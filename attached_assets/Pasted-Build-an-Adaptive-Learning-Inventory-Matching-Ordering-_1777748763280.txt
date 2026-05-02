@@ -1,0 +1,198 @@
+Build an Adaptive Learning, Inventory-Matching, Ordering, and Predictive Inventory System for SmokeCraft 360.
+
+GOAL:
+Create a system that learns from user behavior, matches preferences to real venue inventory, enables ordering, and predicts what venues should stock next.
+
+--------------------------------------------------
+1. USER PREFERENCE ENGINE (ADAPTIVE LEARNING)
+--------------------------------------------------
+
+Track per user:
+- flavorPreferences
+- strength
+- mood
+- selected products
+- saved blends
+- past orders
+
+Store in persistent database.
+
+Each interaction updates user profile.
+
+--------------------------------------------------
+2. GLOBAL LEARNING (CROWD DATA)
+--------------------------------------------------
+
+Track across all users:
+
+- most selected cigars
+- most ordered items
+- most popular pairings (cigar + drink + food)
+- trending flavors
+
+Create globalTrendScore:
++1 to +2 for trending products
+
+--------------------------------------------------
+3. INVENTORY MATCHING (CRITICAL)
+
+Before recommendation:
+
+Filter products by:
+- venueId
+- active = true
+- inStock = true
+
+Products must include:
+- quantity
+- inStock
+- venueId
+
+If quantity = 0:
+- mark as out of stock
+- do NOT recommend
+
+--------------------------------------------------
+4. SMART MATCHING LOGIC
+
+Final score must include:
+
+- base recommendation score
+- user preference boost
+- global trend boost
+- inventory priority boost (in-stock items)
+
+--------------------------------------------------
+5. FALLBACK MATCHING (IF ITEM NOT AVAILABLE)
+
+If user preference matches a product NOT in inventory:
+
+- find closest match within venue inventory
+- display:
+
+"Closest Available Match"
+
+If no close match:
+- show:
+
+"Not Available — Order Option"
+
+--------------------------------------------------
+6. ORDERING SYSTEM INTEGRATION
+
+When product is available:
+
+Show:
+- "Available Now"
+- "Request at Table"
+- "Pickup"
+- "Delivery" (if within radius)
+
+POST /api/orders:
+
+{
+  userId,
+  venueId,
+  productId,
+  pairingId,
+  foodId,
+  orderType,
+  status: "pending"
+}
+
+If item is NOT in inventory:
+
+Show:
+"Request This Item"
+
+Store as:
+- demand request
+
+--------------------------------------------------
+7. DEMAND TRACKING (IMPORTANT)
+
+Track:
+
+- requested items not in stock
+- frequently searched but unavailable products
+
+Store in:
+demandRequests table
+
+--------------------------------------------------
+8. PREDICTIVE INVENTORY SYSTEM
+
+For each venue, analyze:
+
+- most selected items
+- most ordered items
+- most requested (but unavailable)
+- trending flavors
+
+Generate:
+
+"Restock Suggestions"
+
+Example:
+"You should stock more:
+- Padron 1964 (high demand)
+- Sweet profile cigars (trending)"
+  
+--------------------------------------------------
+9. VENUE DASHBOARD ADDITIONS
+
+Add section:
+
+"Inventory Intelligence"
+
+Display:
+
+- Top selling items
+- Low stock items
+- High demand missing items
+- Trending categories
+- Suggested restocks
+
+--------------------------------------------------
+10. BLEND LEARNING
+
+Track user-created blends:
+
+- identify popular combinations
+- suggest:
+
+"Customers like you also enjoy..."
+
+--------------------------------------------------
+11. EXPERIENCE ROUTING
+
+When user selects product:
+
+System must:
+
+- confirm availability at venue
+- route to:
+  - table request
+  - pickup
+  - delivery (if within distance)
+
+--------------------------------------------------
+12. FUTURE READY
+
+Prepare system for:
+
+- automated restock alerts
+- distributor integration
+- brand campaign optimization
+
+--------------------------------------------------
+GOAL
+
+Transform SmokeCraft 360 into a real-time intelligent system that:
+
+- learns from users
+- adapts to preferences
+- matches real inventory
+- enables ordering
+- predicts what venues should stock next
+- increases revenue and efficiency for venues
