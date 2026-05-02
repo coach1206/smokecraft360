@@ -8,7 +8,13 @@ export interface RecommendParams {
   flavorPreferences: string[];
   strength: number;
   mood: string;
+  venueId?: string;
 }
+
+export type AvailabilityLabel =
+  | "Available Now"
+  | "Closest Available Match"
+  | "Not Available";
 
 export interface ProductResult {
   id: string;
@@ -22,11 +28,18 @@ export interface ProductResult {
   tier?: "premium" | "mid" | "standard";
   boostApplied?: number;
   boostLevel?: number;
+  trendBoost?: number;
   sponsored?: boolean;
   brandId?: string;
   campaignId?: string;
   /** Cloudinary image URL — may be absent for static / seed products */
   imageUrl?: string;
+  /** Venue inventory status — present when venueId sent in request */
+  inStock?: boolean;
+  quantity?: number;
+  availabilityLabel?: AvailabilityLabel;
+  /** Set when this is a closest-match substitute for an out-of-stock ideal */
+  fallbackFor?: string;
 }
 
 export interface FoodResult {
@@ -46,6 +59,8 @@ export interface RecommendResponse {
   pairings:        ProductResult[];
   foodPairings:    FoodResult[];
   featured:        ProductResult[];
+  /** Out-of-stock top matches — returned for demand-capture UI */
+  outOfStock?:     ProductResult[];
 }
 
 export interface InventoryItem {
@@ -686,6 +701,84 @@ export async function fetchInsights(params: {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error((err as { error?: string }).error ?? "Failed to fetch insights");
+  }
+  return res.json();
+}
+
+// ── Demand requests ───────────────────────────────────────────────────────────
+
+export interface DemandRequestParams {
+  productId:   string;
+  productName?: string;
+  category?:   string;
+  venueId?:    string;
+  sessionId?:  string;
+}
+
+/** Fire-and-forget — logs an out-of-stock demand request. Never blocks the UI. */
+export function createDemandRequest(params: DemandRequestParams): void {
+  fetch("/api/demand", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body:    JSON.stringify(params),
+  }).catch(() => { /* fire-and-forget */ });
+}
+
+// ── Venue Intelligence ────────────────────────────────────────────────────────
+
+export interface IntelligenceProduct {
+  productId:  string;
+  name:       string;
+  category:   string;
+  orderCount?: number;
+  viewCount?:  number;
+  trendScore:  number;
+  inStock?:    boolean;
+}
+
+export interface IntelligenceLowStock {
+  productId: string;
+  name:      string;
+  quantity:  number;
+  category:  string;
+}
+
+export interface IntelligenceDemandItem {
+  productId:    string;
+  productName:  string;
+  category:     string;
+  requestCount: number;
+  trendScore:   number;
+}
+
+export interface IntelligenceRestockSuggestion {
+  productId:   string;
+  productName: string;
+  category:    string;
+  reason:      string;
+  urgency:     "high" | "medium" | "low";
+}
+
+export interface VenueIntelligence {
+  venueId:            string;
+  generatedAt:        string;
+  topSellers:         IntelligenceProduct[];
+  topViewed:          IntelligenceProduct[];
+  lowStock:           IntelligenceLowStock[];
+  outOfStock:         { productId: string; name: string; category: string }[];
+  highDemandMissing:  IntelligenceDemandItem[];
+  trendingFlavors:    { flavor: string; count: number }[];
+  trendingCategories: { category: string; count: number }[];
+  restockSuggestions: IntelligenceRestockSuggestion[];
+}
+
+export async function fetchVenueIntelligence(venueId: string): Promise<VenueIntelligence> {
+  const res = await fetch(`/api/venues/${venueId}/intelligence`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to fetch venue intelligence");
   }
   return res.json();
 }

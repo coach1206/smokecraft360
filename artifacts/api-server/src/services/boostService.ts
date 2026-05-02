@@ -23,6 +23,7 @@ import { eq, sql } from "drizzle-orm";
 import { db, productsTable, analyticsEventsTable } from "@workspace/db";
 import type { Product, ScoredProduct } from "../engine/types";
 import { isActiveCampaign, CAMPAIGN_BOOST } from "./campaignStore";
+import { getTrendBoost }                    from "./trendStore";
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -178,15 +179,21 @@ export function hasProducts(): boolean {
  */
 export function applyBoosts(products: ScoredProduct[]): ScoredProduct[] {
   return products.map((p): ScoredProduct => {
-    const state       = getProductBoost(p.id);
-    const meta        = metaStore.get(p.id);
-    const campaignOn  = isActiveCampaign(state.campaignId);
-    const rawBoost    = state.boostLevel + (state.sponsored ? 2 : 0) + (campaignOn ? CAMPAIGN_BOOST : 0);
-    const boost       = p.score > 0 ? Math.min(rawBoost, MAX_BOOST_POINTS) : 0;
+    const state      = getProductBoost(p.id);
+    const meta       = metaStore.get(p.id);
+    const campaignOn = isActiveCampaign(state.campaignId);
+    const trend      = getTrendBoost(p.id);
+
+    // Boost only applied when product already has relevance (score > 0),
+    // so trending/sponsored products with zero relevance never surface.
+    const rawBoost = state.boostLevel + (state.sponsored ? 2 : 0) + (campaignOn ? CAMPAIGN_BOOST : 0) + trend;
+    const boost    = p.score > 0 ? Math.min(rawBoost, MAX_BOOST_POINTS) : 0;
+
     return {
       ...p,
       score:        p.score + boost,
       boostApplied: boost,
+      trendBoost:   trend,
       boostLevel:   state.boostLevel,
       sponsored:    state.sponsored,
       brandId:      state.brandId,

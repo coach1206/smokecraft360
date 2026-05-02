@@ -1,0 +1,147 @@
+Build a Demand Engine and Proof System for SmokeCraft 360.
+
+GOAL:
+Automatically create, track, and display real customer demand so the platform generates proof for distributors and brands.
+
+--------------------------------------------------
+1. DEMAND CAPTURE SYSTEM
+--------------------------------------------------
+
+When a user:
+
+- selects a product
+- searches for something
+- requests an item not in stock
+- creates a blend
+
+Capture:
+
+- product name
+- flavor profile
+- category (cigar, alcohol, food)
+- venueId
+- timestamp
+
+Store in:
+demandEvents table
+
+--------------------------------------------------
+2. MISSING PRODUCT DETECTION
+--------------------------------------------------
+
+If a user selects or searches for a product NOT in venue inventory:
+
+- mark as:
+  "unfulfilled demand"
+
+Store in:
+missingDemand table
+
+--------------------------------------------------
+3. TREND ENGINE
+--------------------------------------------------
+
+Analyze demandEvents:
+
+Generate:
+
+- trending cigars
+- trending flavors
+- trending pairings
+- trending blends
+
+Update continuously.
+
+--------------------------------------------------
+4. DEMAND SCORE
+
+For each product or flavor:
+
+Calculate:
+demandScore =
+
+- selections
+- requests
+- orders
+- blend usage
+
+Rank highest demand items.
+
+--------------------------------------------------
+5. VENUE DEMAND DASHBOARD
+
+Add section:
+
+"Customer Demand"
+
+Show:
+
+- Most requested products
+- Most requested but unavailable items
+- Trending flavors
+- Trending pairings
+
+--------------------------------------------------
+6. "YOU ARE MISSING SALES" ALERTS
+
+If demand exists but no inventory:
+
+Show:
+
+"Customers are asking for this but you don’t have it"
+
+List:
+- product
+- number of requests
+
+--------------------------------------------------
+7. PROOF PANEL (FOR YOU / SALES USE)
+
+Create view:
+
+"Demand Proof"
+
+Display:
+
+- top demanded cigars
+- top demanded alcohol
+- conversion rates
+- real usage numbers
+
+--------------------------------------------------
+8. AUTO-GENERATED INSIGHT STATEMENTS
+
+System generates lines like:
+
+- "Customers prefer bold cigars 42% more"
+- "Sweet flavor profiles are trending upward"
+- "Bourbon pairings dominate 68% of sessions"
+
+--------------------------------------------------
+9. DEMAND → OPPORTUNITY ENGINE
+
+Generate:
+
+"Distributor Opportunities"
+
+Example:
+
+"High demand for Padron-style cigars across 2 venues — no supply available"
+
+--------------------------------------------------
+10. EXPORT / SHARE (SIMPLE)
+
+Allow:
+
+- copy insights
+- basic export (JSON or text)
+
+--------------------------------------------------
+GOAL
+
+Turn SmokeCraft 360 into a system that:
+
+- captures real demand
+- proves what customers want
+- exposes missed revenue
+- creates leverage for distributor deals

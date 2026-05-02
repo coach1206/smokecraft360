@@ -16,12 +16,12 @@ import { VaultModal }        from "@/components/Vault/VaultModal";
 import { BandCreatorModal }  from "@/components/Band/BandCreatorModal";
 import { OfflineBanner }     from "@/components/PWA/OfflineBanner";
 import { InstallBanner }     from "@/components/PWA/InstallBanner";
-import { fetchRecommendations, trackEvent, trackPreferences, persistExperience, type RecommendResponse, type OrderType } from "@/services/api";
+import { fetchRecommendations, createDemandRequest, trackEvent, trackPreferences, persistExperience, type RecommendResponse, type ProductResult, type OrderType } from "@/services/api";
 import { useUser }           from "@/hooks/useUser";
 import { useOnlineStatus }   from "@/hooks/useOnlineStatus";
 import { useVenue }          from "@/contexts/VenueContext";
 import { usePresentation }  from "@/contexts/PresentationContext";
-import { AlertCircle, RotateCcw, Bookmark, BookmarkCheck, Flame, Zap, ShoppingBag, MonitorPlay } from "lucide-react";
+import { AlertCircle, RotateCcw, Bookmark, BookmarkCheck, Flame, Zap, ShoppingBag, MonitorPlay, Bell, CheckCircle2 } from "lucide-react";
 import { OrderModal }        from "@/components/Order/OrderModal";
 import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
 import type { SavedBlend }   from "@/services/storage";
@@ -46,6 +46,7 @@ export default function Home() {
   const [isDemoMode, setIsDemoMode]           = useState(false);
   const [orderModalOpen, setOrderModalOpen]   = useState(false);
   const [confirmedOrder, setConfirmedOrder]   = useState<{ id: string; type: OrderType } | null>(null);
+  const [requestedItems, setRequestedItems]   = useState<Set<string>>(new Set());
 
   const [category, setCategory] = useState<"cigar" | "alcohol">("cigar");
   const [flavors, setFlavors]   = useState<string[]>([]);
@@ -88,11 +89,13 @@ export default function Home() {
     setPhase("loading");
     setExperienceSaved(false);
     try {
+      const venueIdParam = venue.id !== "default" ? venue.id : undefined;
       const data = await fetchRecommendations({
         category:          params.category,
         flavorPreferences: params.flavors,
         strength:          params.strength,
         mood:              params.mood,
+        venueId:           venueIdParam,
       });
       setResults(data);
       // Fire recommendation_view event for each recommended product, tagging campaignId if set
@@ -139,7 +142,19 @@ export default function Home() {
 
   const handleDiscover = () => {
     if (flavors.length === 0) { setError("Please select at least one tasting note."); return; }
+    setRequestedItems(new Set());
     discover({ category, flavors, strength, mood });
+  };
+
+  const handleRequestItem = (item: ProductResult) => {
+    if (requestedItems.has(item.id)) return;
+    setRequestedItems((prev) => new Set([...prev, item.id]));
+    createDemandRequest({
+      productId:   item.id,
+      productName: item.name,
+      category:    item.category,
+      venueId:     venue.id !== "default" ? venue.id : undefined,
+    });
   };
 
   /** Demo Mode — pre-fills the form and immediately runs the full flow. */
@@ -511,6 +526,53 @@ export default function Home() {
                   </motion.button>
                 )}
               </motion.div>
+
+              {/* ── Out-of-stock demand section ────────────────────── */}
+              {results.outOfStock && results.outOfStock.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.1, duration: 0.6 }}
+                  className="mt-8 rounded-xl p-5"
+                  style={{ background: "rgba(212,175,55,0.03)", border: "1px solid rgba(212,175,55,0.12)" }}
+                >
+                  <p className="text-[9px] uppercase tracking-[0.28em] mb-4" style={{ color: "rgba(212,175,55,0.4)" }}>
+                    Not Available at This Venue · Request for Future Stock
+                  </p>
+                  <div className="space-y-2">
+                    {results.outOfStock.map((item) => {
+                      const requested = requestedItems.has(item.id);
+                      return (
+                        <div key={item.id}
+                          className="flex items-center justify-between gap-4 px-4 py-3 rounded-xl"
+                          style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                          <div className="min-w-0">
+                            <p className="font-serif text-sm truncate" style={{ color: "rgba(200,180,145,0.75)" }}>{item.name}</p>
+                            <p className="text-[8px] uppercase tracking-[0.15em] mt-0.5" style={{ color: "rgba(180,155,100,0.35)" }}>
+                              {item.category} · Not in stock
+                            </p>
+                          </div>
+                          <motion.button
+                            onClick={() => handleRequestItem(item)}
+                            disabled={requested}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-full text-[9px] uppercase tracking-[0.15em] flex-shrink-0 transition-all duration-300"
+                            style={requested
+                              ? { background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)", color: "rgba(212,175,55,0.55)" }
+                              : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(180,155,100,0.5)" }
+                            }
+                            whileHover={!requested ? { borderColor: "rgba(212,175,55,0.35)", color: "rgba(212,175,55,0.75)", background: "rgba(212,175,55,0.06)" } : {}}
+                            whileTap={!requested ? { scale: 0.96 } : {}}
+                          >
+                            {requested
+                              ? <><CheckCircle2 size={10} />Requested</>
+                              : <><Bell size={10} />Request This Item</>
+                            }
+                          </motion.button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
 
               {/* Featured Selections */}
               <FeaturedSection featured={featured} />

@@ -22,9 +22,9 @@ const router: IRouter = Router();
  */
 router.post(
   "/",
-  allowOnly("category", "flavorPreferences", "strength", "mood"),
+  allowOnly("category", "flavorPreferences", "strength", "mood", "venueId"),
   (req: Request, res: Response) => {
-    const { category, flavorPreferences, strength, mood } = req.body as Partial<RecommendRequest>;
+    const { category, flavorPreferences, strength, mood, venueId } = req.body as Partial<RecommendRequest>;
 
     const validCategories = getRegisteredCategories();
 
@@ -50,10 +50,11 @@ router.post(
       flavorPreferences,
       strength,
       mood,
+      venueId: typeof venueId === "string" ? venueId : undefined,
     });
 
     req.log.info(
-      { category, strength, mood, resultCount: result.recommendations.length },
+      { category, strength, mood, venueId, resultCount: result.recommendations.length, outOfStockCount: result.outOfStock?.length ?? 0 },
       "recommendation request processed",
     );
 
