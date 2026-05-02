@@ -1,14 +1,15 @@
 /**
  * Scoring Service — high-level ranking and featured-section pipeline.
  *
- * Combines the base flavor/strength/mood scoring from the engine with
- * boost data from the boost service.  Import this in routes and engines
- * rather than calling scorer.ts and boostService.ts directly.
+ * Exports two complementary functions matching the reference architecture:
  *
- * Key exports:
- *  - rankAndScore     — score a pool and return top N
- *  - buildFeatured    — build the sponsored/boosted featured section
- *  - scoreBreakdown   — per-product scoring debug breakdown
+ *  scoreProducts(products, input)   — pure base scoring, no boost applied
+ *  buildFeatured(pool, topIds, req) — sponsored/boosted featured section
+ *  rankAndScore(pool, req, topN)    — convenience: score + boost + sort in one call
+ *  scoreBreakdown(product, req)     — per-product debug breakdown
+ *
+ * The recommendation engine calls scoreProducts first, then hands the result
+ * to boostService.applyBoosts for a clean two-pass pipeline.
  */
 
 import type { Product, RecommendRequest, ScoredProduct } from "../engine/types";
@@ -28,18 +29,30 @@ export interface ScoreBreakdown {
   boostLevel: number;
 }
 
-// ── Ranking ───────────────────────────────────────────────────────────────────
+// ── Pure scoring (no boost) ───────────────────────────────────────────────────
 
 /**
- * Rank a pool of products and return the top N.
- * Boost is applied automatically from the boost service.
+ * Score a pool of products against a request using only base signals
+ * (flavor notes, strength, mood, tier) — no boost applied.
+ *
+ * The engine calls this first, then passes the result to boostService.applyBoosts
+ * for a clean two-pass pipeline:
+ *
+ *   const scored   = scoreProducts(pool, request);
+ *   const boosted  = applyBoosts(scored);
+ *   const top3     = boosted.sort(...).slice(0, 3);
  */
-export function rankAndScore(
-  pool:    Product[],
-  request: RecommendRequest,
-  topN:    number,
+export function scoreProducts(
+  products: Product[],
+  request:  RecommendRequest,
 ): ScoredProduct[] {
-  return rankProducts(pool, request, topN);
+  return products.map((p): ScoredProduct => ({
+    ...p,
+    score:        scoreProductBase(p, request),
+    boostApplied: 0,
+    boostLevel:   0,
+    sponsored:    false,
+  }));
 }
 
 // ── Featured section ──────────────────────────────────────────────────────────
@@ -83,11 +96,25 @@ export function buildFeatured(
     .slice(0, maxItems);
 }
 
+// ── Convenience: score + boost + sort in one call ─────────────────────────────
+
+/**
+ * Rank a pool and return the top N — score, boost, sort combined.
+ * Useful outside of the main recommendation flow (e.g. testing, batch jobs).
+ */
+export function rankAndScore(
+  pool:    Product[],
+  request: RecommendRequest,
+  topN:    number,
+): ScoredProduct[] {
+  return rankProducts(pool, request, topN);
+}
+
 // ── Debug / explainability ────────────────────────────────────────────────────
 
 /**
  * Returns a full score breakdown for a single product.
- * Useful for debugging why a product ranked where it did.
+ * Useful for explaining why a product ranked where it did.
  */
 export function scoreBreakdown(
   product: Product,

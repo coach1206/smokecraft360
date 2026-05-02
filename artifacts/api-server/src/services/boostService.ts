@@ -7,13 +7,21 @@
  * All mutations are write-through: the in-memory cache is updated instantly
  * (so recommendations are never blocked), then the DB is persisted async.
  *
- * Call `seedProducts` or `seedFromDB` once at startup (via engine/inventory.ts),
- * then `syncStatsFromDB` to load persisted impression counts.
+ * Two modes of use:
+ *
+ *  1. State management   — getProductBoost, applyBoost, recordImpression, getAllInventory
+ *  2. Pipeline transform — applyBoosts(scoredProducts) for the recommendation engine
+ *
+ * The engine calls scoreProducts (pure) then applyBoosts (adds boost to scores):
+ *
+ *   const scored  = scoreProducts(pool, request);   // scoringService
+ *   const boosted = applyBoosts(scored);             // boostService  ← here
+ *   const top3    = boosted.sort(...).slice(0, 3);
  */
 
 import { eq, sql } from "drizzle-orm";
 import { db, productsTable, analyticsEventsTable } from "@workspace/db";
-import type { Product } from "../engine/types";
+import type { Product, ScoredProduct } from "../engine/types";
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -43,6 +51,9 @@ export type InventoryEntry = ProductMeta & BoostState & ProductStats;
 const boostStore = new Map<string, BoostState>();
 const statsStore = new Map<string, ProductStats>();
 const metaStore  = new Map<string, ProductMeta>();
+
+/** Maximum boost contribution — keeps irrelevant products from crowding out relevant ones. */
+const MAX_BOOST_POINTS = 5;
 
 // ── Seeding ───────────────────────────────────────────────────────────────────
 
@@ -141,6 +152,36 @@ export function getAllInventory(): InventoryEntry[] {
 
 export function hasProducts(): boolean {
   return metaStore.size > 0;
+}
+
+// ── Pipeline transform ────────────────────────────────────────────────────────
+
+/**
+ * Apply boost levels to an already-scored product array.
+ *
+ * This is the second pass in the recommendation pipeline:
+ *
+ *   scored  = scoreProducts(pool, request)  → base flavor/strength/mood scores
+ *   boosted = applyBoosts(scored)           → adds sponsored + boost level on top
+ *
+ * Boost is only added when a product already has relevance (score > 0),
+ * so sponsored products with zero relevance are never pushed into recommendations.
+ */
+export function applyBoosts(products: ScoredProduct[]): ScoredProduct[] {
+  return products.map((p): ScoredProduct => {
+    const state    = getProductBoost(p.id);
+    const rawBoost = state.boostLevel + (state.sponsored ? 2 : 0);
+    const boost    = p.score > 0 ? Math.min(rawBoost, MAX_BOOST_POINTS) : 0;
+    return {
+      ...p,
+      score:        p.score + boost,
+      boostApplied: boost,
+      boostLevel:   state.boostLevel,
+      sponsored:    state.sponsored,
+      brandId:      state.brandId,
+      campaignId:   state.campaignId,
+    };
+  });
 }
 
 // ── Write API ─────────────────────────────────────────────────────────────────

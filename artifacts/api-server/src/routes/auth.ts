@@ -22,7 +22,7 @@ function sanitizeUser(user: typeof usersTable.$inferSelect) {
  * The very first user registered automatically becomes super_admin.
  * Subsequent registrations use the requested role (defaulting to "customer").
  */
-router.post("/auth/register", async (req: Request, res: Response) => {
+router.post("/register", async (req: Request, res: Response) => {
   const { name, email, password, role } = req.body as {
     name?: string; email?: string; password?: string; role?: string;
   };
@@ -69,7 +69,7 @@ router.post("/auth/register", async (req: Request, res: Response) => {
 /**
  * POST /api/auth/login
  */
-router.post("/auth/login", async (req: Request, res: Response) => {
+router.post("/login", async (req: Request, res: Response) => {
   const { email, password } = req.body as { email?: string; password?: string };
 
   if (!email || !password) {
@@ -92,7 +92,7 @@ router.post("/auth/login", async (req: Request, res: Response) => {
 /**
  * GET /api/auth/me
  */
-router.get("/auth/me", requireAuth, async (req: AuthRequest, res: Response) => {
+router.get("/me", requireAuth, async (req: AuthRequest, res: Response) => {
   const [user] = await db.select().from(usersTable)
     .where(eq(usersTable.id, req.user!.id)).limit(1);
 

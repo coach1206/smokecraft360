@@ -15,12 +15,11 @@ import { requireRole } from "../middleware/roles";
 const router: IRouter = Router();
 
 router.get(
-  "/analytics",
+  "/",
   requireAuth,
   requireRole("venue_owner", "manager"),
   async (_req: Request, res: Response) => {
 
-    // Aggregate from DB — this is the persistent historical record
     const [recRows, sponsoredRows] = await Promise.all([
       db
         .select({

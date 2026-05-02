@@ -2,7 +2,7 @@
  * POST /api/events
  *
  * Public endpoint — logs a user interaction event to the analytics_events table.
- * Fire-and-forget safe: returns immediately, DB write is non-blocking.
+ * Fire-and-forget safe: responds immediately, DB write is non-blocking.
  */
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db, analyticsEventsTable } from "@workspace/db";
@@ -19,7 +19,7 @@ const VALID_CLIENT_EVENTS = new Set<EventType>([
   "sponsored_view",
 ]);
 
-router.post("/events", (req: Request, res: Response) => {
+router.post("/", (req: Request, res: Response) => {
   const { eventType, productId } = req.body as { eventType?: string; productId?: string };
 
   if (!eventType || !VALID_CLIENT_EVENTS.has(eventType as EventType)) {
@@ -32,12 +32,9 @@ router.post("/events", (req: Request, res: Response) => {
   // Respond immediately — never let analytics block the client
   res.json({ success: true });
 
-  // Async DB write — errors are logged but don't affect the response
+  // Async DB write — errors logged but never affect the response
   db.insert(analyticsEventsTable)
-    .values({
-      eventType: eventType as EventType,
-      productId: productId ?? null,
-    })
+    .values({ eventType: eventType as EventType, productId: productId ?? null })
     .catch((err) => {
       req.log.error({ err, eventType, productId }, "Failed to persist event");
     });

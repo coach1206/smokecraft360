@@ -87,7 +87,7 @@ export interface PersistExperienceParams {
   foodPairingId?: string;
 }
 
-// ─── Public API ──────────────────────────────────────────────────────────────
+// ── Recommendations ───────────────────────────────────────────────────────────
 
 export async function fetchRecommendations(params: RecommendParams): Promise<RecommendResponse> {
   const response = await fetch("/api/recommend", {
@@ -105,9 +105,11 @@ export async function fetchRecommendations(params: RecommendParams): Promise<Rec
   };
 }
 
+// ── Analytics (fire-and-forget) ───────────────────────────────────────────────
+
 /**
  * Fire-and-forget event tracking.
- * Never throws — errors are swallowed so they never disrupt the user experience.
+ * Never throws — analytics failures must never disrupt the user experience.
  */
 export function trackEvent(params: TrackEventParams): void {
   fetch("/api/events", {
@@ -139,11 +141,11 @@ export async function persistExperience(
   }
 }
 
-// ─── Protected API ───────────────────────────────────────────────────────────
+// ── Partner dashboard (authenticated) ────────────────────────────────────────
 
 export async function fetchInventory(): Promise<InventoryItem[]> {
-  const res = await fetch("/api/inventory");
-  if (!res.ok) throw new Error("Failed to fetch inventory");
+  const res = await fetch("/api/products");
+  if (!res.ok) throw new Error("Failed to fetch products");
   return res.json();
 }
 
@@ -151,7 +153,7 @@ export async function updateInventoryItem(
   id: string,
   updates: Partial<Pick<InventoryItem, "boostLevel" | "sponsored" | "brandId" | "campaignId">>,
 ): Promise<InventoryItem> {
-  const res = await fetch(`/api/inventory/${id}`, {
+  const res = await fetch(`/api/products/${id}`, {
     method:  "PATCH",
     headers: getAuthHeaders(),
     body:    JSON.stringify(updates),

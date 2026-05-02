@@ -2,8 +2,8 @@
  * POST /api/experiences
  *
  * Persists a completed recommendation session to the experiences table.
- * Auth is optional — if a valid JWT is present the experience is linked to
- * the authenticated user; otherwise it is stored anonymously.
+ * Auth is optional — links to the authenticated user when a valid JWT is
+ * present; stored anonymously otherwise.
  */
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db, experiencesTable } from "@workspace/db";
@@ -11,7 +11,7 @@ import { verifyToken } from "../lib/jwt";
 
 const router: IRouter = Router();
 
-router.post("/experiences", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   const { selectedProductId, pairingProductId, foodPairingId } = req.body as {
     selectedProductId?: string;
     pairingProductId?:  string;
@@ -40,8 +40,8 @@ router.post("/experiences", async (req: Request, res: Response) => {
     .values({
       userId:            userId ?? "00000000-0000-0000-0000-000000000000",
       selectedProductId,
-      pairingProductId:  pairingProductId  ?? null,
-      foodPairingId:     foodPairingId     ?? null,
+      pairingProductId:  pairingProductId ?? null,
+      foodPairingId:     foodPairingId    ?? null,
     })
     .returning({ id: experiencesTable.id });
 

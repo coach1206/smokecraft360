@@ -1,38 +1,36 @@
 /**
  * Product routes — inventory listing and boost management.
  *
- * GET  /api/inventory       — public product list with current boost state
- * PATCH /api/inventory/:id  — update a product's boost/sponsored settings (auth required)
+ * GET  /api/products      — public product list with current boost state
+ * PATCH /api/products/:id — update a product's boost/sponsored settings (auth required)
  */
 
 import { Router, type IRouter, type Request, type Response } from "express";
 import { getAllInventory, applyBoost } from "../services/boostService";
-import { requireAuth } from "../middleware/auth";
+import { requireAuth, type AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/roles";
-import type { AuthRequest } from "../middleware/auth";
 
 const router: IRouter = Router();
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /**
- * GET /api/inventory
- * Public — returns all products with their current boost state and
- * session impression counts.
+ * GET /api/products
+ * Public — returns all products with current boost state and impression counts.
  */
-router.get("/inventory", (_req: Request, res: Response) => {
+router.get("/", (_req: Request, res: Response) => {
   res.json(getAllInventory());
 });
 
 /**
- * PATCH /api/inventory/:id
+ * PATCH /api/products/:id
  * Protected — requires venue_owner, manager, or super_admin.
  *
  * Body (all fields optional):
  *   { boostLevel: 0–3, sponsored: boolean, brandId?: string, campaignId?: string }
  */
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 router.patch(
-  "/inventory/:id",
+  "/:id",
   requireAuth,
   requireRole("venue_owner", "manager"),
   async (req: AuthRequest, res: Response) => {
