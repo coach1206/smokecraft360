@@ -12,6 +12,7 @@ import PaymentSuccess  from "@/pages/PaymentSuccess";
 import PaymentCancel   from "@/pages/PaymentCancel";
 import { DemoBanner }            from "@/components/Demo/DemoBanner";
 import { PresentationOverlay }   from "@/components/Presentation/PresentationOverlay";
+import { KioskModeProvider, KioskModeBanner } from "@/contexts/KioskModeContext";
 
 const queryClient = new QueryClient();
 
@@ -34,12 +35,15 @@ function App() {
         <VenueProvider>
           <AuthProvider>
             <PresentationProvider>
-              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                <Router />
-              </WouterRouter>
-              <PresentationOverlay />
-              <DemoBanner />
-              <Toaster />
+              <KioskModeProvider>
+                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                  <Router />
+                </WouterRouter>
+                <PresentationOverlay />
+                <DemoBanner />
+                <KioskModeBanner />
+                <Toaster />
+              </KioskModeProvider>
             </PresentationProvider>
           </AuthProvider>
         </VenueProvider>

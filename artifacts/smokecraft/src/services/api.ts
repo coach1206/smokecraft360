@@ -1323,6 +1323,92 @@ export async function updateRedemptionStatus(id: string, status: string): Promis
   return res.json();
 }
 
+// ── Device Management ─────────────────────────────────────────────────────────
+
+export interface DeviceItem {
+  id:           string;
+  venueId:      string;
+  type:         "mobile" | "tablet" | "kiosk";
+  nickname:     string;
+  tableNumber:  string | null;
+  status:       "active" | "inactive";
+  lastActiveAt: string | null;
+  createdAt:    string;
+  updatedAt:    string;
+}
+
+export interface DeviceMetrics {
+  sessionsStarted:  number;
+  ordersPlaced:     number;
+  resetsTriggered:  number;
+  avgSessionMs:     number;
+  avgSessionMin:    number;
+  resetBreakdown: {
+    inactivity:    number;
+    orderComplete: number;
+    staffReset:    number;
+  };
+}
+
+export async function fetchDevices(): Promise<DeviceItem[]> {
+  const res = await fetch("/api/devices", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch devices");
+  return res.json();
+}
+
+export async function registerDevice(data: {
+  type:        "mobile" | "tablet" | "kiosk";
+  nickname:    string;
+  tableNumber?: string;
+}): Promise<DeviceItem> {
+  const res = await fetch("/api/devices", {
+    method:  "POST",
+    headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+    body:    JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to register device");
+  return res.json();
+}
+
+export async function updateDevice(id: string, data: {
+  nickname?:    string;
+  tableNumber?: string | null;
+  status?:      "active" | "inactive";
+}): Promise<DeviceItem> {
+  const res = await fetch(`/api/devices/${id}`, {
+    method:  "PATCH",
+    headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+    body:    JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update device");
+  return res.json();
+}
+
+export async function deleteDevice(id: string): Promise<void> {
+  const res = await fetch(`/api/devices/${id}`, {
+    method:  "DELETE",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to delete device");
+}
+
+export async function resetDevice(id: string): Promise<{ ok: boolean; resetAt: string }> {
+  const res = await fetch(`/api/devices/${id}/reset`, {
+    method:  "POST",
+    headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+    body:    "{}",
+  });
+  if (!res.ok) throw new Error("Failed to reset device");
+  return res.json();
+}
+
+export async function fetchDeviceMetrics(id: string): Promise<DeviceMetrics> {
+  const res = await fetch(`/api/devices/${id}/metrics`, { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch device metrics");
+  const data = await res.json();
+  return data.metrics as DeviceMetrics;
+}
+
 // ── Demo helpers ──────────────────────────────────────────────────────────────
 
 /** Clears all server-side demo data (orders). Best-effort — never throws. */

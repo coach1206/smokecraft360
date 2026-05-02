@@ -223,6 +223,35 @@ Both verified-orders AND xp thresholds must be met to advance:
 - `artifacts/api-server/src/services/xpEngine.ts` — CAS-guarded XP + loyalty points awarding + humidor upsert
 - Fraud prevention: only staff/manager/venue_owner/super_admin can verify; double-verify is idempotent
 
+### Device Management Routes
+| Endpoint | Auth | Purpose |
+|---|---|---|
+| `GET /api/devices` | manager+ | List all registered devices for the user's venue |
+| `POST /api/devices` | manager+ | Register a new device (type, nickname, tableNumber) |
+| `PATCH /api/devices/:id` | manager+ | Update nickname / tableNumber / status |
+| `DELETE /api/devices/:id` | manager+ | Remove a device |
+| `GET /api/devices/:id/metrics` | manager+ | Usage stats: sessions, orders, resets, avg session time, reset breakdown |
+| `POST /api/devices/:id/reset` | staff+ | Staff-triggered session reset (closes open session) |
+| `POST /api/devices/:id/session` | auth | Start (`action: "start"`) or end (`action: "end"`) a device session |
+| `GET /api/devices/venue-qr/:venueId` | auth | SVG QR code for venue (optional ?tableNumber=&mode=normal/tablet/kiosk) |
+
+**DB Tables:**
+- `devices` — id, venueId, type (mobile/tablet/kiosk), nickname, tableNumber, status, lastActiveAt
+- `device_sessions` — id, deviceId, venueId, tableNumber, userId, orderPlaced, resetReason, startedAt, endedAt
+
+**Kiosk Mode (client-side):**
+- Activated via URL params: `?mode=kiosk&venueId=X&tableNumber=Y&deviceId=Z`
+- 90-second inactivity timer → 10-second countdown overlay → auto-reset to home
+- Full-screen API requested automatically on kiosk mount
+- `KioskModeProvider` wraps App; `KioskModeBanner` shows mode + reset button
+- `?mode=tablet` shows the banner without the inactivity timer
+
+**Pricing config** (`artifacts/smokecraft/src/config/devicePricing.ts`):
+- Tablet: $35/mo rental · $350 one-time purchase
+- Kiosk: $199/mo rental · $1,600 one-time purchase
+- Plan bundles: BASE (QR only, free), EXPERIENCE (1 kiosk + tablets, $99/mo), ELITE (unlimited, $249/mo)
+- `venuePlanToBundle(plan)` maps basic→BASE, mid→EXPERIENCE, premium→ELITE
+
 ### Lounge League Routes
 | Endpoint | Auth | Purpose |
 |---|---|---|
@@ -255,6 +284,7 @@ Badges computed per request: `top_rated` (#1 score), `most_active` (most verifie
 - **Loyalty & Rewards** (manager+) — create/edit/toggle rewards catalogue, redemption queue with fulfil/cancel controls
 - **Signature Creations** — user's own signature cigar requests + status progress + box design details; Maestro-gated "New Design" button opens 4-step modal
 - **Lounge League** — full ranked leaderboard of all venues, weekly highlights (Top Lounge / Best Experience / Trending), "You helped your lounge rank #X" contribution card, badge legend, scoring guide
+- **Device Manager** (manager+) — plan bundle banner, registered device list (type/status/table/last-active), add/enable/disable/delete/reset controls, per-device metrics panel (sessions/orders/resets/avg time), hardware pricing cards (tablet/kiosk), venue QR code generator (mode-aware: normal/tablet/kiosk, per-table or venue-wide, downloadable SVG), mode guide
 
 ### Frontend
 - `artifacts/smokecraft/src/components/Dashboard/VerifyOrdersTab.tsx`

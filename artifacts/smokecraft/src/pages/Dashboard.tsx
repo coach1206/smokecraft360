@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, TrendingUp, Package, Sparkles, Zap,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
-  Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown, Award, Gift,
+  Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown, Award, Gift, Monitor,
 } from "lucide-react";
 import { LiveOrders }                from "@/components/Dashboard/LiveOrders";
 import { BrandsTab }               from "@/components/Dashboard/BrandsTab";
@@ -18,6 +18,7 @@ import { ProgressTab }              from "@/components/Dashboard/ProgressTab";
 import { LoyaltyRewardsTab }        from "@/components/Dashboard/LoyaltyRewardsTab";
 import { LoungeLeagueTab }          from "@/components/Dashboard/LoungeLeagueTab";
 import { SignatureCreationsTab }     from "@/components/Dashboard/SignatureCreationsTab";
+import { DeviceManagerTab }          from "@/components/Dashboard/DeviceManagerTab";
 import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
   type InventoryItem, type AnalyticsSummary,
@@ -30,7 +31,7 @@ import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
-type DashTab = "overview" | "products" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations";
+type DashTab = "overview" | "products" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices";
 
 const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
   { id: "overview",     label: "Overview",              icon: <BarChart3 size={12} />    },
@@ -47,6 +48,7 @@ const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
   { id: "loyalty",      label: "Loyalty & Rewards",     icon: <Gift size={12} />         },
   { id: "my-creations", label: "Signature Creations",   icon: <Crown size={12} />        },
   { id: "lounge-league",label: "Lounge League",         icon: <Trophy size={12} />       },
+  { id: "devices",      label: "Device Manager",        icon: <Monitor size={12} />      },
   { id: "analytics",    label: "Analytics",             icon: <Tag size={12} />          },
 ];
 
@@ -493,6 +495,15 @@ export default function Dashboard() {
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.25 }}>
                     <LoungeLeagueTab />
+                  </motion.div>
+                )}
+
+                {/* ── Device Manager tab ─────────────────────────────────────── */}
+                {activeTab === "devices" && (
+                  <motion.div key="devices"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+                    <DeviceManagerTab />
                   </motion.div>
                 )}
 
