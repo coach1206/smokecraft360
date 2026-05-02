@@ -9,34 +9,34 @@ interface PairingsSectionProps {
 export function PairingsSection({ pairings }: PairingsSectionProps) {
   if (!pairings || pairings.length === 0) return null;
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2, delayChildren: 0.5 }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
-  };
-
   return (
     <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="mt-16 w-full max-w-2xl mx-auto"
+      className="mt-20 w-full max-w-2xl mx-auto"
+      initial={{ opacity: 0, y: 32 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.9, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
       data-testid="pairings-section"
     >
-      <motion.h3 variants={item} className="text-center font-serif text-2xl mb-8 text-primary/80">
-        Recommended Pairings
-      </motion.h3>
-      
+      {/* Section divider */}
+      <div className="flex items-center gap-4 mb-8">
+        <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.2))" }} />
+        <h3
+          className="font-serif text-2xl tracking-wider"
+          style={{ color: "rgba(212,175,55,0.75)", fontWeight: 300, fontStyle: "italic" }}
+        >
+          Recommended Pairings
+        </h3>
+        <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, rgba(212,175,55,0.2), transparent)" }} />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {pairings.map((pairing) => (
-          <motion.div key={pairing.id} variants={item}>
+        {pairings.map((pairing, i) => (
+          <motion.div
+            key={pairing.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.7 + i * 0.2, ease: [0.22, 1, 0.36, 1] }}
+          >
             <PairingCard product={pairing} />
           </motion.div>
         ))}
