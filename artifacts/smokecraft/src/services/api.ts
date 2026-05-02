@@ -507,6 +507,92 @@ export async function createDistributor(data: {
   return res.json();
 }
 
+// ── Brand Insights ────────────────────────────────────────────────────────────
+
+export interface InsightsProduct {
+  productId:  string;
+  name:       string;
+  category:   string;
+  tier?:      string;
+  boostLevel?: number;
+  sponsored?:  boolean;
+  count:      number;
+}
+
+export interface InsightsTrending {
+  productId:   string;
+  name:        string;
+  category:    string;
+  tier?:       string;
+  recentCount: number;
+  priorCount:  number;
+  velocity:    number;
+}
+
+export interface InsightsBrandPerf {
+  brandId:    string;
+  name:       string;
+  category:   string;
+  shown:      number;
+  selected:   number;
+  ordered:    number;
+  selectRate: number;
+  orderRate:  number;
+}
+
+export interface InsightsProductPerf {
+  productId:      string;
+  name:           string;
+  category:       string;
+  tier?:          string;
+  views:          number;
+  swipeLeft:      number;
+  swipeRight:     number;
+  selected:       number;
+  ordered:        number;
+  recommendations: number;
+  conversionRate: number;
+}
+
+export interface InsightsData {
+  filters: { venueId: string | null; category: string; timeRange: string };
+  conversionFunnel: {
+    sessions:   number;
+    selected:   number;
+    ordered:    number;
+    selectRate: number;
+    orderRate:  number;
+  };
+  topSelected:    InsightsProduct[];
+  topSkipped:     InsightsProduct[];
+  topRightSwiped: InsightsProduct[];
+  topPairings:    InsightsProduct[];
+  topFood:        InsightsProduct[];
+  flavorTrends:   { flavor: string; count: number }[];
+  brandPerformance:   InsightsBrandPerf[];
+  productPerformance: InsightsProductPerf[];
+  trending:    InsightsTrending[];
+  timeSeries:  { day: string; count: number }[];
+}
+
+export async function fetchInsights(params: {
+  venueId?:  string;
+  category?: string;
+  timeRange?: string;
+}): Promise<InsightsData> {
+  const qs = new URLSearchParams();
+  if (params.venueId)   qs.set("venueId",   params.venueId);
+  if (params.category)  qs.set("category",  params.category);
+  if (params.timeRange) qs.set("timeRange", params.timeRange);
+
+  const res = await fetch(`/api/analytics/insights?${qs}`, { headers: getAuthHeaders() });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to fetch insights");
+  }
+  return res.json();
+}
+
 // ── Demo helpers ──────────────────────────────────────────────────────────────
 
 /** Clears all server-side demo data (orders). Best-effort — never throws. */

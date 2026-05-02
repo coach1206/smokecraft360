@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { LiveOrders }     from "@/components/Dashboard/LiveOrders";
 import { BrandsTab }      from "@/components/Dashboard/BrandsTab";
+import { InsightsTab }    from "@/components/Dashboard/InsightsTab";
 import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
   type InventoryItem, type AnalyticsSummary,
@@ -19,13 +20,14 @@ import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
-type DashTab        = "overview" | "products" | "brands" | "analytics";
+type DashTab        = "overview" | "products" | "brands" | "insights" | "analytics";
 
 const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
-  { id: "overview",  label: "Overview",            icon: <BarChart3 size={12} /> },
-  { id: "products",  label: "Products",            icon: <Package size={12} />   },
+  { id: "overview",  label: "Overview",              icon: <BarChart3 size={12} /> },
+  { id: "products",  label: "Products",              icon: <Package size={12} />   },
   { id: "brands",    label: "Brands & Distributors", icon: <Building2 size={12} /> },
-  { id: "analytics", label: "Analytics",           icon: <TrendingUp size={12} /> },
+  { id: "insights",  label: "Brand Insights",        icon: <TrendingUp size={12} /> },
+  { id: "analytics", label: "Analytics",             icon: <Tag size={12} />       },
 ];
 
 export default function Dashboard() {
@@ -356,6 +358,23 @@ export default function Dashboard() {
                       </p>
                     </div>
                     <BrandsTab />
+                  </motion.div>
+                )}
+
+                {/* ── Brand Insights tab ────────────────────────────────────── */}
+                {activeTab === "insights" && (
+                  <motion.div key="insights"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+                    <div className="mb-6">
+                      <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
+                        Brand Insights
+                      </h2>
+                      <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+                        Customer behavior · product performance · flavor trends · brand analytics
+                      </p>
+                    </div>
+                    <InsightsTab />
                   </motion.div>
                 )}
 
