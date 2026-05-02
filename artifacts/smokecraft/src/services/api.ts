@@ -241,7 +241,7 @@ export async function uploadProductImage(file: File): Promise<string> {
 // ── Orders ────────────────────────────────────────────────────────────────────
 
 export type OrderType   = "table" | "pickup" | "delivery";
-export type OrderStatus = "pending" | "in_progress" | "completed" | "cancelled";
+export type OrderStatus = "pending" | "in_progress" | "completed" | "cancelled" | "paid";
 
 export interface CreateOrderParams {
   cigarId?:    string;
@@ -300,6 +300,31 @@ export async function updateOrderStatus(id: string, status: OrderStatus): Promis
   });
   if (!res.ok) throw new Error("Failed to update order status");
   return res.json();
+}
+
+// ── Stripe Checkout ───────────────────────────────────────────────────────────
+
+export interface CheckoutItem {
+  name:      string;
+  price:     number;
+  quantity?: number;
+}
+
+export async function createCheckoutSession(params: {
+  items:     CheckoutItem[];
+  orderId:   string;
+  venueId?:  string;
+}): Promise<{ url: string }> {
+  const res = await fetch("/api/create-checkout-session", {
+    method:  "POST",
+    headers: getAuthHeaders(),
+    body:    JSON.stringify(params),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to create checkout session");
+  }
+  return res.json() as Promise<{ url: string }>;
 }
 
 export async function fetchAnalytics(): Promise<AnalyticsSummary> {

@@ -4,17 +4,21 @@ import { Toaster }         from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider }    from "@/contexts/AuthContext";
 import { VenueProvider }   from "@/contexts/VenueContext";
-import NotFound  from "@/pages/not-found";
-import Home      from "@/pages/Home";
-import Dashboard from "@/pages/Dashboard";
+import NotFound        from "@/pages/not-found";
+import Home            from "@/pages/Home";
+import Dashboard       from "@/pages/Dashboard";
+import PaymentSuccess  from "@/pages/PaymentSuccess";
+import PaymentCancel   from "@/pages/PaymentCancel";
 
 const queryClient = new QueryClient();
 
 function Router() {
   return (
     <Switch>
-      <Route path="/"          component={Home}      />
-      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/"          component={Home}           />
+      <Route path="/dashboard" component={Dashboard}      />
+      <Route path="/success"   component={PaymentSuccess} />
+      <Route path="/cancel"    component={PaymentCancel}  />
       <Route component={NotFound} />
     </Switch>
   );

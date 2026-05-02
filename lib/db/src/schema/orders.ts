@@ -11,7 +11,7 @@ export const ordersTable = pgTable("orders", {
   foodId:      text("food_id"),
   foodName:    text("food_name"),
   orderType:   text("order_type").notNull().$type<"table" | "pickup" | "delivery">(),
-  status:      text("status").notNull().default("pending").$type<"pending" | "in_progress" | "completed" | "cancelled">(),
+  status:      text("status").notNull().default("pending").$type<"pending" | "in_progress" | "completed" | "cancelled" | "paid">(),
   tableNumber: text("table_number"),
   createdAt:   timestamp("created_at").notNull().defaultNow(),
   updatedAt:   timestamp("updated_at").notNull().defaultNow(),

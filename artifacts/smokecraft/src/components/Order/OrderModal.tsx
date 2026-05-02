@@ -15,7 +15,10 @@ import {
   X, MapPin, Loader2, CheckCircle, XCircle,
   UtensilsCrossed, Wine, Cigarette, ShoppingBag, Hash,
 } from "lucide-react";
-import { createOrder, type ProductResult, type FoodResult, type OrderType } from "@/services/api";
+import {
+  createOrder, createCheckoutSession,
+  type ProductResult, type FoodResult, type OrderType,
+} from "@/services/api";
 
 interface OrderModalProps {
   isOpen:    boolean;
@@ -57,6 +60,7 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
   const [deliveryMiles,   setDeliveryMiles]   = useState<number | null>(null);
   const [tableNumber,     setTableNumber]     = useState("");
   const [isSubmitting,    setIsSubmitting]    = useState(false);
+  const [isRedirecting,   setIsRedirecting]   = useState(false);
   const [submitError,     setSubmitError]     = useState<string | null>(null);
 
   // Reset when modal opens
@@ -106,29 +110,46 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
     selectedType !== null &&
     !(selectedType === "delivery" && deliveryStatus === "unavailable") &&
     !(selectedType === "delivery" && deliveryStatus === "checking") &&
-    !isSubmitting;
+    !isSubmitting &&
+    !isRedirecting;
 
   const handleSubmit = async () => {
     if (!selectedType || !canSubmit) return;
     setIsSubmitting(true);
     setSubmitError(null);
     try {
+      // Step 1 — persist the order record
       const order = await createOrder({
-        cigarId:   cigar?.id,
-        cigarName: cigar?.name,
-        drinkId:   drink?.id,
-        drinkName: drink?.name,
-        foodId:    food?.id,
-        foodName:  food?.name,
-        orderType: selectedType,
+        cigarId:     cigar?.id,
+        cigarName:   cigar?.name,
+        drinkId:     drink?.id,
+        drinkName:   drink?.name,
+        foodId:      food?.id,
+        foodName:    food?.name,
+        orderType:   selectedType,
         tableNumber: selectedType === "table" ? tableNumber || undefined : undefined,
         venueId,
       });
-      onSuccess(order.id, selectedType);
+
+      // Step 2 — table orders go straight to confirmation (no payment required)
+      if (selectedType === "table") {
+        onSuccess(order.id, selectedType);
+        return;
+      }
+
+      // Step 3 — pickup / delivery → redirect to Stripe Checkout
+      setIsRedirecting(true);
+      const { url } = await createCheckoutSession({
+        items:   [{ name: "SmokeCraft 360 Experience", price: 4500, quantity: 1 }],
+        orderId: order.id,
+        venueId,
+      });
+      // Navigate away — intentionally not resetting submitting state
+      window.location.href = url;
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Could not place order. Try again.");
-    } finally {
       setIsSubmitting(false);
+      setIsRedirecting(false);
     }
   };
 
@@ -314,14 +335,22 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
                   whileHover={canSubmit ? { scale: 1.01, boxShadow: "0 6px 32px rgba(212,175,55,0.4)" } : {}}
                   whileTap={canSubmit ? { scale: 0.98 } : {}}
                 >
-                  {isSubmitting ? (
+                  {isRedirecting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 size={14} className="animate-spin" />Redirecting to Payment…
+                    </span>
+                  ) : isSubmitting ? (
                     <span className="flex items-center justify-center gap-2">
                       <Loader2 size={14} className="animate-spin" />Placing Order…
                     </span>
                   ) : (
                     <span className="flex items-center justify-center gap-2">
                       <ShoppingBag size={14} />
-                      {selectedType ? `Confirm ${ORDER_TYPES.find(o => o.type === selectedType)?.label}` : "Select Order Type"}
+                      {selectedType === "table"
+                        ? "Request at Table"
+                        : selectedType
+                          ? `Pay & Confirm ${ORDER_TYPES.find(o => o.type === selectedType)?.label}`
+                          : "Select Order Type"}
                     </span>
                   )}
                 </motion.button>

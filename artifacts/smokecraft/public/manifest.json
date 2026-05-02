@@ -1,12 +1,12 @@
 {
-  "name": "SmokeCraft",
+  "name": "SmokeCraft 360",
   "short_name": "SmokeCraft",
-  "description": "Connoisseur's Companion — premium cigar and spirits recommendations",
+  "description": "Premium cigar and spirits recommendations — curated for the connoisseur.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "any",
   "theme_color": "#D4AF37",
-  "background_color": "#0f0804",
+  "background_color": "#0b0b0b",
   "scope": "/",
   "lang": "en",
   "categories": ["lifestyle", "food"],
@@ -15,7 +15,7 @@
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/opengraph.jpg",

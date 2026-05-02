@@ -13,8 +13,10 @@ import analyticsRouter   from "./routes/analytics";
 import eventsRouter      from "./routes/events";
 import experiencesRouter from "./routes/experiences";
 import venuesRouter      from "./routes/venues";
-import uploadRouter      from "./routes/upload";
-import ordersRouter      from "./routes/orders";
+import uploadRouter           from "./routes/upload";
+import ordersRouter           from "./routes/orders";
+import checkoutRouter         from "./routes/checkout";
+import { stripeWebhookHandler } from "./routes/stripeWebhook";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -66,6 +68,15 @@ app.use(
 );
 
 app.use(cors(corsOptions));
+
+// Stripe webhook must receive the raw body for signature verification —
+// register BEFORE express.json() parses and discards the raw stream.
+app.post(
+  "/api/webhook/stripe",
+  express.raw({ type: "application/json" }),
+  stripeWebhookHandler,
+);
+
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(rejectDeepPayloads);
@@ -82,6 +93,7 @@ app.use("/api/experiences",                 experiencesRouter);
 app.use("/api/venues",                      venuesRouter);
 app.use("/api/upload",                      uploadRouter);
 app.use("/api/orders",                      ordersRouter);
+app.use("/api",                             checkoutRouter);
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────
 app.use((_req: Request, res: Response) => {

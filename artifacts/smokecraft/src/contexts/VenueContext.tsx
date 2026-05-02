@@ -41,7 +41,7 @@ export interface VenueConfig {
 
 const DEFAULT_CONFIG: VenueConfig = {
   id:           "default",
-  logoText:     "SmokeCraft",
+  logoText:     "SmokeCraft 360",
   tagline:      "Connoisseur's Companion",
   primaryColor: "#D4AF37",
   features: {
