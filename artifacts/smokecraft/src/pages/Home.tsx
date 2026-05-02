@@ -16,11 +16,13 @@ import { VaultModal }        from "@/components/Vault/VaultModal";
 import { BandCreatorModal }  from "@/components/Band/BandCreatorModal";
 import { OfflineBanner }     from "@/components/PWA/OfflineBanner";
 import { InstallBanner }     from "@/components/PWA/InstallBanner";
-import { fetchRecommendations, trackEvent, persistExperience, type RecommendResponse } from "@/services/api";
+import { fetchRecommendations, trackEvent, persistExperience, type RecommendResponse, type OrderType } from "@/services/api";
 import { useUser }           from "@/hooks/useUser";
 import { useOnlineStatus }   from "@/hooks/useOnlineStatus";
 import { useVenue }          from "@/contexts/VenueContext";
-import { AlertCircle, RotateCcw, Bookmark, BookmarkCheck, Flame, Zap } from "lucide-react";
+import { AlertCircle, RotateCcw, Bookmark, BookmarkCheck, Flame, Zap, ShoppingBag } from "lucide-react";
+import { OrderModal }        from "@/components/Order/OrderModal";
+import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
 import type { SavedBlend }   from "@/services/storage";
 
 type Phase = "form" | "loading" | "results";
@@ -41,6 +43,8 @@ export default function Home() {
   const [bandOpen, setBandOpen]               = useState(false);
   const [experienceSaved, setExperienceSaved] = useState(false);
   const [isDemoMode, setIsDemoMode]           = useState(false);
+  const [orderModalOpen, setOrderModalOpen]   = useState(false);
+  const [confirmedOrder, setConfirmedOrder]   = useState<{ id: string; type: OrderType } | null>(null);
 
   const [category, setCategory] = useState<"cigar" | "alcohol">("cigar");
   const [flavors, setFlavors]   = useState<string[]>([]);
@@ -133,6 +137,11 @@ export default function Home() {
     }
   };
 
+  const handleOrderSuccess = (orderId: string, orderType: OrderType) => {
+    setOrderModalOpen(false);
+    setConfirmedOrder({ id: orderId, type: orderType });
+  };
+
   const handleStartOver = () => {
     setPhase("form");
     setResults(null);
@@ -167,6 +176,28 @@ export default function Home() {
       </AnimatePresence>
       <AnimatePresence>
         {justUnlockedElite && <EliteUnlockAnimation onComplete={clearEliteUnlock} />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {orderModalOpen && (
+          <OrderModal
+            isOpen={orderModalOpen}
+            cigar={results?.recommendations[0]}
+            drink={results?.pairings[0]}
+            food={results?.foodPairings[0]}
+            onClose={() => setOrderModalOpen(false)}
+            onSuccess={handleOrderSuccess}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {confirmedOrder && (
+          <OrderConfirmation
+            orderId={confirmedOrder.id}
+            orderType={confirmedOrder.type}
+            onDismiss={() => setConfirmedOrder(null)}
+          />
+        )}
       </AnimatePresence>
 
       <VaultModal
@@ -338,6 +369,27 @@ export default function Home() {
               {/* Action buttons */}
               <motion.div className="flex items-center justify-center gap-3 mt-8 flex-wrap"
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8, duration: 0.6 }}>
+
+                {/* PRIMARY CTA — Order */}
+                <motion.button
+                  onClick={() => setOrderModalOpen(true)}
+                  className="flex items-center gap-2 px-5 py-3 rounded-full text-xs uppercase tracking-[0.18em] relative overflow-hidden"
+                  style={{
+                    background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
+                    color:      "hsl(22 18% 6%)",
+                    boxShadow:  "0 0 20px rgba(212,175,55,0.22), 0 4px 16px rgba(0,0,0,0.4)",
+                  }}
+                  whileHover={{ scale: 1.04, boxShadow: "0 0 32px rgba(212,175,55,0.38), 0 6px 20px rgba(0,0,0,0.45)" }}
+                  whileTap={{ scale: 0.97 }}
+                  data-testid="btn-order"
+                >
+                  <motion.div className="absolute inset-0 pointer-events-none"
+                    style={{ background: "linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.18) 50%, transparent 65%)", backgroundSize: "200% 100%" }}
+                    animate={{ backgroundPosition: ["200% 0", "-200% 0"] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 2 }}
+                  />
+                  <ShoppingBag size={13} />Order This Experience
+                </motion.button>
 
                 <motion.button onClick={handleSave} disabled={experienceSaved}
                   className="flex items-center gap-2 px-5 py-3 rounded-full text-xs uppercase tracking-[0.18em] transition-all duration-400"

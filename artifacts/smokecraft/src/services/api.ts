@@ -238,6 +238,70 @@ export async function uploadProductImage(file: File): Promise<string> {
   return data.url;
 }
 
+// ── Orders ────────────────────────────────────────────────────────────────────
+
+export type OrderType   = "table" | "pickup" | "delivery";
+export type OrderStatus = "pending" | "in_progress" | "completed" | "cancelled";
+
+export interface CreateOrderParams {
+  cigarId?:    string;
+  cigarName?:  string;
+  drinkId?:    string;
+  drinkName?:  string;
+  foodId?:     string;
+  foodName?:   string;
+  orderType:   OrderType;
+  tableNumber?: string;
+  venueId?:    string;
+}
+
+export interface Order {
+  id:          string;
+  userId?:     string;
+  venueId?:    string;
+  cigarId?:    string;
+  cigarName?:  string;
+  drinkId?:    string;
+  drinkName?:  string;
+  foodId?:     string;
+  foodName?:   string;
+  orderType:   OrderType;
+  status:      OrderStatus;
+  tableNumber?: string;
+  createdAt:   string;
+  updatedAt:   string;
+}
+
+export async function createOrder(params: CreateOrderParams): Promise<Order> {
+  const res = await fetch("/api/orders", {
+    method:  "POST",
+    headers: getAuthHeaders(),
+    body:    JSON.stringify(params),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to create order");
+  }
+  return res.json();
+}
+
+export async function fetchOrders(status?: OrderStatus): Promise<Order[]> {
+  const url = status ? `/api/orders?status=${status}` : "/api/orders";
+  const res = await fetch(url, { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch orders");
+  return res.json();
+}
+
+export async function updateOrderStatus(id: string, status: OrderStatus): Promise<Order> {
+  const res = await fetch(`/api/orders/${id}/status`, {
+    method:  "PATCH",
+    headers: getAuthHeaders(),
+    body:    JSON.stringify({ status }),
+  });
+  if (!res.ok) throw new Error("Failed to update order status");
+  return res.json();
+}
+
 export async function fetchAnalytics(): Promise<AnalyticsSummary> {
   const res = await fetch("/api/analytics", { headers: getAuthHeaders() });
   if (!res.ok) {

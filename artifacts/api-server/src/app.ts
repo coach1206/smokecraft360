@@ -14,6 +14,7 @@ import eventsRouter      from "./routes/events";
 import experiencesRouter from "./routes/experiences";
 import venuesRouter      from "./routes/venues";
 import uploadRouter      from "./routes/upload";
+import ordersRouter      from "./routes/orders";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -80,6 +81,7 @@ app.use("/api/events",                      eventsRouter);
 app.use("/api/experiences",                 experiencesRouter);
 app.use("/api/venues",                      venuesRouter);
 app.use("/api/upload",                      uploadRouter);
+app.use("/api/orders",                      ordersRouter);
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────
 app.use((_req: Request, res: Response) => {

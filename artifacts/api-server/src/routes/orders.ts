@@ -1,0 +1,155 @@
+/**
+ * Orders routes
+ *
+ * POST   /api/orders           — place an order (auth optional — guest orders supported)
+ * GET    /api/orders           — list orders for dashboard (auth required, manager+)
+ * PATCH  /api/orders/:id/status — update order status    (auth required, manager+ or staff)
+ * GET    /api/orders/mine       — get own orders          (auth required)
+ */
+
+import { Router, type IRouter, type Request, type Response } from "express";
+import { eq, desc, inArray }                                  from "drizzle-orm";
+import { db, ordersTable }                                    from "@workspace/db";
+import { verifyToken }                                        from "../lib/jwt";
+import { requireAuth, type AuthRequest }                      from "../middleware/auth";
+import { requireRole }                                        from "../middleware/roles";
+import { allowOnly }                                          from "../middleware/sanitize";
+
+const router: IRouter = Router();
+
+const VALID_TYPES   = ["table", "pickup", "delivery"] as const;
+const VALID_STATUSES = ["pending", "in_progress", "completed", "cancelled"] as const;
+
+type OrderType   = (typeof VALID_TYPES)[number];
+type OrderStatus = (typeof VALID_STATUSES)[number];
+
+/** Try to extract userId from an optional Bearer token — never throws. */
+async function tryGetUserId(req: Request): Promise<string | null> {
+  const header = req.headers["authorization"];
+  if (!header?.startsWith("Bearer ")) return null;
+  try {
+    const payload = await verifyToken(header.slice(7));
+    return payload.sub ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// ── POST /api/orders ──────────────────────────────────────────────────────────
+router.post(
+  "/",
+  allowOnly("cigarId", "cigarName", "drinkId", "drinkName", "foodId", "foodName",
+            "orderType", "tableNumber", "venueId"),
+  async (req: Request, res: Response) => {
+    const { cigarId, cigarName, drinkId, drinkName, foodId, foodName,
+            orderType, tableNumber, venueId } = req.body as {
+      cigarId?:    string;
+      cigarName?:  string;
+      drinkId?:    string;
+      drinkName?:  string;
+      foodId?:     string;
+      foodName?:   string;
+      orderType?:  string;
+      tableNumber?: string;
+      venueId?:    string;
+    };
+
+    if (!orderType || !(VALID_TYPES as readonly string[]).includes(orderType)) {
+      res.status(400).json({ error: `"orderType" must be one of: ${VALID_TYPES.join(", ")}` });
+      return;
+    }
+    if (!cigarId && !drinkId && !foodId) {
+      res.status(400).json({ error: "At least one of cigarId, drinkId, or foodId is required" });
+      return;
+    }
+
+    const userId = await tryGetUserId(req);
+
+    const [order] = await db.insert(ordersTable).values({
+      userId:      userId     ?? undefined,
+      venueId:     venueId   ?? undefined,
+      cigarId:     cigarId   ?? undefined,
+      cigarName:   cigarName ?? undefined,
+      drinkId:     drinkId   ?? undefined,
+      drinkName:   drinkName ?? undefined,
+      foodId:      foodId    ?? undefined,
+      foodName:    foodName  ?? undefined,
+      orderType:   orderType as OrderType,
+      status:      "pending",
+      tableNumber: tableNumber ?? undefined,
+    }).returning();
+
+    req.log.info({ orderId: order.id, orderType, userId }, "order created");
+    res.status(201).json(order);
+  },
+);
+
+// ── GET /api/orders/mine ──────────────────────────────────────────────────────
+router.get(
+  "/mine",
+  requireAuth,
+  async (req: AuthRequest, res: Response) => {
+    const orders = await db
+      .select()
+      .from(ordersTable)
+      .where(eq(ordersTable.userId, req.user!.id))
+      .orderBy(desc(ordersTable.createdAt))
+      .limit(20);
+
+    res.json(orders);
+  },
+);
+
+// ── GET /api/orders ───────────────────────────────────────────────────────────
+router.get(
+  "/",
+  requireAuth,
+  requireRole("venue_owner", "manager", "staff"),
+  async (req: AuthRequest, res: Response) => {
+    const { status } = req.query as { status?: string };
+
+    let query = db.select().from(ordersTable).$dynamic();
+
+    if (status && (VALID_STATUSES as readonly string[]).includes(status)) {
+      query = query.where(
+        inArray(ordersTable.status, [status as OrderStatus]),
+      );
+    }
+
+    const orders = await query.orderBy(desc(ordersTable.createdAt)).limit(100);
+    res.json(orders);
+  },
+);
+
+// ── PATCH /api/orders/:id/status ──────────────────────────────────────────────
+router.patch(
+  "/:id/status",
+  requireAuth,
+  requireRole("venue_owner", "manager", "staff"),
+  allowOnly("status"),
+  async (req: AuthRequest, res: Response) => {
+    const { id }     = req.params;
+    const { status } = req.body as { status?: string };
+
+    if (!status || !(VALID_STATUSES as readonly string[]).includes(status)) {
+      res.status(400).json({ error: `"status" must be one of: ${VALID_STATUSES.join(", ")}` });
+      return;
+    }
+
+    const [updated] = await db
+      .update(ordersTable)
+      .set({ status: status as OrderStatus, updatedAt: new Date() })
+      .where(eq(ordersTable.id, id))
+      .returning();
+
+    if (!updated) {
+      res.status(404).json({ error: "Order not found" });
+      return;
+    }
+
+    req.log.info({ orderId: id, status, userId: req.user?.id }, "order status updated");
+    res.json(updated);
+  },
+);
+
+export default router;
