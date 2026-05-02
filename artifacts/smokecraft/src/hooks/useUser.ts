@@ -3,11 +3,13 @@ import {
   addScore,
   ELITE_THRESHOLD,
   loadProfile,
+  removeBlend,
   removeExperience,
+  saveBlend,
   saveExperience,
   saveProfile,
   UserProfile,
-  SavedExperience,
+  SavedBlend,
 } from "../services/storage";
 import type { RecommendParams, ProductResult } from "../services/api";
 
@@ -24,6 +26,8 @@ interface UseUserReturn {
     pairings: ProductResult[],
   ) => void;
   handleRemoveExperience: (id: string) => void;
+  handleSaveBlend: (blend: Omit<SavedBlend, "id" | "createdAt">) => void;
+  handleRemoveBlend: (id: string) => void;
   updateName: (name: string) => void;
 }
 
@@ -31,17 +35,13 @@ export function useUser(): UseUserReturn {
   const [profile, setProfile] = useState<UserProfile>(() => loadProfile());
   const [justUnlockedElite, setJustUnlockedElite] = useState(false);
   const prevLevelRef = useRef<UserProfile["level"]>(profile.level);
-
   const wasElite = useRef(profile.level === "elite");
 
   const applyProfile = useCallback((next: UserProfile) => {
     const prevWasElite = wasElite.current;
     const nowElite = next.level === "elite";
     wasElite.current = nowElite;
-
-    if (!prevWasElite && nowElite) {
-      setJustUnlockedElite(true);
-    }
+    if (!prevWasElite && nowElite) setJustUnlockedElite(true);
     setProfile(next);
   }, []);
 
@@ -58,28 +58,31 @@ export function useUser(): UseUserReturn {
   }, [applyProfile]);
 
   const handleSaveExperience = useCallback(
-    (
-      preferences: RecommendParams,
-      recommendations: ProductResult[],
-      pairings: ProductResult[],
-    ) => {
-      const current = loadProfile();
-      applyProfile(saveExperience(current, { preferences, recommendations, pairings }));
+    (preferences: RecommendParams, recommendations: ProductResult[], pairings: ProductResult[]) => {
+      applyProfile(saveExperience(loadProfile(), { preferences, recommendations, pairings }));
     },
     [applyProfile],
   );
 
   const handleRemoveExperience = useCallback(
-    (id: string) => {
-      applyProfile(removeExperience(loadProfile(), id));
+    (id: string) => { applyProfile(removeExperience(loadProfile(), id)); },
+    [applyProfile],
+  );
+
+  const handleSaveBlend = useCallback(
+    (blend: Omit<SavedBlend, "id" | "createdAt">) => {
+      applyProfile(saveBlend(loadProfile(), blend));
     },
     [applyProfile],
   );
 
+  const handleRemoveBlend = useCallback(
+    (id: string) => { applyProfile(removeBlend(loadProfile(), id)); },
+    [applyProfile],
+  );
+
   const updateName = useCallback(
-    (name: string) => {
-      applyProfile(saveProfile({ ...loadProfile(), name }));
-    },
+    (name: string) => { applyProfile(saveProfile({ ...loadProfile(), name })); },
     [applyProfile],
   );
 
@@ -94,6 +97,8 @@ export function useUser(): UseUserReturn {
     recordSwipe,
     handleSaveExperience,
     handleRemoveExperience,
+    handleSaveBlend,
+    handleRemoveBlend,
     updateName,
   };
 }
