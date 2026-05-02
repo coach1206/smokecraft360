@@ -1,0 +1,202 @@
+FAILURE PREVENTION CHECKLIST
+
+After install:
+
+Sidebar must appear on EVERY page
+Main card must be LIGHT (cream, not white)
+Background must show through (not flat black)
+Only ONE gold button (Order Now)
+No random new styles added later
+
+Break any of these → design falls apart again
+
+🔥 MASTER BUILD (REPLIT READY CODE)
+
+This is a React + CSS system you can drop into your app.
+
+🧱 1. GLOBAL STYLES (create: styles.css)
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+
+  background:
+    linear-gradient(rgba(20,15,10,0.85), rgba(20,15,10,0.95)),
+    url('/images/lounge-bg.jpg') center/cover no-repeat fixed;
+
+  color: #fff;
+}
+
+/* Layout */
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: rgba(10,10,10,0.75);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  border-right: 1px solid rgba(212,175,55,0.2);
+}
+
+.sidebar h2 {
+  color: #D4AF37;
+  font-family: serif;
+  margin-bottom: 30px;
+}
+
+.step {
+  margin-bottom: 18px;
+  color: rgba(255,255,255,0.6);
+  transition: all 0.2s;
+}
+
+.step.active {
+  color: #D4AF37;
+  font-weight: bold;
+}
+
+.step.completed {
+  color: #A87C2D;
+}
+
+/* Main */
+.main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Card Layout */
+.card-container {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+/* Product */
+.product {
+  width: 280px;
+}
+
+.product img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+}
+
+/* Light Card */
+.light-card {
+  width: 420px;
+  background: rgba(245, 235, 221, 0.95);
+  color: #1A1410;
+  border-radius: 18px;
+  padding: 24px;
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+.light-card h1 {
+  font-family: serif;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.section {
+  margin-bottom: 16px;
+}
+
+/* Buttons */
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: rgba(0,0,0,0.1);
+}
+
+.btn-primary {
+  background: #D4AF37;
+  color: #000;
+  font-weight: bold;
+  box-shadow: 0 0 20px rgba(212,175,55,0.5);
+}
+⚛️ 2. MAIN PAGE (replace your main page)
+import "./styles.css";
+
+export default function App() {
+  return (
+    <div className="app">
+
+      {/* SIDEBAR */}
+      <div className="sidebar">
+        <h2>SmokeCraft</h2>
+
+        <div className="step completed">1. Mood</div>
+        <div className="step completed">2. Flavor</div>
+        <div className="step active">3. Strength</div>
+        <div className="step">4. Pairing</div>
+        <div className="step">5. Style</div>
+        <div className="step">6. Name</div>
+        <div className="step">7. Reveal</div>
+      </div>
+
+      {/* MAIN */}
+      <div className="main">
+
+        <div className="card-container">
+
+          {/* PRODUCT */}
+          <div className="product">
+            <img src="/images/cigar.png" alt="cigar" />
+          </div>
+
+          {/* CARD */}
+          <div className="light-card">
+
+            <h1>Midnight Reserve</h1>
+            <p>Balanced. Bold. Unforgettable.</p>
+
+            <div className="section">
+              <strong>The Cigar</strong>
+              <p>Dominican Medium Body</p>
+            </div>
+
+            <div className="section">
+              <strong>The Pairing</strong>
+              <p>Small Batch Bourbon</p>
+            </div>
+
+            <div className="section">
+              <strong>Flavor Notes</strong>
+              <p>Cocoa · Cedar · Spice · Earth</p>
+            </div>
+
+            <div className="buttons">
+              <button className="btn btn-secondary">Refine</button>
+              <button className="btn btn-secondary">Save</button>
+              <button className="btn btn-primary">Order Now</button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  );
+}

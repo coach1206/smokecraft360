@@ -590,70 +590,33 @@ export default function Home() {
               <div data-tour="tour-card-stack">
                 <CardStack
                   recommendations={results.recommendations}
+                  pairings={results.pairings}
                   onComplete={() => {}}
                   onSwipe={handleSwipe}
+                  onOrder={() => setOrderModalOpen(true)}
+                  onSave={handleSave}
+                  experienceSaved={experienceSaved}
                 />
               </div>
 
-              {/* Action buttons */}
-              <motion.div className="flex items-center justify-center gap-3 mt-8 flex-wrap"
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8, duration: 0.6 }}>
-
-                {/* PRIMARY CTA — Order */}
-                <motion.button
-                  onClick={() => setOrderModalOpen(true)}
-                  className="flex items-center gap-2 px-5 py-3 rounded-full text-xs uppercase tracking-[0.18em] relative overflow-hidden"
-                  style={{
-                    background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
-                    color:      "hsl(22 18% 6%)",
-                    boxShadow:  "0 0 20px rgba(212,175,55,0.22), 0 4px 16px rgba(0,0,0,0.4)",
-                  }}
-                  whileHover={{ scale: 1.04, boxShadow: "0 0 32px rgba(212,175,55,0.38), 0 6px 20px rgba(0,0,0,0.45)" }}
-                  whileTap={{ scale: 0.97 }}
-                  data-testid="btn-order"
-                  data-tour="tour-order-btn"
-                >
-                  <motion.div className="absolute inset-0 pointer-events-none"
-                    style={{ background: "linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.18) 50%, transparent 65%)", backgroundSize: "200% 100%" }}
-                    animate={{ backgroundPosition: ["200% 0", "-200% 0"] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 2 }}
-                  />
-                  <ShoppingBag size={13} />Order This Experience
-                </motion.button>
-
-                <motion.button onClick={handleSave} disabled={experienceSaved}
-                  className="flex items-center gap-2 px-5 py-3 rounded-full text-xs uppercase tracking-[0.18em] transition-all duration-400"
-                  style={experienceSaved
-                    ? { background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.3)", color: "rgba(212,175,55,0.75)" }
-                    : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(180,155,100,0.55)" }
-                  }
-                  whileHover={!experienceSaved ? { borderColor: "rgba(212,175,55,0.35)", color: "rgba(212,175,55,0.75)", background: "rgba(212,175,55,0.06)" } : {}}
-                  whileTap={!experienceSaved ? { scale: 0.96 } : {}}
-                  data-testid="btn-save">
-                  <AnimatePresence mode="wait">
-                    {experienceSaved
-                      ? <motion.span key="saved" className="flex items-center gap-2" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}><BookmarkCheck size={13} />Saved · +5pts</motion.span>
-                      : <motion.span key="save"  className="flex items-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><Bookmark size={13} />Save Experience</motion.span>
-                    }
-                  </AnimatePresence>
-                </motion.button>
-
-                {venue.features.bandCreator && (
+              {/* Create My Blend — secondary feature, shown below stack if enabled */}
+              {venue.features.bandCreator && (
+                <motion.div className="flex justify-center mt-6"
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.5 }}>
                   <motion.button onClick={() => setBandOpen(true)}
-                    className="flex items-center gap-2 px-5 py-3 rounded-full text-xs uppercase tracking-[0.18em]"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs uppercase tracking-[0.18em]"
                     style={{
-                      background: "linear-gradient(135deg, rgba(180,130,30,0.22), rgba(212,175,55,0.12))",
-                      border: "1px solid rgba(212,175,55,0.38)",
-                      color: "rgba(212,175,55,0.88)",
-                      boxShadow: "0 0 16px rgba(212,175,55,0.1)",
+                      background: "linear-gradient(135deg, rgba(180,130,30,0.18), rgba(212,175,55,0.09))",
+                      border: "1px solid rgba(212,175,55,0.32)",
+                      color: "rgba(212,175,55,0.8)",
                     }}
-                    whileHover={{ boxShadow: "0 0 24px rgba(212,175,55,0.22)", borderColor: "rgba(212,175,55,0.6)" }}
+                    whileHover={{ boxShadow: "0 0 22px rgba(212,175,55,0.2)", borderColor: "rgba(212,175,55,0.55)" }}
                     whileTap={{ scale: 0.96 }}
                     data-testid="btn-create-blend">
-                    <Flame size={13} />Create My Blend
+                    <Flame size={12} />Create My Blend
                   </motion.button>
-                )}
-              </motion.div>
+                </motion.div>
+              )}
 
               {/* ── Out-of-stock demand section ────────────────────── */}
               {results.outOfStock && results.outOfStock.length > 0 && (
