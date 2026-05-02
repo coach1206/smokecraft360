@@ -78,7 +78,15 @@ function FeaturedCard({ product }: { product: ProductResult }) {
 
         {/* Badges row */}
         <div className="flex items-center gap-2 mb-3">
-          {product.sponsored && (
+          {product.campaignId && (
+            <span
+              className="text-[8px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full flex items-center gap-1"
+              style={{ background: "rgba(212,175,55,0.14)", border: "1px solid rgba(212,175,55,0.35)", color: "rgba(212,175,55,0.9)" }}
+            >
+              <Sparkles size={8} />Campaign
+            </span>
+          )}
+          {!product.campaignId && product.sponsored && (
             <span
               className="text-[8px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full flex items-center gap-1"
               style={{ background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.28)", color: "rgba(212,175,55,0.8)" }}
@@ -86,7 +94,7 @@ function FeaturedCard({ product }: { product: ProductResult }) {
               <Sparkles size={8} />Featured
             </span>
           )}
-          {!product.sponsored && product.boostLevel && product.boostLevel >= 2 && (
+          {!product.campaignId && !product.sponsored && product.boostLevel && product.boostLevel >= 2 && (
             <span
               className="text-[8px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full"
               style={{ background: "rgba(212,175,55,0.07)", border: "1px solid rgba(212,175,55,0.18)", color: "rgba(212,175,55,0.6)" }}

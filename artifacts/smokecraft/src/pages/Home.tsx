@@ -95,7 +95,14 @@ export default function Home() {
         mood:              params.mood,
       });
       setResults(data);
-      trackEvent({ eventType: "recommendation_view" });
+      // Fire recommendation_view event for each recommended product, tagging campaignId if set
+      for (const rec of data.recommendations) {
+        trackEvent({
+          eventType: "recommendation_view",
+          productId: rec.id,
+          metadata:  rec.campaignId ? { campaignId: rec.campaignId } : undefined,
+        });
+      }
       trackPreferences({
         category:          params.category,
         flavorPreferences: params.flavors,
@@ -174,10 +181,15 @@ export default function Home() {
   const handleOrderSuccess = (orderId: string, orderType: OrderType) => {
     setOrderModalOpen(false);
     setConfirmedOrder({ id: orderId, type: orderType });
+    const topRec = results?.recommendations[0];
     trackEvent({
       eventType: "order_created",
-      productId: results?.recommendations[0]?.id,
-      metadata:  { orderId, orderType },
+      productId: topRec?.id,
+      metadata:  {
+        orderId,
+        orderType,
+        ...(topRec?.campaignId ? { campaignId: topRec.campaignId } : {}),
+      },
     });
   };
 

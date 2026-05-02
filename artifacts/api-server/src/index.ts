@@ -1,6 +1,7 @@
 import app from "./app";
 import { logger } from "./lib/logger";
 import { initInventory } from "./engine/inventory";
+import { loadCampaigns } from "./services/campaignStore";
 
 // ── Required environment variable guard ───────────────────────────────────────
 // Fail fast at startup rather than crashing mid-request or silently misbehaving.
@@ -37,6 +38,9 @@ try {
   logger.error({ err }, "Failed to initialise inventory — check DATABASE_URL");
   process.exit(1);
 }
+
+// Load campaigns after inventory (non-fatal — campaigns are optional)
+await loadCampaigns();
 
 app.listen(port, (err) => {
   if (err) {

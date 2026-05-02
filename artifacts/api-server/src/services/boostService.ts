@@ -22,6 +22,7 @@
 import { eq, sql } from "drizzle-orm";
 import { db, productsTable, analyticsEventsTable } from "@workspace/db";
 import type { Product, ScoredProduct } from "../engine/types";
+import { isActiveCampaign, CAMPAIGN_BOOST } from "./campaignStore";
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -177,10 +178,11 @@ export function hasProducts(): boolean {
  */
 export function applyBoosts(products: ScoredProduct[]): ScoredProduct[] {
   return products.map((p): ScoredProduct => {
-    const state    = getProductBoost(p.id);
-    const meta     = metaStore.get(p.id);
-    const rawBoost = state.boostLevel + (state.sponsored ? 2 : 0);
-    const boost    = p.score > 0 ? Math.min(rawBoost, MAX_BOOST_POINTS) : 0;
+    const state       = getProductBoost(p.id);
+    const meta        = metaStore.get(p.id);
+    const campaignOn  = isActiveCampaign(state.campaignId);
+    const rawBoost    = state.boostLevel + (state.sponsored ? 2 : 0) + (campaignOn ? CAMPAIGN_BOOST : 0);
+    const boost       = p.score > 0 ? Math.min(rawBoost, MAX_BOOST_POINTS) : 0;
     return {
       ...p,
       score:        p.score + boost,
@@ -242,9 +244,11 @@ export async function updateImageUrl(id: string, imageUrl: string): Promise<void
  */
 export function recordImpression(productId: string, featured: boolean): void {
   const eventType = featured ? "sponsored_view" as const : "recommendation" as const;
+  const state     = getProductBoost(productId);
+  const metadata  = state.campaignId ? { campaignId: state.campaignId } : null;
 
   db.insert(analyticsEventsTable)
-    .values({ productId, eventType })
+    .values({ productId, eventType, metadata })
     .then(() => {
       const current = statsStore.get(productId) ?? { impressions: 0, featuredImpressions: 0 };
       statsStore.set(productId, {

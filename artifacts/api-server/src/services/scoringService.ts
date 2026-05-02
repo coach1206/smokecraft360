@@ -15,6 +15,7 @@
 import type { Product, RecommendRequest, ScoredProduct } from "../engine/types";
 import { scoreProduct, scoreProductBase, rankProducts } from "../engine/scorer";
 import { getProductBoost } from "./boostService";
+import { isActiveCampaign } from "./campaignStore";
 
 export type { ScoredProduct };
 
@@ -72,7 +73,7 @@ export function buildFeatured(
   return pool
     .filter((p) => {
       const boost = getProductBoost(p.id);
-      return (boost.sponsored || boost.boostLevel >= 2) && !topIds.has(p.id);
+      return (boost.sponsored || boost.boostLevel >= 2 || isActiveCampaign(boost.campaignId)) && !topIds.has(p.id);
     })
     .map((p): ScoredProduct => {
       const boost = getProductBoost(p.id);

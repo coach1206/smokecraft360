@@ -507,6 +507,103 @@ export async function createDistributor(data: {
   return res.json();
 }
 
+// ── Campaigns ─────────────────────────────────────────────────────────────────
+
+export interface Campaign {
+  id:             string;
+  name:           string;
+  brandId?:       string | null;
+  distributorId?: string | null;
+  status:         "draft" | "active" | "paused" | "completed" | "cancelled";
+  budgetCents?:   number | null;
+  impressionGoal?:number | null;
+  startDate?:     string | null;
+  endDate?:       string | null;
+  notes?:         string | null;
+  active:         boolean;
+  brandName?:     string | null;
+  productCount?:  number;
+  createdAt?:     string;
+  updatedAt?:     string;
+}
+
+export interface CampaignPerformance {
+  campaign: {
+    id: string; name: string; status: string; active: boolean;
+    startDate?: string | null; endDate?: string | null;
+    budgetCents?: number | null; impressionGoal?: number | null;
+  };
+  performance: {
+    impressions: number; clicks: number; conversions: number;
+    ctr: number; cvr: number; productCount: number;
+  };
+  pacing: {
+    daysTotal: number; daysElapsed: number; daysRemaining: number; pct: number;
+    impressionGoalPct: number | null;
+  } | null;
+  productBreakdown: {
+    productId: string; name: string;
+    impressions: number; clicks: number; conversions: number;
+  }[];
+}
+
+export async function fetchCampaigns(): Promise<Campaign[]> {
+  const res = await fetch("/api/campaigns", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch campaigns");
+  return res.json();
+}
+
+export async function fetchCampaign(id: string): Promise<Campaign & { products: InventoryItem[] }> {
+  const res = await fetch(`/api/campaigns/${id}`, { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch campaign");
+  return res.json();
+}
+
+export async function createCampaign(data: Partial<Campaign>): Promise<Campaign> {
+  const res = await fetch("/api/campaigns", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to create campaign");
+  }
+  return res.json();
+}
+
+export async function updateCampaign(id: string, data: Partial<Campaign>): Promise<Campaign> {
+  const res = await fetch(`/api/campaigns/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to update campaign");
+  }
+  return res.json();
+}
+
+export async function assignCampaignProducts(
+  campaignId: string,
+  productIds: string[],
+  clearExisting = false,
+): Promise<void> {
+  const res = await fetch(`/api/campaigns/${campaignId}/products`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify({ productIds, clearExisting }),
+  });
+  if (!res.ok) throw new Error("Failed to assign products to campaign");
+}
+
+export async function fetchCampaignPerformance(id: string): Promise<CampaignPerformance> {
+  const res = await fetch(`/api/campaigns/${id}/performance`, { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch campaign performance");
+  return res.json();
+}
+
 // ── Brand Insights ────────────────────────────────────────────────────────────
 
 export interface InsightsProduct {
