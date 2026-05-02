@@ -16,7 +16,7 @@ import {
   UtensilsCrossed, Wine, Cigarette, ShoppingBag, Hash,
 } from "lucide-react";
 import {
-  createOrder, createCheckoutSession, updateOrderStatus,
+  createOrder, createCheckoutSession, updateOrderStatus, captureDemandEvent,
   type ProductResult, type FoodResult, type OrderType,
 } from "@/services/api";
 import { DEMO_MODE } from "@/config/demo";
@@ -131,6 +131,19 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
         tableNumber: selectedType === "table" ? tableNumber || undefined : undefined,
         venueId,
       });
+
+      // Capture demand "order" events for each ordered product (fire-and-forget)
+      const orderVenueId = venueId;
+      for (const item of [cigar, drink].filter(Boolean) as ProductResult[]) {
+        captureDemandEvent({
+          productId:   item.id,
+          productName: item.name,
+          category:    item.category,
+          flavorNotes: item.flavorNotes,
+          eventType:   "order",
+          venueId:     orderVenueId,
+        });
+      }
 
       // Step 2 — table orders go straight to confirmation (no payment required)
       if (selectedType === "table") {

@@ -19,8 +19,8 @@ import {
   DollarSign, Target, Download, ExternalLink,
 } from "lucide-react";
 import {
-  fetchDemandProof, fetchDemandOpportunities,
-  type DemandProof, type DemandOpportunity,
+  fetchDemandProof, fetchDemandOpportunities, fetchDemandInsights,
+  type DemandProof, type DemandOpportunity, type DemandInsights, type MissingDemandItem,
 } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -255,14 +255,85 @@ function CopyButton({ getValue, label }: { getValue: () => string; label: string
   );
 }
 
+// ── MissingDemandRow ───────────────────────────────────────────────────────────
+
+function MissingDemandRow({ item, i }: { item: MissingDemandItem; i: number }) {
+  const ago = (() => {
+    try {
+      const ms = Date.now() - new Date(item.lastRequestedAt).getTime();
+      const h  = Math.floor(ms / 3_600_000);
+      const d  = Math.floor(h / 24);
+      if (d > 1)  return `${d}d ago`;
+      if (h > 0)  return `${h}h ago`;
+      return "Recently";
+    } catch { return ""; }
+  })();
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
+      className="flex items-center justify-between px-4 py-3 rounded-xl"
+      style={{ background: "rgba(239,68,68,0.04)", border: "1px solid rgba(239,68,68,0.12)" }}>
+      <div className="min-w-0">
+        <p className="font-serif text-xs truncate" style={{ color: "rgba(210,190,155,0.85)" }}>{item.productName}</p>
+        <p className="text-[8px] uppercase tracking-[0.12em] mt-0.5" style={{ color: "rgba(180,155,100,0.38)" }}>
+          {item.category} · last {ago}
+        </p>
+      </div>
+      <div className="flex items-center gap-4 flex-shrink-0 ml-4">
+        <div className="text-right">
+          <p className="text-sm font-serif" style={{ color: "rgba(239,100,90,0.85)" }}>{item.requestCount}</p>
+          <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(180,155,100,0.3)" }}>requests</p>
+        </div>
+        {item.trendScore > 0 && (
+          <div className="text-right">
+            <p className="text-xs font-serif" style={{ color: GOLD_DIM }}>{Math.round(item.trendScore * 100)}</p>
+            <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(180,155,100,0.3)" }}>trend</p>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+// ── RequestedRow ───────────────────────────────────────────────────────────────
+
+function RequestedRow({ name, category, score, views, selections, orders, i }: {
+  name: string; category: string; score: number; views: number;
+  selections: number; orders: number; i: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+      className="flex items-center gap-3 py-2.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+      <span className="text-[9px] tabular-nums w-4 text-right flex-shrink-0" style={{ color: "rgba(180,155,100,0.3)" }}>
+        {i + 1}
+      </span>
+      <div className="flex-1 min-w-0">
+        <p className="font-serif text-xs truncate" style={{ color: "rgba(210,190,155,0.82)" }}>{name}</p>
+        <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(180,155,100,0.32)" }}>{category}</p>
+      </div>
+      <div className="flex items-center gap-3 flex-shrink-0 text-[7px]" style={{ color: "rgba(180,155,100,0.4)" }}>
+        {views > 0      && <span>{views}v</span>}
+        {selections > 0 && <span>{selections}sel</span>}
+        {orders > 0     && <span style={{ color: GOLD_DIM }}>{orders}ord</span>}
+      </div>
+      <div className="text-right flex-shrink-0 w-10">
+        <p className="text-xs font-serif" style={{ color: GOLD_MID, fontWeight: 300 }}>{Math.round(score)}</p>
+        <p className="text-[7px] uppercase tracking-[0.08em]" style={{ color: "rgba(180,155,100,0.28)" }}>pts</p>
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export function DemandProofTab() {
-  const { user }    = useAuth();
-  const [proof,     setProof]     = useState<DemandProof | null>(null);
-  const [opps,      setOpps]      = useState<DemandOpportunity[]>([]);
-  const [loading,   setLoading]   = useState(true);
-  const [error,     setError]     = useState<string | null>(null);
+  const { user }      = useAuth();
+  const [proof,       setProof]     = useState<DemandProof | null>(null);
+  const [opps,        setOpps]      = useState<DemandOpportunity[]>([]);
+  const [insights,    setInsights]  = useState<DemandInsights | null>(null);
+  const [loading,     setLoading]   = useState(true);
+  const [error,       setError]     = useState<string | null>(null);
 
   const venueId = user?.venueId ?? undefined;
 
@@ -270,12 +341,14 @@ export function DemandProofTab() {
     setLoading(true);
     setError(null);
     try {
-      const [p, o] = await Promise.all([
+      const [p, o, ins] = await Promise.all([
         fetchDemandProof(venueId),
         fetchDemandOpportunities(),
+        fetchDemandInsights(venueId).catch(() => null),
       ]);
       setProof(p);
       setOpps(o.opportunities);
+      setInsights(ins);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not load demand data");
     } finally {
@@ -392,23 +465,67 @@ export function DemandProofTab() {
         </div>
 
         {/* ── Insight Statements ────────────────────────────────────────────── */}
-        {proof.insightStatements.length > 0 && (
+        {(insights?.insightStatements ?? proof.insightStatements).length > 0 && (
           <Panel gold>
-            <SectionHeader title="Proof Statements" subtitle="Auto-generated from real platform data" icon={<Zap size={13} />} />
+            <SectionHeader title="Customer Demand Insights" subtitle="Auto-generated from real platform data" icon={<Zap size={13} />} />
             <div className="space-y-2">
-              {proof.insightStatements.map((text, i) => (
+              {(insights?.insightStatements ?? proof.insightStatements).map((text, i) => (
                 <InsightCard key={i} text={text} i={i} />
               ))}
             </div>
           </Panel>
         )}
 
-        {/* ── Missed Sales Alert ────────────────────────────────────────────── */}
+        {/* ── Customer Demand: Most Requested Products ──────────────────────── */}
+        {insights && insights.topRequestedProducts.length > 0 && (
+          <Panel>
+            <SectionHeader
+              title="Most Selected Items"
+              subtitle="Ranked by weighted demand score — views, selections, orders"
+              icon={<TrendingUp size={13} />}
+            />
+            <div>
+              {insights.topRequestedProducts.slice(0, 10).map((p, i) => (
+                <RequestedRow
+                  key={p.productId}
+                  name={p.productName}
+                  category={p.category}
+                  score={p.score}
+                  views={p.views}
+                  selections={p.selections}
+                  orders={p.orders}
+                  i={i}
+                />
+              ))}
+            </div>
+          </Panel>
+        )}
+
+        {/* ── Missing Inventory (persisted missingDemand table) ─────────────── */}
+        {insights && insights.topMissingProducts.length > 0 && (
+          <Panel>
+            <SectionHeader
+              title="Missing Inventory"
+              subtitle="High demand items not stocked — from persistent request log"
+              icon={<AlertTriangle size={13} />}
+            />
+            <div className="space-y-2">
+              {insights.topMissingProducts.map((item, i) => (
+                <MissingDemandRow key={item.productId} item={item} i={i} />
+              ))}
+            </div>
+            <p className="text-[8px] mt-3" style={{ color: "rgba(180,155,100,0.3)" }}>
+              Request counts are persisted — they survive server restarts and accumulate over time.
+            </p>
+          </Panel>
+        )}
+
+        {/* ── Missed Sales Alert (from demand score engine) ─────────────────── */}
         {proof.missedSales.length > 0 && (
           <Panel>
             <SectionHeader
               title="You Are Missing Sales"
-              subtitle="Customers are asking — you have no inventory"
+              subtitle="Demand score engine — products with demand but no supply"
               icon={<AlertTriangle size={13} />}
             />
             <div className="space-y-2">

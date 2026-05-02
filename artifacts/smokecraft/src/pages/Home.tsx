@@ -105,6 +105,15 @@ export default function Home() {
           productId: rec.id,
           metadata:  rec.campaignId ? { campaignId: rec.campaignId } : undefined,
         });
+        // Capture as "view" demand signal (fire-and-forget, no venue needed)
+        captureDemandEvent({
+          productId:   rec.id,
+          productName: rec.name,
+          category:    rec.category,
+          flavorNotes: rec.flavorNotes,
+          eventType:   "view",
+          venueId:     params.venueId,
+        });
       }
       trackPreferences({
         category:          params.category,

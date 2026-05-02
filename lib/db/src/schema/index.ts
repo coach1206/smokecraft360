@@ -11,3 +11,4 @@ export * from "./distributors";
 export * from "./campaigns";
 export * from "./demandRequests";
 export * from "./demandEvents";
+export * from "./missingDemand";

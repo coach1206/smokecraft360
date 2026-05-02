@@ -707,7 +707,7 @@ export async function fetchInsights(params: {
 
 // ── Demand events ─────────────────────────────────────────────────────────────
 
-export type DemandEventType = "selection" | "oos_request" | "order" | "blend_use" | "search";
+export type DemandEventType = "view" | "selection" | "oos_request" | "order" | "blend_use" | "search";
 
 export interface DemandEventParams {
   productId:    string;
@@ -871,6 +871,50 @@ export async function fetchDemandOpportunities(): Promise<DemandOpportunitiesRes
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error((err as { error?: string }).error ?? "Failed to fetch opportunities");
+  }
+  return res.json();
+}
+
+// ── Demand Insights (Customer Demand) ────────────────────────────────────────
+
+export interface DemandInsightProduct {
+  productId:   string;
+  productName: string;
+  category:    string;
+  views:       number;
+  selections:  number;
+  oosRequests: number;
+  orders:      number;
+  blendUses:   number;
+  score:       number;
+  trendScore:  number;
+}
+
+export interface MissingDemandItem {
+  productId:       string;
+  productName:     string;
+  category:        string;
+  requestCount:    number;
+  lastRequestedAt: string;
+  trendScore:      number;
+}
+
+export interface DemandInsights {
+  generatedAt:          string;
+  venueId:              string | null;
+  topRequestedProducts: DemandInsightProduct[];
+  topMissingProducts:   MissingDemandItem[];
+  topFlavors:           { flavor: string; count: number }[];
+  topCategories:        { category: string; count: number; percent: number }[];
+  insightStatements:    string[];
+}
+
+export async function fetchDemandInsights(venueId?: string): Promise<DemandInsights> {
+  const qs  = venueId ? `?venueId=${encodeURIComponent(venueId)}` : "";
+  const res = await fetch(`/api/demand/insights${qs}`, { headers: getAuthHeaders() });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to fetch demand insights");
   }
   return res.json();
 }

@@ -1,18 +1,26 @@
 /**
  * POST /api/demand/events — capture a demand event.
  *
- * Accepts any user interaction that represents demand:
- *   selection, oos_request, order, blend_use, search
+ * Valid eventTypes: view, selection, oos_request, order, blend_use, search
+ *
+ * Side-effects:
+ *   - For "oos_request": also upserts missingDemand (increments requestCount).
  *
  * Auth optional — anonymous demand is still valuable.
- * Responds immediately; write is async.
+ * Responds immediately; all DB writes are async so the UI is never blocked.
  */
 
 import { Router, type IRouter, type Request, type Response } from "express";
-import { db, demandEventsTable, type InsertDemandEvent }      from "@workspace/db";
+import { sql }                                                from "drizzle-orm";
+import {
+  db,
+  demandEventsTable,
+  missingDemandTable,
+  type InsertDemandEvent,
+  DEMAND_EVENT_TYPES,
+}                                                             from "@workspace/db";
 import { verifyToken }                                        from "../lib/jwt";
 import { allowOnly }                                          from "../middleware/sanitize";
-import { DEMAND_EVENT_TYPES }                                 from "@workspace/db";
 
 const router: IRouter = Router();
 
@@ -72,11 +80,33 @@ router.post(
       sessionId: sessionId ?? undefined,
     };
 
-    db.insert(demandEventsTable)
-      .values(record)
-      .catch((err) => {
-        req.log.error({ err }, "Failed to persist demand event");
+    // Write demand event
+    await db.insert(demandEventsTable).values(record).catch((err) => {
+      req.log.error({ err }, "Failed to persist demand event");
+    });
+
+    // Side-effect: upsert missingDemand for OOS requests
+    if (eventType === "oos_request" && venueId) {
+      db.execute(sql`
+        INSERT INTO missing_demand (venue_id, product_id, product_name, category, request_count, last_requested_at)
+        VALUES (
+          ${venueId}::uuid,
+          ${productId},
+          ${productName ?? null},
+          ${category ?? null},
+          1,
+          now()
+        )
+        ON CONFLICT ON CONSTRAINT missing_demand_venue_product_unique
+        DO UPDATE SET
+          request_count    = missing_demand.request_count + 1,
+          last_requested_at = now(),
+          product_name      = COALESCE(EXCLUDED.product_name, missing_demand.product_name),
+          category          = COALESCE(EXCLUDED.category,     missing_demand.category)
+      `).catch((err) => {
+        req.log.error({ err }, "Failed to upsert missing demand");
       });
+    }
   },
 );
 

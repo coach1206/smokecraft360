@@ -18,6 +18,7 @@ import { createInsertSchema }                       from "drizzle-zod";
 import { z }                                        from "zod/v4";
 
 export const DEMAND_EVENT_TYPES = [
+  "view",
   "selection",
   "oos_request",
   "order",
