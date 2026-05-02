@@ -1,0 +1,137 @@
+/client/src/services/api.js
+const API_BASE = "/api";
+
+export async function getRecommendations(payload) {
+  const res = await fetch(`${API_BASE}/recommend`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  return res.json();
+}
+
+export async function saveExperience(data) {
+  const res = await fetch(`${API_BASE}/experiences`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  return res.json();
+}
+
+export async function trackEvent(event) {
+  await fetch(`${API_BASE}/events`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(event),
+  });
+}
+🔥 STEP B — CONNECT UI TO ENGINE
+
+Inside your main page (likely Home.jsx or Discover.jsx):
+
+import { getRecommendations } from "../services/api";
+
+const handleDiscover = async () => {
+  setLoading(true);
+
+  const payload = {
+    category,
+    flavorPreferences,
+    strength,
+    mood,
+  };
+
+  const result = await getRecommendations(payload);
+
+  setRecommendations(result.recommendations);
+  setPairings(result.pairings);
+
+  setLoading(false);
+};
+🔥 STEP C — SWIPE TRACKING (IMPORTANT)
+
+Inside your swipe card component:
+
+import { trackEvent } from "../services/api";
+
+const handleSwipeRight = (item) => {
+  trackEvent({
+    eventType: "swipe_right",
+    productId: item.id,
+  });
+};
+
+const handleSwipeLeft = (item) => {
+  trackEvent({
+    eventType: "swipe_left",
+    productId: item.id,
+  });
+};
+🔥 STEP D — SAVE EXPERIENCE (VAULT)
+
+When user clicks “Save”:
+
+import { saveExperience } from "../services/api";
+
+const handleSave = async () => {
+  await saveExperience({
+    cigar: selectedCigar,
+    pairing: selectedPairing,
+    food: selectedFood,
+    preferences: currentPreferences,
+  });
+};
+🔥 STEP E — BACKEND ROUTES (MAKE SURE THESE EXIST)
+/server/routes/recommend.js
+router.post("/recommend", async (req, res) => {
+  const result = recommendationEngine(req.body);
+  res.json(result);
+});
+/server/routes/events.js
+router.post("/events", (req, res) => {
+  console.log("EVENT:", req.body);
+  res.json({ success: true });
+});
+/server/routes/experiences.js
+router.post("/experiences", (req, res) => {
+  // Save to DB or memory
+  console.log("Saved Experience:", req.body);
+  res.json({ success: true });
+});
+🔥 STEP F — ENGINE CALL (BACKEND)
+
+Inside your engine:
+
+export function recommendationEngine(input) {
+  // scoring logic you already built
+  return {
+    recommendations,
+    pairings,
+    food,
+  };
+}
+🔥 STEP G — DATABASE HOOK (WHEN READY)
+
+Replace console logs with DB writes:
+
+await db.insert(experiences).values({
+  userId,
+  productId,
+  pairingId,
+  foodId,
+});
+🔥 STEP H — ENV + PORT FIX
+
+Make sure server uses:
+
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log(`Server running on ${PORT}`));

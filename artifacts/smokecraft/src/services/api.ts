@@ -68,6 +68,27 @@ export interface AnalyticsSummary {
   sponsored: InventoryItem[];
 }
 
+export type ClientEventType =
+  | "view"
+  | "swipe_right"
+  | "swipe_left"
+  | "save"
+  | "boost_click"
+  | "sponsored_view";
+
+export interface TrackEventParams {
+  eventType: ClientEventType;
+  productId?: string;
+}
+
+export interface PersistExperienceParams {
+  selectedProductId: string;
+  pairingProductId?: string;
+  foodPairingId?: string;
+}
+
+// ─── Public API ──────────────────────────────────────────────────────────────
+
 export async function fetchRecommendations(params: RecommendParams): Promise<RecommendResponse> {
   const response = await fetch("/api/recommend", {
     method: "POST",
@@ -83,6 +104,42 @@ export async function fetchRecommendations(params: RecommendParams): Promise<Rec
     featured:        data.featured        ?? [],
   };
 }
+
+/**
+ * Fire-and-forget event tracking.
+ * Never throws — errors are swallowed so they never disrupt the user experience.
+ */
+export function trackEvent(params: TrackEventParams): void {
+  fetch("/api/events", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(params),
+  }).catch(() => { /* analytics failure must never surface */ });
+}
+
+/**
+ * Persist a completed session to the database.
+ * Links to the authenticated user when a JWT is present; anonymous otherwise.
+ * Returns the server-assigned experience ID, or null on failure.
+ */
+export async function persistExperience(
+  params: PersistExperienceParams,
+): Promise<string | null> {
+  try {
+    const res = await fetch("/api/experiences", {
+      method:  "POST",
+      headers: getAuthHeaders(),
+      body:    JSON.stringify(params),
+    });
+    if (!res.ok) return null;
+    const data = await res.json() as { id: string };
+    return data.id;
+  } catch {
+    return null;
+  }
+}
+
+// ─── Protected API ───────────────────────────────────────────────────────────
 
 export async function fetchInventory(): Promise<InventoryItem[]> {
   const res = await fetch("/api/inventory");

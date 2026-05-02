@@ -14,7 +14,7 @@ import { ProfileBadge } from "@/components/Profile/ProfileBadge";
 import { EliteUnlockAnimation } from "@/components/Profile/EliteUnlockAnimation";
 import { VaultModal } from "@/components/Vault/VaultModal";
 import { BandCreatorModal } from "@/components/Band/BandCreatorModal";
-import { fetchRecommendations, RecommendResponse } from "@/services/api";
+import { fetchRecommendations, trackEvent, persistExperience, RecommendResponse } from "@/services/api";
 import { useUser } from "@/hooks/useUser";
 import { AlertCircle, RotateCcw, Bookmark, BookmarkCheck, Flame } from "lucide-react";
 import type { SavedBlend } from "@/services/storage";
@@ -65,10 +65,43 @@ export default function Home() {
     if (results) { setPhase("results"); recordSession(); }
   };
 
+  /**
+   * Called by CardStack whenever the user swipes a card.
+   * - Tracks the swipe in the local profile (score points)
+   * - Fires an analytics event to the backend (non-blocking)
+   */
+  const handleSwipe = (direction: "left" | "right", productId: string) => {
+    recordSwipe();
+    trackEvent({
+      eventType: direction === "right" ? "swipe_right" : "swipe_left",
+      productId,
+    });
+  };
+
+  /**
+   * Saves the current experience:
+   * 1. localStorage profile update (instant, offline-safe)
+   * 2. DB persist via /api/experiences (async, non-blocking)
+   * 3. Save analytics event
+   */
   const handleSave = () => {
     if (!results) return;
+
+    // Local profile save (always works, even offline)
     handleSaveExperience({ category, flavorPreferences: flavors, strength, mood }, results.recommendations, results.pairings);
     setExperienceSaved(true);
+
+    // DB persist — fire-and-forget, no await
+    void persistExperience({
+      selectedProductId: results.recommendations[0]?.id ?? "",
+      pairingProductId:  results.pairings[0]?.id,
+      foodPairingId:     results.foodPairings[0]?.id,
+    });
+
+    // Analytics event
+    if (results.recommendations[0]) {
+      trackEvent({ eventType: "save", productId: results.recommendations[0].id });
+    }
   };
 
   const handleStartOver = () => {
@@ -199,7 +232,7 @@ export default function Home() {
                 </motion.button>
               </div>
 
-              {/* Partner dashboard link — subtle, for venue operators */}
+              {/* Partner dashboard link */}
               <div className="text-center pb-4">
                 <a href="/dashboard"
                   className="text-[8px] uppercase tracking-[0.22em] transition-colors duration-200"
@@ -228,7 +261,11 @@ export default function Home() {
                 <p className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "rgba(212,175,55,0.45)" }}>Swipe to explore</p>
               </motion.div>
 
-              <CardStack recommendations={results.recommendations} onComplete={() => {}} onSwipe={recordSwipe} />
+              <CardStack
+                recommendations={results.recommendations}
+                onComplete={() => {}}
+                onSwipe={handleSwipe}
+              />
 
               {/* Action buttons */}
               <motion.div className="flex items-center justify-center gap-3 mt-8 flex-wrap"
