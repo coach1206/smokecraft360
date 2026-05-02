@@ -27,6 +27,7 @@ export interface SavedBlend {
   design: BlendDesign;
   cigarBaseName: string;
   pairingName: string;
+  foodPairingName?: string;
 }
 
 export interface UserProfile {

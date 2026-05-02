@@ -15,6 +15,11 @@ interface VaultModalProps {
 
 type VaultTab = "experiences" | "blends";
 
+const FOOD_EMOJI: Record<string, string> = {
+  wings: "🍗", steak: "🥩", salad: "🥗",
+  appetizers: "🫙", seafood: "🦞", desserts: "🍫",
+};
+
 export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, onNameChange }: VaultModalProps) {
   const isElite = profile.level === "elite";
   const progressPct = Math.min((profile.score / ELITE_THRESHOLD) * 100, 100);
@@ -118,7 +123,7 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
             <div className="flex-1 overflow-y-auto px-6 pb-8 space-y-4">
               {tab === "experiences" ? (
                 profile.savedExperiences.length === 0 ? (
-                  <EmptyState label="Your vault awaits" sub="Save your first experience to begin your collection" />
+                  <EmptyState label="Your vault awaits" sub="Save your first experience to begin" />
                 ) : (
                   profile.savedExperiences.map((exp, i) => (
                     <ExperienceCard key={exp.id} experience={exp} index={i} onRemove={onRemove} />
@@ -161,11 +166,11 @@ function ExperienceCard({ experience, index, onRemove }: { experience: SavedExpe
   const topPairing = experience.pairings[0];
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: 20, transition: { duration: 0.25 } }}
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="glass-card rounded-xl p-5 relative group">
       <button onClick={() => onRemove(experience.id)}
-        className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
+        className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
         style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "rgba(239,68,68,0.7)" }}>
         <Trash2 size={11} />
       </button>
@@ -207,35 +212,54 @@ function ExperienceCard({ experience, index, onRemove }: { experience: SavedExpe
 
 function BlendCard({ blend, index, onRemove }: { blend: SavedBlend; index: number; onRemove: (id: string) => void }) {
   const date = new Date(blend.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const hasFullExperience = blend.cigarBaseName && blend.pairingName && blend.foodPairingName;
 
   return (
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.07, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="glass-card rounded-xl p-5 relative group">
       <button onClick={() => onRemove(blend.id)}
-        className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
+        className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
         style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "rgba(239,68,68,0.7)" }}>
         <Trash2 size={11} />
       </button>
-      <p className="text-[9px] uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(180,155,100,0.4)" }}>{date}</p>
+
+      <div className="flex items-center gap-2 mb-3">
+        <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.4)" }}>{date}</p>
+        {hasFullExperience && (
+          <span className="text-[8px] uppercase tracking-[0.15em] px-2 py-0.5 rounded-full"
+            style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)", color: "rgba(212,175,55,0.6)" }}>
+            Full Experience
+          </span>
+        )}
+      </div>
+
       <div className="flex justify-center mb-4">
         <CigarBandPreview design={blend.design} blendName={blend.blendName} style={blend.style} size="sm" />
       </div>
+
       {blend.description && (
-        <p className="text-xs italic text-center mb-3 font-serif" style={{ color: "rgba(210,190,155,0.6)" }}>"{blend.description}"</p>
+        <p className="text-xs italic text-center mb-4 font-serif" style={{ color: "rgba(210,190,155,0.6)" }}>"{blend.description}"</p>
       )}
-      <div className="pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-        <div className="flex justify-between">
-          <div>
-            <p className="text-[9px] uppercase tracking-[0.18em] mb-0.5" style={{ color: "rgba(180,155,100,0.35)" }}>Based on</p>
-            <p className="text-xs font-serif italic" style={{ color: "rgba(210,190,155,0.65)" }}>{blend.cigarBaseName}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-[9px] uppercase tracking-[0.18em] mb-0.5" style={{ color: "rgba(180,155,100,0.35)" }}>Paired with</p>
-            <p className="text-xs font-serif italic" style={{ color: "rgba(212,175,55,0.6)" }}>{blend.pairingName}</p>
-          </div>
-        </div>
+
+      <div className="pt-3 space-y-2.5" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <ExperienceRow label="Cigar"  value={blend.cigarBaseName} />
+        <ExperienceRow label="Drink"  value={blend.pairingName}   accent />
+        {blend.foodPairingName && (
+          <ExperienceRow label="Food" value={blend.foodPairingName} />
+        )}
       </div>
     </motion.div>
+  );
+}
+
+function ExperienceRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="flex items-baseline justify-between gap-2">
+      <p className="text-[9px] uppercase tracking-[0.18em] flex-shrink-0" style={{ color: "rgba(180,155,100,0.35)" }}>{label}</p>
+      <p className="font-serif text-xs italic text-right" style={{ color: accent ? "rgba(212,175,55,0.65)" : "rgba(210,190,155,0.65)" }}>
+        {value || "—"}
+      </p>
+    </div>
   );
 }

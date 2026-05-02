@@ -1,0 +1,131 @@
+Upgrade the Band Creator system to include a Food Pairing layer as part of the experience.
+
+GOAL:
+Allow users to complete their full experience (cigar + drink + food) without slowing down the initial survey.
+
+FEATURES:
+
+-----------------------------------
+1. POST-RECOMMENDATION FOOD SECTION
+-----------------------------------
+
+After showing cigar + alcohol pairing results, add a new section:
+
+Title:
+"Complete Your Experience"
+
+Display food pairing suggestions based on cigar + alcohol profile.
+
+Food categories:
+- Wings
+- Steak
+- Salad
+- Appetizers
+- Seafood
+- Desserts
+
+Each food item should include:
+- name
+- short description
+- flavorTags (e.g., ["smoky", "savory", "light", "rich"])
+
+-----------------------------------
+2. FOOD PAIRING LOGIC
+-----------------------------------
+
+Create simple pairing rules:
+
+IF cigar is:
+- strong/bold → recommend steak, wings, grilled foods
+- sweet → recommend desserts, glazed wings
+- light → recommend salad, seafood, light appetizers
+- smoky → recommend BBQ, smoked meats
+
+Match food using flavorTags + strength logic.
+
+Return top 2–3 food pairings with results.
+
+-----------------------------------
+3. UI DISPLAY
+-----------------------------------
+
+Below pairing cards (alcohol):
+
+Add a new section:
+"Recommended Food Pairings"
+
+Display as:
+- horizontal cards or tiles
+- image placeholder (optional)
+- food name + short description
+
+Animate:
+- delayed reveal (after cigar + drink)
+- fade + slide up
+
+-----------------------------------
+4. BAND CREATOR INTEGRATION
+-----------------------------------
+
+When user clicks "Create My Blend":
+
+Include:
+
+- Selected cigar
+- Selected drink pairing
+- Selected food pairing
+
+Allow user to optionally choose:
+"Signature Food Pairing"
+
+Save inside blend:
+
+{
+  name,
+  cigar,
+  pairing,
+  food,
+  design,
+  createdAt
+}
+
+-----------------------------------
+5. ELITE FEATURE CONTROL
+-----------------------------------
+
+Standard users:
+- see food suggestions
+
+Elite users:
+- can customize and lock in food pairing
+- save "Full Experience" (cigar + drink + food)
+
+-----------------------------------
+6. VAULT UPDATE
+-----------------------------------
+
+In "My Vault":
+
+Display:
+- cigar
+- drink pairing
+- food pairing
+- blend name
+
+Label:
+"Full Experience"
+
+-----------------------------------
+7. FUTURE READY
+-----------------------------------
+
+Structure food system similar to other categories:
+- allow future expansion (restaurant menus, venue-specific dishes)
+
+-----------------------------------
+IMPORTANT:
+Do NOT add food questions to the initial survey.
+
+Food should feel like a natural extension of the experience, not a required input.
+
+Keep the experience smooth, premium, and intuitive.

@@ -1,0 +1,115 @@
+Build a Brand / Distributor Monetization system into the recommendation engine and dashboard.
+
+GOAL:
+Allow venues and future brand partners to influence product visibility in a controlled, intelligent way.
+
+FEATURES:
+
+-----------------------------------
+1. PRODUCT BOOST SYSTEM (VENUE CONTROL)
+-----------------------------------
+
+Update product model to include:
+
+- boostLevel: number (0–3)
+- sponsored: boolean
+
+Logic:
+
+- boostLevel adds hidden score:
+   +1 per level
+
+- sponsored products:
+   +2 bonus
+
+These should NOT override relevance, only enhance it.
+
+-----------------------------------
+2. DASHBOARD CONTROLS
+-----------------------------------
+
+In Inventory page:
+
+Add:
+
+- "Boost Level" selector (0–3)
+- "Sponsored Placement" toggle
+
+UI:
+- simple slider or dropdown
+- label: "Increase Visibility"
+
+-----------------------------------
+3. SMART PLACEMENT LOGIC
+-----------------------------------
+
+Modify recommendation scoring:
+
+Final Score =
+   baseScore
+ + (boostLevel)
+ + (sponsored ? 2 : 0)
+
+BUT:
+
+- Cap total influence so irrelevant products do NOT rank #1
+- Maintain user trust
+
+-----------------------------------
+4. FEATURED PRODUCTS SECTION (UI)
+-----------------------------------
+
+In results page:
+
+Add section:
+
+"Featured Selections"
+
+Display:
+- sponsored / boosted products
+
+Design:
+- slightly different styling
+- labeled "Featured"
+
+-----------------------------------
+5. ANALYTICS TRACKING
+-----------------------------------
+
+Track:
+
+- how often boosted products are selected
+- how often sponsored products convert
+
+Display in dashboard:
+
+- "Top Boosted Products"
+- "Sponsored Performance"
+
+-----------------------------------
+6. FUTURE BRAND READY STRUCTURE
+-----------------------------------
+
+Prepare product model for:
+
+- brandId
+- campaignId
+
+So later you can plug in:
+
+- paid campaigns
+- distributor deals
+
+-----------------------------------
+7. EXPERIENCE INTEGRITY
+-----------------------------------
+
+IMPORTANT RULE:
+
+- Do NOT break recommendation logic
+- Boosting should feel natural
+- Always match user preferences first
+
+-----------------------------------
+GOAL:
+Create a system where product visibility can be influenced, monetized, and tracked without breaking the user experience.

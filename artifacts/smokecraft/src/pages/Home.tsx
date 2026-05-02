@@ -6,6 +6,7 @@ import { StrengthSlider } from "@/components/StrengthSlider";
 import { MoodSelector } from "@/components/MoodSelector";
 import { CardStack } from "@/components/CardStack";
 import { PairingsSection } from "@/components/PairingsSection";
+import { FoodSection } from "@/components/Food/FoodSection";
 import { CigarBurnLoader } from "@/components/CigarBurnLoader";
 import { AmbientBackground } from "@/components/AmbientBackground";
 import { ProfileBadge } from "@/components/Profile/ProfileBadge";
@@ -82,8 +83,9 @@ export default function Home() {
     setExperienceSaved(false);
   };
 
-  const cigarBase  = results?.recommendations[0]?.name  ?? "";
+  const cigarBase   = results?.recommendations[0]?.name ?? "";
   const pairingBase = results?.pairings[0]?.name ?? "";
+  const foodPairings = results?.foodPairings ?? [];
 
   return (
     <div className="min-h-[100dvh] w-full text-foreground flex flex-col relative overflow-hidden" style={{ background: "hsl(22 18% 5%)" }}>
@@ -116,13 +118,14 @@ export default function Home() {
         isElite={isElite}
         cigarBaseName={cigarBase}
         pairingName={pairingBase}
+        foodPairings={foodPairings}
         onClose={() => setBandOpen(false)}
         onSave={handleSaveBand}
       />
 
       <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-6 py-10 relative z-10">
 
-        {/* Header row */}
+        {/* Header */}
         <div className="flex items-start justify-between mb-12">
           <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}>
             <h1 className="font-serif tracking-[0.1em]"
@@ -222,11 +225,10 @@ export default function Home() {
 
               <CardStack recommendations={results.recommendations} onComplete={() => {}} onSwipe={recordSwipe} />
 
-              {/* Action buttons row */}
+              {/* Action buttons */}
               <motion.div className="flex items-center justify-center gap-3 mt-8 flex-wrap"
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8, duration: 0.6 }}>
 
-                {/* Save experience */}
                 <motion.button onClick={handleSave} disabled={experienceSaved}
                   className="flex items-center gap-2 px-5 py-3 rounded-full text-xs uppercase tracking-[0.18em] transition-all duration-400"
                   style={experienceSaved
@@ -239,14 +241,12 @@ export default function Home() {
                   <AnimatePresence mode="wait">
                     {experienceSaved
                       ? <motion.span key="saved" className="flex items-center gap-2" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}><BookmarkCheck size={13} />Saved · +5pts</motion.span>
-                      : <motion.span key="save" className="flex items-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><Bookmark size={13} />Save Experience</motion.span>
+                      : <motion.span key="save"  className="flex items-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><Bookmark size={13} />Save Experience</motion.span>
                     }
                   </AnimatePresence>
                 </motion.button>
 
-                {/* Create Blend */}
-                <motion.button
-                  onClick={() => setBandOpen(true)}
+                <motion.button onClick={() => setBandOpen(true)}
                   className="flex items-center gap-2 px-5 py-3 rounded-full text-xs uppercase tracking-[0.18em]"
                   style={{
                     background: "linear-gradient(135deg, rgba(180,130,30,0.22), rgba(212,175,55,0.12))",
@@ -256,16 +256,18 @@ export default function Home() {
                   }}
                   whileHover={{ boxShadow: "0 0 24px rgba(212,175,55,0.22)", borderColor: "rgba(212,175,55,0.6)" }}
                   whileTap={{ scale: 0.96 }}
-                  data-testid="btn-create-blend"
-                >
-                  <Flame size={13} />
-                  Create My Blend
+                  data-testid="btn-create-blend">
+                  <Flame size={13} />Create My Blend
                 </motion.button>
               </motion.div>
 
+              {/* Alcohol pairings */}
               <PairingsSection pairings={results.pairings} />
 
-              <motion.div className="mt-16 text-center pb-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 0.6 }}>
+              {/* Food pairings */}
+              <FoodSection foodPairings={foodPairings} />
+
+              <motion.div className="mt-16 text-center pb-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.6, duration: 0.6 }}>
                 <button data-testid="btn-start-over" onClick={handleStartOver}
                   className="inline-flex items-center gap-2.5 text-xs uppercase tracking-[0.25em] group transition-all duration-300"
                   style={{ color: "rgba(180,155,100,0.4)" }}

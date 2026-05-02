@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Crown, Lock, Share2, Check } from "lucide-react";
+import { X, Crown, Lock, Share2, Check, UtensilsCrossed } from "lucide-react";
 import { CigarBandPreview } from "./CigarBandPreview";
 import { COLOR_OPTIONS, EMBLEM_OPTIONS, BLEND_STYLES, TEXT_STYLES } from "./bandConstants";
 import type { BlendDesign, SavedBlend } from "../../services/storage";
+import type { FoodResult } from "../../services/api";
 
 interface BandCreatorModalProps {
   isOpen: boolean;
   isElite: boolean;
   cigarBaseName: string;
   pairingName: string;
+  foodPairings: FoodResult[];
   onClose: () => void;
   onSave: (blend: Omit<SavedBlend, "id" | "createdAt">) => void;
 }
@@ -21,32 +23,42 @@ const DEFAULT_DESIGN: BlendDesign = {
   textStyle:    "serif",
 };
 
-export function BandCreatorModal({
-  isOpen, isElite, cigarBaseName, pairingName, onClose, onSave,
-}: BandCreatorModalProps) {
-  const [blendName, setBlendName]   = useState("");
-  const [description, setDesc]      = useState("");
-  const [style, setStyle]           = useState("bold");
-  const [design, setDesign]         = useState<BlendDesign>(DEFAULT_DESIGN);
-  const [saved, setSaved]           = useState(false);
-  const [shareVisible, setShareVisible] = useState(false);
-  const [copied, setCopied]         = useState(false);
+const CATEGORY_EMOJI: Record<string, string> = {
+  wings: "🍗", steak: "🥩", salad: "🥗",
+  appetizers: "🫙", seafood: "🦞", desserts: "🍫",
+};
 
-  const availableColors  = COLOR_OPTIONS.filter((c) => isElite || !c.eliteOnly);
-  const availableEmblems = EMBLEM_OPTIONS.filter((e) => isElite || !e.eliteOnly);
-  const availableStyles  = BLEND_STYLES;
-  const availableText    = TEXT_STYLES.filter((t) => isElite || !t.eliteOnly);
+export function BandCreatorModal({
+  isOpen, isElite, cigarBaseName, pairingName, foodPairings = [], onClose, onSave,
+}: BandCreatorModalProps) {
+  const [blendName, setBlendName]       = useState("");
+  const [description, setDesc]          = useState("");
+  const [style, setStyle]               = useState("bold");
+  const [design, setDesign]             = useState<BlendDesign>(DEFAULT_DESIGN);
+  const [savedState, setSaved]          = useState(false);
+  const [shareVisible, setShareVisible] = useState(false);
+  const [copied, setCopied]             = useState(false);
+  const [selectedFood, setSelectedFood] = useState<string>(foodPairings[0]?.name ?? "");
 
   const setDesignField = <K extends keyof BlendDesign>(key: K, value: BlendDesign[K]) =>
     setDesign((d) => ({ ...d, [key]: value }));
 
   const handleSave = () => {
-    onSave({ blendName: blendName || "My Blend", description, style, design, cigarBaseName, pairingName });
+    onSave({
+      blendName: blendName || "My Blend",
+      description,
+      style,
+      design,
+      cigarBaseName,
+      pairingName,
+      foodPairingName: selectedFood || undefined,
+    });
     setSaved(true);
   };
 
   const handleShare = async () => {
-    const text = `🌿 ${blendName || "My Blend"} — a ${style} experience, paired with ${pairingName}. Crafted on SmokeCraft.`;
+    const foodLine = selectedFood ? ` Alongside ${selectedFood}.` : "";
+    const text = `✦ ${blendName || "My Blend"} — a ${style} experience, paired with ${pairingName}.${foodLine} Crafted on SmokeCraft.`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -62,6 +74,7 @@ export function BandCreatorModal({
     setDesc("");
     setStyle("bold");
     setDesign(DEFAULT_DESIGN);
+    setSelectedFood(foodPairings[0]?.name ?? "");
     onClose();
   };
 
@@ -69,7 +82,6 @@ export function BandCreatorModal({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             className="fixed inset-0 z-[80]"
             style={{ background: "rgba(0,0,0,0.78)", backdropFilter: "blur(6px)" }}
@@ -77,7 +89,6 @@ export function BandCreatorModal({
             onClick={handleClose}
           />
 
-          {/* Modal */}
           <motion.div
             className="fixed inset-x-4 top-6 bottom-6 z-[90] max-w-3xl mx-auto flex flex-col rounded-2xl overflow-hidden"
             style={{
@@ -90,7 +101,6 @@ export function BandCreatorModal({
             exit={{ opacity: 0, scale: 0.96, y: 10 }}
             transition={{ type: "spring", stiffness: 260, damping: 26 }}
           >
-            {/* Gold top line */}
             <div className="h-px w-full flex-shrink-0" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)" }} />
 
             {/* Header */}
@@ -100,15 +110,16 @@ export function BandCreatorModal({
                   Create My Blend
                 </h2>
                 <p className="text-[10px] uppercase tracking-[0.3em] mt-0.5" style={{ color: "rgba(212,175,55,0.45)" }}>
-                  Design your cigar identity
+                  Design your full cigar experience
                 </p>
               </div>
-              <button onClick={handleClose} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.5)" }}>
+              <button onClick={handleClose} className="w-9 h-9 rounded-full flex items-center justify-center"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.5)" }}>
                 <X size={15} />
               </button>
             </div>
 
-            {/* Body — scrollable */}
+            {/* Body */}
             <div className="flex-1 overflow-y-auto px-7 pb-6 space-y-7">
 
               {/* Live band preview */}
@@ -128,7 +139,7 @@ export function BandCreatorModal({
                   value={blendName}
                   onChange={(e) => setBlendName(e.target.value)}
                   onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = "rgba(212,175,55,0.55)"; }}
-                  onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = "rgba(212,175,55,0.25)"; }}
+                  onBlur={(e) =>  { (e.target as HTMLInputElement).style.borderColor = "rgba(212,175,55,0.25)"; }}
                 />
               </div>
 
@@ -136,7 +147,7 @@ export function BandCreatorModal({
               <div>
                 <Label>Style</Label>
                 <div className="flex flex-wrap gap-2">
-                  {availableStyles.map((s) => (
+                  {BLEND_STYLES.map((s) => (
                     <button key={s.id} onClick={() => setStyle(s.id)}
                       className="px-4 py-2 rounded-full text-sm font-serif tracking-wide transition-all duration-300"
                       style={style === s.id
@@ -148,7 +159,7 @@ export function BandCreatorModal({
                 </div>
               </div>
 
-              {/* Primary Color */}
+              {/* Band Color */}
               <div>
                 <Label>Band Color</Label>
                 <div className="flex flex-wrap gap-2.5">
@@ -156,11 +167,10 @@ export function BandCreatorModal({
                     const locked = c.eliteOnly && !isElite;
                     const active = design.primaryColor === c.id;
                     return (
-                      <button
-                        key={c.id}
+                      <button key={c.id}
                         onClick={() => !locked && setDesignField("primaryColor", c.id)}
                         title={locked ? `${c.label} — Elite only` : c.label}
-                        className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-all duration-200"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-all duration-200"
                         style={{
                           background: active ? c.primary : "rgba(255,255,255,0.04)",
                           border: active ? `1px solid ${c.accent}` : "1px solid rgba(255,255,255,0.08)",
@@ -169,16 +179,16 @@ export function BandCreatorModal({
                           cursor: locked ? "not-allowed" : "pointer",
                         }}
                       >
-                        <span className="w-3 h-3 rounded-full inline-block flex-shrink-0" style={{ background: c.accent }} />
+                        <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: c.accent }} />
                         {c.label}
-                        {locked && <Lock size={9} className="ml-0.5" style={{ color: "rgba(212,175,55,0.4)" }} />}
+                        {locked && <Lock size={9} style={{ color: "rgba(212,175,55,0.4)" }} />}
                       </button>
                     );
                   })}
                 </div>
                 {!isElite && (
                   <p className="mt-2 text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(212,175,55,0.35)" }}>
-                    <Crown size={9} className="inline mr-1" />Obsidian, Platinum, Jade & Rose unlock at Elite
+                    <Crown size={9} className="inline mr-1" />4 exclusive colors unlock at Elite
                   </p>
                 )}
               </div>
@@ -191,8 +201,7 @@ export function BandCreatorModal({
                     const locked = em.eliteOnly && !isElite;
                     const active = design.emblem === em.id;
                     return (
-                      <button
-                        key={em.id}
+                      <button key={em.id}
                         onClick={() => !locked && setDesignField("emblem", em.id)}
                         title={locked ? `${em.label} — Elite only` : em.label}
                         className="px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 flex items-center gap-1.5"
@@ -212,7 +221,7 @@ export function BandCreatorModal({
                 </div>
               </div>
 
-              {/* Text style */}
+              {/* Lettering */}
               <div>
                 <Label>Lettering</Label>
                 <div className="flex gap-2">
@@ -220,8 +229,7 @@ export function BandCreatorModal({
                     const locked = t.eliteOnly && !isElite;
                     const active = design.textStyle === t.id;
                     return (
-                      <button
-                        key={t.id}
+                      <button key={t.id}
                         onClick={() => !locked && setDesignField("textStyle", t.id as BlendDesign["textStyle"])}
                         className="px-4 py-2 rounded text-sm transition-all duration-200 flex items-center gap-1.5"
                         style={{
@@ -242,14 +250,78 @@ export function BandCreatorModal({
                 </div>
               </div>
 
+              {/* Signature Food Pairing */}
+              {foodPairings.length > 0 && (
+                <div>
+                  <Label>
+                    Signature Food Pairing
+                    {!isElite && (
+                      <span className="ml-2 text-[8px] normal-case tracking-normal" style={{ color: "rgba(180,155,100,0.35)" }}>
+                        — customize at Elite
+                      </span>
+                    )}
+                  </Label>
+
+                  {isElite ? (
+                    /* Elite: pick from suggestions */
+                    <div className="flex flex-col gap-2">
+                      {foodPairings.map((food) => {
+                        const emoji = CATEGORY_EMOJI[food.category] ?? "🍽";
+                        const isSelected = selectedFood === food.name;
+                        return (
+                          <button
+                            key={food.id}
+                            onClick={() => setSelectedFood(food.name)}
+                            className="flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-250"
+                            style={{
+                              background: isSelected ? "rgba(212,175,55,0.1)" : "rgba(255,255,255,0.03)",
+                              border: isSelected ? "1px solid rgba(212,175,55,0.38)" : "1px solid rgba(255,255,255,0.07)",
+                              color: isSelected ? "rgba(230,210,175,0.9)" : "rgba(180,155,100,0.6)",
+                            }}
+                          >
+                            <span className="text-xl leading-none">{emoji}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-serif text-sm leading-tight">{food.name}</p>
+                              <p className="text-[10px] mt-0.5 truncate" style={{ color: "rgba(180,155,100,0.45)" }}>
+                                {food.description.slice(0, 60)}…
+                              </p>
+                            </div>
+                            {isSelected && (
+                              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+                                <Check size={14} style={{ color: "rgba(212,175,55,0.8)", flexShrink: 0 }} />
+                              </motion.div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    /* Standard: display-only top pick */
+                    <div
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                      style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
+                    >
+                      <span className="text-xl leading-none">{CATEGORY_EMOJI[foodPairings[0].category] ?? "🍽"}</span>
+                      <div className="flex-1">
+                        <p className="font-serif text-sm" style={{ color: "rgba(210,190,155,0.75)" }}>{foodPairings[0].name}</p>
+                        <p className="text-[9px] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>Auto-selected pairing</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded"
+                        style={{ background: "rgba(212,175,55,0.07)", border: "1px solid rgba(212,175,55,0.15)" }}>
+                        <Crown size={9} style={{ color: "rgba(212,175,55,0.5)" }} />
+                        <span className="text-[8px] uppercase tracking-[0.15em]" style={{ color: "rgba(212,175,55,0.5)" }}>Elite</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Description */}
               <div>
                 <Label>
                   Description <span style={{ color: "rgba(180,155,100,0.35)", fontSize: "10px" }}>(optional)</span>
                 </Label>
-                <textarea
-                  rows={2}
-                  maxLength={120}
+                <textarea rows={2} maxLength={120}
                   placeholder="Describe your signature blend…"
                   value={description}
                   onChange={(e) => setDesc(e.target.value)}
@@ -258,25 +330,18 @@ export function BandCreatorModal({
                 />
               </div>
 
-              {/* Based on */}
-              <div className="flex gap-6 pb-2">
-                <div>
-                  <p className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: "rgba(180,155,100,0.4)" }}>Based On</p>
-                  <p className="font-serif text-sm italic" style={{ color: "rgba(210,190,155,0.7)" }}>{cigarBaseName || "—"}</p>
-                </div>
-                <div>
-                  <p className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: "rgba(180,155,100,0.4)" }}>Paired With</p>
-                  <p className="font-serif text-sm italic" style={{ color: "rgba(210,190,155,0.7)" }}>{pairingName || "—"}</p>
-                </div>
+              {/* Provenance row */}
+              <div className="flex gap-6 pb-2 flex-wrap">
+                <InfoPill label="Based On"    value={cigarBaseName} />
+                <InfoPill label="Paired With" value={pairingName}   />
+                {selectedFood && <InfoPill label="Signature Food" value={selectedFood} icon={CATEGORY_EMOJI[foodPairings.find(f => f.name === selectedFood)?.category ?? ""] ?? "🍽"} />}
               </div>
 
-              {/* Share card preview */}
+              {/* Share card */}
               <AnimatePresence>
                 {shareVisible && (
                   <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
+                    initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
                     className="rounded-xl overflow-hidden"
                     style={{ border: "1px solid rgba(212,175,55,0.2)", background: "rgba(0,0,0,0.3)" }}
                   >
@@ -286,9 +351,11 @@ export function BandCreatorModal({
                         <CigarBandPreview design={design} blendName={blendName} style={style} size="sm" />
                       </div>
                       <p className="text-xs text-center font-serif italic" style={{ color: "rgba(210,190,155,0.6)" }}>
-                        {blendName || "My Blend"} · {style} · paired with {pairingName}
+                        {blendName || "My Blend"} · {style} · {pairingName}
+                        {selectedFood ? ` · ${selectedFood}` : ""}
                       </p>
-                      <p className="mt-3 text-center text-[9px] uppercase tracking-[0.2em]" style={{ color: copied ? "rgba(100,200,120,0.8)" : "rgba(180,155,100,0.35)" }}>
+                      <p className="mt-3 text-center text-[9px] uppercase tracking-[0.2em]"
+                        style={{ color: copied ? "rgba(100,200,120,0.8)" : "rgba(180,155,100,0.35)" }}>
                         {copied ? "✓ Copied to clipboard" : "Text copied — paste to share"}
                       </p>
                     </div>
@@ -297,40 +364,32 @@ export function BandCreatorModal({
               </AnimatePresence>
             </div>
 
-            {/* Footer actions */}
+            {/* Footer */}
             <div className="flex-shrink-0 px-7 py-5 flex items-center gap-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              {/* Share */}
-              <motion.button
-                onClick={handleShare}
+              <motion.button onClick={handleShare}
                 className="flex items-center gap-2 px-4 py-3 rounded text-xs uppercase tracking-[0.18em]"
                 style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(180,155,100,0.55)" }}
                 whileHover={{ borderColor: "rgba(212,175,55,0.35)", color: "rgba(212,175,55,0.75)" }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <Share2 size={13} />
-                Share
+                whileTap={{ scale: 0.97 }}>
+                <Share2 size={13} />Share
               </motion.button>
 
-              {/* Save */}
-              <motion.button
-                onClick={handleSave}
-                disabled={saved}
-                className="flex-1 flex items-center justify-center gap-2 py-3 font-serif text-base tracking-[0.18em] uppercase rounded transition-all duration-400"
-                style={saved
+              <motion.button onClick={handleSave} disabled={savedState}
+                className="flex-1 flex items-center justify-center gap-2 py-3 font-serif text-base tracking-[0.18em] uppercase rounded"
+                style={savedState
                   ? { background: "rgba(100,200,120,0.12)", border: "1px solid rgba(100,200,120,0.3)", color: "rgba(100,200,120,0.8)" }
                   : { background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))", color: "hsl(22 18% 6%)", boxShadow: "0 0 30px rgba(212,175,55,0.1)" }
                 }
-                whileHover={!saved ? { boxShadow: "0 0 40px rgba(212,175,55,0.2)" } : {}}
-                whileTap={!saved ? { scale: 0.99 } : {}}
-              >
+                whileHover={!savedState ? { boxShadow: "0 0 40px rgba(212,175,55,0.2)" } : {}}
+                whileTap={!savedState ? { scale: 0.99 } : {}}>
                 <AnimatePresence mode="wait">
-                  {saved ? (
+                  {savedState ? (
                     <motion.span key="done" className="flex items-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                       <Check size={15} />Saved to Vault · +15pts
                     </motion.span>
                   ) : (
-                    <motion.span key="save" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                      Save Blend
+                    <motion.span key="save" className="flex items-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                      <UtensilsCrossed size={14} />Save Full Experience
                     </motion.span>
                   )}
                 </AnimatePresence>
@@ -348,5 +407,17 @@ function Label({ children }: { children: React.ReactNode }) {
     <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ color: "rgba(180,155,100,0.5)" }}>
       {children}
     </p>
+  );
+}
+
+function InfoPill({ label, value, icon }: { label: string; value: string; icon?: string }) {
+  return (
+    <div>
+      <p className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: "rgba(180,155,100,0.4)" }}>{label}</p>
+      <p className="font-serif text-sm italic" style={{ color: "rgba(210,190,155,0.7)" }}>
+        {icon && <span className="mr-1 not-italic">{icon}</span>}
+        {value || "—"}
+      </p>
+    </div>
   );
 }
