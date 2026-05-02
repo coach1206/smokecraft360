@@ -25,8 +25,8 @@ import {
   Award, SkipForward, Wine, Utensils, Zap,
 } from "lucide-react";
 import {
-  fetchInsights, fetchDistributors,
-  type InsightsData, type Distributor,
+  fetchInsights, fetchDistributors, fetchCampaigns, fetchCampaignPerformance,
+  type InsightsData, type Distributor, type Campaign, type CampaignPerformance,
 } from "@/services/api";
 
 // ── Types / consts ─────────────────────────────────────────────────────────────
@@ -63,6 +63,11 @@ export function InsightsTab() {
   const [venueId,   setVenueId]   = useState<string>("");
   const [perfOpen,  setPerfOpen]  = useState(false);
 
+  // Campaign insights
+  const [campaigns,     setCampaigns]     = useState<Campaign[]>([]);
+  const [campaignPerfs, setCampaignPerfs] = useState<Map<string, CampaignPerformance>>(new Map());
+  const [campLoading,   setCampLoading]   = useState(true);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -80,9 +85,28 @@ export function InsightsTab() {
     }
   }, [timeRange, category, venueId]);
 
+  const loadCampaigns = useCallback(async () => {
+    setCampLoading(true);
+    try {
+      const camps = await fetchCampaigns();
+      setCampaigns(camps);
+      const perfs = await Promise.all(
+        camps.map((c) => fetchCampaignPerformance(c.id).then((p) => [c.id, p] as const).catch(() => null)),
+      );
+      const perfMap = new Map<string, CampaignPerformance>();
+      for (const entry of perfs) {
+        if (entry) perfMap.set(entry[0], entry[1]);
+      }
+      setCampaignPerfs(perfMap);
+    } catch { /* non-critical */ } finally {
+      setCampLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchDistributors().then((d) => setDistributors(d)).catch(() => {});
-  }, []);
+    loadCampaigns();
+  }, [loadCampaigns]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -267,6 +291,13 @@ export function InsightsTab() {
                 </p>
               )}
             </Section>
+
+            {/* ── Campaign Performance ──────────────────────────────────── */}
+            <CampaignInsightsSection
+              campaigns={campaigns}
+              perfs={campaignPerfs}
+              loading={campLoading}
+            />
 
             {/* ── Future Ready Panel ────────────────────────────────────── */}
             <FuturePanel />
@@ -591,6 +622,216 @@ function Section({ title, subtitle, children, compact, action, icon }: {
         {children}
       </div>
     </motion.div>
+  );
+}
+
+// ── Campaign Insights Section ──────────────────────────────────────────────────
+
+interface CampaignRow {
+  id:            string;
+  name:          string;
+  status:        string;
+  active:        boolean;
+  impressions:   number;
+  clicks:        number;
+  conversions:   number;
+  ctr:           number;
+  cvr:           number;
+  budgetCents:   number | null;
+  productCount:  number;
+  roiLabel:      string | null;
+}
+
+function CampaignInsightsSection({
+  campaigns, perfs, loading,
+}: {
+  campaigns: Campaign[];
+  perfs:     Map<string, CampaignPerformance>;
+  loading:   boolean;
+}) {
+  const rows: CampaignRow[] = campaigns.map((c) => {
+    const p = perfs.get(c.id);
+    const impressions  = p?.performance.impressions  ?? 0;
+    const clicks       = p?.performance.clicks       ?? 0;
+    const conversions  = p?.performance.conversions  ?? 0;
+    const ctr          = p?.performance.ctr          ?? 0;
+    const cvr          = p?.performance.cvr          ?? 0;
+    const productCount = p?.performance.productCount ?? c.productCount ?? 0;
+
+    // Basic ROI: clicks per $100 budget (if budget set)
+    const budgetCents = c.budgetCents ?? null;
+    let roiLabel: string | null = null;
+    if (budgetCents && budgetCents > 0 && impressions > 0) {
+      const cpm = Math.round((budgetCents / 100) / (impressions / 1000));
+      roiLabel = `$${cpm} CPM`;
+    }
+
+    return { id: c.id, name: c.name, status: c.status, active: c.active,
+             impressions, clicks, conversions, ctr, cvr, budgetCents, productCount, roiLabel };
+  }).sort((a, b) => b.impressions - a.impressions);
+
+  const totalImpressions = rows.reduce((s, r) => s + r.impressions, 0);
+  const totalClicks      = rows.reduce((s, r) => s + r.clicks,      0);
+  const totalConversions = rows.reduce((s, r) => s + r.conversions, 0);
+  const activeCamps      = rows.filter((r) => r.active).length;
+  const maxImpressions   = rows[0]?.impressions ?? 1;
+
+  const STATUS_COLORS: Record<string, string> = {
+    active:    "rgba(100,200,120,0.75)",
+    draft:     "rgba(180,155,100,0.5)",
+    paused:    "rgba(212,175,55,0.7)",
+    completed: "rgba(130,150,212,0.65)",
+    cancelled: "rgba(239,90,80,0.55)",
+  };
+
+  return (
+    <Section
+      title="Campaign Performance"
+      subtitle="Sponsored placement attribution — impressions · clicks · conversions · ROI"
+      icon={<Megaphone size={13} style={{ color: GOLD_DIM }} />}
+    >
+      {loading ? (
+        <div className="flex items-center justify-center py-10">
+          <motion.div className="w-6 h-6 rounded-full border-2"
+            style={{ borderColor: "rgba(212,175,55,0.15)", borderTopColor: "rgba(212,175,55,0.6)" }}
+            animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
+        </div>
+      ) : campaigns.length === 0 ? (
+        <div className="py-10 text-center">
+          <Megaphone size={28} className="mx-auto mb-3" style={{ color: "rgba(212,175,55,0.18)" }} />
+          <p className="text-xs italic" style={{ color: "rgba(180,155,100,0.35)" }}>
+            No campaigns yet — create one in the Campaigns tab to start tracking placement performance
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-5">
+
+          {/* ── Aggregate KPIs ───────────────────────────────────────────── */}
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { label: "Active Campaigns", value: activeCamps,                        gold: true  },
+              { label: "Total Impressions", value: totalImpressions.toLocaleString(), gold: false },
+              { label: "Total Clicks",      value: totalClicks.toLocaleString(),      gold: false },
+              { label: "Conversions",       value: totalConversions.toLocaleString(), gold: true  },
+            ].map(({ label, value, gold }) => (
+              <div key={label} className="p-3 rounded-xl"
+                style={{
+                  background: gold ? "rgba(212,175,55,0.05)" : "rgba(255,255,255,0.025)",
+                  border:     gold ? "1px solid rgba(212,175,55,0.18)" : "1px solid rgba(255,255,255,0.06)",
+                }}>
+                <p className="text-2xl font-serif" style={{ color: gold ? GOLD : "rgba(210,190,155,0.82)", fontWeight: 300 }}>
+                  {value}
+                </p>
+                <p className="text-[8px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+                  {label}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Per-campaign bar chart of impressions ────────────────────── */}
+          {rows.length > 0 && (
+            <div className="space-y-2.5">
+              <p className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.4)" }}>
+                Impressions by campaign
+              </p>
+              {rows.slice(0, 6).map((r, i) => (
+                <div key={r.id}>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                        style={{ background: STATUS_COLORS[r.status] ?? GOLD_DIM }} />
+                      <span className="font-serif text-xs truncate" style={{ color: "rgba(210,190,155,0.82)" }}>
+                        {r.name}
+                      </span>
+                      {r.active && (
+                        <span className="text-[7px] uppercase tracking-wider px-1 py-0.5 rounded flex-shrink-0"
+                          style={{ background: "rgba(100,200,120,0.08)", border: "1px solid rgba(100,200,120,0.2)", color: "rgba(100,200,120,0.65)" }}>
+                          Live
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 flex-shrink-0 ml-3">
+                      {r.roiLabel && (
+                        <span className="text-[8px]" style={{ color: "rgba(212,175,55,0.6)" }}>{r.roiLabel}</span>
+                      )}
+                      <span className="text-[10px] font-serif" style={{ color: GOLD_DIM }}>
+                        {r.impressions.toLocaleString()}
+                        <span className="text-[8px] ml-1" style={{ color: "rgba(180,155,100,0.35)" }}>imp</span>
+                      </span>
+                    </div>
+                  </div>
+                  <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+                    <motion.div className="h-full rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${maxImpressions > 0 ? (r.impressions / maxImpressions) * 100 : 0}%` }}
+                      transition={{ duration: 0.8, ease: "easeOut", delay: i * 0.06 }}
+                      style={{ background: r.active
+                        ? "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(212,175,55,0.85))"
+                        : "rgba(180,155,100,0.25)"
+                      }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ── Attribution table ─────────────────────────────────────────── */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                  {["Campaign", "Status", "Products", "Impressions", "Clicks", "CTR", "Orders", "CVR", "CPM"].map((h) => (
+                    <th key={h} className="text-left pb-2 pr-3 text-[8px] uppercase tracking-[0.16em]"
+                      style={{ color: "rgba(180,155,100,0.4)", fontWeight: 400 }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r, i) => (
+                  <motion.tr key={r.id}
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
+                    style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
+                    <td className="py-2.5 pr-3 font-serif max-w-[150px] truncate"
+                      style={{ color: "rgba(220,200,165,0.85)" }}>{r.name}</td>
+                    <td className="py-2.5 pr-3">
+                      <span className="text-[7px] uppercase tracking-wider px-1.5 py-0.5 rounded-full"
+                        style={{
+                          background: `${STATUS_COLORS[r.status] ?? GOLD_DIM}18`,
+                          border: `1px solid ${STATUS_COLORS[r.status] ?? GOLD_DIM}40`,
+                          color: STATUS_COLORS[r.status] ?? GOLD_DIM,
+                        }}>
+                        {r.status}
+                      </span>
+                    </td>
+                    <td className="py-2.5 pr-3" style={{ color: "rgba(180,155,100,0.55)" }}>{r.productCount}</td>
+                    <td className="py-2.5 pr-3" style={{ color: "rgba(200,180,145,0.7)" }}>{r.impressions.toLocaleString()}</td>
+                    <td className="py-2.5 pr-3" style={{ color: "rgba(200,180,145,0.75)" }}>{r.clicks.toLocaleString()}</td>
+                    <td className="py-2.5 pr-3">
+                      <span style={{
+                        color: r.ctr >= 10 ? "rgba(100,200,120,0.8)" : r.ctr >= 3 ? "rgba(212,175,55,0.75)" : "rgba(180,155,100,0.45)",
+                        fontSize: 10,
+                      }}>{r.ctr}%</span>
+                    </td>
+                    <td className="py-2.5 pr-3" style={{ color: "rgba(212,175,55,0.8)" }}>{r.conversions}</td>
+                    <td className="py-2.5 pr-3">
+                      <span style={{
+                        color: r.cvr >= 10 ? "rgba(100,200,120,0.8)" : r.cvr >= 2 ? "rgba(212,175,55,0.75)" : "rgba(180,155,100,0.4)",
+                        fontSize: 10,
+                      }}>{r.cvr}%</span>
+                    </td>
+                    <td className="py-2.5 pr-3" style={{ color: "rgba(212,175,55,0.55)", fontSize: 10 }}>
+                      {r.roiLabel ?? <span style={{ color: "rgba(180,155,100,0.25)" }}>—</span>}
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      )}
+    </Section>
   );
 }
 

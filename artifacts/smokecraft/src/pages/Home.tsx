@@ -158,10 +158,19 @@ export default function Home() {
 
   const handleSwipe = (direction: "left" | "right", productId: string) => {
     recordSwipe();
+    const product = results?.recommendations.find((r) => r.id === productId);
     trackEvent({
       eventType: direction === "right" ? "swipe_right" : "swipe_left",
       productId,
+      metadata: product?.campaignId ? { campaignId: product.campaignId } : undefined,
     });
+    if (direction === "right") {
+      trackEvent({
+        eventType: "product_selected",
+        productId,
+        metadata: product?.campaignId ? { campaignId: product.campaignId } : undefined,
+      });
+    }
   };
 
   const handleSave = () => {
