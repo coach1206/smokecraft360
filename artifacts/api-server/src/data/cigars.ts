@@ -1,10 +1,5 @@
 import { Product } from "../engine/types";
 
-/**
- * Sample dataset for cigars.
- * Each entry conforms to the shared Product interface.
- * Add more entries here to expand the catalog without touching engine logic.
- */
 export const cigars: Product[] = [
   {
     id: "cigar-001",
@@ -15,6 +10,8 @@ export const cigars: Product[] = [
     moodTags: ["relaxed", "reflective", "social"],
     pairingTags: ["rum", "cognac", "light-whiskey"],
     tier: "premium",
+    boostLevel: 0,
+    sponsored: false,
   },
   {
     id: "cigar-002",
@@ -25,6 +22,10 @@ export const cigars: Product[] = [
     moodTags: ["social", "celebratory", "relaxed"],
     pairingTags: ["bourbon", "dark-rum", "port"],
     tier: "premium",
+    boostLevel: 2,
+    sponsored: true,
+    brandId: "padron-brand",
+    campaignId: "padron-spring-2026",
   },
   {
     id: "cigar-003",
@@ -35,6 +36,8 @@ export const cigars: Product[] = [
     moodTags: ["bold", "focused", "intense"],
     pairingTags: ["bourbon", "rye-whiskey", "mezcal"],
     tier: "premium",
+    boostLevel: 0,
+    sponsored: false,
   },
   {
     id: "cigar-004",
@@ -45,6 +48,8 @@ export const cigars: Product[] = [
     moodTags: ["bold", "adventurous", "intense"],
     pairingTags: ["scotch", "rye-whiskey", "amaro"],
     tier: "mid",
+    boostLevel: 1,
+    sponsored: false,
   },
   {
     id: "cigar-005",
@@ -55,5 +60,7 @@ export const cigars: Product[] = [
     moodTags: ["relaxed", "reflective", "social"],
     pairingTags: ["light-whiskey", "rum", "cognac"],
     tier: "mid",
+    boostLevel: 0,
+    sponsored: false,
   },
 ];

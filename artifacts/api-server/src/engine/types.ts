@@ -14,6 +14,14 @@ export interface Product {
   moodTags: string[];
   pairingTags: string[];
   tier: Tier;
+  /** Optional initial boost level (0–3). Runtime managed via inventory store. */
+  boostLevel?: number;
+  /** Whether this product has sponsored placement. Runtime managed via inventory store. */
+  sponsored?: boolean;
+  /** Future: brand partner identifier */
+  brandId?: string;
+  /** Future: active campaign identifier */
+  campaignId?: string;
 }
 
 export interface RecommendRequest {
@@ -25,9 +33,10 @@ export interface RecommendRequest {
 
 export interface ScoredProduct extends Product {
   score: number;
+  /** Boost points applied (0 if none) */
+  boostApplied: number;
 }
 
-/** A food item in the catalog. */
 export interface FoodItem {
   id: string;
   name: string;
@@ -38,7 +47,6 @@ export interface FoodItem {
   strengthMax: number;
 }
 
-/** A food item with a computed pairing score. */
 export interface ScoredFood extends FoodItem {
   score: number;
 }
@@ -47,4 +55,14 @@ export interface RecommendResponse {
   recommendations: ScoredProduct[];
   pairings: ScoredProduct[];
   foodPairings: ScoredFood[];
+  /** Sponsored / high-boost products with some user relevance, shown separately. */
+  featured: ScoredProduct[];
+}
+
+/** Shape returned by GET /api/inventory */
+export interface InventoryProduct extends Product {
+  boostLevel: number;
+  sponsored: boolean;
+  impressions: number;
+  featuredImpressions: number;
 }

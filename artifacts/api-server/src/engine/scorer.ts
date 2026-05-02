@@ -1,89 +1,73 @@
 import { Product, RecommendRequest, ScoredProduct, Tier } from "./types";
+import { getProductBoost } from "./inventory";
 
-/**
- * Weights used in scoring. Adjust these values to tune recommendation quality
- * without touching the scoring logic itself.
- */
 const WEIGHTS = {
-  /** Points awarded per overlapping flavor note */
-  flavorMatch: 3,
-  /** Points awarded for an exact mood tag match */
-  moodMatch: 4,
-  /** Strength proximity rewards — no penalties, only bonuses */
-  strengthExact: 3,   // |distance| = 0
-  strengthClose: 2,   // |distance| = 1
-  strengthNear: 1,    // |distance| = 2
-  // |distance| >= 3 → 0 points
+  flavorMatch:    3,
+  moodMatch:      4,
+  strengthExact:  3,
+  strengthClose:  2,
+  strengthNear:   1,
 } as const;
 
-/** Bonus points per quality tier */
 const TIER_BONUS: Record<Tier, number> = {
   premium: 2,
-  mid: 1,
+  mid:     1,
   standard: 0,
 };
 
 /**
- * Computes a relevance score for a single product against a user request.
- *
- * Scoring is purely additive — no penalties.
- *
- * Score breakdown:
- *  +3 per overlapping flavor note
- *  +4 if any mood tag matches the requested mood
- *  +3 / +2 / +1 for strength proximity (exact / ±1 / ±2), 0 beyond
- *  +2 / +1 / +0 tier bonus (premium / mid / standard)
- *
- * @param product  The product to evaluate.
- * @param request  The user's preference payload.
- * @returns        A numeric score (higher = better match).
+ * Maximum boost contribution that sponsored/boosted products can add.
+ * Keeps irrelevant products from overriding genuinely relevant ones.
  */
-export function scoreProduct(
-  product: Product,
-  request: RecommendRequest,
-): number {
+const MAX_BOOST_POINTS = 5;
+
+/**
+ * Base relevance score — no boost applied.
+ * Used internally and by the featured-product filter.
+ */
+export function scoreProductBase(product: Product, request: RecommendRequest): number {
   let score = 0;
 
-  // --- Flavor overlap ---
-  const preferenceSet = new Set(
-    request.flavorPreferences.map((f) => f.toLowerCase()),
-  );
+  const preferenceSet = new Set(request.flavorPreferences.map((f) => f.toLowerCase()));
   for (const note of product.flavorNotes) {
-    if (preferenceSet.has(note.toLowerCase())) {
-      score += WEIGHTS.flavorMatch;
-    }
+    if (preferenceSet.has(note.toLowerCase())) score += WEIGHTS.flavorMatch;
   }
 
-  // --- Strength proximity (graduated reward, no penalty) ---
-  const strengthDistance = Math.abs(product.strength - request.strength);
-  if (strengthDistance === 0) {
-    score += WEIGHTS.strengthExact;
-  } else if (strengthDistance === 1) {
-    score += WEIGHTS.strengthClose;
-  } else if (strengthDistance === 2) {
-    score += WEIGHTS.strengthNear;
-  }
-  // distance >= 3 → no points added
+  const dist = Math.abs(product.strength - request.strength);
+  if      (dist === 0) score += WEIGHTS.strengthExact;
+  else if (dist === 1) score += WEIGHTS.strengthClose;
+  else if (dist === 2) score += WEIGHTS.strengthNear;
 
-  // --- Mood match ---
-  const requestedMood = request.mood.toLowerCase();
-  if (product.moodTags.some((tag) => tag.toLowerCase() === requestedMood)) {
+  if (product.moodTags.some((t) => t.toLowerCase() === request.mood.toLowerCase())) {
     score += WEIGHTS.moodMatch;
   }
 
-  // --- Tier bonus ---
   score += TIER_BONUS[product.tier] ?? 0;
 
   return score;
 }
 
 /**
- * Scores all products in a pool and returns the top N, sorted descending.
+ * Full score = base relevance + capped boost contribution.
  *
- * @param pool     Array of products to rank.
- * @param request  The user's preference payload.
- * @param topN     Maximum number of results to return.
- * @returns        Ranked array of ScoredProduct (highest score first).
+ * Boost is only applied when the product has at least some base relevance
+ * (score > 0), preserving recommendation integrity.
+ */
+export function scoreProduct(
+  product: Product,
+  request: RecommendRequest,
+): { total: number; base: number; boost: number } {
+  const base  = scoreProductBase(product, request);
+  const state = getProductBoost(product.id);
+
+  const rawBoost = state.boostLevel + (state.sponsored ? 2 : 0);
+  const boost    = base > 0 ? Math.min(rawBoost, MAX_BOOST_POINTS) : 0;
+
+  return { total: base + boost, base, boost };
+}
+
+/**
+ * Scores all products and returns the top N, annotated with boost metadata.
  */
 export function rankProducts(
   pool: Product[],
@@ -91,7 +75,19 @@ export function rankProducts(
   topN: number,
 ): ScoredProduct[] {
   return pool
-    .map((product) => ({ ...product, score: scoreProduct(product, request) }))
+    .map((product): ScoredProduct => {
+      const { total, boost } = scoreProduct(product, request);
+      const state = getProductBoost(product.id);
+      return {
+        ...product,
+        score:        total,
+        boostApplied: boost,
+        boostLevel:   state.boostLevel,
+        sponsored:    state.sponsored,
+        brandId:      state.brandId,
+        campaignId:   state.campaignId,
+      };
+    })
     .sort((a, b) => b.score - a.score)
     .slice(0, topN);
 }

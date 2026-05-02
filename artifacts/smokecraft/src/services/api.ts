@@ -15,6 +15,11 @@ export interface ProductResult {
   pairingTags: string[];
   score: number;
   tier?: "premium" | "mid" | "standard";
+  boostApplied?: number;
+  boostLevel?: number;
+  sponsored?: boolean;
+  brandId?: string;
+  campaignId?: string;
 }
 
 export interface FoodResult {
@@ -32,6 +37,33 @@ export interface RecommendResponse {
   recommendations: ProductResult[];
   pairings: ProductResult[];
   foodPairings: FoodResult[];
+  featured: ProductResult[];
+}
+
+export interface InventoryItem {
+  id: string;
+  name: string;
+  category: string;
+  tier: string;
+  boostLevel: number;
+  sponsored: boolean;
+  brandId?: string;
+  campaignId?: string;
+  impressions: number;
+  featuredImpressions: number;
+}
+
+export interface AnalyticsSummary {
+  summary: {
+    totalProducts: number;
+    boostedProducts: number;
+    sponsoredProducts: number;
+    totalImpressions: number;
+    sponsoredImpressions: number;
+    featuredImpressions: number;
+  };
+  topPerformers: InventoryItem[];
+  sponsored: InventoryItem[];
 }
 
 export async function fetchRecommendations(params: RecommendParams): Promise<RecommendResponse> {
@@ -40,13 +72,37 @@ export async function fetchRecommendations(params: RecommendParams): Promise<Rec
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(params),
   });
-
   if (!response.ok) throw new Error("Failed to fetch recommendations");
-
   const data = await response.json();
   return {
     recommendations: data.recommendations ?? [],
     pairings:        data.pairings        ?? [],
     foodPairings:    data.foodPairings    ?? [],
+    featured:        data.featured        ?? [],
   };
+}
+
+export async function fetchInventory(): Promise<InventoryItem[]> {
+  const res = await fetch("/api/inventory");
+  if (!res.ok) throw new Error("Failed to fetch inventory");
+  return res.json();
+}
+
+export async function updateInventoryItem(
+  id: string,
+  updates: Partial<Pick<InventoryItem, "boostLevel" | "sponsored" | "brandId" | "campaignId">>,
+): Promise<InventoryItem> {
+  const res = await fetch(`/api/inventory/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updates),
+  });
+  if (!res.ok) throw new Error("Failed to update product");
+  return res.json();
+}
+
+export async function fetchAnalytics(): Promise<AnalyticsSummary> {
+  const res = await fetch("/api/analytics");
+  if (!res.ok) throw new Error("Failed to fetch analytics");
+  return res.json();
 }

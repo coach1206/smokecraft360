@@ -1,10 +1,5 @@
 import { Product } from "../engine/types";
 
-/**
- * Sample dataset for alcohol products (whiskey, bourbon, etc.).
- * Each entry conforms to the shared Product interface.
- * Add more entries or sub-categories (rum, cognac, mezcal) without touching engine logic.
- */
 export const alcohol: Product[] = [
   {
     id: "alc-001",
@@ -15,6 +10,8 @@ export const alcohol: Product[] = [
     moodTags: ["relaxed", "social", "celebratory"],
     pairingTags: ["medium-body cigar", "mild cigar", "sweet cigar"],
     tier: "mid",
+    boostLevel: 0,
+    sponsored: false,
   },
   {
     id: "alc-002",
@@ -25,6 +22,8 @@ export const alcohol: Product[] = [
     moodTags: ["relaxed", "social", "reflective"],
     pairingTags: ["mild cigar", "sweet cigar", "creamy cigar"],
     tier: "standard",
+    boostLevel: 0,
+    sponsored: false,
   },
   {
     id: "alc-003",
@@ -35,6 +34,10 @@ export const alcohol: Product[] = [
     moodTags: ["bold", "intense", "adventurous"],
     pairingTags: ["full-body cigar", "spicy cigar", "leather cigar"],
     tier: "mid",
+    boostLevel: 2,
+    sponsored: true,
+    brandId: "beam-suntory",
+    campaignId: "knob-creek-q2-2026",
   },
   {
     id: "alc-004",
@@ -45,6 +48,8 @@ export const alcohol: Product[] = [
     moodTags: ["bold", "intense", "focused"],
     pairingTags: ["full-body cigar", "earthy cigar", "dark cigar"],
     tier: "premium",
+    boostLevel: 0,
+    sponsored: false,
   },
   {
     id: "alc-005",
@@ -55,5 +60,7 @@ export const alcohol: Product[] = [
     moodTags: ["celebratory", "social", "bold"],
     pairingTags: ["medium-body cigar", "sweet cigar", "nutty cigar"],
     tier: "premium",
+    boostLevel: 1,
+    sponsored: false,
   },
 ];

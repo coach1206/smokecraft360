@@ -7,6 +7,7 @@ import { MoodSelector } from "@/components/MoodSelector";
 import { CardStack } from "@/components/CardStack";
 import { PairingsSection } from "@/components/PairingsSection";
 import { FoodSection } from "@/components/Food/FoodSection";
+import { FeaturedSection } from "@/components/Featured/FeaturedSection";
 import { CigarBurnLoader } from "@/components/CigarBurnLoader";
 import { AmbientBackground } from "@/components/AmbientBackground";
 import { ProfileBadge } from "@/components/Profile/ProfileBadge";
@@ -21,11 +22,11 @@ import type { SavedBlend } from "@/services/storage";
 type Phase = "form" | "loading" | "results";
 
 export default function Home() {
-  const [phase, setPhase]                   = useState<Phase>("form");
-  const [error, setError]                   = useState<string | null>(null);
-  const [results, setResults]               = useState<RecommendResponse | null>(null);
-  const [vaultOpen, setVaultOpen]           = useState(false);
-  const [bandOpen, setBandOpen]             = useState(false);
+  const [phase, setPhase]                     = useState<Phase>("form");
+  const [error, setError]                     = useState<string | null>(null);
+  const [results, setResults]                 = useState<RecommendResponse | null>(null);
+  const [vaultOpen, setVaultOpen]             = useState(false);
+  const [bandOpen, setBandOpen]               = useState(false);
   const [experienceSaved, setExperienceSaved] = useState(false);
 
   const [category, setCategory] = useState<"cigar" | "alcohol">("cigar");
@@ -70,10 +71,6 @@ export default function Home() {
     setExperienceSaved(true);
   };
 
-  const handleSaveBand = (blend: Omit<SavedBlend, "id" | "createdAt">) => {
-    handleSaveBlend(blend);
-  };
-
   const handleStartOver = () => {
     setPhase("form");
     setResults(null);
@@ -83,9 +80,10 @@ export default function Home() {
     setExperienceSaved(false);
   };
 
-  const cigarBase   = results?.recommendations[0]?.name ?? "";
-  const pairingBase = results?.pairings[0]?.name ?? "";
-  const foodPairings = results?.foodPairings ?? [];
+  const cigarBase    = results?.recommendations[0]?.name ?? "";
+  const pairingBase  = results?.pairings[0]?.name        ?? "";
+  const foodPairings = results?.foodPairings              ?? [];
+  const featured     = results?.featured                  ?? [];
 
   return (
     <div className="min-h-[100dvh] w-full text-foreground flex flex-col relative overflow-hidden" style={{ background: "hsl(22 18% 5%)" }}>
@@ -99,7 +97,6 @@ export default function Home() {
       <AnimatePresence>
         {phase === "loading" && <CigarBurnLoader onComplete={handleBurnComplete} />}
       </AnimatePresence>
-
       <AnimatePresence>
         {justUnlockedElite && <EliteUnlockAnimation onComplete={clearEliteUnlock} />}
       </AnimatePresence>
@@ -112,7 +109,6 @@ export default function Home() {
         onRemoveBlend={handleRemoveBlend}
         onNameChange={updateName}
       />
-
       <BandCreatorModal
         isOpen={bandOpen}
         isElite={isElite}
@@ -120,7 +116,7 @@ export default function Home() {
         pairingName={pairingBase}
         foodPairings={foodPairings}
         onClose={() => setBandOpen(false)}
-        onSave={handleSaveBand}
+        onSave={(blend: Omit<SavedBlend, "id" | "createdAt">) => handleSaveBlend(blend)}
       />
 
       <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-6 py-10 relative z-10">
@@ -148,7 +144,7 @@ export default function Home() {
 
         <AnimatePresence mode="wait">
 
-          {/* ── Form ───────────────────────────── */}
+          {/* ── Form ─────────────────────────── */}
           {(phase === "form" || phase === "loading") && (
             <motion.div key="form"
               initial={{ opacity: 0, y: 24 }}
@@ -168,23 +164,20 @@ export default function Home() {
               )}
 
               <section><CategoryToggle value={category} onChange={handleCategoryChange} /></section>
-
               <section>
                 <FormLabel title="Palate" hint="Select notes" isElite={isElite} />
                 <FlavorChips category={category} selected={flavors} onChange={setFlavors} />
               </section>
-
               <section>
                 <FormLabel title="Strength" isElite={isElite} />
                 <StrengthSlider value={strength} onChange={setStrength} />
               </section>
-
               <section>
                 <FormLabel title="Atmosphere" isElite={isElite} />
                 <MoodSelector selected={mood} onChange={setMood} />
               </section>
 
-              <div className="mt-6 mb-12">
+              <div className="mt-6 mb-8">
                 <motion.button data-testid="btn-discover" onClick={handleDiscover}
                   className="w-full py-5 font-serif text-xl tracking-[0.22em] uppercase rounded-sm relative overflow-hidden"
                   style={{
@@ -205,10 +198,22 @@ export default function Home() {
                   Curate Selection
                 </motion.button>
               </div>
+
+              {/* Partner dashboard link — subtle, for venue operators */}
+              <div className="text-center pb-4">
+                <a href="/dashboard"
+                  className="text-[8px] uppercase tracking-[0.22em] transition-colors duration-200"
+                  style={{ color: "rgba(180,155,100,0.22)" }}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,175,55,0.45)")}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(180,155,100,0.22)")}
+                >
+                  Partner Dashboard
+                </a>
+              </div>
             </motion.div>
           )}
 
-          {/* ── Results ─────────────────────────── */}
+          {/* ── Results ───────────────────────── */}
           {phase === "results" && results && (
             <motion.div key="results"
               initial={{ opacity: 0, scale: 0.96, filter: "blur(10px)" }}
@@ -261,13 +266,16 @@ export default function Home() {
                 </motion.button>
               </motion.div>
 
+              {/* Featured Selections */}
+              <FeaturedSection featured={featured} />
+
               {/* Alcohol pairings */}
               <PairingsSection pairings={results.pairings} />
 
               {/* Food pairings */}
               <FoodSection foodPairings={foodPairings} />
 
-              <motion.div className="mt-16 text-center pb-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.6, duration: 0.6 }}>
+              <motion.div className="mt-16 text-center pb-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8, duration: 0.6 }}>
                 <button data-testid="btn-start-over" onClick={handleStartOver}
                   className="inline-flex items-center gap-2.5 text-xs uppercase tracking-[0.25em] group transition-all duration-300"
                   style={{ color: "rgba(180,155,100,0.4)" }}
