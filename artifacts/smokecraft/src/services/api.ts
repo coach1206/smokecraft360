@@ -461,6 +461,125 @@ export async function fetchLeaderboard(): Promise<LeaderboardData> {
   return res.json();
 }
 
+// ── Signature Cigars ──────────────────────────────────────────────────────────
+
+export interface BandDesignPayload {
+  template:     string;
+  primaryColor: string;
+  accentColor:  string;
+  fontStyle:    string;
+  emblem:       string;
+  brandName:    string;
+}
+
+export interface CigarSpecPayload {
+  strength:         number;
+  flavorDirection:  string[];
+  wrapperType:      string;
+  preferredPairing?: string;
+}
+
+export interface SignatureCigarPayload {
+  brandName:    string;
+  bandDesign:   BandDesignPayload;
+  cigarSpec:    CigarSpecPayload;
+  description?: string;
+  status:       "draft" | "submitted";
+}
+
+export interface SignatureCigarRecord {
+  id:              string;
+  userId:          string;
+  brandName:       string;
+  bandDesign:      BandDesignPayload;
+  cigarSpec:       CigarSpecPayload;
+  description?:    string | null;
+  status:          string;
+  productionStage?: string | null;
+  manufacturerId?: string | null;
+  adminNotes?:     string | null;
+  rejectedReason?: string | null;
+  createdAt:       string;
+  updatedAt:       string;
+  userName?:       string;
+  manufacturer?:   Manufacturer | null;
+}
+
+export interface Manufacturer {
+  id:           string;
+  name:         string;
+  contactEmail?: string | null;
+  contactPhone?: string | null;
+  country?:     string | null;
+  specialty?:   string | null;
+  notes?:       string | null;
+  createdAt:    string;
+  updatedAt:    string;
+}
+
+export async function submitSignatureCigar(payload: SignatureCigarPayload): Promise<SignatureCigarRecord> {
+  const res = await fetch("/api/signature-cigars", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body:    JSON.stringify({ ...payload, status: "submitted" }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Submission failed");
+  }
+  return res.json();
+}
+
+export async function saveDraftSignatureCigar(payload: SignatureCigarPayload): Promise<SignatureCigarRecord> {
+  const res = await fetch("/api/signature-cigars", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body:    JSON.stringify({ ...payload, status: "draft" }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Save failed");
+  }
+  return res.json();
+}
+
+export async function fetchMySignatureCigars(): Promise<SignatureCigarRecord[]> {
+  const res = await fetch("/api/signature-cigars", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch signature cigars");
+  return res.json();
+}
+
+export async function fetchAllSignatureCigars(): Promise<SignatureCigarRecord[]> {
+  const res = await fetch("/api/signature-cigars/all", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch signature cigars");
+  return res.json();
+}
+
+export async function adminUpdateSignatureCigar(id: string, update: {
+  status?:          string | null;
+  manufacturerId?:  string | null;
+  adminNotes?:      string | null;
+  rejectedReason?:  string | null;
+  productionStage?: string | null;
+}): Promise<SignatureCigarRecord> {
+  const res = await fetch(`/api/signature-cigars/${id}/admin`, {
+    method:  "PATCH",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body:    JSON.stringify(update),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Update failed");
+  }
+  return res.json();
+}
+
+export async function fetchManufacturers(): Promise<Manufacturer[]> {
+  const res = await fetch("/api/manufacturers", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch manufacturers");
+  return res.json();
+}
+
 // ── Stripe Checkout ───────────────────────────────────────────────────────────
 
 export interface CheckoutItem {

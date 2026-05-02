@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, TrendingUp, Package, Sparkles, Zap,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
-  Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy,
+  Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown,
 } from "lucide-react";
 import { LiveOrders }                from "@/components/Dashboard/LiveOrders";
 import { BrandsTab }               from "@/components/Dashboard/BrandsTab";
@@ -13,6 +13,7 @@ import { InventoryIntelligenceTab } from "@/components/Dashboard/InventoryIntell
 import { DemandProofTab }           from "@/components/Dashboard/DemandProofTab";
 import { VerifyOrdersTab }          from "@/components/Dashboard/VerifyOrdersTab";
 import { LeaderboardTab }           from "@/components/Dashboard/LeaderboardTab";
+import { SignatureRequestsTab }     from "@/components/Dashboard/SignatureRequestsTab";
 import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
   type InventoryItem, type AnalyticsSummary,
@@ -25,7 +26,7 @@ import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
-type DashTab = "overview" | "products" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "analytics";
+type DashTab = "overview" | "products" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "analytics";
 
 const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
   { id: "overview",     label: "Overview",              icon: <BarChart3 size={12} />    },
@@ -37,6 +38,7 @@ const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
   { id: "demand",       label: "Demand Proof",          icon: <DollarSign size={12} />   },
   { id: "verify",       label: "Verify Orders",         icon: <ShieldCheck size={12} />  },
   { id: "leaderboard",  label: "Leaderboard",           icon: <Trophy size={12} />       },
+  { id: "signatures",   label: "Signature Requests",    icon: <Crown size={12} />        },
   { id: "analytics",    label: "Analytics",             icon: <Tag size={12} />          },
 ];
 
@@ -438,6 +440,15 @@ export default function Dashboard() {
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.25 }}>
                     <LeaderboardTab />
+                  </motion.div>
+                )}
+
+                {/* ── Signature Requests tab ────────────────────────────────── */}
+                {activeTab === "signatures" && (
+                  <motion.div key="signatures"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+                    <SignatureRequestsTab />
                   </motion.div>
                 )}
 

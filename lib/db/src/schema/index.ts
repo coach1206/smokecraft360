@@ -14,3 +14,5 @@ export * from "./demandEvents";
 export * from "./missingDemand";
 export * from "./userProgression";
 export * from "./userHumidor";
+export * from "./manufacturers";
+export * from "./signatureRequests";

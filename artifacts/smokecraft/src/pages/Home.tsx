@@ -12,8 +12,10 @@ import { CigarBurnLoader }   from "@/components/CigarBurnLoader";
 import { AmbientBackground } from "@/components/AmbientBackground";
 import { ProfileBadge }      from "@/components/Profile/ProfileBadge";
 import { EliteUnlockAnimation } from "@/components/Profile/EliteUnlockAnimation";
-import { VaultModal }        from "@/components/Vault/VaultModal";
-import { BandCreatorModal }  from "@/components/Band/BandCreatorModal";
+import { VaultModal }               from "@/components/Vault/VaultModal";
+import { BandCreatorModal }         from "@/components/Band/BandCreatorModal";
+import { SignatureCigarModal }      from "@/components/SignatureCigar/SignatureCigarModal";
+import { useProgression }           from "@/hooks/useProgression";
 import { OfflineBanner }     from "@/components/PWA/OfflineBanner";
 import { InstallBanner }     from "@/components/PWA/InstallBanner";
 import { fetchRecommendations, createDemandRequest, captureDemandEvent, trackEvent, trackPreferences, persistExperience, type RecommendResponse, type ProductResult, type OrderType } from "@/services/api";
@@ -21,7 +23,7 @@ import { useUser }           from "@/hooks/useUser";
 import { useOnlineStatus }   from "@/hooks/useOnlineStatus";
 import { useVenue }          from "@/contexts/VenueContext";
 import { usePresentation }  from "@/contexts/PresentationContext";
-import { AlertCircle, RotateCcw, Bookmark, BookmarkCheck, Flame, Zap, ShoppingBag, MonitorPlay, Bell, CheckCircle2 } from "lucide-react";
+import { AlertCircle, RotateCcw, Bookmark, BookmarkCheck, Flame, Zap, ShoppingBag, MonitorPlay, Bell, CheckCircle2, Crown } from "lucide-react";
 import { OrderModal }        from "@/components/Order/OrderModal";
 import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
 import type { SavedBlend }   from "@/services/storage";
@@ -42,6 +44,7 @@ export default function Home() {
   const [results, setResults]                 = useState<RecommendResponse | null>(null);
   const [vaultOpen, setVaultOpen]             = useState(false);
   const [bandOpen, setBandOpen]               = useState(false);
+  const [signatureOpen, setSignatureOpen]     = useState(false);
   const [experienceSaved, setExperienceSaved] = useState(false);
   const [isDemoMode, setIsDemoMode]           = useState(false);
   const [orderModalOpen, setOrderModalOpen]   = useState(false);
@@ -60,6 +63,8 @@ export default function Home() {
     handleSaveBlend, handleRemoveBlend,
     updateName,
   } = useUser();
+
+  const { isMaestro } = useProgression();
 
   const isOnline = useOnlineStatus();
   const venue    = useVenue();
@@ -322,6 +327,11 @@ export default function Home() {
         onClose={() => setBandOpen(false)}
         onSave={(blend: Omit<SavedBlend, "id" | "createdAt">) => handleSaveBlend(blend)}
       />
+      <SignatureCigarModal
+        isOpen={signatureOpen}
+        isMaestro={isMaestro}
+        onClose={() => setSignatureOpen(false)}
+      />
 
       <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-6 py-10 relative z-10">
 
@@ -451,6 +461,42 @@ export default function Home() {
                   </motion.button>
                 )}
               </div>
+
+              {/* Maestro del Fuego — Signature Cigar CTA */}
+              {isMaestro && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15, duration: 0.5 }}
+                  className="rounded-2xl p-4"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(212,175,55,0.08), rgba(180,130,30,0.04))",
+                    border: "1px solid rgba(212,175,55,0.25)",
+                    boxShadow: "0 0 30px rgba(212,175,55,0.06)",
+                  }}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Crown size={11} style={{ color: "rgba(212,175,55,0.7)" }} />
+                    <span className="text-[8px] uppercase tracking-[0.25em]" style={{ color: "rgba(212,175,55,0.55)" }}>
+                      Maestro del Fuego · Exclusive
+                    </span>
+                  </div>
+                  <p className="font-serif text-sm mb-3" style={{ color: "rgba(210,190,155,0.75)", fontWeight: 300 }}>
+                    Design your signature cigar and submit for manufacturer fulfillment.
+                  </p>
+                  <motion.button
+                    onClick={() => setSignatureOpen(true)}
+                    className="w-full py-2.5 text-xs uppercase tracking-[0.2em] rounded-lg flex items-center justify-center gap-2"
+                    style={{
+                      background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
+                      color: "hsl(22 18% 6%)",
+                    }}
+                    whileHover={{ scale: 1.01, boxShadow: "0 0 24px rgba(212,175,55,0.2)" }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Flame size={12} />Create Your Signature Cigar
+                  </motion.button>
+                </motion.div>
+              )}
 
               {/* Partner dashboard link */}
               <div className="text-center pb-4">

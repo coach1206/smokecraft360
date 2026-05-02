@@ -1,0 +1,125 @@
+Build a Level Requirement and XP Progression System for SmokeCraft 360.
+
+GOAL:
+Define clear, structured rules for how many items users must purchase and interact with to level up.
+
+--------------------------------------------------
+1. CORE METRICS (TRACK THESE)
+
+For each user track:
+
+- totalVerifiedOrders
+- totalCigarsSmoked
+- totalDrinksTried
+- totalFullExperiences (cigar + drink + food)
+- uniqueProductsTried
+- XP
+
+--------------------------------------------------
+2. XP SYSTEM (VERIFIED ONLY)
+
+ONLY award XP for verified orders.
+
+XP rules:
+
+- cigar purchase → +10 XP
+- drink pairing → +8 XP
+- food add-on → +5 XP
+- full experience (cigar + drink + food) → +25 XP total
+- trying new product → +5 bonus XP
+
+--------------------------------------------------
+3. LEVEL TIERS (HARD REQUIREMENTS)
+
+Define exact thresholds:
+
+LEVEL 1 — Explorer
+- 0–5 verified orders
+- XP: 0–100
+
+LEVEL 2 — Enthusiast
+- 5–15 verified orders
+- at least 3 different cigars tried
+- XP: 100–300
+
+LEVEL 3 — Aficionado
+- 15–30 verified orders
+- at least 6 different cigars
+- at least 3 drink pairings
+- XP: 300–700
+
+LEVEL 4 — Connoisseur
+- 30–60 verified orders
+- at least 10 unique cigars
+- at least 5 full experiences
+- XP: 700–1500
+
+LEVEL 5 — Maestro del Fuego (TOP)
+
+REQUIREMENTS:
+- 60+ verified orders
+- at least 15 unique cigars
+- at least 10 full experiences
+- at least 3 blends created
+- XP: 1500+
+
+--------------------------------------------------
+4. PROGRESSION RULE (IMPORTANT)
+
+User must meet BOTH:
+
+- XP threshold
+- activity requirements
+
+If XP is high but requirements not met:
+→ DO NOT level up
+
+--------------------------------------------------
+5. PROGRESS DISPLAY (UI)
+
+Show:
+
+- current level
+- next level name
+- XP progress bar
+- checklist:
+
+Example:
+
+"To reach Connoisseur you need:"
+✔ 30 orders
+✔ 10 cigars tried
+✔ 5 full experiences
+
+--------------------------------------------------
+6. COMBO INCENTIVE
+
+Encourage behavior:
+
+- show message:
+"Full experience earns maximum XP"
+
+--------------------------------------------------
+7. LOCKED STATUS
+
+Display:
+
+"Level progression is based on verified lounge purchases only"
+
+--------------------------------------------------
+8. LEADERBOARD FILTERING
+
+Rank users by:
+
+- level first
+- XP second
+
+--------------------------------------------------
+GOAL
+
+Create a system where:
+
+- users clearly understand how to level up
+- progression requires real purchases
+- variety and exploration are rewarded
+- top status is difficult and respected

@@ -31,6 +31,8 @@ import demandInsightsRouter     from "./routes/demandInsights";
 import orderVerificationRouter  from "./routes/orderVerification";
 import progressionRouter        from "./routes/progression";
 import venueIntelligenceRouter  from "./routes/venueIntelligence";
+import signatureCigarsRouter    from "./routes/signatureCigars";
+import manufacturersRouter      from "./routes/manufacturers";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -122,6 +124,8 @@ app.use("/api/demand",                      demandInsightsRouter);
 app.use("/api/orders",                      orderVerificationRouter);
 app.use("/api/progression",                 progressionRouter);
 app.use("/api/venues",                      venueIntelligenceRouter);
+app.use("/api/signature-cigars",            signatureCigarsRouter);
+app.use("/api/manufacturers",               manufacturersRouter);
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────
 app.use((_req: Request, res: Response) => {
