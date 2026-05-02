@@ -1,23 +1,29 @@
 /**
- * ProgressTab — user-facing My Progress dashboard.
+ * ProgressTab — user-facing My Progress + Loyalty Points + Rewards dashboard.
  *
  * Sections:
- *  1. Level card — tier, XP bar, next-tier requirements
- *  2. Stats grid — orders, cigars, drinks, food, blends, unique products
- *  3. Achievement badges — milestones computed from progression data
- *  4. Humidor preview — last 6 verified purchases
- *  5. XP Breakdown guide — how points are earned
+ *  1. Points balance card — spendable loyalty points
+ *  2. Level card — tier, XP bar, next-tier requirements
+ *  3. Available rewards — redeem with one click
+ *  4. Stats grid — orders, cigars, drinks, food, blends, unique products
+ *  5. Achievement badges — milestones computed from progression data
+ *  6. Humidor preview — last 6 verified purchases
+ *  7. Earn guide — XP + points schedule
  */
 
 import { useState, useEffect, useCallback }  from "react";
 import { motion, AnimatePresence }            from "framer-motion";
+import { toast }                              from "sonner";
 import {
   Crown, Flame, RefreshCw, Lock, CheckCircle2,
   Cigarette, GlassWater, UtensilsCrossed, Star,
-  Palette, Trophy, Target, Zap, Award,
+  Palette, Trophy, Target, Zap, Award, Gift, CheckCircle, Clock,
 } from "lucide-react";
-import { fetchProgression, type UserProgressionData } from "@/services/api";
-import { LEVEL_TIERS, levelProgress, nextTier }       from "@/lib/levels";
+import {
+  fetchProgression, fetchLoyalty, redeemReward,
+  type UserProgressionData, type LoyaltyData, type RewardItem,
+} from "@/services/api";
+import { LEVEL_TIERS, levelProgress, nextTier } from "@/lib/levels";
 
 const GOLD     = "rgba(212,175,55,1)";
 const GOLD_DIM = "rgba(212,175,55,0.55)";
@@ -97,71 +103,70 @@ const ACHIEVEMENTS: Achievement[] = [
     icon: <Star size={14} />,
     unlocked: (p) => p.uniqueProductsTried >= 25,
   },
-  // Blends
+  // Blend
   {
-    id: "first_blend", label: "Blend Apprentice", category: "blend",
-    desc: "Create your first custom blend",
+    id: "first_blend", label: "Blend Initiate", category: "blend",
+    desc: "Create your first signature cigar blend",
     icon: <Palette size={14} />,
-    unlocked: (p) => p.blendsCreated >= 1,
+    unlocked: (p) => (p.blendsCreated ?? 0) >= 1,
   },
   {
-    id: "five_blends", label: "Blend Master", category: "blend",
-    desc: "5 unique blends created",
+    id: "five_blends", label: "Master Blender", category: "blend",
+    desc: "5 signature blends crafted",
     icon: <Palette size={14} />,
-    unlocked: (p) => p.blendsCreated >= 5,
+    unlocked: (p) => (p.blendsCreated ?? 0) >= 5,
   },
   // XP
   {
-    id: "xp_100", label: "XP Warrior", category: "xp",
-    desc: "Earn 100 XP from verified orders",
+    id: "xp_100", label: "Rising Smoke", category: "xp",
+    desc: "Earn 100 XP",
     icon: <Zap size={14} />,
     unlocked: (p) => p.xp >= 100,
   },
   {
-    id: "xp_500", label: "XP Champion", category: "xp",
-    desc: "Earn 500 XP from verified orders",
+    id: "xp_350", label: "Smoke Signals", category: "xp",
+    desc: "Earn 350 XP",
     icon: <Zap size={14} />,
-    unlocked: (p) => p.xp >= 500,
+    unlocked: (p) => p.xp >= 350,
+  },
+  {
+    id: "xp_700", label: "Grand Reserve", category: "xp",
+    desc: "Earn 700 XP — Maestro territory",
+    icon: <Zap size={14} />,
+    unlocked: (p) => p.xp >= 700,
   },
   // Elite
   {
-    id: "elite_status", label: "Elite Status", category: "elite",
-    desc: "Reach Connoisseur tier",
-    icon: <Crown size={14} />,
-    unlocked: (p) => p.level.index >= 3,
-  },
-  {
     id: "maestro", label: "Maestro del Fuego", category: "elite",
-    desc: "Reach the highest tier — unlock Signature Cigar Creator",
+    desc: "Reach the highest tier — Signature Cigar Creator unlocked",
     icon: <Crown size={14} />,
     unlocked: (p) => p.level.index >= 4,
   },
 ];
 
-const CATEGORY_LABELS: Record<Achievement["category"], string> = {
-  orders:     "Experience",
+const CATEGORY_LABELS: Record<string, string> = {
+  orders:     "Orders",
   collection: "Collection",
-  blend:      "Creation",
+  blend:      "Blends",
   xp:         "XP",
   elite:      "Elite",
 };
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
-function StatCard({ label, value, icon, color }: {
-  label: string; value: number; icon: React.ReactNode; color: string;
-}) {
+function StatCard({ label, value, icon, color }: { label: string; value: number; icon: React.ReactNode; color: string }) {
   return (
-    <motion.div
-      className="rounded-xl p-4 flex flex-col gap-2"
+    <motion.div className="rounded-xl p-4"
       style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}
-      whileHover={{ borderColor: `${color}30` }}
+      initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}
     >
-      <div className="flex items-center gap-2" style={{ color }}>
+      <div className="flex items-center gap-2 mb-1.5" style={{ color }}>
         {icon}
-        <span className="text-[8px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>{label}</span>
+        <span className="text-[7px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>{label}</span>
       </div>
-      <span className="font-serif text-2xl" style={{ color, fontWeight: 300 }}>{value.toLocaleString()}</span>
+      <p className="font-serif text-2xl" style={{ color, fontWeight: 300 }}>
+        {value.toLocaleString()}
+      </p>
     </motion.div>
   );
 }
@@ -169,30 +174,26 @@ function StatCard({ label, value, icon, color }: {
 function BadgeCard({ badge, unlocked }: { badge: Achievement; unlocked: boolean }) {
   return (
     <motion.div
-      className="rounded-xl p-3 flex items-center gap-3"
+      className="flex items-center gap-3 p-3 rounded-xl transition-all duration-300"
       style={{
-        background: unlocked ? "rgba(212,175,55,0.04)" : "rgba(255,255,255,0.02)",
-        border: unlocked ? "1px solid rgba(212,175,55,0.2)" : "1px solid rgba(255,255,255,0.06)",
-        opacity: unlocked ? 1 : 0.5,
+        background: unlocked ? "rgba(212,175,55,0.05)" : "rgba(255,255,255,0.02)",
+        border:     unlocked ? "1px solid rgba(212,175,55,0.2)" : "1px solid rgba(255,255,255,0.05)",
+        opacity:    unlocked ? 1 : 0.45,
       }}
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: unlocked ? 1 : 0.5, scale: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div
-        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+      initial={{ opacity: 0, y: 4 }} animate={{ opacity: unlocked ? 1 : 0.45, y: 0 }}>
+      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
         style={{
-          background: unlocked ? "rgba(212,175,55,0.15)" : "rgba(255,255,255,0.05)",
-          color: unlocked ? GOLD : MUTED,
-        }}
-      >
+          background: unlocked ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.04)",
+          border:     unlocked ? "1px solid rgba(212,175,55,0.3)"  : "1px solid rgba(255,255,255,0.08)",
+          color:      unlocked ? GOLD_DIM : "rgba(180,155,100,0.25)",
+        }}>
         {unlocked ? badge.icon : <Lock size={12} />}
       </div>
       <div className="min-w-0">
-        <p className="text-xs font-serif truncate" style={{ color: unlocked ? "rgba(220,200,165,0.9)" : MUTED }}>
+        <p className="text-xs font-serif leading-tight" style={{ color: unlocked ? "rgba(220,200,165,0.9)" : MUTED }}>
           {badge.label}
         </p>
-        <p className="text-[8px] mt-0.5 leading-relaxed" style={{ color: "rgba(180,155,100,0.35)" }}>
+        <p className="text-[7px] mt-0.5 leading-snug truncate" style={{ color: "rgba(180,155,100,0.35)" }}>
           {badge.desc}
         </p>
       </div>
@@ -235,22 +236,150 @@ function XpBar({ current, next, pct }: { current: number; next: number | null; p
   );
 }
 
+// ── Reward card (user-facing) ──────────────────────────────────────────────────
+
+const TYPE_LABELS: Record<string, string> = {
+  discount:   "Discount",
+  free_item:  "Free Item",
+  experience: "Experience",
+};
+
+const LEVEL_LABELS = ["Explorer", "Enthusiast", "Aficionado", "Connoisseur", "Maestro del Fuego"];
+
+function RewardCard({
+  reward, balance, levelIndex, onRedeem, redeeming,
+}: {
+  reward:    RewardItem;
+  balance:   number;
+  levelIndex: number;
+  onRedeem:  (id: string) => void;
+  redeeming: string | null;
+}) {
+  const canAfford  = balance >= reward.pointsCost;
+  const levelMet   = levelIndex >= reward.levelRequired;
+  const canRedeem  = canAfford && levelMet;
+  const isRedeeming = redeeming === reward.id;
+
+  return (
+    <motion.div
+      className="rounded-xl p-4 flex items-center gap-4"
+      style={{
+        background: canRedeem ? "rgba(212,175,55,0.04)" : "rgba(255,255,255,0.02)",
+        border: canRedeem ? "1px solid rgba(212,175,55,0.2)" : "1px solid rgba(255,255,255,0.06)",
+        opacity: levelMet ? 1 : 0.5,
+      }}
+      initial={{ opacity: 0, y: 6 }} animate={{ opacity: levelMet ? 1 : 0.5, y: 0 }}>
+
+      <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+        style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)" }}>
+        <Gift size={14} style={{ color: GOLD_DIM }} />
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <p className="font-serif text-sm leading-tight" style={{ color: "rgba(220,200,165,0.88)" }}>
+          {reward.name}
+        </p>
+        {reward.description && (
+          <p className="text-[8px] mt-0.5 truncate" style={{ color: MUTED }}>{reward.description}</p>
+        )}
+        <div className="flex items-center gap-2 mt-1 flex-wrap">
+          <span className="text-[7px] uppercase tracking-wider px-1.5 py-0.5 rounded-full"
+            style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.18)", color: GOLD_DIM }}>
+            {TYPE_LABELS[reward.type] ?? reward.type}
+          </span>
+          {reward.levelRequired > 0 && (
+            <span className="text-[7px]" style={{ color: MUTED }}>
+              Requires: {LEVEL_LABELS[reward.levelRequired]}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-col items-end gap-2 flex-shrink-0">
+        <div className="text-right">
+          <p className="font-serif text-base" style={{ color: canAfford ? GOLD_DIM : "rgba(180,155,100,0.35)", fontWeight: 300 }}>
+            {reward.pointsCost}
+          </p>
+          <p className="text-[7px] uppercase tracking-wider" style={{ color: MUTED }}>pts</p>
+        </div>
+
+        {!levelMet ? (
+          <span className="flex items-center gap-1 text-[7px] px-2 py-1 rounded-lg"
+            style={{ background: "rgba(255,255,255,0.03)", color: MUTED, border: "1px solid rgba(255,255,255,0.07)" }}>
+            <Lock size={9} /> Locked
+          </span>
+        ) : (
+          <motion.button
+            onClick={() => onRedeem(reward.id)}
+            disabled={!canAfford || isRedeeming}
+            className="px-3 py-1.5 rounded-lg text-[8px] uppercase tracking-[0.12em] transition-colors"
+            style={canAfford
+              ? { background: "rgba(212,175,55,0.14)", border: "1px solid rgba(212,175,55,0.3)", color: GOLD_DIM }
+              : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: MUTED, cursor: "not-allowed" }
+            }
+            whileHover={canAfford ? { scale: 1.03 } : {}}
+            whileTap={canAfford ? { scale: 0.97 } : {}}>
+            {isRedeeming ? "…" : canAfford ? "Redeem" : "Need more pts"}
+          </motion.button>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export function ProgressTab() {
-  const [data,    setData]    = useState<UserProgressionData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [catFilter, setCatFilter] = useState<Achievement["category"] | "all">("all");
+  const [data,       setData]       = useState<UserProgressionData | null>(null);
+  const [loyalty,    setLoyalty]    = useState<LoyaltyData | null>(null);
+  const [loading,    setLoading]    = useState(true);
+  const [redeeming,  setRedeeming]  = useState<string | null>(null);
+  const [catFilter,  setCatFilter]  = useState<Achievement["category"] | "all">("all");
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      setData(await fetchProgression());
+      const [prog, loy] = await Promise.allSettled([fetchProgression(), fetchLoyalty()]);
+      if (prog.status === "fulfilled") setData(prog.value);
+      if (loy.status  === "fulfilled") setLoyalty(loy.value);
     } catch { /* silent */ }
     finally { setLoading(false); }
   }, []);
 
   useEffect(() => { void load(); }, [load]);
+
+  const handleRedeem = async (rewardId: string) => {
+    if (!loyalty) return;
+    setRedeeming(rewardId);
+    try {
+      const res = await redeemReward(rewardId);
+      setLoyalty((prev) => prev
+        ? {
+            ...prev,
+            pointsBalance:     res.newBalance,
+            pointsRedeemed:    prev.pointsRedeemed + (prev.pointsBalance - res.newBalance),
+            recentRedemptions: [res.redemption, ...prev.recentRedemptions.slice(0, 9)],
+          }
+        : prev
+      );
+      toast("Reward claimed!", {
+        description: "Show this to a staff member — it's pending fulfilment.",
+        duration: 5000,
+        style: {
+          background: "hsl(22 18% 8%)",
+          border:     "1px solid rgba(212,175,55,0.35)",
+          color:      "rgba(220,200,165,0.95)",
+        },
+      });
+    } catch (err) {
+      toast("Could not redeem", {
+        description: err instanceof Error ? err.message : "Please try again",
+        duration: 4000,
+      });
+    } finally {
+      setRedeeming(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -283,6 +412,14 @@ export function ProgressTab() {
     : allAchievements.filter((a) => a.category === catFilter);
   const earnedCount     = allAchievements.filter((a) => a.earned).length;
 
+  const balance    = loyalty?.pointsBalance ?? 0;
+  const levelIndex = data.level.index;
+
+  // Rewards: split into affordable (highlight) and locked-by-points
+  const available  = loyalty?.available ?? [];
+  const nextReward = available.find((r) => r.pointsCost > balance);
+  const ptsToNext  = nextReward ? nextReward.pointsCost - balance : null;
+
   return (
     <div className="space-y-8">
 
@@ -293,7 +430,7 @@ export function ProgressTab() {
             My Progress
           </h2>
           <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: MUTED }}>
-            XP · Achievements · Humidor
+            Points · XP · Rewards · Achievements
           </p>
         </div>
         <motion.button onClick={load}
@@ -304,7 +441,80 @@ export function ProgressTab() {
         </motion.button>
       </div>
 
-      {/* Level card */}
+      {/* ── Points Balance Card ───────────────────────────────────────────────── */}
+      {loyalty && (
+        <motion.div className="rounded-2xl p-6"
+          style={{
+            background: "linear-gradient(135deg, rgba(120,80,5,0.14), rgba(212,175,55,0.04))",
+            border: "1px solid rgba(212,175,55,0.22)",
+            boxShadow: "0 0 32px rgba(212,175,55,0.04)",
+          }}
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+
+          <div className="flex items-start justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <Gift size={20} style={{ color: GOLD_DIM }} />
+              <div>
+                <h3 className="font-serif text-lg" style={{ color: "rgba(220,200,165,0.88)", fontWeight: 300 }}>
+                  Loyalty Points
+                </h3>
+                <p className="text-[8px] uppercase tracking-[0.2em] mt-0.5" style={{ color: MUTED }}>
+                  Earned from verified purchases
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="font-serif text-3xl" style={{ color: GOLD, fontWeight: 300 }}>
+                {balance.toLocaleString()}
+              </p>
+              <p className="text-[7px] uppercase tracking-[0.2em] mt-0.5" style={{ color: MUTED }}>available</p>
+            </div>
+          </div>
+
+          {/* Mini breakdown */}
+          <div className="grid grid-cols-3 gap-3 mb-5">
+            {[
+              { label: "Total Earned",  value: loyalty.totalPoints },
+              { label: "Redeemed",      value: loyalty.pointsRedeemed },
+              { label: "Balance",       value: loyalty.pointsBalance },
+            ].map(({ label, value }) => (
+              <div key={label} className="rounded-lg p-3 text-center"
+                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <p className="font-serif text-base" style={{ color: GOLD_DIM, fontWeight: 300 }}>{value.toLocaleString()}</p>
+                <p className="text-[7px] uppercase tracking-wider mt-0.5" style={{ color: MUTED }}>{label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Progress to next reward */}
+          {ptsToNext !== null && nextReward && (
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-[8px]" style={{ color: MUTED }}>
+                <span>Progress to <span style={{ color: "rgba(210,190,155,0.65)" }}>{nextReward.name}</span></span>
+                <span>{balance} / {nextReward.pointsCost} pts</span>
+              </div>
+              <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
+                <motion.div className="h-full rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min(100, (balance / nextReward.pointsCost) * 100)}%` }}
+                  transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+                  style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.8), rgba(212,175,55,0.9))" }} />
+              </div>
+              <p className="text-[7px]" style={{ color: "rgba(180,155,100,0.3)" }}>
+                {ptsToNext} more pts to unlock this reward
+              </p>
+            </div>
+          )}
+
+          {ptsToNext === null && available.length > 0 && (
+            <p className="text-[8px]" style={{ color: "rgba(100,200,120,0.55)" }}>
+              ✓ You can afford {available.filter((r) => r.pointsCost <= balance).length} reward{available.filter((r) => r.pointsCost <= balance).length !== 1 ? "s" : ""} — scroll down to redeem
+            </p>
+          )}
+        </motion.div>
+      )}
+
+      {/* ── Level Card ───────────────────────────────────────────────────────── */}
       <motion.div
         className="rounded-2xl p-6"
         style={{
@@ -314,8 +524,8 @@ export function ProgressTab() {
           border: `1px solid ${currentTier.borderColor}`,
           boxShadow: isElite ? "0 0 40px rgba(212,175,55,0.06)" : "none",
         }}
-        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-      >
+        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.08 }}>
+
         <div className="flex items-start justify-between mb-5">
           <div className="flex items-center gap-3">
             {isElite ? (
@@ -332,18 +542,12 @@ export function ProgressTab() {
               </p>
             </div>
           </div>
-
-          {/* Tier badge */}
           <div className="flex flex-col items-end gap-1">
             <span className="text-[7px] uppercase tracking-[0.2em]" style={{ color: MUTED }}>Tier</span>
             <div className="flex gap-1">
               {LEVEL_TIERS.map((t) => (
-                <div key={t.index}
-                  className="w-1.5 h-1.5 rounded-full"
-                  style={{
-                    background: t.index <= data.level.index ? t.color : "rgba(255,255,255,0.1)",
-                  }}
-                />
+                <div key={t.index} className="w-1.5 h-1.5 rounded-full"
+                  style={{ background: t.index <= data.level.index ? t.color : "rgba(255,255,255,0.1)" }} />
               ))}
             </div>
           </div>
@@ -363,7 +567,65 @@ export function ProgressTab() {
         )}
       </motion.div>
 
-      {/* Stats grid */}
+      {/* ── Available Rewards ─────────────────────────────────────────────────── */}
+      {available.length > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[8px] uppercase tracking-[0.22em]" style={{ color: MUTED }}>Available Rewards</p>
+            <p className="text-[7px]" style={{ color: MUTED }}>{balance.toLocaleString()} pts balance</p>
+          </div>
+          <div className="space-y-2">
+            {available.map((r) => (
+              <RewardCard key={r.id} reward={r} balance={balance} levelIndex={levelIndex}
+                onRedeem={handleRedeem} redeeming={redeeming} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {loyalty && available.length === 0 && (
+        <div className="rounded-xl p-6 text-center"
+          style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+          <Gift size={24} className="mx-auto mb-2" style={{ color: "rgba(180,155,100,0.2)" }} />
+          <p className="text-xs" style={{ color: MUTED }}>No rewards available yet — keep earning points</p>
+        </div>
+      )}
+
+      {/* ── Recent Redemptions ───────────────────────────────────────────────── */}
+      {loyalty && loyalty.recentRedemptions.length > 0 && (
+        <div>
+          <p className="text-[8px] uppercase tracking-[0.22em] mb-3" style={{ color: MUTED }}>Recent Redemptions</p>
+          <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
+            {loyalty.recentRedemptions.map((r, i) => (
+              <div key={r.id} className="flex items-center gap-3 px-4 py-3"
+                style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.04)" : "none",
+                  background: i % 2 === 0 ? "rgba(255,255,255,0.015)" : "transparent" }}>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-serif" style={{ color: "rgba(210,190,155,0.8)" }}>{r.rewardName}</p>
+                  <p className="text-[7px] mt-0.5" style={{ color: MUTED }}>
+                    {r.pointsSpent} pts · {new Date(r.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {r.status === "fulfilled"
+                    ? <CheckCircle size={11} style={{ color: "rgba(100,200,120,0.65)" }} />
+                    : r.status === "cancelled"
+                      ? <span style={{ color: "rgba(200,80,80,0.5)", fontSize: "10px" }}>✕</span>
+                      : <Clock size={11} style={{ color: GOLD_DIM }} />
+                  }
+                  <span className="text-[7px] uppercase tracking-wider" style={{
+                    color: r.status === "fulfilled" ? "rgba(100,200,120,0.65)"
+                      : r.status === "cancelled"    ? "rgba(200,80,80,0.5)"
+                      : GOLD_DIM,
+                  }}>{r.status}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Stats Grid ───────────────────────────────────────────────────────── */}
       <div>
         <p className="text-[8px] uppercase tracking-[0.22em] mb-3" style={{ color: MUTED }}>Lifetime Stats</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -376,18 +638,15 @@ export function ProgressTab() {
         </div>
       </div>
 
-      {/* Achievements */}
+      {/* ── Achievements ─────────────────────────────────────────────────────── */}
       <div>
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <div>
-            <p className="text-[8px] uppercase tracking-[0.22em]" style={{ color: MUTED }}>
-              Achievements
-            </p>
+            <p className="text-[8px] uppercase tracking-[0.22em]" style={{ color: MUTED }}>Achievements</p>
             <p className="text-[7px] mt-0.5" style={{ color: "rgba(180,155,100,0.3)" }}>
               {earnedCount} / {ACHIEVEMENTS.length} unlocked
             </p>
           </div>
-          {/* Category filter pills */}
           <div className="flex gap-1 flex-wrap">
             {(["all", "orders", "collection", "blend", "xp", "elite"] as const).map((cat) => (
               <button key={cat}
@@ -396,29 +655,25 @@ export function ProgressTab() {
                 style={catFilter === cat
                   ? { background: "rgba(212,175,55,0.14)", border: "1px solid rgba(212,175,55,0.3)", color: GOLD_DIM }
                   : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: MUTED }
-                }
-              >
+                }>
                 {cat === "all" ? "All" : CATEGORY_LABELS[cat]}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Progress bar for earned */}
         <div className="h-0.5 rounded-full mb-4 overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
           <motion.div className="h-full rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${(earnedCount / ACHIEVEMENTS.length) * 100}%` }}
             transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
-            style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.8), rgba(212,175,55,0.9))" }}
-          />
+            style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.8), rgba(212,175,55,0.9))" }} />
         </div>
 
         <AnimatePresence mode="wait">
           <motion.div key={catFilter} className="grid grid-cols-1 sm:grid-cols-2 gap-2"
             initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}>
-            {/* Earned first */}
             {[...visibleBadges].sort((a, b) => (b.earned ? 1 : 0) - (a.earned ? 1 : 0)).map((badge) => (
               <BadgeCard key={badge.id} badge={badge} unlocked={badge.earned} />
             ))}
@@ -426,7 +681,7 @@ export function ProgressTab() {
         </AnimatePresence>
       </div>
 
-      {/* Humidor */}
+      {/* ── Humidor ──────────────────────────────────────────────────────────── */}
       {data.humidor.length > 0 && (
         <div>
           <p className="text-[8px] uppercase tracking-[0.22em] mb-3" style={{ color: MUTED }}>
@@ -434,21 +689,15 @@ export function ProgressTab() {
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {data.humidor.slice(0, 6).map((item, i) => (
-              <motion.div key={item.productId}
-                className="rounded-xl p-3"
+              <motion.div key={item.productId} className="rounded-xl p-3"
                 style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}
-                initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-              >
+                initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                 <p className="text-xs font-serif leading-tight" style={{ color: "rgba(210,190,155,0.82)" }}>
                   {item.productName ?? "Unknown"}
                 </p>
                 <div className="flex items-center justify-between mt-1.5">
-                  <span className="text-[7px] uppercase tracking-wider" style={{ color: MUTED }}>
-                    {item.category}
-                  </span>
-                  <span className="text-[7px] tabular-nums" style={{ color: GOLD_DIM }}>
-                    ×{item.quantityPurchased}
-                  </span>
+                  <span className="text-[7px] uppercase tracking-wider" style={{ color: MUTED }}>{item.category}</span>
+                  <span className="text-[7px] tabular-nums" style={{ color: GOLD_DIM }}>×{item.quantityPurchased}</span>
                 </div>
               </motion.div>
             ))}
@@ -456,25 +705,30 @@ export function ProgressTab() {
         </div>
       )}
 
-      {/* XP Guide */}
+      {/* ── Earn Guide ───────────────────────────────────────────────────────── */}
       <div className="rounded-xl p-5" style={{ background: "rgba(212,175,55,0.02)", border: "1px solid rgba(212,175,55,0.1)" }}>
-        <p className="text-[8px] uppercase tracking-[0.2em] mb-4" style={{ color: MUTED }}>How XP is Earned</p>
-        <div className="grid grid-cols-2 gap-y-2.5 gap-x-6">
+        <p className="text-[8px] uppercase tracking-[0.2em] mb-4" style={{ color: MUTED }}>How XP & Points are Earned</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-6">
           {[
-            { label: "Cigar purchase",        xp: "+10 XP" },
-            { label: "Drink pairing",         xp: "+8 XP"  },
-            { label: "Food order",            xp: "+4 XP"  },
-            { label: "Full combo (all 3)",    xp: "+20 XP" },
-            { label: "New product first try", xp: "+5 XP"  },
-          ].map(({ label, xp }) => (
+            { label: "Cigar purchase",        xp: "+10 XP", pts: "+10 pts" },
+            { label: "Drink pairing",         xp: "+8 XP",  pts: "+8 pts"  },
+            { label: "Food order",            xp: "+4 XP",  pts: "+5 pts"  },
+            { label: "Full combo (all 3)",    xp: "+20 XP", pts: "+25 pts" },
+            { label: "New product first try", xp: "+5 XP",  pts: "—"       },
+            { label: "Welcome (first order)", xp: "—",      pts: "+50 pts" },
+          ].map(({ label, xp, pts }) => (
             <div key={label} className="flex items-center justify-between gap-2">
               <span className="text-[9px]" style={{ color: "rgba(180,155,100,0.55)" }}>{label}</span>
-              <span className="text-[9px] font-medium flex-shrink-0" style={{ color: GOLD_DIM }}>{xp}</span>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <span className="text-[8px] font-medium" style={{ color: GOLD_DIM }}>{xp}</span>
+                <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.4)" }}>·</span>
+                <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.7)" }}>{pts}</span>
+              </div>
             </div>
           ))}
         </div>
         <p className="text-[7px] mt-4 pt-3" style={{ color: "rgba(180,155,100,0.28)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-          XP is only awarded on staff-verified orders. Unverified orders do not count.
+          XP and points are only awarded on staff-verified orders. Unverified orders do not count.
         </p>
       </div>
 

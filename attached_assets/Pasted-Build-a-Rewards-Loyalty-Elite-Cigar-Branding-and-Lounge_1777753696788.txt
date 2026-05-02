@@ -1,0 +1,228 @@
+Build a Rewards, Loyalty, Elite Cigar Branding, and Lounge League Competition System for SmokeCraft 360.
+
+GOAL:
+Create a full ecosystem where users earn rewards, progress through verified purchases, unlock elite cigar creation, and lounges compete against each other based on performance and experience quality.
+
+--------------------------------------------------
+1. LOYALTY POINTS SYSTEM
+
+Track:
+
+- userPoints
+- totalPoints
+- pointsRedeemed
+
+Award ONLY for verified purchases:
+
+- cigar → +10 points
+- drink → +8 points
+- food → +5 points
+- full experience → +25 points
+
+--------------------------------------------------
+2. REWARDS SYSTEM
+
+Create rewards table:
+
+- id
+- name
+- type ("discount", "free item", "experience", "elite")
+- pointsCost
+- levelRequired
+- active
+
+Allow users to redeem points.
+
+--------------------------------------------------
+3. LEVEL-BASED PERKS
+
+Explorer:
+- welcome bonus
+
+Enthusiast:
+- small perks (discounts)
+
+Aficionado:
+- early access items
+
+Connoisseur:
+- VIP perks (priority service)
+
+Maestro del Fuego:
+- elite access + creation privileges
+
+--------------------------------------------------
+4. ELITE CIGAR CREATION (TOP TIER ONLY)
+
+Unlocked ONLY at:
+Maestro del Fuego
+
+Allow:
+
+A. BAND DESIGNER
+- template-based designs
+- colors, fonts, emblem
+- brand name
+- live preview
+
+B. CIGAR SPEC
+- strength
+- flavor direction
+- wrapper type
+
+C. CUSTOM BOX DESIGN (NEW)
+
+Allow:
+
+- box color
+- logo placement
+- label text
+- limited edition naming
+
+Save as:
+Signature Series
+
+--------------------------------------------------
+5. MANUFACTURER PIPELINE
+
+Create:
+
+signatureRequests:
+
+- id
+- userId
+- bandDesign
+- cigarSpec
+- boxDesign
+- status ("submitted", "approved", "production")
+- manufacturerId
+
+Admin can assign manufacturers.
+
+--------------------------------------------------
+6. ELITE STATUS DISPLAY
+
+Show:
+
+- "Signature Creator"
+- custom cigar preview
+- production status
+
+--------------------------------------------------
+7. LOUNGE LEAGUE SYSTEM (COMPETITION)
+
+Create:
+
+lounges table (if not existing)
+
+Create:
+
+loungeStats:
+
+- loungeId
+- totalOrders
+- totalRevenue
+- averageExperienceScore
+- totalUsers
+- repeatCustomers
+- trendingScore
+
+--------------------------------------------------
+8. LOUNGE SCORING SYSTEM
+
+Calculate:
+
+loungeScore based on:
+
+- verified orders volume
+- customer engagement
+- repeat visits
+- blend activity
+- ratings (optional)
+
+--------------------------------------------------
+9. LOUNGE LEADERBOARD
+
+Create:
+
+"Lounge League"
+
+Display:
+
+- top lounges
+- ranking
+- weekly/monthly winners
+
+--------------------------------------------------
+10. LEAGUE STYLE COMPETITION
+
+Simulate:
+
+- weekly rankings
+- monthly champions
+
+Show:
+
+"Top Lounge This Week"
+"Top Experience Venue"
+
+--------------------------------------------------
+11. USER CONTRIBUTION TO LOUNGE
+
+Each user action contributes to lounge score:
+
+- orders
+- blends
+- engagement
+
+Display:
+
+"You helped your lounge rank #2 this week"
+
+--------------------------------------------------
+12. LOUNGE BADGES
+
+Award lounges:
+
+- "Top Rated Lounge"
+- "Most Active Lounge"
+- "Best Experience"
+- "Trending Venue"
+
+--------------------------------------------------
+13. VENUE INCENTIVES
+
+Allow lounges to:
+
+- create rewards
+- run XP boosts
+- push specific products
+
+--------------------------------------------------
+14. EXPERIENCE REWARDS
+
+Add:
+
+- VIP nights
+- exclusive tastings
+- invite-only events
+
+--------------------------------------------------
+15. DASHBOARD ADDITIONS
+
+Add:
+
+"Loyalty & Rewards"
+"Signature Creations"
+"Lounge League"
+
+--------------------------------------------------
+GOAL
+
+Create a system where:
+
+- users earn rewards from real purchases
+- elite users create real cigar brands
+- lounges compete for ranking and recognition
+- engagement increases across the entire platform
+- SmokeCraft 360 becomes a competitive, rewarding, and premium ecosystem

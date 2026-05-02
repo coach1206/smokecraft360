@@ -1160,6 +1160,107 @@ export async function fetchDemandInsights(venueId?: string): Promise<DemandInsig
   return res.json();
 }
 
+// ── Loyalty & Rewards ─────────────────────────────────────────────────────────
+
+export interface RewardItem {
+  id:            string;
+  venueId:       string | null;
+  name:          string;
+  description:   string | null;
+  type:          "discount" | "free_item" | "experience";
+  pointsCost:    number;
+  levelRequired: number;
+  active:        boolean;
+  createdAt:     string;
+  updatedAt:     string;
+}
+
+export interface RedemptionItem {
+  id:          string;
+  userId:      string;
+  rewardId:    string;
+  rewardName:  string;
+  pointsSpent: number;
+  status:      "pending" | "fulfilled" | "cancelled";
+  notes:       string | null;
+  createdAt:   string;
+  updatedAt:   string;
+}
+
+export interface LoyaltyData {
+  totalPoints:        number;
+  pointsRedeemed:     number;
+  pointsBalance:      number;
+  levelIndex:         number;
+  available:          RewardItem[];
+  recentRedemptions:  RedemptionItem[];
+}
+
+export async function fetchLoyalty(): Promise<LoyaltyData> {
+  const res = await fetch("/api/loyalty", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch loyalty data");
+  return res.json();
+}
+
+export async function redeemReward(rewardId: string): Promise<{ redemption: RedemptionItem; newBalance: number }> {
+  const res = await fetch("/api/loyalty/redeem", {
+    method:  "POST",
+    headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+    body:    JSON.stringify({ rewardId }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(err.error ?? "Redemption failed");
+  }
+  return res.json();
+}
+
+export async function fetchAllRewards(): Promise<RewardItem[]> {
+  const res = await fetch("/api/rewards", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch rewards");
+  return res.json();
+}
+
+export async function createReward(data: Partial<RewardItem>): Promise<RewardItem> {
+  const res = await fetch("/api/rewards", {
+    method:  "POST",
+    headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+    body:    JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to create reward");
+  return res.json();
+}
+
+export async function updateReward(id: string, data: Partial<RewardItem>): Promise<RewardItem> {
+  const res = await fetch(`/api/rewards/${id}`, {
+    method:  "PATCH",
+    headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+    body:    JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update reward");
+  return res.json();
+}
+
+export async function toggleRewardActive(id: string, active: boolean): Promise<RewardItem> {
+  return updateReward(id, { active });
+}
+
+export async function fetchAdminRedemptions(): Promise<RedemptionItem[]> {
+  const res = await fetch("/api/loyalty/redemptions", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch redemptions");
+  return res.json();
+}
+
+export async function updateRedemptionStatus(id: string, status: string): Promise<RedemptionItem> {
+  const res = await fetch(`/api/loyalty/redemptions/${id}`, {
+    method:  "PATCH",
+    headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+    body:    JSON.stringify({ status }),
+  });
+  if (!res.ok) throw new Error("Failed to update redemption");
+  return res.json();
+}
+
 // ── Demo helpers ──────────────────────────────────────────────────────────────
 
 /** Clears all server-side demo data (orders). Best-effort — never throws. */

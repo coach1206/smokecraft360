@@ -33,6 +33,8 @@ import progressionRouter        from "./routes/progression";
 import venueIntelligenceRouter  from "./routes/venueIntelligence";
 import signatureCigarsRouter    from "./routes/signatureCigars";
 import manufacturersRouter      from "./routes/manufacturers";
+import loyaltyRouter            from "./routes/loyalty";
+import rewardsAdminRouter       from "./routes/rewardsAdmin";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -126,6 +128,8 @@ app.use("/api/progression",                 progressionRouter);
 app.use("/api/venues",                      venueIntelligenceRouter);
 app.use("/api/signature-cigars",            signatureCigarsRouter);
 app.use("/api/manufacturers",               manufacturersRouter);
+app.use("/api/loyalty",                     loyaltyRouter);
+app.use("/api/rewards",                     rewardsAdminRouter);
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────
 app.use((_req: Request, res: Response) => {

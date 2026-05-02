@@ -16,3 +16,6 @@ export * from "./userProgression";
 export * from "./userHumidor";
 export * from "./manufacturers";
 export * from "./signatureRequests";
+export * from "./userLoyaltyPoints";
+export * from "./rewards";
+export * from "./redemptions";

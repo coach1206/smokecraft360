@@ -39,7 +39,7 @@ Luxury cigar & spirits recommendation app. Dark gold theme, glassmorphism cards,
 
 ## Database Schema (`lib/db/src/schema/`)
 
-Ten tables pushed to PostgreSQL via Drizzle:
+Sixteen tables pushed to PostgreSQL via Drizzle:
 
 | File | Table | Notes |
 |---|---|---|
@@ -59,6 +59,9 @@ Ten tables pushed to PostgreSQL via Drizzle:
 | `orders.ts`           | `orders`           | Extended with: `verified`, `verifiedAt`, `verificationMethod`, `verifiedBy`, `xpAwarded` columns |
 | `userProgression.ts`  | `user_progression` | 5-tier XP progression (one row per user); xp, totalVerifiedOrders, humidor stats |
 | `userHumidor.ts`      | `user_humidor`     | Personal purchase history per user × product (verified orders only) |
+| `userLoyaltyPoints.ts` | `user_loyalty_points` | Loyalty point balance per user (totalPoints, pointsRedeemed) — separate from XP |
+| `rewards.ts`          | `rewards`          | Venue reward catalogue (discount / free_item / experience); levelRequired 0–4 |
+| `redemptions.ts`      | `redemptions`      | Redemption records: pending → fulfilled / cancelled |
 
 ---
 
@@ -192,6 +195,19 @@ Both verified-orders AND xp thresholds must be met to advance:
 - Full combo (all 3): +20 bonus
 - First time trying a product: +5 bonus per new product
 
+### Loyalty Point Awards (verified orders only, separate from XP)
+- Cigar: +10 pts · Drink: +8 pts · Food: +5 pts
+- Full combo (all 3): +25 bonus pts
+- Welcome bonus (first order ever): +50 pts
+- pointsBalance = totalPoints − pointsRedeemed
+
+### Level-Based Perks
+- Explorer (0): welcome bonus 50 pts
+- Enthusiast (1): 5% discount rewards
+- Aficionado (2): early product access rewards
+- Connoisseur (3): VIP & priority service rewards
+- Maestro del Fuego (4): elite access, events, custom cigar creation
+
 ### Backend Routes
 
 | Endpoint | Auth | Purpose |
@@ -203,12 +219,26 @@ Both verified-orders AND xp thresholds must be met to advance:
 | `GET /api/progression/leaderboard` | Required | Top 10 by XP / verified orders / 7-day trending |
 
 ### Services
-- `artifacts/api-server/src/services/xpEngine.ts` — CAS-guarded XP awarding + humidor upsert
+- `artifacts/api-server/src/services/xpEngine.ts` — CAS-guarded XP + loyalty points awarding + humidor upsert
 - Fraud prevention: only staff/manager/venue_owner/super_admin can verify; double-verify is idempotent
+
+### Loyalty & Rewards Routes
+| Endpoint | Auth | Purpose |
+|---|---|---|
+| `GET /api/loyalty` | Required | User's points balance + available rewards + recent redemptions |
+| `POST /api/loyalty/redeem` | Required | Redeem points for a reward (body: `{ rewardId }`) |
+| `GET /api/loyalty/redemptions` | staff+ | All redemptions (admin queue) |
+| `PATCH /api/loyalty/redemptions/:id` | staff+ | Mark pending → fulfilled / cancelled |
+| `GET /api/rewards` | Required | Full rewards catalogue |
+| `POST /api/rewards` | manager+ | Create a new reward |
+| `PATCH /api/rewards/:id` | manager+ | Update reward (name, cost, active, level gate) |
+| `DELETE /api/rewards/:id` | manager+ | Soft-deactivate a reward |
 
 ### Dashboard Tabs (staff-visible)
 - **Verify Orders** — list pending/verified orders, one-click verify, QR modal, XP toast
 - **Leaderboard** — Top Creators (by XP), Top Smokers (by orders), Trending (7 days)
+- **My Progress** — loyalty points balance card, available rewards + one-click redeem, recent redemptions, XP level card, achievement badges, humidor
+- **Loyalty & Rewards** (manager+) — create/edit/toggle rewards catalogue, redemption queue with fulfil/cancel controls
 
 ### Frontend
 - `artifacts/smokecraft/src/components/Dashboard/VerifyOrdersTab.tsx`
