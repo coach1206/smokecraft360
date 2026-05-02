@@ -6,6 +6,7 @@
  */
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db, analyticsEventsTable } from "@workspace/db";
+import { allowOnly } from "../middleware/sanitize";
 import type { EventType } from "@workspace/db";
 
 const router: IRouter = Router();
@@ -19,25 +20,29 @@ const VALID_CLIENT_EVENTS = new Set<EventType>([
   "sponsored_view",
 ]);
 
-router.post("/", (req: Request, res: Response) => {
-  const { eventType, productId } = req.body as { eventType?: string; productId?: string };
+router.post(
+  "/",
+  allowOnly("eventType", "productId"),
+  (req: Request, res: Response) => {
+    const { eventType, productId } = req.body as { eventType?: string; productId?: string };
 
-  if (!eventType || !VALID_CLIENT_EVENTS.has(eventType as EventType)) {
-    res.status(400).json({
-      error: `"eventType" must be one of: ${[...VALID_CLIENT_EVENTS].join(", ")}`,
-    });
-    return;
-  }
+    if (!eventType || !VALID_CLIENT_EVENTS.has(eventType as EventType)) {
+      res.status(400).json({
+        error: `"eventType" must be one of: ${[...VALID_CLIENT_EVENTS].join(", ")}`,
+      });
+      return;
+    }
 
-  // Respond immediately — never let analytics block the client
-  res.json({ success: true });
+    // Respond immediately — never let analytics block the client
+    res.json({ success: true });
 
-  // Async DB write — errors logged but never affect the response
-  db.insert(analyticsEventsTable)
-    .values({ eventType: eventType as EventType, productId: productId ?? null })
-    .catch((err) => {
-      req.log.error({ err, eventType, productId }, "Failed to persist event");
-    });
-});
+    // Async DB write — errors logged but never affect the response
+    db.insert(analyticsEventsTable)
+      .values({ eventType: eventType as EventType, productId: productId ?? null })
+      .catch((err) => {
+        req.log.error({ err, eventType, productId }, "Failed to persist event");
+      });
+  },
+);
 
 export default router;

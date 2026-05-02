@@ -1,14 +1,15 @@
 /**
  * Product routes — inventory listing and boost management.
  *
- * GET  /api/products      — public product list with current boost state
- * PATCH /api/products/:id — update a product's boost/sponsored settings (auth required)
+ * GET   /api/products      — public product list with current boost state
+ * PATCH /api/products/:id  — update a product's boost/sponsored settings (auth required)
  */
 
 import { Router, type IRouter, type Request, type Response } from "express";
 import { getAllInventory, applyBoost } from "../services/boostService";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/roles";
+import { allowOnly } from "../middleware/sanitize";
 
 const router: IRouter = Router();
 
@@ -26,13 +27,14 @@ router.get("/", (_req: Request, res: Response) => {
  * PATCH /api/products/:id
  * Protected — requires venue_owner, manager, or super_admin.
  *
- * Body (all fields optional):
+ * Body (all fields optional; all other fields are stripped):
  *   { boostLevel: 0–3, sponsored: boolean, brandId?: string, campaignId?: string }
  */
 router.patch(
   "/:id",
   requireAuth,
   requireRole("venue_owner", "manager"),
+  allowOnly("boostLevel", "sponsored", "brandId", "campaignId"),
   async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
     const { boostLevel, sponsored, brandId, campaignId } = req.body as {

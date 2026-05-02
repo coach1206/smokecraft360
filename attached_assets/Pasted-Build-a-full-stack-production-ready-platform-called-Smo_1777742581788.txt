@@ -1,0 +1,327 @@
+Build a full-stack, production-ready platform called "SmokeCraft 360" that functions as a multi-industry experience and revenue system with offline capability, installable tablet support, multi-tenant architecture, and white-label customization.
+
+TECH STACK:
+- Backend: Node.js + Express
+- Frontend: React (Vite)
+- Database: PostgreSQL (with fallback to in-memory if unavailable)
+- Authentication: JWT + bcrypt
+- Styling: premium dark theme with gold accents
+- State management: React hooks
+- Storage: localStorage + IndexedDB for offline support
+
+--------------------------------------------------
+CORE SYSTEM REQUIREMENTS
+--------------------------------------------------
+
+1. RECOMMENDATION ENGINE (CORE INTELLIGENCE)
+
+Build a modular engine supporting categories:
+- cigar
+- alcohol (whiskey, bourbon)
+- food
+- expandable for future categories
+
+Each product must include:
+- id, name, category
+- flavorNotes (array)
+- strength (1–5)
+- moodTags
+- pairingTags
+- tier ("standard", "mid", "premium")
+- boostLevel (0–3)
+- sponsored (boolean)
+- venueId
+
+SCORING LOGIC:
+- flavor match: +3 each
+- mood match: +4
+- strength:
+  exact = +3
+  within 1 = +2
+  within 2 = +1
+- tier:
+  premium = +2
+  mid = +1
+- boostLevel = +1 per level
+- sponsored = +2
+
+NO negative scoring.
+
+Return:
+- top 3 recommendations
+- top 2 alcohol pairings
+- top 2 food pairings
+
+--------------------------------------------------
+2. PAIRING SYSTEM (SEMANTIC RULES)
+--------------------------------------------------
+
+Implement rules:
+
+- strong/bold cigar → peaty/bold whiskey
+- sweet cigar → bourbon/dessert pairing
+- light cigar → light spirits + seafood/salad
+- smoky → BBQ / grilled / wings
+
+Apply reverse pairing for alcohol.
+
+--------------------------------------------------
+3. FRONTEND EXPERIENCE (PREMIUM UI)
+--------------------------------------------------
+
+Build React UI with:
+
+PHASE 1 — INPUT:
+- category selector
+- flavor chips
+- strength slider (gold gradient)
+- mood selector
+- "Discover" button
+
+PHASE 2 — RESULTS:
+- swipeable card system (Framer Motion)
+- like (right) / skip (left)
+- product details
+- pairing section
+- food pairing section
+
+DESIGN:
+- dark base + warm lighting
+- gold/amber accents
+- glassmorphism cards
+- depth layers (no flat UI)
+
+--------------------------------------------------
+4. EXPERIENCE LAYER
+--------------------------------------------------
+
+Add:
+
+- cigar burn loading animation (2 sec)
+- "Crafting your experience..." text
+- cinematic reveal (fade + scale)
+- first card highlighted (hero card)
+- subtle smoke background animation
+
+--------------------------------------------------
+5. ELITE SYSTEM + USER IDENTITY
+--------------------------------------------------
+
+Create user system:
+
+- score tracking
+- +10 per session
+- +5 per save
+- unlock Elite at score > 50
+
+Features:
+- "My Vault"
+- saved experiences
+- Elite UI mode (enhanced styling)
+- badge indicator
+
+--------------------------------------------------
+6. BAND CREATOR SYSTEM
+--------------------------------------------------
+
+Allow users to:
+
+- create custom blend
+- name it
+- choose colors (gold, black, burgundy)
+- choose emblem (crown, shield, flame)
+
+Save:
+- cigar
+- drink pairing
+- food pairing
+- band design
+
+Elite users:
+- full customization
+
+--------------------------------------------------
+7. FOOD PAIRING SYSTEM
+--------------------------------------------------
+
+Post-recommendation only:
+
+Add section:
+"Complete Your Experience"
+
+Options:
+- wings
+- steak
+- salad
+- appetizers
+- seafood
+- desserts
+
+Use flavor + strength logic to match.
+
+--------------------------------------------------
+8. VENUE DASHBOARD
+--------------------------------------------------
+
+Build admin panel:
+
+Dashboard:
+- total interactions
+- top products
+- top pairings
+- flavor trends
+
+Inventory:
+- add/edit products
+- toggle active
+- set boostLevel
+- toggle sponsored
+
+Analytics:
+- most selected
+- most skipped
+- boosted performance
+
+--------------------------------------------------
+9. MONETIZATION SYSTEM
+--------------------------------------------------
+
+Implement:
+
+- boostLevel scoring
+- sponsored scoring
+- featured products section in UI
+
+Track:
+- boosted product clicks
+- sponsored conversions
+
+--------------------------------------------------
+10. BACKEND ARCHITECTURE
+--------------------------------------------------
+
+Structure:
+
+/server
+  /routes
+  /engine
+  /services
+  /db
+  /middleware
+
+API endpoints:
+
+POST /api/recommend
+POST /api/events
+POST /api/experiences
+GET /api/products
+POST /api/products
+GET /api/analytics
+POST /api/auth/login
+POST /api/auth/register
+
+--------------------------------------------------
+11. EVENT TRACKING
+--------------------------------------------------
+
+Track:
+
+- swipe_left
+- swipe_right
+- recommendation_view
+- product_selected
+- pairing_selected
+- food_selected
+- blend_created
+- save_experience
+
+--------------------------------------------------
+12. OFFLINE MODE
+--------------------------------------------------
+
+Implement:
+
+- cache products + results
+- offline detection (navigator.onLine)
+- fallback to local engine
+- queue events while offline
+- auto sync when online
+
+--------------------------------------------------
+13. PWA (INSTALLABLE APP)
+--------------------------------------------------
+
+Add:
+
+- manifest.json
+- service worker
+- install button
+- fullscreen mode
+
+Works on:
+- tablets
+- kiosks
+
+--------------------------------------------------
+14. MULTI-TENANT SYSTEM
+--------------------------------------------------
+
+Support multiple venues:
+
+- all data tied to venueId
+- frontend loads per venue
+- separate inventory per venue
+
+--------------------------------------------------
+15. WHITE LABEL SYSTEM
+--------------------------------------------------
+
+Allow:
+
+- custom logo
+- custom colors
+- theme profiles
+- feature toggles
+
+Super admin:
+- create/manage venues
+
+--------------------------------------------------
+16. DEMO MODE
+--------------------------------------------------
+
+Add:
+
+- "Try Demo" button
+- auto-load sample data
+- skip login
+- fast flow (15–20 sec demo)
+- reset button
+
+--------------------------------------------------
+17. SECURITY + HARDENING
+--------------------------------------------------
+
+Add:
+
+- validation
+- rate limiting
+- error handling
+- CORS config
+- safe responses
+
+--------------------------------------------------
+GOAL
+
+Deliver a fully functional platform that:
+
+- works online and offline
+- installs on tablets/kiosks
+- supports multiple venues
+- allows white-label customization
+- tracks user behavior
+- enables monetization through product placement
+- delivers a premium, cinematic user experience
+
+This is not a prototype.
+This is a scalable platform foundation.
