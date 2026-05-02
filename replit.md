@@ -39,16 +39,20 @@ Luxury cigar & spirits recommendation app. Dark gold theme, glassmorphism cards,
 
 ## Database Schema (`lib/db/src/schema/`)
 
-Six tables pushed to PostgreSQL via Drizzle:
+Nine tables pushed to PostgreSQL via Drizzle:
 
 | File | Table | Notes |
 |---|---|---|
 | `users.ts` | `users` | Roles, level, JWT auth |
 | `venues.ts` | `venues` | Venue profiles |
-| `products.ts` | `products` | Full product catalog with boost/sponsored flags |
+| `products.ts` | `products` | Full product catalog; `distributorId` added |
 | `experiences.ts` | `experiences` | Per-user recommendation sessions |
 | `brands.ts` | `brands` | Brand partner records |
-| `analyticsEvents.ts` | `analytics_events` | Impression + event tracking |
+| `analyticsEvents.ts` | `analytics_events` | Impression + event tracking (13 event types) |
+| `orders.ts` | `orders` | Customer orders |
+| `userPreferences.ts` | `user_preferences` | Preference snapshots (flavor, strength, mood) |
+| `venueInventory.ts` | `venue_inventory` | Per-venue stock levels |
+| `distributors.ts` | `distributors` | Distributor / supplier records |
 
 ---
 
@@ -72,7 +76,7 @@ Six tables pushed to PostgreSQL via Drizzle:
 
 - Algorithm: HS256, expiry 7d
 - Secret: `process.env.SESSION_SECRET`
-- Payload: `{ sub, email, role, name }`
+- Payload: `{ sub, email, role, name, venueId }`
 - Header: `Authorization: Bearer <token>`
 - Frontend storage: `localStorage` (`smokecraft_auth_token` / `smokecraft_auth_user`)
 
@@ -115,7 +119,14 @@ engine/
 | `GET /api/inventory` | None | Public |
 | `PATCH /api/inventory/:id` | Required | venue_owner, manager, super_admin |
 | `GET /api/analytics` | Required | venue_owner, manager, super_admin |
+| `GET /api/analytics/venue/:id` | Required | venue_owner, manager, super_admin |
+| `POST /api/events` | None (auth optional) | Public — 11 valid event types |
+| `POST /api/preferences` | None (auth optional) | Public — fire-and-forget snapshot |
 | `GET /api/auth/me` | Required | Any authenticated user |
+
+### Event Types (POST /api/events)
+
+`view` · `swipe_right` · `swipe_left` · `save` · `boost_click` · `sponsored_view` · `recommendation_view` · `product_selected` · `pairing_selected` · `food_selected` · `order_created`
 
 ---
 

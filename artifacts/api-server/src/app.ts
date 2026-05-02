@@ -5,19 +5,21 @@ import { logger } from "./lib/logger";
 import { rejectDeepPayloads }             from "./middleware/sanitize";
 import { authLimiter, recommendLimiter }  from "./middleware/rateLimit";
 
-import healthRouter      from "./routes/health";
-import authRouter        from "./routes/auth";
-import recommendRouter   from "./routes/recommend";
-import productsRouter    from "./routes/products";
-import analyticsRouter   from "./routes/analytics";
-import eventsRouter      from "./routes/events";
-import experiencesRouter from "./routes/experiences";
-import venuesRouter      from "./routes/venues";
-import uploadRouter           from "./routes/upload";
-import ordersRouter           from "./routes/orders";
-import checkoutRouter         from "./routes/checkout";
+import healthRouter        from "./routes/health";
+import authRouter          from "./routes/auth";
+import recommendRouter     from "./routes/recommend";
+import productsRouter      from "./routes/products";
+import analyticsRouter     from "./routes/analytics";
+import venueAnalyticsRouter from "./routes/venueAnalytics";
+import eventsRouter        from "./routes/events";
+import preferencesRouter   from "./routes/preferences";
+import experiencesRouter   from "./routes/experiences";
+import venuesRouter        from "./routes/venues";
+import uploadRouter             from "./routes/upload";
+import ordersRouter             from "./routes/orders";
+import checkoutRouter           from "./routes/checkout";
 import { stripeWebhookHandler } from "./routes/stripeWebhook";
-import demoRouter              from "./routes/demo";
+import demoRouter               from "./routes/demo";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -88,8 +90,10 @@ app.use("/api",                             healthRouter);
 app.use("/api/auth",      authLimiter,      authRouter);
 app.use("/api/recommend", recommendLimiter, recommendRouter);
 app.use("/api/products",                    productsRouter);
+app.use("/api/analytics",                   venueAnalyticsRouter);
 app.use("/api/analytics",                   analyticsRouter);
 app.use("/api/events",                      eventsRouter);
+app.use("/api/preferences",                 preferencesRouter);
 app.use("/api/experiences",                 experiencesRouter);
 app.use("/api/venues",                      venuesRouter);
 app.use("/api/upload",                      uploadRouter);

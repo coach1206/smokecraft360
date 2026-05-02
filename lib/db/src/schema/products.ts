@@ -27,8 +27,9 @@ export const productsTable = pgTable("products", {
   boostLevel:  integer("boost_level").notNull().default(0),
   sponsored:   boolean("sponsored").notNull().default(false),
   active:      boolean("active").notNull().default(true),
-  brandId:     uuid("brand_id"),
-  campaignId:  text("campaign_id"),
+  brandId:       uuid("brand_id"),
+  distributorId: uuid("distributor_id"),
+  campaignId:    text("campaign_id"),
   imageUrl:    text("image_url"),
   createdAt:   timestamp("created_at").notNull().defaultNow(),
 });

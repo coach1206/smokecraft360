@@ -64,7 +64,7 @@ router.post(
       role:  assignedRole,
     }).returning();
 
-    const token = await signToken({ sub: user.id, email: user.email, role: user.role, name: user.name });
+    const token = await signToken({ sub: user.id, email: user.email, role: user.role, name: user.name, venueId: user.venueId ?? null });
 
     req.log.info({ userId: user.id, role: user.role }, "user registered");
     res.status(201).json({ token, user: sanitizeUser(user) });
@@ -91,7 +91,7 @@ router.post(
       res.status(401).json({ error: "Invalid email or password" }); return;
     }
 
-    const token = await signToken({ sub: user.id, email: user.email, role: user.role, name: user.name });
+    const token = await signToken({ sub: user.id, email: user.email, role: user.role, name: user.name, venueId: user.venueId ?? null });
 
     req.log.info({ userId: user.id }, "user logged in");
     res.json({ token, user: sanitizeUser(user) });

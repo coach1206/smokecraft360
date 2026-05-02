@@ -7,10 +7,11 @@ const ALG    = "HS256";
 const EXPIRY = "7d";
 
 export interface JWTPayload {
-  sub:   string;
-  email: string;
-  role:  string;
-  name:  string;
+  sub:     string;
+  email:   string;
+  role:    string;
+  name:    string;
+  venueId?: string | null;
 }
 
 export async function signToken(payload: JWTPayload): Promise<string> {

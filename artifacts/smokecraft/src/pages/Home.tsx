@@ -16,7 +16,7 @@ import { VaultModal }        from "@/components/Vault/VaultModal";
 import { BandCreatorModal }  from "@/components/Band/BandCreatorModal";
 import { OfflineBanner }     from "@/components/PWA/OfflineBanner";
 import { InstallBanner }     from "@/components/PWA/InstallBanner";
-import { fetchRecommendations, trackEvent, persistExperience, type RecommendResponse, type OrderType } from "@/services/api";
+import { fetchRecommendations, trackEvent, trackPreferences, persistExperience, type RecommendResponse, type OrderType } from "@/services/api";
 import { useUser }           from "@/hooks/useUser";
 import { useOnlineStatus }   from "@/hooks/useOnlineStatus";
 import { useVenue }          from "@/contexts/VenueContext";
@@ -96,6 +96,12 @@ export default function Home() {
       });
       setResults(data);
       trackEvent({ eventType: "recommendation_view" });
+      trackPreferences({
+        category:          params.category,
+        flavorPreferences: params.flavors,
+        strength:          params.strength,
+        mood:              params.mood,
+      });
     } catch (err) {
       setPhase("form");
       setError(
@@ -168,6 +174,11 @@ export default function Home() {
   const handleOrderSuccess = (orderId: string, orderType: OrderType) => {
     setOrderModalOpen(false);
     setConfirmedOrder({ id: orderId, type: orderType });
+    trackEvent({
+      eventType: "order_created",
+      productId: results?.recommendations[0]?.id,
+      metadata:  { orderId, orderType },
+    });
   };
 
   const handleStartOver = () => {

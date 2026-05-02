@@ -5,3 +5,6 @@ export * from "./experiences";
 export * from "./brands";
 export * from "./analyticsEvents";
 export * from "./orders";
+export * from "./userPreferences";
+export * from "./venueInventory";
+export * from "./distributors";

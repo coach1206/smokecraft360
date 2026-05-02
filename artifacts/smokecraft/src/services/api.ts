@@ -87,12 +87,15 @@ export type ClientEventType =
   | "product_selected"
   | "pairing_selected"
   | "food_selected"
+  | "order_created"
   | "blend_created"
   | "save_experience";
 
 export interface TrackEventParams {
   eventType: ClientEventType;
   productId?: string;
+  venueId?:  string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface PersistExperienceParams {
@@ -152,11 +155,26 @@ export function trackEvent(params: TrackEventParams): void {
   }
   fetch("/api/events", {
     method:  "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body:    JSON.stringify(params),
   }).catch(() => {
     enqueueEvent({ eventType: params.eventType, productId: params.productId });
   });
+}
+
+/** Fire-and-forget — records the user's preference snapshot for trend analytics. */
+export function trackPreferences(params: {
+  category:          "cigar" | "alcohol";
+  flavorPreferences: string[];
+  strength:          number;
+  mood:              string;
+  venueId?:          string;
+}): void {
+  fetch("/api/preferences", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body:    JSON.stringify(params),
+  }).catch(() => { /* fire-and-forget — never block UI */ });
 }
 
 export async function persistExperience(
@@ -329,6 +347,50 @@ export async function createCheckoutSession(params: {
     throw new Error((err as { error?: string }).error ?? "Failed to create checkout session");
   }
   return res.json() as Promise<{ url: string }>;
+}
+
+// ── Venue analytics ───────────────────────────────────────────────────────────
+
+export interface VenueAnalyticsProduct {
+  productId:   string | null;
+  name:        string;
+  impressions?: number;
+  swipeRights?: number;
+  swipeLefts?:  number;
+  skips?:       number;
+  selections?:  number;
+  orders?:      number;
+  tier?:        string;
+  boostLevel?:  number;
+  sponsored?:   boolean;
+}
+
+export interface VenueAnalytics {
+  venueId:    string;
+  period:     string;
+  topCigars:  VenueAnalyticsProduct[];
+  topSkipped: VenueAnalyticsProduct[];
+  topPairings: VenueAnalyticsProduct[];
+  topFood:     VenueAnalyticsProduct[];
+  flavorTrends: { flavor: string; count: number }[];
+  boostedPerformance:   (VenueAnalyticsProduct & { boostLevel: number })[];
+  sponsoredPerformance: (VenueAnalyticsProduct & { totalImpressions: number; sponsoredViews: number })[];
+  orderConversion: {
+    totalOrders:    number;
+    withCigar:      number;
+    withPairing:    number;
+    withFood:       number;
+    conversionRate: number;
+  };
+}
+
+export async function fetchVenueAnalytics(venueId: string): Promise<VenueAnalytics> {
+  const res = await fetch(`/api/analytics/venue/${venueId}`, { headers: getAuthHeaders() });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to fetch venue analytics");
+  }
+  return res.json();
 }
 
 export async function fetchAnalytics(): Promise<AnalyticsSummary> {

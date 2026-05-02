@@ -11,7 +11,7 @@ import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../lib/jwt";
 
 export interface AuthRequest extends Request {
-  user?: { id: string; email: string; role: string; name: string };
+  user?: { id: string; email: string; role: string; name: string; venueId?: string | null };
 }
 
 /**
@@ -31,7 +31,7 @@ export async function requireAuth(
   try {
     const token   = header.slice(7);
     const payload = await verifyToken(token);
-    req.user = { id: payload.sub, email: payload.email, role: payload.role, name: payload.name };
+    req.user = { id: payload.sub, email: payload.email, role: payload.role, name: payload.name, venueId: payload.venueId ?? null };
     next();
   } catch {
     res.status(401).json({ error: "Invalid or expired token" });
