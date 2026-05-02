@@ -3,48 +3,43 @@
  *
  * GET   /api/products      — public product list with current boost state
  * POST  /api/products      — create a new product (auth required)
- * PATCH /api/products/:id  — update boost/sponsored settings (auth required)
+ * PATCH /api/products/:id  — update boost/sponsored/imageUrl settings (auth required)
  */
 
 import { Router, type IRouter, type Request, type Response } from "express";
-import { db, productsTable }             from "@workspace/db";
-import { getAllInventory, applyBoost, seedProducts } from "../services/boostService";
-import { registerProductInEngine }       from "../engine/registry";
-import { requireAuth, type AuthRequest } from "../middleware/auth";
-import { requireRole }                   from "../middleware/roles";
-import { allowOnly }                     from "../middleware/sanitize";
-import type { Product }                  from "../engine/types";
+import { db, productsTable }                     from "@workspace/db";
+import { getAllInventory, applyBoost, seedProducts, updateImageUrl } from "../services/boostService";
+import { registerProductInEngine }               from "../engine/registry";
+import { requireAuth, type AuthRequest }         from "../middleware/auth";
+import { requireRole }                           from "../middleware/roles";
+import { allowOnly }                             from "../middleware/sanitize";
+import type { Product }                          from "../engine/types";
 
 const router: IRouter = Router();
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const CLOUDINARY_RE = /^https:\/\/res\.cloudinary\.com\//;
 
 const VALID_CATEGORIES = ["cigar", "alcohol", "food", "coffee", "tea", "scent", "candle"] as const;
-type ValidCategory = typeof VALID_CATEGORIES[number];
+type ValidCategory = (typeof VALID_CATEGORIES)[number];
 
-/**
- * GET /api/products
- * Public — returns all products with current boost state and impression counts.
- */
+// ── GET /api/products ─────────────────────────────────────────────────────────
 router.get("/", (_req: Request, res: Response) => {
   res.json(getAllInventory());
 });
 
-/**
- * POST /api/products
- * Protected — creates a new product, persists to DB, and registers it in the
- * in-memory scoring engine so recommendations reflect it immediately.
- */
+// ── POST /api/products ────────────────────────────────────────────────────────
 router.post(
   "/",
   requireAuth,
   requireRole("venue_owner", "manager"),
-  allowOnly("id", "name", "category", "flavorNotes", "strength", "moodTags", "pairingTags", "tier", "boostLevel", "sponsored", "venueId", "brandId", "campaignId"),
+  allowOnly("id", "name", "category", "flavorNotes", "strength", "moodTags", "pairingTags",
+            "tier", "boostLevel", "sponsored", "venueId", "brandId", "campaignId", "imageUrl"),
   async (req: AuthRequest, res: Response) => {
     const {
       id, name, category, flavorNotes, strength,
       moodTags, pairingTags, tier, boostLevel,
-      sponsored, venueId, brandId, campaignId,
+      sponsored, venueId, brandId, campaignId, imageUrl,
     } = req.body as {
       id?:          string;
       name?:        string;
@@ -59,6 +54,7 @@ router.post(
       venueId?:     string;
       brandId?:     string;
       campaignId?:  string;
+      imageUrl?:    string;
     };
 
     if (!name || typeof name !== "string" || name.trim().length === 0) {
@@ -75,6 +71,9 @@ router.post(
     }
     if (boostLevel !== undefined && (!Number.isInteger(boostLevel) || boostLevel < 0 || boostLevel > 3)) {
       res.status(400).json({ error: '"boostLevel" must be an integer 0–3' }); return;
+    }
+    if (imageUrl !== undefined && !CLOUDINARY_RE.test(imageUrl)) {
+      res.status(400).json({ error: '"imageUrl" must be a valid Cloudinary URL' }); return;
     }
 
     const productId = id ?? `${category}-${Date.now()}`;
@@ -94,13 +93,13 @@ router.post(
         boostLevel:  boostLevel  ?? 0,
         sponsored:   sponsored   ?? false,
         active:      true,
-        venueId:     venueId   ?? null,
-        brandId:     brandId   ?? null,
+        venueId:     venueId    ?? null,
+        brandId:     brandId    ?? null,
         campaignId:  campaignId ?? null,
+        imageUrl:    imageUrl   ?? null,
       })
       .returning();
 
-    // Register in the engine's scoring pool so future recommendations include it
     const engineProduct: Product = {
       id:          inserted.id,
       name:        inserted.name,
@@ -112,6 +111,7 @@ router.post(
       tier:        inserted.tier,
       boostLevel:  inserted.boostLevel,
       sponsored:   inserted.sponsored,
+      imageUrl:    inserted.imageUrl ?? undefined,
     };
 
     registerProductInEngine(engineProduct);
@@ -122,22 +122,20 @@ router.post(
   },
 );
 
-/**
- * PATCH /api/products/:id
- * Protected — requires venue_owner, manager, or super_admin.
- */
+// ── PATCH /api/products/:id ───────────────────────────────────────────────────
 router.patch(
   "/:id",
   requireAuth,
   requireRole("venue_owner", "manager"),
-  allowOnly("boostLevel", "sponsored", "brandId", "campaignId"),
+  allowOnly("boostLevel", "sponsored", "brandId", "campaignId", "imageUrl"),
   async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
-    const { boostLevel, sponsored, brandId, campaignId } = req.body as {
+    const { boostLevel, sponsored, brandId, campaignId, imageUrl } = req.body as {
       boostLevel?: number;
       sponsored?:  boolean;
       brandId?:    string;
       campaignId?: string;
+      imageUrl?:   string;
     };
 
     if (
@@ -153,12 +151,24 @@ router.patch(
       return;
     }
 
+    if (imageUrl !== undefined && !CLOUDINARY_RE.test(imageUrl)) {
+      res.status(400).json({ error: '"imageUrl" must be a valid Cloudinary URL' });
+      return;
+    }
+
     try {
+      // Apply boost/sponsored changes
       const updated = await applyBoost(id, { boostLevel, sponsored, brandId, campaignId });
-      req.log.info({ productId: id, userId: req.user?.id, ...updated }, "product boost updated");
-      res.json({ id, ...updated });
+
+      // Apply imageUrl change separately (different store / DB column)
+      if (imageUrl !== undefined) {
+        await updateImageUrl(id, imageUrl);
+      }
+
+      req.log.info({ productId: id, userId: req.user?.id, ...updated }, "product updated");
+      res.json({ id, ...updated, ...(imageUrl !== undefined ? { imageUrl } : {}) });
     } catch (err) {
-      req.log.error({ err, productId: id }, "failed to update product boost");
+      req.log.error({ err, productId: id }, "failed to update product");
       res.status(500).json({ error: "Failed to update product" });
     }
   },

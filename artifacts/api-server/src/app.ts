@@ -1,5 +1,5 @@
 import express, { type Express, type Request, type Response, type NextFunction } from "express";
-import cors    from "cors";
+import cors     from "cors";
 import pinoHttp from "pino-http";
 import { logger } from "./lib/logger";
 import { rejectDeepPayloads }             from "./middleware/sanitize";
@@ -13,10 +13,9 @@ import analyticsRouter   from "./routes/analytics";
 import eventsRouter      from "./routes/events";
 import experiencesRouter from "./routes/experiences";
 import venuesRouter      from "./routes/venues";
+import uploadRouter      from "./routes/upload";
 
-// ── CORS ─────────────────────────────────────────────────────────────────────
-// Allow origins listed in REPLIT_DOMAINS (published app) and REPLIT_DEV_DOMAIN
-// (preview). In development fall back to localhost so local curl tests work.
+// ── CORS ──────────────────────────────────────────────────────────────────────
 
 function buildAllowedOrigins(): string[] {
   const origins: string[] = [];
@@ -51,6 +50,10 @@ const corsOptions: cors.CorsOptions = {
 
 const app: Express = express();
 
+// Replit routes all traffic through its reverse proxy — trust the X-Forwarded-For
+// header so express-rate-limit and other middleware can read the real client IP.
+app.set("trust proxy", 1);
+
 app.use(
   pinoHttp({
     logger,
@@ -68,14 +71,15 @@ app.use(rejectDeepPayloads);
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 
-app.use("/api",                          healthRouter);
-app.use("/api/auth",      authLimiter,   authRouter);
+app.use("/api",                             healthRouter);
+app.use("/api/auth",      authLimiter,      authRouter);
 app.use("/api/recommend", recommendLimiter, recommendRouter);
-app.use("/api/products",                 productsRouter);
-app.use("/api/analytics",                analyticsRouter);
-app.use("/api/events",                   eventsRouter);
-app.use("/api/experiences",              experiencesRouter);
-app.use("/api/venues",                   venuesRouter);
+app.use("/api/products",                    productsRouter);
+app.use("/api/analytics",                   analyticsRouter);
+app.use("/api/events",                      eventsRouter);
+app.use("/api/experiences",                 experiencesRouter);
+app.use("/api/venues",                      venuesRouter);
+app.use("/api/upload",                      uploadRouter);
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────
 app.use((_req: Request, res: Response) => {

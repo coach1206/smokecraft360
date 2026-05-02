@@ -1,4 +1,4 @@
-import { getAuthHeaders } from "./auth";
+import { getAuthHeaders, getStoredToken } from "./auth";
 import { cacheSet, cacheGet } from "./cache";
 import { enqueueEvent } from "./eventQueue";
 
@@ -24,6 +24,8 @@ export interface ProductResult {
   sponsored?: boolean;
   brandId?: string;
   campaignId?: string;
+  /** Cloudinary image URL — may be absent for static / seed products */
+  imageUrl?: string;
 }
 
 export interface FoodResult {
@@ -35,13 +37,14 @@ export interface FoodResult {
   strengthMin: number;
   strengthMax: number;
   score: number;
+  imageUrl?: string;
 }
 
 export interface RecommendResponse {
   recommendations: ProductResult[];
-  pairings: ProductResult[];
-  foodPairings: FoodResult[];
-  featured: ProductResult[];
+  pairings:        ProductResult[];
+  foodPairings:    FoodResult[];
+  featured:        ProductResult[];
 }
 
 export interface InventoryItem {
@@ -55,6 +58,8 @@ export interface InventoryItem {
   campaignId?: string;
   impressions: number;
   featuredImpressions: number;
+  /** Cloudinary image URL */
+  imageUrl?: string;
 }
 
 export interface AnalyticsSummary {
@@ -97,17 +102,10 @@ export interface PersistExperienceParams {
 
 // ── Recommendations ───────────────────────────────────────────────────────────
 
-/** Cache key derived from the request so different preference combos cache separately. */
 function recommendCacheKey(params: RecommendParams): string {
   return `${params.category}|${params.strength}|${params.mood}|${params.flavorPreferences.slice().sort().join(",")}`;
 }
 
-/**
- * Fetch recommendations from the API.
- * - On success: caches the result in IndexedDB for offline reuse.
- * - When offline: returns the last cached result for the same preferences.
- * - Throws only when both network and cache fail.
- */
 export async function fetchRecommendations(params: RecommendParams): Promise<RecommendResponse> {
   const cacheKey = recommendCacheKey(params);
 
@@ -128,16 +126,12 @@ export async function fetchRecommendations(params: RecommendParams): Promise<Rec
       featured:        data.featured         ?? [],
     };
 
-    // Cache for offline use (fire-and-forget)
     void cacheSet("recommendations", cacheKey, result);
-
     return result;
   } catch {
-    // Network failed — try the IndexedDB cache
     const cached = await cacheGet<RecommendResponse>("recommendations", cacheKey);
     if (cached) return cached;
 
-    // Try the generic "last result" cache
     const last = await cacheGet<RecommendResponse>("recommendations", "last");
     if (last) return last;
 
@@ -145,35 +139,22 @@ export async function fetchRecommendations(params: RecommendParams): Promise<Rec
   }
 }
 
-// ── Analytics (fire-and-forget with offline queue) ────────────────────────────
+// ── Analytics ─────────────────────────────────────────────────────────────────
 
-/**
- * Track a user interaction event.
- * - When online: fires directly to /api/events.
- * - When offline: queues the event locally for replay on reconnect.
- * Never throws — analytics failures must never disrupt the user experience.
- */
 export function trackEvent(params: TrackEventParams): void {
   if (!navigator.onLine) {
     enqueueEvent({ eventType: params.eventType, productId: params.productId });
     return;
   }
-
   fetch("/api/events", {
     method:  "POST",
     headers: { "Content-Type": "application/json" },
     body:    JSON.stringify(params),
   }).catch(() => {
-    // Network failed mid-request — queue it
     enqueueEvent({ eventType: params.eventType, productId: params.productId });
   });
 }
 
-/**
- * Persist a completed session to the database.
- * Links to the authenticated user when a JWT is present; anonymous otherwise.
- * Returns the server-assigned experience ID, or null on failure.
- */
 export async function persistExperience(
   params: PersistExperienceParams,
 ): Promise<string | null> {
@@ -201,7 +182,7 @@ export async function fetchInventory(): Promise<InventoryItem[]> {
 
 export async function updateInventoryItem(
   id: string,
-  updates: Partial<Pick<InventoryItem, "boostLevel" | "sponsored" | "brandId" | "campaignId">>,
+  updates: Partial<Pick<InventoryItem, "boostLevel" | "sponsored" | "brandId" | "campaignId" | "imageUrl">>,
 ): Promise<InventoryItem> {
   const res = await fetch(`/api/products/${id}`, {
     method:  "PATCH",
@@ -228,6 +209,33 @@ export async function createInventoryItem(
     throw new Error((err as { error?: string }).error ?? "Failed to create product");
   }
   return res.json();
+}
+
+/**
+ * Upload an image file to Cloudinary via the backend.
+ * Returns the Cloudinary secure URL on success.
+ */
+export async function uploadProductImage(file: File): Promise<string> {
+  const token = getStoredToken();
+  const headers: HeadersInit = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    headers,
+    body:   formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Image upload failed");
+  }
+
+  const data = await res.json() as { url: string };
+  return data.url;
 }
 
 export async function fetchAnalytics(): Promise<AnalyticsSummary> {

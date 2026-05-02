@@ -42,6 +42,7 @@ export interface ProductMeta {
   name:     string;
   category: string;
   tier:     string;
+  imageUrl?: string;
 }
 
 export type InventoryEntry = ProductMeta & BoostState & ProductStats;
@@ -60,7 +61,13 @@ const MAX_BOOST_POINTS = 5;
 /** Seed from a static Product array (used on first run before DB rows exist). */
 export function seedProducts(products: Product[]): void {
   for (const p of products) {
-    metaStore.set(p.id, { id: p.id, name: p.name, category: p.category, tier: p.tier });
+    metaStore.set(p.id, {
+      id:       p.id,
+      name:     p.name,
+      category: p.category,
+      tier:     p.tier,
+      imageUrl: p.imageUrl,
+    });
     boostStore.set(p.id, {
       boostLevel:  p.boostLevel  ?? 0,
       sponsored:   p.sponsored   ?? false,
@@ -80,6 +87,7 @@ export function seedFromDB(rows: (typeof productsTable.$inferSelect)[]): void {
       name:     row.name,
       category: row.category,
       tier:     row.tier,
+      imageUrl: row.imageUrl ?? undefined,
     });
     boostStore.set(row.id, {
       boostLevel:  row.boostLevel,
@@ -170,6 +178,7 @@ export function hasProducts(): boolean {
 export function applyBoosts(products: ScoredProduct[]): ScoredProduct[] {
   return products.map((p): ScoredProduct => {
     const state    = getProductBoost(p.id);
+    const meta     = metaStore.get(p.id);
     const rawBoost = state.boostLevel + (state.sponsored ? 2 : 0);
     const boost    = p.score > 0 ? Math.min(rawBoost, MAX_BOOST_POINTS) : 0;
     return {
@@ -180,6 +189,8 @@ export function applyBoosts(products: ScoredProduct[]): ScoredProduct[] {
       sponsored:    state.sponsored,
       brandId:      state.brandId,
       campaignId:   state.campaignId,
+      // Merge imageUrl from metaStore (DB-loaded) or keep existing value on the product
+      imageUrl:     meta?.imageUrl ?? p.imageUrl,
     };
   });
 }
@@ -209,6 +220,20 @@ export async function applyBoost(
   }).where(eq(productsTable.id, id));
 
   return updated;
+}
+
+/**
+ * Write-through image URL update.
+ * Updates both the in-memory metaStore and the database.
+ */
+export async function updateImageUrl(id: string, imageUrl: string): Promise<void> {
+  const current = metaStore.get(id);
+  if (current) {
+    metaStore.set(id, { ...current, imageUrl });
+  }
+  await db.update(productsTable)
+    .set({ imageUrl })
+    .where(eq(productsTable.id, id));
 }
 
 /**

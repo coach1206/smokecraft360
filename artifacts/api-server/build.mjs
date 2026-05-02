@@ -115,7 +115,24 @@ import __bannerUrl from 'node:url';
 globalThis.require = __bannerCrReq(import.meta.url);
 globalThis.__filename = __bannerUrl.fileURLToPath(import.meta.url);
 globalThis.__dirname = __bannerPath.dirname(globalThis.__filename);
-    `,
+
+// Normalize CLOUDINARY_URL before the cloudinary SDK auto-reads it at module load.
+// The SDK throws if the value does not start with "cloudinary://".
+// Common mistake: pasting the full "CLOUDINARY_URL=cloudinary://..." assignment
+// as the secret value instead of just the URL portion.
+;(function(){
+  var _raw = process.env["CLOUDINARY_URL"] || "";
+  if (_raw && !_raw.startsWith("cloudinary://")) {
+    var _stripped = _raw.replace(/^CLOUDINARY_URL=/, "");
+    if (_stripped.startsWith("cloudinary://")) {
+      process.env["CLOUDINARY_URL"] = _stripped;
+    } else {
+      process.env["__CLOUDINARY_URL_BAD__"] = _raw;
+      delete process.env["CLOUDINARY_URL"];
+    }
+  }
+})();
+`,
     },
   });
 }

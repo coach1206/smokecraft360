@@ -1,0 +1,166 @@
+Integrate Stripe payments into the Order system and apply global branding for "SmokeCraft 360" across the entire platform.
+
+GOAL:
+Enable full payment flow (recommendation → order → payment → confirmation) while ensuring the product is consistently branded as SmokeCraft 360 in UI, PWA install, Stripe checkout, emails, and metadata.
+
+-----------------------------------
+1) STRIPE SETUP (BACKEND)
+-----------------------------------
+
+- Use environment variable:
+  STRIPE_SECRET_KEY
+
+- Install Stripe SDK if missing.
+
+Create route:
+POST /api/create-checkout-session
+
+Input:
+{
+  items: [
+    { name, price, quantity }
+  ],
+  venueId,
+  orderId
+}
+
+Create Stripe Checkout Session:
+- mode: "payment"
+- currency: "usd"
+- line_items from items
+- success_url: <APP_URL>/success?session_id={CHECKOUT_SESSION_ID}
+- cancel_url: <APP_URL>/cancel
+
+Add branding:
+- product name: "SmokeCraft 360 Experience"
+- payment_intent_data.description: "SmokeCraft 360 Experience"
+
+Return:
+{ url: session.url }
+
+-----------------------------------
+2) CONNECT TO ORDER FLOW (FRONTEND)
+-----------------------------------
+
+On "Order This Experience":
+
+- If orderType = "delivery" or "pickup":
+  call /api/create-checkout-session
+  redirect user to returned Stripe URL
+
+- If orderType = "table":
+  skip payment (staff request only)
+
+-----------------------------------
+3) STRIPE WEBHOOK (BACKEND)
+-----------------------------------
+
+Create route:
+POST /api/webhook/stripe
+
+- Verify signature (STRIPE_WEBHOOK_SECRET)
+- Listen for:
+  checkout.session.completed
+
+On success:
+- find order by orderId or metadata
+- update order.status = "paid"
+- mark as ready for processing
+
+Return 200 OK
+
+-----------------------------------
+4) SUCCESS / CANCEL PAGES (FRONTEND)
+-----------------------------------
+
+/success:
+Display:
+"Welcome to SmokeCraft 360. Your experience is being prepared."
+
+/cancel:
+Display:
+"Your SmokeCraft 360 experience was canceled."
+
+-----------------------------------
+5) GLOBAL BRAND CONFIG
+-----------------------------------
+
+Create:
+client/src/config/brand.js
+
+export const BRAND = {
+  name: "SmokeCraft 360",
+  shortName: "SmokeCraft",
+  tagline: "Craft Your Experience",
+  primaryColor: "#D4AF37",
+  background: "#0b0b0b",
+  accent: "#c28f2c"
+};
+
+-----------------------------------
+6) UI BRANDING
+-----------------------------------
+
+- Update <title> to "SmokeCraft 360"
+- Header/logo text: "SmokeCraft 360"
+- Footer:
+  "© SmokeCraft 360 — All Rights Reserved"
+
+- Use BRAND colors for:
+  buttons, highlights, accents
+
+-----------------------------------
+7) PWA (INSTALLABLE APP)
+-----------------------------------
+
+Update public/manifest.json:
+
+{
+  "name": "SmokeCraft 360",
+  "short_name": "SmokeCraft",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#D4AF37",
+  "background_color": "#0b0b0b",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
+
+-----------------------------------
+8) EMAIL BRANDING (SENDGRID)
+-----------------------------------
+
+- Sender name: "SmokeCraft 360"
+
+Subjects:
+- "Welcome to SmokeCraft 360"
+- "Your SmokeCraft 360 Experience is Ready"
+
+-----------------------------------
+9) SAFETY + STABILITY
+-----------------------------------
+
+- Do NOT expose STRIPE_SECRET_KEY
+- Validate inputs to /api/create-checkout-session
+- Handle errors with safe responses
+- Do NOT break:
+  recommendation engine
+  swipe UI
+  ordering system
+  dashboard
+
+-----------------------------------
+GOAL
+-----------------------------------
+
+Deliver a complete, branded, production-ready flow where users can:
+
+- Discover an experience
+- Order it
+- Pay through Stripe
+- See confirmation
+- Interact with a fully branded SmokeCraft 360 platform
+
+This must feel like a real, premium product—not a demo.

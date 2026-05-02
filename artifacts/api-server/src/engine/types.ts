@@ -22,6 +22,8 @@ export interface Product {
   brandId?: string;
   /** Future: active campaign identifier */
   campaignId?: string;
+  /** Cloudinary image URL */
+  imageUrl?: string;
 }
 
 export interface RecommendRequest {

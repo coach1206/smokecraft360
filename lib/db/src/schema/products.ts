@@ -29,6 +29,7 @@ export const productsTable = pgTable("products", {
   active:      boolean("active").notNull().default(true),
   brandId:     uuid("brand_id"),
   campaignId:  text("campaign_id"),
+  imageUrl:    text("image_url"),
   createdAt:   timestamp("created_at").notNull().defaultNow(),
 });
 

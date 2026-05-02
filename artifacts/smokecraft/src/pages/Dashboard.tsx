@@ -1,13 +1,17 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, TrendingUp, Package, Sparkles, Zap,
-  Check, BarChart3, RefreshCw, LogOut, User, Shield,
+  Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
 } from "lucide-react";
-import { fetchInventory, fetchAnalytics, updateInventoryItem, InventoryItem, AnalyticsSummary } from "@/services/api";
+import {
+  fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
+  type InventoryItem, type AnalyticsSummary,
+} from "@/services/api";
+import { cloudinaryOptimize } from "@/components/ProductImage";
 import { AmbientBackground } from "@/components/AmbientBackground";
-import { LoginModal } from "@/components/Auth/LoginModal";
-import { useAuth } from "@/contexts/AuthContext";
+import { LoginModal }        from "@/components/Auth/LoginModal";
+import { useAuth }           from "@/contexts/AuthContext";
 import { canAccessDashboard } from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
@@ -65,6 +69,20 @@ export default function Dashboard() {
     setSaving((s) => ({ ...s, [item.id]: false }));
   };
 
+  const handleImageUpload = async (item: InventoryItem, file: File) => {
+    setSaving((s) => ({ ...s, [item.id]: true }));
+    try {
+      const url = await uploadProductImage(file);
+      await updateInventoryItem(item.id, { imageUrl: url });
+      setInventory((prev) => prev.map((p) => p.id === item.id ? { ...p, imageUrl: url } : p));
+      setSaved((s) => ({ ...s, [item.id]: true }));
+      setTimeout(() => setSaved((s) => ({ ...s, [item.id]: false })), 1800);
+    } catch {
+      // Non-critical — silently fail, image stays unchanged
+    }
+    setSaving((s) => ({ ...s, [item.id]: false }));
+  };
+
   const filtered = inventory.filter((p) => filter === "all" || p.category === filter);
   const stats    = analytics?.summary;
 
@@ -72,11 +90,8 @@ export default function Dashboard() {
     <div className="min-h-[100dvh] w-full flex flex-col relative" style={{ background: "hsl(22 18% 4%)" }}>
       <AmbientBackground />
 
-      {/* Login modal */}
       <AnimatePresence>
-        {showLogin && (
-          <LoginModal onClose={() => setShowLogin(false)} />
-        )}
+        {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
       </AnimatePresence>
 
       <div className="relative z-10 flex-1 flex flex-col max-w-5xl mx-auto w-full px-6 py-10">
@@ -106,7 +121,6 @@ export default function Dashboard() {
           <motion.div className="flex items-center gap-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
             {user ? (
               <>
-                {/* User pill */}
                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl"
                   style={{ background: "rgba(212,175,55,0.06)", border: "1px solid rgba(212,175,55,0.15)" }}>
                   <User size={12} style={{ color: "rgba(212,175,55,0.55)" }} />
@@ -152,8 +166,7 @@ export default function Dashboard() {
           <div className="flex-1 flex items-center justify-center">
             <motion.div className="w-8 h-8 rounded-full border-2" animate={{ rotate: 360 }}
               style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.7)" }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            />
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
           </div>
         )}
 
@@ -172,10 +185,7 @@ export default function Dashboard() {
               </p>
               <motion.button onClick={() => setShowLogin(true)}
                 className="px-6 py-3 rounded-xl text-sm uppercase tracking-[0.15em]"
-                style={{
-                  background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
-                  color: "hsl(22 18% 6%)",
-                }}
+                style={{ background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))", color: "hsl(22 18% 6%)" }}
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
                 <span className="flex items-center gap-2"><Shield size={13} />Sign In to Dashboard</span>
               </motion.button>
@@ -185,8 +195,7 @@ export default function Dashboard() {
 
         {/* Wrong role */}
         {!authLoading && user && !authorized && (
-          <motion.div className="flex-1 flex items-center justify-center"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <motion.div className="flex-1 flex items-center justify-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="text-center p-8 rounded-xl max-w-sm"
               style={{ background: "rgba(239,68,68,0.05)", border: "1px solid rgba(239,68,68,0.15)" }}>
               <p className="font-serif text-lg mb-2" style={{ color: "rgba(230,180,180,0.8)", fontWeight: 300 }}>Access Denied</p>
@@ -197,15 +206,14 @@ export default function Dashboard() {
           </motion.div>
         )}
 
-        {/* Dashboard content (authorized) */}
+        {/* Dashboard content */}
         {!authLoading && authorized && (
           loading ? (
             <div className="flex-1 flex items-center justify-center">
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <motion.div className="w-10 h-10 rounded-full mx-auto mb-4 border-2"
                   style={{ borderColor: "rgba(212,175,55,0.3)", borderTopColor: "rgba(212,175,55,0.8)" }}
-                  animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                />
+                  animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
                 <p className="text-[10px] uppercase tracking-[0.25em] text-center" style={{ color: "rgba(180,155,100,0.4)" }}>Loading…</p>
               </motion.div>
             </div>
@@ -222,12 +230,12 @@ export default function Dashboard() {
               {stats && (
                 <motion.div className="grid grid-cols-2 md:grid-cols-3 gap-4"
                   initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
-                  <StatCard icon={<Package size={16} />}    label="Total Products"         value={stats.totalProducts}       />
-                  <StatCard icon={<Zap size={16} />}        label="Boosted"                value={stats.boostedProducts}     accent />
-                  <StatCard icon={<Sparkles size={16} />}   label="Sponsored"              value={stats.sponsoredProducts}   gold />
-                  <StatCard icon={<BarChart3 size={16} />}  label="Total Impressions"      value={stats.totalImpressions}    />
+                  <StatCard icon={<Package size={16} />}    label="Total Products"         value={stats.totalProducts}        />
+                  <StatCard icon={<Zap size={16} />}        label="Boosted"                value={stats.boostedProducts}      accent />
+                  <StatCard icon={<Sparkles size={16} />}   label="Sponsored"              value={stats.sponsoredProducts}    gold />
+                  <StatCard icon={<BarChart3 size={16} />}  label="Total Impressions"      value={stats.totalImpressions}     />
                   <StatCard icon={<TrendingUp size={16} />} label="Sponsored Impressions"  value={stats.sponsoredImpressions} gold />
-                  <StatCard icon={<TrendingUp size={16} />} label="Featured Impressions"   value={stats.featuredImpressions} accent />
+                  <StatCard icon={<TrendingUp size={16} />} label="Featured Impressions"   value={stats.featuredImpressions}  accent />
                 </motion.div>
               )}
 
@@ -236,7 +244,9 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>Product Visibility</h2>
-                    <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>Adjust boost level and sponsored placement</p>
+                    <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+                      Adjust boost, sponsored placement, and product images
+                    </p>
                   </div>
                   <div className="flex rounded-full p-0.5 gap-0.5" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
                     {(["all", "cigar", "alcohol"] as CategoryFilter[]).map((f) => (
@@ -255,10 +265,13 @@ export default function Dashboard() {
                       <motion.div key={item.id} layout
                         initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.97 }}
                         transition={{ delay: i * 0.04 }}>
-                        <ProductRow item={item}
-                          isSaving={saving[item.id] ?? false} justSaved={saved[item.id] ?? false}
+                        <ProductRow
+                          item={item}
+                          isSaving={saving[item.id] ?? false}
+                          justSaved={saved[item.id] ?? false}
                           onBoostChange={(lvl) => handleBoostChange(item, lvl)}
                           onSponsoredChange={(s) => handleSponsoredChange(item, s)}
+                          onImageUpload={(file) => handleImageUpload(item, file)}
                         />
                       </motion.div>
                     ))}
@@ -297,6 +310,7 @@ export default function Dashboard() {
                   </div>
                 </motion.div>
               )}
+
             </div>
           )
         )}
@@ -305,7 +319,11 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ icon, label, value, accent, gold }: { icon: React.ReactNode; label: string; value: number; accent?: boolean; gold?: boolean }) {
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function StatCard({ icon, label, value, accent, gold }: {
+  icon: React.ReactNode; label: string; value: number; accent?: boolean; gold?: boolean;
+}) {
   return (
     <div className="p-4 rounded-xl flex items-center gap-3"
       style={{
@@ -321,16 +339,59 @@ function StatCard({ icon, label, value, accent, gold }: { icon: React.ReactNode;
   );
 }
 
-function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChange }: {
-  item: InventoryItem; isSaving: boolean; justSaved: boolean;
-  onBoostChange: (l: number) => void; onSponsoredChange: (s: boolean) => void;
+function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChange, onImageUpload }: {
+  item: InventoryItem;
+  isSaving: boolean;
+  justSaved: boolean;
+  onBoostChange: (l: number) => void;
+  onSponsoredChange: (s: boolean) => void;
+  onImageUpload: (file: File) => void;
 }) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const thumbUrl = item.imageUrl
+    ? cloudinaryOptimize(item.imageUrl, 96, 96)
+    : null;
+
   return (
     <div className="flex items-center gap-4 p-4 rounded-xl"
       style={{
         background: item.sponsored ? "rgba(212,175,55,0.05)" : "rgba(255,255,255,0.025)",
-        border: item.sponsored ? "1px solid rgba(212,175,55,0.18)" : "1px solid rgba(255,255,255,0.06)",
+        border:     item.sponsored ? "1px solid rgba(212,175,55,0.18)" : "1px solid rgba(255,255,255,0.06)",
       }}>
+
+      {/* Image thumbnail + upload trigger */}
+      <div className="relative flex-shrink-0 group/img" style={{ width: 52, height: 52 }}>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="sr-only"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) onImageUpload(f); e.target.value = ""; }}
+        />
+        <button
+          onClick={() => fileRef.current?.click()}
+          disabled={isSaving}
+          className="w-full h-full rounded-lg overflow-hidden relative"
+          style={{
+            background: thumbUrl ? "transparent" : "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
+          title="Upload product image"
+        >
+          {thumbUrl ? (
+            <img src={thumbUrl} alt={item.name} className="w-full h-full object-cover" />
+          ) : (
+            <ImagePlus size={16} className="absolute inset-0 m-auto" style={{ color: "rgba(212,175,55,0.3)" }} />
+          )}
+          {/* Hover overlay */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 rounded-lg"
+            style={{ background: "rgba(10,6,2,0.65)" }}>
+            <ImagePlus size={14} style={{ color: "rgba(212,175,55,0.85)" }} />
+          </div>
+        </button>
+      </div>
+
+      {/* Name + meta */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <p className="font-serif text-sm truncate" style={{ color: "rgba(220,200,165,0.85)" }}>{item.name}</p>
@@ -338,6 +399,12 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
             <span className="text-[8px] uppercase tracking-[0.15em] px-1.5 py-0.5 rounded-full flex items-center gap-1 flex-shrink-0"
               style={{ background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.25)", color: "rgba(212,175,55,0.75)" }}>
               <Sparkles size={7} />Sponsored
+            </span>
+          )}
+          {item.imageUrl && (
+            <span className="text-[8px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full flex-shrink-0"
+              style={{ background: "rgba(100,200,120,0.08)", border: "1px solid rgba(100,200,120,0.2)", color: "rgba(100,200,120,0.6)" }}>
+              ✓ Image
             </span>
           )}
         </div>
@@ -351,6 +418,8 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
           )}
         </div>
       </div>
+
+      {/* Boost selector */}
       <div className="flex flex-col items-center gap-1.5">
         <p className="text-[8px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.35)" }}>Boost</p>
         <div className="flex gap-1">
@@ -364,6 +433,8 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
           ))}
         </div>
       </div>
+
+      {/* Sponsored toggle */}
       <div className="flex flex-col items-center gap-1.5">
         <p className="text-[8px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.35)" }}>Sponsored</p>
         <button onClick={() => onSponsoredChange(!item.sponsored)}
@@ -376,6 +447,8 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
           />
         </button>
       </div>
+
+      {/* Save indicator */}
       <div className="w-5 flex-shrink-0">
         <AnimatePresence>
           {justSaved && !isSaving && (
