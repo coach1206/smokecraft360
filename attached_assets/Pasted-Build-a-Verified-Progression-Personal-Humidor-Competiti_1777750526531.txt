@@ -1,0 +1,225 @@
+Build a Verified Progression, Personal Humidor, Competition, and Status System for SmokeCraft 360.
+
+GOAL:
+Create a system where users can ONLY level up through real, verified purchases at lounges, track their personal cigar/drink history, compete for status, and unlock elite rewards like creating their own cigar and band.
+
+--------------------------------------------------
+1. VERIFIED ORDER SYSTEM (CORE)
+
+Extend orders table:
+
+- id
+- userId
+- venueId
+- productId
+- pairingId
+- foodId
+- orderType
+- status ("pending", "completed")
+- verified (boolean)
+- verifiedAt (timestamp)
+- verificationMethod ("staff", "qr", "pos")
+
+--------------------------------------------------
+2. VERIFICATION METHODS
+
+Support:
+
+A. STAFF CONFIRMATION
+- staff marks order completed → verified = true
+
+B. QR CODE
+- generate QR per order
+- scan at lounge → verified = true
+
+C. POS (future ready)
+- auto-verify via POS
+
+--------------------------------------------------
+3. XP SYSTEM (STRICT)
+
+ONLY award XP when:
+verified = true
+
+NO verification = NO XP
+
+--------------------------------------------------
+4. XP REWARDS
+
+Award XP:
+
+- cigar purchase → +10
+- drink pairing → +8
+- full combo (cigar + drink + food) → +20 bonus
+- new product tried → +5 bonus
+
+--------------------------------------------------
+5. PERSONAL HUMIDOR (REAL HISTORY)
+
+Create:
+
+userHumidor:
+
+- id
+- userId
+- productId
+- category
+- quantityPurchased
+- lastPurchasedAt
+
+ONLY update if:
+verified = true
+
+--------------------------------------------------
+6. USER PROGRESSION TRACKING
+
+Track:
+
+- totalVerifiedOrders
+- totalCigarsSmoked
+- totalDrinksTried
+- blendsCreated
+- XP
+
+--------------------------------------------------
+7. LEVEL SYSTEM (STATUS)
+
+Levels:
+
+1. Explorer
+2. Enthusiast
+3. Aficionado
+4. Connoisseur
+5. Maestro del Fuego (Top Tier)
+
+Unlock based on:
+- verified orders
+- XP
+- variety (different products tried)
+
+--------------------------------------------------
+8. LEVEL PROGRESSION RULES
+
+Example:
+
+- Explorer → 0–5 verified orders
+- Enthusiast → 5–15
+- Aficionado → 15–30
+- Connoisseur → 30–60
+- Maestro del Fuego → 60+ + high XP
+
+--------------------------------------------------
+9. BLEND COMPETITION SYSTEM
+
+Each blend gets:
+
+blendScore based on:
+- flavor harmony
+- pairing compatibility
+- strength balance
+- popularity
+
+--------------------------------------------------
+10. LEADERBOARD
+
+Rank users by:
+
+- XP
+- blendScore
+- verified orders
+
+Display:
+
+- Top Creators
+- Top Smokers
+- Trending Users
+
+--------------------------------------------------
+11. STATUS + PROFILE DISPLAY
+
+Show:
+
+- level title
+- XP progress bar
+- verified orders
+- favorite flavors
+- total cigars/drinks tried
+
+--------------------------------------------------
+12. COMBO BONUS SYSTEM
+
+Encourage:
+
+- cigar + drink → bonus XP
+- cigar + drink + food → higher bonus XP
+
+--------------------------------------------------
+13. TOP TIER UNLOCK (ELITE)
+
+At "Maestro del Fuego":
+
+Unlock:
+
+- Create Signature Cigar
+- Define flavor profile
+- Name the cigar
+
+--------------------------------------------------
+14. BAND CREATOR (ELITE ONLY)
+
+Allow:
+
+- custom colors
+- custom emblem
+- custom text
+
+Save as:
+"Signature Series"
+
+--------------------------------------------------
+15. SOCIAL STATUS + BRAGGING RIGHTS
+
+Display:
+
+- "Top 10 This Week"
+- "Most Recreated Blend"
+- "Trending Creator"
+
+--------------------------------------------------
+16. FRAUD PREVENTION
+
+Prevent:
+
+- manual XP edits
+- fake order creation
+- duplicate verification
+
+--------------------------------------------------
+17. VENUE DASHBOARD ADDITIONS
+
+Allow staff to:
+
+- view orders
+- verify orders
+- scan QR codes
+
+--------------------------------------------------
+18. USER FEEDBACK
+
+After verification:
+
+Display:
+
+"Your experience has been verified. XP awarded."
+
+--------------------------------------------------
+GOAL
+
+Create a system where:
+
+- users level up ONLY through real purchases
+- status reflects real-world experience
+- lounges validate activity
+- users compete for recognition
+- elite users unlock custom creation tools
+- platform drives real purchasing behavior

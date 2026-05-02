@@ -55,7 +55,10 @@ Ten tables pushed to PostgreSQL via Drizzle:
 | `distributors.ts` | `distributors` | Distributor partners: name, state, contactEmail, website |
 | `campaigns.ts` | `campaigns` | Sponsored campaign structure (future-ready) |
 | `demandRequests.ts` | `demand_requests` | Guest requests for out-of-stock products (legacy OOS capture) |
-| `demandEvents.ts`   | `demand_events`   | Comprehensive demand signals: selection, oos_request, order, blend_use, search |
+| `demandEvents.ts`     | `demand_events`    | Comprehensive demand signals: selection, oos_request, order, blend_use, search |
+| `orders.ts`           | `orders`           | Extended with: `verified`, `verifiedAt`, `verificationMethod`, `verifiedBy`, `xpAwarded` columns |
+| `userProgression.ts`  | `user_progression` | 5-tier XP progression (one row per user); xp, totalVerifiedOrders, humidor stats |
+| `userHumidor.ts`      | `user_humidor`     | Personal purchase history per user × product (verified orders only) |
 
 ---
 
@@ -167,6 +170,51 @@ engine/
 - `components/Auth/LoginModal.tsx` — Login/Register modal with role selector
 - `App.tsx` — wraps all routes with `<AuthProvider>`
 - `pages/Dashboard.tsx` — gated: unauthenticated → login prompt, wrong role → denied
+
+---
+
+## Verified Progression, Humidor & Competition System
+
+### Level Tiers (`artifacts/smokecraft/src/lib/levels.ts`)
+
+Both verified-orders AND xp thresholds must be met to advance:
+
+| Index | Title | Min Orders | Min XP | Unlocks |
+|---|---|---|---|---|
+| 0 | Explorer | 0 | 0 | — |
+| 1 | Enthusiast | 5 | 50 | — |
+| 2 | Aficionado | 15 | 150 | — |
+| 3 | Connoisseur | 30 | 350 | `isElite = true` |
+| 4 | Maestro del Fuego | 60 | 700 | Band Creator + Signature Cigar |
+
+### XP Awards (verified orders only)
+- Cigar: +10 · Drink: +8 · Food: +4
+- Full combo (all 3): +20 bonus
+- First time trying a product: +5 bonus per new product
+
+### Backend Routes
+
+| Endpoint | Auth | Purpose |
+|---|---|---|
+| `PATCH /api/orders/:id/verify` | staff+ | Mark order verified → award XP atomically |
+| `GET /api/orders/:id/qr` | Required | Gold SVG QR code for order |
+| `GET /api/orders/:id/verify-scan` | staff+ | QR scan landing → auto-verify |
+| `GET /api/progression` | Required | User XP, level, humidor, recent orders |
+| `GET /api/progression/leaderboard` | Required | Top 10 by XP / verified orders / 7-day trending |
+
+### Services
+- `artifacts/api-server/src/services/xpEngine.ts` — CAS-guarded XP awarding + humidor upsert
+- Fraud prevention: only staff/manager/venue_owner/super_admin can verify; double-verify is idempotent
+
+### Dashboard Tabs (staff-visible)
+- **Verify Orders** — list pending/verified orders, one-click verify, QR modal, XP toast
+- **Leaderboard** — Top Creators (by XP), Top Smokers (by orders), Trending (7 days)
+
+### Frontend
+- `artifacts/smokecraft/src/components/Dashboard/VerifyOrdersTab.tsx`
+- `artifacts/smokecraft/src/components/Dashboard/LeaderboardTab.tsx`
+- `artifacts/smokecraft/src/components/Profile/ProfileBadge.tsx` — 5-tier arc/crown display
+- `artifacts/smokecraft/src/lib/levels.ts` — `computeLevel()`, `levelProgress()`, `nextTier()`
 
 ### Scoring (Recommendation Engine)
 

@@ -293,20 +293,24 @@ export interface CreateOrderParams {
 }
 
 export interface Order {
-  id:          string;
-  userId?:     string;
-  venueId?:    string;
-  cigarId?:    string;
-  cigarName?:  string;
-  drinkId?:    string;
-  drinkName?:  string;
-  foodId?:     string;
-  foodName?:   string;
-  orderType:   OrderType;
-  status:      OrderStatus;
-  tableNumber?: string;
-  createdAt:   string;
-  updatedAt:   string;
+  id:                  string;
+  userId?:             string;
+  venueId?:            string;
+  cigarId?:            string;
+  cigarName?:          string;
+  drinkId?:            string;
+  drinkName?:          string;
+  foodId?:             string;
+  foodName?:           string;
+  orderType:           OrderType;
+  status:              OrderStatus;
+  tableNumber?:        string;
+  verified:            boolean;
+  verifiedAt?:         string | null;
+  verificationMethod?: string | null;
+  xpAwarded:           boolean;
+  createdAt:           string;
+  updatedAt:           string;
 }
 
 export async function createOrder(params: CreateOrderParams): Promise<Order> {
@@ -336,6 +340,124 @@ export async function updateOrderStatus(id: string, status: OrderStatus): Promis
     body:    JSON.stringify({ status }),
   });
   if (!res.ok) throw new Error("Failed to update order status");
+  return res.json();
+}
+
+// ── Order verification ─────────────────────────────────────────────────────
+
+export interface XpBreakdown { reason: string; xp: number }
+export interface XpResult    { xpAwarded: number; breakdown: XpBreakdown[]; newXp: number; newOrders: number }
+
+export interface VerifyOrderResponse {
+  order:          Order;
+  xpResult:       XpResult | null;
+  message:        string;
+  alreadyVerified: boolean;
+}
+
+export async function verifyOrder(
+  id: string,
+  method: "staff" | "qr" | "pos" = "staff",
+): Promise<VerifyOrderResponse> {
+  const res = await fetch(`/api/orders/${id}/verify`, {
+    method:  "PATCH",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body:    JSON.stringify({ method }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Verification failed");
+  }
+  return res.json();
+}
+
+/** Returns the URL for the order's QR code SVG image. */
+export function getOrderQrUrl(orderId: string): string {
+  return `/api/orders/${orderId}/qr`;
+}
+
+// ── User Progression ───────────────────────────────────────────────────────
+
+export interface LevelInfo {
+  index:           number;
+  title:           string;
+  nextTier:        { title: string; minOrders: number; minXp: number } | null;
+  progressPercent: number;
+}
+
+export interface HumidorEntry {
+  id:                string;
+  productId:         string;
+  productName:       string | null;
+  category:          string | null;
+  quantityPurchased: number;
+  lastPurchasedAt:   string;
+  firstPurchasedAt:  string;
+  imageUrl:          string | null;
+}
+
+export interface RecentOrderSummary {
+  id:                 string;
+  cigarName?:         string | null;
+  drinkName?:         string | null;
+  foodName?:          string | null;
+  orderType:          string;
+  status:             string;
+  verified:           boolean;
+  verifiedAt?:        string | null;
+  verificationMethod?: string | null;
+  xpAwarded:          boolean;
+  createdAt:          string;
+}
+
+export interface UserProgressionData {
+  userId:              string;
+  xp:                  number;
+  totalVerifiedOrders: number;
+  totalCigarsSmoked:   number;
+  totalDrinksTried:    number;
+  totalFoodOrders:     number;
+  blendsCreated:       number;
+  uniqueProductsTried: number;
+  level:               LevelInfo;
+  humidor:             HumidorEntry[];
+  recentOrders:        RecentOrderSummary[];
+}
+
+export async function fetchProgression(): Promise<UserProgressionData> {
+  const res = await fetch("/api/progression", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch progression");
+  return res.json();
+}
+
+// ── Leaderboard ────────────────────────────────────────────────────────────
+
+export interface LeaderEntry {
+  userId:              string;
+  name:                string;
+  xp:                  number;
+  totalVerifiedOrders: number;
+  totalCigarsSmoked?:  number;
+  totalDrinksTried?:   number;
+  level:               LevelInfo;
+}
+
+export interface TrendingEntry {
+  userId:     string;
+  name:       string;
+  orderCount: number;
+}
+
+export interface LeaderboardData {
+  generatedAt:   string;
+  topCreators:   LeaderEntry[];
+  topSmokers:    LeaderEntry[];
+  trendingUsers: TrendingEntry[];
+}
+
+export async function fetchLeaderboard(): Promise<LeaderboardData> {
+  const res = await fetch("/api/progression/leaderboard", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch leaderboard");
   return res.json();
 }
 

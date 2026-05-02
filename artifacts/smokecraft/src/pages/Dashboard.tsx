@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, TrendingUp, Package, Sparkles, Zap,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
-  Building2, Tag, Brain, DollarSign,
+  Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy,
 } from "lucide-react";
 import { LiveOrders }                from "@/components/Dashboard/LiveOrders";
 import { BrandsTab }               from "@/components/Dashboard/BrandsTab";
@@ -11,6 +11,8 @@ import { InsightsTab }             from "@/components/Dashboard/InsightsTab";
 import { CampaignsTab }            from "@/components/Dashboard/CampaignsTab";
 import { InventoryIntelligenceTab } from "@/components/Dashboard/InventoryIntelligenceTab";
 import { DemandProofTab }           from "@/components/Dashboard/DemandProofTab";
+import { VerifyOrdersTab }          from "@/components/Dashboard/VerifyOrdersTab";
+import { LeaderboardTab }           from "@/components/Dashboard/LeaderboardTab";
 import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
   type InventoryItem, type AnalyticsSummary,
@@ -23,7 +25,7 @@ import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
-type DashTab = "overview" | "products" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "analytics";
+type DashTab = "overview" | "products" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "analytics";
 
 const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
   { id: "overview",     label: "Overview",              icon: <BarChart3 size={12} />    },
@@ -33,6 +35,8 @@ const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
   { id: "insights",     label: "Brand Insights",        icon: <TrendingUp size={12} />   },
   { id: "intelligence", label: "Inventory Intel",       icon: <Brain size={12} />        },
   { id: "demand",       label: "Demand Proof",          icon: <DollarSign size={12} />   },
+  { id: "verify",       label: "Verify Orders",         icon: <ShieldCheck size={12} />  },
+  { id: "leaderboard",  label: "Leaderboard",           icon: <Trophy size={12} />       },
   { id: "analytics",    label: "Analytics",             icon: <Tag size={12} />          },
 ];
 
@@ -416,6 +420,24 @@ export default function Dashboard() {
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.25 }}>
                     <DemandProofTab />
+                  </motion.div>
+                )}
+
+                {/* ── Verify Orders tab ─────────────────────────────────────── */}
+                {activeTab === "verify" && (
+                  <motion.div key="verify"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+                    <VerifyOrdersTab />
+                  </motion.div>
+                )}
+
+                {/* ── Leaderboard tab ───────────────────────────────────────── */}
+                {activeTab === "leaderboard" && (
+                  <motion.div key="leaderboard"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+                    <LeaderboardTab />
                   </motion.div>
                 )}
 

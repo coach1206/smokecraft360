@@ -28,6 +28,8 @@ import demandRouter             from "./routes/demand";
 import demandEventsRouter       from "./routes/demandEvents";
 import demandProofRouter        from "./routes/demandProof";
 import demandInsightsRouter     from "./routes/demandInsights";
+import orderVerificationRouter  from "./routes/orderVerification";
+import progressionRouter        from "./routes/progression";
 import venueIntelligenceRouter  from "./routes/venueIntelligence";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -117,6 +119,8 @@ app.use("/api/demand",                      demandEventsRouter);
 app.use("/api/demand",                      demandRouter);
 app.use("/api/demand",                      demandProofRouter);
 app.use("/api/demand",                      demandInsightsRouter);
+app.use("/api/orders",                      orderVerificationRouter);
+app.use("/api/progression",                 progressionRouter);
 app.use("/api/venues",                      venueIntelligenceRouter);
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────

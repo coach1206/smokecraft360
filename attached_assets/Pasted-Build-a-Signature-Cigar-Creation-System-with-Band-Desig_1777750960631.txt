@@ -1,0 +1,172 @@
+Build a Signature Cigar Creation System with Band Designer and Manufacturer Pipeline for SmokeCraft 360.
+
+GOAL:
+Allow top-tier users to design their own cigar band and submit a custom cigar concept that can be fulfilled by partner manufacturers.
+
+--------------------------------------------------
+1. ACCESS CONTROL (ELITE ONLY)
+
+Only users with level:
+"Maestro del Fuego"
+
+Can access:
+
+"Create Your Signature Cigar"
+
+--------------------------------------------------
+2. BAND CREATOR (TEMPLATE SYSTEM)
+
+Provide pre-built templates:
+
+Band styles:
+- Classic Gold Label
+- Modern Minimal
+- Vintage Cuban
+- Luxury Black
+
+Customization options:
+
+- primary color
+- accent color
+- font style
+- emblem/icon (crown, flame, crest, etc.)
+- brand name (user-defined)
+
+Display:
+- live preview of cigar band
+
+--------------------------------------------------
+3. DESIGN OUTPUT
+
+Save:
+
+- bandDesignJSON
+- preview image (via canvas or export)
+- userId
+- timestamp
+
+--------------------------------------------------
+4. CIGAR SPEC BUILDER
+
+User defines:
+
+- strength (mild → strong)
+- flavor direction (sweet, bold, spicy, creamy)
+- wrapper type (light, dark, Maduro-style)
+- preferred pairing (optional)
+
+Save as:
+
+cigarSpec
+
+--------------------------------------------------
+5. SIGNATURE SUBMISSION SYSTEM
+
+Create:
+
+signatureRequests table:
+
+- id
+- userId
+- bandDesign
+- cigarSpec
+- status ("draft", "submitted", "review", "approved", "production")
+- manufacturerId (nullable)
+- createdAt
+
+--------------------------------------------------
+6. MANUFACTURER PIPELINE (STRUCTURE)
+
+Create:
+
+manufacturers table:
+
+- id
+- name
+- contactEmail
+- specialty (premium, boutique, etc.)
+
+Allow admin to:
+
+- assign request to manufacturer
+- update status
+
+--------------------------------------------------
+7. REQUEST FLOW
+
+User submits:
+
+"Submit My Signature Cigar"
+
+System:
+
+- stores request
+- flags for admin review
+
+Admin can:
+
+- approve concept
+- assign manufacturer
+
+--------------------------------------------------
+8. PRODUCTION OPTIONS (FUTURE READY)
+
+Allow stages:
+
+- sample batch
+- small run (limited edition)
+- full production
+
+--------------------------------------------------
+9. USER STATUS DISPLAY
+
+Show:
+
+"Signature Creator"
+
+Display:
+
+- their cigar design
+- status of production
+
+--------------------------------------------------
+10. BRAND PROTECTION (IMPORTANT)
+
+Prevent:
+
+- offensive names
+- duplicate brand names
+
+Add validation step.
+
+--------------------------------------------------
+11. DASHBOARD (ADMIN)
+
+Add:
+
+"Signature Requests"
+
+Show:
+
+- pending designs
+- approved designs
+- production status
+
+--------------------------------------------------
+12. FUTURE READY
+
+Prepare for:
+
+- direct manufacturer API integration
+- print-ready band export
+- packaging design (cigar box)
+
+--------------------------------------------------
+GOAL
+
+Create a system where:
+
+- elite users can design their own cigar identity
+- the platform captures real demand for custom products
+- manufacturers can fulfill these designs
+- SmokeCraft 360 becomes a bridge between user creativity and real production
