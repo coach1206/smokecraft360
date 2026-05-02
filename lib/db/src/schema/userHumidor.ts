@@ -8,8 +8,6 @@
  */
 
 import { pgTable, uuid, text, integer, timestamp, unique } from "drizzle-orm/pg-core";
-import { createInsertSchema }                              from "drizzle-zod";
-import { z }                                               from "zod/v4";
 
 export const userHumidorTable = pgTable(
   "user_humidor",
@@ -28,8 +26,4 @@ export const userHumidorTable = pgTable(
   }),
 );
 
-export const insertUserHumidorSchema = createInsertSchema(userHumidorTable).omit({
-  id: true, firstPurchasedAt: true,
-});
-export type InsertUserHumidor = z.infer<typeof insertUserHumidorSchema>;
-export type UserHumidor       = typeof userHumidorTable.$inferSelect;
+export type UserHumidor = typeof userHumidorTable.$inferSelect;

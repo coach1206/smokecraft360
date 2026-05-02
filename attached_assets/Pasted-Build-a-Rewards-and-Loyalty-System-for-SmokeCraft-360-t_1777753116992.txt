@@ -1,0 +1,126 @@
+Build a Rewards and Loyalty System for SmokeCraft 360 tied to verified purchases and user levels.
+
+GOAL:
+Increase repeat visits, higher spend per visit, and long-term engagement through structured rewards.
+
+--------------------------------------------------
+1. LOYALTY POINTS SYSTEM
+
+Track:
+
+- userPoints
+
+Award points ONLY for verified purchases:
+
+- cigar → +10 points
+- drink → +8 points
+- food → +5 points
+- full experience → +25 points
+
+--------------------------------------------------
+2. POINTS BALANCE
+
+Store:
+
+- totalPoints
+- pointsRedeemed
+
+--------------------------------------------------
+3. REWARD TYPES
+
+Create:
+
+rewards table:
+
+- id
+- name
+- type ("discount", "free item", "experience")
+- pointsCost
+- levelRequired
+- active
+
+--------------------------------------------------
+4. REDEEM SYSTEM
+
+Allow users to:
+
+- redeem points for rewards
+- deduct points from balance
+
+--------------------------------------------------
+5. LEVEL-BASED PERKS
+
+Explorer:
+- welcome bonus points
+
+Enthusiast:
+- small discounts (5%)
+
+Aficionado:
+- early access to products
+
+Connoisseur:
+- VIP perks (priority service, exclusive items)
+
+Maestro del Fuego:
+- elite access:
+  - custom cigar creation
+  - exclusive events
+  - highest priority perks
+
+--------------------------------------------------
+6. EXPERIENCE REWARDS (HIGH VALUE)
+
+Add rewards like:
+
+- free cigar pairing
+- tasting event access
+- VIP lounge seating
+- invite-only events
+
+--------------------------------------------------
+7. VENUE CONTROL
+
+Allow venue to:
+
+- create custom rewards
+- set point values
+- activate/deactivate rewards
+
+--------------------------------------------------
+8. DASHBOARD
+
+Add section:
+
+"Loyalty & Rewards"
+
+Show:
+
+- user points
+- available rewards
+- redeemed rewards
+
+--------------------------------------------------
+9. USER UI
+
+Show:
+
+- points balance
+- rewards available
+- progress to next reward
+
+--------------------------------------------------
+10. FRAUD CONTROL
+
+Only allow rewards from:
+verified purchases
+
+--------------------------------------------------
+GOAL
+
+Create a loyalty system that:
+
+- rewards real purchases
+- encourages repeat visits
+- increases spend per visit
+- enhances user experience

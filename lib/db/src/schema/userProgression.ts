@@ -15,9 +15,7 @@
  * Both conditions (orders AND xp) must reach the tier threshold to advance.
  */
 
-import { pgTable, uuid, integer, timestamp, unique } from "drizzle-orm/pg-core";
-import { createInsertSchema }                        from "drizzle-zod";
-import { z }                                         from "zod/v4";
+import { pgTable, uuid, integer, timestamp } from "drizzle-orm/pg-core";
 
 export const userProgressionTable = pgTable("user_progression", {
   id:                   uuid("id").primaryKey().defaultRandom(),
@@ -33,8 +31,4 @@ export const userProgressionTable = pgTable("user_progression", {
   createdAt:            timestamp("created_at").notNull().defaultNow(),
 });
 
-export const insertUserProgressionSchema = createInsertSchema(userProgressionTable).omit({
-  id: true, createdAt: true,
-});
-export type InsertUserProgression = z.infer<typeof insertUserProgressionSchema>;
-export type UserProgression       = typeof userProgressionTable.$inferSelect;
+export type UserProgression = typeof userProgressionTable.$inferSelect;
