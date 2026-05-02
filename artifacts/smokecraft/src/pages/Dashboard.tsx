@@ -3,13 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, TrendingUp, Package, Sparkles, Zap,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
-  Building2, Tag, Brain,
+  Building2, Tag, Brain, DollarSign,
 } from "lucide-react";
 import { LiveOrders }                from "@/components/Dashboard/LiveOrders";
 import { BrandsTab }               from "@/components/Dashboard/BrandsTab";
 import { InsightsTab }             from "@/components/Dashboard/InsightsTab";
 import { CampaignsTab }            from "@/components/Dashboard/CampaignsTab";
 import { InventoryIntelligenceTab } from "@/components/Dashboard/InventoryIntelligenceTab";
+import { DemandProofTab }           from "@/components/Dashboard/DemandProofTab";
 import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
   type InventoryItem, type AnalyticsSummary,
@@ -22,16 +23,17 @@ import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
-type DashTab = "overview" | "products" | "brands" | "campaigns" | "insights" | "intelligence" | "analytics";
+type DashTab = "overview" | "products" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "analytics";
 
 const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
-  { id: "overview",     label: "Overview",              icon: <BarChart3 size={12} />  },
-  { id: "products",     label: "Products",              icon: <Package size={12} />    },
-  { id: "brands",       label: "Brands & Distributors", icon: <Building2 size={12} />  },
-  { id: "campaigns",    label: "Campaigns",             icon: <Zap size={12} />        },
-  { id: "insights",     label: "Brand Insights",        icon: <TrendingUp size={12} /> },
-  { id: "intelligence", label: "Inventory Intel",       icon: <Brain size={12} />      },
-  { id: "analytics",    label: "Analytics",             icon: <Tag size={12} />        },
+  { id: "overview",     label: "Overview",              icon: <BarChart3 size={12} />    },
+  { id: "products",     label: "Products",              icon: <Package size={12} />      },
+  { id: "brands",       label: "Brands & Distributors", icon: <Building2 size={12} />    },
+  { id: "campaigns",    label: "Campaigns",             icon: <Zap size={12} />          },
+  { id: "insights",     label: "Brand Insights",        icon: <TrendingUp size={12} />   },
+  { id: "intelligence", label: "Inventory Intel",       icon: <Brain size={12} />        },
+  { id: "demand",       label: "Demand Proof",          icon: <DollarSign size={12} />   },
+  { id: "analytics",    label: "Analytics",             icon: <Tag size={12} />          },
 ];
 
 export default function Dashboard() {
@@ -405,6 +407,15 @@ export default function Dashboard() {
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.25 }}>
                     <InventoryIntelligenceTab />
+                  </motion.div>
+                )}
+
+                {/* ── Demand Proof tab ──────────────────────────────────────── */}
+                {activeTab === "demand" && (
+                  <motion.div key="demand"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+                    <DemandProofTab />
                   </motion.div>
                 )}
 

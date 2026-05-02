@@ -1,0 +1,110 @@
+Build a Demand Engine for SmokeCraft 360 that captures user behavior, identifies missing inventory, and generates real-time demand insights.
+
+GOAL:
+Turn user interactions into measurable demand and actionable insights for venues and distributors.
+
+-----------------------------------
+1. DATABASE TABLES
+-----------------------------------
+
+Create:
+
+demandEvents:
+- id
+- userId (nullable)
+- venueId
+- productName
+- category (cigar, alcohol, food)
+- flavorProfile (array or string)
+- eventType ("view", "select", "search", "request", "order")
+- timestamp
+
+missingDemand:
+- id
+- venueId
+- productName
+- category
+- requestCount
+- lastRequestedAt
+
+-----------------------------------
+2. TRACK DEMAND EVENTS
+-----------------------------------
+
+Whenever user:
+
+- views recommendation → log "view"
+- swipes right / selects → log "select"
+- searches → log "search"
+- requests unavailable product → log "request"
+- places order → log "order"
+
+-----------------------------------
+3. MISSING INVENTORY DETECTION
+-----------------------------------
+
+If user selects or searches for product NOT in inventory:
+
+- add or update entry in missingDemand
+- increment requestCount
+
+-----------------------------------
+4. DEMAND AGGREGATION
+-----------------------------------
+
+Create function:
+
+getDemandInsights(venueId):
+
+Return:
+
+- topRequestedProducts
+- topMissingProducts
+- topFlavors
+- topCategories
+
+-----------------------------------
+5. DASHBOARD VIEW
+-----------------------------------
+
+Add new section:
+
+"Customer Demand"
+
+Display:
+
+- Most Requested Products
+- Missing Inventory (high demand items not stocked)
+- Trending Flavors
+- Most Selected Items
+
+-----------------------------------
+6. SIMPLE TREND LOGIC
+-----------------------------------
+
+Rank based on:
+
+- number of selects
+- number of requests
+- number of orders
+
+-----------------------------------
+7. INSIGHT GENERATION
+-----------------------------------
+
+Generate simple statements:
+
+- "Customers are requesting [X] frequently"
+- "[Flavor] profiles are trending"
+- "High demand for items not in stock"
+
+-----------------------------------
+8. PERFORMANCE
+
+- fast queries
+- limit to top 10 items per category
+
+-----------------------------------
+GOAL
+
+Create a system that captures real demand, highlights missed opportunities, and provides clear insight into what customers want.

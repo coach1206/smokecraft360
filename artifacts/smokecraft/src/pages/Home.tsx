@@ -16,7 +16,7 @@ import { VaultModal }        from "@/components/Vault/VaultModal";
 import { BandCreatorModal }  from "@/components/Band/BandCreatorModal";
 import { OfflineBanner }     from "@/components/PWA/OfflineBanner";
 import { InstallBanner }     from "@/components/PWA/InstallBanner";
-import { fetchRecommendations, createDemandRequest, trackEvent, trackPreferences, persistExperience, type RecommendResponse, type ProductResult, type OrderType } from "@/services/api";
+import { fetchRecommendations, createDemandRequest, captureDemandEvent, trackEvent, trackPreferences, persistExperience, type RecommendResponse, type ProductResult, type OrderType } from "@/services/api";
 import { useUser }           from "@/hooks/useUser";
 import { useOnlineStatus }   from "@/hooks/useOnlineStatus";
 import { useVenue }          from "@/contexts/VenueContext";
@@ -149,11 +149,21 @@ export default function Home() {
   const handleRequestItem = (item: ProductResult) => {
     if (requestedItems.has(item.id)) return;
     setRequestedItems((prev) => new Set([...prev, item.id]));
+    const venueIdParam = venue.id !== "default" ? venue.id : undefined;
+    // Fire both legacy demand_requests and new demand_events
     createDemandRequest({
       productId:   item.id,
       productName: item.name,
       category:    item.category,
-      venueId:     venue.id !== "default" ? venue.id : undefined,
+      venueId:     venueIdParam,
+    });
+    captureDemandEvent({
+      productId:   item.id,
+      productName: item.name,
+      category:    item.category,
+      flavorNotes: item.flavorNotes,
+      eventType:   "oos_request",
+      venueId:     venueIdParam,
     });
   };
 
@@ -185,6 +195,17 @@ export default function Home() {
         productId,
         metadata: product?.campaignId ? { campaignId: product.campaignId } : undefined,
       });
+      // Capture as demand signal
+      if (product) {
+        captureDemandEvent({
+          productId,
+          productName: product.name,
+          category:    product.category,
+          flavorNotes: product.flavorNotes,
+          eventType:   "selection",
+          venueId:     venue.id !== "default" ? venue.id : undefined,
+        });
+      }
     }
   };
 

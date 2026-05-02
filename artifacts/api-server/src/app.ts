@@ -25,6 +25,8 @@ import checkoutRouter           from "./routes/checkout";
 import { stripeWebhookHandler } from "./routes/stripeWebhook";
 import demoRouter               from "./routes/demo";
 import demandRouter             from "./routes/demand";
+import demandEventsRouter       from "./routes/demandEvents";
+import demandProofRouter        from "./routes/demandProof";
 import venueIntelligenceRouter  from "./routes/venueIntelligence";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -110,7 +112,9 @@ app.use("/api/upload",                      uploadRouter);
 app.use("/api/orders",                      ordersRouter);
 app.use("/api",                             checkoutRouter);
 app.use("/api",                             demoRouter);
+app.use("/api/demand",                      demandEventsRouter);
 app.use("/api/demand",                      demandRouter);
+app.use("/api/demand",                      demandProofRouter);
 app.use("/api/venues",                      venueIntelligenceRouter);
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────

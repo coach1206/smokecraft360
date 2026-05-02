@@ -705,6 +705,29 @@ export async function fetchInsights(params: {
   return res.json();
 }
 
+// ── Demand events ─────────────────────────────────────────────────────────────
+
+export type DemandEventType = "selection" | "oos_request" | "order" | "blend_use" | "search";
+
+export interface DemandEventParams {
+  productId:    string;
+  productName?: string;
+  category?:    string;
+  flavorNotes?: string[];
+  eventType:    DemandEventType;
+  venueId?:     string;
+  sessionId?:   string;
+}
+
+/** Fire-and-forget — captures a demand signal. Never blocks the UI. */
+export function captureDemandEvent(params: DemandEventParams): void {
+  fetch("/api/demand/events", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body:    JSON.stringify(params),
+  }).catch(() => { /* fire-and-forget */ });
+}
+
 // ── Demand requests ───────────────────────────────────────────────────────────
 
 export interface DemandRequestParams {
@@ -779,6 +802,75 @@ export async function fetchVenueIntelligence(venueId: string): Promise<VenueInte
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error((err as { error?: string }).error ?? "Failed to fetch venue intelligence");
+  }
+  return res.json();
+}
+
+// ── Demand Proof ─────────────────────────────────────────────────────────────
+
+export interface DemandScoreItem {
+  productId:   string;
+  productName: string;
+  category:    string;
+  score:       number;
+  selections:  number;
+  oosRequests: number;
+  orders:      number;
+  blendUses:   number;
+  trendScore:  number;
+  inStock:     boolean;
+}
+
+export interface DemandProof {
+  generatedAt: string;
+  venueId:     string | null;
+  summary: {
+    totalDemandSignals:     number;
+    totalOrders:            number;
+    conversionRate:         number;
+    missedSalesCount:       number;
+    uniqueProductsDemanded: number;
+  };
+  topDemandedCigars:   DemandScoreItem[];
+  topDemandedAlcohol:  DemandScoreItem[];
+  allProducts:         DemandScoreItem[];
+  missedSales:         DemandScoreItem[];
+  trendingFlavors:     { flavor: string; count: number }[];
+  categoryDistribution: { cigar: number; alcohol: number };
+  insightStatements:   string[];
+}
+
+export interface DemandOpportunity {
+  productId:     string;
+  productName:   string;
+  category:      string;
+  totalRequests: number;
+  venuesMissing: number;
+  urgency:       "high" | "medium" | "low";
+  statement:     string;
+}
+
+export interface DemandOpportunitiesResponse {
+  generatedAt:        string;
+  opportunities:      DemandOpportunity[];
+  totalOpportunities: number;
+}
+
+export async function fetchDemandProof(venueId?: string): Promise<DemandProof> {
+  const qs  = venueId ? `?venueId=${encodeURIComponent(venueId)}` : "";
+  const res = await fetch(`/api/demand/proof${qs}`, { headers: getAuthHeaders() });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to fetch demand proof");
+  }
+  return res.json();
+}
+
+export async function fetchDemandOpportunities(): Promise<DemandOpportunitiesResponse> {
+  const res = await fetch("/api/demand/opportunities", { headers: getAuthHeaders() });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to fetch opportunities");
   }
   return res.json();
 }

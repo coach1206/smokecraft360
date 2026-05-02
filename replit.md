@@ -54,7 +54,8 @@ Ten tables pushed to PostgreSQL via Drizzle:
 | `venueInventory.ts` | `venue_inventory` | Per-venue stock levels |
 | `distributors.ts` | `distributors` | Distributor partners: name, state, contactEmail, website |
 | `campaigns.ts` | `campaigns` | Sponsored campaign structure (future-ready) |
-| `demandRequests.ts` | `demand_requests` | Guest requests for out-of-stock products |
+| `demandRequests.ts` | `demand_requests` | Guest requests for out-of-stock products (legacy OOS capture) |
+| `demandEvents.ts`   | `demand_events`   | Comprehensive demand signals: selection, oos_request, order, blend_use, search |
 
 ---
 
