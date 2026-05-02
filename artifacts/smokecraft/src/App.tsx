@@ -4,12 +4,14 @@ import { Toaster }         from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider }    from "@/contexts/AuthContext";
 import { VenueProvider }   from "@/contexts/VenueContext";
+import { PresentationProvider } from "@/contexts/PresentationContext";
 import NotFound        from "@/pages/not-found";
 import Home            from "@/pages/Home";
 import Dashboard       from "@/pages/Dashboard";
 import PaymentSuccess  from "@/pages/PaymentSuccess";
 import PaymentCancel   from "@/pages/PaymentCancel";
-import { DemoBanner } from "@/components/Demo/DemoBanner";
+import { DemoBanner }            from "@/components/Demo/DemoBanner";
+import { PresentationOverlay }   from "@/components/Presentation/PresentationOverlay";
 
 const queryClient = new QueryClient();
 
@@ -31,11 +33,14 @@ function App() {
       <TooltipProvider>
         <VenueProvider>
           <AuthProvider>
-            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <Router />
-            </WouterRouter>
-            <DemoBanner />
-            <Toaster />
+            <PresentationProvider>
+              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <Router />
+              </WouterRouter>
+              <PresentationOverlay />
+              <DemoBanner />
+              <Toaster />
+            </PresentationProvider>
           </AuthProvider>
         </VenueProvider>
       </TooltipProvider>

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CategoryToggle }    from "@/components/CategoryToggle";
 import { FlavorChips }       from "@/components/FlavorChips";
@@ -20,7 +20,8 @@ import { fetchRecommendations, trackEvent, persistExperience, type RecommendResp
 import { useUser }           from "@/hooks/useUser";
 import { useOnlineStatus }   from "@/hooks/useOnlineStatus";
 import { useVenue }          from "@/contexts/VenueContext";
-import { AlertCircle, RotateCcw, Bookmark, BookmarkCheck, Flame, Zap, ShoppingBag } from "lucide-react";
+import { usePresentation }  from "@/contexts/PresentationContext";
+import { AlertCircle, RotateCcw, Bookmark, BookmarkCheck, Flame, Zap, ShoppingBag, MonitorPlay } from "lucide-react";
 import { OrderModal }        from "@/components/Order/OrderModal";
 import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
 import type { SavedBlend }   from "@/services/storage";
@@ -62,6 +63,15 @@ export default function Home() {
   const isOnline = useOnlineStatus();
   const venue    = useVenue();
 
+  const {
+    isActive:              isPresenting,
+    currentStep:           presentationStep,
+    shouldTriggerDiscover,
+    clearTriggerDiscover,
+    onResultsReady,
+    start:                 startPresentation,
+  } = usePresentation();
+
   const handleCategoryChange = (newCat: "cigar" | "alcohol") => {
     setCategory(newCat);
     setFlavors([]);
@@ -95,6 +105,24 @@ export default function Home() {
       );
     }
   }, [isOnline]);
+
+  // Presentation step 1 → 2: auto-fill form + trigger discover
+  useEffect(() => {
+    if (!shouldTriggerDiscover) return;
+    clearTriggerDiscover();
+    setCategory(DEMO.category);
+    setFlavors(DEMO.flavors);
+    setStrength(DEMO.strength);
+    setMood(DEMO.mood);
+    setIsDemoMode(true);
+    discover(DEMO);
+  }, [shouldTriggerDiscover, clearTriggerDiscover, discover]);
+
+  // Presentation step 2: auto-advance when results are ready
+  useEffect(() => {
+    if (!isPresenting || presentationStep !== 2) return;
+    if (phase === "results") onResultsReady();
+  }, [isPresenting, presentationStep, phase, onResultsReady]);
 
   const handleDiscover = () => {
     if (flavors.length === 0) { setError("Please select at least one tasting note."); return; }
@@ -262,23 +290,25 @@ export default function Home() {
                 </motion.div>
               )}
 
-              <section><CategoryToggle value={category} onChange={handleCategoryChange} /></section>
-              <section>
-                <FormLabel title="Palate" hint="Select notes" isElite={isElite} />
-                <FlavorChips category={category} selected={flavors} onChange={setFlavors} />
-              </section>
-              <section>
-                <FormLabel title="Strength" isElite={isElite} />
-                <StrengthSlider value={strength} onChange={setStrength} />
-              </section>
-              <section>
-                <FormLabel title="Atmosphere" isElite={isElite} />
-                <MoodSelector selected={mood} onChange={setMood} />
-              </section>
+              <div data-tour="tour-preferences" className="flex flex-col gap-10">
+                <section><CategoryToggle value={category} onChange={handleCategoryChange} /></section>
+                <section>
+                  <FormLabel title="Palate" hint="Select notes" isElite={isElite} />
+                  <FlavorChips category={category} selected={flavors} onChange={setFlavors} />
+                </section>
+                <section>
+                  <FormLabel title="Strength" isElite={isElite} />
+                  <StrengthSlider value={strength} onChange={setStrength} />
+                </section>
+                <section>
+                  <FormLabel title="Atmosphere" isElite={isElite} />
+                  <MoodSelector selected={mood} onChange={setMood} />
+                </section>
+              </div>
 
               <div className="mt-6 mb-2 flex flex-col gap-3">
                 {/* Primary CTA */}
-                <motion.button data-testid="btn-discover" onClick={handleDiscover}
+                <motion.button data-testid="btn-discover" data-tour="tour-discover" onClick={handleDiscover}
                   className="w-full py-5 font-serif text-xl tracking-[0.22em] uppercase rounded-sm relative overflow-hidden"
                   style={{
                     background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%), hsl(43 75% 44%))",
@@ -298,6 +328,28 @@ export default function Home() {
                   Curate Selection
                 </motion.button>
 
+                {/* Guided Tour CTA */}
+                <motion.button
+                  data-testid="btn-start-presentation"
+                  onClick={startPresentation}
+                  className="w-full py-3 text-xs uppercase tracking-[0.22em] rounded-sm flex items-center justify-center gap-2"
+                  style={{
+                    background: "rgba(212,175,55,0.05)",
+                    border: "1px solid rgba(212,175,55,0.28)",
+                    color: "rgba(212,175,55,0.65)",
+                  }}
+                  whileHover={{
+                    background: "rgba(212,175,55,0.1)",
+                    borderColor: "rgba(212,175,55,0.55)",
+                    color: "rgba(212,175,55,0.9)",
+                  }}
+                  whileTap={{ scale: 0.99 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <MonitorPlay size={12} />
+                  Start Guided Experience
+                </motion.button>
+
                 {/* Demo Mode CTA */}
                 {venue.features.demoMode && (
                   <motion.button
@@ -306,13 +358,13 @@ export default function Home() {
                     className="w-full py-3 text-xs uppercase tracking-[0.22em] rounded-sm flex items-center justify-center gap-2"
                     style={{
                       background: "rgba(255,255,255,0.03)",
-                      border: "1px dashed rgba(212,175,55,0.22)",
-                      color: "rgba(180,155,100,0.55)",
+                      border: "1px dashed rgba(212,175,55,0.18)",
+                      color: "rgba(180,155,100,0.4)",
                     }}
                     whileHover={{
-                      background: "rgba(212,175,55,0.05)",
-                      borderColor: "rgba(212,175,55,0.4)",
-                      color: "rgba(212,175,55,0.75)",
+                      background: "rgba(212,175,55,0.04)",
+                      borderColor: "rgba(212,175,55,0.35)",
+                      color: "rgba(212,175,55,0.65)",
                     }}
                     whileTap={{ scale: 0.99 }}
                     transition={{ duration: 0.2 }}
@@ -360,11 +412,13 @@ export default function Home() {
                 <p className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "rgba(212,175,55,0.45)" }}>Swipe to explore</p>
               </motion.div>
 
-              <CardStack
-                recommendations={results.recommendations}
-                onComplete={() => {}}
-                onSwipe={handleSwipe}
-              />
+              <div data-tour="tour-card-stack">
+                <CardStack
+                  recommendations={results.recommendations}
+                  onComplete={() => {}}
+                  onSwipe={handleSwipe}
+                />
+              </div>
 
               {/* Action buttons */}
               <motion.div className="flex items-center justify-center gap-3 mt-8 flex-wrap"
@@ -382,6 +436,7 @@ export default function Home() {
                   whileHover={{ scale: 1.04, boxShadow: "0 0 32px rgba(212,175,55,0.38), 0 6px 20px rgba(0,0,0,0.45)" }}
                   whileTap={{ scale: 0.97 }}
                   data-testid="btn-order"
+                  data-tour="tour-order-btn"
                 >
                   <motion.div className="absolute inset-0 pointer-events-none"
                     style={{ background: "linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.18) 50%, transparent 65%)", backgroundSize: "200% 100%" }}
@@ -429,7 +484,9 @@ export default function Home() {
               <FeaturedSection featured={featured} />
 
               {/* Alcohol pairings */}
-              <PairingsSection pairings={results.pairings} />
+              <div data-tour="tour-pairings">
+                <PairingsSection pairings={results.pairings} />
+              </div>
 
               {/* Food pairings */}
               {venue.features.foodPairing && <FoodSection foodPairings={foodPairings} />}
