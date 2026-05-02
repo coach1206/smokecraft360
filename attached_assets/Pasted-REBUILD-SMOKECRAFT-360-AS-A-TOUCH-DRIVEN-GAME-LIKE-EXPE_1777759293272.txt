@@ -1,0 +1,256 @@
+REBUILD SMOKECRAFT 360 AS A TOUCH-DRIVEN, GAME-LIKE EXPERIENCE WITH SWIPE INTERACTIONS, SLIDING SCREENS, AND DYNAMIC BACKGROUND VISUALS
+
+This is NOT a form. It must feel like a guided challenge where users swipe, choose, and unlock their experience step-by-step.
+
+---
+
+CORE EXPERIENCE
+
+Turn every step into an interactive moment:
+
+* Users SWIPE left or right to choose preferences
+* Each choice feels like a decision, not a setting
+* The system reacts instantly with visual feedback
+* The flow builds toward a final reveal
+
+---
+
+GLOBAL LAYOUT
+
+* Left: Sidebar (fixed, always visible)
+* Center: Interactive swipe area (main focus)
+* Background: REAL luxury lounge image that CHANGES dynamically
+
+The center area must NEVER be static
+
+---
+
+SIDEBAR BEHAVIOR (CRITICAL FIX)
+
+Sidebar is not just navigation — it controls screens
+
+When a user clicks a sidebar item:
+
+* Current screen slides OUT to the left
+* New screen slides IN from the right
+* Add subtle glow to clicked item
+* Play a soft click sound
+
+This must feel like panels opening and closing, not page switching
+
+---
+
+🔥 DYNAMIC BACKGROUND SYSTEM (MAJOR UPGRADE)
+
+The background MUST change based on what the user is selecting.
+
+This is NOT optional.
+
+For every step:
+
+* The background image transitions smoothly (fade 0.4–0.6s)
+* The image reflects what the user is currently working on
+* The product visual in the center updates with it
+
+---
+
+STEP: PALET / MOOD
+
+Background:
+
+* Changes to different lounge moods (warm, dim, rich tones)
+
+Center Image:
+
+* Cigar visual updates tone (lighter, darker, richer)
+
+User interaction:
+
+* Swipe RIGHT = accept
+* Swipe LEFT = skip
+* Tap = confirm selection
+
+Visual feedback:
+
+* Swipe right → gold highlight + “Selected”
+* Swipe left → fade out + next card appears
+* Background subtly shifts color temperature
+
+---
+
+STEP: FLAVOR
+
+Background:
+
+* Changes to close-up lifestyle scenes (whiskey pour, cigar ash, wood textures)
+
+Center Image:
+
+* Cigar + whiskey pairing updates visually
+
+User swipes through:
+
+* Cocoa
+* Cedar
+* Spice
+* Nutty
+
+As they swipe:
+
+* Background image transitions
+* Small text updates:
+
+  “Building flavor profile…”
+
+---
+
+STEP: STRENGTH
+
+Background:
+
+* Adjust lighting intensity
+
+  * Mild → brighter, softer
+  * Medium → balanced
+  * Intense → darker, deeper shadows
+
+Center Image:
+
+* Whiskey gets richer color
+* Cigar shadow deepens
+
+Replace slider with swipe cards:
+
+* Mild
+* Medium
+* Full
+
+---
+
+STEP: ATMOSPHERE
+
+Background MUST fully change scene:
+
+* Relaxed → couch lounge, soft lighting
+* Bold → darker, dramatic lighting
+* Social → multiple glasses / group vibe
+* Reflective → single chair, dim light
+
+This step should feel like changing environments
+
+---
+
+CARD DESIGN (IMPORTANT)
+
+Each swipe card must:
+
+* Be large and centered
+* Have soft shadow (depth)
+* Use light cream background
+* Use large readable text (18px+ minimum)
+* Include subtle REAL image (not emoji)
+
+---
+
+ANIMATION SYSTEM
+
+* Cards slide in from right
+* Previous cards slide out left
+* Slight rotation on swipe (like real card movement)
+* Background crossfades between images
+* Product image updates with smooth fade
+
+NO snapping or abrupt changes
+
+---
+
+PROGRESSION FEEDBACK
+
+After each selection:
+
+Show:
+
+“Your experience is taking shape…”
+
+Keep it large and readable
+
+---
+
+REVEAL SCREEN (FINAL PAYOFF)
+
+Trigger after all swipe steps complete
+
+Animation:
+
+* Screen dims slightly
+* Background shifts to premium final lounge scene
+* Product image locks into final position
+
+CENTER:
+
+* Large cigar + whiskey pairing (FINAL image)
+
+RIGHT:
+
+Light premium card with:
+
+Title:
+“Midnight Reserve”
+
+Subtext:
+“Crafted for your taste”
+
+Dynamic line:
+“Smooth • Smoky • Relaxed”
+
+---
+
+BUTTONS
+
+* Refine (secondary)
+* Save (secondary)
+* ORDER NOW (primary gold)
+* Share (ghost)
+
+---
+
+KIOSK + TOUCH RULES
+
+* Minimum touch targets: 60px
+* Large spacing
+* Clear feedback on every interaction
+* No small UI elements
+
+---
+
+CONSISTENCY RULE
+
+All screens must:
+
+* Use same sidebar
+* Use same card style
+* Use same animation system
+* Use same layout
+
+BUT:
+
+👉 Background MUST change dynamically per step
+👉 Product image MUST update with selections
+
+---
+
+FINAL GOAL
+
+The system must feel like:
+
+* a guided challenge
+* a swipe-based experience
+* a living environment that reacts to the user
+
+NOT:
+
+* a static interface
+* a flat design
+* a form
+
+---

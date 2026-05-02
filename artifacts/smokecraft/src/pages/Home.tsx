@@ -9,7 +9,8 @@ import { PairingsSection }   from "@/components/PairingsSection";
 import { FoodSection }       from "@/components/Food/FoodSection";
 import { FeaturedSection }   from "@/components/Featured/FeaturedSection";
 import { CigarBurnLoader }   from "@/components/CigarBurnLoader";
-import { AmbientBackground } from "@/components/AmbientBackground";
+import { DynamicBackground } from "@/components/DynamicBackground";
+import { SwipeCardDeck }     from "@/components/SwipeCardDeck";
 import { ProfileBadge }      from "@/components/Profile/ProfileBadge";
 import { EliteUnlockAnimation } from "@/components/Profile/EliteUnlockAnimation";
 import { VaultModal }               from "@/components/Vault/VaultModal";
@@ -31,6 +32,53 @@ import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
 import type { SavedBlend }   from "@/services/storage";
 
 type Phase = "welcome" | "form" | "loading" | "results";
+
+/* ── Universal slide animation ────────────────────────────────── */
+const SLIDE_VARIANTS = {
+  enter:  (dir: number) => ({ x: dir > 0 ? "110%" : "-110%", opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit:   (dir: number) => ({ x: dir > 0 ? "-55%"  : "55%",  opacity: 0 }),
+};
+const SLIDE_T = { duration: 0.42, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] };
+
+/* ── Swipe-deck card data ─────────────────────────────────────── */
+const CIGAR_FLAVORS = [
+  { id: "smoky",   title: "Smoky",   desc: "Deep wood smoke, campfire, volcanic ash"     },
+  { id: "sweet",   title: "Sweet",   desc: "Natural honey, dried fruit, light caramel"   },
+  { id: "earthy",  title: "Earthy",  desc: "Damp soil, forest floor, rich minerals"      },
+  { id: "cedar",   title: "Cedar",   desc: "Crisp cedarwood, freshly cut timber"         },
+  { id: "spicy",   title: "Spicy",   desc: "Black pepper, chili, cinnamon bark"          },
+  { id: "creamy",  title: "Creamy",  desc: "Smooth chocolate, butter, vanilla"           },
+  { id: "nutty",   title: "Nutty",   desc: "Toasted almond, hazelnut, walnut"            },
+  { id: "leather", title: "Leather", desc: "Rich saddle leather, aged tobacco"           },
+  { id: "cocoa",   title: "Cocoa",   desc: "Dark chocolate, roasted coffee"              },
+  { id: "floral",  title: "Floral",  desc: "Jasmine, fresh rose, light herbs"            },
+];
+const SPIRITS_FLAVORS = [
+  { id: "vanilla", title: "Vanilla", desc: "Soft vanilla bean, sweet cream"             },
+  { id: "oak",     title: "Oak",     desc: "American oak, toasted wood"                 },
+  { id: "caramel", title: "Caramel", desc: "Burnt sugar, rich toffee"                   },
+  { id: "citrus",  title: "Citrus",  desc: "Orange peel, lemon zest, bright"            },
+  { id: "honey",   title: "Honey",   desc: "Wildflower honey, golden sweetness"         },
+  { id: "rye",     title: "Rye",     desc: "Spicy rye grain, herbal notes"              },
+  { id: "smoke",   title: "Smoke",   desc: "Peaty smoke, bonfire, mineral"              },
+  { id: "fruity",  title: "Fruity",  desc: "Dried cherry, apple, fresh pear"            },
+];
+const STRENGTH_CARDS = [
+  { id: "mild",   title: "Mild",   subtitle: "Strength · Level 1", desc: "Smooth and gentle — perfect for newcomers or a relaxed afternoon" },
+  { id: "medium", title: "Medium", subtitle: "Strength · Level 3", desc: "Balanced character — the classic refined experience"              },
+  { id: "full",   title: "Full",   subtitle: "Strength · Level 5", desc: "Rich and powerful — bold complexity for the experienced"         },
+];
+const MOOD_CARDS = [
+  { id: "relaxed",     title: "Relaxed",     desc: "Smooth and easy — perfect for winding down"              },
+  { id: "bold",        title: "Bold",        desc: "Strong character — full-bodied and powerful"             },
+  { id: "social",      title: "Social",      desc: "Great for sharing and good conversation"                 },
+  { id: "reflective",  title: "Reflective",  desc: "Complex and contemplative — a quiet moment"             },
+  { id: "celebratory", title: "Celebratory", desc: "Special occasion — premium and memorable"               },
+  { id: "focused",     title: "Focused",     desc: "Clean and clear — helps you stay sharp"                 },
+  { id: "adventurous", title: "Adventurous", desc: "Something different — exciting and unique"              },
+  { id: "intense",     title: "Intense",     desc: "Rich and commanding — for the experienced"              },
+];
 
 // ── Demo mode preset ──────────────────────────────────────────────────────────
 const DEMO: { category: "cigar" | "alcohol"; flavors: string[]; strength: number; mood: string } = {
@@ -62,6 +110,8 @@ export default function Home() {
   const [formStep,  setFormStep]  = useState<0|1|2|3>(0);
   const [slideDir,  setSlideDir]  = useState<1|-1>(1);
   const [orderTaken, setOrderTaken] = useState(false);
+  const [bgKey,      setBgKey]      = useState("welcome");
+  const [moodDone,   setMoodDone]   = useState(false);
 
   // Sidebar step computation
   const activeStep: SidebarStep =
@@ -94,7 +144,15 @@ export default function Home() {
     playClick();
     setSlideDir(step >= formStep ? 1 : -1);
     setFormStep(step);
-  }, [formStep, playClick]);
+    const defaults: Record<number, string> = {
+      0: `experience_${category}`,
+      1: "flavor_smoky",
+      2: "strength_mild",
+      3: "mood_relaxed",
+    };
+    setBgKey(defaults[step] ?? "default");
+    if (step < 3) setMoodDone(false);
+  }, [formStep, playClick, category]);
 
   const {
     profile, isElite, justUnlockedElite, clearEliteUnlock,
@@ -304,6 +362,8 @@ export default function Home() {
     setIsDemoMode(false);
     setOrderTaken(false);
     setFormStep(0);
+    setBgKey("welcome");
+    setMoodDone(false);
   };
 
   const cigarBase    = results?.recommendations[0]?.name ?? "";
@@ -313,14 +373,14 @@ export default function Home() {
 
   return (
     <div className="min-h-[100dvh] w-full text-foreground flex flex-col relative overflow-hidden" style={{ background: "hsl(22 18% 5%)" }}>
-      <AmbientBackground />
+      <DynamicBackground bgKey={bgKey} />
 
       {/* Experience sidebar — self-positions fixed on lg+ screens */}
       <ExperienceSidebar
         activeStep={activeStep}
         completed={completedSteps}
         values={{ category, flavors, strength, mood } satisfies SidebarValues}
-        onReset={phase === "results" ? () => { setPhase("form"); setResults(null); setExperienceSaved(false); setFormStep(0); } : undefined}
+        onReset={phase === "results" ? handleStartOver : undefined}
         onStepClick={(s) => {
           if (phase !== "form") return;
           if (s <= activeStep) goToStep(s as 0|1|2|3);
@@ -510,7 +570,7 @@ export default function Home() {
                 data-testid="btn-begin-experience"
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.55 }}
-                onClick={() => { playClick(); setPhase("form"); }}
+                onClick={() => { playClick(); setPhase("form"); setBgKey(`experience_${category}`); }}
                 whileHover={{
                   scale: 1.03,
                   boxShadow: "0 0 0 1px rgba(212,175,55,0.65), 0 16px 48px rgba(0,0,0,0.55), 0 0 80px rgba(212,175,55,0.22)",
@@ -590,115 +650,214 @@ export default function Home() {
                 </motion.div>
               )}
 
-              <div data-tour="tour-preferences" className="flex flex-col gap-5">
-                {/* Category toggle — sits on its own, no card wrapper needed */}
-                <section><CategoryToggle value={category} onChange={handleCategoryChange} /></section>
+              {/* ── Swipe-driven step wizard ─────────────────── */}
+              <div style={{ position: "relative", overflow: "hidden" }}>
+                <AnimatePresence mode="wait" custom={slideDir}>
 
-                {/* Palate — cream card */}
-                <section style={{
-                  background:   "rgba(245,235,221,0.97)",
-                  borderRadius: 14,
-                  padding:      "22px 24px",
-                  boxShadow:    "0 6px 32px rgba(0,0,0,0.30), 0 2px 8px rgba(0,0,0,0.14)",
-                  border:       "2px solid rgba(184,137,26,0.42)",
-                }}>
-                  <FormLabel title="Palate" hint="Select notes" isElite={isElite} />
-                  <FlavorChips category={category} selected={flavors} onChange={setFlavors} />
-                </section>
+                  {/* STEP 0 — Experience */}
+                  {formStep === 0 && (
+                    <motion.div key="step-exp"
+                      custom={slideDir} variants={SLIDE_VARIANTS}
+                      initial="enter" animate="center" exit="exit"
+                      transition={SLIDE_T}
+                      style={{ display: "flex", flexDirection: "column", gap: 24 }}
+                    >
+                      <div style={{ textAlign: "center" }}>
+                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 1 of 4</p>
+                        <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Choose Your Experience</h2>
+                      </div>
 
-                {/* Strength — cream card */}
-                <section style={{
-                  background:   "rgba(245,235,221,0.97)",
-                  borderRadius: 14,
-                  padding:      "22px 24px",
-                  boxShadow:    "0 6px 32px rgba(0,0,0,0.30), 0 2px 8px rgba(0,0,0,0.14)",
-                  border:       "2px solid rgba(184,137,26,0.42)",
-                }}>
-                  <FormLabel title="Strength" isElite={isElite} />
-                  <StrengthSlider value={strength} onChange={(v) => { setStrength(v); }} />
-                </section>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                        {(["cigar","alcohol"] as const).map((cat) => {
+                          const isSel = category === cat;
+                          return (
+                            <motion.button key={cat}
+                              data-testid={`choice-${cat}`}
+                              onClick={() => { handleCategoryChange(cat); setBgKey(cat === "cigar" ? "experience_cigar" : "experience_spirits"); playClick(); }}
+                              whileTap={{ scale: 0.94 }}
+                              style={{
+                                minHeight: 170, borderRadius: 20, cursor: "pointer",
+                                border: isSel ? "2px solid rgba(184,137,26,0.82)" : "2px solid rgba(184,137,26,0.28)",
+                                background: isSel ? "rgba(245,235,221,0.97)" : "rgba(245,235,221,0.11)",
+                                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14,
+                                boxShadow: isSel ? "0 0 0 3px rgba(212,175,55,0.2), 0 12px 42px rgba(0,0,0,0.38)" : "0 4px 18px rgba(0,0,0,0.25)",
+                                transition: "all 0.25s ease",
+                              } as React.CSSProperties}
+                            >
+                              {cat === "cigar"
+                                ? <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={isSel ? "#7B5A1E" : "rgba(245,235,221,0.72)"} strokeWidth="1.4" strokeLinecap="round"><line x1="2" y1="13" x2="18" y2="13"/><line x1="18" y1="13" x2="22" y2="9"/><path d="M6 11 Q8 7 12 8 Q16 9 18 13"/></svg>
+                                : <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={isSel ? "#7B5A1E" : "rgba(245,235,221,0.72)"} strokeWidth="1.4" strokeLinecap="round"><path d="M8 22h8"/><path d="M12 11v11"/><path d="M5 3l2 8h10l2-8H5z"/></svg>
+                              }
+                              <span style={{ fontFamily: "var(--app-font-serif)", fontSize: 22, fontWeight: 600, color: isSel ? "#1A1410" : "rgba(245,235,221,0.88)", letterSpacing: "0.07em" }}>
+                                {cat === "cigar" ? "Cigar" : "Spirits"}
+                              </span>
+                              {isSel && <div style={{ width: 36, height: 2, background: "linear-gradient(90deg,transparent,rgba(184,137,26,0.75),transparent)", borderRadius: 1 }} />}
+                            </motion.button>
+                          );
+                        })}
+                      </div>
 
-                {/* Atmosphere — cream card */}
-                <section style={{
-                  background:   "rgba(245,235,221,0.97)",
-                  borderRadius: 14,
-                  padding:      "22px 24px",
-                  boxShadow:    "0 6px 32px rgba(0,0,0,0.30), 0 2px 8px rgba(0,0,0,0.14)",
-                  border:       "2px solid rgba(184,137,26,0.42)",
-                }}>
-                  <FormLabel title="Atmosphere" isElite={isElite} />
-                  <MoodSelector selected={mood} onChange={(m) => { setMood(m); }} />
-                </section>
-              </div>
+                      <motion.button onClick={() => goToStep(1)}
+                        whileHover={{ scale: 1.02, boxShadow: "0 0 0 1px rgba(212,175,55,0.6), 0 14px 44px rgba(0,0,0,0.55)" }}
+                        whileTap={{ scale: 0.94 }}
+                        style={{
+                          minHeight: 64, width: "100%", borderRadius: 6, border: "none", cursor: "pointer",
+                          background: "linear-gradient(135deg,hsl(43 75% 40%),hsl(45 85% 52%),hsl(43 75% 42%))",
+                          color: "#1A1410", fontFamily: "var(--app-font-serif)", fontSize: 16,
+                          fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase",
+                          boxShadow: "0 0 0 1px rgba(212,175,55,0.35), 0 10px 36px rgba(0,0,0,0.45)",
+                        }}
+                      >
+                        Continue — Choose Flavors
+                      </motion.button>
+                    </motion.div>
+                  )}
 
-              <div className="mt-6 mb-2 flex flex-col gap-3">
-                {/* Primary CTA */}
-                <motion.button data-testid="btn-discover" data-tour="tour-discover" onClick={handleDiscover}
-                  className="w-full font-serif text-xl tracking-[0.22em] uppercase rounded-sm relative overflow-hidden"
-                  style={{
-                    minHeight: 68,
-                    background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%), hsl(43 75% 44%))",
-                    color: "hsl(22 18% 6%)",
-                    boxShadow: isElite
-                      ? "0 0 0 1px rgba(212,175,55,0.4), 0 8px 30px rgba(0,0,0,0.5), 0 0 50px rgba(212,175,55,0.15)"
-                      : "0 0 0 1px rgba(212,175,55,0.3), 0 8px 30px rgba(0,0,0,0.5), 0 0 40px rgba(212,175,55,0.08)",
-                  }}
-                  whileHover={{ boxShadow: "0 0 0 1px rgba(212,175,55,0.55), 0 12px 40px rgba(0,0,0,0.55), 0 0 65px rgba(212,175,55,0.22)", scale: 1.005 }}
-                  whileTap={{ scale: 0.997 }} transition={{ duration: 0.3 }}
-                >
-                  <motion.div className="absolute inset-0 pointer-events-none"
-                    style={{ background: "linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.18) 50%, transparent 65%)", backgroundSize: "200% 100%" }}
-                    animate={{ backgroundPosition: ["200% 0", "-200% 0"] }}
-                    transition={{ duration: 3.5, repeat: Infinity, ease: "linear", repeatDelay: 1.5 }}
-                  />
-                  Curate Selection
-                </motion.button>
+                  {/* STEP 1 — Flavor */}
+                  {formStep === 1 && (
+                    <motion.div key="step-flavor"
+                      custom={slideDir} variants={SLIDE_VARIANTS}
+                      initial="enter" animate="center" exit="exit"
+                      transition={SLIDE_T}
+                      style={{ display: "flex", flexDirection: "column", gap: 24 }}
+                    >
+                      <div style={{ textAlign: "center" }}>
+                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 2 of 4</p>
+                        <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Your Palate</h2>
+                        <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Swipe right to add · left to skip</p>
+                      </div>
+                      <SwipeCardDeck
+                        items={category === "cigar" ? CIGAR_FLAVORS : SPIRITS_FLAVORS}
+                        multiSelect={true}
+                        onComplete={(sel) => { setFlavors(sel.map(s => s.charAt(0).toUpperCase() + s.slice(1))); goToStep(2); }}
+                        onCardFocus={(id) => setBgKey(`flavor_${id}`)}
+                        rightLabel="Add"
+                        leftLabel="Skip"
+                      />
+                      <button onClick={() => goToStep(0)} style={{ background:"transparent", border:"none", color:"rgba(210,190,155,0.4)", fontSize:12, letterSpacing:"0.2em", textTransform:"uppercase", cursor:"pointer", marginTop:44 }}>← Back</button>
+                    </motion.div>
+                  )}
 
-                {/* Guided Tour CTA */}
-                <motion.button
-                  data-testid="btn-start-presentation"
-                  onClick={startPresentation}
-                  className="w-full py-3 text-xs uppercase tracking-[0.22em] rounded-sm flex items-center justify-center gap-2"
-                  style={{
-                    background: "rgba(212,175,55,0.05)",
-                    border: "1px solid rgba(212,175,55,0.28)",
-                    color: "rgba(212,175,55,0.65)",
-                  }}
-                  whileHover={{
-                    background: "rgba(212,175,55,0.1)",
-                    borderColor: "rgba(212,175,55,0.55)",
-                    color: "rgba(212,175,55,0.9)",
-                  }}
-                  whileTap={{ scale: 0.99 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <MonitorPlay size={12} />
-                  Start Guided Experience
-                </motion.button>
+                  {/* STEP 2 — Strength */}
+                  {formStep === 2 && (
+                    <motion.div key="step-strength"
+                      custom={slideDir} variants={SLIDE_VARIANTS}
+                      initial="enter" animate="center" exit="exit"
+                      transition={SLIDE_T}
+                      style={{ display: "flex", flexDirection: "column", gap: 24 }}
+                    >
+                      <div style={{ textAlign: "center" }}>
+                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 3 of 4</p>
+                        <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Your Strength</h2>
+                        <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Swipe right to select · left for next</p>
+                      </div>
+                      <SwipeCardDeck
+                        items={STRENGTH_CARDS}
+                        multiSelect={false}
+                        onComplete={(sel) => { setStrength(sel[0] === "mild" ? 1 : sel[0] === "medium" ? 3 : 5); goToStep(3); }}
+                        onCardFocus={(id) => setBgKey(`strength_${id}`)}
+                        rightLabel="Select"
+                        leftLabel="Next"
+                      />
+                      <button onClick={() => goToStep(1)} style={{ background:"transparent", border:"none", color:"rgba(210,190,155,0.4)", fontSize:12, letterSpacing:"0.2em", textTransform:"uppercase", cursor:"pointer", marginTop:44 }}>← Back</button>
+                    </motion.div>
+                  )}
 
-                {/* Demo Mode CTA */}
-                {venue.features.demoMode && (
-                  <motion.button
-                    data-testid="btn-try-demo"
-                    onClick={handleTryDemo}
-                    className="w-full py-3 text-xs uppercase tracking-[0.22em] rounded-sm flex items-center justify-center gap-2"
-                    style={{
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px dashed rgba(212,175,55,0.18)",
-                      color: "rgba(180,155,100,0.4)",
-                    }}
-                    whileHover={{
-                      background: "rgba(212,175,55,0.04)",
-                      borderColor: "rgba(212,175,55,0.35)",
-                      color: "rgba(212,175,55,0.65)",
-                    }}
-                    whileTap={{ scale: 0.99 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Zap size={12} />
-                    Try Demo — 15 second experience
-                  </motion.button>
-                )}
+                  {/* STEP 3 — Mood */}
+                  {formStep === 3 && (
+                    <motion.div key="step-mood"
+                      custom={slideDir} variants={SLIDE_VARIANTS}
+                      initial="enter" animate="center" exit="exit"
+                      transition={SLIDE_T}
+                      style={{ display: "flex", flexDirection: "column", gap: 24 }}
+                    >
+                      {!moodDone ? (
+                        <>
+                          <div style={{ textAlign: "center" }}>
+                            <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 4 of 4</p>
+                            <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Your Atmosphere</h2>
+                            <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Swipe right when it resonates</p>
+                          </div>
+                          <SwipeCardDeck
+                            items={MOOD_CARDS}
+                            multiSelect={false}
+                            onComplete={(sel) => { setMood(sel[0] ?? "relaxed"); setMoodDone(true); setBgKey("results"); }}
+                            onCardFocus={(id) => setBgKey(`mood_${id}`)}
+                            rightLabel="This is Me"
+                            leftLabel="Next"
+                          />
+                          <button onClick={() => goToStep(2)} style={{ background:"transparent", border:"none", color:"rgba(210,190,155,0.4)", fontSize:12, letterSpacing:"0.2em", textTransform:"uppercase", cursor:"pointer", marginTop:44 }}>← Back</button>
+                        </>
+                      ) : (
+                        <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.52, ease: [0.22,1,0.36,1] }}
+                          style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 28 }}
+                        >
+                          <div style={{ textAlign: "center" }}>
+                            <p style={{ color: "rgba(212,175,55,0.72)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 14 }}>Your experience is taking shape</p>
+                            <h2 className="font-serif" style={{ fontSize: "clamp(1.8rem,4vw,2.5rem)", color: "rgba(245,235,221,0.95)", fontWeight: 300 }}>Ready to Reveal</h2>
+                          </div>
+
+                          {/* Selection summary tags */}
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
+                            {[
+                              category === "cigar" ? "Cigar" : "Spirits",
+                              ...flavors.slice(0, 3),
+                              strength === 1 ? "Mild" : strength <= 3 ? "Medium" : "Full",
+                              mood.charAt(0).toUpperCase() + mood.slice(1),
+                            ].filter(Boolean).map(tag => (
+                              <span key={tag} style={{ padding: "7px 18px", borderRadius: 20, background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.32)", color: "rgba(212,175,55,0.88)", fontSize: 13, letterSpacing: "0.1em", fontWeight: 600 }}>{tag}</span>
+                            ))}
+                          </div>
+
+                          <div style={{ height: 1, width: 80, background: "linear-gradient(90deg,transparent,rgba(212,175,55,0.48),transparent)" }} />
+
+                          {/* Primary CTA */}
+                          <motion.button data-testid="btn-discover" onClick={handleDiscover}
+                            whileHover={{ scale: 1.02, boxShadow: "0 0 0 1px rgba(212,175,55,0.62), 0 16px 50px rgba(0,0,0,0.55), 0 0 75px rgba(212,175,55,0.22)" }}
+                            whileTap={{ scale: 0.94 }}
+                            style={{
+                              minHeight: 68, minWidth: 300, padding: "0 44px", borderRadius: 6, border: "none", cursor: "pointer",
+                              background: "linear-gradient(135deg,hsl(43 75% 40%),hsl(45 85% 52%),hsl(43 75% 42%))",
+                              color: "#1A1410", fontFamily: "var(--app-font-serif)", fontSize: 18,
+                              fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase",
+                              boxShadow: "0 0 0 1px rgba(212,175,55,0.38), 0 10px 36px rgba(0,0,0,0.45), 0 0 55px rgba(212,175,55,0.1)",
+                              position: "relative", overflow: "hidden",
+                            }}
+                          >
+                            <motion.div style={{ position:"absolute", inset:0, pointerEvents:"none", background:"linear-gradient(105deg,transparent 35%,rgba(255,255,255,0.15) 50%,transparent 65%)", backgroundSize:"200% 100%" }}
+                              animate={{ backgroundPosition: ["200% 0","-200% 0"] }}
+                              transition={{ duration: 3.5, repeat: Infinity, ease: "linear", repeatDelay: 2 }}
+                            />
+                            Curate My Selection
+                          </motion.button>
+
+                          {/* Secondary buttons */}
+                          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+                            <motion.button data-testid="btn-start-presentation" onClick={startPresentation}
+                              whileHover={{ borderColor: "rgba(212,175,55,0.55)", color: "rgba(212,175,55,0.9)" }}
+                              whileTap={{ scale: 0.94 }}
+                              style={{ padding:"11px 22px", background:"rgba(212,175,55,0.05)", border:"1px solid rgba(212,175,55,0.28)", color:"rgba(212,175,55,0.65)", borderRadius:6, cursor:"pointer", fontSize:11, letterSpacing:"0.22em", textTransform:"uppercase" }}
+                            >
+                              Guided Tour
+                            </motion.button>
+                            {venue.features.demoMode && (
+                              <motion.button data-testid="btn-try-demo" onClick={handleTryDemo}
+                                whileHover={{ color: "rgba(212,175,55,0.65)" }}
+                                whileTap={{ scale: 0.94 }}
+                                style={{ padding:"11px 22px", background:"transparent", border:"1px dashed rgba(212,175,55,0.2)", color:"rgba(180,155,100,0.4)", borderRadius:6, cursor:"pointer", fontSize:11, letterSpacing:"0.22em", textTransform:"uppercase" }}
+                              >
+                                Try Demo
+                              </motion.button>
+                            )}
+                          </div>
+
+                          <button onClick={() => setMoodDone(false)} style={{ background:"transparent", border:"none", color:"rgba(210,190,155,0.32)", fontSize:11, letterSpacing:"0.2em", textTransform:"uppercase", cursor:"pointer" }}>← Revisit Atmosphere</button>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  )}
+
+                </AnimatePresence>
               </div>
 
               {/* Maestro del Fuego — Signature Cigar CTA */}

@@ -1,0 +1,207 @@
+REFACTOR SMOKECRAFT 360 INTO A UNIVERSAL DESIGN + MOTION SYSTEM WHERE EVERY PAGE HAS THE SAME LOOK, FEEL, COLOR, AND INTERACTION BEHAVIOR
+
+This system must behave like one continuous experience. No page should feel different.
+
+---
+
+GLOBAL RULE (NON-NEGOTIABLE)
+
+Every screen must use:
+
+* The SAME background system
+* The SAME sidebar
+* The SAME card style
+* The SAME button system
+* The SAME animation timing
+* The SAME interaction feedback
+
+If one page feels different, it is wrong.
+
+---
+
+1. GLOBAL LAYOUT SYSTEM
+
+Create a reusable layout wrapper:
+
+* Sidebar (left, fixed)
+* Main interaction area (center)
+* Optional right panel (details)
+
+ALL pages must be rendered inside this layout component.
+
+---
+
+2. GLOBAL BACKGROUND SYSTEM
+
+Create ONE background system used everywhere:
+
+* Real luxury lounge image
+* Left side darker (for sidebar)
+* Right side lighter (for visibility)
+* Subtle movement animation (very slow)
+
+Background must NEVER change style, only image content changes per step.
+
+---
+
+3. UNIVERSAL CARD SYSTEM
+
+Create ONE reusable card component:
+
+* Cream background (#F5EBDD)
+* Rounded corners (16–20px)
+* Soft shadow
+* Same padding on all pages
+
+All content must live inside this card system.
+
+No custom cards per page.
+
+---
+
+4. UNIVERSAL BUTTON SYSTEM
+
+Create 3 button types ONLY:
+
+PRIMARY (gold gradient):
+
+* Used once per screen
+* Glow + press animation
+
+SECONDARY (glass):
+
+* Light border + blur
+* Used for support actions
+
+GHOST:
+
+* Minimal text button
+
+All buttons must:
+
+* Scale down on press (0.94)
+* Glow slightly on hover
+* Use same transition timing
+
+---
+
+5. UNIVERSAL MOTION SYSTEM (THIS IS WHAT YOU WERE MISSING)
+
+Every interaction in the app must use the SAME motion behavior:
+
+* Screen transitions: slide in from right (0.4s)
+* Card transitions: fade + slight scale
+* Click response: instant scale down + sound
+* Background: slow continuous movement
+* Product: subtle floating animation
+
+NO page should introduce a different animation style.
+
+---
+
+6. SCREEN TRANSITION SYSTEM
+
+When navigating (sidebar click or swipe):
+
+* Current screen slides LEFT and fades
+* New screen slides IN from RIGHT
+* Duration: 0.4–0.5 seconds
+* Easing: ease-in-out
+
+This must be consistent across ALL pages.
+
+---
+
+7. INTERACTION FEEDBACK SYSTEM
+
+Every user action must produce feedback:
+
+* Click → sound + slight scale
+* Selection → glow + text confirmation
+* Swipe → card moves physically
+
+Example feedback text:
+“Your experience is taking shape…”
+
+---
+
+8. PRODUCT VISUAL SYSTEM
+
+The cigar + whiskey visual must:
+
+* Always be present
+* Always animate slightly (floating)
+* Always update based on user choices
+* Always stay in the same position
+
+No page should remove or relocate it.
+
+---
+
+9. DYNAMIC BACKGROUND + PRODUCT LINK
+
+* Background image changes per step
+* Product image updates with selections
+* Transitions must be smooth fade (0.4s)
+
+BUT:
+
+* layout and overlay remain identical
+
+---
+
+10. SIDEBAR SYSTEM (UNIVERSAL)
+
+Sidebar must:
+
+* Stay fixed on all pages
+* Use same styling
+* Highlight active step (gold glow)
+* Show completed steps (checkmark)
+
+Clicking sidebar must trigger:
+
+* slide transition
+* click sound
+* visual highlight
+
+---
+
+11. TOUCH / KIOSK CONSISTENCY
+
+* All tap targets minimum 60px
+* Same spacing across all pages
+* Same feedback on every interaction
+* No small or inconsistent UI elements
+
+---
+
+12. REMOVE ALL INCONSISTENCY
+
+Delete or refactor anything that:
+
+* uses a different color tone
+* uses different spacing
+* uses different animation timing
+* uses a different card style
+* behaves differently on click
+
+Everything must feel like one system.
+
+---
+
+FINAL GOAL
+
+The entire platform should feel like:
+
+* one continuous experience
+* one environment
+* one system reacting to the user
+
+NOT:
+
+* separate pages
+* separate designs
+* mixed UI styles
+
+---

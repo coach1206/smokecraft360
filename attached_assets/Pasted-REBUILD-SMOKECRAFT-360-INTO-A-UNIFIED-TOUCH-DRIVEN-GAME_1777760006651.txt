@@ -1,0 +1,312 @@
+REBUILD SMOKECRAFT 360 INTO A UNIFIED, TOUCH-DRIVEN, GAME-LIKE EXPERIENCE WITH SWIPE INTERACTIONS, SLIDING SCREENS, DYNAMIC BACKGROUNDS, AND REAL PRODUCT VISUALS
+
+This system must feel like a premium cigar lounge experience, not a form or dashboard.
+
+---
+
+CORE EXPERIENCE
+
+- Users swipe left/right to choose preferences  
+- Each selection updates visuals in real time  
+- Every interaction triggers motion, sound, and feedback  
+- The experience builds toward a final reveal  
+
+---
+
+UNIVERSAL SYSTEM RULE (CRITICAL)
+
+ALL pages must share:
+
+- Same layout  
+- Same sidebar  
+- Same background system  
+- Same card style  
+- Same animation timing  
+- Same interaction feedback  
+
+No page should feel different.
+
+---
+
+GLOBAL LAYOUT
+
+- Left: fixed sidebar  
+- Center: swipe interaction area  
+- Right: optional detail panel  
+- Background: REAL lounge image (always visible)
+
+---
+
+SIDEBAR BEHAVIOR
+
+Sidebar controls screens.
+
+When clicked:
+
+- Current screen slides LEFT and fades  
+- New screen slides IN from RIGHT  
+- Clicked item glows gold  
+- Soft click sound plays  
+
+Sidebar states:
+
+- Active → gold highlight  
+- Completed → checkmark  
+- Locked → dim  
+
+---
+
+SWIPE INTERACTION SYSTEM
+
+Every step uses swipe cards.
+
+---
+
+CARD BEHAVIOR
+
+- Swipe RIGHT → accept  
+- Swipe LEFT → skip  
+- Tap → confirm  
+
+Animation:
+
+- Card rotates slightly on swipe  
+- Accepted card glows gold  
+- Next card slides in from right  
+- Previous card exits left  
+
+Cards must:
+
+- Be large and centered  
+- Use cream background (#F5EBDD)  
+- Have real imagery (NO emojis)  
+- Be easy to read (18px+ text)
+
+---
+
+DYNAMIC BACKGROUND SYSTEM (MANDATORY)
+
+Background MUST change per step.
+
+- Smooth fade transitions (0.4–0.6s)
+- Background reflects current selection
+- Always remains visible behind UI
+
+Examples:
+
+Mood → full lounge scene changes  
+Flavor → close-up textures (wood, smoke, pour)  
+Strength → lighting intensity shifts  
+Atmosphere → different environments  
+
+---
+
+REAL PRODUCT VISUAL SYSTEM (CRITICAL FIX)
+
+The cigar must be visual, not text.
+
+---
+
+CIGAR + WHISKEY DISPLAY
+
+- Center visual must always show:
+  - Real cigar image  
+  - Real whiskey glass  
+- Positioned together as one composition  
+- Subtle floating animation  
+
+---
+
+DYNAMIC CIGAR SYSTEM
+
+Cigar MUST change based on user selections:
+
+---
+
+FLAVOR:
+
+- Smoky → dark Maduro cigar  
+- Sweet → light Connecticut cigar  
+- Earthy → medium brown Habano  
+- Spicy → reddish wrapper  
+
+---
+
+STRENGTH:
+
+- Mild → lighter tone cigar  
+- Medium → balanced tone  
+- Full → darker, richer cigar  
+
+Increase shadow depth with strength
+
+---
+
+SIZE (ADD THIS):
+
+- Robusto → short/thick  
+- Toro → balanced  
+- Churchill → long/elegant  
+
+Cigar image must update accordingly
+
+---
+
+PAIRING STEP:
+
+- Whiskey and cigar must visually match  
+- Lighting + tone align  
+
+---
+
+IMAGE SOURCES
+
+Use REAL images only:
+
+- Unsplash  
+- Pexels  
+
+Search terms:
+
+- “maduro cigar close up”  
+- “connecticut wrapper cigar”  
+- “premium cigar with whiskey”  
+- “cigar on wooden table”  
+
+---
+
+VISUAL TRANSITIONS
+
+- Cigar fades when updating (0.3–0.5s)  
+- No snapping  
+- Maintain same position  
+- Add slight glow when changed  
+
+---
+
+INTERACTION FEEDBACK
+
+After each action:
+
+Display:
+
+“Your experience is taking shape…”
+
+Selections show:
+
+“Maduro profile selected”
+
+---
+
+ANIMATION SYSTEM (UNIVERSAL)
+
+ALL pages must use:
+
+- Slide transitions (0.4s)  
+- Fade + scale on cards  
+- Click scale (0.94)  
+- Hover glow  
+- Background slow movement  
+- Product floating animation  
+
+No variation allowed.
+
+---
+
+SCREEN FLOW
+
+---
+
+PHASE 1 — ENTRY
+
+- Full-screen lounge background  
+- Title: “Craft Your Experience”  
+- Gold button: “Start”  
+
+---
+
+PHASE 2 — BUILD (SWIPE)
+
+Steps:
+
+1. Mood  
+2. Flavor  
+3. Strength  
+4. Atmosphere  
+5. Pairing  
+
+Each uses swipe cards + visual updates  
+
+---
+
+PHASE 3 — REVEAL
+
+Animation:
+
+- Screen dims  
+- New scene fades in  
+
+---
+
+FINAL SCREEN
+
+CENTER:
+
+- Final cigar + whiskey pairing  
+
+RIGHT:
+
+Light card showing:
+
+“Midnight Reserve”  
+
+“Crafted for your taste”  
+
+“Smooth • Smoky • Relaxed”  
+
+---
+
+BUTTONS
+
+- Refine  
+- Save  
+- ORDER NOW (gold)  
+- Share  
+
+---
+
+KIOSK RULES
+
+- Touch targets: 60px+  
+- Large spacing  
+- Instant feedback  
+- No small UI elements  
+
+---
+
+DO NOT
+
+- Use emojis  
+- Use static backgrounds  
+- Keep cigar image fixed  
+- Use different styles across pages  
+- Let UI feel inactive  
+
+---
+
+FINAL GOAL
+
+The system must feel like:
+
+- a guided challenge  
+- a swipe-driven experience  
+- a real environment reacting to the user  
+- a premium product interaction  
+
+NOT:
+
+- a form  
+- a static UI  
+- a basic app  
+
+---
