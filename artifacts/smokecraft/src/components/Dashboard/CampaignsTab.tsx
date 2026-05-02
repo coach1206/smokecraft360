@@ -385,7 +385,7 @@ function CampaignForm({
 
         <div>
           <Label>Status</Label>
-          <select value={status} onChange={(e) => setStatus(e.target.value)}
+          <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)}
             className="w-full px-3 py-2 rounded-lg text-xs"
             style={{
               background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",

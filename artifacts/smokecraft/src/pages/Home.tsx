@@ -117,7 +117,7 @@ export default function Home() {
           category:    rec.category,
           flavorNotes: rec.flavorNotes,
           eventType:   "view",
-          venueId:     params.venueId,
+          venueId:     venue.id !== "default" ? venue.id : undefined,
         });
       }
       trackPreferences({
