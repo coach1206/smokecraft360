@@ -24,7 +24,7 @@ import { useOnlineStatus }   from "@/hooks/useOnlineStatus";
 import { useVenue }          from "@/contexts/VenueContext";
 import { usePresentation }  from "@/contexts/PresentationContext";
 import { AlertCircle, RotateCcw, Bookmark, BookmarkCheck, Flame, Zap, ShoppingBag, MonitorPlay, Bell, CheckCircle2, Crown } from "lucide-react";
-import { ExperienceSidebar, type SidebarStep } from "@/components/ExperienceSidebar";
+import { ExperienceSidebar, type SidebarStep, type SidebarValues } from "@/components/ExperienceSidebar";
 import { ExperienceRightPanel }                from "@/components/ExperienceRightPanel";
 import { OrderModal }        from "@/components/Order/OrderModal";
 import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
@@ -297,7 +297,12 @@ export default function Home() {
       <AmbientBackground />
 
       {/* Experience sidebar — self-positions fixed on lg+ screens */}
-      <ExperienceSidebar activeStep={activeStep} completed={completedSteps} />
+      <ExperienceSidebar
+        activeStep={activeStep}
+        completed={completedSteps}
+        values={{ category, flavors, strength, mood } satisfies SidebarValues}
+        onReset={phase === "results" ? () => { setPhase("form"); setResults(null); setExperienceSaved(false); } : undefined}
+      />
 
       {/* Elite ambient overlay */}
       {isElite && (
@@ -599,18 +604,18 @@ export default function Home() {
               transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
               className="flex flex-col flex-1 w-full"
             >
-              <motion.div className="mb-10 text-center"
+              <motion.div className="mb-8 text-center"
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }}>
-                <div className="flex items-center justify-center gap-3 mb-2">
-                  <h2 className="font-serif text-3xl" style={{ fontWeight: 300 }}>Your Selection</h2>
-                  {isDemoMode && (
-                    <span className="px-2 py-0.5 rounded-full text-[9px] uppercase tracking-[0.22em]"
-                      style={{ background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.3)", color: "rgba(212,175,55,0.75)" }}>
-                      Demo
-                    </span>
-                  )}
-                </div>
-                <p className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "rgba(212,175,55,0.45)" }}>Swipe to explore</p>
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.32em", textTransform: "uppercase", color: "rgba(212,175,55,0.65)", marginBottom: 8 }}>
+                  Step 7 of 7
+                  {isDemoMode && <span style={{ marginLeft: 12, color: "rgba(212,175,55,0.50)" }}>· Demo</span>}
+                </p>
+                <h2 className="font-serif" style={{ fontSize: "clamp(1.7rem, 4vw, 2.6rem)", fontWeight: 700, color: "rgba(245,230,200,0.97)", letterSpacing: "0.04em", lineHeight: 1.1 }}>
+                  Your Experience Is Ready
+                </h2>
+                <p style={{ fontSize: 14, color: "rgba(200,175,135,0.65)", marginTop: 8, letterSpacing: "0.04em" }}>
+                  Crafted for your taste. Designed for the moment.
+                </p>
               </motion.div>
 
               <div data-tour="tour-card-stack">
