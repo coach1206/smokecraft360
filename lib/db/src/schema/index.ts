@@ -19,3 +19,4 @@ export * from "./signatureRequests";
 export * from "./userLoyaltyPoints";
 export * from "./rewards";
 export * from "./redemptions";
+export * from "./loungeStats";

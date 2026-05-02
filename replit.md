@@ -62,6 +62,7 @@ Sixteen tables pushed to PostgreSQL via Drizzle:
 | `userLoyaltyPoints.ts` | `user_loyalty_points` | Loyalty point balance per user (totalPoints, pointsRedeemed) — separate from XP |
 | `rewards.ts`          | `rewards`          | Venue reward catalogue (discount / free_item / experience); levelRequired 0–4 |
 | `redemptions.ts`      | `redemptions`      | Redemption records: pending → fulfilled / cancelled |
+| `loungeStats.ts`      | `lounge_stats`     | Aggregated per-venue competition stats: weekly/total orders, users, repeatCustomers, trendingScore, weeklyRank, badges |
 
 ---
 
@@ -222,6 +223,19 @@ Both verified-orders AND xp thresholds must be met to advance:
 - `artifacts/api-server/src/services/xpEngine.ts` — CAS-guarded XP + loyalty points awarding + humidor upsert
 - Fraud prevention: only staff/manager/venue_owner/super_admin can verify; double-verify is idempotent
 
+### Lounge League Routes
+| Endpoint | Auth | Purpose |
+|---|---|---|
+| `GET /api/lounge-league` | Required | Full ranked leaderboard — all venues with scores + badges (upserts lounge_stats) |
+| `GET /api/lounge-league/my-lounge` | Required | Current user's venue rank + total venues |
+| `GET /api/lounge-league/:id` | Required | Single venue stats + rank |
+
+Scoring: `totalVerifiedOrders×10 + weeklyOrders×25 + totalUsers×5 + repeatCustomers×8`
+Badges computed per request: `top_rated` (#1 score), `most_active` (most verified orders), `trending_venue` (most weekly orders), `best_experience` (highest repeat customer ratio)
+
+### Signature Requests Schema Extension
+`signatureRequests` table now has `boxDesign TEXT` column (JSON). `BoxDesign` type: `{ boxColor, logoPlacement, labelText, limitedEditionName, finishStyle }`. Modal is now a 4-step flow: Band → Spec → Box Design → Review.
+
 ### Loyalty & Rewards Routes
 | Endpoint | Auth | Purpose |
 |---|---|---|
@@ -239,6 +253,8 @@ Both verified-orders AND xp thresholds must be met to advance:
 - **Leaderboard** — Top Creators (by XP), Top Smokers (by orders), Trending (7 days)
 - **My Progress** — loyalty points balance card, available rewards + one-click redeem, recent redemptions, XP level card, achievement badges, humidor
 - **Loyalty & Rewards** (manager+) — create/edit/toggle rewards catalogue, redemption queue with fulfil/cancel controls
+- **Signature Creations** — user's own signature cigar requests + status progress + box design details; Maestro-gated "New Design" button opens 4-step modal
+- **Lounge League** — full ranked leaderboard of all venues, weekly highlights (Top Lounge / Best Experience / Trending), "You helped your lounge rank #X" contribution card, badge legend, scoring guide
 
 ### Frontend
 - `artifacts/smokecraft/src/components/Dashboard/VerifyOrdersTab.tsx`

@@ -1,0 +1,171 @@
+Build a complete Hardware, Tablet (Rent/Buy), Kiosk, and Device Management System for SmokeCraft 360.
+
+GOAL:
+Allow lounges to start with QR (no hardware) and optionally upgrade to tablets or kiosks for a premium in-venue experience, with full device control, session management, and clear pricing models.
+
+--------------------------------------------------
+1. DEVICE TYPES (SUPPORTED MODES)
+--------------------------------------------------
+
+Support three modes:
+
+- MOBILE (QR / BYOD)
+- TABLET MODE (table experience)
+- KIOSK MODE (front-of-house, full screen)
+
+Each device must be registered with:
+- deviceId
+- venueId
+- type ("mobile", "tablet", "kiosk")
+- tableNumber (nullable)
+- status ("active", "inactive")
+
+--------------------------------------------------
+2. QR SYSTEM (DEFAULT ENTRY)
+
+For every venue:
+
+- generate venue QR
+- generate table-specific QR (optional)
+
+QR links must include:
+- venueId
+- optional tableNumber
+
+Flow:
+User scans → opens experience → tied to venue + table
+
+--------------------------------------------------
+3. TABLET MODE (RENT OR BUY)
+
+UI optimized for:
+- touch-first interaction
+- fast ordering
+- swipe recommendations
+- quick reset
+
+Behavior:
+- auto-launch SmokeCraft 360 on load
+- hide browser chrome where possible
+- persistent “Start / Reset” control for staff
+
+--------------------------------------------------
+4. KIOSK MODE (FULL SCREEN)
+
+Behavior:
+- full-screen immersive UI
+- no navigation outside app
+- auto-start guided experience
+- reset after inactivity
+
+Inactivity rules:
+- 60–120 seconds idle → reset to home
+- after order completion → reset session
+
+--------------------------------------------------
+5. SESSION MANAGEMENT
+
+For all devices:
+
+- create session per user
+- attach to deviceId + venueId (+ tableNumber if present)
+
+Auto reset when:
+- order completed
+- inactivity timeout reached
+- manual staff reset triggered
+
+--------------------------------------------------
+6. DEVICE REGISTRATION (DASHBOARD)
+
+Create devices table:
+
+- id
+- venueId
+- type
+- tableNumber
+- nickname (e.g., “Table 4 Tablet”)
+- lastActiveAt
+- status
+
+Dashboard actions:
+- add/register device
+- assign table number
+- enable/disable device
+- view usage stats per device
+
+--------------------------------------------------
+7. BRANDING + THEME
+
+On device load:
+- apply venue theme (colors, background, logo)
+- apply experience profile (SmokeCraft / PourCraft / etc.)
+
+--------------------------------------------------
+8. PRICING STRUCTURE (CONFIG LAYER)
+
+Store pricing config (for display/admin use):
+
+- tabletRentalMonthly: 25–40 (USD)
+- tabletPurchaseOneTime: 250–400
+- kioskRentalMonthly: 150–250
+- kioskPurchaseOneTime: 1200–2000
+
+Expose in dashboard (read-only or admin-editable).
+
+--------------------------------------------------
+9. PLAN BUNDLES (FEATURE FLAGS)
+
+Support bundles:
+
+- BASE (QR only)
+- EXPERIENCE (QR + 1 kiosk + tablet support)
+- ELITE (multiple kiosks + full device features)
+
+Use feature flags to enable:
+- kiosk mode
+- multi-device support
+- advanced device analytics
+
+--------------------------------------------------
+10. USAGE ANALYTICS (PER DEVICE)
+
+Track per device:
+
+- sessionsStarted
+- ordersPlaced
+- avgSessionTime
+- resetsTriggered
+
+Create endpoint:
+GET /api/devices/:id/metrics
+
+--------------------------------------------------
+11. STAFF CONTROLS
+
+On dashboard:
+
+- “Reset Device Session”
+- “Lock / Unlock Device”
+- “View Active Session”
+
+Optional:
+- quick “Start New Guest” button
+
+--------------------------------------------------
+12. SECURITY + STABILITY
+
+- prevent navigation outside app (where possible)
+- handle network loss with offline fallback (cache last data)
+- never expose sensitive keys on client devices
+
+--------------------------------------------------
+GOAL
+
+Create a flexible hardware system where lounges can:
+
+- start free with QR
+- upgrade to tablet experiences (rent or buy)
+- add kiosks for premium engagement
+- manage all devices from one dashboard
+- increase interaction, orders, and perceived value

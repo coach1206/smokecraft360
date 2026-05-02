@@ -19,7 +19,7 @@ import { CigarBandPreview }                   from "@/components/Band/CigarBandP
 import { COLOR_OPTIONS, EMBLEM_OPTIONS }      from "@/components/Band/bandConstants";
 import {
   submitSignatureCigar, saveDraftSignatureCigar,
-  type SignatureCigarPayload,
+  type SignatureCigarPayload, type BoxDesignPayload,
 }                                             from "@/services/api";
 import type { BlendDesign }                   from "@/services/storage";
 
@@ -124,6 +124,13 @@ export function SignatureCigarModal({
   const [preferredPairing, setPreferredPairing] = useState("");
   const [description,     setDescription]      = useState("");
 
+  // Box design state
+  const [boxColor,           setBoxColor]           = useState("#1a1008");
+  const [logoPlacement,      setLogoPlacement]      = useState<BoxDesignPayload["logoPlacement"]>("top-center");
+  const [labelText,          setLabelText]          = useState("");
+  const [limitedEditionName, setLimitedEditionName] = useState("");
+  const [finishStyle,        setFinishStyle]        = useState<BoxDesignPayload["finishStyle"]>("matte");
+
   // Submit state
   const [submitting, setSubmitting] = useState(false);
   const [submitted,  setSubmitted]  = useState(false);
@@ -156,6 +163,17 @@ export function SignatureCigarModal({
     setStep((s) => s + 1);
   };
 
+  const boxDesignPayload = (): BoxDesignPayload | undefined => {
+    if (!labelText.trim() && !limitedEditionName.trim()) return undefined;
+    return {
+      boxColor,
+      logoPlacement,
+      labelText:          labelText.trim(),
+      limitedEditionName: limitedEditionName.trim(),
+      finishStyle,
+    };
+  };
+
   const buildPayload = (status: "draft" | "submitted"): SignatureCigarPayload => ({
     brandName: brandName.trim(),
     bandDesign: {
@@ -172,6 +190,7 @@ export function SignatureCigarModal({
       wrapperType:      wrapperType as never,
       preferredPairing: preferredPairing.trim() || undefined,
     },
+    boxDesign:   boxDesignPayload(),
     description: description.trim() || undefined,
     status,
   });
@@ -207,7 +226,10 @@ export function SignatureCigarModal({
   const handleClose = () => {
     setStep(1); setTemplate("classic-gold"); setBrandName(""); setDesign(TEMPLATES[0]!.design);
     setNameError(null); setStrength(3); setFlavorDirs([]); setWrapperType("natural");
-    setPreferredPairing(""); setDescription(""); setSubmitting(false); setSubmitted(false); setSubmitError(null);
+    setPreferredPairing(""); setDescription("");
+    setBoxColor("#1a1008"); setLogoPlacement("top-center"); setLabelText("");
+    setLimitedEditionName(""); setFinishStyle("matte");
+    setSubmitting(false); setSubmitted(false); setSubmitError(null);
     onClose();
   };
 
@@ -314,9 +336,9 @@ export function SignatureCigarModal({
               <>
                 {/* Step indicator */}
                 <div className="px-6 pb-3 flex-shrink-0">
-                  <StepIndicator step={step} total={3} />
+                  <StepIndicator step={step} total={4} />
                   <p className="text-[8px] uppercase tracking-[0.2em] mt-1.5" style={{ color: "rgba(180,155,100,0.35)" }}>
-                    Step {step} of 3 — {step === 1 ? "Band Design" : step === 2 ? "Cigar Spec" : "Review & Submit"}
+                    Step {step} of 4 — {step === 1 ? "Band Design" : step === 2 ? "Cigar Spec" : step === 3 ? "Box Design" : "Review & Submit"}
                   </p>
                 </div>
 
@@ -520,8 +542,108 @@ export function SignatureCigarModal({
                       </motion.div>
                     )}
 
-                    {/* ── Step 3: Review & Submit ─────────────────────────── */}
+                    {/* ── Step 3: Box Design ──────────────────────────────── */}
                     {step === 3 && (
+                      <motion.div key="step3-box" className="space-y-6"
+                        initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+
+                        <p className="text-xs" style={{ color: "rgba(180,155,100,0.5)" }}>
+                          Design the outer box for your limited edition run. All fields are optional — skip to go straight to review.
+                        </p>
+
+                        {/* Box colour */}
+                        <div>
+                          <SectionLabel>Box Color</SectionLabel>
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="color"
+                              value={boxColor}
+                              onChange={(e) => setBoxColor(e.target.value)}
+                              className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent"
+                              style={{ outlineOffset: 2, outline: "1px solid rgba(212,175,55,0.3)" }}
+                            />
+                            <div className="flex-1 flex flex-wrap gap-1.5">
+                              {["#1a1008","#0a0a14","#14100a","#1c1408","#0c0c0c","#1a0808"].map((c) => (
+                                <button key={c} onClick={() => setBoxColor(c)}
+                                  className="w-7 h-7 rounded-lg border-2 transition-all"
+                                  style={{ background: c, borderColor: boxColor === c ? "rgba(212,175,55,0.7)" : "rgba(255,255,255,0.1)" }} />
+                              ))}
+                            </div>
+                          </div>
+                          <div className="mt-2 flex items-center gap-2">
+                            <div className="w-5 h-5 rounded" style={{ background: boxColor, border: "1px solid rgba(255,255,255,0.15)" }} />
+                            <p className="text-[9px] font-mono" style={{ color: "rgba(180,155,100,0.5)" }}>{boxColor}</p>
+                          </div>
+                        </div>
+
+                        {/* Logo placement */}
+                        <div>
+                          <SectionLabel>Logo Placement</SectionLabel>
+                          <div className="grid grid-cols-3 gap-2">
+                            {(["top-center","top-left","side-panel"] as const).map((lp) => (
+                              <button key={lp} onClick={() => setLogoPlacement(lp)}
+                                className="px-3 py-2.5 rounded-lg text-[9px] uppercase tracking-wider transition-all"
+                                style={logoPlacement === lp
+                                  ? { background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.38)", color: "rgba(212,175,55,0.9)" }
+                                  : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.5)" }
+                                }>
+                                {lp.replace(/-/g, " ")}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Finish style */}
+                        <div>
+                          <SectionLabel>Finish Style</SectionLabel>
+                          <div className="grid grid-cols-3 gap-2">
+                            {(["matte","gloss","embossed"] as const).map((fs) => (
+                              <button key={fs} onClick={() => setFinishStyle(fs)}
+                                className="px-3 py-2.5 rounded-lg text-xs capitalize transition-all"
+                                style={finishStyle === fs
+                                  ? { background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.38)", color: "rgba(212,175,55,0.9)" }
+                                  : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.5)" }
+                                }>
+                                {fs}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Label text */}
+                        <div>
+                          <SectionLabel>Label Text <span style={{ opacity: 0.5 }}>(optional)</span></SectionLabel>
+                          <input
+                            className="w-full bg-transparent outline-none text-sm py-2 border-b transition-colors"
+                            style={{ borderColor: "rgba(212,175,55,0.2)", color: "rgba(210,190,155,0.8)", caretColor: GOLD }}
+                            placeholder="e.g. Reserve · Aged 5 Years…"
+                            maxLength={60}
+                            value={labelText}
+                            onChange={(e) => setLabelText(e.target.value)}
+                          />
+                        </div>
+
+                        {/* Limited edition name */}
+                        <div>
+                          <SectionLabel>Limited Edition Name <span style={{ opacity: 0.5 }}>(optional)</span></SectionLabel>
+                          <input
+                            className="w-full bg-transparent outline-none text-sm py-2 border-b transition-colors"
+                            style={{ borderColor: "rgba(212,175,55,0.2)", color: "rgba(210,190,155,0.8)", caretColor: GOLD }}
+                            placeholder="e.g. Reserve No. 1 · Grand Cru…"
+                            maxLength={50}
+                            value={limitedEditionName}
+                            onChange={(e) => setLimitedEditionName(e.target.value)}
+                          />
+                          <p className="text-[8px] mt-1" style={{ color: "rgba(180,155,100,0.3)" }}>
+                            This name will appear on the box lid and production label.
+                          </p>
+                        </div>
+
+                      </motion.div>
+                    )}
+
+                    {/* ── Step 4: Review & Submit ─────────────────────────── */}
+                    {step === 4 && (
                       <motion.div key="step3" className="space-y-5"
                         initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
 
@@ -597,16 +719,16 @@ export function SignatureCigarModal({
 
                   <div className="flex-1" />
 
-                  {step < 3 && (
+                  {step < 4 && (
                     <motion.button onClick={handleNext}
                       className="flex items-center gap-1.5 px-6 py-2.5 rounded-lg text-xs uppercase tracking-[0.15em]"
                       style={{ background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))", color: "hsl(22 18% 6%)" }}
                       whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
-                      Next<ChevronRight size={12} />
+                      {step === 3 ? "Review" : "Next"}<ChevronRight size={12} />
                     </motion.button>
                   )}
 
-                  {step === 3 && (
+                  {step === 4 && (
                     <>
                       <motion.button onClick={handleSaveDraft} disabled={submitting}
                         className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs uppercase tracking-[0.15em]"

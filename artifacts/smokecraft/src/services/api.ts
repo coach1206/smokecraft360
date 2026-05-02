@@ -479,10 +479,19 @@ export interface CigarSpecPayload {
   preferredPairing?: string;
 }
 
+export interface BoxDesignPayload {
+  boxColor:           string;
+  logoPlacement:      "top-center" | "top-left" | "side-panel";
+  labelText:          string;
+  limitedEditionName: string;
+  finishStyle:        "matte" | "gloss" | "embossed";
+}
+
 export interface SignatureCigarPayload {
   brandName:    string;
   bandDesign:   BandDesignPayload;
   cigarSpec:    CigarSpecPayload;
+  boxDesign?:   BoxDesignPayload;
   description?: string;
   status:       "draft" | "submitted";
 }
@@ -1157,6 +1166,59 @@ export async function fetchDemandInsights(venueId?: string): Promise<DemandInsig
     const err = await res.json().catch(() => ({}));
     throw new Error((err as { error?: string }).error ?? "Failed to fetch demand insights");
   }
+  return res.json();
+}
+
+// ── Lounge League ─────────────────────────────────────────────────────────────
+
+export interface LoungeLeagueEntry {
+  loungeId:            string;
+  loungeName:          string;
+  loungeType:          string;
+  totalOrders:         number;
+  totalVerifiedOrders: number;
+  weeklyOrders:        number;
+  totalUsers:          number;
+  repeatCustomers:     number;
+  score:               number;
+  rank:                number;
+  badges:              string[];
+}
+
+export async function fetchLoungeLeague(): Promise<LoungeLeagueEntry[]> {
+  const res = await fetch("/api/lounge-league", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch lounge league");
+  return res.json();
+}
+
+export async function fetchMyLoungeStats(): Promise<(LoungeLeagueEntry & { totalVenues: number }) | null> {
+  const res = await fetch("/api/lounge-league/my-lounge", { headers: getAuthHeaders() });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+// ── Signature Cigar Creations (user) ──────────────────────────────────────────
+
+export interface SignatureRequestItem {
+  id:              string;
+  userId:          string;
+  brandName:       string;
+  bandDesign:      string;
+  cigarSpec:       string;
+  boxDesign:       string | null;
+  description:     string | null;
+  status:          string;
+  productionStage: string | null;
+  manufacturerId:  string | null;
+  adminNotes:      string | null;
+  rejectedReason:  string | null;
+  createdAt:       string;
+  updatedAt:       string;
+}
+
+export async function fetchMySignatureRequests(): Promise<SignatureRequestItem[]> {
+  const res = await fetch("/api/signature-cigars", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch signature requests");
   return res.json();
 }
 

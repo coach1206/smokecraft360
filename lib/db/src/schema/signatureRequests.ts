@@ -31,6 +31,7 @@ export const signatureRequestsTable = pgTable("signature_requests", {
   brandName:       text("brand_name").notNull(),
   bandDesign:      text("band_design").notNull(),
   cigarSpec:       text("cigar_spec").notNull(),
+  boxDesign:       text("box_design"),          // JSON – BoxDesign | null
   description:     text("description"),
   status:          text("status").notNull().default("draft").$type<SignatureStatus>(),
   productionStage: text("production_stage").$type<ProductionStage>(),
@@ -59,4 +60,12 @@ export type CigarSpec = {
   flavorDirection:  Array<"sweet" | "bold" | "spicy" | "creamy" | "earthy" | "floral">;
   wrapperType:      "claro" | "natural" | "colorado" | "colorado-maduro" | "maduro";
   preferredPairing?: string;
+};
+
+export type BoxDesign = {
+  boxColor:          string;   // hex / named color
+  logoPlacement:     "top-center" | "top-left" | "side-panel";
+  labelText:         string;   // short text on box lid
+  limitedEditionName: string;  // e.g. "Reserve No. 1"
+  finishStyle:       "matte" | "gloss" | "embossed";
 };
