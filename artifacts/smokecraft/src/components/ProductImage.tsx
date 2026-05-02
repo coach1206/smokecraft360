@@ -1,22 +1,31 @@
 /**
- * ProductImage — displays a Cloudinary-hosted product photo with:
- *   • automatic URL transformation for optimal size/format
- *   • a branded placeholder when no image is available
- *   • a gradient overlay at the bottom for text legibility
- *   • lazy loading
+ * ProductImage — displays a product photo with:
+ *   • Cloudinary URL transformation for optimal size/format
+ *   • Real fallback images from /public/images/ (cigar.png, whiskey.png)
+ *   • Branded placeholder when no image is available at all
+ *   • Gradient overlay at the bottom for text legibility on dark cards
  */
 
 import { useState } from "react";
+import { cloudinaryOptimize } from "@/lib/cloudinary";
 
 interface ProductImageProps {
-  url?:      string | null;
-  alt:       string;
-  category:  string;
-  height?:   number;
+  url?:       string | null;
+  alt:        string;
+  category:   string;
+  height?:    number;
   className?: string;
+  /** When true, uses a light-compatible (transparent) bottom gradient */
+  lightCard?: boolean;
 }
 
-// Per-category placeholder gradients (dark luxury palette)
+/** Map product categories to bundled fallback images */
+const FALLBACK_IMAGES: Record<string, string> = {
+  cigar:   "/images/cigar.png",
+  alcohol: "/images/whiskey.png",
+};
+
+/** Per-category placeholder gradients — shown only when no fallback image exists */
 const GRADIENTS: Record<string, string> = {
   cigar:   "linear-gradient(160deg, #2a1506 0%, #140a03 60%, #0d0603 100%)",
   alcohol: "linear-gradient(160deg, #0d1828 0%, #080f1a 60%, #050b14 100%)",
@@ -27,7 +36,7 @@ const GRADIENTS: Record<string, string> = {
   candle:  "linear-gradient(160deg, #1f1802 0%, #100d01 60%, #0a0900 100%)",
 };
 
-// Per-category decorative SVG marks
+/** Per-category decorative SVG marks for deepest fallback */
 const MARKS: Record<string, string> = {
   cigar:   "M6 12h12M8 8l8 8M16 8l-8 8",
   alcohol: "M9 3h6l1 7H8L9 3zM7 10v8a2 2 0 002 2h6a2 2 0 002-2v-8",
@@ -38,50 +47,59 @@ const MARKS: Record<string, string> = {
   candle:  "M12 2v4M8 6c0-2 8-2 8 0v14H8V6z",
 };
 
-/**
- * Inject Cloudinary transformation parameters into a Cloudinary image URL.
- * For non-Cloudinary URLs the original string is returned unchanged.
- */
-export function cloudinaryOptimize(url: string, width: number, height: number): string {
-  if (!url?.includes("res.cloudinary.com")) return url;
-  return url.replace(
-    "/upload/",
-    `/upload/w_${width},h_${height},c_fill,q_auto,f_auto/`,
-  );
-}
 
-export function ProductImage({ url, alt, category, height = 220, className = "" }: ProductImageProps) {
-  const [imgError, setImgError] = useState(false);
+export function ProductImage({ url, alt, category, height = 220, className = "", lightCard = false }: ProductImageProps) {
+  const cat        = category?.toLowerCase() ?? "cigar";
+  const optimized  = url ? cloudinaryOptimize(url, 800, height * 2) : null;
 
-  const cat         = category?.toLowerCase() ?? "cigar";
-  const optimized   = url ? cloudinaryOptimize(url, Math.round(800), Math.round(height * 2)) : null;
-  const showImage   = optimized && !imgError;
+  const [primaryError,  setPrimaryError]  = useState(false);
+  const [fallbackError, setFallbackError] = useState(false);
+
+  const fallbackSrc = FALLBACK_IMAGES[cat] ?? null;
+
+  const showPrimary  = !!optimized && !primaryError;
+  const showFallback = !showPrimary && !!fallbackSrc && !fallbackError;
 
   return (
     <div
       className={`relative w-full overflow-hidden flex-shrink-0 ${className}`}
       style={{ height }}
     >
-      {showImage ? (
+      {showPrimary ? (
         <img
-          src={optimized}
+          src={optimized!}
           alt={alt}
           className="absolute inset-0 w-full h-full object-cover"
-          onError={() => setImgError(true)}
+          onError={() => setPrimaryError(true)}
           loading="lazy"
           decoding="async"
         />
+      ) : showFallback ? (
+        /* Real product photo fallback — object-contain so the transparent PNG stays clean */
+        <div className="absolute inset-0 flex items-center justify-center"
+          style={{ background: "linear-gradient(160deg, rgba(20,12,4,0.6) 0%, rgba(10,6,2,0.8) 100%)" }}>
+          <img
+            src={fallbackSrc!}
+            alt={alt}
+            className="h-full w-auto max-w-full object-contain drop-shadow-2xl"
+            style={{ filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.7))" }}
+            onError={() => setFallbackError(true)}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
       ) : (
         <Placeholder category={cat} />
       )}
 
-      {/* Bottom gradient — dark to transparent, so text below image reads clearly */}
+      {/* Bottom gradient — ensures text on the card below image reads clearly */}
       <div
-        className="absolute inset-x-0 bottom-0"
+        className="absolute inset-x-0 bottom-0 pointer-events-none"
         style={{
           height: "55%",
-          background: "linear-gradient(to bottom, transparent 0%, rgba(10,6,2,0.92) 100%)",
-          pointerEvents: "none",
+          background: lightCard
+            ? "linear-gradient(to bottom, transparent 0%, rgba(240,228,210,0.9) 100%)"
+            : "linear-gradient(to bottom, transparent 0%, rgba(10,6,2,0.92) 100%)",
         }}
       />
     </div>
@@ -94,16 +112,14 @@ function Placeholder({ category }: { category: string }) {
 
   return (
     <div className="absolute inset-0 flex items-center justify-center" style={{ background: gradient }}>
-      {/* Subtle crosshatch texture */}
       <div
         className="absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage:
-            "repeating-linear-gradient(45deg, rgba(212,175,55,0.8) 0px, transparent 1px, transparent 18px)," +
+            "repeating-linear-gradient(45deg,  rgba(212,175,55,0.8) 0px, transparent 1px, transparent 18px)," +
             "repeating-linear-gradient(-45deg, rgba(212,175,55,0.8) 0px, transparent 1px, transparent 18px)",
         }}
       />
-      {/* Category icon */}
       <svg
         viewBox="0 0 24 24"
         fill="none"

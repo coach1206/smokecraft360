@@ -24,7 +24,7 @@ import {
   type InventoryItem, type AnalyticsSummary,
 } from "@/services/api";
 import { DEMO_MODE, DEMO_ANALYTICS } from "@/config/demo";
-import { cloudinaryOptimize }        from "@/components/ProductImage";
+import { cloudinaryOptimize }        from "@/lib/cloudinary";
 import { AmbientBackground }         from "@/components/AmbientBackground";
 import { LoginModal }                from "@/components/Auth/LoginModal";
 import { useAuth }                   from "@/contexts/AuthContext";

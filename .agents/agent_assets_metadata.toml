@@ -1,0 +1,20 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "4Nq05mn_pxmTfN9CC-uUx"
+uri = "file://artifacts/smokecraft/public/images/lounge-bg.png"
+type = "image"
+title = "luxury cigar lounge background"
+
+[[generated]]
+id = "9VtBbA-yxpP2vC05uatss"
+uri = "file://artifacts/smokecraft/public/images/cigar.png"
+type = "image"
+title = "premium cigar product shot"
+
+[[generated]]
+id = "P-IZr46yyhIgfmokLIEmk"
+uri = "file://artifacts/smokecraft/public/images/whiskey.png"
+type = "image"
+title = "bourbon whiskey glass product shot"
