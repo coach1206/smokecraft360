@@ -5,8 +5,30 @@ interface CategoryToggleProps {
   onChange: (value: "cigar" | "alcohol") => void;
 }
 
-const LABELS = { cigar: "Cigar",   alcohol: "Spirits" };
-const ICONS  = { cigar: "🚬",      alcohol: "🥃" };
+/* Premium SVG icons — no emojis */
+function CigarIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="2" y1="13" x2="18" y2="13" />
+      <line x1="18" y1="13" x2="22" y2="9" />
+      <line x1="2" y1="13" x2="2" y2="11" />
+      <path d="M6 11 Q8 7 12 8 Q16 9 18 13" />
+    </svg>
+  );
+}
+
+function SpiritsIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 22h8" />
+      <path d="M12 11v11" />
+      <path d="M5 3l2 8h10l2-8H5z" />
+      <path d="M5 3h14" />
+    </svg>
+  );
+}
+
+const LABELS = { cigar: "Cigar", alcohol: "Spirits" };
 
 export function CategoryToggle({ value, onChange }: CategoryToggleProps) {
   return (
@@ -14,7 +36,7 @@ export function CategoryToggle({ value, onChange }: CategoryToggleProps) {
       className="flex w-full p-1.5 rounded-2xl"
       style={{
         background: "rgba(245,235,221,0.95)",
-        border:     "1.5px solid rgba(184,137,26,0.35)",
+        border:     "2px solid rgba(184,137,26,0.32)",
         boxShadow:  "0 4px 20px rgba(0,0,0,0.25), inset 0 1px 3px rgba(0,0,0,0.08)",
       }}
       data-testid="category-toggle"
@@ -29,9 +51,11 @@ export function CategoryToggle({ value, onChange }: CategoryToggleProps) {
             className="relative flex-1 flex items-center justify-center gap-2.5 rounded-xl font-serif font-bold uppercase tracking-[0.12em] transition-colors duration-400 z-10"
             style={{
               minHeight: 68,
-              fontSize:  20,
+              fontSize:  19,
               color: isSelected ? "#1A1410" : "#7B5A1E",
               cursor: "pointer",
+              border: "none",
+              background: "transparent",
             }}
           >
             {isSelected && (
@@ -45,7 +69,7 @@ export function CategoryToggle({ value, onChange }: CategoryToggleProps) {
                 transition={{ type: "spring", stiffness: 280, damping: 28 }}
               />
             )}
-            <span style={{ fontSize: 22 }}>{ICONS[cat]}</span>
+            {cat === "cigar" ? <CigarIcon /> : <SpiritsIcon />}
             {LABELS[cat]}
           </button>
         );

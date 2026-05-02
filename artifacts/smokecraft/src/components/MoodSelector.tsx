@@ -6,14 +6,14 @@ interface MoodSelectorProps {
 }
 
 const MOODS = [
-  { value: "relaxed",     label: "Relaxed",     icon: "🌙" },
-  { value: "bold",        label: "Bold",         icon: "🔥" },
-  { value: "social",      label: "Social",       icon: "🥂" },
-  { value: "reflective",  label: "Reflective",   icon: "🎭" },
-  { value: "celebratory", label: "Celebratory",  icon: "✨" },
-  { value: "focused",     label: "Focused",      icon: "🎯" },
-  { value: "adventurous", label: "Adventurous",  icon: "🌿" },
-  { value: "intense",     label: "Intense",      icon: "⚡" },
+  { value: "relaxed",     label: "Relaxed"     },
+  { value: "bold",        label: "Bold"         },
+  { value: "social",      label: "Social"       },
+  { value: "reflective",  label: "Reflective"   },
+  { value: "celebratory", label: "Celebratory"  },
+  { value: "focused",     label: "Focused"      },
+  { value: "adventurous", label: "Adventurous"  },
+  { value: "intense",     label: "Intense"      },
 ];
 
 const MOOD_DESCRIPTIONS: Record<string, string> = {
@@ -31,7 +31,7 @@ export function MoodSelector({ selected, onChange }: MoodSelectorProps) {
   return (
     <div className="space-y-4" data-testid="mood-selector">
       <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-        {MOODS.map(({ value, label, icon }, i) => {
+        {MOODS.map(({ value, label }, i) => {
           const isSelected = selected === value;
           return (
             <motion.button
@@ -44,31 +44,31 @@ export function MoodSelector({ selected, onChange }: MoodSelectorProps) {
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.95 }}
               style={{
-                minHeight:     64,
-                padding:       "12px 8px",
-                borderRadius:  12,
+                minHeight:     60,
+                padding:       "14px 8px",
+                borderRadius:  10,
                 fontSize:      15,
                 fontWeight:    600,
+                fontFamily:    "var(--app-font-serif)",
+                letterSpacing: "0.03em",
                 cursor:        "pointer",
                 display:       "flex",
-                flexDirection: "column",
                 alignItems:    "center",
-                gap:           6,
-                transition:    "all 0.25s ease",
+                justifyContent: "center",
+                transition:    "all 0.22s ease",
                 ...(isSelected ? {
                   background: "linear-gradient(135deg, #b07c14, #D4AF37)",
                   border:     "2px solid #D4AF37",
                   color:      "#1A1410",
-                  boxShadow:  "0 0 20px rgba(212,175,55,0.30), 0 4px 12px rgba(0,0,0,0.10)",
+                  boxShadow:  "0 0 18px rgba(212,175,55,0.28), 0 3px 10px rgba(0,0,0,0.10)",
                 } : {
-                  background: "rgba(26,20,16,0.07)",
+                  background: "rgba(26,20,16,0.06)",
                   border:     "1.5px solid rgba(90,60,30,0.22)",
                   color:      "#3D2712",
                 }),
               }}
             >
-              <span style={{ fontSize: 20, lineHeight: 1 }}>{icon}</span>
-              <span>{label}</span>
+              {label}
             </motion.button>
           );
         })}
@@ -80,9 +80,9 @@ export function MoodSelector({ selected, onChange }: MoodSelectorProps) {
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.28 }}
-          style={{ fontSize: 14, fontWeight: 600, color: "#7B5A1E" }}
+          style={{ fontSize: 13, fontWeight: 600, color: "#7B5A1E" }}
         >
-          ✓ {MOOD_DESCRIPTIONS[selected]}
+          {MOOD_DESCRIPTIONS[selected]}
         </motion.p>
       )}
     </div>

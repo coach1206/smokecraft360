@@ -30,7 +30,7 @@ import { OrderModal }        from "@/components/Order/OrderModal";
 import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
 import type { SavedBlend }   from "@/services/storage";
 
-type Phase = "form" | "loading" | "results";
+type Phase = "welcome" | "form" | "loading" | "results";
 
 // ── Demo mode preset ──────────────────────────────────────────────────────────
 const DEMO: { category: "cigar" | "alcohol"; flavors: string[]; strength: number; mood: string } = {
@@ -41,7 +41,7 @@ const DEMO: { category: "cigar" | "alcohol"; flavors: string[]; strength: number
 };
 
 export default function Home() {
-  const [phase, setPhase]                     = useState<Phase>("form");
+  const [phase, setPhase]                     = useState<Phase>("welcome");
   const [error, setError]                     = useState<string | null>(null);
   const [results, setResults]                 = useState<RecommendResponse | null>(null);
   const [vaultOpen, setVaultOpen]             = useState(false);
@@ -58,23 +58,43 @@ export default function Home() {
   const [strength, setStrength] = useState<number>(3);
   const [mood, setMood]         = useState<string>("relaxed");
 
-  // Step tracking for sidebar
-  const [strengthTouched, setStrengthTouched] = useState(false);
-  const [moodTouched,     setMoodTouched]     = useState(false);
-  const [orderTaken,      setOrderTaken]      = useState(false);
+  // Step wizard
+  const [formStep,  setFormStep]  = useState<0|1|2|3>(0);
+  const [slideDir,  setSlideDir]  = useState<1|-1>(1);
+  const [orderTaken, setOrderTaken] = useState(false);
 
-  const computeActiveStep = (): SidebarStep => {
-    if (phase === "loading") return 4;
-    if (phase === "results") return orderTaken ? 6 : 5;
-    if (flavors.length === 0) return 1;
-    if (!strengthTouched)    return 2;
-    if (!moodTouched)        return 3;
-    return 4;
-  };
-  const activeStep  = computeActiveStep();
+  // Sidebar step computation
+  const activeStep: SidebarStep =
+    phase === "loading" ? 4 :
+    phase === "results" ? (orderTaken ? 6 : 5) :
+    formStep;
   const completedSteps = new Set<number>(
     Array.from({ length: activeStep }, (_, i) => i),
   );
+
+  // Web Audio click sound — subtle soft tick
+  const playClick = useCallback(() => {
+    try {
+      const ACtx = window.AudioContext ?? (window as unknown as Record<string, typeof AudioContext>)["webkitAudioContext"];
+      const ctx  = new ACtx();
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(1100, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(550, ctx.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.055, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.09);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.09);
+    } catch { /* audio unavailable — silent fail */ }
+  }, []);
+
+  const goToStep = useCallback((step: 0|1|2|3) => {
+    playClick();
+    setSlideDir(step >= formStep ? 1 : -1);
+    setFormStep(step);
+  }, [formStep, playClick]);
 
   const {
     profile, isElite, justUnlockedElite, clearEliteUnlock,
@@ -275,16 +295,15 @@ export default function Home() {
   };
 
   const handleStartOver = () => {
-    setPhase("form");
+    setPhase("welcome");
     setResults(null);
     setFlavors([]);
     setStrength(3);
     setMood("relaxed");
     setExperienceSaved(false);
     setIsDemoMode(false);
-    setStrengthTouched(false);
-    setMoodTouched(false);
     setOrderTaken(false);
+    setFormStep(0);
   };
 
   const cigarBase    = results?.recommendations[0]?.name ?? "";
@@ -301,7 +320,11 @@ export default function Home() {
         activeStep={activeStep}
         completed={completedSteps}
         values={{ category, flavors, strength, mood } satisfies SidebarValues}
-        onReset={phase === "results" ? () => { setPhase("form"); setResults(null); setExperienceSaved(false); } : undefined}
+        onReset={phase === "results" ? () => { setPhase("form"); setResults(null); setExperienceSaved(false); setFormStep(0); } : undefined}
+        onStepClick={(s) => {
+          if (phase !== "form") return;
+          if (s <= activeStep) goToStep(s as 0|1|2|3);
+        }}
       />
 
       {/* Elite ambient overlay */}
@@ -415,6 +438,139 @@ export default function Home() {
 
         <AnimatePresence mode="wait">
 
+          {/* ── Welcome landing ──────────────── */}
+          {phase === "welcome" && (
+            <motion.div key="welcome"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col items-center justify-center flex-1 text-center"
+              style={{ minHeight: "60vh", paddingTop: "8vh" }}
+            >
+              {/* Eyebrow */}
+              <motion.p
+                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.18, duration: 0.6 }}
+                className="uppercase tracking-[0.35em] text-xs mb-6"
+                style={{ color: "rgba(212,175,55,0.65)" }}
+              >
+                Curated for the Connoisseur
+              </motion.p>
+
+              {/* Headline */}
+              <motion.h2
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.28, duration: 0.7 }}
+                className="font-serif"
+                style={{
+                  fontSize: "clamp(2rem, 5vw, 3.2rem)",
+                  fontWeight: 300,
+                  lineHeight: 1.15,
+                  letterSpacing: "0.04em",
+                  color: "rgba(245,235,221,0.95)",
+                  maxWidth: 520,
+                  marginBottom: "1.2rem",
+                }}
+              >
+                Your Perfect Cigar &amp;<br />Spirit Awaits
+              </motion.h2>
+
+              {/* Subline */}
+              <motion.p
+                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.38, duration: 0.6 }}
+                style={{
+                  color: "rgba(210,190,155,0.62)",
+                  fontSize: 15,
+                  fontWeight: 400,
+                  maxWidth: 380,
+                  lineHeight: 1.6,
+                  marginBottom: "2.8rem",
+                }}
+              >
+                Tell us your palate, your strength preference, and your mood —
+                we'll craft the perfect pairing for this moment.
+              </motion.p>
+
+              {/* Gold divider */}
+              <motion.div
+                initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+                transition={{ delay: 0.42, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  height: 1,
+                  width: 80,
+                  background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.55), transparent)",
+                  marginBottom: "2.8rem",
+                }}
+              />
+
+              {/* Begin CTA */}
+              <motion.button
+                data-testid="btn-begin-experience"
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.55 }}
+                onClick={() => { playClick(); setPhase("form"); }}
+                whileHover={{
+                  scale: 1.03,
+                  boxShadow: "0 0 0 1px rgba(212,175,55,0.65), 0 16px 48px rgba(0,0,0,0.55), 0 0 80px rgba(212,175,55,0.22)",
+                }}
+                whileTap={{ scale: 0.97 }}
+                style={{
+                  minHeight: 64,
+                  minWidth: 280,
+                  padding: "0 48px",
+                  background: "linear-gradient(135deg, hsl(43 75% 38%), hsl(45 85% 50%), hsl(43 75% 40%))",
+                  color: "#1A1410",
+                  border: "none",
+                  borderRadius: 4,
+                  fontFamily: "var(--app-font-serif)",
+                  fontSize: 17,
+                  fontWeight: 600,
+                  letterSpacing: "0.22em",
+                  textTransform: "uppercase",
+                  cursor: "pointer",
+                  boxShadow: "0 0 0 1px rgba(212,175,55,0.38), 0 10px 36px rgba(0,0,0,0.45), 0 0 55px rgba(212,175,55,0.12)",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <motion.div
+                  style={{
+                    position: "absolute", inset: 0, pointerEvents: "none",
+                    background: "linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.14) 50%, transparent 65%)",
+                    backgroundSize: "200% 100%",
+                  }}
+                  animate={{ backgroundPosition: ["200% 0", "-200% 0"] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: "linear", repeatDelay: 2 }}
+                />
+                Begin Your Experience
+              </motion.button>
+
+              {/* Secondary: demo link */}
+              {venue.features.demoMode && (
+                <motion.button
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                  transition={{ delay: 0.75, duration: 0.5 }}
+                  onClick={handleTryDemo}
+                  style={{
+                    marginTop: 18,
+                    background: "transparent",
+                    border: "none",
+                    color: "rgba(180,155,100,0.38)",
+                    fontSize: 11,
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                  }}
+                  whileHover={{ color: "rgba(212,175,55,0.65)" }}
+                >
+                  Try 15-Second Demo
+                </motion.button>
+              )}
+            </motion.div>
+          )}
+
           {/* ── Form ─────────────────────────── */}
           {(phase === "form" || phase === "loading") && (
             <motion.div key="form"
@@ -440,11 +596,11 @@ export default function Home() {
 
                 {/* Palate — cream card */}
                 <section style={{
-                  background:   "rgba(245,235,221,0.96)",
-                  borderRadius: 16,
+                  background:   "rgba(245,235,221,0.97)",
+                  borderRadius: 14,
                   padding:      "22px 24px",
-                  boxShadow:    "0 4px 24px rgba(0,0,0,0.22), 0 1px 6px rgba(0,0,0,0.10)",
-                  border:       "1px solid rgba(184,137,26,0.18)",
+                  boxShadow:    "0 6px 32px rgba(0,0,0,0.30), 0 2px 8px rgba(0,0,0,0.14)",
+                  border:       "2px solid rgba(184,137,26,0.42)",
                 }}>
                   <FormLabel title="Palate" hint="Select notes" isElite={isElite} />
                   <FlavorChips category={category} selected={flavors} onChange={setFlavors} />
@@ -452,26 +608,26 @@ export default function Home() {
 
                 {/* Strength — cream card */}
                 <section style={{
-                  background:   "rgba(245,235,221,0.96)",
-                  borderRadius: 16,
+                  background:   "rgba(245,235,221,0.97)",
+                  borderRadius: 14,
                   padding:      "22px 24px",
-                  boxShadow:    "0 4px 24px rgba(0,0,0,0.22), 0 1px 6px rgba(0,0,0,0.10)",
-                  border:       "1px solid rgba(184,137,26,0.18)",
+                  boxShadow:    "0 6px 32px rgba(0,0,0,0.30), 0 2px 8px rgba(0,0,0,0.14)",
+                  border:       "2px solid rgba(184,137,26,0.42)",
                 }}>
                   <FormLabel title="Strength" isElite={isElite} />
-                  <StrengthSlider value={strength} onChange={(v) => { setStrength(v); setStrengthTouched(true); }} />
+                  <StrengthSlider value={strength} onChange={(v) => { setStrength(v); }} />
                 </section>
 
                 {/* Atmosphere — cream card */}
                 <section style={{
-                  background:   "rgba(245,235,221,0.96)",
-                  borderRadius: 16,
+                  background:   "rgba(245,235,221,0.97)",
+                  borderRadius: 14,
                   padding:      "22px 24px",
-                  boxShadow:    "0 4px 24px rgba(0,0,0,0.22), 0 1px 6px rgba(0,0,0,0.10)",
-                  border:       "1px solid rgba(184,137,26,0.18)",
+                  boxShadow:    "0 6px 32px rgba(0,0,0,0.30), 0 2px 8px rgba(0,0,0,0.14)",
+                  border:       "2px solid rgba(184,137,26,0.42)",
                 }}>
                   <FormLabel title="Atmosphere" isElite={isElite} />
-                  <MoodSelector selected={mood} onChange={(m) => { setMood(m); setMoodTouched(true); }} />
+                  <MoodSelector selected={mood} onChange={(m) => { setMood(m); }} />
                 </section>
               </div>
 

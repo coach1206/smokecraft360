@@ -35,10 +35,11 @@ export interface SidebarValues {
 const STRENGTH_LABELS = ["", "Very Mild", "Mild", "Medium", "Full", "Intense"];
 
 interface Props {
-  activeStep: SidebarStep;
-  completed:  Set<number>;
-  values?:    SidebarValues;
-  onReset?:   () => void;
+  activeStep:   SidebarStep;
+  completed:    Set<number>;
+  values?:      SidebarValues;
+  onReset?:     () => void;
+  onStepClick?: (step: number) => void;
 }
 
 function stepValue(index: number, values: SidebarValues): string | null {
@@ -57,7 +58,7 @@ function stepValue(index: number, values: SidebarValues): string | null {
   }
 }
 
-export function ExperienceSidebar({ activeStep, completed, values = {}, onReset }: Props) {
+export function ExperienceSidebar({ activeStep, completed, values = {}, onReset, onStepClick }: Props) {
   const venue = useVenue();
 
   return (
@@ -94,7 +95,8 @@ export function ExperienceSidebar({ activeStep, completed, values = {}, onReset 
           return (
             <motion.div
               key={step.label}
-              className="relative flex items-center gap-3 px-3 py-3 rounded-xl"
+              onClick={() => !isLocked && onStepClick?.(i)}
+              className="relative flex items-center gap-3 px-3 py-3 rounded-xl w-full text-left"
               style={{
                 background: isActive
                   ? "linear-gradient(135deg, rgba(212,175,55,0.15), rgba(180,130,30,0.08))"
@@ -102,9 +104,12 @@ export function ExperienceSidebar({ activeStep, completed, values = {}, onReset 
                 border: isActive
                   ? "1px solid rgba(212,175,55,0.35)"
                   : "1px solid transparent",
-                /* locked steps are dimmed but STILL READABLE */
-                opacity: isLocked ? 0.58 : 1,
+                opacity:    isLocked ? 0.58 : 1,
+                cursor:     isLocked ? "default" : "pointer",
+                appearance: "none",
               }}
+              whileHover={(!isLocked && onStepClick) ? { backgroundColor: isActive ? undefined : "rgba(212,175,55,0.06)", scale: 1.01 } : {}}
+              whileTap={(!isLocked && onStepClick) ? { scale: 0.97 } : {}}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: isLocked ? 0.58 : 1, x: 0 }}
               transition={{ delay: i * 0.04, duration: 0.35 }}
