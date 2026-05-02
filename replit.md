@@ -39,20 +39,21 @@ Luxury cigar & spirits recommendation app. Dark gold theme, glassmorphism cards,
 
 ## Database Schema (`lib/db/src/schema/`)
 
-Nine tables pushed to PostgreSQL via Drizzle:
+Ten tables pushed to PostgreSQL via Drizzle:
 
 | File | Table | Notes |
 |---|---|---|
 | `users.ts` | `users` | Roles, level, JWT auth |
 | `venues.ts` | `venues` | Venue profiles |
-| `products.ts` | `products` | Full product catalog; `distributorId` added |
+| `products.ts` | `products` | Full product catalog; `brandId`, `distributorId`, `campaignId` |
 | `experiences.ts` | `experiences` | Per-user recommendation sessions |
-| `brands.ts` | `brands` | Brand partner records |
+| `brands.ts` | `brands` | Brand partners: name, category, distributorId, logoUrl, website |
 | `analyticsEvents.ts` | `analytics_events` | Impression + event tracking (13 event types) |
 | `orders.ts` | `orders` | Customer orders |
 | `userPreferences.ts` | `user_preferences` | Preference snapshots (flavor, strength, mood) |
 | `venueInventory.ts` | `venue_inventory` | Per-venue stock levels |
-| `distributors.ts` | `distributors` | Distributor / supplier records |
+| `distributors.ts` | `distributors` | Distributor partners: name, state, contactEmail, website |
+| `campaigns.ts` | `campaigns` | Sponsored campaign structure (future-ready) |
 
 ---
 
@@ -122,11 +123,38 @@ engine/
 | `GET /api/analytics/venue/:id` | Required | venue_owner, manager, super_admin |
 | `POST /api/events` | None (auth optional) | Public — 11 valid event types |
 | `POST /api/preferences` | None (auth optional) | Public — fire-and-forget snapshot |
+| `GET /api/brands` | Required | venue_owner, manager, super_admin |
+| `POST /api/brands` | Required | super_admin, venue_owner, manager |
+| `PATCH /api/brands/:id` | Required | super_admin, venue_owner, manager |
+| `GET /api/brands/:id/performance` | Required | super_admin, venue_owner, manager, brand_partner |
+| `GET /api/distributors` | Required | venue_owner, manager, super_admin |
+| `POST /api/distributors` | Required | super_admin only |
+| `PATCH /api/distributors/:id` | Required | super_admin only |
 | `GET /api/auth/me` | Required | Any authenticated user |
 
 ### Event Types (POST /api/events)
 
 `view` · `swipe_right` · `swipe_left` · `save` · `boost_click` · `sponsored_view` · `recommendation_view` · `product_selected` · `pairing_selected` · `food_selected` · `order_created`
+
+---
+
+## Brands & Distributors System
+
+### Data model
+- `distributors` → `brands` (one-to-many via `distributorId`)
+- `brands` → `products` (one-to-many via `brandId`)
+- `campaigns` → links `brandId` + `distributorId` for time-boxed sponsored promotions
+
+### Dashboard
+`pages/Dashboard.tsx` now has four tabs:
+- **Overview** — stats summary + live orders
+- **Products** — boost/sponsored/image controls per product
+- **Brands & Distributors** — `BrandsTab` component: distributor sidebar, brand cards with expandable product+impression detail, Campaigns future-ready panel
+- **Analytics** — impression bars + sponsored performance charts
+
+### Seeded demo data
+- 3 distributors: Altadis USA (FL), General Cigar Holdings (TN), Moet Hennessy USA (NY)
+- 5 brands: Montecristo, Romeo y Julieta (→ Altadis), Macanudo (→ General Cigar), Macallan, Glenfiddich (→ MH USA)
 
 ---
 

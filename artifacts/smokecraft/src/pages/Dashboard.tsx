@@ -3,32 +3,43 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, TrendingUp, Package, Sparkles, Zap,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
+  Building2, Tag,
 } from "lucide-react";
-import { LiveOrders } from "@/components/Dashboard/LiveOrders";
+import { LiveOrders }     from "@/components/Dashboard/LiveOrders";
+import { BrandsTab }      from "@/components/Dashboard/BrandsTab";
 import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
   type InventoryItem, type AnalyticsSummary,
 } from "@/services/api";
 import { DEMO_MODE, DEMO_ANALYTICS } from "@/config/demo";
-import { cloudinaryOptimize } from "@/components/ProductImage";
-import { AmbientBackground } from "@/components/AmbientBackground";
-import { LoginModal }        from "@/components/Auth/LoginModal";
-import { useAuth }           from "@/contexts/AuthContext";
-import { canAccessDashboard } from "@/services/auth";
+import { cloudinaryOptimize }        from "@/components/ProductImage";
+import { AmbientBackground }         from "@/components/AmbientBackground";
+import { LoginModal }                from "@/components/Auth/LoginModal";
+import { useAuth }                   from "@/contexts/AuthContext";
+import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
+type DashTab        = "overview" | "products" | "brands" | "analytics";
+
+const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
+  { id: "overview",  label: "Overview",            icon: <BarChart3 size={12} /> },
+  { id: "products",  label: "Products",            icon: <Package size={12} />   },
+  { id: "brands",    label: "Brands & Distributors", icon: <Building2 size={12} /> },
+  { id: "analytics", label: "Analytics",           icon: <TrendingUp size={12} /> },
+];
 
 export default function Dashboard() {
   const { user, loading: authLoading, logout } = useAuth();
 
-  const [inventory, setInventory] = useState<InventoryItem[]>([]);
-  const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
-  const [filter,    setFilter]    = useState<CategoryFilter>("all");
-  const [loading,   setLoading]   = useState(false);
-  const [saving,    setSaving]    = useState<Record<string, boolean>>({});
-  const [saved,     setSaved]     = useState<Record<string, boolean>>({});
-  const [error,     setError]     = useState<string | null>(null);
-  const [showLogin, setShowLogin] = useState(false);
+  const [activeTab,  setActiveTab]  = useState<DashTab>("overview");
+  const [inventory,  setInventory]  = useState<InventoryItem[]>([]);
+  const [analytics,  setAnalytics]  = useState<AnalyticsSummary | null>(null);
+  const [filter,     setFilter]     = useState<CategoryFilter>("all");
+  const [loading,    setLoading]    = useState(false);
+  const [saving,     setSaving]     = useState<Record<string, boolean>>({});
+  const [saved,      setSaved]      = useState<Record<string, boolean>>({});
+  const [error,      setError]      = useState<string | null>(null);
+  const [showLogin,  setShowLogin]  = useState(false);
 
   const authorized = user && canAccessDashboard(user.role);
 
@@ -37,8 +48,6 @@ export default function Dashboard() {
     setLoading(true);
     setError(null);
     try {
-      // In demo mode, use rich sample analytics so the dashboard always looks impressive.
-      // Inventory is still fetched live so real product data (boosts, images) shows through.
       const [inv, ana] = await Promise.all([
         fetchInventory().catch(() => [] as InventoryItem[]),
         DEMO_MODE
@@ -49,7 +58,6 @@ export default function Dashboard() {
       setAnalytics(ana);
     } catch (e) {
       if (DEMO_MODE) {
-        // Never show errors in demo mode — fall back to demo analytics
         setAnalytics(DEMO_ANALYTICS as AnalyticsSummary);
       } else {
         setError(e instanceof Error ? e.message : "Could not load data");
@@ -91,9 +99,7 @@ export default function Dashboard() {
       setInventory((prev) => prev.map((p) => p.id === item.id ? { ...p, imageUrl: url } : p));
       setSaved((s) => ({ ...s, [item.id]: true }));
       setTimeout(() => setSaved((s) => ({ ...s, [item.id]: false })), 1800);
-    } catch {
-      // Non-critical — silently fail, image stays unchanged
-    }
+    } catch { /* silent */ }
     setSaving((s) => ({ ...s, [item.id]: false }));
   };
 
@@ -111,7 +117,7 @@ export default function Dashboard() {
       <div className="relative z-10 flex-1 flex flex-col max-w-5xl mx-auto w-full px-6 py-10">
 
         {/* Header */}
-        <div className="flex items-start justify-between mb-10">
+        <div className="flex items-start justify-between mb-8">
           <div>
             <motion.div className="flex items-center gap-3 mb-1"
               initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
@@ -173,7 +179,7 @@ export default function Dashboard() {
           </motion.div>
         </div>
 
-        <div className="mb-10 h-px w-full" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent)" }} />
+        <div className="mb-8 h-px w-full" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent)" }} />
 
         {/* Auth loading */}
         {authLoading && (
@@ -238,100 +244,158 @@ export default function Dashboard() {
               </div>
             </div>
           ) : (
-            <div className="space-y-10">
+            <div className="space-y-8">
 
-              {/* Stats */}
-              {stats && (
-                <motion.div className="grid grid-cols-2 md:grid-cols-3 gap-4"
-                  initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
-                  <StatCard icon={<Package size={16} />}    label="Total Products"         value={stats.totalProducts}        />
-                  <StatCard icon={<Zap size={16} />}        label="Boosted"                value={stats.boostedProducts}      accent />
-                  <StatCard icon={<Sparkles size={16} />}   label="Sponsored"              value={stats.sponsoredProducts}    gold />
-                  <StatCard icon={<BarChart3 size={16} />}  label="Total Impressions"      value={stats.totalImpressions}     />
-                  <StatCard icon={<TrendingUp size={16} />} label="Sponsored Impressions"  value={stats.sponsoredImpressions} gold />
-                  <StatCard icon={<TrendingUp size={16} />} label="Featured Impressions"   value={stats.featuredImpressions}  accent />
-                </motion.div>
-              )}
-
-              {/* Live Orders */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                <div className="rounded-xl p-6" style={{ background: "rgba(212,175,55,0.03)", border: "1px solid rgba(212,175,55,0.12)" }}>
-                  <LiveOrders />
+              {/* Tab navigation */}
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <div className="flex gap-1 p-1 rounded-xl w-fit"
+                  style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                  {TABS.map((tab) => (
+                    <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[10px] uppercase tracking-[0.15em] transition-all duration-200 whitespace-nowrap"
+                      style={activeTab === tab.id
+                        ? {
+                            background: "rgba(212,175,55,0.12)",
+                            border: "1px solid rgba(212,175,55,0.28)",
+                            color: "rgba(212,175,55,0.9)",
+                          }
+                        : {
+                            border: "1px solid transparent",
+                            color: "rgba(180,155,100,0.45)",
+                          }
+                      }>
+                      {tab.icon}{tab.label}
+                    </button>
+                  ))}
                 </div>
               </motion.div>
 
-              {/* Product Controls */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>Product Visibility</h2>
-                    <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
-                      Adjust boost, sponsored placement, and product images
-                    </p>
-                  </div>
-                  <div className="flex rounded-full p-0.5 gap-0.5" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                    {(["all", "cigar", "alcohol"] as CategoryFilter[]).map((f) => (
-                      <button key={f} onClick={() => setFilter(f)}
-                        className="px-3 py-1.5 text-[9px] uppercase tracking-[0.15em] rounded-full transition-all duration-200"
-                        style={filter === f
-                          ? { background: "rgba(212,175,55,0.15)", color: "rgba(212,175,55,0.85)", border: "1px solid rgba(212,175,55,0.3)" }
-                          : { color: "rgba(180,155,100,0.5)" }
-                        }>{f}</button>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <AnimatePresence mode="popLayout">
-                    {filtered.map((item, i) => (
-                      <motion.div key={item.id} layout
-                        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.97 }}
-                        transition={{ delay: i * 0.04 }}>
-                        <ProductRow
-                          item={item}
-                          isSaving={saving[item.id] ?? false}
-                          justSaved={saved[item.id] ?? false}
-                          onBoostChange={(lvl) => handleBoostChange(item, lvl)}
-                          onSponsoredChange={(s) => handleSponsoredChange(item, s)}
-                          onImageUpload={(file) => handleImageUpload(item, file)}
-                        />
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
+              <AnimatePresence mode="wait">
 
-              {/* Analytics */}
-              {analytics && (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
-                  <div className="mb-6">
-                    <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>Performance Analytics</h2>
-                    <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>Persistent across server restarts</p>
-                  </div>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="rounded-xl p-5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                      <p className="text-[9px] uppercase tracking-[0.22em] mb-4" style={{ color: "rgba(180,155,100,0.45)" }}>Top Impressions</p>
-                      {analytics.topPerformers.length === 0
-                        ? <p className="text-xs italic" style={{ color: "rgba(180,155,100,0.3)" }}>No impressions yet — run some recommendations</p>
-                        : <div className="space-y-3">{analytics.topPerformers.map((p) => (
-                            <ImpressionBar key={p.id} item={p} max={analytics.topPerformers[0]?.impressions || 1} />
-                          ))}</div>
-                      }
+                {/* ── Overview tab ───────────────────────────────────────────── */}
+                {activeTab === "overview" && (
+                  <motion.div key="overview" className="space-y-8"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+
+                    {stats && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <StatCard icon={<Package size={16} />}    label="Total Products"         value={stats.totalProducts}        />
+                        <StatCard icon={<Zap size={16} />}        label="Boosted"                value={stats.boostedProducts}      accent />
+                        <StatCard icon={<Sparkles size={16} />}   label="Sponsored"              value={stats.sponsoredProducts}    gold />
+                        <StatCard icon={<BarChart3 size={16} />}  label="Total Impressions"      value={stats.totalImpressions}     />
+                        <StatCard icon={<TrendingUp size={16} />} label="Sponsored Impressions"  value={stats.sponsoredImpressions} gold />
+                        <StatCard icon={<TrendingUp size={16} />} label="Featured Impressions"   value={stats.featuredImpressions}  accent />
+                      </div>
+                    )}
+
+                    <div className="rounded-xl p-6" style={{ background: "rgba(212,175,55,0.03)", border: "1px solid rgba(212,175,55,0.12)" }}>
+                      <LiveOrders />
                     </div>
-                    <div className="rounded-xl p-5" style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.12)" }}>
-                      <p className="text-[9px] uppercase tracking-[0.22em] mb-4 flex items-center gap-2" style={{ color: "rgba(212,175,55,0.55)" }}>
-                        <Sparkles size={9} />Sponsored Performance
+                  </motion.div>
+                )}
+
+                {/* ── Products tab ───────────────────────────────────────────── */}
+                {activeTab === "products" && (
+                  <motion.div key="products" className="space-y-6"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>Product Visibility</h2>
+                        <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+                          Adjust boost, sponsored placement, and product images
+                        </p>
+                      </div>
+                      <div className="flex rounded-full p-0.5 gap-0.5"
+                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                        {(["all", "cigar", "alcohol"] as CategoryFilter[]).map((f) => (
+                          <button key={f} onClick={() => setFilter(f)}
+                            className="px-3 py-1.5 text-[9px] uppercase tracking-[0.15em] rounded-full transition-all duration-200"
+                            style={filter === f
+                              ? { background: "rgba(212,175,55,0.15)", color: "rgba(212,175,55,0.85)", border: "1px solid rgba(212,175,55,0.3)" }
+                              : { color: "rgba(180,155,100,0.5)" }
+                            }>{f}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <AnimatePresence mode="popLayout">
+                        {filtered.map((item, i) => (
+                          <motion.div key={item.id} layout
+                            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.97 }}
+                            transition={{ delay: i * 0.04 }}>
+                            <ProductRow
+                              item={item}
+                              isSaving={saving[item.id] ?? false}
+                              justSaved={saved[item.id] ?? false}
+                              onBoostChange={(lvl) => handleBoostChange(item, lvl)}
+                              onSponsoredChange={(s) => handleSponsoredChange(item, s)}
+                              onImageUpload={(file) => handleImageUpload(item, file)}
+                            />
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* ── Brands & Distributors tab ──────────────────────────────── */}
+                {activeTab === "brands" && (
+                  <motion.div key="brands"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+                    <div className="mb-6">
+                      <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
+                        Brands &amp; Distributors
+                      </h2>
+                      <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+                        Brand partner directory · product attribution · campaign readiness
                       </p>
-                      {analytics.sponsored.length === 0
-                        ? <p className="text-xs italic" style={{ color: "rgba(180,155,100,0.35)" }}>No sponsored products yet</p>
-                        : <div className="space-y-3">{analytics.sponsored.map((p) => (
-                            <ImpressionBar key={p.id} item={p} max={Math.max(...analytics.sponsored.map((s) => s.impressions), 1)} gold />
-                          ))}</div>
-                      }
                     </div>
-                  </div>
-                </motion.div>
-              )}
+                    <BrandsTab />
+                  </motion.div>
+                )}
 
+                {/* ── Analytics tab ──────────────────────────────────────────── */}
+                {activeTab === "analytics" && analytics && (
+                  <motion.div key="analytics" className="space-y-6"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+
+                    <div className="mb-2">
+                      <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>Performance Analytics</h2>
+                      <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>Persistent across server restarts</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="rounded-xl p-5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                        <p className="text-[9px] uppercase tracking-[0.22em] mb-4" style={{ color: "rgba(180,155,100,0.45)" }}>Top Impressions</p>
+                        {analytics.topPerformers.length === 0
+                          ? <p className="text-xs italic" style={{ color: "rgba(180,155,100,0.3)" }}>No impressions yet — run some recommendations</p>
+                          : <div className="space-y-3">{analytics.topPerformers.map((p) => (
+                              <ImpressionBar key={p.id} item={p} max={analytics.topPerformers[0]?.impressions || 1} />
+                            ))}</div>
+                        }
+                      </div>
+                      <div className="rounded-xl p-5" style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.12)" }}>
+                        <p className="text-[9px] uppercase tracking-[0.22em] mb-4 flex items-center gap-2" style={{ color: "rgba(212,175,55,0.55)" }}>
+                          <Sparkles size={9} />Sponsored Performance
+                        </p>
+                        {analytics.sponsored.length === 0
+                          ? <p className="text-xs italic" style={{ color: "rgba(180,155,100,0.35)" }}>No sponsored products yet</p>
+                          : <div className="space-y-3">{analytics.sponsored.map((p) => (
+                              <ImpressionBar key={p.id} item={p} max={Math.max(...analytics.sponsored.map((s) => s.impressions), 1)} gold />
+                            ))}</div>
+                        }
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+              </AnimatePresence>
             </div>
           )
         )}
@@ -340,7 +404,7 @@ export default function Dashboard() {
   );
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── Sub-components ─────────────────────────────────────────────────────────────
 
 function StatCard({ icon, label, value, accent, gold }: {
   icon: React.ReactNode; label: string; value: number; accent?: boolean; gold?: boolean;
@@ -368,10 +432,8 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
   onSponsoredChange: (s: boolean) => void;
   onImageUpload: (file: File) => void;
 }) {
-  const fileRef = useRef<HTMLInputElement>(null);
-  const thumbUrl = item.imageUrl
-    ? cloudinaryOptimize(item.imageUrl, 96, 96)
-    : null;
+  const fileRef  = useRef<HTMLInputElement>(null);
+  const thumbUrl = item.imageUrl ? cloudinaryOptimize(item.imageUrl, 96, 96) : null;
 
   return (
     <div className="flex items-center gap-4 p-4 rounded-xl"
@@ -380,31 +442,17 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
         border:     item.sponsored ? "1px solid rgba(212,175,55,0.18)" : "1px solid rgba(255,255,255,0.06)",
       }}>
 
-      {/* Image thumbnail + upload trigger */}
       <div className="relative flex-shrink-0 group/img" style={{ width: 52, height: 52 }}>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          className="sr-only"
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) onImageUpload(f); e.target.value = ""; }}
-        />
-        <button
-          onClick={() => fileRef.current?.click()}
-          disabled={isSaving}
+        <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) onImageUpload(f); e.target.value = ""; }} />
+        <button onClick={() => fileRef.current?.click()} disabled={isSaving}
           className="w-full h-full rounded-lg overflow-hidden relative"
-          style={{
-            background: thumbUrl ? "transparent" : "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
-          }}
-          title="Upload product image"
-        >
-          {thumbUrl ? (
-            <img src={thumbUrl} alt={item.name} className="w-full h-full object-cover" />
-          ) : (
-            <ImagePlus size={16} className="absolute inset-0 m-auto" style={{ color: "rgba(212,175,55,0.3)" }} />
-          )}
-          {/* Hover overlay */}
+          style={{ background: thumbUrl ? "transparent" : "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+          title="Upload product image">
+          {thumbUrl
+            ? <img src={thumbUrl} alt={item.name} className="w-full h-full object-cover" />
+            : <ImagePlus size={16} className="absolute inset-0 m-auto" style={{ color: "rgba(212,175,55,0.3)" }} />
+          }
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 rounded-lg"
             style={{ background: "rgba(10,6,2,0.65)" }}>
             <ImagePlus size={14} style={{ color: "rgba(212,175,55,0.85)" }} />
@@ -412,7 +460,6 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
         </button>
       </div>
 
-      {/* Name + meta */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <p className="font-serif text-sm truncate" style={{ color: "rgba(220,200,165,0.85)" }}>{item.name}</p>
@@ -440,7 +487,6 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
         </div>
       </div>
 
-      {/* Boost selector */}
       <div className="flex flex-col items-center gap-1.5">
         <p className="text-[8px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.35)" }}>Boost</p>
         <div className="flex gap-1">
@@ -449,41 +495,36 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
               className="w-7 h-7 rounded text-xs font-medium transition-all duration-200"
               style={item.boostLevel === lvl
                 ? { background: "rgba(212,175,55,0.2)", border: "1px solid rgba(212,175,55,0.5)", color: "rgba(212,175,55,0.9)" }
-                : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.45)" }
+                : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.4)" }
               }>{lvl}</button>
           ))}
         </div>
       </div>
 
-      {/* Sponsored toggle */}
-      <div className="flex flex-col items-center gap-1.5">
-        <p className="text-[8px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.35)" }}>Sponsored</p>
-        <button onClick={() => onSponsoredChange(!item.sponsored)}
-          className="relative w-10 h-5 rounded-full transition-all duration-300 flex-shrink-0"
-          style={{ background: item.sponsored ? "linear-gradient(90deg, hsl(43 75% 42%), hsl(45 85% 52%))" : "rgba(255,255,255,0.08)" }}>
-          <motion.div className="absolute top-0.5 w-4 h-4 rounded-full"
-            style={{ background: item.sponsored ? "hsl(22 18% 6%)" : "rgba(180,155,100,0.5)" }}
-            animate={{ left: item.sponsored ? "calc(100% - 18px)" : "2px" }}
-            transition={{ type: "spring", stiffness: 400, damping: 26 }}
-          />
-        </button>
-      </div>
+      <button onClick={() => onSponsoredChange(!item.sponsored)} disabled={isSaving}
+        className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-200"
+        style={item.sponsored
+          ? { background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.3)" }
+          : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }
+        }>
+        <Sparkles size={12} style={{ color: item.sponsored ? "rgba(212,175,55,0.8)" : "rgba(180,155,100,0.35)" }} />
+        <span className="text-[8px] uppercase tracking-[0.1em]"
+          style={{ color: item.sponsored ? "rgba(212,175,55,0.7)" : "rgba(180,155,100,0.35)" }}>
+          {item.sponsored ? "On" : "Off"}
+        </span>
+      </button>
 
-      {/* Save indicator */}
-      <div className="w-5 flex-shrink-0">
-        <AnimatePresence>
-          {justSaved && !isSaving && (
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-              <Check size={14} style={{ color: "rgba(100,200,120,0.8)" }} />
-            </motion.div>
-          )}
-          {isSaving && (
-            <motion.div className="w-3.5 h-3.5 rounded-full border"
-              style={{ borderColor: "rgba(212,175,55,0.4)", borderTopColor: "transparent" }}
-              animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-            />
-          )}
-        </AnimatePresence>
+      <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
+        {isSaving
+          ? <motion.div className="w-4 h-4 rounded-full border"
+              style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.7)" }}
+              animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
+          : justSaved
+            ? <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                <Check size={14} style={{ color: "rgba(100,200,120,0.7)" }} />
+              </motion.div>
+            : null
+        }
       </div>
     </div>
   );
@@ -492,14 +533,18 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
 function ImpressionBar({ item, max, gold }: { item: InventoryItem; max: number; gold?: boolean }) {
   const pct = max > 0 ? (item.impressions / max) * 100 : 0;
   return (
-    <div className="flex items-center gap-3">
-      <p className="text-xs font-serif truncate w-32 flex-shrink-0" style={{ color: "rgba(210,190,155,0.7)" }}>{item.name}</p>
-      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
-        <motion.div className="h-full rounded-full"
-          style={{ background: gold ? "linear-gradient(90deg, hsl(36 70% 40%), hsl(43 85% 52%))" : "rgba(180,155,100,0.4)" }}
-          initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.9, ease: "easeOut", delay: 0.3 }} />
+    <div className="space-y-1">
+      <div className="flex items-center justify-between gap-2">
+        <span className="font-serif text-xs truncate" style={{ color: "rgba(200,180,145,0.8)" }}>{item.name}</span>
+        <span className="text-xs flex-shrink-0" style={{ color: gold ? "rgba(212,175,55,0.7)" : "rgba(180,155,100,0.55)" }}>
+          {item.impressions}
+        </span>
       </div>
-      <span className="text-[9px] tabular-nums w-6 text-right flex-shrink-0" style={{ color: "rgba(180,155,100,0.45)" }}>{item.impressions}</span>
+      <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+        <motion.div className="h-full rounded-full"
+          initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, ease: "easeOut" }}
+          style={{ background: gold ? "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(212,175,55,0.9))" : "rgba(180,155,100,0.5)" }} />
+      </div>
     </div>
   );
 }

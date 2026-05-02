@@ -8,3 +8,4 @@ export * from "./orders";
 export * from "./userPreferences";
 export * from "./venueInventory";
 export * from "./distributors";
+export * from "./campaigns";

@@ -402,6 +402,111 @@ export async function fetchAnalytics(): Promise<AnalyticsSummary> {
   return res.json();
 }
 
+// ── Brands & Distributors ─────────────────────────────────────────────────────
+
+export interface Brand {
+  id:                   string;
+  name:                 string;
+  category:             string;
+  distributorId:        string | null;
+  logoUrl:              string | null;
+  website:              string | null;
+  contactEmail:         string | null;
+  active:               boolean;
+  createdAt:            string;
+  productCount:         number;
+  impressions:          number;
+  sponsoredImpressions: number;
+}
+
+export interface Distributor {
+  id:           string;
+  name:         string;
+  state:        string | null;
+  contactEmail: string | null;
+  website:      string | null;
+  region:       string | null;
+  active:       boolean;
+  createdAt:    string;
+  brandCount:   number;
+}
+
+export interface BrandPerformance {
+  brand: Brand;
+  products: {
+    id:          string;
+    name:        string;
+    category:    string;
+    tier:        string;
+    boostLevel:  number;
+    sponsored:   boolean;
+    impressions: number;
+    imageUrl?:   string;
+  }[];
+  summary: {
+    productCount:         number;
+    totalImpressions:     number;
+    sponsoredImpressions: number;
+    boostedCount:         number;
+    sponsoredCount:       number;
+  };
+}
+
+export async function fetchBrands(): Promise<Brand[]> {
+  const res = await fetch("/api/brands", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch brands");
+  return res.json();
+}
+
+export async function fetchDistributors(): Promise<Distributor[]> {
+  const res = await fetch("/api/distributors", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch distributors");
+  return res.json();
+}
+
+export async function fetchBrandPerformance(brandId: string): Promise<BrandPerformance> {
+  const res = await fetch(`/api/brands/${brandId}/performance`, { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch brand performance");
+  return res.json();
+}
+
+export async function createBrand(data: {
+  name:          string;
+  category:      string;
+  distributorId?: string;
+  website?:       string;
+  contactEmail?:  string;
+}): Promise<Brand> {
+  const res = await fetch("/api/brands", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body:    JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to create brand");
+  }
+  return res.json();
+}
+
+export async function createDistributor(data: {
+  name:          string;
+  state?:        string;
+  contactEmail?: string;
+  website?:      string;
+}): Promise<Distributor> {
+  const res = await fetch("/api/distributors", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body:    JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to create distributor");
+  }
+  return res.json();
+}
+
 // ── Demo helpers ──────────────────────────────────────────────────────────────
 
 /** Clears all server-side demo data (orders). Best-effort — never throws. */
