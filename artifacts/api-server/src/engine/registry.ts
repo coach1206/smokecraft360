@@ -1,7 +1,6 @@
 import { Product, Category } from "./types";
-import { cigars } from "../data/cigars";
+import { cigars  } from "../data/cigars";
 import { alcohol } from "../data/alcohol";
-import { seedInventory } from "./inventory";
 
 const datasets: Record<string, Product[]> = {
   cigar:   cigars,
@@ -12,10 +11,6 @@ const pairingCategories: Record<string, string> = {
   cigar:   "alcohol",
   alcohol: "cigar",
 };
-
-// Seed inventory store on module load
-seedInventory(cigars);
-seedInventory(alcohol);
 
 export function getProductsByCategory(category: Category): Product[] {
   return datasets[category.toLowerCase()] ?? [];

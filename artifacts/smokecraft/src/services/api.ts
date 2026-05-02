@@ -1,3 +1,5 @@
+import { getAuthHeaders } from "./auth";
+
 export interface RecommendParams {
   category: "cigar" | "alcohol";
   flavorPreferences: string[];
@@ -93,16 +95,22 @@ export async function updateInventoryItem(
   updates: Partial<Pick<InventoryItem, "boostLevel" | "sponsored" | "brandId" | "campaignId">>,
 ): Promise<InventoryItem> {
   const res = await fetch(`/api/inventory/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(updates),
+    method:  "PATCH",
+    headers: getAuthHeaders(),
+    body:    JSON.stringify(updates),
   });
-  if (!res.ok) throw new Error("Failed to update product");
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to update product");
+  }
   return res.json();
 }
 
 export async function fetchAnalytics(): Promise<AnalyticsSummary> {
-  const res = await fetch("/api/analytics");
-  if (!res.ok) throw new Error("Failed to fetch analytics");
+  const res = await fetch("/api/analytics", { headers: getAuthHeaders() });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to fetch analytics");
+  }
   return res.json();
 }

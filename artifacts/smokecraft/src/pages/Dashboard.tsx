@@ -1,39 +1,50 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, TrendingUp, Package, Sparkles, Zap, ChevronDown, Check, BarChart3, RefreshCw } from "lucide-react";
+import {
+  ArrowLeft, TrendingUp, Package, Sparkles, Zap,
+  Check, BarChart3, RefreshCw, LogOut, User, Shield,
+} from "lucide-react";
 import { fetchInventory, fetchAnalytics, updateInventoryItem, InventoryItem, AnalyticsSummary } from "@/services/api";
 import { AmbientBackground } from "@/components/AmbientBackground";
+import { LoginModal } from "@/components/Auth/LoginModal";
+import { useAuth } from "@/contexts/AuthContext";
+import { canAccessDashboard } from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
 
 export default function Dashboard() {
-  const [inventory, setInventory]   = useState<InventoryItem[]>([]);
-  const [analytics, setAnalytics]   = useState<AnalyticsSummary | null>(null);
-  const [filter, setFilter]         = useState<CategoryFilter>("all");
-  const [loading, setLoading]       = useState(true);
-  const [saving, setSaving]         = useState<Record<string, boolean>>({});
-  const [saved,  setSaved]          = useState<Record<string, boolean>>({});
-  const [error, setError]           = useState<string | null>(null);
+  const { user, loading: authLoading, logout } = useAuth();
+
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
+  const [filter,    setFilter]    = useState<CategoryFilter>("all");
+  const [loading,   setLoading]   = useState(false);
+  const [saving,    setSaving]    = useState<Record<string, boolean>>({});
+  const [saved,     setSaved]     = useState<Record<string, boolean>>({});
+  const [error,     setError]     = useState<string | null>(null);
+  const [showLogin, setShowLogin] = useState(false);
+
+  const authorized = user && canAccessDashboard(user.role);
 
   const load = useCallback(async () => {
+    if (!authorized) return;
     setLoading(true);
     setError(null);
     try {
       const [inv, ana] = await Promise.all([fetchInventory(), fetchAnalytics()]);
       setInventory(inv);
       setAnalytics(ana);
-    } catch {
-      setError("Unable to reach the server. Make sure the API server is running.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not load data");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [authorized]);
 
   useEffect(() => { load(); }, [load]);
 
   const handleBoostChange = async (item: InventoryItem, boostLevel: number) => {
-    const optimistic = inventory.map((p) => p.id === item.id ? { ...p, boostLevel } : p);
-    setInventory(optimistic);
+    setInventory((prev) => prev.map((p) => p.id === item.id ? { ...p, boostLevel } : p));
     setSaving((s) => ({ ...s, [item.id]: true }));
     try {
       await updateInventoryItem(item.id, { boostLevel });
@@ -44,8 +55,7 @@ export default function Dashboard() {
   };
 
   const handleSponsoredChange = async (item: InventoryItem, sponsored: boolean) => {
-    const optimistic = inventory.map((p) => p.id === item.id ? { ...p, sponsored } : p);
-    setInventory(optimistic);
+    setInventory((prev) => prev.map((p) => p.id === item.id ? { ...p, sponsored } : p));
     setSaving((s) => ({ ...s, [item.id]: true }));
     try {
       await updateInventoryItem(item.id, { sponsored });
@@ -56,187 +66,239 @@ export default function Dashboard() {
   };
 
   const filtered = inventory.filter((p) => filter === "all" || p.category === filter);
-
-  const stats = analytics?.summary;
+  const stats    = analytics?.summary;
 
   return (
     <div className="min-h-[100dvh] w-full flex flex-col relative" style={{ background: "hsl(22 18% 4%)" }}>
       <AmbientBackground />
+
+      {/* Login modal */}
+      <AnimatePresence>
+        {showLogin && (
+          <LoginModal onClose={() => setShowLogin(false)} />
+        )}
+      </AnimatePresence>
 
       <div className="relative z-10 flex-1 flex flex-col max-w-5xl mx-auto w-full px-6 py-10">
 
         {/* Header */}
         <div className="flex items-start justify-between mb-10">
           <div>
-            <motion.div
-              className="flex items-center gap-3 mb-1"
-              initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <a
-                href="/"
-                className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] transition-colors duration-200"
+            <motion.div className="flex items-center gap-3 mb-1"
+              initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
+              <a href="/" className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] transition-colors duration-200"
                 style={{ color: "rgba(180,155,100,0.45)" }}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,175,55,0.75)")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(180,155,100,0.45)")}
-              >
-                <ArrowLeft size={11} />
-                SmokeCraft
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(180,155,100,0.45)")}>
+                <ArrowLeft size={11} />SmokeCraft
               </a>
             </motion.div>
-            <motion.h1
-              className="font-serif text-3xl"
-              style={{ fontWeight: 300, color: "rgba(230,210,175,0.9)" }}
-              initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1 }}
-            >
+            <motion.h1 className="font-serif text-3xl" style={{ fontWeight: 300, color: "rgba(230,210,175,0.9)" }}
+              initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
               Partner Dashboard
             </motion.h1>
-            <motion.p
-              className="text-[10px] uppercase tracking-[0.3em] mt-1"
-              style={{ color: "rgba(212,175,55,0.4)" }}
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
+            <motion.p className="text-[10px] uppercase tracking-[0.3em] mt-1" style={{ color: "rgba(212,175,55,0.4)" }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
               Product Visibility & Analytics
             </motion.p>
           </div>
-          <motion.button
-            onClick={load}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs uppercase tracking-[0.15em] transition-all"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.5)" }}
-            whileHover={{ borderColor: "rgba(212,175,55,0.3)", color: "rgba(212,175,55,0.7)" }}
-            whileTap={{ scale: 0.97 }}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-          >
-            <RefreshCw size={12} />
-            Refresh
-          </motion.button>
+
+          <motion.div className="flex items-center gap-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+            {user ? (
+              <>
+                {/* User pill */}
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl"
+                  style={{ background: "rgba(212,175,55,0.06)", border: "1px solid rgba(212,175,55,0.15)" }}>
+                  <User size={12} style={{ color: "rgba(212,175,55,0.55)" }} />
+                  <span className="text-[10px]" style={{ color: "rgba(210,185,140,0.7)" }}>{user.name}</span>
+                  <span className="text-[8px] uppercase tracking-[0.1em] px-1.5 py-0.5 rounded-full"
+                    style={{ background: "rgba(212,175,55,0.1)", color: "rgba(212,175,55,0.6)" }}>
+                    {user.role.replace("_", " ")}
+                  </span>
+                </div>
+                <motion.button onClick={load}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs uppercase tracking-[0.15em] transition-all"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.5)" }}
+                  whileHover={{ borderColor: "rgba(212,175,55,0.3)", color: "rgba(212,175,55,0.7)" }}
+                  whileTap={{ scale: 0.97 }}>
+                  <RefreshCw size={12} />
+                </motion.button>
+                <motion.button onClick={logout}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all"
+                  style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.4)" }}
+                  whileHover={{ borderColor: "rgba(239,68,68,0.3)", color: "rgba(239,68,68,0.6)" }}
+                  whileTap={{ scale: 0.97 }}>
+                  <LogOut size={12} />
+                </motion.button>
+              </>
+            ) : (
+              <motion.button onClick={() => setShowLogin(true)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs uppercase tracking-[0.15em]"
+                style={{
+                  background: "linear-gradient(135deg, rgba(180,130,30,0.2), rgba(212,175,55,0.1))",
+                  border: "1px solid rgba(212,175,55,0.3)", color: "rgba(212,175,55,0.8)",
+                }}
+                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+                <Shield size={12} />Sign In
+              </motion.button>
+            )}
+          </motion.div>
         </div>
 
-        {/* Gold top border */}
         <div className="mb-10 h-px w-full" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent)" }} />
 
-        {loading ? (
+        {/* Auth loading */}
+        {authLoading && (
           <div className="flex-1 flex items-center justify-center">
-            <motion.div
-              className="text-center"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            >
-              <motion.div
-                className="w-10 h-10 rounded-full mx-auto mb-4 border-2"
-                style={{ borderColor: "rgba(212,175,55,0.3)", borderTopColor: "rgba(212,175,55,0.8)" }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              />
-              <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: "rgba(180,155,100,0.4)" }}>Loading inventory…</p>
-            </motion.div>
+            <motion.div className="w-8 h-8 rounded-full border-2" animate={{ rotate: 360 }}
+              style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.7)" }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            />
           </div>
-        ) : error ? (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center p-8 rounded-xl" style={{ background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.2)" }}>
-              <p className="text-sm" style={{ color: "rgba(239,68,68,0.8)" }}>{error}</p>
+        )}
+
+        {/* Not authenticated */}
+        {!authLoading && !user && (
+          <motion.div className="flex-1 flex flex-col items-center justify-center gap-6"
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <div className="text-center p-10 rounded-2xl max-w-md"
+              style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.12)" }}>
+              <Shield size={32} className="mx-auto mb-4" style={{ color: "rgba(212,175,55,0.4)" }} />
+              <h3 className="font-serif text-xl mb-2" style={{ color: "rgba(220,200,165,0.8)", fontWeight: 300 }}>
+                Restricted Area
+              </h3>
+              <p className="text-sm mb-6" style={{ color: "rgba(180,155,100,0.5)" }}>
+                Sign in with a partner account to access product visibility controls and analytics.
+              </p>
+              <motion.button onClick={() => setShowLogin(true)}
+                className="px-6 py-3 rounded-xl text-sm uppercase tracking-[0.15em]"
+                style={{
+                  background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
+                  color: "hsl(22 18% 6%)",
+                }}
+                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+                <span className="flex items-center gap-2"><Shield size={13} />Sign In to Dashboard</span>
+              </motion.button>
             </div>
-          </div>
-        ) : (
-          <div className="space-y-10">
+          </motion.div>
+        )}
 
-            {/* Stats row */}
-            {stats && (
-              <motion.div
-                className="grid grid-cols-2 md:grid-cols-3 gap-4"
-                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-              >
-                <StatCard icon={<Package size={16} />} label="Total Products" value={stats.totalProducts} />
-                <StatCard icon={<Zap size={16} />}     label="Boosted"        value={stats.boostedProducts} accent />
-                <StatCard icon={<Sparkles size={16} />} label="Sponsored"     value={stats.sponsoredProducts} gold />
-                <StatCard icon={<BarChart3 size={16} />} label="Total Impressions" value={stats.totalImpressions} />
-                <StatCard icon={<TrendingUp size={16} />} label="Sponsored Impressions" value={stats.sponsoredImpressions} gold />
-                <StatCard icon={<TrendingUp size={16} />} label="Featured Impressions"  value={stats.featuredImpressions} accent />
+        {/* Wrong role */}
+        {!authLoading && user && !authorized && (
+          <motion.div className="flex-1 flex items-center justify-center"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <div className="text-center p-8 rounded-xl max-w-sm"
+              style={{ background: "rgba(239,68,68,0.05)", border: "1px solid rgba(239,68,68,0.15)" }}>
+              <p className="font-serif text-lg mb-2" style={{ color: "rgba(230,180,180,0.8)", fontWeight: 300 }}>Access Denied</p>
+              <p className="text-sm" style={{ color: "rgba(239,68,68,0.6)" }}>
+                Your role ({user.role.replace("_", " ")}) does not have dashboard access.
+              </p>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Dashboard content (authorized) */}
+        {!authLoading && authorized && (
+          loading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <motion.div className="w-10 h-10 rounded-full mx-auto mb-4 border-2"
+                  style={{ borderColor: "rgba(212,175,55,0.3)", borderTopColor: "rgba(212,175,55,0.8)" }}
+                  animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
+                <p className="text-[10px] uppercase tracking-[0.25em] text-center" style={{ color: "rgba(180,155,100,0.4)" }}>Loading…</p>
               </motion.div>
-            )}
-
-            {/* Product Controls */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>Product Visibility</h2>
-                  <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>Adjust boost level and sponsored placement</p>
-                </div>
-                {/* Category filter */}
-                <div className="flex rounded-full p-0.5 gap-0.5" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                  {(["all", "cigar", "alcohol"] as CategoryFilter[]).map((f) => (
-                    <button key={f} onClick={() => setFilter(f)}
-                      className="px-3 py-1.5 text-[9px] uppercase tracking-[0.15em] rounded-full transition-all duration-200"
-                      style={filter === f
-                        ? { background: "rgba(212,175,55,0.15)", color: "rgba(212,175,55,0.85)", border: "1px solid rgba(212,175,55,0.3)" }
-                        : { color: "rgba(180,155,100,0.5)" }
-                      }>{f}</button>
-                  ))}
-                </div>
+            </div>
+          ) : error ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="p-8 rounded-xl" style={{ background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.2)" }}>
+                <p className="text-sm" style={{ color: "rgba(239,68,68,0.8)" }}>{error}</p>
               </div>
+            </div>
+          ) : (
+            <div className="space-y-10">
 
-              <div className="space-y-3">
-                <AnimatePresence mode="popLayout">
-                  {filtered.map((item, i) => (
-                    <motion.div
-                      key={item.id}
-                      layout
-                      initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.97 }}
-                      transition={{ delay: i * 0.04 }}
-                    >
-                      <ProductRow
-                        item={item}
-                        isSaving={saving[item.id] ?? false}
-                        justSaved={saved[item.id]  ?? false}
-                        onBoostChange={(lvl) => handleBoostChange(item, lvl)}
-                        onSponsoredChange={(s) => handleSponsoredChange(item, s)}
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            </motion.div>
+              {/* Stats */}
+              {stats && (
+                <motion.div className="grid grid-cols-2 md:grid-cols-3 gap-4"
+                  initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
+                  <StatCard icon={<Package size={16} />}    label="Total Products"         value={stats.totalProducts}       />
+                  <StatCard icon={<Zap size={16} />}        label="Boosted"                value={stats.boostedProducts}     accent />
+                  <StatCard icon={<Sparkles size={16} />}   label="Sponsored"              value={stats.sponsoredProducts}   gold />
+                  <StatCard icon={<BarChart3 size={16} />}  label="Total Impressions"      value={stats.totalImpressions}    />
+                  <StatCard icon={<TrendingUp size={16} />} label="Sponsored Impressions"  value={stats.sponsoredImpressions} gold />
+                  <StatCard icon={<TrendingUp size={16} />} label="Featured Impressions"   value={stats.featuredImpressions} accent />
+                </motion.div>
+              )}
 
-            {/* Analytics */}
-            {analytics && analytics.topPerformers.length > 0 && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
-                <div className="mb-6">
-                  <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>Performance Analytics</h2>
-                  <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>Impression data — resets on server restart</p>
+              {/* Product Controls */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>Product Visibility</h2>
+                    <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>Adjust boost level and sponsored placement</p>
+                  </div>
+                  <div className="flex rounded-full p-0.5 gap-0.5" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                    {(["all", "cigar", "alcohol"] as CategoryFilter[]).map((f) => (
+                      <button key={f} onClick={() => setFilter(f)}
+                        className="px-3 py-1.5 text-[9px] uppercase tracking-[0.15em] rounded-full transition-all duration-200"
+                        style={filter === f
+                          ? { background: "rgba(212,175,55,0.15)", color: "rgba(212,175,55,0.85)", border: "1px solid rgba(212,175,55,0.3)" }
+                          : { color: "rgba(180,155,100,0.5)" }
+                        }>{f}</button>
+                    ))}
+                  </div>
                 </div>
+                <div className="space-y-3">
+                  <AnimatePresence mode="popLayout">
+                    {filtered.map((item, i) => (
+                      <motion.div key={item.id} layout
+                        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.97 }}
+                        transition={{ delay: i * 0.04 }}>
+                        <ProductRow item={item}
+                          isSaving={saving[item.id] ?? false} justSaved={saved[item.id] ?? false}
+                          onBoostChange={(lvl) => handleBoostChange(item, lvl)}
+                          onSponsoredChange={(s) => handleSponsoredChange(item, s)}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  {/* Top performers */}
-                  <div className="rounded-xl p-5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                    <p className="text-[9px] uppercase tracking-[0.22em] mb-4" style={{ color: "rgba(180,155,100,0.45)" }}>Top Impressions</p>
-                    <div className="space-y-3">
-                      {analytics.topPerformers.map((p) => (
-                        <ImpressionBar key={p.id} item={p} max={analytics.topPerformers[0].impressions || 1} />
-                      ))}
+              {/* Analytics */}
+              {analytics && (
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
+                  <div className="mb-6">
+                    <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>Performance Analytics</h2>
+                    <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>Persistent across server restarts</p>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="rounded-xl p-5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                      <p className="text-[9px] uppercase tracking-[0.22em] mb-4" style={{ color: "rgba(180,155,100,0.45)" }}>Top Impressions</p>
+                      {analytics.topPerformers.length === 0
+                        ? <p className="text-xs italic" style={{ color: "rgba(180,155,100,0.3)" }}>No impressions yet — run some recommendations</p>
+                        : <div className="space-y-3">{analytics.topPerformers.map((p) => (
+                            <ImpressionBar key={p.id} item={p} max={analytics.topPerformers[0]?.impressions || 1} />
+                          ))}</div>
+                      }
+                    </div>
+                    <div className="rounded-xl p-5" style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.12)" }}>
+                      <p className="text-[9px] uppercase tracking-[0.22em] mb-4 flex items-center gap-2" style={{ color: "rgba(212,175,55,0.55)" }}>
+                        <Sparkles size={9} />Sponsored Performance
+                      </p>
+                      {analytics.sponsored.length === 0
+                        ? <p className="text-xs italic" style={{ color: "rgba(180,155,100,0.35)" }}>No sponsored products yet</p>
+                        : <div className="space-y-3">{analytics.sponsored.map((p) => (
+                            <ImpressionBar key={p.id} item={p} max={Math.max(...analytics.sponsored.map((s) => s.impressions), 1)} gold />
+                          ))}</div>
+                      }
                     </div>
                   </div>
-
-                  {/* Sponsored performance */}
-                  <div className="rounded-xl p-5" style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.12)" }}>
-                    <p className="text-[9px] uppercase tracking-[0.22em] mb-4 flex items-center gap-2" style={{ color: "rgba(212,175,55,0.55)" }}>
-                      <Sparkles size={9} />Sponsored Performance
-                    </p>
-                    {analytics.sponsored.length === 0 ? (
-                      <p className="text-xs italic" style={{ color: "rgba(180,155,100,0.35)" }}>No sponsored products yet</p>
-                    ) : (
-                      <div className="space-y-3">
-                        {analytics.sponsored.map((p) => (
-                          <ImpressionBar key={p.id} item={p} max={Math.max(...analytics.sponsored.map(s => s.impressions), 1)} gold />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </div>
+                </motion.div>
+              )}
+            </div>
+          )
         )}
       </div>
     </div>
@@ -247,7 +309,7 @@ function StatCard({ icon, label, value, accent, gold }: { icon: React.ReactNode;
   return (
     <div className="p-4 rounded-xl flex items-center gap-3"
       style={{
-        background: gold ? "rgba(212,175,55,0.06)" : accent ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.025)",
+        background: gold ? "rgba(212,175,55,0.06)" : "rgba(255,255,255,0.025)",
         border: gold ? "1px solid rgba(212,175,55,0.18)" : accent ? "1px solid rgba(212,175,55,0.1)" : "1px solid rgba(255,255,255,0.06)",
       }}>
       <div style={{ color: gold ? "rgba(212,175,55,0.7)" : "rgba(180,155,100,0.5)" }}>{icon}</div>
@@ -260,20 +322,15 @@ function StatCard({ icon, label, value, accent, gold }: { icon: React.ReactNode;
 }
 
 function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChange }: {
-  item: InventoryItem;
-  isSaving: boolean;
-  justSaved: boolean;
-  onBoostChange: (level: number) => void;
-  onSponsoredChange: (sponsored: boolean) => void;
+  item: InventoryItem; isSaving: boolean; justSaved: boolean;
+  onBoostChange: (l: number) => void; onSponsoredChange: (s: boolean) => void;
 }) {
   return (
-    <div className="flex items-center gap-4 p-4 rounded-xl transition-all duration-300"
+    <div className="flex items-center gap-4 p-4 rounded-xl"
       style={{
         background: item.sponsored ? "rgba(212,175,55,0.05)" : "rgba(255,255,255,0.025)",
         border: item.sponsored ? "1px solid rgba(212,175,55,0.18)" : "1px solid rgba(255,255,255,0.06)",
       }}>
-
-      {/* Product info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <p className="font-serif text-sm truncate" style={{ color: "rgba(220,200,165,0.85)" }}>{item.name}</p>
@@ -289,15 +346,11 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
           <span style={{ color: "rgba(180,155,100,0.2)" }}>·</span>
           <span className="text-[8px] uppercase tracking-[0.12em]" style={{ color: "rgba(180,155,100,0.4)" }}>{item.tier}</span>
           {item.impressions > 0 && (
-            <>
-              <span style={{ color: "rgba(180,155,100,0.2)" }}>·</span>
-              <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.38)" }}>{item.impressions} impressions</span>
-            </>
+            <><span style={{ color: "rgba(180,155,100,0.2)" }}>·</span>
+            <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.38)" }}>{item.impressions} impressions</span></>
           )}
         </div>
       </div>
-
-      {/* Boost level selector */}
       <div className="flex flex-col items-center gap-1.5">
         <p className="text-[8px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.35)" }}>Boost</p>
         <div className="flex gap-1">
@@ -307,48 +360,33 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
               style={item.boostLevel === lvl
                 ? { background: "rgba(212,175,55,0.2)", border: "1px solid rgba(212,175,55,0.5)", color: "rgba(212,175,55,0.9)" }
                 : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.45)" }
-              }>
-              {lvl}
-            </button>
+              }>{lvl}</button>
           ))}
         </div>
       </div>
-
-      {/* Sponsored toggle */}
       <div className="flex flex-col items-center gap-1.5">
         <p className="text-[8px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.35)" }}>Sponsored</p>
-        <button
-          onClick={() => onSponsoredChange(!item.sponsored)}
+        <button onClick={() => onSponsoredChange(!item.sponsored)}
           className="relative w-10 h-5 rounded-full transition-all duration-300 flex-shrink-0"
-          style={{
-            background: item.sponsored
-              ? "linear-gradient(90deg, hsl(43 75% 42%), hsl(45 85% 52%))"
-              : "rgba(255,255,255,0.08)",
-          }}
-        >
-          <motion.div
-            className="absolute top-0.5 w-4 h-4 rounded-full"
+          style={{ background: item.sponsored ? "linear-gradient(90deg, hsl(43 75% 42%), hsl(45 85% 52%))" : "rgba(255,255,255,0.08)" }}>
+          <motion.div className="absolute top-0.5 w-4 h-4 rounded-full"
             style={{ background: item.sponsored ? "hsl(22 18% 6%)" : "rgba(180,155,100,0.5)" }}
             animate={{ left: item.sponsored ? "calc(100% - 18px)" : "2px" }}
             transition={{ type: "spring", stiffness: 400, damping: 26 }}
           />
         </button>
       </div>
-
-      {/* Save indicator */}
       <div className="w-5 flex-shrink-0">
         <AnimatePresence>
           {justSaved && !isSaving && (
-            <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }}>
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
               <Check size={14} style={{ color: "rgba(100,200,120,0.8)" }} />
             </motion.div>
           )}
           {isSaving && (
-            <motion.div
-              className="w-3.5 h-3.5 rounded-full border border-t-transparent"
+            <motion.div className="w-3.5 h-3.5 rounded-full border"
               style={{ borderColor: "rgba(212,175,55,0.4)", borderTopColor: "transparent" }}
-              animate={{ rotate: 360 }}
-              transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+              animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
             />
           )}
         </AnimatePresence>
@@ -365,9 +403,7 @@ function ImpressionBar({ item, max, gold }: { item: InventoryItem; max: number; 
       <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
         <motion.div className="h-full rounded-full"
           style={{ background: gold ? "linear-gradient(90deg, hsl(36 70% 40%), hsl(43 85% 52%))" : "rgba(180,155,100,0.4)" }}
-          initial={{ width: 0 }} animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.9, ease: "easeOut", delay: 0.3 }}
-        />
+          initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.9, ease: "easeOut", delay: 0.3 }} />
       </div>
       <span className="text-[9px] tabular-nums w-6 text-right flex-shrink-0" style={{ color: "rgba(180,155,100,0.45)" }}>{item.impressions}</span>
     </div>
