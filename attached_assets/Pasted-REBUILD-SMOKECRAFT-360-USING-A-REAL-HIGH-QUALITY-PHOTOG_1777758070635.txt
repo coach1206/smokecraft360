@@ -1,0 +1,181 @@
+REBUILD SMOKECRAFT 360 USING A REAL, HIGH-QUALITY PHOTOGRAPHIC BACKGROUND (NO CARTOON, NO FAKE RENDER, NO ILLUSTRATION)
+
+This system must use a REAL luxury cigar lounge photograph as the environment and merge it with a high-contrast, easy-to-read, premium interface designed for men 35–75.
+
+---
+
+BACKGROUND (NON-NEGOTIABLE)
+
+* Use a REAL photo only (Unsplash or similar high-quality source)
+* NO gradients as primary background
+* NO AI-cartoon style images
+* NO flat dark screens
+
+Search and use:
+
+* “luxury cigar lounge interior warm lighting”
+* “upscale whiskey bar interior wood leather ambient light”
+* “premium lounge interior golden hour lighting”
+
+The image must include:
+
+* warm lighting (amber/gold tones)
+* depth (visible background, not flat)
+* realistic textures (wood, leather, glass)
+
+---
+
+BACKGROUND IMPLEMENTATION
+
+Apply a LEFT-TO-RIGHT overlay so the UI is readable:
+
+* LEFT SIDE (sidebar): darker overlay
+* RIGHT SIDE (content): lighter overlay so image shows through
+
+Use this logic:
+
+* left side opacity: ~85%
+* center: ~50%
+* right side: ~15–25%
+
+DO NOT fully darken the image
+
+The background must feel alive and visible
+
+---
+
+MAIN CONTENT STRUCTURE
+
+LEFT:
+
+* Sidebar (darkened for readability)
+
+CENTER:
+
+* Large cigar + whiskey visual (real product image, not icon)
+
+RIGHT:
+
+* Light premium card (cream color for readability)
+
+---
+
+LIGHT CARD (READABILITY FIX)
+
+* Background: warm cream (#F5EBDD)
+* Text: dark brown (#1A1410)
+* Strong contrast (no gold text on dark background for reading)
+
+This is where ALL text lives
+
+DO NOT place text directly on the background image
+
+---
+
+TYPOGRAPHY (FOR AGING VISION)
+
+* Title: 34px–42px
+* Body: minimum 18px
+* Clear spacing between lines
+* Bold, readable fonts only
+
+---
+
+BUTTON SYSTEM (NON-GENERIC)
+
+PRIMARY BUTTON:
+
+* Gold gradient (#D4AF37 → #A87C2D)
+* Large (min 60px height)
+* Soft glow
+* Label: “ORDER NOW”
+
+SECONDARY BUTTON:
+
+* Glass style (light border, subtle background)
+* Large and readable
+
+NO small or flat buttons allowed
+
+---
+
+PRODUCT VISUAL (MUST EXIST)
+
+* Real cigar image (angled slightly)
+* Real whiskey glass (layered behind or beside)
+* Soft shadow for depth
+
+This is the visual anchor
+
+---
+
+INTERACTION FEEDBACK
+
+Every selection must show feedback:
+
+Example:
+“Smoky selected — bold and rich”
+
+Use large readable text
+
+---
+
+REVEAL SCREEN
+
+* Fade transition (no sudden change)
+* Show cigar + whiskey pairing large
+* Light card displays:
+
+Title:
+“Midnight Reserve”
+
+Subtext:
+“Built for your taste: Smooth • Smoky • Relaxed”
+
+Buttons:
+
+* Refine
+* Save
+* ORDER NOW (primary gold)
+
+---
+
+ANIMATION RULES
+
+* slow and smooth only
+* no fast motion
+* subtle floating effect for product
+* gentle background movement
+
+---
+
+CONSISTENCY RULE
+
+ALL screens must:
+
+* use the SAME background system
+* use the SAME light card style
+* use the SAME button system
+* use the SAME sidebar
+
+NO variations
+
+---
+
+FINAL GOAL
+
+The interface must feel like:
+
+* a real luxury lounge environment
+* a premium, easy-to-use system
+* visually rich but effortless to read
+
+The user should feel:
+
+“I want to sit here and use this”
+
+NOT:
+
+“I’m trying to figure this out”
+
+---

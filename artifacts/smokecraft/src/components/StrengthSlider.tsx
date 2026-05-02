@@ -20,23 +20,19 @@ export function StrengthSlider({ value, onChange }: StrengthSliderProps) {
     <div className="w-full space-y-5 py-2" data-testid="strength-slider-container">
       {/* Value display */}
       <div className="flex justify-between items-center">
-        <span className="text-sm font-medium uppercase tracking-[0.18em]"
-          style={{ color: "rgba(190,165,120,0.65)" }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: "#7B5A1E", textTransform: "uppercase", letterSpacing: "0.16em" }}>
           Mild
         </span>
         <div className="text-center">
-          <div className="font-serif leading-none"
-            style={{ fontSize: "2.8rem", color: "rgba(212,175,55,0.95)", fontWeight: 700 }}
+          <div style={{ fontFamily: "var(--app-font-serif)", fontSize: "2.8rem", fontWeight: 700, color: "#B8891A", lineHeight: 1 }}
             data-testid="strength-value">
             {value}
           </div>
-          <div className="text-sm font-semibold uppercase tracking-[0.15em] mt-1"
-            style={{ color: "rgba(212,175,55,0.80)" }}>
+          <div style={{ fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.16em", color: "#7B5A1E", marginTop: 4 }}>
             {STRENGTH_LABELS[value]}
           </div>
         </div>
-        <span className="text-sm font-medium uppercase tracking-[0.18em]"
-          style={{ color: "rgba(190,165,120,0.65)" }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: "#7B5A1E", textTransform: "uppercase", letterSpacing: "0.16em" }}>
           Intense
         </span>
       </div>
@@ -58,20 +54,25 @@ export function StrengthSlider({ value, onChange }: StrengthSliderProps) {
           <div key={step} className="flex flex-col items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full transition-all duration-400"
               style={step <= value ? {
-                background: "linear-gradient(135deg, hsl(48 90% 60%), hsl(43 85% 48%))",
-                boxShadow:  "0 0 10px rgba(212,175,55,0.6)",
-              } : { background: "rgba(255,255,255,0.10)" }} />
-            <span className="text-xs font-medium text-center leading-tight"
-              style={{ color: step <= value ? "rgba(212,175,55,0.75)" : "rgba(180,155,100,0.35)", fontSize: 11 }}>
-              {["V.Mild","Mild","Medium","Full","Intense"][step - 1]}
+                background: "linear-gradient(135deg, #b07c14, #D4AF37)",
+                boxShadow:  "0 0 10px rgba(212,175,55,0.55)",
+              } : { background: "rgba(90,60,30,0.18)" }} />
+            <span style={{
+              fontSize: 10,
+              fontWeight: 700,
+              textAlign: "center",
+              lineHeight: 1.2,
+              color: step <= value ? "#7B5A1E" : "rgba(90,60,30,0.4)",
+            }}>
+              {["V.Mild","Mild","Med","Full","Intense"][step - 1]}
             </span>
           </div>
         ))}
       </div>
 
-      {/* Feedback text */}
+      {/* Feedback */}
       {value > 0 && (
-        <p className="text-sm font-medium" style={{ color: "rgba(212,175,55,0.72)" }}>
+        <p style={{ fontSize: 14, fontWeight: 600, color: "#7B5A1E" }}>
           ✓ {STRENGTH_DESCRIPTIONS[value]}
         </p>
       )}

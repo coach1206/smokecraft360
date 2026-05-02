@@ -429,17 +429,42 @@ export default function Home() {
                 </motion.div>
               )}
 
-              <div data-tour="tour-preferences" className="flex flex-col gap-10">
+              <div data-tour="tour-preferences" className="flex flex-col gap-5">
+                {/* Category toggle — sits on its own, no card wrapper needed */}
                 <section><CategoryToggle value={category} onChange={handleCategoryChange} /></section>
-                <section>
+
+                {/* Palate — cream card */}
+                <section style={{
+                  background:   "rgba(245,235,221,0.96)",
+                  borderRadius: 16,
+                  padding:      "22px 24px",
+                  boxShadow:    "0 4px 24px rgba(0,0,0,0.22), 0 1px 6px rgba(0,0,0,0.10)",
+                  border:       "1px solid rgba(184,137,26,0.18)",
+                }}>
                   <FormLabel title="Palate" hint="Select notes" isElite={isElite} />
                   <FlavorChips category={category} selected={flavors} onChange={setFlavors} />
                 </section>
-                <section>
+
+                {/* Strength — cream card */}
+                <section style={{
+                  background:   "rgba(245,235,221,0.96)",
+                  borderRadius: 16,
+                  padding:      "22px 24px",
+                  boxShadow:    "0 4px 24px rgba(0,0,0,0.22), 0 1px 6px rgba(0,0,0,0.10)",
+                  border:       "1px solid rgba(184,137,26,0.18)",
+                }}>
                   <FormLabel title="Strength" isElite={isElite} />
                   <StrengthSlider value={strength} onChange={(v) => { setStrength(v); setStrengthTouched(true); }} />
                 </section>
-                <section>
+
+                {/* Atmosphere — cream card */}
+                <section style={{
+                  background:   "rgba(245,235,221,0.96)",
+                  borderRadius: 16,
+                  padding:      "22px 24px",
+                  boxShadow:    "0 4px 24px rgba(0,0,0,0.22), 0 1px 6px rgba(0,0,0,0.10)",
+                  border:       "1px solid rgba(184,137,26,0.18)",
+                }}>
                   <FormLabel title="Atmosphere" isElite={isElite} />
                   <MoodSelector selected={mood} onChange={(m) => { setMood(m); setMoodTouched(true); }} />
                 </section>
@@ -696,13 +721,13 @@ export default function Home() {
   );
 }
 
-function FormLabel({ title, hint, isElite }: { title: string; hint?: string; isElite: boolean }) {
+function FormLabel({ title, hint, isElite: _isElite }: { title: string; hint?: string; isElite: boolean }) {
   return (
-    <div className="mb-5 flex items-baseline justify-between">
-      <h2 className="font-serif" style={{ fontSize: "1.55rem", fontWeight: 500, color: isElite ? "rgba(240,215,170,0.97)" : "rgba(235,215,180,0.93)", letterSpacing: "0.02em" }}>
+    <div className="mb-4 flex items-baseline justify-between">
+      <h2 className="font-serif" style={{ fontSize: "1.45rem", fontWeight: 700, color: "#1A1410", letterSpacing: "0.02em" }}>
         {title}
       </h2>
-      {hint && <span className="text-sm font-medium uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.55)" }}>{hint}</span>}
+      {hint && <span style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.18em", color: "#7B5A1E" }}>{hint}</span>}
     </div>
   );
 }
