@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CategoryToggle }    from "@/components/CategoryToggle";
 import { FlavorChips }       from "@/components/FlavorChips";
@@ -122,11 +122,25 @@ export default function Home() {
     Array.from({ length: activeStep }, (_, i) => i),
   );
 
-  // Web Audio click sound — subtle soft tick
+  // Web Audio click sound — subtle soft tick.
+  // Lazily cache a single AudioContext so iOS Safari accepts it as a
+  // user-gesture-bound instance and we never throw "operation is insecure".
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const audioBrokenRef = useRef(false);
   const playClick = useCallback(() => {
+    if (audioBrokenRef.current) return;
     try {
-      const ACtx = window.AudioContext ?? (window as unknown as Record<string, typeof AudioContext>)["webkitAudioContext"];
-      const ctx  = new ACtx();
+      if (!audioCtxRef.current) {
+        const ACtx = window.AudioContext ?? (window as unknown as Record<string, typeof AudioContext>)["webkitAudioContext"];
+        if (!ACtx) { audioBrokenRef.current = true; return; }
+        audioCtxRef.current = new ACtx();
+      }
+      const ctx = audioCtxRef.current;
+      if (!ctx) return;
+      // Resume if suspended (iOS auto-suspends until user gesture)
+      if (ctx.state === "suspended") {
+        try { void ctx.resume(); } catch { /* ignore */ }
+      }
       const osc  = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain); gain.connect(ctx.destination);
@@ -137,7 +151,10 @@ export default function Home() {
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.09);
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.09);
-    } catch { /* audio unavailable — silent fail */ }
+    } catch {
+      // Mark audio as permanently unavailable so we stop trying
+      audioBrokenRef.current = true;
+    }
   }, []);
 
   const goToStep = useCallback((step: 0|1|2|3) => {
