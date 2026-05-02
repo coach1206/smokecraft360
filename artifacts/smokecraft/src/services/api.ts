@@ -1,4 +1,6 @@
 import { getAuthHeaders } from "./auth";
+import { cacheSet, cacheGet } from "./cache";
+import { enqueueEvent } from "./eventQueue";
 
 export interface RecommendParams {
   category: "cigar" | "alcohol";
@@ -74,7 +76,13 @@ export type ClientEventType =
   | "swipe_left"
   | "save"
   | "boost_click"
-  | "sponsored_view";
+  | "sponsored_view"
+  | "recommendation_view"
+  | "product_selected"
+  | "pairing_selected"
+  | "food_selected"
+  | "blend_created"
+  | "save_experience";
 
 export interface TrackEventParams {
   eventType: ClientEventType;
@@ -89,34 +97,76 @@ export interface PersistExperienceParams {
 
 // ── Recommendations ───────────────────────────────────────────────────────────
 
-export async function fetchRecommendations(params: RecommendParams): Promise<RecommendResponse> {
-  const response = await fetch("/api/recommend", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(params),
-  });
-  if (!response.ok) throw new Error("Failed to fetch recommendations");
-  const data = await response.json();
-  return {
-    recommendations: data.recommendations ?? [],
-    pairings:        data.pairings        ?? [],
-    foodPairings:    data.foodPairings    ?? [],
-    featured:        data.featured        ?? [],
-  };
+/** Cache key derived from the request so different preference combos cache separately. */
+function recommendCacheKey(params: RecommendParams): string {
+  return `${params.category}|${params.strength}|${params.mood}|${params.flavorPreferences.slice().sort().join(",")}`;
 }
 
-// ── Analytics (fire-and-forget) ───────────────────────────────────────────────
+/**
+ * Fetch recommendations from the API.
+ * - On success: caches the result in IndexedDB for offline reuse.
+ * - When offline: returns the last cached result for the same preferences.
+ * - Throws only when both network and cache fail.
+ */
+export async function fetchRecommendations(params: RecommendParams): Promise<RecommendResponse> {
+  const cacheKey = recommendCacheKey(params);
+
+  try {
+    const response = await fetch("/api/recommend", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(params),
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch recommendations");
+
+    const data = await response.json() as Partial<RecommendResponse>;
+    const result: RecommendResponse = {
+      recommendations: data.recommendations ?? [],
+      pairings:        data.pairings        ?? [],
+      foodPairings:    data.foodPairings     ?? [],
+      featured:        data.featured         ?? [],
+    };
+
+    // Cache for offline use (fire-and-forget)
+    void cacheSet("recommendations", cacheKey, result);
+
+    return result;
+  } catch {
+    // Network failed — try the IndexedDB cache
+    const cached = await cacheGet<RecommendResponse>("recommendations", cacheKey);
+    if (cached) return cached;
+
+    // Try the generic "last result" cache
+    const last = await cacheGet<RecommendResponse>("recommendations", "last");
+    if (last) return last;
+
+    throw new Error("Recommendations unavailable — please check your connection");
+  }
+}
+
+// ── Analytics (fire-and-forget with offline queue) ────────────────────────────
 
 /**
- * Fire-and-forget event tracking.
+ * Track a user interaction event.
+ * - When online: fires directly to /api/events.
+ * - When offline: queues the event locally for replay on reconnect.
  * Never throws — analytics failures must never disrupt the user experience.
  */
 export function trackEvent(params: TrackEventParams): void {
+  if (!navigator.onLine) {
+    enqueueEvent({ eventType: params.eventType, productId: params.productId });
+    return;
+  }
+
   fetch("/api/events", {
     method:  "POST",
     headers: { "Content-Type": "application/json" },
     body:    JSON.stringify(params),
-  }).catch(() => { /* analytics failure must never surface */ });
+  }).catch(() => {
+    // Network failed mid-request — queue it
+    enqueueEvent({ eventType: params.eventType, productId: params.productId });
+  });
 }
 
 /**
@@ -161,6 +211,21 @@ export async function updateInventoryItem(
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error((err as { error?: string }).error ?? "Failed to update product");
+  }
+  return res.json();
+}
+
+export async function createInventoryItem(
+  item: Omit<InventoryItem, "impressions" | "featuredImpressions">,
+): Promise<InventoryItem> {
+  const res = await fetch("/api/products", {
+    method:  "POST",
+    headers: getAuthHeaders(),
+    body:    JSON.stringify(item),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to create product");
   }
   return res.json();
 }

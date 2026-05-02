@@ -1,25 +1,37 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CategoryToggle } from "@/components/CategoryToggle";
-import { FlavorChips } from "@/components/FlavorChips";
-import { StrengthSlider } from "@/components/StrengthSlider";
-import { MoodSelector } from "@/components/MoodSelector";
-import { CardStack } from "@/components/CardStack";
-import { PairingsSection } from "@/components/PairingsSection";
-import { FoodSection } from "@/components/Food/FoodSection";
-import { FeaturedSection } from "@/components/Featured/FeaturedSection";
-import { CigarBurnLoader } from "@/components/CigarBurnLoader";
+import { CategoryToggle }    from "@/components/CategoryToggle";
+import { FlavorChips }       from "@/components/FlavorChips";
+import { StrengthSlider }    from "@/components/StrengthSlider";
+import { MoodSelector }      from "@/components/MoodSelector";
+import { CardStack }         from "@/components/CardStack";
+import { PairingsSection }   from "@/components/PairingsSection";
+import { FoodSection }       from "@/components/Food/FoodSection";
+import { FeaturedSection }   from "@/components/Featured/FeaturedSection";
+import { CigarBurnLoader }   from "@/components/CigarBurnLoader";
 import { AmbientBackground } from "@/components/AmbientBackground";
-import { ProfileBadge } from "@/components/Profile/ProfileBadge";
+import { ProfileBadge }      from "@/components/Profile/ProfileBadge";
 import { EliteUnlockAnimation } from "@/components/Profile/EliteUnlockAnimation";
-import { VaultModal } from "@/components/Vault/VaultModal";
-import { BandCreatorModal } from "@/components/Band/BandCreatorModal";
-import { fetchRecommendations, trackEvent, persistExperience, RecommendResponse } from "@/services/api";
-import { useUser } from "@/hooks/useUser";
-import { AlertCircle, RotateCcw, Bookmark, BookmarkCheck, Flame } from "lucide-react";
-import type { SavedBlend } from "@/services/storage";
+import { VaultModal }        from "@/components/Vault/VaultModal";
+import { BandCreatorModal }  from "@/components/Band/BandCreatorModal";
+import { OfflineBanner }     from "@/components/PWA/OfflineBanner";
+import { InstallBanner }     from "@/components/PWA/InstallBanner";
+import { fetchRecommendations, trackEvent, persistExperience, type RecommendResponse } from "@/services/api";
+import { useUser }           from "@/hooks/useUser";
+import { useOnlineStatus }   from "@/hooks/useOnlineStatus";
+import { useVenue }          from "@/contexts/VenueContext";
+import { AlertCircle, RotateCcw, Bookmark, BookmarkCheck, Flame, Zap } from "lucide-react";
+import type { SavedBlend }   from "@/services/storage";
 
 type Phase = "form" | "loading" | "results";
+
+// ── Demo mode preset ──────────────────────────────────────────────────────────
+const DEMO: { category: "cigar" | "alcohol"; flavors: string[]; strength: number; mood: string } = {
+  category: "cigar",
+  flavors:  ["cedar", "leather", "smoky"],
+  strength: 3,
+  mood:     "relaxed",
+};
 
 export default function Home() {
   const [phase, setPhase]                     = useState<Phase>("form");
@@ -28,6 +40,7 @@ export default function Home() {
   const [vaultOpen, setVaultOpen]             = useState(false);
   const [bandOpen, setBandOpen]               = useState(false);
   const [experienceSaved, setExperienceSaved] = useState(false);
+  const [isDemoMode, setIsDemoMode]           = useState(false);
 
   const [category, setCategory] = useState<"cigar" | "alcohol">("cigar");
   const [flavors, setFlavors]   = useState<string[]>([]);
@@ -42,34 +55,62 @@ export default function Home() {
     updateName,
   } = useUser();
 
+  const isOnline = useOnlineStatus();
+  const venue    = useVenue();
+
   const handleCategoryChange = (newCat: "cigar" | "alcohol") => {
     setCategory(newCat);
     setFlavors([]);
   };
 
-  const handleDiscover = async () => {
-    if (flavors.length === 0) { setError("Please select at least one tasting note."); return; }
+  /** Core discover function — accepts explicit params to avoid async state races. */
+  const discover = useCallback(async (params: {
+    category: "cigar" | "alcohol";
+    flavors:   string[];
+    strength:  number;
+    mood:      string;
+  }) => {
     setError(null);
     setPhase("loading");
     setExperienceSaved(false);
     try {
-      const data = await fetchRecommendations({ category, flavorPreferences: flavors, strength, mood });
+      const data = await fetchRecommendations({
+        category:          params.category,
+        flavorPreferences: params.flavors,
+        strength:          params.strength,
+        mood:              params.mood,
+      });
       setResults(data);
-    } catch {
+      trackEvent({ eventType: "recommendation_view" });
+    } catch (err) {
       setPhase("form");
-      setError("The cellar is currently unavailable. Please try again.");
+      setError(
+        !isOnline
+          ? "You're offline. Connect to the internet and try again."
+          : "The cellar is currently unavailable. Please try again.",
+      );
     }
+  }, [isOnline]);
+
+  const handleDiscover = () => {
+    if (flavors.length === 0) { setError("Please select at least one tasting note."); return; }
+    discover({ category, flavors, strength, mood });
+  };
+
+  /** Demo Mode — pre-fills the form and immediately runs the full flow. */
+  const handleTryDemo = () => {
+    setCategory(DEMO.category);
+    setFlavors(DEMO.flavors);
+    setStrength(DEMO.strength);
+    setMood(DEMO.mood);
+    setIsDemoMode(true);
+    discover(DEMO);
   };
 
   const handleBurnComplete = () => {
     if (results) { setPhase("results"); recordSession(); }
   };
 
-  /**
-   * Called by CardStack whenever the user swipes a card.
-   * - Tracks the swipe in the local profile (score points)
-   * - Fires an analytics event to the backend (non-blocking)
-   */
   const handleSwipe = (direction: "left" | "right", productId: string) => {
     recordSwipe();
     trackEvent({
@@ -78,29 +119,17 @@ export default function Home() {
     });
   };
 
-  /**
-   * Saves the current experience:
-   * 1. localStorage profile update (instant, offline-safe)
-   * 2. DB persist via /api/experiences (async, non-blocking)
-   * 3. Save analytics event
-   */
   const handleSave = () => {
     if (!results) return;
-
-    // Local profile save (always works, even offline)
     handleSaveExperience({ category, flavorPreferences: flavors, strength, mood }, results.recommendations, results.pairings);
     setExperienceSaved(true);
-
-    // DB persist — fire-and-forget, no await
     void persistExperience({
       selectedProductId: results.recommendations[0]?.id ?? "",
       pairingProductId:  results.pairings[0]?.id,
       foodPairingId:     results.foodPairings[0]?.id,
     });
-
-    // Analytics event
     if (results.recommendations[0]) {
-      trackEvent({ eventType: "save", productId: results.recommendations[0].id });
+      trackEvent({ eventType: "save_experience", productId: results.recommendations[0].id });
     }
   };
 
@@ -111,6 +140,7 @@ export default function Home() {
     setStrength(3);
     setMood("relaxed");
     setExperienceSaved(false);
+    setIsDemoMode(false);
   };
 
   const cigarBase    = results?.recommendations[0]?.name ?? "";
@@ -122,10 +152,15 @@ export default function Home() {
     <div className="min-h-[100dvh] w-full text-foreground flex flex-col relative overflow-hidden" style={{ background: "hsl(22 18% 5%)" }}>
       <AmbientBackground />
 
+      {/* Elite ambient overlay */}
       {isElite && (
         <div className="fixed inset-0 pointer-events-none z-0"
           style={{ background: "radial-gradient(ellipse 100% 60% at 50% 0%, rgba(212,175,55,0.04) 0%, transparent 60%)" }} />
       )}
+
+      {/* Offline + Install banners */}
+      <OfflineBanner isOnline={isOnline} />
+      <InstallBanner />
 
       <AnimatePresence>
         {phase === "loading" && <CigarBurnLoader onComplete={handleBurnComplete} />}
@@ -165,11 +200,11 @@ export default function Home() {
                   : "linear-gradient(135deg, hsl(38 25% 88%), hsl(43 85% 68%), hsl(38 25% 82%))",
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
               }}>
-              SmokeCraft
+              {venue.logoText}
             </h1>
             <div className="flex items-center gap-2 mt-1">
               <div className="h-px w-8" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.35))" }} />
-              <p className="text-[9px] uppercase tracking-[0.4em]" style={{ color: "rgba(212,175,55,0.45)" }}>Connoisseur's Companion</p>
+              <p className="text-[9px] uppercase tracking-[0.4em]" style={{ color: "rgba(212,175,55,0.45)" }}>{venue.tagline}</p>
             </div>
           </motion.div>
           <ProfileBadge profile={profile} onOpenVault={() => setVaultOpen(true)} />
@@ -210,7 +245,8 @@ export default function Home() {
                 <MoodSelector selected={mood} onChange={setMood} />
               </section>
 
-              <div className="mt-6 mb-8">
+              <div className="mt-6 mb-2 flex flex-col gap-3">
+                {/* Primary CTA */}
                 <motion.button data-testid="btn-discover" onClick={handleDiscover}
                   className="w-full py-5 font-serif text-xl tracking-[0.22em] uppercase rounded-sm relative overflow-hidden"
                   style={{
@@ -230,6 +266,30 @@ export default function Home() {
                   />
                   Curate Selection
                 </motion.button>
+
+                {/* Demo Mode CTA */}
+                {venue.features.demoMode && (
+                  <motion.button
+                    data-testid="btn-try-demo"
+                    onClick={handleTryDemo}
+                    className="w-full py-3 text-xs uppercase tracking-[0.22em] rounded-sm flex items-center justify-center gap-2"
+                    style={{
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px dashed rgba(212,175,55,0.22)",
+                      color: "rgba(180,155,100,0.55)",
+                    }}
+                    whileHover={{
+                      background: "rgba(212,175,55,0.05)",
+                      borderColor: "rgba(212,175,55,0.4)",
+                      color: "rgba(212,175,55,0.75)",
+                    }}
+                    whileTap={{ scale: 0.99 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Zap size={12} />
+                    Try Demo — 15 second experience
+                  </motion.button>
+                )}
               </div>
 
               {/* Partner dashboard link */}
@@ -257,7 +317,15 @@ export default function Home() {
             >
               <motion.div className="mb-10 text-center"
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }}>
-                <h2 className="font-serif text-3xl mb-2" style={{ fontWeight: 300 }}>Your Selection</h2>
+                <div className="flex items-center justify-center gap-3 mb-2">
+                  <h2 className="font-serif text-3xl" style={{ fontWeight: 300 }}>Your Selection</h2>
+                  {isDemoMode && (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] uppercase tracking-[0.22em]"
+                      style={{ background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.3)", color: "rgba(212,175,55,0.75)" }}>
+                      Demo
+                    </span>
+                  )}
+                </div>
                 <p className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "rgba(212,175,55,0.45)" }}>Swipe to explore</p>
               </motion.div>
 
@@ -288,19 +356,21 @@ export default function Home() {
                   </AnimatePresence>
                 </motion.button>
 
-                <motion.button onClick={() => setBandOpen(true)}
-                  className="flex items-center gap-2 px-5 py-3 rounded-full text-xs uppercase tracking-[0.18em]"
-                  style={{
-                    background: "linear-gradient(135deg, rgba(180,130,30,0.22), rgba(212,175,55,0.12))",
-                    border: "1px solid rgba(212,175,55,0.38)",
-                    color: "rgba(212,175,55,0.88)",
-                    boxShadow: "0 0 16px rgba(212,175,55,0.1)",
-                  }}
-                  whileHover={{ boxShadow: "0 0 24px rgba(212,175,55,0.22)", borderColor: "rgba(212,175,55,0.6)" }}
-                  whileTap={{ scale: 0.96 }}
-                  data-testid="btn-create-blend">
-                  <Flame size={13} />Create My Blend
-                </motion.button>
+                {venue.features.bandCreator && (
+                  <motion.button onClick={() => setBandOpen(true)}
+                    className="flex items-center gap-2 px-5 py-3 rounded-full text-xs uppercase tracking-[0.18em]"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(180,130,30,0.22), rgba(212,175,55,0.12))",
+                      border: "1px solid rgba(212,175,55,0.38)",
+                      color: "rgba(212,175,55,0.88)",
+                      boxShadow: "0 0 16px rgba(212,175,55,0.1)",
+                    }}
+                    whileHover={{ boxShadow: "0 0 24px rgba(212,175,55,0.22)", borderColor: "rgba(212,175,55,0.6)" }}
+                    whileTap={{ scale: 0.96 }}
+                    data-testid="btn-create-blend">
+                    <Flame size={13} />Create My Blend
+                  </motion.button>
+                )}
               </motion.div>
 
               {/* Featured Selections */}
@@ -310,7 +380,7 @@ export default function Home() {
               <PairingsSection pairings={results.pairings} />
 
               {/* Food pairings */}
-              <FoodSection foodPairings={foodPairings} />
+              {venue.features.foodPairing && <FoodSection foodPairings={foodPairings} />}
 
               <motion.div className="mt-16 text-center pb-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8, duration: 0.6 }}>
                 <button data-testid="btn-start-over" onClick={handleStartOver}
@@ -319,7 +389,7 @@ export default function Home() {
                   onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,175,55,0.7)")}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(180,155,100,0.4)")}>
                   <RotateCcw size={13} className="group-hover:-rotate-90 transition-transform duration-500" />
-                  Begin Anew
+                  {isDemoMode ? "Exit Demo" : "Begin Anew"}
                 </button>
               </motion.div>
             </motion.div>
