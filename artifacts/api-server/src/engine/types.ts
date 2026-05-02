@@ -7,6 +7,9 @@
 /** Supported product categories. Add new ones here as the catalog grows. */
 export type Category = "cigar" | "alcohol" | string;
 
+/** Product quality tier — contributes a bonus to the recommendation score. */
+export type Tier = "premium" | "mid" | "standard";
+
 /** A single product in any category. */
 export interface Product {
   id: string;
@@ -20,6 +23,8 @@ export interface Product {
   moodTags: string[];
   /** Cross-category pairing descriptors (e.g. ["bourbon", "full-body cigar"]) */
   pairingTags: string[];
+  /** Quality tier — affects scoring bonus */
+  tier: Tier;
 }
 
 /** Input payload for the POST /recommend endpoint. */

@@ -1,15 +1,127 @@
 import { Product, ScoredProduct } from "./types";
 
 /**
- * Finds the best cross-category pairings for a set of recommended products.
+ * Semantic pairing rules.
  *
- * Strategy: collect all pairingTags from the recommendations, then score
- * candidates in the pairing pool by how many of those tags appear in their
- * own flavorNotes or name (case-insensitive substring match). Return the
- * top N unique results.
+ * Maps a product trait (derived from strength range or flavor note) to
+ * descriptors that make a good pairing in the complementary category.
  *
- * This keeps pairing logic decoupled from the main scorer so each can evolve
- * independently (e.g. more sophisticated NLP matching later).
+ * Rules are evaluated in order; all matching rules contribute to the score.
+ *
+ * Format:
+ *   { match: fn(product) => bool, keywords: string[], points: number }
+ *
+ * To add new rules, push entries here — no other logic needs to change.
+ */
+const PAIRING_RULES: Array<{
+  match: (p: Product) => boolean;
+  keywords: string[];
+  points: number;
+}> = [
+  // --- Strength-based rules ---
+  {
+    // Strong cigar → bold, peaty, or full-bodied whiskey
+    match: (p) => p.category === "cigar" && p.strength >= 4,
+    keywords: ["bold", "peaty", "rye", "scotch", "full-body", "smoky", "intense"],
+    points: 3,
+  },
+  {
+    // Medium cigar → bourbon or smooth whiskey
+    match: (p) => p.category === "cigar" && p.strength === 3,
+    keywords: ["bourbon", "medium-body", "vanilla", "oak", "smooth"],
+    points: 2,
+  },
+  {
+    // Mild cigar → approachable, sweet spirits
+    match: (p) => p.category === "cigar" && p.strength <= 2,
+    keywords: ["mild", "light", "rum", "cognac", "sweet", "fruity", "caramel"],
+    points: 3,
+  },
+  {
+    // Strong alcohol → full-body, bold cigars
+    match: (p) => p.category === "alcohol" && p.strength >= 4,
+    keywords: ["full-body", "bold", "leather", "dark", "earthy", "intense"],
+    points: 3,
+  },
+  {
+    // Mild/medium alcohol → mild or medium cigars
+    match: (p) => p.category === "alcohol" && p.strength <= 3,
+    keywords: ["mild", "medium-body", "sweet", "creamy", "smooth", "nutty"],
+    points: 2,
+  },
+
+  // --- Flavor-based rules ---
+  {
+    // Sweet cigar → smooth bourbon, rum, or cognac
+    match: (p) => p.category === "cigar" && p.flavorNotes.some((n) => ["sweet", "honey", "cream", "nutty"].includes(n)),
+    keywords: ["bourbon", "rum", "cognac", "sweet", "caramel", "vanilla", "fruity"],
+    points: 2,
+  },
+  {
+    // Smoky/earthy cigar → peaty scotch or mezcal
+    match: (p) => p.category === "cigar" && p.flavorNotes.some((n) => ["smoky", "earthy", "leather"].includes(n)),
+    keywords: ["smoky", "peaty", "scotch", "rye", "mezcal", "maritime"],
+    points: 2,
+  },
+  {
+    // Spicy cigar → rye or bold whiskey
+    match: (p) => p.category === "cigar" && p.flavorNotes.some((n) => ["spicy", "pepper"].includes(n)),
+    keywords: ["rye", "spicy", "pepper", "bold", "scotch"],
+    points: 2,
+  },
+  {
+    // Sweet/vanilla spirit → sweet or nutty cigar
+    match: (p) => p.category === "alcohol" && p.flavorNotes.some((n) => ["vanilla", "caramel", "sweet", "fruity"].includes(n)),
+    keywords: ["sweet", "nutty", "mild", "honey", "cream", "floral"],
+    points: 2,
+  },
+  {
+    // Smoky/peaty spirit → earthy or strong cigar
+    match: (p) => p.category === "alcohol" && p.flavorNotes.some((n) => ["smoky", "peaty", "maritime"].includes(n)),
+    keywords: ["earthy", "full-body", "leather", "dark", "bold", "intense"],
+    points: 2,
+  },
+];
+
+/**
+ * Scores a pairing candidate against a set of active keywords.
+ * Checks candidate name, flavor notes, and pairing tags for keyword overlap.
+ */
+function scorePairingCandidate(candidate: Product, activeKeywords: Set<string>): number {
+  let score = 0;
+
+  for (const keyword of activeKeywords) {
+    // Name match (broad, e.g. "bourbon" in product name)
+    if (candidate.name.toLowerCase().includes(keyword)) {
+      score += 2;
+    }
+    // Flavor note match
+    for (const note of candidate.flavorNotes) {
+      if (note.toLowerCase().includes(keyword) || keyword.includes(note.toLowerCase())) {
+        score += 1;
+      }
+    }
+    // Pairing tag match
+    for (const tag of candidate.pairingTags) {
+      if (tag.toLowerCase().includes(keyword) || keyword.includes(tag.toLowerCase())) {
+        score += 1;
+      }
+    }
+  }
+
+  return score;
+}
+
+/**
+ * Finds the best cross-category pairings using semantic rule-based logic.
+ *
+ * Strategy:
+ *  1. Apply all matching pairing rules against the recommended products
+ *     to build a weighted keyword set.
+ *  2. Score each candidate in the pairing pool against those keywords.
+ *  3. Return the top N unique results.
+ *
+ * To add new pairing logic, add entries to PAIRING_RULES above.
  *
  * @param recommendations  The top-ranked products from the primary category.
  * @param pairingPool      Products from the complementary category.
@@ -21,44 +133,45 @@ export function findPairings(
   pairingPool: Product[],
   topN: number,
 ): ScoredProduct[] {
-  // Build a unified set of pairing keywords from all recommended products
-  const pairingKeywords = new Set<string>(
-    recommendations.flatMap((r) =>
-      r.pairingTags.map((tag) => tag.toLowerCase()),
-    ),
-  );
+  if (pairingPool.length === 0 || recommendations.length === 0) return [];
 
-  if (pairingKeywords.size === 0) {
-    return [];
+  // Build a weighted keyword map from all matching rules
+  const keywordWeights = new Map<string, number>();
+
+  for (const rec of recommendations) {
+    for (const rule of PAIRING_RULES) {
+      if (rule.match(rec)) {
+        for (const keyword of rule.keywords) {
+          keywordWeights.set(keyword, (keywordWeights.get(keyword) ?? 0) + rule.points);
+        }
+      }
+    }
   }
 
-  // Score each candidate in the pairing pool
+  if (keywordWeights.size === 0) return [];
+
+  const activeKeywords = new Set(keywordWeights.keys());
+
+  // Score each pairing candidate
   const scored: ScoredProduct[] = pairingPool.map((candidate) => {
-    let score = 0;
+    const baseScore = scorePairingCandidate(candidate, activeKeywords);
 
-    // Check each pairing keyword against the candidate's flavor notes
-    for (const keyword of pairingKeywords) {
-      for (const note of candidate.flavorNotes) {
-        if (note.toLowerCase().includes(keyword) || keyword.includes(note.toLowerCase())) {
-          score += 1;
-        }
-      }
-      // Also match against the product name for broad descriptors like "bourbon"
-      if (candidate.name.toLowerCase().includes(keyword)) {
-        score += 2;
-      }
-    }
+    // Apply keyword weight multiplier for heavier-weighted keywords
+    let weightedScore = 0;
+    for (const keyword of activeKeywords) {
+      const weight = keywordWeights.get(keyword) ?? 1;
+      const candidateText = [
+        candidate.name,
+        ...candidate.flavorNotes,
+        ...candidate.pairingTags,
+      ].join(" ").toLowerCase();
 
-    // Bonus: match pairing tags between recommendation and candidate
-    for (const keyword of pairingKeywords) {
-      for (const tag of candidate.pairingTags) {
-        if (tag.toLowerCase().includes(keyword) || keyword.includes(tag.toLowerCase())) {
-          score += 1;
-        }
+      if (candidateText.includes(keyword)) {
+        weightedScore += weight;
       }
     }
 
-    return { ...candidate, score };
+    return { ...candidate, score: baseScore + weightedScore };
   });
 
   return scored

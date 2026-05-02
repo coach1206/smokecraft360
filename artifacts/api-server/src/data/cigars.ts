@@ -14,6 +14,7 @@ export const cigars: Product[] = [
     strength: 2,
     moodTags: ["relaxed", "reflective", "social"],
     pairingTags: ["rum", "cognac", "light-whiskey"],
+    tier: "premium",
   },
   {
     id: "cigar-002",
@@ -23,6 +24,7 @@ export const cigars: Product[] = [
     strength: 3,
     moodTags: ["social", "celebratory", "relaxed"],
     pairingTags: ["bourbon", "dark-rum", "port"],
+    tier: "premium",
   },
   {
     id: "cigar-003",
@@ -32,6 +34,7 @@ export const cigars: Product[] = [
     strength: 4,
     moodTags: ["bold", "focused", "intense"],
     pairingTags: ["bourbon", "rye-whiskey", "mezcal"],
+    tier: "premium",
   },
   {
     id: "cigar-004",
@@ -41,6 +44,7 @@ export const cigars: Product[] = [
     strength: 4,
     moodTags: ["bold", "adventurous", "intense"],
     pairingTags: ["scotch", "rye-whiskey", "amaro"],
+    tier: "mid",
   },
   {
     id: "cigar-005",
@@ -50,5 +54,6 @@ export const cigars: Product[] = [
     strength: 2,
     moodTags: ["relaxed", "reflective", "social"],
     pairingTags: ["light-whiskey", "rum", "cognac"],
+    tier: "mid",
   },
 ];

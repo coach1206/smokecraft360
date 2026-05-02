@@ -14,6 +14,7 @@ export const alcohol: Product[] = [
     strength: 3,
     moodTags: ["relaxed", "social", "celebratory"],
     pairingTags: ["medium-body cigar", "mild cigar", "sweet cigar"],
+    tier: "mid",
   },
   {
     id: "alc-002",
@@ -23,6 +24,7 @@ export const alcohol: Product[] = [
     strength: 2,
     moodTags: ["relaxed", "social", "reflective"],
     pairingTags: ["mild cigar", "sweet cigar", "creamy cigar"],
+    tier: "standard",
   },
   {
     id: "alc-003",
@@ -32,6 +34,7 @@ export const alcohol: Product[] = [
     strength: 4,
     moodTags: ["bold", "intense", "adventurous"],
     pairingTags: ["full-body cigar", "spicy cigar", "leather cigar"],
+    tier: "mid",
   },
   {
     id: "alc-004",
@@ -41,6 +44,7 @@ export const alcohol: Product[] = [
     strength: 5,
     moodTags: ["bold", "intense", "focused"],
     pairingTags: ["full-body cigar", "earthy cigar", "dark cigar"],
+    tier: "premium",
   },
   {
     id: "alc-005",
@@ -50,5 +54,6 @@ export const alcohol: Product[] = [
     strength: 3,
     moodTags: ["celebratory", "social", "bold"],
     pairingTags: ["medium-body cigar", "sweet cigar", "nutty cigar"],
+    tier: "premium",
   },
 ];

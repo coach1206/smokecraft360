@@ -1,4 +1,4 @@
-import { Product, RecommendRequest, ScoredProduct } from "./types";
+import { Product, RecommendRequest, ScoredProduct, Tier } from "./types";
 
 /**
  * Weights used in scoring. Adjust these values to tune recommendation quality
@@ -6,20 +6,33 @@ import { Product, RecommendRequest, ScoredProduct } from "./types";
  */
 const WEIGHTS = {
   /** Points awarded per overlapping flavor note */
-  flavorMatch: 2,
-  /** Points subtracted per unit of strength distance (lower = closer match) */
-  strengthPenalty: 1,
-  /** Points awarded for a mood tag match */
-  moodMatch: 3,
+  flavorMatch: 3,
+  /** Points awarded for an exact mood tag match */
+  moodMatch: 4,
+  /** Strength proximity rewards — no penalties, only bonuses */
+  strengthExact: 3,   // |distance| = 0
+  strengthClose: 2,   // |distance| = 1
+  strengthNear: 1,    // |distance| = 2
+  // |distance| >= 3 → 0 points
 } as const;
+
+/** Bonus points per quality tier */
+const TIER_BONUS: Record<Tier, number> = {
+  premium: 2,
+  mid: 1,
+  standard: 0,
+};
 
 /**
  * Computes a relevance score for a single product against a user request.
  *
+ * Scoring is purely additive — no penalties.
+ *
  * Score breakdown:
- *  +2 per overlapping flavor note
- *  +3 if any mood tag matches the requested mood
- *  -1 per point of strength distance from the requested strength
+ *  +3 per overlapping flavor note
+ *  +4 if any mood tag matches the requested mood
+ *  +3 / +2 / +1 for strength proximity (exact / ±1 / ±2), 0 beyond
+ *  +2 / +1 / +0 tier bonus (premium / mid / standard)
  *
  * @param product  The product to evaluate.
  * @param request  The user's preference payload.
@@ -41,15 +54,25 @@ export function scoreProduct(
     }
   }
 
-  // --- Strength proximity (inverse penalty) ---
+  // --- Strength proximity (graduated reward, no penalty) ---
   const strengthDistance = Math.abs(product.strength - request.strength);
-  score -= strengthDistance * WEIGHTS.strengthPenalty;
+  if (strengthDistance === 0) {
+    score += WEIGHTS.strengthExact;
+  } else if (strengthDistance === 1) {
+    score += WEIGHTS.strengthClose;
+  } else if (strengthDistance === 2) {
+    score += WEIGHTS.strengthNear;
+  }
+  // distance >= 3 → no points added
 
   // --- Mood match ---
   const requestedMood = request.mood.toLowerCase();
   if (product.moodTags.some((tag) => tag.toLowerCase() === requestedMood)) {
     score += WEIGHTS.moodMatch;
   }
+
+  // --- Tier bonus ---
+  score += TIER_BONUS[product.tier] ?? 0;
 
   return score;
 }
