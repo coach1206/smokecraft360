@@ -1,5 +1,5 @@
 import { Product, RecommendRequest, ScoredProduct, Tier } from "./types";
-import { getProductBoost } from "./inventory";
+import { getProductBoost } from "../services/boostService";
 
 const WEIGHTS = {
   flavorMatch:    3,
@@ -10,8 +10,8 @@ const WEIGHTS = {
 } as const;
 
 const TIER_BONUS: Record<Tier, number> = {
-  premium: 2,
-  mid:     1,
+  premium:  2,
+  mid:      1,
   standard: 0,
 };
 
@@ -22,8 +22,8 @@ const TIER_BONUS: Record<Tier, number> = {
 const MAX_BOOST_POINTS = 5;
 
 /**
- * Base relevance score — no boost applied.
- * Used internally and by the featured-product filter.
+ * Base relevance score — flavor, strength, mood, tier.
+ * No boost applied. Used by the scoring service's featured section builder.
  */
 export function scoreProductBase(product: Product, request: RecommendRequest): number {
   let score = 0;
@@ -67,12 +67,12 @@ export function scoreProduct(
 }
 
 /**
- * Scores all products and returns the top N, annotated with boost metadata.
+ * Scores all products in a pool and returns the top N, annotated with boost metadata.
  */
 export function rankProducts(
-  pool: Product[],
+  pool:    Product[],
   request: RecommendRequest,
-  topN: number,
+  topN:    number,
 ): ScoredProduct[] {
   return pool
     .map((product): ScoredProduct => {

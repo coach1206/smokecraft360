@@ -1,0 +1,148 @@
+/server/index.js
+import app from "./app.js";
+
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`);
+});
+/server/app.js
+import express from "express";
+import cors from "cors";
+
+import recommendRoutes from "./routes/recommend.js";
+import eventRoutes from "./routes/events.js";
+import experienceRoutes from "./routes/experiences.js";
+import productRoutes from "./routes/products.js";
+import authRoutes from "./routes/auth.js";
+import analyticsRoutes from "./routes/analytics.js";
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+app.use("/api/recommend", recommendRoutes);
+app.use("/api/events", eventRoutes);
+app.use("/api/experiences", experienceRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/analytics", analyticsRoutes);
+
+export default app;
+🔥 STEP 2 — RECOMMEND ROUTE (CORE SYSTEM)
+/server/routes/recommend.js
+import express from "express";
+import { runRecommendation } from "../engine/recommendationEngine.js";
+
+const router = express.Router();
+
+router.post("/", async (req, res) => {
+  try {
+    const result = await runRecommendation(req.body);
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Recommendation failed" });
+  }
+});
+
+export default router;
+🔥 STEP 3 — ENGINE (THIS IS YOUR BRAIN)
+/server/engine/recommendationEngine.js
+import { scoreProducts } from "../services/scoringService.js";
+import { applyBoosts } from "../services/boostService.js";
+import { getPairings } from "./pairingEngine.js";
+import { getFoodPairings } from "./foodEngine.js";
+import { products } from "../data/fallbackData.js";
+
+export async function runRecommendation(input) {
+  const { category } = input;
+
+  const filtered = products.filter(p => p.category === category);
+
+  let scored = scoreProducts(filtered, input);
+
+  scored = applyBoosts(scored);
+
+  const top = scored.sort((a, b) => b.score - a.score).slice(0, 3);
+
+  const pairings = getPairings(top[0]);
+  const food = getFoodPairings(top[0]);
+
+  return {
+    recommendations: top,
+    pairings,
+    food
+  };
+}
+🔥 STEP 4 — SCORING SERVICE (YOUR LOGIC)
+/server/services/scoringService.js
+export function scoreProducts(products, input) {
+  return products.map(p => {
+    let score = 0;
+
+    // Flavor
+    input.flavorPreferences.forEach(f => {
+      if (p.flavorNotes.includes(f)) score += 3;
+    });
+
+    // Mood
+    if (p.moodTags.includes(input.mood)) score += 4;
+
+    // Strength
+    const diff = Math.abs(p.strength - input.strength);
+    if (diff === 0) score += 3;
+    else if (diff === 1) score += 2;
+    else if (diff === 2) score += 1;
+
+    // Tier
+    if (p.tier === "premium") score += 2;
+    if (p.tier === "mid") score += 1;
+
+    return { ...p, score };
+  });
+}
+🔥 STEP 5 — BOOST SERVICE (MONETIZATION CORE)
+/server/services/boostService.js
+export function applyBoosts(products) {
+  return products.map(p => {
+    let bonus = p.boostLevel || 0;
+
+    if (p.sponsored) bonus += 2;
+
+    return {
+      ...p,
+      score: p.score + bonus
+    };
+  });
+}
+🔥 STEP 6 — EVENT TRACKING (DATA GOLD)
+/server/routes/events.js
+import express from "express";
+
+const router = express.Router();
+
+router.post("/", (req, res) => {
+  console.log("EVENT:", req.body);
+  res.json({ success: true });
+});
+
+export default router;
+🔥 STEP 7 — PRODUCTS (VENUE CONTROL)
+/server/routes/products.js
+import express from "express";
+import { products } from "../data/fallbackData.js";
+
+const router = express.Router();
+
+router.get("/", (req, res) => {
+  res.json(products);
+});
+
+router.post("/", (req, res) => {
+  products.push(req.body);
+  res.json({ success: true });
+});
+
+export default router;
