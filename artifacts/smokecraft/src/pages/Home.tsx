@@ -24,6 +24,8 @@ import { useOnlineStatus }   from "@/hooks/useOnlineStatus";
 import { useVenue }          from "@/contexts/VenueContext";
 import { usePresentation }  from "@/contexts/PresentationContext";
 import { AlertCircle, RotateCcw, Bookmark, BookmarkCheck, Flame, Zap, ShoppingBag, MonitorPlay, Bell, CheckCircle2, Crown } from "lucide-react";
+import { ExperienceSidebar, type SidebarStep } from "@/components/ExperienceSidebar";
+import { ExperienceRightPanel }                from "@/components/ExperienceRightPanel";
 import { OrderModal }        from "@/components/Order/OrderModal";
 import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
 import type { SavedBlend }   from "@/services/storage";
@@ -55,6 +57,24 @@ export default function Home() {
   const [flavors, setFlavors]   = useState<string[]>([]);
   const [strength, setStrength] = useState<number>(3);
   const [mood, setMood]         = useState<string>("relaxed");
+
+  // Step tracking for sidebar
+  const [strengthTouched, setStrengthTouched] = useState(false);
+  const [moodTouched,     setMoodTouched]     = useState(false);
+  const [orderTaken,      setOrderTaken]      = useState(false);
+
+  const computeActiveStep = (): SidebarStep => {
+    if (phase === "loading") return 4;
+    if (phase === "results") return orderTaken ? 6 : 5;
+    if (flavors.length === 0) return 1;
+    if (!strengthTouched)    return 2;
+    if (!moodTouched)        return 3;
+    return 4;
+  };
+  const activeStep  = computeActiveStep();
+  const completedSteps = new Set<number>(
+    Array.from({ length: activeStep }, (_, i) => i),
+  );
 
   const {
     profile, isElite, justUnlockedElite, clearEliteUnlock,
@@ -227,6 +247,7 @@ export default function Home() {
     if (!results) return;
     handleSaveExperience({ category, flavorPreferences: flavors, strength, mood }, results.recommendations, results.pairings);
     setExperienceSaved(true);
+    setOrderTaken(true);
     void persistExperience({
       selectedProductId: results.recommendations[0]?.id ?? "",
       pairingProductId:  results.pairings[0]?.id,
@@ -240,6 +261,7 @@ export default function Home() {
   const handleOrderSuccess = (orderId: string, orderType: OrderType) => {
     setOrderModalOpen(false);
     setConfirmedOrder({ id: orderId, type: orderType });
+    setOrderTaken(true);
     const topRec = results?.recommendations[0];
     trackEvent({
       eventType: "order_created",
@@ -260,6 +282,9 @@ export default function Home() {
     setMood("relaxed");
     setExperienceSaved(false);
     setIsDemoMode(false);
+    setStrengthTouched(false);
+    setMoodTouched(false);
+    setOrderTaken(false);
   };
 
   const cigarBase    = results?.recommendations[0]?.name ?? "";
@@ -270,6 +295,9 @@ export default function Home() {
   return (
     <div className="min-h-[100dvh] w-full text-foreground flex flex-col relative overflow-hidden" style={{ background: "hsl(22 18% 5%)" }}>
       <AmbientBackground />
+
+      {/* Experience sidebar — self-positions fixed on lg+ screens */}
+      <ExperienceSidebar activeStep={activeStep} completed={completedSteps} />
 
       {/* Elite ambient overlay */}
       {isElite && (
@@ -333,7 +361,31 @@ export default function Home() {
         onClose={() => setSignatureOpen(false)}
       />
 
-      <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-6 py-10 relative z-10">
+      {/* Right panel — fixed, only visible on xl when results showing */}
+      {phase === "results" && results?.recommendations[0] && (
+        <aside
+          className="hidden xl:flex flex-col fixed right-0 top-0 bottom-0 overflow-y-auto z-20"
+          style={{
+            width:          300,
+            background:     "rgba(10,8,5,0.78)",
+            backdropFilter: "blur(20px) saturate(1.4)",
+            WebkitBackdropFilter: "blur(20px) saturate(1.4)",
+            borderLeft:     "1px solid rgba(212,175,55,0.09)",
+            boxShadow:      "-4px 0 32px rgba(0,0,0,0.5)",
+          }}>
+          <div className="p-5">
+            <ExperienceRightPanel
+              product={results.recommendations[0]}
+              pairing={results.pairings[0]}
+              onOrder={() => setOrderModalOpen(true)}
+              onSave={handleSave}
+              experienceSaved={experienceSaved}
+            />
+          </div>
+        </aside>
+      )}
+
+      <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-6 py-10 relative z-10 lg:ml-[220px] xl:pr-[300px] transition-all duration-300">
 
         {/* Header */}
         <div className="flex items-start justify-between mb-12">
@@ -385,11 +437,11 @@ export default function Home() {
                 </section>
                 <section>
                   <FormLabel title="Strength" isElite={isElite} />
-                  <StrengthSlider value={strength} onChange={setStrength} />
+                  <StrengthSlider value={strength} onChange={(v) => { setStrength(v); setStrengthTouched(true); }} />
                 </section>
                 <section>
                   <FormLabel title="Atmosphere" isElite={isElite} />
-                  <MoodSelector selected={mood} onChange={setMood} />
+                  <MoodSelector selected={mood} onChange={(m) => { setMood(m); setMoodTouched(true); }} />
                 </section>
               </div>
 

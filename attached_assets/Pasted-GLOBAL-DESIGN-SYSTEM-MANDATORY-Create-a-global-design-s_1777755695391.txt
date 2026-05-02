@@ -1,0 +1,151 @@
+GLOBAL DESIGN SYSTEM (MANDATORY)
+
+Create a global design system file:
+
+Colors:
+background: #0B0B0B
+panel: rgba(20,20,20,0.6)
+gold primary: #D4AF37
+gold accent: #A87C2D
+glow: rgba(212,175,55,0.25)
+Typography:
+Headline: elegant serif (Playfair Display or similar)
+Body: clean modern sans-serif (Inter)
+Spacing:
+consistent padding: 16px / 24px / 32px scale
+border radius: 16px–20px max
+🧊 GLASS UI SYSTEM
+
+Create reusable class:
+
+.glass-panel:
+
+semi-transparent dark background
+backdrop blur (18px+)
+subtle gold border
+soft shadow (depth)
+slight inner highlight
+
+.glass-button:
+
+gold tint
+glow on hover
+press-in animation on click
+🧱 MASTER LAYOUT (USED ON EVERY PAGE)
+
+Structure:
+
+LEFT SIDEBAR (fixed)
+CENTER CONTENT (main)
+RIGHT PANEL (optional)
+
+🧭 SIDEBAR (GLOBAL COMPONENT)
+
+Must be identical on ALL pages.
+
+Include:
+
+Logo at top (gold)
+Vertical steps:
+Mood
+Flavor
+Strength
+Pairing
+Style
+Name
+Reveal
+
+States:
+
+Active → gold glow
+Completed → checkmark + dim gold
+Locked → faded
+
+Sidebar style:
+
+darker glass panel
+thin gold divider line
+touch-friendly spacing
+🎬 BACKGROUND SYSTEM
+Full-screen luxury lounge image
+Dark gradient overlay
+Subtle vignette edges
+Optional slow smoke animation layer
+
+DO NOT use flat backgrounds
+
+🥃 MAIN EXPERIENCE SCREEN
+
+CENTER:
+
+Large cigar image (angled)
+Whiskey glass beside it
+soft shadow
+slow zoom animation
+
+RIGHT PANEL (glass):
+
+Experience name (large serif)
+tagline
+cigar details
+whiskey pairing
+flavor notes
+
+BOTTOM ACTIONS:
+
+Primary: “Order Now” (gold glow)
+Secondary: “Refine”, “Save”
+✨ INTERACTIONS
+
+All interactions must feel premium:
+
+tap → slight press scale (0.97)
+hover → glow effect
+transitions → smooth fade/slide (0.3s)
+
+NO abrupt animations
+
+📱 KIOSK OPTIMIZATION
+minimum button height: 48px+
+large spacing between elements
+no tiny click targets
+touch feedback required
+🔁 CONSISTENCY RULE
+
+Every page MUST:
+
+reuse sidebar
+reuse glass-panel
+reuse button system
+reuse spacing system
+match same lighting/background tone
+
+No page-specific styling deviations allowed.
+
+🎯 DELIVERABLE
+
+Return:
+
+Global CSS / styling system
+Layout component (sidebar + content)
+Sidebar component with states
+Example page (Experience Builder)
+Button system
+Background system
+Fully responsive kiosk-ready UI
+🧠 PROMPT END
+💡 REAL TALK (DON’T IGNORE THIS)
+
+This prompt isn’t just design…
+
+It’s control.
+
+If you follow this:
+
+👉 Every page will look like it belongs together
+👉 Your platform will feel expensive
+👉 You can scale without redesigning every screen
+
+If you don’t:
+
+👉 You’ll keep fixing the same visual problems over and over

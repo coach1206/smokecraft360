@@ -277,6 +277,50 @@ Badges computed per request: `top_rated` (#1 score), `most_active` (most verifie
 | `PATCH /api/rewards/:id` | manager+ | Update reward (name, cost, active, level gate) |
 | `DELETE /api/rewards/:id` | manager+ | Soft-deactivate a reward |
 
+### Global Design System (`src/index.css`)
+
+**CSS custom properties (`:root`):**
+- Gold: `--sc-gold`, `--sc-gold-accent`, `--sc-gold-dim`, `--sc-gold-muted`, `--sc-gold-glow`, `--sc-gold-ultra`
+- Surfaces: `--sc-bg`, `--sc-panel`, `--sc-panel-dark`, `--sc-surface`, `--sc-border`, `--sc-border-subtle`
+- Text: `--sc-text-primary`, `--sc-text-muted`, `--sc-text-dim`
+- Spacing: `--sc-space-sm/md/lg` (16/24/32px), Radius: `--sc-radius-sm/md/lg` (12/16/20px)
+- Blur: `--sc-blur-sm/md/lg`, Transition: `--sc-transition`
+
+**Glass utility classes:**
+- `.glass-panel` — semi-transparent dark, blur(18px), gold border, depth shadow + inner highlight
+- `.glass-panel-dark` — deeper version (sidebar, overlays), blur(24px)
+- `.glass-panel-hero` — elevated hero card, blur(24px), stronger gold border + glow
+
+**Button classes:**
+- `.sc-btn-primary` — gold fill, 48px min-height, shimmer hover + glow shadow, scale:0.97 on press
+- `.sc-btn-ghost` — outline gold, hover: background tint + brighter border
+
+**Kiosk utilities:** `.kiosk-target` (56px min), `.kiosk-text` (16px), `.kiosk-spacing`, `.kiosk-mode` touch rules
+
+**Typography:** Playfair Display (headlines) + Cormorant Garamond (serif) + Inter (body) — all from Google Fonts
+
+### Experience Layout System
+
+**`ExperienceSidebar`** (`src/components/ExperienceSidebar.tsx`)
+- Fixed left panel (220px wide, hidden below lg)
+- 7 steps: Experience → Flavor → Strength → Mood → Curate → Pairing → Reveal
+- Step states: `active` (gold glow + pulse ring), `completed` (check mark + dimmed gold), `locked` (32% opacity)
+- Active step computed dynamically from Home.tsx form state (flavors, strengthTouched, moodTouched, phase, orderTaken)
+
+**`ExperienceRightPanel`** (`src/components/ExperienceRightPanel.tsx`)
+- Fixed right panel (300px wide, hidden below xl)
+- Shows in results phase: product name, tier, strength, mood, tasting notes chips, pairing tags, pairing card
+- Uses `.sc-btn-primary` + `.sc-btn-ghost` for Order / Save actions
+
+**`AmbientBackground`** (enhanced)
+- 7-layer system: deep warm base → overhead lamp pools → leather/mahogany fills → cinema vignette → film grain → slow smoke wisps → top gold arc glow
+
+**Home.tsx integration:**
+- `ExperienceSidebar` injected directly into render tree (self-positions fixed)
+- Right panel rendered conditionally in results phase as a fixed `<aside>`
+- Main content area: `lg:ml-[220px] xl:pr-[300px]` responsive offset
+- Step tracking state: `strengthTouched`, `moodTouched`, `orderTaken` — auto-advance sidebar as user fills in form
+
 ### Dashboard Tabs (staff-visible)
 - **Verify Orders** — list pending/verified orders, one-click verify, QR modal, XP toast
 - **Leaderboard** — Top Creators (by XP), Top Smokers (by orders), Trending (7 days)
