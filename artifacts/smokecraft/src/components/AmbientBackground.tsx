@@ -26,7 +26,7 @@ export function AmbientBackground() {
 
       {/* ── Layer 1: Atmosphere overlay — darken + warm tint ──── */}
       <div className="absolute inset-0" style={{
-        background: "linear-gradient(rgba(15,10,5,0.82), rgba(18,12,6,0.92))",
+        background: "linear-gradient(rgba(12,8,3,0.60), rgba(14,9,4,0.72))",
       }} />
 
       {/* ── Layer 2: Overhead lamp pools (luxury lounge lighting) ─ */}
@@ -53,15 +53,15 @@ export function AmbientBackground() {
       <div className="absolute inset-0" style={{
         background: `
           radial-gradient(ellipse 120% 120% at 50% 50%,
-            transparent 28%,
-            rgba(0,0,0,0.5) 65%,
-            rgba(0,0,0,0.82) 100%)
+            transparent 35%,
+            rgba(0,0,0,0.32) 65%,
+            rgba(0,0,0,0.60) 100%)
         `,
       }} />
       <div className="absolute inset-0" style={{
         background: `
-          linear-gradient(180deg, rgba(0,0,0,0.4)  0%, transparent 20%),
-          linear-gradient(0deg,   rgba(0,0,0,0.45) 0%, transparent 24%)
+          linear-gradient(180deg, rgba(0,0,0,0.22) 0%, transparent 18%),
+          linear-gradient(0deg,   rgba(0,0,0,0.25) 0%, transparent 20%)
         `,
       }} />
 
