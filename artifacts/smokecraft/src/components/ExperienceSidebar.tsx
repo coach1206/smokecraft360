@@ -1,19 +1,6 @@
 /**
  * ExperienceSidebar — fixed left step-progress navigator.
- *
- * Steps map to the Home page form flow:
- *   0 Experience  (category selected)
- *   1 Flavor      (≥1 flavor chip chosen)
- *   2 Strength    (slider moved from default)
- *   3 Mood        (mood selected — always has default)
- *   4 Discover    (curate button pressed)
- *   5 Pairing     (results showing)
- *   6 Reveal      (order/save action)
- *
- * States:
- *   locked    — not yet reachable
- *   active    — currently filling / user is here
- *   completed — done
+ * Rebuilt for ages 35–75: larger text, more spacing, strong gold highlights.
  */
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -38,9 +25,7 @@ const STEPS: StepDef[] = [
 ];
 
 interface Props {
-  /** Currently active step index (0–6) */
   activeStep: SidebarStep;
-  /** Steps that are fully completed (checked) */
   completed:  Set<number>;
 }
 
@@ -51,33 +36,25 @@ export function ExperienceSidebar({ activeStep, completed }: Props) {
     <aside
       className="sc-sidebar fixed left-0 top-0 bottom-0 hidden lg:flex flex-col z-20"
       style={{
-        width:           220,
-        background:      "rgba(8,6,4,0.82)",
-        backdropFilter:  "blur(24px) saturate(1.3)",
+        width:                260,
+        background:           "rgba(10,7,4,0.88)",
+        backdropFilter:       "blur(24px) saturate(1.3)",
         WebkitBackdropFilter: "blur(24px) saturate(1.3)",
-        borderRight:     "1px solid rgba(212,175,55,0.10)",
-        boxShadow:       "4px 0 32px rgba(0,0,0,0.55), inset -1px 0 0 rgba(255,255,255,0.02)",
+        borderRight:          "1px solid rgba(212,175,55,0.14)",
+        boxShadow:            "4px 0 32px rgba(0,0,0,0.6), inset -1px 0 0 rgba(255,255,255,0.02)",
       }}
     >
       {/* Logo */}
-      <div className="px-6 pt-8 pb-6">
-        <div className="flex items-center gap-2 mb-1">
-          <Flame size={13} style={{ color: "rgba(212,175,55,0.7)" }} />
-          <p className="font-serif tracking-[0.12em] text-sm"
-            style={{ color: "rgba(212,175,55,0.85)", fontWeight: 400 }}>
+      <div className="px-7 pt-8 pb-5">
+        <div className="flex items-center gap-2.5 mb-1">
+          <Flame size={16} style={{ color: "rgba(212,175,55,0.8)" }} />
+          <p className="font-serif tracking-[0.1em] text-base"
+            style={{ color: "rgba(212,175,55,0.9)", fontWeight: 500 }}>
             {venue.logoText}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, rgba(212,175,55,0.3), transparent)" }} />
-          <p className="text-[6px] uppercase tracking-[0.35em]" style={{ color: "rgba(212,175,55,0.3)" }}>
-            360
-          </p>
-        </div>
+        <div className="h-px mt-3" style={{ background: "linear-gradient(90deg, rgba(212,175,55,0.3), transparent)" }} />
       </div>
-
-      {/* Gold divider */}
-      <div className="mx-6 mb-6" style={{ height: 1, background: "rgba(212,175,55,0.1)" }} />
 
       {/* Steps */}
       <nav className="flex-1 px-4 space-y-1 overflow-hidden">
@@ -89,52 +66,41 @@ export function ExperienceSidebar({ activeStep, completed }: Props) {
           return (
             <motion.div
               key={step.label}
-              className="relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-300"
+              className="relative flex items-center gap-3.5 px-4 py-3.5 rounded-xl transition-all duration-300"
               style={{
                 background: isActive
-                  ? "rgba(212,175,55,0.07)"
-                  : isCompleted
-                    ? "rgba(212,175,55,0.03)"
-                    : "transparent",
+                  ? "rgba(212,175,55,0.10)"
+                  : isCompleted ? "rgba(212,175,55,0.04)" : "transparent",
                 border: isActive
-                  ? "1px solid rgba(212,175,55,0.22)"
+                  ? "1px solid rgba(212,175,55,0.30)"
                   : "1px solid transparent",
-                opacity: isLocked ? 0.32 : 1,
+                opacity: isLocked ? 0.35 : 1,
               }}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: isLocked ? 0.32 : 1, x: 0 }}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: isLocked ? 0.35 : 1, x: 0 }}
               transition={{ delay: i * 0.05, duration: 0.4 }}
             >
-              {/* Connector line above (skip first) */}
+              {/* Connector */}
               {i > 0 && (
-                <div
-                  className="absolute left-[22px] -top-1 w-px"
+                <div className="absolute left-[28px] -top-1 w-px"
                   style={{
-                    height: "0.25rem",
+                    height: "0.35rem",
                     background: isCompleted || isActive
-                      ? "rgba(212,175,55,0.3)"
-                      : "rgba(255,255,255,0.06)",
-                  }}
-                />
+                      ? "rgba(212,175,55,0.35)" : "rgba(255,255,255,0.07)",
+                  }} />
               )}
 
-              {/* Step indicator */}
-              <div
-                className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center relative"
+              {/* Step circle */}
+              <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center relative"
                 style={{
                   background: isActive
                     ? "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))"
-                    : isCompleted
-                      ? "rgba(212,175,55,0.18)"
-                      : "rgba(255,255,255,0.04)",
-                  border: isActive
-                    ? "none"
-                    : isCompleted
-                      ? "1px solid rgba(212,175,55,0.35)"
-                      : "1px solid rgba(255,255,255,0.08)",
+                    : isCompleted ? "rgba(212,175,55,0.20)" : "rgba(255,255,255,0.05)",
+                  border: isActive ? "none"
+                    : isCompleted ? "1px solid rgba(212,175,55,0.40)"
+                    : "1px solid rgba(255,255,255,0.10)",
                   boxShadow: isActive
-                    ? "0 0 12px rgba(212,175,55,0.4), 0 0 4px rgba(212,175,55,0.6)"
-                    : "none",
+                    ? "0 0 16px rgba(212,175,55,0.45), 0 0 5px rgba(212,175,55,0.65)" : "none",
                 }}
               >
                 <AnimatePresence mode="wait">
@@ -142,13 +108,13 @@ export function ExperienceSidebar({ activeStep, completed }: Props) {
                     <motion.span key="check"
                       initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
-                      <Check size={9} style={{ color: "rgba(212,175,55,0.8)" }} strokeWidth={2.5} />
+                      <Check size={13} style={{ color: "rgba(212,175,55,0.9)" }} strokeWidth={2.5} />
                     </motion.span>
                   ) : (
                     <motion.span key="num"
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="text-[8px] font-medium"
-                      style={{ color: isActive ? "hsl(22 18% 6%)" : "rgba(180,155,100,0.35)" }}>
+                      className="text-xs font-semibold"
+                      style={{ color: isActive ? "hsl(22 18% 6%)" : "rgba(180,155,100,0.4)" }}>
                       {i + 1}
                     </motion.span>
                   )}
@@ -156,45 +122,39 @@ export function ExperienceSidebar({ activeStep, completed }: Props) {
 
                 {/* Active pulse ring */}
                 {isActive && (
-                  <motion.div
-                    className="absolute inset-0 rounded-full"
-                    style={{ border: "1px solid rgba(212,175,55,0.4)" }}
-                    animate={{ scale: [1, 1.45, 1], opacity: [0.8, 0, 0.8] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  />
+                  <motion.div className="absolute inset-0 rounded-full"
+                    style={{ border: "1px solid rgba(212,175,55,0.45)" }}
+                    animate={{ scale: [1, 1.5, 1], opacity: [0.8, 0, 0.8] }}
+                    transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }} />
                 )}
               </div>
 
               {/* Labels */}
               <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-medium tracking-[0.08em] leading-none"
+                <p className="text-sm font-semibold tracking-[0.05em] leading-snug"
                   style={{
                     color: isActive
-                      ? "rgba(230,210,175,0.92)"
-                      : isCompleted
-                        ? "rgba(200,175,130,0.65)"
-                        : "rgba(180,155,100,0.35)",
+                      ? "rgba(240,220,180,0.95)"
+                      : isCompleted ? "rgba(210,185,135,0.75)"
+                      : "rgba(180,155,100,0.38)",
                   }}>
                   {step.label}
                 </p>
                 {(isActive || isCompleted) && (
-                  <motion.p
-                    className="text-[7px] tracking-[0.05em] mt-0.5"
-                    style={{ color: isActive ? "rgba(180,155,100,0.45)" : "rgba(155,130,80,0.35)" }}
+                  <motion.p className="text-xs mt-0.5 leading-snug"
+                    style={{ color: isActive ? "rgba(180,155,100,0.55)" : "rgba(155,130,80,0.4)" }}
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     {step.sublabel}
                   </motion.p>
                 )}
               </div>
 
-              {/* Active glow bar */}
+              {/* Active right glow bar */}
               {isActive && (
-                <motion.div
-                  className="absolute right-0 top-2 bottom-2 w-0.5 rounded-full"
-                  style={{ background: "linear-gradient(180deg, transparent, rgba(212,175,55,0.6), transparent)" }}
+                <motion.div className="absolute right-0 top-2 bottom-2 w-0.5 rounded-full"
+                  style={{ background: "linear-gradient(180deg, transparent, rgba(212,175,55,0.65), transparent)" }}
                   initial={{ scaleY: 0 }} animate={{ scaleY: 1 }}
-                  transition={{ duration: 0.35 }}
-                />
+                  transition={{ duration: 0.35 }} />
               )}
             </motion.div>
           );
@@ -202,9 +162,9 @@ export function ExperienceSidebar({ activeStep, completed }: Props) {
       </nav>
 
       {/* Footer */}
-      <div className="px-6 py-6">
+      <div className="px-7 py-6">
         <div className="h-px mb-4" style={{ background: "rgba(212,175,55,0.08)" }} />
-        <p className="text-[6px] uppercase tracking-[0.3em] text-center" style={{ color: "rgba(180,155,100,0.2)" }}>
+        <p className="text-[9px] uppercase tracking-[0.3em] text-center" style={{ color: "rgba(180,155,100,0.22)" }}>
           SmokeCraft 360 · Est. 2024
         </p>
       </div>

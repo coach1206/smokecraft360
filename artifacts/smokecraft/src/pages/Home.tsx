@@ -385,7 +385,7 @@ export default function Home() {
         </aside>
       )}
 
-      <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-6 py-10 relative z-10 lg:ml-[220px] xl:pr-[300px] transition-all duration-300">
+      <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-6 py-10 relative z-10 lg:ml-[260px] xl:pr-[300px] transition-all duration-300">
 
         {/* Header */}
         <div className="flex items-start justify-between mb-12">
@@ -400,9 +400,9 @@ export default function Home() {
               }}>
               {venue.logoText}
             </h1>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-2 mt-1.5">
               <div className="h-px w-8" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.35))" }} />
-              <p className="text-[9px] uppercase tracking-[0.4em]" style={{ color: "rgba(212,175,55,0.45)" }}>{venue.tagline}</p>
+              <p className="text-xs font-medium uppercase tracking-[0.32em]" style={{ color: "rgba(212,175,55,0.55)" }}>{venue.tagline}</p>
             </div>
           </motion.div>
           <ProfileBadge profile={profile} onOpenVault={() => setVaultOpen(true)} />
@@ -448,8 +448,9 @@ export default function Home() {
               <div className="mt-6 mb-2 flex flex-col gap-3">
                 {/* Primary CTA */}
                 <motion.button data-testid="btn-discover" data-tour="tour-discover" onClick={handleDiscover}
-                  className="w-full py-5 font-serif text-xl tracking-[0.22em] uppercase rounded-sm relative overflow-hidden"
+                  className="w-full font-serif text-xl tracking-[0.22em] uppercase rounded-sm relative overflow-hidden"
                   style={{
+                    minHeight: 68,
                     background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%), hsl(43 75% 44%))",
                     color: "hsl(22 18% 6%)",
                     boxShadow: isElite
@@ -697,11 +698,11 @@ export default function Home() {
 
 function FormLabel({ title, hint, isElite }: { title: string; hint?: string; isElite: boolean }) {
   return (
-    <div className="mb-4 flex items-baseline justify-between">
-      <h2 className="font-serif text-2xl" style={{ fontWeight: 400, color: isElite ? "rgba(235,210,165,0.95)" : "rgba(230,210,175,0.9)" }}>
+    <div className="mb-5 flex items-baseline justify-between">
+      <h2 className="font-serif" style={{ fontSize: "1.55rem", fontWeight: 500, color: isElite ? "rgba(240,215,170,0.97)" : "rgba(235,215,180,0.93)", letterSpacing: "0.02em" }}>
         {title}
       </h2>
-      {hint && <span className="text-[10px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.45)" }}>{hint}</span>}
+      {hint && <span className="text-sm font-medium uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.55)" }}>{hint}</span>}
     </div>
   );
 }

@@ -1,0 +1,150 @@
+REBUILD SMOKECRAFT 360 FOR MEN AGES 35–75 WITH AGING VISION WHILE MAINTAINING A LUXURY CIGAR LOUNGE EXPERIENCE
+
+This system must be visually rich but extremely easy to read, touch, and understand.
+
+---
+
+CORE RULES
+
+* Everything must be readable at a glance from arm’s length
+* Large text, high contrast, no strain
+* Buttons must feel solid and easy to tap
+* No clutter, no small UI elements
+* Every action must feel rewarding and responsive
+
+---
+
+TYPOGRAPHY (CRITICAL)
+
+* Headings: 32px–40px (serif, bold, gold or dark brown)
+* Section titles: 20px–24px
+* Body text: minimum 18px (never smaller)
+* Increase line spacing for readability
+
+DO NOT use thin or light fonts
+
+---
+
+CONTRAST FIX (VERY IMPORTANT)
+
+* Replace pure black backgrounds with deep brown (#1A1410)
+* Use a warm cream card (#F5EBDD) for ALL main content
+* Dark text on light card for readability
+* Gold only for accents and highlights
+
+Text must NEVER sit directly on busy backgrounds
+
+---
+
+LAYOUT STRUCTURE
+
+LEFT SIDEBAR:
+
+* Keep steps, but increase spacing
+* Each step must be clearly readable
+* Active step = strong gold highlight
+* Completed = checkmark + dim gold
+
+CENTER:
+
+* Large cigar + whiskey visual
+* Keep it bold and clear
+
+RIGHT:
+
+* Light premium card (main reading area)
+
+---
+
+BUTTON SYSTEM (TOUCH-FIRST)
+
+Buttons must feel like physical objects:
+
+* Minimum height: 60px
+* Large padding
+* Rounded edges
+* Strong visual separation
+
+PRIMARY BUTTON:
+
+* Gold gradient
+* Slight glow
+* Label example: “ORDER NOW”
+
+SECONDARY BUTTON:
+
+* Soft glass background
+* Clear border
+
+GHOST BUTTON:
+
+* Simple text, lower emphasis
+
+Every button must:
+
+* slightly scale down when pressed
+* show instant feedback
+
+---
+
+INTERACTION SIMPLIFICATION
+
+* Limit choices per step (no overwhelming options)
+* Use clear labels instead of abstract names
+* Show immediate feedback after each selection
+
+Example:
+
+User selects flavor:
+→ Display:
+“Smoky selected — bold and rich”
+
+---
+
+VISUAL STIMULATION (IMPORTANT)
+
+Add subtle motion to keep attention:
+
+* Slow floating cigar animation
+* Gentle light movement on card
+* Background slightly shifts (very slow)
+
+DO NOT use fast or flashy animations
+
+---
+
+REVEAL SCREEN (MAKE IT SATISFYING)
+
+* Fade in slowly
+* Center the cigar + whiskey pairing
+* Use large readable title:
+
+“Midnight Reserve”
+
+* Add simple line:
+
+“Built for your taste: Smooth • Smoky • Relaxed”
+
+---
+
+REMOVE STRAIN
+
+* No small text
+* No tight spacing
+* No overlapping visuals
+* No low-contrast gold-on-dark text
+
+---
+
+FINAL EXPERIENCE GOAL
+
+The interface should feel:
+
+* easy to read
+* comfortable to use
+* visually rich but not overwhelming
+* like a premium experience without effort
+
+The user should never have to squint, guess, or search
+
+---
