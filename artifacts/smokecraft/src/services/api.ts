@@ -14,6 +14,7 @@ export interface ProductResult {
   moodTags: string[];
   pairingTags: string[];
   score: number;
+  tier?: "premium" | "mid" | "standard";
 }
 
 export interface RecommendResponse {

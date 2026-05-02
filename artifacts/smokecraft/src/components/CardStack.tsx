@@ -7,12 +7,14 @@ import { AnimatePresence, motion } from "framer-motion";
 interface CardStackProps {
   recommendations: ProductResult[];
   onComplete: () => void;
+  onSwipe?: () => void;
 }
 
-export function CardStack({ recommendations, onComplete }: CardStackProps) {
+export function CardStack({ recommendations, onComplete, onSwipe }: CardStackProps) {
   const [cards, setCards] = useState<ProductResult[]>(recommendations);
 
   const handleSwipe = (_dir: "left" | "right") => {
+    onSwipe?.();
     setTimeout(() => {
       const remaining = cards.slice(1);
       setCards(remaining);
