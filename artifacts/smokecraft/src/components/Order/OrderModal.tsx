@@ -16,9 +16,10 @@ import {
   UtensilsCrossed, Wine, Cigarette, ShoppingBag, Hash,
 } from "lucide-react";
 import {
-  createOrder, createCheckoutSession,
+  createOrder, createCheckoutSession, updateOrderStatus,
   type ProductResult, type FoodResult, type OrderType,
 } from "@/services/api";
+import { DEMO_MODE } from "@/config/demo";
 
 interface OrderModalProps {
   isOpen:    boolean;
@@ -137,7 +138,17 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
         return;
       }
 
-      // Step 3 — pickup / delivery → redirect to Stripe Checkout
+      // Step 3a — DEMO MODE: simulate payment instantly, no Stripe redirect
+      if (DEMO_MODE) {
+        setIsRedirecting(true);
+        // Brief pause to show "Processing demo…" state so it feels intentional
+        await new Promise((r) => setTimeout(r, 900));
+        await updateOrderStatus(order.id, "paid");
+        onSuccess(order.id, selectedType);
+        return;
+      }
+
+      // Step 3b — pickup / delivery → redirect to Stripe Checkout
       setIsRedirecting(true);
       const { url } = await createCheckoutSession({
         items:   [{ name: "SmokeCraft 360 Experience", price: 4500, quantity: 1 }],
@@ -337,7 +348,8 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
                 >
                   {isRedirecting ? (
                     <span className="flex items-center justify-center gap-2">
-                      <Loader2 size={14} className="animate-spin" />Redirecting to Payment…
+                      <Loader2 size={14} className="animate-spin" />
+                      {DEMO_MODE ? "Processing demo…" : "Redirecting to Payment…"}
                     </span>
                   ) : isSubmitting ? (
                     <span className="flex items-center justify-center gap-2">
@@ -349,7 +361,9 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
                       {selectedType === "table"
                         ? "Request at Table"
                         : selectedType
-                          ? `Pay & Confirm ${ORDER_TYPES.find(o => o.type === selectedType)?.label}`
+                          ? DEMO_MODE
+                            ? "Demo: Confirm Experience"
+                            : `Pay & Confirm ${ORDER_TYPES.find(o => o.type === selectedType)?.label}`
                           : "Select Order Type"}
                     </span>
                   )}

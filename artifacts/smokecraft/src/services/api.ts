@@ -1,6 +1,7 @@
 import { getAuthHeaders, getStoredToken } from "./auth";
 import { cacheSet, cacheGet } from "./cache";
 import { enqueueEvent } from "./eventQueue";
+import { DEMO_MODE, DEMO_RECOMMENDATIONS } from "@/config/demo";
 
 export interface RecommendParams {
   category: "cigar" | "alcohol";
@@ -134,6 +135,9 @@ export async function fetchRecommendations(params: RecommendParams): Promise<Rec
 
     const last = await cacheGet<RecommendResponse>("recommendations", "last");
     if (last) return last;
+
+    // Demo safe-mode fallback — never show a failure to the user
+    if (DEMO_MODE) return DEMO_RECOMMENDATIONS as RecommendResponse;
 
     throw new Error("Recommendations unavailable — please check your connection");
   }
@@ -334,4 +338,18 @@ export async function fetchAnalytics(): Promise<AnalyticsSummary> {
     throw new Error((err as { error?: string }).error ?? "Failed to fetch analytics");
   }
   return res.json();
+}
+
+// ── Demo helpers ──────────────────────────────────────────────────────────────
+
+/** Clears all server-side demo data (orders). Best-effort — never throws. */
+export async function resetDemoData(): Promise<void> {
+  try {
+    await fetch("/api/demo/reset", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch {
+    // Silently ignore — client-side reset still runs
+  }
 }

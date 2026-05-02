@@ -9,6 +9,7 @@ import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
   type InventoryItem, type AnalyticsSummary,
 } from "@/services/api";
+import { DEMO_MODE, DEMO_ANALYTICS } from "@/config/demo";
 import { cloudinaryOptimize } from "@/components/ProductImage";
 import { AmbientBackground } from "@/components/AmbientBackground";
 import { LoginModal }        from "@/components/Auth/LoginModal";
@@ -36,11 +37,23 @@ export default function Dashboard() {
     setLoading(true);
     setError(null);
     try {
-      const [inv, ana] = await Promise.all([fetchInventory(), fetchAnalytics()]);
+      // In demo mode, use rich sample analytics so the dashboard always looks impressive.
+      // Inventory is still fetched live so real product data (boosts, images) shows through.
+      const [inv, ana] = await Promise.all([
+        fetchInventory().catch(() => [] as InventoryItem[]),
+        DEMO_MODE
+          ? Promise.resolve(DEMO_ANALYTICS as AnalyticsSummary)
+          : fetchAnalytics(),
+      ]);
       setInventory(inv);
       setAnalytics(ana);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not load data");
+      if (DEMO_MODE) {
+        // Never show errors in demo mode — fall back to demo analytics
+        setAnalytics(DEMO_ANALYTICS as AnalyticsSummary);
+      } else {
+        setError(e instanceof Error ? e.message : "Could not load data");
+      }
     } finally {
       setLoading(false);
     }

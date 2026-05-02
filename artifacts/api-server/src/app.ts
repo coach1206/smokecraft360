@@ -17,6 +17,7 @@ import uploadRouter           from "./routes/upload";
 import ordersRouter           from "./routes/orders";
 import checkoutRouter         from "./routes/checkout";
 import { stripeWebhookHandler } from "./routes/stripeWebhook";
+import demoRouter              from "./routes/demo";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -94,6 +95,7 @@ app.use("/api/venues",                      venuesRouter);
 app.use("/api/upload",                      uploadRouter);
 app.use("/api/orders",                      ordersRouter);
 app.use("/api",                             checkoutRouter);
+app.use("/api",                             demoRouter);
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────
 app.use((_req: Request, res: Response) => {

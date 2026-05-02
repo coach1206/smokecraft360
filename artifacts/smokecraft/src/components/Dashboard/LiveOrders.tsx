@@ -18,6 +18,7 @@ import {
   fetchOrders, updateOrderStatus,
   type Order, type OrderStatus,
 } from "@/services/api";
+import { DEMO_MODE, DEMO_ORDERS } from "@/config/demo";
 
 const POLL_MS = 30_000;
 
@@ -48,14 +49,17 @@ function formatAge(isoDate: string): string {
 }
 
 export function LiveOrders() {
-  const [orders,    setOrders]    = useState<Order[]>([]);
-  const [loading,   setLoading]   = useState(true);
+  const [orders,    setOrders]    = useState<Order[]>(DEMO_MODE ? (DEMO_ORDERS as Order[]) : []);
+  const [loading,   setLoading]   = useState(!DEMO_MODE);
   const [error,     setError]     = useState<string | null>(null);
   const [updating,  setUpdating]  = useState<Record<string, boolean>>({});
-  const [newCount,  setNewCount]  = useState(0);   // badge for new pending orders
-  const prevPendingCount = useRef(0);
+  const [newCount,  setNewCount]  = useState(0);
+  const prevPendingCount = useRef(DEMO_MODE ? DEMO_ORDERS.filter((o) => o.status === "pending").length : 0);
 
   const load = useCallback(async (silent = false) => {
+    // In demo mode, always serve local demo data — never hit the API
+    if (DEMO_MODE) return;
+
     if (!silent) setLoading(true);
     setError(null);
     try {
@@ -75,8 +79,9 @@ export function LiveOrders() {
     }
   }, []);
 
-  // Initial load + polling
+  // Initial load + polling (skipped in demo mode)
   useEffect(() => {
+    if (DEMO_MODE) return;
     void load();
     const id = setInterval(() => load(true), POLL_MS);
     return () => clearInterval(id);
@@ -84,6 +89,15 @@ export function LiveOrders() {
 
   const handleStatusUpdate = async (order: Order, newStatus: OrderStatus) => {
     setUpdating((u) => ({ ...u, [order.id]: true }));
+
+    if (DEMO_MODE) {
+      // Simulate a brief update delay, then apply locally — no API call
+      await new Promise((r) => setTimeout(r, 400));
+      setOrders((prev) => prev.map((o) => o.id === order.id ? { ...o, status: newStatus } : o));
+      setUpdating((u) => ({ ...u, [order.id]: false }));
+      return;
+    }
+
     try {
       const updated = await updateOrderStatus(order.id, newStatus);
       setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
@@ -115,7 +129,7 @@ export function LiveOrders() {
             )}
           </div>
           <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
-            Auto-refreshes every 30 s
+            {DEMO_MODE ? "Simulated orders — demo mode" : "Auto-refreshes every 30 s"}
           </p>
         </div>
         <div className="flex items-center gap-2">

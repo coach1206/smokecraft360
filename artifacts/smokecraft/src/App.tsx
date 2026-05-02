@@ -9,6 +9,7 @@ import Home            from "@/pages/Home";
 import Dashboard       from "@/pages/Dashboard";
 import PaymentSuccess  from "@/pages/PaymentSuccess";
 import PaymentCancel   from "@/pages/PaymentCancel";
+import { DemoBanner } from "@/components/Demo/DemoBanner";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ function App() {
             <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
               <Router />
             </WouterRouter>
+            <DemoBanner />
             <Toaster />
           </AuthProvider>
         </VenueProvider>
