@@ -203,43 +203,29 @@ function useClickSound() {
 
   return useCallback(() => {
     const a = audioRef.current;
-    if (a) {
-      try {
-        a.currentTime = 0;
-        const p = a.play();
-        if (p && typeof p.then === "function") {
-          p.catch(() => playSynth(ctxRef));
-        }
-        return;
-      } catch { /* fall through to synth */ }
-    }
-    playSynth(ctxRef);
+    if (!a) return;
+    try {
+      a.currentTime = 0;
+      const p = a.play();
+      if (p && typeof p.then === "function") {
+        /* If click.mp3 fails to play (404, autoplay block, decode error)
+         * we deliberately stay silent. The previous fallback called
+         * playSynth() which created a literal sine-wave oscillator —
+         * that's the buzzing the 33rd brief flagged. Silence > buzz. */
+        p.catch(() => { /* swallow */ });
+      }
+    } catch { /* sound is non-essential */ }
   }, []);
+  /* ctxRef intentionally unused now; kept declared so future re-introduction
+   * of a percussive feedback layer can wire through the same plumbing. */
+  void ctxRef;
 }
 
-function playSynth(ctxRef: React.MutableRefObject<AudioContext | null>) {
-  try {
-    type WebkitWindow = Window & { webkitAudioContext?: typeof AudioContext };
-    const Ctor = window.AudioContext ?? (window as WebkitWindow).webkitAudioContext;
-    if (!Ctor) return;
-    if (!ctxRef.current) ctxRef.current = new Ctor();
-    const ctx = ctxRef.current;
-    const t   = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gn  = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(880, t);
-    osc.frequency.exponentialRampToValueAtTime(440, t + 0.08);
-    gn.gain.setValueAtTime(0.0001, t);
-    gn.gain.exponentialRampToValueAtTime(0.18, t + 0.005);
-    gn.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
-    osc.connect(gn).connect(ctx.destination);
-    osc.start(t);
-    osc.stop(t + 0.13);
-  } catch {
-    /* sound is non-essential */
-  }
-}
+/* playSynth() removed — was the source of the persistent buzz reported in
+ * the 33rd brief. AudioContext oscillators produce raw tones that read as
+ * "buzzy" by nature, and on systems where click.mp3 fails to load (iframe
+ * 404s, autoplay blocks, asset path issues) the synth was firing on every
+ * tap. The bundled click.mp3 is the only acceptable click feedback now. */
 
 export default function Intro() {
   const { t } = useTranslation();
@@ -332,12 +318,10 @@ export default function Intro() {
       if (i >= SPLASH_TITLE.length) window.clearInterval(letterTimer);
     }, LETTER_INTERVAL_MS);
 
-    // Ambient drone — looped, low volume. Autoplay may be blocked until the
-    // user taps; that's fine, the catch keeps it silent rather than throwing.
-    const ambient   = new Audio(`${base}sounds/ambient.mp3`);
-    ambient.loop    = true;
-    ambient.volume  = 0.15;
-    void ambient.play().catch(() => { /* autoplay blocked — non-essential */ });
+    /* Ambient drone REMOVED per 33rd brief ("buzzing noise is still there").
+     * The looped low-volume ambient.mp3 was the persistent humming source —
+     * a continuous low-frequency bed reads as a buzz no matter how quiet it
+     * is. Startup chime stays because it's a one-shot, not a loop. */
 
     // Startup chime fires partway through the splash for a "boot" feel.
     const chime     = new Audio(`${base}sounds/startup.mp3`);
@@ -353,7 +337,6 @@ export default function Intro() {
       window.clearInterval(letterTimer);
       window.clearTimeout(chimeT);
       window.clearTimeout(stageT);
-      try { ambient.pause(); } catch { /* ignore */ }
     };
   }, []);
 
