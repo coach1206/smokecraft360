@@ -14,6 +14,15 @@ export const productCategoryEnum = pgEnum("product_category", [
 
 export const productTierEnum = pgEnum("product_tier", ["standard", "mid", "premium"]);
 
+/**
+ * Submission lifecycle for vendor-submitted products.
+ * Legacy products and venue/admin-created products default to "approved".
+ * Only brand_partner submissions enter as "pending" and require admin approval.
+ */
+export const productSubmissionStatusEnum = pgEnum("product_submission_status", [
+  "pending", "approved", "rejected",
+]);
+
 export const productsTable = pgTable("products", {
   id:          text("id").primaryKey(),
   venueId:     uuid("venue_id"),
@@ -31,6 +40,12 @@ export const productsTable = pgTable("products", {
   distributorId: uuid("distributor_id"),
   campaignId:    text("campaign_id"),
   imageUrl:    text("image_url"),
+  // Vendor submission workflow
+  submissionStatus: productSubmissionStatusEnum("submission_status").notNull().default("approved"),
+  submittedBy:      uuid("submitted_by"),                  // user id of brand_partner who submitted
+  reviewedBy:       uuid("reviewed_by"),                   // super_admin who approved/rejected
+  reviewedAt:       timestamp("reviewed_at"),
+  rejectionReason:  text("rejection_reason"),
   createdAt:   timestamp("created_at").notNull().defaultNow(),
 });
 

@@ -24,3 +24,4 @@ export * from "./devices";
 export * from "./commissions";
 export * from "./networkMetrics";
 export * from "./payoutRequests";
+export * from "./vendorPlacements";

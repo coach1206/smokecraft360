@@ -32,7 +32,7 @@ router.get("/", (_req: Request, res: Response) => {
 router.post(
   "/",
   requireAuth,
-  requireRole("venue_owner", "manager"),
+  requireRole("venue_owner", "manager", "brand_partner"),
   allowOnly("id", "name", "category", "flavorNotes", "strength", "moodTags", "pairingTags",
             "tier", "boostLevel", "sponsored", "venueId", "brandId", "campaignId", "imageUrl"),
   async (req: AuthRequest, res: Response) => {
@@ -79,6 +79,9 @@ router.post(
     const productId = id ?? `${category}-${Date.now()}`;
     const VALID_TIERS = ["standard", "mid", "premium"];
 
+    // Vendor (brand_partner) submissions enter as pending; venue/admin go live immediately.
+    const isVendorSubmission = req.user?.role === "brand_partner";
+
     const [inserted] = await db
       .insert(productsTable)
       .values({
@@ -90,13 +93,16 @@ router.post(
         moodTags:    Array.isArray(moodTags)    ? moodTags    : [],
         pairingTags: Array.isArray(pairingTags) ? pairingTags : [],
         tier:        (tier && VALID_TIERS.includes(tier) ? tier : "standard") as "standard" | "mid" | "premium",
-        boostLevel:  boostLevel  ?? 0,
-        sponsored:   sponsored   ?? false,
-        active:      true,
+        // Vendors cannot self-boost or self-sponsor — that requires a paid placement
+        boostLevel:  isVendorSubmission ? 0     : (boostLevel ?? 0),
+        sponsored:   isVendorSubmission ? false : (sponsored  ?? false),
+        active:      !isVendorSubmission,                            // hidden until approved
         venueId:     venueId    ?? null,
         brandId:     brandId    ?? null,
         campaignId:  campaignId ?? null,
         imageUrl:    imageUrl   ?? null,
+        submissionStatus: isVendorSubmission ? "pending" : "approved",
+        submittedBy:      isVendorSubmission ? req.user!.id : null,
       })
       .returning();
 
@@ -114,11 +120,17 @@ router.post(
       imageUrl:    inserted.imageUrl ?? undefined,
     };
 
-    registerProductInEngine(engineProduct);
-    seedProducts([engineProduct]);
+    // Only seed approved products into the live recommendation engine
+    if (!isVendorSubmission) {
+      registerProductInEngine(engineProduct);
+      seedProducts([engineProduct]);
+    }
 
-    req.log.info({ productId: inserted.id, name: inserted.name, category }, "product created");
-    res.status(201).json(inserted);
+    req.log.info(
+      { productId: inserted.id, name: inserted.name, category, submissionStatus: inserted.submissionStatus },
+      isVendorSubmission ? "vendor product submitted (pending approval)" : "product created",
+    );
+    res.status(isVendorSubmission ? 202 : 201).json(inserted);
   },
 );
 

@@ -40,6 +40,8 @@ import devicesRouter            from "./routes/devices";
 import commissionsRouter        from "./routes/commissions";
 import networkInsightsRouter    from "./routes/networkInsights";
 import payoutsRouter            from "./routes/payouts";
+import vendorAdminRouter        from "./routes/vendorAdmin";
+import vendorPlacementsRouter   from "./routes/vendorPlacements";
 import { startAggregationWorker } from "./lib/aggregationWorker";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -141,6 +143,8 @@ app.use("/api/devices",                     devicesRouter);
 app.use("/api",                             commissionsRouter);
 app.use("/api/network",                     networkInsightsRouter);
 app.use("/api/payouts",                     payoutsRouter);
+app.use("/api/admin/vendor",                vendorAdminRouter);
+app.use("/api/vendor/placements",           vendorPlacementsRouter);
 
 // Start background aggregation worker (hourly rollups for network/venue metrics)
 if (process.env["NODE_ENV"] !== "test") {
