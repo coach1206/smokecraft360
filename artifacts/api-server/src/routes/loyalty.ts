@@ -131,26 +131,44 @@ router.post(
       return;
     }
 
-    // Check balance
-    const balance = await getBalance(userId);
-    if (balance.pointsBalance < reward.pointsCost) {
+    // ── Atomic balance debit (race-safe). ──────────────────────────────────
+    // The previous flow did SELECT balance → check → UPDATE +cost, which
+    // allows two parallel redeems with balance==cost to BOTH pass the
+    // check and BOTH deduct (overdraft). The fix is a single conditional
+    // UPDATE that only succeeds when the balance is still >= cost at the
+    // moment the row is locked, mirroring the atomic-claim pattern used
+    // on the offline-queue race. Same row of points_redeemed is the
+    // single point of mutual exclusion.
+    //
+    // Step 1: ensure a balance row exists (idempotent insert with 0/0).
+    await db.execute(sql`
+      INSERT INTO user_loyalty_points (user_id, total_points, points_redeemed)
+      VALUES (${userId}::uuid, 0, 0)
+      ON CONFLICT (user_id) DO NOTHING
+    `);
+    // Step 2: conditional debit — only succeeds if balance still >= cost.
+    const debit = await db.execute(sql`
+      UPDATE user_loyalty_points
+         SET points_redeemed = points_redeemed + ${reward.pointsCost},
+             updated_at      = now()
+       WHERE user_id = ${userId}::uuid
+         AND (total_points - points_redeemed) >= ${reward.pointsCost}
+       RETURNING total_points, points_redeemed
+    `) as { rows: Array<{ total_points: number; points_redeemed: number }> };
+
+    if (!debit.rows || debit.rows.length === 0) {
+      // Race lost OR genuinely insufficient. Re-fetch the truth for the
+      // user-facing error so they see why.
+      const truth = await getBalance(userId);
       res.status(402).json({
-        error: "Insufficient points",
-        pointsBalance: balance.pointsBalance,
+        error:         "Insufficient points",
+        pointsBalance: truth.pointsBalance,
         pointsNeeded:  reward.pointsCost,
       });
       return;
     }
-
-    // Deduct points
-    await db.execute(sql`
-      INSERT INTO user_loyalty_points (user_id, total_points, points_redeemed)
-      VALUES (${userId}::uuid, 0, ${reward.pointsCost})
-      ON CONFLICT (user_id)
-      DO UPDATE SET
-        points_redeemed = user_loyalty_points.points_redeemed + ${reward.pointsCost},
-        updated_at      = now()
-    `);
+    const newTotalRedeemed = Number(debit.rows[0]!.points_redeemed);
+    const newTotal         = Number(debit.rows[0]!.total_points);
 
     // Record redemption
     const [redemption] = await db
@@ -167,7 +185,7 @@ router.post(
     res.json({
       message:    "Reward redeemed — pending staff fulfilment",
       redemption,
-      newBalance: balance.pointsBalance - reward.pointsCost,
+      newBalance: newTotal - newTotalRedeemed,
     });
   },
 );

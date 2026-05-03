@@ -125,6 +125,25 @@ Two distinct NDA flows now coexist:
      until all fields complete and ink drawn. On success: sessionStorage flag
      `demoNdaSigned=1`, fade-out 300ms, navigate `/intro`. Reload-resistant.
 
+## Reward Redemption (G1)
+
+The schema (`rewardsTable`, `redemptionsTable`, `userLoyaltyPointsTable`),
+routes (`/api/loyalty/*`, `/api/rewards/*`), and admin tab
+(`LoyaltyRewardsTab`) were already in place from earlier work. This pass
+only added the missing race-safety hardening on `POST /api/loyalty/redeem`:
+
+- **Atomic conditional debit**: replaced the SELECT-balance → check →
+  UPDATE +cost flow (which let two parallel redeems both pass the check
+  and overdraft) with a single `UPDATE ... WHERE (total_points -
+  points_redeemed) >= cost RETURNING ...`. If the UPDATE returns 0 rows,
+  the race was lost OR the user genuinely lacks balance — re-fetch the
+  truth and return 402. Same atomic-claim pattern used by the offline
+  queue. Verified: 5 parallel redeems at exactly cost-equal balance →
+  exactly 1 succeeds, 4 × 402, final balance = 0, no overdraft.
+- **Pre-existing behaviour preserved**: tier gate (403), inactive reward
+  (404), invalid UUID (400), anon (401), fresh user with no balance row
+  (still 402, no crash). 16/16 happy-path probes still pass.
+
 ## Package Update Policy (Brief D)
 
 Surgical, non-destructive updates only. The workspace runs `pnpm audit` clean
