@@ -129,9 +129,15 @@ export async function fetchRecommendations(params: RecommendParams): Promise<Rec
   const cacheKey = recommendCacheKey(params);
 
   try {
+    const { getDeviceId } = await import("./deviceFingerprint");
     const response = await fetch("/api/recommend", {
       method:  "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        // Tag kiosk-origin recommendations so the server can update
+        // devices.lastActiveAt even for unauth public requests.
+        "X-Device-Id":  getDeviceId(),
+      },
       body:    JSON.stringify(params),
     });
 

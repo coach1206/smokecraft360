@@ -138,6 +138,90 @@ export function KioskModeProvider({ children }: { children: ReactNode }) {
     }
   }, [mode]);
 
+  // ── Kiosk lockdown ────────────────────────────────────────────────────────
+  // Only active when mode === "kiosk". Does NOT affect tablet/normal so
+  // dashboard users keep their right-click + devtools.
+  useEffect(() => {
+    if (mode !== "kiosk") return;
+
+    // 1. Block right-click context menu (prevents "save image / inspect")
+    const onContextMenu = (e: MouseEvent) => e.preventDefault();
+    window.addEventListener("contextmenu", onContextMenu);
+
+    // 2. Block reload, devtools, new-tab, close-window keyboard shortcuts.
+    //    NOTE: browsers cannot block ALL system shortcuts (Cmd-Q on macOS,
+    //    Alt-F4 on Win). Real lockdown still requires the OS launching
+    //    Chrome/Edge in actual --kiosk mode. This middleware closes the
+    //    common in-page exits.
+    const onKeyDown = (e: KeyboardEvent) => {
+      const k = e.key.toLowerCase();
+      const ctrl = e.ctrlKey || e.metaKey;
+      const blocked =
+        k === "f5"  ||
+        k === "f11" ||
+        k === "f12" ||
+        (ctrl && (k === "r" || k === "w" || k === "t" || k === "n" || k === "p" || k === "s")) ||
+        (ctrl && e.shiftKey && (k === "i" || k === "j" || k === "c" || k === "r" || k === "n" || k === "t")) ||
+        (e.altKey && k === "f4");
+      if (blocked) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown, { capture: true });
+
+    // 3. Disable text selection + drag (no copy-out, no image drag).
+    const KIOSK_LOCKDOWN_CSS = `
+      html, body {
+        -webkit-user-select: none;
+        -ms-user-select:    none;
+        user-select:        none;
+        -webkit-touch-callout: none;
+        overscroll-behavior:   none;
+      }
+      img, a { -webkit-user-drag: none; user-drag: none; }
+      /* Inputs still need selection for typing */
+      input, textarea, [contenteditable="true"] {
+        -webkit-user-select: text;
+        user-select:         text;
+      }
+    `;
+    const styleEl = document.createElement("style");
+    styleEl.dataset["kiosk"] = "lockdown";
+    styleEl.textContent = KIOSK_LOCKDOWN_CSS;
+    document.head.appendChild(styleEl);
+
+    // 4. Acquire wake lock so the kiosk screen never sleeps. Re-acquires
+    //    automatically when the tab regains visibility (browsers drop the
+    //    lock on backgrounding).
+    type ScreenWakeLock = { release: () => Promise<void> };
+    type WakeLockNav = Navigator & {
+      wakeLock?: { request: (type: "screen") => Promise<ScreenWakeLock> };
+    };
+    const wakeNav = navigator as WakeLockNav;
+    let wakeLock: ScreenWakeLock | null = null;
+
+    async function requestWake() {
+      try {
+        if (!wakeNav.wakeLock) return;
+        wakeLock = await wakeNav.wakeLock.request("screen");
+      } catch { /* user agent may deny — non-fatal */ }
+    }
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") void requestWake();
+    };
+    void requestWake();
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      window.removeEventListener("contextmenu", onContextMenu);
+      window.removeEventListener("keydown", onKeyDown, { capture: true } as EventListenerOptions);
+      document.removeEventListener("visibilitychange", onVisibility);
+      styleEl.remove();
+      if (wakeLock) wakeLock.release().catch(() => {});
+    };
+  }, [mode]);
+
   const value: KioskState = {
     mode, isKiosk: mode === "kiosk", isTablet: mode === "tablet",
     venueId, tableNumber, deviceId, reset,

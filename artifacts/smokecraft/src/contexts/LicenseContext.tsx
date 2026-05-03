@@ -88,7 +88,12 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
         : "/api/license/status";
 
       try {
-        const r = await fetch(url, { credentials: "include" });
+        // Lazy-import to avoid a circular dep with services/auth.
+        const { getDeviceId } = await import("@/services/deviceFingerprint");
+        const r = await fetch(url, {
+          credentials: "include",
+          headers:     { "X-Device-Id": getDeviceId() },
+        });
         if (!r.ok) throw new Error(`status ${r.status}`);
         const data = await r.json() as Partial<Omit<LicenseState, "loading" | "offline">>;
         if (cancelled) return;

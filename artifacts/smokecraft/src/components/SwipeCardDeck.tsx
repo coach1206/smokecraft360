@@ -6,6 +6,13 @@ export interface SwipeCardItem {
   title:    string;
   subtitle?: string;
   desc?:    string;
+  /** Hero image (bg-image URL). Renders behind the title with a vignette
+   *  scrim so text stays readable. Optional — cards without an image fall
+   *  back to the original cream background + gold accent. */
+  image?:   string;
+  /** Optional accent hex color used for the gold rule + dot tint. Defaults
+   *  to the deck's house gold. */
+  accent?:  string;
 }
 
 interface Props {
@@ -123,27 +130,80 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
         {leftLabel}
       </motion.div>
 
-      {/* Card body */}
+      {/* Card body — layered shell:
+            1. base cream surface
+            2. optional hero photo (top 45%) with cream-fade scrim
+            3. inner vignette + paper-grain warmth for depth
+            4. multi-layer drop shadow (ambient + key + contact)         */}
       <div
         style={{
           width: "100%",
           height: "100%",
-          background: "rgba(245,235,221,0.97)",
-          border: "2px solid rgba(184,137,26,0.40)",
-          borderRadius: 20,
-          boxShadow: "0 16px 60px rgba(0,0,0,0.45), 0 4px 14px rgba(0,0,0,0.18)",
+          background: "linear-gradient(180deg, #FAF1DD 0%, #F2E5C8 100%)",
+          border: "1px solid rgba(184,137,26,0.55)",
+          borderRadius: 22,
+          boxShadow: [
+            "0 1px 0 rgba(255,255,255,0.55) inset",            // top highlight
+            "0 -1px 0 rgba(120,82,16,0.18) inset",             // bottom shade
+            "0 2px 4px rgba(0,0,0,0.10)",                      // contact
+            "0 14px 32px rgba(20,12,4,0.32)",                  // key
+            "0 36px 80px rgba(20,12,4,0.42)",                  // ambient
+            `0 0 0 1px ${item.accent ?? "rgba(184,137,26,0.18)"}`, // gold ring
+          ].join(", "),
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
-          padding: "44px 36px",
+          padding: "26px 32px 30px",
           userSelect: "none",
           cursor: "grab",
-          gap: 12,
+          gap: 8,
           position: "relative",
           overflow: "hidden",
+          isolation: "isolate",
         }}
       >
+        {/* Hero image (top half) — only when image provided */}
+        {item.image && (
+          <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              top: 0, left: 0, right: 0,
+              height: "46%",
+              backgroundImage:    `url(${item.image})`,
+              backgroundSize:     "cover",
+              backgroundPosition: "center",
+              filter: "saturate(1.05) contrast(1.05)",
+              zIndex: 0,
+            }}
+          />
+        )}
+        {/* Cream scrim that fades the photo into the card body so text
+            stays legible even on busy images. */}
+        {item.image && (
+          <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              top: 0, left: 0, right: 0,
+              height: "58%",
+              background:
+                "linear-gradient(180deg, rgba(250,241,221,0) 0%, rgba(250,241,221,0.55) 55%, rgba(250,241,221,1) 100%)",
+              zIndex: 1,
+            }}
+          />
+        )}
+
+        {/* Inner vignette adds physical depth even when no image */}
+        <div
+          aria-hidden
+          style={{
+            position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
+            background:
+              "radial-gradient(ellipse at center, rgba(255,250,235,0) 35%, rgba(60,38,12,0.10) 100%)",
+          }}
+        />
+
         {/* Gold top accent */}
         <div
           style={{
@@ -152,19 +212,22 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
             left: "20%",
             right: "20%",
             height: 3,
-            background: "linear-gradient(90deg, transparent, rgba(184,137,26,0.55), transparent)",
+            background: `linear-gradient(90deg, transparent, ${item.accent ?? "rgba(184,137,26,0.85)"}, transparent)`,
             borderRadius: "0 0 4px 4px",
+            zIndex: 3,
           }}
         />
 
-        {/* Progress */}
+        {/* Progress — pushed below the hero space when image present */}
         <p
           style={{
+            position: "relative", zIndex: 3,
+            marginTop: item.image ? "44%" : 0,
             fontSize: 11,
-            color: "rgba(100,72,20,0.55)",
-            letterSpacing: "0.28em",
+            color: "rgba(80,52,12,0.78)",
+            letterSpacing: "0.32em",
             textTransform: "uppercase",
-            fontWeight: 600,
+            fontWeight: 700,
           }}
         >
           {index + 1} of {total}
@@ -173,12 +236,15 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
         {/* Title */}
         <h3
           style={{
-            fontSize: "clamp(2rem, 6vw, 3rem)",
+            position: "relative", zIndex: 3,
+            fontSize: "clamp(2.1rem, 6.2vw, 3.1rem)",
             fontFamily: "var(--app-font-serif)",
-            fontWeight: 300,
-            color: "#1A1410",
+            fontWeight: 500,
+            color: "#15100A",
             textAlign: "center",
-            lineHeight: 1.1,
+            lineHeight: 1.05,
+            letterSpacing: "0.005em",
+            textShadow: "0 1px 0 rgba(255,250,235,0.6)",
           }}
         >
           {item.title}
@@ -187,11 +253,12 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
         {item.subtitle && (
           <p
             style={{
+              position: "relative", zIndex: 3,
               fontSize: 12,
-              color: "#7B5A1E",
-              letterSpacing: "0.14em",
+              color: "#6B4A12",
+              letterSpacing: "0.18em",
               textTransform: "uppercase",
-              fontWeight: 600,
+              fontWeight: 700,
             }}
           >
             {item.subtitle}
@@ -201,33 +268,40 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
         {item.desc && (
           <p
             style={{
-              fontSize: 15,
-              color: "#4A3020",
+              position: "relative", zIndex: 3,
+              fontSize: 16.5,
+              fontWeight: 500,
+              color: "#1F140A",
               textAlign: "center",
-              lineHeight: 1.65,
-              maxWidth: 270,
-              marginTop: 8,
+              lineHeight: 1.55,
+              letterSpacing: "0.005em",
+              maxWidth: 290,
+              marginTop: 6,
             }}
           >
             {item.desc}
           </p>
         )}
 
+        {/* Spacer pushes the swipe hint to the bottom of the card */}
+        <div style={{ flex: 1 }} />
+
         {/* Swipe hint */}
         <div
           style={{
+            position: "relative", zIndex: 3,
             display: "flex",
-            gap: 20,
-            marginTop: 28,
+            gap: 22,
             alignItems: "center",
-            color: "rgba(90,60,30,0.38)",
+            color: "rgba(70,42,12,0.55)",
             fontSize: 11,
-            letterSpacing: "0.16em",
+            letterSpacing: "0.20em",
             textTransform: "uppercase",
+            fontWeight: 600,
           }}
         >
           <span>← {leftLabel}</span>
-          <div style={{ width: 32, height: 1, background: "rgba(90,60,30,0.18)" }} />
+          <div style={{ width: 32, height: 1, background: "rgba(184,137,26,0.4)" }} />
           <span>{rightLabel} →</span>
         </div>
       </div>
@@ -237,8 +311,11 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
 
 /* ── Stack card (behind the top) ─────────────────────────────── */
 function StackCard({ depth }: { depth: number }) {
-  const scale = 1 - depth * 0.06;
-  const translateY = depth * 14;
+  const scale = 1 - depth * 0.05;
+  const translateY = depth * 12;
+  // Each layer slightly darker + smaller shadow, suggesting a real stack
+  // of paper sitting on a table rather than identical cards.
+  const tint = depth === 1 ? 0.92 : 0.84;
   return (
     <div
       style={{
@@ -246,10 +323,14 @@ function StackCard({ depth }: { depth: number }) {
         inset: 0,
         zIndex: 10 - depth,
         transform: `scale(${scale}) translateY(${translateY}px)`,
-        background: "rgba(245,235,221,0.88)",
-        border: "2px solid rgba(184,137,26,0.25)",
-        borderRadius: 20,
-        boxShadow: "0 8px 32px rgba(0,0,0,0.22)",
+        background: `linear-gradient(180deg, rgba(250,241,221,${tint}) 0%, rgba(232,218,184,${tint}) 100%)`,
+        border: "1px solid rgba(184,137,26,0.30)",
+        borderRadius: 22,
+        boxShadow: [
+          "0 1px 0 rgba(255,255,255,0.4) inset",
+          "0 6px 18px rgba(20,12,4,0.22)",
+          `0 ${10 + depth * 6}px ${22 + depth * 8}px rgba(20,12,4,0.28)`,
+        ].join(", "),
       }}
     />
   );

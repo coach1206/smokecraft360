@@ -15,6 +15,7 @@ import { requireAuth, type AuthRequest }                      from "../middlewar
 import { requireRole }                                        from "../middleware/roles";
 import { allowOnly }                                          from "../middleware/sanitize";
 import { checkLicenseForVenue }                               from "../middleware/license";
+import { requireDeviceBinding }                                from "../middleware/deviceTouch";
 
 const router: IRouter = Router();
 
@@ -58,6 +59,10 @@ router.post(
   "/",
   allowOnly("cigarId", "cigarName", "drinkId", "drinkName", "foodId", "foodName",
             "orderType", "tableNumber", "venueId"),
+  // Device-binding gate — when the kiosk sends X-Device-Id, the device row
+  // must exist, be active, and belong to the same venue. Dashboard manual
+  // orders that omit the header still pass through (legacy compatibility).
+  requireDeviceBinding,
   async (req: Request, res: Response) => {
     // License gate (kiosk endpoint — no auth, so we check the venueId in the body).
     const bodyVenueId = typeof req.body?.venueId === "string" ? req.body.venueId : null;

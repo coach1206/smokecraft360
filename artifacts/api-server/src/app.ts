@@ -52,6 +52,7 @@ import subscriptionsRouter      from "./routes/subscriptions";
 import osEventsRouter           from "./routes/osEvents";
 import osCommandRouter          from "./routes/osCommand";
 import osFinancialsRouter       from "./routes/osFinancials";
+import { deviceTouch }          from "./middleware/deviceTouch";
 import { startAggregationWorker } from "./lib/aggregationWorker";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -115,6 +116,11 @@ app.post(
 
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+
+// Passive device-touch — must run BEFORE the API routers so every /api/*
+// request contributes to liveness telemetry (architect feedback). Header
+// is optional; missing/invalid header is a no-op.
+app.use("/api", deviceTouch);
 app.use(rejectDeepPayloads);
 // Parse Accept-Language → req.locale (en/es/fr). Passive: no body changes.
 app.use(localeMiddleware);

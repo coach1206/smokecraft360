@@ -42,27 +42,50 @@ const SLIDE_VARIANTS = {
 const SLIDE_T = { duration: 0.42, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] };
 
 /* ── Swipe-deck card data ─────────────────────────────────────── */
+// Hero imagery: curated Unsplash photos (free-licensed) keyed to each flavor.
+// Sized down via Unsplash URL params to keep the deck snappy on kiosks.
+const FLAVOR_IMG = (id: string) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=720&q=70`;
+
 const CIGAR_FLAVORS = [
-  { id: "smoky",   title: "Smoky",   desc: "Deep wood smoke, campfire, volcanic ash"     },
-  { id: "sweet",   title: "Sweet",   desc: "Natural honey, dried fruit, light caramel"   },
-  { id: "earthy",  title: "Earthy",  desc: "Damp soil, forest floor, rich minerals"      },
-  { id: "cedar",   title: "Cedar",   desc: "Crisp cedarwood, freshly cut timber"         },
-  { id: "spicy",   title: "Spicy",   desc: "Black pepper, chili, cinnamon bark"          },
-  { id: "creamy",  title: "Creamy",  desc: "Smooth chocolate, butter, vanilla"           },
-  { id: "nutty",   title: "Nutty",   desc: "Toasted almond, hazelnut, walnut"            },
-  { id: "leather", title: "Leather", desc: "Rich saddle leather, aged tobacco"           },
-  { id: "cocoa",   title: "Cocoa",   desc: "Dark chocolate, roasted coffee"              },
-  { id: "floral",  title: "Floral",  desc: "Jasmine, fresh rose, light herbs"            },
+  { id: "smoky",   title: "Smoky",   desc: "Deep wood smoke, campfire, volcanic ash",
+    image: FLAVOR_IMG("photo-1475070929565-c985b496cb9f") },                // smoking ember / firepit
+  { id: "sweet",   title: "Sweet",   desc: "Natural honey, dried fruit, light caramel",
+    image: FLAVOR_IMG("photo-1587049352846-4a222e784d38") },                // honey jar
+  { id: "earthy",  title: "Earthy",  desc: "Damp soil, forest floor, rich minerals",
+    image: FLAVOR_IMG("photo-1448375240586-882707db888b") },                // forest floor
+  { id: "cedar",   title: "Cedar",   desc: "Crisp cedarwood, freshly cut timber",
+    image: FLAVOR_IMG("photo-1542273917363-3b1817f69a2d") },                // cedar planks
+  { id: "spicy",   title: "Spicy",   desc: "Black pepper, chili, cinnamon bark",
+    image: FLAVOR_IMG("photo-1532336414038-cf19250c5757") },                // peppercorns
+  { id: "creamy",  title: "Creamy",  desc: "Smooth chocolate, butter, vanilla",
+    image: FLAVOR_IMG("photo-1481391319762-47dff72954d9") },                // cream pour
+  { id: "nutty",   title: "Nutty",   desc: "Toasted almond, hazelnut, walnut",
+    image: FLAVOR_IMG("photo-1508061253366-f7da158b6d46") },                // mixed nuts
+  { id: "leather", title: "Leather", desc: "Rich saddle leather, aged tobacco",
+    image: FLAVOR_IMG("photo-1531685250784-7569952593d2") },                // worn leather
+  { id: "cocoa",   title: "Cocoa",   desc: "Dark chocolate, roasted coffee",
+    image: FLAVOR_IMG("photo-1481391319762-47dff72954d9") },                // chocolate chunks
+  { id: "floral",  title: "Floral",  desc: "Jasmine, fresh rose, light herbs",
+    image: FLAVOR_IMG("photo-1490750967868-88aa4486c946") },                // garden roses
 ];
 const SPIRITS_FLAVORS = [
-  { id: "vanilla", title: "Vanilla", desc: "Soft vanilla bean, sweet cream"             },
-  { id: "oak",     title: "Oak",     desc: "American oak, toasted wood"                 },
-  { id: "caramel", title: "Caramel", desc: "Burnt sugar, rich toffee"                   },
-  { id: "citrus",  title: "Citrus",  desc: "Orange peel, lemon zest, bright"            },
-  { id: "honey",   title: "Honey",   desc: "Wildflower honey, golden sweetness"         },
-  { id: "rye",     title: "Rye",     desc: "Spicy rye grain, herbal notes"              },
-  { id: "smoke",   title: "Smoke",   desc: "Peaty smoke, bonfire, mineral"              },
-  { id: "fruity",  title: "Fruity",  desc: "Dried cherry, apple, fresh pear"            },
+  { id: "vanilla", title: "Vanilla", desc: "Soft vanilla bean, sweet cream",
+    image: FLAVOR_IMG("photo-1607920591413-9ec43be3b942") },                // vanilla pods
+  { id: "oak",     title: "Oak",     desc: "American oak, toasted wood",
+    image: FLAVOR_IMG("photo-1542273917363-3b1817f69a2d") },                // oak grain
+  { id: "caramel", title: "Caramel", desc: "Burnt sugar, rich toffee",
+    image: FLAVOR_IMG("photo-1551024506-0bccd828d307") },                   // caramel drizzle
+  { id: "citrus",  title: "Citrus",  desc: "Orange peel, lemon zest, bright",
+    image: FLAVOR_IMG("photo-1547514701-42782101795e") },                   // citrus slices
+  { id: "honey",   title: "Honey",   desc: "Wildflower honey, golden sweetness",
+    image: FLAVOR_IMG("photo-1587049352846-4a222e784d38") },                // honey jar
+  { id: "rye",     title: "Rye",     desc: "Spicy rye grain, herbal notes",
+    image: FLAVOR_IMG("photo-1574323347407-f5e1ad6d020b") },                // grain stalks
+  { id: "smoke",   title: "Smoke",   desc: "Peaty smoke, bonfire, mineral",
+    image: FLAVOR_IMG("photo-1475070929565-c985b496cb9f") },                // smoking ember
+  { id: "fruity",  title: "Fruity",  desc: "Dried cherry, apple, fresh pear",
+    image: FLAVOR_IMG("photo-1567306226416-28f0efdc88ce") },                // cherries
 ];
 const STRENGTH_CARDS = [
   { id: "mild",   title: "Mild",   subtitle: "Strength · Level 1", desc: "Smooth and gentle — perfect for newcomers or a relaxed afternoon" },

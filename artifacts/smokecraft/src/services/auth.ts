@@ -25,8 +25,16 @@ export interface AuthResponse {
 const TOKEN_KEY = "smokecraft_auth_token";
 const USER_KEY  = "smokecraft_auth_user";
 
+import { getDeviceId } from "./deviceFingerprint";
+
 export function getStoredToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
+}
+
+/** Best-effort device id helper — re-exported so callers don't need a
+ *  second import alongside `getAuthHeaders`. */
+export function getDeviceIdHeader(): Record<string, string> {
+  return { "X-Device-Id": getDeviceId() };
 }
 
 export function getStoredUser(): AuthUser | null {
@@ -47,7 +55,12 @@ export function clearAuth(): void {
 
 export function getAuthHeaders(): HeadersInit {
   const token = getStoredToken();
-  const headers: HeadersInit = { "Content-Type": "application/json" };
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    // Always tag requests with the device id so the server can update
+    // last-seen + (when binding is enforced) verify the device row.
+    "X-Device-Id":  getDeviceId(),
+  };
   if (token) headers["Authorization"] = `Bearer ${token}`;
   return headers;
 }
