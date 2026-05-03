@@ -1,0 +1,140 @@
+IMPLEMENT DUAL IMAGE SYSTEM: CLOUDINARY + UNSPLASH
+
+GOAL:
+Use Cloudinary for all controlled product imagery and Unsplash only for background environments.
+
+----------------------------------------
+STEP 1: CLOUDINARY SETUP
+----------------------------------------
+
+Create folders in Cloudinary:
+
+/cigars/
+/wrappers/
+/flavors/
+
+Upload real images:
+
+CIGARS:
+robusto.jpg
+toro.jpg
+churchill.jpg
+lancero.jpg
+torpedo.jpg
+perfecto.jpg
+
+WRAPPERS:
+claro.jpg
+colorado.jpg
+maduro.jpg
+oscuro.jpg
+
+FLAVORS:
+cocoa.jpg
+leather.jpg
+cedar.jpg
+spice.jpg
+cream.jpg
+smoke.jpg
+earth.jpg
+nutty.jpg
+
+----------------------------------------
+STEP 2: IMAGE MAP (FRONTEND)
+----------------------------------------
+
+const cloudinaryBase = "https://res.cloudinary.com/YOUR_NAME/image/upload";
+
+export const cigarImages = {
+  robusto: `${cloudinaryBase}/cigars/robusto.jpg`,
+  toro: `${cloudinaryBase}/cigars/toro.jpg`,
+  churchill: `${cloudinaryBase}/cigars/churchill.jpg`,
+  lancero: `${cloudinaryBase}/cigars/lancero.jpg`,
+  torpedo: `${cloudinaryBase}/cigars/torpedo.jpg`,
+  perfecto: `${cloudinaryBase}/cigars/perfecto.jpg`
+};
+
+export const wrapperImages = {
+  claro: `${cloudinaryBase}/wrappers/claro.jpg`,
+  colorado: `${cloudinaryBase}/wrappers/colorado.jpg`,
+  maduro: `${cloudinaryBase}/wrappers/maduro.jpg`,
+  oscuro: `${cloudinaryBase}/wrappers/oscuro.jpg`
+};
+
+export const flavorImages = {
+  cocoa: `${cloudinaryBase}/flavors/cocoa.jpg`,
+  leather: `${cloudinaryBase}/flavors/leather.jpg`,
+  cedar: `${cloudinaryBase}/flavors/cedar.jpg`,
+  spice: `${cloudinaryBase}/flavors/spice.jpg`,
+  cream: `${cloudinaryBase}/flavors/cream.jpg`,
+  smoke: `${cloudinaryBase}/flavors/smoke.jpg`,
+  earth: `${cloudinaryBase}/flavors/earth.jpg`,
+  nutty: `${cloudinaryBase}/flavors/nutty.jpg`
+};
+
+----------------------------------------
+STEP 3: FORCE CONTROL (IMPORTANT)
+----------------------------------------
+
+RULES:
+
+- DO NOT fetch cigars from Unsplash
+- DO NOT fetch flavors from Unsplash
+- ONLY use Cloudinary maps
+
+Fallback:
+
+if (!imageFound) {
+  use default cigar image from Cloudinary
+}
+
+----------------------------------------
+STEP 4: BACKGROUND ENGINE (UNSPLASH)
+----------------------------------------
+
+Background changes based on step:
+
+FLAVOR STEP:
+→ whiskey glass + cigar smoke
+
+STRENGTH STEP:
+→ burning cigar close-up
+
+MOOD STEP:
+→ lounge / leather chair / night setting
+
+PAIRING STEP:
+→ drink-focused background
+
+----------------------------------------
+STEP 5: DYNAMIC BACKGROUND SWITCH
+----------------------------------------
+
+function getBackground(step, selection) {
+  if (step === "flavor") return unsplash("whiskey cigar smoke");
+  if (step === "strength") return unsplash("burning cigar close up");
+  if (step === "mood") return unsplash("luxury lounge leather chair");
+  if (step === "pairing") return unsplash("bourbon glass ice");
+}
+
+----------------------------------------
+STEP 6: CLOUDINARY TRANSFORMATIONS
+----------------------------------------
+
+Use:
+
+f_auto,q_auto,w_800,h_600,c_fill
+
+Result:
+- consistent sizing
+- fast loading
+- premium look
+
+----------------------------------------
+FINAL RESULT:
+----------------------------------------
+
+- cigars always accurate
+- flavors visually correct
+- backgrounds immersive
+- no random images ever again

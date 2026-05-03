@@ -9,6 +9,13 @@ export interface RecommendParams {
   strength: number;
   mood: string;
   venueId?: string;
+  /** Cigar physical preference (vitola). Cigar flow only — drives the
+   *  vitola match-boost in the server scorer. Shape names match the
+   *  CigarShape union in services/storage.ts.                                */
+  cigarShape?:   "robusto" | "corona" | "toro" | "churchill" | "torpedo" | "belicoso";
+  /** Session-length preference, derived to a soft strength bias on the
+   *  server (longer sessions favor smoother / slower-burn products).         */
+  cigarSession?: "quick" | "standard" | "extended" | "long";
 }
 
 export type AvailabilityLabel =

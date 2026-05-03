@@ -3,7 +3,7 @@ import { Product } from "../engine/types";
 export const cigars: Product[] = [
   {
     id: "cigar-001",
-    name: "Arturo Fuente Hemingway",
+    name: "Arturo Fuente Hemingway Toro",
     category: "cigar",
     flavorNotes: ["cedar", "cream", "nutty", "sweet"],
     strength: 2,
@@ -15,7 +15,7 @@ export const cigars: Product[] = [
   },
   {
     id: "cigar-002",
-    name: "Padron 1964 Anniversary",
+    name: "Padron 1964 Anniversary Torpedo",
     category: "cigar",
     flavorNotes: ["cocoa", "earthy", "smoky", "sweet"],
     strength: 3,
@@ -29,7 +29,7 @@ export const cigars: Product[] = [
   },
   {
     id: "cigar-003",
-    name: "Liga Privada No. 9",
+    name: "Liga Privada No. 9 Robusto",
     category: "cigar",
     flavorNotes: ["dark-chocolate", "espresso", "leather", "smoky"],
     strength: 4,
@@ -41,7 +41,7 @@ export const cigars: Product[] = [
   },
   {
     id: "cigar-004",
-    name: "Oliva Serie V Melanio",
+    name: "Oliva Serie V Melanio Churchill",
     category: "cigar",
     flavorNotes: ["spicy", "pepper", "leather", "cedar"],
     strength: 4,
@@ -53,7 +53,7 @@ export const cigars: Product[] = [
   },
   {
     id: "cigar-005",
-    name: "Rocky Patel Vintage 1992",
+    name: "Rocky Patel Vintage 1992 Corona",
     category: "cigar",
     flavorNotes: ["honey", "sweet", "nutty", "floral"],
     strength: 2,

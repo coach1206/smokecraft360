@@ -22,9 +22,13 @@ const router: IRouter = Router();
  */
 router.post(
   "/",
-  allowOnly("category", "flavorPreferences", "strength", "mood", "venueId"),
+  allowOnly("category", "flavorPreferences", "strength", "mood", "venueId", "cigarShape", "cigarSession"),
   (req: Request, res: Response) => {
-    const { category, flavorPreferences, strength, mood, venueId } = req.body as Partial<RecommendRequest>;
+    const { category, flavorPreferences, strength, mood, venueId, cigarShape, cigarSession } = req.body as Partial<RecommendRequest>;
+    const validShapes = ["robusto","corona","toro","churchill","torpedo","belicoso"] as const;
+    const validSessions = ["quick","standard","extended","long"] as const;
+    const safeShape = typeof cigarShape === "string" && (validShapes as readonly string[]).includes(cigarShape) ? cigarShape as RecommendRequest["cigarShape"] : undefined;
+    const safeSession = typeof cigarSession === "string" && (validSessions as readonly string[]).includes(cigarSession) ? cigarSession as RecommendRequest["cigarSession"] : undefined;
 
     const validCategories = getRegisteredCategories();
 
@@ -51,6 +55,8 @@ router.post(
       strength,
       mood,
       venueId: typeof venueId === "string" ? venueId : undefined,
+      cigarShape: safeShape,
+      cigarSession: safeSession,
     });
 
     req.log.info(

@@ -30,6 +30,28 @@ export interface SavedBlend {
   foodPairingName?: string;
 }
 
+/* ── Cigar Structure (vitola intelligence) ─────────────────────────────────
+ * Captures the guest's PHYSICAL cigar preference so the engine can boost
+ * products whose names match the chosen vitola (e.g. selecting "Toro" boosts
+ * any product with "Toro" in its name). Ring gauge and burn time are
+ * derived from the shape per the standard vitola conventions, so the kiosk
+ * UI only asks for shape + session length. Persisted on UserProfile so
+ * returning guests get the same physical match without re-asking.            */
+export type CigarShape =
+  | "robusto"   // 5×50, ~30–45 min, full-bodied fast impact
+  | "corona"    // 5.5×42, balanced classic ~45 min
+  | "toro"      // 6×50, longer smoother ~75 min
+  | "churchill" // 7×47, slow burn ~90 min
+  | "torpedo"   // 6×52 tapered head, focused draw
+  | "belicoso"; // 5×50 short tapered, intense flavor
+
+export type CigarSession = "quick" | "standard" | "extended" | "long";
+
+export interface CigarProfile {
+  shape:   CigarShape;
+  session: CigarSession;
+}
+
 export interface UserProfile {
   name: string;
   level: "standard" | "elite";
@@ -42,6 +64,10 @@ export interface UserProfile {
   recentBlendScores: number[];
   /** Total blends scored — drives sessions count. */
   blendsScored: number;
+  /** Last selected cigar shape + session length. Optional — only set after
+   *  the guest has gone through the Structure step at least once. Persists
+   *  across sessions so returning guests skip re-entering preference.       */
+  cigarProfile?: CigarProfile;
 }
 
 const DEFAULT_PROFILE: UserProfile = {
@@ -67,6 +93,7 @@ export function loadProfile(): UserProfile {
       bestBlendScore:     parsed.bestBlendScore     ?? 0,
       recentBlendScores:  parsed.recentBlendScores  ?? [],
       blendsScored:       parsed.blendsScored       ?? 0,
+      cigarProfile:       parsed.cigarProfile,           // optional, may be undefined
     };
   } catch {
     return { ...DEFAULT_PROFILE };
@@ -153,6 +180,15 @@ export function recordBlendScore(
     blendsScored:      profile.blendsScored + 1,
   };
   return { profile: saveProfile(next), previousBest, isNewBest };
+}
+
+/**
+ * Persist the guest's cigar physical preference. Returning guests can be
+ * pre-selected on the Structure step so they only re-confirm rather than
+ * re-pick. Pure function: caller handles re-render with returned profile.
+ */
+export function setCigarProfile(profile: UserProfile, cigarProfile: CigarProfile): UserProfile {
+  return saveProfile({ ...profile, cigarProfile });
 }
 
 export function resetProfile(): UserProfile {

@@ -38,6 +38,13 @@ export interface RecommendRequest {
   mood:              string;
   /** Optional venue filter — enables inventory-aware recommendations. */
   venueId?:          string;
+  /** Cigar vitola preference — when present the scorer adds a bounded
+   *  boost to products whose names match the requested shape (e.g.
+   *  selecting "toro" boosts every product with /toro/i in its name).
+   *  Cigar category only; ignored for alcohol requests.                      */
+  cigarShape?:       "robusto" | "corona" | "toro" | "churchill" | "torpedo" | "belicoso";
+  /** Session-length preference — soft hint, used as a tiebreaker only.       */
+  cigarSession?:     "quick" | "standard" | "extended" | "long";
 }
 
 export interface ScoredProduct extends Product {

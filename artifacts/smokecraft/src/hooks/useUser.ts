@@ -9,8 +9,10 @@ import {
   saveBlend,
   saveExperience,
   saveProfile,
+  setCigarProfile,
   UserProfile,
   SavedBlend,
+  CigarProfile,
 } from "../services/storage";
 import type { RecommendParams, ProductResult } from "../services/api";
 
@@ -32,6 +34,9 @@ interface UseUserReturn {
   handleSaveBlend: (blend: Omit<SavedBlend, "id" | "createdAt">) => void;
   handleRemoveBlend: (id: string) => void;
   updateName: (name: string) => void;
+  /** Persist the guest's cigar shape + session length so returning visits
+   *  pre-select the Structure step instead of asking again. */
+  updateCigarProfile: (cigarProfile: CigarProfile) => void;
 }
 
 export function useUser(): UseUserReturn {
@@ -98,6 +103,11 @@ export function useUser(): UseUserReturn {
     [applyProfile],
   );
 
+  const updateCigarProfile = useCallback(
+    (cigarProfile: CigarProfile) => { applyProfile(setCigarProfile(loadProfile(), cigarProfile)); },
+    [applyProfile],
+  );
+
   const clearEliteUnlock = useCallback(() => setJustUnlockedElite(false), []);
 
   return {
@@ -113,6 +123,7 @@ export function useUser(): UseUserReturn {
     handleSaveBlend,
     handleRemoveBlend,
     updateName,
+    updateCigarProfile,
   };
 }
 

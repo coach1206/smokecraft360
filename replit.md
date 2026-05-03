@@ -79,6 +79,7 @@ A competition system that ranks venues based on `totalVerifiedOrders`, `weeklyOr
 - **Auth Context**: `AuthProvider` and `useAuth()` hook for managing user authentication state.
 - **Dashboard**: Features tabs for Overview, Products, Brands & Distributors, Analytics, Verify Orders, Leaderboard, My Progress, Loyalty & Rewards, Signature Creations, Lounge League, and Device Manager.
 - **Experience Layout**: `ExperienceSidebar` (fixed left panel with 7 steps: Experience to Reveal) and `ExperienceRightPanel` (fixed right panel displaying product details in results phase). Dynamic step tracking based on user input.
+- **Cigar Structure step** (`CigarStructureStep.tsx`, cigar-only formStep 1): vitola picker (6 SVG silhouettes — Robusto/Corona/Toro/Churchill/Torpedo/Belicoso) + session length chips (quick/standard/extended/long). Persisted to `UserProfile.cigar` via `setCigarProfile()`. Forwarded to `/api/recommend` as `cigarShape`/`cigarSession`. Engine scoring: vitolaMatch (+2 on word-boundary name match, cigar-only) and sessionMatch (+1 when product strength falls in session-preferred band). Sidebar collapses Structure under Experience slot 0; click-back map: sidebar 0→0, 1→2, 2→3, 3→4 (never routes Flavor click to Structure). Alcohol flow skips this step entirely (4-step wizard); cigar flow shows "Step X of 5" labels.
 
 # External Dependencies
 

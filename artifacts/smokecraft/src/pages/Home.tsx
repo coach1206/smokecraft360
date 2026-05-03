@@ -11,6 +11,7 @@ import { FeaturedSection }   from "@/components/Featured/FeaturedSection";
 import { CigarBurnLoader }   from "@/components/CigarBurnLoader";
 import { DynamicBackground } from "@/components/DynamicBackground";
 import { SwipeCardDeck }     from "@/components/SwipeCardDeck";
+import { CigarStructureStep } from "@/components/CigarStructureStep";
 import { ProfileBadge }      from "@/components/Profile/ProfileBadge";
 import { EliteUnlockAnimation } from "@/components/Profile/EliteUnlockAnimation";
 import { VaultModal }               from "@/components/Vault/VaultModal";
@@ -196,19 +197,35 @@ export default function Home() {
   const [flavors, setFlavors]   = useState<string[]>([]);
   const [strength, setStrength] = useState<number>(3);
   const [mood, setMood]         = useState<string>("relaxed");
+  /* Cigar Structure (vitola) selections — populated on Structure step
+   * (formStep 1, cigar only) and forwarded to the engine via discover().
+   * Defaults are sensible and harmless when category === "alcohol" since
+   * the server scorer ignores them outside cigar requests. */
+  const [cigarShape,   setCigarShape]   = useState<"robusto" | "corona" | "toro" | "churchill" | "torpedo" | "belicoso">("toro");
+  const [cigarSession, setCigarSession] = useState<"quick" | "standard" | "extended" | "long">("standard");
 
-  // Step wizard
-  const [formStep,  setFormStep]  = useState<0|1|2|3>(0);
+  // Step wizard — formStep 0=Experience, 1=Structure (cigar only), 2=Flavor, 3=Strength, 4=Mood
+  const [formStep,  setFormStep]  = useState<0|1|2|3|4>(0);
   const [slideDir,  setSlideDir]  = useState<1|-1>(1);
   const [orderTaken, setOrderTaken] = useState(false);
   const [bgKey,      setBgKey]      = useState("welcome");
   const [moodDone,   setMoodDone]   = useState(false);
 
-  // Sidebar step computation
+  /* Sidebar slot computation. The sidebar exposes 4 abstract form slots
+   * (Experience / Flavor / Strength / Mood) plus loading + results slots.
+   * The Cigar Structure step (formStep 1) is treated as a sub-state of
+   * Experience for the sidebar — it doesn't get its own slot, so the
+   * existing 0–6 SidebarStep type stays unchanged. Mapping:
+   *   formStep 0 (Experience)        → sidebar 0
+   *   formStep 1 (Cigar Structure)   → sidebar 0  (still under Experience)
+   *   formStep 2 (Flavor)            → sidebar 1
+   *   formStep 3 (Strength)          → sidebar 2
+   *   formStep 4 (Mood)              → sidebar 3                              */
+  const sidebarFormStep = (formStep <= 1 ? 0 : formStep - 1) as SidebarStep;
   const activeStep: SidebarStep =
     phase === "loading" ? 4 :
     phase === "results" ? (orderTaken ? 6 : 5) :
-    formStep;
+    sidebarFormStep;
   const completedSteps = new Set<number>(
     Array.from({ length: activeStep }, (_, i) => i),
   );
@@ -325,24 +342,29 @@ export default function Home() {
     return "Reveal complete";
   }, [blendProgress]);
 
-  const goToStep = useCallback((step: 0|1|2|3) => {
+  const goToStep = useCallback((step: 0|1|2|3|4) => {
     const forward = step > formStep;
     if (forward) playChime(); else playClick();
     setSlideDir(forward ? 1 : -1);
     setFormStep(step);
     const defaults: Record<number, string> = {
       0: `experience_${category}`,
-      1: "flavor_smoky",
-      2: "strength_mild",
-      3: "mood_relaxed",
+      1: "experience_cigar",   // Structure step lives inside the cigar atmosphere
+      2: "flavor_smoky",
+      3: "strength_mild",
+      4: "mood_relaxed",
     };
     setBgKey(defaults[step] ?? "default");
-    if (step < 3) setMoodDone(false);
+    if (step < 4) setMoodDone(false);
     if (forward) {
+      /* Coach lines indexed by the step we just ARRIVED at. Index 0 unused
+       * (we never go to step 0 forward). Cigar inserts a Structure line at
+       * index 1; alcohol skips that index entirely (never enters step 1). */
       const lines = [
-        "Good choice — choose your palate next",
+        "Good choice — let's begin",
+        "Pick the cigar shape that fits your night",
+        "Now choose your palate",
         "Excellent — building your experience",
-        "Beautiful — one final touch",
         "Perfect — ready to reveal",
       ];
       showCoach(lines[Math.min(step, lines.length - 1)]);
@@ -354,7 +376,7 @@ export default function Home() {
     recordSession, recordSwipe, recordBlend,
     handleSaveExperience, handleRemoveExperience,
     handleSaveBlend, handleRemoveBlend,
-    updateName,
+    updateName, updateCigarProfile,
   } = useUser();
 
   const { isMaestro } = useProgression();
@@ -382,6 +404,11 @@ export default function Home() {
     flavors:   string[];
     strength:  number;
     mood:      string;
+    /* Vitola intelligence — only forwarded to the engine on cigar requests
+     * so the alcohol flow stays untouched. Server scorer applies a bounded
+     * boost to products whose name contains the requested shape.            */
+    cigarShape?:   "robusto" | "corona" | "toro" | "churchill" | "torpedo" | "belicoso";
+    cigarSession?: "quick" | "standard" | "extended" | "long";
   }) => {
     setError(null);
     setPhase("loading");
@@ -394,6 +421,10 @@ export default function Home() {
         strength:          params.strength,
         mood:              params.mood,
         venueId:           venueIdParam,
+        ...(params.category === "cigar" && params.cigarShape ? {
+          cigarShape:   params.cigarShape,
+          cigarSession: params.cigarSession,
+        } : {}),
       });
       setResults(data);
       // Fire recommendation_view event for each recommended product, tagging campaignId if set
@@ -450,7 +481,10 @@ export default function Home() {
   const handleDiscover = () => {
     if (flavors.length === 0) { setError("Please select at least one tasting note."); return; }
     setRequestedItems(new Set());
-    discover({ category, flavors, strength, mood });
+    discover({
+      category, flavors, strength, mood,
+      ...(category === "cigar" ? { cigarShape, cigarSession } : {}),
+    });
   };
 
   const handleRequestItem = (item: ProductResult) => {
@@ -685,7 +719,13 @@ export default function Home() {
         onReset={phase === "results" ? handleStartOver : undefined}
         onStepClick={(s) => {
           if (phase !== "form") return;
-          if (s <= activeStep) goToStep(s as 0|1|2|3);
+          if (s <= activeStep) {
+            // Sidebar uses 4 abstract steps (Experience/Flavor/Strength/Mood);
+            // formStep has 5 with Structure inserted at index 1 (cigar only).
+            // Reverse map: sidebar 0→0, 1→2, 2→3, 3→4. Never route Flavor→Structure.
+            const formIdx = (s === 0 ? 0 : s + 1) as 0|1|2|3|4;
+            goToStep(formIdx);
+          }
         }}
       />
 
@@ -1049,7 +1089,7 @@ export default function Home() {
                       style={{ display: "flex", flexDirection: "column", gap: 24 }}
                     >
                       <div style={{ textAlign: "center" }}>
-                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 1 of 4</p>
+                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 1 of {category === "cigar" ? 5 : 4}</p>
                         <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Choose Your Experience</h2>
                       </div>
 
@@ -1232,7 +1272,8 @@ export default function Home() {
                         );
                       })()}
 
-                      <motion.button onClick={() => goToStep(1)}
+                      <motion.button
+                        onClick={() => goToStep(category === "cigar" ? 1 : 2)}
                         whileHover={{ scale: 1.02, boxShadow: "0 0 0 1px rgba(212,175,55,0.6), 0 14px 44px rgba(0,0,0,0.55)" }}
                         whileTap={{ scale: 0.94 }}
                         style={{
@@ -1243,13 +1284,44 @@ export default function Home() {
                           boxShadow: "0 0 0 1px rgba(212,175,55,0.35), 0 10px 36px rgba(0,0,0,0.45)",
                         }}
                       >
-                        Continue — Choose Flavors
+                        {category === "cigar" ? "Continue — Cigar Structure" : "Continue — Choose Flavors"}
                       </motion.button>
                     </motion.div>
                   )}
 
-                  {/* STEP 1 — Flavor */}
-                  {formStep === 1 && (
+                  {/* STEP 1 — Cigar Structure (vitola + session length, cigar flow only).
+                      Alcohol flow skips this step entirely; goToStep(2) is dispatched from
+                      step 0's Continue button when category === "alcohol". */}
+                  {formStep === 1 && category === "cigar" && (
+                    <motion.div key="step-structure"
+                      custom={slideDir} variants={SLIDE_VARIANTS}
+                      initial="enter" animate="center" exit="exit"
+                      transition={SLIDE_T}
+                      style={{ display: "flex", flexDirection: "column", gap: 24 }}
+                    >
+                      <div style={{ textAlign: "center" }}>
+                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 2 of 5</p>
+                        <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Cigar Structure</h2>
+                        <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Choose your shape and the time you have</p>
+                      </div>
+                      <CigarStructureStep
+                        initialShape={profile.cigarProfile?.shape ?? cigarShape}
+                        initialSession={profile.cigarProfile?.session ?? cigarSession}
+                        onShapeFocus={() => setBgKey("experience_cigar")}
+                        onComplete={(shape, session) => {
+                          setCigarShape(shape);
+                          setCigarSession(session);
+                          /* Persist on profile so returning guests are pre-selected next visit. */
+                          updateCigarProfile({ shape, session });
+                          goToStep(2);
+                        }}
+                        onBack={() => goToStep(0)}
+                      />
+                    </motion.div>
+                  )}
+
+                  {/* STEP 2 — Flavor */}
+                  {formStep === 2 && (
                     <motion.div key="step-flavor"
                       custom={slideDir} variants={SLIDE_VARIANTS}
                       initial="enter" animate="center" exit="exit"
@@ -1257,24 +1329,25 @@ export default function Home() {
                       style={{ display: "flex", flexDirection: "column", gap: 24 }}
                     >
                       <div style={{ textAlign: "center" }}>
-                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 2 of 4</p>
+                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Step 3 of 5" : "Step 2 of 4"}</p>
                         <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Your Palate</h2>
                         <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Swipe right to add · left to skip</p>
                       </div>
                       <SwipeCardDeck
                         items={category === "cigar" ? CIGAR_FLAVORS : SPIRITS_FLAVORS}
                         multiSelect={true}
-                        onComplete={(sel) => { setFlavors(sel.map(s => s.charAt(0).toUpperCase() + s.slice(1))); goToStep(2); }}
+                        onComplete={(sel) => { setFlavors(sel.map(s => s.charAt(0).toUpperCase() + s.slice(1))); goToStep(3); }}
                         onCardFocus={(id) => setBgKey(`flavor_${id}`)}
                         rightLabel="Add"
                         leftLabel="Skip"
                       />
-                      <button onClick={() => goToStep(0)} style={{ background:"transparent", border:"none", color:"rgba(210,190,155,0.4)", fontSize:12, letterSpacing:"0.2em", textTransform:"uppercase", cursor:"pointer", marginTop:44 }}>← Back</button>
+                      {/* Back: cigar returns to Structure (step 1), alcohol returns to Experience (step 0). */}
+                      <button onClick={() => goToStep(category === "cigar" ? 1 : 0)} style={{ background:"transparent", border:"none", color:"rgba(210,190,155,0.4)", fontSize:12, letterSpacing:"0.2em", textTransform:"uppercase", cursor:"pointer", marginTop:44 }}>← Back</button>
                     </motion.div>
                   )}
 
-                  {/* STEP 2 — Strength */}
-                  {formStep === 2 && (
+                  {/* STEP 3 — Strength */}
+                  {formStep === 3 && (
                     <motion.div key="step-strength"
                       custom={slideDir} variants={SLIDE_VARIANTS}
                       initial="enter" animate="center" exit="exit"
@@ -1282,24 +1355,24 @@ export default function Home() {
                       style={{ display: "flex", flexDirection: "column", gap: 24 }}
                     >
                       <div style={{ textAlign: "center" }}>
-                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 3 of 4</p>
+                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Step 4 of 5" : "Step 3 of 4"}</p>
                         <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Your Strength</h2>
                         <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Swipe right to select · left for next</p>
                       </div>
                       <SwipeCardDeck
                         items={STRENGTH_CARDS}
                         multiSelect={false}
-                        onComplete={(sel) => { setStrength(sel[0] === "mild" ? 1 : sel[0] === "medium" ? 3 : 5); goToStep(3); }}
+                        onComplete={(sel) => { setStrength(sel[0] === "mild" ? 1 : sel[0] === "medium" ? 3 : 5); goToStep(4); }}
                         onCardFocus={(id) => setBgKey(`strength_${id}`)}
                         rightLabel="Select"
                         leftLabel="Next"
                       />
-                      <button onClick={() => goToStep(1)} style={{ background:"transparent", border:"none", color:"rgba(210,190,155,0.4)", fontSize:12, letterSpacing:"0.2em", textTransform:"uppercase", cursor:"pointer", marginTop:44 }}>← Back</button>
+                      <button onClick={() => goToStep(2)} style={{ background:"transparent", border:"none", color:"rgba(210,190,155,0.4)", fontSize:12, letterSpacing:"0.2em", textTransform:"uppercase", cursor:"pointer", marginTop:44 }}>← Back</button>
                     </motion.div>
                   )}
 
-                  {/* STEP 3 — Mood */}
-                  {formStep === 3 && (
+                  {/* STEP 4 — Mood */}
+                  {formStep === 4 && (
                     <motion.div key="step-mood"
                       custom={slideDir} variants={SLIDE_VARIANTS}
                       initial="enter" animate="center" exit="exit"
@@ -1309,7 +1382,7 @@ export default function Home() {
                       {!moodDone ? (
                         <>
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 4 of 4</p>
+                            <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Step 5 of 5" : "Step 4 of 4"}</p>
                             <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Your Atmosphere</h2>
                             <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Swipe right when it resonates</p>
                           </div>
@@ -1321,7 +1394,7 @@ export default function Home() {
                             rightLabel="This is Me"
                             leftLabel="Next"
                           />
-                          <button onClick={() => goToStep(2)} style={{ background:"transparent", border:"none", color:"rgba(210,190,155,0.4)", fontSize:12, letterSpacing:"0.2em", textTransform:"uppercase", cursor:"pointer", marginTop:44 }}>← Back</button>
+                          <button onClick={() => goToStep(3)} style={{ background:"transparent", border:"none", color:"rgba(210,190,155,0.4)", fontSize:12, letterSpacing:"0.2em", textTransform:"uppercase", cursor:"pointer", marginTop:44 }}>← Back</button>
                         </>
                       ) : (
                         <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.52, ease: [0.22,1,0.36,1] }}
