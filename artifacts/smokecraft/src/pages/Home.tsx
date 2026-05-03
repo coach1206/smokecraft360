@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "wouter";
 import { motion, AnimatePresence, animate } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 import { CategoryToggle }    from "@/components/CategoryToggle";
 import { FlavorChips }       from "@/components/FlavorChips";
 import { StrengthSlider }    from "@/components/StrengthSlider";
@@ -159,6 +161,14 @@ const DEMO: { category: "cigar" | "alcohol"; flavors: string[]; strength: number
 };
 
 export default function Home() {
+  /* Route navigation. Used for the top-left "Back to Experience Hub" button
+   * so the SmokeCraft experience page is no longer a dead end — guests can
+   * return to the Intro portal selector without falling back on the browser
+   * back button. Per 31st brief audit: Intro/Dashboard/BrewCraft/PourCraft/
+   * PaymentSuccess/PaymentCancel all already have escape paths via existing
+   * `navigate("/")` or `<a href="/">`; Home was the lone gap. */
+  const [, navigate] = useLocation();
+
   const [phase, setPhase]                     = useState<Phase>("welcome");
   const [error, setError]                     = useState<string | null>(null);
   const [results, setResults]                 = useState<RecommendResponse | null>(null);
@@ -720,6 +730,44 @@ export default function Home() {
       {/* Offline + Install banners */}
       <OfflineBanner isOnline={isOnline} />
       <InstallBanner />
+
+      {/* Top-left back-to-Hub button — fixed across all phases so the
+          SmokeCraft experience is never a dead end. zIndex 60 keeps it
+          above the locked-reveal gate (z=50) so guests can always exit.
+          Styled to the dark/gold SmokeCraft palette rather than the
+          olive/navy Profound Innovation palette (this is the SmokeCraft
+          experience surface, not the entry portal). */}
+      <button
+        type="button"
+        onClick={() => navigate("/")}
+        data-testid="home-back-to-hub"
+        aria-label="Back to Experience Hub"
+        style={{
+          position: "fixed", top: 18, left: 18, zIndex: 60,
+          display: "inline-flex", alignItems: "center", gap: 8,
+          padding: "9px 14px",
+          background: "rgba(20,14,8,0.78)",
+          color: "rgba(235,215,175,0.92)",
+          border: "1px solid rgba(212,175,55,0.28)",
+          borderRadius: 999,
+          fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase",
+          cursor: "pointer",
+          backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+          boxShadow: "0 6px 24px rgba(0,0,0,0.45)",
+          transition: "transform 250ms ease, opacity 250ms ease, border-color 250ms ease",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "translateY(-1px)";
+          e.currentTarget.style.borderColor = "rgba(212,175,55,0.55)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "translateY(0)";
+          e.currentTarget.style.borderColor = "rgba(212,175,55,0.28)";
+        }}
+      >
+        <ArrowLeft size={12} />
+        Experience Hub
+      </button>
 
       <AnimatePresence>
         {phase === "loading" && <CigarBurnLoader onComplete={handleBurnComplete} />}
