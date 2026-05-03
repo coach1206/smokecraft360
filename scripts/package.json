@@ -5,10 +5,16 @@
   "type": "module",
   "scripts": {
     "hello": "tsx ./src/hello.ts",
+    "e2e:device-hardware": "tsx ./src/e2eDeviceHardware.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "tsx": "catalog:"
+  },
+  "dependencies": {
+    "@workspace/db": "workspace:*",
+    "bcryptjs": "^3.0.3",
+    "drizzle-orm": "catalog:"
   }
 }

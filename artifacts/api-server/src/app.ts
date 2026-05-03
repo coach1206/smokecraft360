@@ -37,6 +37,7 @@ import notificationsRouter      from "./routes/notifications";
 import auditLogRouter           from "./routes/auditLog";
 import supportTicketsRouter     from "./routes/supportTickets";
 import supportTicketMessagesRouter from "./routes/supportTicketMessages";
+import deviceHardwareRouter,        { deviceHardwareReportRouter } from "./routes/deviceHardware";
 import reservationsRouter       from "./routes/reservations";
 import conflictsRouter          from "./routes/conflicts";
 import ipVaultRouter            from "./routes/ipVault";
@@ -228,6 +229,17 @@ app.use("/api/manufacturers",               manufacturersRouter);
 app.use("/api/loyalty",                     loyaltyRouter);
 app.use("/api/rewards",                     rewardsAdminRouter);
 app.use("/api/lounge-league",               loungeLeagueRouter);
+// Hardware lifecycle sidecar to /api/devices. The report router is mounted
+// at the literal /api/devices/hardware path BEFORE the per-device router
+// so Express matches the static segment ahead of the :deviceId param
+// (otherwise "hardware" would be tried as a UUID by the per-device mount
+// and fail with 400). The per-device router uses mergeParams so the
+// :deviceId from the parent mount is visible.
+app.use("/api/devices/hardware",            deviceHardwareReportRouter);
+app.use(
+  "/api/devices/:deviceId/hardware",
+  deviceHardwareRouter,
+);
 app.use("/api/devices",                     devicesRouter);
 app.use("/api/os",          osLimiter,      osEventsRouter);
 app.use("/api/os",          osLimiter,      osCommandRouter);

@@ -75,6 +75,17 @@ export const supportTicketWriteLimiter = rateLimit({
   message: { error: "Too many support ticket actions — please wait a moment" },
 });
 
+/* Device-hardware write limiter — authed PUT on /api/devices/:id/hardware.
+ * Hardware records are written once at install and rarely thereafter (warranty
+ * extension, supplier change). 20/min/IP is generous slack for an installer
+ * configuring a fleet of kiosks in one session while still choking off a
+ * hostile client. Reads stay off this limiter. */
+export const deviceHardwareWriteLimiter = rateLimit({
+  ...shared,
+  limit:   20,
+  message: { error: "Too many device hardware updates — please wait a moment" },
+});
+
 /* Voice-queue enqueue limiter — public write that any kiosk (incl. anonymous)
  * can hit to drop a transcript onto the queue. A misbehaving kiosk or hostile
  * client could try to flood the queue to crowd out legitimate commands; the

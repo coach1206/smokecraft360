@@ -46,3 +46,4 @@ export * from "./userMemories";
 export * from "./voiceCommands";
 export * from "./supportTickets";
 export * from "./supportTicketMessages";
+export * from "./deviceHardware";
