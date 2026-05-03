@@ -216,3 +216,21 @@ id = "CbJxcYFwlMOJ0FMLHNDG3"
 uri = "file://attached_assets/locked_cards/mood_intense.png"
 type = "image"
 title = "generated_image"
+
+[[generated]]
+id = "21igy2t-H6tsmQOghEcdJ"
+uri = "file://attached_assets/locked_cards/experience_smokecraft.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Ku71kveGHOGjCu5kUkonS"
+uri = "file://attached_assets/locked_cards/experience_pourcraft.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "09j6vmZ1BZxuaaeSf8nSN"
+uri = "file://attached_assets/locked_cards/experience_vapecraft.png"
+type = "image"
+title = "generated_image"

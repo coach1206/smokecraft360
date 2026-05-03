@@ -17,6 +17,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
+/* Locked experience-card imagery. Bundled by Vite via the @assets alias so
+ * the welcome screen can NEVER drift to the wrong photo (e.g. the prior
+ * Unsplash/Pexels/Imgix URLs were unstable — third-party hosts returned
+ * unrelated stock or 404'd, breaking the brand identity per visual rules).
+ * Each PNG is hand-vetted to satisfy:
+ *   • SmokeCraft → real people + lit cigars + smoke + warm gold/amber lounge
+ *   • PourCraft  → whiskey pour + crystal glass + rich brown contrast (no people)
+ *   • VapeCraft  → cool blue/purple vapor on pure black (no warm tones, no
+ *                  cigars, no whiskey, no people)
+ * To replace any image, regenerate the file at the same path — no code edit
+ * needed. Do NOT swap to network URLs; the Cloudinary cloud is empty today
+ * and any fallback chain has historically caused brand-breaking misfires
+ * (see "Wizard Card Imagery (Locked)" in replit.md). */
+import smokecraftImg from "@assets/locked_cards/experience_smokecraft.png";
+import pourcraftImg  from "@assets/locked_cards/experience_pourcraft.png";
+import vapecraftImg  from "@assets/locked_cards/experience_vapecraft.png";
+
 /**
  * Time-of-day mode for the kiosk. Drives copy + overlay opacity + (when
  * generated assets are present) the looping background video. Determined
@@ -107,7 +124,7 @@ const EXPERIENCES: Experience[] = [
     key:        "smokecraft",
     title:      "SmokeCraft 360",
     descriptor: "Cigars · Spirits · Lounge",
-    image:      "https://www.themanual.com/tachyon/sites/9/2025/07/enrique-bancalari-L_1jns4QHf0-unsplash.jpg?resize=1200,800",
+    image:      smokecraftImg,
     accent:     "#D4AF37",
     gradient:   "linear-gradient(180deg, rgba(20,12,4,0.15) 0%, rgba(20,12,4,0.85) 100%)",
   },
@@ -115,7 +132,7 @@ const EXPERIENCES: Experience[] = [
     key:        "pourcraft",
     title:      "PourCraft 360",
     descriptor: "Wine · Cocktails · Bar",
-    image:      "https://images.pexels.com/photos/31094805/pexels-photo-31094805/free-photo-of-pouring-red-wine-into-a-glass-indoors.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image:      pourcraftImg,
     accent:     "#B91C3C",
     gradient:   "linear-gradient(180deg, rgba(40,8,12,0.15) 0%, rgba(40,8,12,0.85) 100%)",
   },
@@ -123,7 +140,7 @@ const EXPERIENCES: Experience[] = [
     key:        "vapecraft",
     title:      "VapeCraft 360",
     descriptor: "Vapor · Flavor · Modern",
-    image:      "https://herb-platform-images.imgix.net/wp-content/uploads/2025/05/02171936/giorgio-trovato-3ncMShQ9LSA-unsplash-scaled.jpg?auto=format&fit=crop&w=1200",
+    image:      vapecraftImg,
     accent:     "#7DD3FC",
     gradient:   "linear-gradient(180deg, rgba(8,18,32,0.15) 0%, rgba(8,18,32,0.85) 100%)",
   },
