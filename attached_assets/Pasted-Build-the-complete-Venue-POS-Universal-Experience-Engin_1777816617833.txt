@@ -1,0 +1,637 @@
+Build the complete Venue POS + Universal Experience Engine for SmokeCraft 360, PourCraft 360, VapeCraft 360, and BrewCraft 360.
+
+This is the final operational layer. Do not leave placeholders, fake buttons, or disconnected UI.
+
+The system must connect:
+
+User selection → product recommendation → venue match → inventory availability → order / reservation → POS dashboard → commission tracking.
+
+--------------------------------------------------
+CORE PLATFORM STRUCTURE
+--------------------------------------------------
+
+The platform has four experience systems:
+
+1. SmokeCraft 360
+   Cigars, lounges, cigar pairings, private cigar sessions.
+
+2. PourCraft 360
+   Liquor, cocktails, whiskey, wine, bar pairings.
+
+3. VapeCraft 360
+   Vape flavors, device types, hit intensity, smoke/vapor preferences.
+
+4. BrewCraft 360
+   Beer styles, beer flights, brewery pairings, food pairings.
+
+Each system must have:
+- its own identity
+- its own visuals
+- its own questions
+- its own products
+- its own venue types
+- its own recommendation logic
+- but all must run on one universal engine.
+
+--------------------------------------------------
+UNIVERSAL EXPERIENCE FLOW
+--------------------------------------------------
+
+Every system must follow this flow:
+
+1. User chooses system
+2. User answers swipe-based questions
+3. AI engine builds recommendation
+4. System finds matching venue/bar/lounge/event
+5. System checks inventory
+6. User chooses:
+   - Reserve experience
+   - Add to cart
+   - Pay now
+   - Pay at venue
+7. Venue receives order in POS dashboard
+8. Commission is calculated
+9. Order is logged
+10. User receives confirmation
+
+--------------------------------------------------
+VENUE TYPES
+--------------------------------------------------
+
+Support these venue categories:
+
+- Cigar lounge
+- Whiskey bar
+- Cocktail bar
+- Wine bar
+- Vape lounge
+- Vape shop
+- Brewery
+- Restaurant
+- Event space
+- Hotel lounge
+- Private club
+- Pop-up event
+- Yacht event
+- Golf clubhouse
+- Private tasting event
+
+--------------------------------------------------
+VENUE DASHBOARD
+--------------------------------------------------
+
+Each venue must have a dashboard where they can:
+
+- Add products
+- Edit products
+- Upload product images
+- Set product price
+- Set inventory quantity
+- Mark product available / unavailable
+- Tag products by experience type
+- Tag products by flavor
+- Tag products by strength
+- Tag products by mood
+- Tag products by pairing compatibility
+- Create events
+- View incoming orders
+- Accept / reject reservations
+- Mark orders fulfilled
+- View sales
+- View commissions owed
+- View customer preferences
+- Manage POS settings
+
+--------------------------------------------------
+PRODUCT TYPES
+--------------------------------------------------
+
+Products must support:
+
+SmokeCraft:
+- cigars
+- cigar flights
+- cigar boxes
+- cigar accessories
+- lounge sessions
+- private cigar experiences
+
+PourCraft:
+- whiskey
+- bourbon
+- rum
+- tequila
+- wine
+- cocktails
+- tasting flights
+- bottle service
+- drink pairings
+
+VapeCraft:
+- disposable vape
+- pod device
+- mod device
+- vape juice
+- flavor sample flight
+- lounge session
+
+BrewCraft:
+- lager
+- IPA
+- stout
+- wheat beer
+- craft special
+- beer flight
+- food pairing
+- brewery event
+
+--------------------------------------------------
+PRODUCT TAGGING SYSTEM
+--------------------------------------------------
+
+Each product must include:
+
+- productName
+- productType
+- systemType: smokecraft / pourcraft / vapecraft / brewcraft
+- venueId
+- description
+- price
+- inventoryCount
+- imageUrl
+- flavorTags
+- strengthTags
+- moodTags
+- pairingTags
+- availabilityStatus
+- ageRestricted boolean
+- taxable boolean
+- commissionRate
+- createdAt
+- updatedAt
+
+Example tags:
+
+SmokeCraft:
+- mild
+- medium
+- bold
+- earthy
+- sweet
+- spicy
+- relaxed
+- social
+- celebratory
+
+PourCraft:
+- smooth
+- smoky
+- sweet
+- spicy
+- bold
+- mellow
+- whiskey
+- wine
+- cocktail
+
+VapeCraft:
+- fruity
+- menthol
+- dessert
+- tobacco
+- exotic
+- smooth
+- strong hit
+- cloud heavy
+
+BrewCraft:
+- lager
+- IPA
+- stout
+- wheat
+- crisp
+- bitter
+- roasted
+- sweet
+- light body
+- heavy body
+
+--------------------------------------------------
+VENUE MATCHING LOGIC
+--------------------------------------------------
+
+When user completes the experience flow, match venues based on:
+
+1. Selected system
+2. Product availability
+3. Matching tags
+4. Distance / location
+5. Venue rating
+6. Venue event availability
+7. Price range
+8. Venue subscription tier
+9. Featured placement if paid
+10. Inventory in stock
+
+Result screen must show:
+
+- Recommended product
+- Recommended venue
+- Product image
+- Venue image
+- Distance
+- Price
+- Available times
+- Reserve button
+- Add to cart button
+- Pay now button
+- Pay at venue button
+
+--------------------------------------------------
+POS ORDER FLOW
+--------------------------------------------------
+
+Build POS order statuses:
+
+- pending
+- accepted
+- rejected
+- preparing
+- ready
+- fulfilled
+- cancelled
+- refunded
+
+Venue actions:
+
+- Accept order
+- Reject order
+- Mark ready
+- Mark fulfilled
+- Cancel order
+- Issue refund request
+
+User actions:
+
+- Reserve
+- Pay now
+- Pay at venue
+- Cancel reservation
+- Reorder
+
+--------------------------------------------------
+PAYMENT LOGIC
+--------------------------------------------------
+
+Support:
+
+1. Pay now
+   User pays through platform.
+   Platform records payment.
+   Commission is calculated.
+   Venue payout is recorded.
+
+2. Pay at venue
+   User reserves.
+   Venue confirms.
+   Commission is tracked as pending.
+   Venue marks as paid after in-person checkout.
+
+3. Deposit
+   User pays deposit.
+   Remaining balance paid at venue.
+
+4. Tab mode
+   User adds products to a venue tab.
+   Venue closes tab in POS.
+
+--------------------------------------------------
+COMMISSION ENGINE
+--------------------------------------------------
+
+Every order must calculate:
+
+- grossAmount
+- taxAmount
+- platformCommissionRate
+- platformCommissionAmount
+- venueNetAmount
+- affiliateCommission if applicable
+- salesRepCommission if applicable
+- payoutStatus
+
+Commission status:
+
+- pending
+- locked
+- payable
+- paid
+- reversed
+- disputed
+
+--------------------------------------------------
+EVENT MODE
+--------------------------------------------------
+
+Venues must be able to create events:
+
+Event fields:
+- eventName
+- eventType
+- venueId
+- systemType
+- description
+- date
+- startTime
+- endTime
+- capacity
+- ticketPrice
+- productsIncluded
+- imageUrl
+- availabilityStatus
+
+Event examples:
+- Cigar night
+- Whiskey tasting
+- Beer flight night
+- Vape flavor launch
+- Private lounge session
+- Brand takeover
+- Golf clubhouse cigar event
+- Yacht tasting event
+
+Users must be able to:
+- discover events
+- reserve spots
+- pay for tickets
+- add products
+- receive confirmation
+
+--------------------------------------------------
+ADMIN SUPER DASHBOARD
+--------------------------------------------------
+
+Platform admin must control:
+
+- Approve venues
+- Suspend venues
+- View all orders
+- View all commissions
+- View all events
+- Override commission rules
+- Feature venues
+- Feature events
+- Manage disputes
+- View revenue analytics
+- View system health
+- View audit logs
+
+--------------------------------------------------
+DATABASE TABLES TO CREATE
+--------------------------------------------------
+
+Create these tables:
+
+venues
+venue_users
+venue_products
+venue_product_tags
+venue_inventory_logs
+venue_orders
+venue_order_items
+venue_reservations
+venue_events
+venue_event_tickets
+venue_pos_settings
+venue_commission_ledger
+venue_payouts
+platform_commission_rules
+experience_sessions
+experience_results
+audit_logs
+
+--------------------------------------------------
+API ROUTES TO BUILD
+--------------------------------------------------
+
+Venue:
+GET /api/venues
+GET /api/venues/:id
+POST /api/venues
+PATCH /api/venues/:id
+POST /api/venues/:id/approve
+POST /api/venues/:id/suspend
+
+Products:
+GET /api/venue-products
+POST /api/venue-products
+PATCH /api/venue-products/:id
+DELETE /api/venue-products/:id
+POST /api/venue-products/:id/inventory
+
+Experience Match:
+POST /api/experience/match
+POST /api/experience/result
+GET /api/experience/session/:id
+
+Orders:
+POST /api/venue-orders
+GET /api/venue-orders/:id
+GET /api/venues/:venueId/orders
+PATCH /api/venue-orders/:id/status
+POST /api/venue-orders/:id/pay
+POST /api/venue-orders/:id/refund
+
+Reservations:
+POST /api/reservations
+GET /api/reservations/:id
+PATCH /api/reservations/:id/status
+
+Events:
+GET /api/events
+POST /api/events
+PATCH /api/events/:id
+POST /api/events/:id/tickets
+GET /api/venues/:venueId/events
+
+POS:
+GET /api/pos/:venueId/dashboard
+GET /api/pos/:venueId/live-orders
+PATCH /api/pos/orders/:id/status
+
+Commissions:
+GET /api/commissions
+GET /api/venues/:venueId/commissions
+POST /api/commissions/run
+PATCH /api/commissions/:id/status
+
+Admin:
+GET /api/admin/venue-overview
+GET /api/admin/revenue
+GET /api/admin/audit-logs
+
+--------------------------------------------------
+FRONTEND PAGES TO BUILD
+--------------------------------------------------
+
+User pages:
+- /experience-hub
+- /smokecraft
+- /pourcraft
+- /vapecraft
+- /brewcraft
+- /experience/result
+- /venue/:id
+- /checkout
+- /confirmation
+- /events
+- /events/:id
+
+Venue pages:
+- /venue/dashboard
+- /venue/products
+- /venue/orders
+- /venue/events
+- /venue/settings
+- /venue/commissions
+
+Admin pages:
+- /admin/venues
+- /admin/orders
+- /admin/events
+- /admin/commissions
+- /admin/revenue
+- /admin/audit
+
+--------------------------------------------------
+UI REQUIREMENTS
+--------------------------------------------------
+
+Each system must have its own visual identity:
+
+SmokeCraft:
+- cigar lounge imagery
+- warm gold/brown
+- premium slow motion feel
+
+PourCraft:
+- liquor/glass imagery
+- amber/red/gold
+- reflective bar feel
+
+VapeCraft:
+- vapor imagery
+- dark blue/purple
+- modern neon edge
+- no liquor bottles
+- no cigar background
+
+BrewCraft:
+- beer imagery
+- foam/golden/wood tones
+- brewery feel
+- real beer photos on cards
+
+--------------------------------------------------
+CARD REQUIREMENTS
+--------------------------------------------------
+
+Every selection card must include:
+
+- real image
+- readable cream or dark contrast background
+- title
+- descriptor
+- selected state
+- next-step behavior
+
+No blank cards.
+No invisible text.
+No random objects.
+
+--------------------------------------------------
+AGE GATE
+--------------------------------------------------
+
+Because this system involves alcohol, cigars, and vape products:
+
+Add age verification before access.
+
+User must confirm legal age before entering.
+
+Store age gate confirmation in sessionStorage.
+
+Do not allow checkout without age confirmation.
+
+--------------------------------------------------
+LEGAL / COMPLIANCE
+--------------------------------------------------
+
+Add disclaimers:
+
+- Products may be age restricted.
+- Availability depends on venue inventory.
+- Drink, cigar, vape, and beer recommendations are for lawful adult users only.
+- Venues are responsible for final compliance with local laws.
+- Prices may vary by venue.
+
+--------------------------------------------------
+AUDIT LOGGING
+--------------------------------------------------
+
+Log:
+
+- venue creation
+- product creation
+- inventory changes
+- price changes
+- order creation
+- order status changes
+- payment activity
+- commission changes
+- admin overrides
+- refunds
+- cancellations
+
+--------------------------------------------------
+SECURITY
+--------------------------------------------------
+
+Add:
+
+- role-based access
+- venue owner permissions
+- admin permissions
+- input validation
+- order ownership validation
+- rate limiting
+- payment verification
+- audit logs
+- no public write access to venue products/orders
+
+--------------------------------------------------
+FINAL USER FLOW
+--------------------------------------------------
+
+1. Profound Innovation boot screen
+2. Experience hub
+3. User selects SmokeCraft / PourCraft / VapeCraft / BrewCraft
+4. User answers swipe-based experience questions
+5. System recommends product and venue
+6. User chooses reservation, order, or event
+7. Venue receives it in POS
+8. Commission is tracked
+9. User receives confirmation
+
+--------------------------------------------------
+FINAL GOAL
+--------------------------------------------------
+
+This platform must function as:
+
+A universal hospitality experience engine with POS-ready venue ordering, inventory matching, event booking, and commission tracking.
+
+No missing business layer.
+No dead UI.
+No fake POS.
+No generic shared screens.

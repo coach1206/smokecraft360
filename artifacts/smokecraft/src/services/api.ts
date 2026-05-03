@@ -389,6 +389,39 @@ export async function createInventoryItem(
 }
 
 /**
+ * Create a new product with the full vendor-submission payload.
+ * Use this from the dashboard's "Add Product" form — it accepts the rich
+ * schema fields (flavorNotes, strength, moodTags, tier…) that the lean
+ * `InventoryItem` shape doesn't expose. The server enforces auth
+ * (venue_owner / manager / brand_partner) and validation.
+ */
+export interface NewProductPayload {
+  name:        string;
+  category:    "cigar" | "alcohol" | "wine" | "cocktail" | "food" | "coffee" | "tea" | "scent" | "candle";
+  flavorNotes: string[];
+  strength?:   number;
+  moodTags?:   string[];
+  pairingTags?: string[];
+  tier?:       "standard" | "mid" | "premium";
+  imageUrl?:   string;
+  venueId?:    string;
+  brandId?:    string;
+}
+
+export async function createProduct(payload: NewProductPayload): Promise<InventoryItem> {
+  const res = await fetch("/api/products", {
+    method:  "POST",
+    headers: getAuthHeaders(),
+    body:    JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to create product");
+  }
+  return res.json();
+}
+
+/**
  * Upload an image file to Cloudinary via the backend.
  * Returns the Cloudinary secure URL on success.
  */

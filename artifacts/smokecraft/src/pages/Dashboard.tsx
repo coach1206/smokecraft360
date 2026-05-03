@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
-  ArrowLeft, TrendingUp, Package, Sparkles, Zap,
+  ArrowLeft, TrendingUp, Package, Sparkles, Zap, Plus,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
   Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown, Award, Gift, Monitor, Activity,
 } from "lucide-react";
@@ -22,6 +22,7 @@ import { LoungeLeagueTab }          from "@/components/Dashboard/LoungeLeagueTab
 import { SignatureCreationsTab }     from "@/components/Dashboard/SignatureCreationsTab";
 import { DeviceManagerTab }          from "@/components/Dashboard/DeviceManagerTab";
 import { OsTab }                     from "@/components/Dashboard/OsTab";
+import { NewProductForm }            from "@/components/Dashboard/NewProductForm";
 import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
   type InventoryItem, type AnalyticsSummary,
@@ -69,6 +70,7 @@ export default function Dashboard() {
   const [saved,      setSaved]      = useState<Record<string, boolean>>({});
   const [error,      setError]      = useState<string | null>(null);
   const [showLogin,  setShowLogin]  = useState(false);
+  const [showNewProduct, setShowNewProduct] = useState(false);
 
   const authorized = user && canAccessDashboard(user.role);
 
@@ -141,6 +143,12 @@ export default function Dashboard() {
 
       <AnimatePresence>
         {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
+        {showNewProduct && (
+          <NewProductForm
+            onClose={() => setShowNewProduct(false)}
+            onCreated={(item) => setInventory((prev) => [item, ...prev])}
+          />
+        )}
       </AnimatePresence>
 
       <div className="relative z-10 flex-1 flex flex-col max-w-5xl mx-auto w-full px-6 py-10">
@@ -338,16 +346,29 @@ export default function Dashboard() {
                           Adjust boost, sponsored placement, and product images
                         </p>
                       </div>
-                      <div className="flex rounded-full p-0.5 gap-0.5"
-                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                        {(["all", "cigar", "alcohol"] as CategoryFilter[]).map((f) => (
-                          <button key={f} onClick={() => setFilter(f)}
-                            className="px-3 py-1.5 text-[9px] uppercase tracking-[0.15em] rounded-full transition-all duration-200"
-                            style={filter === f
-                              ? { background: "rgba(212,175,55,0.15)", color: "rgba(212,175,55,0.85)", border: "1px solid rgba(212,175,55,0.3)" }
-                              : { color: "rgba(180,155,100,0.5)" }
-                            }>{f}</button>
-                        ))}
+                      <div className="flex items-center gap-2">
+                        <div className="flex rounded-full p-0.5 gap-0.5"
+                          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                          {(["all", "cigar", "alcohol"] as CategoryFilter[]).map((f) => (
+                            <button key={f} onClick={() => setFilter(f)}
+                              className="px-3 py-1.5 text-[9px] uppercase tracking-[0.15em] rounded-full transition-all duration-200"
+                              style={filter === f
+                                ? { background: "rgba(212,175,55,0.15)", color: "rgba(212,175,55,0.85)", border: "1px solid rgba(212,175,55,0.3)" }
+                                : { color: "rgba(180,155,100,0.5)" }
+                              }>{f}</button>
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => setShowNewProduct(true)}
+                          data-testid="dashboard-new-product"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] uppercase tracking-[0.15em] transition-all duration-200"
+                          style={{
+                            background: "rgba(212,175,55,0.18)",
+                            color:      "rgba(230,200,120,0.95)",
+                            border:     "1px solid rgba(212,175,55,0.45)",
+                          }}>
+                          <Plus size={11} /> New Product
+                        </button>
                       </div>
                     </div>
 

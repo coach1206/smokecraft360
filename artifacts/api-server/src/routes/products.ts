@@ -91,6 +91,34 @@ router.post(
     // Vendor (brand_partner) submissions enter as pending; venue/admin go live immediately.
     const isVendorSubmission = req.user?.role === "brand_partner";
 
+    // ── Tenant binding ────────────────────────────────────────────────────────
+    // SECURITY: never trust client-supplied venueId/brandId here.
+    //   - venue_owner / manager: venueId is forced to the caller's own venue.
+    //     If they have no venueId on their JWT, we reject — they can't dump
+    //     anonymous inventory into the global pool, and they can't assign
+    //     products to a competitor's venue.
+    //   - brand_partner: venueId stays null (vendor submissions are
+    //     venue-agnostic until an admin places them). brandId is allowed
+    //     because the admin review step (vendorAdmin.ts approve/reject)
+    //     verifies the brand attribution before the product goes live.
+    let effectiveVenueId: string | null;
+    let effectiveBrandId: string | null;
+    if (isVendorSubmission) {
+      effectiveVenueId = null;
+      effectiveBrandId = brandId ?? null;
+    } else {
+      const callerVenueId = req.user?.venueId ?? null;
+      if (!callerVenueId) {
+        res.status(403).json({ error: "Your account is not linked to a venue; cannot create products" });
+        return;
+      }
+      // venue_owner/manager: client venueId is ignored, brandId is ignored
+      // (they manage their own inventory; brand attribution comes via the
+      // approved brand catalog and admin tooling, not self-assignment).
+      effectiveVenueId = callerVenueId;
+      effectiveBrandId = null;
+    }
+
     const [inserted] = await db
       .insert(productsTable)
       .values({
@@ -106,8 +134,8 @@ router.post(
         boostLevel:  isVendorSubmission ? 0     : (boostLevel ?? 0),
         sponsored:   isVendorSubmission ? false : (sponsored  ?? false),
         active:      !isVendorSubmission,                            // hidden until approved
-        venueId:     venueId    ?? null,
-        brandId:     brandId    ?? null,
+        venueId:     effectiveVenueId,
+        brandId:     effectiveBrandId,
         campaignId:  campaignId ?? null,
         imageUrl:    imageUrl   ?? null,
         submissionStatus: isVendorSubmission ? "pending" : "approved",
