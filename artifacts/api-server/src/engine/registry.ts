@@ -62,3 +62,20 @@ export function getPairingPool(category: Category): Product[] {
 export function getRegisteredCategories(): string[] {
   return Object.keys(datasets);
 }
+
+/**
+ * Look up a product by id across every category (static + dynamic).
+ * Used by the operations layer (staff pitch, layout) so it doesn't need
+ * to know which vertical the product belongs to.
+ */
+export function findProduct(productId: string): Product | null {
+  for (const cat of Object.keys(datasets)) {
+    const hit = datasets[cat]!.find((p) => p.id === productId);
+    if (hit) return hit;
+  }
+  for (const cat of Object.keys(dynamic)) {
+    const hit = dynamic[cat]!.find((p) => p.id === productId);
+    if (hit) return hit;
+  }
+  return null;
+}

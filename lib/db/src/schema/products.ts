@@ -43,6 +43,8 @@ export const productsTable = pgTable("products", {
   distributorId: uuid("distributor_id"),
   campaignId:    text("campaign_id"),
   imageUrl:    text("image_url"),
+  /** Wholesale cost in cents — feeds the profit engine. NULL = not entered. */
+  costCents:   integer("cost_cents"),
   // Vendor submission workflow
   submissionStatus: productSubmissionStatusEnum("submission_status").notNull().default("approved"),
   submittedBy:      uuid("submitted_by"),                  // user id of brand_partner who submitted

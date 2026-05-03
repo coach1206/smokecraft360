@@ -34,6 +34,10 @@ export const menuItemsTable = pgTable("menu_items", {
   tags:        json("tags").$type<string[]>().notNull().default([]),
   /** Price in cents. Required (we sell these). */
   priceCents:  integer("price_cents").notNull(),
+  /** Wholesale cost in cents — feeds the profit engine. NULL = not entered. */
+  costCents:   integer("cost_cents"),
+  /** Reorder threshold for low-stock alerts (units). Default 5. */
+  reorderThreshold: integer("reorder_threshold").notNull().default(5),
   imageUrl:    text("image_url"),
   available:   boolean("available").notNull().default(true),
   createdAt:   timestamp("created_at").notNull().defaultNow(),

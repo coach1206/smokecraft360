@@ -8,8 +8,9 @@
  */
 
 import { Router, type IRouter, type Request, type Response } from "express";
-import { eq, desc, inArray }                                  from "drizzle-orm";
-import { db, ordersTable, auditLogTable }                     from "@workspace/db";
+import { eq, desc, inArray, and, sql }                        from "drizzle-orm";
+import { db, ordersTable, auditLogTable, venueInventoryTable } from "@workspace/db";
+import { updateStockCache }                                   from "../services/venueInventoryStore";
 import { verifyToken }                                        from "../lib/jwt";
 import { requireAuth, type AuthRequest }                      from "../middleware/auth";
 import { requireRole }                                        from "../middleware/roles";
@@ -124,6 +125,39 @@ router.post(
     }).returning();
 
     req.log.info({ orderId: order.id, orderType, userId }, "order created");
+
+    /* Decrement inventory for every product on the order that the venue
+     * actually tracks. We never fail the order on a missed decrement —
+     * unconfigured / legacy venues simply have no inventory row, and a
+     * blocked order on a DB hiccup would be a worse customer outcome
+     * than a stock count drifting by one. */
+    if (venueId) {
+      const productIds = [cigarId, drinkId, foodId].filter((p): p is string => !!p);
+      for (const productId of productIds) {
+        try {
+          const [updated] = await db
+            .update(venueInventoryTable)
+            .set({
+              quantity:  sql`GREATEST(0, ${venueInventoryTable.quantity} - 1)`,
+              updatedAt: new Date(),
+            })
+            .where(and(
+              eq(venueInventoryTable.venueId,   venueId),
+              eq(venueInventoryTable.productId, productId),
+            ))
+            .returning();
+          if (updated) {
+            updateStockCache(venueId, productId, {
+              quantity:  updated.quantity,
+              available: updated.available && updated.quantity > 0,
+            });
+          }
+        } catch (err) {
+          req.log.warn({ err, venueId, productId }, "inventory decrement failed (non-fatal)");
+        }
+      }
+    }
+
     res.status(201).json(order);
   },
 );

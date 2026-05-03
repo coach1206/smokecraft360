@@ -88,6 +88,61 @@ A unified "AI brain" layer that attaches deterministic natural-language commenta
 - Menu POST returns 401 to anonymous callers; 8 house items are seeded directly via SQL during initial setup.
 - Smoke-tested end-to-end: `/api/recommend` returns commentary with 8 pairing tags, `/api/menu/suggested?tags=smoky,sweet,bbq` returns 3 ranked items, `/api/voice/speak` returns 503 with the documented error code, voice limiter trips after 15 calls.
 
+### Operations Layer (POS Webhooks · Reorder Alerts · Menu Layout · Profit · Staff Pitch)
+
+The operational closing-the-loop layer that turns the recommendation engine, inventory, and order flow into a single feedback system. All pure functions over existing tables — no new ORMs, no LLM, no OAuth.
+
+**Schema additions** (raw SQL migration, schemas updated to match):
+
+- `products.cost_cents` — wholesale cost (nullable). Feeds the profit engine.
+- `menu_items.cost_cents` — same, for kitchen items.
+- `menu_items.reorder_threshold` — default 5. Per-item low-stock threshold.
+
+**Pure-function services** (no I/O, fully unit-testable):
+
+- `services/profitEngine.ts` — `calculateProfit(item)` returns `{profitCents, marginRatio}` or `null` when cost is missing. We deliberately return null instead of treating null cost as $0, which would surface a misleading 100% margin. `calculateProfits(items)` filters out cost-less items.
+- `services/menuLayout.ts` — `optimizeMenuLayout(items)` ranks by `margin*W_MARGIN + popularity*W_POPULARITY + conversion*W_CONVERSION`. Weights are explicit constants (50 / 1 / 30) and documented at the top of the file. Sold-out items get a `-10000` penalty so they sink to the bottom but stay visible (kitchen still needs to know what to restock). Each result carries a `reason` string ("high-margin & popular", "crowd-favorite", "sold-out") for auditable layout decisions.
+- `services/reorderAlerts.ts` — `checkReorder(items, threshold=5)` returns alerts sorted by urgency (`threshold / (qty+0.5)` so out-of-stock isn't infinite). Keeps policy (the threshold) out of the cache layer.
+- `services/staffPitch.ts` — `generatePitch({name, flavorNotes, moodTags, marginRatio?, popularity?})` returns `{hook, why, pairing, upsell}`. Distinct from `aiCommentary.ts` (guest-facing): this is operational coaching copy ("This is one of our top movers tonight…"). Upsell line only fires when marginRatio > 0.5 so we don't push staff to upsell loss-leaders.
+
+**Routes:**
+
+- **Tenant isolation** (caught in code review): every `/api/ops/*` route enforces venue scoping in addition to role. Non-`super_admin` callers can only see their own venue's data; passing another venue's ID in `?venueId=…` returns 403 `venue_forbidden`. The kitchen menu optimizer additionally allows the NULL-venue house menu (visible to all venues) but never another venue's items. Helper: `authorizedVenueId(req, requested)` returns the venue the caller is allowed to read or null. Super admins are exempt.
+- POS webhook events are now Zod-validated before any DB write — malformed signed payloads return a clean 400 `invalid_event_shape` instead of 500-ing into a POS retry storm.
+- `routes/operations.ts` mounted at `/api/ops`, all routes gated by `requireAuth + requireRole("super_admin","venue_owner","manager","staff")`:
+  - `GET  /api/ops/reorder-alerts?venueId=…&threshold=…` — reads venue_inventory, hydrates names from the engine registry.
+  - `POST /api/ops/menu/optimize` — accepts arbitrary items in body (Zod-validated, max 500), returns optimized order. Lets the dashboard score whatever's on screen without us knowing its shape.
+  - `GET  /api/ops/menu/optimize/kitchen` — convenience: pulls available `menu_items` with stored cost_cents and optimizes them.
+  - `POST /api/ops/profit` — batched profit calc.
+  - `GET  /api/ops/staff-pitch/:productId` — registry-first lookup, falls back to `products` table for vendor-submitted items. Margin-aware when both price and cost are known.
+
+- `routes/posWebhook.ts` mounted at `/api/webhooks/pos` with raw-body parser (mirrors Stripe pattern, registered before `express.json`):
+  - **Generic / vendor-neutral** by design — the user has consistently dismissed full OAuth integrations. A signed normalized receiver lets ANY POS (Square, Toast, Clover, custom kiosk-side adapter) push events with a tiny shim, without us maintaining per-vendor auth state.
+  - HMAC-SHA256 over the raw body, header `X-Pos-Signature: sha256=<hex>`, constant-time compared via `timingSafeEqual` (with length-mismatch short-circuit so Buffer construction can't throw).
+  - **Fails CLOSED** (503 `pos_webhook_not_configured`) if `POS_WEBHOOK_SECRET` env is unset — better to surface a 503 in the POS dashboard than to silently accept unsigned events.
+  - Accepted events:
+    - `inventory.updated` → `upsertVenueInventory(venueId, productId, quantity, available?, priceCents?)`
+    - `order.created` → atomic `GREATEST(0, quantity-1)` decrement + cache update
+  - Unknown event types are accepted with 200 + ignored (POS vendors push catalog/heartbeat/customer events we don't care about; rejecting with 4xx makes them retry forever).
+
+**Order → inventory decrement** (`routes/orders.ts`):
+
+- After `POST /api/orders` inserts a row, when `venueId` is present we atomically decrement venue_inventory for every productId on the order (cigar/drink/food) using `GREATEST(0, quantity - 1)`.
+- Cache is updated in lockstep via `updateStockCache`.
+- **Never fails the order** — a missed decrement (DB hiccup, unconfigured venue) logs a warn and continues. A blocked order is a worse customer outcome than a stock count drifting by one.
+
+**To wire a real POS:**
+
+1. Set `POS_WEBHOOK_SECRET` (any random 32+ char string) in Replit secrets.
+2. Configure your POS to POST to `https://<your-domain>/api/webhooks/pos` with `Content-Type: application/json` and `X-Pos-Signature: sha256=<hex-hmac-of-raw-body>`.
+3. Map the POS's native event shape to `{type: "inventory.updated"|"order.created", data: {venueId, productId, quantity, …}}` in a tiny adapter (Square/Toast/Clover all support webhook customization or a small Lambda shim).
+
+**What this brief did NOT add (deliberate scope discipline):**
+
+- No Square/Toast OAuth/SDK — generic webhook receiver covers the same ground without per-vendor credential plumbing.
+- No conversion-rate tracking (impressions already exist via `boostService.statsStore`; conversion would need a join through orders → recommendations and is its own sub-project).
+- No frontend dashboard UI for these endpoints — the user's message was "use api on file replit", so this turn is API-only. The dashboard wiring is a clean follow-up: a Reorder Alerts widget and a "Top-converting items" panel are both single-component additions that consume these endpoints.
+
 ### BrewCraft Quick-Pick Page
 
 `artifacts/smokecraft/src/pages/BrewCraft.tsx` — a beer-led pairing screen at `/brewcraft` rendered as a 3-column kiosk lounge layout (left step nav 260px / center 4 beer cards / right mode-synced context panel 360px) over a dimmed cigar-lounge backdrop (`attached_assets/locked_cards/experience_smokecraft.png` + radial dark overlay). Card hero visuals are CSS gradients (Light=gold, Amber=copper, IPA=hazy orange, Dark=stout). Each card maps to a flavor + strength + mood preset and POSTs to the existing `/api/recommend` endpoint with `category: "beer"`; the result panel shows the top beer plus the cross-category cigar pairing returned by the engine. After a result loads, a **PourCraft upsell** unlocks on a 3-second timer (`UPSELL_DELAY_MS`) — a second `/api/recommend` call with `category: "alcohol"` and the same flavor preset (strength bumped one notch for the "elevate" framing) returns a premium pour, with "Add Whiskey" routing to `/pourcraft`. Right context panel reads `mode = upsellVisible ? "spirit" : "beer"` so the "MODE" header swaps between BrewCraft and PourCraft to match the active funnel stage. Zero new backend endpoints, zero mock data — thin UI funnel on top of the production engine, so inventory filtering applies automatically when a venue is set. A 4th experience card on `Intro.tsx` routes here via the existing `navigate("/" + key)` pattern. The brief's BrewCraft proposal also called for replacing menus with toy in-memory loyalty/inventory/dashboard backends — those were rejected to avoid regressing the real XP, inventory, venue analytics, and dashboard systems already in place.

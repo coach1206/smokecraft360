@@ -31,6 +31,8 @@ import uploadRouter             from "./routes/upload";
 import ordersRouter             from "./routes/orders";
 import checkoutRouter           from "./routes/checkout";
 import { stripeWebhookHandler } from "./routes/stripeWebhook";
+import { posWebhookHandler }    from "./routes/posWebhook";
+import operationsRouter         from "./routes/operations";
 import demoRouter               from "./routes/demo";
 import demandRouter             from "./routes/demand";
 import demandEventsRouter       from "./routes/demandEvents";
@@ -117,6 +119,14 @@ app.post(
   stripeWebhookHandler,
 );
 
+// POS webhook also needs the raw body for HMAC verification — same pattern
+// as Stripe. Generic vendor-neutral receiver; gated by POS_WEBHOOK_SECRET.
+app.post(
+  "/api/webhooks/pos",
+  express.raw({ type: "application/json", limit: "32kb" }),
+  posWebhookHandler,
+);
+
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 
@@ -157,6 +167,9 @@ app.use("/api/scoring",                     scoringRouter);
 app.use("/api/system",                      systemStatusRouter);
 app.use("/api/upload",                      uploadRouter);
 app.use("/api/orders",                      ordersRouter);
+// Operations layer — staff/manager tools: reorder alerts, menu layout
+// optimization, profit calc, staff pitch. All gated to staff+.
+app.use("/api/ops",                         operationsRouter);
 app.use("/api",                             checkoutRouter);
 app.use("/api",                             demoRouter);
 app.use("/api/demand",                      demandEventsRouter);
