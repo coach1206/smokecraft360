@@ -29,3 +29,4 @@ export * from "./subscriptions";
 export * from "./dunningEvents";
 export * from "./notifications";
 export * from "./auditLog";
+export * from "./themeProfiles";
