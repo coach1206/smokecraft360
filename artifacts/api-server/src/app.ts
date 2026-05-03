@@ -3,7 +3,7 @@ import cors     from "cors";
 import pinoHttp from "pino-http";
 import { logger } from "./lib/logger";
 import { rejectDeepPayloads }             from "./middleware/sanitize";
-import { authLimiter, recommendLimiter }  from "./middleware/rateLimit";
+import { authLimiter, recommendLimiter, osLimiter } from "./middleware/rateLimit";
 
 import healthRouter        from "./routes/health";
 import authRouter          from "./routes/auth";
@@ -50,6 +50,7 @@ import { paymentsRouter }       from "./routes/payments";
 import subscriptionsRouter      from "./routes/subscriptions";
 import osEventsRouter           from "./routes/osEvents";
 import osCommandRouter          from "./routes/osCommand";
+import osFinancialsRouter       from "./routes/osFinancials";
 import { startAggregationWorker } from "./lib/aggregationWorker";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -152,8 +153,9 @@ app.use("/api/loyalty",                     loyaltyRouter);
 app.use("/api/rewards",                     rewardsAdminRouter);
 app.use("/api/lounge-league",               loungeLeagueRouter);
 app.use("/api/devices",                     devicesRouter);
-app.use("/api/os",                          osEventsRouter);
-app.use("/api/os",                          osCommandRouter);
+app.use("/api/os",          osLimiter,      osEventsRouter);
+app.use("/api/os",          osLimiter,      osCommandRouter);
+app.use("/api/os",          osLimiter,      osFinancialsRouter);
 app.use("/api",                             commissionsRouter);
 app.use("/api/network",                     networkInsightsRouter);
 app.use("/api/payouts",                     payoutsRouter);

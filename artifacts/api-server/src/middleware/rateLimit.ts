@@ -24,3 +24,11 @@ const shared = {
 
 export const authLimiter      = rateLimit(shared);
 export const recommendLimiter = rateLimit(shared);
+
+// OS layer: 120/min — admin tooling polls live event feed every 8s and may
+// burst on filter changes; tighter than open APIs but not punishing.
+export const osLimiter = rateLimit({
+  ...shared,
+  limit:   120,
+  message: { error: "OS rate limit exceeded — slow down admin polling" },
+});

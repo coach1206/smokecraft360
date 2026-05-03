@@ -10,13 +10,61 @@
  * The optional `module` filter reads from metadata.module so the same surface
  * works once additional modules (PourCraft, VapeCraft) start emitting events.
  */
-import { Router, type IRouter, type Response } from "express";
-import { and, eq, gte, lte, desc, sql }        from "drizzle-orm";
-import { db, analyticsEventsTable }            from "@workspace/db";
-import { requireAuth, type AuthRequest }       from "../middleware/auth";
-import { requireRole }                         from "../middleware/roles";
+import { Router, type IRouter, type Request, type Response } from "express";
+import { and, eq, gte, lte, desc, sql }                      from "drizzle-orm";
+import { db, analyticsEventsTable }                          from "@workspace/db";
+import type { EventType }                                    from "@workspace/db";
+import { requireAuth, type AuthRequest }                     from "../middleware/auth";
+import { requireRole }                                       from "../middleware/roles";
+import { allowOnly }                                         from "../middleware/sanitize";
 
 const router: IRouter = Router();
+
+// Same envelope as /api/events accepts, but matches the brief's field naming
+// so any client expecting GLOBAL_EVENTS-shaped ingestion just works. We do
+// NOT create a parallel table — payload is stored in analytics_events.metadata
+// with module_name nested as metadata.module for filterability.
+const VALID_EVENT_TYPES = new Set<EventType>([
+  "view", "swipe_right", "swipe_left", "save", "boost_click",
+  "sponsored_view", "recommendation_view", "product_selected",
+  "pairing_selected", "food_selected", "order_created",
+]);
+
+router.post(
+  "/event",
+  allowOnly("module_name", "event_type", "payload", "session_id", "venue_id"),
+  async (req: Request, res: Response) => {
+    const { module_name, event_type, payload, session_id, venue_id } = req.body as {
+      module_name?: string;
+      event_type?:  string;
+      payload?:     Record<string, unknown>;
+      session_id?:  string;
+      venue_id?:    string;
+    };
+
+    // Brief rule: NEVER throw to client; ignore malformed safely with 200.
+    if (!event_type || !VALID_EVENT_TYPES.has(event_type as EventType)) {
+      res.json({ accepted: false, reason: "invalid event_type (ignored)" });
+      return;
+    }
+
+    res.json({ accepted: true });
+
+    db.insert(analyticsEventsTable).values({
+      eventType: event_type as EventType,
+      venueId:   venue_id ?? null,
+      userId:    null,
+      productId: null,
+      metadata:  {
+        module:     module_name ?? null,
+        sessionId:  session_id  ?? null,
+        ...(payload ?? {}),
+      },
+    }).catch((err) => {
+      req.log.error({ err, module_name, event_type }, "os.event ingest failed");
+    });
+  },
+);
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_LIMIT = 1000;
