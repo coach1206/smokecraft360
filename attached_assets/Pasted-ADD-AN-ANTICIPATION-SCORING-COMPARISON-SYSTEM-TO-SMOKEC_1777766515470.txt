@@ -1,0 +1,200 @@
+ADD AN ANTICIPATION + SCORING + COMPARISON SYSTEM TO SMOKECRAFT 360 THAT BUILDS EXCITEMENT BEFORE THE FINAL REVEAL
+
+This system must feel like a game where the user is building something valuable and wants to see their final result.
+
+---
+
+CORE OBJECTIVE
+
+Do NOT show the final result immediately.
+
+Create:
+
+- buildup
+- suspense
+- delayed gratification
+- reward at the end
+
+---
+
+1. PROGRESSION METER (ALWAYS VISIBLE)
+
+Add a visible progress bar or meter:
+
+- Shows % complete (ex: 40%, 60%, 80%)
+- Updates after each step
+- Use gold fill animation
+
+Add text:
+
+“Your blend is forming…”
+
+---
+
+2. LIVE SCORE BUILD (HIDDEN BUT TEASED)
+
+As the user makes selections:
+
+- Internally calculate a “blend score”
+- Do NOT show full score yet
+
+Instead show hints:
+
+- “Strong profile developing”
+- “Balanced pairing detected”
+- “Premium blend in progress”
+
+---
+
+3. BUILD-UP TEXT (IMPORTANT)
+
+After each step, display:
+
+- “Good choice… this is shaping up nicely”
+- “You’re creating something strong”
+- “This one’s getting interesting…”
+
+Keep it short, readable, and encouraging
+
+---
+
+4. LOCK THE FINAL RESULT (KEY FEATURE)
+
+Before reveal:
+
+- Show a locked panel or blurred card
+- Label:
+
+“Your Blend is Ready”
+
+Add:
+
+- blurred cigar + whiskey image behind it
+- faint glow
+- slight movement
+
+---
+
+5. REVEAL MOMENT (MAKE IT HIT)
+
+User taps:
+
+👉 “Reveal My Blend”
+
+Trigger:
+
+- background dims slightly
+- sound cue (soft, premium tone)
+- screen fades + zooms in
+- card sharpens into focus
+
+---
+
+6. FINAL RESULT SCREEN
+
+Display:
+
+TITLE:
+“Midnight Reserve”
+
+SCORE:
+Example: “92 / 100”
+
+RATING:
+- Smoothness
+- Boldness
+- Balance
+
+VISUAL:
+- Final cigar + whiskey pairing
+
+---
+
+7. COMPARISON SYSTEM (THIS IS WHAT MAKES IT ADDICTIVE)
+
+After reveal, show:
+
+“Compared to Others”
+
+Examples:
+
+- “Top 15% of blends created”
+- “Stronger than average”
+- “More balanced than most users”
+
+Add a simple bar or meter showing position
+
+---
+
+8. PERSONALIZED LINE (IMPORTANT)
+
+Add:
+
+“Built for your taste: Smooth • Smoky • Relaxed”
+
+This makes it feel personal
+
+---
+
+9. SHARE + REPLAY LOOP
+
+Add buttons:
+
+- “Try Again”
+- “Compare Another”
+- “Share My Blend”
+- “Order This Experience”
+
+Goal:
+
+User wants to:
+- improve their score
+- try different combinations
+
+---
+
+10. VISUAL + MOTION RULES
+
+- Reveal must be slower than other transitions
+- Use fade + zoom (0.5–0.8s)
+- Add glow pulse when score appears
+- Product locks into final position
+
+---
+
+11. SOUND DESIGN
+
+Add:
+
+- soft “build-up” tone before reveal
+- light “success” sound when score appears
+
+Keep everything subtle and premium
+
+---
+
+12. FINAL EXPERIENCE FEEL
+
+The user should feel:
+
+- curious while building
+- excited before reveal
+- rewarded at the end
+- motivated to try again
+
+---
+
+FINAL GOAL
+
+Turn the system into:
+
+- a challenge
+- a game
+- a repeatable experience
+
+NOT:
+
+- a one-time selection tool
+- a static recommendation engine
+
+---

@@ -1,0 +1,170 @@
+ADD THE FINAL SENSORY LAYER TO SMOKECRAFT 360 TO CREATE A FULLY IMMERSIVE, TOUCH-DRIVEN, LUXURY EXPERIENCE
+
+This layer must make the system feel physical, responsive, and alive.
+
+---
+
+CORE OBJECTIVE
+
+Every interaction must engage at least TWO senses:
+
+- Visual (movement, lighting, product)
+- Touch (response, motion)
+- Sound (feedback, ambiance)
+
+The system should feel like something you interact with physically—not just tap.
+
+---
+
+1. TOUCH FEEDBACK SYSTEM (CRITICAL)
+
+All interactive elements must respond instantly:
+
+- Buttons scale down on press (0.94)
+- Cards slightly tilt or shift when touched
+- Sidebar items move slightly when clicked (translateX + glow)
+
+Add:
+- micro “bounce back” effect after press
+- subtle vibration-style motion (visual only)
+
+---
+
+2. CLICK SOUND SYSTEM
+
+Add layered sound feedback:
+
+- Soft “click” for navigation
+- Slightly deeper “tap” for selections
+- Subtle confirmation tone when completing a step
+
+Rules:
+
+- Volume low (premium feel)
+- No harsh or loud sounds
+- Instant playback on touch
+
+---
+
+3. AMBIENT SOUND (OPTIONAL BUT POWERFUL)
+
+Loop a very low background audio:
+
+- soft lounge chatter
+- light jazz or instrumental
+- glass / bar ambiance
+
+Must be:
+- extremely subtle
+- not distracting
+- auto-start or tap-to-start
+
+---
+
+4. PRODUCT SENSORY EFFECTS
+
+Cigar + whiskey must feel alive:
+
+- Cigar has subtle floating motion
+- Add faint ember glow effect on tip
+- Whiskey reflects light (slight shimmer)
+
+Optional advanced:
+- faint smoke drift from cigar tip (very low opacity)
+
+---
+
+5. LIGHT & REFLECTION SYSTEM
+
+Add dynamic lighting effects:
+
+- soft gold glow that shifts slightly
+- light reflection sweep across cards (slow)
+- subtle highlight on hover/touch
+
+No aggressive animations—everything must feel smooth
+
+---
+
+6. SCREEN TRANSITION FEEL
+
+Upgrade transitions:
+
+- screens slide with weight (not fast)
+- add slight blur during movement
+- new screen “settles” into place
+
+Goal:
+Feels like panels physically moving, not digital switching
+
+---
+
+7. SWIPE PHYSICS (IMPORTANT)
+
+Cards must behave like real objects:
+
+- slight rotation when dragged
+- resistance feeling (slower near center)
+- snap into place when released
+
+Visual only—no need for full physics engine
+
+---
+
+8. PROGRESSION REWARD FEEDBACK
+
+After each step:
+
+- show confirmation text:
+  “Good choice… building your experience”
+- brief glow or highlight pulse
+
+At final reveal:
+
+- subtle audio cue
+- lighting shift
+- product locks into final position
+
+---
+
+9. IDLE MODE (KIOSK FEATURE)
+
+When no one is interacting:
+
+- background slowly moves
+- product gently floats
+- subtle text appears:
+
+  “Touch to begin your experience”
+
+This draws people in without being aggressive
+
+---
+
+10. CONSISTENCY RULE
+
+ALL sensory effects must be:
+
+- subtle
+- smooth
+- consistent across all screens
+
+No random or mismatched effects allowed
+
+---
+
+FINAL GOAL
+
+The system must feel like:
+
+- a premium lounge experience
+- something tactile and responsive
+- something people naturally want to touch
+
+NOT:
+
+- a website
+- a static interface
+- a noisy or flashy app
+
+---

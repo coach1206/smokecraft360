@@ -122,44 +122,63 @@ export default function Home() {
     Array.from({ length: activeStep }, (_, i) => i),
   );
 
-  // Web Audio click sound — subtle soft tick.
-  // Lazily cache a single AudioContext so iOS Safari accepts it as a
-  // user-gesture-bound instance and we never throw "operation is insecure".
-  const audioCtxRef = useRef<AudioContext | null>(null);
+  // ── Sensory layer: cached AudioContext + three layered tones ─────
+  const audioCtxRef    = useRef<AudioContext | null>(null);
   const audioBrokenRef = useRef(false);
-  const playClick = useCallback(() => {
-    if (audioBrokenRef.current) return;
+  const getCtx = useCallback((): AudioContext | null => {
+    if (audioBrokenRef.current) return null;
     try {
       if (!audioCtxRef.current) {
         const ACtx = window.AudioContext ?? (window as unknown as Record<string, typeof AudioContext>)["webkitAudioContext"];
-        if (!ACtx) { audioBrokenRef.current = true; return; }
+        if (!ACtx) { audioBrokenRef.current = true; return null; }
         audioCtxRef.current = new ACtx();
       }
       const ctx = audioCtxRef.current;
-      if (!ctx) return;
-      // Resume if suspended (iOS auto-suspends until user gesture)
-      if (ctx.state === "suspended") {
+      if (ctx && ctx.state === "suspended") {
         try { void ctx.resume(); } catch { /* ignore */ }
       }
+      return ctx;
+    } catch { audioBrokenRef.current = true; return null; }
+  }, []);
+  const playTone = useCallback((f0: number, f1: number, dur: number, peak = 0.05, type: OscillatorType = "sine") => {
+    const ctx = getCtx();
+    if (!ctx) return;
+    try {
       const osc  = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain); gain.connect(ctx.destination);
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(1100, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(550, ctx.currentTime + 0.04);
-      gain.gain.setValueAtTime(0.055, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.09);
+      osc.type = type;
+      osc.frequency.setValueAtTime(f0, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(f1, ctx.currentTime + dur);
+      gain.gain.setValueAtTime(peak, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
       osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.09);
-    } catch {
-      // Mark audio as permanently unavailable so we stop trying
-      audioBrokenRef.current = true;
-    }
+      osc.stop(ctx.currentTime + dur);
+    } catch { audioBrokenRef.current = true; }
+  }, [getCtx]);
+  // Soft high tick — used for navigation/back/sidebar
+  const playClick  = useCallback(() => playTone(1100, 550, 0.09, 0.055, "sine"),    [playTone]);
+  // Deeper warm tap — used for hard selections
+  const playSelect = useCallback(() => playTone(720,  360, 0.13, 0.07,  "triangle"),[playTone]);
+  // Two-note rising chime — used to confirm step completion
+  const playChime  = useCallback(() => {
+    playTone(660, 880,  0.18, 0.06, "sine");
+    setTimeout(() => playTone(880, 1320, 0.22, 0.05, "sine"), 90);
+  }, [playTone]);
+
+  // Coach toast — momentary confirmation after each step
+  const [coachMsg, setCoachMsg] = useState<string | null>(null);
+  const coachTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showCoach = useCallback((msg: string) => {
+    if (coachTimerRef.current) clearTimeout(coachTimerRef.current);
+    setCoachMsg(msg);
+    coachTimerRef.current = setTimeout(() => setCoachMsg(null), 1900);
   }, []);
 
   const goToStep = useCallback((step: 0|1|2|3) => {
-    playClick();
-    setSlideDir(step >= formStep ? 1 : -1);
+    const forward = step > formStep;
+    if (forward) playChime(); else playClick();
+    setSlideDir(forward ? 1 : -1);
     setFormStep(step);
     const defaults: Record<number, string> = {
       0: `experience_${category}`,
@@ -169,7 +188,16 @@ export default function Home() {
     };
     setBgKey(defaults[step] ?? "default");
     if (step < 3) setMoodDone(false);
-  }, [formStep, playClick, category]);
+    if (forward) {
+      const lines = [
+        "Good choice — choose your palate next",
+        "Excellent — building your experience",
+        "Beautiful — one final touch",
+        "Perfect — ready to reveal",
+      ];
+      showCoach(lines[Math.min(step, lines.length - 1)]);
+    }
+  }, [formStep, playClick, playChime, category, showCoach]);
 
   const {
     profile, isElite, justUnlockedElite, clearEliteUnlock,
@@ -391,6 +419,39 @@ export default function Home() {
   return (
     <div className="min-h-[100dvh] w-full text-foreground flex flex-col relative overflow-hidden" style={{ background: "hsl(22 18% 5%)" }}>
       <DynamicBackground bgKey={bgKey} />
+
+      {/* Coach toast — fades in for 1.9s after each step completion */}
+      <AnimatePresence>
+        {coachMsg && (
+          <motion.div
+            key={coachMsg}
+            initial={{ opacity: 0, y: -18, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0,   scale: 1    }}
+            exit={{    opacity: 0, y: -14, scale: 0.97 }}
+            transition={{ duration: 0.35, ease: [0.22,1,0.36,1] }}
+            style={{
+              position: "fixed", top: 28, left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 60,
+              background: "rgba(28,18,8,0.88)",
+              border: "1px solid rgba(212,175,55,0.45)",
+              color: "rgba(212,175,55,0.94)",
+              padding: "11px 26px",
+              borderRadius: 999,
+              fontFamily: "var(--app-font-serif)",
+              fontSize: 12, letterSpacing: "0.22em", textTransform: "uppercase", fontWeight: 500,
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              boxShadow: "0 10px 38px rgba(0,0,0,0.55), 0 0 50px rgba(212,175,55,0.18)",
+              pointerEvents: "none",
+              maxWidth: "calc(100vw - 40px)",
+              textAlign: "center",
+            }}
+          >
+            {coachMsg}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Experience sidebar — self-positions fixed on lg+ screens */}
       <ExperienceSidebar
@@ -690,7 +751,7 @@ export default function Home() {
                           return (
                             <motion.button key={cat}
                               data-testid={`choice-${cat}`}
-                              onClick={() => { handleCategoryChange(cat); setBgKey(cat === "cigar" ? "experience_cigar" : "experience_spirits"); playClick(); }}
+                              onClick={() => { handleCategoryChange(cat); setBgKey(cat === "cigar" ? "experience_cigar" : "experience_spirits"); playSelect(); }}
                               whileTap={{ scale: 0.94 }}
                               style={{
                                 minHeight: 170, borderRadius: 20, cursor: "pointer",
