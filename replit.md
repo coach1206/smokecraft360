@@ -242,6 +242,85 @@ overrides, payout approvals, fraud-flag actions — currently only
 redacted), CSV export of filtered results, retention / cold-archive
 cron, frontend timeline UI.
 
+## Help Center — support tickets (Slice 1)
+
+Backend-only slice. New surface for venue staff to file support requests
+and for super_admins to triage them. Append-only ticket lifecycle (no
+DELETE endpoint exposed — verified 404 on DELETE/PUT) with status
+transitions gated by role.
+
+**New schema** `lib/db/src/schema/supportTickets.ts` (additive):
+- pgEnum `support_ticket_status` = `open | in_progress | resolved | closed`
+- pgEnum `support_ticket_priority` = `low | normal | high`
+- Columns: `id`, `venueId`, `openedBy`, `assignedTo` (nullable, super only),
+  `subject` (≤200), `body` (≤5000), `status` (default `open`), `priority`
+  (default `normal`), `createdAt`, `updatedAt`, `resolvedAt` (nullable).
+- Indexes:
+  - `idx_support_tickets_venue_status_created` `(venue_id, status, created_at DESC)`
+  - `idx_support_tickets_assigned_status` `(assigned_to, status)` for super triage
+- Pushed via `drizzle-kit push` (no manual SQL).
+
+**New limiter** `supportTicketWriteLimiter` (rateLimit.ts) — 10/min/IP on
+all POST/PATCH surfaces (POST /, PATCH /:id/status, PATCH /:id/assign).
+This is a per-user write-burst guard; the cap test passes only after the
+limiter window resets (test harness restarts the api-server between
+write-heavy batches).
+
+**New router** `routes/supportTickets.ts` mounted at `/api/support-tickets`:
+- `POST /` — open a ticket.
+  - **Auth:** `requireAuth` + `requireRole(venue_owner, manager, staff)`.
+  - **Tenant scope:** body `venueId` is **silently ignored**; the row's
+    `venueId` is always `req.user.venueId`. super_admin without a venue
+    context gets 403 (no tenant to assign).
+  - **Per-venue cap (atomic, G4 pattern):** `INSERT ... SELECT ... WHERE
+    (SELECT COUNT(*) FROM support_tickets WHERE venue_id = $v AND status
+    IN ('open','in_progress')) < 50`. Cap-overflow returns 429 with
+    body `{error: "Open ticket cap reached for this venue"}` —
+    distinguishable from the IP limiter's wording. Verified: 50 seeded
+    rows → 51st POST 429-cap; closing one → next POST 201.
+  - Validation: subject 1..200, body 1..5000, priority enum.
+- `GET /` — paginated list.
+  - **Auth:** `requireAuth` + `requireRole(venue_owner, manager, staff,
+    super_admin)`. customer 403.
+  - **Tenant scope:** non-super forced to own `venueId` (any `?venueId=`
+    is silently ignored — same defensible pattern as G6). super_admin
+    may pass `?venueId=` to scope or omit to see all.
+  - Filters: `?status=open|in_progress|resolved|closed` (validated → 400).
+  - **Pagination:** keyset cursor `(createdAt DESC, id DESC)` with
+    µs-precision (G6 pattern reused). Cursor format
+    `<isoCreatedAt-µs>_<uuid>`. Garbage cursors silently → first page.
+    `?limit=` default 50, hard cap 200. `cursorTs` internal column is
+    stripped from response. Verified end-to-end with 5 rows seeded at
+    the exact same `created_at`: 2+2+1 yields 5 unique ids, no skip.
+- `GET /:id` — single ticket. Cross-tenant returns 404 (no existence
+  leak). super_admin can read any.
+- `PATCH /:id/status` — transition status.
+  - **Venue-side roles** can only toggle `open ↔ closed` (basic ack/dismiss).
+  - **`in_progress` and `resolved`** are **super_admin-only** (the
+    answering side owns triage state). Owner attempts → 403.
+  - `resolvedAt` is stamped via `sql\`now()\`` when status enters
+    `resolved`, and cleared via `sql\`NULL\`` on any non-resolved status.
+  - Cross-tenant or unknown id → 404 (no existence leak).
+- `PATCH /:id/assign` — super_admin-only. Body `{assignedTo: uuid|null}`.
+  - Validates target user exists AND has role `super_admin` (cannot
+    park a ticket on a venue user) → 400 if not.
+  - `null` unassigns. Drizzle `.set({assignedTo: null})` correctly
+    emits `SET assigned_to = NULL` (verified manually + suite).
+  - Owner/manager attempts → 403.
+
+**Verified:** 47/47 e2e green across 4 batches with workflow restarts
+between batches to clear the in-memory rate-limit store. Tests cover:
+all role × method matrices, validation, tenant isolation (incl. body
+override), super venueId-scope toggle, status-transition role gating,
+resolvedAt round-trip, /assign null + non-super-target validation,
+per-venue cap atomicity, cap free-after-close, tied-µs cursor
+pagination, malformed cursor, cursorTs non-leak, append-only
+(DELETE/PUT 404).
+
+**Out of scope (Slice 2):** `support_ticket_messages` thread table +
+POST/GET messages on a ticket; per-action notification fan-out to
+ticket opener on status change; CSV export; SLA timer; frontend UI.
+
 ## Notifications inbox writes (G5)
 
 Backend-only slice. Schema `notifications` and `GET /api/notifications`

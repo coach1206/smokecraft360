@@ -63,6 +63,18 @@ export const notificationWriteLimiter = rateLimit({
   message: { error: "Too many notification updates — please slow down" },
 });
 
+/* Support-ticket write limiter — authed writes (POST /api/support-tickets,
+ * PATCH /:id/status, PATCH /:id/assign). Opening a ticket is naturally a
+ * low-volume human action; 10/min/IP gives slack for accidental double-tap
+ * and one retry while choking off a hostile client trying to flood the
+ * super_admin queue. Reads (GET) stay off this limiter — the inbox can poll
+ * cheaply. Per-venue 50-open cap inside the INSERT is the hard backstop. */
+export const supportTicketWriteLimiter = rateLimit({
+  ...shared,
+  limit:   10,
+  message: { error: "Too many support ticket actions — please wait a moment" },
+});
+
 /* Voice-queue enqueue limiter — public write that any kiosk (incl. anonymous)
  * can hit to drop a transcript onto the queue. A misbehaving kiosk or hostile
  * client could try to flood the queue to crowd out legitimate commands; the
