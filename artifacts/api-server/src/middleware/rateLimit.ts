@@ -52,6 +52,17 @@ export const ndaSignLimiter = rateLimit({
   message: { error: "Too many signature attempts — please wait a moment and try again" },
 });
 
+/* Memory-write limiter — authed writes (POST/PATCH/DELETE on /api/memories).
+ * A legitimate user might bulk-set ~50 memories during onboarding, so 60/min/IP
+ * leaves slack while still choking off a runaway client cycling keys to thrash
+ * the DB. Reads (GET /) deliberately stay off this limiter — they're cheap and
+ * are polled by future UI surfaces. (Architect MEDIUM fix.) */
+export const memoryWriteLimiter = rateLimit({
+  ...shared,
+  limit:   60,
+  message: { error: "Too many memory updates — please slow down" },
+});
+
 /* Session-join limiter — authed write that scans the 6-char A-Z0-9 code
  * namespace (~36^6 ≈ 2.2B), but a brute-force enumerator could still
  * attempt thousands of codes per minute to crash an active party. 30/min

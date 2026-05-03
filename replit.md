@@ -125,6 +125,44 @@ Two distinct NDA flows now coexist:
      until all fields complete and ink drawn. On success: sessionStorage flag
      `demoNdaSigned=1`, fade-out 300ms, navigate `/intro`. Reload-resistant.
 
+## AI Memory (G3)
+
+Backend-only slice. Provides recallable per-user "facts" an AI assistant
+can pull on subsequent visits — distinct from `userPreferences`, which is
+a fire-and-forget time-series of recommendation snapshots.
+
+**Schema** (1 new table, no destructive changes):
+- `user_memories` — `id`, `userId`, `venueId` (nullable), `key` (slug,
+  ≤64 chars), `value` (text, ≤500 chars), `source` (`manual` |
+  `inferred`), `confidence` (0..1, default 1.0), `createdAt`,
+  `updatedAt`, `lastUsedAt` (nullable). Unique on `(userId, key)` —
+  upserting the same key replaces value in place.
+
+**Routes** mounted at `/api/memories`, all authed and strictly
+owner-scoped (no admin override surface — that's a separate route file
+when needed):
+- `GET /` — current user's memories, ordered `lastUsedAt DESC NULLS
+  LAST, updatedAt DESC`, capped at 50 returned.
+- `POST /` — upsert by key. **Atomic capped upsert**: single
+  `INSERT … SELECT WHERE EXISTS(same key) OR (count < cap) ON CONFLICT
+  DO UPDATE …`. New keys are gated by the per-user cap; existing-key
+  upserts bypass the cap (in-place update). 0 rows returned ⇒ 409.
+- `PATCH /:id` — owner-gated atomic update of `value` / `confidence`,
+  and/or `touch:true` to set `lastUsedAt = now()`. 0 rows ⇒ 404.
+- `DELETE /:id` — owner-gated atomic delete. 0 rows ⇒ 404.
+
+**Hard cap:** `MAX_MEMORIES_PER_USER = 50`. Verified by 5-way parallel
+distinct-key insert at cap-1 → exactly 1×201, 4×409, final count = 50;
+and 5-way same-key race → 5×201, 1 row (atomic ON CONFLICT collapse).
+
+**Cross-user isolation verified:** PATCH/DELETE/GET on another user's
+memory returns 404 / empty list, not 403, to avoid leaking existence.
+
+**Out of scope (call out for next slice):** AI inference pipeline that
+auto-creates `source='inferred'` memories from chat/recs, surfacing
+memories inside `/api/recommend` prompts, frontend UI, vector embeddings
+/ semantic search, multi-tenant sharing.
+
 ## Multi-User Sessions (G2)
 
 Backend-only slice. Provides the grouping primitive ("party") that future

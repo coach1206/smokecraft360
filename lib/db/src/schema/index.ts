@@ -42,3 +42,4 @@ export * from "./ndaSignatures";
 export * from "./offlineQueue";
 export * from "./sessions";
 export * from "./sessionMembers";
+export * from "./userMemories";
