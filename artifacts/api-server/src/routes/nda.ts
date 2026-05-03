@@ -1,20 +1,52 @@
 /**
- * NDA — single-signature gate for the IP vault.
+ * NDA routes.
  *
- *   GET  /api/nda/me   — { signed: bool, signedAt, name }
- *   POST /api/nda/sign — body { name } → records signature
+ *   GET  /api/nda/me              — { signed, signedAt, name }            (auth)
+ *   POST /api/nda/sign            — body { name } → IP-vault gate sign    (auth)
  *
- * Idempotent: re-signing returns the original signature payload (we keep
- * the first signature so the timestamp is the legally-meaningful one).
+ *   POST /api/nda/demo-sign       — full ceremony from /demo gate         (public)
+ *   GET  /api/nda/signatures      — list latest 100 demo signatures       (super_admin)
+ *   GET  /api/nda/signatures/:id  — single signature with full data       (super_admin)
+ *
+ * The /me + /sign pair is the lightweight per-user gate that lets a logged-in
+ * super_admin into the IP vault. The /demo-sign pair captures rich pre-auth
+ * ceremony rows (typed name + initials + drawn canvas signature + agreed
+ * checkbox + forensic fields) for legal evidence; reads are admin-only.
  */
 
-import { Router, type IRouter, type Response } from "express";
-import { eq, and, isNull }                     from "drizzle-orm";
-import { db, usersTable }                      from "@workspace/db";
+import { Router, type IRouter, type Response, type Request } from "express";
+import { eq, and, isNull, desc }               from "drizzle-orm";
+import { db, usersTable, ndaSignaturesTable }  from "@workspace/db";
 import { requireAuth, type AuthRequest }       from "../middleware/auth";
+import { requireRole }                         from "../middleware/roles";
 import { allowOnly }                           from "../middleware/sanitize";
+import { ndaSignLimiter }                      from "../middleware/rateLimit";
 
 const router: IRouter = Router();
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Coarse device classification from UA — for forensic logging only. */
+function classifyDevice(ua: string | undefined): "mobile" | "tablet" | "desktop" | "unknown" {
+  if (!ua) return "unknown";
+  const s = ua.toLowerCase();
+  if (/ipad|tablet/.test(s))                  return "tablet";
+  if (/mobile|iphone|android.*mobile/.test(s)) return "mobile";
+  if (/android/.test(s))                       return "tablet";
+  return "desktop";
+}
+
+/** Validate signature dataURL: must be a PNG dataURL with non-trivial payload. */
+function validateSignatureData(s: string): string | null {
+  if (typeof s !== "string") return "signatureData must be a string";
+  const m = /^data:image\/(png|jpeg);base64,([A-Za-z0-9+/=]+)$/.exec(s);
+  if (!m)                                  return "signatureData must be a base64-encoded PNG/JPEG dataURL";
+  // Cap at 256 KB raw to avoid DB bloat (architect-style guard).
+  if (s.length > 350_000)                  return "signatureData exceeds 256 KB";
+  // A near-empty canvas exports as ~1.5 KB of pure white PNG. Require at least
+  // ~2 KB of payload so we don't accept blank canvases.
+  if ((m[2]?.length ?? 0) < 2000)          return "signatureData appears to be empty";
+  return null;
+}
 
 router.get("/me", requireAuth, async (req: AuthRequest, res: Response) => {
   const [u] = await db.select({
@@ -69,6 +101,87 @@ router.post(
 
     req.log.info({ userId: req.user?.id, name: trimmed }, "NDA signed");
     res.status(201).json({ signed: true, signedAt: updated[0].ts, name: updated[0].name });
+  },
+);
+
+// ── /api/nda/demo-sign ────────────────────────────────────────────────────────
+// Public route — no auth required because the demo gate runs before login.
+
+router.post(
+  "/demo-sign",
+  ndaSignLimiter, // HIGH (architect fix): IP-based throttle on public write endpoint
+  allowOnly("fullName", "initials", "signatureData", "agreed", "sessionId"),
+  async (req: Request, res: Response) => {
+    const b = req.body as {
+      fullName?: unknown; initials?: unknown; signatureData?: unknown;
+      agreed?: unknown; sessionId?: unknown;
+    };
+
+    if (typeof b.fullName !== "string" || b.fullName.trim().length < 2 || b.fullName.trim().length > 200) {
+      res.status(400).json({ error: '"fullName" must be 2-200 characters' }); return;
+    }
+    if (typeof b.initials !== "string" || b.initials.trim().length < 1 || b.initials.trim().length > 12) {
+      res.status(400).json({ error: '"initials" must be 1-12 characters' }); return;
+    }
+    if (typeof b.signatureData !== "string") {
+      res.status(400).json({ error: '"signatureData" is required' }); return;
+    }
+    const sigErr = validateSignatureData(b.signatureData);
+    if (sigErr) { res.status(400).json({ error: sigErr }); return; }
+    if (b.agreed !== true) {
+      res.status(400).json({ error: '"agreed" must be true' }); return;
+    }
+    if (b.sessionId !== undefined && (typeof b.sessionId !== "string" || b.sessionId.length > 200)) {
+      res.status(400).json({ error: '"sessionId" must be a string up to 200 chars' }); return;
+    }
+
+    const [row] = await db.insert(ndaSignaturesTable).values({
+      fullName:      b.fullName.trim(),
+      initials:      b.initials.trim(),
+      signatureData: b.signatureData,
+      agreed:        true,
+      ipAddress:     req.ip ?? null,
+      deviceType:    classifyDevice(req.get("user-agent") ?? undefined),
+      sessionId:     typeof b.sessionId === "string" ? b.sessionId : null,
+    }).returning({ id: ndaSignaturesTable.id, createdAt: ndaSignaturesTable.createdAt });
+
+    req.log?.info({ id: row?.id, name: b.fullName.trim() }, "demo NDA signed");
+    res.status(201).json({ id: row?.id, signedAt: row?.createdAt });
+  },
+);
+
+// ── /api/nda/signatures (admin list) ──────────────────────────────────────────
+
+router.get(
+  "/signatures",
+  requireAuth, requireRole("super_admin"),
+  async (_req: AuthRequest, res: Response) => {
+    const rows = await db.select({
+      id:         ndaSignaturesTable.id,
+      fullName:   ndaSignaturesTable.fullName,
+      initials:   ndaSignaturesTable.initials,
+      agreed:     ndaSignaturesTable.agreed,
+      ipAddress:  ndaSignaturesTable.ipAddress,
+      deviceType: ndaSignaturesTable.deviceType,
+      sessionId:  ndaSignaturesTable.sessionId,
+      createdAt:  ndaSignaturesTable.createdAt,
+    }).from(ndaSignaturesTable).orderBy(desc(ndaSignaturesTable.createdAt)).limit(100);
+    res.json({ signatures: rows });
+  },
+);
+
+// ── /api/nda/signatures/:id (admin single — includes signature image) ────────
+
+router.get(
+  "/signatures/:id",
+  requireAuth, requireRole("super_admin"),
+  async (req: AuthRequest, res: Response) => {
+    const id = String(req.params["id"] ?? "");
+    if (!UUID_RE.test(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+    const [row] = await db.select().from(ndaSignaturesTable)
+      .where(eq(ndaSignaturesTable.id, id)).limit(1);
+    if (!row) { res.status(404).json({ error: "Not found" }); return; }
+    res.json(row);
   },
 );
 

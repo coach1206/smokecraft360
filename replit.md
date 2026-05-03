@@ -100,7 +100,32 @@ NDA gate is implemented as three columns on `users` (`nda_signed_at`, `nda_signa
 
 IP vault routes at `/api/ip-vault` are super_admin-only AND NDA-gated (412 Precondition Failed with `requiresNda: true` payload pointing the client at `/api/nda/sign` if missing): GET list (`?status=`, `?includeRetired=true`), GET one, POST create (draft), PATCH update (title/desc/status/notes/fileUrl/fileHash/authorship — guarded against retired rows), POST `/:id/register` (atomic draft → registered with WHERE status='draft' guard; 409 if already registered or not draft), DELETE soft-retire. The "IP Vault" dashboard tab renders an inline NDA signing modal first, then the asset list with Register / Mark Disputed / Retire actions per row and a New Asset form (title/kind/desc/fileUrl/fileHash/authorship/notes). 21/21 e2e probes passed.
 
-### Exports (Brief B — Enterprise OS slice)
+### Demo NDA Gate (additive — does NOT replace IP-vault NDA)
+
+Two distinct NDA flows now coexist:
+
+1. **IP-vault NDA** (existing, untouched) — `GET/POST /api/nda/me` + `/sign`,
+   3 cols on `users` (`ndaSignedAt`, `ndaSignatureName`, `ndaSignatureIp`).
+   Lightweight, idempotent, name-only, requires login. Gates super_admin
+   access to the IP vault.
+
+2. **Demo-gate NDA** (new) — full ceremony captured at `/demo` before login.
+   - Schema: `nda_signatures` (id, fullName, initials, signatureData base64,
+     agreed, ipAddress, deviceType, sessionId, createdAt + index on createdAt).
+   - `POST /api/nda/demo-sign` — public; validates fullName 2–200, initials
+     1–12, signatureData is base64 PNG/JPEG dataURL ≥ 2 KB and ≤ 256 KB,
+     `agreed===true`. Strips unknown fields via `allowOnly`. Server-generated
+     timestamp + IP + UA-classified deviceType.
+   - `GET /api/nda/signatures` — super_admin only, latest 100, omits
+     signatureData blob.
+   - `GET /api/nda/signatures/:id` — super_admin only, full row including blob.
+   - Frontend: `/demo` route → `<DemoNdaModal/>` with full name + initials
+     inputs, `<SignaturePad/>` (Pointer Events: mouse + touch + pen,
+     `touch-action:none`, hi-DPI scaled), agree checkbox. Submit disabled
+     until all fields complete and ink drawn. On success: sessionStorage flag
+     `demoNdaSigned=1`, fade-out 300ms, navigate `/intro`. Reload-resistant.
+
+## Exports (Brief B — Enterprise OS slice)
 
 Audit-logged data exports for vendors / products / inventory / orders in CSV or JSON. The `export_logs` table (`lib/db/src/schema/exportLogs.ts`) records every export with `requestedBy`, `scope`, `format`, `venueId` (null for super_admin global pulls), arbitrary `filters` JSON blob, `rowCount`, `byteCount`, `status` (`completed | failed`), and an optional `errorMessage`. The export payload itself is **not** persisted — the source tables remain the system of record; the log is the audit trail.
 

@@ -41,3 +41,13 @@ export const osLimiter = rateLimit({
   limit:   120,
   message: { error: "OS rate limit exceeded — slow down admin polling" },
 });
+
+/* NDA demo-sign limiter — public unauthenticated write, must be tight to
+ * prevent automated DB amplification of the legal-evidence table. A real
+ * human signs once per session; 5/min/IP gives slack for accidental
+ * double-tap and one retry while choking off bots. (Architect HIGH fix.) */
+export const ndaSignLimiter = rateLimit({
+  ...shared,
+  limit:   5,
+  message: { error: "Too many signature attempts — please wait a moment and try again" },
+});

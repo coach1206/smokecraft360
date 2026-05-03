@@ -17,6 +17,7 @@ import BrewCraft       from "@/pages/BrewCraft";
 import PourCraft       from "@/pages/PourCraft";
 import PaymentSuccess  from "@/pages/PaymentSuccess";
 import PaymentCancel   from "@/pages/PaymentCancel";
+import Demo            from "@/pages/Demo";
 import { DemoBanner }            from "@/components/Demo/DemoBanner";
 import { PresentationOverlay }   from "@/components/Presentation/PresentationOverlay";
 import { KioskModeProvider, KioskModeBanner } from "@/contexts/KioskModeContext";
@@ -39,6 +40,11 @@ function Router() {
       <Route path="/pourcraft"  component={PourCraft}      />
       <Route path="/success"    component={PaymentSuccess} />
       <Route path="/cancel"     component={PaymentCancel}  />
+      {/* /demo — NDA-gated entry to the demo experience. Renders the
+          DemoNdaModal until the user signs (sessionStorage flag), then
+          redirects to /intro. Declared before /:theme so it can't be
+          shadowed by the dynamic theme route. */}
+      <Route path="/demo"       component={Demo}           />
       {/* Dynamic per-theme entry URL (/smokecraft, /pourcraft, /grillcraft …).
           Declared LAST in the Switch so explicit app routes above always win;
           loadTheme() resolves the active theme from the first path segment.
