@@ -1,0 +1,273 @@
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+export default function Intro() {
+  const navigate = useNavigate();
+
+  const [stage, setStage] = useState("splash"); // splash → select
+  const [selected, setSelected] = useState(null);
+
+  const [isIdle, setIsIdle] = useState(false);
+  const [demoStep, setDemoStep] = useState(0);
+  const [demoScore, setDemoScore] = useState(null);
+
+  const idleTimer = useRef(null);
+  const demoLoop = useRef(null);
+
+  const cards = [
+    {
+      key: "smokecraft",
+      title: "SmokeCraft 360",
+      desc: "Build your cigar experience",
+      image:
+        "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a"
+    },
+    {
+      key: "pourcraft",
+      title: "PourCraft 360",
+      desc: "Craft your perfect pour",
+      image:
+        "https://images.unsplash.com/photo-1514361892635-e9558d7d1a8d"
+    },
+    {
+      key: "vapecraft",
+      title: "VapeCraft 360",
+      desc: "Explore your flavor cloud",
+      image:
+        "https://images.unsplash.com/photo-1585238342024-78d387f4a707"
+    }
+  ];
+
+  // ===== SPLASH =====
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setStage("select");
+      startIdleTimer();
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // ===== IDLE DETECTION =====
+  const startIdleTimer = () => {
+    clearTimeout(idleTimer.current);
+    idleTimer.current = setTimeout(() => {
+      setIsIdle(true);
+      startDemo();
+    }, 7000);
+  };
+
+  const resetIdle = () => {
+    setIsIdle(false);
+    setDemoStep(0);
+    setDemoScore(null);
+    clearInterval(demoLoop.current);
+    startIdleTimer();
+  };
+
+  // ===== DEMO MODE =====
+  const startDemo = () => {
+    let step = 0;
+
+    demoLoop.current = setInterval(() => {
+      step++;
+
+      // Step 1: Highlight card
+      if (step === 1) setSelected("smokecraft");
+
+      // Step 2: Simulate scoring
+      if (step === 2) {
+        fetch("/api/scoring", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            flavor: 85,
+            strength: 75,
+            pairing: 90
+          })
+        })
+          .then(res => res.json())
+          .then(data => setDemoScore(data.score));
+      }
+
+      // Step 3: Show result
+      if (step === 3) {
+        setDemoStep(3);
+      }
+
+      // Reset loop
+      if (step > 5) {
+        setSelected(null);
+        setDemoStep(0);
+        setDemoScore(null);
+        step = 0;
+      }
+
+    }, 2500);
+  };
+
+  // ===== USER SELECT =====
+  const handleSelect = (theme) => {
+    resetIdle();
+
+    const click = new Audio("/sounds/click.mp3");
+    click.volume = 0.3;
+    click.play();
+
+    setSelected(theme);
+
+    setTimeout(() => {
+      navigate("/" + theme);
+    }, 600);
+  };
+
+  // ===== GLOBAL TOUCH =====
+  useEffect(() => {
+    window.addEventListener("click", resetIdle);
+    window.addEventListener("touchstart", resetIdle);
+
+    return () => {
+      window.removeEventListener("click", resetIdle);
+      window.removeEventListener("touchstart", resetIdle);
+    };
+  }, []);
+
+  return (
+    <div style={styles.wrapper}>
+      <div style={styles.overlay} />
+
+      {stage === "splash" && (
+        <div style={styles.splash}>
+          <h1 style={styles.piMain}>PROFOUND INNOVATION</h1>
+          <h2 style={styles.piSub}>P.I</h2>
+        </div>
+      )}
+
+      {stage === "select" && (
+        <div style={styles.center}>
+          <h1 style={styles.title}>Craft Your Experience</h1>
+
+          {isIdle && (
+            <div style={styles.tapPulse}>
+              WATCH THE EXPERIENCE
+            </div>
+          )}
+
+          <div style={styles.cardRow}>
+            {cards.map((card) => (
+              <div
+                key={card.key}
+                onClick={() => handleSelect(card.key)}
+                style={{
+                  ...styles.card,
+                  backgroundImage: `url(${card.image})`,
+                  transform:
+                    selected === card.key
+                      ? "scale(1.05)"
+                      : "scale(1)",
+                  opacity:
+                    selected && selected !== card.key ? 0 : 1
+                }}
+              >
+                <div style={styles.cardOverlay} />
+                <div style={styles.cardContent}>
+                  <h2>{card.title}</h2>
+                  <p>{card.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* DEMO RESULT */}
+          {isIdle && demoStep === 3 && (
+            <div style={styles.demoResult}>
+              <h2>Elite Experience</h2>
+              <p>Score: {demoScore}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const styles = {
+  wrapper: {
+    height: "100vh",
+    background:
+      "url('https://images.unsplash.com/photo-1552566626-52f8b828add9') center/cover",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+
+  overlay: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    background:
+      "linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.5))"
+  },
+
+  splash: {
+    textAlign: "center",
+    color: "#fff"
+  },
+
+  piMain: {
+    fontSize: "46px"
+  },
+
+  piSub: {
+    opacity: 0.6
+  },
+
+  center: {
+    textAlign: "center",
+    color: "#fff"
+  },
+
+  title: {
+    fontSize: "36px",
+    marginBottom: "20px"
+  },
+
+  tapPulse: {
+    animation: "pulse 1.5s infinite",
+    marginBottom: "20px"
+  },
+
+  cardRow: {
+    display: "flex",
+    gap: "30px"
+  },
+
+  card: {
+    width: "300px",
+    height: "420px",
+    borderRadius: "20px",
+    backgroundSize: "cover",
+    cursor: "pointer",
+    transition: "all 0.4s"
+  },
+
+  cardOverlay: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    background:
+      "linear-gradient(to top, rgba(0,0,0,0.85), transparent)",
+    borderRadius: "20px"
+  },
+
+  cardContent: {
+    position: "absolute",
+    bottom: "20px",
+    left: "20px"
+  },
+
+  demoResult: {
+    marginTop: "30px",
+    fontSize: "20px"
+  }
+};

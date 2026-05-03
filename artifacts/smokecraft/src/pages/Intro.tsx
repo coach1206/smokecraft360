@@ -22,6 +22,30 @@ const SPLASH_TITLE        = "PROFOUND INNOVATION";
 const IDLE_THRESHOLD_MS   = 8000;   // no input for 8s on the selector → attract mode
 const DEMO_CYCLE_MS       = 2500;   // attract-mode card highlight cadence
 
+/**
+ * Sample inputs for the attract-mode preview scorecard. Mirrors the
+ * /api/scoring contract (flavor/strength/pairing ∈ [0,10]).
+ */
+const DEMO_SAMPLE = { flavor: 8.5, strength: 7.5, pairing: 9.0 };
+
+/**
+ * Client-side mirror of the server's /api/scoring formula:
+ *     score = flavor*0.4 + strength*0.3 + pairing*0.3
+ *
+ * Kept in lockstep with artifacts/api-server/src/routes/scoring.ts so the
+ * attract loop can preview a realistic score without any network traffic.
+ */
+function previewScore(s: typeof DEMO_SAMPLE): { score: number; label: string } {
+  const score = Number((s.flavor * 0.4 + s.strength * 0.3 + s.pairing * 0.3).toFixed(2));
+  const label =
+    score >= 8.5 ? "exceptional"
+    : score >= 7 ? "excellent"
+    : score >= 5 ? "balanced"
+    : score >= 3 ? "modest"
+    :              "weak";
+  return { score, label };
+}
+
 type ThemeKey = "smokecraft" | "pourcraft" | "vapecraft";
 
 interface Experience {
@@ -468,6 +492,67 @@ export default function Intro() {
           );
         })}
       </div>
+
+      {/* Attract-mode preview scorecard — visible while the demo loop sits on
+          the SmokeCraft card. Uses the same weighted formula as /api/scoring
+          so the displayed result is always consistent with the live engine,
+          but computed client-side to avoid hammering the API from idle kiosks. */}
+      <AnimatePresence>
+        {isIdle && !selected && stage === "select" && attractIdx === 0 && (() => {
+          const { score, label } = previewScore(DEMO_SAMPLE);
+          return (
+            <motion.div
+              key="attract-scorecard"
+              data-testid="intro-demo-scorecard"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                position: "fixed", left: "50%", bottom: "14vh",
+                transform: "translateX(-50%)",
+                zIndex: 41, pointerEvents: "none",
+                padding: "16px 28px", borderRadius: 14,
+                border: "1px solid rgba(212,175,55,0.35)",
+                background: "rgba(10,6,4,0.78)",
+                backdropFilter: "blur(8px)",
+                color: "#F5EBDD", textAlign: "center",
+                boxShadow: "0 14px 50px rgba(0,0,0,0.6)",
+                minWidth: 280,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 11, letterSpacing: "0.4em",
+                  textTransform: "uppercase",
+                  color: "rgba(212,175,55,0.8)",
+                  marginBottom: 8,
+                }}
+              >
+                Preview · SmokeCraft Score
+              </div>
+              <div
+                style={{
+                  fontFamily: "var(--app-font-serif, Georgia, serif)",
+                  fontSize: 30, fontWeight: 600,
+                  color: "#D4AF37", lineHeight: 1.1,
+                }}
+              >
+                {score.toFixed(2)}
+              </div>
+              <div
+                style={{
+                  marginTop: 4, fontSize: 13,
+                  letterSpacing: "0.28em", textTransform: "uppercase",
+                  color: "#F5EBDD", opacity: 0.7,
+                }}
+              >
+                {label}
+              </div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
 
       {/* Attract-mode "TAP TO BEGIN" pulse — appears after IDLE_THRESHOLD_MS
           of no interaction on the selector. Disappears on any input. */}
