@@ -30,6 +30,7 @@ import systemStatusRouter  from "./routes/systemStatus";
 import uploadRouter             from "./routes/upload";
 import ordersRouter             from "./routes/orders";
 import reservationsRouter       from "./routes/reservations";
+import conflictsRouter          from "./routes/conflicts";
 import checkoutRouter           from "./routes/checkout";
 import { stripeWebhookHandler } from "./routes/stripeWebhook";
 import { posWebhookHandler }    from "./routes/posWebhook";
@@ -170,6 +171,7 @@ app.use("/api/system",                      systemStatusRouter);
 app.use("/api/upload",                      uploadRouter);
 app.use("/api/orders",                      ordersRouter);
 app.use("/api/reservations",                reservationsRouter);
+app.use("/api/conflicts",                   conflictsRouter);
 // Operations layer — staff/manager tools: reorder alerts, menu layout
 // optimization, profit calc, staff pitch. All gated to staff+.
 app.use("/api/ops",                         operationsRouter);

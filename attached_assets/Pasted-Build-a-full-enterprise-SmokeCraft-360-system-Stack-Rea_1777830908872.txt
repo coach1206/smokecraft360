@@ -1,0 +1,358 @@
+Build a full enterprise SmokeCraft 360 system.
+
+Stack:
+React + Vite
+Node.js + Express + TypeScript
+PostgreSQL + Drizzle ORM
+JWT Auth
+Zod validation
+
+This is a production-level system, not a mockup.
+
+==================================================
+UI / UX (MANDATORY)
+==================================================
+
+- Glassmorphism design (blur, transparency)
+- Deep layered cards (no flat cards)
+- Smooth animations
+- Touchscreen optimized (tablet/kiosk)
+- Large responsive buttons
+- Active sliders + faders
+- Clean typography
+- Premium cigar lounge visuals
+- Dark luxury theme with gold accents
+
+Every screen must include:
+- Back button (working)
+- Home button (working)
+
+==================================================
+FRONTEND ROUTES
+==================================================
+
+/admin
+/admin/vendors
+/admin/venues
+/admin/products
+/admin/inventory
+/admin/orders
+/admin/finance
+/admin/contracts
+/admin/integrations
+/admin/conflicts
+/admin/exports
+/admin/updates
+/admin/system-health
+/admin/loyalty
+/admin/competition
+/admin/hardware
+/admin/demo
+
+/vendor/dashboard
+/vendor/products
+/vendor/inventory
+/vendor/orders
+
+/venue/dashboard
+/venue/inventory
+/venue/orders
+
+/kiosk/start
+/kiosk/session
+/kiosk/reset
+
+/demo/nda
+/demo/session
+
+==================================================
+DATABASE TABLES
+==================================================
+
+users
+vendors
+venues
+products
+inventory
+orders
+order_items
+commission_rules
+commission_ledger
+payout_requests
+refunds
+disputes
+contracts
+contract_signatures
+nda_signatures
+integrations
+integration_logs
+distributors
+conflicts
+export_logs
+update_packages
+audit_logs
+offline_queue
+ai_events
+kiosk_sessions
+loyalty
+competition
+hardware
+
+==================================================
+DATA OWNERSHIP ENGINE
+==================================================
+
+Each record must track:
+
+sourceType:
+admin
+vendor
+venue
+pos
+distributor
+system
+
+priorityLevel
+version
+lastUpdatedBy
+
+Rules:
+Admin overrides everything
+POS controls live quantity if enabled
+Distributor controls catalog if authorized
+Vendor controls retail price unless locked
+
+==================================================
+CONFLICT ENGINE
+==================================================
+
+Detect:
+
+price mismatch
+inventory mismatch
+duplicate product
+unauthorized overwrite
+
+Admin must resolve conflicts via UI.
+
+==================================================
+FINANCIAL ENGINE
+==================================================
+
+Support:
+
+platform commission
+venue share
+vendor payout
+sales commission
+
+Include:
+
+payout approval
+refund handling
+dispute freeze
+
+==================================================
+CONTRACT + NDA SYSTEM
+==================================================
+
+Contracts:
+
+vendor
+venue
+distributor
+sales
+hardware
+
+Store:
+terms
+commission
+permissions
+signature
+timestamp
+
+NDA:
+
+User must sign before demo
+Store:
+name
+signature
+timestamp
+
+==================================================
+COMPLIANCE
+==================================================
+
+- Age verification
+- Region restriction placeholder
+- Restricted product rules
+
+==================================================
+OFFLINE MODE
+==================================================
+
+Store locally:
+
+inventory snapshot
+orders queue
+updates queue
+
+Sync when online.
+
+==================================================
+KIOSK MODE
+==================================================
+
+- Auto reset
+- Session timeout
+- Locked admin
+- Touch UI
+
+==================================================
+INTEGRATION HUB
+==================================================
+
+Create connectors:
+
+SquareConnector
+ToastConnector
+CloverConnector
+GenericConnector
+
+Functions:
+
+connect
+sync
+status
+webhook
+
+Routes:
+
+POST /api/integrations/connect
+POST /api/integrations/sync
+GET /api/integrations/status
+
+==================================================
+EXPORT SYSTEM
+==================================================
+
+Export:
+
+vendors
+products
+inventory
+orders
+commissions
+
+Formats:
+CSV
+JSON
+
+==================================================
+UPDATE SYSTEM
+==================================================
+
+Allow:
+
+upload update
+validate
+apply
+rollback
+
+==================================================
+AI LEARNING
+==================================================
+
+Track:
+
+clicks
+selections
+orders
+
+Adjust recommendation weights.
+
+==================================================
+LOYALTY SYSTEM
+==================================================
+
+Points system
+Tier levels
+Rewards
+
+==================================================
+COMPETITION SYSTEM
+==================================================
+
+Track:
+
+venue sales
+top products
+leaderboards
+
+==================================================
+HARDWARE SYSTEM
+==================================================
+
+Track:
+
+tablet
+kiosk
+assignment
+status
+
+==================================================
+SECURITY
+==================================================
+
+JWT auth
+role-based access
+rate limiting
+audit logs
+input validation
+
+Roles:
+
+admin
+vendor
+venue
+staff
+
+==================================================
+SYSTEM HEALTH
+==================================================
+
+Show:
+
+DB status
+API status
+integration status
+sync status
+errors
+
+==================================================
+SEED DATA
+==================================================
+
+Create:
+
+1 admin
+2 vendors
+2 venues
+10+ products
+inventory records
+orders
+logs
+
+==================================================
+DELIVERABLE
+==================================================
+
+After build return:
+
+Full code
+File tree
+Run instructions
+Env variables
+DB setup
+Testing checklist
+System explanation

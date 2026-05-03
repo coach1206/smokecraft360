@@ -507,6 +507,63 @@ export async function updateReservationStatus(
   return res.json();
 }
 
+// ── Data conflicts ────────────────────────────────────────────────────────────
+
+export type ConflictStatus     = "open" | "resolved" | "dismissed";
+export type ConflictResolution = "use_a" | "use_b" | "use_custom" | "dismissed";
+export type ConflictSource     = "vendor" | "pos" | "distributor" | "system" | "admin" | "manual";
+export type ConflictEntityType = "product" | "inventory" | "price" | "venue" | "other";
+
+export interface DataConflict {
+  id:            string;
+  entityType:    ConflictEntityType;
+  entityId:      string;
+  venueId:       string | null;
+  fieldName:     string;
+  sourceA:       ConflictSource;
+  valueA:        string;
+  sourceB:       ConflictSource;
+  valueB:        string;
+  detectedAt:    string;
+  detectedBy:    string | null;
+  status:        ConflictStatus;
+  resolution:    ConflictResolution | null;
+  resolvedValue: string | null;
+  resolvedBy:    string | null;
+  resolvedAt:    string | null;
+  notes:         string | null;
+  createdAt:     string;
+  updatedAt:     string;
+}
+
+export async function fetchConflicts(status?: ConflictStatus): Promise<DataConflict[]> {
+  const qs = status ? `?status=${encodeURIComponent(status)}` : "";
+  const res = await fetch(`/api/conflicts${qs}`, { headers: getAuthHeaders() });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to fetch conflicts");
+  }
+  const data = await res.json() as { conflicts: DataConflict[] };
+  return data.conflicts;
+}
+
+export async function resolveConflict(
+  id: string,
+  resolution: ConflictResolution,
+  opts: { customValue?: string; notes?: string } = {},
+): Promise<DataConflict> {
+  const res = await fetch(`/api/conflicts/${id}/resolve`, {
+    method:  "PATCH",
+    headers: getAuthHeaders(),
+    body:    JSON.stringify({ resolution, ...opts }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to resolve conflict");
+  }
+  return res.json();
+}
+
 /**
  * Upload an image file to Cloudinary via the backend.
  * Returns the Cloudinary secure URL on success.

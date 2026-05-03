@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
-  ArrowLeft, TrendingUp, Package, Sparkles, Zap, Plus, CalendarClock,
+  ArrowLeft, TrendingUp, Package, Sparkles, Zap, Plus, CalendarClock, AlertTriangle,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
   Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown, Award, Gift, Monitor, Activity,
 } from "lucide-react";
@@ -24,6 +24,7 @@ import { DeviceManagerTab }          from "@/components/Dashboard/DeviceManagerT
 import { OsTab }                     from "@/components/Dashboard/OsTab";
 import { NewProductForm }            from "@/components/Dashboard/NewProductForm";
 import { ReservationsTab }           from "@/components/Dashboard/ReservationsTab";
+import { ConflictsTab }              from "@/components/Dashboard/ConflictsTab";
 import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
   type InventoryItem, type AnalyticsSummary,
@@ -36,12 +37,13 @@ import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
-type DashTab = "overview" | "products" | "reservations" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os";
+type DashTab = "overview" | "products" | "reservations" | "conflicts" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os";
 
 const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
   { id: "overview",     label: "Overview",              icon: <BarChart3 size={12} />    },
   { id: "products",     label: "Products",              icon: <Package size={12} />      },
   { id: "reservations", label: "Reservations",          icon: <CalendarClock size={12} /> },
+  { id: "conflicts",    label: "Conflicts",             icon: <AlertTriangle size={12} /> },
   { id: "brands",       label: "Brands & Distributors", icon: <Building2 size={12} />    },
   { id: "campaigns",    label: "Campaigns",             icon: <Zap size={12} />          },
   { id: "insights",     label: "Brand Insights",        icon: <TrendingUp size={12} />   },
@@ -397,6 +399,9 @@ export default function Dashboard() {
 
                 {/* ── Reservations tab ───────────────────────────────────────── */}
                 {activeTab === "reservations" && <ReservationsTab />}
+
+                {/* ── Conflicts tab ──────────────────────────────────────────── */}
+                {activeTab === "conflicts" && <ConflictsTab />}
 
                 {/* ── Brands & Distributors tab ──────────────────────────────── */}
                 {activeTab === "brands" && (
