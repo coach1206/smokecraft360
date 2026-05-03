@@ -1,0 +1,331 @@
+FINAL STATUS: NOT COMPLETE UNTIL THIS IS BUILT
+⚠️ MISSING / REQUIRED (NO EXCEPTIONS)
+
+You were close, but these are still critical gaps:
+
+Session Memory + Persistence Layer
+→ Without this, evolution + personality = fake
+Blend Naming Engine (AI-generated identity)
+→ Makes results feel premium + shareable
+Cigar Image Library (REAL curated fallback)
+→ API alone is not enough
+AI Rate Limiting + Fallback Responses
+→ Prevents crashes + lag in live use
+Event Logging + Analytics
+→ You need to see how users behave
+“Beat Your Last Score” Mode (Retention loop)
+→ This is what makes people come back
+Admin Control Panel (tune scoring + AI tone)
+→ You’ll need this once users hit it
+🛡️ FAILURE PREVENTION CHECKLIST
+
+✔ No static responses
+✔ No repeated AI phrases
+✔ No generic images ever again
+✔ No score inflation
+✔ All results must feel earned
+✔ Every action must trigger visible feedback
+✔ System must work offline fallback
+
+🧠 MASTER SYSTEM PROMPT (FINAL VERSION)
+
+BUILD SMOKECRAFT 360 AS A FULL ADAPTIVE CIGAR EXPERIENCE OS
+
+CORE OBJECTIVE:
+
+Create a system that:
+
+learns the user
+scores intelligently
+responds with personality
+evolves over time
+creates competition
+generates shareable outputs
+drives repeat usage
+PART 1: SCORING ENGINE (NON-INFLATED)
+
+Base score = 50
+
+FLAVOR MATCH:
++8 match
++4 partial
+-6 conflict
+
+STRENGTH:
++10 match
+-8 mismatch
+
+MOOD:
++6 match
+-5 mismatch
+
+RARITY BONUS:
++10 rare combos
+
+CONFLICT PENALTY:
+-10 if conflicting traits stack
+
+Clamp:
+40–98
+
+PART 2: USER PROFILE SYSTEM (PERSISTENT MEMORY)
+
+Create DB:
+
+user_profiles {
+user_id,
+humor_level,
+competitiveness,
+directness,
+archetype,
+past_scores JSON,
+past_flavors JSON,
+best_score,
+sessions_count,
+last_feedback
+}
+
+PART 3: EVOLUTION ENGINE
+
+Compute:
+
+avgLast5
+improvement %
+
+Display:
+
+"Our evolution as a cigar profile"
+"You’ve improved X% over your last 5 blends"
+"You tend to prefer bold + cocoa profiles"
+
+PART 4: ARCHETYPE ENGINE
+
+Assign:
+
+Dominant Palate
+Smooth Operator
+Risk Taker
+Craftsman
+
+Store + display badge
+
+PART 5: AI PERSONALITY ENGINE (OPENAI)
+
+INPUT:
+
+user profile
+last 5 sessions
+current selections
+score
+
+OUTPUT:
+
+personality feedback
+explanation
+improvement suggestion
+progress acknowledgment
+
+Tone adapts:
+
+high humor → witty
+high competitive → challenging
+direct → concise
+PART 6: NEXT MOVE ENGINE
+
+Generate:
+
+3 actionable improvements
+
+Always end feedback with:
+
+"Next move:"
+→ specific flavor
+→ strength adjustment
+→ pairing suggestion
+
+PART 7: BLEND NAMING ENGINE (AI)
+
+Generate names like:
+
+"Midnight Ember"
+"Velvet Smoke"
+"Golden Reserve"
+
+Store + display
+
+PART 8: SHAREABLE BLEND CARD
+
+Include:
+
+cigar image
+blend name
+score
+archetype
+flavor profile
+percentile ranking
+
+Export:
+PNG / share link
+
+PART 9: LEADERBOARD SYSTEM
+
+Track:
+
+top_blends {
+user_id,
+score,
+blend_name,
+timestamp
+}
+
+Display:
+Top blends today / week
+
+PART 10: BEAT YOUR LAST SCORE MODE
+
+Display:
+
+"Your Best: 88"
+"Current: 82"
+
+CTA:
+"Beat Your Last Blend"
+
+PART 11: CIGAR MATCH ENGINE
+
+Match cigar dynamically based on:
+
+flavor overlap
+strength
+mood
+
+Return:
+
+real cigar
+size
+wrapper
+cut
+burn time
+PART 12: IMAGE SYSTEM (LOCKED)
+
+Use:
+
+controlled flavor mapping
+real cigar images
+whiskey visuals
+
+Fallback:
+local assets only (no placeholders)
+
+PART 13: PERFORMANCE + SAFETY
+cache AI responses
+rate limit requests
+fallback to pre-written responses if API fails
+PART 14: ADMIN PANEL
+
+Allow:
+
+adjust scoring weights
+tweak AI tone levels
+view top blends
+monitor usage
+FINAL RESULT:
+
+System behaves like:
+A premium cigar concierge that learns, adapts, and challenges the user.
+
+
+
+
+💻 FULL CORE WIRING (REPLIT READY)
+🧠 SCORING + EVOLUTION
+function calculateScore(user, cigar) {
+  let score = 50;
+
+  user.flavors.forEach(f => {
+    if (cigar.flavors.includes(f)) score += 8;
+    else score -= 4;
+  });
+
+  if (user.strength === cigar.strength) score += 10;
+  else score -= 6;
+
+  if (user.mood === cigar.mood) score += 6;
+  else score -= 3;
+
+  if (user.flavors.includes("floral") && user.flavors.includes("smoky")) {
+    score += 10;
+  }
+
+  return Math.max(40, Math.min(score, 98));
+}
+
+function calculateImprovement(current, history) {
+  const last = history.slice(-5);
+  const avg = last.reduce((a, b) => a + b, 0) / last.length || 50;
+  return ((current - avg) / avg) * 100;
+}
+🧠 ARCHETYPE
+function getArchetype(user) {
+  if (user.flavors.includes("smoky") && user.flavors.includes("leather"))
+    return "Dominant Palate";
+  if (user.flavors.includes("creamy"))
+    return "Smooth Operator";
+  if (user.flavors.length > 3)
+    return "Risk Taker";
+  return "Craftsman";
+}
+🤖 OPENAI ROUTE
+app.post("/api/ai-feedback", async (req, res) => {
+  const { userId, flavors, strength, mood, score } = req.body;
+
+  const user = await db.getUserProfile(userId);
+
+  const prompt = `
+User personality:
+Humor: ${user.humor_level}
+Competitive: ${user.competitiveness}
+Direct: ${user.directness}
+
+Selections:
+${flavors.join(", ")} | ${strength} | ${mood}
+Score: ${score}
+
+Give:
+- reaction
+- explanation
+- improvement suggestion
+- acknowledge progress
+`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    res.json({ message: response.choices[0].message.content });
+  } catch {
+    res.json({ message: "Solid build. Try adjusting strength for better balance next round." });
+  }
+});
+🏆 LEADERBOARD
+app.post("/api/leaderboard", async (req, res) => {
+  const { userId, score, blendName } = req.body;
+
+  await db.insert("top_blends", {
+    user_id: userId,
+    score,
+    blend_name: blendName,
+    timestamp: new Date()
+  });
+
+  res.sendStatus(200);
+});
+🎯 WHAT YOU NOW HAVE
+
+This is no longer:
+
+❌ a UI
+❌ a selector
+❌ a gimmick

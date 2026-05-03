@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, animate } from "framer-motion";
 import { CategoryToggle }    from "@/components/CategoryToggle";
 import { FlavorChips }       from "@/components/FlavorChips";
 import { StrengthSlider }    from "@/components/StrengthSlider";
@@ -40,6 +40,30 @@ const SLIDE_VARIANTS = {
   exit:   (dir: number) => ({ x: dir > 0 ? "-55%"  : "55%",  opacity: 0 }),
 };
 const SLIDE_T = { duration: 0.42, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] };
+
+/* ── AnimatedCount ─────────────────────────────────────────────────
+ * Counts up from 0 → `to` over `durationMs`, starting after `delayMs`.
+ * Uses framer-motion's `animate()` driver so it cancels cleanly on
+ * unmount (no leaked rAF). Tabular-nums + fixed min-width on the parent
+ * span so the digits don't reflow during the count.                   */
+function AnimatedCount({
+  to, delayMs = 0, durationMs = 1200, className, style,
+}: { to: number; delayMs?: number; durationMs?: number; className?: string; style?: React.CSSProperties }) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    setValue(0);
+    const t = setTimeout(() => {
+      const controls = animate(0, to, {
+        duration: durationMs / 1000,
+        ease: [0.22, 1, 0.36, 1],
+        onUpdate: (v) => setValue(Math.round(v)),
+      });
+      return () => controls.stop();
+    }, delayMs);
+    return () => clearTimeout(t);
+  }, [to, delayMs, durationMs]);
+  return <span className={className} style={style}>{value}</span>;
+}
 
 /* ── Swipe-deck card data ─────────────────────────────────────── */
 // Hero imagery: curated Unsplash photos (free-licensed) keyed to each flavor.
@@ -1410,6 +1434,41 @@ export default function Home() {
               className="flex flex-col flex-1 w-full"
               style={{ position: "relative" }}
             >
+              {/* Subtle smoke FX — two slow-drifting blurred plumes at the
+                  top of the reveal panel. Pure CSS gradients on motion.divs,
+                  GPU-only translate/opacity so it never costs frame time on
+                  a kiosk. Pointer-events: none so it can't ever block taps. */}
+              <motion.div
+                aria-hidden
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.4, duration: 1.6 }}
+                style={{
+                  position: "absolute", top: 0, left: 0, right: 0, height: 320,
+                  pointerEvents: "none", zIndex: 4, overflow: "hidden",
+                }}
+              >
+                {[0, 1].map((i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ x: i ? "20%" : "-20%", y: 30, opacity: 0 }}
+                    animate={{
+                      x: i ? ["20%", "-10%", "30%"] : ["-20%", "10%", "-30%"],
+                      y: [30, -10, 30],
+                      opacity: [0, 0.32, 0.18, 0.32, 0],
+                    }}
+                    transition={{ delay: 1.6 + i * 0.6, duration: 9, repeat: Infinity, ease: "easeInOut" }}
+                    style={{
+                      position: "absolute",
+                      top: i ? -40 : 0, left: i ? "30%" : "10%",
+                      width: 360, height: 220,
+                      background: "radial-gradient(ellipse at center, rgba(220,200,170,0.32) 0%, rgba(180,150,110,0.16) 40%, transparent 72%)",
+                      filter: "blur(28px)",
+                      mixBlendMode: "screen",
+                    }}
+                  />
+                ))}
+              </motion.div>
               {/* Curtain lift — a near-black overlay that fades out over the
                   first ~1.5 s so the reveal feels like a stage lighting up
                   instead of an instant page swap. Pointer-events: none so it
@@ -1478,9 +1537,13 @@ export default function Home() {
                     background: "linear-gradient(135deg, rgba(40,28,14,0.85), rgba(60,40,18,0.7))",
                   }}
                 >
-                  <span className="font-serif" style={{ fontSize: 38, fontWeight: 600, color: "rgba(212,175,55,0.96)", letterSpacing: "0.02em", lineHeight: 1 }}>
-                    {blendScore}
-                  </span>
+                  <AnimatedCount
+                    to={blendScore}
+                    delayMs={1400}
+                    durationMs={1500}
+                    className="font-serif"
+                    style={{ fontSize: 38, fontWeight: 600, color: "rgba(212,175,55,0.96)", letterSpacing: "0.02em", lineHeight: 1, fontVariantNumeric: "tabular-nums", minWidth: 64, display: "inline-block", textAlign: "right" }}
+                  />
                   <span style={{ fontSize: 15, color: "rgba(210,190,155,0.55)", letterSpacing: "0.1em" }}>/ 100</span>
                 </motion.div>
 
