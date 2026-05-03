@@ -1,0 +1,140 @@
+Build the SmokeCraft / PourCraft / BrewCraft pairing selection screen as a guided, step-based experience.
+
+----------------------------------------
+GLOBAL RULES
+----------------------------------------
+- No transparent cards
+- No floating elements
+- No random animations
+- All visuals must be intentional and tied to the selection
+- Cards must be visually descriptive (user should “see” the flavor)
+
+----------------------------------------
+STEP STRUCTURE
+----------------------------------------
+
+Top of screen:
+
+"Step 1: Choose Your Flavor Profile"
+
+Subtext:
+"This determines your cigar and drink pairing"
+
+----------------------------------------
+FLAVOR CARDS (CRITICAL UPDATE)
+----------------------------------------
+
+Each flavor card must include:
+
+1. Cream background (#F5EFE6)
+2. CLEAR readable text
+3. A REAL IMAGE representing the drink
+
+----------------------------------------
+BEER SYSTEM (MANDATORY FOR BREWCRAFT)
+----------------------------------------
+
+Each BrewCraft flavor MUST show real beer imagery:
+
+Smooth & Mellow:
+- Light golden beer
+- Clean foam
+- Lager or pilsner look
+
+Spicy & Warm:
+- Amber beer
+- Reddish tones
+- Stronger body
+
+Smoky & Bold:
+- Dark stout or porter
+- Thick foam
+- Deep brown/black tones
+
+Rich & Sweet:
+- Dark ale or stout
+- Creamy texture
+- Chocolate tones
+
+----------------------------------------
+CARD STRUCTURE
+----------------------------------------
+
+Each card:
+
+Top:
+- Image (takes up top portion of card)
+
+Bottom:
+- Title (Smooth & Mellow, etc.)
+- Flavor notes
+
+----------------------------------------
+CARD INTERACTION
+----------------------------------------
+
+On click:
+
+- Selected card:
+  - scales up slightly
+  - changes to gold highlight (#D4A85F)
+
+- Other cards:
+  - dim slightly
+
+----------------------------------------
+AI PANEL (RIGHT SIDE)
+----------------------------------------
+
+Must react to selection:
+
+Example:
+
+Smooth & Mellow:
+"This lighter beer profile pairs well with mild cigars and smooth finishes."
+
+----------------------------------------
+NEXT STEP FLOW
+----------------------------------------
+
+After selection:
+
+Show button:
+
+"Continue to Pairing →"
+
+----------------------------------------
+MOVEMENT
+----------------------------------------
+
+Flow must be:
+
+1. User sees step
+2. User sees real drink visuals
+3. User selects
+4. System responds
+5. User continues
+
+----------------------------------------
+VISUAL RULE (IMPORTANT)
+----------------------------------------
+
+User must be able to:
+
+LOOK at the card
+and instantly understand the flavor
+
+WITHOUT reading
+
+----------------------------------------
+FINAL EXPERIENCE
+----------------------------------------
+
+This must feel like:
+
+"A visual selection system driven by real drink identity"
+
+NOT:
+- generic cards
+- placeholder UI
+- text-only selection
