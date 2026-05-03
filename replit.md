@@ -83,7 +83,7 @@ A unified "AI brain" layer that attaches deterministic natural-language commenta
 
 **Operational notes:**
 
-- The ElevenLabs connector (`ccfg_elevenlabs_01KG0GEQNFW9Z6F2NYP4C2VHM9`) needs to be authorized via Replit integrations before voice playback works. Until then, every `/api/voice/speak` call returns 503 and the UI shows the connect-CTA hint — the rest of the page is fully functional.
+- ElevenLabs voice activation: the user dismissed the Replit connector prompt during this session. To enable voice playback later, either (a) re-propose `ccfg_elevenlabs_01KG0GEQNFW9Z6F2NYP4C2VHM9` and complete OAuth, OR (b) add an `ELEVENLABS_API_KEY` secret — `lib/elevenlabs.ts` checks the connector first then falls back to that env var. Until one of those is in place, every `/api/voice/speak` call returns 503 `voice_not_configured` and the UI shows the connect-CTA hint instead of the play button — the rest of every page (commentary text, menu suggestions, mic input, recommendations) is fully functional.
 - Voice rate limit is 15/min/IP. A typical kiosk session hits it 1–2 times (once on result, occasionally on persona swap), so the cap is effectively spam-only.
 - Menu POST returns 401 to anonymous callers; 8 house items are seeded directly via SQL during initial setup.
 - Smoke-tested end-to-end: `/api/recommend` returns commentary with 8 pairing tags, `/api/menu/suggested?tags=smoky,sweet,bbq` returns 3 ranked items, `/api/voice/speak` returns 503 with the documented error code, voice limiter trips after 15 calls.
