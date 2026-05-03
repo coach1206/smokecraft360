@@ -39,18 +39,31 @@ const BG: Record<string, BgState> = {
   results:              { filter: "brightness(0.40) saturate(1.15)",                    tint: "rgba(10,6,3,0.58)"   },
 };
 
-// Map bg keys → specific scene image (falls back to lounge-bg.jpg)
+// Map bg keys → specific scene image (falls back to WHISKEY_SCENE)
+//
+// Bg policy: NO fruit, NO citrus garnish, NO cocktails. Spirits scenes show
+// neat whiskey/bourbon in a rocks glass on dark wood — that's the brand.
+// Cigar scenes show smoke + tobacco. Mood scenes (relaxed/social/bold/
+// reflective) are abstract lounge ambiance.
+const WHISKEY_SCENE =
+  "https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=1600&q=70";
+const CIGAR_SCENE =
+  "https://images.unsplash.com/photo-1527144901953-6e34cf3a4ff5?auto=format&fit=crop&w=1600&q=70";
+
 const SCENE: Record<string, string> = {
-  mood_relaxed:     "/images/scenes/relaxed.jpg",
-  mood_social:      "/images/scenes/social.jpg",
-  mood_celebratory: "/images/scenes/social.jpg",
-  mood_bold:        "/images/scenes/bold.jpg",
-  mood_intense:     "/images/scenes/bold.jpg",
-  mood_adventurous: "/images/scenes/bold.jpg",
-  mood_reflective:  "/images/scenes/reflective.jpg",
-  mood_focused:     "/images/scenes/reflective.jpg",
+  welcome:             WHISKEY_SCENE,
+  experience_cigar:    CIGAR_SCENE,
+  experience_spirits:  WHISKEY_SCENE,
+  mood_relaxed:        "/images/scenes/relaxed.jpg",
+  mood_social:         "/images/scenes/social.jpg",
+  mood_celebratory:    "/images/scenes/social.jpg",
+  mood_bold:           "/images/scenes/bold.jpg",
+  mood_intense:        "/images/scenes/bold.jpg",
+  mood_adventurous:    "/images/scenes/bold.jpg",
+  mood_reflective:     "/images/scenes/reflective.jpg",
+  mood_focused:        "/images/scenes/reflective.jpg",
 };
-const DEFAULT_SCENE = "/images/lounge-bg.jpg";
+const DEFAULT_SCENE = WHISKEY_SCENE;
 
 interface Props { bgKey: string }
 

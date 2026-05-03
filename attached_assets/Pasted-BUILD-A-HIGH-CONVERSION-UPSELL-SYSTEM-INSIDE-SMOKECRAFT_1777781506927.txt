@@ -1,0 +1,189 @@
+BUILD A HIGH-CONVERSION UPSELL SYSTEM INSIDE SMOKECRAFT 360 / POURCRAFT 360 THAT FEELS NATURAL, PREMIUM, AND INTEGRATED INTO THE EXPERIENCE FLOW
+
+---
+
+CORE OBJECTIVE
+
+Increase revenue by presenting upgrades and add-ons immediately after the user completes their experience.
+
+Upsells must feel like:
+
+* a better version of what they already want
+* not a random sales pitch
+
+---
+
+UPSSELL TRIGGER POINT
+
+Display upsells ONLY after:
+
+👉 “Your Experience Is Ready”
+
+This is the emotional peak of the journey
+
+---
+
+UPSSELL PANEL (RIGHT SIDE OR MODAL)
+
+Create a dedicated section labeled:
+
+“Upgrade Your Experience”
+
+---
+
+UPSSELL TYPES
+
+1. PREMIUM UPGRADE
+
+Show a better version of the selected cigar or drink
+
+Example:
+
+Standard:
+Padron 1964
+
+Upgrade:
+Limited Reserve Maduro
+
+Display:
+
+* richer flavor description
+* aged wrapper
+* stronger profile
+
+---
+
+2. EXPERIENCE BUNDLE
+
+Offer a full package:
+
+* cigar + whiskey + pairing
+
+Example:
+
+“Full Lounge Experience – $95”
+
+---
+
+3. CUSTOMIZATION
+
+Allow personalization:
+
+* custom cigar band
+* engraved box
+* naming the experience
+
+---
+
+4. MEMBERSHIP (OPTIONAL)
+
+Offer recurring value:
+
+* exclusive cigars
+* hidden pairings
+* priority access
+
+---
+
+VISUAL DESIGN
+
+Each upsell must:
+
+* use real product images
+* have gold border or glow
+* be slightly elevated above base selection
+
+---
+
+INTERACTION
+
+Each upsell card must:
+
+* animate in (slide from right)
+* respond on click (scale + glow)
+* play click sound
+
+---
+
+PSYCHOLOGY TRIGGERS
+
+Add:
+
+* “Recommended for You”
+* “Most Popular Upgrade”
+* “Limited Availability”
+
+Optional:
+
+* stock counter (e.g., “Only 7 left”)
+
+---
+
+PRICING DISPLAY
+
+Show:
+
+* base option
+* upgraded option
+* price difference clearly
+
+Example:
+
+Standard – Included
+Upgrade – +$25
+
+---
+
+CHECKOUT INTEGRATION
+
+When user clicks:
+
+* “Upgrade”
+* or “Order Now”
+
+Send selection to:
+
+POST /create-checkout-session
+
+Include:
+
+* item name
+* description
+* price
+* image
+
+---
+
+UX FLOW
+
+User completes experience
+→ sees result
+→ sees upsell options
+→ selects upgrade or base
+→ proceeds to checkout
+
+---
+
+FINAL GOAL
+
+User should feel:
+
+“I want to upgrade this”
+
+NOT:
+
+“I’m being sold something”
+
+---
+
+FAIL CONDITION
+
+If upsell feels:
+
+* forced
+* random
+* disconnected
+
+→ system fails
+
+---
