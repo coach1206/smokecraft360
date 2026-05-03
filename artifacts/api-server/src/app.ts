@@ -178,7 +178,15 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   const log = (req as typeof req & { log?: typeof logger }).log ?? logger;
   log.error({ err }, "Unhandled error");
   if (res.headersSent) return;
-  res.status(500).json({ error: "Something went wrong" });
+
+  // Honor explicit status from express/body-parser errors (PayloadTooLarge=413, SyntaxError on JSON=400, etc.)
+  const e      = err as Error & { status?: number; statusCode?: number; type?: string };
+  const status = e.status ?? e.statusCode ?? 500;
+  const message =
+    status === 413 ? "Payload too large" :
+    status === 400 ? "Invalid request"   :
+    "Something went wrong";
+  res.status(status).json({ error: message });
 });
 
 export default app;
