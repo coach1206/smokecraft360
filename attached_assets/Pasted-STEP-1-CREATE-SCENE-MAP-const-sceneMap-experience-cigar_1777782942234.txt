@@ -1,0 +1,100 @@
+STEP 1: CREATE SCENE MAP
+const sceneMap = {
+  experience: {
+    cigar: "/images/scenes/cigar-burning.mp4",
+    spirits: "/images/scenes/whiskey-pour.mp4"
+  },
+
+  flavor: {
+    smoky: "/images/scenes/cigar-smoke-dark.mp4",
+    cocoa: "/images/scenes/cocoa-beans.mp4",
+    creamy: "/images/scenes/vanilla-cream.mp4",
+    leather: "/images/scenes/leather-lounge.mp4"
+  },
+
+  strength: {
+    mild: "/images/scenes/light-lounge.mp4",
+    medium: "/images/scenes/rich-bar.mp4",
+    full: "/images/scenes/dark-smoke.mp4"
+  },
+
+  mood: {
+    relaxed: "/images/scenes/lounge-daylight.mp4",
+    social: "/images/scenes/cigar-bar-group.mp4",
+    bold: "/images/scenes/night-club-smoke.mp4"
+  }
+};
+
+👉 Notice:
+We’re not using random photos anymore.
+
+We’re controlling the vibe.
+
+🎬 STEP 2: VIDEO BACKGROUND (THIS IS THE UPGRADE)
+
+Stop using static images.
+
+Use looping cinematic video:
+
+const SceneBackground = ({ scene }) => {
+  return (
+    <video
+      autoPlay
+      muted
+      loop
+      playsInline
+      className="absolute top-0 left-0 w-full h-full object-cover z-0"
+    >
+      <source src={scene} type="video/mp4" />
+    </video>
+  );
+};
+⚡ STEP 3: SWITCH SCENE BASED ON STATE
+const getScene = (step, selection) => {
+  return sceneMap[step]?.[selection] || "/images/scenes/default.mp4";
+};
+USE IT
+const scene = getScene(currentStep, userSelection);
+
+<SceneBackground scene={scene} />
+🎯 STEP 4: APPLY YOUR EXACT RULE
+WHEN USER IS IN CIGAR FLOW:
+
+👉 Background MUST be:
+
+burning cigar
+smoke
+warm lighting
+WHEN USER SWITCHES TO DRINKS:
+
+👉 Background MUST change to:
+
+whiskey pour
+ice
+glass
+WHEN USER IS IN FLAVOR:
+
+👉 Background MUST reflect flavor
+
+Example:
+
+Smoky → smoke drifting
+Cocoa → cacao beans
+Creamy → smooth texture / latte
+🚫 WHAT YOU MUST REMOVE
+
+Delete this behavior:
+
+background = "jack-daniels.jpg";
+
+❌ Hardcoded
+❌ Not contextual
+❌ Breaks immersion
+
+🔥 STEP 5: SMOOTH TRANSITION (THIS MATTERS)
+.scene-transition {
+  transition: opacity 0.6s ease-in-out;
+}
+setScene(newScene);
+fadeOut();
+fadeIn();
