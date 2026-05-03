@@ -30,6 +30,7 @@ import {
 }                                              from "@workspace/db";
 import { requireAuth, type AuthRequest }       from "../middleware/auth";
 import { sessionJoinLimiter }                  from "../middleware/rateLimit";
+import { recordVisit }                         from "../services/visitTracker";
 import { z }                                   from "zod";
 
 const router: IRouter = Router();
@@ -65,6 +66,10 @@ router.post(
           .values({ hostUserId: hostId, venueId, code, status: "active" })
           .returning();
         if (!sess) continue;
+
+        // Cross-venue identity: record this user-at-venue visit. Fire-and-forget;
+        // failures are swallowed by the service so they cannot break session creation.
+        if (venueId) void recordVisit(hostId, venueId);
 
         // Insert the host as the first member. Wrapped in try so a (theoretically
         // impossible) duplicate doesn't fail the whole flow.

@@ -1,0 +1,238 @@
+MASTER SYSTEM PROMPT (FULLY MERGED)
+PROMPT START
+
+Build a full-stack “Dynamic Craft Experience Platform” with:
+
+Frontend:
+
+React (Vite)
+Tablet-first design
+Global Layout wrapper enforced
+
+Backend:
+
+Node.js + Express
+
+Database:
+
+PostgreSQL + Drizzle ORM
+
+Realtime:
+
+Socket.io
+
+Offline Support:
+
+Service Workers + IndexedDB
+🔒 UI ENFORCEMENT RULES (MANDATORY)
+No icons, emojis, or glyph-based UI allowed
+All visuals must be real images (Unsplash or generated)
+Every page MUST use AppLayout
+Back button must exist on every screen automatically
+Any page not using AppLayout must not render
+1. CORE SYSTEM MODULES
+
+Implement:
+
+Craft Config Engine
+Experience Flow Controller
+Dynamic Theme Engine
+AI Voice Narration Layer
+Inventory Injection System
+Order System
+Scoring Engine
+Multi-User Session Engine
+Leaderboards
+Analytics Engine
+Notification System
+Reward Redemption System
+AI Personal Memory Layer
+Offline Cache + Sync Engine
+Admin Control Panel
+Global Layout System
+2. GLOBAL LAYOUT SYSTEM
+
+Create reusable layout that:
+
+Injects Back Button automatically
+Displays page title
+Handles background rendering
+Wraps ALL pages
+3. BACK BUTTON SYSTEM
+Always visible top-left
+Uses navigation history
+Cannot be removed from any screen
+4. CRAFT CONFIG ENGINE
+
+Dynamic system:
+
+Table: craft_configs
+
+craft_name
+background_keywords
+sound_keywords
+voice_style
+mood_options
+flavor_sliders
+pairing_categories
+challenge_type
+5. ADMIN CONTROL PANEL
+
+Route: /admin
+
+Features:
+
+Create new craft
+Input keywords → auto generate visuals
+Control inventory
+Manage rewards
+View analytics
+Monitor offline sync
+6. DYNAMIC THEME ENGINE
+Pull images from Unsplash
+Apply backgrounds dynamically
+Smooth transitions (fade/zoom/slide)
+Apply ambient sound
+7. AI VOICE LAYER
+Narrates transitions
+Matches craft style
+Uses queue system to prevent overlap
+8. EXPERIENCE FLOW
+Entry animation
+Mood selection
+Flavor builder
+Brand identity
+Style selection
+Challenge mode
+AI recommendation
+Inventory injection
+Order panel
+Score update
+Reward trigger
+9. MULTI-USER SESSION ENGINE
+Join by code
+Real-time scoring
+Shared experience
+10. REAL-TIME SYNC
+
+Socket events:
+
+score_updated
+order_placed
+leaderboard_updated
+11. INVENTORY SYSTEM
+Venue controls products
+AI suggestions overridden
+Tier pricing (standard/premium/reserve)
+12. ORDER SYSTEM
+Place order from tablet
+Send to venue
+Real-time updates
+13. SCORING SYSTEM
+
+Points for:
+
+completion
+challenge
+ordering
+upgrades
+14. LEADERBOARDS
+User ranking
+Venue ranking
+Session winners
+15. REWARD SYSTEM
+Points → redeem perks
+Free drink / discount
+Stored in user_rewards
+16. AI MEMORY SYSTEM
+Stores user behavior
+Personalizes future sessions
+17. OFFLINE MODE
+Cache UI + assets
+Store orders locally
+Sync when reconnected
+18. ANALYTICS
+
+Track:
+
+user behavior
+conversions
+trends
+19. SECURITY
+JWT auth
+rate limiting
+audit logs
+PROMPT END
+🟢 MERGED FRONTEND CODE (UPDATED)
+AppLayout (ENFORCED)
+import BackButton from "./BackButton";
+
+export default function AppLayout({ children, title, background }) {
+  return (
+    <div style={{
+      height: "100vh",
+      backgroundImage: `url(${background})`,
+      backgroundSize: "cover",
+      position: "relative"
+    }}>
+
+      <BackButton />
+
+      <div style={{
+        position: "absolute",
+        top: "20px",
+        left: "80px",
+        color: "#fff",
+        fontSize: "24px"
+      }}>
+        {title}
+      </div>
+
+      <div style={{ paddingTop: "80px" }}>
+        {children}
+      </div>
+
+    </div>
+  );
+}
+BackButton (GLOBAL)
+import { useNavigate } from "react-router-dom";
+
+export default function BackButton() {
+  const navigate = useNavigate();
+
+  return (
+    <button onClick={() => navigate(-1)} style={{
+      position: "absolute",
+      top: "20px",
+      left: "20px",
+      background: "rgba(0,0,0,0.7)",
+      color: "#fff",
+      padding: "12px"
+    }}>
+      Back
+    </button>
+  );
+}
+CraftExperience (NOW ENFORCED)
+import AppLayout from "../components/AppLayout";
+
+export default function CraftExperience({ craft }) {
+  return (
+    <AppLayout
+      title={craft?.name}
+      background={craft?.background}
+    >
+      <h1 style={{ color: "#fff" }}>Start Experience</h1>
+    </AppLayout>
+  );
+}
+🧠 FINAL REALITY
+
+Now:
+
+✔ No missing systems
+✔ No UI inconsistency
+✔ No navigation issues
+✔ No cheap visuals
+✔ Full platform foundation
