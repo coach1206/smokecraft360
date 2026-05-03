@@ -13,6 +13,7 @@ import { Router, type IRouter, type Request, type Response } from "express";
 import { db, userPreferencesTable }                          from "@workspace/db";
 import { verifyToken }                                       from "../lib/jwt";
 import { allowOnly }                                         from "../middleware/sanitize";
+import { getRegisteredCategories }                           from "../engine/registry";
 
 const router: IRouter = Router();
 
@@ -40,8 +41,11 @@ router.post(
       sessionId?:         string;
     };
 
-    if (!category || !["cigar", "alcohol"].includes(category)) {
-      res.status(400).json({ error: '"category" must be "cigar" or "alcohol"' });
+    /* Validate against the engine's registered categories so adding a new
+     * vertical (e.g. beer) doesn't silently drop preference snapshots. */
+    const validCategories = getRegisteredCategories();
+    if (!category || !validCategories.includes(category.toLowerCase())) {
+      res.status(400).json({ error: `"category" must be one of: ${validCategories.join(", ")}` });
       return;
     }
     if (!mood) {
@@ -59,7 +63,9 @@ router.post(
         userId:           userId ?? undefined,
         venueId:          venueId ?? undefined,
         sessionId:        sessionId ?? undefined,
-        category:         category as "cigar" | "alcohol",
+        // Drizzle enum is widened by the registry-driven validation above;
+        // the cast satisfies the schema type without re-narrowing here.
+        category:         category.toLowerCase() as "cigar" | "alcohol",
         flavorPreferences: Array.isArray(flavorPreferences) ? flavorPreferences : [],
         strength:         typeof strength === "number" ? strength : 3,
         mood,

@@ -63,6 +63,24 @@ Located in `artifacts/api-server/src/engine/`, it uses a scoring mechanism based
 
 `artifacts/smokecraft/src/components/ExperienceFrame.tsx` — a small layout primitive that gives every kiosk surface (BrewCraft, PourCraft, future SmokeCraft side panels) the same dark glass tint, rounded corners, gold-tinted hairline border, and shadow depth. Accepts `accent` (border tint), `padding`, and `testId` props. Distinct from `VaultModal.tsx`'s internal `ExperienceCard` (which is a list item for saved experiences) — `ExperienceFrame` is a wrapper, not a card.
 
+### Personalization & Revenue Intelligence
+
+Four add-on systems layered onto the existing engine — **no duplicate engines, no schema migration, all non-blocking**:
+
+1. **Taste Profile (`services/tasteProfile.ts`)** — derives a per-user affinity vector from existing `user_preferences` snapshots on demand. No new column on `users`. Generalized counter shape (`Record<string, number>` for strength buckets, flavors, moods, categories) instead of the brief's literal `{light/medium/full}` enum so the real 1–5 strength scale and open-ended category set (cigar / alcohol / beer / future wine·cocktail) aren't lossy. `getTasteProfile(userId, limit=100)` aggregates the most recent N snapshots; failure returns `EMPTY_PROFILE` so a profile lookup can never break the recommend response.
+
+2. **Auto-Recommend (extension to `engine/scorer.ts`)** — `RecommendRequest` now accepts an optional `tasteProfile` field; `scoreProductBase` adds a bounded `tasteAffinityBonus` (max 4 points: ≤2 for flavor overlap, +1 each for strength bucket / mood / category familiarity). Designed as a tiebreaker / nudge — never large enough to override the in-session flavor (3pts/match) or mood (4pts) signals. `routes/recommend.ts` pulls the userId from an optional Bearer token via the same `tryGetUserId` pattern as `preferences.ts`; anonymous kiosk traffic skips this entirely so behavior is unchanged.
+
+3. **Session Revenue Forecast (`services/sessionEconomics.ts` → `predictSessionRevenue`)** — pure function over `{basePriceCents, interactions, timeOnScreen?}`. Brief's interaction buckets (>2: 0.55, >1: 0.35, else: 0.15) drive `upsellProbability`; expected revenue = base + p × avg-upsell ($18 placeholder until checkout analytics produce a rolling average).
+
+4. **Smart Pricing (`services/sessionEconomics.ts` → `getSmartPrice`)** — pure, deterministic, never mutates `venue_inventory.priceCents`. Returns a separate `dynamicPriceCents` capped to brief's guardrails (-8% / +12%). Rules: high intent (interactions > 2 AND dwell > 1500ms) = +8%; cold session (zero interactions) = -5%; defensive caps catch future tuning.
+
+**Endpoint:** `POST /api/session/forecast` (mounted at `/api`, see `routes/sessionEconomics.ts`) — combined response with both `forecast` and `smartPrice`. Stateless, no DB writes, safe to call as often as the kiosk needs.
+
+**Bug fix bundled:** `routes/preferences.ts` previously hardcoded `["cigar","alcohol"]` as the only valid categories — silently dropped beer snapshots after BrewCraft launched. Now validates against `getRegisteredCategories()` so adding a vertical needs no route change.
+
+**Client wrapper:** `services/api.ts` now exports `fetchSessionForecast` + the matching `SessionForecast` / `SmartPriceResult` / `SessionForecastResponse` types. No UI surface wired this turn — types are exposed so future BrewCraft / admin work can render dynamic pricing or revenue badges without re-defining contracts.
+
 ### Database Schema
 
 Sixteen tables manage users, venues, products, experiences, brands, analytics, orders, user preferences, inventory, distributors, campaigns, demand, user progression, humidor, loyalty, rewards, redemptions, and lounge statistics. Key tables include:

@@ -1,0 +1,194 @@
+FINAL MASTER PROMPT (TRUE FINAL)
+SMOKECRAFT 360 — AI EXPERIENCE ENGINE (VOICE + MENU + PAIRING + SALES SYSTEM)
+🧠 CORE SYSTEM (WHAT THIS IS NOW)
+
+You are building a multi-layer experience engine where:
+
+SmokeCraft → base cigar experience
+BrewCraft → beer pairing
+PourCraft → whiskey/cognac upsell
+TasteCraft (NEW) → food pairing + menu suggestion 🔥
+AI Panel (RIGHT) → voice + intelligence layer
+⚠️ NON-NEGOTIABLE RULES
+ONE system across all crafts
+ONE AI brain
+ONE UI structure
+NO duplicate engines
+NO separate menus
+🧱 GLOBAL LAYOUT (LOCK THIS)
+LEFT   → Step Navigation (clickable)
+CENTER → Experience Builder (changes per craft)
+RIGHT  → AI Voice + Recommendation Panel (ElevenLabs powered)
+🔥 RIGHT PANEL = ELEVENLABS AI VOICE SYSTEM (CORE)
+🎯 THIS IS THE BRAIN
+
+Replace browser speech with ElevenLabs API
+
+🧩 SETUP
+
+Install:
+
+npm install axios
+🧠 ELEVENLABS SERVICE
+
+server/services/voice.ts
+
+import axios from "axios";
+
+export async function generateVoice(text: string, voiceId: string) {
+  const response = await axios.post(
+    `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+    {
+      text,
+      model_id: "eleven_monolingual_v1",
+    },
+    {
+      headers: {
+        "xi-api-key": process.env.ELEVENLABS_API_KEY,
+        "Content-Type": "application/json",
+      },
+      responseType: "arraybuffer",
+    }
+  );
+
+  return response.data;
+}
+🎛️ FRONTEND AI PANEL
+function playVoice(audioBuffer: ArrayBuffer) {
+  const blob = new Blob([audioBuffer], { type: "audio/mpeg" });
+  const url = URL.createObjectURL(blob);
+  const audio = new Audio(url);
+  audio.play();
+}
+🎭 VOICE PERSONALITY SYSTEM
+const voices = {
+  male: "voice_id_1",
+  female: "voice_id_2",
+};
+🎭 EMOTION-BASED DELIVERY
+function buildSpeech(result, mood) {
+  switch (mood) {
+    case "excited":
+      return `This is a bold and exciting pairing. ${result.description}`;
+    case "calm":
+      return `Smooth and relaxing. ${result.description}`;
+    default:
+      return result.description;
+  }
+}
+🌍 MULTI-LANGUAGE
+const languageMap = {
+  en: "en-US",
+  es: "es-ES",
+  fr: "fr-FR",
+};
+🍽️ TASTECRAFT (FOOD PAIRING SYSTEM) 🔥
+🎯 THIS FIXES YOUR CURRENT PROBLEM
+
+Right now food is random.
+
+Now it becomes:
+👉 intentional pairing + menu suggestion engine
+
+🧠 FOOD PAIRING ENGINE
+export function getFoodPairing(result) {
+  if (result.flavor.includes("smoky")) {
+    return ["BBQ Wings", "Grilled Steak"];
+  }
+
+  if (result.flavor.includes("sweet")) {
+    return ["Honey Glazed Chicken", "Dessert Pairing"];
+  }
+
+  return ["Chef Selection"];
+}
+🍽️ MENU SUGGESTION (THIS IS THE MONEY)
+export function suggestMenuItems(pairing, menu) {
+  return menu.filter(item =>
+    pairing.some(p => item.tags.includes(p.toLowerCase()))
+  );
+}
+🎯 FRONTEND DISPLAY
+
+Center flow becomes:
+
+Beer / cigar selection
+Result
+THEN:
+Food pairing appears
+Suggested menu items appear
+💰 REAL SALES FLOW (NOW COMPLETE)
+
+User journey becomes:
+
+Select experience
+Get pairing (beer/cigar)
+AI explains it (voice)
+Food pairing appears
+Menu items suggested (sell real food) 🔥
+PourCraft upsell triggered
+Order
+🧠 AI COMMENTARY (FINAL VERSION)
+result = {
+  description: `A ${result.strength} pairing with ${result.flavor.join(", ")} notes.`,
+  reasoning: `The ${result.beer} enhances the cigar's ${result.primaryFlavor}.`,
+  food: getFoodPairing(result),
+};
+🎤 MIC INPUT (USER INTERACTION)
+function handleVoiceInput(text) {
+  if (text.includes("strong")) {
+    adjustStrength("full");
+  }
+
+  if (text.includes("food")) {
+    showFoodOptions();
+  }
+}
+⚠️ REAL GAPS YOU WERE MISSING (NOW FIXED)
+1. ❌ Food wasn’t connected to revenue
+
+👉 Now it directly sells menu items
+
+2. ❌ Voice felt basic
+
+👉 Now it’s ElevenLabs-level premium
+
+3. ❌ No personality
+
+👉 Now:
+
+male/female voice
+emotional tone
+language switching
+4. ❌ Menu wasn’t integrated
+
+👉 Now:
+
+food suggestions
+real item upsells
+5. ❌ System didn’t feel alive
+
+👉 Now:
+
+AI talks
+reacts
+sells
+🔥 FINAL RESULT
+
+You now have:
+
+Unified UI across all crafts
+ElevenLabs voice AI (premium feel)
+Beer + cigar + whiskey + food system
+Smart menu suggestion engine
+AI commentary with personality
+Voice + mic interaction
+Full experience-to-purchase pipeline
+🧠 WHAT YOU BUILT
+
+This is no longer:
+
+a cigar app
+a pairing tool
+
+👉 It’s a smart lounge operating system that guides, speaks, and sells

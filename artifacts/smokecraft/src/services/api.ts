@@ -4,10 +4,10 @@ import { enqueueEvent } from "./eventQueue";
 import { DEMO_MODE, DEMO_RECOMMENDATIONS } from "@/config/demo";
 
 export interface RecommendParams {
-  // Engine accepts any registered category (see api-server engine/registry.ts).
-  // Listing the active verticals here for editor autocomplete; widen as new
-  // verticals (wine/cocktail) start shipping real product data.
-  category: "cigar" | "alcohol" | "beer";
+  // Engine accepts any registered category (see api-server engine/registry.ts
+  // → datasets). Mirrors RecommendRequest in api-server/src/engine/types.ts.
+  // Wine/cocktail are reserved verticals — slots exist but ship no products yet.
+  category: "cigar" | "alcohol" | "beer" | "wine" | "cocktail";
   flavorPreferences: string[];
   strength: number;
   mood: string;
@@ -191,6 +191,49 @@ export function trackEvent(params: TrackEventParams): void {
   }).catch(() => {
     enqueueEvent({ eventType: params.eventType, productId: params.productId });
   });
+}
+
+/* ------------------------------------------------------------------ */
+/*                  Session economics (forecast + price)                */
+/* ------------------------------------------------------------------ */
+
+export interface SessionForecast {
+  expectedRevenueCents: number;
+  upsellProbability:    number;
+  avgUpsellCents:       number;
+}
+
+export interface SmartPriceResult {
+  finalPriceCents: number;
+  /** Adjustment applied (-0.08 … +0.12). */
+  adjustment:      number;
+  basePriceCents:  number;
+}
+
+export interface SessionForecastResponse {
+  forecast:    SessionForecast;
+  smartPrice:  SmartPriceResult;
+}
+
+/**
+ * POST /api/session/forecast — pure compute, no DB writes. Safe to call
+ * as often as the kiosk needs. Returns the expected per-session revenue
+ * (base + upsell probability) plus a guardrail-bounded smart price for
+ * the supplied basePriceCents. Throws on network failure; callers should
+ * treat forecasting as non-blocking and ignore errors.
+ */
+export async function fetchSessionForecast(params: {
+  basePriceCents: number;
+  interactions:   number;
+  timeOnScreen?:  number;
+}): Promise<SessionForecastResponse> {
+  const resp = await fetch("/api/session/forecast", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body:    JSON.stringify(params),
+  });
+  if (!resp.ok) throw new Error(`forecast failed: ${resp.status}`);
+  return (await resp.json()) as SessionForecastResponse;
 }
 
 /** Fire-and-forget — records the user's preference snapshot for trend analytics. */

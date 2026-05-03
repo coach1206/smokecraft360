@@ -3,6 +3,20 @@ import { getRecommendations } from "../engine/recommend";
 import { getRegisteredCategories } from "../engine/registry";
 import { allowOnly } from "../middleware/sanitize";
 import { RecommendRequest } from "../engine/types";
+import { verifyToken } from "../lib/jwt";
+import { getTasteProfile } from "../services/tasteProfile";
+
+/** Pull a userId from the optional Bearer token. Never throws. */
+async function tryGetUserId(req: Request): Promise<string | null> {
+  const header = req.headers["authorization"];
+  if (!header?.startsWith("Bearer ")) return null;
+  try {
+    const payload = await verifyToken(header.slice(7));
+    return payload.sub ?? null;
+  } catch {
+    return null;
+  }
+}
 
 const router: IRouter = Router();
 
@@ -27,7 +41,7 @@ const router: IRouter = Router();
 router.post(
   "/",
   allowOnly("category", "flavorPreferences", "strength", "mood", "venueId", "cigarShape", "cigarSession"),
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     const { category, flavorPreferences, strength, mood, venueId, cigarShape, cigarSession } = req.body as Partial<RecommendRequest>;
     const validShapes = ["robusto","corona","toro","churchill","torpedo","belicoso"] as const;
     const validSessions = ["quick","standard","extended","long"] as const;
@@ -53,6 +67,16 @@ router.post(
       return;
     }
 
+    /* Optional personalization — auto-recommend bias from past behavior.
+     * Pulled only for authenticated users; anonymous kiosk requests skip
+     * this entirely so behavior is unchanged. Failure is non-fatal: any
+     * error inside getTasteProfile returns EMPTY_PROFILE and the engine
+     * just behaves as it always has. */
+    const userId = await tryGetUserId(req);
+    const tasteProfile = userId
+      ? await getTasteProfile(userId).catch(() => undefined)
+      : undefined;
+
     const result = getRecommendations({
       category: category.toLowerCase(),
       flavorPreferences,
@@ -61,6 +85,15 @@ router.post(
       venueId: typeof venueId === "string" ? venueId : undefined,
       cigarShape: safeShape,
       cigarSession: safeSession,
+      tasteProfile: tasteProfile && tasteProfile.sampleCount > 0
+        ? {
+            strength:    tasteProfile.strength,
+            flavor:      tasteProfile.flavor,
+            mood:        tasteProfile.mood,
+            categories:  tasteProfile.categories,
+            sampleCount: tasteProfile.sampleCount,
+          }
+        : undefined,
     });
 
     req.log.info(

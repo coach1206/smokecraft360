@@ -31,6 +31,17 @@ export interface Product {
   imageUrl?: string;
 }
 
+/** Pre-computed taste profile bias — see services/tasteProfile.ts.
+ *  Optional; when present the scorer awards a small bounded affinity
+ *  bonus per product. Anonymous kiosk requests omit this. */
+export interface TasteProfileBias {
+  strength:    Record<string, number>;
+  flavor:      Record<string, number>;
+  mood:        Record<string, number>;
+  categories:  Record<string, number>;
+  sampleCount: number;
+}
+
 export interface RecommendRequest {
   category:          Category;
   flavorPreferences: string[];
@@ -45,6 +56,11 @@ export interface RecommendRequest {
   cigarShape?:       "robusto" | "corona" | "toro" | "churchill" | "torpedo" | "belicoso";
   /** Session-length preference — soft hint, used as a tiebreaker only.       */
   cigarSession?:     "quick" | "standard" | "extended" | "long";
+  /** Optional taste profile aggregated from past userPreferences snapshots.
+   *  When provided, scorer adds a bounded affinity bonus to bias results
+   *  toward products that match the user's history. Anonymous requests
+   *  omit this field entirely; behavior is unchanged when absent. */
+  tasteProfile?:     TasteProfileBias;
 }
 
 export interface ScoredProduct extends Product {

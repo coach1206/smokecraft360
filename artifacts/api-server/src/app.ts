@@ -13,7 +13,8 @@ import productsRouter      from "./routes/products";
 import analyticsRouter     from "./routes/analytics";
 import venueAnalyticsRouter from "./routes/venueAnalytics";
 import eventsRouter        from "./routes/events";
-import preferencesRouter   from "./routes/preferences";
+import preferencesRouter      from "./routes/preferences";
+import sessionEconomicsRouter from "./routes/sessionEconomics";
 import experiencesRouter   from "./routes/experiences";
 import brandsRouter        from "./routes/brands";
 import distributorsRouter  from "./routes/distributors";
@@ -136,6 +137,8 @@ app.use("/api/analytics",                   insightsRouter);
 app.use("/api/analytics",                   analyticsRouter);
 app.use("/api/events",                      eventsRouter);
 app.use("/api/preferences",                 preferencesRouter);
+// sessionEconomicsRouter exposes /session/forecast → /api/session/forecast
+app.use("/api",                             sessionEconomicsRouter);
 app.use("/api/experiences",                 experiencesRouter);
 app.use("/api/brands",                      brandsRouter);
 app.use("/api/distributors",                distributorsRouter);

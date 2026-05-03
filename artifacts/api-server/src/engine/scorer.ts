@@ -1,5 +1,6 @@
 import { Product, RecommendRequest, ScoredProduct, Tier } from "./types";
 import { getProductBoost } from "../services/boostService";
+import { tasteAffinityBonus } from "../services/tasteProfile";
 
 const WEIGHTS = {
   flavorMatch:    3,
@@ -76,6 +77,18 @@ export function scoreProductBase(product: Product, request: RecommendRequest): n
   }
 
   score += TIER_BONUS[product.tier] ?? 0;
+
+  /* Taste profile affinity — bounded bonus (max 4) computed from the
+   * user's past preferences snapshots. No-op when request.tasteProfile
+   * is absent (anonymous kiosk traffic) or empty. Designed to act as a
+   * tiebreaker / nudge — never large enough to override a strong
+   * in-session flavor or mood signal. */
+  if (request.tasteProfile && request.tasteProfile.sampleCount > 0) {
+    score += tasteAffinityBonus(product, {
+      ...request.tasteProfile,
+      lastUpdated: 0,
+    });
+  }
 
   return score;
 }
