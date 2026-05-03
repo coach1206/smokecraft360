@@ -1,0 +1,310 @@
+FULL SYSTEM UPGRADE — SMOKECRAFT 360 + POURCRAFT 360
+BUILD A PREMIUM, HIGH-CONTRAST, INTERACTIVE EXPERIENCE WITH REAL IMAGES, STRONG READABILITY, AND IMMERSIVE USER FEEDBACK ACROSS ALL SCREENS
+
+---
+
+CORE RULE
+
+If the user has to guess → it failed
+If the user instantly sees, feels, and understands → it works
+
+---
+
+1. REAL IMAGE SYSTEM (CRITICAL)
+
+ALL cards MUST use real, meaningful images tied to the experience
+
+---
+
+SMOKECRAFT (CIGAR)
+
+ONLY USE:
+
+* tobacco leaves
+* cigar wrappers
+* rolled cigars
+* cedar wood
+* cocoa beans
+* leather
+* smoke / embers
+
+DO NOT USE:
+
+* fruit like watermelon
+* random scenery
+* generic lifestyle filler
+
+---
+
+POURCRAFT (DRINK)
+
+ONLY USE:
+
+* bourbon / whiskey glasses
+* ice textures
+* real pours
+* citrus peel (when relevant)
+* herbs (mint, rosemary)
+
+---
+
+RULE:
+
+Image must represent the **feeling + experience**, not random objects
+
+---
+
+2. CARD DESIGN (MAKE IT FEEL LIKE A PRODUCT)
+
+* width: 420–520px
+* height: 480–600px
+
+Image = 60%
+Text = 40%
+
+Cards must feel like something you want to touch
+
+---
+
+3. FONT SYSTEM (AGING VISION FIX)
+
+* Titles: 28–34px
+* Card labels: 20–24px
+* Descriptions: 18–20px
+* Sidebar: minimum 16–18px
+
+NO small text anywhere
+
+---
+
+4. BACKGROUND + VISIBILITY FIX (BIG ISSUE)
+
+Background images must NOT overpower UI
+
+Add dark overlay:
+
+```css
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: -1;
+}
+```
+
+---
+
+5. “COMPLETE YOUR EXPERIENCE” FIX (WAS DEAD)
+
+Make it a spotlight moment
+
+---
+
+```css
+.complete-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.65),
+    rgba(0,0,0,0.55),
+    rgba(0,0,0,0.65)
+  );
+}
+
+.complete-content {
+  background: radial-gradient(
+    circle at center,
+    rgba(255,220,140,0.18),
+    transparent 70%
+  );
+}
+```
+
+---
+
+TITLE FIX
+
+```css
+.complete-title {
+  font-size: 34px;
+  color: #F5E6C8;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+}
+```
+
+---
+
+6. CARD VISIBILITY + BRIGHTNESS
+
+```css
+.experience-card {
+  background: rgba(30,20,10,0.88);
+  border: 1px solid rgba(212,175,55,0.25);
+}
+
+.experience-card img {
+  filter: brightness(1.2) contrast(1.1);
+}
+```
+
+---
+
+7. INTERACTION SYSTEM (NO DEAD UI)
+
+EVERY ACTION MUST RESPOND
+
+Click:
+
+* scale 0.94
+* glow pulse
+* play soft click
+
+---
+
+```css
+.clickable:active {
+  transform: scale(0.94);
+}
+```
+
+---
+
+8. SWIPE SYSTEM (MAKE IT A GAME)
+
+Each selection must feel like progression
+
+* swipe left = reject
+* swipe right = accept
+* card tilts slightly
+* smooth transition
+* sound feedback
+
+---
+
+9. SIDEBAR BEHAVIOR (FIX DEAD NAV)
+
+When user clicks:
+
+* screen SLIDES in
+* not static replace
+* previous screen fades back
+
+---
+
+10. RIGHT PANEL (FIX DARK + USELESS)
+
+```css
+.right-panel {
+  background: rgba(20,15,10,0.85);
+  backdrop-filter: blur(10px);
+}
+
+.active-selection {
+  box-shadow: 0 0 20px rgba(212,175,55,0.6);
+}
+```
+
+---
+
+RIGHT PANEL MUST SHOW:
+
+* selected item
+* flavor notes
+* strength
+* pairing
+* WHY IT WORKS
+
+---
+
+11. FINAL RESULT SCREEN (MAKE IT PREMIUM)
+
+CENTER:
+
+* real cigar OR real drink
+
+RIGHT:
+
+* full breakdown
+
+ADD:
+
+* cigar size (Toro, Robusto, Churchill)
+* cut type
+* drink style (neat, rocks, cocktail)
+
+---
+
+12. FINAL MOMENT (THIS IS WHERE YOU WIN)
+
+When result loads:
+
+* glow pulse
+* soft sound
+* text fades in
+
+“Your experience is ready.”
+
+---
+
+13. REMOVE EVERYTHING WEAK
+
+DELETE:
+
+* emojis
+* small fonts
+* random images
+* flat cards
+* low contrast
+
+---
+
+14. IMAGE QUALITY STANDARD
+
+ALL images must be:
+
+* warm lighting
+* high resolution
+* cinematic
+* consistent tone
+
+---
+
+SEARCH TERMS
+
+Cigar:
+“premium cigar close up warm light wood table”
+
+Drink:
+“bourbon glass ice cinematic amber lighting”
+
+---
+
+FINAL GOAL
+
+User should feel:
+
+* this is premium
+* this is alive
+* this is easy
+* this is addictive
+
+NOT:
+
+* confusing
+* dark
+* hard to read
+* boring
+
+---
+
+END STATE
+
+Every screen = consistent
+Every click = responsive
+Every image = meaningful
+Every step = engaging
+
+---

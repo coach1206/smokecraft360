@@ -22,10 +22,12 @@
  */
 
 const CLICK_SRC  = "/sounds/click.mp3";
-const SWIPE_SRC  = "/sounds/swipe.mp3";
-const SELECT_SRC = "/sounds/select.mp3";
-// Fallback used until dedicated swipe.mp3 / select.mp3 are added to /public/sounds.
-const FALLBACK_SRC = "/sounds/startup.mp3";
+// swipe + select are procedurally synthesised PCM WAVs (see scripts/genSounds)
+// — small (~6KB / ~16KB), zero-licence, perceptually correct kiosk feedback.
+const SWIPE_SRC  = "/sounds/swipe.wav";
+const SELECT_SRC = "/sounds/select.wav";
+// Fallback used if a sound file is missing entirely.
+const FALLBACK_SRC = "/sounds/click.mp3";
 
 const MUTE_KEY = "smokecraft_sound_muted";
 

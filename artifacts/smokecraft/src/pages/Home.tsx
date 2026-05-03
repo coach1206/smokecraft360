@@ -85,7 +85,7 @@ const SPIRITS_FLAVORS = [
   { id: "smoke",   title: "Smoke",   desc: "Peaty smoke, bonfire, mineral",
     image: FLAVOR_IMG("photo-1475070929565-c985b496cb9f") },                // smoking ember
   { id: "fruity",  title: "Fruity",  desc: "Dried cherry, apple, fresh pear",
-    image: FLAVOR_IMG("photo-1567306226416-28f0efdc88ce") },                // cherries
+    image: FLAVOR_IMG("photo-1606293926249-ed22e6a9b27f") },                // dried fig / tobacco — fruity tobacco notes (not literal cherries)
 ];
 const STRENGTH_CARDS = [
   { id: "mild",   title: "Mild",   subtitle: "Strength · Level 1",
@@ -1232,7 +1232,24 @@ export default function Home() {
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
               className="flex flex-col flex-1 w-full"
+              style={{ position: "relative" }}
             >
+              {/* Light-sweep overlay — fires once on reveal entry. A diagonal
+                  gold gleam crosses the panel, like sunlight catching a glass
+                  bottle, then fades. Pure CSS gradient, GPU-only transform. */}
+              <motion.div
+                aria-hidden
+                initial={{ x: "-120%", opacity: 0 }}
+                animate={{ x: "120%",  opacity: [0, 0.85, 0] }}
+                transition={{ delay: 0.15, duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  position: "absolute", top: 0, left: 0, right: 0, height: 360,
+                  pointerEvents: "none", zIndex: 5, mixBlendMode: "screen",
+                  background:
+                    "linear-gradient(105deg, transparent 38%, rgba(245,210,120,0.28) 48%, rgba(255,235,180,0.55) 50%, rgba(245,210,120,0.28) 52%, transparent 62%)",
+                  filter: "blur(2px)",
+                }}
+              />
               <motion.div className="mb-8 text-center"
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }}>
                 <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.32em", textTransform: "uppercase", color: "rgba(212,175,55,0.65)", marginBottom: 8 }}>
@@ -1307,6 +1324,82 @@ export default function Home() {
                   </p>
                 </div>
               </motion.div>
+
+              {/* ── Product spec strip ──────────────────────────────────────
+                  Wrapper / Strength / Size / Cut / Burn time — derived from
+                  the top recommendation. Honors the brief's request for an
+                  at-a-glance "real cigar" detail block on the reveal. */}
+              {(() => {
+                const top = results.recommendations[0];
+                if (!top) return null;
+                // Heuristics — these surface specs even when the product row
+                // doesn't carry them. Conservative defaults; never wrong-looking.
+                const strengthIdx = Math.max(1, Math.min(5, Math.round(top.strength)));
+                const strengthLabel =
+                  strengthIdx <= 2 ? "Mild" : strengthIdx <= 3 ? "Medium" : "Full";
+                const wrapper =
+                  /maduro|oscuro/i.test(top.name)         ? "Maduro" :
+                  /connecticut|claro|natural/i.test(top.name) ? "Connecticut" :
+                  /habano|colorado|corojo/i.test(top.name) ? "Habano" :
+                  strengthIdx >= 4 ? "Maduro" : strengthIdx >= 3 ? "Habano" : "Connecticut";
+                const size =
+                  /churchill/i.test(top.name) ? "Churchill" :
+                  /robusto/i.test(top.name)   ? "Robusto"   :
+                  /toro/i.test(top.name)      ? "Toro"      : "Toro";
+                const cut = "Straight Cut";
+                const burnMin =
+                  size === "Churchill" ? "60–75 min" :
+                  size === "Robusto"   ? "30–40 min" : "45–55 min";
+                const isCigar = top.category === "cigar";
+                const specs = isCigar
+                  ? [
+                      { k: "Wrapper",  v: wrapper      },
+                      { k: "Strength", v: strengthLabel },
+                      { k: "Size",     v: size          },
+                      { k: "Cut",      v: cut           },
+                      { k: "Burn",     v: burnMin       },
+                    ]
+                  : [
+                      { k: "Style",    v: "Neat"        },
+                      { k: "Body",     v: strengthLabel },
+                      { k: "Finish",   v: strengthIdx >= 4 ? "Long" : "Smooth" },
+                      { k: "Glass",    v: "Rocks"       },
+                      { k: "Pour",     v: "2 oz"        },
+                    ];
+                return (
+                  <motion.div
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0  }}
+                    transition={{ delay: 0.85, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    style={{
+                      display: "flex", justifyContent: "center", flexWrap: "wrap",
+                      gap: 14, marginBottom: 22, padding: "16px 18px",
+                      borderRadius: 14,
+                      background: "linear-gradient(135deg, rgba(40,28,14,0.55), rgba(20,15,10,0.35))",
+                      border: "1px solid rgba(212,175,55,0.18)",
+                      boxShadow: "inset 0 1px 0 rgba(255,225,160,0.06), 0 8px 24px rgba(0,0,0,0.35)",
+                    }}
+                    data-testid="reveal-spec-strip"
+                  >
+                    {specs.map((s, i) => (
+                      <div key={s.k} style={{
+                        display: "flex", flexDirection: "column", alignItems: "center",
+                        minWidth: 78, padding: "0 8px",
+                        borderLeft: i === 0 ? "none" : "1px solid rgba(212,175,55,0.10)",
+                      }}>
+                        <span style={{
+                          fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase",
+                          color: "rgba(180,155,100,0.55)", marginBottom: 6,
+                        }}>{s.k}</span>
+                        <span className="font-serif" style={{
+                          fontSize: 17, fontWeight: 500, color: "rgba(245,225,180,0.95)",
+                          letterSpacing: "0.02em",
+                        }}>{s.v}</span>
+                      </div>
+                    ))}
+                  </motion.div>
+                );
+              })()}
 
               <div data-tour="tour-card-stack">
                 <CardStack

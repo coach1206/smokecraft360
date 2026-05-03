@@ -274,7 +274,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
           <p
             style={{
               position: "relative", zIndex: 3,
-              fontSize: 16.5,
+              fontSize: 18,                                              // bumped 16.5→18 per UX brief (35–75 yo readers)
               fontWeight: 500,
               color: "#1F140A",
               textAlign: "center",
