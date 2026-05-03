@@ -32,6 +32,7 @@ import ordersRouter             from "./routes/orders";
 import reservationsRouter       from "./routes/reservations";
 import conflictsRouter          from "./routes/conflicts";
 import ipVaultRouter            from "./routes/ipVault";
+import exportsRouter            from "./routes/exports";
 import ndaRouter                from "./routes/nda";
 import checkoutRouter           from "./routes/checkout";
 import { stripeWebhookHandler } from "./routes/stripeWebhook";
@@ -175,6 +176,7 @@ app.use("/api/orders",                      ordersRouter);
 app.use("/api/reservations",                reservationsRouter);
 app.use("/api/conflicts",                   conflictsRouter);
 app.use("/api/ip-vault",                    ipVaultRouter);
+app.use("/api/exports",                     exportsRouter);
 app.use("/api/nda",                         ndaRouter);
 // Operations layer — staff/manager tools: reorder alerts, menu layout
 // optimization, profit calc, staff pitch. All gated to staff+.

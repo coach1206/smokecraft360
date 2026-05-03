@@ -587,6 +587,65 @@ export async function retireIpAsset(id: string): Promise<IpAsset> {
   return data.asset;
 }
 
+// ── Exports (Brief B) ─────────────────────────────────────────────────────────
+
+export type ExportScope  = "vendors" | "products" | "inventory" | "orders";
+export type ExportFormat = "csv" | "json";
+export type ExportStatus = "completed" | "failed";
+
+export interface ExportLog {
+  id:           string;
+  requestedBy:  string;
+  scope:        ExportScope;
+  format:       ExportFormat;
+  venueId:      string | null;
+  filters:      Record<string, unknown>;
+  rowCount:     number;
+  byteCount:    number;
+  status:       ExportStatus;
+  errorMessage: string | null;
+  createdAt:    string;
+}
+
+export async function fetchExportHistory(): Promise<ExportLog[]> {
+  const res = await fetch("/api/exports", { headers: getAuthHeaders() });
+  const data = await jsonOrThrow<{ exports: ExportLog[] }>(res);
+  return data.exports;
+}
+
+/**
+ * Execute an export and trigger browser download.
+ * Returns { rowCount, byteCount } from response headers.
+ */
+export async function runExport(input: {
+  scope:  ExportScope;
+  format: ExportFormat;
+  filters?: { status?: string; since?: string; until?: string };
+}): Promise<{ rowCount: number; byteCount: number; filename: string }> {
+  const res = await fetch("/api/exports", {
+    method:  "POST",
+    headers: getAuthHeaders(),
+    body:    JSON.stringify(input),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as Record<string, unknown>;
+    throw new Error((err["error"] as string) ?? `HTTP ${res.status}`);
+  }
+  const blob = await res.blob();
+  const cd   = res.headers.get("Content-Disposition") ?? "";
+  const m    = /filename="([^"]+)"/.exec(cd);
+  const filename = m?.[1] ?? `${input.scope}-export.${input.format}`;
+  const url = URL.createObjectURL(blob);
+  const a   = document.createElement("a");
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  return {
+    rowCount:  Number(res.headers.get("X-Export-Rows")  ?? 0),
+    byteCount: Number(res.headers.get("X-Export-Bytes") ?? 0),
+    filename,
+  };
+}
+
 // ── Data conflicts ────────────────────────────────────────────────────────────
 
 export type ConflictStatus     = "open" | "resolved" | "dismissed";

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
-  ArrowLeft, TrendingUp, Package, Sparkles, Zap, Plus, CalendarClock, AlertTriangle, FileLock,
+  ArrowLeft, TrendingUp, Package, Sparkles, Zap, Plus, CalendarClock, AlertTriangle, FileLock, Download,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
   Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown, Award, Gift, Monitor, Activity,
 } from "lucide-react";
@@ -26,6 +26,7 @@ import { NewProductForm }            from "@/components/Dashboard/NewProductForm
 import { ReservationsTab }           from "@/components/Dashboard/ReservationsTab";
 import { ConflictsTab }              from "@/components/Dashboard/ConflictsTab";
 import { IpVaultTab }                from "@/components/Dashboard/IpVaultTab";
+import { ExportsTab }                from "@/components/Dashboard/ExportsTab";
 import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
   type InventoryItem, type AnalyticsSummary,
@@ -38,7 +39,7 @@ import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
-type DashTab = "overview" | "products" | "reservations" | "conflicts" | "ip-vault" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os";
+type DashTab = "overview" | "products" | "reservations" | "conflicts" | "ip-vault" | "exports" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os";
 
 const TABS: { id: DashTab; label: string; icon: React.ReactNode; superAdminOnly?: boolean }[] = [
   { id: "overview",     label: "Overview",              icon: <BarChart3 size={12} />    },
@@ -46,6 +47,7 @@ const TABS: { id: DashTab; label: string; icon: React.ReactNode; superAdminOnly?
   { id: "reservations", label: "Reservations",          icon: <CalendarClock size={12} /> },
   { id: "conflicts",    label: "Conflicts",             icon: <AlertTriangle size={12} /> },
   { id: "ip-vault",     label: "IP Vault",              icon: <FileLock size={12} />, superAdminOnly: true },
+  { id: "exports",      label: "Exports",               icon: <Download size={12} />     },
   { id: "brands",       label: "Brands & Distributors", icon: <Building2 size={12} />    },
   { id: "campaigns",    label: "Campaigns",             icon: <Zap size={12} />          },
   { id: "insights",     label: "Brand Insights",        icon: <TrendingUp size={12} />   },
@@ -412,6 +414,9 @@ export default function Dashboard() {
                     The IP Vault is restricted to <span className="text-emerald-300">super_admin</span> accounts.
                   </div>
                 )}
+
+                {/* ── Exports tab ───────────────────────────────────────────── */}
+                {activeTab === "exports" && <ExportsTab />}
 
                 {/* ── Brands & Distributors tab ──────────────────────────────── */}
                 {activeTab === "brands" && (
