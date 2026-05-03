@@ -4,6 +4,7 @@ import { Toaster }         from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider }    from "@/contexts/AuthContext";
 import { VenueProvider }   from "@/contexts/VenueContext";
+import { ThemeProvider }   from "@/contexts/ThemeContext";
 import { LicenseProvider } from "@/contexts/LicenseContext";
 import { LicenseGate }     from "@/components/License/LicenseGate";
 import { PresentationProvider } from "@/contexts/PresentationContext";
@@ -42,6 +43,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <VenueProvider>
+         <ThemeProvider>
           <LicenseProvider>
             <AuthProvider>
               <PresentationProvider>
@@ -58,6 +60,7 @@ function App() {
               </PresentationProvider>
             </AuthProvider>
           </LicenseProvider>
+         </ThemeProvider>
         </VenueProvider>
       </TooltipProvider>
     </QueryClientProvider>
