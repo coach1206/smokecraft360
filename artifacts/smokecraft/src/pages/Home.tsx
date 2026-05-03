@@ -166,6 +166,14 @@ export default function Home() {
     setTimeout(() => playTone(880, 1320, 0.22, 0.05, "sine"), 90);
   }, [playTone]);
 
+  // Idle attractor — shows "Touch to begin" hint after 6s on welcome
+  const [showIdleHint, setShowIdleHint] = useState(false);
+  useEffect(() => {
+    setShowIdleHint(false);
+    const t = setTimeout(() => setShowIdleHint(true), 6000);
+    return () => clearTimeout(t);
+  }, []);
+
   // Coach toast — momentary confirmation after each step
   const [coachMsg, setCoachMsg] = useState<string | null>(null);
   const coachTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -477,6 +485,19 @@ export default function Home() {
   return (
     <div className="min-h-[100dvh] w-full text-foreground flex flex-col relative overflow-hidden" style={{ background: "hsl(22 18% 5%)" }}>
       <DynamicBackground bgKey={bgKey} />
+
+      {/* Kiosk picture-frame overlay — decorative gold border on lg+ */}
+      <div
+        aria-hidden
+        className="hidden lg:block"
+        style={{
+          position: "fixed", inset: 14, pointerEvents: "none", zIndex: 100,
+          borderRadius: 18,
+          border: "1px solid rgba(212,175,55,0.22)",
+          boxShadow:
+            "inset 0 0 80px rgba(0,0,0,0.55), 0 0 0 14px #000, 0 0 60px rgba(212,175,55,0.06)",
+        }}
+      />
 
       {/* Progression meter — visible throughout buildup */}
       {(phase === "form" || phase === "loading" || phase === "ready") && (
@@ -843,6 +864,25 @@ export default function Home() {
                 />
                 Begin Your Experience
               </motion.button>
+
+              {/* Idle attractor — appears after 6s of inactivity */}
+              <AnimatePresence>
+                {showIdleHint && (
+                  <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: [0, 0.85, 0.5, 0.85], y: 0 }}
+                    exit={{    opacity: 0, y: 4 }}
+                    transition={{ opacity: { duration: 3.4, repeat: Infinity, ease: "easeInOut" }, y: { duration: 0.6 } }}
+                    style={{
+                      marginTop: 14, textAlign: "center",
+                      color: "rgba(212,175,55,0.7)",
+                      fontSize: 11, letterSpacing: "0.32em", textTransform: "uppercase", fontWeight: 600,
+                    }}
+                  >
+                    Touch to begin your experience
+                  </motion.p>
+                )}
+              </AnimatePresence>
 
               {/* Secondary: demo link */}
               {venue.features.demoMode && (

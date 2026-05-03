@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 interface BgState { filter: string; tint: string }
 
 const BG: Record<string, BgState> = {
@@ -43,20 +45,30 @@ export function DynamicBackground({ bgKey }: Props) {
   const state = BG[bgKey] ?? BG.default;
   return (
     <div
-      className="fixed inset-0 z-0 pointer-events-none"
-      style={{
-        backgroundImage: "url('/images/lounge-bg.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        filter: state.filter,
-        transition: "filter 0.5s ease",
-      }}
+      className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
+      style={{ filter: state.filter, transition: "filter 0.5s ease" }}
     >
+      {/* Slow drifting lounge photo — 28s breathing loop */}
+      <motion.div
+        animate={{
+          scale:     [1.08, 1.11, 1.08],
+          x:         ["0%", "-1.4%", "0%"],
+          y:         ["0%", "-0.8%", "0%"],
+        }}
+        transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          position: "absolute", inset: 0,
+          backgroundImage:    "url('/images/lounge-bg.jpg')",
+          backgroundSize:     "cover",
+          backgroundPosition: "center",
+          willChange:         "transform",
+        }}
+      />
       <div
         className="absolute inset-0"
         style={{ background: state.tint, transition: "background 0.5s ease" }}
       />
-      {/* Sidebar gradient */}
+      {/* Sidebar gradient — left dark for sidebar readability, right light for product visibility */}
       <div
         className="absolute inset-0"
         style={{
