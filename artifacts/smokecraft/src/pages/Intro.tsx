@@ -168,13 +168,21 @@ const EXPERIENCES: Experience[] = [
     accent:     "#7DD3FC",
     gradient:   "linear-gradient(180deg, rgba(8,18,32,0.15) 0%, rgba(8,18,32,0.85) 100%)",
   },
-  /* BrewCraft removed from the entry-portal selector per 35th brief
-   * ("the brown card on bottom left — REMOVE IT"). It had no `image`
-   * asset and only a CSS gradient hero, which on 4-card layouts wrapped
-   * to a 3+1 grid leaving an empty-looking dark amber card alone in the
-   * bottom-left row. The /brewcraft route in App.tsx is preserved for
-   * direct navigation; only the portal card was removed. To restore,
-   * add a real image asset and re-add this entry. */
+  /* BrewCraft restored per 36th brief: user wants it visible in the
+   * portal, not hidden. The 35th-brief removal was reverted. Visibility
+   * is now solved by the grid (see below) — 4 cards fit on one row at
+   * desktop/kiosk widths, so BrewCraft no longer wraps to an off-screen
+   * second row. Still uses a CSS-only amber gradient hero (no photo
+   * asset locked yet); swap `image` to a real PNG when ready. */
+  {
+    key:        "brewcraft",
+    title:      "BrewCraft 360",
+    descriptor: "Beer · Pairings · Quick",
+    image:      "",
+    accent:     "#E8A04A",
+    gradient:
+      "linear-gradient(180deg, rgba(232,160,74,0.45) 0%, rgba(120,60,18,0.65) 50%, rgba(20,10,4,0.92) 100%)",
+  },
 ];
 
 /**
@@ -597,7 +605,11 @@ export default function Intro() {
         style={{
           flex: 1, width: "100%", maxWidth: 1400,
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          /* 36th-brief tuning: lowered min track from 300px → 220px so
+           * all 4 experience cards (smoke/pour/vape/brew) fit on one
+           * row at typical kiosk/desktop widths (≥ ~1000px container).
+           * At narrower widths auto-fit still wraps responsively. */
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
           gap: 28,
           alignItems: "stretch",
           // Lift above the time-of-day tint (z=2) so cards stay legible
