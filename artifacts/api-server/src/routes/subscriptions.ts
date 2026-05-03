@@ -26,6 +26,7 @@ import { desc }                                from "drizzle-orm";
 import { requireAuth, type AuthRequest }       from "../middleware/auth";
 import { requireRole }                         from "../middleware/roles";
 import { allowOnly }                           from "../middleware/sanitize";
+import { logAudit }                            from "../lib/audit";
 
 const router: IRouter = Router();
 
@@ -385,6 +386,15 @@ router.post(
         .where(eq(subscriptionsTable.id, existing.id));
     }
 
+    await logAudit(req, {
+      action:     "subscription.admin_override",
+      entityType: "subscription",
+      entityId:   existing?.id ?? null,
+      before:     { adminOverride: existing?.adminOverride ?? null, reason: existing?.adminOverrideReason ?? null },
+      after:      { adminOverride: override, reason },
+      venueId:    String(venueId),
+    });
+
     req.log.info({ venueId, override, reason, by: req.user!.id }, "Subscription admin override toggled");
     res.json({ venueId, adminOverride: override, reason });
   },
@@ -427,6 +437,14 @@ router.post(
       .where(eq(subscriptionsTable.id, existing.id));
 
     await logDunningEvent(String(venueId), "retry", { metadata: { source: "admin_extend", days, by: req.user!.id } });
+    await logAudit(req, {
+      action:     "subscription.extend_grace",
+      entityType: "subscription",
+      entityId:   existing.id,
+      before:     { gracePeriodEndsAt: existing.gracePeriodEndsAt?.toISOString() ?? null },
+      after:      { gracePeriodEndsAt: newEnd.toISOString(), addedDays: days },
+      venueId:    String(venueId),
+    });
 
     req.log.info({ venueId, days, by: req.user!.id, newEnd }, "Grace period extended by admin");
     res.json({ venueId, gracePeriodEndsAt: newEnd.toISOString() });

@@ -279,6 +279,48 @@ export async function stripeWebhookHandler(req: Request, res: Response): Promise
       }
       logger.info({ subId: sub.id, venueId }, "Subscription canceled");
     } catch (err) { logger.error({ err, subId: sub.id }, "Failed to mark subscription canceled"); }
+  } else if (event.type === "payment_intent.succeeded") {
+    // One-shot PaymentIntents created via POST /api/payments/create-intent.
+    // Idempotency: skip if the entity is already in a paid/active state.
+    const pi = event.data.object as Stripe.PaymentIntent;
+    const kind = pi.metadata?.["kind"];
+    const id   = pi.metadata?.["id"];
+    if (kind === "signature_request" && id) {
+      try {
+        const { signatureRequestsTable } = await import("@workspace/db");
+        const { and, inArray } = await import("drizzle-orm");
+        // Atomic guarded update: only advance from pre-payment states. The
+        // status check lives in WHERE so a concurrent admin transition or
+        // duplicate webhook delivery can't clobber a later state.
+        const updated = await db.update(signatureRequestsTable)
+          .set({ status: "submitted", stripePaymentIntentId: pi.id, updatedAt: new Date() })
+          .where(and(
+            eq(signatureRequestsTable.id, id),
+            inArray(signatureRequestsTable.status, ["draft", "rejected"]),
+          ))
+          .returning({ id: signatureRequestsTable.id });
+        if (updated.length > 0) {
+          logger.info({ id, intentId: pi.id }, "Signature request marked submitted via PaymentIntent");
+        } else {
+          logger.debug({ id, intentId: pi.id }, "Signature request already past pre-payment state — webhook no-op");
+        }
+      } catch (err) { logger.error({ err, id }, "Failed to process signature_request payment_intent.succeeded"); }
+    } else if (kind === "placement" && id) {
+      try {
+        // Unified activation: applies status flip, startDate/endDate/activatedAt,
+        // AND the product boost/sponsored side effects. Atomic + idempotent —
+        // the helper's WHERE guard ensures terminal placements aren't reactivated.
+        const { activatePlacement } = await import("./vendorPlacements");
+        const flipped = await activatePlacement(id, { paymentIntentId: pi.id });
+        if (flipped) {
+          logger.info({ id, intentId: pi.id }, "Placement activated via PaymentIntent");
+        } else {
+          logger.debug({ id, intentId: pi.id }, "Placement not in pending_payment — webhook no-op");
+        }
+      } catch (err) { logger.error({ err, id }, "Failed to process placement payment_intent.succeeded"); }
+    } else {
+      logger.debug({ intentId: pi.id, kind, id }, "payment_intent.succeeded with unknown metadata — ignored");
+    }
   } else if (event.type === "customer.subscription.created" || event.type === "customer.subscription.updated") {
     const sub = event.data.object as Stripe.Subscription;
     try { await syncSubscriptionFromStripe(sub); logger.info({ subId: sub.id, status: sub.status }, "Subscription synced"); }

@@ -11,13 +11,16 @@
  * so re-running just refreshes the counts.
  */
 
-import { sql }                                 from "drizzle-orm";
+import { sql, and, eq, lt, isNull, or }        from "drizzle-orm";
 import {
   db,
   analyticsEventsTable,
   ordersTable,
   networkMetricsTable,
   venueMetricsTable,
+  subscriptionsTable,
+  dunningEventsTable,
+  notificationsTable,
 }                                              from "@workspace/db";
 import { logger }                              from "./logger";
 
@@ -175,6 +178,71 @@ async function aggregateScores(timeframe: "daily" | "weekly" | "monthly", days: 
   }
 }
 
+/**
+ * Reconciliation pass — payment/subscription cleanup.
+ *
+ * Finds every subscription stuck in `past_due` whose grace window has
+ * expired (and which has not been admin-overridden) and flips it to
+ * `canceled`. Writes a dunning event + in-app notification so the venue
+ * owner sees the state change in their inbox.
+ *
+ * Idempotent: only acts on rows still in past_due. Re-running is safe.
+ */
+async function reconcileExpiredGrace(): Promise<number> {
+  const now = new Date();
+  const expired = await db
+    .select()
+    .from(subscriptionsTable)
+    .where(and(
+      eq(subscriptionsTable.status, "past_due"),
+      eq(subscriptionsTable.adminOverride, false),
+      // gracePeriodEndsAt is set AND in the past
+      lt(subscriptionsTable.gracePeriodEndsAt, now),
+    ));
+
+  let canceled = 0;
+  for (const sub of expired) {
+    try {
+      // Atomic guarded update: re-assert all selection criteria in WHERE so
+      // a concurrent payment success / admin override / status change between
+      // SELECT and UPDATE wins the race. Only emit dunning + notification
+      // if THIS pass actually flipped the row.
+      const flipped = await db.update(subscriptionsTable)
+        .set({ status: "canceled", updatedAt: now })
+        .where(and(
+          eq(subscriptionsTable.id, sub.id),
+          eq(subscriptionsTable.status, "past_due"),
+          eq(subscriptionsTable.adminOverride, false),
+          lt(subscriptionsTable.gracePeriodEndsAt, now),
+        ))
+        .returning({ id: subscriptionsTable.id });
+      if (flipped.length === 0) continue;
+
+      await db.insert(dunningEventsTable).values({
+        venueId:   sub.venueId,
+        type:      "canceled",
+        metadata:  { reason: "grace_expired", subscriptionId: sub.id },
+      });
+
+      await db.insert(notificationsTable).values({
+        venueId:  sub.venueId,
+        channel:  "in_app",
+        title:    "Service Paused",
+        message:  "Your grace period has ended without a successful payment. Renew anytime to restore service.",
+        category: "canceled",
+        status:   "sent",
+      }).catch(() => { /* notifications are best-effort */ });
+
+      canceled++;
+    } catch (err) {
+      logger.error({ err, subId: sub.id }, "Failed to reconcile expired subscription");
+    }
+  }
+  // Reference imports the linter would otherwise flag.
+  void isNull; void or;
+  return canceled;
+}
+
 let running = false;
 
 export async function runAggregation(): Promise<void> {
@@ -191,7 +259,8 @@ export async function runAggregation(): Promise<void> {
       await aggregatePairings(name, days);
       await aggregateScores(name, days);
     }
-    logger.info({ ms: Date.now() - start }, "aggregation worker complete");
+    const canceled = await reconcileExpiredGrace();
+    logger.info({ ms: Date.now() - start, expiredSubsCanceled: canceled }, "aggregation + reconciliation complete");
   } catch (err) {
     logger.error({ err }, "aggregation worker failed");
   } finally {

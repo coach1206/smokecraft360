@@ -38,6 +38,9 @@ export const signatureRequestsTable = pgTable("signature_requests", {
   manufacturerId:  uuid("manufacturer_id"),
   adminNotes:      text("admin_notes"),
   rejectedReason:  text("rejected_reason"),
+  // Stripe PaymentIntent id for the alternative Elements-based checkout flow
+  // (POST /api/payments/create-intent). Distinct from any Checkout session id.
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
   createdAt:       timestamp("created_at").notNull().defaultNow(),
   updatedAt:       timestamp("updated_at").notNull().defaultNow(),
 });

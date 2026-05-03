@@ -31,6 +31,8 @@ export const vendorPlacementsTable = pgTable("vendor_placements", {
   priceCents:       integer("price_cents").notNull(),
   status:           placementStatusEnum("status").notNull().default("pending_payment"),
   stripeSessionId:  text("stripe_session_id"),
+  // PaymentIntent id when paid via the Elements flow instead of Checkout.
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
   campaignId:       uuid("campaign_id"),                   // populated when activated
   startDate:        timestamp("start_date"),
   endDate:          timestamp("end_date"),

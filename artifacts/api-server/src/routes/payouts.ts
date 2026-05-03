@@ -22,6 +22,7 @@ import {
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { requireRole }                          from "../middleware/roles";
 import { allowOnly }                            from "../middleware/sanitize";
+import { logAudit }                             from "../lib/audit";
 
 const router: IRouter = Router();
 
@@ -171,6 +172,15 @@ async function transition(
     .set(patch)
     .where(eq(payoutRequestsTable.id, id))
     .returning();
+
+  await logAudit(req, {
+    action:     `payout.${to}`,
+    entityType: "payout_request",
+    entityId:   id,
+    before:     { status: existing.status, amountCents: existing.amountCents },
+    after:      { status: to, amountCents: existing.amountCents },
+    venueId:    existing.venueId,
+  });
 
   req.log.info({ payoutId: id, to, by: req.user?.id }, "Payout status updated");
   res.json(updated);

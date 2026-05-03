@@ -1,0 +1,263 @@
+BUILD A DYNAMIC TEMPLATE ENGINE FOR SMOKECRAFT 360 THAT ALLOWS MULTIPLE EXPERIENCE BRANDS (SMOKECRAFT, POURCRAFT, GRILLCRAFT, ETC.) TO RUN FROM THE SAME CORE SYSTEM USING CONFIGURATION FILES
+
+---
+
+CORE OBJECTIVE
+
+Create ONE system that dynamically changes:
+
+- visuals
+- products
+- text
+- scoring logic
+- sound
+
+based on a selected theme
+
+---
+
+1. THEME CONFIG SYSTEM
+
+Create folder:
+
+/client/themes/
+
+Each theme has a config file:
+
+Example: /themes/smokecraft.js
+
+---
+
+CONFIG STRUCTURE
+
+export const smokecraft = {
+  name: "SmokeCraft 360",
+  productType: "cigar",
+  secondaryProduct: "whiskey",
+
+  colors: {
+    primary: "#C6A85B",
+    background: "#0B0B0B"
+  },
+
+  steps: ["mood", "flavor", "strength", "atmosphere", "pairing"],
+
+  visuals: {
+    type: "smoke",
+    sceneFolder: "/images/scenes/smoke/"
+  },
+
+  sound: {
+    click: "/sounds/click.mp3",
+    ambient: "/sounds/lounge.mp3"
+  }
+};
+
+---
+
+Create additional configs:
+
+- pourcraft.js
+- grillcraft.js
+- brewcraft.js
+
+---
+
+2. THEME LOADER
+
+Create a global theme loader:
+
+/client/themeLoader.js
+
+---
+
+CODE
+
+export function loadTheme(themeName) {
+  switch (themeName) {
+    case "pourcraft":
+      return require("./themes/pourcraft").pourcraft;
+    case "grillcraft":
+      return require("./themes/grillcraft").grillcraft;
+    default:
+      return require("./themes/smokecraft").smokecraft;
+  }
+}
+
+---
+
+3. GLOBAL THEME CONTEXT
+
+Wrap app in ThemeProvider:
+
+---
+
+CODE
+
+import React, { createContext, useContext } from "react";
+
+const ThemeContext = createContext();
+
+export const ThemeProvider = ({ theme, children }) => {
+  return (
+    <ThemeContext.Provider value={theme}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export const useTheme = () => useContext(ThemeContext);
+
+---
+
+4. APPLY THEME TO UI
+
+In components:
+
+---
+
+CODE
+
+const theme = useTheme();
+
+<h1 style={{ color: theme.colors.primary }}>
+  {theme.name}
+</h1>
+
+---
+
+5. DYNAMIC SCENE SYSTEM
+
+Load background based on theme:
+
+---
+
+CODE
+
+const scenePath = ${theme.visuals.sceneFolder}${currentStep}.jpg;
+
+---
+
+6. PRODUCT MAPPING (BACKEND)
+
+Modify API:
+
+GET /api/products?type=theme.productType
+
+---
+
+CODE
+
+router.get("/products", async (req, res) => {
+  const { type } = req.query;
+
+  const products = await db.products.find({
+    category: type
+  });
+
+  res.json(products);
+});
+
+---
+
+7. SCORING ENGINE PER THEME
+
+Create scoring configs:
+
+/server/scoring/
+
+smokecraft.js  
+pourcraft.js  
+
+---
+
+CODE
+
+export const smokecraftScore = (data) => {
+  return (data.flavor * 0.4) + (data.strength * 0.3) + (data.pairing * 0.3);
+};
+
+---
+
+Load dynamically:
+
+---
+
+CODE
+
+function getScoringEngine(theme) {
+  switch (theme) {
+    case "pourcraft":
+      return pourcraftScore;
+    default:
+      return smokecraftScore;
+  }
+}
+
+---
+
+8. FEATURE FLAGS
+
+Create table:
+
+FEATURE_FLAGS
+
+- id
+- theme
+- feature_name
+- enabled
+
+---
+
+Use to toggle:
+
+- sound
+- animations
+- premium features
+
+---
+
+9. ROUTING PER TEMPLATE
+
+Support:
+
+/smokecraft  
+/pourcraft  
+/grillcraft  
+
+---
+
+CODE
+
+<Route path="/:theme" element={<App />} />
+
+---
+
+10. ADMIN TEMPLATE CONTROL
+
+Admin can:
+
+- select theme per venue
+- switch branding
+- enable/disable features
+
+---
+
+11. ASSET STRUCTURE
+
+/images/scenes/smoke/
+/images/scenes/pour/
+/images/scenes/grill/
+
+---
+
+12. FINAL GOAL
+
+Create a system where:
+
+- new templates are added via config only
+- no code duplication
+- same engine powers all experiences
+- scaling to new industries is fast
+
+---

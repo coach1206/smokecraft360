@@ -20,6 +20,7 @@ import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { requireRole }                          from "../middleware/roles";
 import { allowOnly }                            from "../middleware/sanitize";
 import { requireActiveLicense }                 from "../middleware/license";
+import { sql }                                  from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -193,33 +194,158 @@ router.post(
 );
 
 /**
- * Activate a placement after successful Stripe payment. Called from the
- * stripeWebhook handler. Idempotent: re-running has no effect.
+ * Unified placement activation. Used by BOTH the Checkout-session webhook
+ * (passes `sessionId`) and the PaymentIntent webhook (passes `paymentIntentId`).
+ *
+ * Idempotent and race-safe: the status='pending_payment' guard lives in the
+ * UPDATE's WHERE clause, so duplicate webhook deliveries or concurrent admin
+ * actions can't reactivate a terminal placement (active/expired/cancelled).
+ * Product-boost side effects are only applied when this call actually flipped
+ * the row, so a late webhook never re-stamps boost on an already-active slot.
  */
-export async function activatePlacementFromSession(sessionId: string, placementId: string): Promise<void> {
+export async function activatePlacement(
+  placementId: string,
+  ref: { sessionId?: string; paymentIntentId?: string },
+): Promise<boolean> {
   const [placement] = await db.select().from(vendorPlacementsTable).where(eq(vendorPlacementsTable.id, placementId)).limit(1);
-  if (!placement || placement.status === "active") return;
+  if (!placement) return false;
 
   const tier = TIERS[placement.placementType];
-  if (!tier) return;
+  if (!tier) return false;
 
   const start = new Date();
   const end   = new Date(start.getTime() + tier.durationDays * 24 * 60 * 60 * 1000);
 
-  await db.update(vendorPlacementsTable)
-    .set({
-      status:           "active",
-      startDate:        start,
-      endDate:          end,
-      activatedAt:      new Date(),
-      stripeSessionId:  sessionId,
-    })
-    .where(eq(vendorPlacementsTable.id, placementId));
+  // Build patch from the payment reference; keep both columns nullable so
+  // either Checkout or PaymentIntent can be the source of truth per row.
+  const patch: Partial<typeof vendorPlacementsTable.$inferInsert> = {
+    status:      "active",
+    startDate:   start,
+    endDate:     end,
+    activatedAt: new Date(),
+  };
+  if (ref.sessionId)       patch.stripeSessionId       = ref.sessionId;
+  if (ref.paymentIntentId) patch.stripePaymentIntentId = ref.paymentIntentId;
 
-  // Apply the boost to the product so it surfaces in recommendations
+  // Atomic guarded transition: only flip pending_payment → active.
+  const flipped = await db.update(vendorPlacementsTable)
+    .set(patch)
+    .where(and(
+      eq(vendorPlacementsTable.id, placementId),
+      eq(vendorPlacementsTable.status, "pending_payment"),
+    ))
+    .returning({ id: vendorPlacementsTable.id });
+
+  if (flipped.length === 0) return false;
+
+  // Apply the boost to the product so it surfaces in recommendations.
+  // Only runs when THIS call won the race — never re-stamped on duplicate.
   await db.update(productsTable)
     .set({ boostLevel: tier.boostLevel, sponsored: tier.sponsored })
     .where(eq(productsTable.id, placement.productId));
+
+  return true;
 }
+
+/**
+ * Backwards-compatible wrapper. Existing callers (Checkout-session webhook)
+ * keep working without changing their signature.
+ */
+export async function activatePlacementFromSession(sessionId: string, placementId: string): Promise<void> {
+  await activatePlacement(placementId, { sessionId });
+}
+
+// ── GET /api/vendor/placements/analytics ──────────────────────────────────────
+//
+// Aggregated marketplace performance for the authenticated brand_partner.
+// Rolls up the partner's placements into spend, active slots, lifetime
+// impressions/clicks/conversions, and click-through-rate. Super admins can
+// scope to any brand via ?brandId=... for support workflows.
+
+// Helper to normalize drizzle's db.execute result across pg-style QueryResult
+// (has .rows) and array-style (already iterable). Mirrors the pattern used
+// by other raw-SQL callers in this codebase.
+function asRows<T>(r: unknown): T[] {
+  if (Array.isArray(r)) return r as T[];
+  if (r && typeof r === "object" && Array.isArray((r as { rows?: unknown }).rows)) {
+    return (r as { rows: T[] }).rows;
+  }
+  return [];
+}
+
+router.get(
+  "/analytics",
+  requireAuth,
+  requireRole("brand_partner", "super_admin"),
+  async (req: AuthRequest, res: Response) => {
+    // brand_partner sees their own purchases. super_admin can pass ?purchasedBy=
+    // (a user id) to scope to a specific brand_partner for support workflows.
+    const isSuper       = req.user!.role === "super_admin";
+    const requested     = typeof req.query["purchasedBy"] === "string" ? req.query["purchasedBy"] : null;
+    const purchasedById = isSuper && requested ? requested : req.user!.id;
+
+    const totalsResult = await db.execute(sql`
+      SELECT
+        COUNT(*)::text                                                                          AS total_placements,
+        COUNT(*) FILTER (WHERE status = 'active')::text                                         AS active_placements,
+        COALESCE(SUM(price_cents) FILTER (WHERE status IN ('active','expired','completed')), 0)::text AS total_spend_cents,
+        MIN(created_at)                                                                         AS first_purchase_at
+      FROM vendor_placements
+      WHERE purchased_by = ${purchasedById}
+    `);
+    const totals = asRows<{
+      total_placements:   string;
+      active_placements:  string;
+      total_spend_cents:  string;
+      first_purchase_at:  string | null;
+    }>(totalsResult)[0];
+
+    const perfResult = await db.execute(sql`
+      SELECT
+        vp.id::text                                                                              AS placement_id,
+        COUNT(*) FILTER (WHERE ae.event_type = 'placement_impression')::text                     AS impressions,
+        COUNT(*) FILTER (WHERE ae.event_type = 'placement_click')::text                          AS clicks,
+        COUNT(*) FILTER (WHERE ae.event_type IN ('product_selected','order_placed') AND ae.product_id IS NOT NULL)::text AS conversions
+      FROM vendor_placements vp
+      LEFT JOIN analytics_events ae
+        ON (ae.metadata->>'placementId') = vp.id::text
+      WHERE vp.purchased_by = ${purchasedById}
+      GROUP BY vp.id
+      ORDER BY impressions DESC NULLS LAST
+      LIMIT 100
+    `);
+    const performance = asRows<{
+      placement_id: string;
+      impressions:  string;
+      clicks:       string;
+      conversions:  string;
+    }>(perfResult);
+
+    const impressionsTotal = performance.reduce((acc, r) => acc + Number(r.impressions || 0), 0);
+    const clicksTotal      = performance.reduce((acc, r) => acc + Number(r.clicks || 0), 0);
+    const conversionsTotal = performance.reduce((acc, r) => acc + Number(r.conversions || 0), 0);
+    const ctr              = impressionsTotal > 0 ? clicksTotal / impressionsTotal : 0;
+
+    res.json({
+      purchasedBy: purchasedById,
+      summary: {
+        totalPlacements:  Number(totals?.total_placements   ?? 0),
+        activePlacements: Number(totals?.active_placements  ?? 0),
+        totalSpendCents:  Number(totals?.total_spend_cents  ?? 0),
+        firstPurchaseAt:  totals?.first_purchase_at ?? null,
+        impressions:      impressionsTotal,
+        clicks:           clicksTotal,
+        conversions:      conversionsTotal,
+        ctr:              Number(ctr.toFixed(4)),
+      },
+      perPlacement: performance.map((r) => ({
+        placementId: r.placement_id,
+        impressions: Number(r.impressions ?? 0),
+        clicks:      Number(r.clicks      ?? 0),
+        conversions: Number(r.conversions ?? 0),
+      })),
+    });
+  },
+);
 
 export default router;
