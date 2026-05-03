@@ -1,0 +1,90 @@
+In SmokeCraftDashboard.tsx (or main screen)
+const getBackground = () => {
+  switch (mode) {
+    case "smokecraft":
+      return "url('https://images.unsplash.com/photo-1600628422019-1f7f51a9f932')";
+    case "pourcraft":
+      return "url('https://images.unsplash.com/photo-1514361892635-e955b4b4e8d3')";
+    case "vapecraft":
+      return "url('https://images.unsplash.com/photo-1603732551658-5fabbafa84eb')";
+    case "brewcraft":
+      return "url('https://images.unsplash.com/photo-1516450360452-9312f5e86fc7')";
+    default:
+      return "none";
+  }
+};
+🎨 STEP 2: APPLY IT TO YOUR MAIN CONTAINER
+<div
+  className="dashboard-main"
+  style={{
+    backgroundImage: `
+      linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.85)),
+      ${getBackground()}
+    `,
+    backgroundSize: "cover",
+    backgroundPosition: "center"
+  }}
+>
+🔥 STEP 3: PASS THE MODE CORRECTLY
+
+In your App.tsx, update navigation:
+
+const [screen, setScreen] = useState("entry");
+const [mode, setMode] = useState(null);
+Update entry click handlers:
+<EntryScreen
+  onEnter={(selected) => {
+    setMode(selected);
+    setScreen("dashboard");
+  }}
+/>
+Then pass mode:
+{screen === "dashboard" && (
+  <SmokeCraftDashboard mode={mode} />
+)}
+🧩 STEP 4: UPDATE DASHBOARD COMPONENT
+export default function SmokeCraftDashboard({ mode }) {
+🎯 RESULT (THIS IS WHAT YOU WANT)
+
+Now when user clicks:
+
+SmokeCraft
+Dark cigar lounge
+Warm lighting
+Wood tones
+PourCraft
+Glass + whiskey pour motion
+Clean reflections
+Liquid focus
+VapeCraft
+Dark + neon + vapor
+Modern / futuristic
+BrewCraft
+Beer foam, glass, golden tones
+Casual but rich
+⚠️ IMPORTANT (YOU MISSED THIS EARLIER)
+
+Right now your BrewCraft card is blank.
+
+👉 That’s why it feels broken
+
+Fix it:
+
+.brewcraft {
+  background: url("https://images.unsplash.com/photo-1516450360452-9312f5e86fc7") center/cover no-repeat;
+}
+🔥 NEXT LEVEL (THIS IS WHAT MAKES IT CRAZY GOOD)
+
+Don’t just change background.
+
+Also change:
+
+Titles
+const titles = {
+  smokecraft: "Your Perfect Cigar Experience",
+  pourcraft: "Precision Spirit Pairing",
+  vapecraft: "Modern Vapor Experience",
+  brewcraft: "Craft Beer Pairing System"
+};
+Then render:
+<h1>{titles[mode]}</h1>
