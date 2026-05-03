@@ -10,6 +10,15 @@ import ExperienceFrame from "@/components/ExperienceFrame";
 import VoicePanel from "@/components/AIPanel/VoicePanel";
 import SuggestedMenu from "@/components/AIPanel/SuggestedMenu";
 import loungeBg from "@assets/locked_cards/experience_pourcraft.png";
+/* Per-style spirit hero photos — mirrors BrewCraft's per-style beer photo
+ * pattern. Each one matches its PourStyle's flavor/strength/mood: smooth
+ * bourbon, spicy rye, peated Islay scotch, aged cognac. Live in
+ * `generated_images/` so the locked-photography set stays untouched;
+ * swap to a real photograph by replacing the file at the same path. */
+import pourSmoothImg from "@assets/generated_images/pour_smooth.png";
+import pourSpicyImg  from "@assets/generated_images/pour_spicy.png";
+import pourSmokyImg  from "@assets/generated_images/pour_smoky.png";
+import pourRichImg   from "@assets/generated_images/pour_rich.png";
 
 /**
  * PourCraft — whisky / spirit-led pairing flow.
@@ -34,6 +43,8 @@ interface PourStyle {
   gradient:  string;
   accent:    string;
   glyph:     string;
+  /** Per-style spirit hero photo, bundled at build time via Vite. */
+  image:     string;
 }
 
 const STYLES: PourStyle[] = [
@@ -47,6 +58,7 @@ const STYLES: PourStyle[] = [
     gradient: "linear-gradient(155deg, #f0d68a 0%, #c89548 50%, #5a3818 100%)",
     accent:   "#E8C870",
     glyph:    "◐",
+    image:    pourSmoothImg,
   },
   {
     id:       "spicy",
@@ -58,6 +70,7 @@ const STYLES: PourStyle[] = [
     gradient: "linear-gradient(155deg, #d88848 0%, #a04818 50%, #4a2008 100%)",
     accent:   "#E89858",
     glyph:    "◑",
+    image:    pourSpicyImg,
   },
   {
     id:       "smoky",
@@ -69,6 +82,7 @@ const STYLES: PourStyle[] = [
     gradient: "linear-gradient(155deg, #6a4828 0%, #3a2410 50%, #100804 100%)",
     accent:   "#A08858",
     glyph:    "◒",
+    image:    pourSmokyImg,
   },
   {
     id:       "rich",
@@ -80,6 +94,7 @@ const STYLES: PourStyle[] = [
     gradient: "linear-gradient(155deg, #6a2818 0%, #3a1008 60%, #100404 100%)",
     accent:   "#C8704A",
     glyph:    "●",
+    image:    pourRichImg,
   },
 ];
 
@@ -261,7 +276,12 @@ export default function PourCraft() {
                     border: `1px solid ${style.accent}66`,
                     cursor: loading ? "default" : "pointer",
                     padding: 0, color: "inherit",
-                    background: style.gradient,
+                    /* Photo on top, gradient fallback beneath — if the
+                     * image asset ever fails to load, the original color
+                     * identity still shows through. Mirrors BrewCraft. */
+                    backgroundImage:    `url(${style.image}), ${style.gradient}`,
+                    backgroundSize:     "cover",
+                    backgroundPosition: "center",
                     boxShadow: isSel
                       ? `0 0 0 2px ${style.accent}, 0 30px 80px ${style.accent}55`
                       : "0 18px 50px rgba(0,0,0,0.55)",

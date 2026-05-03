@@ -276,3 +276,27 @@ id = "2qGXu3fNhh58c37Q7itMh"
 uri = "file://attached_assets/generated_images/generated_image.png"
 type = "image"
 title = "generated_image"
+
+[[generated]]
+id = "V7b_NLbv5Uxg1krF42UBS"
+uri = "file://attached_assets/generated_images/pour_smooth.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "OwVpOqzyFt2xei7u06MBQ"
+uri = "file://attached_assets/generated_images/pour_spicy.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "zYkqJAet3DsnrQ1KIns0Y"
+uri = "file://attached_assets/generated_images/pour_smoky.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "-shSOXJr2TXrJ-4mlvaZd"
+uri = "file://attached_assets/generated_images/pour_rich.png"
+type = "image"
+title = "generated_image"
