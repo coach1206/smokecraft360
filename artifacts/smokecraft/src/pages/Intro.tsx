@@ -16,6 +16,7 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useBrowserSpeech } from "@/hooks/useBrowserSpeech";
 
 /* Locked experience-card imagery. Bundled by Vite via the @assets alias so
  * the welcome screen can NEVER drift to the wrong photo (e.g. the prior
@@ -118,6 +119,29 @@ interface Experience {
   accent:     string;   // hex used for glow + accent text
   gradient:   string;   // overlay gradient on the card
 }
+
+/**
+ * Browser-TTS ambient voice cues for the entry portal. Kept short + literal
+ * so OS voices read them clearly without intonation drift. Resolved per
+ * ThemeKey so the same maps cover all four cards. Hover cooldown in the
+ * component prevents rapid re-entry from re-speaking. */
+const VOICE_HOVER: Record<ThemeKey, string> = {
+  smokecraft: "SmokeCraft. Cigar experience system.",
+  pourcraft:  "PourCraft. Spirits and pairing system.",
+  vapecraft:  "VapeCraft. Vapor experience system.",
+  brewcraft:  "BrewCraft. Beer experience system.",
+};
+const VOICE_PICK: Record<ThemeKey, string> = {
+  smokecraft: "Entering SmokeCraft.",
+  pourcraft:  "Entering PourCraft.",
+  vapecraft:  "Entering VapeCraft.",
+  brewcraft:  "Entering BrewCraft.",
+};
+/** Minimum gap between consecutive hover cues so jittery mouse movement
+ *  doesn't re-trigger speech every frame. */
+const HOVER_COOLDOWN_MS = 1200;
+/** sessionStorage flag — once-per-session entry-screen voice cue. */
+const VOICE_INTRO_SESSION_KEY = "pi_voice_intro_cue";
 
 const EXPERIENCES: Experience[] = [
   {
@@ -227,6 +251,13 @@ export default function Intro() {
   const [attractIdx, setAttractIdx] = useState(0);
   const [tod]                  = useState<TimeOfDay>(() => timeOfDayFromHour(new Date().getHours()));
   const playClick              = useClickSound();
+  /* Browser-native TTS for ambient entry-portal cues. Distinct from
+   * useVoice (server ElevenLabs) — this is for low-latency atmosphere,
+   * not narrator content. Auto-respects prefers-reduced-motion. */
+  const { speak: speakCue }    = useBrowserSpeech();
+  /* Last hover-cue timestamp; gates HOVER_COOLDOWN_MS to suppress
+   * re-speaks from jittery cursor movement. */
+  const hoverCooldownRef       = useRef<number>(0);
 
   // Time-of-day driven copy + overlay opacity. Night gets the most
   // atmospheric framing; day is the lightest read.
@@ -326,9 +357,38 @@ export default function Intro() {
     };
   }, []);
 
+  /* Once-per-session entry cue — speaks "Select your experience." shortly
+   * after the splash dissolves so it lands during the cards' fade-in. The
+   * sessionStorage flag prevents re-prompting on SPA back-nav within the
+   * same kiosk session. */
+  useEffect(() => {
+    if (stage !== "select") return;
+    let alreadyFired = false;
+    try { alreadyFired = sessionStorage.getItem(VOICE_INTRO_SESSION_KEY) === "1"; }
+    catch { /* private mode — just speak once per mount */ }
+    if (alreadyFired) return;
+    try { sessionStorage.setItem(VOICE_INTRO_SESSION_KEY, "1"); } catch { /* ignore */ }
+    const t = window.setTimeout(() => speakCue("Select your experience."), 600);
+    return () => window.clearTimeout(t);
+  }, [stage, speakCue]);
+
+  /* Hover cue — speaks the per-card descriptor on first hover, with a
+   * cooldown so wiggling between two cards doesn't queue speech. Skipped
+   * during attract mode (cards animate themselves; voice would clash) and
+   * once a selection is in flight. */
+  const onHoverCard = useCallback((key: ThemeKey) => {
+    if (selected) return;
+    if (isIdle)   return;
+    const now = Date.now();
+    if (now - hoverCooldownRef.current < HOVER_COOLDOWN_MS) return;
+    hoverCooldownRef.current = now;
+    speakCue(VOICE_HOVER[key]);
+  }, [selected, isIdle, speakCue]);
+
   const onPick = (key: ThemeKey) => {
     if (selected) return;
     playClick();
+    speakCue(VOICE_PICK[key]);
     setSel(key);
     // Persist choice so loadTheme() picks it up on the next page.
     try { localStorage.setItem("smokecraft_theme", key); } catch { /* ignore */ }
@@ -580,6 +640,8 @@ export default function Intro() {
               data-testid={`intro-card-${exp.key}`}
               type="button"
               onClick={() => onPick(exp.key)}
+              onHoverStart={() => onHoverCard(exp.key)}
+              onFocus={() => onHoverCard(exp.key)}
               disabled={selected !== null}
               initial={{ opacity: 0, y: 30 }}
               animate={{
