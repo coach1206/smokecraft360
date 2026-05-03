@@ -1,0 +1,182 @@
+MISSING / REQUIRED (READ THIS FIRST)
+
+Right now your system is still missing:
+
+Central Image Mapping Engine
+→ Without this, it will keep picking random garbage images
+Image API Integration (Unsplash or similar)
+→ You’re currently using placeholders / wrong matches
+Cigar Matching Engine (final result logic)
+→ You’re showing one cigar regardless of choices (weak experience)
+Flavor → Cigar DNA Logic
+→ This is what makes the final result feel intelligent
+Fallback Image Control
+→ If API fails, you need curated backups (no blank or wrong visuals)
+
+If you skip ANY of these… it breaks again.
+
+🛡️ FAILURE PREVENTION CHECKLIST
+
+Before you run anything:
+
+✔ No generic images
+✔ No “keyword only” search
+✔ Every flavor must map to controlled keywords
+✔ Every cigar must have a real image
+✔ Every screen must animate smoothly
+✔ Every selection must influence final result
+✔ No dead UI (everything reacts)
+
+🧠 MASTER PROMPT (PUT THIS IN REPLIT AGENT)
+
+BUILD A CONTROLLED IMAGE SYSTEM + DYNAMIC CIGAR MATCHING ENGINE FOR SMOKECRAFT 360
+
+GOAL:
+Transform the experience into a premium cigar sommelier system using real imagery and intelligent matching.
+
+PART 1: FLAVOR IMAGE ENGINE
+
+Create a controlled mapping system.
+
+const FLAVOR_IMAGE_MAP = {
+sweet: ["honey dripping macro", "caramel swirl luxury", "brown sugar texture warm"],
+creamy: ["latte foam macro", "cream swirl coffee", "vanilla bean close up"],
+cocoa: ["cocoa beans raw", "dark chocolate chunks premium", "roasted coffee beans"],
+leather: ["aged leather chair brown", "leather saddle texture", "luxury leather patina"],
+floral: ["jasmine dark background", "deep red rose petals macro", "herbal botanical leaves"],
+smoky: ["cigar smoke swirl dark", "embers burning close up", "whiskey smoke glass"],
+mild: ["light tobacco leaf", "soft sunlight window calm", "light wood texture"]
+};
+
+PART 2: IMAGE FETCH FUNCTION
+
+async function fetchImage(query) {
+const res = await fetch(https://api.unsplash.com/search/photos?query=${query}&client_id=YOUR_KEY);
+const data = await res.json();
+return data.results[0]?.urls?.regular;
+}
+
+async function getFlavorImage(flavor) {
+const queries = FLAVOR_IMAGE_MAP[flavor];
+const randomQuery = queries[Math.floor(Math.random() * queries.length)];
+return await fetchImage(randomQuery);
+}
+
+PART 3: SWIPE CARD UI
+
+Card height: 520px
+Image top 60%
+Text bottom 40%
+Smooth swipe (Framer Motion or CSS easing)
+Click sound on select
+Scale up active card slightly
+
+PART 4: CIGAR MATCHING ENGINE (THIS IS THE MAGIC)
+
+Create cigar profiles:
+
+const CIGAR_DATABASE = [
+{
+name: "Padron 1964 Anniversary",
+strength: "medium",
+flavors: ["cocoa", "earthy", "sweet"],
+size: "Robusto",
+wrapper: "Nicaraguan Maduro",
+image: "REAL IMAGE URL"
+},
+{
+name: "Arturo Fuente Hemingway",
+strength: "mild",
+flavors: ["creamy", "sweet", "floral"],
+size: "Perfecto",
+wrapper: "Cameroon",
+image: "REAL IMAGE URL"
+},
+{
+name: "Oliva Serie V",
+strength: "full",
+flavors: ["leather", "cocoa", "smoky"],
+size: "Toro",
+wrapper: "Sun Grown Habano",
+image: "REAL IMAGE URL"
+}
+];
+
+MATCH LOGIC:
+
+function matchCigar(userSelections) {
+return CIGAR_DATABASE.map(cigar => {
+let score = 0;
+
+userSelections.forEach(sel => {
+  if (cigar.flavors.includes(sel)) score += 2;
+  if (cigar.strength === sel) score += 1;
+});
+
+return { cigar, score };
+
+}).sort((a, b) => b.score - a.score)[0].cigar;
+}
+
+PART 5: FINAL REVEAL EXPERIENCE
+
+When finished:
+
+SHOW:
+
+Real cigar image (large, center)
+Name
+Strength
+Size (Robusto / Toro / Churchill)
+Wrapper
+Flavor profile
+Pairing (whiskey)
+
+ADD:
+
+glow animation
+subtle smoke animation
+score rating animation (count up)
+
+PART 6: REAL SPIRIT IMAGES
+
+Replace background with:
+
+whiskey glass
+bourbon pour
+cigar lounge environment
+
+NO FRUIT
+NO RANDOM STOCK
+
+PART 7: FALLBACK SYSTEM
+
+If API fails:
+
+Use local images:
+
+/assets/images/flavors/sweet.jpg
+/assets/images/flavors/creamy.jpg
+etc.
+
+END RESULT:
+
+The system must feel like:
+A luxury cigar concierge guiding the user visually and intelligently.
+
+
+
+
+💻 QUICK CODE YOU CAN DROP (CORE LOGIC)
+Flavor Image Hook
+const [image, setImage] = useState("");
+
+useEffect(() => {
+  getFlavorImage(currentFlavor).then(setImage);
+}, [currentFlavor]);
+Final Cigar Render
+const cigar = matchCigar(userSelections);
+
+<img src={cigar.image} className="w-full rounded-xl" />
+<h2>{cigar.name}</h2>
+<p>{cigar.size} • {cigar.wrapper}</p>

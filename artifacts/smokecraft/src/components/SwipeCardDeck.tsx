@@ -11,6 +11,11 @@ export interface SwipeCardItem {
    *  scrim so text stays readable. Optional — cards without an image fall
    *  back to the original cream background + gold accent. */
   image?:   string;
+  /** Optional ordered fallback chain. If the primary image fails to load
+   *  (404, rate-limit, blocked), the next URL in the array is tried, then
+   *  the next. Prevents silent empty cards when a single Unsplash photo
+   *  goes stale. When provided, the first entry is used as the primary. */
+  images?:  string[];
   /** Optional accent hex color used for the gold rule + dot tint. Defaults
    *  to the deck's house gold. */
   accent?:  string;
@@ -165,27 +170,51 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
           isolation: "isolate",
         }}
       >
-        {/* Hero image (top ~60%) — only when image provided.
-            Larger than v1 so the photo is the dominant element on the card,
-            not a strip. */}
-        {item.image && (
-          <div
-            aria-hidden
-            style={{
-              position: "absolute",
-              top: 0, left: 0, right: 0,
-              height: "58%",
-              backgroundImage:    `url(${item.image})`,
-              backgroundSize:     "cover",
-              backgroundPosition: "center",
-              filter: "saturate(1.08) contrast(1.06)",
-              zIndex: 0,
-            }}
-          />
-        )}
+        {/* Hero image (top ~60%) — uses an <img> element so we can detect
+            load failures and walk through `item.images` fallbacks. The
+            previous bg-image approach silently showed an empty top half
+            when an Unsplash URL went stale. */}
+        {(() => {
+          const chain = item.images && item.images.length > 0
+            ? item.images
+            : item.image ? [item.image] : [];
+          if (chain.length === 0) return null;
+          return (
+            <div
+              aria-hidden
+              style={{
+                position: "absolute",
+                top: 0, left: 0, right: 0,
+                height: "58%",
+                background: "linear-gradient(180deg,#3a2812,#1a1208)", // warm placeholder
+                zIndex: 0, overflow: "hidden",
+              }}
+            >
+              <img
+                src={chain[0]}
+                alt=""
+                loading="eager"
+                onError={(e) => {
+                  const img  = e.currentTarget;
+                  const next = Number(img.dataset.idx ?? 0) + 1;
+                  if (next < chain.length) {
+                    img.dataset.idx = String(next);
+                    img.src = chain[next];
+                  }
+                }}
+                style={{
+                  width: "100%", height: "100%",
+                  objectFit: "cover", objectPosition: "center",
+                  filter: "saturate(1.08) contrast(1.06)",
+                  display: "block",
+                }}
+              />
+            </div>
+          );
+        })()}
         {/* Cream scrim that fades the photo into the card body so text
             stays legible even on busy images. */}
-        {item.image && (
+        {(item.image || (item.images && item.images.length > 0)) && (
           <div
             aria-hidden
             style={{

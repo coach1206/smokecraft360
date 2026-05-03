@@ -47,56 +47,82 @@ const SLIDE_T = { duration: 0.42, ease: [0.22, 1, 0.36, 1] as [number,number,num
 const FLAVOR_IMG = (id: string) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=720&q=70`;
 
+/* ── FLAVOR_IMAGE_MAP ─────────────────────────────────────────────────────
+ * Per the curator's brief: every flavor card must read as something a cigar
+ * sommelier would point at. Strict rules — NO fruit slices, NO candy, NO
+ * generic stock textures. Each entry is an ORDERED FALLBACK CHAIN; if the
+ * first Unsplash photo 404s or is rate-limited, SwipeCardDeck walks the
+ * chain via <img onError>. This eliminates the silent-empty-card failure
+ * mode that previously made "Sweet" look like watermelon to some guests
+ * (a stale Unsplash ID was returning placeholder content). */
+const FLAVOR_IMAGE_MAP: Record<string, string[]> = {
+  smoky:   ["photo-1527181152855-fc03fc7949c5", "photo-1475070929565-c985b496cb9f", "photo-1571115332103-43cb8da6c558"], // cigar smoke, embers, whiskey w/ smoke
+  sweet:   ["photo-1587049352846-4a222e784d38", "photo-1558642452-9d2a7deb7f62", "photo-1551024506-0bccd828d307"],         // honey dripping, brown sugar, caramel
+  earthy:  ["photo-1448375240586-882707db888b", "photo-1542601906990-b4d3fb778b09", "photo-1518173946687-a4c8892bbd9f"],   // forest floor, dark earth
+  cedar:   ["photo-1542273917363-3b1817f69a2d", "photo-1597067127309-25395e72d6df", "photo-1518709268805-4e9042af2176"],   // cedar planks, cut timber
+  spicy:   ["photo-1532336414038-cf19250c5757", "photo-1599909533677-d27f9be83b4e", "photo-1610725664285-7c57e6eeac3f"],   // peppercorns, chili, cinnamon
+  creamy:  ["photo-1495474472287-4d71bcdd2085", "photo-1607920591413-9ec43be3b942", "photo-1570968915860-54d5c301fa9f"],   // latte foam, vanilla pods, cream swirl
+  nutty:   ["photo-1508061253366-f7da158b6d46", "photo-1599599810769-bcde5a160d32", "photo-1604423043492-41303f1e2779"],   // mixed nuts, almonds
+  leather: ["photo-1519337265831-281ec6cc8514", "photo-1532375810709-75b1da00537c", "photo-1568393691080-a5e4e5f10fe1"],   // leather chair, aged leather, saddle
+  cocoa:   ["photo-1606312619070-d48b4c652a52", "photo-1511381939415-e44015466834", "photo-1442550528053-c431ecb55509"],   // cocoa beans, dark chocolate, coffee beans
+  floral:  ["photo-1518895949257-7621c3c786d7", "photo-1490750967868-88aa4486c946", "photo-1466692476868-aef1dfb1e735"],   // dark rose petals, jasmine, herbs
+  /* spirits */
+  vanilla: ["photo-1607920591413-9ec43be3b942", "photo-1495474472287-4d71bcdd2085"],
+  oak:     ["photo-1542273917363-3b1817f69a2d", "photo-1518709268805-4e9042af2176"],
+  caramel: ["photo-1551024506-0bccd828d307", "photo-1587049352846-4a222e784d38"],
+  citrus:  ["photo-1582656870004-d8052c00d6e0", "photo-1497534446932-c925b458314e"],   // orange peel zest close-up (NOT cocktail slice)
+  honey:   ["photo-1587049352846-4a222e784d38", "photo-1558642452-9d2a7deb7f62"],
+  rye:     ["photo-1574323347407-f5e1ad6d020b", "photo-1518173946687-a4c8892bbd9f"],
+  smoke:   ["photo-1527181152855-fc03fc7949c5", "photo-1475070929565-c985b496cb9f"],
+  fruity:  ["photo-1606293926249-ed22e6a9b27f", "photo-1574870111867-089730e5a72b"],   // dried fig (tobacco fruit-note, not a fruit slice)
+};
+const flavorImages = (id: string): string[] =>
+  (FLAVOR_IMAGE_MAP[id] ?? []).map(FLAVOR_IMG);
+
 const CIGAR_FLAVORS = [
-  { id: "smoky",   title: "Smoky",   desc: "Deep wood smoke, campfire, volcanic ash",
-    image: FLAVOR_IMG("photo-1475070929565-c985b496cb9f") },                // smoking ember / firepit
-  { id: "sweet",   title: "Sweet",   desc: "Natural honey, dried fruit, light caramel",
-    image: FLAVOR_IMG("photo-1587049352846-4a222e784d38") },                // honey jar
-  { id: "earthy",  title: "Earthy",  desc: "Damp soil, forest floor, rich minerals",
-    image: FLAVOR_IMG("photo-1448375240586-882707db888b") },                // forest floor
-  { id: "cedar",   title: "Cedar",   desc: "Crisp cedarwood, freshly cut timber",
-    image: FLAVOR_IMG("photo-1542273917363-3b1817f69a2d") },                // cedar planks
-  { id: "spicy",   title: "Spicy",   desc: "Black pepper, chili, cinnamon bark",
-    image: FLAVOR_IMG("photo-1532336414038-cf19250c5757") },                // peppercorns
-  { id: "creamy",  title: "Creamy",  desc: "Smooth chocolate, butter, vanilla",
-    image: FLAVOR_IMG("photo-1481391319762-47dff72954d9") },                // cream pour
-  { id: "nutty",   title: "Nutty",   desc: "Toasted almond, hazelnut, walnut",
-    image: FLAVOR_IMG("photo-1508061253366-f7da158b6d46") },                // mixed nuts
-  { id: "leather", title: "Leather", desc: "Rich saddle leather, aged tobacco",
-    image: FLAVOR_IMG("photo-1531685250784-7569952593d2") },                // worn leather
-  { id: "cocoa",   title: "Cocoa",   desc: "Dark chocolate, roasted coffee",
-    image: FLAVOR_IMG("photo-1481391319762-47dff72954d9") },                // chocolate chunks
-  { id: "floral",  title: "Floral",  desc: "Jasmine, fresh rose, light herbs",
-    image: FLAVOR_IMG("photo-1490750967868-88aa4486c946") },                // garden roses
+  { id: "smoky",   title: "Smoky",   desc: "Cigar smoke, embers, whiskey haze",        images: flavorImages("smoky")   },
+  { id: "sweet",   title: "Sweet",   desc: "Honey, brown sugar, light caramel",        images: flavorImages("sweet")   },
+  { id: "earthy",  title: "Earthy",  desc: "Damp soil, forest floor, rich minerals",   images: flavorImages("earthy")  },
+  { id: "cedar",   title: "Cedar",   desc: "Crisp cedarwood, freshly cut timber",      images: flavorImages("cedar")   },
+  { id: "spicy",   title: "Spicy",   desc: "Black pepper, chili, cinnamon bark",       images: flavorImages("spicy")   },
+  { id: "creamy",  title: "Creamy",  desc: "Latte foam, vanilla bean, cream swirl",    images: flavorImages("creamy")  },
+  { id: "nutty",   title: "Nutty",   desc: "Toasted almond, hazelnut, walnut",         images: flavorImages("nutty")   },
+  { id: "leather", title: "Leather", desc: "Aged saddle leather, lounge chair, tobacco", images: flavorImages("leather") },
+  { id: "cocoa",   title: "Cocoa",   desc: "Cocoa beans, dark chocolate, roasted coffee", images: flavorImages("cocoa") },
+  { id: "floral",  title: "Floral",  desc: "Dark rose petals, jasmine, herbal leaves", images: flavorImages("floral")  },
 ];
 const SPIRITS_FLAVORS = [
-  { id: "vanilla", title: "Vanilla", desc: "Soft vanilla bean, sweet cream",
-    image: FLAVOR_IMG("photo-1607920591413-9ec43be3b942") },                // vanilla pods
-  { id: "oak",     title: "Oak",     desc: "American oak, toasted wood",
-    image: FLAVOR_IMG("photo-1542273917363-3b1817f69a2d") },                // oak grain
-  { id: "caramel", title: "Caramel", desc: "Burnt sugar, rich toffee",
-    image: FLAVOR_IMG("photo-1551024506-0bccd828d307") },                   // caramel drizzle
-  { id: "citrus",  title: "Citrus",  desc: "Orange peel, lemon zest, bright",
-    image: FLAVOR_IMG("photo-1547514701-42782101795e") },                   // citrus slices
-  { id: "honey",   title: "Honey",   desc: "Wildflower honey, golden sweetness",
-    image: FLAVOR_IMG("photo-1587049352846-4a222e784d38") },                // honey jar
-  { id: "rye",     title: "Rye",     desc: "Spicy rye grain, herbal notes",
-    image: FLAVOR_IMG("photo-1574323347407-f5e1ad6d020b") },                // grain stalks
-  { id: "smoke",   title: "Smoke",   desc: "Peaty smoke, bonfire, mineral",
-    image: FLAVOR_IMG("photo-1475070929565-c985b496cb9f") },                // smoking ember
-  { id: "fruity",  title: "Fruity",  desc: "Dried cherry, apple, fresh pear",
-    image: FLAVOR_IMG("photo-1606293926249-ed22e6a9b27f") },                // dried fig / tobacco — fruity tobacco notes (not literal cherries)
+  { id: "vanilla", title: "Vanilla", desc: "Soft vanilla bean, sweet cream",           images: flavorImages("vanilla") },
+  { id: "oak",     title: "Oak",     desc: "American oak, toasted wood",               images: flavorImages("oak")     },
+  { id: "caramel", title: "Caramel", desc: "Burnt sugar, rich toffee",                 images: flavorImages("caramel") },
+  { id: "citrus",  title: "Citrus",  desc: "Orange peel, lemon zest",                  images: flavorImages("citrus")  },
+  { id: "honey",   title: "Honey",   desc: "Wildflower honey, golden sweetness",       images: flavorImages("honey")   },
+  { id: "rye",     title: "Rye",     desc: "Spicy rye grain, herbal notes",            images: flavorImages("rye")     },
+  { id: "smoke",   title: "Smoke",   desc: "Peaty smoke, bonfire, mineral",            images: flavorImages("smoke")   },
+  { id: "fruity",  title: "Fruity",  desc: "Dried fig, tobacco fruit notes",           images: flavorImages("fruity")  },
 ];
 const STRENGTH_CARDS = [
   { id: "mild",   title: "Mild",   subtitle: "Strength · Level 1",
     desc: "Smooth and gentle — perfect for newcomers or a relaxed afternoon",
-    image: FLAVOR_IMG("photo-1514329926535-040b69ab1f81") },                // light cigar / soft tone
+    /* Mild used to feel anonymous (per brief). Now: light tobacco leaf / soft
+     * sunlit wood — clearly "lighter cigar", not just any photo. */
+    images: [
+      FLAVOR_IMG("photo-1514329926535-040b69ab1f81"),
+      FLAVOR_IMG("photo-1561365452-adb940139ffa"),
+      FLAVOR_IMG("photo-1518895949257-7621c3c786d7"),
+    ] },
   { id: "medium", title: "Medium", subtitle: "Strength · Level 3",
     desc: "Balanced character — the classic refined experience",
-    image: FLAVOR_IMG("photo-1574966740793-2c5c024ed708") },                // medium habano
+    images: [
+      FLAVOR_IMG("photo-1574966740793-2c5c024ed708"),
+      FLAVOR_IMG("photo-1574870111867-089730e5a72b"),
+    ] },
   { id: "full",   title: "Full",   subtitle: "Strength · Level 5",
     desc: "Rich and powerful — bold complexity for the experienced",
-    image: FLAVOR_IMG("photo-1567015408288-fcd8aac9d76f") },                // dark maduro
+    images: [
+      FLAVOR_IMG("photo-1567015408288-fcd8aac9d76f"),
+      FLAVOR_IMG("photo-1556800572-1b8aedf82db5"),
+    ] },
 ];
 const MOOD_CARDS = [
   { id: "relaxed",     title: "Relaxed",     desc: "Smooth and easy — perfect for winding down",
