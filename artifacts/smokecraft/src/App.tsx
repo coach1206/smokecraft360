@@ -12,6 +12,7 @@ import NotFound        from "@/pages/not-found";
 import Home            from "@/pages/Home";
 import Intro           from "@/pages/Intro";
 import Dashboard       from "@/pages/Dashboard";
+import BrewCraft       from "@/pages/BrewCraft";
 import PaymentSuccess  from "@/pages/PaymentSuccess";
 import PaymentCancel   from "@/pages/PaymentCancel";
 import { DemoBanner }            from "@/components/Demo/DemoBanner";
@@ -26,6 +27,10 @@ function Router() {
       <Route path="/"           component={Intro}          />
       <Route path="/intro"      component={Intro}          />
       <Route path="/dashboard"  component={Dashboard}      />
+      {/* BrewCraft — beer-led quick-pick flow. Declared before /:theme so
+          the explicit path wins; if it ever needs to live under a theme
+          (e.g. /smokecraft/brewcraft) it can be moved down. */}
+      <Route path="/brewcraft"  component={BrewCraft}      />
       <Route path="/success"    component={PaymentSuccess} />
       <Route path="/cancel"     component={PaymentCancel}  />
       {/* Dynamic per-theme entry URL (/smokecraft, /pourcraft, /grillcraft …).

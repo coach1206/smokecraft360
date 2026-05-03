@@ -108,7 +108,7 @@ function previewScore(s: typeof DEMO_SAMPLE): { score: number; label: string } {
   return { score, label };
 }
 
-type ThemeKey = "smokecraft" | "pourcraft" | "vapecraft";
+type ThemeKey = "smokecraft" | "pourcraft" | "vapecraft" | "brewcraft";
 
 interface Experience {
   key:        ThemeKey;
@@ -143,6 +143,19 @@ const EXPERIENCES: Experience[] = [
     image:      vapecraftImg,
     accent:     "#7DD3FC",
     gradient:   "linear-gradient(180deg, rgba(8,18,32,0.15) 0%, rgba(8,18,32,0.85) 100%)",
+  },
+  // BrewCraft uses a CSS-only hero (warm amber-to-mahogany gradient) instead
+  // of a locked image so it ships without waiting on photography. The
+  // gradient is layered ON TOP of the dark card base and chosen to read as
+  // poured-amber beer at a glance. Swap `image` to a locked PNG when ready.
+  {
+    key:        "brewcraft",
+    title:      "BrewCraft 360",
+    descriptor: "Beer · Pairings · Quick",
+    image:      "",
+    accent:     "#E8A04A",
+    gradient:
+      "linear-gradient(180deg, rgba(232,160,74,0.45) 0%, rgba(120,60,18,0.65) 50%, rgba(20,10,4,0.92) 100%)",
   },
 ];
 

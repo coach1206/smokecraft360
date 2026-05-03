@@ -81,6 +81,61 @@ const PAIRING_RULES: Array<{
     keywords: ["earthy", "full-body", "leather", "dark", "bold", "intense"],
     points: 2,
   },
+
+  // --- Beer ↔ cigar rules (BrewCraft) ---
+  // Beers reuse the same flavor vocabulary as spirits, so the rules mirror
+  // the alcohol set above but stay scoped to category === "beer" for clarity
+  // and so future tuning can diverge per category.
+  {
+    // Light/sessionable beer → mild, sweet, creamy cigars
+    match: (p) => p.category === "beer" && p.strength <= 2,
+    keywords: ["mild", "medium-body", "sweet", "creamy", "smooth", "nutty"],
+    points: 2,
+  },
+  {
+    // Hoppy / spicy / citrus beer (IPAs, pale ales) → medium spicy cigars
+    match: (p) => p.category === "beer" && p.flavorNotes.some((n) => ["citrus", "spicy", "pepper", "floral", "fruity"].includes(n)),
+    keywords: ["spicy", "pepper", "medium-body", "habano", "cedar"],
+    points: 2,
+  },
+  {
+    // Dark/roasted beer (stouts, porters) → full-body, earthy, dark cigars
+    match: (p) => p.category === "beer" && p.flavorNotes.some((n) => ["dark-chocolate", "cocoa", "smoky"].includes(n)),
+    keywords: ["earthy", "full-body", "leather", "dark", "bold", "intense", "maduro"],
+    points: 3,
+  },
+  {
+    // Strong beer (imperial / barrel-aged) → bold cigars
+    match: (p) => p.category === "beer" && p.strength >= 4,
+    keywords: ["full-body", "bold", "leather", "dark", "earthy", "intense"],
+    points: 3,
+  },
+
+  // --- Cigar → beer (reverse direction, used by BrewCraft results) ---
+  {
+    // Mild cigar → light, crisp lagers
+    match: (p) => p.category === "cigar" && p.strength <= 2,
+    keywords: ["light", "crisp", "lager", "wheat", "citrus", "pilsner"],
+    points: 2,
+  },
+  {
+    // Medium cigar → amber lagers, balanced ales
+    match: (p) => p.category === "cigar" && p.strength === 3,
+    keywords: ["amber", "lager", "toasted", "caramel", "nutty", "balanced"],
+    points: 2,
+  },
+  {
+    // Full-body / smoky / earthy cigar → stouts, porters, dark beers
+    match: (p) => p.category === "cigar" && (p.strength >= 4 || p.flavorNotes.some((n) => ["smoky", "earthy", "leather"].includes(n))),
+    keywords: ["stout", "porter", "dark-chocolate", "cocoa", "roasted", "smoky"],
+    points: 3,
+  },
+  {
+    // Spicy / pepper cigar → hoppy IPAs and pale ales
+    match: (p) => p.category === "cigar" && p.flavorNotes.some((n) => ["spicy", "pepper"].includes(n)),
+    keywords: ["ipa", "hoppy", "citrus", "pale-ale", "spicy", "pepper"],
+    points: 2,
+  },
 ];
 
 /**

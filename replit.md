@@ -52,6 +52,12 @@ Located in `artifacts/api-server/src/engine/`, it uses a scoring mechanism based
 
 - **Inventory Management**: `initInventory()` seeds product data and manages boost/sponsored states in memory, backed by PostgreSQL.
 - **Scoring Logic**: Awards +2 per overlapping flavor, +3 per mood tag match, -1 per unit of strength distance, and applies boost/sponsored multipliers.
+- **Categories**: `cigar` (5 products), `alcohol` (10 products including the House Signature Pairing drinks: Buffalo Trace, Maker's Mark, Knob Creek Rye, Lagavulin 16, Woodford Reserve, Blanton's Single Barrel, Macallan 12, Hennessy XO, Maker's Mark 46, Ardbeg 10), `beer` (8 products covering Light/Amber/IPA/Dark — Corona, Modelo, Sam Adams, Yuengling, Lagunitas, Sierra Nevada, Guinness, Founders Porter), plus empty `wine`/`cocktail` slots reserved for vendor uploads. Adding a new vertical only requires registering products in `engine/registry.ts` `datasets`; the recommend route accepts any registered category automatically.
+- **Cross-Category Pairing**: `engine/pairing.ts` carries bidirectional rules for cigar↔alcohol AND cigar↔beer. Beer rules mirror alcohol rules but stay scoped to `category === "beer"` so future tuning can diverge per category. Cigar→beer rules add beer-style keywords (light/lager/amber/ipa/hoppy/stout/porter/roasted) so a cigar-led journey can recommend a beer pairing.
+
+### BrewCraft Quick-Pick Page
+
+`artifacts/smokecraft/src/pages/BrewCraft.tsx` — a beer-led 4-card swipe page at `/brewcraft` (Light & Easy / Toasted & Balanced / Bold & Hoppy / Dark & Heavy). Each card maps to a flavor + strength + mood preset and POSTs to the existing `/api/recommend` endpoint with `category: "beer"`; the result panel shows the top beer plus the cross-category cigar pairing returned by the engine. Zero new backend endpoints, zero mock data — thin UI funnel on top of the production engine, so inventory filtering applies automatically when a venue is set. Card hero visuals are CSS gradients (no remote images, no locked-asset wait); a 4th experience card on `Intro.tsx` routes here via the existing `navigate("/" + key)` pattern. The brief's BrewCraft proposal also called for replacing menus with toy in-memory loyalty/inventory/dashboard backends — those were rejected to avoid regressing the real XP, inventory, venue analytics, and dashboard systems already in place.
 
 ### Database Schema
 

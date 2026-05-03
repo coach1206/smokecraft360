@@ -4,7 +4,10 @@ import { enqueueEvent } from "./eventQueue";
 import { DEMO_MODE, DEMO_RECOMMENDATIONS } from "@/config/demo";
 
 export interface RecommendParams {
-  category: "cigar" | "alcohol";
+  // Engine accepts any registered category (see api-server engine/registry.ts).
+  // Listing the active verticals here for editor autocomplete; widen as new
+  // verticals (wine/cocktail) start shipping real product data.
+  category: "cigar" | "alcohol" | "beer";
   flavorPreferences: string[];
   strength: number;
   mood: string;
@@ -26,7 +29,7 @@ export type AvailabilityLabel =
 export interface ProductResult {
   id: string;
   name: string;
-  category: "cigar" | "alcohol";
+  category: "cigar" | "alcohol" | "beer";
   flavorNotes: string[];
   strength: number;
   moodTags: string[];
@@ -192,7 +195,7 @@ export function trackEvent(params: TrackEventParams): void {
 
 /** Fire-and-forget — records the user's preference snapshot for trend analytics. */
 export function trackPreferences(params: {
-  category:          "cigar" | "alcohol";
+  category:          "cigar" | "alcohol" | "beer";
   flavorPreferences: string[];
   strength:          number;
   mood:              string;

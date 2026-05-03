@@ -1,0 +1,156 @@
+FINAL PATCH PROMPT
+SMOKECRAFT 360 — SCREEN REDESIGN + BREWCRAFT INTEGRATION (NON-DESTRUCTIVE)
+Goal: Fix the current screen so it reads fast, looks like a cigar lounge (not a living room), and turns the center into a real decision engine (BrewCraft), while keeping your existing pairing engine, inventory, payments, kiosk, offline, and white-label intact.
+
+🧠 MISSING / REQUIRED (WHAT THIS PATCH ADDS)
+
+
+Cigar-lounge background with proper dark overlay
+
+
+Readable typography system (sizes, contrast, hierarchy)
+
+
+Center = BrewCraft beer cards (replace food cards)
+
+
+Right panel syncs to active mode (no mixed beer/whiskey copy)
+
+
+Timed PourCraft upsell trigger (not instant)
+
+
+Shared wrapper for UI consistency across Smoke/Brew/Pour
+
+
+Hook into existing pairing + inventory + analytics (no new services)
+
+
+
+⚠️ FAILURE PREVENTION CHECKLIST
+
+
+Do NOT create a new pairing engine or DB
+
+
+Do NOT keep food as primary center content
+
+
+Do NOT hardcode images permanently (use your assets/admin later)
+
+
+Do NOT let card styles differ between modules
+
+
+Do NOT show upsell instantly (kills trust)
+
+
+
+🎨 PIXEL-LEVEL LAYOUT (GRID + VISUAL HIERARCHY)
+3-column grid (desktop/tablet kiosk):
+
+
+Left (260px): Step nav (dimmed)
+
+
+Center (flex): BrewCraft decision cards (brightest area)
+
+
+Right (360px): Context panel (darker, supportive)
+
+
+<div className="relative min-h-screen text-white">  {/* Background */}  <div    className="absolute inset-0 bg-cover bg-center"    style={{ backgroundImage: "url('/images/lounge/cigar-lounge.jpg')" }}  />  <div className="absolute inset-0 bg-black/80" />  {/* Content */}  <div className="relative grid grid-cols-[260px_1fr_360px] gap-6 p-6">    <aside className="opacity-70">{/* Left Nav */}</aside>    <main>{/* Center BrewCraft */}</main>    <section className="bg-zinc-900/90 rounded-2xl p-5">{/* Right Panel */}</section>  </div></div>
+Visual rules:
+
+
+Center cards = brighter (focus)
+
+
+Right panel = darker (info)
+
+
+Left nav = dim (context)
+
+
+
+🔠 READABILITY SYSTEM (GLOBAL)
+:root {  --text-primary: #FFFFFF;  --text-secondary: #E5E5E5;  --accent: #D4AF37;}.text-primary { color: var(--text-primary); }.text-secondary { color: var(--text-secondary); }.text-accent { color: var(--accent); }.h1 { font-size: 28px; line-height: 1.2; font-weight: 600; }.h2 { font-size: 22px; line-height: 1.3; font-weight: 600; }.body { font-size: 16px; line-height: 1.6; }.small { font-size: 14px; line-height: 1.5; }.text-shadow { text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+
+Gold is accent only, not body text.
+
+
+🍺 CENTER = BREWCRAFT DECISION CARDS (REPLACE FOOD)
+client/src/components/BrewCraftCards.tsx
+import React from "react";const cards = [  { id: "light", label: "Light & Easy", img: "/images/beers/light.jpg" },  { id: "amber", label: "Toasted & Balanced", img: "/images/beers/amber.jpg" },  { id: "ipa",   label: "Bold & Hoppy", img: "/images/beers/ipa.jpg" },  { id: "dark",  label: "Dark & Heavy", img: "/images/beers/dark.jpg" },];export default function BrewCraftCards({ onSelect }: any) {  return (    <div className="grid grid-cols-2 xl:grid-cols-4 gap-6">      {cards.map((c) => (        <div          key={c.id}          onClick={() => onSelect(c.id)}          className="h-[320px] rounded-2xl overflow-hidden relative cursor-pointer                     hover:scale-[1.03] transition shadow-xl"        >          <img src={c.img} className="absolute inset-0 w-full h-full object-cover" />          {/* bottom gradient for readable text */}          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />          <div className="absolute bottom-4 left-4 right-4">            <h3 className="h2 text-shadow">{c.label}</h3>          </div>        </div>      ))}    </div>  );}
+Image rules (don’t break these):
+
+
+Light = bright golden lager
+
+
+Amber = caramel/copper
+
+
+IPA = hazy orange
+
+
+Dark = stout/black
+Same framing, same lighting style per category.
+
+
+
+🧠 CONNECT TO YOUR EXISTING ENGINE (NO NEW LOGIC)
+client/src/pages/BrewCraftPage.tsx
+import React, { useEffect, useState } from "react";import BrewCraftCards from "../components/BrewCraftCards";import PourCraftUpsell from "../components/PourCraftUpsell";export default function BrewCraftPage() {  const [result, setResult] = useState<any>(null);  const [showUpsell, setShowUpsell] = useState(false);  function handleSelect(type: string) {    // your existing engine    existingPairingEngine({ category: "beer", type }).then((res: any) => {      // inventory sync (use your existing helper)      const available = checkInventory(res.beer);      const final = available ? res : { ...res, beer: getInventoryFallback("beer", type) };      setResult(final);      // analytics (existing)      trackEvent("brewcraft_selection", {        beerType: type,        cigar: final.cigar,      });    });  }  // timed upsell (critical)  useEffect(() => {    if (result) {      const t = setTimeout(() => setShowUpsell(true), 1800);      return () => clearTimeout(t);    }  }, [result]);  return (    <div>      <h1 className="h1 mb-4 text-shadow">Build Your Experience</h1>      <BrewCraftCards onSelect={handleSelect} />      {result && (        <div className="mt-6 bg-zinc-900/90 rounded-2xl p-5">          <h2 className="h2">{result.name}</h2>          <p className="body text-secondary">{result.beer} + {result.cigar}</p>          <p className="small text-secondary mt-1">{result.vibe}</p>          <button className="mt-4 bg-[#D4AF37] text-black font-semibold px-6 py-3 rounded-xl shadow-lg">            Build My Experience          </button>        </div>      )}      {showUpsell && result && <PourCraftUpsell base={result} />}    </div>  );}
+
+🥃 POURCRAFT UPSELL (TIMED + CLEAN)
+client/src/components/PourCraftUpsell.tsx
+import React from "react";export default function PourCraftUpsell({ base }: any) {  return (    <div className="mt-6 border-t border-white/10 pt-4">      <h3 className="h2">Take it further</h3>      <p className="small text-secondary">Add a premium pour to elevate this pairing</p>      <div className="flex gap-3 mt-3">        <button className="bg-[#D4AF37] text-black px-4 py-2 rounded-lg font-semibold">          Add Whiskey        </button>        <button className="bg-white/10 px-4 py-2 rounded-lg">          Add Cognac        </button>      </div>    </div>  );}
+
+📊 RIGHT PANEL (MODE-SYNCED, NO MIXED MESSAGING)
+const mode = result?.category || "beer"; // "beer" or "spirit"<div className="bg-zinc-900/90 rounded-2xl p-5">  <div className="small text-secondary">MODE</div>  <div className="h2 text-accent mb-3">    {mode === "beer" ? "BrewCraft" : "PourCraft"}  </div>  <div className="small text-secondary">STRENGTH</div>  <div className="body mb-2">{result?.strength || "Medium"}</div>  <div className="small text-secondary">MOOD</div>  <div className="body mb-2">{result?.mood || "Social"}</div>  <div className="small text-secondary">TASTING NOTES</div>  <div className="body">{(result?.notes || []).join(", ")}</div>  <div className="mt-4 small text-secondary">WHY IT WORKS</div>  <p className="small text-secondary">    {mode === "beer"      ? "Beer profile complements the cigar’s body without overpowering it."      : "Spirit profile mirrors and elevates the cigar’s dominant notes."}  </p></div>
+
+🎛 CONSISTENCY WRAPPER (FIXES “EVERY PAGE LOOKS DIFFERENT”)
+client/src/components/ExperienceCard.tsx
+export default function ExperienceCard({ children }: any) {  return (    <div className="rounded-2xl overflow-hidden bg-zinc-900/90 text-white shadow-xl">      {children}    </div>  );}
+Use this wrapper across SmokeCraft / BrewCraft / PourCraft.
+
+🎯 FINAL RESULT
+After this patch:
+
+
+Background feels like a real cigar lounge (not a living room)
+
+
+Text is readable in low light (bigger, higher contrast)
+
+
+Center is a decision engine (beer cards), not dead content
+
+
+BrewCraft is visible and primary
+
+
+Right panel matches the mode (no mixed bourbon/beer copy)
+
+
+Upsell is timed and natural (converts better)
+
+
+UI is consistent across modules
+
+
+
+⚠️ REAL TALK
+You didn’t need a new system.
+You needed alignment, hierarchy, and visual honesty.
+Run this patch and your screen goes from
+“nice idea” → “this is a real product people will use and pay for.”
+If you want, I’ll tune:
+
+
+exact animation timings (hover, tap, reveal)
+
+
+or tighten your color system across the whole app so nothing drifts again.
+

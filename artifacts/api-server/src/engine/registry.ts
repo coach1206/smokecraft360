@@ -9,14 +9,19 @@
 import { Product, Category } from "./types";
 import { cigars  }           from "../data/cigars";
 import { alcohol }           from "../data/alcohol";
+import { beer    }           from "../data/beer";
 
 // New theme verticals (wine, cocktail) start empty — vendors populate them
 // via POST /api/products and registerProductInEngine. Listing them here
 // makes the engine recognize them as valid categories so the recommendation
 // API accepts ?category=wine / ?category=cocktail requests from PourCraft.
+//
+// `beer` ships with a curated lineup (see data/beer.ts) so the BrewCraft
+// swipe-card page has working content out of the box.
 const datasets: Record<string, Product[]> = {
   cigar:    cigars,
   alcohol:  alcohol,
+  beer:     beer,
   wine:     [],
   cocktail: [],
 };
@@ -25,9 +30,12 @@ const datasets: Record<string, Product[]> = {
  *  static arrays read-only and support easy reset in tests. */
 const dynamic: Record<string, Product[]> = {};
 
+// Cross-category pairing direction. Beer ↔ cigar mirrors alcohol ↔ cigar
+// so a BrewCraft beer pick surfaces a cigar pairing and vice-versa.
 const pairingCategories: Record<string, string> = {
   cigar:   "alcohol",
   alcohol: "cigar",
+  beer:    "cigar",
 };
 
 /** Register a product so it is included in future recommendation runs. */

@@ -14,11 +14,15 @@ const router: IRouter = Router();
  *
  * Body (only these fields are accepted — all others are stripped):
  *  {
- *    "category":          "cigar" | "alcohol",
+ *    "category":          "cigar" | "alcohol" | "beer" | "wine" | "cocktail",
  *    "flavorPreferences": ["smoky", "cedar"],
  *    "strength":          3,          // 1–5
  *    "mood":              "relaxed"
  *  }
+ *
+ * The list of accepted categories is defined by the engine registry
+ * (see engine/registry.ts → datasets) and surfaced at request time via
+ * getRegisteredCategories(), so adding a new vertical needs no change here.
  */
 router.post(
   "/",

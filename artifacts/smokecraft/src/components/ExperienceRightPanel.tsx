@@ -64,7 +64,11 @@ export function ExperienceRightPanel({ product, pairing, onOrder, onSave, experi
         className="flex items-center gap-2">
         <Flame size={14} style={{ color: GOLD_DIM }} />
         <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.28em", color: GOLD_DIM, fontWeight: 700 }}>
-          {product.category === "cigar" ? "Signature Cigar" : "Curated Spirit"}
+          {product.category === "cigar"
+            ? "Signature Cigar"
+            : product.category === "beer"
+            ? "Craft Brew"
+            : "Curated Spirit"}
         </span>
       </motion.div>
 
