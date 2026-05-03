@@ -1069,10 +1069,18 @@ export default function Home() {
                             cat:      "cigar"   as const,
                             title:    "Cigar",
                             subtitle: "Handcrafted. Bold. Timeless.",
+                            /* IMPORTANT: head ID was photo-1574870111867-089730e5a72b
+                             * — that ID was repurposed by Unsplash at some point
+                             * and started returning a giraffe photo on the kiosk.
+                             * Replaced with the verified cigar shot we already
+                             * use in DynamicBackground (proven stable). All chain
+                             * URLs below have been visually verified as cigar/
+                             * tobacco/humidor content. Do NOT swap to random IDs
+                             * without confirming the rendered image first.        */
                             images: [
-                              "https://images.unsplash.com/photo-1574870111867-089730e5a72b?auto=format&fit=crop&w=1400&q=75",
-                              "https://images.unsplash.com/photo-1556800572-1b8aedf82db5?auto=format&fit=crop&w=1400&q=75",
-                              "https://images.unsplash.com/photo-1553530666-ba11a90bb0ae?auto=format&fit=crop&w=1400&q=75",
+                              "https://images.unsplash.com/photo-1527144901953-6e34cf3a4ff5?auto=format&fit=crop&w=1400&q=75",
+                              "https://images.unsplash.com/photo-1567449303078-57ad995bd17f?auto=format&fit=crop&w=1400&q=75",
+                              "https://images.unsplash.com/photo-1605647540924-852290f6b0d5?auto=format&fit=crop&w=1400&q=75",
                             ],
                           },
                           {
