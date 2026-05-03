@@ -21,3 +21,4 @@ export * from "./rewards";
 export * from "./redemptions";
 export * from "./loungeStats";
 export * from "./devices";
+export * from "./commissions";

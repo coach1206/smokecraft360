@@ -1,0 +1,333 @@
+BUILD SMOKECRAFT 360 AS A COMPLETE, PRODUCTION-READY, REVENUE-GENERATING SYSTEM INCLUDING INTERACTIVE EXPERIENCE, REAL PRODUCT VISUALS, ADMIN DASHBOARD, INVENTORY MANAGEMENT, PAYMENT PROCESSING (STRIPE), COMMISSION TRACKING, AND ANALYTICS — ALL IN ONE UNIFIED PLATFORM
+
+This must be a fully functional system, not a demo.
+
+---
+
+🚨 MISSING / REQUIRED (NON-NEGOTIABLE)
+
+You MUST include:
+
+- PostgreSQL (or equivalent) database
+- Node.js + Express backend
+- React frontend (kiosk-ready)
+- JWT admin authentication
+- Stripe payment integration
+- Webhook verification (source of truth)
+- Event tracking system
+- Admin dashboard for venues
+
+If any of these are missing, the system is incomplete.
+
+---
+
+🛡️ FAILURE PREVENTION CHECKLIST
+
+DO NOT:
+
+- hardcode cigars or whiskey
+- trust frontend pricing
+- process payments on frontend only
+- skip Stripe webhook verification
+- build UI without backend connection
+
+Everything must be:
+dynamic, stored, and secure
+
+---
+
+🔥 CORE EXPERIENCE (FRONTEND)
+
+Build a touch-driven, swipe-based experience:
+
+User flow:
+
+1. Mood selection (swipe cards)
+2. Flavor selection (swipe cards)
+3. Strength selection (swipe cards)
+4. Atmosphere selection (scene change)
+5. Pairing selection
+6. Name generation
+7. Reveal screen
+
+---
+
+🎬 INTERACTION SYSTEM
+
+- Swipe LEFT = skip
+- Swipe RIGHT = accept
+- Tap = confirm
+- Cards rotate slightly and slide
+- Every action triggers:
+  - scale feedback (0.94)
+  - glow effect
+  - sound (click/tap)
+
+---
+
+🖼️ DYNAMIC SCENE SYSTEM
+
+The background MUST change based on user selections:
+
+- Mood → full lounge scene
+- Flavor → texture/close-up environment
+- Strength → lighting intensity change
+- Atmosphere → full environment swap
+
+Use REAL images only (Unsplash/Pexels)
+
+Transitions:
+- fade (0.4–0.6s)
+- no snapping
+
+---
+
+🥃 REAL PRODUCT VISUAL SYSTEM
+
+Always show:
+
+- real cigar image
+- real whiskey image
+
+Position:
+- cigar in front
+- whiskey slightly behind/right
+
+---
+
+🔥 REALISTIC CIGAR SYSTEM
+
+Use a sequence of REAL images:
+
+- fresh cigar
+- slight burn
+- ash forming
+- longer ash
+- developed burn
+
+Transition:
+- fade between images (0.3–0.5s)
+
+---
+
+🌫️ SMOKE SYSTEM
+
+- real smoke PNG or video
+- opacity: 0.05–0.12
+- slow upward drift
+- subtle movement
+
+---
+
+🔊 SOUND SYSTEM
+
+Add:
+
+- click sound (navigation)
+- tap sound (selection)
+- subtle burn sound (loop, low volume)
+- soft reveal tone
+
+---
+
+📊 ANTICIPATION + SCORING SYSTEM
+
+- show progress bar (%)
+- hide full score until reveal
+
+Display hints:
+
+“Your blend is forming”
+“Balanced profile detected”
+
+---
+
+🔒 LOCKED REVEAL
+
+Before final:
+
+- blurred result card
+- label: “Your Blend is Ready”
+
+User must click:
+“Reveal My Blend”
+
+---
+
+🏆 FINAL RESULT SCREEN
+
+Display:
+
+- Experience name
+- Score (e.g. 92/100)
+- Breakdown (smoothness, boldness, balance)
+- Real cigar + whiskey pairing
+
+Comparison:
+
+- “Top 15% of blends”
+- “More balanced than most users”
+
+---
+
+💳 PAYMENT SYSTEM (STRIPE)
+
+BACKEND:
+
+Create endpoint:
+
+POST /api/create-payment-intent
+
+- fetch cigar + whiskey from DB
+- calculate total
+- create Stripe PaymentIntent
+- return clientSecret
+
+---
+
+FRONTEND:
+
+- use Stripe.js
+- confirm card payment with clientSecret
+
+---
+
+🔔 STRIPE WEBHOOK (CRITICAL)
+
+Create /api/webhook
+
+Handle:
+
+payment_intent.succeeded:
+
+- create order record
+- mark status “paid”
+- log commission
+
+Webhook MUST be verified with Stripe signature
+
+---
+
+🧾 DATABASE STRUCTURE
+
+Create tables:
+
+CIGARS
+WHISKEY
+PAIRINGS
+ORDERS
+COMMISSIONS
+USER_SESSIONS
+EVENT_LOG
+
+Each must store real data (no placeholders)
+
+---
+
+🏪 ADMIN DASHBOARD (/admin)
+
+Features:
+
+1. Cigar management
+   - add/edit/delete
+   - upload image
+   - set price
+   - toggle active
+
+2. Whiskey management
+   - same as cigars
+
+3. Inventory control
+   - stock levels
+   - availability
+   - featured items
+
+4. Analytics
+   - most selected flavors
+   - top cigars
+   - top pairings
+   - average score
+   - session count
+
+---
+
+💰 COMMISSION SYSTEM
+
+- log % of every order
+- store in COMMISSIONS table
+- status: pending / paid
+
+---
+
+🏦 PAYOUT SYSTEM
+
+Admin route:
+
+POST /admin/payout
+
+- sum pending commissions
+- mark as paid
+
+---
+
+🧠 ANALYTICS TRACKING
+
+Track events:
+
+- swipe
+- selection
+- reveal
+- order click
+
+Store in EVENT_LOG
+
+---
+
+🛒 ORDER FLOW
+
+When user clicks “ORDER NOW”:
+
+1. create payment intent
+2. process payment
+3. webhook confirms
+4. order stored
+5. commission logged
+
+---
+
+📱 KIOSK RULES
+
+- touch targets ≥ 60px
+- large readable text (18px+)
+- high contrast
+- simple flow
+
+---
+
+🎨 CONSISTENCY RULE
+
+ALL pages must share:
+
+- same layout
+- same animation timing
+- same card style
+- same button system
+- same interaction feedback
+
+---
+
+🎯 FINAL GOAL
+
+Deliver a system that:
+
+- users interact with
+- venues control
+- processes real payments
+- tracks real data
+- generates recurring revenue
+
+This is NOT a UI.
+
+This is a complete SaaS + revenue platform.
+
+-

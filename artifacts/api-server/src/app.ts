@@ -37,6 +37,7 @@ import loyaltyRouter            from "./routes/loyalty";
 import rewardsAdminRouter       from "./routes/rewardsAdmin";
 import loungeLeagueRouter       from "./routes/loungeLeague";
 import devicesRouter            from "./routes/devices";
+import commissionsRouter        from "./routes/commissions";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -134,6 +135,7 @@ app.use("/api/loyalty",                     loyaltyRouter);
 app.use("/api/rewards",                     rewardsAdminRouter);
 app.use("/api/lounge-league",               loungeLeagueRouter);
 app.use("/api/devices",                     devicesRouter);
+app.use("/api",                             commissionsRouter);
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────
 app.use((_req: Request, res: Response) => {

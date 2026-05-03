@@ -1,0 +1,301 @@
+BUILD THE COMPLETE SMOKECRAFT 360 BACKEND SYSTEM (PRODUCTION-READY) INCLUDING ORDER HARDENING, INVENTORY MANAGEMENT, SCORING ENGINE, STRIPE PAYMENTS + CONNECT PAYOUTS, ANALYTICS, RBAC SECURITY, AND BACKGROUND WORKERS — ALL FULLY WIRED
+
+This must be a real backend system that is secure, scalable, and revenue-ready.
+
+---
+
+🚨 MISSING / REQUIRED (NON-NEGOTIABLE)
+
+You MUST include:
+
+- Node.js + Express backend
+- PostgreSQL database (with proper schema)
+- JWT authentication system
+- Stripe payments (PaymentIntent)
+- Stripe webhooks (verified)
+- Stripe Connect payouts
+- Event tracking system
+- Background workers (cron jobs)
+- Role-based access control (RBAC)
+- Idempotency protection
+
+If any of these are missing, the system is incomplete.
+
+---
+
+🛡️ FAILURE PREVENTION CHECKLIST
+
+DO NOT:
+
+- trust frontend pricing
+- process payments without webhook confirmation
+- skip idempotency
+- skip validation
+- store sensitive data without protection
+
+Everything must be:
+secure, validated, and consistent
+
+---
+
+🔥 DATABASE SCHEMA (REQUIRED TABLES)
+
+USERS
+- id
+- email
+- password_hash
+- role (super_admin, venue_admin, staff)
+- created_at
+
+VENUES
+- id
+- name
+- stripe_account_id
+- created_at
+
+CIGARS
+- id
+- venue_id
+- name
+- wrapper_type
+- strength
+- flavor_notes
+- size
+- image_url
+- base_price
+- markup
+- stock_quantity
+- is_active
+
+WHISKEY
+- id
+- venue_id
+- name
+- type
+- flavor_notes
+- image_url
+- base_price
+- is_active
+
+PAIRINGS
+- id
+- cigar_id
+- whiskey_id
+- compatibility_score
+- description
+
+ORDERS
+- id
+- venue_id
+- cigar_id
+- whiskey_id
+- amount
+- status (initiated, pending, paid, fulfilled, refunded)
+- stripe_payment_id
+- created_at
+
+COMMISSIONS
+- id
+- order_id
+- amount
+- status (pending, paid)
+- created_at
+
+PAYOUT_REQUESTS
+- id
+- venue_id
+- amount
+- status (pending, approved, paid, failed)
+- stripe_transfer_id
+
+EVENT_LOG
+- id
+- venue_id
+- event_type (swipe, select, reveal, order)
+- metadata (json)
+- created_at
+
+USER_SESSIONS
+- id
+- venue_id
+- selections (json)
+- final_score
+- created_at
+
+---
+
+🔐 AUTH + RBAC SYSTEM
+
+- JWT login route: POST /api/auth/login
+- middleware to verify token
+- role-based access:
+
+super_admin → full access  
+venue_admin → own venue only  
+staff → limited access  
+
+---
+
+💳 STRIPE PAYMENT SYSTEM
+
+POST /api/payments/create-intent
+
+- fetch cigar + whiskey from DB
+- calculate price (base + markup)
+- apply idempotency key
+- create PaymentIntent
+- return clientSecret
+
+---
+
+🔔 STRIPE WEBHOOK (SOURCE OF TRUTH)
+
+POST /api/webhooks/stripe
+
+Handle:
+
+payment_intent.succeeded:
+
+- validate signature
+- update ORDER status → paid
+- decrement inventory
+- create COMMISSION record
+
+---
+
+💰 STRIPE CONNECT PAYOUT SYSTEM
+
+POST /api/stripe/connect
+
+- create or attach Stripe Express account
+- store stripe_account_id in VENUES
+
+POST /api/payouts/request
+
+- create payout request
+- enforce minimum threshold
+
+POST /api/payouts/approve (admin only)
+
+- send transfer via stripe.transfers.create()
+- store stripe_transfer_id
+- update status
+
+---
+
+🧠 SCORING / PAIRING ENGINE
+
+Create service:
+
+calculateBlendScore(selections)
+
+- weight flavor match (40%)
+- weight strength alignment (30%)
+- weight pairing compatibility (30%)
+
+Return:
+
+- score (0–100)
+- breakdown
+- explanation text
+
+---
+
+📦 INVENTORY SYSTEM
+
+- lock stock during checkout
+- decrement on successful payment
+- block purchase if stock = 0
+- fallback suggestion if unavailable
+
+---
+
+📊 ANALYTICS SYSTEM
+
+Track events:
+
+- swipe
+- selection
+- reveal
+- order
+
+Store in EVENT_LOG
+
+Create endpoints:
+
+GET /api/analytics/summary
+- top cigars
+- top flavors
+- top pairings
+- avg score
+- conversion rate
+
+---
+
+⚙️ BACKGROUND WORKERS (CRON)
+
+Create workers:
+
+1. reconciliation worker
+- verify payments vs orders
+
+2. payout worker
+- process approved payouts
+
+3. analytics worker
+- aggregate daily stats
+
+4. cleanup worker
+- remove stale sessions
+
+---
+
+🔁 IDEMPOTENCY SYSTEM
+
+- enforce unique stripe_payment_id
+- prevent duplicate order creation
+- safe retry logic for API calls
+
+---
+
+🔒 SECURITY LAYER
+
+- input validation (Joi/Zod)
+- rate limiting (login, payments)
+- sanitize all inputs
+- secure cookies
+- environment variable protection
+
+---
+
+📬 NOTIFICATIONS (OPTIONAL)
+
+- send order confirmation
+- send payout confirmation
+- alert on failed payments
+
+---
+
+📁 MEDIA HANDLING
+
+- store images via CDN or cloud storage
+- optimize for tablet performance
+- consistent image sizing
+
+---
+
+🎯 FINAL GOAL
+
+Deliver a backend that:
+
+- processes real payments
+- manages real inventory
+- tracks real data
+- pays out real money
+- scales across multiple venues
+
+This is NOT a demo backend.
+
+This is a production-grade SaaS system.
+
+--

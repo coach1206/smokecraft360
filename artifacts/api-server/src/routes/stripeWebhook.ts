@@ -14,11 +14,14 @@
  *   checkout.session.completed  → sets order.status = "paid"
  */
 
-import { type Request, type Response } from "express";
-import Stripe                          from "stripe";
-import { eq }                          from "drizzle-orm";
-import { db, ordersTable }             from "@workspace/db";
-import { logger }                      from "../lib/logger";
+import { type Request, type Response }            from "express";
+import Stripe                                      from "stripe";
+import { eq }                                      from "drizzle-orm";
+import { db, ordersTable, commissionsTable }       from "@workspace/db";
+import { logger }                                  from "../lib/logger";
+
+// Platform commission rate in basis points (1000 = 10.00%)
+const PLATFORM_COMMISSION_BPS = 1000;
 
 function getStripe(): Stripe {
   const key = process.env["STRIPE_SECRET_KEY"];
@@ -47,6 +50,8 @@ export async function stripeWebhookHandler(req: Request, res: Response): Promise
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const orderId = session.metadata?.orderId;
+    const venueId = session.metadata?.venueId || null;
+    const gross   = session.amount_total ?? 0;
 
     if (orderId) {
       try {
@@ -57,6 +62,27 @@ export async function stripeWebhookHandler(req: Request, res: Response): Promise
         logger.info({ orderId, sessionId: session.id }, "Order marked paid via Stripe webhook");
       } catch (err) {
         logger.error({ err, orderId }, "Failed to update order status from webhook");
+      }
+
+      // Log platform commission (idempotent on stripeSessionId would be ideal, but
+      // Stripe webhooks are typically delivered once; duplicates can be reconciled later).
+      if (gross > 0) {
+        try {
+          const amount = Math.round((gross * PLATFORM_COMMISSION_BPS) / 10_000);
+          await db.insert(commissionsTable).values({
+            orderId,
+            venueId,
+            grossAmountCents: gross,
+            ratePctBps:       PLATFORM_COMMISSION_BPS,
+            amountCents:      amount,
+            currency:         session.currency ?? "usd",
+            stripeSessionId:  session.id,
+            status:           "pending",
+          });
+          logger.info({ orderId, venueId, amount, gross }, "Commission logged");
+        } catch (err) {
+          logger.error({ err, orderId }, "Failed to log commission");
+        }
       }
     }
   }
