@@ -1,0 +1,129 @@
+FINAL PATCH PROMPT
+SMOKECRAFT 360 — PERSONALIZATION + REVENUE INTELLIGENCE (ADD-ON ONLY)
+
+Integrate the following four systems into the existing platform:
+
+AI taste profile per user
+Auto-recommend based on past behavior
+Revenue prediction per session
+Smart pricing adjustments
+
+Constraints:
+
+Use existing user model, tracking, and analytics
+Do not create duplicate pairing or pricing engines
+Persist to your current DB (Postgres/Drizzle)
+All calls must be non-blocking (do not delay UI)
+1) 🧠 AI TASTE PROFILE (PER USER)
+Data model (extend existing user/profile)
+type TasteProfile = {
+  strength: { light: number; medium: number; full: number };
+  flavor: { smooth: number; sweet: number; bitter: number; rich: number };
+  categories: { beer: number; whiskey: number; cigar: number };
+  lastUpdated: number;
+};
+Update on every completed selection
+export function updateTasteProfile(profile: TasteProfile, selection: any): TasteProfile {
+  const next = { ...profile };
+
+  // strength
+  next.strength[selection.strength] += 1;
+
+  // flavor
+  selection.flavors.forEach((f: string) => {
+    next.flavor[f] = (next.flavor[f] || 0) + 1;
+  });
+
+  // category
+  next.categories[selection.category] += 1;
+
+  next.lastUpdated = Date.now();
+  return next;
+}
+Persist (use your existing user update route/service)
+// inside your existing save flow
+await db.users.update({
+  where: { id: userId },
+  data: { tasteProfile: updatedProfile },
+});
+2) 🔁 AUTO-RECOMMEND (BASED ON PAST BEHAVIOR)
+Ranking logic (lightweight, synchronous)
+export function getAutoRecommendation(profile: TasteProfile, candidates: any[]) {
+  return candidates
+    .map((c) => {
+      let score = 0;
+
+      // strength affinity
+      score += profile.strength[c.strength] || 0;
+
+      // flavor affinity
+      c.flavors.forEach((f: string) => {
+        score += profile.flavor[f] || 0;
+      });
+
+      // category bias
+      score += profile.categories[c.category] || 0;
+
+      return { ...c, score };
+    })
+    .sort((a, b) => b.score - a.score)[0];
+}
+Frontend usage (non-blocking enhancement)
+useEffect(() => {
+  if (candidates && userProfile?.tasteProfile) {
+    const best = getAutoRecommendation(userProfile.tasteProfile, candidates);
+    setHighlighted(best); // visually pin as “Recommended for you”
+  }
+}, [candidates, userProfile]);
+3) 💰 REVENUE PREDICTION (PER SESSION)
+Model (simple, fast, good enough to start)
+export function predictSessionRevenue(session: any) {
+  const base = session.basePrice || 0;
+
+  const upsellProb =
+    session.interactions > 2 ? 0.55 :
+    session.interactions > 1 ? 0.35 : 0.15;
+
+  const avgUpsell = 18; // use your real avg later
+
+  const expected = base + (upsellProb * avgUpsell);
+
+  return {
+    expectedRevenue: Math.round(expected * 100) / 100,
+    upsellProbability: upsellProb,
+  };
+}
+Frontend hook (display quietly in admin/debug or use for logic)
+useEffect(() => {
+  const prediction = predictSessionRevenue(sessionData);
+  setSessionForecast(prediction);
+}, [sessionData]);
+4) 📈 SMART PRICING ADJUSTMENTS (CONTROLLED, RULE-BASED)
+Guardrails
+Never change supplier base price
+Adjust only markup/upsell offers within safe bounds
+Keep deterministic (no randomness)
+Logic
+export function getSmartPrice(basePrice: number, context: any) {
+  let adjustment = 0;
+
+  // high intent → allow higher margin
+  if (context.interactions > 2 && context.timeOnScreen > 1500) {
+    adjustment += 0.08; // +8%
+  }
+
+  // low intent → soften to convert
+  if (context.interactions === 0) {
+    adjustment -= 0.05; // -5%
+  }
+
+  // cap limits
+  if (adjustment > 0.12) adjustment = 0.12;
+  if (adjustment < -0.08) adjustment = -0.08;
+
+  const final = basePrice * (1 + adjustment);
+
+  return Math.round(final * 100) / 100;
+}
+Frontend usage
+const finalPrice = getSmartPrice(result.basePrice, sessionData);
