@@ -1,0 +1,300 @@
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+export default function Intro() {
+  const navigate = useNavigate();
+
+  const [stage, setStage] = useState("splash");
+  const [isIdle, setIsIdle] = useState(false);
+
+  const [scene, setScene] = useState("intro");
+  const [demoScore, setDemoScore] = useState(null);
+
+  const idleTimer = useRef(null);
+  const demoTimer = useRef(null);
+
+  // ===== BACKGROUND SCENES =====
+  const scenes = {
+    intro:
+      "https://images.unsplash.com/photo-1552566626-52f8b828add9",
+    mood:
+      "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a",
+    flavor:
+      "https://images.unsplash.com/photo-1514361892635-e9558d7d1a8d",
+    pairing:
+      "https://images.unsplash.com/photo-1585238342024-78d387f4a707",
+    reveal:
+      "https://images.unsplash.com/photo-1600891964599-f61ba0e24092"
+  };
+
+  // ===== PRODUCT VISUALS =====
+  const cigarStages = [
+    "/images/cigar1.png",
+    "/images/cigar2.png",
+    "/images/cigar3.png",
+    "/images/cigar4.png"
+  ];
+
+  const [cigarIndex, setCigarIndex] = useState(0);
+
+  // ===== SPLASH =====
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setStage("select");
+      startIdle();
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // ===== IDLE =====
+  const startIdle = () => {
+    clearTimeout(idleTimer.current);
+
+    idleTimer.current = setTimeout(() => {
+      setIsIdle(true);
+      startDemo();
+    }, 6000);
+  };
+
+  const resetIdle = () => {
+    setIsIdle(false);
+    setScene("intro");
+    setDemoScore(null);
+    setCigarIndex(0);
+    clearInterval(demoTimer.current);
+    startIdle();
+  };
+
+  // ===== DEMO FLOW =====
+  const startDemo = () => {
+    let step = 0;
+
+    demoTimer.current = setInterval(() => {
+      step++;
+
+      if (step === 1) {
+        setScene("mood");
+        setCigarIndex(1);
+      }
+
+      if (step === 2) {
+        setScene("flavor");
+        setCigarIndex(2);
+      }
+
+      if (step === 3) {
+        setScene("pairing");
+        setCigarIndex(3);
+      }
+
+      if (step === 4) {
+        fetch("/api/scoring", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            flavor: 85,
+            strength: 70,
+            pairing: 90
+          })
+        })
+          .then(res => res.json())
+          .then(data => setDemoScore(data.score));
+      }
+
+      if (step === 5) {
+        setScene("reveal");
+      }
+
+      if (step > 7) {
+        step = 0;
+        setScene("intro");
+        setDemoScore(null);
+        setCigarIndex(0);
+      }
+
+    }, 2500);
+  };
+
+  // ===== TOUCH RESET =====
+  useEffect(() => {
+    window.addEventListener("click", resetIdle);
+    window.addEventListener("touchstart", resetIdle);
+
+    return () => {
+      window.removeEventListener("click", resetIdle);
+      window.removeEventListener("touchstart", resetIdle);
+    };
+  }, []);
+
+  // ===== NAVIGATION =====
+  const handleEnter = (path) => {
+    navigate("/" + path);
+  };
+
+  return (
+    <div
+      style={{
+        ...styles.wrapper,
+        backgroundImage: `url(${scenes[scene]})`
+      }}
+    >
+      <div style={styles.overlay} />
+
+      {/* SPLASH */}
+      {stage === "splash" && (
+        <div style={styles.splash}>
+          <h1 style={styles.piMain}>PROFOUND INNOVATION</h1>
+          <h2 style={styles.piSub}>P.I</h2>
+        </div>
+      )}
+
+      {/* MAIN */}
+      {stage === "select" && (
+        <div style={styles.center}>
+          {!isIdle && (
+            <>
+              <h1 style={styles.title}>Craft Your Experience</h1>
+
+              <div style={styles.buttons}>
+                <button onClick={() => handleEnter("smokecraft")}>
+                  SmokeCraft
+                </button>
+                <button onClick={() => handleEnter("pourcraft")}>
+                  PourCraft
+                </button>
+                <button onClick={() => handleEnter("vapecraft")}>
+                  VapeCraft
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* DEMO MODE */}
+          {isIdle && (
+            <div style={styles.demo}>
+              <h2>Building Experience...</h2>
+
+              {/* CIGAR VISUAL */}
+              <img
+                src={cigarStages[cigarIndex]}
+                style={styles.cigar}
+              />
+
+              {/* SMOKE EFFECT */}
+              <div style={styles.smoke} />
+
+              {/* GLASS VISUAL */}
+              <img
+                src="/images/whiskey.png"
+                style={styles.glass}
+              />
+
+              {/* SCORE */}
+              {demoScore && (
+                <div style={styles.score}>
+                  Score: {demoScore}
+                </div>
+              )}
+
+              {/* FINAL */}
+              {scene === "reveal" && (
+                <div style={styles.reveal}>
+                  Elite Experience Ready
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const styles = {
+  wrapper: {
+    height: "100vh",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    transition: "all 1s ease",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+
+  overlay: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    background:
+      "linear-gradient(to right, rgba(0,0,0,0.85), rgba(0,0,0,0.5))"
+  },
+
+  splash: {
+    textAlign: "center",
+    color: "#fff"
+  },
+
+  piMain: {
+    fontSize: "48px"
+  },
+
+  piSub: {
+    opacity: 0.6
+  },
+
+  center: {
+    textAlign: "center",
+    color: "#fff",
+    zIndex: 2
+  },
+
+  title: {
+    fontSize: "36px",
+    marginBottom: "30px"
+  },
+
+  buttons: {
+    display: "flex",
+    gap: "20px",
+    justifyContent: "center"
+  },
+
+  demo: {
+    position: "relative",
+    fontSize: "22px"
+  },
+
+  cigar: {
+    width: "220px",
+    marginTop: "20px"
+  },
+
+  glass: {
+    width: "140px",
+    position: "absolute",
+    right: "-160px",
+    bottom: "0"
+  },
+
+  smoke: {
+    position: "absolute",
+    width: "200px",
+    height: "200px",
+    background:
+      "url('https://i.imgur.com/9h3Yf6T.png') center/contain no-repeat",
+    opacity: 0.15,
+    animation: "smoke 6s infinite linear"
+  },
+
+  score: {
+    marginTop: "20px",
+    fontSize: "26px",
+    color: "#C6A85B"
+  },
+
+  reveal: {
+    marginTop: "20px",
+    fontSize: "28px"
+  }
+};
