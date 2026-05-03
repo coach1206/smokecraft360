@@ -7,6 +7,7 @@
  */
 
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { FlaskConical, RotateCcw, Loader2 } from "lucide-react";
 import { DEMO_MODE, clearDemoLocalState } from "@/config/demo";
@@ -16,11 +17,22 @@ if (!DEMO_MODE) {
   // Tree-shaken in production builds when DEMO_MODE is false
 }
 
+/* Routes where the operator-facing demo banner is allowed to render.
+ * The banner is a venue-staff utility (Reset Demo button + safe-mode
+ * indicator); showing it on customer-facing kiosk surfaces (Intro
+ * portal, SmokeCraft experience, BrewCraft/PourCraft flows, payment
+ * confirmation) is visual noise from the guest's perspective and was
+ * the "card on the bottom right" the 34th brief flagged. Operators
+ * land on /dashboard, so the banner stays available there. */
+const OPERATOR_ROUTES = new Set<string>(["/dashboard"]);
+
 export function DemoBanner() {
   const [resetting, setResetting] = useState(false);
   const [expanded,  setExpanded]  = useState(false);
+  const [location] = useLocation();
 
   if (!DEMO_MODE) return null;
+  if (!OPERATOR_ROUTES.has(location)) return null;
 
   const handleReset = async () => {
     if (resetting) return;
