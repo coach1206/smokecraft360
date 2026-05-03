@@ -25,6 +25,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import type { CigarShape, CigarSession } from "../services/storage";
 import { haptic } from "../utils/haptics";
+import { cigarShapeImage } from "../lib/cloudinary";
 
 interface CigarStructureStepProps {
   /** Pre-selected shape (from returning guest's saved cigarProfile). */
@@ -131,6 +132,13 @@ export function CigarStructureStep({
 }: CigarStructureStepProps) {
   const [shape,   setShape]   = useState<CigarShape>(initialShape);
   const [session, setSession] = useState<CigarSession>(initialSession);
+  /* Per-shape "Cloudinary photo failed to load" set. When a shape's photo
+   * 404s (e.g. the venue hasn't uploaded cigars/<shape>.jpg yet), we add it
+   * here and the card transparently falls back to the SVG silhouette — so
+   * the empty-Cloudinary state is visually identical to the pre-Cloudinary
+   * design. As soon as a venue uploads the asset, photos light up on next
+   * page load with no code change. See lib/cloudinary.ts. */
+  const [failedPhotos, setFailedPhotos] = useState<Set<CigarShape>>(() => new Set());
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
@@ -182,7 +190,34 @@ export function CigarStructureStep({
                 appearance: "none",
               }}
             >
-              <VitolaSilhouette shape={s} />
+              {failedPhotos.has(s) ? (
+                <VitolaSilhouette shape={s} />
+              ) : (
+                <img
+                  src={cigarShapeImage(s)}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                  onError={() => {
+                    setFailedPhotos((prev) => {
+                      if (prev.has(s)) return prev;
+                      const next = new Set(prev);
+                      next.add(s);
+                      return next;
+                    });
+                  }}
+                  style={{
+                    width: "100%",
+                    height: 70,
+                    objectFit: "cover",
+                    borderRadius: 8,
+                    border: "1px solid rgba(212,175,55,0.18)",
+                    background: "rgba(20,15,10,0.6)",
+                    display: "block",
+                  }}
+                />
+              )}
               <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <span
                   className="font-serif"
