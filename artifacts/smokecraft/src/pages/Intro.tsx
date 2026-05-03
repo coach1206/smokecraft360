@@ -44,6 +44,19 @@ const DEMO_CAPTIONS = [
 const DEMO_SAMPLE = { flavor: 8.5, strength: 7.5, pairing: 9.0 };
 
 /**
+ * Cigar build-stage assets shown during the attract narrative. Index aligned
+ * with the cycle: 0=unlit, 1=just-lit, 2=ember+small ash, 3=full ash + smoke.
+ * Files live in artifacts/smokecraft/public/images/ (served at /images/...).
+ */
+const CIGAR_STAGES = [
+  "images/cigar1.png",
+  "images/cigar2.png",
+  "images/cigar3.png",
+  "images/cigar4.png",
+] as const;
+const WHISKEY_GLASS = "images/whiskey.png";
+
+/**
  * Client-side mirror of the server's /api/scoring formula:
  *     score = flavor*0.4 + strength*0.3 + pairing*0.3
  *
@@ -549,6 +562,88 @@ export default function Intro() {
           );
         })}
       </div>
+
+      {/* Attract-mode product stage — cigar progresses through 4 build stages
+          across the cycle (unlit → lit → ember → full ash); whiskey glass
+          slides in next to the cigar on the reveal beat. Sits above the cards
+          to focus the eye, below the caption + scorecard. Pre-loads all four
+          stages on first render to avoid in-flight image swaps mid-beat. */}
+      {(() => {
+        const base = import.meta.env.BASE_URL;
+        return (
+          <AnimatePresence>
+            {isIdle && !selected && stage === "select" && (
+              <motion.div
+                key="attract-stage"
+                data-testid="intro-product-stage"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  position: "fixed", left: "50%", top: "26vh",
+                  transform: "translateX(-50%)",
+                  zIndex: 38, pointerEvents: "none",
+                  display: "flex", alignItems: "flex-end",
+                  gap: 24,
+                  filter: "drop-shadow(0 24px 50px rgba(0,0,0,0.65))",
+                }}
+              >
+                {/* Hidden preloaders so all 4 cigar stages and the glass are
+                    decoded before the cycle reaches them. */}
+                <div
+                  aria-hidden
+                  style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}
+                >
+                  {CIGAR_STAGES.map((src) => (
+                    <img key={src} src={`${base}${src}`} alt="" />
+                  ))}
+                  <img src={`${base}${WHISKEY_GLASS}`} alt="" />
+                </div>
+
+                {/* Cigar — cross-fades between stages, advancing one per beat. */}
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={`cigar-${attractIdx}`}
+                    src={`${base}${CIGAR_STAGES[attractIdx]}`}
+                    alt=""
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.02 }}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    style={{
+                      width: "clamp(200px, 26vw, 360px)",
+                      height: "auto",
+                      display: "block",
+                    }}
+                  />
+                </AnimatePresence>
+
+                {/* Whiskey glass — only on the reveal beat, slides in from
+                    the right with a slight bounce. */}
+                <AnimatePresence>
+                  {attractIdx === REVEAL_BEAT && (
+                    <motion.img
+                      key="whiskey"
+                      src={`${base}${WHISKEY_GLASS}`}
+                      alt=""
+                      initial={{ opacity: 0, x: 40, scale: 0.9 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                      style={{
+                        width: "clamp(110px, 13vw, 180px)",
+                        height: "auto",
+                        display: "block",
+                      }}
+                    />
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        );
+      })()}
 
       {/* Attract-mode beat caption — narrates the demo sequence above the cards
           so the kiosk visibly explains what the product does (mood → flavor →
