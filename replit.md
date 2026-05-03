@@ -125,6 +125,29 @@ Two distinct NDA flows now coexist:
      until all fields complete and ink drawn. On success: sessionStorage flag
      `demoNdaSigned=1`, fade-out 300ms, navigate `/intro`. Reload-resistant.
 
+## Package Update Policy (Brief D)
+
+Surgical, non-destructive updates only. The workspace runs `pnpm audit` clean
+(0 / 0 / 0 / 0 / 0) as of this snapshot.
+
+- **Catalog (`pnpm-workspace.yaml`)**: bumps applied to `@tailwindcss/vite`,
+  `tailwindcss`, `@tanstack/react-query`, `@types/node`, `framer-motion`,
+  `@replit/vite-plugin-cartographer`. `react` / `react-dom` are pinned to
+  exact `19.1.0` to stay compatible with Expo's required peer.
+- **Per-package patches**: `react-hook-form` (smokecraft + mockup-sandbox),
+  `orval`, `@types/pg`, `drizzle-kit`, `prettier`. `@types/bcryptjs`
+  removed (deprecated; bcryptjs ships its own types).
+- **Security overrides** (transitive vuln remediation, no API impact):
+  `brace-expansion ≥2.0.3`, `picomatch ≥4.0.4`, `yaml ≥2.8.3`,
+  `path-to-regexp ≥8.4.0`, `lodash ≥4.18.0`, `postcss ≥8.5.10`. These
+  cleared 7 moderate + 4 high CVEs in one pass.
+- **Refused (major versions = require dedicated migration slices)**:
+  `@hookform/resolvers` 3→5, `@vitejs/plugin-react` 5→6, `chokidar` 4→5,
+  `date-fns` 3→4, `pino` 9→10, `pino-http` 10→11, `react-resizable-panels`
+  2→4, `recharts` 2→3, `thread-stream` 3→4, `typescript` 5→6, `vite` 7→8,
+  `zod` 3→4, `esbuild` 0.27→0.28, `lucide-react` 0.545→1.x. Each is a
+  separate scoped task — never blanket-bump.
+
 ## Offline Queue (Brief C — Enterprise OS slice)
 
 Kiosks buffer POST-style actions in localStorage when offline, then replay
