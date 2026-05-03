@@ -1,0 +1,172 @@
+. DATABASE (THIS IS YOUR FOUNDATION)
+
+Create:
+/data/cigars.ts
+
+export const cigars = [
+  {
+    id: "padron-1964",
+    name: "Padron 1964 Anniversary",
+    strength: "medium",
+    flavors: ["cocoa", "earthy", "sweet"],
+    wrapper: "nicaraguan",
+    size: "toro",
+    image: "https://images.unsplash.com/photo-1601050690597-df0568f70950"
+  },
+  {
+    id: "arturo-fuente",
+    name: "Arturo Fuente Opus X",
+    strength: "full",
+    flavors: ["spicy", "leather", "cedar"],
+    wrapper: "dominican",
+    size: "robusto",
+    image: "https://images.unsplash.com/photo-1582582494700-cdf9a9b9cdd5"
+  }
+];
+
+Create:
+/data/drinks.ts
+
+export const drinks = [
+  {
+    id: "buffalo-trace",
+    name: "Buffalo Trace Bourbon",
+    flavors: ["vanilla", "caramel", "sweet"],
+    strength: "medium",
+    image: "https://images.unsplash.com/photo-1581579186913-45ac7e6efe93"
+  },
+  {
+    id: "makers-mark",
+    name: "Maker’s Mark",
+    flavors: ["caramel", "oak", "sweet"],
+    strength: "medium",
+    image: "https://images.unsplash.com/photo-1575023782549-62ca0d244b39"
+  }
+];
+🔥 2. MATCHING ENGINE (THIS IS THE BRAIN)
+
+Create:
+/utils/matchEngine.ts
+
+export function scoreItem(userPrefs: any, item: any) {
+  let score = 0;
+
+  // Flavor match
+  const matches = item.flavors.filter((f: string) =>
+    userPrefs.flavors.includes(f)
+  );
+  score += matches.length * 20;
+
+  // Strength match
+  if (userPrefs.strength === item.strength) {
+    score += 25;
+  }
+
+  // Mood influence
+  if (userPrefs.mood === "relaxed" && item.strength === "mild") {
+    score += 10;
+  }
+
+  if (userPrefs.mood === "bold" && item.strength === "full") {
+    score += 10;
+  }
+
+  return score;
+}
+
+export function getBestMatch(userPrefs: any, list: any[]) {
+  let best = null;
+  let highest = 0;
+
+  for (const item of list) {
+    const score = scoreItem(userPrefs, item);
+
+    if (score > highest) {
+      highest = score;
+      best = item;
+    }
+  }
+
+  return best;
+}
+🔥 3. CONNECT TO YOUR UI
+
+In your Reveal Screen:
+
+import { cigars } from "../data/cigars";
+import { drinks } from "../data/drinks";
+import { getBestMatch } from "../utils/matchEngine";
+import { useExperience } from "../context/ExperienceContext";
+
+export default function Reveal() {
+  const { selections } = useExperience();
+
+  const userPrefs = {
+    flavors: selections.flavor || [],
+    strength: selections.strength,
+    mood: selections.mood
+  };
+
+  const cigar = getBestMatch(userPrefs, cigars);
+  const drink = getBestMatch(userPrefs, drinks);
+
+  return (
+    <div className="reveal">
+      <img src={cigar.image} />
+      <h1>{cigar.name}</h1>
+
+      <img src={drink.image} />
+      <h2>{drink.name}</h2>
+    </div>
+  );
+}
+🔥 4. REAL IMAGE SYSTEM (THIS FIXES YOUR VISUAL ISSUE)
+
+You said it clearly:
+
+👉 “I want REAL cigars and REAL drinks”
+
+Use:
+
+Option A (Fast & Free)
+Unsplash (already used)
+Pexels
+
+Search dynamically:
+
+const query = `${cigar.name} cigar close up warm lighting`;
+Option B (Better Long Term)
+
+Use:
+
+SerpAPI (Google Images)
+Custom image proxy
+🔥 5. DYNAMIC BACKGROUND BASED ON RESULT
+const bg = cigar.image;
+
+<div
+  className="background"
+  style={{
+    backgroundImage: `url(${bg})`,
+  }}
+/>
+
+Add blur + overlay so it doesn’t overpower text.
+
+🔥 6. FINAL EXPERIENCE DATA (WHAT YOU WERE MISSING)
+
+Add this to reveal:
+
+<p>Size: {cigar.size}</p>
+<p>Wrapper: {cigar.wrapper}</p>
+<p>Flavor Profile: {cigar.flavors.join(", ")}</p>
+<p>Best Served: {drink.name}</p>
+🔥 7. UPGRADE YOUR EXPERIENCE (NEXT LEVEL)
+
+You can now evolve into:
+
+AI pairing (OpenAI or local model)
+user history memory
+preference learning
+premium upsells (buy now, reserve, lounge order)
+💥 WHAT YOU JU
