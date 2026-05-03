@@ -1,0 +1,89 @@
+Build a full-screen cinematic boot-up intro for "Profound Innovation" that plays before the SmokeCraft 360 interface loads.
+
+VISUAL STYLE:
+- Background: matte olive/pewter green (#C5C8B4 range), smooth with very subtle grain (no heavy texture)
+- Logo: flat, solid dark green symbol (no outline, no glow, no 3D)
+- Typography: deep navy blue (#0B2A4A range)
+- Entire design must feel minimal, premium, and controlled (not flashy, no gaming UI)
+
+BOOT SEQUENCE FLOW:
+
+1. INITIAL STATE (0.0s)
+- Screen is full olive green
+- Very faint grain texture
+- No logo visible yet
+- Silent for first 0.3s
+
+2. LOGO ENTRY (0.3s – 1.2s)
+- Logo slides in smoothly from LEFT to CENTER
+- Motion: ease-out (slow down as it lands)
+- Slight motion blur during movement
+- Logo stops perfectly centered
+
+3. TEXT REVEAL (1.2s – 2.0s)
+- "PROFOUND" fades in (navy blue, wide letter spacing)
+- "INNOVATION" appears below it, thinner and more subtle
+- Bottom line appears:
+  "Software & Systems Development Company"
+- All text fades in softly (no pop-in)
+
+4. TAGLINE OVERLAY (2.0s – 2.8s)
+- Fade in line:
+  "Digital Infrastructure Studio"
+- Positioned beneath logo/text
+- Smaller, refined font
+- Slight opacity (not overpowering)
+
+5. SOUND DESIGN (IMPORTANT)
+- Play a soft cinematic "arrival" sound:
+  - deep low-end whoosh
+  - subtle bass impact
+  - clean, no buzzing or distortion
+- Sound should hit RIGHT as logo finishes sliding in
+- Volume: medium-low, not aggressive
+
+6. HOLD MOMENT (2.8s – 3.8s)
+- Everything sits still
+- No movement
+- Let the identity breathe for 1 second
+
+7. FADE OUT TRANSITION (3.8s – 4.8s)
+- Entire screen fades to slightly darker tone
+- Then smoothly crossfades into SmokeCraft 360 main interface
+- No abrupt cuts
+
+8. HANDOFF TO PLATFORM
+- Load SmokeCraft 360 dashboard AFTER animation completes
+- Ensure no flicker or reload jump
+- Must feel like one continuous system
+
+FUNCTIONAL REQUIREMENTS:
+
+- Show boot screen ONLY once per session (use sessionStorage)
+- Allow tap/click to skip animation
+- Ensure mobile responsiveness
+- Optimize for fast load (logo preloaded)
+- Sound must fail gracefully if autoplay blocked
+
+ANIMATION STYLE RULES:
+
+- No neon glow
+- No excessive effects
+- No 3D extrusion
+- No hard transitions
+- Everything must feel smooth, intentional, and premium
+
+FINAL FEEL:
+
+The experience should feel like:
+"A system initializing… not a website loading."
+
+NOT:
+- flashy startup intro
+- gaming animation
+- loud tech gimmick
+
+END RESULT:
+
+User sees:
+olive screen → logo slides in → sound hits → text fades in → subtle hold → fades into SmokeCraft 360 interface seamlessly
