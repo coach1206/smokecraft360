@@ -1422,3 +1422,63 @@ export async function resetDemoData(): Promise<void> {
     // Silently ignore — client-side reset still runs
   }
 }
+
+// ── OS Layer (super_admin only) ───────────────────────────────────────────────
+
+export interface OsEventRow {
+  id:        string;
+  createdAt: string;
+  eventType: string;
+  venueId:   string | null;
+  userId:    string | null;
+  productId: string | null;
+  metadata:  Record<string, unknown> | null;
+}
+
+export interface OsEventsFilters {
+  venueId?:   string;
+  userId?:    string;
+  eventType?: string;
+  module?:    string;
+  since?:     string;
+  until?:     string;
+  limit?:     number;
+}
+
+export async function fetchOsEvents(filters: OsEventsFilters = {}): Promise<{
+  generatedAt: string; count: number; events: OsEventRow[];
+}> {
+  const qs = new URLSearchParams();
+  for (const [k, v] of Object.entries(filters)) {
+    if (v !== undefined && v !== "") qs.set(k, String(v));
+  }
+  const res = await fetch(`/api/os/events?${qs.toString()}`, { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error(`Failed to fetch OS events (${res.status})`);
+  return res.json();
+}
+
+export function osEventsCsvUrl(filters: OsEventsFilters = {}): string {
+  const qs = new URLSearchParams({ format: "csv" });
+  for (const [k, v] of Object.entries(filters)) {
+    if (v !== undefined && v !== "") qs.set(k, String(v));
+  }
+  return `/api/os/events?${qs.toString()}`;
+}
+
+export type OsCommand =
+  | { command: "theme.switch";  venueId: string; themeProfile: string }
+  | { command: "venue.lock";    venueId: string }
+  | { command: "venue.unlock";  venueId: string }
+  | { command: "flag.toggle";   name: string; enabled: boolean; themeSlug?: string | null; venueId?: string | null }
+  | { command: "subscription.extend_grace"; venueId: string; days: number };
+
+export async function runOsCommand(cmd: OsCommand): Promise<Record<string, unknown>> {
+  const res = await fetch("/api/os/command", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body:    JSON.stringify(cmd),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error((data as { error?: string }).error ?? `Command failed (${res.status})`);
+  return data;
+}

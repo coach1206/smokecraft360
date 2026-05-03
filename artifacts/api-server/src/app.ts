@@ -48,6 +48,8 @@ import vendorAdminRouter        from "./routes/vendorAdmin";
 import vendorPlacementsRouter   from "./routes/vendorPlacements";
 import { paymentsRouter }       from "./routes/payments";
 import subscriptionsRouter      from "./routes/subscriptions";
+import osEventsRouter           from "./routes/osEvents";
+import osCommandRouter          from "./routes/osCommand";
 import { startAggregationWorker } from "./lib/aggregationWorker";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -150,6 +152,8 @@ app.use("/api/loyalty",                     loyaltyRouter);
 app.use("/api/rewards",                     rewardsAdminRouter);
 app.use("/api/lounge-league",               loungeLeagueRouter);
 app.use("/api/devices",                     devicesRouter);
+app.use("/api/os",                          osEventsRouter);
+app.use("/api/os",                          osCommandRouter);
 app.use("/api",                             commissionsRouter);
 app.use("/api/network",                     networkInsightsRouter);
 app.use("/api/payouts",                     payoutsRouter);

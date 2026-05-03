@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, TrendingUp, Package, Sparkles, Zap,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
-  Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown, Award, Gift, Monitor,
+  Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown, Award, Gift, Monitor, Activity,
 } from "lucide-react";
 import { LiveOrders }                from "@/components/Dashboard/LiveOrders";
 import { BrandsTab }               from "@/components/Dashboard/BrandsTab";
@@ -19,6 +19,7 @@ import { LoyaltyRewardsTab }        from "@/components/Dashboard/LoyaltyRewardsT
 import { LoungeLeagueTab }          from "@/components/Dashboard/LoungeLeagueTab";
 import { SignatureCreationsTab }     from "@/components/Dashboard/SignatureCreationsTab";
 import { DeviceManagerTab }          from "@/components/Dashboard/DeviceManagerTab";
+import { OsTab }                     from "@/components/Dashboard/OsTab";
 import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
   type InventoryItem, type AnalyticsSummary,
@@ -31,7 +32,7 @@ import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
-type DashTab = "overview" | "products" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices";
+type DashTab = "overview" | "products" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os";
 
 const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
   { id: "overview",     label: "Overview",              icon: <BarChart3 size={12} />    },
@@ -50,6 +51,7 @@ const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
   { id: "lounge-league",label: "Lounge League",         icon: <Trophy size={12} />       },
   { id: "devices",      label: "Device Manager",        icon: <Monitor size={12} />      },
   { id: "analytics",    label: "Analytics",             icon: <Tag size={12} />          },
+  { id: "os",           label: "360 Enterprise OS",     icon: <Activity size={12} />     },
 ];
 
 export default function Dashboard() {
@@ -496,6 +498,20 @@ export default function Dashboard() {
                     transition={{ duration: 0.25 }}>
                     <LoungeLeagueTab />
                   </motion.div>
+                )}
+
+                {/* ── 360 Enterprise OS tab (super_admin only) ───────────────── */}
+                {activeTab === "os" && user?.role === "super_admin" && (
+                  <motion.div key="os"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+                    <OsTab />
+                  </motion.div>
+                )}
+                {activeTab === "os" && user?.role !== "super_admin" && (
+                  <div className="p-8 text-center text-zinc-400">
+                    The 360 Enterprise OS is restricted to <span className="text-emerald-300">super_admin</span> accounts.
+                  </div>
                 )}
 
                 {/* ── Device Manager tab ─────────────────────────────────────── */}

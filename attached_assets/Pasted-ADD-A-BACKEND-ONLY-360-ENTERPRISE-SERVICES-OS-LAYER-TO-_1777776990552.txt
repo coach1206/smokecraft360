@@ -1,0 +1,201 @@
+ADD A BACKEND-ONLY 360 ENTERPRISE SERVICES OS LAYER TO THE EXISTING PLATFORM WITHOUT MODIFYING THE CURRENT 360 DASHBOARD UI — PROVIDE CENTRALIZED DATA INGESTION, QUERY, FINANCIAL LOGGING, AND COMMAND APIs THAT THE EXISTING DASHBOARD CAN OPTIONALLY CALL
+
+---
+
+🚨 CORE OBJECTIVE
+
+- DO NOT modify any existing dashboard components, routes, or layouts
+- ADD a backend OS layer that:
+  - collects events from all modules
+  - exposes unified query endpoints
+  - logs financial activity
+  - supports admin commands
+- Ensure all endpoints are production-safe, multi-tenant, and auditable
+
+---
+
+🧱 DATABASE (ADD-ONLY, NO BREAKING CHANGES)
+
+CREATE TABLES:
+
+GLOBAL_EVENTS
+- id (pk)
+- module_name
+- event_type
+- payload (jsonb)
+- session_id
+- venue_id
+- created_at (timestamp, indexed)
+
+GLOBAL_FINANCIALS
+- id (pk)
+- order_id
+- venue_id
+- amount (numeric)
+- currency (text)
+- status (text)
+- stripe_payment_id (unique, nullable)
+- created_at (timestamp, indexed)
+
+GLOBAL_COMMAND_LOG
+- id (pk)
+- command_type
+- target
+- executed_by
+- result (jsonb)
+- created_at (timestamp, indexed)
+
+Indexes:
+- GLOBAL_EVENTS (module_name, event_type, created_at)
+- GLOBAL_EVENTS (venue_id, session_id)
+- GLOBAL_FINANCIALS (venue_id, created_at)
+- UNIQUE (stripe_payment_id)
+
+---
+
+🔗 EVENT INGESTION (NON-BLOCKING)
+
+CREATE:
+
+POST /api/os/event
+
+Body:
+{
+  module_name,
+  event_type,
+  payload,
+  session_id,
+  venue_id
+}
+
+Rules:
+- async insert (do not block user flow)
+- validate minimal fields
+- ignore malformed events safely
+- NEVER throw to client; return 200 with { accepted: true }
+
+---
+
+📊 QUERY APIS (READ-ONLY, SAFE)
+
+CREATE:
+
+GET /api/os/events
+Query params:
+- module_name
+- event_type
+- venue_id
+- session_id
+- from (date)
+- to (date)
+- limit (default 50)
+
+GET /api/os/financials
+Query params:
+- venue_id
+- status
+- from
+- to
+- limit
+
+Return paginated JSON
+
+---
+
+💳 FINANCIAL LOGGING (HOOK-IN ONLY)
+
+On Stripe webhook handlers (existing):
+
+- On payment_intent.succeeded:
+  INSERT into GLOBAL_FINANCIALS:
+    order_id, venue_id, amount, currency, status='paid', stripe_payment_id
+
+- On refunds / failures:
+  UPDATE status accordingly
+
+Ensure:
+- idempotent write using stripe_payment_id unique constraint
+- wrap in transaction with order update
+
+---
+
+⚙️ COMMAND API (NO UI CHANGE REQUIRED)
+
+CREATE:
+
+POST /api/os/command
+
+Body:
+{
+  command_type,
+  target,
+  params
+}
+
+Supported command_type:
+- disable_module
+- enable_module
+- switch_theme
+- lock_venue
+- unlock_venue
+- reset_session
+
+Rules:
+- require super_admin role
+- log every command in GLOBAL_COMMAND_LOG
+- return { success: true, result }
+
+---
+
+🔐 SECURITY
+
+- enforce RBAC on all /api/os/* routes
+- super_admin → full
+- admin → read-only
+- venue_admin → scoped to own venue_id
+
+- validate inputs (Zod/Joi)
+- rate limit OS endpoints
+
+---
+
+🧠 OPTIONAL (NO DASHBOARD CHANGE)
+
+Allow existing dashboard to optionally call:
+
+- /api/os/events (for live feed panels if added later)
+- /api/os/financials (for revenue widgets)
+
+DO NOT inject UI changes automatically
+
+---
+
+📡 PERFORMANCE
+
+- use connection pooling
+- add simple in-memory cache (30–60s) for GET endpoints
+- ensure queries use indexes
+- keep event ingestion lightweight
+
+---
+
+🧪 TESTS
+
+- insert 1k events → no slowdown
+- replay same Stripe event → only one financial record
+- query with filters → <200ms
+- invalid payload → safely ignored
+
+---
+
+🎯 FINAL RESULT
+
+- 360 OS exists as a backend control/data layer
+- no changes to current dashboard UI
+- all modules can report into a central system
+- financials are centrally logged and auditable
+- commands can be executed programmatically
+
+SYSTEM IS CENTRALIZED WITHOUT UI DISRUPTION
+
+---
