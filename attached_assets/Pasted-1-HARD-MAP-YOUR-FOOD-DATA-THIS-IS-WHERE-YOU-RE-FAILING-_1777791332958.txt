@@ -1,0 +1,144 @@
+1. HARD MAP YOUR FOOD DATA (THIS IS WHERE YOU’RE FAILING)
+
+You need guaranteed images tied to the data, not optional.
+
+🔧 UPDATE YOUR FOOD DATA
+const foodOptions = [
+  {
+    name: "Crème Brûlée",
+    category: "dessert",
+    description: "Vanilla custard with caramel crust",
+    image: "/images/food/creme-brulee.jpg"
+  },
+  {
+    name: "Burrata Caprese",
+    category: "salad",
+    description: "Fresh burrata, tomatoes, basil",
+    image: "/images/food/burrata.jpg"
+  },
+  {
+    name: "Beet & Walnut Salad",
+    category: "salad",
+    description: "Roasted beets, walnuts, chèvre",
+    image: "/images/food/beet-salad.jpg"
+  }
+];
+
+👉 If image is missing anywhere → your UI breaks
+So this must be REQUIRED, not optional
+
+🧱 2. FIX YOUR CARD COMPONENT (YOU’RE NOT RENDERING IMAGE PROPERLY)
+🔥 FINAL CARD (DROP THIS IN)
+<div className="food-card">
+
+  {/* IMAGE */}
+  <img
+    src={item.image}
+    alt={item.name}
+    className="food-img"
+    onError={(e) => {
+      e.currentTarget.src = "/images/fallback-food.jpg";
+    }}
+  />
+
+  {/* OVERLAY */}
+  <div className="food-overlay" />
+
+  {/* CONTENT */}
+  <div className="food-content">
+
+    <span className="tag">{item.category}</span>
+
+    <h3>{item.name}</h3>
+    <p>{item.description}</p>
+
+  </div>
+
+</div>
+🎨 3. FIX THE STYLING (YOUR OVERLAY IS PROBABLY HIDING IMAGE)
+.food-card {
+  position: relative;
+  height: 240px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.food-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.food-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.2),
+    rgba(0,0,0,0.7)
+  );
+}
+
+.food-content {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  color: white;
+}
+🔥 4. FORCE IMAGE LOAD BEFORE RENDER (THIS IS THE HIDDEN BUG)
+
+Sometimes your UI renders before images exist.
+
+Fix that:
+
+if (!item.image) {
+  return null; // or skeleton loader
+}
+🔥 5. DEBUG CHECK (DO THIS RIGHT NOW)
+
+Open console and log:
+
+console.log(item);
+
+If you see:
+
+{
+  name: "Crème Brûlée",
+  image: undefined
+}
+
+👉 That’s your problem. Not UI.
+
+🔥 6. OPTIONAL (BUT STRONG UPGRADE)
+
+Add image preloading so no flicker:
+
+useEffect(() => {
+  const img = new Image();
+  img.src = item.image;
+}, [item.image]);
+🔥 7. REAL IMAGE SOURCES (DON’T SKIP THIS)
+
+Use:
+
+Unsplash
+Pexels
+
+Search:
+
+"creme brulee dessert"
+"burrata caprese plate"
+"beet walnut salad gourmet"
+
+👉 Must look like upscale dining, not stock junk
+
+🔥 FINAL RESULT
+
+After this:
+
+✔ All 3 cards show real food
+✔ No empty blocks
+✔ No flicker
+✔ No broken UI
+✔ Feels like a real menu
