@@ -1,0 +1,309 @@
+// ==============================
+// SMOKECRAFT 360 + STRIPE (ONE FILE)
+// Run: npm i express cors stripe dotenv
+// Then: node index.js
+// Env needed:
+//   STRIPE_SECRET_KEY=sk_test_...
+//   STRIPE_WEBHOOK_SECRET=whsec_...
+//   STRIPE_PUBLISHABLE_KEY=pk_test_...
+// ==============================
+
+import express from "express";
+import cors from "cors";
+import Stripe from "stripe";
+import crypto from "crypto";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const app = express();
+app.use(cors());
+
+// ---------- Stripe ----------
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2023-10-16",
+});
+
+// IMPORTANT: raw body for webhook
+app.post(
+  "/api/webhook",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    const sig = req.headers["stripe-signature"];
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+    } catch (err) {
+      console.error("Webhook signature error:", err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // ----- Idempotency (simple) -----
+    if (processedEvents.has(event.id)) {
+      return res.json({ received: true });
+    }
+    processedEvents.add(event.id);
+
+    const data = event.data.object;
+
+    switch (event.type) {
+      case "payment_intent.succeeded": {
+        console.log("💰 Payment succeeded:", data.id);
+
+        // Create/mark order as paid
+        const orderId = data.metadata?.orderId;
+        if (orderId && ORDERS[orderId]) {
+          ORDERS[orderId].status = "paid";
+          ORDERS[orderId].stripe_payment_id = data.id;
+        }
+        break;
+      }
+
+      case "invoice.paid": {
+        console.log("🔁 Subscription active");
+        break;
+      }
+
+      case "invoice.payment_failed": {
+        console.log("⚠️ Payment failed");
+        break;
+      }
+
+      default:
+        console.log("Unhandled event:", event.type);
+    }
+
+    res.json({ received: true });
+  }
+);
+
+// After webhook, enable JSON parsing for other routes
+app.use(express.json());
+
+// ==============================
+// THEME ENGINE
+// ==============================
+const THEMES = {
+  smokecraft: {
+    name: "SmokeCraft 360",
+    productType: "cigar",
+    secondaryProduct: "whiskey",
+  },
+  pourcraft: {
+    name: "PourCraft 360",
+    productType: "wine",
+    secondaryProduct: "cocktail",
+  },
+};
+const getTheme = (name) => THEMES[name] || THEMES.smokecraft;
+
+// ==============================
+// MOCK DATABASE
+// ==============================
+const DB = {
+  cigar: [
+    { id: 1, name: "Maduro King", price: 20 },
+    { id: 2, name: "Connecticut Smooth", price: 18 },
+  ],
+  whiskey: [{ id: 3, name: "Oak Reserve", price: 15 }],
+  wine: [{ id: 4, name: "Cabernet Reserve", price: 22 }],
+  cocktail: [{ id: 5, name: "Old Fashioned", price: 14 }],
+};
+
+// ==============================
+// IN-MEMORY ORDER STORE (demo)
+// ==============================
+const ORDERS = {};
+const processedEvents = new Set();
+
+// ==============================
+// PRODUCTS API (BY THEME)
+// ==============================
+app.get("/api/products", (req, res) => {
+  const themeName = req.query.theme || "smokecraft";
+  const theme = getTheme(themeName);
+
+  const primary = DB[theme.productType] || [];
+  const secondary = DB[theme.secondaryProduct] || [];
+
+  res.json({
+    theme: theme.name,
+    primary,
+    secondary,
+  });
+});
+
+// ==============================
+// SCORING ENGINE
+// ==============================
+app.post("/api/scoring", (req, res) => {
+  const { flavor = 0, strength = 0, pairing = 0 } = req.body;
+
+  const score = flavor * 0.4 + strength * 0.3 + pairing * 0.3;
+
+  res.json({
+    score: Math.round(score),
+    label: score > 80 ? "Elite Blend" : "Standard Blend",
+  });
+});
+
+// ==============================
+// CREATE PAYMENT INTENT (REAL)
+// ==============================
+app.post("/api/payments/create-intent", async (req, res) => {
+  try {
+    const { theme = "smokecraft", items = [] } = req.body;
+
+    // Fetch prices from "DB" (never trust client)
+    let total = 0;
+    items.forEach((id) => {
+      for (const key of Object.keys(DB)) {
+        const found = DB[key].find((p) => p.id === id);
+        if (found) total += found.price;
+      }
+    });
+
+    // Create order
+    const orderId = crypto.randomUUID();
+    ORDERS[orderId] = {
+      id: orderId,
+      items,
+      theme,
+      amount: total,
+      status: "pending",
+    };
+
+    // Idempotency key (avoid duplicates if retried)
+    const idemKey = `order_${orderId}`;
+
+    const intent = await stripe.paymentIntents.create(
+      {
+        amount: Math.round(total * 100),
+        currency: "usd",
+        metadata: { orderId, theme },
+      },
+      { idempotencyKey: idemKey }
+    );
+
+    res.json({
+      clientSecret: intent.client_secret,
+      orderId,
+      publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==============================
+// ORDER STATUS
+// ==============================
+app.get("/api/order/:id", (req, res) => {
+  const order = ORDERS[req.params.id];
+  if (!order) return res.status(404).json({ error: "Not found" });
+  res.json(order);
+});
+
+// ==============================
+// SIMPLE FRONTEND (TEST UI)
+// ==============================
+app.get("/", (req, res) => {
+  res.send(`
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>SmokeCraft 360 + Stripe</title>
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body style="background:#111;color:#fff;font-family:sans-serif;padding:40px">
+  <h1>SmokeCraft 360 + Stripe</h1>
+
+  <button onclick="load('smokecraft')">SmokeCraft</button>
+  <button onclick="load('pourcraft')">PourCraft</button>
+
+  <h2 id="theme"></h2>
+  <div id="products"></div>
+
+  <button onclick="score()">Test Score</button>
+  <button onclick="checkout()">Checkout (Stripe)</button>
+
+  <script>
+    let currentTheme = "smokecraft";
+    let lastProducts = [];
+
+    function load(theme) {
+      currentTheme = theme;
+      fetch('/api/products?theme=' + theme)
+        .then(r => r.json())
+        .then(data => {
+          document.getElementById("theme").innerText = data.theme;
+          lastProducts = [...data.primary, ...data.secondary];
+
+          document.getElementById("products").innerHTML =
+            "<h3>Products</h3>" +
+            lastProducts.map(p => \`\${p.id}. \${p.name} - $\${p.price}\`).join("<br>");
+        });
+    }
+
+    function score() {
+      fetch('/api/scoring', {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ flavor: 80, strength: 70, pairing: 90 })
+      })
+      .then(r => r.json())
+      .then(d => alert("Score: " + d.score));
+    }
+
+    async function checkout() {
+      // pick first two items for demo
+      const ids = lastProducts.slice(0,2).map(p => p.id);
+
+      const res = await fetch('/api/payments/create-intent', {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ theme: currentTheme, items: ids })
+      });
+
+      const data = await res.json();
+
+      const stripe = Stripe(data.publishableKey);
+
+      const { error } = await stripe.confirmCardPayment(data.clientSecret, {
+        payment_method: {
+          card: { // test card
+            number: "4242424242424242",
+            exp_month: 12,
+            exp_year: 2030,
+            cvc: "123"
+          }
+        }
+      });
+
+      if (error) {
+        alert(error.message);
+      } else {
+        alert("Payment submitted. Check server logs/webhook.");
+      }
+    }
+
+    load("smokecraft");
+  </script>
+</body>
+</html>
+  `);
+});
+
+// ==============================
+// START
+// ==============================
+app.listen(3000, () => {
+  console.log("🔥 Running on http://localhost:3000");
+});
