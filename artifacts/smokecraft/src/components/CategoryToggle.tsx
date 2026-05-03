@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { haptic } from "../utils/haptics";
 
 interface CategoryToggleProps {
   value: "cigar" | "alcohol";
@@ -47,7 +48,7 @@ export function CategoryToggle({ value, onChange }: CategoryToggleProps) {
           <button
             key={cat}
             data-testid={`category-btn-${cat}`}
-            onClick={() => onChange(cat)}
+            onClick={() => { if (!isSelected) haptic.select(); onChange(cat); }}
             className="relative flex-1 flex items-center justify-center gap-2.5 rounded-xl font-serif font-bold uppercase tracking-[0.12em] transition-colors duration-400 z-10"
             style={{
               minHeight: 68,

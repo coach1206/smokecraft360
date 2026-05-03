@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, animate, useMotionValue, useTransform } from "framer-motion";
 import { playClick, playSwipe, playSelect } from "../services/sound";
+import { haptic } from "../utils/haptics";
 
 export interface SwipeCardItem {
   id:       string;
@@ -58,6 +59,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
     if (exiting.current) return;
     exiting.current = true;
     playSelect();                                                  // accept chime
+    haptic.select();                                               // tactile commit
     animate(x, 680, { duration: 0.32, ease: [0.4, 0, 1, 1] }).then(onSwipeRight);
   }
 
@@ -65,6 +67,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
     if (exiting.current) return;
     exiting.current = true;
     playSwipe();                                                   // skip whoosh
+    haptic.swipe();                                                // tactile skip
     animate(x, -680, { duration: 0.32, ease: [0.4, 0, 1, 1] }).then(onSwipeLeft);
   }
 
