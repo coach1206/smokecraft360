@@ -1,0 +1,211 @@
+SINGLE MERGED MASTER PROMPT
+SMOKECRAFT 360 — UNIFIED EXPERIENCE OS (PRODUCTION VERSION)
+⚠️ SYSTEM RULES (DO NOT BREAK THESE)
+No duplicate engines
+One state controller for everything
+One event system
+One render pipeline
+All features plug into the same flow
+
+If anything violates this → it gets removed.
+
+🧠 CORE ARCHITECTURE (ONE SOURCE OF TRUTH)
+1. GLOBAL STATE (MASTER CONTROL)
+const [step, setStep] = useState(1);
+const [session, setSession] = useState({});
+const [result, setResult] = useState(null);
+const [isTransitioning, setIsTransitioning] = useState(false);
+
+const TOTAL_STEPS = 8;
+2. STEP FLOW (LOCKED)
+1 → Experience
+2 → Flavor
+3 → Strength
+4 → Mood
+5 → Curate
+6 → Pairing
+7 → Confirm
+8 → Result
+3. EVENT SYSTEM (ONLY ONE)
+function updateSession(key, value) {
+  setSession(prev => ({ ...prev, [key]: value }));
+}
+
+function nextStep() {
+  setIsTransitioning(true);
+
+  setTimeout(() => {
+    setStep(prev => prev + 1);
+    setIsTransitioning(false);
+  }, 400);
+}
+
+function prevStep() {
+  if (step > 1) setStep(step - 1);
+}
+
+function goToStep(num) {
+  setStep(num);
+}
+🎬 TRANSITION SYSTEM (GLOBAL)
+<AnimatePresence mode="wait">
+  <motion.div
+    key={step}
+    initial={{ opacity: 0, y: 40 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -40 }}
+    transition={{ duration: 0.4 }}
+  >
+    {renderStep(step)}
+  </motion.div>
+</AnimatePresence>
+📊 PROGRESS SYSTEM (GLOBAL)
+function ProgressBar({ step }) {
+  const percent = Math.round((step / TOTAL_STEPS) * 100);
+
+  return (
+    <div className="progress-wrap">
+      <div className="progress-bar" style={{ width: `${percent}%` }} />
+    </div>
+  );
+}
+🎤 AUDIO SYSTEM (SINGLE INSTANCE ONLY)
+const audioRef = useRef(null);
+
+function speak(text) {
+  fetch("/api/voice", {
+    method: "POST",
+    body: JSON.stringify({ text })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+
+      const audio = new Audio(data.url);
+      audioRef.current = audio;
+      audio.play();
+    });
+}
+🎯 VOICE TRIGGER (CONTROLLED)
+useEffect(() => {
+
+  if (step === 2) speak("Tell me what flavors you enjoy.");
+  if (step === 4) speak("Let’s match the mood.");
+  if (step === 6) speak("Building your perfect pairing.");
+
+}, [step]);
+🖼 IMAGE ENGINE (SINGLE SOURCE)
+function getImage(item, context) {
+
+  let base = item.image;
+
+  if (context.time === "night") base += "?dark";
+  if (context.mood === "premium") base += "?gold";
+
+  return base;
+}
+🔌 POS + INVENTORY ENGINE
+function syncInventory(menu, inventory) {
+  return menu.map(item => ({
+    ...item,
+    available: inventory[item.name]?.stock > 0
+  }));
+}
+💰 PRICING ENGINE
+function dynamicPrice(base, data) {
+  let adj = 0;
+
+  if (data.demand) adj += 0.08;
+  if (data.lowSales) adj -= 0.05;
+
+  return base * (1 + adj);
+}
+📊 PROFIT ENGINE
+function profit(item) {
+  return {
+    profit: item.price - item.cost,
+    margin: (item.price - item.cost) / item.price
+  };
+}
+🧠 AI PAIRING ENGINE (ONE ONLY)
+function pairingEngine(session) {
+
+  return {
+    cigar: "...",
+    drink: "...",
+    food: "...",
+    reason: "balanced pairing"
+  };
+}
+🧑‍💼 STAFF ENGINE
+function staffRecommendations(data) {
+  return data.sort((a, b) => b.margin - a.margin);
+}
+🎯 FINAL RESULT HANDLER
+function finalizeExperience() {
+  const rec = pairingEngine(session);
+  setResult(rec);
+  setStep(8);
+}
+🧾 RESULT SCREEN (MANDATORY)
+function ResultScreen() {
+
+  if (!result) return null;
+
+  return (
+    <div>
+
+      <h1>Your Perfect Pairing</h1>
+
+      <img src={result.image} />
+
+      <h2>{result.cigar}</h2>
+      <p>{result.drink}</p>
+      <p>{result.food}</p>
+
+      <button onClick={() => setStep(1)}>
+        Start Over
+      </button>
+
+    </div>
+  );
+}
+🔙 NAVIGATION SYSTEM (GLOBAL)
+<button onClick={prevStep}>Back</button>
+🧭 SIDE NAV (CLICKABLE)
+<div onClick={() => goToStep(1)}>Experience</div>
+<div onClick={() => goToStep(2)}>Flavor</div>
+🎨 UI SYSTEM (ONE DESIGN LANGUAGE)
+unified card component
+unified grid
+real images only
+dark theme + cream content
+🌍 CONTEXT ENGINE
+function contextEngine() {
+  return {
+    time: getTime(),
+    mood: session.mood,
+    weather: "auto"
+  };
+}
+🔄 FULL SYSTEM FLOW
+User selects →
+Session updates →
+Step transition →
+AI speaks →
+Image resolves →
+Menu updates →
+Inventory checks →
+Final pairing →
+Result screen
+⚠️ WHAT THIS SOLVES (ALL YOUR ISSUES)
+
+✔ No scroll conflicts
+✔ No flickering images
+✔ No audio stacking
+✔ No dead-end screens
+✔ No duplicate logic
+✔ No inconsistent UI
+✔ No broken flow
