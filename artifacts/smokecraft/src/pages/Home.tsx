@@ -995,18 +995,31 @@ export default function Home() {
                           glass-wrapped, dominant on screen. Selected card gets
                           a gold border + soft pulse; the other dims to 0.55. */}
                       {(() => {
+                        /* Each card holds an `images` chain — first URL is
+                         * preferred, the rest are fallbacks if the primary
+                         * 404s or is rate-limited (the previous cigar URL
+                         * silently failed for some guests, leaving an empty
+                         * card). The <img> element fires onError to advance
+                         * through the chain. */
                         const CARDS = [
                           {
                             cat:      "cigar"   as const,
                             title:    "Cigar",
                             subtitle: "Handcrafted. Bold. Timeless.",
-                            image:    "https://images.unsplash.com/photo-1527144901953-6e34cf3a4ff5?auto=format&fit=crop&w=1400&q=75",
+                            images: [
+                              "https://images.unsplash.com/photo-1574870111867-089730e5a72b?auto=format&fit=crop&w=1400&q=75",
+                              "https://images.unsplash.com/photo-1556800572-1b8aedf82db5?auto=format&fit=crop&w=1400&q=75",
+                              "https://images.unsplash.com/photo-1553530666-ba11a90bb0ae?auto=format&fit=crop&w=1400&q=75",
+                            ],
                           },
                           {
                             cat:      "alcohol" as const,
                             title:    "Spirits",
                             subtitle: "Smooth. Refined. Complex.",
-                            image:    "https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=1400&q=75",
+                            images: [
+                              "https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=1400&q=75",
+                              "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1400&q=75",
+                            ],
                           },
                         ];
                         const anySelected = CARDS.some((c) => category === c.cat);
@@ -1060,18 +1073,41 @@ export default function Home() {
                                     padding: 0,
                                   }}
                                 >
-                                  {/* Image layer (zooms on hover via group-hover) */}
+                                  {/* Image layer — real <img> so we can detect
+                                      load failures and fall back through the
+                                      chain. Tinted dark-warm placeholder behind
+                                      so empty cards never appear during load. */}
                                   <div
                                     style={{
                                       position: "absolute", inset: 0,
-                                      backgroundImage:    `url('${c.image}')`,
-                                      backgroundSize:     "cover",
-                                      backgroundPosition: "center",
-                                      transition: "transform 0.6s ease, filter 0.4s ease",
-                                      filter: isSel ? "brightness(1.08) saturate(1.08)" : "brightness(0.92) saturate(0.95)",
+                                      background: c.cat === "cigar"
+                                        ? "linear-gradient(135deg, #2a1608 0%, #4a2410 60%, #1a0d04 100%)"
+                                        : "linear-gradient(135deg, #2a1c08 0%, #4a3010 60%, #1a1004 100%)",
+                                      overflow: "hidden",
                                     }}
-                                    className="group-hover:scale-110"
-                                  />
+                                  >
+                                    <img
+                                      src={c.images[0]}
+                                      alt=""
+                                      loading="eager"
+                                      onError={(e) => {
+                                        const img  = e.currentTarget;
+                                        const tried = Number(img.dataset.idx ?? 0);
+                                        const next  = tried + 1;
+                                        if (next < c.images.length) {
+                                          img.dataset.idx = String(next);
+                                          img.src = c.images[next];
+                                        }
+                                      }}
+                                      style={{
+                                        width: "100%", height: "100%",
+                                        objectFit: "cover", objectPosition: "center",
+                                        transition: "transform 0.6s ease, filter 0.4s ease",
+                                        filter: isSel ? "brightness(1.08) saturate(1.08)" : "brightness(0.92) saturate(0.95)",
+                                      }}
+                                      className="group-hover:scale-110"
+                                    />
+                                  </div>
                                   {/* Dark gradient overlay (bottom 60% black per brief) */}
                                   <div
                                     style={{
