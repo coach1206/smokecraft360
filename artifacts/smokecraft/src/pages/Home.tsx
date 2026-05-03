@@ -3,7 +3,6 @@ import { motion, AnimatePresence, animate } from "framer-motion";
 import { CategoryToggle }    from "@/components/CategoryToggle";
 import { FlavorChips }       from "@/components/FlavorChips";
 import { StrengthSlider }    from "@/components/StrengthSlider";
-import { MoodSelector }      from "@/components/MoodSelector";
 import { CardStack }         from "@/components/CardStack";
 import { PairingsSection }   from "@/components/PairingsSection";
 import { FoodSection }       from "@/components/Food/FoodSection";
@@ -66,106 +65,89 @@ function AnimatedCount({
   return <span className={className} style={style}>{value}</span>;
 }
 
-/* ── Swipe-deck card data ─────────────────────────────────────── */
-// Hero imagery: curated Unsplash photos (free-licensed) keyed to each flavor.
-// Sized down via Unsplash URL params to keep the deck snappy on kiosks.
-const FLAVOR_IMG = (id: string) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=720&q=70`;
-
-/* ── FLAVOR_IMAGE_MAP ─────────────────────────────────────────────────────
- * Per the curator's brief: every flavor card must read as something a cigar
- * sommelier would point at. Strict rules — NO fruit slices, NO candy, NO
- * generic stock textures. Each entry is an ORDERED FALLBACK CHAIN; if the
- * first Unsplash photo 404s or is rate-limited, SwipeCardDeck walks the
- * chain via <img onError>. This eliminates the silent-empty-card failure
- * mode that previously made "Sweet" look like watermelon to some guests
- * (a stale Unsplash ID was returning placeholder content). */
-const FLAVOR_IMAGE_MAP: Record<string, string[]> = {
-  smoky:   ["photo-1527181152855-fc03fc7949c5", "photo-1475070929565-c985b496cb9f", "photo-1571115332103-43cb8da6c558"], // cigar smoke, embers, whiskey w/ smoke
-  sweet:   ["photo-1587049352846-4a222e784d38", "photo-1558642452-9d2a7deb7f62", "photo-1551024506-0bccd828d307"],         // honey dripping, brown sugar, caramel
-  earthy:  ["photo-1448375240586-882707db888b", "photo-1542601906990-b4d3fb778b09", "photo-1518173946687-a4c8892bbd9f"],   // forest floor, dark earth
-  cedar:   ["photo-1542273917363-3b1817f69a2d", "photo-1597067127309-25395e72d6df", "photo-1518709268805-4e9042af2176"],   // cedar planks, cut timber
-  spicy:   ["photo-1532336414038-cf19250c5757", "photo-1599909533677-d27f9be83b4e", "photo-1610725664285-7c57e6eeac3f"],   // peppercorns, chili, cinnamon
-  creamy:  ["photo-1495474472287-4d71bcdd2085", "photo-1607920591413-9ec43be3b942", "photo-1570968915860-54d5c301fa9f"],   // latte foam, vanilla pods, cream swirl
-  nutty:   ["photo-1508061253366-f7da158b6d46", "photo-1599599810769-bcde5a160d32", "photo-1604423043492-41303f1e2779"],   // mixed nuts, almonds
-  leather: ["photo-1519337265831-281ec6cc8514", "photo-1532375810709-75b1da00537c", "photo-1568393691080-a5e4e5f10fe1"],   // leather chair, aged leather, saddle
-  cocoa:   ["photo-1606312619070-d48b4c652a52", "photo-1511381939415-e44015466834", "photo-1442550528053-c431ecb55509"],   // cocoa beans, dark chocolate, coffee beans
-  floral:  ["photo-1518895949257-7621c3c786d7", "photo-1490750967868-88aa4486c946", "photo-1466692476868-aef1dfb1e735"],   // dark rose petals, jasmine, herbs
-  /* spirits */
-  vanilla: ["photo-1607920591413-9ec43be3b942", "photo-1495474472287-4d71bcdd2085"],
-  oak:     ["photo-1542273917363-3b1817f69a2d", "photo-1518709268805-4e9042af2176"],
-  caramel: ["photo-1551024506-0bccd828d307", "photo-1587049352846-4a222e784d38"],
-  citrus:  ["photo-1582656870004-d8052c00d6e0", "photo-1497534446932-c925b458314e"],   // orange peel zest close-up (NOT cocktail slice)
-  honey:   ["photo-1587049352846-4a222e784d38", "photo-1558642452-9d2a7deb7f62"],
-  rye:     ["photo-1574323347407-f5e1ad6d020b", "photo-1518173946687-a4c8892bbd9f"],
-  smoke:   ["photo-1527181152855-fc03fc7949c5", "photo-1475070929565-c985b496cb9f"],
-  fruity:  ["photo-1606293926249-ed22e6a9b27f", "photo-1574870111867-089730e5a72b"],   // dried fig (tobacco fruit-note, not a fruit slice)
-};
-const flavorImages = (id: string): string[] =>
-  (FLAVOR_IMAGE_MAP[id] ?? []).map(FLAVOR_IMG);
+/* ── Swipe-deck card data ─────────────────────────────────────────
+ * LOCKED-IN imagery: AI-generated, hosted in attached_assets/locked_cards/
+ * and bundled by Vite (fingerprinted hashes, never expire).
+ *
+ * History: previous version pulled from Unsplash by photo-ID. Multiple IDs
+ * were silently repurposed by Unsplash over time (most famously, Medium-
+ * strength fell through to a giraffe photo — see audit screenshots). The
+ * fallback chain masked it but never fixed it. Locking in local assets
+ * eliminates that drift entirely. Each image was generated to match its
+ * card description AND brand rules (no fruit slices, no animals, no
+ * cocktails — dark luxury cigar lounge aesthetic only).                  */
+import flavorSmoky    from "@assets/locked_cards/flavor_smoky.png";
+import flavorSweet    from "@assets/locked_cards/flavor_sweet.png";
+import flavorEarthy   from "@assets/locked_cards/flavor_earthy.png";
+import flavorCedar    from "@assets/locked_cards/flavor_cedar.png";
+import flavorSpicy    from "@assets/locked_cards/flavor_spicy.png";
+import flavorCreamy   from "@assets/locked_cards/flavor_creamy.png";
+import flavorNutty    from "@assets/locked_cards/flavor_nutty.png";
+import flavorLeather  from "@assets/locked_cards/flavor_leather.png";
+import flavorCocoa    from "@assets/locked_cards/flavor_cocoa.png";
+import flavorFloral   from "@assets/locked_cards/flavor_floral.png";
+import flavorVanilla  from "@assets/locked_cards/flavor_vanilla.png";
+import flavorOak      from "@assets/locked_cards/flavor_oak.png";
+import flavorCaramel  from "@assets/locked_cards/flavor_caramel.png";
+import flavorCitrus   from "@assets/locked_cards/flavor_citrus.png";
+import flavorHoney    from "@assets/locked_cards/flavor_honey.png";
+import flavorRye      from "@assets/locked_cards/flavor_rye.png";
+import flavorSmoke    from "@assets/locked_cards/flavor_smoke.png";
+import flavorFruity   from "@assets/locked_cards/flavor_fruity.png";
+import strengthMild   from "@assets/locked_cards/strength_mild.png";
+import strengthMedium from "@assets/locked_cards/strength_medium.png";
+import strengthFull   from "@assets/locked_cards/strength_full.png";
+import moodRelaxed     from "@assets/locked_cards/mood_relaxed.png";
+import moodBold        from "@assets/locked_cards/mood_bold.png";
+import moodSocial      from "@assets/locked_cards/mood_social.png";
+import moodReflective  from "@assets/locked_cards/mood_reflective.png";
+import moodCelebratory from "@assets/locked_cards/mood_celebratory.png";
+import moodFocused     from "@assets/locked_cards/mood_focused.png";
+import moodAdventurous from "@assets/locked_cards/mood_adventurous.png";
+import moodIntense     from "@assets/locked_cards/mood_intense.png";
 
 const CIGAR_FLAVORS = [
-  { id: "smoky",   title: "Smoky",   desc: "Cigar smoke, embers, whiskey haze",        images: flavorImages("smoky")   },
-  { id: "sweet",   title: "Sweet",   desc: "Honey, brown sugar, light caramel",        images: flavorImages("sweet")   },
-  { id: "earthy",  title: "Earthy",  desc: "Damp soil, forest floor, rich minerals",   images: flavorImages("earthy")  },
-  { id: "cedar",   title: "Cedar",   desc: "Crisp cedarwood, freshly cut timber",      images: flavorImages("cedar")   },
-  { id: "spicy",   title: "Spicy",   desc: "Black pepper, chili, cinnamon bark",       images: flavorImages("spicy")   },
-  { id: "creamy",  title: "Creamy",  desc: "Latte foam, vanilla bean, cream swirl",    images: flavorImages("creamy")  },
-  { id: "nutty",   title: "Nutty",   desc: "Toasted almond, hazelnut, walnut",         images: flavorImages("nutty")   },
-  { id: "leather", title: "Leather", desc: "Aged saddle leather, lounge chair, tobacco", images: flavorImages("leather") },
-  { id: "cocoa",   title: "Cocoa",   desc: "Cocoa beans, dark chocolate, roasted coffee", images: flavorImages("cocoa") },
-  { id: "floral",  title: "Floral",  desc: "Dark rose petals, jasmine, herbal leaves", images: flavorImages("floral")  },
+  { id: "smoky",   title: "Smoky",   desc: "Cigar smoke, embers, whiskey haze",        images: [flavorSmoky]   },
+  { id: "sweet",   title: "Sweet",   desc: "Honey, brown sugar, light caramel",        images: [flavorSweet]   },
+  { id: "earthy",  title: "Earthy",  desc: "Damp soil, forest floor, rich minerals",   images: [flavorEarthy]  },
+  { id: "cedar",   title: "Cedar",   desc: "Crisp cedarwood, freshly cut timber",      images: [flavorCedar]   },
+  { id: "spicy",   title: "Spicy",   desc: "Black pepper, chili, cinnamon bark",       images: [flavorSpicy]   },
+  { id: "creamy",  title: "Creamy",  desc: "Latte foam, vanilla bean, cream swirl",    images: [flavorCreamy]  },
+  { id: "nutty",   title: "Nutty",   desc: "Toasted almond, hazelnut, walnut",         images: [flavorNutty]   },
+  { id: "leather", title: "Leather", desc: "Aged saddle leather, lounge chair, tobacco", images: [flavorLeather] },
+  { id: "cocoa",   title: "Cocoa",   desc: "Cocoa beans, dark chocolate, roasted coffee", images: [flavorCocoa]  },
+  { id: "floral",  title: "Floral",  desc: "Dark rose petals, jasmine, herbal leaves", images: [flavorFloral]  },
 ];
 const SPIRITS_FLAVORS = [
-  { id: "vanilla", title: "Vanilla", desc: "Soft vanilla bean, sweet cream",           images: flavorImages("vanilla") },
-  { id: "oak",     title: "Oak",     desc: "American oak, toasted wood",               images: flavorImages("oak")     },
-  { id: "caramel", title: "Caramel", desc: "Burnt sugar, rich toffee",                 images: flavorImages("caramel") },
-  { id: "citrus",  title: "Citrus",  desc: "Orange peel, lemon zest",                  images: flavorImages("citrus")  },
-  { id: "honey",   title: "Honey",   desc: "Wildflower honey, golden sweetness",       images: flavorImages("honey")   },
-  { id: "rye",     title: "Rye",     desc: "Spicy rye grain, herbal notes",            images: flavorImages("rye")     },
-  { id: "smoke",   title: "Smoke",   desc: "Peaty smoke, bonfire, mineral",            images: flavorImages("smoke")   },
-  { id: "fruity",  title: "Fruity",  desc: "Dried fig, tobacco fruit notes",           images: flavorImages("fruity")  },
+  { id: "vanilla", title: "Vanilla", desc: "Soft vanilla bean, sweet cream",           images: [flavorVanilla] },
+  { id: "oak",     title: "Oak",     desc: "American oak, toasted wood",               images: [flavorOak]     },
+  { id: "caramel", title: "Caramel", desc: "Burnt sugar, rich toffee",                 images: [flavorCaramel] },
+  { id: "citrus",  title: "Citrus",  desc: "Orange peel, lemon zest",                  images: [flavorCitrus]  },
+  { id: "honey",   title: "Honey",   desc: "Wildflower honey, golden sweetness",       images: [flavorHoney]   },
+  { id: "rye",     title: "Rye",     desc: "Spicy rye grain, herbal notes",            images: [flavorRye]     },
+  { id: "smoke",   title: "Smoke",   desc: "Peaty smoke, bonfire, mineral",            images: [flavorSmoke]   },
+  { id: "fruity",  title: "Fruity",  desc: "Dried fig, tobacco fruit notes",           images: [flavorFruity]  },
 ];
 const STRENGTH_CARDS = [
   { id: "mild",   title: "Mild",   subtitle: "Strength · Level 1",
     desc: "Smooth and gentle — perfect for newcomers or a relaxed afternoon",
-    /* Mild used to feel anonymous (per brief). Now: light tobacco leaf / soft
-     * sunlit wood — clearly "lighter cigar", not just any photo. */
-    images: [
-      FLAVOR_IMG("photo-1514329926535-040b69ab1f81"),
-      FLAVOR_IMG("photo-1561365452-adb940139ffa"),
-      FLAVOR_IMG("photo-1518895949257-7621c3c786d7"),
-    ] },
+    images: [strengthMild] },
   { id: "medium", title: "Medium", subtitle: "Strength · Level 3",
     desc: "Balanced character — the classic refined experience",
-    images: [
-      FLAVOR_IMG("photo-1574966740793-2c5c024ed708"),
-      FLAVOR_IMG("photo-1574870111867-089730e5a72b"),
-    ] },
+    images: [strengthMedium] },
   { id: "full",   title: "Full",   subtitle: "Strength · Level 5",
     desc: "Rich and powerful — bold complexity for the experienced",
-    images: [
-      FLAVOR_IMG("photo-1567015408288-fcd8aac9d76f"),
-      FLAVOR_IMG("photo-1556800572-1b8aedf82db5"),
-    ] },
+    images: [strengthFull] },
 ];
 const MOOD_CARDS = [
-  { id: "relaxed",     title: "Relaxed",     desc: "Smooth and easy — perfect for winding down",
-    image: FLAVOR_IMG("photo-1470337458703-46ad1756a187") },                // calm leather lounge
-  { id: "bold",        title: "Bold",        desc: "Strong character — full-bodied and powerful",
-    image: FLAVOR_IMG("photo-1527281400683-1aae777175f8") },                // bold whisky pour
-  { id: "social",      title: "Social",      desc: "Great for sharing and good conversation",
-    image: FLAVOR_IMG("photo-1543007630-9710e4a00a20") },                   // glasses cheers
-  { id: "reflective",  title: "Reflective",  desc: "Complex and contemplative — a quiet moment",
-    image: FLAVOR_IMG("photo-1527169402691-feff5539e52c") },                // moody window
-  { id: "celebratory", title: "Celebratory", desc: "Special occasion — premium and memorable",
-    image: FLAVOR_IMG("photo-1514362545857-3bc16c4c7d1b") },                // champagne pour
-  { id: "focused",     title: "Focused",     desc: "Clean and clear — helps you stay sharp",
-    image: FLAVOR_IMG("photo-1453614512568-c4024d13c247") },                // amber spirit / clean
-  { id: "adventurous", title: "Adventurous", desc: "Something different — exciting and unique",
-    image: FLAVOR_IMG("photo-1551734413-9aa235ea6ba9") },                   // smoky atmosphere
-  { id: "intense",     title: "Intense",     desc: "Rich and commanding — for the experienced",
-    image: FLAVOR_IMG("photo-1569529465841-dfecdab7503b") },                // dark dramatic spirit
+  { id: "relaxed",     title: "Relaxed",     desc: "Smooth and easy — perfect for winding down",   image: moodRelaxed },
+  { id: "bold",        title: "Bold",        desc: "Strong character — full-bodied and powerful",  image: moodBold },
+  { id: "social",      title: "Social",      desc: "Great for sharing and good conversation",      image: moodSocial },
+  { id: "reflective",  title: "Reflective",  desc: "Complex and contemplative — a quiet moment",   image: moodReflective },
+  { id: "celebratory", title: "Celebratory", desc: "Special occasion — premium and memorable",     image: moodCelebratory },
+  { id: "focused",     title: "Focused",     desc: "Clean and clear — helps you stay sharp",       image: moodFocused },
+  { id: "adventurous", title: "Adventurous", desc: "Something different — exciting and unique",    image: moodAdventurous },
+  { id: "intense",     title: "Intense",     desc: "Rich and commanding — for the experienced",    image: moodIntense },
 ];
 
 // ── Demo mode preset ──────────────────────────────────────────────────────────

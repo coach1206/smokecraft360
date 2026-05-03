@@ -34,6 +34,10 @@ The application features a luxury aesthetic with a dark gold theme, glassmorphis
 
 ## Core Features and Implementations
 
+### Wizard Card Imagery (Locked)
+
+All flavor (cigar + spirits), strength, and mood cards in the experience wizard use AI-generated images stored in `attached_assets/locked_cards/` and bundled by Vite via the `@assets` alias. The previous Unsplash-by-photo-id system was abandoned because IDs were silently repurposed (e.g. Medium-strength fell through to a giraffe photo via the onError fallback chain). Each locked image was generated to match its card description AND brand rules (no fruit slices, no animals, no cocktails — dark luxury cigar lounge aesthetic). The `images: [...]` array shape is preserved so `SwipeCardDeck`'s onError fallback path remains intact (just never needs to fire). Known follow-up: the 29 PNGs total ~34 MB; converting to WebP/AVIF and capping dimensions would meaningfully reduce kiosk payload size — deferred to keep this change scoped purely to correctness. The Experience-step welcome cards (line ~1100 of Home.tsx) still use Unsplash and are intentionally left alone (verified-stable per existing comment).
+
 ### Recommendation Engine
 
 Located in `artifacts/api-server/src/engine/`, it uses a scoring mechanism based on flavor, strength, mood, and boost levels. It includes modules for semantic cross-category pairing, food pairing, and a central product registry.

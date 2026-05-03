@@ -42,3 +42,177 @@ id = "ZzqyLYpunB7fNk4BCdxyn"
 uri = "file://artifacts/smokecraft/public/images/cigar4.png"
 type = "image"
 title = "generated_image"
+
+[[generated]]
+id = "Ii8C55mGjilhxWf3QxG_F"
+uri = "file://attached_assets/locked_cards/flavor_smoky.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "LwIvhrlloZ02ht81_Nrpn"
+uri = "file://attached_assets/locked_cards/flavor_sweet.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "SIwBSALZqvzQAB7h8iBOg"
+uri = "file://attached_assets/locked_cards/flavor_earthy.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "rOVUkZYZmFKdo9aEILFi5"
+uri = "file://attached_assets/locked_cards/flavor_cedar.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "VgCh8Nja06JKIU8XSzLUH"
+uri = "file://attached_assets/locked_cards/flavor_spicy.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ay39VeuwUOhMIaODMk7zi"
+uri = "file://attached_assets/locked_cards/flavor_creamy.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "IBhmScLXE9yu2eRKcM9kG"
+uri = "file://attached_assets/locked_cards/flavor_nutty.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "rICTEow5-OsuJ4adzn3nP"
+uri = "file://attached_assets/locked_cards/flavor_leather.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ojczEWe7oUZ7pxzuOip0K"
+uri = "file://attached_assets/locked_cards/flavor_cocoa.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "XteR6pc4RNrXcKkJw7NhX"
+uri = "file://attached_assets/locked_cards/flavor_floral.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "hCtlYd8lcsuhTLDwlUDto"
+uri = "file://attached_assets/locked_cards/flavor_vanilla.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "28UvP4bQeJ1WRzjZ-g8_g"
+uri = "file://attached_assets/locked_cards/flavor_oak.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "J8D3OWeL0DU7tR_kl9fev"
+uri = "file://attached_assets/locked_cards/flavor_caramel.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "qsgxcrVBwQknvUY6a5zww"
+uri = "file://attached_assets/locked_cards/flavor_citrus.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "uOS_7MaW7aIjUy36t4AEi"
+uri = "file://attached_assets/locked_cards/flavor_honey.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "4zomOBEzejBmDaEDojL4Z"
+uri = "file://attached_assets/locked_cards/flavor_rye.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "2gUkU5rMDzws9BXjqUe-M"
+uri = "file://attached_assets/locked_cards/flavor_smoke.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "S9N7-6ioSNXYZ-yvaEZNm"
+uri = "file://attached_assets/locked_cards/flavor_fruity.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "lbnD1EU2rITptN6I0rl7w"
+uri = "file://attached_assets/locked_cards/strength_mild.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "OpeHpeiN-PJXZRNIlCs-R"
+uri = "file://attached_assets/locked_cards/strength_medium.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "yFdTZ1y5G_c-TvVnJI9C_"
+uri = "file://attached_assets/locked_cards/strength_full.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "QOL9NYa6VoGbryrUjdBkT"
+uri = "file://attached_assets/locked_cards/mood_relaxed.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "I5z4Q_Fuqd_fADlx4Xkd3"
+uri = "file://attached_assets/locked_cards/mood_bold.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "alQwEcGL58Rt0O0b7jRXW"
+uri = "file://attached_assets/locked_cards/mood_social.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "PW0hdjmYBuhVZ2WJZcboT"
+uri = "file://attached_assets/locked_cards/mood_reflective.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "F3oZ1to8kJmzn-3Y4wBkq"
+uri = "file://attached_assets/locked_cards/mood_celebratory.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "pu1IRPTPyLiTMG4QRj9ZR"
+uri = "file://attached_assets/locked_cards/mood_focused.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "OxZfedqF58yiPH5bBIbj1"
+uri = "file://attached_assets/locked_cards/mood_adventurous.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "CbJxcYFwlMOJ0FMLHNDG3"
+uri = "file://attached_assets/locked_cards/mood_intense.png"
+type = "image"
+title = "generated_image"
