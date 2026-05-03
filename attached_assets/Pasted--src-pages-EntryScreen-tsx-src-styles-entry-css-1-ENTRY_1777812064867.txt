@@ -1,0 +1,156 @@
+/src/pages/EntryScreen.tsx
+/src/styles/entry.css
+🧩 1. ENTRY SCREEN COMPONENT
+/src/pages/EntryScreen.tsx
+import "./entry.css";
+
+export default function EntryScreen() {
+  return (
+    <div className="entry-container">
+      
+      <div className="entry-header">
+        <h1>Choose Your Experience</h1>
+      </div>
+
+      <div className="entry-cards">
+        
+        <div className="entry-card smokecraft">
+          <div className="card-overlay" />
+          <h2>SmokeCraft 360</h2>
+          <p>Cigar. Atmosphere. Experience.</p>
+        </div>
+
+        <div className="entry-card pourcraft">
+          <div className="card-overlay" />
+          <h2>PourCraft 360</h2>
+          <p>Spirits. Pairing. Precision.</p>
+        </div>
+
+      </div>
+
+    </div>
+  );
+}
+🎨 2. STYLING (THIS IS WHERE IT FEELS PREMIUM)
+/src/styles/entry.css
+/* BASE */
+.entry-container {
+  width: 100%;
+  height: 100vh;
+  background: #bfc3ae; /* slightly darker olive than boot */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 1.2s ease;
+}
+
+/* HEADER */
+.entry-header h1 {
+  color: #0b2a4a;
+  font-size: 28px;
+  letter-spacing: 4px;
+  margin-bottom: 40px;
+}
+
+/* CARD WRAPPER */
+.entry-cards {
+  display: flex;
+  gap: 40px;
+}
+
+/* CARD BASE */
+.entry-card {
+  width: 280px;
+  height: 360px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* OVERLAY */
+.card-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.35);
+}
+
+/* TEXT */
+.entry-card h2 {
+  position: absolute;
+  bottom: 80px;
+  left: 20px;
+  color: white;
+  letter-spacing: 2px;
+}
+
+.entry-card p {
+  position: absolute;
+  bottom: 50px;
+  left: 20px;
+  color: #ddd;
+  font-size: 12px;
+}
+
+/* HOVER EFFECT */
+.entry-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+/* BACKGROUNDS */
+.smokecraft {
+  background: url("https://images.unsplash.com/photo-1581349485608-9469926a8e5e") center/cover no-repeat;
+}
+
+.pourcraft {
+  background: url("https://images.unsplash.com/photo-1544145945-f90425340c7e") center/cover no-repeat;
+}
+
+/* FADE IN */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+🔗 3. CONNECT IT TO YOUR APP
+
+Update your App.tsx:
+
+import { useState } from "react";
+import BootIntro from "./components/BootIntro";
+import EntryScreen from "./pages/EntryScreen";
+
+function App() {
+  const [ready, setReady] = useState(false);
+
+  return (
+    <>
+      {!ready && <BootIntro onFinish={() => setReady(true)} />}
+      {ready && <EntryScreen />}
+    </>
+  );
+}
+
+export default App;
+🔥 WHAT THIS DOES (PAY ATTENTION)
+
+User flow now:
+
+Boot screen loads
+Logo slides in
+Sound hits
+Fade out
+THIS screen fades in smoothly
+
+👉 No jump
+👉 No reload feel
+👉 Feels like one system

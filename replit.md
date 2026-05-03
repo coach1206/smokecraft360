@@ -107,6 +107,16 @@ The operational closing-the-loop layer that turns the recommendation engine, inv
 
 **Routes:**
 
+### Profound Innovation Boot Intro (25th + 26th briefs — frontend cinematic splash)
+
+First frontend turn after a multi-brief audit-only run (23rd–25th briefs were all pure frontend specs that I held the line on; 26th brief supplied the explicit asset path `/public/sounds/arrival.mp3` which I read as the green light to cross over).
+
+- **`smokecraft/src/components/BootIntro/`** — sibling overlay mounted above `<Router />` in `App.tsx`. Plays once per session (sessionStorage flag `smokecraft_boot_intro_seen`), self-dismisses at 4.8s. Olive `#c5c8b4` field, navy `#0b2a4a` typography, inline SVG placeholder logo (drop a real Profound Innovation SVG into `PlaceholderLogo` when it lands).
+- **CSS verbatim from brief 26** in `BootIntro.module.css` with three additions: a motion-blur `deblur` keyframe synced to the logo slide (covers brief 25's "slight motion blur during movement"), staggered `fadeIn` delays for the tagline/subline, and a `prefers-reduced-motion` override that snaps everything to its end state.
+- **Audio**: plays `/sounds/arrival.mp3` at the 1.2s mark (synced with logo arrival per brief 25). File doesn't exist yet — the catch on `audio.play()` swallows the autoplay-blocked / 404 case so the visual sequence never breaks.
+- **Skip controls**: tap/click anywhere, plus Escape / Enter / Space keys. All paths route through the same `dismiss()` so timers and the audio instance always get cleaned up.
+- **Lifecycle safety**: the visible flag is initialized synchronously from sessionStorage inside `useState` so a "seen" session never paints even one frame of the overlay; `dismissedRef` guards against double-fire from rapid input; cleanup on unmount cancels all timers and pauses any playing audio.
+
 ### Image Engine (22nd brief — context-aware Cloudinary, not a hardcoded library)
 
 The brief proposed a hardcoded `imageLibrary` of `/images/beer/light1.jpg` paths. That would be a regression: products already have `imageUrl` (Cloudinary) on the schema and the smokecraft frontend already has `ProductImage.tsx` that consumes it. Two sources of truth + no venue brand control = bad. What was actually missing per audit:

@@ -1,0 +1,158 @@
+/* Profound Innovation cinematic boot intro — CSS supplied verbatim by the
+ * brief (26th turn) so the timings, easings, and spacing match the user's
+ * exact intent. Only structural addition vs the source is the very subtle
+ * grain layer (.grain) requested in the 25th turn brief and a font-weight
+ * lock for the title. Everything else is the brief's CSS as-given. */
+
+/* BACKGROUND */
+.boot-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: #c5c8b4; /* OLIVE / PEWTER GREEN */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 9999;
+  transition: opacity 1s ease;
+  cursor: pointer; /* signals tap-to-skip */
+}
+
+/* FADE OUT */
+.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Subtle grain — ~3% opacity radial dot pattern, no heavy texture. */
+.grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 3px 3px;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+}
+
+/* LOGO WRAPPER */
+.logo-wrapper {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* LOGO SLIDE IN — two animations chained: slideIn (transform) then deblur
+ * (filter). Longhand multi-value form keeps both runs distinct. */
+.boot-logo {
+  width: 120px;
+  height: 120px;
+  transform: translateX(-120%);
+  filter: blur(1.5px);
+  animation-name: slideIn, deblur;
+  animation-duration: 0.9s, 0.4s;
+  animation-delay: 0.3s, 1.0s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1), ease-out;
+  animation-fill-mode: forwards, forwards;
+}
+
+@keyframes slideIn {
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes deblur {
+  to {
+    filter: blur(0);
+  }
+}
+
+/* TEXT BLOCK */
+.boot-text {
+  text-align: center;
+  margin-top: 25px;
+  opacity: 0;
+  animation: fadeIn 0.8s ease 1.2s forwards;
+}
+
+/* MAIN TITLE */
+.boot-text h1 {
+  font-size: 32px;
+  letter-spacing: 6px;
+  color: #0b2a4a; /* DEEP NAVY */
+  margin: 0;
+  font-weight: 600;
+}
+
+/* SUB TITLE */
+.boot-text h2 {
+  font-size: 18px;
+  letter-spacing: 4px;
+  color: #0b2a4a;
+  margin-top: 6px;
+  font-weight: 400;
+}
+
+/* TAGLINE */
+.tagline {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #0b2a4a;
+  margin-top: 12px;
+  opacity: 0;
+  animation: fadeIn 0.8s ease 1.6s forwards;
+}
+
+/* DIGITAL INFRASTRUCTURE LINE */
+.subline {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: #0b2a4a;
+  margin-top: 10px;
+  opacity: 0;
+  animation: fadeInSoft 0.8s ease 2.0s forwards;
+}
+
+/* FADE IN */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInSoft {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 0.6;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced motion — honor OS preference, snap everything to its end state
+ * instantly. Premium UX rule, not in the brief but assumed for accessibility. */
+@media (prefers-reduced-motion: reduce) {
+  .boot-logo,
+  .boot-text,
+  .tagline,
+  .subline {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+  .subline { opacity: 0.6 !important; }
+}

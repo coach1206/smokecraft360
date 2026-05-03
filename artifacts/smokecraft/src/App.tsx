@@ -19,6 +19,7 @@ import PaymentCancel   from "@/pages/PaymentCancel";
 import { DemoBanner }            from "@/components/Demo/DemoBanner";
 import { PresentationOverlay }   from "@/components/Presentation/PresentationOverlay";
 import { KioskModeProvider, KioskModeBanner } from "@/contexts/KioskModeContext";
+import BootIntro                  from "@/components/BootIntro";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,10 @@ function App() {
                   <KioskModeBanner />
                   <LicenseGate />
                   <Toaster />
+                  {/* Profound Innovation cinematic boot intro — sibling
+                      overlay so it sits above every route on first session
+                      load and self-dismisses to reveal the underlying app. */}
+                  <BootIntro />
                 </KioskModeProvider>
               </PresentationProvider>
             </AuthProvider>
