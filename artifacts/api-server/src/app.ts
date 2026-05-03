@@ -33,6 +33,7 @@ import checkoutRouter           from "./routes/checkout";
 import { stripeWebhookHandler } from "./routes/stripeWebhook";
 import { posWebhookHandler }    from "./routes/posWebhook";
 import operationsRouter         from "./routes/operations";
+import imagesRouter             from "./routes/images";
 import demoRouter               from "./routes/demo";
 import demandRouter             from "./routes/demand";
 import demandEventsRouter       from "./routes/demandEvents";
@@ -170,6 +171,7 @@ app.use("/api/orders",                      ordersRouter);
 // Operations layer — staff/manager tools: reorder alerts, menu layout
 // optimization, profit calc, staff pitch. All gated to staff+.
 app.use("/api/ops",                         operationsRouter);
+app.use("/api/images",   recommendLimiter,  imagesRouter);
 app.use("/api",                             checkoutRouter);
 app.use("/api",                             demoRouter);
 app.use("/api/demand",                      demandEventsRouter);

@@ -107,6 +107,16 @@ The operational closing-the-loop layer that turns the recommendation engine, inv
 
 **Routes:**
 
+### Image Engine (22nd brief — context-aware Cloudinary, not a hardcoded library)
+
+The brief proposed a hardcoded `imageLibrary` of `/images/beer/light1.jpg` paths. That would be a regression: products already have `imageUrl` (Cloudinary) on the schema and the smokecraft frontend already has `ProductImage.tsx` that consumes it. Two sources of truth + no venue brand control = bad. What was actually missing per audit:
+
+- **Real Cloudinary context transforms** — `services/imageContext.ts::applyContextTransforms(url, ctx)`. Pure function. Injects REAL Cloudinary segments (`e_brightness:-25,e_saturation:-15` for night, `e_sepia:35` for premium mood, `e_brightness:8` for hot weather, `e_blue:20` for cold) directly after `/upload/`. Non-Cloudinary URLs pass through unchanged so the kiosk's bundled locked-card art is never mangled.
+- **Subtype-based fallback chain** — `services/imageResolver.ts::resolveProductImage({productId?, category?, subtype?, venueId?, context?})`. Resolution order: sold-out (if venueId+productId) → product.imageUrl → category/subtype Cloudinary fallback (`kiosk-fallbacks/beer-ipa.jpg` etc., venues can override by uploading to those paths) → generic placeholder. Cigar fallbacks derive from product.strength (1–2=mild, 3=medium, 4–5=full).
+- **POST /api/images/resolve** — anonymous-friendly (kiosk has no session), Zod-validated, behind `recommendLimiter`. Requires either productId OR category+subtype. Returns `{imageUrl, soldOut, source: "product"|"category-fallback"|"sold-out"|"generic", transforms}`. The `source` field powers client diagnostics; `transforms` lists the exact Cloudinary tokens applied. **Sold-out lookups require a Bearer token bound to the requested venueId** (super_admin can query any venue) — anonymous callers always get `soldOut:false` even with a valid venueId, preventing unauthenticated probing of competitor inventory state. The Zod schema enforces `venueId` is a real UUID, blocking sequential ID enumeration at the parser layer.
+
+Skipped per the audit-first / no-scope-bloat rules: parallel `imageLibrary` of fake `/images/beer/light1.jpg` paths (would conflict with the real Cloudinary plumbing); `useDynamicImage` frontend hook (existing `ProductImage.tsx` already covers this, would be duplication); card UI changes / auto image switch hook (frontend territory — this turn is API-only per the standing pattern).
+
 ### Network Intelligence Layer (21st brief — net-new only after audit)
 
 - **Couples mode** — `services/coupleProfiles.ts::blendProfiles(a, b)` is a pure function that collapses two `RecommendRequest` payloads into one compromise request, then runs through the standard engine. Rules: flavorPreferences UNION, strength rounded mean (floored when gap ≥ 3 — better to undershoot than overpower the milder palate), mood = A wins tie, cigarShape/Session only carry when both agree, tasteProfile averaged per dimension. Endpoint: `POST /api/recommend/couples` with `{ profileA, profileB }`. Both must share category. Response includes `blended` so the UI can explain "we picked this because both of you wanted X".
