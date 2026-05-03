@@ -9,7 +9,7 @@ import {
 import ExperienceFrame from "@/components/ExperienceFrame";
 import VoicePanel from "@/components/AIPanel/VoicePanel";
 import SuggestedMenu from "@/components/AIPanel/SuggestedMenu";
-import loungeBg from "@assets/locked_cards/experience_smokecraft.png";
+import loungeBg from "@assets/locked_cards/experience_pourcraft.png";
 
 /**
  * PourCraft — whisky / spirit-led pairing flow.
@@ -178,25 +178,9 @@ export default function PourCraft() {
           gap: 16,
         }}
       >
-        <button
-          type="button"
-          onClick={() => navigate("/")}
-          data-testid="pourcraft-back"
-          style={{
-            background:    "rgba(0,0,0,0.55)",
-            color:         "#E5E5E5",
-            border:        "1px solid rgba(212,175,55,0.3)",
-            padding:       "10px 18px",
-            borderRadius:  999,
-            fontSize:      12,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            cursor:        "pointer",
-            backdropFilter: "blur(8px)",
-          }}
-        >
-          ← Back
-        </button>
+        {/* Inline back button removed — replaced by GlobalBackButton mounted
+            once in App.tsx (history-based navigation). */}
+        <div />
         <div style={{ textAlign: "right", textShadow: "0 2px 8px rgba(0,0,0,0.85)" }}>
           <h1
             style={{
