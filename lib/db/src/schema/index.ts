@@ -33,3 +33,4 @@ export * from "./themeProfiles";
 export * from "./featureFlags";
 export * from "./commissionReversals";
 export * from "./fraudFlags";
+export * from "./menuItems";

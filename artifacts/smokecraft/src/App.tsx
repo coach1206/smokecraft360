@@ -13,6 +13,7 @@ import Home            from "@/pages/Home";
 import Intro           from "@/pages/Intro";
 import Dashboard       from "@/pages/Dashboard";
 import BrewCraft       from "@/pages/BrewCraft";
+import PourCraft       from "@/pages/PourCraft";
 import PaymentSuccess  from "@/pages/PaymentSuccess";
 import PaymentCancel   from "@/pages/PaymentCancel";
 import { DemoBanner }            from "@/components/Demo/DemoBanner";
@@ -31,6 +32,9 @@ function Router() {
           the explicit path wins; if it ever needs to live under a theme
           (e.g. /smokecraft/brewcraft) it can be moved down. */}
       <Route path="/brewcraft"  component={BrewCraft}      />
+      {/* PourCraft — whisky/spirit-led pairing flow. Same explicit-route
+          pattern as /brewcraft so the dynamic /:theme handler can't shadow it. */}
+      <Route path="/pourcraft"  component={PourCraft}      />
       <Route path="/success"    component={PaymentSuccess} />
       <Route path="/cancel"     component={PaymentCancel}  />
       {/* Dynamic per-theme entry URL (/smokecraft, /pourcraft, /grillcraft …).

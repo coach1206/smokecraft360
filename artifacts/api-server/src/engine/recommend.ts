@@ -17,6 +17,7 @@ import { getInStockSet, getStockInfo }                        from "../services/
 import { findPairings }                                       from "./pairing";
 import { findFoodPairings }                                   from "./food";
 import { foods }                                              from "../data/foods";
+import { buildPairingCommentary }                             from "../services/aiCommentary";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -155,11 +156,28 @@ export function getRecommendations(request: RecommendRequest): RecommendResponse
   // Track featured impressions
   for (const f of featured) recordImpression(f.id, true);
 
+  /* Deterministic commentary — built from the top recommendation + its
+   * cross-category pairing (if any). No LLM call, no external dependency.
+   * Pairing tags surface flavor + product-level pairing tags so the
+   * frontend can pass them straight to /api/menu/suggested. */
+  const top      = recommendations[0];
+  const topPair  = pairings[0];
+  const commentary = top
+    ? {
+        ...buildPairingCommentary(top, topPair, "neutral"),
+        pairingTags: Array.from(new Set([
+          ...(top.flavorNotes ?? []),
+          ...(top.pairingTags ?? []),
+        ])).map((t) => t.toLowerCase()),
+      }
+    : undefined;
+
   return {
     recommendations,
     pairings,
     foodPairings,
     featured,
     ...(outOfStockResults.length > 0 ? { outOfStock: outOfStockResults } : {}),
+    ...(commentary ? { commentary } : {}),
   };
 }

@@ -64,6 +64,14 @@ export interface FoodResult {
   imageUrl?: string;
 }
 
+/** Deterministic AI commentary built server-side from the structured result.
+ *  Mirrors RecommendCommentary in api-server engine/types.ts. */
+export interface RecommendCommentary {
+  description: string;
+  reasoning?:  string;
+  pairingTags: string[];
+}
+
 export interface RecommendResponse {
   recommendations: ProductResult[];
   pairings:        ProductResult[];
@@ -71,6 +79,23 @@ export interface RecommendResponse {
   featured:        ProductResult[];
   /** Out-of-stock top matches — returned for demand-capture UI */
   outOfStock?:     ProductResult[];
+  /** Natural-language layer for the right-panel voice player. */
+  commentary?:     RecommendCommentary;
+}
+
+/** Real venue menu item — orderable. Mirrors menu_items table. */
+export interface MenuItemResult {
+  id:          string;
+  venueId?:    string | null;
+  name:        string;
+  description?: string | null;
+  category:    string;
+  tags:        string[];
+  priceCents:  number;
+  imageUrl?:   string | null;
+  available:   boolean;
+  /** Tag-overlap score with the requested context (suggestion endpoint only). */
+  matchScore?: number;
 }
 
 export interface InventoryItem {
@@ -159,6 +184,8 @@ export async function fetchRecommendations(params: RecommendParams): Promise<Rec
       pairings:        data.pairings        ?? [],
       foodPairings:    data.foodPairings     ?? [],
       featured:        data.featured         ?? [],
+      ...(data.outOfStock ? { outOfStock: data.outOfStock } : {}),
+      ...(data.commentary ? { commentary: data.commentary } : {}),
     };
 
     void cacheSet("recommendations", cacheKey, result);
@@ -175,6 +202,60 @@ export async function fetchRecommendations(params: RecommendParams): Promise<Rec
 
     throw new Error("Recommendations unavailable — please check your connection");
   }
+}
+
+/* ------------------------------------------------------------------ */
+/*               Voice synthesis (ElevenLabs proxy)                     */
+/* ------------------------------------------------------------------ */
+
+export type VoicePersona = "female" | "male";
+
+export interface SpeakParams {
+  text:     string;
+  persona?: VoicePersona;
+  voiceId?: string;
+}
+
+/**
+ * POST /api/voice/speak — backend proxies to ElevenLabs, returns audio.
+ * Throws with `voice_not_configured` when the connector hasn't been
+ * authorized — callers should catch and surface a "connect voice" CTA
+ * rather than a hard error.
+ */
+export async function fetchVoiceAudio(params: SpeakParams): Promise<Blob> {
+  const resp = await fetch("/api/voice/speak", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(params),
+  });
+  if (!resp.ok) {
+    let code = `voice_failed_${resp.status}`;
+    try {
+      const j = await resp.json() as { error?: string };
+      if (j.error) code = j.error;
+    } catch { /* keep generic code */ }
+    throw new Error(code);
+  }
+  return resp.blob();
+}
+
+/* ------------------------------------------------------------------ */
+/*                    Menu suggestions (orderable)                     */
+/* ------------------------------------------------------------------ */
+
+export async function fetchSuggestedMenu(params: {
+  tags:    string[];
+  venueId?: string;
+  limit?:   number;
+}): Promise<MenuItemResult[]> {
+  if (params.tags.length === 0) return [];
+  const qs = new URLSearchParams({ tags: params.tags.join(",") });
+  if (params.venueId) qs.set("venueId", params.venueId);
+  if (params.limit)   qs.set("limit",   String(params.limit));
+  const resp = await fetch(`/api/menu/suggested?${qs.toString()}`);
+  if (!resp.ok) throw new Error(`menu_suggested_failed_${resp.status}`);
+  const data = await resp.json() as { items: MenuItemResult[] };
+  return data.items;
 }
 
 // ── Analytics ─────────────────────────────────────────────────────────────────

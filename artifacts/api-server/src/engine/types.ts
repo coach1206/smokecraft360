@@ -93,6 +93,17 @@ export interface ScoredFood extends FoodItem {
   score: number;
 }
 
+/** Natural-language layer added by services/aiCommentary.ts.
+ *  Always present (deterministic) — feeds the right-panel voice player. */
+export interface RecommendCommentary {
+  /** Speakable headline for the top recommendation. */
+  description: string;
+  /** Optional one-sentence pairing rationale (when a cross-category pairing exists). */
+  reasoning?:  string;
+  /** Pairing/flavor tags surfaced by this result — used by /api/menu/suggested. */
+  pairingTags: string[];
+}
+
 export interface RecommendResponse {
   recommendations: ScoredProduct[];
   pairings:        ScoredProduct[];
@@ -104,6 +115,9 @@ export interface RecommendResponse {
    * Returned so the UI can offer "Request This Item" demand capture.
    */
   outOfStock?:     ScoredProduct[];
+  /** Deterministic AI-style commentary built from the structured result.
+   *  Optional only because legacy endpoints may construct responses without it. */
+  commentary?:     RecommendCommentary;
 }
 
 /** Shape returned by GET /api/inventory */

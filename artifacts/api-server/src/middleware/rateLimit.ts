@@ -25,6 +25,15 @@ const shared = {
 export const authLimiter      = rateLimit(shared);
 export const recommendLimiter = rateLimit(shared);
 
+/* Voice TTS layer: 15/min/IP — every call is a paid ElevenLabs character
+ * burn, so we cap aggressively. A kiosk speaking the commentary once per
+ * recommend (and occasionally on persona swap) stays well under this. */
+export const voiceLimiter = rateLimit({
+  ...shared,
+  limit:   15,
+  message: { error: "Too many voice requests — please wait a moment" },
+});
+
 // OS layer: 120/min — admin tooling polls live event feed every 8s and may
 // burst on filter changes; tighter than open APIs but not punishing.
 export const osLimiter = rateLimit({

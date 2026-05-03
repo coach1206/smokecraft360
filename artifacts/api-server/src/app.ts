@@ -3,7 +3,7 @@ import cors     from "cors";
 import pinoHttp from "pino-http";
 import { logger } from "./lib/logger";
 import { rejectDeepPayloads }             from "./middleware/sanitize";
-import { authLimiter, recommendLimiter, osLimiter } from "./middleware/rateLimit";
+import { authLimiter, recommendLimiter, osLimiter, voiceLimiter } from "./middleware/rateLimit";
 import { localeMiddleware }                 from "./middleware/locale";
 
 import healthRouter        from "./routes/health";
@@ -15,6 +15,8 @@ import venueAnalyticsRouter from "./routes/venueAnalytics";
 import eventsRouter        from "./routes/events";
 import preferencesRouter      from "./routes/preferences";
 import sessionEconomicsRouter from "./routes/sessionEconomics";
+import voiceRouter             from "./routes/voice";
+import menuRouter              from "./routes/menu";
 import experiencesRouter   from "./routes/experiences";
 import brandsRouter        from "./routes/brands";
 import distributorsRouter  from "./routes/distributors";
@@ -139,6 +141,11 @@ app.use("/api/events",                      eventsRouter);
 app.use("/api/preferences",                 preferencesRouter);
 // sessionEconomicsRouter exposes /session/forecast → /api/session/forecast
 app.use("/api",                             sessionEconomicsRouter);
+// voiceRouter exposes /voice/speak → /api/voice/speak (ElevenLabs proxy).
+// voiceLimiter caps spend: every call is paid TTS characters.
+app.use("/api/voice",                       voiceLimiter, voiceRouter);
+// menuRouter exposes /all, /suggested, / → /api/menu/* (orderable menu items)
+app.use("/api/menu",                        menuRouter);
 app.use("/api/experiences",                 experiencesRouter);
 app.use("/api/brands",                      brandsRouter);
 app.use("/api/distributors",                distributorsRouter);

@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { fetchRecommendations, type RecommendResponse, type ProductResult } from "@/services/api";
 import ExperienceFrame from "@/components/ExperienceFrame";
+import VoicePanel     from "@/components/AIPanel/VoicePanel";
+import SuggestedMenu  from "@/components/AIPanel/SuggestedMenu";
 import loungeBg from "@assets/locked_cards/experience_smokecraft.png";
 
 /**
@@ -109,6 +111,9 @@ export default function BrewCraft() {
   const [loading, setLoading]       = useState(false);
   const [result, setResult]         = useState<PairingResult | null>(null);
   const [error, setError]           = useState<string | null>(null);
+  /* Full server response retained so the right-panel VoicePanel can read
+   * `commentary` and the menu suggester can read pairingTags. */
+  const [lastResp, setLastResp]     = useState<RecommendResponse | null>(null);
 
   // PourCraft upsell — timed reveal, second engine call
   const [upsell, setUpsell]              = useState<ProductResult | null>(null);
@@ -170,6 +175,7 @@ export default function BrewCraft() {
         beer:  resp.recommendations[0] ?? null,
         cigar: resp.pairings[0]        ?? null,
       });
+      setLastResp(resp);
 
       // Kick off the PourCraft upsell pre-fetch immediately, but only
       // reveal the panel after the user has had a moment to absorb the
@@ -581,6 +587,13 @@ export default function BrewCraft() {
                       )}
                     </AnimatePresence>
 
+                    {/* Real-menu suggestions filtered by this pairing's tags.
+                        Renders nothing when no tags or no matches. */}
+                    <SuggestedMenu
+                      tags={lastResp?.commentary?.pairingTags ?? []}
+                      testId="brewcraft-menu"
+                    />
+
                     <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap" }}>
                       <button
                         type="button"
@@ -680,6 +693,17 @@ export default function BrewCraft() {
               </p>
             </div>
           </ExperienceFrame>
+
+          {/* AI Sommelier — voice + mic. Reads commentary off the latest
+              recommend response; degrades quietly when no result yet
+              or when the ElevenLabs connector isn't authorized. */}
+          <div style={{ marginTop: 16 }}>
+            <VoicePanel
+              commentary={lastResp?.commentary}
+              accent="rgba(212,175,55,0.55)"
+              testId="brewcraft-voice"
+            />
+          </div>
         </aside>
       </div>
 
