@@ -38,6 +38,9 @@ import rewardsAdminRouter       from "./routes/rewardsAdmin";
 import loungeLeagueRouter       from "./routes/loungeLeague";
 import devicesRouter            from "./routes/devices";
 import commissionsRouter        from "./routes/commissions";
+import networkInsightsRouter    from "./routes/networkInsights";
+import payoutsRouter            from "./routes/payouts";
+import { startAggregationWorker } from "./lib/aggregationWorker";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -136,6 +139,13 @@ app.use("/api/rewards",                     rewardsAdminRouter);
 app.use("/api/lounge-league",               loungeLeagueRouter);
 app.use("/api/devices",                     devicesRouter);
 app.use("/api",                             commissionsRouter);
+app.use("/api/network",                     networkInsightsRouter);
+app.use("/api/payouts",                     payoutsRouter);
+
+// Start background aggregation worker (hourly rollups for network/venue metrics)
+if (process.env["NODE_ENV"] !== "test") {
+  startAggregationWorker();
+}
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────
 app.use((_req: Request, res: Response) => {

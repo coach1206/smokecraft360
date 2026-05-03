@@ -1,0 +1,230 @@
+BUILD A VENDOR MARKETPLACE SYSTEM FOR SMOKECRAFT 360 THAT ALLOWS CIGAR AND WHISKEY BRANDS TO PARTICIPATE IN THE PLATFORM, PAY FOR PLACEMENT, AND RECEIVE PERFORMANCE INSIGHTS — WITHOUT CONTROLLING VENUE INVENTORY
+
+---
+
+CORE OBJECTIVE
+
+Create a controlled marketplace where:
+
+- vendors can submit products
+- vendors can pay for featured placement
+- venues can choose what to use
+- system tracks performance
+
+---
+
+DATABASE ADDITIONS
+
+Create tables:
+
+---
+
+VENDORS
+
+- id
+- name
+- type (cigar, whiskey)
+- contact_email
+- stripe_customer_id
+- created_at
+
+---
+
+VENDOR_PRODUCTS
+
+- id
+- vendor_id
+- name
+- category (cigar, whiskey)
+- flavor_notes
+- strength
+- wrapper_type
+- image_url
+- description
+- status (pending, approved, rejected)
+
+---
+
+FEATURED_PLACEMENTS
+
+- id
+- vendor_product_id
+- placement_type (featured, premium, sponsored)
+- start_date
+- end_date
+- price
+- status
+
+---
+
+VENDOR_ANALYTICS
+
+- id
+- vendor_id
+- product_id
+- views
+- selections
+- conversions
+- timeframe
+
+---
+
+---
+
+VENDOR PORTAL (FRONTEND)
+
+Route: /vendor
+
+Sections:
+
+---
+
+1. PRODUCT SUBMISSION
+
+- upload product
+- add details
+- submit for approval
+
+Status:
+- pending
+- approved
+- rejected
+
+---
+
+2. FEATURED PLACEMENT PURCHASE
+
+- choose placement tier
+- select duration
+- pay via Stripe
+
+---
+
+3. ANALYTICS DASHBOARD
+
+Show:
+
+- product views
+- selection rate
+- conversion rate
+- popularity trends
+
+---
+
+4. CAMPAIGN CONTROL
+
+- start/stop campaigns
+- adjust placement duration
+
+---
+
+---
+
+ADMIN CONTROL PANEL (CRITICAL)
+
+Admin must:
+
+- approve/reject vendor products
+- control which products appear
+- override placements
+- remove vendors if needed
+
+---
+
+---
+
+PLACEMENT LOGIC
+
+When displaying products:
+
+- prioritize approved + featured items
+- blend with venue inventory
+- DO NOT override venue control
+
+---
+
+---
+
+PAYMENT SYSTEM (VENDOR SIDE)
+
+Use Stripe:
+
+POST /api/vendor/create-payment
+
+- vendor selects placement
+- create payment intent
+- confirm purchase
+- activate placement
+
+---
+
+---
+
+ANALYTICS TRACKING
+
+Track:
+
+- product impressions
+- product selections
+- orders tied to vendor products
+
+Store in VENDOR_ANALYTICS
+
+---
+
+---
+
+SECURITY RULES
+
+- vendors cannot access venue data
+- vendors cannot edit inventory
+- vendors only see aggregated analytics
+
+---
+
+---
+
+MONETIZATION MODEL
+
+Vendors pay for:
+
+- featured placement
+- premium positioning
+- campaign visibility
+
+Optional:
+
+- subscription access to analytics
+
+---
+
+---
+
+UI INTEGRATION
+
+Display tags:
+
+- “Featured”
+- “Sponsored”
+- “Trending”
+
+But keep it subtle and premium
+
+---
+
+---
+
+FINAL GOAL
+
+Create a system where:
+
+- vendors pay to be seen
+- venues control what is sold
+- users interact naturally
+- platform earns from both sides
+
+This is NOT an open marketplace.
+
+This is a controlled, premium ecosystem.
+
+---

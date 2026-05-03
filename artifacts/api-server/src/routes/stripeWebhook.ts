@@ -16,8 +16,10 @@
 
 import { type Request, type Response }            from "express";
 import Stripe                                      from "stripe";
-import { eq }                                      from "drizzle-orm";
-import { db, ordersTable, commissionsTable }       from "@workspace/db";
+import { and, eq, sql }                            from "drizzle-orm";
+import {
+  db, ordersTable, commissionsTable, venueInventoryTable,
+}                                                  from "@workspace/db";
 import { logger }                                  from "../lib/logger";
 
 // Platform commission rate in basis points (1000 = 10.00%)
@@ -54,6 +56,18 @@ export async function stripeWebhookHandler(req: Request, res: Response): Promise
     const gross   = session.amount_total ?? 0;
 
     if (orderId) {
+      // Idempotency: skip if this order is already paid
+      const [existing] = await db
+        .select({ status: ordersTable.status, venueId: ordersTable.venueId,
+                  cigarId: ordersTable.cigarId, drinkId: ordersTable.drinkId, foodId: ordersTable.foodId })
+        .from(ordersTable).where(eq(ordersTable.id, orderId)).limit(1);
+
+      if (existing?.status === "paid") {
+        logger.info({ orderId }, "Webhook: order already paid, skipping (idempotent)");
+        res.json({ received: true });
+        return;
+      }
+
       try {
         await db
           .update(ordersTable)
@@ -62,6 +76,28 @@ export async function stripeWebhookHandler(req: Request, res: Response): Promise
         logger.info({ orderId, sessionId: session.id }, "Order marked paid via Stripe webhook");
       } catch (err) {
         logger.error({ err, orderId }, "Failed to update order status from webhook");
+      }
+
+      // Decrement inventory for cigar / drink / food on the order
+      const orderVenueId = existing?.venueId ?? venueId;
+      if (orderVenueId) {
+        const productIds = [existing?.cigarId, existing?.drinkId, existing?.foodId].filter((x): x is string => !!x);
+        for (const pid of productIds) {
+          try {
+            await db.update(venueInventoryTable)
+              .set({
+                quantity:  sql`GREATEST(${venueInventoryTable.quantity} - 1, 0)`,
+                available: sql`(${venueInventoryTable.quantity} - 1) > 0`,
+                updatedAt: new Date(),
+              })
+              .where(and(
+                eq(venueInventoryTable.venueId,   orderVenueId),
+                eq(venueInventoryTable.productId, pid),
+              ));
+          } catch (err) {
+            logger.error({ err, orderId, pid }, "Failed to decrement inventory");
+          }
+        }
       }
 
       // Log platform commission (idempotent on stripeSessionId would be ideal, but

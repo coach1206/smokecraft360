@@ -121,7 +121,7 @@ function assignBadges(stats: (RawStat & { score: number; rank: number })[]) {
 router.get(
   "/",
   requireAuth,
-  async (_req: AuthRequest, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     const raw   = await computeLeague();
     const scored = raw
       .map((s) => ({ ...s, score: computeScore(s) }))
@@ -129,10 +129,26 @@ router.get(
       .map((s, i) => ({ ...s, rank: i + 1 }));
 
     const badges = assignBadges(scored);
-    const result = scored.map((s) => ({ ...s, badges: badges[s.loungeId] ?? [] }));
 
-    // Upsert lounge_stats rows (cache)
-    for (const s of result) {
+    // Anonymize: non-super_admin viewers never see other venues' real names.
+    // Their own venue is shown by name; everyone else becomes "Lounge #N".
+    const isAdmin   = req.user?.role === "super_admin";
+    const myVenueId = req.user?.venueId;
+
+    const result = scored.map((s) => {
+      const isSelf      = s.loungeId === myVenueId;
+      const showRealName = isAdmin || isSelf;
+      return {
+        ...s,
+        loungeName: showRealName ? s.loungeName : `Lounge #${s.rank}`,
+        loungeId:   showRealName ? s.loungeId   : null,           // strip ID for anonymized rows
+        isSelf,
+        badges:     badges[s.loungeId] ?? [],
+      };
+    });
+
+    // Upsert lounge_stats rows (cache) — use real loungeIds from `scored`, not anonymized result
+    for (const s of scored) {
       await db.execute(sql`
         INSERT INTO lounge_stats
           (lounge_id, total_orders, total_verified_orders, weekly_orders,
@@ -140,7 +156,7 @@ router.get(
         VALUES
           (${s.loungeId}::uuid, ${s.totalOrders}, ${s.totalVerifiedOrders},
            ${s.weeklyOrders}, ${s.totalUsers}, ${s.repeatCustomers},
-           ${s.score}, ${s.rank}, ${s.badges.join(",")}, now())
+           ${s.score}, ${s.rank}, ${(badges[s.loungeId] ?? []).join(",")}, now())
         ON CONFLICT (lounge_id)
         DO UPDATE SET
           total_orders           = EXCLUDED.total_orders,
@@ -191,6 +207,13 @@ router.get(
   "/:id",
   requireAuth,
   async (req: AuthRequest, res: Response) => {
+    // Single-venue lookup: only allowed for the venue's own user or super_admin
+    const isAdmin = req.user?.role === "super_admin";
+    if (!isAdmin && req.user?.venueId !== req.params.id) {
+      res.status(403).json({ error: "You can only view stats for your own venue" });
+      return;
+    }
+
     const raw    = await computeLeague();
     const scored = raw
       .map((s) => ({ ...s, score: computeScore(s) }))
@@ -198,10 +221,11 @@ router.get(
       .map((s, i) => ({ ...s, rank: i + 1 }));
 
     const badges = assignBadges(scored);
-    const venue  = scored.find((s) => s.loungeId === req.params.id);
+    const venueIdParam = String(req.params["id"] ?? "");
+    const venue        = scored.find((s) => s.loungeId === venueIdParam);
     if (!venue) { res.status(404).json({ error: "Venue not found" }); return; }
 
-    res.json({ ...venue, badges: badges[req.params.id] ?? [], totalVenues: scored.length });
+    res.json({ ...venue, badges: badges[venueIdParam] ?? [], totalVenues: scored.length });
   },
 );
 
