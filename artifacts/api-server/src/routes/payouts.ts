@@ -55,7 +55,7 @@ router.post(
 
     // Available balance = venue's gross earnings (paid orders) minus platform commission
     // minus already-requested-or-paid amounts.
-    const [bal] = await db.execute<{ available: string }>(sql`
+    const [bal] = (await db.execute<{ available: string }>(sql`
       WITH paid AS (
         SELECT
           COALESCE(SUM(c.gross_amount_cents), 0)::int AS gross,
@@ -71,7 +71,7 @@ router.post(
       )
       SELECT (paid.gross - paid.commission - reserved.used)::text AS available
       FROM paid, reserved
-    `);
+    `)).rows;
     const available = bal ? Number(bal.available) : 0;
 
     if (amountCents > available) {

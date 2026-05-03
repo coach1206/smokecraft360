@@ -150,7 +150,7 @@ router.patch(
   requireRole("venue_owner", "manager"),
   allowOnly("boostLevel", "sponsored", "brandId", "campaignId", "imageUrl"),
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
     const { boostLevel, sponsored, brandId, campaignId, imageUrl } = req.body as {
       boostLevel?: number;
       sponsored?:  boolean;

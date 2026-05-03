@@ -72,7 +72,7 @@ router.get(
   requireAuth,
   requireRole("venue_owner", "manager", "super_admin"),
   async (req: AuthRequest, res: Response) => {
-    const { venueId } = req.params;
+    const venueId = String(req.params.venueId ?? "");
     const user        = req.user!;
 
     if (user.role !== "super_admin" && user.venueId !== venueId) {

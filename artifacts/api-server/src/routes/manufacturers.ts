@@ -75,7 +75,7 @@ router.patch(
   requireAuth,
   requireRole("super_admin"),
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
 
     const parsed = manufacturerSchema.partial().safeParse(req.body);
     if (!parsed.success) {
@@ -85,7 +85,7 @@ router.patch(
 
     const [updated] = await db
       .update(manufacturersTable)
-      .set({ ...parsed.data, updatedAt: new Date() })
+      .set({ ...parsed.data, updatedAt: new Date() } as Partial<typeof manufacturersTable.$inferInsert>)
       .where(eq(manufacturersTable.id, id))
       .returning();
 
@@ -101,7 +101,7 @@ router.delete(
   requireAuth,
   requireRole("super_admin"),
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
     await db.delete(manufacturersTable).where(eq(manufacturersTable.id, id));
     res.status(204).end();
   },

@@ -171,7 +171,7 @@ export function findPairings(
       }
     }
 
-    return { ...candidate, score: baseScore + weightedScore };
+    return { ...candidate, score: baseScore + weightedScore, boostApplied: 0 };
   });
 
   return scored

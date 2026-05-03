@@ -79,7 +79,7 @@ router.patch(
   requireRole("super_admin"),
   allowOnly("name", "state", "contactEmail", "website", "region", "active"),
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
     if (!UUID_RE.test(id)) { res.status(400).json({ error: "Invalid distributor id" }); return; }
 
     const { name, state, contactEmail, website, region, active } = req.body as {

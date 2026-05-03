@@ -1,0 +1,258 @@
+RUN A FULL PRODUCTION PRESSURE TEST ON THE PROFOUND INNOVATION (P.I) PLATFORM TO VALIDATE PERFORMANCE, STABILITY, DATA INTEGRITY, AND FINANCIAL SAFETY UNDER REAL-WORLD AND HIGH-LOAD CONDITIONS — INCLUDING FRONTEND, BACKEND, STRIPE PAYMENTS, WEBHOOKS, DATA TRACKING, AND MULTI-TENANT ISOLATION
+
+---
+
+🚨 CORE OBJECTIVE
+
+Simulate real-world usage at scale to ensure:
+
+- no crashes under load
+- no duplicate or lost payments
+- no data corruption
+- no UI failures
+- consistent behavior across all modules
+
+---
+
+🧪 1. LOAD TEST (API + BACKEND)
+
+Simulate:
+
+- 50–200 concurrent users
+- repeated requests to:
+
+/api/products  
+/api/scoring  
+/api/payments/create-intent  
+/api/behavior/track  
+
+Verify:
+
+- response times < 500ms
+- no timeouts
+- no memory leaks
+- CPU usage stable
+
+---
+
+💳 2. PAYMENT FLOW STRESS TEST
+
+Simulate:
+
+- 20–50 simultaneous payment attempts
+
+Verify:
+
+- each PaymentIntent created once (idempotency)
+- no duplicate charges
+- all metadata.orderId match DB
+- all orders created before payment
+
+---
+
+🔁 3. WEBHOOK STORM TEST
+
+Replay webhook events:
+
+- send same event 3–5 times
+
+Verify:
+
+- processed only once
+- no duplicate order updates
+- no duplicate commission entries
+
+---
+
+📦 4. ORDER STATE INTEGRITY TEST
+
+Attempt invalid transitions:
+
+- pending → fulfilled
+- initiated → paid (skip pending)
+
+Verify:
+
+- system rejects invalid states
+- only valid transitions allowed
+
+---
+
+📊 5. DATA TRACKING LOAD TEST
+
+Simulate:
+
+- continuous event tracking:
+
+POST /api/behavior/track
+
+Verify:
+
+- no dropped events
+- correct session_id storage
+- DB performance remains stable
+
+---
+
+🧠 6. PROFILE LEARNING VALIDATION
+
+Simulate:
+
+- repeated selections per session
+
+Verify:
+
+- USER_PROFILE updates correctly
+- preferences reflect behavior trends
+- no cross-session data leakage
+
+---
+
+🎬 7. FRONTEND STRESS TEST
+
+Simulate:
+
+- rapid clicks
+- repeated theme switching
+- multiple interactions during demo mode
+
+Verify:
+
+- no UI freeze
+- no broken transitions
+- no stuck states
+
+---
+
+🎥 8. VIDEO + ASSET STABILITY
+
+Verify:
+
+- videos loop correctly
+- no flickering
+- fallback if video fails
+
+---
+
+🔊 9. AUDIO SYSTEM TEST
+
+Verify:
+
+- click sounds trigger consistently
+- ambient sound loops without stacking
+- no browser autoplay failures
+
+---
+
+🔐 10. SECURITY TEST
+
+Attempt:
+
+- sending invalid payloads
+- manipulating price on frontend
+- accessing other tenant data
+
+Verify:
+
+- backend rejects invalid data
+- pricing is server-controlled
+- tenant isolation enforced
+
+---
+
+💥 11. FAILURE SIMULATION
+
+Simulate:
+
+- Stripe success but DB write fails
+- network drop during payment
+- delayed webhook delivery
+
+Verify:
+
+- system retries safely
+- no lost orders
+- reconciliation restores consistency
+
+---
+
+⚙️ 12. RECONCILIATION TEST
+
+Run reconciliation worker:
+
+- compare Stripe vs DB
+
+Verify:
+
+- all payments match orders
+- mismatches flagged or corrected
+
+---
+
+📈 13. SYSTEM HEALTH MONITORING
+
+Call:
+
+GET /api/system/status
+
+Verify it returns:
+
+- pending payments
+- failed webhooks
+- stuck orders
+- system alerts
+
+---
+
+🧾 14. AUDIT LOG VALIDATION
+
+Verify:
+
+- all financial actions logged
+- before/after states recorded
+- timestamps accurate
+
+---
+
+🚀 15. FULL USER JOURNEY TEST
+
+Simulate real user:
+
+1. splash loads  
+2. intro plays  
+3. user selects experience  
+4. selections made  
+5. scoring calculated  
+6. order created  
+7. payment processed  
+8. webhook confirms  
+9. profile updated  
+
+Verify:
+
+- ZERO failures across entire flow
+
+---
+
+🎯 PASS CRITERIA
+
+System is considered production-ready ONLY if:
+
+- no duplicate payments
+- no dropped data
+- no UI crashes
+- all APIs respond correctly
+- all flows complete successfully
+
+---
+
+💥 FINAL RESULT
+
+After passing this pressure test, PROFOUND INNOVATION (P.I) is:
+
+- stable under load  
+- financially secure  
+- fully reliable  
+- ready for real-world deployment  
+
+---

@@ -138,7 +138,7 @@ router.get(
   requireAuth,
   requireRole("super_admin", "venue_owner", "manager", "brand_partner"),
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
     if (!UUID_RE.test(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
     const [row] = await db.select().from(campaignsTable).where(eq(campaignsTable.id, id));
@@ -161,7 +161,7 @@ router.patch(
   allowOnly("name", "brandId", "distributorId", "status", "budgetCents",
             "impressionGoal", "startDate", "endDate", "notes", "active"),
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
     if (!UUID_RE.test(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
     const {
@@ -205,7 +205,7 @@ router.post(
   requireAuth,
   requireRole("super_admin", "venue_owner", "manager"),
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
     if (!UUID_RE.test(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
     const { productIds, clearExisting } = req.body as {
@@ -253,7 +253,7 @@ router.get(
   requireAuth,
   requireRole("super_admin", "venue_owner", "manager", "brand_partner"),
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
     if (!UUID_RE.test(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
     const [campaign] = await db.select().from(campaignsTable).where(eq(campaignsTable.id, id));

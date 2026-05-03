@@ -38,7 +38,7 @@ router.get(
   requireRole("venue_owner", "manager", "super_admin"),
   async (req: AuthRequest, res: Response) => {
 
-    const venueId  = req.params.id;
+    const venueId  = String(req.params.id ?? "");
     const user     = req.user!;
 
     // Non-super_admin users may only query their own venue

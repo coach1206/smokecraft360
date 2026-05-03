@@ -79,7 +79,7 @@ router.patch(
     const [updated] = await db
       .update(rewardsTable)
       .set({ ...parse.data, updatedAt: new Date() })
-      .where(eq(rewardsTable.id, req.params.id))
+      .where(eq(rewardsTable.id, String(req.params.id ?? "")))
       .returning();
     if (!updated) {
       res.status(404).json({ error: "Reward not found" });
@@ -99,7 +99,7 @@ router.delete(
     const [updated] = await db
       .update(rewardsTable)
       .set({ active: false, updatedAt: new Date() })
-      .where(eq(rewardsTable.id, req.params.id))
+      .where(eq(rewardsTable.id, String(req.params.id ?? "")))
       .returning();
     if (!updated) {
       res.status(404).json({ error: "Reward not found" });

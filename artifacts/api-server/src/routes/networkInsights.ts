@@ -86,7 +86,7 @@ router.get(
 
     // This venue's order count rank vs all venues, derived from venue_metrics
     // (count any 'flavor' rollup as proxy for activity)
-    const [rankRow] = await db.execute<{ rank: string; total: string }>(sql`
+    const [rankRow] = (await db.execute<{ rank: string; total: string }>(sql`
       WITH venue_totals AS (
         SELECT venue_id, SUM(count)::int AS total
         FROM venue_metrics
@@ -97,7 +97,7 @@ router.get(
         (SELECT COUNT(*) + 1 FROM venue_totals
           WHERE total > (SELECT total FROM venue_totals WHERE venue_id = ${venueId}))::text AS rank,
         (SELECT COUNT(*) FROM venue_totals)::text AS total
-    `);
+    `)).rows;
 
     const rank        = rankRow ? Number(rankRow.rank)  : null;
     const totalVenues = rankRow ? Number(rankRow.total) : 0;

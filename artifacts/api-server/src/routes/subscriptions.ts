@@ -354,7 +354,7 @@ router.post(
   requireRole("super_admin"),
   allowOnly("override", "reason"),
   async (req: AuthRequest, res: Response) => {
-    const { venueId } = req.params;
+    const venueId = String(req.params.venueId ?? "");
     if (!venueId) { res.status(400).json({ error: "venueId is required" }); return; }
 
     const override = req.body?.override === true;
@@ -412,7 +412,7 @@ router.post(
   requireRole("super_admin"),
   allowOnly("days"),
   async (req: AuthRequest, res: Response) => {
-    const { venueId } = req.params;
+    const venueId = String(req.params.venueId ?? "");
     const days = Number(req.body?.days);
     if (!venueId)                           { res.status(400).json({ error: "venueId is required" }); return; }
     if (!Number.isFinite(days) || days < 1 || days > 90) {

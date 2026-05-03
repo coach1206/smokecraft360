@@ -115,7 +115,7 @@ router.patch(
     const existing = await db
       .select()
       .from(devicesTable)
-      .where(and(eq(devicesTable.id, req.params.id), eq(devicesTable.venueId, venueId)))
+      .where(and(eq(devicesTable.id, String(req.params.id ?? "")), eq(devicesTable.venueId, venueId)))
       .limit(1);
 
     if (!existing[0]) { res.status(404).json({ error: "Device not found" }); return; }
@@ -130,7 +130,7 @@ router.patch(
     const [updated] = await db
       .update(devicesTable)
       .set(updates)
-      .where(eq(devicesTable.id, req.params.id))
+      .where(eq(devicesTable.id, String(req.params.id ?? "")))
       .returning();
 
     res.json(updated);
@@ -150,12 +150,12 @@ router.delete(
     const existing = await db
       .select({ id: devicesTable.id })
       .from(devicesTable)
-      .where(and(eq(devicesTable.id, req.params.id), eq(devicesTable.venueId, venueId)))
+      .where(and(eq(devicesTable.id, String(req.params.id ?? "")), eq(devicesTable.venueId, venueId)))
       .limit(1);
 
     if (!existing[0]) { res.status(404).json({ error: "Device not found" }); return; }
 
-    await db.delete(devicesTable).where(eq(devicesTable.id, req.params.id));
+    await db.delete(devicesTable).where(eq(devicesTable.id, String(req.params.id ?? "")));
     res.json({ ok: true });
   },
 );
@@ -173,7 +173,7 @@ router.get(
     const device = await db
       .select()
       .from(devicesTable)
-      .where(and(eq(devicesTable.id, req.params.id), eq(devicesTable.venueId, venueId)))
+      .where(and(eq(devicesTable.id, String(req.params.id ?? "")), eq(devicesTable.venueId, venueId)))
       .limit(1);
 
     if (!device[0]) { res.status(404).json({ error: "Device not found" }); return; }
@@ -181,7 +181,7 @@ router.get(
     const sessions = await db
       .select()
       .from(deviceSessionsTable)
-      .where(eq(deviceSessionsTable.deviceId, req.params.id))
+      .where(eq(deviceSessionsTable.deviceId, String(req.params.id ?? "")))
       .orderBy(desc(deviceSessionsTable.startedAt))
       .limit(100);
 
@@ -228,7 +228,7 @@ router.post(
     const device = await db
       .select()
       .from(devicesTable)
-      .where(and(eq(devicesTable.id, req.params.id), eq(devicesTable.venueId, venueId)))
+      .where(and(eq(devicesTable.id, String(req.params.id ?? "")), eq(devicesTable.venueId, venueId)))
       .limit(1);
 
     if (!device[0]) { res.status(404).json({ error: "Device not found" }); return; }
@@ -239,7 +239,7 @@ router.post(
       .set({ endedAt: new Date(), resetReason: "staff_reset" })
       .where(
         and(
-          eq(deviceSessionsTable.deviceId, req.params.id),
+          eq(deviceSessionsTable.deviceId, String(req.params.id ?? "")),
           isNull(deviceSessionsTable.endedAt),
         ),
       );
@@ -248,7 +248,7 @@ router.post(
     await db
       .update(devicesTable)
       .set({ lastActiveAt: new Date(), updatedAt: new Date() })
-      .where(eq(devicesTable.id, req.params.id));
+      .where(eq(devicesTable.id, String(req.params.id ?? "")));
 
     res.json({ ok: true, resetAt: new Date() });
   },
@@ -266,7 +266,7 @@ router.post(
     const device = await db
       .select()
       .from(devicesTable)
-      .where(eq(devicesTable.id, req.params.id))
+      .where(eq(devicesTable.id, String(req.params.id ?? "")))
       .limit(1);
 
     if (!device[0]) { res.status(404).json({ error: "Device not found" }); return; }
@@ -277,22 +277,22 @@ router.post(
         .update(deviceSessionsTable)
         .set({ endedAt: new Date(), resetReason: "staff_reset" })
         .where(and(
-          eq(deviceSessionsTable.deviceId, req.params.id),
+          eq(deviceSessionsTable.deviceId, String(req.params.id ?? "")),
           isNull(deviceSessionsTable.endedAt),
         ));
 
       const [session] = await db.insert(deviceSessionsTable).values({
-        deviceId:    req.params.id,
+        deviceId:    String(req.params.id ?? ""),
         venueId:     device[0].venueId,
         tableNumber: parsed.data.tableNumber ?? device[0].tableNumber ?? null,
-        userId:      parsed.data.userId ?? req.user?.sub ?? null,
+        userId:      parsed.data.userId ?? req.user?.id ?? null,
       }).returning();
 
       // Stamp lastActiveAt
       await db
         .update(devicesTable)
         .set({ lastActiveAt: new Date(), updatedAt: new Date() })
-        .where(eq(devicesTable.id, req.params.id));
+        .where(eq(devicesTable.id, String(req.params.id ?? "")));
 
       res.status(201).json(session);
     } else {
@@ -305,7 +305,7 @@ router.post(
           resetReason: (parsed.data.resetReason as ResetReason) ?? null,
         })
         .where(and(
-          eq(deviceSessionsTable.deviceId, req.params.id),
+          eq(deviceSessionsTable.deviceId, String(req.params.id ?? "")),
           isNull(deviceSessionsTable.endedAt),
         ))
         .returning();
@@ -321,7 +321,7 @@ router.get(
   "/venue-qr/:venueId",
   requireAuth,
   async (req: AuthRequest, res: Response) => {
-    const { venueId } = req.params;
+    const venueId = String(req.params.venueId ?? "");
     const tableNumber = req.query["tableNumber"] as string | undefined;
     const mode        = (req.query["mode"] as string) ?? "normal";
 

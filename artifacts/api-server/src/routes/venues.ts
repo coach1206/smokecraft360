@@ -71,7 +71,7 @@ router.post(
 // ── GET /api/venues/:id — public config for white-label loading ───────────────
 // Must come AFTER the root GET "/" so "default" slug isn't mistaken for a UUID.
 router.get("/:id", async (req, res: Response) => {
-  const { id } = req.params;
+  const id = String(req.params.id ?? "");
 
   // SmokeCraft default (no DB lookup needed)
   if (id === "default" || id === "smokecraft") {

@@ -37,7 +37,7 @@ async function aggregateFlavors(timeframe: "daily" | "weekly" | "monthly", days:
 
   // Network: count product_selected events grouped by metadata.flavor
   // (falls back to productId where flavor is absent — still useful as a "cigar" rollup)
-  const networkRows = await db.execute<{ value: string; count: string }>(sql`
+  const networkRows = (await db.execute<{ value: string; count: string }>(sql`
     SELECT
       COALESCE(metadata->>'flavor', product_id) AS value,
       COUNT(*)::text                            AS count
@@ -48,7 +48,7 @@ async function aggregateFlavors(timeframe: "daily" | "weekly" | "monthly", days:
     GROUP BY value
     ORDER BY count DESC
     LIMIT 50
-  `);
+  `)).rows;
 
   for (const r of networkRows) {
     await db.insert(networkMetricsTable).values({
@@ -63,7 +63,7 @@ async function aggregateFlavors(timeframe: "daily" | "weekly" | "monthly", days:
   }
 
   // Per-venue: same rollup but grouped by venue_id
-  const venueRows = await db.execute<{ venue_id: string; value: string; count: string }>(sql`
+  const venueRows = (await db.execute<{ venue_id: string; value: string; count: string }>(sql`
     SELECT
       venue_id,
       COALESCE(metadata->>'flavor', product_id) AS value,
@@ -75,7 +75,7 @@ async function aggregateFlavors(timeframe: "daily" | "weekly" | "monthly", days:
       AND COALESCE(metadata->>'flavor', product_id) IS NOT NULL
     GROUP BY venue_id, value
     ORDER BY count DESC
-  `);
+  `)).rows;
 
   for (const r of venueRows) {
     await db.insert(venueMetricsTable).values({
@@ -94,14 +94,14 @@ async function aggregateFlavors(timeframe: "daily" | "weekly" | "monthly", days:
 async function aggregateCigars(timeframe: "daily" | "weekly" | "monthly", days: number): Promise<void> {
   const since = new Date(Date.now() - days * 24 * HOUR_MS);
 
-  const networkRows = await db.execute<{ value: string; count: string }>(sql`
+  const networkRows = (await db.execute<{ value: string; count: string }>(sql`
     SELECT cigar_id AS value, COUNT(*)::text AS count
     FROM orders
     WHERE created_at >= ${since} AND cigar_id IS NOT NULL
     GROUP BY cigar_id
     ORDER BY count DESC
     LIMIT 30
-  `);
+  `)).rows;
 
   for (const r of networkRows) {
     await db.insert(networkMetricsTable).values({
@@ -119,7 +119,7 @@ async function aggregateCigars(timeframe: "daily" | "weekly" | "monthly", days: 
 async function aggregatePairings(timeframe: "daily" | "weekly" | "monthly", days: number): Promise<void> {
   const since = new Date(Date.now() - days * 24 * HOUR_MS);
 
-  const networkRows = await db.execute<{ value: string; count: string }>(sql`
+  const networkRows = (await db.execute<{ value: string; count: string }>(sql`
     SELECT
       cigar_name || ' + ' || drink_name AS value,
       COUNT(*)::text                    AS count
@@ -130,7 +130,7 @@ async function aggregatePairings(timeframe: "daily" | "weekly" | "monthly", days
     GROUP BY value
     ORDER BY count DESC
     LIMIT 20
-  `);
+  `)).rows;
 
   for (const r of networkRows) {
     await db.insert(networkMetricsTable).values({
@@ -149,7 +149,7 @@ async function aggregateScores(timeframe: "daily" | "weekly" | "monthly", days: 
   const since = new Date(Date.now() - days * 24 * HOUR_MS);
 
   // Average blendScore from analytics_events metadata where present
-  const networkRows = await db.execute<{ avg_score: string; n: string }>(sql`
+  const networkRows = (await db.execute<{ avg_score: string; n: string }>(sql`
     SELECT
       AVG((metadata->>'blendScore')::float)::text AS avg_score,
       COUNT(*)::text                              AS n
@@ -157,7 +157,7 @@ async function aggregateScores(timeframe: "daily" | "weekly" | "monthly", days: 
     WHERE event_type = 'recommendation'
       AND created_at >= ${since}
       AND metadata->>'blendScore' IS NOT NULL
-  `);
+  `)).rows;
 
   const row = networkRows[0];
   if (row?.avg_score) {

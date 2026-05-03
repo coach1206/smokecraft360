@@ -255,7 +255,7 @@ router.get(
   "/:id",
   requireAuth,
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
     const userId = req.user!.id;
     const role   = req.user!.role;
 
@@ -291,7 +291,7 @@ router.patch(
   "/:id",
   requireAuth,
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
     const userId = req.user!.id;
 
     const [existing] = await db
@@ -367,7 +367,7 @@ router.patch(
   requireAuth,
   requireRole("super_admin", "manager"),
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
 
     const [existing] = await db
       .select()
@@ -418,7 +418,7 @@ router.post(
   requireAuth,
   requireActiveLicense,
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
     const userId = req.user!.id;
 
     const [existing] = await db
@@ -506,7 +506,7 @@ router.delete(
   "/:id",
   requireAuth,
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
     const userId = req.user!.id;
 
     const [existing] = await db

@@ -208,7 +208,7 @@ router.patch(
     const [updated] = await db
       .update(redemptionsTable)
       .set({ ...parse.data, updatedAt: new Date() })
-      .where(eq(redemptionsTable.id, req.params.id))
+      .where(eq(redemptionsTable.id, String(req.params.id ?? "")))
       .returning();
     if (!updated) {
       res.status(404).json({ error: "Redemption not found" });

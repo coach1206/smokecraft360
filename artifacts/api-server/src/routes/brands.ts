@@ -112,7 +112,7 @@ router.patch(
   requireRole("super_admin", "venue_owner", "manager"),
   allowOnly("name", "category", "distributorId", "logoUrl", "website", "contactEmail", "active"),
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
     if (!UUID_RE.test(id)) { res.status(400).json({ error: "Invalid brand id" }); return; }
 
     const { name, category, distributorId, logoUrl, website, contactEmail, active } = req.body as {
@@ -152,7 +152,7 @@ router.get(
   requireAuth,
   requireRole("super_admin", "venue_owner", "manager", "brand_partner"),
   async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
     if (!UUID_RE.test(id)) { res.status(400).json({ error: "Invalid brand id" }); return; }
 
     const [brand] = await db.select().from(brandsTable).where(eq(brandsTable.id, id)).limit(1);

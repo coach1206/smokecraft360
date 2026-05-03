@@ -30,7 +30,7 @@ router.patch(
   requireRole("staff", "manager", "venue_owner", "super_admin"),
   allowOnly("method"),
   async (req: AuthRequest, res: Response) => {
-    const { id }     = req.params;
+    const id         = String(req.params.id ?? "");
     const { method } = req.body as { method?: string };
 
     const verificationMethod: VerificationMethod =
@@ -71,7 +71,7 @@ router.patch(
         verifiedBy:         req.user!.id,
         status:             "completed",
         updatedAt:          new Date(),
-      })
+      } as Partial<typeof ordersTable.$inferInsert>)
       .where(eq(ordersTable.id, id))
       .returning();
 
@@ -108,7 +108,7 @@ router.get(
   "/:id/qr",
   requireAuth,
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
 
     // Fetch order — owner can view their own; staff+ can view any
     const [order] = await db
@@ -154,7 +154,7 @@ router.get(
   requireAuth,
   requireRole("staff", "manager", "venue_owner", "super_admin"),
   async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const id = String(req.params.id ?? "");
 
     const [order] = await db
       .select()
@@ -181,7 +181,7 @@ router.get(
         verifiedBy:         req.user!.id,
         status:             "completed",
         updatedAt:          new Date(),
-      })
+      } as Partial<typeof ordersTable.$inferInsert>)
       .where(eq(ordersTable.id, id))
       .returning();
 

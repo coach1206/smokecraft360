@@ -39,7 +39,7 @@ async function computeLeague(): Promise<RawStat[]> {
   const weekAgo = new Date(Date.now() - WEEK_MS);
 
   // Aggregate orders per venue
-  const rows = await db.execute<{
+  const rows = (await db.execute<{
     lounge_id:             string;
     lounge_name:           string;
     lounge_type:           string;
@@ -67,7 +67,7 @@ async function computeLeague(): Promise<RawStat[]> {
     LEFT JOIN orders o ON o.venue_id = v.id
     GROUP BY v.id, v.name, v.type
     ORDER BY total_verified_orders DESC
-  `);
+  `)).rows;
 
   return rows.map((r) => ({
     loungeId:            r.lounge_id,
@@ -209,7 +209,7 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     // Single-venue lookup: only allowed for the venue's own user or super_admin
     const isAdmin = req.user?.role === "super_admin";
-    if (!isAdmin && req.user?.venueId !== req.params.id) {
+    if (!isAdmin && req.user?.venueId !== String(req.params.id ?? "")) {
       res.status(403).json({ error: "You can only view stats for your own venue" });
       return;
     }

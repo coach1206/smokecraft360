@@ -177,7 +177,7 @@ export async function awardXpForOrder(order: DbOrder): Promise<XpResult | null> 
     totalPts += 50;
   }
 
-  const [loyaltyRow] = await db.execute<{ total_points: number }>(sql`
+  const [loyaltyRow] = (await db.execute<{ total_points: number }>(sql`
     INSERT INTO user_loyalty_points (user_id, total_points, points_redeemed)
     VALUES (${order.userId}::uuid, ${totalPts}, 0)
     ON CONFLICT (user_id)
@@ -185,7 +185,7 @@ export async function awardXpForOrder(order: DbOrder): Promise<XpResult | null> 
       total_points = user_loyalty_points.total_points + ${totalPts},
       updated_at   = now()
     RETURNING total_points
-  `);
+  `)).rows;
 
   logger.info(
     { orderId: order.id, userId: order.userId, xp: totalXp, pts: totalPts, breakdown },

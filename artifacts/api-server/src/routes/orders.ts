@@ -167,7 +167,7 @@ router.patch(
   requireRole("venue_owner", "manager", "staff"),
   allowOnly("status"),
   async (req: AuthRequest, res: Response) => {
-    const { id }     = req.params;
+    const id         = String(req.params.id ?? "");
     const { status } = req.body as { status?: string };
 
     if (!status || !(VALID_STATUSES as readonly string[]).includes(status)) {
@@ -226,7 +226,7 @@ router.patch(
         noop:               [400, `Order already in status "${status}"`],
         invalid_transition: [422, `Invalid transition from "${(result as { from?: string }).from}" → "${status}"`],
       };
-      const [code, msg] = map[result.error];
+      const [code, msg] = map[String(result.error)]!;
       res.status(code).json({ error: msg, from: (result as { from?: string }).from });
       return;
     }

@@ -360,8 +360,8 @@ router.get(
     // ── Insight statements ────────────────────────────────────────────────
 
     const insightStatements = generateInsights({
-      topCigar:        topCigars[0],
-      topAlcohol:      topAlcohol[0],
+      topCigar:        topCigars[0]  ? { name: topCigars[0].productName }  : undefined,
+      topAlcohol:      topAlcohol[0] ? { name: topAlcohol[0].productName } : undefined,
       missedSalesCount: missedSales.length,
       totalDemand,
       totalOrders,
