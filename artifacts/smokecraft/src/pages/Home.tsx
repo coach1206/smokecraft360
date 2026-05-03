@@ -1139,18 +1139,17 @@ export default function Home() {
                             cat:      "cigar"   as const,
                             title:    "Cigar",
                             subtitle: "Handcrafted. Bold. Timeless.",
-                            /* IMPORTANT: head ID was photo-1574870111867-089730e5a72b
-                             * — that ID was repurposed by Unsplash at some point
-                             * and started returning a giraffe photo on the kiosk.
-                             * Replaced with the verified cigar shot we already
-                             * use in DynamicBackground (proven stable). All chain
-                             * URLs below have been visually verified as cigar/
-                             * tobacco/humidor content. Do NOT swap to random IDs
-                             * without confirming the rendered image first.        */
+                            /* IMPORTANT: this card has rotted before — prior
+                             * Unsplash IDs in the chain stopped resolving to
+                             * cigars (one fell through to a VR-goggles photo
+                             * on the kiosk). All three URLs below have been
+                             * visually verified to render cigar / humidor
+                             * content. Do NOT swap to new IDs without opening
+                             * the URL and confirming the rendered image. */
                             images: [
-                              "https://images.unsplash.com/photo-1527144901953-6e34cf3a4ff5?auto=format&fit=crop&w=1400&q=75",
-                              "https://images.unsplash.com/photo-1567449303078-57ad995bd17f?auto=format&fit=crop&w=1400&q=75",
-                              "https://images.unsplash.com/photo-1605647540924-852290f6b0d5?auto=format&fit=crop&w=1400&q=75",
+                              "https://images.pexels.com/photos/1637114/pexels-photo-1637114.jpeg?auto=compress&cs=tinysrgb&w=1400",
+                              "https://images.pexels.com/photos/14017014/pexels-photo-14017014.jpeg?auto=compress&cs=tinysrgb&w=1400",
+                              "https://images.pexels.com/photos/6713596/pexels-photo-6713596.jpeg?auto=compress&cs=tinysrgb&w=1400",
                             ],
                           },
                           {
