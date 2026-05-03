@@ -29,6 +29,26 @@ const UNMOUNT_AT_MS   = 4800;
 const SOUND_AT_MS     = 1200; // synced with logo-arrival per brief
 const ARRIVAL_SRC     = "/sounds/arrival.mp3";
 
+/** Synchronous read of the once-per-session flag. App.tsx uses this to
+ *  initialize its `ready` gate so a "seen" session never mounts BootIntro
+ *  at all — eliminates the one-frame-of-nothing flash a useEffect-based
+ *  signal would cause. */
+export function hasSeenBootIntro(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.sessionStorage.getItem(SESSION_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export interface BootIntroProps {
+  /** Called once when the intro animation completes naturally (4.8s) or
+   *  the user skips. Parent should respond by flipping its ready gate so
+   *  this component unmounts and the underlying app renders. */
+  onFinish?: () => void;
+}
+
 /** Inline SVG logo — flat solid dark-green geometric mark, no outline / no
  *  glow / no 3D per brief 25. Stylized "P/I" monogram inside a soft square.
  *  Lives inline so the boot screen never depends on an extra network round-
@@ -57,24 +77,36 @@ function PlaceholderLogo() {
   );
 }
 
-export function BootIntro() {
+export function BootIntro({ onFinish }: BootIntroProps = {}) {
   /* Initialize from sessionStorage SYNCHRONOUSLY so we never even paint the
-   * overlay if it's been seen this session — avoids a one-frame flash. */
-  const [visible, setVisible] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return window.sessionStorage.getItem(SESSION_KEY) !== "1";
-    } catch {
-      return true; // private mode → just show it, harmless
-    }
-  });
+   * overlay if it's been seen this session. With the gate pattern in App.tsx
+   * the parent already pre-checks via hasSeenBootIntro(), but this guard
+   * stays as defense-in-depth for any caller that mounts us directly. */
+  const [visible, setVisible] = useState(() => !hasSeenBootIntro());
   const [fading, setFading]   = useState(false);
+  /* Single source of truth for "we've signaled completion". Prevents
+   * onFinish from firing twice if the auto-timer and a manual skip race. */
+  const finishedRef           = useRef(false);
+  /* Latest onFinish — captured in a ref so timer callbacks always see the
+   * current callback even if the parent re-renders with a new closure. */
+  const onFinishRef           = useRef(onFinish);
+  onFinishRef.current = onFinish;
   const audioRef              = useRef<HTMLAudioElement | null>(null);
   const dismissedRef          = useRef(false);
   /* Tracks the manual-dismiss unmount timer so cleanup can clear it if
    * the component tears down during the 400ms tail (HMR / parent unmount
    * edge case flagged by code review). */
   const dismissTimerRef       = useRef<number | null>(null);
+
+  /* Call onFinish at most once. Centralising this here means the auto-timer,
+   * the manual skip, and any future entry point all funnel through one
+   * idempotent exit. */
+  function finish() {
+    if (finishedRef.current) return;
+    finishedRef.current = true;
+    setVisible(false);
+    onFinishRef.current?.();
+  }
 
   /* Mark the session flag the moment we decide to play the intro so a fast
    * SPA navigation during the animation can't trigger a second instance. */
@@ -88,8 +120,8 @@ export function BootIntro() {
   useEffect(() => {
     if (!visible) return;
 
-    const fadeTimer    = window.setTimeout(() => setFading(true),   FADEOUT_AT_MS);
-    const unmountTimer = window.setTimeout(() => setVisible(false), UNMOUNT_AT_MS);
+    const fadeTimer    = window.setTimeout(() => setFading(true), FADEOUT_AT_MS);
+    const unmountTimer = window.setTimeout(() => finish(),         UNMOUNT_AT_MS);
     const soundTimer   = window.setTimeout(() => {
       try {
         const a = new Audio(ARRIVAL_SRC);
@@ -127,7 +159,7 @@ export function BootIntro() {
     setFading(true);
     dismissTimerRef.current = window.setTimeout(() => {
       dismissTimerRef.current = null;
-      setVisible(false);
+      finish();
     }, 400);
   }
 
@@ -139,6 +171,14 @@ export function BootIntro() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [visible]);
+
+  /* Defense-in-depth path: if a caller mounted us directly without checking
+   * hasSeenBootIntro(), still call onFinish so the parent's gate (if any)
+   * progresses. Idempotent thanks to finishedRef. */
+  useEffect(() => {
+    if (!visible) finish();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!visible) return null;
 

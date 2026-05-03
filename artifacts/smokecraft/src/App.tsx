@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster }         from "@/components/ui/toaster";
@@ -19,7 +20,7 @@ import PaymentCancel   from "@/pages/PaymentCancel";
 import { DemoBanner }            from "@/components/Demo/DemoBanner";
 import { PresentationOverlay }   from "@/components/Presentation/PresentationOverlay";
 import { KioskModeProvider, KioskModeBanner } from "@/contexts/KioskModeContext";
-import BootIntro                  from "@/components/BootIntro";
+import BootIntro, { hasSeenBootIntro } from "@/components/BootIntro";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,13 @@ function Router() {
 }
 
 function App() {
+  /* Gate the routed app behind the boot intro per the user's onFinish
+   * pattern. Initialized synchronously from sessionStorage so a "seen"
+   * session goes straight to ready=true and never mounts BootIntro at
+   * all (no one-frame flash). Providers stay outside the gate so context
+   * state isn't torn down/remounted across the transition. */
+  const [ready, setReady] = useState<boolean>(() => hasSeenBootIntro());
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -60,18 +68,24 @@ function App() {
             <AuthProvider>
               <PresentationProvider>
                 <KioskModeProvider>
-                  <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                    <Router />
-                  </WouterRouter>
-                  <PresentationOverlay />
-                  <DemoBanner />
-                  <KioskModeBanner />
-                  <LicenseGate />
-                  <Toaster />
-                  {/* Profound Innovation cinematic boot intro — sibling
-                      overlay so it sits above every route on first session
-                      load and self-dismisses to reveal the underlying app. */}
-                  <BootIntro />
+                  {/* Boot gate — BootIntro renders first; when it calls
+                      onFinish (auto at 4.8s or on skip) we flip `ready`
+                      and the routed app + chrome mount. On already-seen
+                      sessions ready starts true and we skip BootIntro
+                      entirely. */}
+                  {!ready && <BootIntro onFinish={() => setReady(true)} />}
+                  {ready && (
+                    <>
+                      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                        <Router />
+                      </WouterRouter>
+                      <PresentationOverlay />
+                      <DemoBanner />
+                      <KioskModeBanner />
+                      <LicenseGate />
+                      <Toaster />
+                    </>
+                  )}
                 </KioskModeProvider>
               </PresentationProvider>
             </AuthProvider>
