@@ -47,8 +47,15 @@ const BG: Record<string, BgState> = {
 // reflective) are abstract lounge ambiance.
 const WHISKEY_SCENE =
   "https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=1600&q=70";
+// IMPORTANT: the prior Unsplash cigar URL (photo-1527144901953-6e34cf3a4ff5)
+// started 404'ing, leaving the cigar mood scene as just the dark gradient
+// with no photo. Same drift hit the experience-step card in Home.tsx — we
+// swapped that to a Pexels cigar photo that's been visually verified to
+// render actual cigar/tobacco content (no people, no goggles). Mirror that
+// fix here. Do NOT swap to a new ID without opening the URL and confirming
+// the rendered image.
 const CIGAR_SCENE =
-  "https://images.unsplash.com/photo-1527144901953-6e34cf3a4ff5?auto=format&fit=crop&w=1600&q=70";
+  "https://images.pexels.com/photos/1637114/pexels-photo-1637114.jpeg?auto=compress&cs=tinysrgb&w=1600";
 
 const SCENE: Record<string, string> = {
   welcome:             WHISKEY_SCENE,
