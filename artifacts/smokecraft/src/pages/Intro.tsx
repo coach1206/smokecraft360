@@ -20,7 +20,22 @@ const LETTER_INTERVAL_MS  = 60;
 const STARTUP_CHIME_DELAY = 1200;
 const SPLASH_TITLE        = "PROFOUND INNOVATION";
 const IDLE_THRESHOLD_MS   = 8000;   // no input for 8s on the selector → attract mode
-const DEMO_CYCLE_MS       = 2500;   // attract-mode card highlight cadence
+const DEMO_CYCLE_MS       = 2500;   // attract-mode beat cadence
+const DEMO_BEATS          = 4;      // 3 card-highlight beats + 1 reveal beat
+const REVEAL_BEAT         = 3;      // index of the reveal beat in the cycle
+
+/**
+ * Per-beat captions for the attract narrative. Walks the viewer through what
+ * the product does (mood → flavor → pairing → reveal) instead of just blinking
+ * cards. Index aligned with the cycle: 0=smokecraft, 1=pourcraft, 2=vapecraft,
+ * 3=reveal.
+ */
+const DEMO_CAPTIONS = [
+  "Reading the room",
+  "Tuning the flavor profile",
+  "Selecting the perfect pairing",
+  "Your elite experience is ready",
+] as const;
 
 /**
  * Sample inputs for the attract-mode preview scorecard. Mirrors the
@@ -174,7 +189,7 @@ export default function Intro() {
       let i = 0;
       setAttractIdx(i);
       demoTimerRef.current = window.setInterval(() => {
-        i = (i + 1) % EXPERIENCES.length;
+        i = (i + 1) % DEMO_BEATS;
         setAttractIdx(i);
       }, DEMO_CYCLE_MS);
     };
@@ -392,7 +407,8 @@ export default function Intro() {
           const isSel       = selected === exp.key;
           const isOther     = selected !== null && !isSel;
           const isAttractOn = isIdle && !selected;
-          const isAttractMe = isAttractOn && i === attractIdx;
+          // On reveal beat, dim all cards equally so the scorecard takes focus.
+          const isAttractMe = isAttractOn && attractIdx !== REVEAL_BEAT && i === attractIdx;
           return (
             <motion.button
               key={exp.key}
@@ -493,12 +509,44 @@ export default function Intro() {
         })}
       </div>
 
-      {/* Attract-mode preview scorecard — visible while the demo loop sits on
-          the SmokeCraft card. Uses the same weighted formula as /api/scoring
-          so the displayed result is always consistent with the live engine,
-          but computed client-side to avoid hammering the API from idle kiosks. */}
+      {/* Attract-mode beat caption — narrates the demo sequence above the cards
+          so the kiosk visibly explains what the product does (mood → flavor →
+          pairing → reveal) instead of just blinking. Re-mounts per beat so
+          AnimatePresence cross-fades the text. */}
+      <AnimatePresence mode="wait">
+        {isIdle && !selected && stage === "select" && (
+          <motion.div
+            key={`caption-${attractIdx}`}
+            data-testid="intro-demo-caption"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              position: "fixed", left: 0, right: 0, top: "16vh",
+              textAlign: "center", pointerEvents: "none",
+              zIndex: 39,
+              fontFamily: "var(--app-font-serif, Georgia, serif)",
+              fontSize: "clamp(18px, 2vw, 26px)",
+              letterSpacing: "0.06em",
+              color: "#F5EBDD",
+              textShadow: "0 0 32px rgba(0,0,0,0.55)",
+            }}
+          >
+            {DEMO_CAPTIONS[attractIdx]}
+            <span style={{ opacity: 0.55, marginLeft: 4 }}>
+              {attractIdx < REVEAL_BEAT ? "…" : ""}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Attract-mode preview scorecard — visible during the reveal beat.
+          Uses the same weighted formula as /api/scoring so the displayed
+          result is always consistent with the live engine, but computed
+          client-side to avoid hammering the API from idle kiosks. */}
       <AnimatePresence>
-        {isIdle && !selected && stage === "select" && attractIdx === 0 && (() => {
+        {isIdle && !selected && stage === "select" && attractIdx === REVEAL_BEAT && (() => {
           const { score, label } = previewScore(DEMO_SAMPLE);
           return (
             <motion.div
@@ -529,7 +577,7 @@ export default function Intro() {
                   marginBottom: 8,
                 }}
               >
-                Preview · SmokeCraft Score
+                Elite Experience Ready
               </div>
               <div
                 style={{
