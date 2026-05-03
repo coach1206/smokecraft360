@@ -125,6 +125,41 @@ Two distinct NDA flows now coexist:
      until all fields complete and ink drawn. On success: sessionStorage flag
      `demoNdaSigned=1`, fade-out 300ms, navigate `/intro`. Reload-resistant.
 
+## Multi-User Sessions (G2)
+
+Backend-only slice. Provides the grouping primitive ("party") that future
+slices (group orders, joint loyalty, shared recommendations) will hang
+behaviour off.
+
+**Schema** (2 new tables, no destructive changes):
+- `sessions` — `id`, `venueId`, `hostUserId`, `code` (6-char A-Z0-9, no
+  ambiguous 0/O/1/I/L), `status` (`active` | `closed`), `createdAt`,
+  `closedAt`. **Partial unique index** `sessions_code_active_unique` on
+  `code WHERE status='active'` — codes are unique only among active
+  sessions and freed on close.
+- `session_members` — `(sessionId, userId)` unique-paired, `role`
+  (`host` | `guest`), `joinedAt`, `leftAt` (nullable; null = present).
+
+**Routes** mounted at `/api/sessions`:
+- `POST /` — host (any authed user) creates a session. Code generated
+  randomly, retried up to 5× on partial-index collision.
+- `POST /join` — guest joins by code. Body schema normalises to
+  uppercase. Behind `sessionJoinLimiter` (30/min/IP). **Atomic capped
+  insert**: `INSERT ... SELECT WHERE (live count) < MAX_MEMBERS ON
+  CONFLICT DO UPDATE SET left_at=NULL` — re-join is idempotent, cap
+  cannot be exceeded under concurrent floods.
+- `GET /:id` — visibility-gated to current (non-left) members only.
+- `POST /:id/leave` — guest can leave; host gets 409 (must close instead).
+- `POST /:id/close` — atomic host-only close (`UPDATE WHERE host AND
+  status='active'`). 0-row update path distinguishes 404 / 403 / 409.
+
+**Hard cap:** `MAX_MEMBERS = 20` per session. Enforced atomically inside
+the join INSERT; verified by 5-way parallel-join race test on a
+1-slot-free session → exactly 1 success, 4 × 409, final count = 20.
+
+**Out of scope (call out for next slice):** real-time presence/sockets,
+session-scoped chat, group-order tying, frontend UI.
+
 ## Reward Redemption (G1)
 
 The schema (`rewardsTable`, `redemptionsTable`, `userLoyaltyPointsTable`),

@@ -52,6 +52,17 @@ export const ndaSignLimiter = rateLimit({
   message: { error: "Too many signature attempts — please wait a moment and try again" },
 });
 
+/* Session-join limiter — authed write that scans the 6-char A-Z0-9 code
+ * namespace (~36^6 ≈ 2.2B), but a brute-force enumerator could still
+ * attempt thousands of codes per minute to crash an active party. 30/min
+ * per IP gives a real human plenty of room to fat-finger a code and retry
+ * while making automated enumeration economically pointless. */
+export const sessionJoinLimiter = rateLimit({
+  ...shared,
+  limit:   30,
+  message: { error: "Too many session-join attempts — please wait a moment" },
+});
+
 /* Offline-queue sync limiter — public write that drains a kiosk's buffered
  * actions. Kiosks naturally batch (up to 100 items per call), so callers
  * should rarely make more than a handful of /sync requests per minute.
