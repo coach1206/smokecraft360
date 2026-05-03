@@ -1,0 +1,254 @@
+BUILD A FULL-STACK FOUNDATION FOR SMOKECRAFT 360 WITH A DYNAMIC THEME ENGINE (SMOKECRAFT / POURCRAFT), BACKEND API, PRODUCT FETCHING BY THEME, SCORING ENGINE, BASIC ORDER ENDPOINT, AND A STRIPE WEBHOOK (STRUCTURED + STUBBED) — FULLY WIRED, NO PLACEHOLDERS LEFT UNCONNECTED
+
+---
+
+🚨 CORE OBJECTIVE
+
+Create ONE working system where:
+
+- frontend switches themes dynamically
+- backend serves products based on theme
+- scoring engine calculates results
+- order endpoint processes requests
+- Stripe webhook is structured correctly (even if stubbed)
+
+---
+
+🧱 PROJECT STRUCTURE
+
+/server
+  index.js
+  db.js
+  /routes
+    products.js
+    order.js
+    scoring.js
+    webhook.js
+
+/client
+  main.jsx
+  App.jsx
+  themeLoader.js
+  ThemeContext.jsx
+  /themes
+    smokecraft.js
+    pourcraft.js
+
+---
+
+🔥 BACKEND IMPLEMENTATION
+
+1. CREATE BASIC EXPRESS SERVER
+
+- enable CORS
+- enable JSON parsing
+- mount routes:
+
+/api/products  
+/api/order  
+/api/scoring  
+/api/webhook  
+
+---
+
+2. DATABASE LAYER (INITIAL)
+
+Create db.js with:
+
+- cigars (category: cigar)
+- whiskey (category: whiskey)
+- wine (category: wine)
+- cocktails (category: cocktail)
+
+Expose function:
+
+getProductsByType(type)
+
+Return correct dataset based on category
+
+---
+
+3. PRODUCTS API
+
+GET /api/products?type={type}
+
+- read query param
+- fetch from db
+- return JSON array
+
+---
+
+4. SCORING ENGINE
+
+POST /api/scoring
+
+Input:
+
+{
+  flavor: number,
+  strength: number,
+  pairing: number
+}
+
+Logic:
+
+score = (flavor * 0.4) + (strength * 0.3) + (pairing * 0.3)
+
+Return:
+
+{
+  score: number,
+  label: string
+}
+
+---
+
+5. ORDER ENDPOINT
+
+POST /api/order
+
+Input:
+
+{
+  productIds: [],
+  theme: string
+}
+
+Return:
+
+{
+  status: "order_created",
+  message: "Order received"
+}
+
+(No payment processing yet — just structure)
+
+---
+
+6. STRIPE WEBHOOK (STUB STRUCTURE)
+
+POST /api/webhook
+
+- accept raw body
+- include signature verification placeholder
+- handle event types:
+
+payment_intent.succeeded  
+invoice.paid  
+
+Log:
+
+"Webhook received"
+
+Return:
+
+{ received: true }
+
+---
+
+🔥 FRONTEND IMPLEMENTATION
+
+1. THEME CONFIGS
+
+Create:
+
+/themes/smokecraft.js  
+/themes/pourcraft.js  
+
+Each must define:
+
+- name
+- productType
+- secondaryProduct
+- sceneFolder
+
+---
+
+2. THEME LOADER
+
+Create function:
+
+loadTheme(themeName)
+
+Return correct config
+
+Default → smokecraft
+
+---
+
+3. THEME CONTEXT
+
+Create React context:
+
+- provide theme globally
+- allow components to access theme data
+
+---
+
+4. ROUTING
+
+Support dynamic theme:
+
+/:theme
+
+Extract theme from URL and load correct config
+
+---
+
+5. PRODUCT FETCHING
+
+On theme load:
+
+fetch:
+
+/api/products?type=theme.productType
+
+Store results in state
+
+---
+
+6. UI BINDING
+
+Display:
+
+- theme.name
+- product list
+- pricing
+
+---
+
+7. THEME SWITCHING
+
+Allow:
+
+- button or route change
+- dynamically update theme
+- re-fetch products
+
+---
+
+🔥 INTEGRATION RULES
+
+- frontend must never hardcode products
+- backend must serve all product data
+- theme config controls behavior
+- scoring uses API (not local calc)
+- order endpoint must be callable from UI
+
+---
+
+🔥 FINAL RESULT
+
+After build:
+
+- switching between SmokeCraft and PourCraft works
+- products change based on theme
+- scoring API returns values
+- order endpoint responds
+- webhook is structured and ready for Stripe
+
+THIS IS THE CORE FOUNDATION SYSTEM
+
+ALL FUTURE FEATURES BUILD ON TOP OF THIS
+
+---
