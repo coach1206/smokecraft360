@@ -15,7 +15,10 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 
-const SPLASH_DURATION_MS = 2500;
+const SPLASH_DURATION_MS  = 3200;
+const LETTER_INTERVAL_MS  = 60;
+const STARTUP_CHIME_DELAY = 1200;
+const SPLASH_TITLE        = "PROFOUND INNOVATION";
 
 type ThemeKey = "smokecraft" | "pourcraft" | "vapecraft";
 
@@ -115,15 +118,48 @@ function playSynth(ctxRef: React.MutableRefObject<AudioContext | null>) {
 
 export default function Intro() {
   const [, navigate]       = useLocation();
-  const [stage, setStage]  = useState<"splash" | "select">("splash");
-  const [selected, setSel] = useState<ThemeKey | null>(null);
-  const playClick          = useClickSound();
+  const [stage, setStage]      = useState<"splash" | "select">("splash");
+  const [selected, setSel]     = useState<ThemeKey | null>(null);
+  const [letters, setLetters]  = useState(0);
+  const playClick              = useClickSound();
 
-  // Splash → select transition. Cleanup on unmount so a fast back-nav
-  // can't fire setStage on a torn-down component.
+  // Splash sequence: letter-by-letter reveal + ambient bed + startup chime
+  // + stage transition. All cleanups run on unmount to avoid lingering audio
+  // or fires on a torn-down component.
   useEffect(() => {
-    const t = window.setTimeout(() => setStage("select"), SPLASH_DURATION_MS);
-    return () => window.clearTimeout(t);
+    const base = import.meta.env.BASE_URL;
+
+    // Per-letter typewriter for the wordmark.
+    let i = 0;
+    const letterTimer = window.setInterval(() => {
+      i += 1;
+      setLetters(i);
+      if (i >= SPLASH_TITLE.length) window.clearInterval(letterTimer);
+    }, LETTER_INTERVAL_MS);
+
+    // Ambient drone — looped, low volume. Autoplay may be blocked until the
+    // user taps; that's fine, the catch keeps it silent rather than throwing.
+    const ambient   = new Audio(`${base}sounds/ambient.mp3`);
+    ambient.loop    = true;
+    ambient.volume  = 0.15;
+    void ambient.play().catch(() => { /* autoplay blocked — non-essential */ });
+
+    // Startup chime fires partway through the splash for a "boot" feel.
+    const chime     = new Audio(`${base}sounds/startup.mp3`);
+    chime.volume    = 0.3;
+    const chimeT    = window.setTimeout(
+      () => void chime.play().catch(() => { /* non-essential */ }),
+      STARTUP_CHIME_DELAY,
+    );
+
+    const stageT = window.setTimeout(() => setStage("select"), SPLASH_DURATION_MS);
+
+    return () => {
+      window.clearInterval(letterTimer);
+      window.clearTimeout(chimeT);
+      window.clearTimeout(stageT);
+      try { ambient.pause(); } catch { /* ignore */ }
+    };
   }, []);
 
   const onPick = (key: ThemeKey) => {
@@ -171,23 +207,34 @@ export default function Intro() {
               color: "#F5EBDD", textAlign: "center",
             }}
           >
-            <motion.h1
-              initial={{ opacity: 0, y: 20, letterSpacing: "0.2em" }}
-              animate={{ opacity: 1, y: 0, letterSpacing: "0.32em" }}
-              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            <h1
               style={{
                 fontFamily: "var(--app-font-serif, Georgia, serif)",
                 fontSize: "clamp(36px, 5vw, 56px)",
                 fontWeight: 600,
                 margin: 0,
+                letterSpacing: "0.32em",
                 background: "linear-gradient(180deg, #F5EBDD 0%, #D4AF37 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor:  "transparent",
                 backgroundClip: "text",
+                whiteSpace: "nowrap",
               }}
             >
-              PROFOUND INNOVATION
-            </motion.h1>
+              {SPLASH_TITLE.split("").map((ch, idx) => (
+                <span
+                  key={idx}
+                  style={{
+                    display: "inline-block",
+                    opacity: idx < letters ? 1 : 0,
+                    transform: idx < letters ? "translateY(0)" : "translateY(18px)",
+                    transition: "opacity 0.4s ease, transform 0.4s ease",
+                  }}
+                >
+                  {ch === " " ? "\u00A0" : ch}
+                </span>
+              ))}
+            </h1>
             <motion.h2
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 0.7, y: 0 }}
