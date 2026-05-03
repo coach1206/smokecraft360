@@ -125,6 +125,52 @@ Two distinct NDA flows now coexist:
      until all fields complete and ink drawn. On success: sessionStorage flag
      `demoNdaSigned=1`, fade-out 300ms, navigate `/intro`. Reload-resistant.
 
+## Voice Queue (G4)
+
+Backend-only slice. Inbound counterpart to `/api/voice/speak` (which is
+outbound TTS via ElevenLabs). Holds transcripts captured AT the kiosk
+for downstream worker processing (intent parsing, staff dispatch, etc.).
+
+**Schema** (1 new table, no destructive changes):
+- `voice_commands` — `id`, `userId` (nullable, anon kiosk OK), `venueId`
+  (nullable), `transcript` (text, ≤1000 route-enforced), `status`
+  (`pending` | `claimed` | `completed` | `failed`), `claimedBy` (worker
+  user_id), `result` (jsonb), `errorMessage` (text), `retries` (int,
+  default 0), `createdAt`, `claimedAt`, `completedAt`. Index on
+  `(venueId, status, createdAt)` for the worker poll.
+
+**Routes** mounted at `/api/voice-queue`:
+- `POST /` — public enqueue (kiosks need to write without auth), but
+  every request MUST resolve a `venueId` (from body or Bearer token);
+  otherwise 400. This eliminates a shared global "anonymous bucket"
+  that one bad actor could DoS. Atomic capped INSERT — only counts
+  pending rows for that venue against the cap (completed/failed don't
+  crowd). 0 rows ⇒ 429.
+- `GET /` — staff/admin/super_admin only; lists caller's venue's
+  pending (or `?status=…`); super_admin can `?venueId=…` to override.
+- `POST /:id/claim` — staff+ atomic claim
+  (`UPDATE … WHERE status='pending' RETURNING …`). Two workers race
+  same id ⇒ exactly one 200, others 409.
+- `POST /:id/complete` — claimer-only atomic finish with optional
+  `{result}` jsonb. 0 rows ⇒ 404 (folds not-claimed-by-you / wrong
+  status / unknown into one code to avoid lifecycle leak).
+- `POST /:id/fail` — claimer-only atomic fail with `{errorMessage}`;
+  increments `retries`. Same 0-row → 404 fold.
+- `DELETE /:id` — super_admin purge.
+
+**Hard cap:** `MAX_PENDING_PER_VENUE = 200`. Verified by 5-way parallel
+enqueue at cap-1 → 1×201 + 4×429, count never exceeds 200; and 5-way
+parallel claim of the same id → 1×200 + 4×409.
+
+**New limiter:** `voiceQueueEnqueueLimiter` (15/min/IP) — kiosks should
+not flood. The per-venue 200-pending cap is the hard backstop, this is
+the noise filter.
+
+**Out of scope (call out for next slice):** SSE/socket worker push,
+server-side STT (this slice trusts the client to send the transcript
+text — Whisper/etc. integration is downstream), retry-with-backoff
+scheduler, dead-letter handling, frontend UI.
+
 ## AI Memory (G3)
 
 Backend-only slice. Provides recallable per-user "facts" an AI assistant

@@ -52,6 +52,18 @@ export const ndaSignLimiter = rateLimit({
   message: { error: "Too many signature attempts — please wait a moment and try again" },
 });
 
+/* Voice-queue enqueue limiter — public write that any kiosk (incl. anonymous)
+ * can hit to drop a transcript onto the queue. A misbehaving kiosk or hostile
+ * client could try to flood the queue to crowd out legitimate commands; the
+ * per-venue 200-pending cap is the hard backstop, but per-IP throttling stops
+ * the noise long before it gets there. 15/min/IP — a kiosk speaking once
+ * every 4 seconds is already a chatty session. */
+export const voiceQueueEnqueueLimiter = rateLimit({
+  ...shared,
+  limit:   15,
+  message: { error: "Too many voice commands queued — please wait a moment" },
+});
+
 /* Memory-write limiter — authed writes (POST/PATCH/DELETE on /api/memories).
  * A legitimate user might bulk-set ~50 memories during onboarding, so 60/min/IP
  * leaves slack while still choking off a runaway client cycling keys to thrash
