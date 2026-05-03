@@ -1,0 +1,197 @@
+SMOKECRAFT 360 — COMPLETE SYSTEM MAP (FINAL MERGED)
+
+This is your backend-controlled operating system stack
+Every single thing below is configurable, trackable, and monetizable from your dashboard.
+
+🧠 CORE EXPERIENCE + INTELLIGENCE LAYER
+1. Experience Engine
+Multi-flow system (Smoke / Pour / Vape / Brew)
+Guided journey (questions → recommendation)
+Dynamic switching between craft types
+Dashboard Control:
+Edit question flows
+Adjust recommendation weights
+Configure flavor / mood / pairing logic
+2. AI Personalization Engine
+Learns user preferences over time
+Tracks visit behavior + choices
+Suggests next-best experiences
+Dashboard:
+User profiles
+Behavior logs
+AI scoring adjustments
+3. Voice + Interaction Engine
+AI narration during experience
+Audio transitions + storytelling
+Dashboard:
+Voice scripts
+Timing triggers
+Tone control
+🎮 ENGAGEMENT + REVENUE LOOP
+4. Gamification Engine
+XP system
+Tier levels (Bronze → Elite)
+Achievements + milestones
+Dashboard:
+XP rules
+Tier thresholds
+Unlock conditions
+5. Reward + Redemption Engine
+Points → rewards
+Auto-applied discounts
+VIP perks / “on the house”
+Dashboard:
+Reward catalog
+Pricing overrides
+Expiration logic
+
+👉 This ties directly into checkout automatically
+
+6. Leaderboard + Competition Engine
+Venue vs venue rankings
+User rankings
+Monthly competitions
+Dashboard:
+Scoring formulas
+Competition rules
+Reward distribution
+💰 TRANSACTION + MONEY FLOW
+7. POS Integration Engine
+Square / Toast adapters
+Stripe payments
+Order + receipt sync
+Backend:
+Webhooks (real-time)
+Transaction mapping
+Fail-safe sync
+8. Billing + Subscription Engine
+Venue SaaS pricing tiers
+Tablet/kiosk rental billing
+Revenue share logic
+Dashboard:
+Subscription plans
+Invoices
+Feature gating
+📦 PRODUCT + INVENTORY CONTROL
+9. Inventory + Product Engine
+Cigars / drinks / vapes / products
+SKU tracking
+Availability
+Dashboard:
+Product tagging (flavor, strength, mood)
+Stock alerts
+Bundles
+📊 DATA + INTELLIGENCE
+10. Analytics + Intelligence Engine
+Customer behavior tracking
+Conversion rates
+Revenue per experience
+Dashboard:
+Heatmaps
+Drop-off tracking
+Product performance
+🏢 VENUE + USER MANAGEMENT
+11. Venue Control Panel (Multi-Tenant)
+Multi-location management
+Venue-specific pricing
+Experience customization
+12. User Account + Identity System
+Login / registration
+Loyalty tracking
+Cross-device sync
+13. Staff Mode vs Customer Mode (NEW)
+Customer Mode:
+Full guided experience
+Rewards + gamification
+Staff Mode:
+Manual overrides
+Skip flows
+Apply/remove rewards
+Hidden admin shortcuts (PIN / gesture unlock)
+🔐 SECURITY + CONTROL LAYER
+14. NDA + Legal Protection Engine
+Digital NDA on startup
+Signature canvas (touchscreen)
+Timestamp + IP capture
+Encrypted storage
+15. Fraud / Abuse Detection Engine (NEW CRITICAL)
+Detect reward farming
+Duplicate session detection
+Device fingerprinting
+Suspicious behavior scoring
+Auto-freeze rewards
+Dashboard:
+Fraud alerts
+Flagged users
+Activity logs
+16. Data Ownership + Governance System (NEW)
+Platform owns all system data
+Venue access is permission-based
+No full data export rights
+Audit logs for all access
+
+👉 This protects you from partners trying to clone your system
+
+17. Admin Master Control System (God Mode)
+Global system control
+Venue management
+Revenue oversight
+Feature toggles
+Kill switches
+📡 INFRASTRUCTURE + HARDWARE
+18. Hardware / Device Management Layer (NEW)
+Tablet/kiosk provisioning
+Device ID registration
+Remote lock/unlock
+Kiosk mode (no OS access)
+Auto reset after inactivity
+19. Offline Mode + Sync Engine
+Local caching
+Queue transactions
+Sync when online
+📢 GROWTH + RETENTION
+20. Marketing + Retention Engine
+Push notifications
+SMS/email triggers
+Behavior-based campaigns
+🎨 EXPERIENCE CONTROL
+21. Experience Design Engine
+Theme switching
+Visual customization per venue
+Animations + transitions
+🌐 SCALE + FUTURE DOMINATION
+22. API Ecosystem Engine (NEW)
+Public API gateway
+API key management
+Third-party integrations
+Webhook subscriptions
+External platform expansion
+
+👉 This is how SmokeCraft becomes infrastructure, not just software
+
+🔁 FULL SYSTEM LOOP (HOW EVERYTHING CONNECTS)
+
+Experience → Engagement → Rewards → Purchase → Data → AI Learning → Retention → Repeat
+
+⚠️ REAL TALK (PAY ATTENTION)
+
+At this point, SmokeCraft is:
+
+👉 A behavioral engine
+👉 A revenue optimizer
+👉 A venue operating system
+👉 A future network platform
+
+Not just an app.
+
+🧠 ONE MORE THING YOU SHOULD BE THINKING ABOUT
+
+You might want to think about this next move:
+
+👉 Cross-Venue Identity Layer
+
+Same user walks into different lounges…
+
+Their XP follows them
+Their status follows them
+Their preferences follow them
