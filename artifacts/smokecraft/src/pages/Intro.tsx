@@ -15,6 +15,19 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 
+/**
+ * Time-of-day mode for the kiosk. Drives copy + overlay opacity + (when
+ * generated assets are present) the looping background video. Determined
+ * once on mount from the local hour; kiosks reload nightly so a static
+ * snapshot is fine and avoids re-renders chasing the wall clock.
+ */
+type TimeOfDay = "day" | "evening" | "night";
+function timeOfDayFromHour(hour: number): TimeOfDay {
+  if (hour >= 6  && hour < 17) return "day";
+  if (hour >= 17 && hour < 22) return "evening";
+  return "night";
+}
+
 const SPLASH_DURATION_MS  = 3200;
 const LETTER_INTERVAL_MS  = 60;
 const STARTUP_CHIME_DELAY = 1200;
@@ -177,7 +190,13 @@ export default function Intro() {
   const [letters, setLetters]  = useState(0);
   const [isIdle, setIsIdle]    = useState(false);
   const [attractIdx, setAttractIdx] = useState(0);
+  const [tod]                  = useState<TimeOfDay>(() => timeOfDayFromHour(new Date().getHours()));
   const playClick              = useClickSound();
+
+  // Time-of-day driven copy + overlay opacity. Night gets the most
+  // atmospheric framing; day is the lightest read.
+  const headline = tod === "night" ? "Enter the Experience" : "Craft Your Experience";
+  const overlayAlpha = tod === "day" ? 0.4 : tod === "evening" ? 0.6 : 0.8;
 
   // Refs for the idle countdown + demo cycle so handlers can reset them
   // without re-creating closures.
@@ -296,6 +315,46 @@ export default function Intro() {
         padding: "5vh 4vw",
       }}
     >
+      {/* Time-of-day ambient lounge video — muted/looped/autoplay. One clip
+          per mode (day/evening/night), held in public/videos/. Sits at the
+          bottom of the stack (zIndex 0) under the tint and the attract scene
+          imagery, so it reads as ambient atmosphere rather than the hero.
+          Holding off until the splash has cleared keeps decoding cheap during
+          the brand reveal. `key` forces a fresh load if `tod` ever changes. */}
+      {stage === "select" && (
+        <video
+          key={`bg-${tod}`}
+          data-testid="intro-bg-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          src={`${import.meta.env.BASE_URL}videos/lounge-${tod}.mp4`}
+          style={{
+            position: "absolute", inset: 0, zIndex: 0,
+            width: "100%", height: "100%",
+            objectFit: "cover",
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
+      {/* Time-of-day tint — a single fixed overlay sitting just above the
+          base wrapper background and the scene/video layers. Day kiosks
+          read brightly (alpha 0.4), evening medium (0.6), night the deepest
+          (0.8). Sits below all interactive UI (zIndex 2) and above scene
+          imagery (zIndex 0–1). */}
+      <div
+        aria-hidden
+        data-testid="intro-tod-tint"
+        style={{
+          position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
+          background: `rgba(0,0,0,${overlayAlpha})`,
+          transition: "background 600ms ease",
+        }}
+      />
+
       {/* Cinematic background scene — cycles through the 3 product images
           on attract beats (one image per beat); the reveal beat fades to a
           neutral darkness so the scorecard takes center stage. Ken Burns
@@ -419,7 +478,12 @@ export default function Intro() {
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: selected ? 0 : 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        style={{ textAlign: "center", marginBottom: "4vh", maxWidth: 900 }}
+        style={{
+          textAlign: "center", marginBottom: "4vh", maxWidth: 900,
+          // Lift above the time-of-day tint (z=2) so the headline never
+          // gets darkened along with the background.
+          position: "relative", zIndex: 3,
+        }}
       >
         <h1
           style={{
@@ -434,7 +498,7 @@ export default function Intro() {
             backgroundClip: "text",
           }}
         >
-          Choose Your Experience
+          {tod === "night" ? "Enter the Experience" : headline}
         </h1>
         <p
           style={{
@@ -455,6 +519,9 @@ export default function Intro() {
           gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
           gap: 28,
           alignItems: "stretch",
+          // Lift above the time-of-day tint (z=2) so cards stay legible
+          // and only the background atmosphere is darkened by the tint.
+          position: "relative", zIndex: 3,
         }}
       >
         {EXPERIENCES.map((exp, i) => {
