@@ -749,12 +749,12 @@ export default function Home() {
         <aside
           className="hidden xl:flex flex-col fixed right-0 top-0 bottom-0 overflow-y-auto z-20"
           style={{
-            width:          300,
-            background:     "rgba(10,8,5,0.78)",
+            width:          320,                                        /* widened 300→320 for larger panel content */
+            background:     "rgba(20,15,10,0.85)",                       /* lightened per UX brief */
             backdropFilter: "blur(20px) saturate(1.4)",
             WebkitBackdropFilter: "blur(20px) saturate(1.4)",
-            borderLeft:     "1px solid rgba(212,175,55,0.09)",
-            boxShadow:      "-4px 0 32px rgba(0,0,0,0.5)",
+            borderLeft:     "1px solid rgba(212,175,55,0.18)",
+            boxShadow:      "-6px 0 36px rgba(0,0,0,0.55)",
           }}>
           <div className="p-5">
             <ExperienceRightPanel

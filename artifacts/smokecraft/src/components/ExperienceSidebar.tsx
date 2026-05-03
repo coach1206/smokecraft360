@@ -158,7 +158,7 @@ export function ExperienceSidebar({ activeStep, completed, values = {}, onReset,
               {/* Text */}
               <div className="min-w-0 flex-1">
                 <p style={{
-                  fontSize:      13,
+                  fontSize:      16,                                    /* bumped 13→16 for kiosk readability */
                   fontWeight:    700,
                   letterSpacing: "0.07em",
                   textTransform: "uppercase",
@@ -173,15 +173,15 @@ export function ExperienceSidebar({ activeStep, completed, values = {}, onReset,
 
                 {/* Show selected value for completed steps */}
                 {isCompleted && val ? (
-                  <p style={{ fontSize: 11, fontWeight: 500, color: "rgba(212,175,55,0.78)", marginTop: 2, lineHeight: 1.3 }}>
+                  <p style={{ fontSize: 14, fontWeight: 500, color: "rgba(212,175,55,0.85)", marginTop: 3, lineHeight: 1.3 }}>
                     {val}
                   </p>
                 ) : isActive ? (
-                  <p style={{ fontSize: 11, color: "rgba(200,175,130,0.55)", marginTop: 2, lineHeight: 1.3 }}>
+                  <p style={{ fontSize: 14, color: "rgba(210,185,140,0.72)", marginTop: 3, lineHeight: 1.3 }}>
                     {step.sublabel}
                   </p>
                 ) : (
-                  <p style={{ fontSize: 11, color: "rgba(185,160,110,0.38)", marginTop: 2, lineHeight: 1.3 }}>
+                  <p style={{ fontSize: 14, color: "rgba(195,170,120,0.55)", marginTop: 3, lineHeight: 1.3 }}>
                     {step.sublabel}
                   </p>
                 )}
@@ -209,13 +209,13 @@ export function ExperienceSidebar({ activeStep, completed, values = {}, onReset,
               background:   "rgba(255,255,255,0.04)",
               border:       "1px solid rgba(255,255,255,0.10)",
               color:        "rgba(210,185,140,0.65)",
-              fontSize:     12,
+              fontSize:     14,                                          /* bumped 12→14 */
               fontWeight:   600,
               letterSpacing: "0.12em",
               textTransform: "uppercase",
               cursor:       "pointer",
             }}>
-            <RotateCcw size={12} />
+            <RotateCcw size={14} />
             Start Over
           </button>
         </div>
@@ -224,7 +224,7 @@ export function ExperienceSidebar({ activeStep, completed, values = {}, onReset,
       {/* ── Footer ───────────────────────────────────────────── */}
       <div className="px-6 py-4">
         <div className="h-px mb-3" style={{ background: "rgba(212,175,55,0.10)" }} />
-        <p style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.28em", textAlign: "center", color: "rgba(180,155,100,0.25)" }}>
+        <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.28em", textAlign: "center", color: "rgba(180,155,100,0.4)" }}>
           SmokeCraft 360 · Est. 2024
         </p>
       </div>
