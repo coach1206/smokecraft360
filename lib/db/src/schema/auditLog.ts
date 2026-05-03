@@ -15,7 +15,8 @@
  * Writes are best-effort and must never block the underlying operation.
  */
 
-import { pgTable, uuid, text, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, jsonb, timestamp, index } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const auditLogTable = pgTable("audit_log", {
   id:          uuid("id").primaryKey().defaultRandom(),
@@ -29,7 +30,13 @@ export const auditLogTable = pgTable("audit_log", {
   venueId:     uuid("venue_id"),
   ipAddress:   text("ip_address"),
   createdAt:   timestamp("created_at").notNull().defaultNow(),
-});
+}, (t) => ({
+  // Read-path indexes for the GET /api/audit-log reader (G6). Each index
+  // anchors on created_at DESC so the keyset cursor scan is index-only.
+  venueCreatedIdx:  index("idx_audit_log_venue_created").on(t.venueId,  sql`${t.createdAt} DESC`),
+  actionCreatedIdx: index("idx_audit_log_action_created").on(t.action,   sql`${t.createdAt} DESC`),
+  actorCreatedIdx:  index("idx_audit_log_actor_created").on(t.actorId,  sql`${t.createdAt} DESC`),
+}));
 
 export type DbAuditLog     = typeof auditLogTable.$inferSelect;
 export type InsertAuditLog = typeof auditLogTable.$inferInsert;

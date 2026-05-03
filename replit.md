@@ -171,6 +171,77 @@ server-side STT (this slice trusts the client to send the transcript
 text — Whisper/etc. integration is downstream), retry-with-backoff
 scheduler, dead-letter handling, frontend UI.
 
+## Audit-Log Reader (G6)
+
+Backend-only slice. Schema `audit_log` and helper `lib/audit.ts#logAudit`
+already existed (writer-only — currently called from `routes/orders.ts`).
+This slice adds the missing reader so compliance / back-office can view
+the privileged-action trail. **Append-only is enforced by the absence of
+any write surface** — POST/PATCH/DELETE on `/api/audit-log` all return 404.
+
+**Schema migration** (additive — no column changes):
+- `idx_audit_log_venue_created`  btree `(venue_id, created_at DESC)`
+- `idx_audit_log_action_created` btree `(action,    created_at DESC)`
+- `idx_audit_log_actor_created`  btree `(actor_id,  created_at DESC)`
+
+EXPLAIN-verified that venue-scoped reads hit `idx_audit_log_venue_created`.
+
+**New router** `routes/auditLog.ts` mounted at `/api/audit-log`:
+- `GET /` — paginated read.
+  - **Auth:** `requireAuth` + `requireRole("venue_owner", "manager", "super_admin")`.
+  - **Tenant scope:** `super_admin` may pass `?venueId=…` or omit (sees
+    all venues). Non-super_admin is forced to `req.user.venueId`; any
+    `?venueId=` in the query is **silently ignored** (defensible: it's
+    not a 403 because the request itself is well-formed; the override
+    is treated as a no-op rather than a refusal). A non-super caller
+    with no venue context gets 403.
+  - **Filters** (all optional, AND-combined, validated → 400 on bad
+    input): `?action`, `?entityType`, `?actorId` (uuid), `?since` (ISO),
+    `?until` (ISO, half-open).
+  - **Pagination:** keyset cursor on `(createdAt DESC, id DESC)` to
+    avoid OFFSET cliff. Cursor format `<isoCreatedAt>_<uuid>`.
+    Garbage cursors silently parse-fail and return the first page.
+    `?limit=` default 50, hard cap 200. Implementation fetches
+    `limit+1` and emits `nextCursor=null` once exhausted.
+  - **Response:** `{ entries: AuditLog[], nextCursor: string|null }`.
+
+**No new limiter.** Reads are role-gated (manager+) with a hard 200-row
+cap and keyset pagination — back-office traffic does not need IP
+throttling at this layer.
+
+**Architect-fixed in this slice (both HIGH):**
+- **Cursor µs precision.** `Date.toISOString()` is millisecond-only but
+  Postgres `timestamp` stores microseconds — same-millisecond rows
+  could be skipped by the keyset predicate. Fix: cursor `ts` is now a
+  µs-precision string emitted via Postgres
+  `to_char(created_at, 'YYYY-MM-DD"T"HH24:MI:SS.US')` (selected as an
+  internal `cursorTs` column that's stripped from the response shape).
+  On the next page the predicate casts it back: `created_at < $cur::timestamp`
+  / `created_at = $cur::timestamp AND id < $curId`. Verified end-to-end
+  with 5 rows seeded at the **exact same** `created_at` (forces the id
+  tie-break) — pagination 2+2+1 yields 5 unique ids, no overlap, no
+  skip.
+- **PII redaction by default.** `before_state` / `after_state` jsonb
+  may carry PII / tokens / payment artifacts. Default policy: only
+  `super_admin` sees the payloads; `venue_owner` / `manager` get
+  `null` for both fields (they still see actor / action / entityType /
+  entityId / venueId / createdAt — the full audit value-add minus the
+  diff blob). Verified: a venue_owner's response has both fields null
+  on a row whose `before_state` contains `{"secret":"redact-me"}`,
+  while super_admin sees the secret.
+
+**Verified:** 25/25 original e2e + 8/8 fix-verification e2e (including
+the two critical isolation checks from before: owner `?venueId=`
+silently ignored; POST/PATCH/DELETE all 404).
+
+**Out of scope (call out for next slice):** retroactive `logAudit`
+adoption across the rest of the privileged endpoints (subscriptions
+overrides, payout approvals, fraud-flag actions — currently only
+`orders.ts` writes), per-action allowlist of safe `before_state` /
+`after_state` keys for non-super_admin readers (currently fully
+redacted), CSV export of filtered results, retention / cold-archive
+cron, frontend timeline UI.
+
 ## Notifications inbox writes (G5)
 
 Backend-only slice. Schema `notifications` and `GET /api/notifications`

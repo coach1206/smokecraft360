@@ -34,6 +34,7 @@ import sessionsRouter           from "./routes/sessions";
 import memoriesRouter           from "./routes/memories";
 import voiceQueueRouter         from "./routes/voiceQueue";
 import notificationsRouter      from "./routes/notifications";
+import auditLogRouter           from "./routes/auditLog";
 import reservationsRouter       from "./routes/reservations";
 import conflictsRouter          from "./routes/conflicts";
 import ipVaultRouter            from "./routes/ipVault";
@@ -187,6 +188,10 @@ app.use("/api/voice-queue",                 voiceQueueRouter);
 // subscriptionsRouter (mounted below at /api). Both routers coexist —
 // Express dispatches by full path.
 app.use("/api/notifications",               notificationsRouter);
+// auditLogRouter exposes read-only GET /api/audit-log. Append-only writes
+// flow exclusively through lib/audit.ts#logAudit on the server side; there
+// is intentionally no public write endpoint here (G6).
+app.use("/api/audit-log",                   auditLogRouter);
 app.use("/api/reservations",                reservationsRouter);
 app.use("/api/conflicts",                   conflictsRouter);
 app.use("/api/ip-vault",                    ipVaultRouter);
