@@ -135,6 +135,10 @@ export default function Home() {
   const [experienceSaved, setExperienceSaved] = useState(false);
   const [isDemoMode, setIsDemoMode]           = useState(false);
   const [orderModalOpen, setOrderModalOpen]   = useState(false);
+  /** When the guest taps an upsell card, the order modal opens pre-loaded
+   *  with that upgrade product instead of the default top recommendation.
+   *  Cleared on modal close so the next tap defaults back to the match. */
+  const [upgradeProduct, setUpgradeProduct]   = useState<ProductResult | null>(null);
   const [confirmedOrder, setConfirmedOrder]   = useState<{ id: string; type: OrderType } | null>(null);
   const [requestedItems, setRequestedItems]   = useState<Set<string>>(new Set());
 
@@ -703,10 +707,10 @@ export default function Home() {
         {orderModalOpen && (
           <OrderModal
             isOpen={orderModalOpen}
-            cigar={results?.recommendations[0]}
+            cigar={upgradeProduct ?? results?.recommendations[0]}
             drink={results?.pairings[0]}
             food={results?.foodPairings[0]}
-            onClose={() => setOrderModalOpen(false)}
+            onClose={() => { setOrderModalOpen(false); setUpgradeProduct(null); }}
             onSuccess={handleOrderSuccess}
           />
         )}
@@ -1479,8 +1483,16 @@ export default function Home() {
                 </motion.div>
               )}
 
-              {/* Featured Selections */}
-              <FeaturedSection featured={featured} />
+              {/* Featured Selections — surfaced as "Upgrade Your Experience" */}
+              <FeaturedSection
+                featured={featured}
+                onSelect={(p) => {
+                  playClick();
+                  trackEvent({ eventType: "product_selected", productId: p.id, metadata: { source: "upgrade_upsell" } });
+                  setUpgradeProduct(p);
+                  setOrderModalOpen(true);
+                }}
+              />
 
               {/* Alcohol pairings */}
               <div data-tour="tour-pairings">
