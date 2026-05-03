@@ -125,6 +125,37 @@ Two distinct NDA flows now coexist:
      until all fields complete and ink drawn. On success: sessionStorage flag
      `demoNdaSigned=1`, fade-out 300ms, navigate `/intro`. Reload-resistant.
 
+## Offline Queue (Brief C — Enterprise OS slice)
+
+Kiosks buffer POST-style actions in localStorage when offline, then replay
+them on reconnect. The `offline_queue` table is the forensic audit trail
+PLUS the idempotency cache that prevents double-charging on retries.
+
+- Schema `lib/db/src/schema/offlineQueue.ts`: `id`, `idempotencyKey` (UUID,
+  uniquely indexed), `deviceId`, `venueId`, `kind` (`"order"`),
+  `payload` JSONB, `status` (`pending|synced|failed`), `attempts`,
+  `lastError`, `resultId`, `clientCreatedAt`, `syncedAt`, `createdAt`
+  (+ status & venue indexes).
+- Routes at `/api/offline-queue`:
+  - `POST /sync` — public (kiosk); `osLimiter`; body `{items:[...]}`
+    (max 100 per batch, each payload ≤ 16 KB). Per-item validation: UUID
+    `idempotencyKey`, known `kind`, object `payload`. Dispatches each via
+    `dispatchOne()` (currently inserts an order + best-effort inventory
+    decrement). Idempotent: prior `synced` rows return `{status:"duplicate", resultId}`
+    without re-dispatching. Returns per-item `{idempotencyKey, status, resultId?, error?}`.
+  - `GET /` — manager+; `?status=pending|synced|failed` and `?limit=` filters;
+    super_admin sees global, manager/owner tenant-scoped to their `venueId`.
+  - `DELETE /:id` — super_admin only; UUID-validated.
+- Client `artifacts/smokecraft/src/services/offlineQueue.ts`:
+  `enqueue(kind,payload)` (writes to `localStorage` with crypto-UUID key),
+  `pendingCount()`, `pendingItems()`, `drain(deviceId?)` (POSTs the buffer,
+  removes synced+duplicate items, leaves failed for retry), tiny pub/sub
+  `subscribe()`, `installOnlineListener()` (auto-drains on `window`
+  `online` event).
+- UI `OfflineQueueBanner` — fixed bottom-right chip, renders only when
+  pending > 0 or browser is offline. Red-tinted when offline; "Sync now"
+  button forces a drain. Mounted in App.tsx alongside DemoBanner.
+
 ## Exports (Brief B — Enterprise OS slice)
 
 Audit-logged data exports for vendors / products / inventory / orders in CSV or JSON. The `export_logs` table (`lib/db/src/schema/exportLogs.ts`) records every export with `requestedBy`, `scope`, `format`, `venueId` (null for super_admin global pulls), arbitrary `filters` JSON blob, `rowCount`, `byteCount`, `status` (`completed | failed`), and an optional `errorMessage`. The export payload itself is **not** persisted — the source tables remain the system of record; the log is the audit trail.

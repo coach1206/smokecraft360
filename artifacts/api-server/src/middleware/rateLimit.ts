@@ -51,3 +51,14 @@ export const ndaSignLimiter = rateLimit({
   limit:   5,
   message: { error: "Too many signature attempts — please wait a moment and try again" },
 });
+
+/* Offline-queue sync limiter — public write that drains a kiosk's buffered
+ * actions. Kiosks naturally batch (up to 100 items per call), so callers
+ * should rarely make more than a handful of /sync requests per minute.
+ * 20/min/IP gives kiosks enough rope for staggered drains while keeping
+ * unauthenticated DB write throughput bounded. (Architect HIGH fix.) */
+export const offlineSyncLimiter = rateLimit({
+  ...shared,
+  limit:   20,
+  message: { error: "Too many sync attempts — please wait a moment and try again" },
+});

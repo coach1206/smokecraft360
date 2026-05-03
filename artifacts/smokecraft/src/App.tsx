@@ -19,6 +19,7 @@ import PaymentSuccess  from "@/pages/PaymentSuccess";
 import PaymentCancel   from "@/pages/PaymentCancel";
 import Demo            from "@/pages/Demo";
 import { DemoBanner }            from "@/components/Demo/DemoBanner";
+import { OfflineQueueBanner }   from "@/components/Demo/OfflineQueueBanner";
 import { PresentationOverlay }   from "@/components/Presentation/PresentationOverlay";
 import { KioskModeProvider, KioskModeBanner } from "@/contexts/KioskModeContext";
 import BootIntro, { hasSeenBootIntro } from "@/components/BootIntro";
@@ -87,6 +88,7 @@ function App() {
                       </WouterRouter>
                       <PresentationOverlay />
                       <DemoBanner />
+                      <OfflineQueueBanner />
                       <KioskModeBanner />
                       <LicenseGate />
                       <Toaster />
