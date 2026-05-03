@@ -29,6 +29,7 @@ export * from "./subscriptions";
 export * from "./dunningEvents";
 export * from "./notifications";
 export * from "./auditLog";
+export * from "./reservations";
 export * from "./themeProfiles";
 export * from "./featureFlags";
 export * from "./commissionReversals";

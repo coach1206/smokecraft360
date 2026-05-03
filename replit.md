@@ -88,6 +88,10 @@ Supports mobile, tablet, and kiosk devices with registration, status tracking, a
 
 A competition system ranking venues based on performance metrics like orders and repeat customers, awarding badges.
 
+### Reservations (Brief 42 — B+C)
+
+Distinct from instant orders. The `reservations` table (`lib/db/src/schema/reservations.ts`) holds RSVP / hold-the-spot requests with a `pending → accepted | rejected | cancelled → fulfilled | no_show` lifecycle. A `paymentMode` column carries one of `none | deposit | pay_at_venue` (folding the "pay at venue" option into the reservation rather than touching the existing Stripe checkout). `depositCents` + `depositPaymentIntentId` columns are present so a follow-up brief can wire Stripe deposits without another migration. Routes live at `/api/reservations` (POST create, GET /mine, GET /venue/:venueId, PATCH /:id/status). POST hard-binds `venueId` to `req.user.venueId` for venue staff (cross-tenant injection ignored). PATCH uses an atomic conditional UPDATE (WHERE id=? AND status=expectedCurrent) to prevent state-machine race conditions; the loser of a concurrent PATCH receives 409. Venue staff manage the queue from the new "Reservations" tab in the dashboard, which also captures walk-ins via a "+ New Reservation" form.
+
 ## Frontend Architecture
 
 -   **Auth Context**: `AuthProvider` and `useAuth()` for user authentication.

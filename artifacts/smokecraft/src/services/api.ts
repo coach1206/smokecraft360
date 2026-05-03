@@ -421,6 +421,92 @@ export async function createProduct(payload: NewProductPayload): Promise<Invento
   return res.json();
 }
 
+// ── Reservations ──────────────────────────────────────────────────────────────
+
+export type ReservationStatus      = "pending" | "accepted" | "rejected" | "cancelled" | "fulfilled" | "no_show";
+export type ReservationPaymentMode = "none" | "deposit" | "pay_at_venue";
+
+export interface Reservation {
+  id:           string;
+  userId:       string | null;
+  venueId:      string;
+  productId:    string | null;
+  productName:  string | null;
+  guestName:    string | null;
+  guestPhone:   string | null;
+  partySize:    number;
+  requestedAt:  string;
+  paymentMode:  ReservationPaymentMode;
+  depositCents: number | null;
+  status:       ReservationStatus;
+  notes:        string | null;
+  reviewedBy:   string | null;
+  reviewedAt:   string | null;
+  createdAt:    string;
+  updatedAt:    string;
+}
+
+export interface CreateReservationPayload {
+  /** Required for customers; ignored for venue staff (forced to their own venueId). */
+  venueId?:     string;
+  productId?:   string;
+  productName?: string;
+  guestName?:   string;
+  guestPhone?:  string;
+  partySize?:   number;
+  /** ISO 8601 timestamp; must be in the future. */
+  requestedAt:  string;
+  paymentMode?: ReservationPaymentMode;
+  /** Required when paymentMode = "deposit"; ≥ 100 cents. */
+  depositCents?: number;
+  notes?:       string;
+}
+
+export async function createReservation(payload: CreateReservationPayload): Promise<Reservation> {
+  const res = await fetch("/api/reservations", {
+    method:  "POST",
+    headers: getAuthHeaders(),
+    body:    JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to create reservation");
+  }
+  return res.json();
+}
+
+export async function fetchVenueReservations(
+  venueId: string,
+  status?: ReservationStatus,
+): Promise<Reservation[]> {
+  const qs = status ? `?status=${encodeURIComponent(status)}` : "";
+  const res = await fetch(`/api/reservations/venue/${venueId}${qs}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to fetch reservations");
+  }
+  const data = await res.json() as { reservations: Reservation[] };
+  return data.reservations;
+}
+
+export async function updateReservationStatus(
+  id: string,
+  status: ReservationStatus,
+): Promise<Reservation> {
+  const res = await fetch(`/api/reservations/${id}/status`, {
+    method:  "PATCH",
+    headers: getAuthHeaders(),
+    body:    JSON.stringify({ status }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to update reservation");
+  }
+  return res.json();
+}
+
 /**
  * Upload an image file to Cloudinary via the backend.
  * Returns the Cloudinary secure URL on success.
