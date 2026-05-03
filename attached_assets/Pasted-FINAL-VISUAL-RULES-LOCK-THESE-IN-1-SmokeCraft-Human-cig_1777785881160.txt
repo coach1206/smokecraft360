@@ -1,0 +1,140 @@
+FINAL VISUAL RULES (LOCK THESE IN)
+1. SmokeCraft
+
+👉 Human + cigar + connection
+
+Must always include:
+
+real people
+cigars visible (lit or in hand)
+smoke
+warm lighting (gold / amber)
+lounge or leather setting
+
+Never:
+
+gadgets
+random lifestyle
+solo awkward portraits
+2. PourCraft
+
+👉 Liquid motion + luxury drink
+
+Must always include:
+
+whiskey / bourbon / wine
+pouring action OR ice clink
+glass focus
+rich contrast lighting
+
+Never:
+
+people as main subject
+static bottle-only shots
+dark unreadable images
+3. VapeCraft
+
+👉 Modern + futuristic + clean
+
+Must always include:
+
+vapor clouds
+neon or cool tones (blue / purple)
+minimal environment
+sharp lighting
+
+Never:
+
+cigars
+whiskey
+warm tones
+🛠️ HARD FIX (THIS IS THE REAL SOLUTION)
+
+You must REMOVE ALL DYNAMIC IMAGE LOGIC FROM THESE CARDS
+
+🔥 REPLIT MASTER FIX PROMPT
+FIX EXPERIENCE CARD IMAGE SYSTEM WITH STRICT VISUAL IDENTITY
+
+GOAL:
+Each experience card (SmokeCraft, PourCraft, VapeCraft) must use locked, correct imagery with no randomness.
+
+----------------------------------------
+STEP 1: REMOVE ALL DYNAMIC IMAGE FETCHING
+----------------------------------------
+
+Delete:
+- Unsplash calls
+- search-based image loading
+- keyword-driven image logic
+
+DO NOT allow:
+unsplash()
+fetchImages()
+searchQueryImages()
+
+----------------------------------------
+STEP 2: CREATE LOCKED IMAGE MAP
+----------------------------------------
+
+const experienceImages = {
+  smokecraft: "https://res.cloudinary.com/YOUR_NAME/image/upload/lounge/cigar-lounge-two-men.jpg",
+  pourcraft: "https://res.cloudinary.com/YOUR_NAME/image/upload/lounge/whiskey-pour-glass.jpg",
+  vapecraft: "https://res.cloudinary.com/YOUR_NAME/image/upload/lounge/vape-neon-smoke.jpg"
+};
+
+----------------------------------------
+STEP 3: FORCE IMAGE BY TYPE
+----------------------------------------
+
+function getExperienceImage(type) {
+  return experienceImages[type];
+}
+
+----------------------------------------
+STEP 4: UPDATE UI COMPONENT
+----------------------------------------
+
+<img src={getExperienceImage(type)} />
+
+----------------------------------------
+STEP 5: ADD VISUAL OVERLAY PER TYPE
+----------------------------------------
+
+smokecraft:
+→ warm gradient overlay (gold / amber)
+
+pourcraft:
+→ contrast + highlight glass reflections
+
+vapecraft:
+→ cool neon glow overlay
+
+----------------------------------------
+STEP 6: ADD INTERACTION
+----------------------------------------
+
+- hover: slight zoom (scale 1.05)
+- active: gold border glow
+- click: smooth transition to next step
+
+----------------------------------------
+RESULT:
+----------------------------------------
+
+SmokeCraft → feels human + premium  
+PourCraft → feels liquid + luxury  
+VapeCraft → feels modern + clean  
+
+NO incorrect images ever again
+⚠️ CRITICAL THING YOU WERE ABOUT TO MISS
+
+Even if you fix the image…
+
+👉 If lighting and tone don’t match, it STILL feels wrong
+
+So also make sure:
+
+Module	Color Tone
+SmokeCraft	Gold / Amber
+PourCraft	Deep Brown / Liquid Highlights
+VapeCraft	Blue / Purple / Neon
