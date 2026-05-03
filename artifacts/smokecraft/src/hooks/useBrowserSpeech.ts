@@ -53,6 +53,44 @@ export interface UseBrowserSpeech {
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
+/**
+ * Pick the highest-fidelity available English voice. Browsers ship a wide
+ * spectrum of quality — naive default selection often lands on espeak-ng or
+ * a low-bitrate eSpeak voice that sounds buzzy/robotic, exactly what the
+ * 30th brief flagged ("No buzzing", "high-quality voice").
+ *
+ * Preference order (best → fallback):
+ *   1. Google * English      — Chrome's neural cloud voices (highest quality)
+ *   2. Microsoft * (Online)  — Edge's neural voices, second only to Google
+ *   3. Samantha              — Apple macOS/iOS default high-quality voice
+ *   4. Daniel / Karen / Alex — Other Apple high-quality voices
+ *   5. Any voice flagged `default: true` in English
+ *   6. Any English voice
+ *   7. First voice the platform exposes (last-resort)
+ *
+ * Returns null if no voices are loaded yet (the caller should retry on the
+ * `voiceschanged` event — Chrome populates `getVoices()` asynchronously).
+ */
+function pickHighQualityVoice(
+  voices: readonly SpeechSynthesisVoice[],
+): SpeechSynthesisVoice | null {
+  if (!voices.length) return null;
+  const en = (v: SpeechSynthesisVoice) => v.lang?.toLowerCase().startsWith("en");
+  const tests: Array<(v: SpeechSynthesisVoice) => boolean> = [
+    v => en(v) && /^Google\b.*English/i.test(v.name),
+    v => en(v) && /^Microsoft\b.*Online/i.test(v.name),
+    v => en(v) && /\bSamantha\b/i.test(v.name),
+    v => en(v) && /\b(Daniel|Karen|Alex)\b/i.test(v.name),
+    v => en(v) && v.default,
+    v => en(v),
+  ];
+  for (const test of tests) {
+    const found = voices.find(test);
+    if (found) return found;
+  }
+  return voices[0] ?? null;
+}
+
 export function useBrowserSpeech(opts: BrowserSpeechOptions = {}): UseBrowserSpeech {
   const { rate = 0.95, pitch = 0.9, volume = 0.45, forceSpeak = false } = opts;
 
@@ -60,6 +98,23 @@ export function useBrowserSpeech(opts: BrowserSpeechOptions = {}): UseBrowserSpe
     typeof window !== "undefined" && "speechSynthesis" in window,
   );
   const reducedRef = useRef<boolean>(false);
+  /* The currently-selected high-quality voice. Loaded reactively below
+   * because Chrome returns an empty array from `getVoices()` until the
+   * `voiceschanged` event fires (the engine populates voices asynchronously
+   * on first access). Without this listener, every `speak()` call before
+   * voices load would fall back to whatever low-quality default the OS picks. */
+  const voiceRef = useRef<SpeechSynthesisVoice | null>(null);
+
+  useEffect(() => {
+    if (!supportedRef.current) return;
+    const synth = window.speechSynthesis;
+    const refresh = () => {
+      voiceRef.current = pickHighQualityVoice(synth.getVoices());
+    };
+    refresh();
+    synth.addEventListener?.("voiceschanged", refresh);
+    return () => synth.removeEventListener?.("voiceschanged", refresh);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined" || !("matchMedia" in window)) return;
@@ -86,6 +141,10 @@ export function useBrowserSpeech(opts: BrowserSpeechOptions = {}): UseBrowserSpe
       u.rate = rate;
       u.pitch = pitch;
       u.volume = volume;
+      /* Pin the chosen high-quality voice. If voices haven't loaded yet
+       * (first speak before `voiceschanged` fires), the platform default
+       * still plays — better a quick default-quality cue than silence. */
+      if (voiceRef.current) u.voice = voiceRef.current;
       window.speechSynthesis.speak(u);
     } catch { /* never break the page over an ambient voice cue */ }
   }, [rate, pitch, volume, forceSpeak]);

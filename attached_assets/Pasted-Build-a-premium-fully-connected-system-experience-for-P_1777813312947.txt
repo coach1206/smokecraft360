@@ -1,0 +1,250 @@
+Build a premium, fully connected system experience for "Profound Innovation" that flows into SmokeCraft 360.
+
+The system must feel like controlled software infrastructure, not a website or visual demo.
+
+----------------------------------------
+GLOBAL DESIGN RULES (MANDATORY)
+----------------------------------------
+- No emojis, no glyph icons
+- No floating elements or random animations
+- No background objects (no cigars appearing randomly)
+- No looping visual effects
+- No heavy 3D or glossy effects
+- Flat, matte, premium design only
+- All motion must be user-triggered or part of structured transitions
+
+COLOR SYSTEM:
+- Background: matte olive / pewter green (#C5C8B4 range)
+- Text: deep navy blue (#0B2A4A)
+- Accents: subtle muted green (NO neon glow)
+
+----------------------------------------
+PHASE 1: BOOT INTRO (SYSTEM INITIALIZATION)
+----------------------------------------
+
+Full-screen cinematic boot experience.
+
+FLOW:
+1. Matte olive screen appears (soft grain, no noise)
+2. Logo slides in from LEFT to CENTER (ease-out motion)
+3. Arrival sound plays (clean, deep cinematic tone, NO buzzing)
+4. Text fades in:
+   - PROFOUND
+   - INNOVATION
+   - Software & Systems Development Company
+5. Tagline appears:
+   "Digital Infrastructure Studio"
+6. Hold for 1 second (no movement)
+7. Smooth fade into Entry Screen (no cut)
+
+REQUIREMENTS:
+- Play once per session
+- Allow click/tap to skip
+- No flashing, no harsh transitions
+- Must feel like a system powering on
+
+----------------------------------------
+PHASE 2: ENTRY SCREEN (CONTROLLED ENVIRONMENT)
+----------------------------------------
+
+Immediately after boot, fade into entry screen.
+
+RULES:
+- STATIC environment (no random images, no floating cigars, no drifting objects)
+- Clean matte olive background only
+- No background animation
+
+LAYOUT:
+- Centered title: "Choose Your Experience"
+- Two portal cards ONLY:
+   1. SmokeCraft 360
+   2. PourCraft 360
+
+STRICT:
+- Remove any extra cards (like VapeCraft)
+- Remove any hidden or leftover components
+- Only two cards must exist
+
+----------------------------------------
+PORTAL CARD SYSTEM
+----------------------------------------
+
+Each card:
+- Uses real background image (inside card only)
+- Has dark overlay
+- Displays:
+   - Title
+   - Short descriptor
+
+NO images allowed outside of cards.
+
+----------------------------------------
+PORTAL ANIMATION (USER-TRIGGERED ONLY)
+----------------------------------------
+
+On hover:
+- Background image slowly zooms in
+- Overlay darkens slightly
+- Card lifts subtly (depth effect)
+
+On click:
+- Selected card expands to full screen
+- Other card fades out
+- Smooth zoom transition INTO system
+- No page reload feel
+
+----------------------------------------
+PHASE 3: AI VOICE SYSTEM (FIXED - NO BUZZING)
+----------------------------------------
+
+Use browser SpeechSynthesis with proper voice selection.
+
+RULES:
+- Must cancel previous speech before playing new
+- Must select high-quality voice (Google / Samantha / system default fallback)
+- No overlapping audio
+- No low-quality MP3 playback
+
+VOICE EVENTS:
+- On entry load:
+  "Select your experience."
+
+- On hover:
+  SmokeCraft → "SmokeCraft. Cigar experience system."
+  PourCraft → "PourCraft. Spirits and pairing system."
+
+- On click:
+  "Entering SmokeCraft."
+
+REQUIREMENTS:
+- Low volume
+- Smooth delivery
+- No robotic or buzzing output
+- Graceful fallback if audio blocked
+
+----------------------------------------
+PHASE 4: SMOKECRAFT DASHBOARD
+----------------------------------------
+
+After portal entry, load SmokeCraft dashboard.
+
+LAYOUT:
+- Top bar (branding + profile)
+- Left navigation:
+   - Dashboard
+   - Pairing Engine
+   - My Experiences
+   - Lounge Mode
+   - Settings
+
+MAIN AREA:
+- Welcome message:
+  "What experience are you creating today?"
+
+- Action cards:
+   - Find a cigar pairing
+   - Build a session
+   - Explore lounge experiences
+
+IMAGES:
+- Only inside cards
+- No floating or decorative images elsewhere
+
+----------------------------------------
+PHASE 5: PAIRING ENGINE (CORE FEATURE)
+----------------------------------------
+
+Step-by-step flow:
+
+1. Mood:
+   - Relaxed
+   - Celebratory
+   - Focused
+   - Social
+
+2. Strength
+3. Flavor profile
+4. Drink pairing (optional)
+
+OUTPUT:
+- Recommended cigar
+- Recommended drink
+- Experience description
+- Suggested environment
+
+UI:
+- Smooth transitions between steps
+- Progress bar
+- No sudden jumps
+
+----------------------------------------
+PHASE 6: EXPERIENCE RESULT SCREEN
+----------------------------------------
+
+Display:
+- Large controlled hero image (inside container only)
+- Experience name
+- Description
+- Pairing details
+- "Start Session" button
+
+NO floating visuals.
+
+----------------------------------------
+PHASE 7: SESSION MODE
+----------------------------------------
+
+Full-screen immersive mode:
+- Minimal UI
+- Timer
+- Optional AI voice guidance
+- Controlled background only
+
+----------------------------------------
+PHASE 8: REQUIRED SYSTEM CONTROLS
+----------------------------------------
+
+MANDATORY:
+- Back button on every screen
+- No dead ends
+- No blank states
+- No hidden elements
+- No ghost UI components
+- Remove all unused components
+
+----------------------------------------
+PHASE 9: TRANSITION RULES
+----------------------------------------
+
+- No hard page changes
+- No reload flashes
+- Only:
+   fade
+   zoom
+   slide
+
+Everything must feel continuous.
+
+----------------------------------------
+FINAL EXPERIENCE GOAL
+----------------------------------------
+
+This must feel like:
+
+"A controlled system that initializes, guides the user, and places them into an experience engine."
+
+NOT:
+- a website
+- a UI demo
+- a visual experiment
+
+----------------------------------------
+END FLOW
+----------------------------------------
+
+Boot → Entry → Portal → Dashboard → Pairing → Experience → Session
+
+Everything connected.
+Everything intentional.
+No random visuals.
+No noise.
