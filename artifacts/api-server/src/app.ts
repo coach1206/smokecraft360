@@ -36,6 +36,7 @@ import voiceQueueRouter         from "./routes/voiceQueue";
 import notificationsRouter      from "./routes/notifications";
 import auditLogRouter           from "./routes/auditLog";
 import supportTicketsRouter     from "./routes/supportTickets";
+import supportTicketMessagesRouter from "./routes/supportTicketMessages";
 import reservationsRouter       from "./routes/reservations";
 import conflictsRouter          from "./routes/conflicts";
 import ipVaultRouter            from "./routes/ipVault";
@@ -194,9 +195,16 @@ app.use("/api/notifications",               notificationsRouter);
 // is intentionally no public write endpoint here (G6).
 app.use("/api/audit-log",                   auditLogRouter);
 // Help Center Slice 1 — venue staff open tickets, super_admin works them.
-// Per-venue 50 open|in_progress cap inside POST. Slice 2 will add the
-// support_ticket_messages thread.
+// Per-venue 50 open|in_progress cap inside POST.
 app.use("/api/support-tickets",             supportTicketsRouter);
+// Help Center Slice 2 — append-only message thread on a ticket. Mounted
+// as a nested resource so tenant scope is inherited from the parent
+// ticket (router uses mergeParams for :ticketId). Per-ticket 200-message
+// cap inside POST.
+app.use(
+  "/api/support-tickets/:ticketId/messages",
+  supportTicketMessagesRouter,
+);
 app.use("/api/reservations",                reservationsRouter);
 app.use("/api/conflicts",                   conflictsRouter);
 app.use("/api/ip-vault",                    ipVaultRouter);

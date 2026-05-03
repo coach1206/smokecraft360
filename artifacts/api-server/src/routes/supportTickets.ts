@@ -30,6 +30,7 @@ import {
   db,
   supportTicketsTable,
   usersTable,
+  notificationsTable,
   SUPPORT_TICKET_STATUSES,
   type SupportTicketStatus,
 }                                                   from "@workspace/db";
@@ -350,6 +351,7 @@ router.patch(
       .where(and(...conds))
       .returning({
         id:         supportTicketsTable.id,
+        venueId:    supportTicketsTable.venueId,
         status:     supportTicketsTable.status,
         updatedAt:  supportTicketsTable.updatedAt,
         resolvedAt: supportTicketsTable.resolvedAt,
@@ -359,7 +361,44 @@ router.patch(
       res.status(404).json({ error: "Ticket not found" });
       return;
     }
-    res.json(updated[0]);
+    const row = updated[0]!;
+
+    // Slice 2 — fan-out: when a super_admin moves a ticket FORWARD
+    // (in_progress / resolved / closed), drop a notification on the
+    // ticket's venue inbox so the opener / venue_owner sees it. We
+    // intentionally don't fan-out:
+    //   - venue-side toggles (open ↔ closed by the venue itself) —
+    //     that would just notify the venue about its own action.
+    //   - super-admin REGRESSIONS back to `open` (e.g. reopening a
+    //     closed ticket for re-triage) — that's an internal queue
+    //     operation, not a customer-facing transition. Notifying the
+    //     venue "your ticket is open" after they already saw the
+    //     in_progress / resolved notif would just be noise.
+    // Failure to write the notification must NOT roll back the status
+    // change, so swallow & log only.
+    const FORWARD_STATUSES: ReadonlySet<SupportTicketStatus> = new Set([
+      "in_progress",
+      "resolved",
+      "closed",
+    ]);
+    if (isSuper && FORWARD_STATUSES.has(newStatus)) {
+      try {
+        await db.insert(notificationsTable).values({
+          venueId:  row.venueId,
+          channel:  "in_app",
+          title:    `Support ticket ${newStatus}`,
+          message:  `Your support ticket was marked ${newStatus} by support staff.`,
+          category: `support_ticket_${newStatus}`,
+        });
+      } catch (err) {
+        req.log?.warn?.({ err, ticketId: row.id }, "support-ticket fan-out failed");
+      }
+    }
+
+    // Strip venueId from response — clients already know the scope; this
+    // keeps the PATCH response shape minimal (id/status/updatedAt/resolvedAt).
+    const { venueId: _venueId, ...rest } = row;
+    res.json(rest);
   },
 );
 

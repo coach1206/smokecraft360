@@ -317,9 +317,117 @@ per-venue cap atomicity, cap free-after-close, tied-µs cursor
 pagination, malformed cursor, cursorTs non-leak, append-only
 (DELETE/PUT 404).
 
-**Out of scope (Slice 2):** `support_ticket_messages` thread table +
-POST/GET messages on a ticket; per-action notification fan-out to
-ticket opener on status change; CSV export; SLA timer; frontend UI.
+**Out of scope (Slice 2 — DONE):** see next section. Still deferred:
+CSV export of ticket threads, SLA timer, frontend UI.
+
+## Help Center — message thread + fan-out (Slice 2)
+
+Backend-only follow-on. Adds the back-and-forth thread on a ticket and
+fans out a venue-inbox notification when a super_admin moves a ticket
+forward. Append-only (no edit/delete on individual messages); same
+G3/G4/G5/G6 patterns reused with no new primitives.
+
+**New schema** `lib/db/src/schema/supportTicketMessages.ts` (additive):
+- Columns: `id`, `ticketId`, `authorId`, `body` (≤5000), `createdAt`.
+- Index `support_ticket_messages_ticket_created_idx` on
+  `(ticket_id, created_at ASC)` — natural thread reading order with
+  forward keyset pagination.
+- No `venueId` column — tenant scope lives on the parent ticket
+  (single source of truth; route layer joins to it on every request).
+- Pushed via `drizzle-kit push` (no manual SQL).
+
+**New router** `routes/supportTicketMessages.ts` mounted at
+`/api/support-tickets/:ticketId/messages` with `Router({mergeParams:true})`
+so the parent `:ticketId` parameter is visible to the nested router.
+- `POST /` — append a message.
+  - **Auth:** `requireAuth` + `requireRole(venue_owner, manager, staff,
+    super_admin)`. Customers/brand_partners → 403 (Help Center is for
+    venue staff and operators).
+  - **Tenant scope (inherited):** `resolveTicket()` helper does an
+    owner-gated SELECT on `support_tickets`; for non-super, predicate
+    is `(id=$ticketId AND venue_id=$callerVenue)`. Cross-tenant ⇒ 404
+    (G3/G5/G6 pattern, never leak existence). super_admin sees all.
+  - **Per-ticket cap (atomic, G4 pattern):**
+    `INSERT ... SELECT ... WHERE (SELECT COUNT(*) FROM
+    support_ticket_messages WHERE ticket_id=$t) < 200`. Cap-overflow
+    returns 429 with `{error:"Message cap reached for this ticket…",
+    capMessagesPerTicket:200}` — distinguishable from the IP limiter
+    wording.
+  - **Parent touch:** on success, a separate `UPDATE support_tickets
+    SET updated_at = now() WHERE id=$t` runs (no transaction wrapper —
+    the message row is already committed; the touch is best-effort
+    and idempotent).
+  - **Limiter:** reuses `supportTicketWriteLimiter` (10/min/IP, same
+    bucket as Slice 1) — write-burst protection is per the help-center
+    surface as a whole.
+- `GET /` — paginated thread, oldest first.
+  - Same auth + `resolveTicket()` tenant gate.
+  - **Pagination:** keyset on `(createdAt ASC, id ASC)` with µs
+    precision via `to_char(... 'YYYY-MM-DDTHH24:MI:SS.US')` —
+    same G6 round-trip as the audit log and Slice 1 ticket list, but
+    with the predicate flipped to `>` since we read forward through
+    history. `cursorTs` is stripped from the response shape.
+  - `limit` default 50, max 200; malformed cursor falls through to
+    the first page (no 400 — same forgiving behavior as Slice 1).
+
+**Notification fan-out** (modification to existing `PATCH
+/api/support-tickets/:id/status`):
+- Fires only when `req.user.role === 'super_admin'` AND the new status
+  is one of the FORWARD set `{in_progress, resolved, closed}`. Super
+  regressions back to `open` (e.g. reopening a closed ticket for
+  re-triage) deliberately do NOT fan-out — that's an internal queue
+  operation, not a customer-facing transition; notifying the venue
+  "your ticket is open" again would just be noise (architect-flagged
+  in Slice 2 review and locked by e2e #28).
+- When the gate passes, insert a row into `notifications` addressed
+  to `ticket.venueId` with
+  `channel='in_app'`, `title='Support ticket {status}'`,
+  `message='Your support ticket was marked {status} by support staff.'`,
+  `category='support_ticket_{status}'`. Wrapped in `try/catch` — a
+  fan-out failure logs via `req.log.warn` but never rolls back the
+  status change (the support row is the system of record).
+- Venue-side toggles (`open ↔ closed` by the venue itself) deliberately
+  skip the fan-out — notifying the venue about its own action would be
+  noise.
+- The PATCH response shape is unchanged: `id / status / updatedAt /
+  resolvedAt`. The internal `venueId` field added to the `RETURNING`
+  list is destructured out before the JSON response.
+
+**Mount order (app.ts):** the nested router is mounted on the more
+specific path `/api/support-tickets/:ticketId/messages` AFTER the
+parent `/api/support-tickets` mount; Express's path-most-specific
+match handles routing correctly because the message paths never
+collide with `:id`-style ticket actions (`/status`, `/assign`).
+
+**E2E coverage (29/29 green):** owner/manager/staff/super POST 201
+paths; customer POST 403; unauth 401; empty/oversized body 400;
+cross-tenant POST 404 (no leak); invalid uuid 400; unknown ticket 404;
+owner GET own thread; oldest-first ASC ordering; cross-tenant GET 404;
+super GET any 200; customer GET 403; **CRITICAL** tied-µs ASC keyset
+pagination 2+2+1=5 unique (proves the µs round-trip works in ASC
+direction with id tie-break); cursor µs preserved; `cursorTs` not
+leaked; malformed cursor → first page; **CRITICAL** per-ticket cap
+200 → 429 with cap-distinct error; POST touches parent
+`updated_at`; PUT/DELETE on messages collection 404 (append-only);
+fan-out on super in_progress writes one notif row; venue-side close
+does NOT fan-out; fan-out shape verified
+(`support_ticket_resolved | in_app | "Support ticket resolved"`);
+**LOCK** super regression `closed → open` does NOT fan-out (n=0,
+status returns 200) while a subsequent `open → in_progress` on the
+same ticket DOES fan-out (n=1) — proves the FORWARD-set guard is
+exact, not over-broad.
+
+**System Health audit (#2):** `routes/systemStatus.ts` reviewed
+in this turn — `GET /api/system/status`, super_admin only,
+read-only `Promise.all` over orders/fraud/commissions/payouts/dunning.
+No tenant data leakage (intentionally global), no PII, no mutations,
+no cap risk. Verdict: **HEALTHY, no changes** — anything else would
+be scope creep.
+
+**Out of scope (Slice 3+):** edit-window for own last message;
+@-mentions; CSV export of full thread; SLA timer (auto-stamp
+`responded_at` when first super reply lands); attachment uploads;
+frontend UI for the thread.
 
 ## Notifications inbox writes (G5)
 
