@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, boolean, integer } from "drizzle-orm/pg-core";
 
 export const VERIFICATION_METHODS = ["staff", "qr", "pos"] as const;
 export type VerificationMethod = typeof VERIFICATION_METHODS[number];
@@ -14,8 +14,12 @@ export const ordersTable = pgTable("orders", {
   foodId:             text("food_id"),
   foodName:           text("food_name"),
   orderType:          text("order_type").notNull().$type<"table" | "pickup" | "delivery">(),
-  status:             text("status").notNull().default("pending").$type<"pending" | "in_progress" | "completed" | "cancelled" | "paid">(),
+  status:             text("status").notNull().default("pending").$type<"initiated" | "pending" | "in_progress" | "completed" | "cancelled" | "paid" | "fulfilled" | "refunded">(),
   tableNumber:        text("table_number"),
+  // ── Payment / escrow fields (production hardening) ─────────────────────────
+  expectedAmountCents:    integer("expected_amount_cents"),
+  stripePaymentIntentId:  text("stripe_payment_intent_id").unique(),
+  fundsStatus:            text("funds_status").$type<"held" | "released" | "refunded">().notNull().default("held"),
   // ── Verification fields ────────────────────────────────────────────────────
   verified:           boolean("verified").notNull().default(false),
   verifiedAt:         timestamp("verified_at"),

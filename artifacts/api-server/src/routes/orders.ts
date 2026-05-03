@@ -9,7 +9,7 @@
 
 import { Router, type IRouter, type Request, type Response } from "express";
 import { eq, desc, inArray }                                  from "drizzle-orm";
-import { db, ordersTable }                                    from "@workspace/db";
+import { db, ordersTable, auditLogTable }                     from "@workspace/db";
 import { verifyToken }                                        from "../lib/jwt";
 import { requireAuth, type AuthRequest }                      from "../middleware/auth";
 import { requireRole }                                        from "../middleware/roles";
@@ -19,10 +19,27 @@ import { checkLicenseForVenue }                               from "../middlewar
 const router: IRouter = Router();
 
 const VALID_TYPES   = ["table", "pickup", "delivery"] as const;
-const VALID_STATUSES = ["pending", "in_progress", "completed", "cancelled"] as const;
+const VALID_STATUSES = [
+  "initiated", "pending", "in_progress", "completed", "cancelled",
+  "paid", "fulfilled", "refunded",
+] as const;
 
 type OrderType   = (typeof VALID_TYPES)[number];
 type OrderStatus = (typeof VALID_STATUSES)[number];
+
+// ── Strict order state machine (production hardening) ──────────────────────
+// Webhook is the only authority for `paid` and `refunded`; this map is what
+// staff/manager are allowed to do via PATCH /:id/status.
+const STAFF_TRANSITIONS: Record<OrderStatus, readonly OrderStatus[]> = {
+  initiated:   ["pending", "cancelled"],
+  pending:     ["in_progress", "cancelled"],
+  in_progress: ["completed", "cancelled"],
+  paid:        ["fulfilled"],            // refund must come from Stripe webhook
+  fulfilled:   [],                        // terminal for staff
+  completed:   [],                        // legacy terminal
+  cancelled:   [],                        // terminal
+  refunded:    [],                        // terminal — webhook authority only
+};
 
 /** Try to extract userId from an optional Bearer token — never throws. */
 async function tryGetUserId(req: Request): Promise<string | null> {
@@ -158,19 +175,64 @@ router.patch(
       return;
     }
 
-    const [updated] = await db
-      .update(ordersTable)
-      .set({ status: status as OrderStatus, updatedAt: new Date() })
-      .where(eq(ordersTable.id, id))
-      .returning();
+    // Read current state inside a transaction so the transition check is atomic.
+    const result = await db.transaction(async (tx) => {
+      const [current] = await tx.select().from(ordersTable).where(eq(ordersTable.id, id)).limit(1);
+      if (!current) return { error: "not_found" as const };
 
-    if (!updated) {
-      res.status(404).json({ error: "Order not found" });
+      const from = current.status as OrderStatus;
+      const to   = status as OrderStatus;
+
+      // Staff may not move into webhook-authority states.
+      if (to === "paid" || to === "refunded") {
+        return { error: "webhook_only" as const, from };
+      }
+      if (from === to) return { error: "noop" as const, from };
+      if (!STAFF_TRANSITIONS[from].includes(to)) {
+        return { error: "invalid_transition" as const, from };
+      }
+
+      // Release escrow when fulfilled.
+      const fundsStatus =
+        to === "fulfilled" ? "released" as const :
+        to === "cancelled" ? "refunded" as const :
+        current.fundsStatus;
+
+      const [updated] = await tx
+        .update(ordersTable)
+        .set({ status: to, fundsStatus, updatedAt: new Date() })
+        .where(eq(ordersTable.id, id))
+        .returning();
+
+      // Audit log — full before/after for traceability.
+      await tx.insert(auditLogTable).values({
+        actorId:     req.user?.id ?? null,
+        actorRole:   req.user?.role ?? null,
+        action:      "order.status.update",
+        entityType:  "order",
+        entityId:    id,
+        beforeState: { status: from, fundsStatus: current.fundsStatus },
+        afterState:  { status: to,   fundsStatus },
+        venueId:     current.venueId ?? null,
+      });
+
+      return { updated };
+    });
+
+    if ("error" in result) {
+      const map: Record<string, [number, string]> = {
+        not_found:          [404, "Order not found"],
+        webhook_only:       [403, `Status "${status}" can only be set by Stripe webhook`],
+        noop:               [400, `Order already in status "${status}"`],
+        invalid_transition: [422, `Invalid transition from "${(result as { from?: string }).from}" → "${status}"`],
+      };
+      const [code, msg] = map[result.error];
+      res.status(code).json({ error: msg, from: (result as { from?: string }).from });
       return;
     }
 
     req.log.info({ orderId: id, status, userId: req.user?.id }, "order status updated");
-    res.json(updated);
+    res.json(result.updated);
   },
 );
 

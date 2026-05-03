@@ -1,0 +1,241 @@
+RUN A FULL PRODUCTION HARDENING UPGRADE ON SMOKECRAFT 360 TO ENSURE IT IS A SECURE, FINANCIALLY CORRECT, MULTI-TENANT, ENTERPRISE-READY PLATFORM WITH STRICT ORDER CONTROL, WEBHOOK AUTHORITY, COMMISSION REVERSALS, RECONCILIATION WORKERS, FRAUD DETECTION, AND SYSTEM HEALTH MONITORING — FULLY WIRED WITH NO GAPS
+
+---
+
+🚨 CORE OBJECTIVE
+
+Upgrade the existing system (which already has payments, themes, and orders) into a production-grade platform that:
+
+- cannot lose or duplicate money
+- cannot be tampered with by users or admins
+- automatically detects and corrects inconsistencies
+- safely scales across multiple venues
+
+---
+
+🛡️ NON-NEGOTIABLE RULES
+
+- Stripe webhook is the ONLY authority for payment success
+- Orders MUST follow strict state transitions (no skipping)
+- All financial operations must be idempotent
+- All updates must be logged with before/after states
+- All tenant data must remain isolated
+
+---
+
+🔥 1. ORDER STATE MACHINE (STRICT ENFORCEMENT)
+
+Implement backend-enforced transitions:
+
+initiated → pending → paid → fulfilled  
+paid → refunded  
+
+Reject ANY invalid transition.
+
+Create validation layer in:
+
+PATCH /api/orders/:id/status
+
+---
+
+🔥 2. IDEMPOTENCY + DUPLICATE PROTECTION
+
+Enforce:
+
+- UNIQUE constraint on stripe_payment_id
+- check before inserting orders
+- ignore duplicate webhook events
+
+Wrap all payment updates in transactions
+
+---
+
+🔥 3. WEBHOOK AUTHORITY SYSTEM
+
+In /api/stripe/webhook:
+
+- verify stripe-signature
+- process only trusted events
+- update order status ONLY here
+
+Events:
+
+payment_intent.succeeded → mark order paid  
+invoice.paid → activate subscription  
+invoice.payment_failed → mark past_due  
+
+---
+
+🔥 4. COMMISSION + REVERSAL SYSTEM
+
+On payment success:
+
+- create commission record
+
+On refund:
+
+- reverse commission
+- freeze payout
+- log reversal event
+
+Add:
+
+COMMISSION_REVERSALS table
+
+---
+
+🔥 5. ESCROW / HOLD SYSTEM (OPTIONAL BUT STRONG)
+
+Add:
+
+- order funds status (held / released)
+- release funds only after fulfillment
+- allow admin override
+
+---
+
+🔥 6. FRAUD / ANOMALY DETECTION
+
+Create:
+
+FRAUD_FLAGS table
+
+Track:
+
+- large transactions
+- repeated failures
+- abnormal activity
+
+Trigger flags automatically
+
+---
+
+🔥 7. PRICING VALIDATION LAYER
+
+On webhook:
+
+- re-calculate expected price
+- compare to Stripe amount
+
+If mismatch > threshold:
+
+- reject update
+- log anomaly
+
+---
+
+🔥 8. RECONCILIATION WORKER
+
+Create background job:
+
+- runs every X minutes
+- compares Stripe payments vs DB orders
+- fixes mismatches
+- logs issues
+
+---
+
+🔥 9. SYSTEM HEALTH ENDPOINT
+
+Create:
+
+GET /api/system/status
+
+Return:
+
+- pending payments
+- failed webhooks
+- stuck orders
+- payout queue
+- system alerts
+
+---
+
+🔥 10. AUDIT LOGGING (FULL TRACEABILITY)
+
+Create AUDIT_LOG table:
+
+- user_id
+- action
+- before_state
+- after_state
+- timestamp
+
+Log:
+
+- order updates
+- payouts
+- pricing changes
+- admin actions
+
+---
+
+🔥 11. ROLE-BASED SECURITY HARDENING
+
+Ensure:
+
+- only super_admin can trigger payouts
+- venue_admin scoped to own data
+- no cross-tenant access
+
+---
+
+🔥 12. RETRY + FAILSAFE SYSTEM
+
+If:
+
+- Stripe success but DB fails
+
+Then:
+
+- queue retry
+- retry write
+- ensure consistency
+
+---
+
+🔥 13. ANALYTICS INTEGRITY
+
+Ensure:
+
+- analytics uses confirmed (paid) data only
+- exclude failed or duplicate events
+
+---
+
+🔥 14. BACKGROUND WORKERS
+
+Create:
+
+- reconciliation worker
+- payout worker
+- analytics aggregation worker
+- cleanup worker
+
+Run on cron or intervals
+
+---
+
+🔥 15. FINAL SYSTEM GUARANTEE
+
+After implementation, the platform must:
+
+- process payments correctly every time
+- never duplicate or lose transactions
+- detect and flag suspicious activity
+- maintain clean, auditable financial records
+- scale across venues without data leakage
+
+---
+
+🎯 FINAL GOAL
+
+Transform SmokeCraft 360 from:
+
+a working SaaS system
+
+into:
+
+a financially secure, enterprise-grade platform that can handle real-world usage, money flow, and scale without breaking
+
+---

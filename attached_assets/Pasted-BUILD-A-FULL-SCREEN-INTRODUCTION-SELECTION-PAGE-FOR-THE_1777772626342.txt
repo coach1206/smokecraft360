@@ -1,0 +1,208 @@
+BUILD A FULL-SCREEN INTRODUCTION SELECTION PAGE FOR THE 360 EXPERIENCE PLATFORM WHERE USERS CHOOSE BETWEEN SMOKECRAFT, POURCRAFT, AND VAPECRAFT — WITH PREMIUM VISUALS, TOUCH INTERACTION, AND ANIMATED TRANSITIONS INTO EACH EXPERIENCE
+
+---
+
+🚨 CORE OBJECTIVE
+
+Create a landing experience where users:
+
+- walk up to a screen (kiosk/tablet)
+- instantly understand what to do
+- tap a section
+- smoothly transition into that experience
+
+This must feel like a luxury product selector, not a website menu.
+
+---
+
+🎯 LAYOUT STRUCTURE
+
+Full screen layout:
+
+- background: high-quality lifestyle image (lounge / bar environment)
+- overlay: dark gradient (left darker, right lighter)
+
+Center content:
+
+- headline (large, readable)
+- subtext (clear instruction)
+- 3 large interactive cards (side by side or stacked depending on screen)
+
+---
+
+🧠 HEADLINE
+
+“Choose Your Experience”
+
+Subtext:
+
+“Tap to begin your journey”
+
+Font:
+- large (36–48px)
+- high contrast (white or gold)
+
+---
+
+🔥 EXPERIENCE CARDS (CORE UI)
+
+Create 3 interactive cards:
+
+1. SmokeCraft 360
+2. PourCraft 360
+3. VapeCraft 360
+
+Each card must include:
+
+- real background image (NOT icons)
+- semi-transparent overlay for readability
+- title (bold)
+- short descriptor
+- subtle glow on hover/touch
+
+---
+
+🖼️ VISUAL STYLE PER CARD
+
+SMOKECRAFT:
+- cigar lounge
+- smoke drifting
+- warm amber lighting
+
+POURCRAFT:
+- wine / cocktail pour
+- glass reflections
+- deep reds
+
+VAPECRAFT:
+- vapor clouds
+- neon or soft gradients
+- modern lighting
+
+---
+
+🎬 INTERACTION BEHAVIOR
+
+When user taps a card:
+
+1. card scales slightly (0.95)
+2. glow pulse effect
+3. soft click sound
+4. FULL SCREEN TRANSITION
+
+---
+
+🎥 TRANSITION ANIMATION
+
+Selected card:
+
+- expands to full screen
+- background zooms slightly
+- other cards fade out
+
+Then:
+
+- route to /smokecraft OR /pourcraft OR /vapecraft
+
+Duration:
+0.4–0.6s smooth animation
+
+---
+
+🔊 SOUND
+
+Add:
+
+- click sound on tap
+- optional ambient background loop (low volume)
+
+---
+
+📱 TOUCH / KIOSK RULES
+
+- cards must be large (min 300px width)
+- spacing between cards
+- no small buttons
+- instant response on tap
+
+---
+
+🎨 CONSISTENCY
+
+Cards must:
+
+- share same size
+- same animation timing
+- same layout structure
+
+Only visuals change
+
+---
+
+💻 FRONTEND WIRING (REACT)
+
+Create:
+
+/client/pages/Intro.jsx
+
+---
+
+CODE STRUCTURE
+
+- useState for selected card
+- onClick → trigger animation
+- after delay → navigate
+
+---
+
+EXAMPLE LOGIC
+
+onSelect(theme):
+  setSelected(theme)
+  play animation
+  setTimeout(() => navigate("/" + theme), 500)
+
+---
+
+ROUTING
+
+Ensure routes exist:
+
+/smokecraft  
+/pourcraft  
+/vapecraft  
+
+---
+
+🖼️ IMAGE SOURCE
+
+Use:
+
+- Unsplash
+- Pexels
+
+Search terms:
+
+“cigar lounge luxury”  
+“wine pouring glass”  
+“vape smoke aesthetic”
+
+---
+
+🎯 FINAL GOAL
+
+When a user sees this screen:
+
+- they immediately understand what to do
+- they feel like they are choosing an experience
+- the system feels premium and intentional
+
+NOT:
+
+- a basic homepage
+- a list of links
+- a flat UI
+
+This is the ENTRY POINT to the entire platform.
+
+--
