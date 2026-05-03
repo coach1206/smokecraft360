@@ -25,7 +25,30 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import type { CigarShape, CigarSession } from "../services/storage";
 import { haptic } from "../utils/haptics";
-import { cigarShapeImage } from "../lib/cloudinary";
+
+/* Locked vitola product photography. Bundled by Vite via @assets so the
+ * picker always shows real cigar imagery — Cloudinary venue overrides were
+ * tried previously but the cloud is empty and a network-dependent default
+ * regressed the kiosk to "loading boxes" (see replit.md "Cigar Structure
+ * Step Imagery"). These hand-vetted PNGs each show the right vitola: parejo
+ * for robusto/corona/toro/churchill, sharp tapered head for torpedo, and a
+ * shorter softer-tipped belicoso. To replace any image, regenerate the
+ * file at the same path — no code edit needed. */
+import robustoImg   from "@assets/locked_cards/vitola_robusto.png";
+import coronaImg    from "@assets/locked_cards/vitola_corona.png";
+import toroImg      from "@assets/locked_cards/vitola_toro.png";
+import churchillImg from "@assets/locked_cards/vitola_churchill.png";
+import torpedoImg   from "@assets/locked_cards/vitola_torpedo.png";
+import belicosoImg  from "@assets/locked_cards/vitola_belicoso.png";
+
+const VITOLA_PHOTOS: Record<CigarShape, string> = {
+  robusto:   robustoImg,
+  corona:    coronaImg,
+  toro:      toroImg,
+  churchill: churchillImg,
+  torpedo:   torpedoImg,
+  belicoso:  belicosoImg,
+};
 
 interface CigarStructureStepProps {
   /** Pre-selected shape (from returning guest's saved cigarProfile). */
@@ -132,12 +155,10 @@ export function CigarStructureStep({
 }: CigarStructureStepProps) {
   const [shape,   setShape]   = useState<CigarShape>(initialShape);
   const [session, setSession] = useState<CigarSession>(initialSession);
-  /* Per-shape "Cloudinary photo failed to load" set. When a shape's photo
-   * 404s (e.g. the venue hasn't uploaded cigars/<shape>.jpg yet), we add it
-   * here and the card transparently falls back to the SVG silhouette — so
-   * the empty-Cloudinary state is visually identical to the pre-Cloudinary
-   * design. As soon as a venue uploads the asset, photos light up on next
-   * page load with no code change. See lib/cloudinary.ts. */
+  /* Paranoia safety net: bundled images "should never" 404 since Vite
+   * fingerprints them at build time, but if anything ever goes sideways
+   * (asset deleted, build glitch, decode failure) the card transparently
+   * falls back to the SVG silhouette so the kiosk picker stays usable. */
   const [failedPhotos, setFailedPhotos] = useState<Set<CigarShape>>(() => new Set());
 
   return (
@@ -194,7 +215,7 @@ export function CigarStructureStep({
                 <VitolaSilhouette shape={s} />
               ) : (
                 <img
-                  src={cigarShapeImage(s)}
+                  src={VITOLA_PHOTOS[s]}
                   alt=""
                   aria-hidden="true"
                   loading="lazy"

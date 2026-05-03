@@ -234,3 +234,39 @@ id = "09j6vmZ1BZxuaaeSf8nSN"
 uri = "file://attached_assets/locked_cards/experience_vapecraft.png"
 type = "image"
 title = "generated_image"
+
+[[generated]]
+id = "qwnTF2irMrBx0Tdgi8WIm"
+uri = "file://attached_assets/locked_cards/vitola_robusto.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "DeTz0BG8ugHLQIQ8EbyDB"
+uri = "file://attached_assets/locked_cards/vitola_corona.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "9dJ-WRTF1-eU103ll5GCl"
+uri = "file://attached_assets/locked_cards/vitola_toro.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "mpYobGmJWgmRLIgrG2-ty"
+uri = "file://attached_assets/locked_cards/vitola_churchill.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "90rUpPwreJwDrPp4WmzgU"
+uri = "file://attached_assets/locked_cards/vitola_torpedo.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Dr99pcLenmmQgUkPDv90R"
+uri = "file://attached_assets/locked_cards/vitola_belicoso.png"
+type = "image"
+title = "generated_image"
