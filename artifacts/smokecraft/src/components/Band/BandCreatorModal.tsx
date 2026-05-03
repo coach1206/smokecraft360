@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Crown, Lock, Share2, Check, UtensilsCrossed } from "lucide-react";
+import QRCode from "qrcode";
 import { CigarBandPreview } from "./CigarBandPreview";
 import { COLOR_OPTIONS, EMBLEM_OPTIONS, BLEND_STYLES, TEXT_STYLES } from "./bandConstants";
 import type { BlendDesign, SavedBlend } from "../../services/storage";
@@ -39,6 +40,10 @@ export function BandCreatorModal({
   const [shareVisible, setShareVisible] = useState(false);
   const [copied, setCopied]             = useState(false);
   const [selectedFood, setSelectedFood] = useState<string>(foodPairings[0]?.name ?? "");
+  /* QR is rendered as a data URL so it works fully offline (no remote QR
+   * service, no extra HTTP round-trip on the kiosk). Generated lazily on
+   * Share so we don't pay the cost for guests who never tap it.            */
+  const [qrDataUrl, setQrDataUrl]       = useState<string>("");
 
   const setDesignField = <K extends keyof BlendDesign>(key: K, value: BlendDesign[K]) =>
     setDesign((d) => ({ ...d, [key]: value }));
@@ -56,20 +61,55 @@ export function BandCreatorModal({
     setSaved(true);
   };
 
+  /**
+   * Build the kiosk → phone handoff URL. Encodes the full blend payload as
+   * URL params so the receiving page can hydrate without a server round-trip
+   * or an account on the phone — the guest just scans and sees their blend.
+   *
+   * Honors import.meta.env.BASE_URL so the link works correctly under the
+   * artifact path prefix in production.
+   */
+  const buildShareUrl = (): string => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const base   = import.meta.env.BASE_URL || "/";
+    const params = new URLSearchParams({
+      blend:   blendName || "My Blend",
+      style,
+      cigar:   cigarBaseName,
+      pairing: pairingName,
+    });
+    if (selectedFood) params.set("food", selectedFood);
+    return `${origin}${base}?${params.toString()}`;
+  };
+
   const handleShare = async () => {
     const foodLine = selectedFood ? ` Alongside ${selectedFood}.` : "";
-    const text = `✦ ${blendName || "My Blend"} — a ${style} experience, paired with ${pairingName}.${foodLine} Crafted on SmokeCraft.`;
+    const shareUrl = buildShareUrl();
+    const text = `✦ ${blendName || "My Blend"} — a ${style} experience, paired with ${pairingName}.${foodLine} Crafted on SmokeCraft.\n${shareUrl}`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2200);
     } catch { /* ignore */ }
+    /* Generate the QR as a data URL — high error-correction so a phone can
+     * still read it through the slight glare of a kiosk screen. Dark gold
+     * on cream matches the brand band palette. */
+    try {
+      const dataUrl = await QRCode.toDataURL(shareUrl, {
+        errorCorrectionLevel: "H",
+        margin: 1,
+        width:  220,
+        color:  { dark: "#1A1410", light: "#F5EBDD" },
+      });
+      setQrDataUrl(dataUrl);
+    } catch { setQrDataUrl(""); }
     setShareVisible(true);
   };
 
   const handleClose = () => {
     setSaved(false);
     setShareVisible(false);
+    setQrDataUrl("");
     setBlendName("");
     setDesc("");
     setStyle("bold");
@@ -354,9 +394,43 @@ export function BandCreatorModal({
                         {blendName || "My Blend"} · {style} · {pairingName}
                         {selectedFood ? ` · ${selectedFood}` : ""}
                       </p>
+
+                      {/* QR — kiosk → phone handoff. Cream backdrop so the
+                          dark-gold modules read crisp under any room light;
+                          generous padding so a phone camera locks fast.
+                          aria-label exposes the underlying URL to screen
+                          readers since a QR image alone is opaque to AT.   */}
+                      {qrDataUrl && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.15, duration: 0.4 }}
+                          className="mt-4 flex flex-col items-center"
+                        >
+                          <div
+                            className="rounded-lg p-2"
+                            style={{ background: "#F5EBDD", boxShadow: "0 4px 18px rgba(0,0,0,0.35), 0 0 0 1px rgba(212,175,55,0.25)" }}
+                          >
+                            <img
+                              src={qrDataUrl}
+                              alt={`QR code linking to ${blendName || "your blend"}`}
+                              width={140}
+                              height={140}
+                              style={{ display: "block", imageRendering: "pixelated" }}
+                            />
+                          </div>
+                          <p
+                            className="mt-2 text-center text-[9px] uppercase tracking-[0.22em]"
+                            style={{ color: "rgba(212,175,55,0.65)" }}
+                          >
+                            Scan to take it home
+                          </p>
+                        </motion.div>
+                      )}
+
                       <p className="mt-3 text-center text-[9px] uppercase tracking-[0.2em]"
                         style={{ color: copied ? "rgba(100,200,120,0.8)" : "rgba(180,155,100,0.35)" }}>
-                        {copied ? "✓ Copied to clipboard" : "Text copied — paste to share"}
+                        {copied ? "✓ Link & text copied" : "Link copied — paste or scan to share"}
                       </p>
                     </div>
                   </motion.div>
