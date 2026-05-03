@@ -10,6 +10,7 @@ import { LicenseGate }     from "@/components/License/LicenseGate";
 import { PresentationProvider } from "@/contexts/PresentationContext";
 import NotFound        from "@/pages/not-found";
 import Home            from "@/pages/Home";
+import Intro           from "@/pages/Intro";
 import Dashboard       from "@/pages/Dashboard";
 import PaymentSuccess  from "@/pages/PaymentSuccess";
 import PaymentCancel   from "@/pages/PaymentCancel";
@@ -23,6 +24,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/"           component={Home}           />
+      <Route path="/intro"      component={Intro}          />
       <Route path="/dashboard"  component={Dashboard}      />
       <Route path="/success"    component={PaymentSuccess} />
       <Route path="/cancel"     component={PaymentCancel}  />
