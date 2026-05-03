@@ -1,0 +1,244 @@
+RUN A FULL SYSTEM INTEGRATION, VALIDATION, AND DEBUG PASS ON THE PROFOUND INNOVATION (P.I) PLATFORM TO ENSURE ALL FRONTEND, BACKEND, API, DATA TRACKING, STRIPE PAYMENTS, AND EXPERIENCE FLOWS ARE FULLY WIRED, ERROR-FREE, AND PRODUCTION-READY
+
+---
+
+🚨 CORE OBJECTIVE
+
+Verify and fix the ENTIRE system so that:
+
+- all features connect correctly
+- no API endpoints fail
+- no UI elements are dead
+- all data flows correctly
+- payments, scoring, and behavior tracking are fully operational
+
+---
+
+🧱 1. FRONTEND → BACKEND CONNECTION CHECK
+
+Verify:
+
+- every fetch() call hits a real endpoint
+- all routes return valid JSON
+- no 404 or 500 errors
+
+Fix:
+
+- broken endpoints
+- incorrect paths
+- missing parameters
+
+---
+
+🧠 2. THEME ENGINE VALIDATION
+
+Ensure:
+
+- theme switching works (/smokecraft, /pourcraft, /vapecraft)
+- products change based on theme
+- visuals update correctly
+- no hardcoded values
+
+---
+
+📦 3. PRODUCT SYSTEM CHECK
+
+Verify:
+
+GET /api/products works for:
+
+- cigar
+- whiskey
+- wine
+- cocktail
+
+Ensure:
+
+- correct data returns
+- UI renders correctly
+- no empty states
+
+---
+
+🔥 4. SCORING ENGINE TEST
+
+POST /api/scoring:
+
+- confirm correct calculation
+- confirm response structure
+- confirm frontend displays score
+
+---
+
+💳 5. STRIPE PAYMENT FLOW (CRITICAL)
+
+Verify:
+
+- POST /api/payments/create-intent works
+- clientSecret returns
+- frontend confirms payment
+- webhook receives event
+
+Ensure:
+
+- order status updates AFTER webhook
+- no duplicate charges
+- metadata.orderId matches DB
+
+---
+
+🔁 6. WEBHOOK VALIDATION
+
+Confirm:
+
+- signature verification works
+- events processed once (idempotent)
+- order marked paid correctly
+
+Fix:
+
+- duplicate event handling
+- missing order mapping
+
+---
+
+📊 7. DATA TRACKING SYSTEM
+
+Verify:
+
+POST /api/behavior/track:
+
+- logs all events
+- stores session_id correctly
+
+GET /api/profile:
+
+- returns learned data
+
+Ensure:
+
+- no missing fields
+- no crashes
+
+---
+
+🧠 8. SESSION MANAGEMENT
+
+Verify:
+
+- sessionId is created and stored
+- persists across reloads
+- used in all tracking calls
+
+---
+
+🎬 9. CINEMATIC FLOW VALIDATION
+
+Check:
+
+- splash → selection → demo → interaction
+- idle mode activates
+- demo loop runs
+- touch resets system instantly
+
+Fix:
+
+- stuck states
+- broken transitions
+- missing resets
+
+---
+
+🎥 10. VIDEO + ASSET LOADING
+
+Verify:
+
+- all video paths exist
+- all images load
+- fallback if video fails
+
+---
+
+🔊 11. SOUND SYSTEM CHECK
+
+Verify:
+
+- click sound plays
+- ambient sound loops
+- no browser blocking errors
+
+---
+
+⚙️ 12. ERROR HANDLING
+
+Add:
+
+- try/catch on all API calls
+- fallback UI messages
+- console error logging
+
+---
+
+🔐 13. SECURITY CHECK
+
+Ensure:
+
+- backend validates all inputs
+- no direct client-side pricing
+- no unsafe data exposure
+
+---
+
+🧪 14. FULL FLOW TEST (MANDATORY)
+
+Simulate:
+
+1. user arrives
+2. splash plays
+3. user selects experience
+4. product loads
+5. scoring runs
+6. order created
+7. payment processed
+8. webhook confirms
+9. order updates
+10. behavior tracked
+
+EVERY STEP MUST WORK
+
+---
+
+🚨 15. REMOVE ALL DEAD CODE
+
+- delete unused components
+- remove duplicate logic
+- clean console warnings
+
+---
+
+🎯 FINAL RESULT
+
+After this pass:
+
+- the system runs without errors
+- all features are connected
+- payments work end-to-end
+- data tracking works
+- UI is responsive and interactive
+
+---
+
+💥 FINAL STATE
+
+PROFOUND INNOVATION (P.I) becomes:
+
+- stable
+- reliable
+- testable
+- deployable
+
+NO BROKEN LINKS  
+NO MISSING CONNECTIONS  
+NO GUESSWORK  
+
+---
