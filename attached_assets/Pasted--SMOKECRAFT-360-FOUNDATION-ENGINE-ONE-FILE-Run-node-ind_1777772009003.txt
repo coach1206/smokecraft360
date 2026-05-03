@@ -1,0 +1,211 @@
+// ==============================
+// SMOKECRAFT 360 FOUNDATION ENGINE (ONE FILE)
+// Run: node index.js
+// ==============================
+
+import express from "express";
+import cors from "cors";
+import path from "path";
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// ==============================
+// THEME ENGINE
+// ==============================
+
+const THEMES = {
+  smokecraft: {
+    name: "SmokeCraft 360",
+    productType: "cigar",
+    secondaryProduct: "whiskey",
+    scene: "smoke"
+  },
+  pourcraft: {
+    name: "PourCraft 360",
+    productType: "wine",
+    secondaryProduct: "cocktail",
+    scene: "pour"
+  }
+};
+
+function getTheme(name) {
+  return THEMES[name] || THEMES.smokecraft;
+}
+
+// ==============================
+// MOCK DATABASE
+// ==============================
+
+const DB = {
+  cigar: [
+    { id: 1, name: "Maduro King", price: 20 },
+    { id: 2, name: "Connecticut Smooth", price: 18 }
+  ],
+  whiskey: [
+    { id: 3, name: "Oak Reserve", price: 15 }
+  ],
+  wine: [
+    { id: 4, name: "Cabernet Reserve", price: 22 }
+  ],
+  cocktail: [
+    { id: 5, name: "Old Fashioned", price: 14 }
+  ]
+};
+
+// ==============================
+// PRODUCTS API (BY THEME)
+// ==============================
+
+app.get("/api/products", (req, res) => {
+  const themeName = req.query.theme || "smokecraft";
+  const theme = getTheme(themeName);
+
+  const primary = DB[theme.productType] || [];
+  const secondary = DB[theme.secondaryProduct] || [];
+
+  res.json({
+    theme: theme.name,
+    primary,
+    secondary
+  });
+});
+
+// ==============================
+// SCORING ENGINE
+// ==============================
+
+app.post("/api/scoring", (req, res) => {
+  const { flavor = 0, strength = 0, pairing = 0 } = req.body;
+
+  const score =
+    flavor * 0.4 +
+    strength * 0.3 +
+    pairing * 0.3;
+
+  res.json({
+    score: Math.round(score),
+    label: score > 80 ? "Elite Blend" : "Standard Blend"
+  });
+});
+
+// ==============================
+// ORDER ENDPOINT
+// ==============================
+
+app.post("/api/order", (req, res) => {
+  const { items, theme } = req.body;
+
+  console.log("ORDER RECEIVED:", { items, theme });
+
+  res.json({
+    status: "order_created",
+    message: "Order received successfully"
+  });
+});
+
+// ==============================
+// STRIPE WEBHOOK (STUB STRUCTURE)
+// ==============================
+
+app.post("/api/webhook", (req, res) => {
+  const event = req.body;
+
+  console.log("Webhook received:", event.type);
+
+  switch (event.type) {
+    case "payment_intent.succeeded":
+      console.log("Payment successful");
+      break;
+
+    case "invoice.paid":
+      console.log("Subscription active");
+      break;
+
+    case "invoice.payment_failed":
+      console.log("Payment failed");
+      break;
+
+    default:
+      console.log("Unhandled event");
+  }
+
+  res.json({ received: true });
+});
+
+// ==============================
+// SIMPLE FRONTEND (TEST UI)
+// ==============================
+
+app.get("/", (req, res) => {
+  res.send(`
+    <html>
+      <body style="background:#111;color:white;font-family:sans-serif;padding:40px">
+        <h1>SmokeCraft 360 Engine</h1>
+
+        <button onclick="load('smokecraft')">SmokeCraft</button>
+        <button onclick="load('pourcraft')">PourCraft</button>
+
+        <h2 id="theme"></h2>
+        <div id="products"></div>
+
+        <button onclick="score()">Test Score</button>
+        <button onclick="order()">Test Order</button>
+
+        <script>
+          let currentTheme = "smokecraft";
+
+          function load(theme) {
+            currentTheme = theme;
+
+            fetch('/api/products?theme=' + theme)
+              .then(res => res.json())
+              .then(data => {
+                document.getElementById("theme").innerText = data.theme;
+
+                document.getElementById("products").innerHTML =
+                  "<h3>Primary</h3>" +
+                  data.primary.map(p => p.name + " $" + p.price).join("<br>") +
+                  "<h3>Secondary</h3>" +
+                  data.secondary.map(p => p.name + " $" + p.price).join("<br>");
+              });
+          }
+
+          function score() {
+            fetch('/api/scoring', {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ flavor: 80, strength: 70, pairing: 90 })
+            })
+            .then(res => res.json())
+            .then(data => alert("Score: " + data.score));
+          }
+
+          function order() {
+            fetch('/api/order', {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                items: [1, 3],
+                theme: currentTheme
+              })
+            })
+            .then(res => res.json())
+            .then(data => alert(data.message));
+          }
+
+          load("smokecraft");
+        </script>
+      </body>
+    </html>
+  `);
+});
+
+// ==============================
+// START SERVER
+// ==============================
+
+app.listen(3000, () => {
+  console.log("🔥 SmokeCraft 360 running on http://localhost:3000");
+});
