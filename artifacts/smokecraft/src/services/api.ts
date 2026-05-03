@@ -1937,3 +1937,133 @@ export async function runOsCommand(cmd: OsCommand): Promise<Record<string, unkno
   if (!res.ok) throw new Error((data as { error?: string }).error ?? `Command failed (${res.status})`);
   return data;
 }
+
+// ── Help Center / Support Tickets ────────────────────────────────────────────
+
+export type SupportTicketStatus   = "open" | "in_progress" | "resolved" | "closed";
+export type SupportTicketPriority = "low" | "normal" | "high";
+
+export interface SupportTicket {
+  id:         string;
+  venueId:    string;
+  openedBy:   string;
+  subject:    string;
+  body:       string;
+  status:     SupportTicketStatus;
+  priority:   SupportTicketPriority;
+  assignedTo: string | null;
+  createdAt:  string;
+  updatedAt:  string;
+  resolvedAt: string | null;
+}
+
+export interface SupportTicketMessage {
+  id:        string;
+  ticketId:  string;
+  authorId:  string;
+  body:      string;
+  createdAt: string;
+}
+
+export interface ListSupportTicketsResp {
+  tickets:    SupportTicket[];
+  nextCursor: string | null;
+}
+
+export interface ListSupportTicketMessagesResp {
+  messages:   SupportTicketMessage[];
+  nextCursor: string | null;
+}
+
+export async function listSupportTickets(opts: {
+  status?:     SupportTicketStatus;
+  venueId?:    string;
+  cursor?:     string;
+  limit?:      number;
+} = {}): Promise<ListSupportTicketsResp> {
+  const qs = new URLSearchParams();
+  if (opts.status)  qs.set("status",  opts.status);
+  if (opts.venueId) qs.set("venueId", opts.venueId);
+  if (opts.cursor)  qs.set("cursor",  opts.cursor);
+  if (opts.limit)   qs.set("limit",   String(opts.limit));
+  const suffix = qs.toString() ? `?${qs.toString()}` : "";
+  const res = await fetch(`/api/support-tickets${suffix}`, { headers: getAuthHeaders() });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to load tickets");
+  }
+  return res.json();
+}
+
+export async function getSupportTicket(id: string): Promise<SupportTicket> {
+  const res = await fetch(`/api/support-tickets/${id}`, { headers: getAuthHeaders() });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to load ticket");
+  }
+  return res.json();
+}
+
+export async function createSupportTicket(input: {
+  subject:   string;
+  body:      string;
+  priority?: SupportTicketPriority;
+}): Promise<SupportTicket> {
+  const res = await fetch("/api/support-tickets", {
+    method:  "POST",
+    headers: getAuthHeaders(),
+    body:    JSON.stringify(input),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to create ticket");
+  }
+  return res.json();
+}
+
+export async function patchSupportTicketStatus(
+  id: string, status: SupportTicketStatus,
+): Promise<{ id: string; status: SupportTicketStatus; updatedAt: string; resolvedAt: string | null }> {
+  const res = await fetch(`/api/support-tickets/${id}/status`, {
+    method:  "PATCH",
+    headers: getAuthHeaders(),
+    body:    JSON.stringify({ status }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to update status");
+  }
+  return res.json();
+}
+
+export async function listSupportTicketMessages(
+  ticketId: string, opts: { cursor?: string; limit?: number } = {},
+): Promise<ListSupportTicketMessagesResp> {
+  const qs = new URLSearchParams();
+  if (opts.cursor) qs.set("cursor", opts.cursor);
+  if (opts.limit)  qs.set("limit",  String(opts.limit));
+  const suffix = qs.toString() ? `?${qs.toString()}` : "";
+  const res = await fetch(`/api/support-tickets/${ticketId}/messages${suffix}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to load thread");
+  }
+  return res.json();
+}
+
+export async function postSupportTicketMessage(
+  ticketId: string, body: string,
+): Promise<SupportTicketMessage> {
+  const res = await fetch(`/api/support-tickets/${ticketId}/messages`, {
+    method:  "POST",
+    headers: getAuthHeaders(),
+    body:    JSON.stringify({ body }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? "Failed to post message");
+  }
+  return res.json();
+}

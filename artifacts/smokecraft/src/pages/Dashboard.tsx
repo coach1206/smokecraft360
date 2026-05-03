@@ -5,7 +5,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
   ArrowLeft, TrendingUp, Package, Sparkles, Zap, Plus, CalendarClock, AlertTriangle, FileLock, Download,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
-  Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown, Award, Gift, Monitor, Activity,
+  Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown, Award, Gift, Monitor, Activity, LifeBuoy,
 } from "lucide-react";
 import { LiveOrders }                from "@/components/Dashboard/LiveOrders";
 import { BrandsTab }               from "@/components/Dashboard/BrandsTab";
@@ -25,6 +25,7 @@ import { OsTab }                     from "@/components/Dashboard/OsTab";
 import { NewProductForm }            from "@/components/Dashboard/NewProductForm";
 import { ReservationsTab }           from "@/components/Dashboard/ReservationsTab";
 import { ConflictsTab }              from "@/components/Dashboard/ConflictsTab";
+import { HelpCenterTab }             from "@/components/Dashboard/HelpCenterTab";
 import { IpVaultTab }                from "@/components/Dashboard/IpVaultTab";
 import { ExportsTab }                from "@/components/Dashboard/ExportsTab";
 import {
@@ -39,13 +40,14 @@ import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
-type DashTab = "overview" | "products" | "reservations" | "conflicts" | "ip-vault" | "exports" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os";
+type DashTab = "overview" | "products" | "reservations" | "conflicts" | "ip-vault" | "exports" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os" | "help";
 
 const TABS: { id: DashTab; label: string; icon: React.ReactNode; superAdminOnly?: boolean }[] = [
   { id: "overview",     label: "Overview",              icon: <BarChart3 size={12} />    },
   { id: "products",     label: "Products",              icon: <Package size={12} />      },
   { id: "reservations", label: "Reservations",          icon: <CalendarClock size={12} /> },
   { id: "conflicts",    label: "Conflicts",             icon: <AlertTriangle size={12} /> },
+  { id: "help",         label: "Help Center",           icon: <LifeBuoy size={12} />     },
   { id: "ip-vault",     label: "IP Vault",              icon: <FileLock size={12} />, superAdminOnly: true },
   { id: "exports",      label: "Exports",               icon: <Download size={12} />     },
   { id: "brands",       label: "Brands & Distributors", icon: <Building2 size={12} />    },
@@ -406,6 +408,7 @@ export default function Dashboard() {
 
                 {/* ── Conflicts tab ──────────────────────────────────────────── */}
                 {activeTab === "conflicts" && <ConflictsTab />}
+                {activeTab === "help"      && <HelpCenterTab />}
 
                 {/* ── IP Vault tab (super_admin only) ────────────────────────── */}
                 {activeTab === "ip-vault" && user?.role === "super_admin" && <IpVaultTab />}
