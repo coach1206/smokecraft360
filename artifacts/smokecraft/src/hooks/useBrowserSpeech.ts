@@ -54,22 +54,22 @@ export interface UseBrowserSpeech {
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 /**
- * Pick the highest-fidelity available English voice. Browsers ship a wide
- * spectrum of quality — naive default selection often lands on espeak-ng or
- * a low-bitrate eSpeak voice that sounds buzzy/robotic, exactly what the
- * 30th brief flagged ("No buzzing", "high-quality voice").
+ * Pick the highest-fidelity available **female English** voice. The 32nd
+ * brief was explicit: "the voice needs to be a woman human voice" and "the
+ * buzzing noise is still there." The previous picker fell through to any
+ * default English voice, which on systems without a high-quality female
+ * voice landed on espeak/Daniel/Alex (male, robotic, buzzy).
  *
  * Preference order (best → fallback):
- *   1. Google * English      — Chrome's neural cloud voices (highest quality)
- *   2. Microsoft * (Online)  — Edge's neural voices, second only to Google
- *   3. Samantha              — Apple macOS/iOS default high-quality voice
- *   4. Daniel / Karen / Alex — Other Apple high-quality voices
- *   5. Any voice flagged `default: true` in English
- *   6. Any English voice
- *   7. First voice the platform exposes (last-resort)
+ *   1. Google * Female / Google UK English Female
+ *   2. Microsoft Aria / Jenny / Zira / Michelle (Online when available — the
+ *      "Online" Microsoft voices are the neural-quality tier; offline are SAPI)
+ *   3. Samantha            — Apple macOS/iOS default female (very high quality)
+ *   4. Karen / Moira / Tessa / Fiona / Victoria — Other Apple female voices
  *
- * Returns null if no voices are loaded yet (the caller should retry on the
- * `voiceschanged` event — Chrome populates `getVoices()` asynchronously).
+ * Returns **null** if no high-quality female voice is available. The caller
+ * (speak()) treats null as "stay silent" — silence is strictly better than
+ * the buzzy male espeak default the user complained about.
  */
 function pickHighQualityVoice(
   voices: readonly SpeechSynthesisVoice[],
@@ -77,18 +77,21 @@ function pickHighQualityVoice(
   if (!voices.length) return null;
   const en = (v: SpeechSynthesisVoice) => v.lang?.toLowerCase().startsWith("en");
   const tests: Array<(v: SpeechSynthesisVoice) => boolean> = [
-    v => en(v) && /^Google\b.*English/i.test(v.name),
-    v => en(v) && /^Microsoft\b.*Online/i.test(v.name),
+    v => en(v) && /Google\b.*Female/i.test(v.name),
+    v => en(v) && /Google\s+UK\s+English\s+Female/i.test(v.name),
+    v => en(v) && /Microsoft\b.*\b(Aria|Jenny|Michelle|Zira)\b.*Online/i.test(v.name),
+    v => en(v) && /Microsoft\b.*\b(Aria|Jenny|Michelle|Zira)\b/i.test(v.name),
     v => en(v) && /\bSamantha\b/i.test(v.name),
-    v => en(v) && /\b(Daniel|Karen|Alex)\b/i.test(v.name),
-    v => en(v) && v.default,
-    v => en(v),
+    v => en(v) && /\b(Karen|Moira|Tessa|Fiona|Victoria|Susan|Allison|Ava|Serena)\b/i.test(v.name),
+    /* Last resort: anything explicitly tagged "female" in the name. */
+    v => en(v) && /female/i.test(v.name),
   ];
   for (const test of tests) {
     const found = voices.find(test);
     if (found) return found;
   }
-  return voices[0] ?? null;
+  /* No qualified female voice → silence. Better than buzzing. */
+  return null;
 }
 
 export function useBrowserSpeech(opts: BrowserSpeechOptions = {}): UseBrowserSpeech {
@@ -133,6 +136,11 @@ export function useBrowserSpeech(opts: BrowserSpeechOptions = {}): UseBrowserSpe
   const speak = useCallback((text: string) => {
     if (!supportedRef.current) return;
     if (reducedRef.current && !forceSpeak) return;
+    /* No qualified female voice on this device → stay silent. The 32nd
+     * brief explicitly chose silence over the buzzy/male default that the
+     * platform falls back to (espeak-ng on Linux, eSpeak SAPI on Windows
+     * without the neural pack installed). */
+    if (!voiceRef.current) return;
     const trimmed = text.trim();
     if (!trimmed) return;
     try {
@@ -141,10 +149,7 @@ export function useBrowserSpeech(opts: BrowserSpeechOptions = {}): UseBrowserSpe
       u.rate = rate;
       u.pitch = pitch;
       u.volume = volume;
-      /* Pin the chosen high-quality voice. If voices haven't loaded yet
-       * (first speak before `voiceschanged` fires), the platform default
-       * still plays — better a quick default-quality cue than silence. */
-      if (voiceRef.current) u.voice = voiceRef.current;
+      u.voice = voiceRef.current;
       window.speechSynthesis.speak(u);
     } catch { /* never break the page over an ambient voice cue */ }
   }, [rate, pitch, volume, forceSpeak]);

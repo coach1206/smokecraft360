@@ -736,12 +736,13 @@ export default function Intro() {
         })}
       </div>
 
-      {/* Attract-mode product stage — cigar progresses through 4 build stages
-          across the cycle (unlit → lit → ember → full ash); whiskey glass
-          slides in next to the cigar on the reveal beat. Sits above the cards
-          to focus the eye, below the caption + scorecard. Pre-loads all four
-          stages on first render to avoid in-flight image swaps mid-beat. */}
-      {(() => {
+      {/* Attract-mode product stage — REMOVED per 32nd brief ("cigars popping
+          up randomly"). The cigar build-stage progression + whiskey glass
+          reveal was visually too aggressive on the entry portal. The bg
+          scene image cycling, captions, and scorecard reveal still run so
+          the kiosk continues to demonstrate the product on idle, just
+          without the foreground cigar pop-ins. */}
+      {false && (() => {
         const base = import.meta.env.BASE_URL;
         return (
           <AnimatePresence>
