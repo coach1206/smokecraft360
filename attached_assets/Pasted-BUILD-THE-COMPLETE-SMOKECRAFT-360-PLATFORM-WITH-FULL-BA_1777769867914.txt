@@ -1,0 +1,370 @@
+BUILD THE COMPLETE SMOKECRAFT 360 PLATFORM WITH FULL BACKEND + FRONTEND CODING AND WIRING IN ONE SYSTEM, INCLUDING EXPERIENCE ENGINE, REAL PRODUCT VISUALS, SUBSCRIPTION ENFORCEMENT, STRIPE PAYMENTS, AUTO-RENEW + RECOVERY, VENDOR MARKETPLACE, ANALYTICS, AND ADMIN DASHBOARDS — FULLY CONNECTED AND PRODUCTION-READY
+
+THIS IS A FULL STACK SYSTEM. NOTHING SHOULD BE LEFT UNWIRED.
+
+---
+
+🚨 MISSING / REQUIRED (NON-NEGOTIABLE)
+
+You MUST include:
+
+- Node.js + Express backend
+- PostgreSQL (or Replit DB)
+- React frontend (kiosk-ready)
+- JWT authentication (admin, vendor, venue)
+- Stripe Payments + Billing + Connect
+- Stripe Webhooks (verified)
+- Subscription enforcement system
+- Vendor marketplace
+- Analytics tracking
+- Background workers (cron jobs)
+- Multi-tenant architecture (venue_id on all data)
+
+---
+
+🛡️ FAILURE PREVENTION CHECKLIST
+
+DO NOT:
+
+- trust frontend pricing
+- skip webhook verification
+- hardcode data
+- mix tenant data
+- skip idempotency
+
+Everything must be:
+
+secure, dynamic, and scalable
+
+---
+
+🔥 SYSTEM ARCHITECTURE
+
+Create structure:
+
+/server
+  /routes
+  /services
+  /workers
+  /models
+  /middleware
+
+/client
+  /pages
+  /components
+
+---
+
+🔥 DATABASE TABLES (REQUIRED)
+
+USERS
+VENUES
+SUBSCRIPTIONS
+CIGARS
+WHISKEY
+PAIRINGS
+ORDERS
+COMMISSIONS
+PAYOUT_REQUESTS
+EVENT_LOG
+USER_SESSIONS
+VENDORS
+VENDOR_PRODUCTS
+FEATURED_PLACEMENTS
+VENDOR_ANALYTICS
+CIGAR_BANDS
+CIGAR_BOXES
+AUDIT_LOG
+
+ALL tables must include venue_id where applicable
+
+---
+
+🔥 AUTH + RBAC
+
+POST /api/auth/login → returns JWT
+
+Roles:
+
+- super_admin
+- venue_admin
+- vendor
+- staff
+
+Middleware enforces role access
+
+---
+
+🔥 EXPERIENCE ENGINE (FRONTEND)
+
+Build swipe-based UI:
+
+Steps:
+
+- mood
+- flavor
+- strength
+- atmosphere
+- pairing
+- reveal
+
+Each action:
+
+- triggers animation
+- logs event
+- updates visuals
+
+---
+
+🔥 DYNAMIC SCENE SYSTEM
+
+- change background on each selection
+- use real images (Unsplash/Pexels)
+- fade transitions (0.4–0.6s)
+
+---
+
+🔥 REAL PRODUCT SYSTEM
+
+- real cigar + whiskey images
+- dynamic updates based on selection
+- no placeholders
+
+---
+
+🔥 CIGAR BURN + SMOKE + SOUND
+
+- use real image sequence
+- smoke overlay (low opacity)
+- subtle burn sound loop
+- smooth transitions
+
+---
+
+🔥 SCORING ENGINE
+
+Create service:
+
+calculateBlendScore()
+
+- flavor match (40%)
+- strength match (30%)
+- pairing compatibility (30%)
+
+Return:
+
+- score (0–100)
+- breakdown
+- explanation
+
+---
+
+🔥 STRIPE PAYMENT SYSTEM
+
+POST /api/payments/create-intent
+
+- fetch real product pricing from DB
+- apply idempotency key
+- create PaymentIntent
+- return clientSecret
+
+---
+
+🔥 STRIPE WEBHOOK (SOURCE OF TRUTH)
+
+POST /api/webhooks/stripe
+
+Handle:
+
+invoice.paid → subscription active  
+invoice.payment_failed → past_due  
+payment_intent.succeeded → order paid  
+
+Actions:
+
+- update order status
+- decrement inventory
+- create commission record
+
+---
+
+🔥 SUBSCRIPTION SYSTEM
+
+Table: SUBSCRIPTIONS
+
+Fields:
+
+- status (active, past_due, canceled)
+- grace_until
+
+API:
+
+GET /api/license/status
+
+Frontend:
+
+- active → full access
+- past_due → warning banner
+- canceled → lock screen
+
+---
+
+🔥 BILLING PORTAL
+
+POST /api/billing/portal
+
+- create Stripe portal session
+- return URL
+
+---
+
+🔥 AUTO-RENEW + RECOVERY
+
+Webhook logic:
+
+- payment_failed → start grace period (3–7 days)
+- log dunning event
+- send notification
+
+- payment_success → restore access
+
+Frontend:
+
+- show “Fix Billing” button
+- show countdown before lock
+
+---
+
+🔥 VENDOR MARKETPLACE
+
+Routes:
+
+POST /api/vendor/products
+POST /api/vendor/placement
+
+Features:
+
+- vendor submits product
+- admin approves
+- vendor pays for placement
+
+---
+
+🔥 ANALYTICS SYSTEM
+
+Track events:
+
+- swipe
+- selection
+- reveal
+- order
+
+Store in EVENT_LOG
+
+Worker aggregates:
+
+- top cigars
+- top flavors
+- conversion rate
+
+---
+
+🔥 ADMIN DASHBOARD
+
+Route: /admin
+
+Sections:
+
+- cigars
+- whiskey
+- vendors
+- analytics
+- subscriptions
+- payouts
+
+---
+
+🔥 INVENTORY SYSTEM
+
+- decrement on successful payment
+- block if stock = 0
+- fallback suggestion
+
+---
+
+🔥 COMMISSION SYSTEM
+
+- % of each order
+- stored in COMMISSIONS
+- payout via admin
+
+---
+
+🔥 STRIPE CONNECT PAYOUTS
+
+POST /api/payouts/approve
+
+- transfer funds
+- store stripe_transfer_id
+
+---
+
+🔥 WORKER SYSTEM
+
+Create:
+
+- payment reconciliation worker
+- analytics worker
+- payout worker
+- cleanup worker
+
+Run via cron
+
+---
+
+🔥 AUDIT LOGGING
+
+Store:
+
+- before/after state
+- admin actions
+- pricing changes
+
+---
+
+🔥 SECURITY
+
+- JWT validation
+- input validation (Joi/Zod)
+- rate limiting
+- webhook verification
+- tenant isolation
+
+---
+
+🔥 FRONTEND ENFORCEMENT
+
+On app load:
+
+- check license
+- show banner or lock screen if needed
+
+---
+
+🔥 FINAL GOAL
+
+Deliver a platform that:
+
+- runs full interactive experience
+- processes real payments
+- enforces subscriptions
+- supports vendors
+- tracks analytics
+- pays out revenue
+- scales across venues
+
+THIS IS A COMPLETE SAAS PLATFORM
+
+NO PART SHOULD BE LEFT UNCONNECTED
+
+---

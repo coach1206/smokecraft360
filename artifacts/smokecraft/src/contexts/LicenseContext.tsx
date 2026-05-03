@@ -24,6 +24,10 @@ export interface LicenseState {
   graceEndsAt:      string | null;
   daysRemaining:    number | null;
   adminOverride:    boolean;
+  /** ISO timestamp of next Stripe Smart Retry, or null. */
+  nextRetryAt:      string | null;
+  /** Hint that an upgrade path exists (currently true for starter/pro). */
+  canUpgrade:       boolean;
   /** True while the very first fetch is in flight. */
   loading:          boolean;
   /** Network-level failure on the most recent fetch. */
@@ -38,6 +42,8 @@ const DEFAULT_STATE: LicenseState = {
   graceEndsAt:      null,
   daysRemaining:    null,
   adminOverride:    false,
+  nextRetryAt:      null,
+  canUpgrade:       false,
   loading:          true,
   offline:          false,
 };
@@ -84,9 +90,11 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
       try {
         const r = await fetch(url, { credentials: "include" });
         if (!r.ok) throw new Error(`status ${r.status}`);
-        const data = await r.json() as Omit<LicenseState, "loading" | "offline">;
+        const data = await r.json() as Partial<Omit<LicenseState, "loading" | "offline">>;
         if (cancelled) return;
-        const next: LicenseState = { ...data, loading: false, offline: false };
+        // Slim public payloads omit several fields — merge over defaults so
+        // consumers always get a fully-shaped LicenseState.
+        const next: LicenseState = { ...DEFAULT_STATE, ...data, loading: false, offline: false };
         setState(next);
         writeCache(next);
       } catch {

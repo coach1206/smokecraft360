@@ -11,16 +11,40 @@
  * is the actual security boundary — never trust client-side gating alone.
  */
 
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, AlertTriangle, CreditCard, LifeBuoy } from "lucide-react";
+import { Lock, AlertTriangle, CreditCard, LifeBuoy, Sparkles } from "lucide-react";
 import { useLicense } from "../../contexts/LicenseContext";
 import { useVenue }   from "../../contexts/VenueContext";
 
 const SUPPORT_EMAIL = "support@smokecraft360.com";
 
+/** Format a future ISO timestamp as "in 3h 12m" (or "soon" within 1m). */
+function useRetryCountdown(iso: string | null): string | null {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!iso) return;
+    const id = window.setInterval(() => setNow(Date.now()), 30_000);
+    return () => window.clearInterval(id);
+  }, [iso]);
+  if (!iso) return null;
+  const ms = new Date(iso).getTime() - now;
+  if (ms <= 60_000) return "any moment";
+  const totalMin = Math.floor(ms / 60_000);
+  const hours    = Math.floor(totalMin / 60);
+  const minutes  = totalMin % 60;
+  if (hours >= 24) {
+    const d = Math.floor(hours / 24);
+    return `in ${d}d ${hours % 24}h`;
+  }
+  if (hours > 0) return `in ${hours}h ${minutes}m`;
+  return `in ${minutes}m`;
+}
+
 export function LicenseGate() {
-  const license = useLicense();
-  const venue   = useVenue();
+  const license   = useLicense();
+  const venue     = useVenue();
+  const retryIn   = useRetryCountdown(license.nextRetryAt);
 
   if (license.loading) return null;
 
@@ -46,28 +70,50 @@ export function LicenseGate() {
             <AlertTriangle size={18} className="flex-shrink-0" />
             <div className="min-w-0">
               <p className="text-sm font-medium truncate">
-                Payment required to maintain service
+                Payment issue detected — update to avoid interruption
               </p>
-              {license.daysRemaining !== null && license.daysRemaining > 0 && (
-                <p className="text-[11px] opacity-80">
-                  Service expires in {license.daysRemaining} day{license.daysRemaining === 1 ? "" : "s"}
-                </p>
-              )}
+              <p className="text-[11px] opacity-80">
+                {license.daysRemaining !== null && license.daysRemaining > 0 && (
+                  <>Service pauses in {license.daysRemaining} day{license.daysRemaining === 1 ? "" : "s"}</>
+                )}
+                {retryIn && (
+                  <>
+                    {license.daysRemaining !== null && license.daysRemaining > 0 ? " · " : ""}
+                    Next attempt {retryIn}
+                  </>
+                )}
+              </p>
             </div>
           </div>
-          <button
-            onClick={() => openBillingPortal()}
-            className="flex-shrink-0 px-4 py-1.5 rounded text-xs uppercase tracking-[0.15em] font-medium transition-colors"
-            style={{
-              background: "rgba(255,255,255,0.15)",
-              border:     "1px solid rgba(255,255,255,0.35)",
-              color:      "rgba(255,250,240,0.98)",
-            }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.28)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.15)"; }}
-          >
-            Renew Now
-          </button>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {license.canUpgrade && (
+              <button
+                onClick={() => upgradePlan(license.plan === "starter" ? "pro" : "premium")}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded text-[11px] uppercase tracking-[0.15em] font-medium transition-colors"
+                style={{
+                  background: "rgba(255,215,140,0.18)",
+                  border:     "1px solid rgba(255,220,150,0.5)",
+                  color:      "rgba(255,250,240,0.98)",
+                }}
+              >
+                <Sparkles size={12} />
+                Upgrade to {license.plan === "starter" ? "Pro" : "Premium"}
+              </button>
+            )}
+            <button
+              onClick={() => openBillingPortal()}
+              className="px-4 py-1.5 rounded text-xs uppercase tracking-[0.15em] font-medium transition-colors"
+              style={{
+                background: "rgba(255,255,255,0.15)",
+                border:     "1px solid rgba(255,255,255,0.35)",
+                color:      "rgba(255,250,240,0.98)",
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.28)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.15)"; }}
+            >
+              Fix Billing
+            </button>
+          </div>
         </motion.div>
       </AnimatePresence>
     );
@@ -146,6 +192,21 @@ export function LicenseGate() {
                 Renew Now
               </button>
 
+              {license.canUpgrade && (
+                <button
+                  onClick={() => upgradePlan(license.plan === "starter" ? "pro" : "premium")}
+                  className="flex items-center justify-center gap-2 py-3 px-6 rounded text-xs uppercase tracking-[0.18em] transition-colors"
+                  style={{
+                    background: "rgba(212,175,55,0.1)",
+                    border:     "1px solid rgba(212,175,55,0.4)",
+                    color:      "rgba(230,210,175,0.9)",
+                  }}
+                >
+                  <Sparkles size={13} />
+                  Upgrade Plan
+                </button>
+              )}
+
               <a
                 href={`mailto:${SUPPORT_EMAIL}?subject=SmokeCraft%20360%20%E2%80%94%20${encodeURIComponent(venue.logoText)}%20Subscription`}
                 className="flex items-center justify-center gap-2 py-3 px-6 rounded text-xs uppercase tracking-[0.18em] transition-colors"
@@ -180,7 +241,7 @@ export function LicenseGate() {
  */
 async function openBillingPortal(): Promise<void> {
   try {
-    const r = await fetch("/api/subscriptions/portal", {
+    const r = await fetch("/api/billing/portal", {
       method:      "POST",
       credentials: "include",
     });
@@ -191,4 +252,22 @@ async function openBillingPortal(): Promise<void> {
     }
   } catch { /* fall through */ }
   window.location.href = `mailto:${SUPPORT_EMAIL}?subject=SmokeCraft%20360%20Renewal`;
+}
+
+/** Start a plan upgrade via Stripe Checkout (subscription mode). */
+async function upgradePlan(plan: "pro" | "premium"): Promise<void> {
+  try {
+    const r = await fetch("/api/subscriptions/create-checkout", {
+      method:      "POST",
+      credentials: "include",
+      headers:     { "Content-Type": "application/json" },
+      body:        JSON.stringify({ plan }),
+    });
+    if (r.ok) {
+      const { checkoutUrl } = await r.json() as { checkoutUrl: string };
+      window.open(checkoutUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+  } catch { /* fall through */ }
+  window.location.href = `mailto:${SUPPORT_EMAIL}?subject=SmokeCraft%20360%20Upgrade`;
 }

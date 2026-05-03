@@ -29,6 +29,10 @@ import {
   markInvoicePaid,
   markPaymentFailed,
   markSubscriptionCanceled,
+  logDunningEvent,
+  createNotification,
+  getVenueIdForSubscription,
+  getVenueIdForCustomer,
 }                                                  from "./subscriptions";
 
 // Platform commission rate in basis points (1000 = 10.00%)
@@ -181,28 +185,100 @@ export async function stripeWebhookHandler(req: Request, res: Response): Promise
   }
 
   // ── Subscription lifecycle events ───────────────────────────────────────────
+  // Each handler: (1) update billing state, (2) write a dunning_events row,
+  // (3) create an in-app notification. Notification + dunning logging are
+  // best-effort and never block state updates.
+  type InvoiceShape = {
+    subscription?:        string | { id: string };
+    attempt_count?:       number;
+    next_payment_attempt?: number;  // unix seconds
+    customer?:            string | { id: string };
+    amount_due?:          number;
+    period_end?:          number;
+  };
+  const subIdOf = (inv: InvoiceShape): string | undefined =>
+    typeof inv.subscription === "string" ? inv.subscription : inv.subscription?.id;
+  const custIdOf = (inv: InvoiceShape): string | undefined =>
+    typeof inv.customer === "string" ? inv.customer : inv.customer?.id;
+
   if (event.type === "invoice.paid" || event.type === "invoice.payment_succeeded") {
-    const invoice = event.data.object as Stripe.Invoice;
-    const subId   = typeof (invoice as unknown as { subscription?: string | { id: string } }).subscription === "string"
-      ? (invoice as unknown as { subscription: string }).subscription
-      : (invoice as unknown as { subscription?: { id: string } }).subscription?.id;
+    const invoice = event.data.object as unknown as InvoiceShape;
+    const subId   = subIdOf(invoice);
     if (subId) {
-      try { await markInvoicePaid(subId); logger.info({ subId }, "Subscription invoice paid"); }
-      catch (err) { logger.error({ err, subId }, "Failed to mark invoice paid"); }
+      try {
+        await markInvoicePaid(subId);
+        const venueId = await getVenueIdForSubscription(subId);
+        if (venueId) {
+          await logDunningEvent(venueId, "recovered", { metadata: { subId, attemptCount: invoice.attempt_count } });
+          await createNotification(
+            venueId, "Payment Recovered",
+            "You're back up and running. Thanks for keeping your subscription active.",
+            "recovered",
+          );
+        }
+        logger.info({ subId, venueId }, "Subscription invoice paid");
+      } catch (err) { logger.error({ err, subId }, "Failed to mark invoice paid"); }
     }
   } else if (event.type === "invoice.payment_failed") {
-    const invoice = event.data.object as Stripe.Invoice;
-    const subId   = typeof (invoice as unknown as { subscription?: string | { id: string } }).subscription === "string"
-      ? (invoice as unknown as { subscription: string }).subscription
-      : (invoice as unknown as { subscription?: { id: string } }).subscription?.id;
+    const invoice = event.data.object as unknown as InvoiceShape;
+    const subId   = subIdOf(invoice);
     if (subId) {
-      try { await markPaymentFailed(subId); logger.warn({ subId }, "Subscription payment failed; grace started"); }
-      catch (err) { logger.error({ err, subId }, "Failed to mark payment failed"); }
+      try {
+        await markPaymentFailed(subId);
+        const venueId   = await getVenueIdForSubscription(subId);
+        const nextRetry = invoice.next_payment_attempt ? new Date(invoice.next_payment_attempt * 1000) : null;
+        if (venueId) {
+          await logDunningEvent(venueId, "failed", {
+            nextRetryAt:  nextRetry,
+            attemptCount: invoice.attempt_count,
+            metadata:     { subId, amountDue: invoice.amount_due },
+          });
+          const retryMsg = nextRetry
+            ? ` We'll retry automatically on ${nextRetry.toUTCString()}.`
+            : "";
+          await createNotification(
+            venueId, "Payment Failed",
+            `We couldn't process your payment.${retryMsg} Service will pause if it isn't resolved within ${7} days.`,
+            "failed",
+          );
+        }
+        logger.warn({ subId, venueId }, "Subscription payment failed; grace started");
+      } catch (err) { logger.error({ err, subId }, "Failed to mark payment failed"); }
+    }
+  } else if (event.type === "invoice.upcoming") {
+    // Renewal reminder — Stripe fires this ~7 days before the next charge by default.
+    const invoice = event.data.object as unknown as InvoiceShape;
+    const custId  = custIdOf(invoice);
+    if (custId) {
+      try {
+        const venueId = await getVenueIdForCustomer(custId);
+        if (venueId) {
+          const renewDate = invoice.period_end ? new Date(invoice.period_end * 1000).toUTCString() : "soon";
+          await logDunningEvent(venueId, "reminder", { metadata: { custId, periodEnd: invoice.period_end } });
+          await createNotification(
+            venueId, "Renewal Reminder",
+            `Your SmokeCraft 360 subscription renews ${renewDate}. Make sure your payment method is up to date.`,
+            "reminder",
+          );
+          logger.info({ custId, venueId }, "Renewal reminder sent");
+        }
+      } catch (err) { logger.error({ err, custId }, "Failed to process invoice.upcoming"); }
     }
   } else if (event.type === "customer.subscription.deleted") {
     const sub = event.data.object as Stripe.Subscription;
-    try { await markSubscriptionCanceled(sub.id); logger.info({ subId: sub.id }, "Subscription canceled"); }
-    catch (err) { logger.error({ err, subId: sub.id }, "Failed to mark subscription canceled"); }
+    try {
+      await markSubscriptionCanceled(sub.id);
+      const venueId = await getVenueIdForSubscription(sub.id);
+      if (venueId) {
+        await logDunningEvent(venueId, "canceled", { metadata: { subId: sub.id } });
+        await createNotification(
+          venueId, "Subscription Canceled",
+          "Your subscription has been canceled and service is now paused. Renew anytime to restore access.",
+          "canceled",
+        );
+      }
+      logger.info({ subId: sub.id, venueId }, "Subscription canceled");
+    } catch (err) { logger.error({ err, subId: sub.id }, "Failed to mark subscription canceled"); }
   } else if (event.type === "customer.subscription.created" || event.type === "customer.subscription.updated") {
     const sub = event.data.object as Stripe.Subscription;
     try { await syncSubscriptionFromStripe(sub); logger.info({ subId: sub.id, status: sub.status }, "Subscription synced"); }

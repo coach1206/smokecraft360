@@ -18,8 +18,11 @@ import Stripe                                  from "stripe";
 import { eq }                                  from "drizzle-orm";
 import {
   db, subscriptionsTable, venuesTable,
-  type DbSubscription, GRACE_PERIOD_DAYS,
+  dunningEventsTable, notificationsTable,
+  type DbSubscription, type DbDunningEvent,
+  GRACE_PERIOD_DAYS,
 }                                              from "@workspace/db";
+import { desc }                                from "drizzle-orm";
 import { requireAuth, type AuthRequest }       from "../middleware/auth";
 import { requireRole }                         from "../middleware/roles";
 import { allowOnly }                           from "../middleware/sanitize";
@@ -57,10 +60,20 @@ export type LicenseStatusResponse = {
   graceEndsAt:      string | null;
   daysRemaining:    number | null;
   adminOverride:    boolean;
+  // Stripe Smart Retry: when the next automatic charge attempt is scheduled.
+  // Populated from the latest 'failed' or 'retry' dunning event for this
+  // venue. UI uses this to display "Next attempt in X hours".
+  nextRetryAt:      string | null;
+  attemptCount:     number;
+  // Hint for upsell UX. Currently true when plan === 'starter'.
+  canUpgrade:       boolean;
 };
 
 /** Compute the effective license state for a venue. */
-function computeLicense(sub: DbSubscription | undefined): LicenseStatusResponse {
+function computeLicense(
+  sub:          DbSubscription | undefined,
+  latestRetry?: DbDunningEvent | undefined,
+): LicenseStatusResponse {
   // No subscription row → legacy / unmetered, treat as active so we don't
   // accidentally lock pre-existing venues out of their own kiosks.
   if (!sub) {
@@ -72,8 +85,13 @@ function computeLicense(sub: DbSubscription | undefined): LicenseStatusResponse 
       graceEndsAt:      null,
       daysRemaining:    null,
       adminOverride:    false,
+      nextRetryAt:      null,
+      attemptCount:     0,
+      canUpgrade:       false,
     };
   }
+
+  const canUpgrade = sub.plan === "starter" || sub.plan === "pro";
 
   if (sub.adminOverride) {
     return {
@@ -84,6 +102,9 @@ function computeLicense(sub: DbSubscription | undefined): LicenseStatusResponse 
       graceEndsAt:      null,
       daysRemaining:    null,
       adminOverride:    true,
+      nextRetryAt:      null,
+      attemptCount:     0,
+      canUpgrade,
     };
   }
 
@@ -107,6 +128,11 @@ function computeLicense(sub: DbSubscription | undefined): LicenseStatusResponse 
   const graceMs        = sub.gracePeriodEndsAt ? sub.gracePeriodEndsAt.getTime() - now : null;
   const daysRemaining  = graceMs && graceMs > 0 ? Math.ceil(graceMs / (24 * 60 * 60 * 1000)) : null;
 
+  // Only surface nextRetryAt if it's in the future (past retries aren't useful).
+  const nextRetryAt = latestRetry?.nextRetryAt && latestRetry.nextRetryAt.getTime() > now
+    ? latestRetry.nextRetryAt.toISOString()
+    : null;
+
   return {
     status:           effective,
     plan:             sub.plan,
@@ -115,7 +141,21 @@ function computeLicense(sub: DbSubscription | undefined): LicenseStatusResponse 
     graceEndsAt:      sub.gracePeriodEndsAt?.toISOString() ?? null,
     daysRemaining,
     adminOverride:    false,
+    nextRetryAt,
+    attemptCount:     latestRetry?.attemptCount ?? 0,
+    canUpgrade,
   };
+}
+
+/** Fetch the most-recent dunning event for a venue (used for retry countdown). */
+async function getLatestDunningEvent(venueId: string): Promise<DbDunningEvent | undefined> {
+  const [row] = await db
+    .select()
+    .from(dunningEventsTable)
+    .where(eq(dunningEventsTable.venueId, venueId))
+    .orderBy(desc(dunningEventsTable.createdAt))
+    .limit(1);
+  return row;
 }
 
 // ── GET /api/license/status ───────────────────────────────────────────────────
@@ -152,7 +192,8 @@ router.get("/status", async (req: AuthRequest, res: Response) => {
       .where(eq(subscriptionsTable.venueId, venueId))
       .limit(1);
 
-    const full = computeLicense(sub);
+    const latestRetry = sub ? await getLatestDunningEvent(venueId) : undefined;
+    const full = computeLicense(sub, latestRetry);
 
     // Only return full payload to authed callers checking their own venue.
     if (isAuthed && ownsRequest) {
@@ -160,11 +201,13 @@ router.get("/status", async (req: AuthRequest, res: Response) => {
       return;
     }
 
-    // Slim public payload — enough for the kiosk to show banner/lock,
-    // nothing about plan, billing dates, or admin overrides.
+    // Slim public payload — enough for the kiosk to show banner/lock and
+    // retry countdown, nothing about plan, billing dates, or admin overrides.
     res.json({
       status:        full.status,
       daysRemaining: full.daysRemaining,
+      nextRetryAt:   full.nextRetryAt,
+      canUpgrade:    full.canUpgrade,
     });
   } catch (err) {
     req.log?.error({ err }, "license status lookup failed");
@@ -346,6 +389,142 @@ router.post(
     res.json({ venueId, adminOverride: override, reason });
   },
 );
+
+// ── POST /api/subscriptions/admin/:venueId/extend-grace ───────────────────────
+//
+// Super-admin escape hatch separate from the full override: pushes the grace
+// window further into the future without flipping `adminOverride`. Useful
+// when a venue is mid-recovery and just needs a few extra days of buffer.
+
+router.post(
+  "/admin/:venueId/extend-grace",
+  requireAuth,
+  requireRole("super_admin"),
+  allowOnly("days"),
+  async (req: AuthRequest, res: Response) => {
+    const { venueId } = req.params;
+    const days = Number(req.body?.days);
+    if (!venueId)                           { res.status(400).json({ error: "venueId is required" }); return; }
+    if (!Number.isFinite(days) || days < 1 || days > 90) {
+      res.status(400).json({ error: "days must be between 1 and 90" });
+      return;
+    }
+
+    const [existing] = await db
+      .select()
+      .from(subscriptionsTable)
+      .where(eq(subscriptionsTable.venueId, String(venueId)))
+      .limit(1);
+    if (!existing) { res.status(404).json({ error: "No subscription for this venue" }); return; }
+
+    const base   = existing.gracePeriodEndsAt && existing.gracePeriodEndsAt > new Date()
+      ? existing.gracePeriodEndsAt
+      : new Date();
+    const newEnd = new Date(base.getTime() + days * 24 * 60 * 60 * 1000);
+
+    await db.update(subscriptionsTable)
+      .set({ gracePeriodEndsAt: newEnd, updatedAt: new Date() })
+      .where(eq(subscriptionsTable.id, existing.id));
+
+    await logDunningEvent(String(venueId), "retry", { metadata: { source: "admin_extend", days, by: req.user!.id } });
+
+    req.log.info({ venueId, days, by: req.user!.id, newEnd }, "Grace period extended by admin");
+    res.json({ venueId, gracePeriodEndsAt: newEnd.toISOString() });
+  },
+);
+
+// ── GET /api/notifications ────────────────────────────────────────────────────
+//
+// In-app inbox for the venue owner — returns the most-recent 50 notifications
+// for their venue. Authed; uses req.user.venueId.
+
+router.get(
+  "/notifications",
+  requireAuth,
+  async (req: AuthRequest, res: Response) => {
+    const venueId = req.user?.venueId;
+    if (!venueId) { res.json({ notifications: [], unreadCount: 0 }); return; }
+
+    const rows = await db
+      .select()
+      .from(notificationsTable)
+      .where(eq(notificationsTable.venueId, venueId))
+      .orderBy(desc(notificationsTable.createdAt))
+      .limit(50);
+
+    const unreadCount = rows.filter((r) => r.readAt === null && r.channel === "in_app").length;
+    res.json({ notifications: rows, unreadCount });
+  },
+);
+
+// ── Dunning + notification helpers (called from webhook + admin actions) ─────
+
+/** Append a dunning_events row. Auto-increments attempt_count from history. */
+export async function logDunningEvent(
+  venueId: string,
+  type: "reminder" | "failed" | "retry" | "recovered" | "canceled",
+  opts: { nextRetryAt?: Date | null; attemptCount?: number; metadata?: Record<string, unknown> } = {},
+): Promise<void> {
+  let attemptCount = opts.attemptCount;
+  if (attemptCount === undefined && type === "failed") {
+    // Auto-increment from history of prior failed attempts in this billing cycle.
+    const [last] = await db
+      .select()
+      .from(dunningEventsTable)
+      .where(eq(dunningEventsTable.venueId, venueId))
+      .orderBy(desc(dunningEventsTable.createdAt))
+      .limit(1);
+    attemptCount = last?.type === "failed" || last?.type === "retry"
+      ? (last.attemptCount ?? 0) + 1
+      : 1;
+  }
+
+  await db.insert(dunningEventsTable).values({
+    venueId,
+    type,
+    attemptCount: attemptCount ?? 0,
+    nextRetryAt:  opts.nextRetryAt ?? null,
+    metadata:     opts.metadata ?? null,
+  });
+}
+
+/** Append a notifications row. Channel defaults to in_app. Best-effort — never throws. */
+export async function createNotification(
+  venueId: string,
+  title: string,
+  message: string,
+  category: "reminder" | "failed" | "recovered" | "canceled" | "upsell",
+  channel: "email" | "in_app" = "in_app",
+): Promise<void> {
+  try {
+    await db.insert(notificationsTable).values({
+      venueId, channel, title, message, category, status: "sent",
+    });
+  } catch (err) {
+    // Never let notification logging break a webhook flow.
+    void err;
+  }
+}
+
+/** Resolve venueId from a stripeSubscriptionId (used by webhook). */
+export async function getVenueIdForSubscription(stripeSubId: string): Promise<string | null> {
+  const [row] = await db
+    .select({ venueId: subscriptionsTable.venueId })
+    .from(subscriptionsTable)
+    .where(eq(subscriptionsTable.stripeSubscriptionId, stripeSubId))
+    .limit(1);
+  return row?.venueId ?? null;
+}
+
+/** Resolve venueId from a stripeCustomerId (invoice.upcoming has no sub id). */
+export async function getVenueIdForCustomer(stripeCustomerId: string): Promise<string | null> {
+  const [row] = await db
+    .select({ id: venuesTable.id })
+    .from(venuesTable)
+    .where(eq(venuesTable.stripeCustomerId, stripeCustomerId))
+    .limit(1);
+  return row?.id ?? null;
+}
 
 // ── Webhook helpers (called from stripeWebhook.ts) ────────────────────────────
 
