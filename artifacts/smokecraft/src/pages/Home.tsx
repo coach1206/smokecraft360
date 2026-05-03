@@ -351,7 +351,7 @@ export default function Home() {
 
   const {
     profile, isElite, justUnlockedElite, clearEliteUnlock,
-    recordSession, recordSwipe,
+    recordSession, recordSwipe, recordBlend,
     handleSaveExperience, handleRemoveExperience,
     handleSaveBlend, handleRemoveBlend,
     updateName,
@@ -488,6 +488,13 @@ export default function Home() {
     if (results) setPhase("ready"); // hold at locked reveal gate
   };
 
+  /* "Beat Your Last Score" — captured at reveal time so the badge holds the
+   * value the user just walked into the reveal with. We snapshot previousBest
+   * BEFORE recordBlend persists the new high (otherwise the comparison would
+   * always tie itself).                                                      */
+  const [revealBest,      setRevealBest]      = useState(0);
+  const [revealIsNewBest, setRevealIsNewBest] = useState(false);
+
   const handleReveal = useCallback(() => {
     /* Cinematic build-up — the previous timing (620 ms) made guests miss
      * their own reveal. Now: a held low tone, a mid swell, the chime, then
@@ -497,8 +504,14 @@ export default function Home() {
     playTone(220, 700, 0.40, 0.05, "sine");
     setTimeout(() => playTone(440, 480, 0.32, 0.04, "sine"), 380);
     setTimeout(() => playChime(),                              900);
-    setTimeout(() => { setPhase("results"); recordSession(); }, 1250);
-  }, [playTone, playChime, recordSession]);
+    setTimeout(() => {
+      const { previousBest, isNewBest } = recordBlend(blendScore);
+      setRevealBest(previousBest);
+      setRevealIsNewBest(isNewBest);
+      setPhase("results");
+      recordSession();
+    }, 1250);
+  }, [playTone, playChime, recordSession, recordBlend, blendScore]);
 
   const handleSwipe = (direction: "left" | "right", productId: string) => {
     recordSwipe();
@@ -1522,6 +1535,44 @@ export default function Home() {
                 transition={{ delay: 1.3, duration: 0.9, ease: [0.22,1,0.36,1] }}
                 style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 18, marginBottom: 28 }}
               >
+                {/* Beat-Your-Last-Score badge — shown only after the user has
+                    at least one prior blend on this device. New personal best
+                    swaps to a celebration line; otherwise renders the
+                    challenge "Your best: X · Beat it" so the next round has
+                    a target. Persisted via localStorage in storage.ts so it
+                    survives reloads and tab closes. */}
+                {(revealIsNewBest || revealBest > 0) && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0  }}
+                    transition={{ delay: 2.0, duration: 0.7, ease: [0.22,1,0.36,1] }}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 10,
+                      padding: "6px 14px", borderRadius: 999,
+                      fontSize: 10.5, letterSpacing: "0.24em", textTransform: "uppercase", fontWeight: 700,
+                      background: revealIsNewBest
+                        ? "linear-gradient(135deg, rgba(212,175,55,0.22), rgba(180,130,30,0.12))"
+                        : "rgba(40,28,14,0.55)",
+                      border: revealIsNewBest
+                        ? "1px solid rgba(245,205,90,0.55)"
+                        : "1px solid rgba(212,175,55,0.18)",
+                      color: revealIsNewBest ? "rgba(245,225,170,0.96)" : "rgba(200,175,135,0.72)",
+                    }}
+                  >
+                    {revealIsNewBest ? (
+                      <>
+                        <span aria-hidden style={{ fontSize: 12 }}>★</span>
+                        New Personal Best · Beat {revealBest}
+                      </>
+                    ) : (
+                      <>
+                        Your Best: {revealBest}
+                        <span style={{ opacity: 0.5 }}>·</span>
+                        <span style={{ color: "rgba(245,205,90,0.85)" }}>Beat it next blend</span>
+                      </>
+                    )}
+                  </motion.div>
+                )}
                 <motion.div
                   animate={{
                     boxShadow: [

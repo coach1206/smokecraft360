@@ -3,6 +3,7 @@ import {
   addScore,
   ELITE_THRESHOLD,
   loadProfile,
+  recordBlendScore,
   removeBlend,
   removeExperience,
   saveBlend,
@@ -20,6 +21,8 @@ interface UseUserReturn {
   clearEliteUnlock: () => void;
   recordSession: () => void;
   recordSwipe: () => void;
+  /** Record a blend score and return the previous best + isNewBest flag. */
+  recordBlend: (score: number) => { previousBest: number; isNewBest: boolean };
   handleSaveExperience: (
     preferences: RecommendParams,
     recommendations: ProductResult[],
@@ -56,6 +59,15 @@ export function useUser(): UseUserReturn {
   const recordSwipe = useCallback(() => {
     applyProfile(addScore(loadProfile(), 2));
   }, [applyProfile]);
+
+  const recordBlend = useCallback(
+    (score: number) => {
+      const { profile: next, previousBest, isNewBest } = recordBlendScore(loadProfile(), score);
+      applyProfile(next);
+      return { previousBest, isNewBest };
+    },
+    [applyProfile],
+  );
 
   const handleSaveExperience = useCallback(
     (preferences: RecommendParams, recommendations: ProductResult[], pairings: ProductResult[]) => {
@@ -95,6 +107,7 @@ export function useUser(): UseUserReturn {
     clearEliteUnlock,
     recordSession,
     recordSwipe,
+    recordBlend,
     handleSaveExperience,
     handleRemoveExperience,
     handleSaveBlend,

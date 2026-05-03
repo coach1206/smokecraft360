@@ -1,0 +1,299 @@
+STATUS: THIS IS THE FINAL BUILD LAYER
+
+If you execute this correctly, you now have:
+
+✔ product
+✔ experience
+✔ engagement
+✔ competition
+✔ revenue
+
+🚨 MISSING / REQUIRED (FINAL CHECK)
+
+Before we build this, you MUST have:
+
+User scoring system ✔
+AI feedback ✔
+Image system ✔
+Selection flow ✔
+
+Now we’re adding:
+
+Location-based competition
+Live leaderboard
+Session grouping (nightly play)
+Inventory + pricing
+Checkout + upsell
+Kiosk/tablet mode
+🧠 MASTER PROMPT — LOUNGE MODE + BUSINESS LAYER
+
+BUILD SMOKECRAFT 360 LOUNGE MODE + FULL BUSINESS SYSTEM
+
+GOAL:
+
+Transform the system into a real-world lounge experience where users:
+
+compete live
+build cigar profiles
+see rankings
+purchase products
+interact on shared screens
+PART 1: LOUNGE MODE (CORE EXPERIENCE)
+
+Each physical location has:
+
+lounge_sessions {
+session_id,
+location_id,
+start_time,
+end_time,
+active_users
+}
+
+SESSION TYPE:
+
+“Best Blend of the Night”
+
+WHEN USER ENTERS:
+
+assigned to current session
+their score contributes to leaderboard
+PART 2: LIVE LEADERBOARD
+
+Create:
+
+leaderboard_live {
+user_id,
+score,
+blend_name,
+timestamp,
+location_id
+}
+
+DISPLAY ON SCREEN:
+
+TOP 5 BLENDS:
+
+Midnight Ember – 94
+Velvet Smoke – 91
+Golden Leaf – 88
+
+UI:
+
+large text
+gold highlight for #1
+animated updates
+live refresh every 5–10 seconds
+PART 3: COMPETITION SYSTEM
+
+Add:
+
+“You are currently #3 in the lounge”
+“Beat the top score to win tonight”
+
+END OF SESSION:
+
+Show:
+
+“Best Blend of the Night Winner”
+
+PART 4: USER FEEDBACK + COMPETITION LOOP
+
+After result:
+
+Display:
+
+“Current Rank: #4”
+“Top Score: 94”
+“Your Score: 88”
+
+CTA:
+
+“Try Again — Beat the Leader”
+
+PART 5: REAL INVENTORY SYSTEM
+
+Create:
+
+cigar_inventory {
+id,
+name,
+brand,
+strength,
+flavors,
+size,
+price,
+stock
+}
+
+drinks_inventory {
+id,
+name,
+type,
+flavor_notes,
+price
+}
+
+MATCH SYSTEM:
+
+After user result:
+→ match to real inventory item
+
+DISPLAY:
+
+cigar image
+price
+availability
+PART 6: ORDER SYSTEM (MONETIZATION)
+
+When user selects:
+
+base cigar
+upsell
+bundle
+
+Trigger:
+
+POST /create-checkout-session
+
+ADD OPTIONS:
+
+Buy Single Cigar
+Buy Lounge Experience
+Upgrade to Premium
+Custom Band Add-on
+PART 7: KIOSK MODE (TABLET EXPERIENCE)
+
+System must:
+
+run full screen
+hide browser UI
+support touch gestures
+auto-reset after inactivity (60–90 seconds)
+
+AUTO RESET:
+
+if (no interaction)
+→ return to home screen
+
+PART 8: SHARE + SOCIAL FLEX
+
+Generate:
+
+Blend Card:
+
+name
+score
+archetype
+flavor profile
+ranking
+
+Options:
+
+QR code
+save image
+share
+PART 9: ADMIN CONTROL PANEL
+
+Admin can:
+
+view leaderboard
+reset session
+adjust scoring weights
+manage inventory
+monitor sales
+PART 10: PERFORMANCE + REAL-WORLD STABILITY
+cache leaderboard
+rate limit AI calls
+preload images
+fallback for API failure
+FINAL RESULT:
+
+System must feel like:
+
+A live cigar competition + premium concierge + ordering system
+
+
+
+
+💻 CORE WIRING (BACKEND)
+🔥 CREATE LOUNGE SESSION
+app.post("/api/start-session", async (req, res) => {
+  const session = await db.insert("lounge_sessions", {
+    location_id: req.body.locationId,
+    start_time: new Date()
+  });
+
+  res.json(session);
+});
+🔥 SUBMIT SCORE
+app.post("/api/submit-score", async (req, res) => {
+  const { userId, score, blendName, locationId } = req.body;
+
+  await db.insert("leaderboard_live", {
+    user_id: userId,
+    score,
+    blend_name: blendName,
+    location_id: locationId,
+    timestamp: new Date()
+  });
+
+  res.sendStatus(200);
+});
+🔥 GET LEADERBOARD
+app.get("/api/leaderboard/:locationId", async (req, res) => {
+  const data = await db.query(`
+    SELECT * FROM leaderboard_live
+    WHERE location_id = $1
+    ORDER BY score DESC
+    LIMIT 5
+  `, [req.params.locationId]);
+
+  res.json(data.rows);
+});
+💻 FRONTEND (LIVE DISPLAY)
+useEffect(() => {
+  const interval = setInterval(async () => {
+    const res = await fetch(`/api/leaderboard/${locationId}`);
+    const data = await res.json();
+    setLeaderboard(data);
+  }, 5000);
+
+  return () => clearInterval(interval);
+}, []);
+💻 KIOSK RESET
+let timeout;
+
+function resetTimer() {
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    window.location.href = "/";
+  }, 60000);
+}
+
+document.addEventListener("touchstart", resetTimer);
+document.addEventListener("click", resetTimer);
+💰 MONETIZATION (FINAL LAYER)
+
+You now make money from:
+
+✔ cigar sales
+✔ premium upgrades
+✔ lounge packages
+✔ memberships
+✔ branded cigars
+✔ kiosk licensing to lounges
+
+🎯 WHAT YOU JUST BUILT
+
+This is no longer:
+
+❌ an app
+❌ a feature
+
+This is:
+
+✔ a live experience system
+✔ a competition engine
+✔ a revenue platform
+✔ a lounge attraction
