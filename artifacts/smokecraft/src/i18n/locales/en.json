@@ -1,0 +1,52 @@
+{
+  "intro": {
+    "splash_title":     "PROFOUND INNOVATION",
+    "splash_subtitle":  "P.I",
+    "headline_day":     "Craft Your Experience",
+    "headline_night":   "Enter the Experience",
+    "select_prompt":    "Tap to begin your journey",
+    "smokecraft_title": "SmokeCraft 360",
+    "smokecraft_descriptor": "Cigars · Spirits · Lounge",
+    "pourcraft_title":  "PourCraft 360",
+    "pourcraft_descriptor":  "Wine · Cocktails · Bar",
+    "vapecraft_title":  "VapeCraft 360",
+    "vapecraft_descriptor":  "Vapor · Flavor · Modern",
+    "demo_caption_0":   "Reading the room",
+    "demo_caption_1":   "Tuning the flavor profile",
+    "demo_caption_2":   "Selecting the perfect pairing",
+    "demo_caption_3":   "Your elite experience is ready",
+    "score_label":      "Score",
+    "score_exceptional":"exceptional",
+    "score_excellent":  "excellent",
+    "score_balanced":   "balanced",
+    "score_modest":     "modest",
+    "score_weak":       "weak"
+  },
+  "dashboard": {
+    "tabs": {
+      "overview":     "Overview",
+      "products":     "Products",
+      "brands":       "Brands & Distributors",
+      "campaigns":    "Campaigns",
+      "insights":     "Brand Insights",
+      "intelligence": "Inventory Intel",
+      "demand":       "Demand Proof",
+      "verify":       "Verify Orders",
+      "leaderboard":  "Leaderboard",
+      "signatures":   "Signature Requests",
+      "progress":     "My Progress",
+      "loyalty":      "Loyalty & Rewards",
+      "my-creations": "Signature Creations",
+      "lounge-league":"Lounge League",
+      "devices":      "Device Manager",
+      "analytics":    "Analytics",
+      "os":           "360 Enterprise OS"
+    }
+  },
+  "language": {
+    "label":   "Language",
+    "english": "English",
+    "spanish": "Spanish",
+    "french":  "French"
+  }
+}

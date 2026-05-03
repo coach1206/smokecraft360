@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
   ArrowLeft, TrendingUp, Package, Sparkles, Zap,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
@@ -55,6 +57,7 @@ const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
 ];
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const { user, loading: authLoading, logout } = useAuth();
 
   const [activeTab,  setActiveTab]  = useState<DashTab>("overview");
@@ -176,6 +179,7 @@ export default function Dashboard() {
                     {user.role.replace("_", " ")}
                   </span>
                 </div>
+                <LanguageSwitcher variant="compact" />
                 <motion.button onClick={load}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs uppercase tracking-[0.15em] transition-all"
                   style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.5)" }}
@@ -290,7 +294,7 @@ export default function Dashboard() {
                             color: "rgba(180,155,100,0.45)",
                           }
                       }>
-                      {tab.icon}{tab.label}
+                      {tab.icon}{t(`dashboard.tabs.${tab.id}`, tab.label)}
                     </button>
                   ))}
                 </div>

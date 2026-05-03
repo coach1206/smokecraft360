@@ -14,6 +14,8 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 /**
  * Time-of-day mode for the kiosk. Drives copy + overlay opacity + (when
@@ -31,6 +33,9 @@ function timeOfDayFromHour(hour: number): TimeOfDay {
 const SPLASH_DURATION_MS  = 3200;
 const LETTER_INTERVAL_MS  = 60;
 const STARTUP_CHIME_DELAY = 1200;
+// Wordmark stays canonical across locales (brand identity), but is exposed
+// via i18n key intro.splash_title so future regional brand variants can
+// override it without code changes.
 const SPLASH_TITLE        = "PROFOUND INNOVATION";
 const IDLE_THRESHOLD_MS   = 8000;   // no input for 8s on the selector → attract mode
 const DEMO_CYCLE_MS       = 2500;   // attract-mode beat cadence
@@ -38,16 +43,15 @@ const DEMO_BEATS          = 4;      // 3 card-highlight beats + 1 reveal beat
 const REVEAL_BEAT         = 3;      // index of the reveal beat in the cycle
 
 /**
- * Per-beat captions for the attract narrative. Walks the viewer through what
- * the product does (mood → flavor → pairing → reveal) instead of just blinking
- * cards. Index aligned with the cycle: 0=smokecraft, 1=pourcraft, 2=vapecraft,
- * 3=reveal.
+ * Per-beat caption keys for the attract narrative. Resolved through i18n at
+ * render time so language switches mid-attract update text instantly. Index
+ * aligned with the cycle (0=smokecraft … 3=reveal).
  */
-const DEMO_CAPTIONS = [
-  "Reading the room",
-  "Tuning the flavor profile",
-  "Selecting the perfect pairing",
-  "Your elite experience is ready",
+const DEMO_CAPTION_KEYS = [
+  "intro.demo_caption_0",
+  "intro.demo_caption_1",
+  "intro.demo_caption_2",
+  "intro.demo_caption_3",
 ] as const;
 
 /**
@@ -184,6 +188,7 @@ function playSynth(ctxRef: React.MutableRefObject<AudioContext | null>) {
 }
 
 export default function Intro() {
+  const { t } = useTranslation();
   const [, navigate]       = useLocation();
   const [stage, setStage]      = useState<"splash" | "select">("splash");
   const [selected, setSel]     = useState<ThemeKey | null>(null);
@@ -195,7 +200,7 @@ export default function Intro() {
 
   // Time-of-day driven copy + overlay opacity. Night gets the most
   // atmospheric framing; day is the lightest read.
-  const headline = tod === "night" ? "Enter the Experience" : "Craft Your Experience";
+  const headline = tod === "night" ? t("intro.headline_night") : t("intro.headline_day");
   const overlayAlpha = tod === "day" ? 0.4 : tod === "evening" ? 0.6 : 0.8;
 
   // Refs for the idle countdown + demo cycle so handlers can reset them
@@ -315,6 +320,15 @@ export default function Intro() {
         padding: "5vh 4vw",
       }}
     >
+      {/* Language switcher — top-right, above all overlays. Available on the
+          select stage so kiosk operators / guests can flip locale before
+          choosing a journey. Persists via localStorage["pi_language"]. */}
+      {stage === "select" && (
+        <div style={{ position: "fixed", top: 16, right: 20, zIndex: 50 }}>
+          <LanguageSwitcher variant="full" />
+        </div>
+      )}
+
       {/* Time-of-day ambient lounge video — muted/looped/autoplay. One clip
           per mode (day/evening/night), held in public/videos/. Sits at the
           bottom of the stack (zIndex 0) under the tint and the attract scene
@@ -498,7 +512,7 @@ export default function Intro() {
             backgroundClip: "text",
           }}
         >
-          {tod === "night" ? "Enter the Experience" : headline}
+          {headline}
         </h1>
         <p
           style={{
@@ -507,7 +521,7 @@ export default function Intro() {
             color: "rgba(245,235,221,0.55)",
           }}
         >
-          Tap to begin your journey
+          {t("intro.select_prompt")}
         </p>
       </motion.header>
 
@@ -612,7 +626,7 @@ export default function Intro() {
                     letterSpacing: "0.02em",
                   }}
                 >
-                  {exp.title}
+                  {t(`intro.${exp.key}_title`, exp.title)}
                 </h2>
                 <p
                   style={{
@@ -622,7 +636,7 @@ export default function Intro() {
                     color: exp.accent,
                   }}
                 >
-                  {exp.descriptor}
+                  {t(`intro.${exp.key}_descriptor`, exp.descriptor)}
                 </p>
               </div>
             </motion.button>
@@ -736,7 +750,7 @@ export default function Intro() {
               textShadow: "0 0 32px rgba(0,0,0,0.55)",
             }}
           >
-            {DEMO_CAPTIONS[attractIdx]}
+            {t(DEMO_CAPTION_KEYS[attractIdx])}
             <span style={{ opacity: 0.55, marginLeft: 4 }}>
               {attractIdx < REVEAL_BEAT ? "…" : ""}
             </span>

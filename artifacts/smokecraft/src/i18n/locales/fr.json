@@ -1,0 +1,52 @@
+{
+  "intro": {
+    "splash_title":     "PROFOUND INNOVATION",
+    "splash_subtitle":  "P.I",
+    "headline_day":     "Créez Votre Expérience",
+    "headline_night":   "Entrez dans l'Expérience",
+    "select_prompt":    "Touchez pour commencer votre voyage",
+    "smokecraft_title": "SmokeCraft 360",
+    "smokecraft_descriptor": "Cigares · Spiritueux · Salon",
+    "pourcraft_title":  "PourCraft 360",
+    "pourcraft_descriptor":  "Vin · Cocktails · Bar",
+    "vapecraft_title":  "VapeCraft 360",
+    "vapecraft_descriptor":  "Vapeur · Saveur · Moderne",
+    "demo_caption_0":   "Lecture de l'ambiance",
+    "demo_caption_1":   "Réglage du profil de saveur",
+    "demo_caption_2":   "Sélection de l'accord parfait",
+    "demo_caption_3":   "Votre expérience d'élite est prête",
+    "score_label":      "Score",
+    "score_exceptional":"exceptionnel",
+    "score_excellent":  "excellent",
+    "score_balanced":   "équilibré",
+    "score_modest":     "modeste",
+    "score_weak":       "faible"
+  },
+  "dashboard": {
+    "tabs": {
+      "overview":     "Aperçu",
+      "products":     "Produits",
+      "brands":       "Marques et Distributeurs",
+      "campaigns":    "Campagnes",
+      "insights":     "Aperçus de Marque",
+      "intelligence": "Intel. d'Inventaire",
+      "demand":       "Preuve de Demande",
+      "verify":       "Vérifier Commandes",
+      "leaderboard":  "Classement",
+      "signatures":   "Demandes Signature",
+      "progress":     "Ma Progression",
+      "loyalty":      "Fidélité et Récompenses",
+      "my-creations": "Créations Signature",
+      "lounge-league":"Ligue du Salon",
+      "devices":      "Gestionnaire d'Appareils",
+      "analytics":    "Analytique",
+      "os":           "360 Enterprise OS"
+    }
+  },
+  "language": {
+    "label":   "Langue",
+    "english": "Anglais",
+    "spanish": "Espagnol",
+    "french":  "Français"
+  }
+}

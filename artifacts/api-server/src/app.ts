@@ -4,6 +4,7 @@ import pinoHttp from "pino-http";
 import { logger } from "./lib/logger";
 import { rejectDeepPayloads }             from "./middleware/sanitize";
 import { authLimiter, recommendLimiter, osLimiter } from "./middleware/rateLimit";
+import { localeMiddleware }                 from "./middleware/locale";
 
 import healthRouter        from "./routes/health";
 import authRouter          from "./routes/auth";
@@ -115,6 +116,8 @@ app.post(
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(rejectDeepPayloads);
+// Parse Accept-Language → req.locale (en/es/fr). Passive: no body changes.
+app.use(localeMiddleware);
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 
