@@ -13,13 +13,16 @@ export const venueTypeEnum = pgEnum("venue_type", [
 export const venuePlanEnum = pgEnum("venue_plan", ["basic", "mid", "premium"]);
 
 export const venuesTable = pgTable("venues", {
-  id:           uuid("id").primaryKey().defaultRandom(),
-  name:         text("name").notNull(),
-  type:         venueTypeEnum("type").notNull(),
-  plan:         venuePlanEnum("plan").notNull().default("basic"),
-  themeProfile: text("theme_profile"),
-  active:       boolean("active").notNull().default(true),
-  createdAt:    timestamp("created_at").notNull().defaultNow(),
+  id:               uuid("id").primaryKey().defaultRandom(),
+  name:             text("name").notNull(),
+  type:             venueTypeEnum("type").notNull(),
+  plan:             venuePlanEnum("plan").notNull().default("basic"),
+  themeProfile:     text("theme_profile"),
+  active:           boolean("active").notNull().default(true),
+  // Stripe customer is created lazily on the venue's first subscription
+  // checkout and reused for all future billing portal / invoice operations.
+  stripeCustomerId: text("stripe_customer_id"),
+  createdAt:        timestamp("created_at").notNull().defaultNow(),
 });
 
 export const insertVenueSchema = createInsertSchema(venuesTable).omit({ id: true, createdAt: true });

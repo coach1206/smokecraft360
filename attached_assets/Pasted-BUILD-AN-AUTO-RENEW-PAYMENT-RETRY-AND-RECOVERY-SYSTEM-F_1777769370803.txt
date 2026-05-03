@@ -1,0 +1,195 @@
+BUILD AN AUTO-RENEW, PAYMENT RETRY, AND RECOVERY SYSTEM FOR SMOKECRAFT 360 THAT PREVENTS CHURN, RECOVERS FAILED PAYMENTS, AND DRIVES PLAN UPGRADES
+
+---
+
+CORE OBJECTIVE
+
+- Keep subscriptions active via smart retries
+- Notify users before and after failures
+- Provide one-click recovery (billing portal)
+- Offer plan upgrades before lock
+
+---
+
+1. DATABASE ADDITIONS
+
+SUBSCRIPTIONS
+- id
+- venue_id
+- stripe_customer_id
+- stripe_subscription_id
+- plan (starter, pro, premium)
+- status (active, past_due, canceled)
+- current_period_end
+- grace_until
+- updated_at
+
+DUNNING_EVENTS
+- id
+- venue_id
+- type (reminder, failed, retry, recovered, canceled)
+- attempt_count
+- next_retry_at
+- created_at
+
+NOTIFICATIONS
+- id
+- venue_id
+- channel (email, in_app)
+- message
+- status (sent, failed)
+- created_at
+
+---
+
+2. STRIPE BILLING SETUP
+
+- Create Products/Prices for each plan
+- Enable Smart Retries in Stripe Dashboard
+- Enable Customer Portal
+
+Store:
+- stripe_customer_id
+- stripe_subscription_id
+
+---
+
+3. WEBHOOK HANDLERS (SOURCE OF TRUTH)
+
+Handle events:
+
+invoice.paid
+→ set SUBSCRIPTIONS.status = active
+→ clear grace_until
+→ log DUNNING_EVENTS(type=recovered)
+
+invoice.payment_failed
+→ set status = past_due
+→ set grace_until = now + 3–7 days
+→ log DUNNING_EVENTS(type=failed, attempt_count++)
+→ send notification
+
+invoice.upcoming
+→ send reminder (“payment due soon”)
+
+customer.subscription.deleted
+→ set status = canceled
+
+---
+
+4. LICENSE CHECK (ENFORCEMENT)
+
+GET /api/license/status
+
+Return:
+{
+  status,
+  plan,
+  grace_until
+}
+
+---
+
+5. FRONTEND BEHAVIOR
+
+If active:
+→ full access
+
+If past_due:
+→ show banner:
+“Payment issue detected — update to avoid interruption”
+→ show button: “Fix Billing”
+
+If canceled or grace expired:
+→ show lock screen
+
+---
+
+6. BILLING PORTAL LINK
+
+Create endpoint:
+
+POST /api/billing/portal
+
+Use:
+stripe.billingPortal.sessions.create()
+
+Return URL → frontend opens
+
+---
+
+7. AUTO-RETRY LOGIC
+
+Rely on Stripe Smart Retries
+
+Additionally:
+- display retry countdown in UI
+- show “Next attempt in X hours”
+
+---
+
+8. NOTIFICATION SYSTEM
+
+Send:
+
+Reminder:
+“Your subscription renews soon”
+
+Failed:
+“We couldn’t process your payment”
+
+Grace:
+“Service will pause in 3 days”
+
+Recovered:
+“You’re back up and running”
+
+---
+
+9. UPSELL SYSTEM (CRITICAL)
+
+Before expiration:
+
+If user is on Starter:
+→ show:
+“Upgrade to Pro to unlock premium pairings and priority features”
+
+Trigger points:
+- during experience flow
+- on warning banner
+- before lock screen
+
+---
+
+10. LOCK SCREEN
+
+When expired:
+
+Display:
+“Subscription Required”
+
+Buttons:
+- “Renew Now”
+- “Upgrade Plan”
+
+Disable interaction behind it
+
+---
+
+11. ADMIN OVERRIDE
+
+Allow super_admin to:
+
+- extend grace period
+- manually reactivate subscription
+
+---
+
+FINAL GOAL
+
+- prevent churn
+- recover failed payments
+- increase upgrades
+- protect recurring revenue
+
+---

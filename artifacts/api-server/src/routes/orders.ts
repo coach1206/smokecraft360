@@ -14,6 +14,7 @@ import { verifyToken }                                        from "../lib/jwt";
 import { requireAuth, type AuthRequest }                      from "../middleware/auth";
 import { requireRole }                                        from "../middleware/roles";
 import { allowOnly }                                          from "../middleware/sanitize";
+import { checkLicenseForVenue }                               from "../middleware/license";
 
 const router: IRouter = Router();
 
@@ -41,6 +42,27 @@ router.post(
   allowOnly("cigarId", "cigarName", "drinkId", "drinkName", "foodId", "foodName",
             "orderType", "tableNumber", "venueId"),
   async (req: Request, res: Response) => {
+    // License gate (kiosk endpoint — no auth, so we check the venueId in the body).
+    const bodyVenueId = typeof req.body?.venueId === "string" ? req.body.venueId : null;
+    if (bodyVenueId) {
+      try {
+        const lic = await checkLicenseForVenue(bodyVenueId);
+        if (!lic.allowed) {
+          res.status(402).json({
+            error:  "Subscription required",
+            status: lic.status,
+            plan:   lic.plan,
+            hint:   "Renew the venue subscription to restore ordering",
+          });
+          return;
+        }
+        if (lic.warning === "past_due") res.setHeader("X-License-Warning", "past_due");
+      } catch (err) {
+        req.log.error({ err, venueId: bodyVenueId }, "License check failed for order");
+        // Fail open on internal error — never block kiosk ordering on a DB blip.
+      }
+    }
+
     const { cigarId, cigarName, drinkId, drinkName, foodId, foodName,
             orderType, tableNumber, venueId } = req.body as {
       cigarId?:    string;

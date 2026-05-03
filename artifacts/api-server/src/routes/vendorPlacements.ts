@@ -19,6 +19,7 @@ import {
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { requireRole }                          from "../middleware/roles";
 import { allowOnly }                            from "../middleware/sanitize";
+import { requireActiveLicense }                 from "../middleware/license";
 
 const router: IRouter = Router();
 
@@ -94,6 +95,7 @@ router.post(
   "/purchase",
   requireAuth,
   requireRole("brand_partner"),
+  requireActiveLicense,
   allowOnly("productId", "placementType", "brandId"),
   async (req: AuthRequest, res: Response) => {
     const productId     = typeof req.body?.productId     === "string" ? req.body.productId     : "";

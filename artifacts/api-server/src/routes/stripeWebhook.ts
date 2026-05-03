@@ -23,6 +23,13 @@ import {
 import { logger }                                  from "../lib/logger";
 import { activatePlacementFromSession }            from "./vendorPlacements";
 import { markSignatureRequestSubmitted }           from "./signatureCigars";
+import {
+  linkSubscriptionFromCheckout,
+  syncSubscriptionFromStripe,
+  markInvoicePaid,
+  markPaymentFailed,
+  markSubscriptionCanceled,
+}                                                  from "./subscriptions";
 
 // Platform commission rate in basis points (1000 = 10.00%)
 const PLATFORM_COMMISSION_BPS = 1000;
@@ -79,6 +86,22 @@ export async function stripeWebhookHandler(req: Request, res: Response): Promise
           logger.info({ sessionId: session.id, requestId }, "Signature design fee paid; request submitted");
         } catch (err) {
           logger.error({ err, sessionId: session.id, requestId }, "Failed to mark signature request submitted");
+        }
+      }
+      res.json({ received: true });
+      return;
+    }
+
+    if (session.metadata?.purpose === "subscription") {
+      const venueId       = session.metadata?.venueId;
+      const stripeSubId   = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
+      const stripeCustId  = typeof session.customer     === "string" ? session.customer     : session.customer?.id ?? null;
+      if (venueId && stripeSubId) {
+        try {
+          await linkSubscriptionFromCheckout(venueId, stripeSubId, stripeCustId);
+          logger.info({ sessionId: session.id, venueId, stripeSubId }, "Subscription linked from checkout");
+        } catch (err) {
+          logger.error({ err, sessionId: session.id, venueId }, "Failed to link subscription from checkout");
         }
       }
       res.json({ received: true });
@@ -155,6 +178,35 @@ export async function stripeWebhookHandler(req: Request, res: Response): Promise
         }
       }
     }
+  }
+
+  // ── Subscription lifecycle events ───────────────────────────────────────────
+  if (event.type === "invoice.paid" || event.type === "invoice.payment_succeeded") {
+    const invoice = event.data.object as Stripe.Invoice;
+    const subId   = typeof (invoice as unknown as { subscription?: string | { id: string } }).subscription === "string"
+      ? (invoice as unknown as { subscription: string }).subscription
+      : (invoice as unknown as { subscription?: { id: string } }).subscription?.id;
+    if (subId) {
+      try { await markInvoicePaid(subId); logger.info({ subId }, "Subscription invoice paid"); }
+      catch (err) { logger.error({ err, subId }, "Failed to mark invoice paid"); }
+    }
+  } else if (event.type === "invoice.payment_failed") {
+    const invoice = event.data.object as Stripe.Invoice;
+    const subId   = typeof (invoice as unknown as { subscription?: string | { id: string } }).subscription === "string"
+      ? (invoice as unknown as { subscription: string }).subscription
+      : (invoice as unknown as { subscription?: { id: string } }).subscription?.id;
+    if (subId) {
+      try { await markPaymentFailed(subId); logger.warn({ subId }, "Subscription payment failed; grace started"); }
+      catch (err) { logger.error({ err, subId }, "Failed to mark payment failed"); }
+    }
+  } else if (event.type === "customer.subscription.deleted") {
+    const sub = event.data.object as Stripe.Subscription;
+    try { await markSubscriptionCanceled(sub.id); logger.info({ subId: sub.id }, "Subscription canceled"); }
+    catch (err) { logger.error({ err, subId: sub.id }, "Failed to mark subscription canceled"); }
+  } else if (event.type === "customer.subscription.created" || event.type === "customer.subscription.updated") {
+    const sub = event.data.object as Stripe.Subscription;
+    try { await syncSubscriptionFromStripe(sub); logger.info({ subId: sub.id, status: sub.status }, "Subscription synced"); }
+    catch (err) { logger.error({ err, subId: sub.id }, "Failed to sync subscription"); }
   }
 
   res.json({ received: true });

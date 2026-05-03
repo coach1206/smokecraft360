@@ -4,6 +4,8 @@ import { Toaster }         from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider }    from "@/contexts/AuthContext";
 import { VenueProvider }   from "@/contexts/VenueContext";
+import { LicenseProvider } from "@/contexts/LicenseContext";
+import { LicenseGate }     from "@/components/License/LicenseGate";
 import { PresentationProvider } from "@/contexts/PresentationContext";
 import NotFound        from "@/pages/not-found";
 import Home            from "@/pages/Home";
@@ -33,19 +35,22 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <VenueProvider>
-          <AuthProvider>
-            <PresentationProvider>
-              <KioskModeProvider>
-                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                  <Router />
-                </WouterRouter>
-                <PresentationOverlay />
-                <DemoBanner />
-                <KioskModeBanner />
-                <Toaster />
-              </KioskModeProvider>
-            </PresentationProvider>
-          </AuthProvider>
+          <LicenseProvider>
+            <AuthProvider>
+              <PresentationProvider>
+                <KioskModeProvider>
+                  <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                    <Router />
+                  </WouterRouter>
+                  <PresentationOverlay />
+                  <DemoBanner />
+                  <KioskModeBanner />
+                  <LicenseGate />
+                  <Toaster />
+                </KioskModeProvider>
+              </PresentationProvider>
+            </AuthProvider>
+          </LicenseProvider>
         </VenueProvider>
       </TooltipProvider>
     </QueryClientProvider>

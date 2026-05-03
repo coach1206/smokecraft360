@@ -42,6 +42,7 @@ import networkInsightsRouter    from "./routes/networkInsights";
 import payoutsRouter            from "./routes/payouts";
 import vendorAdminRouter        from "./routes/vendorAdmin";
 import vendorPlacementsRouter   from "./routes/vendorPlacements";
+import subscriptionsRouter      from "./routes/subscriptions";
 import { startAggregationWorker } from "./lib/aggregationWorker";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -145,6 +146,10 @@ app.use("/api/network",                     networkInsightsRouter);
 app.use("/api/payouts",                     payoutsRouter);
 app.use("/api/admin/vendor",                vendorAdminRouter);
 app.use("/api/vendor/placements",           vendorPlacementsRouter);
+// Subscriptions: license/status, create-checkout, portal, admin override
+// (router internally exposes /status, /create-checkout, /portal, /admin/:venueId/override)
+app.use("/api/license",                     subscriptionsRouter);   // mounts /status
+app.use("/api/subscriptions",               subscriptionsRouter);   // mounts /create-checkout, /portal, /admin/:venueId/override
 
 // Start background aggregation worker (hourly rollups for network/venue metrics)
 if (process.env["NODE_ENV"] !== "test") {

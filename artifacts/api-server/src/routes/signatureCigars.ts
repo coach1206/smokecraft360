@@ -30,6 +30,7 @@ import {
 }                                               from "@workspace/db";
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { requireRole }                          from "../middleware/roles";
+import { requireActiveLicense }                 from "../middleware/license";
 import { z }                                    from "zod";
 
 // ── Pricing for custom design fees (cents) ────────────────────────────────────
@@ -142,6 +143,7 @@ const submitSchema = z.object({
 router.post(
   "/",
   requireAuth,
+  requireActiveLicense,
   async (req: AuthRequest, res: Response) => {
     const userId = req.user!.id;
 
@@ -414,6 +416,7 @@ router.patch(
 router.post(
   "/:id/purchase",
   requireAuth,
+  requireActiveLicense,
   async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
     const userId = req.user!.id;
