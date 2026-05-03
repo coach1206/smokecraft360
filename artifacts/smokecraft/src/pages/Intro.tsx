@@ -849,9 +849,15 @@ export default function Intro() {
       {/* Attract-mode preview scorecard — visible during the reveal beat.
           Uses the same weighted formula as /api/scoring so the displayed
           result is always consistent with the live engine, but computed
-          client-side to avoid hammering the API from idle kiosks. */}
+          client-side to avoid hammering the API from idle kiosks.
+          38th brief: HIDDEN. The "8.35 EXCELLENT" card was popping up
+          mid-screen during attract mode and partly obscuring the
+          experience cards (BrewCraft in particular). Gated off with a
+          `false &&` rather than ripped out so the previewScore + DEMO_SAMPLE
+          machinery (still imported) can be re-enabled by flipping the
+          flag if a future brief wants the attract scorecard back. */}
       <AnimatePresence>
-        {isIdle && !selected && stage === "select" && attractIdx === REVEAL_BEAT && (() => {
+        {false && isIdle && !selected && stage === "select" && attractIdx === REVEAL_BEAT && (() => {
           const { score, label } = previewScore(DEMO_SAMPLE);
           return (
             <motion.div
