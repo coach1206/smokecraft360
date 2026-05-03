@@ -22,6 +22,7 @@ import {
 }                                                  from "@workspace/db";
 import { logger }                                  from "../lib/logger";
 import { activatePlacementFromSession }            from "./vendorPlacements";
+import { markSignatureRequestSubmitted }           from "./signatureCigars";
 
 // Platform commission rate in basis points (1000 = 10.00%)
 const PLATFORM_COMMISSION_BPS = 1000;
@@ -53,8 +54,9 @@ export async function stripeWebhookHandler(req: Request, res: Response): Promise
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
 
-    // Branch on the session's purpose. Vendor placement purchases are a separate
-    // flow from customer order checkouts and don't touch orders/inventory/commissions.
+    // Branch on the session's purpose. Vendor placement purchases and signature
+    // design fees are separate flows from customer order checkouts and don't
+    // touch orders / inventory / commissions.
     if (session.metadata?.purpose === "placement") {
       const placementId = session.metadata?.placementId;
       if (placementId) {
@@ -63,6 +65,20 @@ export async function stripeWebhookHandler(req: Request, res: Response): Promise
           logger.info({ sessionId: session.id, placementId }, "Vendor placement activated via webhook");
         } catch (err) {
           logger.error({ err, sessionId: session.id, placementId }, "Failed to activate placement");
+        }
+      }
+      res.json({ received: true });
+      return;
+    }
+
+    if (session.metadata?.purpose === "signature_design") {
+      const requestId = session.metadata?.signatureRequestId;
+      if (requestId) {
+        try {
+          await markSignatureRequestSubmitted(requestId);
+          logger.info({ sessionId: session.id, requestId }, "Signature design fee paid; request submitted");
+        } catch (err) {
+          logger.error({ err, sessionId: session.id, requestId }, "Failed to mark signature request submitted");
         }
       }
       res.json({ received: true });

@@ -1,0 +1,163 @@
+BUILD A SUBSCRIPTION ENFORCEMENT SYSTEM FOR SMOKECRAFT 360 THAT CONTROLS PLATFORM ACCESS BASED ON PAYMENT STATUS AND LOCKS THE USER INTERFACE WHEN A VENUE FAILS TO PAY
+
+---
+
+CORE OBJECTIVE
+
+Ensure that:
+
+- paying venues have full access
+- unpaid venues are restricted
+- system remains secure and professional
+
+---
+
+1. DATABASE TABLE
+
+Create SUBSCRIPTIONS table:
+
+- id
+- venue_id
+- status (active, past_due, canceled)
+- plan (starter, pro, premium)
+- current_period_end
+- stripe_subscription_id
+- last_payment_date
+
+---
+
+2. STRIPE SUBSCRIPTION SYSTEM
+
+Use Stripe Billing:
+
+- create subscription per venue
+- store subscription ID
+- sync status via webhook
+
+---
+
+3. WEBHOOK EVENTS
+
+Handle:
+
+invoice.paid → set status = active  
+invoice.payment_failed → set status = past_due  
+customer.subscription.deleted → set status = canceled  
+
+---
+
+4. LICENSE CHECK API
+
+Create endpoint:
+
+GET /api/license/status
+
+Return:
+
+{
+  status: "active" | "past_due" | "canceled",
+  plan: "pro"
+}
+
+---
+
+5. FRONTEND ENFORCEMENT
+
+On app load:
+
+- call /api/license/status
+- store status globally
+
+---
+
+6. UI LOCK SYSTEM
+
+If status = active:
+→ full access
+
+If status = past_due:
+→ show warning banner:
+“Payment required to maintain service”
+
+If status = canceled:
+→ FULL LOCK SCREEN
+
+---
+
+7. LOCK SCREEN DESIGN
+
+Display:
+
+- brand logo
+- message:
+
+“Subscription Required to Continue”
+
+“Please renew your service to unlock this experience”
+
+Buttons:
+
+- “Renew Now”
+- “Contact Support”
+
+Disable ALL interactions behind it
+
+---
+
+8. GRACE PERIOD LOGIC
+
+Optional:
+
+- allow 3–7 day grace period before full lock
+- show countdown:
+
+“Service expires in 2 days”
+
+---
+
+9. FEATURE LIMITING (ADVANCED)
+
+Instead of full lock:
+
+- disable ordering
+- disable premium features
+- restrict analytics
+
+---
+
+10. ADMIN BYPASS
+
+Super admin can:
+
+- unlock venue manually
+- override subscription status
+
+---
+
+11. OFFLINE FALLBACK
+
+If no internet:
+
+- allow limited cached access
+- re-check license every X minutes
+
+---
+
+12. SECURITY
+
+- verify license on backend
+- do NOT rely on frontend only
+- prevent tampering
+
+---
+
+FINAL GOAL
+
+Create a system where:
+
+- revenue is protected
+- access is controlled
+- experience remains professional
+- no harsh or risky hardware shutdown occurs
+
+---
