@@ -55,32 +55,62 @@ const EXPERIENCES: Experience[] = [
   },
 ];
 
-/** Synthesized soft click — no asset, no network, instant on first user gesture. */
+/**
+ * Click sound. Prefers the bundled asset at /public/sounds/click.mp3
+ * (resolved through Vite's BASE_URL so it works under the artifact's
+ * subpath proxy). Falls back to a synthesized WebAudio click if the
+ * asset 404s or audio playback is blocked.
+ */
 function useClickSound() {
-  const ctxRef = useRef<AudioContext | null>(null);
-  return useCallback(() => {
-    try {
-      type WebkitWindow = Window & { webkitAudioContext?: typeof AudioContext };
-      const Ctor = window.AudioContext ?? (window as WebkitWindow).webkitAudioContext;
-      if (!Ctor) return;
-      if (!ctxRef.current) ctxRef.current = new Ctor();
-      const ctx = ctxRef.current;
-      const t   = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gn  = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(880, t);
-      osc.frequency.exponentialRampToValueAtTime(440, t + 0.08);
-      gn.gain.setValueAtTime(0.0001, t);
-      gn.gain.exponentialRampToValueAtTime(0.18, t + 0.005);
-      gn.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
-      osc.connect(gn).connect(ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.13);
-    } catch {
-      /* sound is non-essential */
-    }
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const ctxRef   = useRef<AudioContext | null>(null);
+
+  // Pre-warm the <audio> element so the first tap is instant (no network race).
+  useEffect(() => {
+    const a = new Audio(`${import.meta.env.BASE_URL}sounds/click.mp3`);
+    a.volume = 0.3;
+    a.preload = "auto";
+    audioRef.current = a;
   }, []);
+
+  return useCallback(() => {
+    const a = audioRef.current;
+    if (a) {
+      try {
+        a.currentTime = 0;
+        const p = a.play();
+        if (p && typeof p.then === "function") {
+          p.catch(() => playSynth(ctxRef));
+        }
+        return;
+      } catch { /* fall through to synth */ }
+    }
+    playSynth(ctxRef);
+  }, []);
+}
+
+function playSynth(ctxRef: React.MutableRefObject<AudioContext | null>) {
+  try {
+    type WebkitWindow = Window & { webkitAudioContext?: typeof AudioContext };
+    const Ctor = window.AudioContext ?? (window as WebkitWindow).webkitAudioContext;
+    if (!Ctor) return;
+    if (!ctxRef.current) ctxRef.current = new Ctor();
+    const ctx = ctxRef.current;
+    const t   = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gn  = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(880, t);
+    osc.frequency.exponentialRampToValueAtTime(440, t + 0.08);
+    gn.gain.setValueAtTime(0.0001, t);
+    gn.gain.exponentialRampToValueAtTime(0.18, t + 0.005);
+    gn.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+    osc.connect(gn).connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.13);
+  } catch {
+    /* sound is non-essential */
+  }
 }
 
 export default function Intro() {

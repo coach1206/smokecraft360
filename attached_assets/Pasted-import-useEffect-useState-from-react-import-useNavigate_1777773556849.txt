@@ -1,0 +1,242 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+export default function Intro() {
+  const navigate = useNavigate();
+
+  const [stage, setStage] = useState("splash"); // splash → select
+  const [selected, setSelected] = useState(null);
+  const [lettersVisible, setLettersVisible] = useState(0);
+
+  const title = "PROFOUND INNOVATION";
+
+  useEffect(() => {
+    // Letter-by-letter reveal
+    let i = 0;
+    const interval = setInterval(() => {
+      setLettersVisible((prev) => prev + 1);
+      i++;
+      if (i >= title.length) clearInterval(interval);
+    }, 60);
+
+    // Ambient + startup sound
+    const ambient = new Audio("/sounds/ambient.mp3");
+    ambient.loop = true;
+    ambient.volume = 0.15;
+    ambient.play().catch(() => {});
+
+    const chime = new Audio("/sounds/startup.mp3");
+    chime.volume = 0.3;
+    setTimeout(() => chime.play().catch(() => {}), 1200);
+
+    // Transition to selection
+    const timer = setTimeout(() => {
+      setStage("select");
+    }, 3200);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timer);
+      ambient.pause();
+    };
+  }, []);
+
+  const handleSelect = (theme) => {
+    const click = new Audio("/sounds/click.mp3");
+    click.volume = 0.3;
+    click.play();
+
+    setSelected(theme);
+
+    setTimeout(() => {
+      navigate("/" + theme);
+    }, 600);
+  };
+
+  const cards = [
+    {
+      key: "smokecraft",
+      title: "SmokeCraft 360",
+      desc: "Build your cigar experience",
+      image:
+        "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a"
+    },
+    {
+      key: "pourcraft",
+      title: "PourCraft 360",
+      desc: "Craft your perfect pour",
+      image:
+        "https://images.unsplash.com/photo-1514361892635-e9558d7d1a8d"
+    },
+    {
+      key: "vapecraft",
+      title: "VapeCraft 360",
+      desc: "Explore your flavor cloud",
+      image:
+        "https://images.unsplash.com/photo-1585238342024-78d387f4a707"
+    }
+  ];
+
+  return (
+    <div style={styles.wrapper}>
+      <div style={styles.overlay} />
+
+      {/* ===== SPLASH ===== */}
+      {stage === "splash" && (
+        <div style={styles.splash}>
+          <div style={styles.logoWrap}>
+            {title.split("").map((char, i) => (
+              <span
+                key={i}
+                style={{
+                  ...styles.letter,
+                  opacity: i < lettersVisible ? 1 : 0,
+                  transform:
+                    i < lettersVisible
+                      ? "translateY(0px)"
+                      : "translateY(20px)"
+                }}
+              >
+                {char === " " ? "\u00A0" : char}
+              </span>
+            ))}
+          </div>
+
+          <div style={styles.piSub}>P.I</div>
+        </div>
+      )}
+
+      {/* ===== SELECT ===== */}
+      {stage === "select" && (
+        <div style={styles.center}>
+          <h1 style={styles.title}>Craft Your Experience</h1>
+          <p style={styles.subtitle}>Select your journey</p>
+
+          <div style={styles.cardRow}>
+            {cards.map((card) => (
+              <div
+                key={card.key}
+                onClick={() => handleSelect(card.key)}
+                style={{
+                  ...styles.card,
+                  backgroundImage: `url(${card.image})`,
+                  transform:
+                    selected === card.key
+                      ? "scale(1.05)"
+                      : "scale(1)",
+                  opacity:
+                    selected && selected !== card.key ? 0 : 1
+                }}
+              >
+                <div style={styles.cardOverlay} />
+                <div style={styles.cardContent}>
+                  <h2>{card.title}</h2>
+                  <p>{card.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const styles = {
+  wrapper: {
+    height: "100vh",
+    width: "100%",
+    position: "relative",
+    background:
+      "url('https://images.unsplash.com/photo-1552566626-52f8b828add9') center/cover",
+    animation: "slowZoom 20s ease-in-out infinite alternate",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden"
+  },
+
+  overlay: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    background:
+      "linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.5))"
+  },
+
+  splash: {
+    textAlign: "center",
+    color: "#fff",
+    zIndex: 2
+  },
+
+  logoWrap: {
+    fontSize: "48px",
+    letterSpacing: "4px",
+    fontWeight: "600"
+  },
+
+  letter: {
+    display: "inline-block",
+    transition: "all 0.4s ease"
+  },
+
+  piSub: {
+    marginTop: "10px",
+    fontSize: "22px",
+    opacity: 0.6
+  },
+
+  center: {
+    textAlign: "center",
+    color: "#fff",
+    zIndex: 2,
+    animation: "fadeIn 1s ease"
+  },
+
+  title: {
+    fontSize: "38px",
+    marginBottom: "10px"
+  },
+
+  subtitle: {
+    fontSize: "18px",
+    marginBottom: "40px",
+    opacity: 0.8
+  },
+
+  cardRow: {
+    display: "flex",
+    gap: "30px",
+    justifyContent: "center"
+  },
+
+  card: {
+    width: "300px",
+    height: "420px",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    borderRadius: "20px",
+    cursor: "pointer",
+    position: "relative",
+    transition: "all 0.4s ease",
+    boxShadow: "0 25px 60px rgba(0,0,0,0.7)"
+  },
+
+  cardOverlay: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    background:
+      "linear-gradient(to top, rgba(0,0,0,0.9), transparent)",
+    borderRadius: "20px"
+  },
+
+  cardContent: {
+    position: "absolute",
+    bottom: "20px",
+    left: "20px",
+    right: "20px",
+    textAlign: "left"
+  }
+};
