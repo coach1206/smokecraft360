@@ -33,6 +33,7 @@ import offlineQueueRouter       from "./routes/offlineQueue";
 import sessionsRouter           from "./routes/sessions";
 import memoriesRouter           from "./routes/memories";
 import voiceQueueRouter         from "./routes/voiceQueue";
+import notificationsRouter      from "./routes/notifications";
 import reservationsRouter       from "./routes/reservations";
 import conflictsRouter          from "./routes/conflicts";
 import ipVaultRouter            from "./routes/ipVault";
@@ -181,6 +182,11 @@ app.use("/api/offline-queue",               offlineQueueRouter);
 app.use("/api/sessions",                    sessionsRouter);
 app.use("/api/memories",                    memoriesRouter);
 app.use("/api/voice-queue",                 voiceQueueRouter);
+// notificationsRouter adds PATCH /:id/read, POST /read-all, DELETE /:id at
+// /api/notifications. The matching GET /api/notifications stays in
+// subscriptionsRouter (mounted below at /api). Both routers coexist —
+// Express dispatches by full path.
+app.use("/api/notifications",               notificationsRouter);
 app.use("/api/reservations",                reservationsRouter);
 app.use("/api/conflicts",                   conflictsRouter);
 app.use("/api/ip-vault",                    ipVaultRouter);

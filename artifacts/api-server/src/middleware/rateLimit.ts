@@ -52,6 +52,17 @@ export const ndaSignLimiter = rateLimit({
   message: { error: "Too many signature attempts — please wait a moment and try again" },
 });
 
+/* Notification-write limiter — authed inbox writes (PATCH/POST/DELETE on
+ * /api/notifications). The inbox page might fire several read-marks in quick
+ * succession (e.g. "mark all as I scroll"), so 60/min/IP leaves slack while
+ * blocking a hostile client from churning the table. GET stays off this
+ * limiter — the inbox can poll cheaply. (Same shape as memoryWriteLimiter.) */
+export const notificationWriteLimiter = rateLimit({
+  ...shared,
+  limit:   60,
+  message: { error: "Too many notification updates — please slow down" },
+});
+
 /* Voice-queue enqueue limiter — public write that any kiosk (incl. anonymous)
  * can hit to drop a transcript onto the queue. A misbehaving kiosk or hostile
  * client could try to flood the queue to crowd out legitimate commands; the

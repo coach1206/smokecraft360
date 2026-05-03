@@ -171,6 +171,47 @@ server-side STT (this slice trusts the client to send the transcript
 text — Whisper/etc. integration is downstream), retry-with-backoff
 scheduler, dead-letter handling, frontend UI.
 
+## Notifications inbox writes (G5)
+
+Backend-only slice. Schema `notifications` and `GET /api/notifications`
+already existed (the GET stays in `routes/subscriptions.ts` — not moved,
+no destructive change). This slice adds the missing write endpoints so
+`readAt` can actually be set and rows can be dismissed.
+
+**No schema changes.** Existing `notifications` table is sufficient
+(`id`, `venueId`, `channel`, `title`, `message`, `status`, `category`,
+`readAt`, `createdAt`).
+
+**New router** `routes/notifications.ts` mounted at `/api/notifications`
+(coexists with the GET in subscriptionsRouter — Express dispatches by
+full path):
+- `PATCH /:id/read` — atomic owner-gated mark-as-read.
+  `UPDATE … WHERE id=? AND venueId=me AND readAt IS NULL RETURNING …`.
+  0 rows ⇒ 404 (folds wrong-tenant / unknown / already-read into one
+  code to avoid existence/lifecycle leak).
+- `POST /read-all` — bulk mark-all-unread for caller's venue.
+  Idempotent — returns `{markedCount}` (0 is a valid response).
+- `DELETE /:id` — atomic owner-gated dismiss. 0 rows ⇒ 404.
+
+All three writes are tenant-scoped via `req.user.venueId`; a caller
+without a venue context gets 403 (they cannot have notifications by
+design).
+
+**New limiter:** `notificationWriteLimiter` (60/min/IP), parity with
+G3 `memoryWriteLimiter`. GET stays unthrottled — the inbox can poll
+cheaply.
+
+**Verified:** 23/23 e2e — including 5-way parallel PATCH same id →
+1×200 + 4×404, 5-way parallel DELETE same id → 1×200 + 4×404, and
+critical tenant-isolation check that read-all on venue A leaves venue
+B's unreadCount untouched.
+
+**Out of scope (call out for next slice):** moving the existing GET
+out of `subscriptions.ts` into the new router (non-destructive
+cleanup), real SMTP delivery for `channel=email` rows (currently
+optimistic intent-only), admin manual-create endpoint, push/SSE
+fanout, frontend inbox UI.
+
 ## AI Memory (G3)
 
 Backend-only slice. Provides recallable per-user "facts" an AI assistant
