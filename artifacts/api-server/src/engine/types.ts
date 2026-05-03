@@ -61,6 +61,11 @@ export interface RecommendRequest {
    *  toward products that match the user's history. Anonymous requests
    *  omit this field entirely; behavior is unchanged when absent. */
   tasteProfile?:     TasteProfileBias;
+  /** Optional time-of-day context. When present the scorer applies a
+   *  small bounded mood-tag bias (e.g. evening boosts "bold" / "premium",
+   *  afternoon boosts "smooth" / "easy"). No effect when absent —
+   *  preserves prior behavior for legacy callers. */
+  timeOfDay?:        "morning" | "afternoon" | "evening" | "night";
 }
 
 export interface ScoredProduct extends Product {

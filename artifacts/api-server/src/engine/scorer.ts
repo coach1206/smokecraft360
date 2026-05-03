@@ -18,7 +18,19 @@ const WEIGHTS = {
    *  fuller, more complex cigars; quick sessions favor lighter strengths so
    *  the smoke doesn't outlast the time. Small bounded tiebreaker.           */
   sessionMatch:   1,
+  /** Time-of-day mood alignment. Bounded so it never overrides explicit
+   *  user mood/flavor signals — acts as a tiebreaker, exactly like vitola. */
+  timeOfDayMatch: 1,
 } as const;
+
+/** Mood tags that align with each time-of-day bucket. Conservative list:
+ *  only tags that genuinely correlate with the time (no novelty matches). */
+const TIME_OF_DAY_MOODS: Record<NonNullable<RecommendRequest["timeOfDay"]>, readonly string[]> = {
+  morning:   ["light", "smooth", "easy"],
+  afternoon: ["smooth", "easy", "social"],
+  evening:   ["bold", "rich", "premium", "elegant"],
+  night:     ["bold", "rich", "premium", "smoky"],
+};
 
 /** Preferred strength band per session length (cigar only).
  *  quick (~30m) → mild, long (~90m+) → fuller. Used for a +1 nudge. */
@@ -74,6 +86,17 @@ export function scoreProductBase(product: Product, request: RecommendRequest): n
   if (request.cigarSession && product.category === "cigar") {
     const [lo, hi] = SESSION_STRENGTH_BAND[request.cigarSession];
     if (product.strength >= lo && product.strength <= hi) score += WEIGHTS.sessionMatch;
+  }
+
+  /* Time-of-day mood bias — fires once if any of the product's mood tags
+   * align with the bucket. Capped at +1 (the WEIGHTS.timeOfDayMatch value)
+   * so it can break ties between otherwise-equivalent products without
+   * dragging in irrelevant ones. Skip when timeOfDay is absent. */
+  if (request.timeOfDay) {
+    const aligned = TIME_OF_DAY_MOODS[request.timeOfDay];
+    if (product.moodTags.some((t) => aligned.includes(t.toLowerCase()))) {
+      score += WEIGHTS.timeOfDayMatch;
+    }
   }
 
   score += TIER_BONUS[product.tier] ?? 0;

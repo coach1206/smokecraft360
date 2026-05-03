@@ -5,6 +5,78 @@ import { allowOnly } from "../middleware/sanitize";
 import { RecommendRequest } from "../engine/types";
 import { verifyToken } from "../lib/jwt";
 import { getTasteProfile } from "../services/tasteProfile";
+import { blendProfiles } from "../services/coupleProfiles";
+
+const VALID_SHAPES   = ["robusto","corona","toro","churchill","torpedo","belicoso"] as const;
+const VALID_SESSIONS = ["quick","standard","extended","long"] as const;
+const VALID_TIMES    = ["morning","afternoon","evening","night"] as const;
+
+function safeShape(v: unknown): RecommendRequest["cigarShape"] {
+  return typeof v === "string" && (VALID_SHAPES as readonly string[]).includes(v)
+    ? (v as RecommendRequest["cigarShape"]) : undefined;
+}
+function safeSession(v: unknown): RecommendRequest["cigarSession"] {
+  return typeof v === "string" && (VALID_SESSIONS as readonly string[]).includes(v)
+    ? (v as RecommendRequest["cigarSession"]) : undefined;
+}
+function safeTime(v: unknown): RecommendRequest["timeOfDay"] {
+  return typeof v === "string" && (VALID_TIMES as readonly string[]).includes(v)
+    ? (v as RecommendRequest["timeOfDay"]) : undefined;
+}
+
+/** Validate a client-supplied taste profile bias. Returns undefined on
+ *  any shape mismatch — never throws. Used by /couples where clients
+ *  may pass each guest's profile inline (the standard /recommend route
+ *  derives this server-side from the authed user's history instead). */
+function safeTasteProfile(v: unknown): RecommendRequest["tasteProfile"] {
+  if (!v || typeof v !== "object") return undefined;
+  const o = v as Record<string, unknown>;
+  const isStrNumMap = (m: unknown): m is Record<string, number> =>
+    !!m && typeof m === "object" && Object.values(m as Record<string, unknown>).every((n) => typeof n === "number" && Number.isFinite(n));
+  if (!isStrNumMap(o.strength) || !isStrNumMap(o.flavor) || !isStrNumMap(o.mood) || !isStrNumMap(o.categories)) return undefined;
+  if (typeof o.sampleCount !== "number" || o.sampleCount < 0) return undefined;
+  // Cap key counts so a malicious client can't blow up the scorer with thousands of bogus dimensions.
+  const cap = (m: Record<string, number>) => Object.fromEntries(Object.entries(m).slice(0, 50));
+  return {
+    strength:    cap(o.strength as Record<string, number>),
+    flavor:      cap(o.flavor   as Record<string, number>),
+    mood:        cap(o.mood     as Record<string, number>),
+    categories:  cap(o.categories as Record<string, number>),
+    sampleCount: Math.min(10_000, Math.floor(o.sampleCount)),
+  };
+}
+
+/** Normalize and validate a single profile payload. Returns null + error
+ *  string on validation failure so the route can surface a clean 400. */
+function parseProfile(raw: Partial<RecommendRequest>): { ok: true; req: RecommendRequest } | { ok: false; error: string } {
+  const validCategories = getRegisteredCategories();
+  if (!raw.category || !validCategories.includes(String(raw.category).toLowerCase())) {
+    return { ok: false, error: `"category" must be one of: ${validCategories.join(", ")}` };
+  }
+  if (!Array.isArray(raw.flavorPreferences) || raw.flavorPreferences.length === 0) {
+    return { ok: false, error: '"flavorPreferences" must be a non-empty array of strings' };
+  }
+  if (typeof raw.strength !== "number" || raw.strength < 1 || raw.strength > 5) {
+    return { ok: false, error: '"strength" must be a number between 1 and 5' };
+  }
+  if (!raw.mood || typeof raw.mood !== "string") {
+    return { ok: false, error: '"mood" must be a non-empty string' };
+  }
+  return {
+    ok: true,
+    req: {
+      category:          String(raw.category).toLowerCase(),
+      flavorPreferences: raw.flavorPreferences,
+      strength:          raw.strength,
+      mood:              raw.mood,
+      venueId:           typeof raw.venueId === "string" ? raw.venueId : undefined,
+      cigarShape:        safeShape(raw.cigarShape),
+      cigarSession:      safeSession(raw.cigarSession),
+      timeOfDay:         safeTime(raw.timeOfDay),
+      tasteProfile:      safeTasteProfile(raw.tasteProfile),
+    },
+  };
+}
 
 /** Pull a userId from the optional Bearer token. Never throws. */
 async function tryGetUserId(req: Request): Promise<string | null> {
@@ -40,30 +112,11 @@ const router: IRouter = Router();
  */
 router.post(
   "/",
-  allowOnly("category", "flavorPreferences", "strength", "mood", "venueId", "cigarShape", "cigarSession"),
+  allowOnly("category", "flavorPreferences", "strength", "mood", "venueId", "cigarShape", "cigarSession", "timeOfDay", "tasteProfile"),
   async (req: Request, res: Response) => {
-    const { category, flavorPreferences, strength, mood, venueId, cigarShape, cigarSession } = req.body as Partial<RecommendRequest>;
-    const validShapes = ["robusto","corona","toro","churchill","torpedo","belicoso"] as const;
-    const validSessions = ["quick","standard","extended","long"] as const;
-    const safeShape = typeof cigarShape === "string" && (validShapes as readonly string[]).includes(cigarShape) ? cigarShape as RecommendRequest["cigarShape"] : undefined;
-    const safeSession = typeof cigarSession === "string" && (validSessions as readonly string[]).includes(cigarSession) ? cigarSession as RecommendRequest["cigarSession"] : undefined;
-
-    const validCategories = getRegisteredCategories();
-
-    if (!category || !validCategories.includes(category.toLowerCase())) {
-      res.status(400).json({ error: `"category" must be one of: ${validCategories.join(", ")}` });
-      return;
-    }
-    if (!Array.isArray(flavorPreferences) || flavorPreferences.length === 0) {
-      res.status(400).json({ error: '"flavorPreferences" must be a non-empty array of strings' });
-      return;
-    }
-    if (typeof strength !== "number" || strength < 1 || strength > 5) {
-      res.status(400).json({ error: '"strength" must be a number between 1 and 5' });
-      return;
-    }
-    if (!mood || typeof mood !== "string") {
-      res.status(400).json({ error: '"mood" must be a non-empty string' });
+    const parsed = parseProfile(req.body as Partial<RecommendRequest>);
+    if (!parsed.ok) {
+      res.status(400).json({ error: parsed.error });
       return;
     }
 
@@ -78,13 +131,7 @@ router.post(
       : undefined;
 
     const result = getRecommendations({
-      category: category.toLowerCase(),
-      flavorPreferences,
-      strength,
-      mood,
-      venueId: typeof venueId === "string" ? venueId : undefined,
-      cigarShape: safeShape,
-      cigarSession: safeSession,
+      ...parsed.req,
       tasteProfile: tasteProfile && tasteProfile.sampleCount > 0
         ? {
             strength:    tasteProfile.strength,
@@ -97,11 +144,61 @@ router.post(
     });
 
     req.log.info(
-      { category, strength, mood, venueId, resultCount: result.recommendations.length, outOfStockCount: result.outOfStock?.length ?? 0 },
+      {
+        category: parsed.req.category,
+        strength: parsed.req.strength,
+        mood:     parsed.req.mood,
+        venueId:  parsed.req.venueId,
+        timeOfDay: parsed.req.timeOfDay,
+        resultCount:     result.recommendations.length,
+        outOfStockCount: result.outOfStock?.length ?? 0,
+      },
       "recommendation request processed",
     );
 
     res.json(result);
+  },
+);
+
+/**
+ * POST /api/recommend/couples
+ *
+ * Couples mode — accepts two profiles in `{ profileA, profileB }`, blends
+ * them into a single compromise request via blendProfiles(), and runs the
+ * standard recommendation pipeline. Returns the same shape as POST /
+ * plus a `blended` field showing exactly what was scored, so the UI can
+ * explain "we picked this because both of you wanted [X]".
+ *
+ * Both profiles must share the same `category` — there's no compromise
+ * between "I want a cigar" and "I want a beer".
+ */
+router.post(
+  "/couples",
+  allowOnly("profileA", "profileB"),
+  async (req: Request, res: Response) => {
+    const body = req.body as { profileA?: Partial<RecommendRequest>; profileB?: Partial<RecommendRequest> };
+    if (!body.profileA || !body.profileB) {
+      res.status(400).json({ error: '"profileA" and "profileB" are both required' });
+      return;
+    }
+    const a = parseProfile(body.profileA);
+    const b = parseProfile(body.profileB);
+    if (!a.ok) { res.status(400).json({ error: `profileA: ${a.error}` }); return; }
+    if (!b.ok) { res.status(400).json({ error: `profileB: ${b.error}` }); return; }
+    if (a.req.category !== b.req.category) {
+      res.status(400).json({ error: "Both profiles must share the same category" });
+      return;
+    }
+
+    const blended = blendProfiles(a.req, b.req);
+    const result = getRecommendations(blended);
+
+    req.log.info(
+      { category: blended.category, blendedStrength: blended.strength, flavors: blended.flavorPreferences.length },
+      "couples recommendation processed",
+    );
+
+    res.json({ ...result, blended });
   },
 );
 
