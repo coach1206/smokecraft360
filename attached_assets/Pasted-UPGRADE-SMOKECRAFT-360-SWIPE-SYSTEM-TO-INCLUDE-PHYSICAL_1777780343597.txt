@@ -1,0 +1,283 @@
+UPGRADE SMOKECRAFT 360 SWIPE SYSTEM TO INCLUDE PHYSICAL FEEDBACK (SOUND + SMOOTH MOTION) AND CONNECT THE FINAL CIGAR RESULT TO REAL IMAGES FROM AN IMAGE API
+
+---
+
+CORE RULE
+
+Every interaction must feel physical.
+Every final result must be real.
+
+If it doesn’t move, respond, and visually match → it’s wrong.
+
+---
+
+1. SWIPE INTERACTION (MAKE IT FEEL REAL)
+
+Replace basic swipe with gesture-based motion.
+
+---
+
+SWIPE BEHAVIOR
+
+* Drag card with finger/mouse
+* Card follows movement in real time
+* Rotation based on drag direction
+
+RIGHT SWIPE:
+
+* Accept
+* Card tilts right
+* Green/gold glow appears
+
+LEFT SWIPE:
+
+* Reject
+* Card tilts left
+* fades out
+
+---
+
+ANIMATION FLOW
+
+* Drag → real-time movement
+* Release → smooth snap or throw
+* Next card slides in from right
+* Previous exits left
+
+Duration:
+0.3–0.5s
+Easing:
+ease-out (not linear)
+
+---
+
+2. CLICK + SWIPE SOUND SYSTEM
+
+Add real tactile feedback.
+
+---
+
+SOUND FILES (add to /public/sounds/):
+
+* click.mp3 (light tap)
+* swipe.mp3 (soft whoosh)
+* select.mp3 (premium confirmation)
+
+---
+
+JS IMPLEMENTATION
+
+```js
+const clickSound = new Audio('/sounds/click.mp3');
+const swipeSound = new Audio('/sounds/swipe.mp3');
+const selectSound = new Audio('/sounds/select.mp3');
+
+export function playClick() {
+  clickSound.currentTime = 0;
+  clickSound.play();
+}
+
+export function playSwipe() {
+  swipeSound.currentTime = 0;
+  swipeSound.play();
+}
+
+export function playSelect() {
+  selectSound.currentTime = 0;
+  selectSound.play();
+}
+```
+
+---
+
+TRIGGER RULES
+
+* Tap → click sound
+* Swipe → swipe sound
+* Final selection → select sound
+
+---
+
+3. SMOOTH MOTION SYSTEM (MANDATORY)
+
+Cards must NEVER snap instantly.
+
+---
+
+CSS
+
+```css
+.card {
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  will-change: transform;
+}
+```
+
+---
+
+JS DRAG LOGIC (concept)
+
+```js
+onDrag = (x) => {
+  setTransform(`translateX(${x}px) rotate(${x * 0.05}deg)`);
+}
+
+onRelease = (x) => {
+  if (x > 120) accept();
+  else if (x < -120) reject();
+  else reset();
+}
+```
+
+---
+
+4. REAL CIGAR IMAGE SYSTEM (THIS IS THE BIG ONE)
+
+STOP using static mapped images.
+
+Pull REAL cigar images dynamically.
+
+---
+
+IMAGE API OPTIONS
+
+Use one:
+
+* Unsplash API
+* Pexels API
+
+---
+
+SEARCH LOGIC
+
+Build search query from user selections:
+
+Example:
+
+```js
+const query = `${wrapper} cigar ${strength} ${size} close up`;
+```
+
+---
+
+MAPPING EXAMPLE
+
+wrapper:
+
+* maduro
+* habano
+* connecticut
+
+strength:
+
+* mild
+* medium
+* full
+
+size:
+
+* robusto
+* toro
+* churchill
+
+---
+
+FETCH IMAGE
+
+```js
+const res = await fetch(`https://api.unsplash.com/search/photos?query=${query}&client_id=API_KEY`);
+const data = await res.json();
+
+setCigarImage(data.results[0].urls.regular);
+```
+
+---
+
+5. LIVE CIGAR PREVIEW (DURING BUILD)
+
+As user selects:
+
+* cigar image updates gradually
+* not just at the end
+
+---
+
+TRANSITION
+
+```css
+.cigar-img {
+  transition: opacity 0.4s ease;
+}
+```
+
+---
+
+6. FINAL REVEAL = REAL PRODUCT
+
+Final screen MUST show:
+
+* Real cigar image from API
+* Correct wrapper tone
+* Correct size shape
+* Positioned with whiskey
+
+---
+
+7. ADD PRODUCT DETAIL PANEL
+
+Right side shows:
+
+* Wrapper: Maduro / Habano / Connecticut
+* Strength: Mild / Medium / Full
+* Size: Toro / Robusto / Churchill
+* Cut: Straight / V-cut / Punch
+* Burn Time: Estimated
+
+---
+
+8. FINAL ANIMATION
+
+When reveal loads:
+
+* screen darkens
+* cigar fades in
+* light sweep across cigar
+* select sound plays
+
+Text:
+
+“Your cigar has been crafted.”
+
+---
+
+9. REMOVE ALL FAKE VISUALS
+
+Delete:
+
+* placeholder cigars
+* static images
+* incorrect flavor images
+
+Replace EVERYTHING with:
+
+* real textures
+* real cigars
+* real materials
+
+---
+
+10. FINAL EXPERIENCE
+
+User must feel:
+
+* they are physically interacting with the system
+* they are shaping something real
+* the result is a real cigar, not a mock
+
+---
+
+FAIL CONDITION
+
+If swipe feels flat OR final cigar looks generic → system is not complete
+
+---

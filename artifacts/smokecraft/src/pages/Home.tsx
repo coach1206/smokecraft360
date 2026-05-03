@@ -88,19 +88,33 @@ const SPIRITS_FLAVORS = [
     image: FLAVOR_IMG("photo-1567306226416-28f0efdc88ce") },                // cherries
 ];
 const STRENGTH_CARDS = [
-  { id: "mild",   title: "Mild",   subtitle: "Strength · Level 1", desc: "Smooth and gentle — perfect for newcomers or a relaxed afternoon" },
-  { id: "medium", title: "Medium", subtitle: "Strength · Level 3", desc: "Balanced character — the classic refined experience"              },
-  { id: "full",   title: "Full",   subtitle: "Strength · Level 5", desc: "Rich and powerful — bold complexity for the experienced"         },
+  { id: "mild",   title: "Mild",   subtitle: "Strength · Level 1",
+    desc: "Smooth and gentle — perfect for newcomers or a relaxed afternoon",
+    image: FLAVOR_IMG("photo-1514329926535-040b69ab1f81") },                // light cigar / soft tone
+  { id: "medium", title: "Medium", subtitle: "Strength · Level 3",
+    desc: "Balanced character — the classic refined experience",
+    image: FLAVOR_IMG("photo-1574966740793-2c5c024ed708") },                // medium habano
+  { id: "full",   title: "Full",   subtitle: "Strength · Level 5",
+    desc: "Rich and powerful — bold complexity for the experienced",
+    image: FLAVOR_IMG("photo-1567015408288-fcd8aac9d76f") },                // dark maduro
 ];
 const MOOD_CARDS = [
-  { id: "relaxed",     title: "Relaxed",     desc: "Smooth and easy — perfect for winding down"              },
-  { id: "bold",        title: "Bold",        desc: "Strong character — full-bodied and powerful"             },
-  { id: "social",      title: "Social",      desc: "Great for sharing and good conversation"                 },
-  { id: "reflective",  title: "Reflective",  desc: "Complex and contemplative — a quiet moment"             },
-  { id: "celebratory", title: "Celebratory", desc: "Special occasion — premium and memorable"               },
-  { id: "focused",     title: "Focused",     desc: "Clean and clear — helps you stay sharp"                 },
-  { id: "adventurous", title: "Adventurous", desc: "Something different — exciting and unique"              },
-  { id: "intense",     title: "Intense",     desc: "Rich and commanding — for the experienced"              },
+  { id: "relaxed",     title: "Relaxed",     desc: "Smooth and easy — perfect for winding down",
+    image: FLAVOR_IMG("photo-1470337458703-46ad1756a187") },                // calm leather lounge
+  { id: "bold",        title: "Bold",        desc: "Strong character — full-bodied and powerful",
+    image: FLAVOR_IMG("photo-1527281400683-1aae777175f8") },                // bold whisky pour
+  { id: "social",      title: "Social",      desc: "Great for sharing and good conversation",
+    image: FLAVOR_IMG("photo-1543007630-9710e4a00a20") },                   // glasses cheers
+  { id: "reflective",  title: "Reflective",  desc: "Complex and contemplative — a quiet moment",
+    image: FLAVOR_IMG("photo-1527169402691-feff5539e52c") },                // moody window
+  { id: "celebratory", title: "Celebratory", desc: "Special occasion — premium and memorable",
+    image: FLAVOR_IMG("photo-1514362545857-3bc16c4c7d1b") },                // champagne pour
+  { id: "focused",     title: "Focused",     desc: "Clean and clear — helps you stay sharp",
+    image: FLAVOR_IMG("photo-1453614512568-c4024d13c247") },                // amber spirit / clean
+  { id: "adventurous", title: "Adventurous", desc: "Something different — exciting and unique",
+    image: FLAVOR_IMG("photo-1551734413-9aa235ea6ba9") },                   // smoky atmosphere
+  { id: "intense",     title: "Intense",     desc: "Rich and commanding — for the experienced",
+    image: FLAVOR_IMG("photo-1569529465841-dfecdab7503b") },                // dark dramatic spirit
 ];
 
 // ── Demo mode preset ──────────────────────────────────────────────────────────

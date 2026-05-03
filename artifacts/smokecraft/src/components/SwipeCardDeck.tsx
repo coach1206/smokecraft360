@@ -162,18 +162,20 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
           isolation: "isolate",
         }}
       >
-        {/* Hero image (top half) — only when image provided */}
+        {/* Hero image (top ~60%) — only when image provided.
+            Larger than v1 so the photo is the dominant element on the card,
+            not a strip. */}
         {item.image && (
           <div
             aria-hidden
             style={{
               position: "absolute",
               top: 0, left: 0, right: 0,
-              height: "46%",
+              height: "58%",
               backgroundImage:    `url(${item.image})`,
               backgroundSize:     "cover",
               backgroundPosition: "center",
-              filter: "saturate(1.05) contrast(1.05)",
+              filter: "saturate(1.08) contrast(1.06)",
               zIndex: 0,
             }}
           />
@@ -186,9 +188,9 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
             style={{
               position: "absolute",
               top: 0, left: 0, right: 0,
-              height: "58%",
+              height: "70%",
               background:
-                "linear-gradient(180deg, rgba(250,241,221,0) 0%, rgba(250,241,221,0.55) 55%, rgba(250,241,221,1) 100%)",
+                "linear-gradient(180deg, rgba(250,241,221,0) 0%, rgba(250,241,221,0.50) 60%, rgba(250,241,221,1) 100%)",
               zIndex: 1,
             }}
           />
@@ -222,7 +224,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
         <p
           style={{
             position: "relative", zIndex: 3,
-            marginTop: item.image ? "44%" : 0,
+            marginTop: item.image ? "54%" : 0,
             fontSize: 11,
             color: "rgba(80,52,12,0.78)",
             letterSpacing: "0.32em",
@@ -286,24 +288,73 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
         {/* Spacer pushes the swipe hint to the bottom of the card */}
         <div style={{ flex: 1 }} />
 
-        {/* Swipe hint */}
+        {/* Swipe hint — larger, more prominent action affordance */}
         <div
           style={{
             position: "relative", zIndex: 3,
             display: "flex",
-            gap: 22,
-            alignItems: "center",
-            color: "rgba(70,42,12,0.55)",
-            fontSize: 11,
-            letterSpacing: "0.20em",
+            gap: 14,
+            alignItems: "stretch",
+            width: "100%",
+            marginTop: 10,
+          }}
+        >
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); swipeLeft(); }}
+            style={{
+              flex: 1,
+              padding: "14px 12px",
+              borderRadius: 12,
+              border: "1.5px solid rgba(130,55,45,0.55)",
+              background: "linear-gradient(135deg, rgba(130,55,45,0.08), rgba(130,55,45,0.02))",
+              color: "rgba(130,55,45,0.95)",
+              fontSize: 13,
+              letterSpacing: "0.20em",
+              textTransform: "uppercase",
+              fontWeight: 700,
+              cursor: "pointer",
+              touchAction: "manipulation",
+            }}
+          >
+            ← {leftLabel}
+          </button>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); swipeRight(); }}
+            style={{
+              flex: 1,
+              padding: "14px 12px",
+              borderRadius: 12,
+              border: `1.5px solid ${item.accent ?? "rgba(184,137,26,0.7)"}`,
+              background: "linear-gradient(135deg, rgba(212,175,55,0.20), rgba(184,137,26,0.10))",
+              color: "#3A2A08",
+              fontSize: 13,
+              letterSpacing: "0.20em",
+              textTransform: "uppercase",
+              fontWeight: 800,
+              cursor: "pointer",
+              boxShadow: "0 4px 14px rgba(184,137,26,0.18)",
+              touchAction: "manipulation",
+            }}
+          >
+            {rightLabel} →
+          </button>
+        </div>
+
+        <p
+          style={{
+            position: "relative", zIndex: 3,
+            marginTop: 6,
+            color: "rgba(70,42,12,0.42)",
+            fontSize: 10,
+            letterSpacing: "0.22em",
             textTransform: "uppercase",
             fontWeight: 600,
           }}
         >
-          <span>← {leftLabel}</span>
-          <div style={{ width: 32, height: 1, background: "rgba(184,137,26,0.4)" }} />
-          <span>{rightLabel} →</span>
-        </div>
+          or swipe the card
+        </p>
       </div>
     </motion.div>
   );
@@ -382,7 +433,19 @@ export function SwipeCardDeck({
   const showStack3 = remaining >= 3;
 
   return (
-    <div style={{ position: "relative", width: "100%", height: 380 }}>
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+        // Fluid card sizing — fills the available column on kiosk while
+        // staying touch-friendly on smaller screens.
+        height: "min(72vh, 580px)",
+        minHeight: 480,
+        maxWidth: 520,
+        marginLeft: "auto",
+        marginRight: "auto",
+      }}
+    >
       {/* Background depth cards */}
       {showStack3 && <StackCard depth={2} />}
       {showStack2 && <StackCard depth={1} />}
