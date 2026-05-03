@@ -17,4 +17,28 @@ title = "premium cigar product shot"
 id = "P-IZr46yyhIgfmokLIEmk"
 uri = "file://artifacts/smokecraft/public/images/whiskey.png"
 type = "image"
-title = "bourbon whiskey glass product shot"
+title = "generated_image"
+
+[[generated]]
+id = "9UiXYkRsCx-6ftPxVvdik"
+uri = "file://artifacts/smokecraft/public/images/cigar1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "kQfKILIGlpGjr6-HyfxXY"
+uri = "file://artifacts/smokecraft/public/images/cigar2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "fkZc57ieIsV3mTOIMJnDM"
+uri = "file://artifacts/smokecraft/public/images/cigar3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ZzqyLYpunB7fNk4BCdxyn"
+uri = "file://artifacts/smokecraft/public/images/cigar4.png"
+type = "image"
+title = "generated_image"
