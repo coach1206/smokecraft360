@@ -1,0 +1,234 @@
+BUILD THE SMOKECRAFT 360 BUSINESS LAYER INCLUDING ADMIN DASHBOARD, INVENTORY MANAGEMENT, PRICING, AND ANALYTICS WITH FULL BACKEND INTEGRATION
+
+---
+
+SYSTEM OVERVIEW
+
+This system must allow lounge owners to:
+
+- manage cigars and whiskey
+- control pricing
+- see customer behavior
+- track performance
+- drive revenue
+
+---
+
+1. DATABASE STRUCTURE
+
+Create the following tables:
+
+---
+
+CIGARS
+
+- id
+- name
+- wrapper_type (maduro, connecticut, habano)
+- strength (mild, medium, full)
+- flavor_notes (array)
+- size (robusto, toro, churchill)
+- image_url
+- price
+- stock_quantity
+- is_active
+
+---
+
+WHISKEY
+
+- id
+- name
+- type (bourbon, scotch, etc)
+- flavor_notes (array)
+- image_url
+- price
+- is_active
+
+---
+
+PAIRINGS
+
+- id
+- cigar_id
+- whiskey_id
+- pairing_score
+- description
+
+---
+
+USER_SESSIONS
+
+- id
+- timestamp
+- selections (json)
+- final_score
+- final_blend_name
+
+---
+
+EVENT_LOG
+
+- id
+- event_type (click, swipe, reveal, order)
+- item_id
+- timestamp
+
+---
+
+---
+
+2. ADMIN AUTH SYSTEM
+
+Create:
+
+POST /api/admin/login  
+→ returns JWT token
+
+Middleware:
+
+- verify admin token on all admin routes
+
+---
+
+3. ADMIN DASHBOARD (FRONTEND)
+
+Route: /admin
+
+Sections:
+
+---
+
+A. CIGAR MANAGEMENT
+
+- add cigar
+- edit cigar
+- upload image
+- set price
+- toggle active/inactive
+
+---
+
+B. WHISKEY MANAGEMENT
+
+- same controls as cigars
+
+---
+
+C. INVENTORY CONTROL
+
+- adjust stock
+- mark out of stock
+- highlight featured items
+
+---
+
+D. ANALYTICS DASHBOARD
+
+Show:
+
+- most selected flavors
+- most viewed cigars
+- top pairings
+- average score
+- session count
+
+---
+
+4. EXPERIENCE → INVENTORY CONNECTION
+
+When user finishes experience:
+
+- match result to real cigar in database
+- match whiskey
+- show:
+
+“Available Now”
+Price
+Stock status
+
+---
+
+5. ORDER / REVENUE FLOW
+
+Add:
+
+ORDER BUTTON:
+
+- creates order record
+- sends request to backend
+- logs event
+
+Optional:
+
+- connect to Stripe later
+
+---
+
+6. PRICING ENGINE (SIMPLE VERSION)
+
+Each product has:
+
+- base price
+- optional markup (admin controlled)
+
+Display:
+
+“House Pairing” → premium price
+
+---
+
+7. ANALYTICS TRACKING
+
+Log events:
+
+- swipe
+- selection
+- reveal
+- order click
+
+Store in EVENT_LOG
+
+---
+
+8. REAL-TIME DATA USAGE
+
+Use analytics to:
+
+- show “Popular Today”
+- show “Top Blend”
+- show comparison stats
+
+---
+
+9. FRONTEND INTEGRATION
+
+All user selections must:
+
+- query database
+- return real cigar
+- return real whiskey
+
+No hardcoded data
+
+---
+
+10. SECURITY
+
+- protect admin routes
+- validate all inputs
+- sanitize data
+
+---
+
+FINAL GOAL
+
+Transform SmokeCraft 360 from:
+
+a visual experience
+
+into:
+
+a revenue-generating, data-driven system for real venues
+
+---
