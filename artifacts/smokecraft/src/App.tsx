@@ -23,6 +23,7 @@ import { OfflineQueueBanner }   from "@/components/Demo/OfflineQueueBanner";
 import { PresentationOverlay }   from "@/components/Presentation/PresentationOverlay";
 import { KioskModeProvider, KioskModeBanner } from "@/contexts/KioskModeContext";
 import BootIntro, { hasSeenBootIntro } from "@/components/BootIntro";
+import GlobalBackButton                from "@/components/Layout/GlobalBackButton";
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,7 @@ function App() {
                   {ready && (
                     <>
                       <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                        <GlobalBackButton />
                         <Router />
                       </WouterRouter>
                       <PresentationOverlay />
