@@ -270,3 +270,9 @@ id = "Dr99pcLenmmQgUkPDv90R"
 uri = "file://attached_assets/locked_cards/vitola_belicoso.png"
 type = "image"
 title = "generated_image"
+
+[[generated]]
+id = "2qGXu3fNhh58c37Q7itMh"
+uri = "file://attached_assets/generated_images/generated_image.png"
+type = "image"
+title = "generated_image"

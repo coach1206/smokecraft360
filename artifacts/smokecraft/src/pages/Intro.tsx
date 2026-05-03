@@ -34,6 +34,11 @@ import { useBrowserSpeech } from "@/hooks/useBrowserSpeech";
 import smokecraftImg from "@assets/locked_cards/experience_smokecraft.png";
 import pourcraftImg  from "@assets/locked_cards/experience_pourcraft.png";
 import vapecraftImg  from "@assets/locked_cards/experience_vapecraft.png";
+/* BrewCraft hero — AI-generated frosty pint of cold lager (37th brief).
+ * Lives outside locked_cards/ because it isn't part of the original
+ * locked photography set; if/when a real photograph is locked, swap the
+ * import path and delete this generated file. */
+import brewcraftImg  from "@assets/generated_images/brewcraft_beer.png";
 
 /**
  * Time-of-day mode for the kiosk. Drives copy + overlay opacity + (when
@@ -160,6 +165,22 @@ const EXPERIENCES: Experience[] = [
     accent:     "#B91C3C",
     gradient:   "linear-gradient(180deg, rgba(40,8,12,0.15) 0%, rgba(40,8,12,0.85) 100%)",
   },
+  /* 37th brief reorder: BrewCraft now sits next to PourCraft (slot 2),
+   * VapeCraft moved to slot 3 (where BrewCraft used to be). Final order
+   * across the row: SmokeCraft · PourCraft · BrewCraft · VapeCraft.
+   * BrewCraft also gets a real hero image now (cold beer in a glass)
+   * instead of the gradient-only placeholder. */
+  {
+    key:        "brewcraft",
+    title:      "BrewCraft 360",
+    descriptor: "Beer · Pairings · Quick",
+    image:      brewcraftImg,
+    accent:     "#E8A04A",
+    /* Lighter top-of-card gradient lets the foam + glass read clearly;
+     * heavier bottom keeps the title legible over the dark bar bokeh. */
+    gradient:
+      "linear-gradient(180deg, rgba(20,12,4,0.10) 0%, rgba(20,12,4,0.85) 100%)",
+  },
   {
     key:        "vapecraft",
     title:      "VapeCraft 360",
@@ -167,21 +188,6 @@ const EXPERIENCES: Experience[] = [
     image:      vapecraftImg,
     accent:     "#7DD3FC",
     gradient:   "linear-gradient(180deg, rgba(8,18,32,0.15) 0%, rgba(8,18,32,0.85) 100%)",
-  },
-  /* BrewCraft restored per 36th brief: user wants it visible in the
-   * portal, not hidden. The 35th-brief removal was reverted. Visibility
-   * is now solved by the grid (see below) — 4 cards fit on one row at
-   * desktop/kiosk widths, so BrewCraft no longer wraps to an off-screen
-   * second row. Still uses a CSS-only amber gradient hero (no photo
-   * asset locked yet); swap `image` to a real PNG when ready. */
-  {
-    key:        "brewcraft",
-    title:      "BrewCraft 360",
-    descriptor: "Beer · Pairings · Quick",
-    image:      "",
-    accent:     "#E8A04A",
-    gradient:
-      "linear-gradient(180deg, rgba(232,160,74,0.45) 0%, rgba(120,60,18,0.65) 50%, rgba(20,10,4,0.92) 100%)",
   },
 ];
 
