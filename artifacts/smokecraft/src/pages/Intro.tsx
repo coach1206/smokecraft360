@@ -11,9 +11,11 @@
  * so this page only needs to navigate by slug.
  */
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
+
+const SPLASH_DURATION_MS = 2500;
 
 type ThemeKey = "smokecraft" | "pourcraft" | "vapecraft";
 
@@ -83,8 +85,16 @@ function useClickSound() {
 
 export default function Intro() {
   const [, navigate]       = useLocation();
+  const [stage, setStage]  = useState<"splash" | "select">("splash");
   const [selected, setSel] = useState<ThemeKey | null>(null);
   const playClick          = useClickSound();
+
+  // Splash → select transition. Cleanup on unmount so a fast back-nav
+  // can't fire setStage on a torn-down component.
+  useEffect(() => {
+    const t = window.setTimeout(() => setStage("select"), SPLASH_DURATION_MS);
+    return () => window.clearTimeout(t);
+  }, []);
 
   const onPick = (key: ThemeKey) => {
     if (selected) return;
@@ -110,6 +120,72 @@ export default function Intro() {
         padding: "5vh 4vw",
       }}
     >
+      {/* Splash — "PROFOUND INNOVATION" brand reveal before the selector */}
+      <AnimatePresence>
+        {stage === "splash" && (
+          <motion.div
+            key="splash"
+            data-testid="intro-splash"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 1.04, filter: "blur(8px)" }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              position: "fixed", inset: 0, zIndex: 60,
+              display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center",
+              background: "#0a0604",
+              backgroundImage:
+                "radial-gradient(ellipse at center, rgba(60,30,10,0.5), transparent 65%)," +
+                "linear-gradient(135deg, rgba(8,4,2,0.95), rgba(2,2,6,0.98))",
+              color: "#F5EBDD", textAlign: "center",
+            }}
+          >
+            <motion.h1
+              initial={{ opacity: 0, y: 20, letterSpacing: "0.2em" }}
+              animate={{ opacity: 1, y: 0, letterSpacing: "0.32em" }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                fontFamily: "var(--app-font-serif, Georgia, serif)",
+                fontSize: "clamp(36px, 5vw, 56px)",
+                fontWeight: 600,
+                margin: 0,
+                background: "linear-gradient(180deg, #F5EBDD 0%, #D4AF37 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor:  "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              PROFOUND INNOVATION
+            </motion.h1>
+            <motion.h2
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 0.7, y: 0 }}
+              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
+              style={{
+                marginTop: 18,
+                fontSize: "clamp(16px, 1.6vw, 22px)",
+                letterSpacing: "0.55em",
+                fontWeight: 300,
+                color: "rgba(212,175,55,0.85)",
+              }}
+            >
+              P.I
+            </motion.h2>
+            {/* Hairline accent under the wordmark */}
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 120, opacity: 1 }}
+              transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1], delay: 0.8 }}
+              style={{
+                marginTop: 28, height: 1,
+                background: "linear-gradient(90deg, transparent, #D4AF37, transparent)",
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Headline */}
       <motion.header
         initial={{ opacity: 0, y: -16 }}
