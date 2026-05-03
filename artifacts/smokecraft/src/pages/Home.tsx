@@ -439,10 +439,15 @@ export default function Home() {
   };
 
   const handleReveal = useCallback(() => {
-    // Build-up tone followed by success chime
-    playTone(280, 560, 0.45, 0.05, "sine");
-    setTimeout(() => playChime(), 480);
-    setTimeout(() => { setPhase("results"); recordSession(); }, 620);
+    /* Cinematic build-up — the previous timing (620 ms) made guests miss
+     * their own reveal. Now: a held low tone, a mid swell, the chime, then
+     * the phase swap ~1.25 s in so the locked gate has time to "exhale"
+     * and the eye is primed for the unfolding sequence on the results screen.
+     */
+    playTone(220, 700, 0.40, 0.05, "sine");
+    setTimeout(() => playTone(440, 480, 0.32, 0.04, "sine"), 380);
+    setTimeout(() => playChime(),                              900);
+    setTimeout(() => { setPhase("results"); recordSession(); }, 1250);
   }, [playTone, playChime, recordSession]);
 
   const handleSwipe = (direction: "left" | "right", productId: string) => {
@@ -1339,18 +1344,34 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.96, filter: "blur(10px)" }}
               animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
               className="flex flex-col flex-1 w-full"
               style={{ position: "relative" }}
             >
+              {/* Curtain lift — a near-black overlay that fades out over the
+                  first ~1.5 s so the reveal feels like a stage lighting up
+                  instead of an instant page swap. Pointer-events: none so it
+                  never blocks taps. */}
+              <motion.div
+                aria-hidden
+                initial={{ opacity: 1 }}
+                animate={{ opacity: 0 }}
+                transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  position: "absolute", inset: 0,
+                  background: "radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.92) 80%)",
+                  pointerEvents: "none", zIndex: 6,
+                }}
+              />
               {/* Light-sweep overlay — fires once on reveal entry. A diagonal
                   gold gleam crosses the panel, like sunlight catching a glass
-                  bottle, then fades. Pure CSS gradient, GPU-only transform. */}
+                  bottle, then fades. Pure CSS gradient, GPU-only transform.
+                  Slowed to 2.4 s so the eye actually catches it. */}
               <motion.div
                 aria-hidden
                 initial={{ x: "-120%", opacity: 0 }}
                 animate={{ x: "120%",  opacity: [0, 0.85, 0] }}
-                transition={{ delay: 0.15, duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ delay: 0.6, duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
                 style={{
                   position: "absolute", top: 0, left: 0, right: 0, height: 360,
                   pointerEvents: "none", zIndex: 5, mixBlendMode: "screen",
@@ -1360,7 +1381,7 @@ export default function Home() {
                 }}
               />
               <motion.div className="mb-8 text-center"
-                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }}>
+                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.9 }}>
                 <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.32em", textTransform: "uppercase", color: "rgba(212,175,55,0.65)", marginBottom: 8 }}>
                   Step 7 of 7
                   {isDemoMode && <span style={{ marginLeft: 12, color: "rgba(212,175,55,0.50)" }}>· Demo</span>}
@@ -1377,7 +1398,7 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 14, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0,  scale: 1    }}
-                transition={{ delay: 0.45, duration: 0.7, ease: [0.22,1,0.36,1] }}
+                transition={{ delay: 1.3, duration: 0.9, ease: [0.22,1,0.36,1] }}
                 style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 18, marginBottom: 28 }}
               >
                 <motion.div
@@ -1415,7 +1436,7 @@ export default function Home() {
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${m.v}%` }}
-                          transition={{ delay: 0.7, duration: 0.95, ease: [0.22,1,0.36,1] }}
+                          transition={{ delay: 1.7, duration: 1.1, ease: [0.22,1,0.36,1] }}
                           style={{ height: "100%", background: "linear-gradient(90deg, rgba(180,130,30,0.85), rgba(245,205,90,0.95))" }}
                         />
                       </div>
@@ -1479,7 +1500,7 @@ export default function Home() {
                   <motion.div
                     initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0  }}
-                    transition={{ delay: 0.85, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ delay: 2.4, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                     style={{
                       display: "flex", justifyContent: "center", flexWrap: "wrap",
                       gap: 14, marginBottom: 22, padding: "16px 18px",
