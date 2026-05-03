@@ -1,0 +1,258 @@
+UPGRADE BOTH SMOKECRAFT 360 AND POURCRAFT 360 INTO A UNIFIED PREMIUM SYSTEM WITH REAL, MEANINGFUL IMAGES, LARGER READABLE TEXT, AND FULL INTERACTIVE FEEDBACK ACROSS CARDS AND SIDE PANELS
+
+---
+
+CORE RULE
+
+If the user has to guess what something means → the system failed
+If the user can SEE + FEEL it instantly → system is correct
+
+---
+
+1. FIX ALL CARD IMAGES (SMOKECRAFT + POURCRAFT)
+
+Every card MUST use a real image that directly represents what it is describing.
+
+---
+
+SMOKECRAFT (CIGAR SIDE)
+
+Use ONLY:
+
+* tobacco leaves
+* cigar wrappers
+* cedar wood
+* cocoa beans
+* leather
+* smoke / ember
+
+NO:
+
+* fruit (like watermelon)
+* random scenery
+* generic lifestyle photos
+
+---
+
+POURCRAFT (DRINK SIDE)
+
+Use ONLY:
+
+* real cocktails
+* whiskey pours
+* ice + glass textures
+* citrus garnish (when relevant)
+* herbs (mint, rosemary)
+
+---
+
+EXAMPLES:
+
+Sweet → honey, caramel, sugar
+Smoky → charred wood, smoked glass
+Citrus → orange peel, lemon twist
+Bold → dark whiskey glass
+
+---
+
+RULE:
+
+Image must match flavor EXPERIENCE, not literal food randomness
+
+---
+
+2. CARD SIZE + VISUAL IMPACT
+
+Increase card size:
+
+* width: 420–520px
+* height: 480–600px
+
+Image must occupy:
+👉 60% of the card
+
+Text area:
+👉 bottom 40%
+
+---
+
+3. FONT SIZE FIX (CRITICAL FOR 35–75 USERS)
+
+Update globally:
+
+* Titles: 28–34px
+* Card labels: 20–24px
+* Descriptions: 18–20px
+* Sidebar text: 16–18px minimum
+
+NO small text anywhere
+
+---
+
+4. RIGHT PANEL FIX (CURRENTLY TOO DARK + DEAD)
+
+Make right panel ACTIVE.
+
+---
+
+VISUAL FIX
+
+* lighten background slightly (not pure black)
+* add soft gradient
+* increase contrast
+
+---
+
+INTERACTION FIX
+
+When user clicks or selects:
+
+* panel updates instantly
+* selected item glows
+* text animates in (fade + slide up)
+
+---
+
+CSS
+
+```css
+.right-panel {
+  background: rgba(20,15,10,0.85);
+  backdrop-filter: blur(10px);
+}
+
+.active-selection {
+  box-shadow: 0 0 20px rgba(212,175,55,0.6);
+  transform: scale(1.02);
+}
+```
+
+---
+
+5. RIGHT PANEL CONTENT (MAKE IT USEFUL)
+
+Must display clearly:
+
+* Selected cigar / drink name
+* Flavor notes
+* Strength / intensity
+* Pairing suggestion
+* Visual tags
+
+---
+
+ADD:
+
+“Why this works” section
+
+---
+
+6. CLICK = RESPONSE (EVERYWHERE)
+
+Every click must:
+
+* scale slightly (0.94)
+* glow briefly
+* play sound
+
+---
+
+NO DEAD UI
+
+---
+
+7. POURCRAFT MUST MATCH SMOKECRAFT
+
+Right now they feel different.
+
+Fix:
+
+* same card style
+* same animation timing
+* same font scale
+* same interaction behavior
+
+---
+
+8. IMAGE QUALITY STANDARD
+
+ALL images must be:
+
+* high resolution
+* warm lighting
+* premium feel
+* consistent color tone
+
+---
+
+SEARCH TERMS
+
+Cigar:
+“premium cigar close up wood table warm light”
+
+Drink:
+“bourbon glass ice amber cinematic lighting”
+
+---
+
+9. FINAL RESULT SCREEN (BOTH SYSTEMS)
+
+Must show:
+
+CENTER:
+
+* real cigar OR drink
+
+RIGHT:
+
+* full breakdown
+
+---
+
+ADD:
+
+* size (cigar: toro, robusto, churchill)
+* cut type
+* drink style (neat, on rocks, cocktail)
+
+---
+
+10. FINAL INTERACTION MOMENT
+
+When result loads:
+
+* glow pulse
+* sound cue
+* text:
+
+“Your experience is ready.”
+
+---
+
+11. REMOVE ALL WEAK ELEMENTS
+
+Delete:
+
+* emojis
+* small unreadable text
+* random images
+* flat cards
+
+---
+
+FINAL GOAL
+
+User should feel:
+
+* this is premium
+* this is interactive
+* this is clear
+* this is worth exploring
+
+NOT:
+
+* confusing
+* inconsistent
+* dull
+
+---

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, animate, useMotionValue, useTransform } from "framer-motion";
+import { playClick, playSwipe, playSelect } from "../services/sound";
 
 export interface SwipeCardItem {
   id:       string;
@@ -51,12 +52,14 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
   function swipeRight() {
     if (exiting.current) return;
     exiting.current = true;
+    playSelect();                                                  // accept chime
     animate(x, 680, { duration: 0.32, ease: [0.4, 0, 1, 1] }).then(onSwipeRight);
   }
 
   function swipeLeft() {
     if (exiting.current) return;
     exiting.current = true;
+    playSwipe();                                                   // skip whoosh
     animate(x, -680, { duration: 0.32, ease: [0.4, 0, 1, 1] }).then(onSwipeLeft);
   }
 
@@ -301,7 +304,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
         >
           <button
             type="button"
-            onClick={(e) => { e.stopPropagation(); swipeLeft(); }}
+            onClick={(e) => { e.stopPropagation(); playClick(); swipeLeft(); }}
             style={{
               flex: 1,
               padding: "14px 12px",
@@ -321,7 +324,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
           </button>
           <button
             type="button"
-            onClick={(e) => { e.stopPropagation(); swipeRight(); }}
+            onClick={(e) => { e.stopPropagation(); playClick(); swipeRight(); }}
             style={{
               flex: 1,
               padding: "14px 12px",
