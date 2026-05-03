@@ -19,6 +19,8 @@ const SPLASH_DURATION_MS  = 3200;
 const LETTER_INTERVAL_MS  = 60;
 const STARTUP_CHIME_DELAY = 1200;
 const SPLASH_TITLE        = "PROFOUND INNOVATION";
+const IDLE_THRESHOLD_MS   = 8000;   // no input for 8s on the selector → attract mode
+const DEMO_CYCLE_MS       = 2500;   // attract-mode card highlight cadence
 
 type ThemeKey = "smokecraft" | "pourcraft" | "vapecraft";
 
@@ -121,7 +123,63 @@ export default function Intro() {
   const [stage, setStage]      = useState<"splash" | "select">("splash");
   const [selected, setSel]     = useState<ThemeKey | null>(null);
   const [letters, setLetters]  = useState(0);
+  const [isIdle, setIsIdle]    = useState(false);
+  const [attractIdx, setAttractIdx] = useState(0);
   const playClick              = useClickSound();
+
+  // Refs for the idle countdown + demo cycle so handlers can reset them
+  // without re-creating closures.
+  const idleTimerRef = useRef<number | null>(null);
+  const demoTimerRef = useRef<number | null>(null);
+
+  // Attract-mode lifecycle: starts after the splash, resets on any user
+  // input, and dims/cycles cards once IDLE_THRESHOLD_MS elapses with no
+  // interaction. Only active on the select stage and never while a card
+  // selection is in flight (selected !== null).
+  useEffect(() => {
+    if (stage !== "select" || selected) return;
+
+    const stopDemo = () => {
+      if (demoTimerRef.current !== null) {
+        window.clearInterval(demoTimerRef.current);
+        demoTimerRef.current = null;
+      }
+    };
+    const startDemo = () => {
+      stopDemo();
+      let i = 0;
+      setAttractIdx(i);
+      demoTimerRef.current = window.setInterval(() => {
+        i = (i + 1) % EXPERIENCES.length;
+        setAttractIdx(i);
+      }, DEMO_CYCLE_MS);
+    };
+    const armIdle = () => {
+      if (idleTimerRef.current !== null) window.clearTimeout(idleTimerRef.current);
+      idleTimerRef.current = window.setTimeout(() => {
+        setIsIdle(true);
+        startDemo();
+      }, IDLE_THRESHOLD_MS);
+    };
+    const onActivity = () => {
+      setIsIdle(false);
+      stopDemo();
+      armIdle();
+    };
+
+    armIdle();
+    window.addEventListener("pointerdown", onActivity);
+    window.addEventListener("keydown",     onActivity);
+    window.addEventListener("touchstart",  onActivity, { passive: true });
+
+    return () => {
+      if (idleTimerRef.current !== null) window.clearTimeout(idleTimerRef.current);
+      stopDemo();
+      window.removeEventListener("pointerdown", onActivity);
+      window.removeEventListener("keydown",     onActivity);
+      window.removeEventListener("touchstart",  onActivity);
+    };
+  }, [stage, selected]);
 
   // Splash sequence: letter-by-letter reveal + ambient bed + startup chime
   // + stage transition. All cleanups run on unmount to avoid lingering audio
@@ -306,9 +364,11 @@ export default function Intro() {
           alignItems: "stretch",
         }}
       >
-        {EXPERIENCES.map((exp) => {
-          const isSel   = selected === exp.key;
-          const isOther = selected !== null && !isSel;
+        {EXPERIENCES.map((exp, i) => {
+          const isSel       = selected === exp.key;
+          const isOther     = selected !== null && !isSel;
+          const isAttractOn = isIdle && !selected;
+          const isAttractMe = isAttractOn && i === attractIdx;
           return (
             <motion.button
               key={exp.key}
@@ -320,7 +380,8 @@ export default function Intro() {
               animate={{
                 opacity: isOther ? 0 : 1,
                 y:       0,
-                scale:   isSel ? 1.04 : 1,
+                scale:   isSel ? 1.04 : isAttractMe ? 1.02 : isAttractOn ? 0.95 : 1,
+                filter:  isAttractOn ? (isAttractMe ? "brightness(1.1)" : "brightness(0.55)") : "brightness(1)",
               }}
               whileHover={selected ? undefined : { scale: 1.02 }}
               whileTap={selected ? undefined : { scale: 0.96 }}
@@ -407,6 +468,34 @@ export default function Intro() {
           );
         })}
       </div>
+
+      {/* Attract-mode "TAP TO BEGIN" pulse — appears after IDLE_THRESHOLD_MS
+          of no interaction on the selector. Disappears on any input. */}
+      <AnimatePresence>
+        {isIdle && !selected && stage === "select" && (
+          <motion.div
+            key="attract-pulse"
+            data-testid="intro-attract-pulse"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: [0.4, 1, 0.4], y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{
+              opacity: { duration: 1.6, repeat: Infinity, ease: "easeInOut" },
+              y:       { duration: 0.5 },
+            }}
+            style={{
+              position: "fixed", left: 0, right: 0, bottom: "6vh",
+              textAlign: "center", pointerEvents: "none",
+              fontSize: "clamp(14px, 1.4vw, 18px)",
+              letterSpacing: "0.4em", textTransform: "uppercase",
+              color: "#D4AF37", zIndex: 40,
+              textShadow: "0 0 24px rgba(212,175,55,0.45)",
+            }}
+          >
+            Tap to Begin
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Selection lock overlay — fades the whole screen as we navigate. */}
       <AnimatePresence>
