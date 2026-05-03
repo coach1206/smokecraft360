@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
-  ArrowLeft, TrendingUp, Package, Sparkles, Zap, Plus, CalendarClock, AlertTriangle,
+  ArrowLeft, TrendingUp, Package, Sparkles, Zap, Plus, CalendarClock, AlertTriangle, FileLock,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
   Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown, Award, Gift, Monitor, Activity,
 } from "lucide-react";
@@ -25,6 +25,7 @@ import { OsTab }                     from "@/components/Dashboard/OsTab";
 import { NewProductForm }            from "@/components/Dashboard/NewProductForm";
 import { ReservationsTab }           from "@/components/Dashboard/ReservationsTab";
 import { ConflictsTab }              from "@/components/Dashboard/ConflictsTab";
+import { IpVaultTab }                from "@/components/Dashboard/IpVaultTab";
 import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
   type InventoryItem, type AnalyticsSummary,
@@ -37,13 +38,14 @@ import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
-type DashTab = "overview" | "products" | "reservations" | "conflicts" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os";
+type DashTab = "overview" | "products" | "reservations" | "conflicts" | "ip-vault" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os";
 
-const TABS: { id: DashTab; label: string; icon: React.ReactNode }[] = [
+const TABS: { id: DashTab; label: string; icon: React.ReactNode; superAdminOnly?: boolean }[] = [
   { id: "overview",     label: "Overview",              icon: <BarChart3 size={12} />    },
   { id: "products",     label: "Products",              icon: <Package size={12} />      },
   { id: "reservations", label: "Reservations",          icon: <CalendarClock size={12} /> },
   { id: "conflicts",    label: "Conflicts",             icon: <AlertTriangle size={12} /> },
+  { id: "ip-vault",     label: "IP Vault",              icon: <FileLock size={12} />, superAdminOnly: true },
   { id: "brands",       label: "Brands & Distributors", icon: <Building2 size={12} />    },
   { id: "campaigns",    label: "Campaigns",             icon: <Zap size={12} />          },
   { id: "insights",     label: "Brand Insights",        icon: <TrendingUp size={12} />   },
@@ -292,7 +294,7 @@ export default function Dashboard() {
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                 <div className="flex gap-1 p-1 rounded-xl w-fit"
                   style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                  {TABS.map((tab) => (
+                  {TABS.filter((t) => !t.superAdminOnly || user?.role === "super_admin").map((tab) => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                       className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[10px] uppercase tracking-[0.15em] transition-all duration-200 whitespace-nowrap"
                       style={activeTab === tab.id
@@ -402,6 +404,14 @@ export default function Dashboard() {
 
                 {/* ── Conflicts tab ──────────────────────────────────────────── */}
                 {activeTab === "conflicts" && <ConflictsTab />}
+
+                {/* ── IP Vault tab (super_admin only) ────────────────────────── */}
+                {activeTab === "ip-vault" && user?.role === "super_admin" && <IpVaultTab />}
+                {activeTab === "ip-vault" && user?.role !== "super_admin" && (
+                  <div className="text-center py-16 text-sm" style={{ color: "rgba(180,155,100,0.6)" }}>
+                    The IP Vault is restricted to <span className="text-emerald-300">super_admin</span> accounts.
+                  </div>
+                )}
 
                 {/* ── Brands & Distributors tab ──────────────────────────────── */}
                 {activeTab === "brands" && (

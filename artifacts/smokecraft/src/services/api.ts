@@ -507,6 +507,86 @@ export async function updateReservationStatus(
   return res.json();
 }
 
+// ── IP Vault + NDA ────────────────────────────────────────────────────────────
+
+export type IpAssetKind   = "spec" | "design" | "code" | "trademark" | "doc" | "other";
+export type IpAssetStatus = "draft" | "registered" | "disputed" | "retired";
+
+export interface IpAsset {
+  id:           string;
+  title:        string;
+  kind:         IpAssetKind;
+  description:  string | null;
+  fileUrl:      string | null;
+  fileHash:     string | null;
+  authorship:   string | null;
+  status:       IpAssetStatus;
+  registeredAt: string | null;
+  registeredBy: string | null;
+  notes:        string | null;
+  retiredAt:    string | null;
+  createdBy:    string;
+  createdAt:    string;
+  updatedAt:    string;
+}
+
+export interface NdaStatus { signed: boolean; signedAt: string | null; name: string | null }
+
+async function jsonOrThrow<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as Record<string, unknown>;
+    const e = new Error((err["error"] as string) ?? `HTTP ${res.status}`);
+    (e as Error & { status?: number; payload?: unknown }).status = res.status;
+    (e as Error & { status?: number; payload?: unknown }).payload = err;
+    throw e;
+  }
+  return res.json();
+}
+
+export async function fetchNdaStatus(): Promise<NdaStatus> {
+  const res = await fetch("/api/nda/me", { headers: getAuthHeaders() });
+  return jsonOrThrow<NdaStatus>(res);
+}
+export async function signNda(name: string): Promise<NdaStatus> {
+  const res = await fetch("/api/nda/sign", {
+    method: "POST", headers: getAuthHeaders(), body: JSON.stringify({ name }),
+  });
+  return jsonOrThrow<NdaStatus>(res);
+}
+
+export async function fetchIpAssets(opts: { status?: IpAssetStatus; includeRetired?: boolean } = {}): Promise<IpAsset[]> {
+  const qs = new URLSearchParams();
+  if (opts.status) qs.set("status", opts.status);
+  if (opts.includeRetired) qs.set("includeRetired", "true");
+  const res = await fetch(`/api/ip-vault${qs.toString() ? "?" + qs : ""}`, { headers: getAuthHeaders() });
+  const data = await jsonOrThrow<{ assets: IpAsset[] }>(res);
+  return data.assets;
+}
+export async function createIpAsset(input: {
+  title: string; kind: IpAssetKind; description?: string;
+  fileUrl?: string; fileHash?: string; authorship?: string; notes?: string;
+}): Promise<IpAsset> {
+  const res = await fetch("/api/ip-vault", {
+    method: "POST", headers: getAuthHeaders(), body: JSON.stringify(input),
+  });
+  return jsonOrThrow<IpAsset>(res);
+}
+export async function registerIpAsset(id: string): Promise<IpAsset> {
+  const res = await fetch(`/api/ip-vault/${id}/register`, { method: "POST", headers: getAuthHeaders() });
+  return jsonOrThrow<IpAsset>(res);
+}
+export async function updateIpAsset(id: string, patch: Partial<{ title: string; description: string | null; status: IpAssetStatus; notes: string | null; fileUrl: string | null; fileHash: string | null; authorship: string | null }>): Promise<IpAsset> {
+  const res = await fetch(`/api/ip-vault/${id}`, {
+    method: "PATCH", headers: getAuthHeaders(), body: JSON.stringify(patch),
+  });
+  return jsonOrThrow<IpAsset>(res);
+}
+export async function retireIpAsset(id: string): Promise<IpAsset> {
+  const res = await fetch(`/api/ip-vault/${id}`, { method: "DELETE", headers: getAuthHeaders() });
+  const data = await jsonOrThrow<{ ok: true; asset: IpAsset }>(res);
+  return data.asset;
+}
+
 // ── Data conflicts ────────────────────────────────────────────────────────────
 
 export type ConflictStatus     = "open" | "resolved" | "dismissed";

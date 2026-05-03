@@ -31,6 +31,7 @@ export * from "./notifications";
 export * from "./auditLog";
 export * from "./reservations";
 export * from "./dataConflicts";
+export * from "./ipAssets";
 export * from "./themeProfiles";
 export * from "./featureFlags";
 export * from "./commissionReversals";

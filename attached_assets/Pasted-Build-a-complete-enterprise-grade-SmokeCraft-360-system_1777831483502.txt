@@ -1,0 +1,363 @@
+Build a complete enterprise-grade SmokeCraft 360 system.
+
+Stack:
+React + Vite (frontend)
+Node.js + Express + TypeScript (backend)
+PostgreSQL + Drizzle ORM (database)
+JWT authentication
+Zod validation
+
+This system must be fully functional, not a mockup.
+
+==================================================
+UI / UX REQUIREMENTS
+==================================================
+
+- Glassmorphism UI (blur + transparency)
+- Deep layered animated cards (no flat cards)
+- Smooth transitions between pages
+- Touchscreen optimized layout (tablet/kiosk)
+- Large responsive buttons
+- Active sliders, faders, toggles
+- Clean, high-contrast typography
+- Premium cigar lounge visuals (no clipart)
+- Dark luxury theme with gold accents
+
+Every page MUST include:
+- Back button (functional)
+- Home button (functional)
+
+==================================================
+CORE ROUTES
+==================================================
+
+/admin
+/admin/vendors
+/admin/venues
+/admin/products
+/admin/inventory
+/admin/orders
+/admin/finance
+/admin/contracts
+/admin/integrations
+/admin/conflicts
+/admin/exports
+/admin/updates
+/admin/system-health
+/admin/loyalty
+/admin/competition
+/admin/hardware
+/admin/help
+
+/vendor/dashboard
+/vendor/products
+/vendor/inventory
+/vendor/orders
+/vendor/help
+
+/venue/dashboard
+/venue/inventory
+/venue/orders
+/venue/help
+
+/kiosk/start
+/kiosk/session
+/kiosk/reset
+
+/demo/nda
+/demo/session
+
+==================================================
+DATABASE TABLES
+==================================================
+
+users
+vendors
+venues
+products
+inventory
+orders
+order_items
+commission_rules
+commission_ledger
+payout_requests
+refunds
+disputes
+contracts
+contract_signatures
+nda_signatures
+integrations
+integration_logs
+distributors
+conflicts
+export_logs
+update_packages
+audit_logs
+offline_queue
+ai_events
+kiosk_sessions
+loyalty
+competition
+hardware
+help_articles
+user_guides
+onboarding_steps
+
+==================================================
+DATA OWNERSHIP ENGINE
+==================================================
+
+Track for every record:
+
+sourceType (admin, vendor, venue, pos, distributor)
+priorityLevel
+version
+lastUpdatedBy
+
+Rules:
+Admin override wins
+POS controls quantity if enabled
+Distributor controls catalog if authorized
+Vendor controls price unless locked
+
+==================================================
+CONFLICT RESOLUTION ENGINE
+==================================================
+
+Detect:
+price mismatch
+inventory mismatch
+duplicate product
+
+Admin UI must allow:
+Use A
+Use B
+Dismiss
+
+==================================================
+FINANCIAL ENGINE
+==================================================
+
+Handle:
+platform commission
+venue share
+vendor payout
+
+Include:
+payout approval
+refund handling
+dispute freeze
+
+==================================================
+CONTRACT + NDA SYSTEM
+==================================================
+
+Contracts:
+vendor
+venue
+distributor
+
+NDA:
+User must sign before demo
+
+Store signature, timestamp
+
+==================================================
+COMPLIANCE
+==================================================
+
+- Age verification gate
+- Region restriction placeholder
+- Restricted product rules
+
+==================================================
+OFFLINE MODE
+==================================================
+
+Store locally:
+orders
+inventory changes
+
+Sync when online
+
+==================================================
+KIOSK MODE
+==================================================
+
+- Auto reset
+- Session timeout
+- Locked admin
+- Touch UI
+
+==================================================
+INTEGRATION HUB
+==================================================
+
+Connectors:
+
+SquareConnector
+ToastConnector
+CloverConnector
+
+Functions:
+connect
+sync
+status
+
+==================================================
+EXPORT SYSTEM
+==================================================
+
+Export:
+vendors
+products
+inventory
+orders
+
+CSV + JSON
+
+==================================================
+UPDATE SYSTEM
+==================================================
+
+Upload
+validate
+apply
+rollback
+
+==================================================
+AI LEARNING
+==================================================
+
+Track:
+clicks
+orders
+preferences
+
+Adjust recommendation weights
+
+==================================================
+LOYALTY + COMPETITION
+==================================================
+
+Points system
+Leaderboard
+
+==================================================
+HARDWARE SYSTEM
+==================================================
+
+Track devices:
+tablets
+kiosks
+
+==================================================
+SECURITY
+==================================================
+
+JWT auth
+RBAC
+rate limiting
+audit logs
+
+==================================================
+SYSTEM HEALTH
+==================================================
+
+Show:
+DB status
+API status
+sync status
+
+==================================================
+🔥 BUILT-IN INSTRUCTION MANUAL SYSTEM (CRITICAL)
+==================================================
+
+Create FULL HELP CENTER INSIDE APP
+
+Routes:
+
+/admin/help
+/vendor/help
+/venue/help
+
+Each role must have full instruction articles written in paragraphs (NOT bullet points).
+
+Store in database:
+
+help_articles:
+id
+title
+role (admin/vendor/venue)
+content (FULL paragraph instructions)
+createdAt
+
+user_guides:
+step-by-step guides
+
+onboarding_steps:
+guided walkthrough flow
+
+==================================================
+HELP CONTENT REQUIREMENTS (WRITE FULL TEXT)
+==================================================
+
+System must generate full instructional text for:
+
+- How to use dashboard
+- How to add products
+- How to manage inventory
+- How to resolve conflicts
+- How to use integrations
+- How payments work
+- How offline mode works
+- How kiosk works
+- How to export reports
+- How to apply updates
+
+Each article must be written in full paragraphs, human-readable, not outline format.
+
+Tone:
+clear
+professional
+instructional
+step-by-step explanation
+
+==================================================
+ONBOARDING SYSTEM
+==================================================
+
+When user logs in first time:
+
+Guide them through:
+
+1. Add product
+2. Add inventory
+3. Activate product
+4. Test kiosk flow
+
+==================================================
+SEED DATA
+==================================================
+
+Create:
+1 admin
+2 vendors
+2 venues
+10 products
+inventory
+orders
+
+==================================================
+FINAL DELIVERY
+==================================================
+
+After build, provide:
+
+Full code
+File tree
+Run instructions
+Env variables
+DB setup
+Testing checklist
+System explanation

@@ -22,6 +22,10 @@ export const usersTable = pgTable("users", {
   venueId:      uuid("venue_id"),
   score:        integer("score").notNull().default(0),
   level:        userLevelEnum("level").notNull().default("standard"),
+  /** NDA — set on first acceptance; required to view the IP-vault tab. */
+  ndaSignedAt:  timestamp("nda_signed_at", { withTimezone: true }),
+  ndaSignatureName: text("nda_signature_name"),
+  ndaSignatureIp:   text("nda_signature_ip"),
   createdAt:    timestamp("created_at").notNull().defaultNow(),
 });
 
