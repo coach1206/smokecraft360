@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface BgState { filter: string; tint: string }
 
@@ -28,47 +28,75 @@ const BG: Record<string, BgState> = {
   strength_mild:        { filter: "brightness(0.80) saturate(0.82) hue-rotate(-5deg)",  tint: "rgba(22,16,10,0.36)" },
   strength_medium:      { filter: "brightness(0.56) saturate(1.0)",                     tint: "rgba(20,12,5,0.52)"  },
   strength_full:        { filter: "brightness(0.34) saturate(1.55)",                    tint: "rgba(10,4,1,0.74)"   },
-  mood_relaxed:         { filter: "brightness(0.55) saturate(0.88)",                    tint: "rgba(20,14,8,0.56)"  },
-  mood_bold:            { filter: "brightness(0.36) saturate(1.65)",                    tint: "rgba(12,4,1,0.72)"   },
-  mood_social:          { filter: "brightness(0.68) saturate(1.08)",                    tint: "rgba(22,15,8,0.46)"  },
-  mood_reflective:      { filter: "brightness(0.26) saturate(0.70)",                    tint: "rgba(8,6,4,0.80)"    },
-  mood_celebratory:     { filter: "brightness(0.72) saturate(1.28) hue-rotate(5deg)",   tint: "rgba(25,18,8,0.42)"  },
-  mood_focused:         { filter: "brightness(0.44) saturate(0.85)",                    tint: "rgba(14,10,6,0.62)"  },
-  mood_adventurous:     { filter: "brightness(0.52) saturate(1.4) hue-rotate(8deg)",    tint: "rgba(15,8,3,0.60)"   },
-  mood_intense:         { filter: "brightness(0.26) saturate(1.75)",                    tint: "rgba(8,3,1,0.80)"    },
-  results:              { filter: "brightness(0.34) saturate(1.2)",                     tint: "rgba(10,6,3,0.70)"   },
+  mood_relaxed:         { filter: "brightness(0.62) saturate(1.0)",                     tint: "rgba(20,14,8,0.42)"  },
+  mood_bold:            { filter: "brightness(0.50) saturate(1.4)",                     tint: "rgba(12,4,1,0.55)"   },
+  mood_social:          { filter: "brightness(0.70) saturate(1.15)",                    tint: "rgba(22,15,8,0.34)"  },
+  mood_reflective:      { filter: "brightness(0.42) saturate(0.85)",                    tint: "rgba(8,6,4,0.62)"    },
+  mood_celebratory:     { filter: "brightness(0.72) saturate(1.28) hue-rotate(5deg)",   tint: "rgba(25,18,8,0.36)"  },
+  mood_focused:         { filter: "brightness(0.46) saturate(0.85)",                    tint: "rgba(14,10,6,0.55)"  },
+  mood_adventurous:     { filter: "brightness(0.55) saturate(1.4) hue-rotate(8deg)",    tint: "rgba(15,8,3,0.50)"   },
+  mood_intense:         { filter: "brightness(0.34) saturate(1.65)",                    tint: "rgba(8,3,1,0.70)"    },
+  results:              { filter: "brightness(0.40) saturate(1.15)",                    tint: "rgba(10,6,3,0.58)"   },
 };
+
+// Map bg keys → specific scene image (falls back to lounge-bg.jpg)
+const SCENE: Record<string, string> = {
+  mood_relaxed:     "/images/scenes/relaxed.jpg",
+  mood_social:      "/images/scenes/social.jpg",
+  mood_celebratory: "/images/scenes/social.jpg",
+  mood_bold:        "/images/scenes/bold.jpg",
+  mood_intense:     "/images/scenes/bold.jpg",
+  mood_adventurous: "/images/scenes/bold.jpg",
+  mood_reflective:  "/images/scenes/reflective.jpg",
+  mood_focused:     "/images/scenes/reflective.jpg",
+};
+const DEFAULT_SCENE = "/images/lounge-bg.jpg";
 
 interface Props { bgKey: string }
 
 export function DynamicBackground({ bgKey }: Props) {
   const state = BG[bgKey] ?? BG.default;
+  const scene = SCENE[bgKey] ?? DEFAULT_SCENE;
+
   return (
     <div
       className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
       style={{ filter: state.filter, transition: "filter 0.5s ease" }}
     >
-      {/* Slow drifting lounge photo — 28s breathing loop */}
-      <motion.div
-        animate={{
-          scale:     [1.08, 1.11, 1.08],
-          x:         ["0%", "-1.4%", "0%"],
-          y:         ["0%", "-0.8%", "0%"],
-        }}
-        transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
-        style={{
-          position: "absolute", inset: 0,
-          backgroundImage:    "url('/images/lounge-bg.jpg')",
-          backgroundSize:     "cover",
-          backgroundPosition: "center",
-          willChange:         "transform",
-        }}
-      />
+      {/* Layered scene crossfade — current scene fades out, next fades in */}
+      <AnimatePresence>
+        <motion.div
+          key={scene}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{    opacity: 0 }}
+          transition={{ duration: 0.55, ease: "easeInOut" }}
+          style={{ position: "absolute", inset: 0 }}
+        >
+          {/* Slow drifting lounge photo — 28s breathing loop */}
+          <motion.div
+            animate={{
+              scale: [1.08, 1.11, 1.08],
+              x:     ["0%", "-1.4%", "0%"],
+              y:     ["0%", "-0.8%", "0%"],
+            }}
+            transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
+            style={{
+              position: "absolute", inset: 0,
+              backgroundImage:    `url('${scene}')`,
+              backgroundSize:     "cover",
+              backgroundPosition: "center",
+              willChange:         "transform",
+            }}
+          />
+        </motion.div>
+      </AnimatePresence>
+
       <div
         className="absolute inset-0"
         style={{ background: state.tint, transition: "background 0.5s ease" }}
       />
-      {/* Sidebar gradient — left dark for sidebar readability, right light for product visibility */}
+      {/* Sidebar gradient — dark left for sidebar readability, light right for product visibility */}
       <div
         className="absolute inset-0"
         style={{

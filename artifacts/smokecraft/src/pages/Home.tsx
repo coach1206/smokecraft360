@@ -1058,7 +1058,7 @@ export default function Home() {
                           <SwipeCardDeck
                             items={MOOD_CARDS}
                             multiSelect={false}
-                            onComplete={(sel) => { setMood(sel[0] ?? "relaxed"); setMoodDone(true); setBgKey("results"); }}
+                            onComplete={(sel) => { const m = sel[0] ?? "relaxed"; setMood(m); setMoodDone(true); setBgKey(`mood_${m}`); }}
                             onCardFocus={(id) => setBgKey(`mood_${id}`)}
                             rightLabel="This is Me"
                             leftLabel="Next"

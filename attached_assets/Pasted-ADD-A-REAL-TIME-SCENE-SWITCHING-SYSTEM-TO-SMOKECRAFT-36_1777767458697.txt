@@ -1,0 +1,185 @@
+ADD A REAL-TIME SCENE SWITCHING SYSTEM TO SMOKECRAFT 360 WHERE THE BACKGROUND AND ENVIRONMENT CHANGE WITH EVERY USER SELECTION
+
+The goal is to visually show the user what they are building, not just tell them.
+
+---
+
+CORE RULE
+
+Every time the user clicks, swipes, or selects something:
+
+- the background image MUST change
+- the lighting tone MUST adjust
+- the environment MUST reflect the choice
+
+No static scenes allowed
+
+---
+
+SCENE SYSTEM STRUCTURE
+
+Create a scene map tied to each step:
+
+---
+
+1. MOOD SELECTION → FULL ENVIRONMENT CHANGE
+
+When user selects mood:
+
+- Relaxed → soft lounge, couch, warm lighting
+- Bold → darker bar, dramatic lighting
+- Social → group setting, multiple glasses
+- Reflective → dim, solo seating, quiet vibe
+
+Transition:
+- crossfade (0.4–0.6s)
+- slight zoom effect
+
+---
+
+2. FLAVOR SELECTION → CLOSE-UP ENVIRONMENT SHIFT
+
+When user selects flavor:
+
+- Cocoa → dark wood, chocolate tones
+- Cedar → wood grain, humidor visuals
+- Spice → warm amber lighting
+- Sweet → brighter, lighter tones
+
+These should feel like:
+👉 zooming into the experience
+
+---
+
+3. STRENGTH SELECTION → LIGHTING INTENSITY CHANGE
+
+When user selects strength:
+
+- Mild → brighter, softer lighting
+- Medium → balanced lighting
+- Full → darker, richer shadows
+
+No full scene change, just lighting shift
+
+---
+
+4. ATMOSPHERE → FULL SCENE TRANSFORMATION
+
+This is the biggest change:
+
+- Relaxed → lounge seating scene
+- Bold → high contrast bar scene
+- Social → busy environment
+- Reflective → minimal, quiet environment
+
+Transition:
+- fade + slight blur (0.5s)
+- feels like stepping into a new room
+
+---
+
+5. PAIRING → PRODUCT + ENVIRONMENT MATCH
+
+When whiskey is selected:
+
+- background updates to match drink tone
+- reflections and highlights adjust
+- cigar + whiskey visually align
+
+---
+
+SCENE TRANSITION RULES
+
+ALL transitions must:
+
+- fade smoothly (0.4–0.6s)
+- never snap
+- maintain same layout
+- keep sidebar fixed
+
+Optional:
+- slight camera drift effect
+
+---
+
+TECH IMPLEMENTATION (SIMPLE)
+
+Use a scene state system:
+
+Example:
+
+- state.scene = “relaxed”
+- state.scene = “bold”
+- state.scene = “social”
+
+Map each scene to an image:
+
+- /images/scenes/relaxed.jpg
+- /images/scenes/bold.jpg
+- /images/scenes/social.jpg
+
+---
+
+TRANSITION METHOD
+
+Use layered backgrounds:
+
+- current scene fades out
+- next scene fades in underneath
+
+CSS:
+
+- opacity transition
+- position fixed
+- z-index stacking
+
+---
+
+VISUAL CONSISTENCY
+
+All images must:
+
+- match color temperature
+- match lighting style
+- feel like same location family
+
+DO NOT mix random images
+
+---
+
+PRODUCT + SCENE LINK
+
+When scene changes:
+
+- cigar lighting updates
+- whiskey reflection updates
+- shadows adjust
+
+Everything must feel connected
+
+---
+
+FEEDBACK TEXT (OPTIONAL)
+
+After scene change, display:
+
+“Setting the tone…”
+“Building your environment…”
+“This is getting interesting…”
+
+---
+
+FINAL GOAL
+
+The user should feel like:
+
+- they are moving through different environments
+- each choice changes the room around them
+- they are building a real experience
+
+NOT:
+
+- clicking options on a screen
+- staying in one static background
+
+---
