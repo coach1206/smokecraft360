@@ -283,6 +283,47 @@ export default function Intro() {
         padding: "5vh 4vw",
       }}
     >
+      {/* Cinematic background scene — cycles through the 3 product images
+          on attract beats (one image per beat); the reveal beat fades to a
+          neutral darkness so the scorecard takes center stage. Ken Burns
+          slow-zoom is applied per scene to give the kiosk subtle motion
+          even when no one is interacting. Reuses the already-vetted card
+          image URLs to avoid introducing new broken assets. */}
+      <AnimatePresence>
+        {isIdle && !selected && stage === "select" && attractIdx !== REVEAL_BEAT && (
+          <motion.div
+            key={`scene-${attractIdx}`}
+            data-testid="intro-demo-scene"
+            initial={{ opacity: 0, scale: 1.0 }}
+            animate={{ opacity: 0.42, scale: 1.08 }}
+            exit={{ opacity: 0, scale: 1.12 }}
+            transition={{
+              opacity: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+              scale:   { duration: DEMO_CYCLE_MS / 1000 + 0.5, ease: "linear" },
+            }}
+            style={{
+              position: "absolute", inset: 0, zIndex: 0,
+              backgroundImage:    `url(${EXPERIENCES[attractIdx].image})`,
+              backgroundSize:     "cover",
+              backgroundPosition: "center",
+              filter: "saturate(0.85) contrast(1.05)",
+              pointerEvents: "none",
+            }}
+          />
+        )}
+      </AnimatePresence>
+      {/* Vignette over scene to keep foreground UI legible. */}
+      {isIdle && !selected && stage === "select" && attractIdx !== REVEAL_BEAT && (
+        <div
+          aria-hidden
+          style={{
+            position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
+            background:
+              "radial-gradient(ellipse at center, rgba(10,6,4,0.35) 0%, rgba(10,6,4,0.85) 75%)",
+          }}
+        />
+      )}
+
       {/* Splash — "PROFOUND INNOVATION" brand reveal before the selector */}
       <AnimatePresence>
         {stage === "splash" && (
@@ -600,6 +641,40 @@ export default function Intro() {
             </motion.div>
           );
         })()}
+      </AnimatePresence>
+
+      {/* Attract-mode progress bar — fills across the 4-beat cycle so the
+          kiosk visibly conveys "something is happening" between beats. Uses
+          framer-motion's repeat to loop as long as attract mode is active. */}
+      <AnimatePresence>
+        {isIdle && !selected && stage === "select" && (
+          <div
+            aria-hidden
+            style={{
+              position: "fixed", left: "50%", bottom: "10vh",
+              transform: "translateX(-50%)",
+              width: "min(360px, 60vw)", height: 2,
+              background: "rgba(245,235,221,0.12)",
+              borderRadius: 2, overflow: "hidden",
+              zIndex: 41, pointerEvents: "none",
+            }}
+          >
+            <motion.div
+              key="attract-progress"
+              initial={{ width: "0%" }}
+              animate={{ width: "100%" }}
+              transition={{
+                duration: (DEMO_CYCLE_MS * DEMO_BEATS) / 1000,
+                ease: "linear",
+                repeat: Infinity,
+              }}
+              style={{
+                height: "100%",
+                background: "linear-gradient(90deg, transparent, #D4AF37 50%, transparent)",
+              }}
+            />
+          </div>
+        )}
       </AnimatePresence>
 
       {/* Attract-mode "TAP TO BEGIN" pulse — appears after IDLE_THRESHOLD_MS
