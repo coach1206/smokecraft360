@@ -985,35 +985,140 @@ export default function Home() {
                         <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Choose Your Experience</h2>
                       </div>
 
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                        {(["cigar","alcohol"] as const).map((cat) => {
-                          const isSel = category === cat;
-                          return (
-                            <motion.button key={cat}
-                              data-testid={`choice-${cat}`}
-                              onClick={() => { handleCategoryChange(cat); setBgKey(cat === "cigar" ? "experience_cigar" : "experience_spirits"); playSelect(); }}
-                              whileTap={{ scale: 0.94 }}
-                              style={{
-                                minHeight: 170, borderRadius: 20, cursor: "pointer",
-                                border: isSel ? "2px solid rgba(184,137,26,0.82)" : "2px solid rgba(184,137,26,0.28)",
-                                background: isSel ? "rgba(245,235,221,0.97)" : "rgba(245,235,221,0.11)",
-                                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14,
-                                boxShadow: isSel ? "0 0 0 3px rgba(212,175,55,0.2), 0 12px 42px rgba(0,0,0,0.38)" : "0 4px 18px rgba(0,0,0,0.25)",
-                                transition: "all 0.25s ease",
-                              } as React.CSSProperties}
-                            >
-                              {cat === "cigar"
-                                ? <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={isSel ? "#7B5A1E" : "rgba(245,235,221,0.72)"} strokeWidth="1.4" strokeLinecap="round"><line x1="2" y1="13" x2="18" y2="13"/><line x1="18" y1="13" x2="22" y2="9"/><path d="M6 11 Q8 7 12 8 Q16 9 18 13"/></svg>
-                                : <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={isSel ? "#7B5A1E" : "rgba(245,235,221,0.72)"} strokeWidth="1.4" strokeLinecap="round"><path d="M8 22h8"/><path d="M12 11v11"/><path d="M5 3l2 8h10l2-8H5z"/></svg>
-                              }
-                              <span style={{ fontFamily: "var(--app-font-serif)", fontSize: 22, fontWeight: 600, color: isSel ? "#1A1410" : "rgba(245,235,221,0.88)", letterSpacing: "0.07em" }}>
-                                {cat === "cigar" ? "Cigar" : "Spirits"}
-                              </span>
-                              {isSel && <div style={{ width: 36, height: 2, background: "linear-gradient(90deg,transparent,rgba(184,137,26,0.75),transparent)", borderRadius: 1 }} />}
-                            </motion.button>
-                          );
-                        })}
-                      </div>
+                      {/* ── Choose Your Experience: full-bleed image cards ──
+                          Real luxury photography (cigar / whiskey on dark wood),
+                          glass-wrapped, dominant on screen. Selected card gets
+                          a gold border + soft pulse; the other dims to 0.55. */}
+                      {(() => {
+                        const CARDS = [
+                          {
+                            cat:      "cigar"   as const,
+                            title:    "Cigar",
+                            subtitle: "Handcrafted. Bold. Timeless.",
+                            image:    "https://images.unsplash.com/photo-1527144901953-6e34cf3a4ff5?auto=format&fit=crop&w=1400&q=75",
+                          },
+                          {
+                            cat:      "alcohol" as const,
+                            title:    "Spirits",
+                            subtitle: "Smooth. Refined. Complex.",
+                            image:    "https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=1400&q=75",
+                          },
+                        ];
+                        const anySelected = CARDS.some((c) => category === c.cat);
+                        return (
+                          <div style={{
+                            display: "grid", gridTemplateColumns: "1fr 1fr",
+                            gap: 28, maxWidth: 880, margin: "0 auto", width: "100%",
+                          }}>
+                            {CARDS.map((c) => {
+                              const isSel = category === c.cat;
+                              const dim   = anySelected && !isSel;
+                              return (
+                                <motion.button
+                                  key={c.cat}
+                                  data-testid={`choice-${c.cat}`}
+                                  onClick={() => {
+                                    handleCategoryChange(c.cat);
+                                    setBgKey(c.cat === "cigar" ? "experience_cigar" : "experience_spirits");
+                                    playSelect();
+                                  }}
+                                  initial={{ opacity: 0, y: 18 }}
+                                  animate={{
+                                    opacity: dim ? 0.55 : 1,
+                                    y:       0,
+                                    scale:   isSel ? [1, 1.025, 1] : 1,
+                                  }}
+                                  transition={isSel
+                                    ? { scale: { duration: 2.6, repeat: Infinity, ease: "easeInOut" }, opacity: { duration: 0.35 } }
+                                    : { duration: 0.35 }
+                                  }
+                                  whileHover={{ scale: 1.03, boxShadow: "0 0 36px rgba(212,175,55,0.45), 0 18px 48px rgba(0,0,0,0.55)" }}
+                                  whileTap={{   scale: 0.97 }}
+                                  className="group"
+                                  style={{
+                                    position: "relative",
+                                    height: "min(48vh, 360px)",
+                                    minHeight: 280,
+                                    borderRadius: 22,
+                                    overflow: "hidden",
+                                    cursor: "pointer",
+                                    border: isSel
+                                      ? "2px solid rgba(212,175,55,0.85)"
+                                      : "1px solid rgba(212,175,55,0.25)",
+                                    background: "rgba(255,255,255,0.05)",
+                                    backdropFilter: "blur(12px)",
+                                    WebkitBackdropFilter: "blur(12px)",
+                                    boxShadow: isSel
+                                      ? "0 0 0 4px rgba(212,175,55,0.18), 0 0 38px rgba(212,175,55,0.42), 0 18px 50px rgba(0,0,0,0.55)"
+                                      : "0 8px 28px rgba(0,0,0,0.40)",
+                                    appearance: "none",
+                                    padding: 0,
+                                  }}
+                                >
+                                  {/* Image layer (zooms on hover via group-hover) */}
+                                  <div
+                                    style={{
+                                      position: "absolute", inset: 0,
+                                      backgroundImage:    `url('${c.image}')`,
+                                      backgroundSize:     "cover",
+                                      backgroundPosition: "center",
+                                      transition: "transform 0.6s ease, filter 0.4s ease",
+                                      filter: isSel ? "brightness(1.08) saturate(1.08)" : "brightness(0.92) saturate(0.95)",
+                                    }}
+                                    className="group-hover:scale-110"
+                                  />
+                                  {/* Dark gradient overlay (bottom 60% black per brief) */}
+                                  <div
+                                    style={{
+                                      position: "absolute", inset: 0,
+                                      background: isSel
+                                        ? "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.20) 40%, rgba(15,8,2,0.78) 100%)"
+                                        : "linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.32) 40%, rgba(0,0,0,0.78) 100%)",
+                                      transition: "background 0.4s ease",
+                                    }}
+                                  />
+                                  {/* Selected gold corner mark */}
+                                  {isSel && (
+                                    <div style={{
+                                      position: "absolute", top: 16, right: 16,
+                                      width: 12, height: 12, borderRadius: 999,
+                                      background: "linear-gradient(135deg, #b07c14, #D4AF37)",
+                                      boxShadow: "0 0 16px rgba(212,175,55,0.85)",
+                                    }} />
+                                  )}
+                                  {/* Title + subtitle */}
+                                  <div style={{
+                                    position: "absolute", left: 0, right: 0, bottom: 0,
+                                    padding: "22px 26px 26px",
+                                    textAlign: "left",
+                                  }}>
+                                    <h3 className="font-serif" style={{
+                                      fontSize: "clamp(1.85rem, 4.2vw, 2.5rem)",  /* ~30–40 px */
+                                      fontWeight: 500,
+                                      color: "#F5E6C8",
+                                      letterSpacing: "0.03em",
+                                      textShadow: "0 2px 12px rgba(0,0,0,0.85)",
+                                      marginBottom: 6,
+                                      lineHeight: 1.05,
+                                    }}>
+                                      {c.title}
+                                    </h3>
+                                    <p style={{
+                                      fontSize: 15, fontWeight: 500,
+                                      color: "rgba(232,212,172,0.92)",
+                                      letterSpacing: "0.10em",
+                                      textTransform: "uppercase",
+                                      textShadow: "0 1px 8px rgba(0,0,0,0.85)",
+                                    }}>
+                                      {c.subtitle}
+                                    </p>
+                                  </div>
+                                </motion.button>
+                              );
+                            })}
+                          </div>
+                        );
+                      })()}
 
                       <motion.button onClick={() => goToStep(1)}
                         whileHover={{ scale: 1.02, boxShadow: "0 0 0 1px rgba(212,175,55,0.6), 0 14px 44px rgba(0,0,0,0.55)" }}
