@@ -1,0 +1,228 @@
+FINAL MASTER PROMPT (FULL SYSTEM — NO GAPS)
+Build a Universal Experience Engine platform that powers SmokeCraft, PourCraft, VapeCraft, and BrewCraft as independent but connected systems.
+
+This is NOT a UI demo.
+This is a revenue-generating experience engine connected to venues and POS systems.
+
+----------------------------------------
+CORE SYSTEM ARCHITECTURE
+----------------------------------------
+
+Every system must follow the same engine:
+
+1. Experience Type
+2. Flavor Profile
+3. Intensity / Strength
+4. Mood / Setting
+5. Result (Product + Venue + Order Flow)
+
+Interaction:
+- Swipe-based navigation between steps
+- Tap for selection
+- Progress indicator always visible
+- AI panel reacts dynamically
+
+----------------------------------------
+UNIVERSAL SWIPE ENGINE
+----------------------------------------
+
+- Swipe left → next step
+- Swipe right → previous step
+- Card expands on selection
+- Background subtly transitions per step
+- No abrupt page changes
+
+----------------------------------------
+SYSTEM IDENTITIES (MANDATORY)
+
+Each system must feel like a different product:
+
+----------------------------------------
+
+SMOKECRAFT (CIGARS)
+- Warm, gold, wood tones
+- Lounge environment
+- Premium, slow pacing
+
+----------------------------------------
+
+POURCRAFT (LIQUOR)
+- Glass reflections
+- Liquid motion
+- Clean + high-end bar feel
+
+----------------------------------------
+
+VAPECRAFT (VAPE)
+- Dark UI
+- Neon blue/purple accents
+- Modern / tech / smooth feel
+
+STEPS:
+- Device Type (disposable, pod, mod)
+- Flavor Type (fruity, menthol, dessert, tobacco)
+- Hit Intensity (light, smooth, strong, cloud heavy)
+- Mood (chill, social, night, focus)
+
+----------------------------------------
+
+BREWCRAFT (BEER)
+- Golden tones
+- Foam textures
+- Social / relaxed vibe
+
+STEPS:
+- Beer Type (lager, IPA, stout, wheat)
+- Flavor (crisp, bitter, sweet, roasted)
+- Body (light, medium, heavy)
+- Occasion (game night, solo, party, dinner)
+
+----------------------------------------
+
+RESULT ENGINE (CRITICAL)
+----------------------------------------
+
+After selections, generate:
+
+1. Product Recommendation
+2. Pairing (cigar, drink, vape, or food)
+3. Environment suggestion
+4. Venue recommendation (NEAREST MATCH)
+
+----------------------------------------
+VENUE INTEGRATION (MAJOR FEATURE)
+----------------------------------------
+
+Each result must connect to:
+
+- Bars
+- Lounges
+- Vape shops
+- Breweries
+- Event spaces
+
+Venue Data Includes:
+- Name
+- Distance
+- Atmosphere type
+- Available inventory
+- Pricing
+
+----------------------------------------
+VENUE MATCH LOGIC
+----------------------------------------
+
+Match user selections to venues based on:
+
+- Flavor profile
+- Experience type
+- Location proximity
+- Inventory availability
+
+----------------------------------------
+POS INTEGRATION (REVENUE LAYER)
+----------------------------------------
+
+Each venue must support:
+
+- Live inventory sync
+- Order routing
+- Pricing display
+- Checkout flow
+
+User can:
+- Order at venue
+- Reserve experience
+- Add items to tab
+- Prepay or pay at location
+
+----------------------------------------
+ORDER FLOW
+----------------------------------------
+
+User Journey:
+
+1. Select experience
+2. Get recommendation
+3. Choose venue
+4. View items available
+5. Add to cart
+6. Checkout / reserve
+
+----------------------------------------
+ADMIN / VENUE DASHBOARD (YOU NEED THIS)
+----------------------------------------
+
+Each venue must have:
+
+- Ability to upload products
+- Set pricing
+- Define experience types
+- Tag inventory (flavor, intensity, etc.)
+- View incoming orders
+- Accept / reject requests
+
+----------------------------------------
+MONETIZATION (DO NOT SKIP)
+----------------------------------------
+
+System earns via:
+
+- Commission per order
+- Featured venue placement
+- Premium venue subscription
+- Experience packages
+- Event bookings
+
+----------------------------------------
+UI RULES (STRICT)
+----------------------------------------
+
+- No shared visuals between systems
+- No reused backgrounds
+- No floating/random elements
+- Each system must visually match its identity
+- Cards must be readable (cream background where needed)
+- Images must represent real products (beer, vape, liquor, cigars)
+
+----------------------------------------
+AI GUIDANCE SYSTEM
+----------------------------------------
+
+- Reacts to every selection
+- Explains pairing logic
+- Suggests upgrades
+- Guides user forward
+
+----------------------------------------
+FINAL EXPERIENCE GOAL
+----------------------------------------
+
+User should feel like:
+
+"I selected a vibe → the system built my experience → and I can actually go do it or buy it right now."
+
+----------------------------------------
+END
+----------------------------------------
+🎯 WHAT YOU JUST BUILT (THIS IS BIG)
+
+This is no longer:
+
+❌ “pick a flavor UI”
+
+This is now:
+
+✅ Experience → Product → Venue → Payment system
+
+⚠️ WHAT YOU STILL MIGHT BE MISSING
+
+You might not have thought about:
+
+1. Location detection (needed for venues)
+2. Inventory tagging system (for matching)
+3. Payment gateway (Stripe, etc.)
+4. Real-time availability
+5. Reservation vs instant order logic
+
+👉 All required for this to actually work in the real world
