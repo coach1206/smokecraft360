@@ -1,0 +1,353 @@
+MISSING / REQUIRED (FINAL — NOTHING LEFT OUT)
+
+These are now MANDATORY SYSTEM LAYERS:
+
+Dynamic Craft Config Engine
+Experience Flow Controller
+Dynamic Theme Engine
+AI Voice Narration Layer
+Inventory Injection System
+Order + POS Sync System
+Scoring + Ranking Engine
+Multi-User Session Engine
+Real-Time Sync Engine (WebSockets)
+Leaderboard System (User + Venue)
+Analytics + Event Tracking Engine
+Notification System
+Reward Redemption System ✅
+AI Personal Memory Layer ✅
+Offline Mode Cache + Sync Layer ✅
+Security + Rate Limiting + Audit Logs
+Admin Control System (full control of everything)
+
+If any of these are missing → system is incomplete.
+
+🟡 FAILURE PREVENTION CHECKLIST (LOCK THIS IN)
+Every screen has back navigation
+Progress bar always visible
+No static images (all dynamic)
+Voice never overlaps (queued system)
+Inventory ALWAYS overrides AI
+Orders must confirm + update live
+Offline mode must not break ordering
+Sync must resolve conflicts when reconnecting
+Multi-user sessions must stay consistent
+Leaderboards must update in real-time
+No UI element without backend connection
+Tablet layout must never break
+🧠 MASTER SYSTEM PROMPT (ULTIMATE FINAL VERSION)
+
+Copy everything below into your builder:
+
+PROMPT START
+
+Build a full-stack “Dynamic Craft Experience Platform” with:
+
+Frontend:
+
+React (Vite)
+Tablet-first responsive UI
+
+Backend:
+
+Node.js + Express
+
+Database:
+
+PostgreSQL + Drizzle ORM
+
+Realtime:
+
+Socket.io (WebSockets)
+
+Offline Support:
+
+IndexedDB + Service Workers
+
+AI Voice:
+
+Text-to-Speech API
+1. CORE SYSTEM ARCHITECTURE
+
+Create a modular platform with:
+
+Craft Config Engine
+Experience Flow Controller
+Dynamic Theme Engine
+AI Voice Narration Layer
+Inventory Injection Layer
+Order Processing System
+Scoring + Ranking Engine
+Multi-User Session Engine
+Leaderboard System
+Analytics + Event Tracking Engine
+Notification System
+Reward Redemption System
+AI Personal Memory Layer
+Offline Mode Cache + Sync Engine
+Security + Audit System
+Admin Control Panel
+
+All crafts must run from ONE shared engine.
+
+2. CRAFT CONFIG ENGINE
+
+Table: craft_configs
+
+Fields:
+
+id
+craft_name
+background_keywords
+sound_keywords
+voice_style
+mood_options (JSON)
+flavor_sliders (JSON)
+challenge_type
+pairing_categories (JSON)
+brand_categories (JSON)
+
+System must dynamically generate experiences from this config.
+
+3. ADMIN CONTROL PANEL
+
+Route: /admin
+
+Sections:
+
+Craft Builder
+Inventory Manager
+Leaderboard Control
+Reward Manager
+Analytics Dashboard
+Voice Settings
+Offline Sync Monitor
+
+Craft Builder allows:
+
+Input keywords
+Define experience
+Instantly generate new craft
+4. DYNAMIC THEME ENGINE
+Pull images from Unsplash API
+Apply backgrounds dynamically
+Animate transitions (fade, slide, zoom)
+Apply sound + ambiance
+5. AI VOICE NARRATION LAYER
+Trigger narration at each step
+Queue system prevents overlap
+Voice style tied to craft_config
+6. EXPERIENCE FLOW CONTROLLER
+
+Steps:
+
+Entry animation
+Mood selection
+Flavor builder
+Brand identity
+Style selection
+Challenge mode
+AI recommendation
+Inventory injection
+Order panel
+Score update
+Reward trigger
+7. MULTI-USER SESSION ENGINE
+
+Tables:
+
+sessions:
+
+id
+session_code
+host_user_id
+status
+
+session_users:
+
+session_id
+user_id
+score
+
+Features:
+
+Join via code
+Live score comparison
+Shared experience mode
+8. REAL-TIME ENGINE (SOCKET.IO)
+
+Events:
+
+user_joined
+score_updated
+order_placed
+leaderboard_updated
+reward_unlocked
+9. INVENTORY SYSTEM
+
+Table: venue_inventory
+
+Fields:
+
+id
+venue_id
+product_name
+price
+tier
+tags
+availability
+
+Must override AI recommendations.
+
+10. ORDER SYSTEM
+
+Table: orders
+
+Fields:
+
+id
+user_id
+session_id
+venue_id
+product_id
+quantity
+total_price
+status
+
+Flow:
+
+Order → confirm → send to venue
+Real-time updates
+11. SCORING SYSTEM
+
+Table: user_scores
+
+Points:
+
+Experience: +5
+Challenge: +10
+Order: +15
+Premium: +25
+New item: +20
+12. LEADERBOARD SYSTEM
+
+Tables:
+
+leaderboards:
+
+entity_type (user / venue)
+score
+rank
+
+Tracks:
+
+top users
+top venues
+session winners
+13. REWARD REDEMPTION SYSTEM (NEW)
+
+Tables:
+
+rewards:
+
+id
+reward_name
+points_required
+reward_type (drink, discount, perk)
+
+user_rewards:
+
+user_id
+reward_id
+redeemed
+
+Flow:
+
+Earn points → unlock reward
+Redeem via order system
+Apply discount or free item
+14. AI PERSONAL MEMORY LAYER (NEW)
+
+Table: user_memory
+
+Stores:
+
+past selections
+preferred flavors
+brand patterns
+spending behavior
+
+System must:
+
+personalize future recommendations
+adapt AI suggestions over time
+15. OFFLINE MODE CACHE + SYNC (NEW)
+
+Use:
+
+Service Workers
+IndexedDB
+
+Features:
+
+Cache UI + assets
+Store actions locally:
+orders
+scores
+selections
+
+When reconnecting:
+
+sync to backend
+resolve conflicts
+update UI
+16. ANALYTICS + EVENT TRACKING
+
+Table: event_logs
+
+Track:
+
+every click
+every selection
+every order
+conversion rates
+17. NOTIFICATION SYSTEM
+Order confirmations
+Rank upgrades
+Reward unlocks
+Session invites
+18. SECURITY SYSTEM
+JWT authentication
+Rate limiting
+Input validation
+Audit logs
+Role-based access
+19. UI REQUIREMENTS
+Full immersive background
+Left vertical toolbar
+Progress bar with %
+Smooth transitions
+Tablet optimized
+Real images only
+Back button on all screens
+20. FUTURE EXPANSION
+
+System must support:
+
+new crafts via admin only
+plugin-based challenge types
+real-time updates without redeploy
+PROMPT END
+🧠 WHAT THIS IS NOW
+
+You now have:
+
+👉 AI
+👉 Real-time multiplayer
+👉 Offline resilience
+👉 Revenue system
+👉 Memory + personalization
+👉 Reward economy
+👉 Venue competition
+
+All in one system.
