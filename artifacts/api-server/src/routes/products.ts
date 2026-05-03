@@ -24,8 +24,14 @@ const VALID_CATEGORIES = ["cigar", "alcohol", "food", "coffee", "tea", "scent", 
 type ValidCategory = (typeof VALID_CATEGORIES)[number];
 
 // ── GET /api/products ─────────────────────────────────────────────────────────
-router.get("/", (_req: Request, res: Response) => {
-  res.json(getAllInventory());
+router.get("/", (req: Request, res: Response) => {
+  // Optional ?category= filter so the multi-theme kiosk can request only the
+  // inventory matching the active theme's productType (e.g. cigar, wine,
+  // whiskey). Unknown / missing param returns the full set unchanged.
+  const category = typeof req.query["category"] === "string" ? req.query["category"].toLowerCase() : null;
+  const all = getAllInventory();
+  if (!category) { res.json(all); return; }
+  res.json(all.filter((p) => String(p.category ?? "").toLowerCase() === category));
 });
 
 // ── POST /api/products ────────────────────────────────────────────────────────

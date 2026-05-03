@@ -8,10 +8,11 @@
 
 import { Router, type IRouter, type Response } from "express";
 import { eq }                                   from "drizzle-orm";
-import { db, venuesTable }                      from "@workspace/db";
+import { db, venuesTable, themeProfilesTable }  from "@workspace/db";
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { requireRole }                          from "../middleware/roles";
 import { allowOnly }                            from "../middleware/sanitize";
+import { logAudit }                             from "../lib/audit";
 
 const router: IRouter = Router();
 
@@ -115,5 +116,72 @@ router.get("/:id", async (req, res: Response) => {
     },
   });
 });
+
+// ── PATCH /api/venues/:id — admin template + plan + active control ──────────
+//
+// Lets a super_admin switch a venue between registered theme profiles
+// (e.g. SmokeCraft → PourCraft) without touching code, plus toggle the
+// venue's active flag and rename it. themeProfile is validated against
+// the theme_profiles registry so a venue can never point to an unknown
+// theme. Every change is audit-logged with before/after snapshots.
+router.patch(
+  "/:id",
+  requireAuth,
+  requireRole("super_admin"),
+  allowOnly("name", "themeProfile", "active", "plan"),
+  async (req: AuthRequest, res: Response) => {
+    const id = String(req.params["id"] ?? "");
+    if (!id) { res.status(400).json({ error: "venue id is required" }); return; }
+
+    const { name, themeProfile, active, plan } = req.body as {
+      name?:         string;
+      themeProfile?: string | null;
+      active?:       boolean;
+      plan?:         "basic" | "mid" | "premium";
+    };
+
+    const [existing] = await db.select().from(venuesTable).where(eq(venuesTable.id, id)).limit(1);
+    if (!existing) { res.status(404).json({ error: "Venue not found" }); return; }
+
+    // Theme registry lookup — refuse references to themes that don't exist.
+    if (themeProfile !== undefined && themeProfile !== null) {
+      const [theme] = await db.select({ slug: themeProfilesTable.slug })
+        .from(themeProfilesTable)
+        .where(eq(themeProfilesTable.slug, themeProfile))
+        .limit(1);
+      if (!theme) { res.status(400).json({ error: `Unknown themeProfile '${themeProfile}'` }); return; }
+    }
+
+    if (plan !== undefined && !["basic", "mid", "premium"].includes(plan)) {
+      res.status(400).json({ error: "plan must be basic|mid|premium" });
+      return;
+    }
+
+    const patch: Partial<typeof venuesTable.$inferInsert> = {};
+    if (name         !== undefined) patch.name         = name;
+    if (themeProfile !== undefined) patch.themeProfile = themeProfile;
+    if (active       !== undefined) patch.active       = active;
+    if (plan         !== undefined) patch.plan         = plan;
+
+    if (Object.keys(patch).length === 0) {
+      res.status(400).json({ error: "No updatable fields supplied" });
+      return;
+    }
+
+    const [updated] = await db.update(venuesTable).set(patch).where(eq(venuesTable.id, id)).returning();
+
+    await logAudit(req, {
+      action:     "venue.update",
+      entityType: "venue",
+      entityId:   id,
+      before:     { name: existing.name, themeProfile: existing.themeProfile, active: existing.active, plan: existing.plan },
+      after:      patch,
+      venueId:    id,
+    });
+
+    req.log.info({ venueId: id, patch, by: req.user!.id }, "Venue updated");
+    res.json(updated);
+  },
+);
 
 export default router;

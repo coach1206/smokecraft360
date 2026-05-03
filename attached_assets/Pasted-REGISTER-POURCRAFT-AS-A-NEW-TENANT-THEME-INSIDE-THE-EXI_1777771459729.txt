@@ -1,0 +1,194 @@
+REGISTER POURCRAFT AS A NEW TENANT THEME INSIDE THE EXISTING SMOKECRAFT 360 PLATFORM AND FULLY WIRE IT INTO THE SAME CORE ENGINE, BACKEND, UI SYSTEM, AND MONETIZATION FLOW — DO NOT BUILD A SEPARATE APP
+
+---
+
+🚨 CORE OBJECTIVE
+
+Integrate PourCraft 360 (wine/cocktail experience) as a configuration-based theme that runs on the SAME system as SmokeCraft 360.
+
+This must be a multi-tenant, multi-theme platform.
+
+---
+
+🚨 NON-NEGOTIABLE RULES
+
+- DO NOT create a standalone PourCraft app
+- DO NOT duplicate backend logic
+- DO NOT hardcode theme behavior
+- EVERYTHING must be config-driven and reusable
+
+---
+
+🧠 THEME SYSTEM (FRONTEND)
+
+Create a new theme config:
+
+/client/themes/pourcraft.js
+
+Include:
+
+- name: "PourCraft 360"
+- productType: "wine"
+- secondaryProduct: "cocktail"
+- color palette (deep reds, gold accents)
+- sceneFolder: "/images/scenes/pour/"
+- sound profile (pour, glass, ambient bar)
+- steps: ["mood", "flavor", "body", "atmosphere", "pairing"]
+
+---
+
+🎛 THEME LOADER
+
+Update themeLoader.js to support:
+
+- smokecraft
+- pourcraft
+
+Ensure switching themes dynamically updates:
+
+- UI colors
+- text labels
+- product queries
+- scene visuals
+- sound effects
+
+---
+
+🌐 ROUTING
+
+Support:
+
+/smokecraft  
+/pourcraft  
+
+Use dynamic route:
+
+<Route path="/:theme" />
+
+Load theme based on URL
+
+---
+
+🖼️ SCENE SYSTEM
+
+For PourCraft:
+
+- use real images (wine pours, cocktails, bar scenes)
+- background must change based on user selections
+- fade transitions (0.4–0.6s)
+
+---
+
+🍷 PRODUCT INTEGRATION (BACKEND)
+
+Modify:
+
+GET /api/products?type=wine  
+GET /api/products?type=cocktail  
+
+Ensure database supports:
+
+- category = wine / cocktail
+- pricing
+- images
+- availability
+
+---
+
+🧠 SCORING ENGINE
+
+Create:
+
+/server/scoring/pourcraft.js
+
+Logic based on:
+
+- flavor match
+- body match
+- pairing compatibility
+
+Load scoring engine dynamically based on theme
+
+---
+
+💳 MONETIZATION (SHARED SYSTEM)
+
+Reuse existing:
+
+- Stripe payments
+- subscription enforcement
+- upsell system
+- vendor marketplace
+
+PourCraft must:
+
+- support ordering drinks
+- support premium pairings
+- support upsells
+
+---
+
+🏪 ADMIN DASHBOARD
+
+Allow venue admin to:
+
+- select theme (SmokeCraft or PourCraft)
+- manage wine/cocktail inventory
+- set pricing
+- control availability
+
+---
+
+📊 ANALYTICS
+
+Track PourCraft data:
+
+- top wines
+- most selected flavors
+- pairing success rate
+- conversion rate
+
+Store in same analytics system (tenant-based)
+
+---
+
+🔐 MULTI-TENANT RULE
+
+ALL data must include:
+
+- venue_id
+- theme type
+
+NO data mixing between venues
+
+---
+
+🎨 UI CONSISTENCY
+
+PourCraft must:
+
+- use same layout as SmokeCraft
+- use same animations
+- use same swipe interactions
+- use same reveal system
+
+ONLY differences:
+
+- visuals
+- products
+- language
+
+---
+
+🎯 FINAL RESULT
+
+After implementation:
+
+- PourCraft runs inside SmokeCraft platform
+- same backend handles both
+- same UI engine powers both
+- system can scale to more themes easily
+
+This is a PLATFORM — not multiple apps.
+
+---
