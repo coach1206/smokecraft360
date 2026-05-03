@@ -1,0 +1,423 @@
+BUILD SMOKECRAFT 360 AS A UNIFIED, REALISTIC, TOUCH-DRIVEN EXPERIENCE WITH SWIPE INTERACTIONS, DYNAMIC BACKGROUNDS, REAL PRODUCT VISUALS, ANTICIPATION BUILD, SCORING, AND FULL SENSORY LAYER
+
+This system must feel like a premium cigar lounge experience—not a website, not a form.
+
+It must be:
+- interactive
+- visual
+- responsive
+- immersive
+- easy to use (for ages 35–75)
+
+---
+
+CORE EXPERIENCE
+
+Users should:
+
+- Swipe to make selections
+- See real-time visual changes
+- Build anticipation toward a final reveal
+- Receive a score + comparison at the end
+
+This must feel like a guided challenge, not a tool.
+
+---
+
+GLOBAL SYSTEM RULE (NON-NEGOTIABLE)
+
+ALL screens must share:
+
+- same layout
+- same sidebar
+- same card style
+- same button system
+- same animation timing
+- same interaction feedback
+
+No visual inconsistency allowed.
+
+---
+
+GLOBAL LAYOUT
+
+- LEFT: fixed sidebar (240–260px)
+- CENTER: interactive swipe area + product visuals
+- RIGHT: light premium card (content)
+
+Wrap entire app in a framed container:
+- 92–95% width
+- ~90vh height
+- rounded corners
+- strong shadow
+
+---
+
+BACKGROUND SYSTEM (REAL IMAGE ONLY)
+
+- Use REAL lounge photography (Unsplash/Pexels)
+- NO cartoon or fake backgrounds
+- NO flat black screens
+
+Apply overlay:
+- left side darker (sidebar readability)
+- right side lighter (product visibility)
+
+Add subtle movement:
+- slow background shift (20–30s loop)
+
+---
+
+SIDEBAR SYSTEM
+
+Steps:
+
+1. Mood
+2. Flavor
+3. Strength
+4. Atmosphere
+5. Pairing
+6. Name
+7. Reveal
+
+States:
+- active = gold glow
+- completed = checkmark
+- locked = dim
+
+Behavior:
+- click → slide transition
+- click → sound feedback
+- clicked item highlights
+
+---
+
+SCREEN TRANSITIONS
+
+- current screen slides LEFT
+- new screen slides IN from RIGHT
+- duration: 0.4–0.5s
+- easing: ease-in-out
+
+Must feel like panels moving physically
+
+---
+
+SWIPE INTERACTION SYSTEM
+
+Each step uses swipe cards:
+
+- swipe RIGHT = accept
+- swipe LEFT = skip
+- tap = confirm
+
+Cards:
+- large
+- centered
+- cream background (#F5EBDD)
+- readable text (18px+)
+
+Animation:
+- slight rotation on swipe
+- next card slides in
+- previous exits left
+
+---
+
+DYNAMIC BACKGROUND SYSTEM
+
+Background MUST change based on step:
+
+Mood → lounge scenes
+Flavor → close-up textures
+Strength → lighting intensity
+Atmosphere → full environment change
+
+Transitions:
+- fade (0.4–0.6s)
+- no snapping
+
+---
+
+REAL PRODUCT VISUAL SYSTEM
+
+CENTER must always show:
+
+- real cigar image
+- real whiskey glass
+
+Position:
+- cigar front
+- whiskey slightly behind/right
+
+---
+
+DYNAMIC CIGAR SYSTEM
+
+Cigar changes based on selections:
+
+Flavor:
+- smoky → dark Maduro
+- sweet → light Connecticut
+- earthy → Habano
+- spicy → reddish wrapper
+
+Strength:
+- mild → lighter tone
+- medium → balanced
+- full → darker
+
+Size:
+- Robusto
+- Toro
+- Churchill
+
+All changes use REAL images
+
+---
+
+REALISTIC CIGAR BURN SYSTEM
+
+Use real image sequence:
+
+- fresh
+- slight burn
+- ash forming
+- longer ash
+- developed burn
+
+Transition:
+- fade between images
+- same angle + lighting required
+
+---
+
+SMOKE SYSTEM (REALISTIC)
+
+- real smoke PNG or video
+- low opacity (0.05–0.12)
+- slow upward drift
+- subtle side movement
+
+Must not block UI
+
+---
+
+EMBER EFFECT
+
+- very soft glow
+- low intensity
+- slight pulse
+
+---
+
+CIGAR AS PROGRESS SYSTEM
+
+Each step advances burn:
+
+Step 1 → clean cigar  
+Step 3 → ash forming  
+Final → full burn + smoke  
+
+---
+
+INTERACTION FEEDBACK
+
+Every action triggers:
+
+- scale down (0.94)
+- glow
+- sound
+
+Display text:
+
+“Your experience is taking shape…”
+
+---
+
+ANTICIPATION SYSTEM
+
+DO NOT show final result early
+
+Add:
+
+- progress bar (%)
+- hidden score (teased only)
+
+Display hints:
+
+“Strong profile forming”
+“Balanced pairing detected”
+
+---
+
+LOCKED REVEAL
+
+Before reveal:
+
+- blurred result
+- label: “Your Blend is Ready”
+
+User must tap:
+
+“Reveal My Blend”
+
+---
+
+REVEAL MOMENT
+
+- screen dims
+- fade + zoom transition
+- sound cue
+
+---
+
+FINAL RESULT SCREEN
+
+Show:
+
+TITLE:
+“Midnight Reserve”
+
+SCORE:
+92 / 100
+
+BREAKDOWN:
+- smoothness
+- boldness
+- balance
+
+TEXT:
+“Built for your taste: Smooth • Smoky • Relaxed”
+
+---
+
+COMPARISON SYSTEM
+
+Display:
+
+- “Top 15% of blends”
+- “Stronger than average”
+- “More balanced than most”
+
+Include visual meter
+
+---
+
+BUTTON SYSTEM
+
+Primary:
+- ORDER NOW (gold)
+
+Secondary:
+- Refine
+- Save
+
+Ghost:
+- Share
+
+---
+
+TYPOGRAPHY (FOR AGING VISION)
+
+- titles: 34–42px
+- body: 18px minimum
+- high contrast
+- no thin fonts
+
+---
+
+TOUCH / KIOSK RULES
+
+- minimum 60px targets
+- large spacing
+- instant feedback
+
+---
+
+SENSORY LAYER
+
+TOUCH:
+- press scale
+- micro bounce
+
+SOUND:
+- click (navigation)
+- tap (selection)
+- subtle completion tone
+
+AMBIENT:
+- low lounge audio (optional)
+
+---
+
+REALISTIC BURN AUDIO
+
+- soft ember sound
+- low volume
+- seamless loop
+
+Behavior:
+- increases slightly with progression
+- never loud or distracting
+
+---
+
+MOTION SYSTEM
+
+ALL animations must be:
+
+- smooth
+- consistent
+- 0.3–0.5s timing
+
+Include:
+
+- screen slides
+- card motion
+- product floating
+- background drift
+
+---
+
+IDLE MODE
+
+When no interaction:
+
+- product floats
+- smoke drifts
+- text appears:
+
+“Touch to begin your experience”
+
+---
+
+CONSISTENCY RULE
+
+Everything must:
+
+- feel like one system
+- share same movement
+- share same styling
+- share same behavior
+
+NO random variations allowed
+
+---
+
+FINAL GOAL
+
+The system must feel like:
+
+- a real cigar lounge experience
+- a guided interactive challenge
+- a premium product display
+- something users want to touch and stay on
+
+NOT:
+
+- a form
+- a static UI
+- a basic app
+
+---

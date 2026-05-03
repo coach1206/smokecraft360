@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CategoryToggle }    from "@/components/CategoryToggle";
 import { FlavorChips }       from "@/components/FlavorChips";
@@ -31,7 +31,7 @@ import { OrderModal }        from "@/components/Order/OrderModal";
 import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
 import type { SavedBlend }   from "@/services/storage";
 
-type Phase = "welcome" | "form" | "loading" | "results";
+type Phase = "welcome" | "form" | "loading" | "ready" | "results";
 
 /* ── Universal slide animation ────────────────────────────────── */
 const SLIDE_VARIANTS = {
@@ -174,6 +174,57 @@ export default function Home() {
     setCoachMsg(msg);
     coachTimerRef.current = setTimeout(() => setCoachMsg(null), 1900);
   }, []);
+
+  // ── Blend scoring (deterministic from selections) ────────────────
+  const blendScore = useMemo(() => {
+    let s = 72;
+    s += Math.min(flavors.length, 5) * 3;
+    s += Math.min(strength, 5) * 1.5;
+    if (mood) s += 4;
+    if (category === "cigar") s += 1.5;
+    return Math.min(98, Math.round(s));
+  }, [flavors.length, strength, mood, category]);
+
+  const subScores = useMemo(() => {
+    const has = (k: string) => flavors.some((f) => f.toLowerCase().includes(k));
+    const clamp = (n: number) => Math.max(60, Math.min(99, Math.round(n)));
+    return {
+      smoothness: clamp(64 + (5 - strength) * 4 + (has("creamy") ? 8 : 0) + (has("sweet") ? 6 : 0) + (has("vanilla") ? 6 : 0)),
+      boldness:   clamp(58 + strength * 6 + (has("smoky") ? 8 : 0) + (has("spicy") || has("pepper") ? 8 : 0) + (has("oak") ? 4 : 0)),
+      balance:    clamp(72 + Math.min(flavors.length, 4) * 4 + (mood ? 4 : 0)),
+    };
+  }, [flavors, strength, mood]);
+
+  const comparisonPct = useMemo(() => Math.max(3, 100 - blendScore + 5), [blendScore]);
+
+  const personalizedTags = useMemo(() => {
+    const cap = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+    const out: string[] = [];
+    if (flavors[0]) out.push(cap(flavors[0]));
+    if (flavors[1]) out.push(cap(flavors[1]));
+    out.push(strength <= 2 ? "Smooth" : strength >= 4 ? "Bold" : "Medium");
+    if (mood) out.push(cap(mood));
+    return out.slice(0, 4);
+  }, [flavors, strength, mood]);
+
+  // ── Progression meter ────────────────────────────────────────────
+  const blendProgress = useMemo(() => {
+    if (phase === "welcome") return 0;
+    if (phase === "results") return 100;
+    if (phase === "ready")   return 99;
+    if (phase === "loading") return 96;
+    if (moodDone)            return 92;
+    return 20 + formStep * 18;
+  }, [phase, formStep, moodDone]);
+
+  const blendStatus = useMemo(() => {
+    if (blendProgress < 30)  return "Choose your direction";
+    if (blendProgress < 50)  return "Strong profile developing";
+    if (blendProgress < 70)  return "Balanced pairing detected";
+    if (blendProgress < 90)  return "Premium blend in progress";
+    if (blendProgress < 100) return "Your blend is ready";
+    return "Reveal complete";
+  }, [blendProgress]);
 
   const goToStep = useCallback((step: 0|1|2|3) => {
     const forward = step > formStep;
@@ -335,8 +386,15 @@ export default function Home() {
   };
 
   const handleBurnComplete = () => {
-    if (results) { setPhase("results"); recordSession(); }
+    if (results) setPhase("ready"); // hold at locked reveal gate
   };
+
+  const handleReveal = useCallback(() => {
+    // Build-up tone followed by success chime
+    playTone(280, 560, 0.45, 0.05, "sine");
+    setTimeout(() => playChime(), 480);
+    setTimeout(() => { setPhase("results"); recordSession(); }, 620);
+  }, [playTone, playChime, recordSession]);
 
   const handleSwipe = (direction: "left" | "right", productId: string) => {
     recordSwipe();
@@ -420,6 +478,42 @@ export default function Home() {
     <div className="min-h-[100dvh] w-full text-foreground flex flex-col relative overflow-hidden" style={{ background: "hsl(22 18% 5%)" }}>
       <DynamicBackground bgKey={bgKey} />
 
+      {/* Progression meter — visible throughout buildup */}
+      {(phase === "form" || phase === "loading" || phase === "ready") && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          style={{
+            position: "fixed", top: 0, left: 0, right: 0, zIndex: 55,
+            pointerEvents: "none",
+            padding: "12px 20px 10px",
+            background: "linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%)",
+          }}
+        >
+          <div style={{ maxWidth: 480, margin: "0 auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 5 }}>
+              <span style={{ fontSize: 9, color: "rgba(212,175,55,0.7)", letterSpacing: "0.28em", textTransform: "uppercase", fontWeight: 600 }}>
+                {blendStatus}
+              </span>
+              <span style={{ fontSize: 10, color: "rgba(212,175,55,0.6)", letterSpacing: "0.18em", fontWeight: 600 }}>
+                {blendProgress}%
+              </span>
+            </div>
+            <div style={{ height: 3, borderRadius: 999, background: "rgba(212,175,55,0.12)", overflow: "hidden" }}>
+              <motion.div
+                animate={{ width: `${blendProgress}%` }}
+                transition={{ duration: 0.6, ease: [0.22,1,0.36,1] }}
+                style={{
+                  height: "100%",
+                  background: "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(245,205,90,0.95))",
+                  boxShadow: "0 0 12px rgba(212,175,55,0.45)",
+                }}
+              />
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Coach toast — fades in for 1.9s after each step completion */}
       <AnimatePresence>
         {coachMsg && (
@@ -477,6 +571,71 @@ export default function Home() {
 
       <AnimatePresence>
         {phase === "loading" && <CigarBurnLoader onComplete={handleBurnComplete} />}
+      </AnimatePresence>
+
+      {/* ── Locked Reveal Gate ────────────────────────────────────── */}
+      <AnimatePresence>
+        {phase === "ready" && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.45 }}
+            style={{
+              position: "fixed", inset: 0, zIndex: 50,
+              display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
+              background: "radial-gradient(ellipse at 50% 40%, rgba(60,30,8,0.5) 0%, rgba(0,0,0,0.86) 70%)",
+              backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.92, y: 22 }} animate={{ scale: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.22,1,0.36,1] }}
+              style={{
+                position: "relative", maxWidth: 440, width: "100%",
+                padding: "44px 32px 38px", borderRadius: 24,
+                background: "rgba(20,14,8,0.9)",
+                border: "1px solid rgba(212,175,55,0.32)",
+                boxShadow: "0 30px 90px rgba(0,0,0,0.7), 0 0 80px rgba(212,175,55,0.16)",
+                textAlign: "center",
+              }}
+            >
+              {/* Blurred floating preview disc */}
+              <motion.div
+                animate={{ y: [0, -7, 0], rotate: [0, 1.6, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                style={{
+                  width: 150, height: 150, borderRadius: "50%", margin: "0 auto 26px",
+                  background: "radial-gradient(circle at 32% 30%, rgba(245,210,110,0.65), rgba(150,90,30,0.5) 45%, rgba(40,22,10,0.88))",
+                  filter: "blur(7px)",
+                  boxShadow: "0 0 70px rgba(212,175,55,0.32), inset 0 0 30px rgba(255,200,100,0.2)",
+                }}
+              />
+              <p style={{ color: "rgba(212,175,55,0.7)", fontSize: 11, letterSpacing: "0.32em", textTransform: "uppercase", marginBottom: 12 }}>
+                Crafted &amp; Locked
+              </p>
+              <h2 className="font-serif" style={{ fontSize: "clamp(1.7rem, 5vw, 2.3rem)", color: "rgba(245,235,221,0.96)", fontWeight: 300, marginBottom: 10, letterSpacing: "0.04em" }}>
+                Your Blend is Ready
+              </h2>
+              <p style={{ color: "rgba(210,190,155,0.55)", fontSize: 13, marginBottom: 30, lineHeight: 1.55 }}>
+                A {comparisonPct <= 20 ? "rare" : "refined"} pairing, scored against thousands of profiles.
+              </p>
+              <motion.button
+                onClick={handleReveal}
+                data-testid="btn-reveal"
+                whileHover={{ scale: 1.02, boxShadow: "0 0 0 1px rgba(212,175,55,0.7), 0 18px 50px rgba(0,0,0,0.6), 0 0 80px rgba(212,175,55,0.32)" }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  minHeight: 64, padding: "0 40px", borderRadius: 6, border: "none", cursor: "pointer",
+                  background: "linear-gradient(135deg,hsl(43 75% 40%),hsl(45 85% 52%),hsl(43 75% 42%))",
+                  color: "#1A1410", fontFamily: "var(--app-font-serif)",
+                  fontSize: 16, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase",
+                  boxShadow: "0 0 0 1px rgba(212,175,55,0.4), 0 12px 36px rgba(0,0,0,0.5), 0 0 60px rgba(212,175,55,0.2)",
+                }}
+              >
+                Reveal My Blend
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
       <AnimatePresence>
         {justUnlockedElite && <EliteUnlockAnimation onComplete={clearEliteUnlock} />}
@@ -1009,6 +1168,67 @@ export default function Home() {
                 <p style={{ fontSize: 14, color: "rgba(200,175,135,0.65)", marginTop: 8, letterSpacing: "0.04em" }}>
                   Crafted for your taste. Designed for the moment.
                 </p>
+              </motion.div>
+
+              {/* SCORE + RATINGS + COMPARISON + PERSONALIZED */}
+              <motion.div
+                initial={{ opacity: 0, y: 14, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0,  scale: 1    }}
+                transition={{ delay: 0.45, duration: 0.7, ease: [0.22,1,0.36,1] }}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 18, marginBottom: 28 }}
+              >
+                <motion.div
+                  animate={{
+                    boxShadow: [
+                      "0 0 0 1px rgba(212,175,55,0.45), 0 0 30px rgba(212,175,55,0.18)",
+                      "0 0 0 1px rgba(212,175,55,0.7), 0 0 60px rgba(212,175,55,0.38)",
+                      "0 0 0 1px rgba(212,175,55,0.45), 0 0 30px rgba(212,175,55,0.18)",
+                    ],
+                  }}
+                  transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+                  style={{
+                    display: "flex", alignItems: "baseline", gap: 6,
+                    padding: "14px 30px", borderRadius: 999,
+                    background: "linear-gradient(135deg, rgba(40,28,14,0.85), rgba(60,40,18,0.7))",
+                  }}
+                >
+                  <span className="font-serif" style={{ fontSize: 38, fontWeight: 600, color: "rgba(212,175,55,0.96)", letterSpacing: "0.02em", lineHeight: 1 }}>
+                    {blendScore}
+                  </span>
+                  <span style={{ fontSize: 15, color: "rgba(210,190,155,0.55)", letterSpacing: "0.1em" }}>/ 100</span>
+                </motion.div>
+
+                <div style={{ display: "flex", gap: 22, justifyContent: "center", flexWrap: "wrap" }}>
+                  {[
+                    { k: "Smoothness", v: subScores.smoothness },
+                    { k: "Boldness",   v: subScores.boldness   },
+                    { k: "Balance",    v: subScores.balance    },
+                  ].map((m) => (
+                    <div key={m.k} style={{ textAlign: "center", minWidth: 76 }}>
+                      <div style={{ fontSize: 9, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(180,155,100,0.55)", marginBottom: 6 }}>
+                        {m.k}
+                      </div>
+                      <div style={{ height: 4, width: 76, borderRadius: 2, background: "rgba(212,175,55,0.12)", overflow: "hidden" }}>
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${m.v}%` }}
+                          transition={{ delay: 0.7, duration: 0.95, ease: [0.22,1,0.36,1] }}
+                          style={{ height: "100%", background: "linear-gradient(90deg, rgba(180,130,30,0.85), rgba(245,205,90,0.95))" }}
+                        />
+                      </div>
+                      <div style={{ fontSize: 11, color: "rgba(212,175,55,0.78)", marginTop: 6, fontWeight: 600 }}>{m.v}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, marginTop: 4 }}>
+                  <p style={{ fontSize: 11, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(212,175,55,0.72)" }}>
+                    Top {comparisonPct}% of blends created
+                  </p>
+                  <p style={{ fontSize: 12, color: "rgba(210,190,155,0.55)", letterSpacing: "0.05em" }}>
+                    Built for your taste · {personalizedTags.join(" • ")}
+                  </p>
+                </div>
               </motion.div>
 
               <div data-tour="tour-card-stack">
