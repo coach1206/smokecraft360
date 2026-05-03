@@ -1,0 +1,251 @@
+FINAL BUILD PROMPT
+
+MISSING / REQUIRED
+
+1. Full SmokeCraft 360 IP Protection System
+Protect code, designs, logic, documents, workflows, and business model before trademark/patent.
+
+2. RSA Encryption Layer (Public Key Only)
+Encrypt sensitive data using OWNER_PUBLIC_KEY. Private key NEVER inside system.
+
+3. Timestamp + Ownership Proof System
+Every asset gets SHA-256 hash + timestamp + version history.
+
+4. Audit Logging System
+Track every action: login, upload, view, edit, delete, export, failed access.
+
+5. NDA / Access Gate
+Users must accept confidentiality + non-reverse-engineering before access.
+
+6. Role-Based Access Control
+Owner, Admin, Partner, Developer, Vendor, Public.
+
+7. IP Evidence Vault
+Stores proof of ownership, hashes, timestamps, versions, logs.
+
+8. Admin Security Command Center
+Full control and visibility.
+
+--------------------------------------------------
+
+FAILURE PREVENTION CHECKLIST
+
+- Private key NEVER stored anywhere in app
+- Public key required or system blocks
+- All sensitive data encrypted before storage
+- Every asset hashed (SHA-256)
+- Every action logged
+- NDA required before protected access
+- All protected routes require auth + role
+- System fails CLOSED if security fails
+- No open endpoints to protected data
+- All secrets via environment variables only
+
+--------------------------------------------------
+
+TECH STACK
+
+Frontend:
+React + TypeScript + Vite + Tailwind
+
+Backend:
+Node.js + Express + TypeScript
+
+Database:
+PostgreSQL + Drizzle ORM
+
+Security:
+JWT
+bcrypt
+crypto module
+RSA encryption
+SHA-256 hashing
+rate limiting
+
+--------------------------------------------------
+
+ENV VARIABLES
+
+DATABASE_URL=
+JWT_SECRET=
+OWNER_PUBLIC_KEY=
+DATA_ENCRYPTION_KEY=
+APP_BASE_URL=
+
+--------------------------------------------------
+
+CRITICAL RULE
+
+ONLY USE PUBLIC KEY IN APP
+PRIVATE KEY STAYS WITH OWNER OFFLINE
+
+--------------------------------------------------
+
+DATABASE TABLES
+
+protected_assets:
+id
+name
+type
+description
+sha256Hash
+encryptedData
+classification
+version
+createdBy
+createdAt
+
+ip_evidence_vault:
+id
+assetId
+hash
+timestamp
+version
+createdAt
+
+nda_acceptances:
+id
+userId
+acceptedAt
+ipAddress
+
+access_permissions:
+id
+userId
+role
+canView
+canUpload
+canDownload
+canExport
+
+security_audit_logs:
+id
+userId
+event
+severity
+ipAddress
+createdAt
+
+--------------------------------------------------
+
+BACKEND SERVICES
+
+rsaEncryption.ts
+- encryptWithPublicKey(data)
+
+hashService.ts
+- createSHA256Hash(data)
+
+auditLogger.ts
+- logEvent(type, userId)
+
+accessControl.ts
+- requireAuth
+- requireRole
+- requireNDA
+
+timestampService.ts
+- createTimestamp()
+
+--------------------------------------------------
+
+API ROUTES
+
+POST /api/assets/upload
+- hash file
+- encrypt metadata
+- store asset
+- log event
+
+GET /api/assets
+- role-based access
+
+GET /api/assets/:id
+- protected access
+
+POST /api/nda/accept
+- store NDA acceptance
+
+GET /api/audit/logs
+- admin only
+
+GET /api/security/status
+- check system health
+
+--------------------------------------------------
+
+FRONTEND PAGES
+
+SecurityDashboard
+- system status
+- asset count
+- logs
+- alerts
+
+AssetVault
+- list protected assets
+
+EvidenceVault
+- show hash + timestamps
+
+NDAGate
+- require acceptance before access
+
+AuditLogs
+- show system activity
+
+--------------------------------------------------
+
+NDA TEXT
+
+By continuing, you acknowledge:
+
+All SmokeCraft 360 materials are proprietary.
+You agree NOT to copy, reverse engineer, share, or recreate.
+All activity is logged.
+Ownership remains with 360 Enterprise Services / Procon Innovations.
+
+--------------------------------------------------
+
+OWNER KEY SETUP (DO THIS YOURSELF)
+
+Run locally:
+
+openssl genrsa -out private.pem 4096
+
+openssl rsa -in private.pem -pubout -out public.pem
+
+Put public.pem into:
+OWNER_PUBLIC_KEY
+
+KEEP private.pem OFFLINE
+
+--------------------------------------------------
+
+SECURITY RULES
+
+- Fail CLOSED always
+- No access without auth
+- No access without NDA
+- No access without permission
+- Log EVERYTHING
+- Encrypt sensitive data
+- Hash every asset
+- Block if key missing
+
+--------------------------------------------------
+
+FINAL OUTPUT
+
+System must print:
+
+"SmokeCraft 360 Security Layer Active"
+
+Show:
+- routes added
+- tables added
+- encryption active
+- audit logging active
+- NDA system active
+
+DO NOT mark complete unless fully wired frontend + backend + database
