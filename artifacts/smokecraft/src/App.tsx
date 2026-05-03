@@ -21,10 +21,17 @@ const queryClient = new QueryClient();
 function Router() {
   return (
     <Switch>
-      <Route path="/"          component={Home}           />
-      <Route path="/dashboard" component={Dashboard}      />
-      <Route path="/success"   component={PaymentSuccess} />
-      <Route path="/cancel"    component={PaymentCancel}  />
+      <Route path="/"           component={Home}           />
+      <Route path="/dashboard"  component={Dashboard}      />
+      <Route path="/success"    component={PaymentSuccess} />
+      <Route path="/cancel"     component={PaymentCancel}  />
+      {/* Per-theme entry URLs (/smokecraft, /pourcraft, …). The route
+          renders the standard Home shell; loadTheme() resolves the active
+          theme from the path segment via window.location, so no per-theme
+          components are required. New themes need no code changes — the
+          theme_profiles registry is the source of truth. */}
+      <Route path="/smokecraft" component={Home}           />
+      <Route path="/pourcraft"  component={Home}           />
       <Route component={NotFound} />
     </Switch>
   );

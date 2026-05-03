@@ -10,9 +10,15 @@ import { Product, Category } from "./types";
 import { cigars  }           from "../data/cigars";
 import { alcohol }           from "../data/alcohol";
 
+// New theme verticals (wine, cocktail) start empty — vendors populate them
+// via POST /api/products and registerProductInEngine. Listing them here
+// makes the engine recognize them as valid categories so the recommendation
+// API accepts ?category=wine / ?category=cocktail requests from PourCraft.
 const datasets: Record<string, Product[]> = {
-  cigar:   cigars,
-  alcohol: alcohol,
+  cigar:    cigars,
+  alcohol:  alcohol,
+  wine:     [],
+  cocktail: [],
 };
 
 /** Products added at runtime via the API — stored separately to keep the

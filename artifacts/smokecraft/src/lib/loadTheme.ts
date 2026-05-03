@@ -44,9 +44,15 @@ const DEFAULT_THEME: ThemeProfile = {
   steps:        ["mood", "flavor", "strength", "pairing"],
 };
 
+/** Recognised theme slugs may appear as the first path segment
+ *  (e.g. `/pourcraft`). Anything else is treated as an app route. */
+const THEME_PATH_RE = /^[a-z][a-z0-9-]{2,40}craft$/;
+
 function pickSlug(arg?: string): string {
   if (arg) return arg;
   if (typeof window !== "undefined") {
+    const segment = window.location.pathname.split("/").filter(Boolean)[0];
+    if (segment && THEME_PATH_RE.test(segment)) return segment;
     const param = new URLSearchParams(window.location.search).get("theme");
     if (param) return param;
     const stored = window.localStorage.getItem("smokecraft_theme");

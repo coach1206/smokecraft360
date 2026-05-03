@@ -5,6 +5,8 @@ import { z } from "zod/v4";
 export const productCategoryEnum = pgEnum("product_category", [
   "cigar",
   "alcohol",
+  "wine",
+  "cocktail",
   "food",
   "coffee",
   "tea",
