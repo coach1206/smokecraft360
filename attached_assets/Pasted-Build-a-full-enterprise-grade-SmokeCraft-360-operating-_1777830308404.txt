@@ -1,0 +1,333 @@
+Build a full enterprise-grade SmokeCraft 360 operating system.
+
+This system must include frontend, backend, database, integration layer, offline sync, financial engine, AI learning loop, compliance layer, and kiosk-ready UI.
+
+Use:
+React + Vite (frontend)
+Node.js + Express + TypeScript (backend)
+PostgreSQL + Drizzle ORM (database)
+
+--------------------------------------------------
+UI / UX REQUIREMENTS
+--------------------------------------------------
+
+Create a premium glass-style interface:
+
+- Glassmorphism cards with blur + transparency
+- Deep layered card shadows (no flat cards)
+- Smooth hover and press animations
+- Touchscreen optimized spacing
+- Large responsive buttons
+- Active sliders and faders
+- Animated transitions between pages
+- No glyph icons, no emojis
+- Use real high-end lounge imagery backgrounds
+- Clean typography, high contrast
+
+Every screen must include:
+- Back button (functional)
+- Home button (functional)
+- Title and description
+
+--------------------------------------------------
+CORE ROUTES
+--------------------------------------------------
+
+/admin
+/admin/integrations
+/admin/conflicts
+/admin/finance
+/admin/contracts
+/admin/exports
+/admin/updates
+/admin/system-health
+
+/vendor
+/vendor/products
+/vendor/inventory
+/vendor/orders
+
+/kiosk
+/kiosk/session
+/kiosk/reset
+
+--------------------------------------------------
+DATABASE TABLES
+--------------------------------------------------
+
+users
+vendors
+venues
+products
+inventory
+orders
+commissions
+integrations
+sync_logs
+conflicts
+contracts
+payments
+payouts
+audit_logs
+update_packages
+ai_learning_events
+offline_queue
+
+--------------------------------------------------
+DATA OWNERSHIP ENGINE
+--------------------------------------------------
+
+Create a system that tracks data source:
+
+vendor
+pos
+distributor
+system
+
+Each record must include:
+
+source
+priority_level
+last_updated_by
+version
+
+Create rules:
+
+POS overrides vendor price only if priority is higher  
+Distributor overrides inventory only if authorized  
+Admin override always wins  
+
+--------------------------------------------------
+CONFLICT RESOLUTION ENGINE
+--------------------------------------------------
+
+Detect conflicts when:
+
+price mismatch
+inventory mismatch
+product mismatch
+
+Create conflict table and admin UI:
+
+Show:
+- conflicting values
+- sources
+- timestamps
+
+Allow:
+- manual resolution
+- rule-based auto resolution
+
+--------------------------------------------------
+FINANCIAL ENGINE
+--------------------------------------------------
+
+Build full payout + commission system:
+
+Split payments between:
+platform
+venue
+vendor
+distributor
+
+Support:
+
+escrow holding
+delayed payouts
+refund handling
+dispute flagging
+
+Create routes:
+
+/api/payments/create
+/api/payouts/process
+/api/refunds
+/api/disputes
+
+--------------------------------------------------
+CONTRACT ENGINE
+--------------------------------------------------
+
+Create contract system:
+
+Vendor agreements
+Distributor agreements
+Commission agreements
+
+Store:
+
+terms
+commission rates
+permissions
+data visibility rules
+
+--------------------------------------------------
+OFFLINE MODE
+--------------------------------------------------
+
+Implement:
+
+Local storage caching
+Offline order queue
+Sync when online
+
+Queue must store:
+
+orders
+inventory changes
+updates
+
+Create sync worker:
+
+runs when connection restored
+
+--------------------------------------------------
+AI LEARNING LOOP
+--------------------------------------------------
+
+Track:
+
+user selections
+product clicks
+completed purchases
+rejected recommendations
+
+Store in ai_learning_events
+
+Create logic:
+
+increase weight for popular products
+decrease weight for ignored products
+
+--------------------------------------------------
+COMPLIANCE LAYER
+--------------------------------------------------
+
+Implement:
+
+Age verification gate
+Location-based restrictions
+Tax calculation placeholder
+
+Block restricted products based on region
+
+--------------------------------------------------
+KIOSK MODE
+--------------------------------------------------
+
+Create kiosk interface:
+
+Auto reset after session
+Timeout system
+Lock admin access
+Prevent browser navigation
+
+--------------------------------------------------
+INTEGRATION HUB
+--------------------------------------------------
+
+Create integration system:
+
+POS
+Distributor
+External API
+
+Routes:
+
+POST /api/integrations/connect
+POST /api/integrations/sync
+GET /api/integrations/status
+
+Create connector classes:
+
+SquareConnector
+ToastConnector
+CloverConnector
+GenericAPIConnector
+
+Do not hardcode APIs — create extensible architecture
+
+--------------------------------------------------
+EXPORT SYSTEM
+--------------------------------------------------
+
+Allow export:
+
+inventory
+orders
+vendors
+commissions
+logs
+
+Formats:
+
+CSV
+JSON
+
+--------------------------------------------------
+UPDATE SYSTEM
+--------------------------------------------------
+
+Allow:
+
+Upload update package
+Validate update
+Apply update
+Rollback update
+
+--------------------------------------------------
+DEMO MODE VS LIVE MODE
+--------------------------------------------------
+
+Create environment toggle:
+
+DEMO_MODE = true/false
+
+Demo Mode:
+- fake data
+- simulated integrations
+
+Live Mode:
+- real database
+- real APIs
+
+--------------------------------------------------
+SECURITY
+--------------------------------------------------
+
+Implement:
+
+JWT authentication
+Role-based access
+Encrypted API keys placeholder
+Webhook validation placeholder
+Rate limiting
+Audit logging
+
+--------------------------------------------------
+SYSTEM HEALTH DASHBOARD
+--------------------------------------------------
+
+Display:
+
+DB status
+API status
+Integration status
+Last sync
+Errors
+Queue size
+
+--------------------------------------------------
+DELIVERABLES
+--------------------------------------------------
+
+After build provide:
+
+Full file tree
+All code files
+Environment variables
+Database migration
+Seed script
+Run instructions
+Testing checklist
+Explanation of each system
