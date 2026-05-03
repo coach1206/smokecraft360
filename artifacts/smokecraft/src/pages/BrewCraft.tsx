@@ -6,6 +6,15 @@ import ExperienceFrame from "@/components/ExperienceFrame";
 import VoicePanel     from "@/components/AIPanel/VoicePanel";
 import SuggestedMenu  from "@/components/AIPanel/SuggestedMenu";
 import loungeBg from "@assets/locked_cards/experience_smokecraft.png";
+/* Per-style beer hero photos (39th brief — "still no beer"). AI-generated
+ * to match each BrewStyle's flavor/strength: pale lager, amber ale, hazy
+ * IPA, imperial stout. Live in `generated_images/` (not `locked_cards/`)
+ * so the locked-photography set stays untouched; swap to a real
+ * photograph by replacing the file at the same path — no code change. */
+import brewLightImg from "@assets/generated_images/brew_light.png";
+import brewAmberImg from "@assets/generated_images/brew_amber.png";
+import brewIpaImg   from "@assets/generated_images/brew_ipa.png";
+import brewDarkImg  from "@assets/generated_images/brew_dark.png";
 
 /**
  * BrewCraft — beer-led pairing flow.
@@ -35,12 +44,18 @@ interface BrewStyle {
   flavors:   string[];
   strength:  number;
   mood:      string;
-  /** Background gradient for the card hero (no remote images). */
+  /** Background gradient for the card hero (kept as fallback / overlay tint
+   *  beneath the photo so each card retains its color identity even while
+   *  the image is loading). */
   gradient:  string;
+  /** Per-style beer hero photo. Bundled at build time via Vite — no
+   *  network fetch, no fallback chain (the asset must exist). */
+  image:     string;
   /** Accent color used for borders, glow, and section dividers. */
   accent:    string;
   /** Single iconographic char rendered in the hero — text-only so the
-   *  page is fully offline / locked-asset friendly. */
+   *  page is fully offline / locked-asset friendly. Now also kept as
+   *  a tiny corner mark beside the photo for accessibility / scanning. */
   glyph:     string;
   /** Strength label rendered in the right context panel. */
   strengthLabel: string;
@@ -55,6 +70,7 @@ const STYLES: BrewStyle[] = [
     strength: 1,
     mood:     "relaxed",
     gradient: "linear-gradient(155deg, #f5e8a0 0%, #e6c76a 45%, #8a6a1e 100%)",
+    image:    brewLightImg,
     accent:   "#E6C76A",
     glyph:    "◐",
     strengthLabel: "Easy",
@@ -67,6 +83,7 @@ const STYLES: BrewStyle[] = [
     strength: 2,
     mood:     "social",
     gradient: "linear-gradient(155deg, #d49555 0%, #9c5a1e 50%, #4a2810 100%)",
+    image:    brewAmberImg,
     accent:   "#D49555",
     glyph:    "◑",
     strengthLabel: "Medium",
@@ -79,6 +96,7 @@ const STYLES: BrewStyle[] = [
     strength: 3,
     mood:     "bold",
     gradient: "linear-gradient(155deg, #e8a04a 0%, #b8651a 50%, #5a2c08 100%)",
+    image:    brewIpaImg,
     accent:   "#E8A04A",
     glyph:    "◒",
     strengthLabel: "Bold",
@@ -91,6 +109,7 @@ const STYLES: BrewStyle[] = [
     strength: 4,
     mood:     "focused",
     gradient: "linear-gradient(155deg, #3a2412 0%, #1a0d06 60%, #050202 100%)",
+    image:    brewDarkImg,
     accent:   "#A06b3a",
     glyph:    "●",
     strengthLabel: "Heavy",
@@ -354,7 +373,13 @@ export default function BrewCraft() {
                     border: `1px solid ${style.accent}66`,
                     cursor: loading ? "default" : "pointer",
                     padding: 0, color: "inherit",
-                    background: style.gradient,
+                    /* Photo on top, gradient fallback beneath — if the
+                     * image asset ever fails to load, the original color
+                     * identity still shows through. `cover` keeps the
+                     * glass centered at any card width. */
+                    backgroundImage:    `url(${style.image}), ${style.gradient}`,
+                    backgroundSize:     "cover",
+                    backgroundPosition: "center",
                     boxShadow: isSel
                       ? `0 0 0 2px ${style.accent}, 0 30px 80px ${style.accent}55`
                       : "0 18px 50px rgba(0,0,0,0.55)",
@@ -364,7 +389,9 @@ export default function BrewCraft() {
                   <div
                     style={{
                       position: "absolute", inset: 0,
-                      background: "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.7) 100%)",
+                      /* Heavier bottom gradient than before so the title
+                       * stays legible over the busier photo background. */
+                      background: "linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.92) 100%)",
                       pointerEvents: "none",
                     }}
                   />
