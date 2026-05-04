@@ -5,6 +5,7 @@ import { ArrowLeft, Lock } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
+import { useVenueContext } from "@/contexts/VenueContext";
 
 const MOCK_USERS = [
   { pin: "1206", name: "JC Collins", role: "owner", email: "jccollins1206@yahoo.com" },
@@ -38,6 +39,7 @@ function saveLockoutState(attempts: number, lockedUntil: number | null) {
 export default function PinLogin() {
   const [, navigate] = useLocation();
   const { setCurrentUser } = usePosContext();
+  const { getBackground } = useVenueContext();
   const cc = useCommandCenter();
   const [pin, setPin] = useState("");
   const [error, setError] = useState(false);
@@ -117,7 +119,7 @@ export default function PinLogin() {
   }, [pin, success, isLocked, failedAttempts, setCurrentUser, navigate, cc]);
 
   return (
-    <BackgroundLayer image="/images/lounge-bg.png" blur={5} style={{
+    <BackgroundLayer image={getBackground("pinLogin")} blur={5} style={{
       minHeight: "100dvh",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",

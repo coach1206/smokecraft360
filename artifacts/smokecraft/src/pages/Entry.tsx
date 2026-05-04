@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Building2, Shield, Package, Play, Presentation } from "lucide-react";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
+import { useVenueContext } from "@/contexts/VenueContext";
 
 const TILES = [
   {
@@ -60,6 +61,7 @@ const TILES = [
 export default function Entry() {
   const [, navigate] = useLocation();
   const [expandingId, setExpandingId] = useState<string | null>(null);
+  const { getBackground } = useVenueContext();
 
   function handleTap(tile: typeof TILES[number]) {
     setExpandingId(tile.id);
@@ -67,7 +69,7 @@ export default function Entry() {
   }
 
   return (
-    <BackgroundLayer image="/images/lounge-bg.png" blur={3} style={{
+    <BackgroundLayer image={getBackground("entry")} blur={3} style={{
       height: "100dvh",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",

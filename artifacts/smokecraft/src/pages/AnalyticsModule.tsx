@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, TrendingUp, Brain, AlertTriangle, Gift, Award, Package, ArrowUpRight, ArrowDownRight, Plus, Minus } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
+import { useVenueContext } from "@/contexts/VenueContext";
 import ConfirmModal from "@/components/ConfirmModal";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
@@ -36,6 +37,7 @@ export default function AnalyticsModule() {
   const [, navigate] = useLocation();
   const pos = usePosContext();
   const cc = useCommandCenter();
+  const { getBackground } = useVenueContext();
   const [tab, setTab] = useState<AnalyticsTab>("overview");
   const [adjustProduct, setAdjustProduct] = useState<string | null>(null);
   const [adjustDelta, setAdjustDelta] = useState(0);
@@ -56,7 +58,7 @@ export default function AnalyticsModule() {
     .map((p, i) => ({ ...p, sold: [24, 18, 15, 12, 9][i] ?? 5 }));
 
   return (
-    <BackgroundLayer image="/images/scenes/reflective.jpg" style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
+    <BackgroundLayer image={getBackground("analytics")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
           style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>

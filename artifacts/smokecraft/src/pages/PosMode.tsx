@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Minus, Plus, Trash2, ShoppingCart, CheckCircle2, Gift, AlertTriangle, XCircle, RotateCcw, Loader2, Undo2 } from "lucide-react";
 import { usePosContext, type Product, type PaymentStatus } from "@/contexts/PosContext";
+import { useVenueContext } from "@/contexts/VenueContext";
 import KioskProductImage from "@/components/KioskProductImage";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
@@ -323,6 +324,7 @@ function FailedOverlay({ error, onRetry, onDismiss }: {
 export default function PosMode() {
   const [, navigate] = useLocation();
   const pos = usePosContext();
+  const { getBackground } = useVenueContext();
   const [activeCategory, setActiveCategory] = useState("all");
   const [overlayState, setOverlayState] = useState<
     | { type: "processing" }
@@ -398,7 +400,7 @@ export default function PosMode() {
   const canRefund = pos.currentUser?.role?.toLowerCase() === "owner" || pos.currentUser?.role?.toLowerCase() === "manager";
 
   return (
-    <BackgroundLayer image="/images/cigar1.png" style={{
+    <BackgroundLayer image={getBackground("pos")} style={{
       height: "100dvh", display: "flex", flexDirection: "column",
       color: "#e8e0c8", overflow: "hidden",
     }}>

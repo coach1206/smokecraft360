@@ -31,6 +31,51 @@ export interface VenueFeatures {
   vault:       boolean;
 }
 
+export type BackgroundKey =
+  | "entry" | "pinLogin" | "dashboard" | "pos"
+  | "analytics" | "devices" | "vendors" | "staff"
+  | "experiences" | "settings" | "touchHome"
+  | "adminTouch" | "venueTouch" | "vendorTouch"
+  | "demoCenter" | "demoWalk";
+
+export const DEFAULT_BACKGROUNDS: Record<BackgroundKey, string> = {
+  entry:       "/images/lounge-bg.png",
+  pinLogin:    "/images/lounge-bg.png",
+  dashboard:   "/images/lounge-bg.jpg",
+  pos:         "/images/cigar1.png",
+  analytics:   "/images/scenes/reflective.jpg",
+  devices:     "/images/scenes/bold.jpg",
+  vendors:     "/images/cigar4.png",
+  staff:       "/images/scenes/social.jpg",
+  experiences: "/images/cigar1.png",
+  settings:    "/images/lounge-bg.jpg",
+  touchHome:   "/images/lounge-bg.jpg",
+  adminTouch:  "/images/cigar3.png",
+  venueTouch:  "/images/cigar.png",
+  vendorTouch: "/images/cigar2.png",
+  demoCenter:  "/images/lounge-bg.png",
+  demoWalk:    "/images/lounge-bg.jpg",
+};
+
+export const BACKGROUND_LABELS: Record<BackgroundKey, string> = {
+  entry:       "Entry / Home",
+  pinLogin:    "PIN Login",
+  dashboard:   "Command Center",
+  pos:         "POS Terminal",
+  analytics:   "Analytics",
+  devices:     "Devices",
+  vendors:     "Vendors",
+  staff:       "Staff",
+  experiences: "Experiences",
+  settings:    "Settings",
+  touchHome:   "Touchscreen Home",
+  adminTouch:  "Admin Console",
+  venueTouch:  "Venue Dashboard",
+  vendorTouch: "Vendor Portal",
+  demoCenter:  "Demo Center",
+  demoWalk:    "Demo Walkthrough",
+};
+
 export interface VenueConfig {
   id:           string;
   logoText:     string;
@@ -38,11 +83,14 @@ export interface VenueConfig {
   primaryColor: string;
   logoUrl:      string | null;
   features:     VenueFeatures;
+  backgrounds:  Partial<Record<BackgroundKey, string>>;
 }
 
 interface VenueContextValue {
   config: VenueConfig;
   updateBranding: (patch: Partial<Pick<VenueConfig, "logoText" | "tagline" | "primaryColor" | "logoUrl">>) => void;
+  updateBackground: (key: BackgroundKey, url: string) => void;
+  getBackground: (key: BackgroundKey) => string;
 }
 
 const DEFAULT_CONFIG: VenueConfig = {
@@ -58,11 +106,14 @@ const DEFAULT_CONFIG: VenueConfig = {
     eliteMode:   true,
     vault:       true,
   },
+  backgrounds:  {},
 };
 
 const VenueContext = createContext<VenueContextValue>({
   config: DEFAULT_CONFIG,
   updateBranding: () => {},
+  updateBackground: () => {},
+  getBackground: (key) => DEFAULT_BACKGROUNDS[key],
 });
 
 /** Apply venue primary color as a CSS custom property so all gold accents
@@ -71,8 +122,19 @@ function applyTheme(color: string): void {
   document.documentElement.style.setProperty("--venue-primary", color);
 }
 
+function loadLocalBackgrounds(venueId: string): Partial<Record<BackgroundKey, string>> {
+  try {
+    const raw = localStorage.getItem(`venue_backgrounds_${venueId}`);
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return {};
+}
+
 export function VenueProvider({ children }: { children: ReactNode }) {
-  const [config, setConfig] = useState<VenueConfig>(DEFAULT_CONFIG);
+  const [config, setConfig] = useState<VenueConfig>(() => ({
+    ...DEFAULT_CONFIG,
+    backgrounds: loadLocalBackgrounds("default"),
+  }));
 
   useEffect(() => {
     const params  = new URLSearchParams(window.location.search);
@@ -91,10 +153,12 @@ export function VenueProvider({ children }: { children: ReactNode }) {
         return r.json() as Promise<VenueConfig>;
       })
       .then((data) => {
+        const localBgs = loadLocalBackgrounds(venueId);
         const merged: VenueConfig = {
           ...DEFAULT_CONFIG,
           ...data,
           features: { ...DEFAULT_CONFIG.features, ...data.features },
+          backgrounds: { ...(data.backgrounds ?? {}), ...localBgs },
         };
         setConfig(merged);
         applyTheme(merged.primaryColor);
@@ -111,8 +175,25 @@ export function VenueProvider({ children }: { children: ReactNode }) {
     });
   }
 
+  function updateBackground(key: BackgroundKey, url: string) {
+    setConfig((prev) => {
+      const next = { ...prev, backgrounds: { ...prev.backgrounds, [key]: url || undefined } };
+      if (!url) delete next.backgrounds[key];
+      try {
+        const stored = JSON.parse(localStorage.getItem(`venue_backgrounds_${prev.id}`) ?? "{}");
+        if (url) stored[key] = url; else delete stored[key];
+        localStorage.setItem(`venue_backgrounds_${prev.id}`, JSON.stringify(stored));
+      } catch { /* ignore */ }
+      return next;
+    });
+  }
+
+  function getBackground(key: BackgroundKey): string {
+    return config.backgrounds[key] || DEFAULT_BACKGROUNDS[key];
+  }
+
   return (
-    <VenueContext.Provider value={{ config, updateBranding }}>{children}</VenueContext.Provider>
+    <VenueContext.Provider value={{ config, updateBranding, updateBackground, getBackground }}>{children}</VenueContext.Provider>
   );
 }
 

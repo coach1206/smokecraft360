@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { hasSignedDemoNda } from "@/components/Demo/DemoNdaModal";
+import { useVenueContext } from "@/contexts/VenueContext";
 import { ExperienceCenterGrid } from "@/components/Touchscreen";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
@@ -14,6 +15,7 @@ const ROUTE_MAP: Record<string, string> = {
 
 export default function DemoExperienceCenter() {
   const [, navigate] = useLocation();
+  const { getBackground } = useVenueContext();
   const [ndaSigned] = useState(() => hasSignedDemoNda());
 
   if (!ndaSigned) {
@@ -27,7 +29,7 @@ export default function DemoExperienceCenter() {
   }
 
   return (
-    <BackgroundLayer image="/images/lounge-bg.png" blur={2} style={{
+    <BackgroundLayer image={getBackground("demoCenter")} blur={2} style={{
         minHeight: "100dvh",
         color: "#e8e0c8",
         display: "flex",

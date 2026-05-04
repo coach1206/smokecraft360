@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
+import { useVenueContext } from "@/contexts/VenueContext";
 import { RoleHomeGrid } from "@/components/Touchscreen";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
@@ -15,6 +16,7 @@ interface Section {
 export default function VendorTouchscreen() {
   const [, navigate] = useLocation();
   const { token } = useAuth();
+  const { getBackground } = useVenueContext();
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +50,7 @@ export default function VendorTouchscreen() {
   }
 
   return (
-    <BackgroundLayer image="/images/cigar2.png" style={{
+    <BackgroundLayer image={getBackground("vendorTouch")} style={{
         minHeight: "100dvh",
         color: "#e8e0c8",
         padding: "32px 20px env(safe-area-inset-bottom, 20px)",

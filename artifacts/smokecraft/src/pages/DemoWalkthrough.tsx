@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import KioskProductImage from "@/components/KioskProductImage";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
+import { useVenueContext } from "@/contexts/VenueContext";
 import type { Product } from "@/contexts/PosContext";
 
 const DEFAULT_STEP_DURATION = 5000;
@@ -639,16 +640,18 @@ function ProfileSelector({
   onSkip,
   savedProfiles,
   onDeleteSaved,
+  bgImage,
 }: {
   onSelect: (profile: DemoProfile) => void;
   onSkip: () => void;
   savedProfiles: SavedProfile[];
   onDeleteSaved: (id: string) => void;
+  bgImage: string;
 }) {
   const savedDemoProfiles = savedProfiles.map(savedToDemoProfile);
 
   return (
-    <BackgroundLayer image="/images/lounge-bg.jpg" style={{
+    <BackgroundLayer image={bgImage} style={{
       height: "100dvh", display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       color: "#e8e0c8", padding: 24, overflow: "auto",
@@ -848,6 +851,7 @@ function SaveProfileDialog({
 
 export default function DemoWalkthrough() {
   const [, navigate] = useLocation();
+  const { getBackground } = useVenueContext();
   const [currentStep, setCurrentStep] = useState(0);
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -970,6 +974,7 @@ export default function DemoWalkthrough() {
         onSkip={handleProfileSkip}
         savedProfiles={savedProfiles}
         onDeleteSaved={handleDeleteSaved}
+        bgImage={getBackground("demoWalk")}
       />
     );
   }
@@ -978,7 +983,7 @@ export default function DemoWalkthrough() {
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
-    <BackgroundLayer image="/images/lounge-bg.jpg" style={{
+    <BackgroundLayer image={getBackground("demoWalk")} style={{
       height: "100dvh", display: "flex", flexDirection: "column",
       color: "#e8e0c8", overflow: "hidden",
     }}>

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers, ShieldAlert, Paintbrush, Image, Type, Palette, Check } from "lucide-react";
+import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers, ShieldAlert, Paintbrush, Image, Type, Palette, Check, RotateCcw } from "lucide-react";
 import { useCommandCenter, POS_MODE_INFO, type PosOperatingMode } from "@/contexts/CommandCenterContext";
 import { usePosContext } from "@/contexts/PosContext";
-import { useVenueContext } from "@/contexts/VenueContext";
+import { useVenueContext, BACKGROUND_LABELS, DEFAULT_BACKGROUNDS, type BackgroundKey } from "@/contexts/VenueContext";
 import ConfirmModal from "@/components/ConfirmModal";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
@@ -20,7 +20,7 @@ export default function SettingsModule() {
   const [, navigate] = useLocation();
   const cc = useCommandCenter();
   const pos = usePosContext();
-  const { config: venue, updateBranding } = useVenueContext();
+  const { config: venue, updateBranding, updateBackground, getBackground } = useVenueContext();
 
   const statusColor = cc.systemStatus === "operational" ? "#34d399" : cc.systemStatus === "degraded" ? "#f59e0b" : "#ef4444";
   const onlineDevices = cc.devices.filter(d => d.status === "online").length;
@@ -39,6 +39,7 @@ export default function SettingsModule() {
   const [brandSaved, setBrandSaved] = useState(false);
   const [brandSaving, setBrandSaving] = useState(false);
   const [brandError, setBrandError] = useState("");
+  const [bgSaved, setBgSaved] = useState(false);
 
   async function saveBranding() {
     if (!brandName.trim()) {
@@ -100,7 +101,7 @@ export default function SettingsModule() {
   }
 
   return (
-    <BackgroundLayer image="/images/lounge-bg.jpg" style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
+    <BackgroundLayer image={getBackground("settings")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
           style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
@@ -316,6 +317,88 @@ export default function SettingsModule() {
           >
             {brandSaving ? "Saving..." : brandSaved ? "Branding Saved!" : "Save Branding"}
           </motion.button>
+        </div>
+
+        <div style={{
+          padding: "16px", borderRadius: 14,
+          background: "rgba(255,255,255,0.03)", border: `1px solid ${brandColor}20`,
+          marginBottom: 16,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Image size={14} color={brandColor} />
+              <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Background Images</span>
+            </div>
+            {bgSaved && (
+              <span style={{ fontSize: 11, color: "#34d399", fontWeight: 600 }}>Saved!</span>
+            )}
+          </div>
+          <div style={{ fontSize: 11, color: "rgba(232,224,200,0.35)", marginBottom: 14, lineHeight: 1.5 }}>
+            Customize background images for each screen. Paste an image URL or leave blank for the default.
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            {(Object.keys(BACKGROUND_LABELS) as BackgroundKey[]).map((key) => {
+              const current = getBackground(key);
+              const isCustom = venue.backgrounds[key] !== undefined;
+              return (
+                <div key={key} style={{
+                  padding: "10px 12px", borderRadius: 10,
+                  background: isCustom ? `${brandColor}08` : "rgba(255,255,255,0.02)",
+                  border: `1px solid ${isCustom ? `${brandColor}30` : "rgba(255,255,255,0.06)"}`,
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: isCustom ? brandColor : "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                      {BACKGROUND_LABELS[key]}
+                    </span>
+                    {isCustom && (
+                      <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => {
+                          updateBackground(key, "");
+                          setBgSaved(true);
+                          setTimeout(() => setBgSaved(false), 2000);
+                          cc.addAuditEntry("background.reset", `Reset ${BACKGROUND_LABELS[key]} background to default`, pos.currentUser?.name);
+                        }}
+                        title="Reset to default"
+                        style={{
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          width: 22, height: 22, borderRadius: 6, cursor: "pointer",
+                          background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                          color: "rgba(232,224,200,0.4)", padding: 0,
+                        }}
+                      >
+                        <RotateCcw size={10} />
+                      </motion.button>
+                    )}
+                  </div>
+                  <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                    <div style={{
+                      width: 36, height: 36, borderRadius: 6, flexShrink: 0,
+                      backgroundImage: `url(${current})`,
+                      backgroundSize: "cover", backgroundPosition: "center",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                    }} />
+                    <input
+                      value={venue.backgrounds[key] ?? ""}
+                      onChange={(e) => {
+                        updateBackground(key, e.target.value);
+                        setBgSaved(true);
+                        setTimeout(() => setBgSaved(false), 2000);
+                      }}
+                      placeholder={DEFAULT_BACKGROUNDS[key]}
+                      style={{
+                        flex: 1, padding: "8px 10px", borderRadius: 8, fontSize: 11,
+                        background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                        color: "#e8e0c8", outline: "none", minWidth: 0,
+                      }}
+                      onFocus={(e) => { e.target.style.borderColor = `${brandColor}60`; }}
+                      onBlur={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div style={{

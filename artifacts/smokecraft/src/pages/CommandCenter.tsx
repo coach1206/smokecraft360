@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter, POS_MODE_INFO } from "@/contexts/CommandCenterContext";
+import { useVenueContext } from "@/contexts/VenueContext";
 import SystemStatusPanel from "@/components/SystemStatusPanel";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
@@ -56,10 +57,11 @@ export default function CommandCenter() {
     }
   }
 
+  const { getBackground } = useVenueContext();
   const statusColor = cc.systemStatus === "operational" ? "#34d399" : cc.systemStatus === "degraded" ? "#f59e0b" : "#ef4444";
 
   return (
-    <BackgroundLayer image="/images/lounge-bg.jpg" style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
+    <BackgroundLayer image={getBackground("dashboard")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)",

@@ -1,5 +1,6 @@
 import { useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
+import { useVenueContext } from "@/contexts/VenueContext";
 import { TouchCard } from "@/components/Touchscreen";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
@@ -15,6 +16,7 @@ const ROLE_ROUTES: Record<string, string> = {
 export default function TouchscreenHome() {
   const [, navigate] = useLocation();
   const { user } = useAuth();
+  const { getBackground } = useVenueContext();
   const role = user?.role;
 
   const tiles = [
@@ -35,7 +37,7 @@ export default function TouchscreenHome() {
   }
 
   return (
-    <BackgroundLayer image="/images/lounge-bg.jpg" style={{
+    <BackgroundLayer image={getBackground("touchHome")} style={{
         minHeight: "100dvh",
         color: "#e8e0c8",
         padding: "40px 20px env(safe-area-inset-bottom, 20px)",

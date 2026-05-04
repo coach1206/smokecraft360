@@ -28,6 +28,7 @@ The application features a luxury aesthetic with a dark gold theme, glassmorphis
 
 -   **BackgroundLayer**: Reusable `BackgroundLayer` component (`src/components/Layout/BackgroundLayer.tsx`) provides full-screen background images with dark gradient overlay and subtle ambient glow. Applied to all screens (Entry, PinLogin, Dashboard/CommandCenter, touchscreen pages, module pages, DemoWalkthrough, DemoExperienceCenter). The Intro page is exempt — it has its own video/attract-mode background system.
 -   **Image-Driven Tiles**: Command Center and Entry page tiles use background images (from `/images/`) with gradient overlays and icon overlays for readability, replacing the previous flat dark icon-only tiles.
+-   **Venue-Customizable Backgrounds**: Background images are managed through `VenueContext` (`getBackground(key)` / `updateBackground(key, url)`). All 16 screens read their backgrounds from the venue context with fallbacks to `DEFAULT_BACKGROUNDS`. Venue owners can customize any screen's background via the Settings page "Background Images" section by pasting image URLs. Customizations persist in localStorage scoped per venue ID (`venue_backgrounds_<venueId>`) and survive page refreshes.
 
 ## Core Features
 
