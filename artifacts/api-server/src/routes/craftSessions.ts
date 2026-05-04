@@ -23,12 +23,8 @@ const router: IRouter = Router();
 const craftEnum = z.enum(CRAFT_TYPES);
 const phaseEnum = z.enum(CRAFT_PHASES);
 
-/** Random duration between 30–38 min (inclusive), stored at session start. */
-function randomDuration(): number {
-  const min = 1800;
-  const max = 2280;
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+/** Default session duration: 35 min = 2100 s (matches schema default). */
+const DEFAULT_DURATION = 2100;
 
 const createSchema = z.object({
   craft:             craftEnum,
@@ -80,7 +76,7 @@ router.post("/", requireAuth, async (req: AuthRequest, res: Response) => {
 
   const userId = req.user!.id;
   const { craft, buildId, timerDurationSecs } = parsed.data;
-  const duration = timerDurationSecs ?? randomDuration();
+  const duration = timerDurationSecs ?? DEFAULT_DURATION;
   const now      = new Date();
   const expires  = new Date(now.getTime() + duration * 1000);
 
@@ -140,7 +136,7 @@ router.patch("/", requireAuth, async (req: AuthRequest, res: Response) => {
       .returning();
     res.json({ session: updated, created: false });
   } else {
-    const duration = randomDuration();
+    const duration = DEFAULT_DURATION;
     const expires  = remainingMs != null
       ? new Date(now.getTime() + remainingMs)
       : new Date(now.getTime() + duration * 1000);
