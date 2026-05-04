@@ -1,0 +1,222 @@
+Audit the existing SmokeCraft 360 codebase first.
+
+DO NOT rebuild anything.
+DO NOT duplicate existing systems.
+DO NOT replace current architecture.
+DO NOT introduce unsafe patterns (no raw SQL, no console.log, no unauthenticated routes).
+
+Preserve ALL existing systems including:
+sessions, Stripe + webhooks, subscriptions, payouts, commissions, analytics, audit logs, kiosk mode, feature flags, offline queue, inventory, loyalty, AI engines.
+
+Implement ONLY the production go-live control layer below.
+
+--------------------------------------------------
+1. SYSTEM VERSION + FORCE REFRESH
+--------------------------------------------------
+
+Add backend endpoint:
+
+GET /api/system/version
+
+Response:
+{
+  version: string,
+  minSupportedVersion: string,
+  forceRefresh: boolean
+}
+
+Add admin endpoint:
+
+POST /api/admin/system/force-refresh
+Body:
+{ enabled: boolean }
+
+Rules:
+- only super_admin can trigger
+- must write audit log
+- must use existing auth + role middleware
+
+Frontend:
+- On app load, fetch /api/system/version
+- If forceRefresh = true → reload app
+- If version < minSupportedVersion → block usage and reload
+
+--------------------------------------------------
+2. DEVICE HEARTBEAT SYSTEM
+--------------------------------------------------
+
+Add backend route:
+
+POST /api/device/heartbeat
+
+Body:
+{
+  deviceId: string,
+  venueId: string,
+  version: string,
+  status: "ACTIVE" | "IDLE"
+}
+
+Store:
+- deviceId
+- venueId
+- lastSeen timestamp
+- version
+- status
+
+Rules:
+- validate input (zod or existing validation)
+- apply rate limiting
+- write audit or system log entry
+
+Add endpoint:
+
+GET /api/admin/devices
+
+Returns:
+- all devices
+- lastSeen
+- status
+- version
+- venueId
+
+Add endpoint:
+
+POST /api/admin/device/:deviceId/refresh
+
+Sets:
+forceRefresh = true for that device session
+
+--------------------------------------------------
+3. FEATURE FLAG FRONTEND SYNC
+--------------------------------------------------
+
+Do NOT rebuild feature flags.
+
+Ensure frontend:
+- fetches flags on load
+- reacts dynamically
+
+Example:
+if (flags.burn_in_protection) enablePixelShift()
+
+--------------------------------------------------
+4. SESSION CLEANUP WORKER
+--------------------------------------------------
+
+Extend existing worker system.
+
+Add worker:
+
+sessionCleanupWorker
+
+Runs every 30 minutes.
+
+Must:
+- find expired sessions
+- mark CLOSED or EXPIRED
+- remove abandoned session members
+- release reward holds (if safe)
+- NOT delete financial records
+- use idempotent pattern (no double processing)
+- log structured output
+
+Add endpoints:
+
+GET /api/admin/workers/session-cleanup/status
+POST /api/admin/workers/session-cleanup/run-now
+
+Rules:
+- run-now is super_admin only
+- use auth + rate limiting
+- log audit action
+
+--------------------------------------------------
+5. KIOSK BURN-IN PROTECTION
+--------------------------------------------------
+
+Extend existing KioskModeContext.
+
+Add:
+- subtle pixel shift (1–2px)
+- interval: 30–60 seconds
+- optional brightness breathing
+
+Behavior:
+- ONLY active during idle / attract loop
+- MUST pause during:
+  - NDA
+  - checkout
+  - staff redemption
+  - active user interaction
+
+Add config flags:
+burnInProtectionEnabled
+pixelShiftInterval
+pixelShiftAmount
+brightnessPulseEnabled
+
+Controlled by feature flags.
+
+--------------------------------------------------
+6. RIPPLE TOUCH EFFECT
+--------------------------------------------------
+
+Create reusable ripple effect component.
+
+Requirements:
+- no layout shift
+- <150ms response
+- works with Framer Motion
+- respects disabled state
+- no icon dependency
+
+Apply to:
+- craft cards
+- answer buttons
+- result CTA
+- staff redemption confirm
+- dashboard action buttons
+
+Do NOT refactor entire UI.
+
+--------------------------------------------------
+7. SECURITY REQUIREMENTS (MANDATORY)
+--------------------------------------------------
+
+- Use existing auth middleware
+- Use existing role checks
+- Use existing rate limiters
+- Validate all inputs
+- Use structured logging
+- Use Drizzle/query builder (NO raw SQL)
+- Fail closed on invalid permissions
+- Do NOT trust client input
+
+--------------------------------------------------
+8. DATABASE RULES
+--------------------------------------------------
+
+Reuse existing tables if possible.
+
+Only add if needed:
+devices table (if not existing)
+worker_run_logs (if not existing)
+
+Do NOT create duplicate systems.
+
+--------------------------------------------------
+9. COMPLETION REPORT
+--------------------------------------------------
+
+After implementation, return:
+
+- files changed
+- routes added
+- tables reused or added
+- audit actions added
+- feature flags used
+- worker behavior
+- manual test steps
+- confirmation no duplicate systems were created
+- confirmation existing systems were preserved

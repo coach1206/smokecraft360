@@ -26,6 +26,7 @@ import { PresentationOverlay }   from "@/components/Presentation/PresentationOve
 import { KioskModeProvider, KioskModeBanner } from "@/contexts/KioskModeContext";
 import BootIntro, { hasSeenBootIntro } from "@/components/BootIntro";
 import GlobalBackButton                from "@/components/Layout/GlobalBackButton";
+import { useSystemVersion }            from "@/hooks/useSystemVersion";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +75,7 @@ function App() {
    * all (no one-frame flash). Providers stay outside the gate so context
    * state isn't torn down/remounted across the transition. */
   const [ready, setReady] = useState<boolean>(() => hasSeenBootIntro());
+  useSystemVersion();
 
   return (
     <QueryClientProvider client={queryClient}>

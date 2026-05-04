@@ -4,6 +4,7 @@ import { ShoppingBag, Bookmark, BookmarkCheck } from "lucide-react";
 import { ProductResult } from "../services/api";
 import { cloudinaryOptimize } from "@/lib/cloudinary";
 import { useState } from "react";
+import RippleButton from "@/components/RippleButton";
 
 interface SwipeableCardProps {
   product:        ProductResult;
@@ -274,16 +275,15 @@ export function SwipeableCard({
               </motion.button>
 
               {/* PRIMARY — Order Now (the ONE gold button) */}
-              <motion.button
+              <RippleButton
                 onClick={onOrder}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] uppercase tracking-[0.18em] font-bold relative overflow-hidden"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] uppercase tracking-[0.18em] font-bold"
+                rippleColor="rgba(255,255,255,0.25)"
                 style={{
                   background: GOLD_FILL,
                   color:      "#0e0803",
                   boxShadow:  GOLD_GLOW,
                 }}
-                whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(212,175,55,0.65), 0 6px 18px rgba(0,0,0,0.3)" }}
-                whileTap={{ scale: 0.97 }}
                 data-testid="btn-order"
                 data-tour="tour-order-btn"
               >
@@ -294,7 +294,7 @@ export function SwipeableCard({
                   transition={{ duration: 2.8, repeat: Infinity, ease: "linear", repeatDelay: 1.8 }}
                 />
                 <ShoppingBag size={12} />Order Now
-              </motion.button>
+              </RippleButton>
             </div>
           </div>
         </motion.div>

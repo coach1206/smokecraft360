@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { ProductResult } from "@/services/api";
 import ExperienceFrame from "@/components/ExperienceFrame";
 import { getAuthHeaders } from "@/services/auth";
+import RippleButton from "@/components/RippleButton";
 
 interface TasteChallengeProps {
   product: ProductResult;
@@ -240,14 +241,12 @@ export default function TasteChallenge({ product, cigar, accent = "#D4AF37", tes
               }
 
               return (
-                <motion.button
+                <RippleButton
                   key={i}
-                  type="button"
                   data-testid={`${testId}-option-${i}`}
                   onClick={() => handleAnswer(i)}
                   disabled={answered}
-                  whileHover={answered ? undefined : { scale: 1.02 }}
-                  whileTap={answered ? undefined : { scale: 0.98 }}
+                  rippleColor={`${accent}30`}
                   style={{
                     background: bg,
                     border,
@@ -262,7 +261,7 @@ export default function TasteChallenge({ product, cigar, accent = "#D4AF37", tes
                   }}
                 >
                   {opt}
-                </motion.button>
+                </RippleButton>
               );
             })}
           </div>

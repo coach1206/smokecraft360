@@ -23,6 +23,7 @@ import {
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Monitor, RotateCcw }     from "lucide-react";
+import { useFeatureFlag } from "@/hooks/useFeatureFlags";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -76,6 +77,7 @@ export function KioskModeProvider({ children }: { children: ReactNode }) {
   const [showOverlay, setShowOverlay] = useState(false);
   const [countdown,   setCountdown]   = useState(COUNTDOWN_S);
   const [burnInActive, setBurnInActive] = useState(false);
+  const burnInEnabled = useFeatureFlag("burn_in_protection", true);
 
   const idleTimer     = useRef<ReturnType<typeof setTimeout> | null>(null);
   const countdownRef  = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -155,7 +157,7 @@ export function KioskModeProvider({ children }: { children: ReactNode }) {
   }, [showOverlay]);
 
   useEffect(() => {
-    if (mode !== "kiosk") return;
+    if (mode !== "kiosk" || !burnInEnabled) return;
     let burnInterval: ReturnType<typeof setInterval> | null = null;
     let shiftIndex = 0;
     const shifts = [
@@ -218,7 +220,7 @@ export function KioskModeProvider({ children }: { children: ReactNode }) {
       }
       setBurnInActive(false);
     };
-  }, [mode]);
+  }, [mode, burnInEnabled]);
 
   // ── Kiosk lockdown ────────────────────────────────────────────────────────
   // Only active when mode === "kiosk". Does NOT affect tablet/normal so

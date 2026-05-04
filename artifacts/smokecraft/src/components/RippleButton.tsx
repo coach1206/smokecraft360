@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, type ReactNode, type MouseEvent, type CSSProperties } from "react";
+import { useState, useCallback, useRef, type ReactNode, type MouseEvent, type CSSProperties, type ButtonHTMLAttributes } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface RippleSpawn {
@@ -8,7 +8,7 @@ interface RippleSpawn {
   size: number;
 }
 
-interface RippleButtonProps {
+interface RippleButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick" | "style"> {
   children: ReactNode;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
@@ -28,6 +28,7 @@ export default function RippleButton({
   style,
   rippleColor = "rgba(212,175,55,0.25)",
   as = "button",
+  ...rest
 }: RippleButtonProps) {
   const [ripples, setRipples] = useState<RippleSpawn[]>([]);
   const containerRef = useRef<HTMLElement>(null);
@@ -68,6 +69,7 @@ export default function RippleButton({
       style={{ position: "relative", overflow: "hidden", ...style }}
       onClick={handleClick as any}
       {...extraProps}
+      {...(rest as any)}
     >
       {children}
       <AnimatePresence>

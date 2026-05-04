@@ -1,5 +1,5 @@
-import { and, eq, lt, inArray } from "drizzle-orm";
-import { db, sessionsTable, redemptionsTable } from "@workspace/db";
+import { and, eq, lt, inArray, isNull } from "drizzle-orm";
+import { db, sessionsTable, redemptionsTable, sessionMembersTable } from "@workspace/db";
 import { logger } from "./logger";
 
 const INTERVAL_MS = 30 * 60 * 1000;
@@ -8,6 +8,7 @@ const EXPIRY_HOURS = 4;
 export interface CleanupResult {
   expiredCount: number;
   cancelledRedemptions: number;
+  abandonedMembersRemoved: number;
   errors: number;
   durationMs: number;
   ranAt: string;
@@ -20,13 +21,14 @@ let interval: NodeJS.Timeout | null = null;
 export async function runSessionCleanup(): Promise<CleanupResult> {
   if (running) {
     logger.warn("session cleanup skipped: previous run still in progress");
-    return lastResult ?? { expiredCount: 0, cancelledRedemptions: 0, errors: 0, durationMs: 0, ranAt: new Date().toISOString() };
+    return lastResult ?? { expiredCount: 0, cancelledRedemptions: 0, abandonedMembersRemoved: 0, errors: 0, durationMs: 0, ranAt: new Date().toISOString() };
   }
 
   running = true;
   const start = Date.now();
   let expiredCount = 0;
   let cancelledRedemptions = 0;
+  let abandonedMembersRemoved = 0;
   let errors = 0;
 
   try {
@@ -47,7 +49,21 @@ export async function runSessionCleanup(): Promise<CleanupResult> {
       expiredCount = stale.length;
 
       if (expiredCount > 0) {
+        const sessionIds = stale.map((s) => s.id);
         const userIds = [...new Set(stale.map((s) => s.hostUserId).filter(Boolean))] as string[];
+
+        const abandoned = await tx
+          .update(sessionMembersTable)
+          .set({ leftAt: new Date() })
+          .where(
+            and(
+              inArray(sessionMembersTable.sessionId, sessionIds),
+              isNull(sessionMembersTable.leftAt),
+            ),
+          )
+          .returning({ id: sessionMembersTable.id });
+
+        abandonedMembersRemoved = abandoned.length;
 
         if (userIds.length > 0) {
           const cancelled = await tx
@@ -68,10 +84,11 @@ export async function runSessionCleanup(): Promise<CleanupResult> {
           {
             expiredCount,
             cancelledRedemptions,
+            abandonedMembersRemoved,
             cutoffHours: EXPIRY_HOURS,
             event: "session_cleanup_complete",
           },
-          "session cleanup: expired sessions closed, pending redemptions cancelled",
+          "session cleanup: expired sessions closed, members removed, redemptions cancelled",
         );
       }
     });
@@ -85,6 +102,7 @@ export async function runSessionCleanup(): Promise<CleanupResult> {
   const result: CleanupResult = {
     expiredCount,
     cancelledRedemptions,
+    abandonedMembersRemoved,
     errors,
     durationMs: Date.now() - start,
     ranAt: new Date().toISOString(),

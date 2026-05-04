@@ -20,6 +20,7 @@ import {
   type Order,
 } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
+import RippleButton from "@/components/RippleButton";
 
 const GOLD     = "rgba(212,175,55,1)";
 const GOLD_DIM = "rgba(212,175,55,0.5)";
@@ -174,22 +175,21 @@ function OrderCard({ order, onVerified }: {
               <QrCode size={10} />QR
             </motion.button>
 
-            <motion.button
+            <RippleButton
               onClick={handleVerify}
               disabled={verifying}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[9px] uppercase tracking-[0.15em]"
+              rippleColor="rgba(52,200,120,0.2)"
               style={{
                 background:   "linear-gradient(135deg, rgba(52,200,120,0.12), rgba(52,200,120,0.07))",
                 border:       "1px solid rgba(52,200,120,0.3)",
                 color:        "rgba(52,200,120,0.85)",
                 opacity:      verifying ? 0.6 : 1,
                 cursor:       verifying ? "wait" : "pointer",
-              }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}>
+              }}>
               <ShieldCheck size={10} />
               {verifying ? "Verifying…" : "Verify"}
-            </motion.button>
+            </RippleButton>
           </div>
         )}
 

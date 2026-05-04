@@ -79,6 +79,8 @@ import experienceEngineRouter    from "./routes/experienceEngine";
 import experienceCompleteRouter  from "./routes/experienceComplete";
 import adminIntensityRouter      from "./routes/adminIntensity";
 import adminWorkersRouter        from "./routes/adminWorkers";
+import systemVersionRouter       from "./routes/systemVersion";
+import deviceHeartbeatRouter     from "./routes/deviceHeartbeat";
 import { startExperienceAutomation } from "./services/experienceAutomation";
 import { startSessionCleanupWorker } from "./lib/sessionCleanupWorker";
 
@@ -268,6 +270,10 @@ app.use("/api/experience-engine",          experienceEngineRouter);
 app.use("/api/experience",                experienceCompleteRouter);
 app.use("/api/admin/intensity",           adminIntensityRouter);
 app.use("/api/admin/workers",             adminWorkersRouter);
+app.use("/api/system",                   systemVersionRouter);
+app.use("/api/admin/system",             systemVersionRouter);
+app.use("/api/device",                   deviceHeartbeatRouter);
+app.use("/api/admin",                    deviceHeartbeatRouter);
 
 // Start background workers
 if (process.env["NODE_ENV"] !== "test") {
