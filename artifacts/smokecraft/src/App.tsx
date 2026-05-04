@@ -127,9 +127,9 @@ function App() {
                     <>
                       <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
                         <GlobalBackButton />
+                        <InactivityGuard />
                         <Router />
                       </WouterRouter>
-                      <InactivityGuard />
                       <PosAuditBridge />
                       <PresentationOverlay />
                       <DemoBanner />
