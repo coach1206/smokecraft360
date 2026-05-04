@@ -53,13 +53,8 @@ function timeOfDayFromHour(hour: number): TimeOfDay {
   return "night";
 }
 
-const SPLASH_DURATION_MS  = 3200;
-const LETTER_INTERVAL_MS  = 60;
+const SPLASH_DURATION_MS  = 4200;
 const STARTUP_CHIME_DELAY = 1200;
-// Wordmark stays canonical across locales (brand identity), but is exposed
-// via i18n key intro.splash_title so future regional brand variants can
-// override it without code changes.
-const SPLASH_TITLE        = "PROFOUND INNOVATION";
 const IDLE_THRESHOLD_MS   = 8000;   // no input for 8s on the selector → attract mode
 const DEMO_CYCLE_MS       = 2500;   // attract-mode beat cadence
 const DEMO_BEATS          = 4;      // 3 card-highlight beats + 1 reveal beat
@@ -240,7 +235,6 @@ export default function Intro() {
   const [, navigate]       = useLocation();
   const [stage, setStage]      = useState<"splash" | "select">("splash");
   const [selected, setSel]     = useState<ThemeKey | null>(null);
-  const [letters, setLetters]  = useState(0);
   const [isIdle, setIsIdle]    = useState(false);
   const [attractIdx, setAttractIdx] = useState(0);
   const [tod]                  = useState<TimeOfDay>(() => timeOfDayFromHour(new Date().getHours()));
@@ -312,37 +306,16 @@ export default function Intro() {
     };
   }, [stage, selected]);
 
-  // Splash sequence: letter-by-letter reveal + ambient bed + startup chime
-  // + stage transition. All cleanups run on unmount to avoid lingering audio
-  // or fires on a torn-down component.
   useEffect(() => {
     const base = import.meta.env.BASE_URL;
-
-    // Per-letter typewriter for the wordmark.
-    let i = 0;
-    const letterTimer = window.setInterval(() => {
-      i += 1;
-      setLetters(i);
-      if (i >= SPLASH_TITLE.length) window.clearInterval(letterTimer);
-    }, LETTER_INTERVAL_MS);
-
-    /* Ambient drone REMOVED per 33rd brief ("buzzing noise is still there").
-     * The looped low-volume ambient.mp3 was the persistent humming source —
-     * a continuous low-frequency bed reads as a buzz no matter how quiet it
-     * is. Startup chime stays because it's a one-shot, not a loop. */
-
-    // Startup chime fires partway through the splash for a "boot" feel.
     const chime     = new Audio(`${base}sounds/startup.mp3`);
     chime.volume    = 0.3;
     const chimeT    = window.setTimeout(
-      () => void chime.play().catch(() => { /* non-essential */ }),
+      () => void chime.play().catch(() => {}),
       STARTUP_CHIME_DELAY,
     );
-
     const stageT = window.setTimeout(() => setStage("select"), SPLASH_DURATION_MS);
-
     return () => {
-      window.clearInterval(letterTimer);
       window.clearTimeout(chimeT);
       window.clearTimeout(stageT);
     };
@@ -491,7 +464,7 @@ export default function Intro() {
         />
       )}
 
-      {/* Splash — "PROFOUND INNOVATION" brand reveal before the selector */}
+      {/* Splash — Profound Innovations premium brand intro sequence */}
       <AnimatePresence>
         {stage === "splash" && (
           <motion.div
@@ -501,67 +474,136 @@ export default function Intro() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, scale: 1.04, filter: "blur(8px)" }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              position: "fixed", inset: 0, zIndex: 60,
-              display: "flex", flexDirection: "column",
-              alignItems: "center", justifyContent: "center",
-              background: "#0a0604",
-              backgroundImage:
-                "radial-gradient(ellipse at center, rgba(60,30,10,0.5), transparent 65%)," +
-                "linear-gradient(135deg, rgba(8,4,2,0.95), rgba(2,2,6,0.98))",
-              color: "#F5EBDD", textAlign: "center",
-            }}
+            className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden"
+            style={{ zIndex: 60 }}
           >
-            <h1
+            {/* Deep navy-to-black radial gradient background */}
+            <div
+              className="absolute inset-0"
               style={{
-                fontFamily: "var(--app-font-serif, Georgia, serif)",
-                fontSize: "clamp(36px, 5vw, 56px)",
-                fontWeight: 600,
-                margin: 0,
-                letterSpacing: "0.32em",
-                background: "linear-gradient(180deg, #F5EBDD 0%, #D4AF37 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor:  "transparent",
-                backgroundClip: "text",
-                whiteSpace: "nowrap",
+                background: "radial-gradient(ellipse at 50% 40%, #020617 0%, #000000 70%)",
               }}
+            />
+
+            {/* Noise overlay — brushed metal texture */}
+            <div
+              className="absolute inset-0 opacity-[0.04] pointer-events-none"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
+                backgroundRepeat: "repeat",
+                backgroundSize: "128px 128px",
+              }}
+            />
+
+            {/* Pulsing cyan glow — center ambient */}
+            <motion.div
+              className="absolute pointer-events-none"
+              animate={{ opacity: [0.12, 0.28, 0.12], scale: [0.95, 1.05, 0.95] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              style={{
+                width: "60vw", height: "60vw", maxWidth: 600, maxHeight: 600,
+                borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(34,211,238,0.18) 0%, transparent 70%)",
+                top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+
+            {/* THE SWOOSH — 3D chevron SVG enters from far left */}
+            <motion.div
+              initial={{ x: "-100vw", opacity: 0, filter: "blur(20px)" }}
+              animate={{ x: 0, opacity: 1, filter: "blur(0px)" }}
+              transition={{ duration: 0.8, ease: [0, 0.55, 0.45, 1] }}
+              className="relative z-10 mb-6"
             >
-              {SPLASH_TITLE.split("").map((ch, idx) => (
-                <span
-                  key={idx}
-                  style={{
-                    display: "inline-block",
-                    opacity: idx < letters ? 1 : 0,
-                    transform: idx < letters ? "translateY(0)" : "translateY(18px)",
-                    transition: "opacity 0.4s ease, transform 0.4s ease",
-                  }}
-                >
-                  {ch === " " ? "\u00A0" : ch}
-                </span>
-              ))}
-            </h1>
-            <motion.h2
-              initial={{ opacity: 0, y: 12 }}
+              <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="chevGrad" x1="10" y1="10" x2="70" y2="70" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#22d3ee" />
+                    <stop offset="50%" stopColor="#06b6d4" />
+                    <stop offset="100%" stopColor="#0891b2" />
+                  </linearGradient>
+                  <filter id="chevGlow">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+                <g filter="url(#chevGlow)">
+                  <path d="M20 12 L52 40 L20 68" stroke="url(#chevGrad)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                  <path d="M36 18 L62 40 L36 62" stroke="url(#chevGrad)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.6" />
+                  <path d="M48 24 L68 40 L48 56" stroke="url(#chevGrad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.3" />
+                </g>
+              </svg>
+            </motion.div>
+
+            {/* BRAND EMERGENCE — masked wipe from center */}
+            <div className="relative z-10 overflow-hidden">
+              <motion.h1
+                initial={{ clipPath: "inset(0 100% 0 0)" }}
+                animate={{ clipPath: "inset(0 0% 0 0)" }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.8 }}
+                className="relative"
+                style={{
+                  fontFamily: "'Inter', 'Montserrat', system-ui, sans-serif",
+                  fontSize: "clamp(28px, 4.5vw, 52px)",
+                  fontWeight: 800,
+                  fontStyle: "italic",
+                  letterSpacing: "0.08em",
+                  color: "#e2e8f0",
+                  textShadow: "0 1px 2px rgba(148,163,184,0.4), 0 0 30px rgba(34,211,238,0.15)",
+                  margin: 0,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                PROFOUND INNOVATIONS
+              </motion.h1>
+
+              {/* Shimmer / lens-flare sweep across text */}
+              <motion.div
+                initial={{ x: "-120%" }}
+                animate={{ x: "220%" }}
+                transition={{ duration: 1.2, ease: "easeInOut", delay: 1.6 }}
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  width: "40%",
+                  background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%)",
+                  transform: "skewX(-15deg)",
+                }}
+              />
+            </div>
+
+            {/* TAGLINE — fades in after logo settles */}
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 0.7, y: 0 }}
-              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 1.8 }}
+              className="relative z-10 mt-6 max-w-md text-center"
               style={{
-                marginTop: 18,
-                fontSize: "clamp(16px, 1.6vw, 22px)",
-                letterSpacing: "0.55em",
+                fontFamily: "'Inter', system-ui, sans-serif",
+                fontSize: "clamp(11px, 1.2vw, 14px)",
                 fontWeight: 300,
-                color: "rgba(212,175,55,0.85)",
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                lineHeight: 1.8,
+                color: "rgba(148,163,184,0.85)",
               }}
             >
-              P.I
-            </motion.h2>
-            {/* Hairline accent under the wordmark */}
+              Profound Innovations builds smart systems that turn everyday
+              environments into interactive, revenue-generating experiences.
+            </motion.p>
+
+            {/* Hairline accent */}
             <motion.div
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 120, opacity: 1 }}
-              transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1], delay: 0.8 }}
+              animate={{ width: 100, opacity: 0.5 }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 2.2 }}
+              className="relative z-10 mt-8"
               style={{
-                marginTop: 28, height: 1,
-                background: "linear-gradient(90deg, transparent, #D4AF37, transparent)",
+                height: 1,
+                background: "linear-gradient(90deg, transparent, #22d3ee, transparent)",
               }}
             />
           </motion.div>

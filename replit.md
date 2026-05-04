@@ -24,7 +24,7 @@ The project uses a pnpm workspace monorepo with TypeScript, separating the front
 
 ## UI/UX and Design
 
-The application features a luxury aesthetic with a dark gold theme, glassmorphism cards, and a sophisticated typography palette (Cormorant Garamond, Inter, Playfair Display). A global design system uses CSS custom properties for consistent theming and effects. Key visual elements include `.glass-panel` classes for semi-transparent backgrounds and `sc-btn-primary`/`sc-btn-ghost` for buttons. It includes a cinematic boot intro, browser TTS entry cues, and a global back button with an opt-in `AppLayout`.
+The application features a luxury aesthetic with a dark gold theme, glassmorphism cards, and a sophisticated typography palette (Cormorant Garamond, Inter, Playfair Display). A global design system uses CSS custom properties for consistent theming and effects. Key visual elements include `.glass-panel` classes for semi-transparent backgrounds and `sc-btn-primary`/`sc-btn-ghost` for buttons. The brand intro splash uses a premium Profound Innovations sequence: deep navy-to-black radial gradient (#020617→#000), SVG noise overlay (brushed metal), pulsing cyan ambient glow, a 3D chevron SVG swooshing from far-left with motion blur (circOut 0.8s), "PROFOUND INNOVATIONS" revealed via clip-path masked wipe (bold italic Inter/Montserrat, metallic text-shadow), tagline fade-in, and a shimmer lens-flare sweep across the text. After 4.2s, it auto-transitions to the 4-card experience selector (SmokeCraft/PourCraft/BrewCraft/VapeCraft). Includes browser TTS entry cues and a global back button with an opt-in `AppLayout`.
 
 ## Core Features and Implementations
 
