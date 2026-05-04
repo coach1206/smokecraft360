@@ -1,8 +1,9 @@
 import { useState, useCallback } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Sparkles, Wine, Beer, Wind, Plus, ChevronRight } from "lucide-react";
+import { ArrowLeft, Sparkles, Wine, Beer, Wind, Plus, ChevronRight, Megaphone, Check } from "lucide-react";
 import { usePosContext, type Product } from "@/contexts/PosContext";
+import { useCommandCenter } from "@/contexts/CommandCenterContext";
 
 interface ExperienceType {
   id: string;
@@ -57,17 +58,26 @@ const EXPERIENCES: ExperienceType[] = [
   },
 ];
 
-type Phase = "select" | "questions" | "result";
+const CAMPAIGN_TEMPLATES = [
+  { id: "happy-hour", name: "Happy Hour Special", desc: "Discounted pairings 4-7pm", color: "#f59e0b" },
+  { id: "tasting-event", name: "Tasting Event", desc: "Guided tasting experience for groups", color: "#8b5cf6" },
+  { id: "loyalty-boost", name: "Loyalty Boost", desc: "Double rewards for repeat visitors", color: "#34d399" },
+  { id: "new-arrival", name: "New Arrival Spotlight", desc: "Feature a new product with samples", color: "#5b8def" },
+];
+
+type Phase = "select" | "questions" | "result" | "campaigns";
 
 export default function ExperiencesModule() {
   const [, navigate] = useLocation();
   const pos = usePosContext();
+  const cc = useCommandCenter();
   const [phase, setPhase] = useState<Phase>("select");
   const [activeExp, setActiveExp] = useState<ExperienceType | null>(null);
   const [questionIdx, setQuestionIdx] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [recommended, setRecommended] = useState<Product[]>([]);
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
+  const [createdCampaigns, setCreatedCampaigns] = useState<Set<string>>(new Set());
 
   const startExperience = useCallback((exp: ExperienceType) => {
     setActiveExp(exp);
@@ -95,6 +105,11 @@ export default function ExperiencesModule() {
     if (ok) setAddedIds(prev => new Set(prev).add(productId));
   }, [pos]);
 
+  const createCampaign = useCallback((templateId: string, templateName: string) => {
+    setCreatedCampaigns(prev => new Set(prev).add(templateId));
+    cc.addAuditEntry("campaign.created", `Campaign created: ${templateName}`, pos.currentUser?.name);
+  }, [cc, pos.currentUser]);
+
   const reset = useCallback(() => {
     setPhase("select");
     setActiveExp(null);
@@ -107,18 +122,29 @@ export default function ExperiencesModule() {
   return (
     <div style={{ height: "100dvh", display: "flex", flexDirection: "column", background: "linear-gradient(180deg, #1a1714 0%, #0f0d0a 100%)", color: "#e8e0c8", overflow: "hidden" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
-        <motion.button whileTap={{ scale: 0.9 }} onClick={phase === "select" ? () => navigate("/dashboard") : reset}
+        <motion.button whileTap={{ scale: 0.9 }} onClick={phase === "select" ? () => navigate("/dashboard") : phase === "campaigns" ? () => setPhase("select") : reset}
           style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
           <ArrowLeft size={20} />
         </motion.button>
-        <div>
+        <div style={{ flex: 1 }}>
           <div style={{ fontSize: 18, fontWeight: 700, color: "#f59e0b" }}>
-            {phase === "select" ? "Experiences" : activeExp?.title}
+            {phase === "campaigns" ? "Campaigns" : phase === "select" ? "Experiences" : activeExp?.title}
           </div>
           <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>
-            {phase === "select" ? "Choose your craft experience" : phase === "questions" ? `Question ${questionIdx + 1} of ${activeExp?.questions.length}` : "Your recommendation"}
+            {phase === "campaigns" ? "Create promotional campaigns" : phase === "select" ? "Choose your craft experience" : phase === "questions" ? `Question ${questionIdx + 1} of ${activeExp?.questions.length}` : "Your recommendation"}
           </div>
         </div>
+        {phase === "select" && (
+          <motion.button whileTap={{ scale: 0.95 }} onClick={() => setPhase("campaigns")}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "10px 16px", borderRadius: 12, fontSize: 12, fontWeight: 600,
+              background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)",
+              color: "#d4af37", cursor: "pointer", minHeight: 42,
+            }}>
+            <Megaphone size={14} /> Campaigns
+          </motion.button>
+        )}
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: phase === "select" ? "start" : "center", padding: "24px 20px", gap: 16 }}>
@@ -265,6 +291,51 @@ export default function ExperiencesModule() {
                     }}>Go to POS →</motion.button>
                 )}
               </div>
+            </motion.div>
+          )}
+          {phase === "campaigns" && (
+            <motion.div key="campaigns" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16, width: "100%", maxWidth: 800 }}>
+              {CAMPAIGN_TEMPLATES.map((tpl, i) => {
+                const created = createdCampaigns.has(tpl.id);
+                return (
+                  <motion.div key={tpl.id}
+                    initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.06 }}
+                    style={{
+                      padding: "20px", borderRadius: 18,
+                      background: "linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))",
+                      border: `1px solid ${tpl.color}30`,
+                      position: "relative", overflow: "hidden",
+                    }}>
+                    <div style={{ position: "absolute", inset: 0, background: `radial-gradient(circle at 15% 50%, ${tpl.color}12, transparent 60%)`, pointerEvents: "none" }} />
+                    <div style={{ position: "relative" }}>
+                      <div style={{
+                        width: 44, height: 44, borderRadius: 12, marginBottom: 12,
+                        background: `${tpl.color}12`, border: `1px solid ${tpl.color}30`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        <Megaphone size={20} color={tpl.color} />
+                      </div>
+                      <div style={{ fontSize: 16, fontWeight: 600, color: "#e8e0c8", marginBottom: 4 }}>{tpl.name}</div>
+                      <div style={{ fontSize: 12, color: "rgba(232,224,200,0.4)", marginBottom: 14 }}>{tpl.desc}</div>
+                      <motion.button whileTap={{ scale: 0.93 }}
+                        onClick={() => !created && createCampaign(tpl.id, tpl.name)}
+                        disabled={created}
+                        style={{
+                          display: "flex", alignItems: "center", gap: 6,
+                          padding: "10px 18px", borderRadius: 10, fontSize: 13, fontWeight: 600,
+                          background: created ? "rgba(52,211,153,0.1)" : `linear-gradient(135deg, ${tpl.color}, ${tpl.color}cc)`,
+                          color: created ? "#34d399" : "#0a0806",
+                          border: created ? "1px solid rgba(52,211,153,0.3)" : "none",
+                          cursor: created ? "default" : "pointer", minHeight: 42,
+                        }}>
+                        {created ? <><Check size={14} /> Created</> : <><Plus size={14} /> Create Campaign</>}
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>
