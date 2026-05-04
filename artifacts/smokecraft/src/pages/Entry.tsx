@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Building2, Shield, Package, Play, Presentation, Sparkles } from "lucide-react";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 import { useVenueContext } from "@/contexts/VenueContext";
 
@@ -10,7 +9,6 @@ const TILES = [
     id: "venue",
     title: "Venue Access",
     desc: "For owners and staff",
-    icon: Building2,
     color: "#d4af37",
     glow: "rgba(212,175,55,0.25)",
     route: "/pin-login",
@@ -20,7 +18,6 @@ const TILES = [
     id: "admin",
     title: "Admin Control",
     desc: "For system administrators",
-    icon: Shield,
     color: "#5b8def",
     glow: "rgba(91,141,239,0.25)",
     route: "/touch/admin",
@@ -30,7 +27,6 @@ const TILES = [
     id: "vendor",
     title: "Vendor Access",
     desc: "For suppliers and partners",
-    icon: Package,
     color: "#a78bfa",
     glow: "rgba(167,139,250,0.25)",
     route: "/touch/vendor",
@@ -40,7 +36,6 @@ const TILES = [
     id: "demo",
     title: "Demo Mode",
     desc: "Explore the system experience",
-    icon: Play,
     color: "#34d399",
     glow: "rgba(52,211,153,0.25)",
     route: "/demo",
@@ -50,7 +45,6 @@ const TILES = [
     id: "investor-demo",
     title: "Investor Demo",
     desc: "Auto-walk product showcase",
-    icon: Presentation,
     color: "#f59e0b",
     glow: "rgba(245,158,11,0.25)",
     route: "/demo-mode",
@@ -60,7 +54,6 @@ const TILES = [
     id: "craft-hub",
     title: "Craft Hub",
     desc: "Guided cigar, spirit, beer & vape journeys",
-    icon: Sparkles,
     color: "#e879f9",
     glow: "rgba(232,121,249,0.25)",
     route: "/experiences",
@@ -121,7 +114,6 @@ export default function Entry() {
       }}>
         <AnimatePresence>
           {TILES.map((tile, i) => {
-            const Icon = tile.icon;
             const isExpanding = expandingId === tile.id;
             return (
               <motion.button
@@ -159,20 +151,10 @@ export default function Entry() {
                 }} />
                 <div style={{
                   position: "absolute", inset: 0,
-                  background: `linear-gradient(180deg, rgba(10,8,6,0.35) 0%, rgba(10,8,6,0.55) 60%, ${tile.color}20 100%)`,
+                  background: `linear-gradient(180deg, rgba(10,8,6,0.15) 0%, rgba(10,8,6,0.45) 70%, rgba(10,8,6,0.75) 100%)`,
                   pointerEvents: "none",
                 }} />
-                <div style={{
-                  width: 56, height: 56, borderRadius: 16,
-                  background: "rgba(0,0,0,0.35)",
-                  border: `1.5px solid ${tile.color}50`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  position: "relative",
-                  backdropFilter: "blur(6px)",
-                }}>
-                  <Icon size={28} color={tile.color} strokeWidth={1.5} />
-                </div>
-                <div style={{ position: "relative", textAlign: "center" }}>
+                <div style={{ position: "relative", textAlign: "center", marginTop: "auto" }}>
                   <div style={{
                     fontSize: 18, fontWeight: 700, color: "#fff",
                     letterSpacing: "0.02em", marginBottom: 4,
