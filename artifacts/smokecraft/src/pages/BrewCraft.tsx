@@ -1,21 +1,67 @@
-import { useState }   from "react";
+import { useState } from "react";
+import { motion }   from "framer-motion";
 import CraftFlow, { type CraftFlowConfig } from "@/components/CraftFlow";
-import DesignPlayground, { hasSeenPlayground, markPlaygroundSeen } from "@/components/DesignPlayground/DesignPlayground";
+import DesignPlayground, {
+  hasSeenPlayground, markPlaygroundSeen,
+  type PlaygroundConfig,
+} from "@/components/DesignPlayground/DesignPlayground";
 import loungeBg      from "@assets/generated_images/brewcraft_beer.png";
 import brewLightImg  from "@assets/generated_images/brew_light.png";
 import brewAmberImg  from "@assets/generated_images/brew_amber.png";
 import brewIpaImg    from "@assets/generated_images/brew_ipa.png";
 import brewDarkImg   from "@assets/generated_images/brew_dark.png";
 
-/**
- * BrewCraft — beer-led guided experience.
- *
- * Uses the unified CraftFlow state machine (Intro → Style → Profile →
- * Match → Reveal → Order). Visuals stay beer-specific via the config.
- *
- * The DesignPlayground overlay runs once per session before CraftFlow starts.
- * Session-storage key "playground_seen_brew" suppresses it on repeat visits.
- */
+const PLAYGROUND_CONFIG: PlaygroundConfig = {
+  craft: "brew", craftLabel: "BrewCraft",
+  accent: "#E6C76A", accentSoft: "#D49555",
+  tint: "rgba(60,30,10,0.5)",
+  background: "/images/scenes/social.jpg",
+  brandNameLabel: "Brewery Name",
+  brandNamePlaceholder: "Name your brewery…",
+  emblemLabel: "Label Icon",
+  emblemOptions: [
+    { id: "hop",    label: "Hop ⊕"    },
+    { id: "grain",  label: "Grain ✦"  },
+    { id: "barrel", label: "Barrel ⬡" },
+    { id: "star",   label: "Star ★"   },
+    { id: "shield", label: "Shield ⬛" },
+  ],
+  colorSwatches: [
+    { id: "amber",   label: "Amber",   primary: "#5A3018", accent: "#E6A830" },
+    { id: "gold",    label: "Gold",    primary: "#3A2808", accent: "#E6C76A" },
+    { id: "dark",    label: "Stout",   primary: "#1A0D06", accent: "#8A6640" },
+    { id: "pale",    label: "Pale",    primary: "#4A3818", accent: "#F0D88A" },
+    { id: "wheat",   label: "Wheat",   primary: "#3A3018", accent: "#D4C080" },
+    { id: "red",     label: "Red Ale", primary: "#3A1008", accent: "#C87040" },
+    { id: "craft",   label: "Craft",   primary: "#0A0806", accent: "#70B880", locked: true },
+    { id: "reserve", label: "Reserve", primary: "#280818", accent: "#C870A0", locked: true },
+  ],
+  selectFields: [
+    {
+      id: "labelStyle", label: "Label Style",
+      options: [
+        { id: "classic", label: "Classic" },
+        { id: "modern",  label: "Modern"  },
+        { id: "retro",   label: "Retro"   },
+        { id: "minimal", label: "Minimal" },
+      ],
+    },
+    {
+      id: "hopProfile", label: "Hop Profile",
+      options: [
+        { id: "bitter", label: "Bold Bitter" },
+        { id: "floral", label: "Floral"      },
+        { id: "citrus", label: "Citrus"      },
+        { id: "earthy", label: "Earthy"      },
+      ],
+      locked: true,
+    },
+  ],
+  engravingLabel: "Tagline",
+  engravingPlaceholder: "Brewed with intent…",
+  engravingLocked: false,
+  lockedHint: "Craft & Reserve palettes and hop-profile fine-tuning unlock in Signature Studio.",
+};
 
 const CONFIG: CraftFlowConfig = {
   testIdPrefix: "brewcraft",
@@ -64,6 +110,7 @@ export default function BrewCraft() {
     return (
       <DesignPlayground
         craft="brew"
+        config={PLAYGROUND_CONFIG}
         onComplete={() => {
           markPlaygroundSeen("brew");
           setShowPlayground(false);
@@ -72,5 +119,14 @@ export default function BrewCraft() {
     );
   }
 
-  return <CraftFlow config={CONFIG} />;
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+      style={{ position: "fixed", inset: 0 }}
+    >
+      <CraftFlow config={CONFIG} />
+    </motion.div>
+  );
 }

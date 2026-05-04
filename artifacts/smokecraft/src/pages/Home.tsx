@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import DesignPlayground, { hasSeenPlayground, markPlaygroundSeen } from "@/components/DesignPlayground/DesignPlayground";
+import DesignPlayground, {
+  hasSeenPlayground, markPlaygroundSeen,
+  type PlaygroundConfig,
+} from "@/components/DesignPlayground/DesignPlayground";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence, animate } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
@@ -159,6 +162,56 @@ const DEMO: { category: "cigar" | "alcohol"; flavors: string[]; strength: number
   flavors:  ["cedar", "leather", "smoky"],
   strength: 3,
   mood:     "relaxed",
+};
+
+const SMOKE_PLAYGROUND_CONFIG: PlaygroundConfig = {
+  craft: "smoke", craftLabel: "SmokeCraft",
+  accent: "#D4AF37", accentSoft: "#C49A25",
+  tint: "rgba(40,25,5,0.5)",
+  background: "/images/cigar.png",
+  brandNameLabel: "Brand Name",
+  brandNamePlaceholder: "Name your cigar brand…",
+  emblemLabel: "Insignia",
+  emblemOptions: [
+    { id: "crown",    label: "Crown ♛"   },
+    { id: "crest",    label: "Crest ❧"   },
+    { id: "initials", label: "Initials"  },
+    { id: "flame",    label: "Flame 🔥"  },
+    { id: "leaf",     label: "Leaf 🌿"   },
+  ],
+  colorSwatches: [
+    { id: "gold",     label: "Gold",     primary: "#2A1F08", accent: "#D4AF37" },
+    { id: "black",    label: "Onyx",     primary: "#141010", accent: "#8B7355" },
+    { id: "burgundy", label: "Burgundy", primary: "#3A0F18", accent: "#C4708A" },
+    { id: "navy",     label: "Navy",     primary: "#0F1B35", accent: "#4A8AC4" },
+    { id: "forest",   label: "Forest",   primary: "#0F2018", accent: "#6AB87A" },
+    { id: "crimson",  label: "Crimson",  primary: "#2A0808", accent: "#C46060" },
+    { id: "obsidian", label: "Obsidian", primary: "#060606", accent: "#A0A0A0", locked: true },
+    { id: "platinum", label: "Platinum", primary: "#1A1814", accent: "#C8C8C8", locked: true },
+  ],
+  selectFields: [
+    {
+      id: "woodTone", label: "Box Wood Tone",
+      options: [
+        { id: "cedar",    label: "Cedar"       },
+        { id: "mahogany", label: "Mahogany"     },
+        { id: "walnut",   label: "Dark Walnut"  },
+        { id: "pine",     label: "Light Pine"   },
+      ],
+    },
+    {
+      id: "interiorColor", label: "Interior Color",
+      options: [
+        { id: "cream", label: "Cream Satin"  },
+        { id: "ebony", label: "Ebony Velvet" },
+        { id: "ivory", label: "Ivory Linen"  },
+      ],
+    },
+  ],
+  engravingLabel: "Engraving Text",
+  engravingPlaceholder: "Add a personal engraving…",
+  engravingLocked: false,
+  lockedHint: "Obsidian & Platinum finishes and 3D box editing unlock in Signature Studio.",
 };
 
 export default function Home() {
@@ -627,6 +680,7 @@ export default function Home() {
         {showPlayground && (
           <DesignPlayground
             craft="smoke"
+            config={SMOKE_PLAYGROUND_CONFIG}
             onComplete={() => {
               markPlaygroundSeen("smoke");
               setShowPlayground(false);

@@ -1,19 +1,65 @@
-import { useState }   from "react";
+import { useState } from "react";
+import { motion }   from "framer-motion";
 import CraftFlow, { type CraftFlowConfig } from "@/components/CraftFlow";
-import DesignPlayground, { hasSeenPlayground, markPlaygroundSeen } from "@/components/DesignPlayground/DesignPlayground";
+import DesignPlayground, {
+  hasSeenPlayground, markPlaygroundSeen,
+  type PlaygroundConfig,
+} from "@/components/DesignPlayground/DesignPlayground";
 import loungeBg      from "@assets/locked_cards/experience_pourcraft.png";
 import pourSmoothImg from "@assets/generated_images/pour_smooth.png";
 import pourSpicyImg  from "@assets/generated_images/pour_spicy.png";
 import pourSmokyImg  from "@assets/generated_images/pour_smoky.png";
 import pourRichImg   from "@assets/generated_images/pour_rich.png";
 
-/**
- * PourCraft — spirit-led guided experience using the unified CraftFlow
- * state machine. Same flow as SmokeCraft / BrewCraft, distinct visuals.
- *
- * The DesignPlayground overlay runs once per session before CraftFlow starts.
- * Session-storage key "playground_seen_pour" suppresses it on repeat visits.
- */
+const PLAYGROUND_CONFIG: PlaygroundConfig = {
+  craft: "pour", craftLabel: "PourCraft",
+  accent: "#E8C870", accentSoft: "#C8704A",
+  tint: "rgba(80,30,10,0.5)",
+  background: "/images/whiskey.png",
+  brandNameLabel: "Drink Name",
+  brandNamePlaceholder: "Name your signature pour…",
+  emblemLabel: "Garnish",
+  emblemOptions: [
+    { id: "orange", label: "Orange Peel 🍊" },
+    { id: "cherry", label: "Maraschino 🍒"  },
+    { id: "twist",  label: "Lemon Twist 🍋" },
+    { id: "herb",   label: "Fresh Herb 🌿"  },
+    { id: "smoke",  label: "Smoke ∿"        },
+  ],
+  colorSwatches: [
+    { id: "whiskey", label: "Whiskey",  primary: "#3A2010", accent: "#C89040" },
+    { id: "cognac",  label: "Cognac",   primary: "#2A1008", accent: "#C05828" },
+    { id: "rum",     label: "Dark Rum", primary: "#200808", accent: "#A04030" },
+    { id: "gin",     label: "Gin",      primary: "#0A1820", accent: "#6090B0" },
+    { id: "vodka",   label: "Crystal",  primary: "#101018", accent: "#8890A8" },
+    { id: "tequila", label: "Tequila",  primary: "#102808", accent: "#80A838" },
+    { id: "aged",    label: "Aged Rare",primary: "#180804", accent: "#C86020", locked: true },
+    { id: "vintage", label: "Vintage",  primary: "#0A0818", accent: "#A870D0", locked: true },
+  ],
+  selectFields: [
+    {
+      id: "glassType", label: "Glass Type",
+      options: [
+        { id: "rocks",    label: "Rocks"    },
+        { id: "coupe",    label: "Coupe"    },
+        { id: "highball", label: "Highball" },
+        { id: "snifter",  label: "Snifter"  },
+      ],
+    },
+    {
+      id: "labelStyle", label: "Label Style",
+      options: [
+        { id: "elegant", label: "Elegant" },
+        { id: "bold",    label: "Bold"    },
+        { id: "minimal", label: "Minimal" },
+      ],
+    },
+  ],
+  engravingLabel: "Serving Note",
+  engravingPlaceholder: "Best served over hand-cut ice…",
+  engravingLocked: false,
+  lockedHint: "Aged Rare & Vintage finishes unlock in Signature Studio.",
+};
 
 const CONFIG: CraftFlowConfig = {
   testIdPrefix: "pourcraft",
@@ -62,6 +108,7 @@ export default function PourCraft() {
     return (
       <DesignPlayground
         craft="pour"
+        config={PLAYGROUND_CONFIG}
         onComplete={() => {
           markPlaygroundSeen("pour");
           setShowPlayground(false);
@@ -70,5 +117,14 @@ export default function PourCraft() {
     );
   }
 
-  return <CraftFlow config={CONFIG} />;
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+      style={{ position: "fixed", inset: 0 }}
+    >
+      <CraftFlow config={CONFIG} />
+    </motion.div>
+  );
 }

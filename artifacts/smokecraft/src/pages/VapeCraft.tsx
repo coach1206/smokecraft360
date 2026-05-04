@@ -1,20 +1,67 @@
-import { useState }   from "react";
+import { useState } from "react";
+import { motion }   from "framer-motion";
 import CraftFlow, { type CraftFlowConfig } from "@/components/CraftFlow";
-import DesignPlayground, { hasSeenPlayground, markPlaygroundSeen } from "@/components/DesignPlayground/DesignPlayground";
+import DesignPlayground, {
+  hasSeenPlayground, markPlaygroundSeen,
+  type PlaygroundConfig,
+} from "@/components/DesignPlayground/DesignPlayground";
 import vapeBg         from "@assets/locked_cards/experience_vapecraft.png";
 import vapeFruitImg   from "@assets/generated_images/vape_fruit.png";
 import vapeDessertImg from "@assets/generated_images/vape_dessert.png";
 import vapeMentholImg from "@assets/generated_images/vape_menthol.png";
 import vapeTobaccoImg from "@assets/generated_images/vape_tobacco.png";
 
-/**
- * VapeCraft — vapor-led guided experience using the unified CraftFlow
- * state machine. Cross-category cigar pairing is intentionally hidden
- * (no vape↔cigar bridges in engine/pairing.ts yet).
- *
- * The DesignPlayground overlay runs once per session before CraftFlow starts.
- * Session-storage key "playground_seen_vape" suppresses it on repeat visits.
- */
+const PLAYGROUND_CONFIG: PlaygroundConfig = {
+  craft: "vape", craftLabel: "VapeCraft",
+  accent: "#B496E6", accentSoft: "#FF7AB8",
+  tint: "rgba(118,80,180,0.5)",
+  background: "/images/scenes/bold.jpg",
+  brandNameLabel: "Flavor Name",
+  brandNamePlaceholder: "Name your flavor identity…",
+  emblemLabel: "Identity Icon",
+  emblemOptions: [
+    { id: "cloud",   label: "Cloud ☁"   },
+    { id: "spark",   label: "Spark ⚡"  },
+    { id: "drop",    label: "Drop ◉"    },
+    { id: "wave",    label: "Wave ∿"    },
+    { id: "crystal", label: "Crystal ⬡" },
+  ],
+  colorSwatches: [
+    { id: "violet",    label: "Violet",  primary: "#1A0828", accent: "#B496E6" },
+    { id: "rose",      label: "Rose",    primary: "#280818", accent: "#E07090" },
+    { id: "sky",       label: "Sky",     primary: "#081828", accent: "#60A8D8" },
+    { id: "mint",      label: "Mint",    primary: "#081808", accent: "#50C890" },
+    { id: "amber",     label: "Amber",   primary: "#280808", accent: "#D07840" },
+    { id: "ice",       label: "Arctic",  primary: "#081820", accent: "#80D0F0" },
+    { id: "neon",      label: "Neon",    primary: "#081008", accent: "#80F040", locked: true },
+    { id: "prismatic", label: "Prism",   primary: "#080810", accent: "#A0A0F8", locked: true },
+  ],
+  selectFields: [
+    {
+      id: "flavorProfile", label: "Flavor Profile",
+      options: [
+        { id: "fruity",  label: "Fruity & Sweet" },
+        { id: "cool",    label: "Cool & Minty"   },
+        { id: "dessert", label: "Dessert"         },
+        { id: "tobacco", label: "Tobacco Rich"    },
+      ],
+    },
+    {
+      id: "nicotineLevel", label: "Nicotine Level",
+      options: [
+        { id: "zero",   label: "0mg"  },
+        { id: "low",    label: "3mg"  },
+        { id: "medium", label: "6mg"  },
+        { id: "high",   label: "12mg" },
+      ],
+      locked: true,
+    },
+  ],
+  engravingLabel: "Flavor Tagline",
+  engravingPlaceholder: "One inhale to rule them all…",
+  engravingLocked: false,
+  lockedHint: "Neon & Prismatic color identities and nicotine customization unlock in Signature Studio.",
+};
 
 const CONFIG: CraftFlowConfig = {
   testIdPrefix: "vapecraft",
@@ -63,6 +110,7 @@ export default function VapeCraft() {
     return (
       <DesignPlayground
         craft="vape"
+        config={PLAYGROUND_CONFIG}
         onComplete={() => {
           markPlaygroundSeen("vape");
           setShowPlayground(false);
@@ -71,5 +119,14 @@ export default function VapeCraft() {
     );
   }
 
-  return <CraftFlow config={CONFIG} />;
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+      style={{ position: "fixed", inset: 0 }}
+    >
+      <CraftFlow config={CONFIG} />
+    </motion.div>
+  );
 }
