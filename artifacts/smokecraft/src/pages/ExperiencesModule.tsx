@@ -23,11 +23,15 @@ interface ExperienceType {
   pairings: Record<string, string>;
 }
 
-const EXPERIENCES: ExperienceType[] = [
+interface ExperienceTypeRouted extends ExperienceType {
+  route: string;
+}
+
+const EXPERIENCES: ExperienceTypeRouted[] = [
   {
     id: "smokecraft", title: "SmokeCraft", brand: "SmokeCraft 360",
     desc: "Premium cigar experience", tags: "CIGARS · SPIRITS · LOUNGE",
-    image: "/images/scenes/smokecraft-card.jpg",
+    image: "/images/scenes/smokecraft-card.jpg", route: "/smokecraft",
     icon: Sparkles, color: "#d4af37", category: "cigar",
     questions: [
       { prompt: "What strength do you prefer?", options: ["Mild", "Medium", "Full Body"] },
@@ -39,7 +43,7 @@ const EXPERIENCES: ExperienceType[] = [
   {
     id: "pourcraft", title: "PourCraft", brand: "PourCraft 360",
     desc: "Spirit & cocktail journey", tags: "WINE · COCKTAILS",
-    image: "/images/scenes/pourcraft-card.jpg",
+    image: "/images/scenes/pourcraft-card.jpg", route: "/pourcraft",
     icon: Wine, color: "#8b5cf6", category: "spirit",
     questions: [
       { prompt: "Choose your spirit", options: ["Whiskey", "Cognac", "Tequila", "Bourbon"] },
@@ -51,7 +55,7 @@ const EXPERIENCES: ExperienceType[] = [
   {
     id: "beercraft", title: "BeerCraft", brand: "BrewCraft 360",
     desc: "Craft beer selection", tags: "BEER · PAIRINGS · QUICK",
-    image: "/images/scenes/brewcraft-card.jpg",
+    image: "/images/scenes/brewcraft-card.jpg", route: "/brewcraft",
     icon: Beer, color: "#f59e0b", category: "beer",
     questions: [
       { prompt: "What style appeals to you?", options: ["Lager", "Ale", "IPA", "Stout"] },
@@ -63,7 +67,7 @@ const EXPERIENCES: ExperienceType[] = [
   {
     id: "vapecraft", title: "VapeCraft", brand: "VapeCraft 360",
     desc: "Vapor experience", tags: "VAPOR · FLAVOR · MODERN",
-    image: "/images/scenes/vapecraft-card.jpg",
+    image: "/images/scenes/vapecraft-card.jpg", route: "/vapecraft",
     icon: Wind, color: "#06b6d4", category: "cigar",
     questions: [
       { prompt: "Flavor direction?", options: ["Fruity", "Menthol", "Tobacco", "Dessert"] },
@@ -180,7 +184,10 @@ export default function ExperiencesModule() {
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.08, duration: 0.4 }}
                   whileHover={{ scale: 1.03, y: -4 }} whileTap={{ scale: 0.97 }}
-                  onClick={() => startExperience(exp)}
+                  onClick={() => {
+                    engagement.trackAction("experience_start", { experienceId: exp.id });
+                    navigate(exp.route);
+                  }}
                   style={{
                     display: "flex", flexDirection: "column", justifyContent: "flex-end",
                     aspectRatio: "1 / 2", padding: 0, minHeight: 420,
