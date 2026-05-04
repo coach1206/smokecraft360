@@ -77,7 +77,10 @@ import { deviceTouch }          from "./middleware/deviceTouch";
 import { startAggregationWorker } from "./lib/aggregationWorker";
 import experienceEngineRouter    from "./routes/experienceEngine";
 import experienceCompleteRouter  from "./routes/experienceComplete";
+import adminIntensityRouter      from "./routes/adminIntensity";
+import adminWorkersRouter        from "./routes/adminWorkers";
 import { startExperienceAutomation } from "./services/experienceAutomation";
+import { startSessionCleanupWorker } from "./lib/sessionCleanupWorker";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -263,11 +266,14 @@ app.use("/api/billing",                     subscriptionsRouter);   // alias —
 app.use("/api",                             subscriptionsRouter);   // exposes /notifications at /api/notifications
 app.use("/api/experience-engine",          experienceEngineRouter);
 app.use("/api/experience",                experienceCompleteRouter);
+app.use("/api/admin/intensity",           adminIntensityRouter);
+app.use("/api/admin/workers",             adminWorkersRouter);
 
 // Start background workers
 if (process.env["NODE_ENV"] !== "test") {
   startAggregationWorker();
   startExperienceAutomation();
+  startSessionCleanupWorker();
 }
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────

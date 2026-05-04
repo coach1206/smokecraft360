@@ -14,7 +14,7 @@
  *     duplicate scoped rows; nulls are treated as distinct values for grouping.
  */
 
-import { pgTable, text, uuid, boolean, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, boolean, timestamp, uniqueIndex, jsonb } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 export const featureFlagsTable = pgTable(
@@ -25,6 +25,7 @@ export const featureFlagsTable = pgTable(
     venueId:   uuid("venue_id"),                      // null = applies to all venues
     name:      text("name").notNull(),
     enabled:   boolean("enabled").notNull().default(false),
+    metadata:  jsonb("metadata"),                     // optional structured payload (e.g. intensity config)
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

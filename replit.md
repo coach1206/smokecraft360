@@ -94,9 +94,25 @@ JWT-based authentication with `requireAuth` middleware and a `requireRole` facto
 
 A 5-tier user progression system tied to verified orders and XP thresholds, unlocking perks. A separate loyalty points system awards bonuses for orders. Rewards are venue-specific.
 
+### Admin Intensity Controls
+
+Venue-level tuning system for the reward/XP/discount engine. Stored as feature flag rows (`intensity-config` name) with config in `metadata` jsonb. Per-field min/max ranges enforced by `FIELD_RANGES` map (not just a single hard limit). Transaction-safe read-modify-write with `SELECT ... FOR UPDATE`. 60s in-memory cache with invalidation. Routes at `/api/admin/intensity/` — GET defaults, GET/:venueId, PATCH/:venueId (venue_owner+), POST/:venueId/reset (super_admin). All mutations audit-logged.
+
+### Session Cleanup Worker
+
+Background worker (`sessionCleanupWorker.ts`) runs every 30m, closes sessions with `status='active'` older than 4h. Transactionally cancels any `pending` redemptions for affected users. Idempotent (status filter prevents double-close). Admin visibility via `/api/admin/workers/session-cleanup/status` (GET) and `/run-now` (POST, super_admin). Started at boot alongside aggregation and experience automation workers.
+
+### Kiosk Burn-in Protection
+
+Pixel-shift anti-burn-in system in `KioskModeContext.tsx`. Active only in kiosk mode. Cycles through 8 directional offsets (±2px) every 45s via injected CSS class on `#root`. State-aware: only shifts during idle (30s inactivity threshold or overlay showing), resets to origin during active interaction. Cleanup removes style element and class on unmount.
+
+### Ripple Touch Effect
+
+Reusable `RippleButton.tsx` component (Framer Motion expanding circle, 450ms, configurable color). Applied to Intro experience cards — ripple spawns at click coordinates with card-accent-tinted color. `position: relative` + `overflow: hidden` on parent contains the ripple.
+
 ### Device Management
 
-Supports mobile, tablet, and kiosk devices with registration, status tracking, and session management. Kiosk mode includes inactivity timers and full-screen integration.
+Supports mobile, tablet, and kiosk devices with registration, status tracking, and session management. Kiosk mode includes inactivity timers, full-screen integration, burn-in protection, and lockdown (context menu, keyboard shortcuts, text selection, wake lock).
 
 ### Lounge League
 

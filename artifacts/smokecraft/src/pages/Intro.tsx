@@ -18,6 +18,9 @@ import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useBrowserSpeech } from "@/hooks/useBrowserSpeech";
 
+interface RippleItem { id: number; x: number; y: number; size: number; color: string }
+let _rippleId = 0;
+
 /* Locked experience-card imagery. Bundled by Vite via the @assets alias so
  * the welcome screen can NEVER drift to the wrong photo (e.g. the prior
  * Unsplash/Pexels/Imgix URLs were unstable — third-party hosts returned
@@ -237,6 +240,7 @@ export default function Intro() {
   const [selected, setSel]     = useState<ThemeKey | null>(null);
   const [isIdle, setIsIdle]    = useState(false);
   const [attractIdx, setAttractIdx] = useState(0);
+  const [cardRipples, setCardRipples] = useState<RippleItem[]>([]);
   const [tod]                  = useState<TimeOfDay>(() => timeOfDayFromHour(new Date().getHours()));
   const playClick              = useClickSound();
   /* Browser-native TTS for ambient entry-portal cues. Distinct from
@@ -676,7 +680,16 @@ export default function Intro() {
               key={exp.key}
               data-testid={`intro-card-${exp.key}`}
               type="button"
-              onClick={() => onPick(exp.key)}
+              onClick={(e: React.MouseEvent) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const size = Math.max(rect.width, rect.height) * 2;
+                const id = ++_rippleId;
+                setCardRipples((p) => [...p, { id, x, y, size, color: `${exp.accent}30` }]);
+                setTimeout(() => setCardRipples((p) => p.filter((r) => r.id !== id)), 500);
+                onPick(exp.key);
+              }}
               onHoverStart={() => onHoverCard(exp.key)}
               onFocus={() => onHoverCard(exp.key)}
               disabled={selected !== null}
@@ -721,6 +734,23 @@ export default function Intro() {
                   background: exp.gradient,
                 }}
               />
+              {/* Ripple touch effect */}
+              <AnimatePresence>
+                {cardRipples.map((r) => (
+                  <motion.span
+                    key={r.id}
+                    initial={{ opacity: 0.5, scale: 0 }}
+                    animate={{ opacity: 0, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.45, ease: "easeOut" }}
+                    style={{
+                      position: "absolute", left: r.x - r.size / 2, top: r.y - r.size / 2,
+                      width: r.size, height: r.size, borderRadius: "50%",
+                      background: r.color, pointerEvents: "none", zIndex: 10,
+                    }}
+                  />
+                ))}
+              </AnimatePresence>
               {/* Glow halo on select/hover */}
               <motion.div
                 animate={{ opacity: isSel ? 1 : 0 }}

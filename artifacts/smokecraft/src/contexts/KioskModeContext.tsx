@@ -36,14 +36,18 @@ interface KioskState {
   tableNumber: string | null;
   deviceId:    string | null;
   reset:       () => void;
+  burnInActive: boolean;
 }
+
+const BURN_IN_INTERVAL_MS = 45_000;
+const BURN_IN_SHIFT_PX    = 2;
 
 // ── Context ────────────────────────────────────────────────────────────────────
 
 const KioskContext = createContext<KioskState>({
   mode: "normal", isKiosk: false, isTablet: false,
   venueId: null, tableNumber: null, deviceId: null,
-  reset: () => {},
+  reset: () => {}, burnInActive: false,
 });
 
 export function useKioskMode(): KioskState {
@@ -71,6 +75,7 @@ export function KioskModeProvider({ children }: { children: ReactNode }) {
 
   const [showOverlay, setShowOverlay] = useState(false);
   const [countdown,   setCountdown]   = useState(COUNTDOWN_S);
+  const [burnInActive, setBurnInActive] = useState(false);
 
   const idleTimer     = useRef<ReturnType<typeof setTimeout> | null>(null);
   const countdownRef  = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -136,6 +141,83 @@ export function KioskModeProvider({ children }: { children: ReactNode }) {
     if (mode === "kiosk" && document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen().catch(() => {});
     }
+  }, [mode]);
+
+  // ── Burn-in protection ──────────────────────────────────────────────────────
+  // Subtle pixel shift (1-2px) every 45s. Only active during idle/attract
+  // (showOverlay === true or no recent activity). Paused when user is
+  // actively interacting (showOverlay === false means active session).
+  const userIsIdle = useRef(false);
+  const burnStyleRef = useRef<HTMLStyleElement | null>(null);
+
+  useEffect(() => {
+    userIsIdle.current = showOverlay;
+  }, [showOverlay]);
+
+  useEffect(() => {
+    if (mode !== "kiosk") return;
+    let burnInterval: ReturnType<typeof setInterval> | null = null;
+    let shiftIndex = 0;
+    const shifts = [
+      { x: 0, y: 0 },
+      { x: BURN_IN_SHIFT_PX, y: 0 },
+      { x: BURN_IN_SHIFT_PX, y: BURN_IN_SHIFT_PX },
+      { x: 0, y: BURN_IN_SHIFT_PX },
+      { x: -BURN_IN_SHIFT_PX, y: 0 },
+      { x: -BURN_IN_SHIFT_PX, y: -BURN_IN_SHIFT_PX },
+      { x: 0, y: -BURN_IN_SHIFT_PX },
+      { x: BURN_IN_SHIFT_PX, y: -BURN_IN_SHIFT_PX },
+    ];
+
+    const styleEl = document.createElement("style");
+    styleEl.dataset["burnin"] = "protection";
+    document.head.appendChild(styleEl);
+    burnStyleRef.current = styleEl;
+
+    const root = document.getElementById("root");
+    if (root) root.classList.add("kiosk-burn-shift");
+
+    let lastActivity = Date.now();
+    const IDLE_THRESHOLD = 30_000;
+    const onActivity = () => { lastActivity = Date.now(); };
+    const activityEvents = ["mousedown", "touchstart", "keydown", "scroll"];
+    activityEvents.forEach((e) => window.addEventListener(e, onActivity, { passive: true }));
+
+    burnInterval = setInterval(() => {
+      const isIdle = userIsIdle.current || (Date.now() - lastActivity > IDLE_THRESHOLD);
+      if (!isIdle) {
+        styleEl.textContent = `
+          .kiosk-burn-shift {
+            transform: translate(0px, 0px);
+            transition: transform 2s ease-in-out;
+          }
+        `;
+        setBurnInActive(false);
+        return;
+      }
+
+      shiftIndex = (shiftIndex + 1) % shifts.length;
+      const s = shifts[shiftIndex]!;
+      styleEl.textContent = `
+        .kiosk-burn-shift {
+          transform: translate(${s.x}px, ${s.y}px);
+          transition: transform 2s ease-in-out;
+        }
+      `;
+      setBurnInActive(s.x !== 0 || s.y !== 0);
+    }, BURN_IN_INTERVAL_MS);
+
+    return () => {
+      if (burnInterval) clearInterval(burnInterval);
+      styleEl.remove();
+      burnStyleRef.current = null;
+      activityEvents.forEach((e) => window.removeEventListener(e, onActivity));
+      if (root) {
+        root.classList.remove("kiosk-burn-shift");
+        root.style.transform = "";
+      }
+      setBurnInActive(false);
+    };
   }, [mode]);
 
   // ── Kiosk lockdown ────────────────────────────────────────────────────────
@@ -224,7 +306,7 @@ export function KioskModeProvider({ children }: { children: ReactNode }) {
 
   const value: KioskState = {
     mode, isKiosk: mode === "kiosk", isTablet: mode === "tablet",
-    venueId, tableNumber, deviceId, reset,
+    venueId, tableNumber, deviceId, reset, burnInActive,
   };
 
   return (

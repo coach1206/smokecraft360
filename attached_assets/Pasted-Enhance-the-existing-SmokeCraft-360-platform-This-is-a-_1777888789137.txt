@@ -1,0 +1,193 @@
+Enhance the existing SmokeCraft 360 platform.
+
+This is a NON-DESTRUCTIVE HARDENING + CONTROL LAYER UPDATE.
+
+Before coding, audit the system and preserve ALL existing infrastructure including:
+
+tenant isolation (venueId)
+Stripe checkout + webhook authority
+subscriptions + billing
+payout workflows
+commissions + revenue tracking
+sessions lifecycle
+rate limiting
+sanitize + device binding
+audit logging
+background workers
+kiosk mode
+feature flags + kill switch
+offline queue
+analytics rollups
+admin dashboard
+AI optimization
+inventory + loyalty + redemptions
+
+DO NOT:
+- rebuild systems
+- create duplicate tables
+- introduce craft_configs
+- remove existing UI systems
+- replace working architecture
+- import unsafe code patterns
+
+----------------------------------------
+IMPLEMENT ONLY THESE 4 GAP AREAS
+----------------------------------------
+
+1. ADMIN INTENSITY CONTROLS (EXTEND EXISTING SYSTEMS)
+
+Extend:
+- milestoneEngine
+- featureFlags
+
+Add configurable controls:
+
+maxDiscountPercent
+maxFixedDiscount
+freeItemDailyLimit
+rewardCooldownMinutes
+minimumSpendForHighRewards
+xpDifficultyMultiplier
+streakBonusCap
+explorationBonusCap
+perfectMatchBonusCap
+crossCraftBonusCap
+rewardFrequencyLimit
+sameDeviceCooldown
+fraudSensitivity
+leaderboardIntensity
+campaignBoostMultiplier
+
+Rules:
+
+- Platform guardrails ALWAYS win
+- Venue cannot exceed platform limits
+- Super admin controls global
+- Venue admin controls local (within limits)
+- Vendor users = read-only
+- ALL changes must:
+  - be validated
+  - be role-checked
+  - write audit logs (before/after)
+
+Use existing DB structures if possible.
+Only create new tables if absolutely required.
+
+----------------------------------------
+2. SESSION CLEANUP WORKER
+----------------------------------------
+
+Extend existing worker pattern.
+
+Worker must:
+- find expired sessions
+- mark as CLOSED or EXPIRED
+- release abandoned reward holds if applicable
+- log structured results (no console.log)
+- write audit/system event
+
+Constraints:
+- must be idempotent
+- must not delete financial data
+- must not double-process sessions
+
+Interval:
+every 30 minutes
+
+Add endpoints:
+GET /api/admin/workers/session-cleanup/status
+POST /api/admin/workers/session-cleanup/run-now (super admin only)
+
+----------------------------------------
+3. KIOSK BURN-IN PROTECTION
+----------------------------------------
+
+Extend KioskModeContext.
+
+Add:
+- subtle pixel shift (1–2px)
+- interval: 30–60 seconds
+- optional brightness breathing
+
+Behavior:
+- ONLY active during idle or attract loop
+- MUST pause during:
+  - NDA signing
+  - checkout
+  - staff redemption
+  - active interaction
+
+Must:
+- not break touch targets
+- not shift layout drastically
+
+Add safe config flags:
+burnInProtectionEnabled
+pixelShiftInterval
+pixelShiftAmount
+brightnessPulseEnabled
+
+----------------------------------------
+4. RIPPLE TOUCH EFFECT (UI ONLY)
+----------------------------------------
+
+Add reusable ripple effect.
+
+Requirements:
+- no layout shift
+- <150ms response
+- works with Framer Motion
+- respects disabled state
+- no icon/glyph dependency
+
+Apply to:
+- craft cards
+- answer buttons
+- result CTA
+- staff redemption confirm
+- dashboard actions
+
+DO NOT refactor entire UI.
+
+----------------------------------------
+SECURITY RULES (MANDATORY)
+----------------------------------------
+
+- Use existing auth middleware
+- Use existing role system
+- Use existing rate limiters
+- Validate all inputs (zod or existing pattern)
+- Use structured logging (not console.log)
+- Use Drizzle/query builder (no raw SQL interpolation)
+- Fail closed on invalid permissions
+- Do not trust client-side data
+
+----------------------------------------
+FEATURE FLAG EXTENSION
+----------------------------------------
+
+Extend existing featureFlags:
+
+admin_intensity_controls
+session_cleanup_worker
+burn_in_protection
+ripple_touch_effects
+
+Respect precedence:
+global > venue > theme > kill switch
+
+----------------------------------------
+COMPLETION REPORT REQUIRED
+----------------------------------------
+
+After implementation, return:
+
+- files changed
+- routes added
+- tables reused or added
+- audit actions added
+- feature flags added
+- worker behavior
+- manual test steps
+- confirmation no duplicate systems were created
+- confirmation no existing systems were broken
