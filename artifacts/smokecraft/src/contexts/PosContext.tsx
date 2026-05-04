@@ -286,6 +286,11 @@ export function PosProvider({ children }: { children: ReactNode }) {
 
     const finalTotal = rewardApplied ? Math.round(total * 0.9 * 100) / 100 : total;
 
+    if (rewardApplied) {
+      lastRewardTimeRef.current = Date.now();
+      startRewardCooldown();
+    }
+
     const order: Order = {
       id: `ORD-${Date.now().toString(36).toUpperCase()}`,
       items: snapshotCart.map(c => ({ ...c })),
@@ -308,8 +313,6 @@ export function PosProvider({ children }: { children: ReactNode }) {
       order.status = "paid";
       syncOrders(ordersRef.current.map(o => o.id === order.id ? { ...o, status: "paid" } : o));
       if (rewardApplied) {
-        lastRewardTimeRef.current = Date.now();
-        startRewardCooldown();
         setRewardMessage(`You unlocked a reward! 10% off applied — saved $${(total - finalTotal).toFixed(2)}`);
       }
     } else {
@@ -377,8 +380,6 @@ export function PosProvider({ children }: { children: ReactNode }) {
       returnOrder.status = "paid";
       syncOrders(ordersRef.current.map(o => o.id === orderId ? { ...o, status: "paid" as PaymentStatus } : o));
       if (failedOrder.rewardApplied) {
-        lastRewardTimeRef.current = Date.now();
-        startRewardCooldown();
         const rawTotal = failedOrder.items.reduce((sum, c) => sum + c.product.price * c.quantity, 0);
         setRewardMessage(`You unlocked a reward! 10% off applied — saved $${(rawTotal - failedOrder.total).toFixed(2)}`);
       }
@@ -395,7 +396,7 @@ export function PosProvider({ children }: { children: ReactNode }) {
     lockRef.current = false;
     setProcessingLock(false);
     return returnOrder;
-  }, [restoreStockForItems, syncProducts, syncOrders, addInventoryLog]);
+  }, [restoreStockForItems, syncProducts, syncOrders, addInventoryLog, startRewardCooldown]);
 
   const refundOrder = useCallback((orderId: string): boolean => {
     const role = userRef.current?.role?.toLowerCase();
