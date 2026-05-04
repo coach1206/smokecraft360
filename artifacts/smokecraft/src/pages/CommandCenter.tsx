@@ -4,12 +4,17 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft, ShoppingCart, Package, Gift, Sparkles, BarChart3,
   Truck, Monitor, Users, Settings, Megaphone, Activity, Layers,
+  Flame, Beer, Wine, Wind,
 } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter, POS_MODE_INFO } from "@/contexts/CommandCenterContext";
 import SystemStatusPanel from "@/components/SystemStatusPanel";
 
 const TILES = [
+  { id: "smokecraft", title: "SmokeCraft", desc: "Launch cigar experience", icon: Flame, color: "#e85d26", route: "/smokecraft", dataKey: "smokecraft" as const },
+  { id: "brewcraft", title: "BrewCraft", desc: "Beer experience", icon: Beer, color: "#f59e0b", route: "/brewcraft", dataKey: "brewcraft" as const },
+  { id: "pourcraft", title: "PourCraft", desc: "Spirits experience", icon: Wine, color: "#a78bfa", route: "/pourcraft", dataKey: "pourcraft" as const },
+  { id: "vapecraft", title: "VapeCraft", desc: "Vape experience", icon: Wind, color: "#06b6d4", route: "/vapecraft", dataKey: "vapecraft" as const },
   { id: "orders", title: "Orders", desc: "Live POS terminal", icon: ShoppingCart, color: "#d4af37", route: "/pos", dataKey: "orders" as const },
   { id: "inventory", title: "Inventory", desc: "Stock control", icon: Package, color: "#5b8def", route: "/pos", dataKey: "inventory" as const },
   { id: "rewards", title: "Rewards", desc: "Loyalty & rewards", icon: Gift, color: "#34d399", route: "/pos", dataKey: "rewards" as const },
@@ -34,6 +39,10 @@ export default function CommandCenter() {
 
   function tileData(key: typeof TILES[number]["dataKey"]): string {
     switch (key) {
+      case "smokecraft": return "Cigar wizard";
+      case "brewcraft": return "Beer pairing";
+      case "pourcraft": return "Spirit pairing";
+      case "vapecraft": return "Vape flow";
       case "orders": return `${pos.orders.length} today`;
       case "inventory": return lowStock > 0 ? `${lowStock} low stock` : "All stocked";
       case "rewards": return `${pos.orders.filter(o => o.rewardApplied).length} triggered`;
@@ -125,9 +134,9 @@ export default function CommandCenter() {
           return (
             <motion.button
               key={tile.id}
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: i * 0.04 }}
+              transition={{ duration: 0.25, delay: Math.min(i * 0.03, 0.3) }}
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate(tile.route)}
