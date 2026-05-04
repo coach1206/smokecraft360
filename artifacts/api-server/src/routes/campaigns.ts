@@ -21,8 +21,7 @@ import {
   analyticsEventsTable,
   brandsTable,
 } from "@workspace/db";
-import { getAllInventory }               from "../services/boostService";
-import { setCampaign, removeCampaign }  from "../services/campaignStore";
+import { setCampaign, removeCampaign, refreshIfStale, rowToMeta } from "../services/campaignStore";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
 import { requireRole }                  from "../middleware/roles";
 import { allowOnly }                    from "../middleware/sanitize";
@@ -34,28 +33,8 @@ const router: IRouter = Router();
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function campaignToMeta(row: typeof campaignsTable.$inferSelect) {
-  return {
-    id:              row.id,
-    name:            row.name,
-    type:            row.type ?? "GENERAL",
-    brandId:         row.brandId       ?? null,
-    distributorId:   row.distributorId ?? null,
-    venueId:         row.venueId       ?? null,
-    craftType:       row.craftType     ?? null,
-    boostMultiplier: row.boostMultiplier ?? 1.0,
-    xpMultiplier:    row.xpMultiplier  ?? 1.0,
-    rewardBonus:     row.rewardBonus   ?? 0,
-    budgetCents:     row.budgetCents   ?? null,
-    budgetLimit:     row.budgetLimit   ?? null,
-    impressionGoal:  row.impressionGoal ?? null,
-    maxRedemptions:  row.maxRedemptions ?? null,
-    startDate:       row.startDate     ?? null,
-    endDate:         row.endDate       ?? null,
-    status:          row.status,
-    active:          row.active,
-  };
-}
+/** Alias so local call-sites keep working after removing the duplicate. */
+const campaignToMeta = rowToMeta;
 
 // ── GET /api/campaigns ────────────────────────────────────────────────────────
 
@@ -64,6 +43,9 @@ router.get(
   requireAuth,
   requireRole("super_admin", "venue_owner", "manager", "brand_partner"),
   async (req: AuthRequest, res: Response) => {
+    // Re-hydrate in-memory store if stale so out-of-band DB edits eventually surface.
+    await refreshIfStale();
+
     const rows = await db
       .select({
         campaign: campaignsTable,
@@ -73,14 +55,19 @@ router.get(
       .leftJoin(brandsTable, eq(campaignsTable.brandId, brandsTable.id))
       .orderBy(campaignsTable.createdAt);
 
-    // Count products per campaign from in-memory inventory
-    const inventory  = getAllInventory();
-    const prodCounts = new Map<string, number>();
-    for (const item of inventory) {
-      if (item.campaignId) {
-        prodCounts.set(item.campaignId, (prodCounts.get(item.campaignId) ?? 0) + 1);
-      }
-    }
+    // Count products per campaign directly from DB — avoids stale in-memory inventory.
+    const prodCountRows = await db
+      .select({
+        campaignId: productsTable.campaignId,
+        count: sql<number>`cast(count(*) as integer)`,
+      })
+      .from(productsTable)
+      .where(sql`${productsTable.campaignId} IS NOT NULL`)
+      .groupBy(productsTable.campaignId);
+
+    const prodCounts = new Map<string, number>(
+      prodCountRows.map(r => [r.campaignId!, r.count]),
+    );
 
     res.json(rows.map(({ campaign, brandName }) => ({
       ...campaign,
@@ -201,9 +188,11 @@ router.get(
     const [row] = await db.select().from(campaignsTable).where(eq(campaignsTable.id, id));
     if (!row) { res.status(404).json({ error: "Campaign not found" }); return; }
 
-    // Products linked to this campaign
-    const inventory  = getAllInventory();
-    const products   = inventory.filter((p) => p.campaignId === id);
+    // Products linked to this campaign — query DB directly for accuracy.
+    const products = await db
+      .select()
+      .from(productsTable)
+      .where(eq(productsTable.campaignId, id));
 
     res.json({ ...row, products });
   },
@@ -459,9 +448,11 @@ router.get(
     const [campaign] = await db.select().from(campaignsTable).where(eq(campaignsTable.id, id));
     if (!campaign) { res.status(404).json({ error: "Campaign not found" }); return; }
 
-    // Products linked to this campaign (in-memory)
-    const inventory  = getAllInventory();
-    const linkedProds= inventory.filter((p) => p.campaignId === id);
+    // Products linked to this campaign — query DB directly for accuracy.
+    const linkedProds = await db
+      .select({ id: productsTable.id, name: productsTable.name })
+      .from(productsTable)
+      .where(eq(productsTable.campaignId, id));
     const productIds = linkedProds.map((p) => p.id);
 
     let impressions   = 0;

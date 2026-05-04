@@ -1,9 +1,7 @@
 import { eq, sql } from "drizzle-orm";
-import { db, campaignsTable, analyticsEventsTable, ordersTable } from "@workspace/db";
+import { db, campaignsTable, analyticsEventsTable } from "@workspace/db";
 import { getCampaignMeta, isActiveCampaign, setCampaign } from "./campaignStore";
 import { getBrandBoostForProduct } from "./brandPartnerStore";
-import { getMeta } from "./boostService";
-import { getVenueIntensityConfig } from "./venueIntensityConfig";
 import { logger } from "../lib/logger";
 
 export interface OrderAttribution {
@@ -72,24 +70,35 @@ export async function recordCampaignConversion(
     const meta = getCampaignMeta(campaignId);
     if (!meta) return;
 
+    // ── Budget / redemption enforcement ──────────────────────────────────────
+    // Stop recording once hard limits are hit so pacing metrics stay accurate.
+    if (meta.maxRedemptions !== null && meta.currentRedemptions >= meta.maxRedemptions) {
+      logger.info({ campaignId, currentRedemptions: meta.currentRedemptions }, "Campaign max redemptions reached — skipping conversion");
+      return;
+    }
+    if (meta.budgetCents !== null && meta.currentSpendCents >= meta.budgetCents) {
+      logger.info({ campaignId, currentSpendCents: meta.currentSpendCents }, "Campaign budget exhausted — skipping conversion");
+      return;
+    }
+
+    const spendDelta = meta.rewardBonus || 0;
+
     await db
       .update(campaignsTable)
       .set({
-        currentSpendCents: sql`${campaignsTable.currentSpendCents} + ${meta.rewardBonus || 0}`,
+        currentSpendCents: sql`${campaignsTable.currentSpendCents} + ${spendDelta}`,
         currentRedemptions: sql`${campaignsTable.currentRedemptions} + 1`,
         updatedAt: new Date(),
       })
       .where(eq(campaignsTable.id, campaignId));
 
+    // Sync in-memory counters so subsequent isActiveCampaign() checks and
+    // budget enforcement use fresh numbers without waiting for a DB reload.
     setCampaign({
       ...meta,
-      currentSpendCents: (meta as any).currentSpendCents
-        ? (meta as any).currentSpendCents + (meta.rewardBonus || 0)
-        : meta.rewardBonus || 0,
-      currentRedemptions: (meta as any).currentRedemptions
-        ? (meta as any).currentRedemptions + 1
-        : 1,
-    } as any);
+      currentSpendCents:  meta.currentSpendCents  + spendDelta,
+      currentRedemptions: meta.currentRedemptions + 1,
+    });
 
     db.insert(analyticsEventsTable)
       .values({

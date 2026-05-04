@@ -32,7 +32,13 @@ router.post(
     }
 
     const [campaign] = await db
-      .select({ id: campaignsTable.id, status: campaignsTable.status, active: campaignsTable.active })
+      .select({
+        id:        campaignsTable.id,
+        status:    campaignsTable.status,
+        active:    campaignsTable.active,
+        startDate: campaignsTable.startDate,
+        endDate:   campaignsTable.endDate,
+      })
       .from(campaignsTable)
       .where(eq(campaignsTable.id, campaignId));
 
@@ -43,6 +49,23 @@ router.post(
 
     if (!campaign.active || campaign.status !== "active") {
       res.status(400).json({ error: "Campaign is not currently active" });
+      return;
+    }
+
+    // ── Date-window enforcement ────────────────────────────────────────────────
+    const now = new Date();
+    if (campaign.startDate && campaign.startDate > now) {
+      res.status(400).json({
+        error: "Campaign has not started yet",
+        startsAt: campaign.startDate,
+      });
+      return;
+    }
+    if (campaign.endDate && campaign.endDate < now) {
+      res.status(400).json({
+        error: "Campaign has ended",
+        endedAt: campaign.endDate,
+      });
       return;
     }
 

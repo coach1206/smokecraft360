@@ -9,18 +9,22 @@ export type EngagementAction =
   | "experience_start"
   | "experience_answer"
   | "experience_complete"
-  | "campaign_enter";
+  | "campaign_enter"
+  | "craft_complete"
+  | "design_save";
 
 const POINTS_MAP: Record<EngagementAction, number> = {
-  select: 10,
-  customize: 15,
-  confirm: 25,
-  purchase: 50,
-  navigate: 5,
-  experience_start: 10,
-  experience_answer: 5,
-  experience_complete: 30,
-  campaign_enter: 20,
+  select:               10,
+  customize:            15,
+  confirm:              25,
+  purchase:             50,
+  navigate:              5,
+  experience_start:     10,
+  experience_answer:     5,
+  experience_complete:  30,
+  campaign_enter:       20,
+  craft_complete:       30,
+  design_save:          10,
 };
 
 const COOLDOWN_MS = 2000;
@@ -63,23 +67,28 @@ export function useEngagement() {
 
     const token = localStorage.getItem("smokecraft_token");
     if (token) {
-      const reason = action === "experience_complete" ? "taste_challenge"
-        : action === "customize" ? "build_your_own"
-        : null;
+      const REASON_MAP: Partial<Record<EngagementAction, string>> = {
+        experience_complete: "taste_challenge",
+        customize:           "build_your_own",
+        craft_complete:      "craft_complete",
+        design_save:         "design_save",
+      };
+      const reason = REASON_MAP[action];
       if (reason) {
         fetch("/api/loyalty/award", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ points: Math.min(points, 20), reason }),
+          body: JSON.stringify({ points: Math.min(points, 500), reason }),
         }).catch(() => {});
       }
     }
 
     const EVENT_MAP: Partial<Record<EngagementAction, string>> = {
-      select: "product_selected",
-      purchase: "order_created",
-      campaign_enter: "campaign_conversion",
+      select:           "product_selected",
+      purchase:         "order_created",
+      campaign_enter:   "campaign_conversion",
       experience_start: "recommendation_view",
+      craft_complete:   "recommendation_view",
     };
     const mappedEvent = EVENT_MAP[action];
     if (mappedEvent) {

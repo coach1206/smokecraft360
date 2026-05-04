@@ -1,6 +1,6 @@
 /**
  * BootIntro — Profound Innovation cinematic brand splash that plays once
- * per session BEFORE the SmokeCraft 360 interface loads. Specced across
+ * per session BEFORE the Axiom OS interface loads. Specced across
  * briefs 25 (visual flow + sound design + sessionStorage gate) and 26
  * (CSS keyframes / colors). Mounted as a sibling overlay above the Router
  * in App.tsx so it covers every entry route on first session load.

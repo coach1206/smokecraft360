@@ -31,6 +31,7 @@ import {
 import { requireAuth, type AuthRequest }       from "../middleware/auth";
 import { sessionJoinLimiter }                  from "../middleware/rateLimit";
 import { recordVisit }                         from "../services/visitTracker";
+import { checkAndAwardVisitMilestone }          from "../services/loyaltyService";
 import { z }                                   from "zod";
 
 const router: IRouter = Router();
@@ -67,9 +68,14 @@ router.post(
           .returning();
         if (!sess) continue;
 
-        // Cross-venue identity: record this user-at-venue visit. Fire-and-forget;
-        // failures are swallowed by the service so they cannot break session creation.
-        if (venueId) void recordVisit(hostId, venueId);
+        // Cross-venue identity: record this user-at-venue visit then check
+        // whether a visit-count milestone was just reached and award bonus points.
+        // Both steps are fire-and-forget; failures never break session creation.
+        if (venueId) {
+          recordVisit(hostId, venueId)
+            .then(({ visitCount }) => checkAndAwardVisitMilestone(hostId, visitCount))
+            .catch(() => {});
+        }
 
         // Insert the host as the first member. Wrapped in try so a (theoretically
         // impossible) duplicate doesn't fail the whole flow.

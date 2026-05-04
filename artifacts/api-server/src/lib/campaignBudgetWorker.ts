@@ -95,6 +95,8 @@ export async function runCampaignBudgetEnforcement(): Promise<BudgetEnforcementR
             budgetLimit: campaign.budgetLimit ?? null,
             impressionGoal: campaign.impressionGoal ?? null,
             maxRedemptions: campaign.maxRedemptions ?? null,
+            currentSpendCents:  campaign.currentSpendCents  ?? 0,
+            currentRedemptions: campaign.currentRedemptions ?? 0,
             startDate: campaign.startDate ?? null,
             endDate: campaign.endDate ?? null,
             status: newStatus,

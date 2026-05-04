@@ -153,12 +153,12 @@ export function DemoNdaModal({ onComplete, deviceId, venueId }: Props) {
             Non-Disclosure Agreement
           </h2>
           <p style={{ margin: "0 0 10px", fontSize: 14, lineHeight: 1.65, opacity: 0.85 }}>
-            Access to the SmokeCraft 360 demo environment is provided in strict confidence.
+            Access to the Axiom OS demo environment is provided in strict confidence.
             By signing below, the undersigned agrees to the following terms:
           </p>
           <ol style={{ margin: 0, paddingLeft: 20, fontSize: 13, lineHeight: 1.7, opacity: 0.75 }}>
             <li>You will not disclose, reproduce, or share any proprietary system designs, user interfaces, workflows, or data observed during this demo session with any third party.</li>
-            <li>You will not reverse-engineer, decompile, or attempt to derive the source code, algorithms, or trade secrets of the SmokeCraft 360 platform.</li>
+            <li>You will not reverse-engineer, decompile, or attempt to derive the source code, algorithms, or trade secrets of the Axiom OS platform.</li>
             <li>All materials, screenshots, recordings, or notes taken during this session remain the intellectual property of Profound Innovations / Axiom OS.</li>
             <li>This agreement remains in effect for a period of two (2) years from the date of signing.</li>
             <li>Violation of these terms may result in legal action and liability for damages.</li>

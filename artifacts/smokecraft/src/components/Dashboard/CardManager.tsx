@@ -1,6 +1,6 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, type DragEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Trash2, ImagePlus, Check, Loader2, AlertTriangle, X } from "lucide-react";
+import { Upload, ImagePlus, Check, Loader2, AlertTriangle, ExternalLink } from "lucide-react";
 import { uploadProductImage, type InventoryItem, updateInventoryItem } from "@/services/api";
 import { cloudinaryOptimize } from "@/lib/cloudinary";
 
@@ -12,70 +12,117 @@ interface CardManagerProps {
 type CraftCategory = "cigar" | "alcohol" | "beer" | "vape";
 
 const CATEGORIES: { id: CraftCategory; label: string; color: string }[] = [
-  { id: "cigar", label: "Cigars", color: "#d4af37" },
+  { id: "cigar",   label: "Cigars",  color: "#d4af37" },
   { id: "alcohol", label: "Spirits", color: "#8b5cf6" },
-  { id: "beer", label: "Beer", color: "#f59e0b" },
-  { id: "vape", label: "Vape", color: "#06b6d4" },
+  { id: "beer",    label: "Beer",    color: "#f59e0b" },
+  { id: "vape",    label: "Vape",    color: "#06b6d4" },
 ];
+
+type UploadStatus = "idle" | "uploading" | "success" | "error";
+
+interface CardState {
+  status:   UploadStatus;
+  progress: number;
+  error:    string | null;
+  dragOver: boolean;
+}
+
+const DEFAULT_STATE: CardState = { status: "idle", progress: 0, error: null, dragOver: false };
 
 export function CardManager({ inventory, onRefresh }: CardManagerProps) {
   const [activeCategory, setActiveCategory] = useState<CraftCategory>("cigar");
-  const [uploading, setUploading] = useState<Record<string, boolean>>({});
-  const [uploaded, setUploaded] = useState<Record<string, boolean>>({});
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [bulkUploading, setBulkUploading] = useState(false);
-  const [bulkFile, setBulkFile] = useState<File | null>(null);
-  const [bulkPreview, setBulkPreview] = useState<string | null>(null);
+  const [cardStates, setCardStates] = useState<Record<string, CardState>>({});
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  const bulkInputRef = useRef<HTMLInputElement | null>(null);
+  const progressTimers = useRef<Record<string, ReturnType<typeof setInterval>>>({});
+
+  const getState = (id: string): CardState => cardStates[id] ?? DEFAULT_STATE;
+
+  const patchState = useCallback((id: string, patch: Partial<CardState>) => {
+    setCardStates(prev => ({ ...prev, [id]: { ...(prev[id] ?? DEFAULT_STATE), ...patch } }));
+  }, []);
 
   const filtered = inventory.filter(item => {
     if (activeCategory === "alcohol") return item.category === "alcohol" || item.category === "spirit";
     return item.category === activeCategory;
   });
 
+  /** Simulate upload progress while the real upload is in-flight. */
+  const startProgress = useCallback((id: string) => {
+    let pct = 0;
+    const timer = setInterval(() => {
+      pct = Math.min(pct + Math.random() * 12 + 4, 88);
+      patchState(id, { progress: pct });
+    }, 200);
+    progressTimers.current[id] = timer;
+  }, [patchState]);
+
+  const stopProgress = useCallback((id: string) => {
+    clearInterval(progressTimers.current[id]);
+    delete progressTimers.current[id];
+  }, []);
+
   const handleUpload = useCallback(async (itemId: string, file: File) => {
     if (file.size > 8 * 1024 * 1024) {
-      setErrors(prev => ({ ...prev, [itemId]: "Image must be under 8MB" }));
-      setTimeout(() => setErrors(prev => { const n = { ...prev }; delete n[itemId]; return n; }), 3000);
+      patchState(itemId, { status: "error", error: "Image must be under 8 MB" });
+      setTimeout(() => patchState(itemId, DEFAULT_STATE), 3500);
       return;
     }
 
-    setUploading(prev => ({ ...prev, [itemId]: true }));
-    setErrors(prev => { const n = { ...prev }; delete n[itemId]; return n; });
+    patchState(itemId, { status: "uploading", progress: 0, error: null, dragOver: false });
+    startProgress(itemId);
 
     try {
       const url = await uploadProductImage(file);
       await updateInventoryItem(itemId, { imageUrl: url });
-      setUploaded(prev => ({ ...prev, [itemId]: true }));
-      setTimeout(() => setUploaded(prev => { const n = { ...prev }; delete n[itemId]; return n; }), 2500);
+      stopProgress(itemId);
+      patchState(itemId, { status: "success", progress: 100 });
       onRefresh();
+      setTimeout(() => patchState(itemId, DEFAULT_STATE), 2500);
     } catch (err: any) {
-      setErrors(prev => ({ ...prev, [itemId]: err?.message ?? "Upload failed" }));
-      setTimeout(() => setErrors(prev => { const n = { ...prev }; delete n[itemId]; return n; }), 4000);
-    } finally {
-      setUploading(prev => ({ ...prev, [itemId]: false }));
+      stopProgress(itemId);
+      patchState(itemId, { status: "error", error: err?.message ?? "Upload failed", progress: 0 });
+      setTimeout(() => patchState(itemId, DEFAULT_STATE), 4000);
     }
-  }, [onRefresh]);
+  }, [patchState, startProgress, stopProgress, onRefresh]);
 
-  const handleBulkFileSelect = useCallback((file: File) => {
-    setBulkFile(file);
-    const url = URL.createObjectURL(file);
-    setBulkPreview(url);
-  }, []);
+  // ── Drag-and-drop handlers ────────────────────────────────────────────────
+
+  const onDragOver = useCallback((e: DragEvent, id: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
+    patchState(id, { dragOver: true });
+  }, [patchState]);
+
+  const onDragLeave = useCallback((e: DragEvent, id: string) => {
+    // Only clear if leaving the card entirely (not a child element)
+    if (!(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node)) {
+      patchState(id, { dragOver: false });
+    }
+  }, [patchState]);
+
+  const onDrop = useCallback((e: DragEvent, id: string) => {
+    e.preventDefault();
+    patchState(id, { dragOver: false });
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      void handleUpload(id, file);
+    }
+  }, [handleUpload, patchState]);
 
   const catColor = CATEGORIES.find(c => c.id === activeCategory)?.color ?? "#d4af37";
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
         <ImagePlus size={16} color={catColor} />
         <span style={{ fontSize: 14, fontWeight: 700, color: "#e8e0c8" }}>Card Manager</span>
         <span style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginLeft: 4 }}>
-          Upload & manage craft card images
+          Upload or drag-and-drop images onto any card
         </span>
       </div>
 
+      {/* Category tabs */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
         {CATEGORIES.map(cat => (
           <motion.button
@@ -113,9 +160,7 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
         }}>
           <AnimatePresence>
             {filtered.map((item, i) => {
-              const isUploading = uploading[item.id];
-              const isUploaded = uploaded[item.id];
-              const error = errors[item.id];
+              const s = getState(item.id);
               const hasImage = !!item.imageUrl;
 
               return (
@@ -124,13 +169,27 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.03 }}
+                  onDragOver={e => onDragOver(e, item.id)}
+                  onDragLeave={e => onDragLeave(e, item.id)}
+                  onDrop={e => onDrop(e, item.id)}
                   style={{
                     borderRadius: 14, overflow: "hidden",
-                    background: "rgba(255,255,255,0.03)",
-                    border: `1px solid ${error ? "rgba(239,68,68,0.3)" : isUploaded ? "rgba(52,211,153,0.3)" : `${catColor}15`}`,
+                    background: s.dragOver
+                      ? `${catColor}10`
+                      : "rgba(255,255,255,0.03)",
+                    border: `1px solid ${
+                      s.status === "error"   ? "rgba(239,68,68,0.4)"   :
+                      s.status === "success" ? "rgba(52,211,153,0.4)"  :
+                      s.dragOver             ? `${catColor}60`          :
+                                               `${catColor}15`
+                    }`,
+                    outline: s.dragOver ? `2px dashed ${catColor}80` : "none",
+                    outlineOffset: "-2px",
                     position: "relative",
+                    transition: "border-color 0.15s, background 0.15s, outline 0.15s",
                   }}
                 >
+                  {/* Image area */}
                   <div style={{
                     width: "100%", aspectRatio: "1",
                     background: hasImage ? "none" : "rgba(255,255,255,0.02)",
@@ -143,20 +202,46 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
                         alt={item.name}
                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
                         loading="lazy"
+                        draggable={false}
                       />
                     ) : (
-                      <ImagePlus size={28} color="rgba(232,224,200,0.15)" />
-                    )}
-                    {isUploading && (
-                      <div style={{
-                        position: "absolute", inset: 0,
-                        background: "rgba(0,0,0,0.6)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                      }}>
-                        <Loader2 size={24} color={catColor} style={{ animation: "spin 1s linear infinite" }} />
+                      <div style={{ textAlign: "center" }}>
+                        <ImagePlus size={28} color="rgba(232,224,200,0.15)" />
+                        {s.dragOver && (
+                          <div style={{ fontSize: 10, color: catColor, marginTop: 6 }}>Drop to upload</div>
+                        )}
                       </div>
                     )}
-                    {isUploaded && (
+
+                    {/* Uploading overlay with progress ring */}
+                    {s.status === "uploading" && (
+                      <div style={{
+                        position: "absolute", inset: 0,
+                        background: "rgba(0,0,0,0.65)",
+                        display: "flex", flexDirection: "column",
+                        alignItems: "center", justifyContent: "center", gap: 8,
+                      }}>
+                        <Loader2 size={24} color={catColor} style={{ animation: "spin 1s linear infinite" }} />
+                        <div style={{
+                          width: "60%", height: 3, borderRadius: 2,
+                          background: "rgba(255,255,255,0.1)",
+                          overflow: "hidden",
+                        }}>
+                          <div style={{
+                            height: "100%", borderRadius: 2,
+                            background: catColor,
+                            width: `${s.progress}%`,
+                            transition: "width 0.2s ease",
+                          }} />
+                        </div>
+                        <div style={{ fontSize: 10, color: "rgba(232,224,200,0.5)" }}>
+                          {Math.round(s.progress)}%
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Success overlay */}
+                    {s.status === "success" && (
                       <motion.div
                         initial={{ scale: 0 }} animate={{ scale: 1 }}
                         style={{
@@ -168,23 +253,60 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
                         <Check size={28} color="#34d399" />
                       </motion.div>
                     )}
+
+                    {/* Drag-over overlay (when card already has image) */}
+                    {s.dragOver && hasImage && (
+                      <div style={{
+                        position: "absolute", inset: 0,
+                        background: `${catColor}20`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        backdropFilter: "blur(2px)",
+                      }}>
+                        <div style={{
+                          textAlign: "center",
+                          padding: "8px 12px", borderRadius: 8,
+                          background: `${catColor}30`,
+                          border: `1px solid ${catColor}60`,
+                        }}>
+                          <Upload size={20} color={catColor} />
+                          <div style={{ fontSize: 10, color: catColor, marginTop: 4 }}>Drop to replace</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
+                  {/* Card footer */}
                   <div style={{ padding: "10px 12px" }}>
                     <div style={{
                       fontSize: 12, fontWeight: 600, color: "#e8e0c8",
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                      marginBottom: 6,
+                      marginBottom: 2,
                     }}>
                       {item.name}
                     </div>
 
-                    {error && (
+                    {/* Cloudinary link when image exists */}
+                    {hasImage && s.status === "idle" && (
+                      <a
+                        href={item.imageUrl!}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: "inline-flex", alignItems: "center", gap: 3,
+                          fontSize: 9, color: "rgba(232,224,200,0.3)",
+                          textDecoration: "none", marginBottom: 6,
+                        }}
+                      >
+                        <ExternalLink size={9} /> View on Cloudinary
+                      </a>
+                    )}
+
+                    {s.status === "error" && (
                       <div style={{
                         fontSize: 10, color: "#ef4444", marginBottom: 6,
                         display: "flex", alignItems: "center", gap: 4,
                       }}>
-                        <AlertTriangle size={10} /> {error}
+                        <AlertTriangle size={10} /> {s.error}
                       </div>
                     )}
 
@@ -195,7 +317,7 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
                       style={{ display: "none" }}
                       onChange={e => {
                         const file = e.target.files?.[0];
-                        if (file) handleUpload(item.id, file);
+                        if (file) void handleUpload(item.id, file);
                         e.target.value = "";
                       }}
                     />
@@ -203,15 +325,16 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
                     <motion.button
                       whileTap={{ scale: 0.95 }}
                       onClick={() => fileInputRefs.current[item.id]?.click()}
-                      disabled={isUploading}
+                      disabled={s.status === "uploading"}
                       style={{
                         width: "100%", padding: "8px 0", borderRadius: 8,
                         fontSize: 11, fontWeight: 600,
                         background: `${catColor}15`,
                         border: `1px solid ${catColor}30`,
                         color: catColor,
-                        cursor: isUploading ? "wait" : "pointer",
+                        cursor: s.status === "uploading" ? "wait" : "pointer",
                         display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                        opacity: s.status === "uploading" ? 0.6 : 1,
                       }}
                     >
                       <Upload size={12} />

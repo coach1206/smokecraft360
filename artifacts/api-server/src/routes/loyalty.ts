@@ -1,8 +1,8 @@
 /**
  * Loyalty routes
  *
- * GET  /api/loyalty              — current user's points balance + available rewards + recent redemptions
- * POST /api/loyalty/award        — award points (taste challenge, build-your-own, etc.)
+ * GET  /api/loyalty              — current user's points balance + visit streak + available rewards + recent redemptions
+ * POST /api/loyalty/award        — award points (taste_challenge, build_your_own, craft_complete, design_save, return_visit, streak_milestone)
  * POST /api/loyalty/redeem       — redeem points for a reward
  * GET  /api/loyalty/redemptions  — admin: all redemptions for a venue
  * PATCH /api/loyalty/redemptions/:id — admin: update redemption status
@@ -16,11 +16,13 @@ import {
   rewardsTable,
   redemptionsTable,
   userProgressionTable,
+  userVenueVisitsTable,
 }                                               from "@workspace/db";
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { requireRole }                          from "../middleware/roles";
 import { z }                                    from "zod";
 import { logAudit }                             from "../lib/audit";
+import { VISIT_MILESTONES }                     from "../services/loyaltyService";
 
 const router: IRouter = Router();
 
@@ -64,7 +66,9 @@ router.get(
   "/",
   requireAuth,
   async (req: AuthRequest, res: Response) => {
-    const userId   = req.user!.id;
+    const userId  = req.user!.id;
+    const venueId = req.user!.venueId ?? null;
+
     const [balance, levelIndex] = await Promise.all([
       getBalance(userId),
       getUserLevelIndex(userId),
@@ -90,9 +94,50 @@ router.get(
       .orderBy(desc(redemptionsTable.createdAt))
       .limit(10);
 
+    // Visit streak info (scoped to home venue if set)
+    let visitInfo: {
+      visitCount: number;
+      firstVisitAt: Date | null;
+      lastVisitAt:  Date | null;
+      isReturnUser: boolean;
+      nextMilestone: number | null;
+      nextMilestoneBonus: number | null;
+    } = {
+      visitCount: 0, firstVisitAt: null, lastVisitAt: null,
+      isReturnUser: false, nextMilestone: null, nextMilestoneBonus: null,
+    };
+
+    if (venueId) {
+      const [visit] = await db
+        .select()
+        .from(userVenueVisitsTable)
+        .where(
+          and(
+            eq(userVenueVisitsTable.userId, userId),
+            eq(userVenueVisitsTable.venueId, venueId),
+          ),
+        )
+        .limit(1);
+
+      if (visit) {
+        const vc = visit.visitCount;
+        const milestoneThresholds = Object.keys(VISIT_MILESTONES).map(Number).sort((a, b) => a - b);
+        const next = milestoneThresholds.find(t => t > vc) ?? null;
+        visitInfo = {
+          visitCount:         vc,
+          firstVisitAt:       visit.firstVisitAt,
+          lastVisitAt:        visit.lastVisitAt,
+          isReturnUser:       vc > 1,
+          nextMilestone:      next,
+          nextMilestoneBonus: next !== null ? (VISIT_MILESTONES[next] ?? null) : null,
+        };
+      }
+    }
+
     res.json({
       ...balance,
       levelIndex,
+      visitInfo,
       available,
       recentRedemptions,
     });
@@ -102,13 +147,26 @@ router.get(
 // ── POST /api/loyalty/award ──────────────────────────────────────────────────
 
 const AWARD_RULES: Record<string, { max: number; cooldownMs: number }> = {
-  taste_challenge: { max: 15, cooldownMs: 30_000 },
-  build_your_own:  { max: 20, cooldownMs: 60_000 },
+  taste_challenge:  { max: 15,  cooldownMs:  30_000 },
+  build_your_own:   { max: 20,  cooldownMs:  60_000 },
+  craft_complete:   { max: 30,  cooldownMs: 120_000 },
+  design_save:      { max: 10,  cooldownMs:  60_000 },
+  return_visit:     { max: 25,  cooldownMs: 3_600_000 },
+  streak_milestone: { max: 500, cooldownMs: 86_400_000 },
 };
 
+const AWARD_REASONS = [
+  "taste_challenge",
+  "build_your_own",
+  "craft_complete",
+  "design_save",
+  "return_visit",
+  "streak_milestone",
+] as const;
+
 const awardSchema = z.object({
-  points: z.number().int().min(1).max(100),
-  reason: z.enum(["taste_challenge", "build_your_own"]),
+  points: z.number().int().min(1).max(500),
+  reason: z.enum(AWARD_REASONS),
 });
 
 const awardCooldowns = new Map<string, number>();
@@ -119,7 +177,7 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     const parse = awardSchema.safeParse(req.body);
     if (!parse.success) {
-      res.status(400).json({ error: "points (1-100) and valid reason required" });
+      res.status(400).json({ error: "points (1-500) and valid reason required" });
       return;
     }
     const userId = req.user!.id;
@@ -139,7 +197,9 @@ router.post(
       INSERT INTO user_loyalty_points (user_id, total_points, points_redeemed)
       VALUES (${userId}::uuid, ${points}, 0)
       ON CONFLICT (user_id)
-      DO UPDATE SET total_points = user_loyalty_points.total_points + ${points}
+      DO UPDATE SET
+        total_points = user_loyalty_points.total_points + ${points},
+        updated_at   = now()
     `);
 
     req.log.info({ userId, points, reason }, "loyalty points awarded");
@@ -190,21 +250,11 @@ router.post(
     }
 
     // ── Atomic balance debit (race-safe). ──────────────────────────────────
-    // The previous flow did SELECT balance → check → UPDATE +cost, which
-    // allows two parallel redeems with balance==cost to BOTH pass the
-    // check and BOTH deduct (overdraft). The fix is a single conditional
-    // UPDATE that only succeeds when the balance is still >= cost at the
-    // moment the row is locked, mirroring the atomic-claim pattern used
-    // on the offline-queue race. Same row of points_redeemed is the
-    // single point of mutual exclusion.
-    //
-    // Step 1: ensure a balance row exists (idempotent insert with 0/0).
     await db.execute(sql`
       INSERT INTO user_loyalty_points (user_id, total_points, points_redeemed)
       VALUES (${userId}::uuid, 0, 0)
       ON CONFLICT (user_id) DO NOTHING
     `);
-    // Step 2: conditional debit — only succeeds if balance still >= cost.
     const debit = await db.execute(sql`
       UPDATE user_loyalty_points
          SET points_redeemed = points_redeemed + ${reward.pointsCost},
@@ -215,8 +265,6 @@ router.post(
     `) as { rows: Array<{ total_points: number; points_redeemed: number }> };
 
     if (!debit.rows || debit.rows.length === 0) {
-      // Race lost OR genuinely insufficient. Re-fetch the truth for the
-      // user-facing error so they see why.
       const truth = await getBalance(userId);
       res.status(402).json({
         error:         "Insufficient points",
