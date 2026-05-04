@@ -2,9 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, ShoppingCart, Package, Gift, Sparkles, BarChart3,
-  Truck, Monitor, Users, Settings, Megaphone, Activity, Layers,
-  Flame, Beer, Wine, Wind,
+  ArrowLeft, Activity, Layers,
 } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter, POS_MODE_INFO } from "@/contexts/CommandCenterContext";
@@ -12,20 +10,20 @@ import SystemStatusPanel from "@/components/SystemStatusPanel";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const TILES = [
-  { id: "smokecraft", title: "SmokeCraft", desc: "Launch cigar experience", icon: Flame, color: "#e85d26", route: "/smokecraft", dataKey: "smokecraft" as const, image: "/images/cigar.png" },
-  { id: "brewcraft", title: "BrewCraft", desc: "Beer experience", icon: Beer, color: "#f59e0b", route: "/brewcraft", dataKey: "brewcraft" as const, image: "/images/scenes/social.jpg" },
-  { id: "pourcraft", title: "PourCraft", desc: "Spirits experience", icon: Wine, color: "#a78bfa", route: "/pourcraft", dataKey: "pourcraft" as const, image: "/images/whiskey.png" },
-  { id: "vapecraft", title: "VapeCraft", desc: "Vape experience", icon: Wind, color: "#06b6d4", route: "/vapecraft", dataKey: "vapecraft" as const, image: "/images/scenes/bold.jpg" },
-  { id: "orders", title: "Orders", desc: "Live POS terminal", icon: ShoppingCart, color: "#d4af37", route: "/pos", dataKey: "orders" as const, image: "/images/scenes/reflective.jpg" },
-  { id: "inventory", title: "Inventory", desc: "Stock control", icon: Package, color: "#5b8def", route: "/pos", dataKey: "inventory" as const, image: "/images/cigar2.png" },
-  { id: "rewards", title: "Rewards", desc: "Loyalty & rewards", icon: Gift, color: "#34d399", route: "/pos", dataKey: "rewards" as const, image: "/images/scenes/relaxed.jpg" },
-  { id: "experiences", title: "Experiences", desc: "Craft engine", icon: Sparkles, color: "#f59e0b", route: "/experiences", dataKey: "experiences" as const, image: "/images/cigar1.png" },
-  { id: "campaigns", title: "Campaigns", desc: "Promotions", icon: Megaphone, color: "#ec4899", route: "/analytics", dataKey: "campaigns" as const, image: "/images/lounge-bg.jpg" },
-  { id: "analytics", title: "Analytics", desc: "Revenue & insights", icon: BarChart3, color: "#8b5cf6", route: "/analytics", dataKey: "analytics" as const, image: "/images/cigar3.png" },
-  { id: "vendors", title: "Vendors", desc: "Suppliers & restock", icon: Truck, color: "#06b6d4", route: "/vendors", dataKey: "vendors" as const, image: "/images/cigar4.png" },
-  { id: "devices", title: "Devices", desc: "Device control", icon: Monitor, color: "#f97316", route: "/devices", dataKey: "devices" as const, image: "/images/scenes/bold.jpg" },
-  { id: "staff", title: "Staff", desc: "Team management", icon: Users, color: "#a78bfa", route: "/staff", dataKey: "staff" as const, image: "/images/scenes/social.jpg" },
-  { id: "settings", title: "Settings", desc: "System & security", icon: Settings, color: "#64748b", route: "/settings", dataKey: "settings" as const, image: "/images/scenes/relaxed.jpg" },
+  { id: "smokecraft", title: "SmokeCraft", desc: "Launch cigar experience", color: "#e85d26", route: "/smokecraft", dataKey: "smokecraft" as const, image: "/images/cigar.png" },
+  { id: "brewcraft", title: "BrewCraft", desc: "Beer experience", color: "#f59e0b", route: "/brewcraft", dataKey: "brewcraft" as const, image: "/images/scenes/social.jpg" },
+  { id: "pourcraft", title: "PourCraft", desc: "Spirits experience", color: "#a78bfa", route: "/pourcraft", dataKey: "pourcraft" as const, image: "/images/whiskey.png" },
+  { id: "vapecraft", title: "VapeCraft", desc: "Vape experience", color: "#06b6d4", route: "/vapecraft", dataKey: "vapecraft" as const, image: "/images/scenes/bold.jpg" },
+  { id: "orders", title: "Orders", desc: "Live POS terminal", color: "#d4af37", route: "/pos", dataKey: "orders" as const, image: "/images/scenes/reflective.jpg" },
+  { id: "inventory", title: "Inventory", desc: "Stock control", color: "#5b8def", route: "/pos", dataKey: "inventory" as const, image: "/images/cigar2.png" },
+  { id: "rewards", title: "Rewards", desc: "Loyalty & rewards", color: "#34d399", route: "/pos", dataKey: "rewards" as const, image: "/images/scenes/relaxed.jpg" },
+  { id: "experiences", title: "Experiences", desc: "Craft engine", color: "#f59e0b", route: "/experiences", dataKey: "experiences" as const, image: "/images/cigar1.png" },
+  { id: "campaigns", title: "Campaigns", desc: "Promotions", color: "#ec4899", route: "/analytics", dataKey: "campaigns" as const, image: "/images/lounge-bg.jpg" },
+  { id: "analytics", title: "Analytics", desc: "Revenue & insights", color: "#8b5cf6", route: "/analytics", dataKey: "analytics" as const, image: "/images/cigar3.png" },
+  { id: "vendors", title: "Vendors", desc: "Suppliers & restock", color: "#06b6d4", route: "/vendors", dataKey: "vendors" as const, image: "/images/cigar4.png" },
+  { id: "devices", title: "Devices", desc: "Device control", color: "#f97316", route: "/devices", dataKey: "devices" as const, image: "/images/scenes/bold.jpg" },
+  { id: "staff", title: "Staff", desc: "Team management", color: "#a78bfa", route: "/staff", dataKey: "staff" as const, image: "/images/scenes/social.jpg" },
+  { id: "settings", title: "Settings", desc: "System & security", color: "#64748b", route: "/settings", dataKey: "settings" as const, image: "/images/scenes/relaxed.jpg" },
 ] as const;
 
 export default function CommandCenter() {
@@ -126,7 +124,6 @@ export default function CommandCenter() {
         gap: 14, alignContent: "start",
       }}>
         {TILES.map((tile, i) => {
-          const Icon = tile.icon;
           const data = tileData(tile.dataKey);
           return (
             <motion.button
@@ -151,27 +148,17 @@ export default function CommandCenter() {
                 position: "absolute", inset: 0,
                 backgroundImage: `url(${tile.image})`,
                 backgroundSize: "cover", backgroundPosition: "center",
-                opacity: 0.35,
                 pointerEvents: "none",
               }} />
               <div style={{
                 position: "absolute", inset: 0,
-                background: `linear-gradient(135deg, rgba(10,8,6,0.85) 0%, ${tile.color}18 100%)`,
+                background: `linear-gradient(135deg, rgba(10,8,6,0.45) 0%, rgba(10,8,6,0.6) 50%, ${tile.color}25 100%)`,
                 pointerEvents: "none",
               }} />
-              <div style={{
-                width: 52, height: 52, borderRadius: 14, flexShrink: 0,
-                background: `${tile.color}20`, border: `1px solid ${tile.color}40`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                position: "relative",
-                backdropFilter: "blur(4px)",
-              }}>
-                <Icon size={24} color={tile.color} strokeWidth={1.5} />
-              </div>
               <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#e8e0c8", marginBottom: 2 }}>{tile.title}</div>
-                <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 4 }}>{tile.desc}</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: tile.color }}>{data}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 2, textShadow: "0 1px 4px rgba(0,0,0,0.7)" }}>{tile.title}</div>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", marginBottom: 4, textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>{tile.desc}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: tile.color, textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}>{data}</div>
               </div>
             </motion.button>
           );

@@ -143,31 +143,32 @@ export default function Entry() {
                   position: "absolute", inset: 0,
                   backgroundImage: `url(${tile.image})`,
                   backgroundSize: "cover", backgroundPosition: "center",
-                  opacity: 0.3,
                   pointerEvents: "none",
                 }} />
                 <div style={{
                   position: "absolute", inset: 0,
-                  background: `linear-gradient(180deg, rgba(10,8,6,0.8) 0%, ${tile.color}15 100%)`,
+                  background: `linear-gradient(180deg, rgba(10,8,6,0.35) 0%, rgba(10,8,6,0.55) 60%, ${tile.color}20 100%)`,
                   pointerEvents: "none",
                 }} />
                 <div style={{
-                  width: 72, height: 72, borderRadius: 18,
-                  background: `${tile.color}20`,
-                  border: `1.5px solid ${tile.color}40`,
+                  width: 56, height: 56, borderRadius: 16,
+                  background: "rgba(0,0,0,0.35)",
+                  border: `1.5px solid ${tile.color}50`,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   position: "relative",
-                  backdropFilter: "blur(4px)",
+                  backdropFilter: "blur(6px)",
                 }}>
-                  <Icon size={32} color={tile.color} strokeWidth={1.5} />
+                  <Icon size={28} color={tile.color} strokeWidth={1.5} />
                 </div>
                 <div style={{ position: "relative", textAlign: "center" }}>
                   <div style={{
-                    fontSize: 18, fontWeight: 600, color: "#e8e0c8",
+                    fontSize: 18, fontWeight: 700, color: "#fff",
                     letterSpacing: "0.02em", marginBottom: 4,
+                    textShadow: "0 1px 4px rgba(0,0,0,0.7)",
                   }}>{tile.title}</div>
                   <div style={{
-                    fontSize: 13, color: "rgba(232,224,200,0.45)",
+                    fontSize: 13, color: "rgba(255,255,255,0.7)",
+                    textShadow: "0 1px 3px rgba(0,0,0,0.6)",
                   }}>{tile.desc}</div>
                 </div>
               </motion.button>

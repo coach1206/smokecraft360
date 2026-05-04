@@ -10,7 +10,7 @@ interface BackgroundLayerProps {
 
 export default function BackgroundLayer({
   image,
-  overlay = "linear-gradient(180deg, rgba(15,13,10,0.82) 0%, rgba(10,8,6,0.92) 60%, rgba(5,4,3,0.97) 100%)",
+  overlay = "linear-gradient(180deg, rgba(15,13,10,0.55) 0%, rgba(10,8,6,0.68) 60%, rgba(5,4,3,0.78) 100%)",
   blur = 0,
   children,
   style,
