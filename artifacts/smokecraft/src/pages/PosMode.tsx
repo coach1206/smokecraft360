@@ -401,6 +401,7 @@ export default function PosMode() {
   function handleDismissOverlay() {
     setOverlayState(null);
     pos.dismissReward();
+    pos.dismissRewardBlocked();
     pos.clearPaymentError();
     setCheckoutCooldown(true);
     setTimeout(() => setCheckoutCooldown(false), 500);
