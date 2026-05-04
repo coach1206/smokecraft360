@@ -131,6 +131,9 @@ A pixel-shift anti-burn-in system active in kiosk mode, cycling through directio
 
 Supports mobile, tablet, and kiosk devices with registration, status tracking, and session management. Kiosk mode includes inactivity timers, full-screen integration, burn-in protection, and lockdown features.
 
+#### Device Heartbeat (Client → Server)
+The `useDeviceHeartbeat` hook (`hooks/useDeviceHeartbeat.ts`) fires every 60s in kiosk/tablet mode, sending `{ deviceId, venueId, version, status }` to `POST /api/device/heartbeat`. If the server responds with `forceRefresh: true`, the client immediately reloads. This completes the per-device remote refresh loop (admin queues refresh via `POST /api/device/:deviceId/refresh` → next heartbeat triggers reload).
+
 ### Lounge League
 
 A competition system that ranks venues based on performance metrics and awards badges.

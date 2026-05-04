@@ -24,6 +24,7 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Monitor, RotateCcw }     from "lucide-react";
 import { useFeatureFlag } from "@/hooks/useFeatureFlags";
+import { useDeviceHeartbeat } from "@/hooks/useDeviceHeartbeat";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -305,6 +306,12 @@ export function KioskModeProvider({ children }: { children: ReactNode }) {
       if (wakeLock) wakeLock.release().catch(() => {});
     };
   }, [mode]);
+
+  useDeviceHeartbeat(
+    mode !== "normal" ? deviceId : null,
+    mode !== "normal" ? venueId : null,
+    showOverlay,
+  );
 
   const value: KioskState = {
     mode, isKiosk: mode === "kiosk", isTablet: mode === "tablet",
