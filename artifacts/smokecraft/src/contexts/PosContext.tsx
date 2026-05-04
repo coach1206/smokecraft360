@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react";
 
 export interface Product {
   id: string;
@@ -46,6 +46,7 @@ interface PosState {
   currentUser: { name: string; role: string; pin: string } | null;
   rewardMessage: string | null;
   rewardBlocked: string | null;
+  rewardCooldownActive: boolean;
   processingLock: boolean;
   paymentError: string | null;
   setCurrentUser: (u: { name: string; role: string; pin: string } | null) => void;
@@ -120,6 +121,7 @@ export function PosProvider({ children }: { children: ReactNode }) {
   const [rewardBlocked, setRewardBlocked] = useState<string | null>(null);
   const [processingLock, setProcessingLock] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [rewardCooldownActive, setRewardCooldownActive] = useState(false);
   const lockRef = useRef(false);
   const cartRef = useRef<CartItem[]>([]);
   const ordersRef = useRef<Order[]>([]);
@@ -127,6 +129,7 @@ export function PosProvider({ children }: { children: ReactNode }) {
   const userRef = useRef<{ name: string; role: string; pin: string } | null>(null);
   const inventoryLogRef = useRef<InventoryLogEntry[]>([]);
   const lastRewardTimeRef = useRef<number>(0);
+  const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const syncCart = useCallback((c: CartItem[]) => { cartRef.current = c; setCart(c); }, []);
   const syncOrders = useCallback((o: Order[]) => { ordersRef.current = o; setOrders(o); }, []);
@@ -247,6 +250,15 @@ export function PosProvider({ children }: { children: ReactNode }) {
     syncProducts(prods);
   }, [syncProducts, addInventoryLog]);
 
+  const startRewardCooldown = useCallback(() => {
+    setRewardCooldownActive(true);
+    if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+    cooldownTimerRef.current = setTimeout(() => {
+      setRewardCooldownActive(false);
+      cooldownTimerRef.current = null;
+    }, REWARD_COOLDOWN_MS);
+  }, []);
+
   const checkout = useCallback(async (): Promise<Order | null> => {
     if (lockRef.current) return null;
 
@@ -297,13 +309,14 @@ export function PosProvider({ children }: { children: ReactNode }) {
       syncOrders(ordersRef.current.map(o => o.id === order.id ? { ...o, status: "paid" } : o));
       if (rewardApplied) {
         lastRewardTimeRef.current = Date.now();
+        startRewardCooldown();
         setRewardMessage(`You unlocked a reward! 10% off applied — saved $${(total - finalTotal).toFixed(2)}`);
       }
     } else {
       order.status = "failed";
       order.failureReason = result.error;
       syncOrders(ordersRef.current.map(o =>
-        o.id === order.id ? { ...o, status: "failed", failureReason: result.error } : o
+        o.id === order.id ? { ...o, status: "failed", failureReason: result.error, stockDeducted: false } : o
       ));
       restoreStockForItems(snapshotCart, "payment.failed");
       setPaymentError(result.error ?? "Payment failed");
@@ -312,7 +325,7 @@ export function PosProvider({ children }: { children: ReactNode }) {
     lockRef.current = false;
     setProcessingLock(false);
     return order;
-  }, [restoreStockForItems, syncOrders, syncCart]);
+  }, [restoreStockForItems, syncOrders, syncCart, startRewardCooldown]);
 
   const retryCheckout = useCallback(async (orderId: string): Promise<Order | null> => {
     if (lockRef.current) return null;
@@ -320,32 +333,34 @@ export function PosProvider({ children }: { children: ReactNode }) {
     const failedOrder = ordersRef.current.find(o => o.id === orderId && o.status === "failed");
     if (!failedOrder) return null;
 
-    if (failedOrder.stockDeducted) return null;
+    const needsStockDeduction = !failedOrder.stockDeducted;
 
     lockRef.current = true;
     setProcessingLock(true);
     setPaymentError(null);
 
-    for (const item of failedOrder.items) {
-      const prod = productsRef.current.find(p => p.id === item.product.id);
-      if (!prod || prod.stock < item.quantity) {
-        lockRef.current = false;
-        setProcessingLock(false);
-        setPaymentError("Insufficient stock — some items are no longer available");
-        return null;
+    if (needsStockDeduction) {
+      for (const item of failedOrder.items) {
+        const prod = productsRef.current.find(p => p.id === item.product.id);
+        if (!prod || prod.stock < item.quantity) {
+          lockRef.current = false;
+          setProcessingLock(false);
+          setPaymentError("Insufficient stock — some items are no longer available");
+          return null;
+        }
       }
-    }
 
-    let prods = productsRef.current;
-    for (const item of failedOrder.items) {
-      const prod = prods.find(p => p.id === item.product.id);
-      const before = prod?.stock ?? 0;
-      prods = prods.map(p =>
-        p.id === item.product.id ? { ...p, stock: p.stock - item.quantity } : p
-      );
-      addInventoryLog(item.product.id, item.product.name, before, before - item.quantity, "checkout.retry");
+      let prods = productsRef.current;
+      for (const item of failedOrder.items) {
+        const prod = prods.find(p => p.id === item.product.id);
+        const before = prod?.stock ?? 0;
+        prods = prods.map(p =>
+          p.id === item.product.id ? { ...p, stock: p.stock - item.quantity } : p
+        );
+        addInventoryLog(item.product.id, item.product.name, before, before - item.quantity, "checkout.retry");
+      }
+      syncProducts(prods);
     }
-    syncProducts(prods);
 
     syncOrders(ordersRef.current.map(o =>
       o.id === orderId ? { ...o, status: "pending" as PaymentStatus, failureReason: undefined, stockDeducted: true } : o
@@ -363,6 +378,7 @@ export function PosProvider({ children }: { children: ReactNode }) {
       syncOrders(ordersRef.current.map(o => o.id === orderId ? { ...o, status: "paid" as PaymentStatus } : o));
       if (failedOrder.rewardApplied) {
         lastRewardTimeRef.current = Date.now();
+        startRewardCooldown();
         const rawTotal = failedOrder.items.reduce((sum, c) => sum + c.product.price * c.quantity, 0);
         setRewardMessage(`You unlocked a reward! 10% off applied — saved $${(rawTotal - failedOrder.total).toFixed(2)}`);
       }
@@ -421,6 +437,12 @@ export function PosProvider({ children }: { children: ReactNode }) {
     applyStockDelta(productId, delta, reason || "manual.adjustment.confirmed");
   }, [applyStockDelta]);
 
+  useEffect(() => {
+    return () => {
+      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+    };
+  }, []);
+
   const dismissReward = useCallback(() => setRewardMessage(null), []);
   const dismissRewardBlocked = useCallback(() => setRewardBlocked(null), []);
   const clearPaymentError = useCallback(() => setPaymentError(null), []);
@@ -428,7 +450,7 @@ export function PosProvider({ children }: { children: ReactNode }) {
   return (
     <PosContext.Provider value={{
       products, cart, orders, inventoryLog, currentUser,
-      rewardMessage, rewardBlocked, processingLock, paymentError,
+      rewardMessage, rewardBlocked, rewardCooldownActive, processingLock, paymentError,
       setCurrentUser: syncUser,
       addToCart, removeFromCart, updateQuantity,
       clearCart, checkout, retryCheckout, refundOrder,

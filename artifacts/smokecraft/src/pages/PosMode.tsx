@@ -351,6 +351,7 @@ export default function PosMode() {
 
   const cartTotal = pos.cart.reduce((sum, c) => sum + c.product.price * c.quantity, 0);
   const cartCount = pos.cart.reduce((sum, c) => sum + c.quantity, 0);
+  const rewardEligible = cartTotal >= 50 && !pos.rewardCooldownActive;
   const rewardClose = cartTotal >= 50;
 
   const isLocked = pos.processingLock || overlayState?.type === "processing";
@@ -705,14 +706,16 @@ export default function PosMode() {
                 exit={{ opacity: 0, height: 0 }}
                 style={{
                   margin: "0 12px", padding: "10px 14px",
-                  background: "linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.04))",
-                  border: "1px solid rgba(212,175,55,0.25)",
+                  background: rewardEligible
+                    ? "linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.04))"
+                    : "linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.03))",
+                  border: `1px solid ${rewardEligible ? "rgba(212,175,55,0.25)" : "rgba(239,68,68,0.2)"}`,
                   borderRadius: 12, display: "flex", alignItems: "center", gap: 8,
                 }}
               >
-                <Gift size={16} color="#d4af37" />
-                <span style={{ fontSize: 12, color: "#d4af37", fontWeight: 600 }}>
-                  Reward unlocked! 10% off at checkout
+                <Gift size={16} color={rewardEligible ? "#d4af37" : "#ef4444"} />
+                <span style={{ fontSize: 12, color: rewardEligible ? "#d4af37" : "#ef4444", fontWeight: 600 }}>
+                  {rewardEligible ? "Reward unlocked! 10% off at checkout" : "Reward on cooldown — no discount this order"}
                 </span>
               </motion.div>
             )}
@@ -729,7 +732,7 @@ export default function PosMode() {
               <span>Subtotal</span>
               <span>${cartTotal.toFixed(2)}</span>
             </div>
-            {rewardClose && (
+            {rewardEligible && (
               <div style={{
                 display: "flex", justifyContent: "space-between",
                 marginBottom: 4, fontSize: 13, color: "#d4af37",
@@ -738,12 +741,21 @@ export default function PosMode() {
                 <span>-${(cartTotal * 0.1).toFixed(2)}</span>
               </div>
             )}
+            {rewardClose && !rewardEligible && (
+              <div style={{
+                display: "flex", justifyContent: "space-between",
+                marginBottom: 4, fontSize: 13, color: "#ef4444",
+              }}>
+                <span>Reward (cooldown)</span>
+                <span>—</span>
+              </div>
+            )}
             <div style={{
               display: "flex", justifyContent: "space-between",
               marginBottom: 16, fontSize: 20, fontWeight: 700, color: "#e8e0c8",
             }}>
               <span>Total</span>
-              <span>${rewardClose ? (cartTotal * 0.9).toFixed(2) : cartTotal.toFixed(2)}</span>
+              <span>${rewardEligible ? (cartTotal * 0.9).toFixed(2) : cartTotal.toFixed(2)}</span>
             </div>
 
             <div style={{ display: "flex", gap: 10 }}>
@@ -779,7 +791,7 @@ export default function PosMode() {
                 }}
               >
                 {isLocked && <Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} />}
-                {isLocked ? "Processing..." : `Checkout ${cartTotal > 0 ? `$${rewardClose ? (cartTotal * 0.9).toFixed(2) : cartTotal.toFixed(2)}` : ""}`}
+                {isLocked ? "Processing..." : `Checkout ${cartTotal > 0 ? `$${rewardEligible ? (cartTotal * 0.9).toFixed(2) : cartTotal.toFixed(2)}` : ""}`}
               </motion.button>
             </div>
           </div>

@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { motion } from "framer-motion";
-import { ArrowLeft, TrendingUp, Brain, AlertTriangle, Gift, Award, Package, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, TrendingUp, Brain, AlertTriangle, Gift, Award, Package, ArrowUpRight, ArrowDownRight, Plus, Minus } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
+import ConfirmModal from "@/components/ConfirmModal";
 
 const AI_INSIGHTS = [
   { icon: TrendingUp, text: "Push premium cigars tonight — Arturo Fuente trending 40% above average", priority: "high" as const },
@@ -35,6 +36,11 @@ export default function AnalyticsModule() {
   const pos = usePosContext();
   const cc = useCommandCenter();
   const [tab, setTab] = useState<AnalyticsTab>("overview");
+  const [adjustProduct, setAdjustProduct] = useState<string | null>(null);
+  const [adjustDelta, setAdjustDelta] = useState(0);
+  const [adjustReason, setAdjustReason] = useState("");
+  const [pendingConfirm, setPendingConfirm] = useState<{ productId: string; delta: number; reason: string } | null>(null);
+  const [adjustError, setAdjustError] = useState<string | null>(null);
 
   const totalRevenue = cc.hourlyRevenue.reduce((s, h) => s + h.amount, 0) + pos.orders.reduce((s, o) => s + o.total, 0);
   const maxHourly = Math.max(...cc.hourlyRevenue.map(h => h.amount), 1);
@@ -203,6 +209,116 @@ export default function AnalyticsModule() {
               </span>
             </div>
 
+            <div style={{
+              padding: 16, borderRadius: 14, marginBottom: 16,
+              background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+            }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
+                Manual Stock Adjustment
+              </div>
+              <div style={{ display: "flex", gap: 10, alignItems: "flex-end", flexWrap: "wrap" }}>
+                <div style={{ flex: 1, minWidth: 160 }}>
+                  <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 4 }}>Product</div>
+                  <select
+                    value={adjustProduct ?? ""}
+                    onChange={e => { setAdjustProduct(e.target.value || null); setAdjustError(null); }}
+                    style={{
+                      width: "100%", padding: "10px 12px", borderRadius: 10, fontSize: 13,
+                      background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                      color: "#e8e0c8", outline: "none",
+                    }}
+                  >
+                    <option value="" style={{ background: "#1a1714" }}>Select product...</option>
+                    {pos.products.map(p => (
+                      <option key={p.id} value={p.id} style={{ background: "#1a1714" }}>
+                        {p.name} (stock: {p.stock})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ width: 120 }}>
+                  <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 4 }}>Quantity</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <motion.button whileTap={{ scale: 0.9 }} onClick={() => setAdjustDelta(d => d - 1)}
+                      style={{
+                        width: 36, height: 36, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center",
+                        background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#ef4444", cursor: "pointer",
+                      }}>
+                      <Minus size={14} />
+                    </motion.button>
+                    <span style={{
+                      minWidth: 40, textAlign: "center", fontSize: 16, fontWeight: 700,
+                      color: adjustDelta > 0 ? "#34d399" : adjustDelta < 0 ? "#ef4444" : "#e8e0c8",
+                    }}>
+                      {adjustDelta > 0 ? "+" : ""}{adjustDelta}
+                    </span>
+                    <motion.button whileTap={{ scale: 0.9 }} onClick={() => setAdjustDelta(d => d + 1)}
+                      style={{
+                        width: 36, height: 36, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center",
+                        background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.2)", color: "#34d399", cursor: "pointer",
+                      }}>
+                      <Plus size={14} />
+                    </motion.button>
+                  </div>
+                </div>
+                <div style={{ flex: 1, minWidth: 140 }}>
+                  <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 4 }}>Reason</div>
+                  <input
+                    value={adjustReason}
+                    onChange={e => setAdjustReason(e.target.value)}
+                    placeholder="e.g. restock, damaged, count correction"
+                    style={{
+                      width: "100%", padding: "10px 12px", borderRadius: 10, fontSize: 13,
+                      background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                      color: "#e8e0c8", outline: "none",
+                    }}
+                  />
+                </div>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    if (!adjustProduct || adjustDelta === 0) return;
+                    const result = pos.manualStockAdjust(adjustProduct, adjustDelta, adjustReason || "manual.adjustment");
+                    if (result.error) {
+                      setAdjustError(result.error);
+                    } else if (result.needsConfirmation) {
+                      setPendingConfirm({ productId: adjustProduct, delta: adjustDelta, reason: adjustReason || "manual.adjustment" });
+                    } else {
+                      setAdjustProduct(null);
+                      setAdjustDelta(0);
+                      setAdjustReason("");
+                      setAdjustError(null);
+                    }
+                  }}
+                  disabled={!adjustProduct || adjustDelta === 0}
+                  style={{
+                    padding: "10px 20px", borderRadius: 10, fontSize: 13, fontWeight: 600,
+                    background: (!adjustProduct || adjustDelta === 0) ? "rgba(212,175,55,0.1)" : "linear-gradient(135deg, #d4af37, #a98828)",
+                    color: (!adjustProduct || adjustDelta === 0) ? "rgba(212,175,55,0.3)" : "#0a0806",
+                    border: "none", cursor: (!adjustProduct || adjustDelta === 0) ? "not-allowed" : "pointer",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Apply
+                </motion.button>
+              </div>
+              <AnimatePresence>
+                {adjustError && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+                    style={{ marginTop: 8, fontSize: 12, color: "#ef4444" }}>
+                    {adjustError}
+                  </motion.div>
+                )}
+                {Math.abs(adjustDelta) > 10 && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+                    style={{ marginTop: 8, fontSize: 12, color: "#f59e0b", display: "flex", alignItems: "center", gap: 6 }}>
+                    <AlertTriangle size={13} />
+                    Large adjustment ({Math.abs(adjustDelta)} units) — requires Owner or Manager confirmation
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             {pos.inventoryLog.length === 0 ? (
               <div style={{
                 padding: 40, textAlign: "center", borderRadius: 14,
@@ -276,6 +392,24 @@ export default function AnalyticsModule() {
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        open={!!pendingConfirm}
+        title="Large Stock Adjustment"
+        message={pendingConfirm ? `This adjustment changes ${Math.abs(pendingConfirm.delta)} units. Only Owner or Manager can approve large adjustments (>10 units). Proceed?` : ""}
+        confirmLabel="Approve Adjustment"
+        danger={false}
+        onConfirm={() => {
+          if (pendingConfirm) {
+            pos.confirmLargeAdjustment(pendingConfirm.productId, pendingConfirm.delta, pendingConfirm.reason);
+            setPendingConfirm(null);
+            setAdjustProduct(null);
+            setAdjustDelta(0);
+            setAdjustReason("");
+          }
+        }}
+        onCancel={() => setPendingConfirm(null)}
+      />
     </div>
   );
 }
