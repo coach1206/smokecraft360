@@ -154,13 +154,15 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
     if (saving) return;
     setSaving(true);
     const payload = { brandName, selectedColor, selectedEmblem, engravingText, selectFields };
-    // Mirror to localStorage first (works for guests and offline)
-    try { localStorage.setItem(`playground_draft_${craft}`, JSON.stringify(payload)); } catch {}
-    // Await API persistence; gate success label on cloud result
+    // Mirror to localStorage; track whether write confirmed (fails silently on private browsing)
+    let localOk = false;
+    try { localStorage.setItem(`playground_draft_${craft}`, JSON.stringify(payload)); localOk = true; } catch {}
+    // PATCH upsert aligns with existing backend route (idempotent, craft-scoped)
     const cloudResult = await upsertDesignDraft({ craft, draftName: brandName || "My Draft", payload });
+    const cloudOk     = cloudResult !== null;
     setSaving(false);
-    setSaved(true);
-    setSaveLocal(cloudResult === null); // null = guest (401) or server error → show "Saved locally"
+    setSaved(localOk || cloudOk);      // only show saved if at least one path succeeded
+    setSaveLocal(!cloudOk && localOk); // "Saved locally" = local confirmed, cloud unavailable
     setCritique(generateCritique(config, brandName, selectedColor));
   };
 
