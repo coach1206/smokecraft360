@@ -7,7 +7,7 @@ import {
   AlertTriangle, TrendingUp, Wifi, Shield, CreditCard,
 } from "lucide-react";
 import KioskProductImage from "@/components/KioskProductImage";
-import type { Product, Order, CartItem } from "@/contexts/PosContext";
+import type { Product } from "@/contexts/PosContext";
 
 const STEP_DURATION = 5000;
 
@@ -18,20 +18,6 @@ const DEMO_PRODUCTS: Product[] = [
   { id: "d-food-1", name: "Wagyu Beef Sliders", category: "food", price: 24, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop&q=80", stock: 10 },
 ];
 
-const DEMO_CART: CartItem[] = [
-  { product: DEMO_PRODUCTS[0], quantity: 1 },
-  { product: DEMO_PRODUCTS[1], quantity: 2 },
-];
-
-const DEMO_ORDER: Order = {
-  id: "DEMO-ORD-001",
-  items: DEMO_CART,
-  total: 88.20,
-  status: "paid",
-  createdAt: new Date().toISOString(),
-  rewardApplied: true,
-  stockDeducted: true,
-};
 
 interface DemoStep {
   id: string;
@@ -443,7 +429,7 @@ export default function DemoWalkthrough() {
   ];
 
   const goNext = useCallback(() => {
-    setCurrentStep(prev => (prev < steps.length - 1 ? prev + 1 : prev));
+    setCurrentStep(prev => (prev < steps.length - 1 ? prev + 1 : 0));
   }, [steps.length]);
 
   const goPrev = useCallback(() => {
@@ -451,10 +437,10 @@ export default function DemoWalkthrough() {
   }, []);
 
   useEffect(() => {
-    if (paused || currentStep >= steps.length - 1) return;
+    if (paused) return;
     timerRef.current = setTimeout(goNext, STEP_DURATION);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
-  }, [currentStep, paused, goNext, steps.length]);
+  }, [currentStep, paused, goNext]);
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
@@ -622,18 +608,17 @@ export default function DemoWalkthrough() {
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={goNext}
-          disabled={currentStep === steps.length - 1}
           style={{
             display: "flex", alignItems: "center", gap: 6,
             padding: "10px 20px", borderRadius: 12,
-            background: currentStep === steps.length - 1 ? "rgba(255,255,255,0.02)" : `linear-gradient(135deg, ${step.color}, ${step.color}cc)`,
-            border: currentStep === steps.length - 1 ? "1px solid rgba(255,255,255,0.08)" : "none",
-            color: currentStep === steps.length - 1 ? "rgba(232,224,200,0.15)" : "#0a0806",
-            cursor: currentStep === steps.length - 1 ? "not-allowed" : "pointer",
+            background: `linear-gradient(135deg, ${step.color}, ${step.color}cc)`,
+            border: "none",
+            color: "#0a0806",
+            cursor: "pointer",
             fontSize: 13, fontWeight: 700, minHeight: 44,
           }}
         >
-          Next <ChevronRight size={16} />
+          {currentStep === steps.length - 1 ? "Restart" : "Next"} <ChevronRight size={16} />
         </motion.button>
       </div>
     </div>
