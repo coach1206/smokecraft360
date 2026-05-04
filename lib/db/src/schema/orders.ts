@@ -26,10 +26,14 @@ export const ordersTable = pgTable("orders", {
   verificationMethod: text("verification_method").$type<VerificationMethod>(),
   verifiedBy:         uuid("verified_by"),       // staff userId who verified
   xpAwarded:          boolean("xp_awarded").notNull().default(false),
-  brandId:            uuid("brand_id"),
-  campaignId:         uuid("campaign_id"),
-  sponsored:          boolean("sponsored").notNull().default(false),
-  campaignType:       text("campaign_type"),
+  brandId:              uuid("brand_id"),
+  brandName:            text("brand_name"),
+  campaignId:           uuid("campaign_id"),
+  sponsored:            boolean("sponsored").notNull().default(false),
+  campaignType:         text("campaign_type"),
+  attributionSource:    text("attribution_source"),
+  campaignDiscountCents:integer("campaign_discount_cents"),
+  campaignXpMultiplier: text("campaign_xp_multiplier"),
   createdAt:          timestamp("created_at").notNull().defaultNow(),
   updatedAt:          timestamp("updated_at").notNull().defaultNow(),
 });

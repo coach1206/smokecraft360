@@ -8,10 +8,13 @@ export const brandProductsTable = pgTable(
     id:          uuid("id").primaryKey().defaultRandom(),
     brandId:     uuid("brand_id").notNull(),
     productId:   text("product_id").notNull(),
+    venueId:     uuid("venue_id"),
     boostWeight: integer("boost_weight").notNull().default(0),
     isFeatured:  boolean("is_featured").notNull().default(false),
+    active:      boolean("active").notNull().default(true),
     campaignId:  uuid("campaign_id"),
     createdAt:   timestamp("created_at").notNull().defaultNow(),
+    updatedAt:   timestamp("updated_at").notNull().defaultNow(),
   },
   (t) => [
     uniqueIndex("brand_products_brand_product_idx").on(t.brandId, t.productId),

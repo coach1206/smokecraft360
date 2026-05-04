@@ -103,6 +103,61 @@ Payment success, loyalty point awards, reward redemptions, reward CRUD, and rede
 - **Payout Worker** (hourly): Processes approved payout requests, validates against pending commission totals, marks commissions paid.
 - **Reward Optimization Worker** (10min): Analyzes 7-day order/redemption ratios and adjusts reward point costs (±10%) based on usage rate.
 
+### Partnership & Distribution Engine
+
+A non-destructive extension wiring brand partners and campaigns into the recommendation pipeline, POS payload, analytics attribution, and admin control layer.
+
+#### Brand Partners & Product Links
+- `brand_partners` table: name, tier (LOCAL/REGIONAL/NATIONAL), monthlyBudgetCents, currentMonthSpendCents, placementPriority, allowedCraftTypes, date windows
+- `brand_products` table: links products to brand partners with boostWeight, isFeatured, venueId scoping, campaignId
+- In-memory `brandPartnerStore` cache loaded at startup, highest-priority brand wins per product
+
+#### Campaign Engine Extensions
+- Extended campaign types: BRAND_SPOTLIGHT, DOUBLE_XP, FEATURED_PAIRING, VENUE_CHALLENGE, COMPETITION, DISTRIBUTOR_PUSH, SEASONAL_PROMO, GENERAL
+- Budget enforcement: currentSpendCents, currentRedemptions tracked per campaign; budgetLimit and maxRedemptions enforced
+- Admin actions: POST pause/resume/disable with audit logging
+- Multiplier bounds validation: boostMultiplier and xpMultiplier clamped to 0.1–3.0 on both POST and PATCH
+- createdBy/updatedBy tracking on campaigns
+
+#### Recommendation Pipeline Injection
+- `applyBrandBoost()` and `applyCampaignBoost()` run after base scoring in boostService
+- Hard cap: MAX_BOOST_POINTS=5, brand boost capped at 30% weight
+- Each result includes: isSponsored, campaignTag, brandTag fields
+- Never overrides base score; respects inventory and campaign status
+
+#### Server-Side Order Attribution
+- Orders derive brandId, campaignId, sponsored, campaignType, attributionSource from server state via `deriveOrderAttribution()`
+- Client cannot set partnership fields (stripped by allowOnly)
+- POS payload includes: brandName, campaignDiscountCents, campaignXpMultiplier
+
+#### Campaign Budget Enforcement Worker
+- Runs every 10 minutes, scans active campaigns
+- Enforces: budgetLimitCents, maxRedemptions, endDate expiry
+- Sets status to paused (budget/redemption exhausted) or completed (expired)
+- Admin endpoints: GET/POST `/api/admin/workers/campaign-budget/status|run-now`
+- Idempotent, structured logging, analytics events for budget warnings/exhaustion
+
+#### Campaign Fraud Detection
+- Reuses existing `fraud_flags` table with "anomaly" kind
+- Detects: rapid redemption velocity (3+ in 5min), hourly abuse (5+ in 1hr), campaign-wide spikes (20+ in 5min)
+- Auto-pauses campaigns on abuse spike detection
+- Fires `campaign_abuse_flagged` analytics events
+- Hooks into order verification (both PATCH verify and QR scan paths)
+
+#### ROI Reporting
+- `GET /api/admin/campaigns/:id/roi` — views, selections, conversions, revenue, discount cost, net revenue, conversion rate, budget remaining, top products, top venues, fraud signals
+- `GET /api/admin/brands/:id/roi` — same metrics aggregated across brand partner's products and campaigns
+
+#### Analytics Event Types Added
+- brand_view, brand_selected, campaign_triggered, campaign_conversion, campaign_reward_applied, campaign_budget_warning, campaign_budget_exhausted, campaign_abuse_flagged
+
+#### Feature Flags Added
+- brand_partnership_engine, campaign_engine, sponsored_placement, campaign_budget_worker, campaign_roi_reporting, campaign_abuse_detection
+
+#### Verification Atomicity
+- Both PATCH verify and QR verify-scan use atomic CAS: `WHERE verified=false` prevents double-counting
+- Campaign conversion recording and fraud checks fire on both verification paths via shared `postVerifyCampaignHooks()`
+
 ### Production Go-Live Control Layer
 
 #### System Version & Force Refresh

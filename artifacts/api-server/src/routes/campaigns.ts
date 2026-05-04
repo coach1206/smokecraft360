@@ -26,6 +26,7 @@ import { setCampaign, removeCampaign }  from "../services/campaignStore";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
 import { requireRole }                  from "../middleware/roles";
 import { allowOnly }                    from "../middleware/sanitize";
+import { logAudit }                     from "../lib/audit";
 
 const router: IRouter = Router();
 
@@ -133,9 +134,24 @@ router.post(
       res.status(400).json({ error: 'Invalid brandId' }); return;
     }
 
-    const VALID_TYPES = ["BRAND_SPOTLIGHT", "DOUBLE_XP", "FEATURED_PAIRING", "VENUE_CHALLENGE", "COMPETITION", "GENERAL"];
+    const VALID_TYPES = ["BRAND_SPOTLIGHT", "DOUBLE_XP", "FEATURED_PAIRING", "VENUE_CHALLENGE", "COMPETITION", "DISTRIBUTOR_PUSH", "SEASONAL_PROMO", "GENERAL"];
     if (type && !VALID_TYPES.includes(type)) {
       res.status(400).json({ error: `"type" must be one of: ${VALID_TYPES.join(", ")}` }); return;
+    }
+    if (boostMultiplier !== undefined && (boostMultiplier < 0.1 || boostMultiplier > 3.0)) {
+      res.status(400).json({ error: '"boostMultiplier" must be between 0.1 and 3.0' }); return;
+    }
+    if (xpMultiplier !== undefined && (xpMultiplier < 0.1 || xpMultiplier > 3.0)) {
+      res.status(400).json({ error: '"xpMultiplier" must be between 0.1 and 3.0' }); return;
+    }
+    if (rewardBonus !== undefined && (rewardBonus < 0 || rewardBonus > 50000)) {
+      res.status(400).json({ error: '"rewardBonus" must be between 0 and 50000' }); return;
+    }
+    if (budgetLimit !== undefined && budgetLimit < 0) {
+      res.status(400).json({ error: '"budgetLimit" must be >= 0' }); return;
+    }
+    if (maxRedemptions !== undefined && maxRedemptions < 0) {
+      res.status(400).json({ error: '"maxRedemptions" must be >= 0' }); return;
     }
 
     const [row] = await db.insert(campaignsTable).values({
@@ -160,6 +176,14 @@ router.post(
     }).returning();
 
     setCampaign(campaignToMeta(row));
+
+    await logAudit(req, {
+      action: "campaign.created",
+      entityType: "campaign",
+      entityId: row.id,
+      after: { name: row.name, type: row.type, status: row.status } as unknown as Record<string, unknown>,
+    });
+
     res.status(201).json(row);
   },
 );
@@ -214,7 +238,30 @@ router.patch(
       startDate: string; endDate: string; notes: string; active: boolean;
     }>;
 
-    const updates: Partial<typeof campaignsTable.$inferInsert> = { updatedAt: new Date() };
+    const VALID_TYPES = ["BRAND_SPOTLIGHT", "DOUBLE_XP", "FEATURED_PAIRING", "VENUE_CHALLENGE", "COMPETITION", "DISTRIBUTOR_PUSH", "SEASONAL_PROMO", "GENERAL"];
+    if (type !== undefined && !VALID_TYPES.includes(type)) {
+      res.status(400).json({ error: `"type" must be one of: ${VALID_TYPES.join(", ")}` }); return;
+    }
+    if (boostMultiplier !== undefined && (boostMultiplier < 0.1 || boostMultiplier > 3.0)) {
+      res.status(400).json({ error: '"boostMultiplier" must be between 0.1 and 3.0' }); return;
+    }
+    if (xpMultiplier !== undefined && (xpMultiplier < 0.1 || xpMultiplier > 3.0)) {
+      res.status(400).json({ error: '"xpMultiplier" must be between 0.1 and 3.0' }); return;
+    }
+    if (rewardBonus !== undefined && (rewardBonus < 0 || rewardBonus > 50000)) {
+      res.status(400).json({ error: '"rewardBonus" must be between 0 and 50000' }); return;
+    }
+    if (budgetLimit !== undefined && budgetLimit < 0) {
+      res.status(400).json({ error: '"budgetLimit" must be >= 0' }); return;
+    }
+    if (maxRedemptions !== undefined && maxRedemptions < 0) {
+      res.status(400).json({ error: '"maxRedemptions" must be >= 0' }); return;
+    }
+
+    const updates: Partial<typeof campaignsTable.$inferInsert> = {
+      updatedAt: new Date(),
+      updatedBy: req.user?.id ?? null,
+    };
     if (name            !== undefined) updates.name            = name.trim();
     if (type            !== undefined) updates.type            = type as any;
     if (brandId         !== undefined) updates.brandId         = brandId || null;
@@ -242,6 +289,104 @@ router.patch(
     if (!row) { res.status(404).json({ error: "Campaign not found" }); return; }
 
     setCampaign(campaignToMeta(row));
+
+    await logAudit(req, {
+      action: "campaign.updated",
+      entityType: "campaign",
+      entityId: row.id,
+      after: updates as unknown as Record<string, unknown>,
+    });
+
+    res.json(row);
+  },
+);
+
+// ── POST /api/campaigns/:id/pause ────────────────────────────────────────────
+
+router.post(
+  "/:id/pause",
+  requireAuth,
+  requireRole("super_admin", "venue_owner", "manager"),
+  async (req: AuthRequest, res: Response) => {
+    const id = String(req.params.id ?? "");
+    if (!UUID_RE.test(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+    const [row] = await db.update(campaignsTable)
+      .set({ status: "paused" as any, updatedAt: new Date(), updatedBy: req.user?.id ?? null })
+      .where(eq(campaignsTable.id, id))
+      .returning();
+
+    if (!row) { res.status(404).json({ error: "Campaign not found" }); return; }
+
+    setCampaign(campaignToMeta(row));
+
+    await logAudit(req, {
+      action: "campaign.paused",
+      entityType: "campaign",
+      entityId: row.id,
+      after: { status: "paused" },
+    });
+
+    res.json(row);
+  },
+);
+
+// ── POST /api/campaigns/:id/resume ───────────────────────────────────────────
+
+router.post(
+  "/:id/resume",
+  requireAuth,
+  requireRole("super_admin", "venue_owner", "manager"),
+  async (req: AuthRequest, res: Response) => {
+    const id = String(req.params.id ?? "");
+    if (!UUID_RE.test(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+    const [row] = await db.update(campaignsTable)
+      .set({ status: "active" as any, active: true, updatedAt: new Date(), updatedBy: req.user?.id ?? null })
+      .where(eq(campaignsTable.id, id))
+      .returning();
+
+    if (!row) { res.status(404).json({ error: "Campaign not found" }); return; }
+
+    setCampaign(campaignToMeta(row));
+
+    await logAudit(req, {
+      action: "campaign.resumed",
+      entityType: "campaign",
+      entityId: row.id,
+      after: { status: "active" },
+    });
+
+    res.json(row);
+  },
+);
+
+// ── POST /api/campaigns/:id/disable ──────────────────────────────────────────
+
+router.post(
+  "/:id/disable",
+  requireAuth,
+  requireRole("super_admin", "venue_owner", "manager"),
+  async (req: AuthRequest, res: Response) => {
+    const id = String(req.params.id ?? "");
+    if (!UUID_RE.test(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+    const [row] = await db.update(campaignsTable)
+      .set({ status: "cancelled" as any, active: false, updatedAt: new Date(), updatedBy: req.user?.id ?? null })
+      .where(eq(campaignsTable.id, id))
+      .returning();
+
+    if (!row) { res.status(404).json({ error: "Campaign not found" }); return; }
+
+    setCampaign(campaignToMeta(row));
+
+    await logAudit(req, {
+      action: "campaign.disabled",
+      entityType: "campaign",
+      entityId: row.id,
+      after: { status: "cancelled", active: false },
+    });
+
     res.json(row);
   },
 );
@@ -290,6 +435,13 @@ router.post(
       await Promise.all(productIds.map((pid) => applyBoost(pid, { campaignId: id })));
     }
 
+    await logAudit(req, {
+      action: "campaign.products_assigned",
+      entityType: "campaign",
+      entityId: id,
+      after: { productIds, assigned, clearExisting: !!clearExisting } as unknown as Record<string, unknown>,
+    });
+
     res.json({ campaignId: id, assigned });
   },
 );
@@ -324,7 +476,7 @@ router.get(
         sql`
           SELECT product_id, event_type, cast(count(*) as integer) AS cnt
           FROM analytics_events
-          WHERE product_id = ANY(${sql.raw(`ARRAY[${productIds.map((p) => `'${p}'`).join(",")}]`)})
+          WHERE product_id = ANY(${productIds})
             AND event_type IN ('recommendation_view','product_selected','order_created')
           GROUP BY product_id, event_type
         `,

@@ -19,7 +19,7 @@ const partnerSchema = z.object({
   active: z.boolean().default(true),
   placementPriority: z.number().int().min(0).max(100).default(0),
   allowedCraftTypes: z.string().max(500).optional(),
-  budgetMonthly: z.number().int().min(0).optional(),
+  monthlyBudgetCents: z.number().int().min(0).optional(),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
 });

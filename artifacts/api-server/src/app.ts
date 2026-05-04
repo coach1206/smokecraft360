@@ -83,10 +83,12 @@ import systemVersionRouter       from "./routes/systemVersion";
 import deviceHeartbeatRouter     from "./routes/deviceHeartbeat";
 import brandPartnersRouter      from "./routes/brandPartners";
 import distributionInsightsRouter from "./routes/distributionInsights";
+import roiReportingRouter        from "./routes/roiReporting";
 import { startExperienceAutomation } from "./services/experienceAutomation";
 import { startSessionCleanupWorker } from "./lib/sessionCleanupWorker";
 import { startPayoutWorker }         from "./lib/payoutWorker";
 import { startRewardOptimizationWorker } from "./lib/rewardOptimizationWorker";
+import { startCampaignBudgetWorker }    from "./lib/campaignBudgetWorker";
 import { requirePaymentsEnabled, requireRewardsEnabled } from "./middleware/killSwitch";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -281,6 +283,7 @@ app.use("/api/device",                   deviceHeartbeatRouter);
 app.use("/api/admin",                    deviceHeartbeatRouter);
 app.use("/api/brand-partners",           brandPartnersRouter);
 app.use("/api/distribution",             distributionInsightsRouter);
+app.use("/api/admin",                    roiReportingRouter);
 
 // Start background workers
 if (process.env["NODE_ENV"] !== "test") {
@@ -289,6 +292,7 @@ if (process.env["NODE_ENV"] !== "test") {
   startSessionCleanupWorker();
   startPayoutWorker();
   startRewardOptimizationWorker();
+  startCampaignBudgetWorker();
 }
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────

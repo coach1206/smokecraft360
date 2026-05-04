@@ -31,6 +31,7 @@ const VALID_CLIENT_EVENTS = new Set<EventType>([
   "brand_selected",
   "campaign_triggered",
   "campaign_conversion",
+  "campaign_reward_applied",
 ]);
 
 async function tryGetUserId(req: Request): Promise<string | null> {

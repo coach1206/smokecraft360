@@ -20,6 +20,10 @@ export const eventTypeEnum = pgEnum("event_type", [
   "brand_selected",
   "campaign_triggered",
   "campaign_conversion",
+  "campaign_reward_applied",
+  "campaign_budget_warning",
+  "campaign_budget_exhausted",
+  "campaign_abuse_flagged",
 ]);
 
 export const analyticsEventsTable = pgTable("analytics_events", {

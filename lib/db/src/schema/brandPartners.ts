@@ -9,17 +9,18 @@ export const partnerTierEnum = pgEnum("partner_tier", [
 ]);
 
 export const brandPartnersTable = pgTable("brand_partners", {
-  id:                uuid("id").primaryKey().defaultRandom(),
-  name:              text("name").notNull(),
-  tier:              partnerTierEnum("tier").notNull().default("LOCAL"),
-  active:            boolean("active").notNull().default(true),
-  placementPriority: integer("placement_priority").notNull().default(0),
-  allowedCraftTypes: text("allowed_craft_types"),
-  budgetMonthly:     integer("budget_monthly"),
-  startDate:         timestamp("start_date"),
-  endDate:           timestamp("end_date"),
-  createdAt:         timestamp("created_at").notNull().defaultNow(),
-  updatedAt:         timestamp("updated_at").notNull().defaultNow(),
+  id:                    uuid("id").primaryKey().defaultRandom(),
+  name:                  text("name").notNull(),
+  tier:                  partnerTierEnum("tier").notNull().default("LOCAL"),
+  active:                boolean("active").notNull().default(true),
+  placementPriority:     integer("placement_priority").notNull().default(0),
+  allowedCraftTypes:     text("allowed_craft_types"),
+  monthlyBudgetCents:    integer("monthly_budget_cents"),
+  currentMonthSpendCents:integer("current_month_spend_cents").notNull().default(0),
+  startDate:             timestamp("start_date"),
+  endDate:               timestamp("end_date"),
+  createdAt:             timestamp("created_at").notNull().defaultNow(),
+  updatedAt:             timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const insertBrandPartnerSchema = createInsertSchema(brandPartnersTable).omit({

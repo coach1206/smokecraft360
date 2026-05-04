@@ -13,12 +13,38 @@
 
 import { Router, type IRouter, type Response } from "express";
 import QRCode                                   from "qrcode";
-import { eq }                                   from "drizzle-orm";
+import { eq, and }                              from "drizzle-orm";
 import { db, ordersTable, VERIFICATION_METHODS, type VerificationMethod } from "@workspace/db";
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { requireRole }                          from "../middleware/roles";
 import { allowOnly }                            from "../middleware/sanitize";
 import { awardXpForOrder }                      from "../services/xpEngine";
+import { recordCampaignConversion }             from "../services/campaignAttribution";
+import { checkCampaignFraud }                   from "../services/campaignFraudDetection";
+
+async function postVerifyCampaignHooks(
+  order: typeof ordersTable.$inferSelect,
+  log: { error: (obj: Record<string, unknown>, msg: string) => void },
+): Promise<void> {
+  if (!order.campaignId) return;
+  recordCampaignConversion(
+    order.campaignId,
+    order.expectedAmountCents ?? 0,
+    order.venueId,
+    order.userId,
+    order.cigarId ?? order.drinkId ?? order.foodId ?? null,
+  ).catch((err) => {
+    log.error({ err, orderId: order.id }, "Campaign conversion recording failed");
+  });
+  checkCampaignFraud({
+    userId: order.userId,
+    venueId: order.venueId,
+    campaignId: order.campaignId,
+    orderId: order.id,
+  }).catch((err) => {
+    log.error({ err, orderId: order.id }, "Campaign fraud check failed");
+  });
+}
 
 const router: IRouter = Router();
 
@@ -61,7 +87,7 @@ router.patch(
       return;
     }
 
-    // Mark verified
+    // Atomic verify — only succeeds if not already verified (CAS guard)
     const [updated] = await db
       .update(ordersTable)
       .set({
@@ -72,7 +98,7 @@ router.patch(
         status:             "completed",
         updatedAt:          new Date(),
       } as Partial<typeof ordersTable.$inferInsert>)
-      .where(eq(ordersTable.id, id))
+      .where(and(eq(ordersTable.id, id), eq(ordersTable.verified, false)))
       .returning();
 
     if (!updated) {
@@ -85,6 +111,8 @@ router.patch(
       req.log.error({ err, orderId: id }, "XP award failed");
       return null;
     });
+
+    await postVerifyCampaignHooks(updated, req.log);
 
     req.log.info(
       { orderId: id, verifiedBy: req.user!.id, method: verificationMethod, xp: xpResult?.xpAwarded },
@@ -182,12 +210,16 @@ router.get(
         status:             "completed",
         updatedAt:          new Date(),
       } as Partial<typeof ordersTable.$inferInsert>)
-      .where(eq(ordersTable.id, id))
+      .where(and(eq(ordersTable.id, id), eq(ordersTable.verified, false)))
       .returning();
 
     const xpResult = updated
       ? await awardXpForOrder(updated).catch(() => null)
       : null;
+
+    if (updated) {
+      await postVerifyCampaignHooks(updated, req.log);
+    }
 
     res.json({
       message: xpResult

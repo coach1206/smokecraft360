@@ -1,0 +1,204 @@
+Audit the existing SmokeCraft 360 authentication system and run full end-to-end validation.
+
+This is a TEST + VALIDATION task only.
+
+DO NOT:
+- modify business logic
+- rebuild systems
+- change routes unless a bug is found
+- weaken security rules
+
+----------------------------------------
+1. AUTH FLOW VERIFICATION
+----------------------------------------
+
+Validate:
+
+- /api/auth/register
+- /api/auth/login
+- JWT token generation
+- JWT token verification middleware
+- role-based access control
+
+Test:
+
+1. Register a test user
+2. Login and capture JWT
+3. Call protected routes with valid token → must succeed
+4. Call protected routes with:
+   - no token → must fail (401)
+   - invalid token → must fail (401)
+   - expired token → must fail (401)
+
+Confirm:
+- no protected route is accessible without valid JWT
+- roles (admin, venue, vendor, staff) are enforced correctly
+
+----------------------------------------
+2. ROLE-BASED ACCESS TEST
+----------------------------------------
+
+Test routes:
+
+/api/admin/*
+/api/venue/*
+/api/staff/*
+/api/vendor/*
+
+Verify:
+
+- admin routes → admin only
+- venue routes → venue-scoped users only
+- vendor routes → read-only unless allowed
+- staff routes → restricted actions only
+
+Confirm:
+- no cross-tenant access
+- venueId is enforced everywhere
+
+----------------------------------------
+3. RECOMMENDATION PIPELINE VALIDATION
+----------------------------------------
+
+Test:
+
+/api/recommend (or equivalent)
+
+Confirm:
+
+- response includes:
+  isSponsored
+  campaignTag
+  brandTag
+
+- verify:
+  out-of-stock products are NOT boosted
+  campaign boosts stay within cap
+  no client-side manipulation possible
+
+----------------------------------------
+4. ANALYTICS VALIDATION
+----------------------------------------
+
+Test:
+
+- brand_view
+- campaign_triggered
+
+Confirm:
+
+- events are stored correctly
+- include:
+  venueId
+  productId
+  brandId
+  campaignId
+
+Verify:
+- no duplicate event writes
+- idempotent behavior where required
+
+----------------------------------------
+5. POS + ORDER FLOW VALIDATION
+----------------------------------------
+
+Test full flow:
+
+1. run experience
+2. select product
+3. apply reward
+4. create order
+
+Confirm:
+
+- finalPriceCents comes from backend only
+- POS payload includes:
+  brandId
+  campaignId
+  sponsored flag
+
+Verify:
+- no client price injection possible
+
+----------------------------------------
+6. CAMPAIGN BUDGET + ATTRIBUTION VALIDATION
+----------------------------------------
+
+Simulate:
+
+- campaign with budgetLimitCents
+- multiple conversions
+
+Confirm:
+
+- currentSpendCents updates ONLY on confirmed order
+- no double counting
+- budget enforcement worker stops campaign when exceeded
+
+----------------------------------------
+7. FRAUD + ABUSE VALIDATION
+----------------------------------------
+
+Simulate:
+
+- rapid repeated redemptions
+- same device abuse
+- duplicate sessions
+
+Confirm:
+
+- fraud_flags created
+- campaign can be paused if threshold hit
+- no bypass of reward limits
+
+----------------------------------------
+8. AUDIT LOG VALIDATION
+----------------------------------------
+
+Trigger:
+
+- brand creation
+- campaign update
+- campaign pause/resume
+
+Confirm:
+
+- audit log includes:
+  actor
+  action
+  entity
+  before/after
+
+----------------------------------------
+9. WORKER VALIDATION
+----------------------------------------
+
+Check:
+
+- campaign budget worker
+- payout worker
+- reward optimization worker
+
+Confirm:
+
+- no crashes
+- idempotent execution
+- correct status updates
+
+----------------------------------------
+10. FINAL REPORT
+----------------------------------------
+
+Return:
+
+- auth flow status (pass/fail)
+- role enforcement status
+- tenant isolation status
+- analytics integrity
+- campaign enforcement status
+- fraud detection status
+- audit log completeness
+- worker health
+- any vulnerabilities found
+- any routes missing protection
+- any edge cases not covered

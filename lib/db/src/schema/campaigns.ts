@@ -26,6 +26,8 @@ export const CAMPAIGN_TYPES = [
   "FEATURED_PAIRING",
   "VENUE_CHALLENGE",
   "COMPETITION",
+  "DISTRIBUTOR_PUSH",
+  "SEASONAL_PROMO",
   "GENERAL",
 ] as const;
 export type CampaignType = typeof CAMPAIGN_TYPES[number];
@@ -45,13 +47,17 @@ export const campaignsTable = pgTable("campaigns", {
   budgetCents:     integer("budget_cents"),
   budgetLimit:     integer("budget_limit"),
   impressionGoal:  integer("impression_goal"),
-  maxRedemptions:  integer("max_redemptions"),
-  startDate:       timestamp("start_date"),
-  endDate:         timestamp("end_date"),
-  notes:           text("notes"),
-  active:          boolean("active").notNull().default(true),
-  createdAt:       timestamp("created_at").notNull().defaultNow(),
-  updatedAt:       timestamp("updated_at").notNull().defaultNow(),
+  maxRedemptions:    integer("max_redemptions"),
+  currentSpendCents: integer("current_spend_cents").notNull().default(0),
+  currentRedemptions:integer("current_redemptions").notNull().default(0),
+  startDate:         timestamp("start_date"),
+  endDate:           timestamp("end_date"),
+  notes:             text("notes"),
+  active:            boolean("active").notNull().default(true),
+  createdBy:         uuid("created_by"),
+  updatedBy:         uuid("updated_by"),
+  createdAt:         timestamp("created_at").notNull().defaultNow(),
+  updatedAt:         timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const insertCampaignSchema = createInsertSchema(campaignsTable).omit({

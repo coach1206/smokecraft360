@@ -2,6 +2,7 @@ import { Router, type IRouter, type Response } from "express";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/roles";
 import { getCleanupStatus, runSessionCleanup } from "../lib/sessionCleanupWorker";
+import { getCampaignBudgetWorkerStatus, runCampaignBudgetEnforcement } from "../lib/campaignBudgetWorker";
 import { logAudit } from "../lib/audit";
 import rateLimit from "express-rate-limit";
 
@@ -40,6 +41,35 @@ router.post(
     });
 
     const result = await runSessionCleanup();
+    res.json(result);
+  },
+);
+
+router.get(
+  "/campaign-budget/status",
+  requireAuth,
+  requireRole("manager", "venue_owner", "super_admin"),
+  (_req: AuthRequest, res: Response) => {
+    res.json(getCampaignBudgetWorkerStatus());
+  },
+);
+
+router.post(
+  "/campaign-budget/run-now",
+  requireAuth,
+  requireRole("super_admin"),
+  workerRunLimiter,
+  async (req: AuthRequest, res: Response) => {
+    req.log.info({ triggeredBy: req.user!.id }, "manual campaign budget enforcement triggered");
+
+    await logAudit(req, {
+      action: "worker.campaign_budget.run_now",
+      entityType: "worker",
+      entityId: "campaign-budget",
+      after: { triggeredBy: req.user!.id, manual: true } as unknown as Record<string, unknown>,
+    });
+
+    const result = await runCampaignBudgetEnforcement();
     res.json(result);
   },
 );

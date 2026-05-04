@@ -209,7 +209,7 @@ export function applyBoosts(products: ScoredProduct[]): ScoredProduct[] {
       brandId:      effectiveBrandId,
       campaignId:   state.campaignId,
       isSponsored:  state.sponsored || brandPartnerBoost.isFeatured,
-      campaignTag:  campaignMeta ? (campaignMeta as any).type ?? null : null,
+      campaignTag:  campaignMeta ? campaignMeta.type ?? null : null,
       brandTag:     effectiveBrandId ?? null,
       imageUrl:     meta?.imageUrl ?? p.imageUrl,
     };
@@ -231,7 +231,7 @@ function applyCampaignBoost(campaignId: string | undefined): { points: number } 
   if (!campaignId || !isActiveCampaign(campaignId)) return { points: 0 };
   const meta = getCampaignMeta(campaignId);
   if (!meta) return { points: 0 };
-  const multiplier = (meta as any).boostMultiplier ?? 1.0;
+  const multiplier = meta.boostMultiplier ?? 1.0;
   const extra = Math.round((multiplier - 1.0) * CAMPAIGN_BOOST);
   return { points: Math.max(0, extra) };
 }
