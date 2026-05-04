@@ -5,6 +5,7 @@ import {
   X, ChevronRight, ChevronLeft, ShoppingCart, Gift, Package,
   Monitor, BarChart3, Sparkles, Play, Pause, CheckCircle2,
   AlertTriangle, TrendingUp, Wifi, Shield, CreditCard,
+  Users, Briefcase, Presentation,
 } from "lucide-react";
 import KioskProductImage from "@/components/KioskProductImage";
 import type { Product } from "@/contexts/PosContext";
@@ -18,15 +19,62 @@ const SPEED_PRESETS: Record<string, number> = {
   instant: 1500,
 };
 
-function parseDemoConfig(search: string): { stepIds: string[] | null; perStepSpeed: number | null } {
+interface DemoProfile {
+  id: string;
+  name: string;
+  description: string;
+  icon: typeof Briefcase;
+  color: string;
+  stepIds: string[];
+  speed: number;
+}
+
+const DEMO_PROFILES: DemoProfile[] = [
+  {
+    id: "investor",
+    name: "Investor Pitch",
+    description: "Revenue metrics, growth potential, and platform capabilities",
+    icon: Briefcase,
+    color: "#d4af37",
+    stepIds: ["dashboard", "order", "reward", "system"],
+    speed: 6000,
+  },
+  {
+    id: "partner",
+    name: "Partner Overview",
+    description: "Integration depth, device management, and inventory control",
+    icon: Users,
+    color: "#5b8def",
+    stepIds: ["order", "inventory", "devices", "experience", "system"],
+    speed: 5000,
+  },
+  {
+    id: "tradeshow",
+    name: "Trade Show",
+    description: "Fast-paced highlight reel of all platform features",
+    icon: Presentation,
+    color: "#34d399",
+    stepIds: ["experience", "order", "reward", "dashboard", "inventory", "devices", "system"],
+    speed: 3500,
+  },
+];
+
+const PROFILE_MAP = new Map(DEMO_PROFILES.map(p => [p.id, p]));
+
+function parseDemoConfig(search: string): { stepIds: string[] | null; perStepSpeed: number | null; profileId: string | null } {
   const params = new URLSearchParams(search);
   const stepsParam = params.get("steps");
   const speedParam = params.get("speed");
+  const profileParam = params.get("profile");
 
-  const stepIds = stepsParam ? stepsParam.split(",").map(s => s.trim()).filter(Boolean) : null;
+  const profile = profileParam ? PROFILE_MAP.get(profileParam) ?? null : null;
+
+  let stepIds: string[] | null = stepsParam ? stepsParam.split(",").map(s => s.trim()).filter(Boolean) : null;
+  if (!stepIds && profile) {
+    stepIds = profile.stepIds;
+  }
 
   let perStepSpeed: number | null = null;
-
   if (speedParam) {
     if (SPEED_PRESETS[speedParam]) {
       perStepSpeed = SPEED_PRESETS[speedParam];
@@ -36,9 +84,11 @@ function parseDemoConfig(search: string): { stepIds: string[] | null; perStepSpe
         perStepSpeed = parsed;
       }
     }
+  } else if (profile) {
+    perStepSpeed = profile.speed;
   }
 
-  return { stepIds, perStepSpeed };
+  return { stepIds, perStepSpeed, profileId: profile?.id ?? null };
 }
 
 const DEMO_PRODUCTS: Product[] = [
@@ -455,13 +505,123 @@ const ALL_STEPS: DemoStep[] = [
 
 const STEP_MAP = new Map(ALL_STEPS.map(s => [s.id, s]));
 
+function ProfileSelector({ onSelect, onSkip }: { onSelect: (profile: DemoProfile) => void; onSkip: () => void }) {
+  return (
+    <div style={{
+      height: "100dvh", display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      background: "linear-gradient(180deg, #1a1714 0%, #0f0d0a 100%)",
+      color: "#e8e0c8", padding: 24,
+    }}>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{ textAlign: "center", marginBottom: 40 }}
+      >
+        <div style={{
+          fontSize: 28, fontWeight: 700, color: "#e8e0c8",
+          fontFamily: "'Playfair Display', serif", marginBottom: 8,
+        }}>
+          Choose a Demo Profile
+        </div>
+        <div style={{ fontSize: 14, color: "rgba(232,224,200,0.5)", maxWidth: 420 }}>
+          Select a preset tailored for your audience, or skip to run the full demo
+        </div>
+      </motion.div>
+
+      <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center", maxWidth: 720, marginBottom: 32 }}>
+        {DEMO_PROFILES.map((profile, i) => {
+          const Icon = profile.icon;
+          return (
+            <motion.button
+              key={profile.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              whileHover={{ scale: 1.03, borderColor: profile.color }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => onSelect(profile)}
+              style={{
+                display: "flex", flexDirection: "column", alignItems: "center",
+                gap: 12, padding: "28px 24px", borderRadius: 20,
+                background: "rgba(255,255,255,0.03)",
+                border: `1px solid rgba(255,255,255,0.08)`,
+                color: "#e8e0c8", cursor: "pointer",
+                width: 210, textAlign: "center",
+                transition: "border-color 0.2s",
+              }}
+            >
+              <div style={{
+                width: 56, height: 56, borderRadius: 16,
+                background: `${profile.color}15`,
+                border: `1px solid ${profile.color}30`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <Icon size={26} color={profile.color} />
+              </div>
+              <div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: profile.color, marginBottom: 4 }}>
+                  {profile.name}
+                </div>
+                <div style={{ fontSize: 12, color: "rgba(232,224,200,0.45)", lineHeight: 1.4 }}>
+                  {profile.description}
+                </div>
+              </div>
+              <div style={{
+                fontSize: 11, color: "rgba(232,224,200,0.3)",
+                padding: "4px 10px", borderRadius: 8,
+                background: "rgba(255,255,255,0.03)",
+              }}>
+                {profile.stepIds.length} steps · {(profile.speed / 1000).toFixed(1)}s each
+              </div>
+            </motion.button>
+          );
+        })}
+      </div>
+
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={onSkip}
+        style={{
+          padding: "12px 28px", borderRadius: 12,
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.1)",
+          color: "rgba(232,224,200,0.6)", cursor: "pointer",
+          fontSize: 14, fontWeight: 600,
+        }}
+      >
+        Skip — Run Full Demo
+      </motion.button>
+    </div>
+  );
+}
+
 export default function DemoWalkthrough() {
   const [, navigate] = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { stepIds, perStepSpeed } = useMemo(() => parseDemoConfig(window.location.search), []);
+  const urlConfig = useMemo(() => parseDemoConfig(window.location.search), []);
+
+  const hasUrlPreset = urlConfig.profileId !== null || urlConfig.stepIds !== null || urlConfig.perStepSpeed !== null;
+  const [showSelector, setShowSelector] = useState(!hasUrlPreset);
+  const [selectedProfile, setSelectedProfile] = useState<DemoProfile | null>(
+    urlConfig.profileId ? PROFILE_MAP.get(urlConfig.profileId) ?? null : null,
+  );
+
+  const { stepIds, perStepSpeed } = useMemo(() => {
+    if (selectedProfile && !urlConfig.stepIds) {
+      return {
+        stepIds: selectedProfile.stepIds,
+        perStepSpeed: urlConfig.perStepSpeed ?? selectedProfile.speed,
+      };
+    }
+    return { stepIds: urlConfig.stepIds, perStepSpeed: urlConfig.perStepSpeed };
+  }, [selectedProfile, urlConfig]);
 
   const steps: DemoStep[] = useMemo(() => {
     if (!stepIds) return ALL_STEPS;
@@ -484,15 +644,27 @@ export default function DemoWalkthrough() {
     setCurrentStep(prev => (prev > 0 ? prev - 1 : prev));
   }, []);
 
+  const handleProfileSelect = useCallback((profile: DemoProfile) => {
+    setSelectedProfile(profile);
+    setCurrentStep(0);
+    setPaused(false);
+    setShowSelector(false);
+  }, []);
+
+  const handleProfileSkip = useCallback(() => {
+    setShowSelector(false);
+  }, []);
+
   useEffect(() => {
-    if (paused) return;
+    if (showSelector || paused) return;
     const duration = getStepDuration(currentStep);
     timerRef.current = setTimeout(goNext, duration);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
-  }, [currentStep, paused, goNext, getStepDuration]);
+  }, [currentStep, paused, showSelector, goNext, getStepDuration]);
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
+      if (showSelector) return;
       if (e.key === "ArrowRight") goNext();
       else if (e.key === "ArrowLeft") goPrev();
       else if (e.key === " ") { e.preventDefault(); setPaused(p => !p); }
@@ -500,7 +672,11 @@ export default function DemoWalkthrough() {
     }
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [goNext, goPrev, navigate]);
+  }, [goNext, goPrev, navigate, showSelector]);
+
+  if (showSelector) {
+    return <ProfileSelector onSelect={handleProfileSelect} onSkip={handleProfileSkip} />;
+  }
 
   const step = steps[currentStep];
   const progress = ((currentStep + 1) / steps.length) * 100;
@@ -524,7 +700,7 @@ export default function DemoWalkthrough() {
       >
         <Play size={12} color="#f59e0b" style={{ marginRight: 8 }} />
         <span style={{ fontSize: 12, fontWeight: 700, color: "#f59e0b", textTransform: "uppercase", letterSpacing: "0.15em" }}>
-          Demo Mode: Simulated Data
+          Demo Mode{selectedProfile ? `: ${selectedProfile.name}` : ": Simulated Data"}
         </span>
       </motion.div>
 
