@@ -106,8 +106,9 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
   const [engravingText, setEngravingText] = useState("");
 
   // UI state
-  const [saving,   setSaving]   = useState(false);
-  const [saved,    setSaved]    = useState(false);
+  const [saving,    setSaving]    = useState(false);
+  const [saved,     setSaved]     = useState(false);
+  const [saveLocal, setSaveLocal] = useState(false);
   const [critique, setCritique] = useState<string | null>(null);
 
   // Pinch-to-scale — tablet two-finger gesture on the canvas
@@ -155,10 +156,11 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
     const payload = { brandName, selectedColor, selectedEmblem, engravingText, selectFields };
     // Mirror to localStorage first (works for guests and offline)
     try { localStorage.setItem(`playground_draft_${craft}`, JSON.stringify(payload)); } catch {}
-    // Await API persistence so "Draft Saved" reflects actual cloud result for auth users
-    await upsertDesignDraft({ craft, draftName: brandName || "My Draft", payload });
+    // Await API persistence; gate success label on cloud result
+    const cloudResult = await upsertDesignDraft({ craft, draftName: brandName || "My Draft", payload });
     setSaving(false);
     setSaved(true);
+    setSaveLocal(cloudResult === null); // null = guest (401) or server error → show "Saved locally"
     setCritique(generateCritique(config, brandName, selectedColor));
   };
 
@@ -557,7 +559,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
               }}
             >
               {saved
-                ? <><Check size={12} /> Draft Saved</>
+                ? <><Check size={12} /> {saveLocal ? "Saved locally" : "Draft Saved"}</>
                 : <><Save size={12} /> Save as Draft</>
               }
             </motion.button>
