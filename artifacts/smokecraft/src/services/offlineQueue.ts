@@ -15,7 +15,7 @@
 
 const KEY = "smokecraft_offline_queue_v1";
 
-export type QueueKind = "order";
+export type QueueKind = "order" | "nda";
 
 export interface QueuedAction {
   idempotencyKey:  string;

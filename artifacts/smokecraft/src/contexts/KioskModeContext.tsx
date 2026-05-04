@@ -25,6 +25,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Monitor, RotateCcw }     from "lucide-react";
 import { useFeatureFlag } from "@/hooks/useFeatureFlags";
 import { useDeviceHeartbeat } from "@/hooks/useDeviceHeartbeat";
+import { hasSignedDemoNda } from "@/components/Demo/DemoNdaModal";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -39,6 +40,8 @@ interface KioskState {
   deviceId:    string | null;
   reset:       () => void;
   burnInActive: boolean;
+  ndaActive:   boolean;
+  setNdaActive: (v: boolean) => void;
 }
 
 const BURN_IN_INTERVAL_MS = 45_000;
@@ -50,6 +53,7 @@ const KioskContext = createContext<KioskState>({
   mode: "normal", isKiosk: false, isTablet: false,
   venueId: null, tableNumber: null, deviceId: null,
   reset: () => {}, burnInActive: false,
+  ndaActive: false, setNdaActive: () => {},
 });
 
 export function useKioskMode(): KioskState {
@@ -78,6 +82,7 @@ export function KioskModeProvider({ children }: { children: ReactNode }) {
   const [showOverlay, setShowOverlay] = useState(false);
   const [countdown,   setCountdown]   = useState(COUNTDOWN_S);
   const [burnInActive, setBurnInActive] = useState(false);
+  const [ndaActive, setNdaActive] = useState(false);
   const burnInEnabled = useFeatureFlag("burn_in_protection", true);
 
   const idleTimer     = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -127,6 +132,10 @@ export function KioskModeProvider({ children }: { children: ReactNode }) {
   // Activity listeners
   useEffect(() => {
     if (mode !== "kiosk") return;
+    if (ndaActive) {
+      clearAll();
+      return;
+    }
     const events = ["mousedown", "mousemove", "touchstart", "keydown", "scroll", "click"];
     const handler = () => {
       if (!showOverlay) startIdleTimer();
@@ -137,7 +146,7 @@ export function KioskModeProvider({ children }: { children: ReactNode }) {
       clearAll();
       events.forEach((e) => window.removeEventListener(e, handler));
     };
-  }, [mode, showOverlay, startIdleTimer, clearAll]);
+  }, [mode, showOverlay, ndaActive, startIdleTimer, clearAll]);
 
   // Enter full-screen on kiosk mode
   useEffect(() => {
@@ -307,15 +316,20 @@ export function KioskModeProvider({ children }: { children: ReactNode }) {
     };
   }, [mode]);
 
+  const ndaSignedFlag = hasSignedDemoNda();
+
   useDeviceHeartbeat(
     mode !== "normal" ? deviceId : null,
     mode !== "normal" ? venueId : null,
     showOverlay,
+    ndaSignedFlag,
+    typeof sessionStorage !== "undefined" ? sessionStorage.getItem("demoNdaSessionId") : null,
   );
 
   const value: KioskState = {
     mode, isKiosk: mode === "kiosk", isTablet: mode === "tablet",
     venueId, tableNumber, deviceId, reset, burnInActive,
+    ndaActive, setNdaActive,
   };
 
   return (

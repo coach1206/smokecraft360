@@ -7,6 +7,8 @@ export function useDeviceHeartbeat(
   deviceId: string | null,
   venueId: string | null,
   isIdle: boolean,
+  ndaSigned?: boolean,
+  sessionId?: string | null,
 ) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -23,6 +25,8 @@ export function useDeviceHeartbeat(
             venueId,
             version: CLIENT_VERSION,
             status: isIdle ? "IDLE" : "ACTIVE",
+            ...(ndaSigned !== undefined ? { ndaSigned } : {}),
+            ...(sessionId ? { sessionId } : {}),
           }),
         });
         if (!res.ok) return;
@@ -42,5 +46,5 @@ export function useDeviceHeartbeat(
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [deviceId, venueId, isIdle]);
+  }, [deviceId, venueId, isIdle, ndaSigned, sessionId]);
 }

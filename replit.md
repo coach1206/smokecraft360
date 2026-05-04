@@ -65,10 +65,11 @@ The application features a luxury aesthetic with a dark gold theme, glassmorphis
 -   **Device Management**: Supports registration, status tracking, and session management for mobile, tablet, and kiosk devices.
 -   **Lounge League**: Competition system ranking venues.
 -   **Multi-User Sessions**: Manages groups of users (parties) with unique codes.
--   **Offline Queue**: Buffers and replays offline actions for kiosks.
+-   **Offline Queue**: Buffers and replays offline actions for kiosks. Supports `order` and `nda` kinds with kind-specific payload size limits (16KB for orders, 400KB for NDA signatures).
 -   **Exports**: Role-gated CSV/JSON data exports.
 -   **Cross-Venue Identity Layer**: Tracks user visits across venues.
 -   **Touchscreen Command Interface**: Role-based touchscreen home screens (`/touch`, `/touch/admin`, `/touch/venue`, `/touch/vendor`), step-based flow engine with 12 flow definitions, Experience Center (`/experience-center`) NDA-gated via existing `DemoNdaModal`, and backend API at `/api/touchscreen/*` with full auth, audit logging, and session persistence in `touchscreen_flow_sessions` table. All touch targets ≥72px, dark gold glass-card aesthetic.
+-   **Demo → NDA → Experience Flow**: `/demo` mounts NDA gate modal, captures signature with deviceId/venueId, redirects to `/experience-center` on success. Offline-safe: queues NDA to offline queue when truly offline (navigator.onLine=false), syncs on reconnect. Kiosk-aware: pauses inactivity timer during NDA signing, heartbeat includes ndaSigned/sessionId state. Audit-logged (`nda.demo_signed`) and analytics-tracked (`nda_viewed`, `nda_signed`, `nda_synced` event types). Deep-link bypass blocked by sessionStorage check in DemoExperienceCenter.
 
 # External Dependencies
 

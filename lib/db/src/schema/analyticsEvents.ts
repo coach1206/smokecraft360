@@ -24,6 +24,9 @@ export const eventTypeEnum = pgEnum("event_type", [
   "campaign_budget_warning",
   "campaign_budget_exhausted",
   "campaign_abuse_flagged",
+  "nda_viewed",
+  "nda_signed",
+  "nda_synced",
 ]);
 
 export const analyticsEventsTable = pgTable("analytics_events", {

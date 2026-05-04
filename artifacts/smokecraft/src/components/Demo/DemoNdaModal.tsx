@@ -14,8 +14,9 @@
  * lightweight per-user gate; this one is the rich pre-auth ceremony.
  */
 
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import { SignaturePad, type SignaturePadHandle } from "./SignaturePad";
+import { enqueue } from "@/services/offlineQueue";
 
 export const DEMO_NDA_FLAG = "demoNdaSigned";
 
@@ -24,9 +25,21 @@ export function hasSignedDemoNda(): boolean {
   catch { return false; }
 }
 
-interface Props { onComplete: () => void }
+function trackNdaEvent(eventType: string, metadata?: Record<string, unknown>) {
+  fetch("/api/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ eventType, metadata }),
+  }).catch(() => {});
+}
 
-export function DemoNdaModal({ onComplete }: Props) {
+interface Props {
+  onComplete: () => void;
+  deviceId?: string | null;
+  venueId?: string | null;
+}
+
+export function DemoNdaModal({ onComplete, deviceId, venueId }: Props) {
   const padRef = useRef<SignaturePadHandle | null>(null);
   const [fullName, setFullName] = useState("");
   const [initials, setInitials] = useState("");
@@ -45,6 +58,10 @@ export function DemoNdaModal({ onComplete }: Props) {
     } catch { return null; }
   }, []);
 
+  useEffect(() => {
+    trackNdaEvent("nda_viewed", { deviceId, venueId, sessionId });
+  }, []);
+
   const canSubmit = fullName.trim().length >= 2
                  && initials.trim().length >= 1
                  && agreed
@@ -57,28 +74,41 @@ export function DemoNdaModal({ onComplete }: Props) {
     const dataUrl = padRef.current?.getDataUrl();
     if (!dataUrl) { setError("Please draw your signature."); setSubmitting(false); return; }
 
+    const payload = {
+      fullName: fullName.trim(),
+      initials: initials.trim(),
+      signatureData: dataUrl,
+      agreed: true as const,
+      ...(sessionId ? { sessionId } : {}),
+      ...(deviceId ? { deviceId } : {}),
+      ...(venueId ? { venueId } : {}),
+    };
+
     try {
       const r = await fetch("/api/nda/demo-sign", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName: fullName.trim(),
-          initials: initials.trim(),
-          signatureData: dataUrl,
-          agreed: true,
-          ...(sessionId ? { sessionId } : {}),
-        }),
+        body: JSON.stringify(payload),
       });
       if (!r.ok) {
         const j = await r.json().catch(() => ({}));
-        throw new Error(j.error || `Signature failed (${r.status})`);
+        setError(j.error || `Signature failed (${r.status})`);
+        setSubmitting(false);
+        return;
       }
       try { sessionStorage.setItem(DEMO_NDA_FLAG, "1"); } catch { /* noop */ }
       setFading(true);
       window.setTimeout(() => onComplete(), 320);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Submission failed");
-      setSubmitting(false);
+    } catch {
+      if (!navigator.onLine) {
+        enqueue("nda", payload as unknown as Record<string, unknown>);
+        try { sessionStorage.setItem(DEMO_NDA_FLAG, "1"); } catch { /* noop */ }
+        setFading(true);
+        window.setTimeout(() => onComplete(), 320);
+      } else {
+        setError("Network error — please try again.");
+        setSubmitting(false);
+      }
     }
   }
 

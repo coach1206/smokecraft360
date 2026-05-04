@@ -16,11 +16,12 @@
 
 import { Router, type IRouter, type Response, type Request } from "express";
 import { eq, and, isNull, desc }               from "drizzle-orm";
-import { db, usersTable, ndaSignaturesTable }  from "@workspace/db";
+import { db, usersTable, ndaSignaturesTable, analyticsEventsTable } from "@workspace/db";
 import { requireAuth, type AuthRequest }       from "../middleware/auth";
 import { requireRole }                         from "../middleware/roles";
 import { allowOnly }                           from "../middleware/sanitize";
 import { ndaSignLimiter }                      from "../middleware/rateLimit";
+import { logAudit }                            from "../lib/audit";
 
 const router: IRouter = Router();
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -110,11 +111,11 @@ router.post(
 router.post(
   "/demo-sign",
   ndaSignLimiter, // HIGH (architect fix): IP-based throttle on public write endpoint
-  allowOnly("fullName", "initials", "signatureData", "agreed", "sessionId"),
+  allowOnly("fullName", "initials", "signatureData", "agreed", "sessionId", "deviceId", "venueId"),
   async (req: Request, res: Response) => {
     const b = req.body as {
       fullName?: unknown; initials?: unknown; signatureData?: unknown;
-      agreed?: unknown; sessionId?: unknown;
+      agreed?: unknown; sessionId?: unknown; deviceId?: unknown; venueId?: unknown;
     };
 
     if (typeof b.fullName !== "string" || b.fullName.trim().length < 2 || b.fullName.trim().length > 200) {
@@ -134,6 +135,8 @@ router.post(
     if (b.sessionId !== undefined && (typeof b.sessionId !== "string" || b.sessionId.length > 200)) {
       res.status(400).json({ error: '"sessionId" must be a string up to 200 chars' }); return;
     }
+    const deviceIdVal = typeof b.deviceId === "string" && UUID_RE.test(b.deviceId) ? b.deviceId : null;
+    const venueIdVal  = typeof b.venueId  === "string" && UUID_RE.test(b.venueId)  ? b.venueId  : null;
 
     const [row] = await db.insert(ndaSignaturesTable).values({
       fullName:      b.fullName.trim(),
@@ -143,9 +146,26 @@ router.post(
       ipAddress:     req.ip ?? null,
       deviceType:    classifyDevice(req.get("user-agent") ?? undefined),
       sessionId:     typeof b.sessionId === "string" ? b.sessionId : null,
+      deviceId:      deviceIdVal,
+      venueId:       venueIdVal,
     }).returning({ id: ndaSignaturesTable.id, createdAt: ndaSignaturesTable.createdAt });
 
-    req.log?.info({ id: row?.id, name: b.fullName.trim() }, "demo NDA signed");
+    req.log?.info({ id: row?.id, name: b.fullName.trim(), deviceId: deviceIdVal }, "demo NDA signed");
+
+    void logAudit(req as unknown as import("../middleware/auth").AuthRequest, {
+      action:     "nda.demo_signed",
+      entityType: "nda_signature",
+      entityId:   row?.id ?? null,
+      after:      { fullName: b.fullName.trim(), deviceId: deviceIdVal, venueId: venueIdVal },
+      venueId:    venueIdVal,
+    });
+
+    db.insert(analyticsEventsTable).values({
+      eventType: "nda_signed",
+      venueId:   venueIdVal,
+      metadata:  { signatureId: row?.id, deviceId: deviceIdVal, sessionId: b.sessionId ?? null },
+    }).catch(() => {});
+
     res.status(201).json({ id: row?.id, signedAt: row?.createdAt });
   },
 );
@@ -164,6 +184,8 @@ router.get(
       ipAddress:  ndaSignaturesTable.ipAddress,
       deviceType: ndaSignaturesTable.deviceType,
       sessionId:  ndaSignaturesTable.sessionId,
+      deviceId:   ndaSignaturesTable.deviceId,
+      venueId:    ndaSignaturesTable.venueId,
       createdAt:  ndaSignaturesTable.createdAt,
     }).from(ndaSignaturesTable).orderBy(desc(ndaSignaturesTable.createdAt)).limit(100);
     res.json({ signatures: rows });

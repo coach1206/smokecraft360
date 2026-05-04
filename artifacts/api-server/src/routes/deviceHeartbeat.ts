@@ -23,6 +23,8 @@ const heartbeatSchema = z.object({
   venueId: z.string().uuid(),
   version: z.string().min(1).max(50),
   status: z.enum(["ACTIVE", "IDLE"]),
+  ndaSigned: z.boolean().optional(),
+  sessionId: z.string().max(200).optional(),
 });
 
 const deviceRefreshSet = new Set<string>();
@@ -37,7 +39,7 @@ router.post(
       return;
     }
 
-    const { deviceId, venueId, version, status } = parsed.data;
+    const { deviceId, venueId, version, status, ndaSigned, sessionId } = parsed.data;
 
     try {
       const [device] = await db
@@ -72,7 +74,7 @@ router.post(
       }
 
       logger.debug(
-        { deviceId, venueId, version, status, event: "device_heartbeat" },
+        { deviceId, venueId, version, status, ndaSigned, sessionId, event: "device_heartbeat" },
         "device heartbeat received",
       );
 

@@ -20,7 +20,7 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { eq, desc, inArray, and, sql }                       from "drizzle-orm";
 import {
-  db, offlineQueueTable, ordersTable, venueInventoryTable,
+  db, offlineQueueTable, ordersTable, venueInventoryTable, ndaSignaturesTable,
 } from "@workspace/db";
 import { requireAuth, type AuthRequest }                     from "../middleware/auth";
 import { requireRole }                                       from "../middleware/roles";
@@ -31,9 +31,10 @@ import { checkLicenseForVenue }                              from "../middleware
 const router: IRouter = Router();
 
 const UUID_RE      = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const VALID_KINDS  = ["order"] as const;
+const VALID_KINDS  = ["order", "nda"] as const;
 const MAX_BATCH    = 100;
 const MAX_PAYLOAD_BYTES = 16 * 1024;
+const MAX_NDA_PAYLOAD_BYTES = 400 * 1024;
 
 type Kind = (typeof VALID_KINDS)[number];
 
@@ -122,6 +123,30 @@ async function dispatchOne(item: SyncItem): Promise<string> {
       }
       return order!.id;
     }
+    case "nda": {
+      const p = item.payload as {
+        fullName?:      string; initials?:      string;
+        signatureData?: string; agreed?:        boolean;
+        sessionId?:     string; deviceId?:      string;
+        venueId?:       string; deviceType?:    string;
+        ipAddress?:     string;
+      };
+      if (!p.fullName || !p.signatureData) {
+        throw new Error("payload requires fullName and signatureData");
+      }
+      const [row] = await db.insert(ndaSignaturesTable).values({
+        fullName:      p.fullName,
+        initials:      p.initials ?? "",
+        signatureData: p.signatureData,
+        agreed:        p.agreed ?? true,
+        ipAddress:     p.ipAddress ?? null,
+        deviceType:    p.deviceType ?? null,
+        sessionId:     p.sessionId ?? null,
+        deviceId:      p.deviceId ?? null,
+        venueId:       p.venueId ?? null,
+      }).returning({ id: ndaSignaturesTable.id });
+      return row!.id;
+    }
   }
 }
 
@@ -161,10 +186,10 @@ router.post(
       if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
         results.push({ idempotencyKey: key, status: "failed", error: "payload must be an object" }); continue;
       }
-      // Size guard against jumbo payloads.
+      const maxBytes = kind === "nda" ? MAX_NDA_PAYLOAD_BYTES : MAX_PAYLOAD_BYTES;
       try {
-        if (JSON.stringify(payload).length > MAX_PAYLOAD_BYTES) {
-          results.push({ idempotencyKey: key, status: "failed", error: "payload exceeds 16KB" }); continue;
+        if (JSON.stringify(payload).length > maxBytes) {
+          results.push({ idempotencyKey: key, status: "failed", error: `payload exceeds ${maxBytes / 1024}KB` }); continue;
         }
       } catch { results.push({ idempotencyKey: key, status: "failed", error: "payload not serializable" }); continue; }
 

@@ -1,0 +1,267 @@
+Audit the existing SmokeCraft 360 frontend + backend before making any changes.
+
+This is a NON-DESTRUCTIVE wiring and integration task.
+
+DO NOT:
+- create duplicate NDA systems
+- create duplicate offline queue systems
+- replace kiosk mode
+- rebuild device heartbeat
+- rebuild demo mode
+- introduce new tables if existing ones cover the need
+
+Preserve and extend:
+
+DemoNdaModal.tsx
+SignaturePad.tsx
+/api/nda/demo-sign
+offlineQueue.ts
+OfflineQueueBanner.tsx
+/api/offline-queue/sync
+KioskModeContext.tsx
+useDeviceHeartbeat.ts
+device touch middleware
+Demo.tsx
+demo.ts config
+nda_signatures table
+offline_queue table
+device_sessions table
+sessions table
+
+--------------------------------------------------
+OBJECTIVE
+--------------------------------------------------
+
+Create a fully wired Demo → NDA → Experience → Offline-safe → Device-controlled flow.
+
+The system must:
+
+1. Block demo access until NDA is signed
+2. Capture and store signature securely
+3. Handle offline NDA signing and sync later
+4. Respect kiosk mode restrictions
+5. Maintain device heartbeat + remote control
+6. Not break existing experience or session flows
+
+--------------------------------------------------
+1. NDA GATING (FRONTEND + BACKEND)
+--------------------------------------------------
+
+Extend DemoNdaModal.tsx:
+
+- Show automatically on Demo load if NDA not signed
+- Block ALL interaction behind modal
+- Prevent bypass via route navigation
+
+Use existing /api/nda/demo-sign
+
+Enhance payload:
+
+{
+  signatureBase64,
+  initials,
+  deviceId,
+  venueId,
+  timestamp
+}
+
+Rules:
+
+- signature required
+- initials required
+- timestamp server-side verified
+- deviceId must be included
+
+Store in nda_signatures:
+
+signature (encrypted if encryption util exists)
+initials
+deviceId
+venueId
+createdAt
+
+--------------------------------------------------
+2. OFFLINE NDA SUPPORT
+--------------------------------------------------
+
+Extend offlineQueue.ts:
+
+If /api/nda/demo-sign fails:
+
+- queue NDA payload
+- mark as "pending_sync"
+
+On reconnect:
+
+- sync NDA to backend
+- mark as completed
+- update UI state
+
+Extend OfflineQueueBanner.tsx:
+
+- show NDA sync status if pending
+- notify user when completed
+
+--------------------------------------------------
+3. SESSION LINKING
+--------------------------------------------------
+
+After NDA success:
+
+- create or attach to session (sessions table)
+- store sessionId in frontend state
+
+Session must include:
+
+sessionId
+deviceId
+venueId
+ndaSigned = true
+
+Prevent experience start if:
+
+ndaSigned !== true
+
+--------------------------------------------------
+4. KIOSK MODE INTEGRATION
+--------------------------------------------------
+
+Extend KioskModeContext.tsx behavior:
+
+While NDA modal active:
+
+- disable:
+  inactivity reset
+  burn-in pixel shift
+  auto navigation
+
+After NDA complete:
+
+- restore normal kiosk behavior
+
+Ensure:
+
+- no context menu
+- no navigation escape
+- no refresh shortcuts
+
+--------------------------------------------------
+5. DEVICE HEARTBEAT INTEGRATION
+--------------------------------------------------
+
+Extend useDeviceHeartbeat.ts:
+
+Include NDA + session status:
+
+{
+  deviceId,
+  venueId,
+  version,
+  status,
+  ndaSigned,
+  sessionId
+}
+
+Backend must update device_sessions accordingly.
+
+Ensure:
+
+- heartbeat continues during demo
+- per-device refresh still works
+- NDA state persists across refresh
+
+--------------------------------------------------
+6. DEMO MODE FLOW CONTROL
+--------------------------------------------------
+
+Extend Demo.tsx:
+
+Flow:
+
+IF ndaSigned === false
+  → show DemoNdaModal
+ELSE
+  → load Experience Center
+
+Ensure:
+
+- no flash of content before NDA
+- no bypass via deep linking
+- no bypass via browser back
+
+--------------------------------------------------
+7. SECURITY + VALIDATION
+--------------------------------------------------
+
+- Validate all NDA inputs (zod or existing pattern)
+- Strip extra fields via allowOnly
+- Do NOT trust client timestamp
+- Use server timestamp
+- Require deviceId + venueId
+
+- Use existing auth if applicable
+- OR treat demo NDA as device-scoped (no JWT required)
+
+- Log NDA signing:
+
+audit action: NDA_SIGNED
+
+--------------------------------------------------
+8. ANALYTICS EVENTS
+--------------------------------------------------
+
+Extend analytics_events:
+
+Add:
+
+NDA_VIEWED
+NDA_SIGNED
+NDA_SYNCED
+
+Track:
+
+deviceId
+venueId
+timestamp
+
+--------------------------------------------------
+9. FAILURE HANDLING
+--------------------------------------------------
+
+If NDA submission fails:
+
+- queue offline
+- show banner
+- prevent experience start until resolved
+
+If sync fails repeatedly:
+
+- retry with exponential backoff
+- log error via structured logger
+
+--------------------------------------------------
+10. COMPLETION REQUIREMENTS
+--------------------------------------------------
+
+Do NOT mark complete unless:
+
+- NDA modal blocks access correctly
+- signature is captured and stored
+- offline NDA queue works and syncs
+- kiosk mode behaves correctly during NDA
+- session links correctly after NDA
+- heartbeat includes NDA state
+- analytics logs NDA events
+- audit logs record NDA signing
+- no duplicate systems created
+- existing flows (experience, sessions, rewards) still work
+
+Return:
+
+files changed
+routes used (no duplicates)
+tables reused
+state flow description
+offline sync behavior
+manual test steps
+confirmation no system duplication

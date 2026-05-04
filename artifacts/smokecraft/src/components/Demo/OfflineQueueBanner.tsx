@@ -10,7 +10,7 @@
 
 import { useEffect, useState } from "react";
 import {
-  pendingCount, drain, subscribe, installOnlineListener,
+  pendingCount, pendingItems, drain, subscribe, installOnlineListener,
 } from "@/services/offlineQueue";
 
 export function OfflineQueueBanner() {
@@ -60,6 +60,7 @@ export function OfflineQueueBanner() {
       <span>
         {online ? "" : "Offline · "}
         {count} queued action{count === 1 ? "" : "s"}
+        {pendingItems().some(i => i.kind === "nda") ? " (incl. NDA)" : ""}
       </span>
       {online && count > 0 && (
         <button

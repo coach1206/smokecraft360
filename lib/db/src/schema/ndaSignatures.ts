@@ -25,6 +25,8 @@ export const ndaSignaturesTable = pgTable("nda_signatures", {
   deviceType:    text("device_type"),
   /** Optional client-supplied session id for tying the signature to a flow. */
   sessionId:     text("session_id"),
+  deviceId:      uuid("device_id"),
+  venueId:       uuid("venue_id"),
   createdAt:     timestamp("created_at").notNull().defaultNow(),
 }, (t) => ({
   byCreatedAt: index("nda_signatures_created_at_idx").on(t.createdAt),

@@ -2,22 +2,43 @@
  * /demo — gated entry point to the SmokeCraft 360 demo.
  *
  * Mounts <DemoNdaModal/> until the NDA is signed (sessionStorage flag),
- * then redirects to /intro to trigger the normal boot/demo experience.
- * Reload-resistant: signed flag is checked synchronously on first render.
+ * then redirects to /experience-center. Reload-resistant: signed flag is
+ * checked synchronously on first render. Kiosk inactivity is paused while
+ * the NDA modal is active.
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { DemoNdaModal, hasSignedDemoNda } from "@/components/Demo/DemoNdaModal";
+import { useKioskMode } from "@/contexts/KioskModeContext";
 
 export default function Demo() {
   const [, navigate] = useLocation();
   const [signed, setSigned] = useState<boolean>(() => hasSignedDemoNda());
+  const { setNdaActive, deviceId, venueId } = useKioskMode();
+
+  useEffect(() => {
+    if (!signed) {
+      setNdaActive(true);
+      return () => { setNdaActive(false); };
+    }
+    return undefined;
+  }, [signed, setNdaActive]);
 
   if (signed) {
-    // Defer navigation to next tick so React doesn't navigate during render.
-    queueMicrotask(() => navigate("/intro"));
+    queueMicrotask(() => navigate("/experience-center"));
     return null;
   }
-  return <DemoNdaModal onComplete={() => { setSigned(true); navigate("/intro"); }} />;
+
+  return (
+    <DemoNdaModal
+      deviceId={deviceId}
+      venueId={venueId}
+      onComplete={() => {
+        setSigned(true);
+        setNdaActive(false);
+        navigate("/experience-center");
+      }}
+    />
+  );
 }
