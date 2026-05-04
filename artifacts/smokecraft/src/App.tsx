@@ -30,6 +30,7 @@ import BuildYourOwn   from "@/pages/BuildYourOwn";
 import PaymentSuccess  from "@/pages/PaymentSuccess";
 import PaymentCancel   from "@/pages/PaymentCancel";
 import Demo            from "@/pages/Demo";
+import DemoWalkthrough from "@/pages/DemoWalkthrough";
 import TouchscreenHome      from "@/pages/TouchscreenHome";
 import AdminTouchscreen     from "@/pages/AdminTouchscreen";
 import VenueTouchscreen     from "@/pages/VenueTouchscreen";
@@ -85,6 +86,7 @@ function Router() {
           redirects to /intro. Declared before /:theme so it can't be
           shadowed by the dynamic theme route. */}
       <Route path="/demo"       component={Demo}           />
+      <Route path="/demo-mode"  component={DemoWalkthrough} />
       <Route path="/touch"             component={TouchscreenHome}      />
       <Route path="/touch/admin"       component={AdminTouchscreen}     />
       <Route path="/touch/venue"       component={VenueTouchscreen}     />

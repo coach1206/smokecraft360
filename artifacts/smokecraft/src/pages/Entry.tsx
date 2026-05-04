@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Building2, Shield, Package, Play } from "lucide-react";
+import { Building2, Shield, Package, Play, Presentation } from "lucide-react";
 
 const TILES = [
   {
@@ -39,6 +39,15 @@ const TILES = [
     color: "#34d399",
     glow: "rgba(52,211,153,0.25)",
     route: "/demo",
+  },
+  {
+    id: "investor-demo",
+    title: "Investor Demo",
+    desc: "Auto-walk product showcase",
+    icon: Presentation,
+    color: "#f59e0b",
+    glow: "rgba(245,158,11,0.25)",
+    route: "/demo-mode",
   },
 ] as const;
 
@@ -94,7 +103,7 @@ export default function Entry() {
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(2, 1fr)",
-        gap: 14, maxWidth: 560, width: "100%",
+        gap: 14, maxWidth: 580, width: "100%",
         position: "relative", zIndex: 1,
         marginTop: 12,
       }}>

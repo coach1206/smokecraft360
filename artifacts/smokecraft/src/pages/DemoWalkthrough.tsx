@@ -1,0 +1,641 @@
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useLocation } from "wouter";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  X, ChevronRight, ChevronLeft, ShoppingCart, Gift, Package,
+  Monitor, BarChart3, Sparkles, Play, Pause, CheckCircle2,
+  AlertTriangle, TrendingUp, Wifi, Shield, CreditCard,
+} from "lucide-react";
+import KioskProductImage from "@/components/KioskProductImage";
+import type { Product, Order, CartItem } from "@/contexts/PosContext";
+
+const STEP_DURATION = 5000;
+
+const DEMO_PRODUCTS: Product[] = [
+  { id: "d-cig-1", name: "Arturo Fuente Opus X", category: "cigar", price: 42, image: "https://images.unsplash.com/photo-1589561253898-768105ca91a8?w=300&h=300&fit=crop&q=80", stock: 8 },
+  { id: "d-spr-1", name: "Macallan 18 Sherry Oak", category: "spirit", price: 28, image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=300&h=300&fit=crop&q=80", stock: 10 },
+  { id: "d-beer-1", name: "Guinness Draught", category: "beer", price: 9, image: "https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=300&h=300&fit=crop&q=80", stock: 24 },
+  { id: "d-food-1", name: "Wagyu Beef Sliders", category: "food", price: 24, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop&q=80", stock: 10 },
+];
+
+const DEMO_CART: CartItem[] = [
+  { product: DEMO_PRODUCTS[0], quantity: 1 },
+  { product: DEMO_PRODUCTS[1], quantity: 2 },
+];
+
+const DEMO_ORDER: Order = {
+  id: "DEMO-ORD-001",
+  items: DEMO_CART,
+  total: 88.20,
+  status: "paid",
+  createdAt: new Date().toISOString(),
+  rewardApplied: true,
+  stockDeducted: true,
+};
+
+interface DemoStep {
+  id: string;
+  title: string;
+  subtitle: string;
+  icon: typeof ShoppingCart;
+  color: string;
+  render: () => React.ReactNode;
+}
+
+function StepCard({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.4 }}
+      style={{
+        width: "100%", maxWidth: 700,
+        padding: 24, borderRadius: 20,
+        background: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        ...style,
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function OrderCreationStep() {
+  const [phase, setPhase] = useState(0);
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase(1), 800);
+    const t2 = setTimeout(() => setPhase(2), 1600);
+    const t3 = setTimeout(() => setPhase(3), 2400);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
+
+  return (
+    <StepCard>
+      <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(232,224,200,0.5)", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+        Simulated Order Flow
+      </div>
+      <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
+        {DEMO_PRODUCTS.slice(0, 3).map((p, i) => (
+          <motion.div
+            key={p.id}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: i <= phase ? 1 : 0.2, scale: i <= phase ? 1 : 0.9 }}
+            style={{
+              display: "flex", gap: 10, padding: 12, borderRadius: 14,
+              background: i <= phase ? "rgba(212,175,55,0.08)" : "rgba(255,255,255,0.02)",
+              border: `1px solid ${i <= phase ? "rgba(212,175,55,0.2)" : "rgba(255,255,255,0.04)"}`,
+              alignItems: "center", flex: 1, minWidth: 180,
+            }}
+          >
+            <KioskProductImage src={p.image} alt={p.name} category={p.category} width={50} height={50} borderRadius={10} />
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#e8e0c8" }}>{p.name}</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#d4af37" }}>${p.price}</div>
+            </div>
+            {i <= phase && (
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                <CheckCircle2 size={18} color="#34d399" />
+              </motion.div>
+            )}
+          </motion.div>
+        ))}
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <div style={{ fontSize: 12, color: "rgba(232,224,200,0.4)" }}>Cart Total</div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: "#d4af37" }}>$79.00</div>
+        </div>
+        <motion.div
+          animate={{ opacity: phase >= 3 ? 1 : 0.3 }}
+          style={{
+            padding: "12px 24px", borderRadius: 12,
+            background: phase >= 3 ? "linear-gradient(135deg, #34d399, #22c55e)" : "rgba(255,255,255,0.06)",
+            color: phase >= 3 ? "#0a0806" : "rgba(232,224,200,0.3)",
+            fontSize: 14, fontWeight: 700,
+          }}
+        >
+          {phase >= 3 ? "Payment Successful" : "Processing..."}
+        </motion.div>
+      </div>
+    </StepCard>
+  );
+}
+
+function RewardUnlockStep() {
+  const [unlocked, setUnlocked] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setUnlocked(true), 1200); return () => clearTimeout(t); }, []);
+
+  return (
+    <StepCard style={{ textAlign: "center" }}>
+      <motion.div
+        animate={{ scale: unlocked ? [1, 1.15, 1] : 1, rotate: unlocked ? [0, -5, 5, 0] : 0 }}
+        transition={{ duration: 0.6 }}
+        style={{
+          width: 80, height: 80, borderRadius: 20, margin: "0 auto 16px",
+          background: unlocked ? "linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.05))" : "rgba(255,255,255,0.04)",
+          border: `2px solid ${unlocked ? "#d4af37" : "rgba(255,255,255,0.1)"}`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}
+      >
+        <Gift size={36} color={unlocked ? "#d4af37" : "rgba(232,224,200,0.3)"} />
+      </motion.div>
+      <AnimatePresence>
+        {unlocked && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: "#d4af37", marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>
+              Reward Unlocked!
+            </div>
+            <div style={{ fontSize: 14, color: "rgba(232,224,200,0.6)", marginBottom: 12 }}>
+              10% loyalty discount applied — saved $8.80
+            </div>
+            <div style={{ display: "inline-flex", gap: 8, padding: "8px 16px", borderRadius: 10, background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.2)" }}>
+              <span style={{ fontSize: 13, color: "#34d399", fontWeight: 600 }}>$88.00 → $79.20</span>
+            </div>
+            <div style={{ marginTop: 12, fontSize: 12, color: "rgba(232,224,200,0.35)" }}>
+              5-minute cooldown prevents reward abuse • 1 reward per order enforced
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </StepCard>
+  );
+}
+
+function InventoryStep() {
+  const [updates, setUpdates] = useState(0);
+  useEffect(() => {
+    const t1 = setTimeout(() => setUpdates(1), 600);
+    const t2 = setTimeout(() => setUpdates(2), 1200);
+    const t3 = setTimeout(() => setUpdates(3), 1800);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
+
+  const movements = [
+    { name: "Arturo Fuente Opus X", before: 8, after: 7, reason: "Order checkout" },
+    { name: "Macallan 18 Sherry Oak", before: 10, after: 8, reason: "Order checkout" },
+    { name: "Cohiba Behike 52", before: 5, after: 5, reason: "Low stock alert" },
+  ];
+
+  return (
+    <StepCard>
+      <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(232,224,200,0.5)", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+        Real-Time Inventory Tracking
+      </div>
+      {movements.map((m, i) => (
+        <motion.div
+          key={m.name}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: i < updates ? 1 : 0.2, x: i < updates ? 0 : -10 }}
+          transition={{ delay: i * 0.1 }}
+          style={{
+            display: "flex", alignItems: "center", gap: 14,
+            padding: "12px 14px", marginBottom: 8, borderRadius: 12,
+            background: i < updates ? "rgba(255,255,255,0.03)" : "transparent",
+            border: `1px solid ${i === 2 && i < updates ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.04)"}`,
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#e8e0c8" }}>{m.name}</div>
+            <div style={{ fontSize: 12, color: "rgba(232,224,200,0.4)" }}>{m.reason}</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 14, color: "rgba(232,224,200,0.5)" }}>{m.before}</span>
+            <span style={{ color: "rgba(232,224,200,0.2)" }}>→</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: m.before === m.after ? "#f59e0b" : "#ef4444" }}>{m.after}</span>
+          </div>
+          {i === 2 && i < updates && <AlertTriangle size={16} color="#f59e0b" />}
+        </motion.div>
+      ))}
+      <div style={{ marginTop: 12, fontSize: 12, color: "rgba(232,224,200,0.3)", fontStyle: "italic" }}>
+        Every stock movement logged with before/after audit trail • Role-gated large adjustments
+      </div>
+    </StepCard>
+  );
+}
+
+function DeviceControlStep() {
+  const devices = [
+    { name: "Main Bar Kiosk", type: "kiosk", status: "online", battery: 100 },
+    { name: "Lounge Tablet #1", type: "tablet", status: "online", battery: 78 },
+    { name: "Demo iPad", type: "tablet", status: "offline", battery: 12 },
+    { name: "Manager Phone", type: "mobile", status: "online", battery: 92 },
+  ];
+
+  return (
+    <StepCard>
+      <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(232,224,200,0.5)", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+        Device Fleet Management
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        {devices.map((d, i) => (
+          <motion.div
+            key={d.name}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.15 }}
+            style={{
+              padding: "14px 16px", borderRadius: 14,
+              background: "rgba(255,255,255,0.03)",
+              border: `1px solid ${d.status === "online" ? "rgba(52,211,153,0.2)" : "rgba(239,68,68,0.2)"}`,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <div style={{
+                width: 8, height: 8, borderRadius: "50%",
+                background: d.status === "online" ? "#34d399" : "#ef4444",
+                boxShadow: `0 0 6px ${d.status === "online" ? "#34d399" : "#ef4444"}`,
+              }} />
+              <span style={{ fontSize: 13, fontWeight: 600, color: "#e8e0c8" }}>{d.name}</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "rgba(232,224,200,0.4)" }}>
+              <span>{d.type}</span>
+              <span>{d.battery}%</span>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+      <div style={{ marginTop: 12, fontSize: 12, color: "rgba(232,224,200,0.3)", fontStyle: "italic" }}>
+        Remote lock/unlock • Force refresh • Role assignment • Real-time heartbeat monitoring
+      </div>
+    </StepCard>
+  );
+}
+
+function DashboardMetricsStep() {
+  const metrics = [
+    { label: "Revenue", value: "$8,830", color: "#d4af37" },
+    { label: "Orders", value: "56", color: "#5b8def" },
+    { label: "Avg Order", value: "$158", color: "#34d399" },
+    { label: "Rewards", value: "12", color: "#f59e0b" },
+  ];
+
+  const hours = ["10a", "11a", "12p", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"];
+  const values = [120, 280, 450, 380, 310, 520, 680, 890, 1240, 1580, 1420, 960];
+  const max = Math.max(...values);
+
+  return (
+    <StepCard>
+      <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(232,224,200,0.5)", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+        Command Center Dashboard
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 20 }}>
+        {metrics.map((m, i) => (
+          <motion.div
+            key={m.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.12 }}
+            style={{ padding: 14, borderRadius: 12, background: "rgba(255,255,255,0.03)", border: `1px solid ${m.color}20`, textAlign: "center" }}
+          >
+            <div style={{ fontSize: 22, fontWeight: 700, color: m.color }}>{m.value}</div>
+            <div style={{ fontSize: 10, color: "rgba(232,224,200,0.4)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4 }}>{m.label}</div>
+          </motion.div>
+        ))}
+      </div>
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 100 }}>
+        {values.map((v, i) => (
+          <motion.div
+            key={hours[i]}
+            initial={{ height: 0 }}
+            animate={{ height: `${(v / max) * 100}%` }}
+            transition={{ delay: 0.5 + i * 0.06, duration: 0.4 }}
+            style={{
+              flex: 1, borderRadius: "3px 3px 0 0", minHeight: 3,
+              background: "linear-gradient(180deg, #d4af37, #d4af3740)",
+            }}
+            title={`${hours[i]}: $${v}`}
+          />
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 3, marginTop: 4 }}>
+        {hours.map(h => (
+          <div key={h} style={{ flex: 1, fontSize: 8, color: "rgba(232,224,200,0.25)", textAlign: "center" }}>{h}</div>
+        ))}
+      </div>
+    </StepCard>
+  );
+}
+
+function ExperienceStep() {
+  const [answered, setAnswered] = useState(0);
+  useEffect(() => {
+    const t1 = setTimeout(() => setAnswered(1), 800);
+    const t2 = setTimeout(() => setAnswered(2), 1600);
+    const t3 = setTimeout(() => setAnswered(3), 2400);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
+
+  const questions = [
+    { q: "What strength do you prefer?", a: "Full Body" },
+    { q: "Flavor profile?", a: "Rich & Bold" },
+    { q: "What's the occasion?", a: "Celebration" },
+  ];
+
+  return (
+    <StepCard style={{ textAlign: "center" }}>
+      <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(232,224,200,0.5)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+        SmokeCraft Experience Engine
+      </div>
+      <div style={{ fontSize: 12, color: "rgba(232,224,200,0.3)", marginBottom: 20 }}>
+        AI-guided product recommendations through curated taste profiles
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, maxWidth: 400, margin: "0 auto" }}>
+        {questions.map((item, i) => (
+          <motion.div
+            key={item.q}
+            initial={{ opacity: 0.3 }}
+            animate={{ opacity: i < answered ? 1 : 0.3 }}
+            style={{
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "12px 16px", borderRadius: 12,
+              background: i < answered ? "rgba(212,175,55,0.08)" : "rgba(255,255,255,0.02)",
+              border: `1px solid ${i < answered ? "rgba(212,175,55,0.2)" : "rgba(255,255,255,0.04)"}`,
+            }}
+          >
+            <span style={{ fontSize: 13, color: "rgba(232,224,200,0.6)" }}>{item.q}</span>
+            {i < answered && (
+              <motion.span initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
+                style={{ fontSize: 13, fontWeight: 600, color: "#d4af37" }}>{item.a}</motion.span>
+            )}
+          </motion.div>
+        ))}
+      </div>
+      {answered >= 3 && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ marginTop: 16 }}>
+          <div style={{ fontSize: 12, color: "#34d399", fontWeight: 600, marginBottom: 4 }}>Recommendation Ready</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#e8e0c8" }}>Arturo Fuente Opus X — Perfect for celebrations</div>
+        </motion.div>
+      )}
+    </StepCard>
+  );
+}
+
+function SystemOverviewStep() {
+  const statusRows = [
+    { icon: Wifi, label: "API Status", value: "Operational", color: "#34d399" },
+    { icon: Monitor, label: "Devices", value: "5/6 Online", color: "#34d399" },
+    { icon: Package, label: "Inventory", value: "2 Low Stock", color: "#f59e0b" },
+    { icon: CreditCard, label: "Payment", value: "Simulated", color: "#5b8def" },
+    { icon: Shield, label: "Security", value: "All Clear", color: "#34d399" },
+    { icon: TrendingUp, label: "POS Mode", value: "Overlay", color: "#5b8def" },
+  ];
+
+  return (
+    <StepCard>
+      <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(232,224,200,0.5)", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+        System Health & Security
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        {statusRows.map((row, i) => {
+          const Icon = row.icon;
+          return (
+            <motion.div
+              key={row.label}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.1 }}
+              style={{
+                display: "flex", alignItems: "center", gap: 12,
+                padding: "12px 14px", borderRadius: 12,
+                background: "rgba(255,255,255,0.02)",
+                border: `1px solid ${row.color}15`,
+              }}
+            >
+              <div style={{
+                width: 36, height: 36, borderRadius: 10,
+                background: `${row.color}10`, border: `1px solid ${row.color}25`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0,
+              }}>
+                <Icon size={16} color={row.color} />
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: "rgba(232,224,200,0.35)" }}>{row.label}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: row.color }}>{row.value}</div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+      <div style={{ marginTop: 12, fontSize: 12, color: "rgba(232,224,200,0.3)", fontStyle: "italic" }}>
+        Full audit trail • Role-based access control • Multi-device fleet management
+      </div>
+    </StepCard>
+  );
+}
+
+export default function DemoWalkthrough() {
+  const [, navigate] = useLocation();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const steps: DemoStep[] = [
+    { id: "order", title: "Order Creation", subtitle: "Smart POS with instant checkout", icon: ShoppingCart, color: "#d4af37", render: () => <OrderCreationStep /> },
+    { id: "reward", title: "Reward Unlock", subtitle: "Automated loyalty with fraud protection", icon: Gift, color: "#34d399", render: () => <RewardUnlockStep /> },
+    { id: "inventory", title: "Inventory Tracking", subtitle: "Real-time stock with audit trail", icon: Package, color: "#5b8def", render: () => <InventoryStep /> },
+    { id: "devices", title: "Device Control", subtitle: "Fleet management across venues", icon: Monitor, color: "#f97316", render: () => <DeviceControlStep /> },
+    { id: "dashboard", title: "Dashboard Metrics", subtitle: "Revenue intelligence & insights", icon: BarChart3, color: "#8b5cf6", render: () => <DashboardMetricsStep /> },
+    { id: "experience", title: "Experience Engine", subtitle: "AI-guided craft recommendations", icon: Sparkles, color: "#f59e0b", render: () => <ExperienceStep /> },
+    { id: "system", title: "System Health", subtitle: "Security, status, and audit", icon: Shield, color: "#34d399", render: () => <SystemOverviewStep /> },
+  ];
+
+  const goNext = useCallback(() => {
+    setCurrentStep(prev => (prev < steps.length - 1 ? prev + 1 : prev));
+  }, [steps.length]);
+
+  const goPrev = useCallback(() => {
+    setCurrentStep(prev => (prev > 0 ? prev - 1 : prev));
+  }, []);
+
+  useEffect(() => {
+    if (paused || currentStep >= steps.length - 1) return;
+    timerRef.current = setTimeout(goNext, STEP_DURATION);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [currentStep, paused, goNext, steps.length]);
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "ArrowRight") goNext();
+      else if (e.key === "ArrowLeft") goPrev();
+      else if (e.key === " ") { e.preventDefault(); setPaused(p => !p); }
+      else if (e.key === "Escape") navigate("/");
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [goNext, goPrev, navigate]);
+
+  const step = steps[currentStep];
+  const progress = ((currentStep + 1) / steps.length) * 100;
+
+  return (
+    <div style={{
+      height: "100dvh", display: "flex", flexDirection: "column",
+      background: "linear-gradient(180deg, #1a1714 0%, #0f0d0a 100%)",
+      color: "#e8e0c8", overflow: "hidden",
+    }}>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "8px 20px",
+          background: "linear-gradient(90deg, rgba(245,158,11,0.15), rgba(239,68,68,0.1), rgba(245,158,11,0.15))",
+          borderBottom: "1px solid rgba(245,158,11,0.2)",
+          flexShrink: 0,
+        }}
+      >
+        <Play size={12} color="#f59e0b" style={{ marginRight: 8 }} />
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#f59e0b", textTransform: "uppercase", letterSpacing: "0.15em" }}>
+          Demo Mode: Simulated Data
+        </span>
+      </motion.div>
+
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)",
+        background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/")}
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center",
+              width: 44, height: 44, borderRadius: 12,
+              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              color: "rgba(232,224,200,0.5)", cursor: "pointer",
+            }}>
+            <X size={18} />
+          </motion.button>
+          <div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: step.color }}>
+              {step.title}
+            </div>
+            <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>
+              {step.subtitle}
+            </div>
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: 12, color: "rgba(232,224,200,0.35)" }}>
+            {currentStep + 1} / {steps.length}
+          </span>
+          <motion.button whileTap={{ scale: 0.9 }} onClick={() => setPaused(p => !p)}
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center",
+              width: 44, height: 44, borderRadius: 12,
+              background: paused ? "rgba(245,158,11,0.1)" : "rgba(255,255,255,0.04)",
+              border: `1px solid ${paused ? "rgba(245,158,11,0.3)" : "rgba(255,255,255,0.08)"}`,
+              color: paused ? "#f59e0b" : "rgba(232,224,200,0.5)",
+              cursor: "pointer",
+            }}>
+            {paused ? <Play size={18} /> : <Pause size={18} />}
+          </motion.button>
+        </div>
+      </div>
+
+      <div style={{ height: 3, background: "rgba(255,255,255,0.04)", flexShrink: 0 }}>
+        <motion.div
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.4 }}
+          style={{
+            height: "100%",
+            background: `linear-gradient(90deg, ${step.color}, ${step.color}80)`,
+            borderRadius: "0 2px 2px 0",
+          }}
+        />
+      </div>
+
+      <div style={{
+        flex: 1, display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center",
+        padding: "24px 20px", overflow: "auto",
+      }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap", justifyContent: "center" }}>
+          {steps.map((s, i) => {
+            const Icon = s.icon;
+            return (
+              <motion.button
+                key={s.id}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setCurrentStep(i)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "6px 12px", borderRadius: 10,
+                  background: i === currentStep ? `${s.color}15` : "rgba(255,255,255,0.02)",
+                  border: `1px solid ${i === currentStep ? `${s.color}40` : "rgba(255,255,255,0.06)"}`,
+                  color: i === currentStep ? s.color : "rgba(232,224,200,0.3)",
+                  cursor: "pointer", fontSize: 11, fontWeight: i === currentStep ? 600 : 400,
+                  minHeight: 36,
+                }}
+              >
+                <Icon size={13} />
+                <span style={{ display: i === currentStep ? "inline" : "none" }}>{s.title}</span>
+              </motion.button>
+            );
+          })}
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div key={step.id} style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+            {step.render()}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <div style={{
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        padding: "12px 20px", borderTop: "1px solid rgba(255,255,255,0.06)",
+        flexShrink: 0,
+      }}>
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={goPrev}
+          disabled={currentStep === 0}
+          style={{
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "10px 20px", borderRadius: 12,
+            background: currentStep === 0 ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            color: currentStep === 0 ? "rgba(232,224,200,0.15)" : "rgba(232,224,200,0.5)",
+            cursor: currentStep === 0 ? "not-allowed" : "pointer",
+            fontSize: 13, fontWeight: 600, minHeight: 44,
+          }}
+        >
+          <ChevronLeft size={16} /> Previous
+        </motion.button>
+
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={() => navigate("/")}
+          style={{
+            padding: "10px 20px", borderRadius: 12,
+            background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)",
+            color: "#ef4444", cursor: "pointer",
+            fontSize: 13, fontWeight: 600, minHeight: 44,
+          }}
+        >
+          Exit Demo
+        </motion.button>
+
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={goNext}
+          disabled={currentStep === steps.length - 1}
+          style={{
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "10px 20px", borderRadius: 12,
+            background: currentStep === steps.length - 1 ? "rgba(255,255,255,0.02)" : `linear-gradient(135deg, ${step.color}, ${step.color}cc)`,
+            border: currentStep === steps.length - 1 ? "1px solid rgba(255,255,255,0.08)" : "none",
+            color: currentStep === steps.length - 1 ? "rgba(232,224,200,0.15)" : "#0a0806",
+            cursor: currentStep === steps.length - 1 ? "not-allowed" : "pointer",
+            fontSize: 13, fontWeight: 700, minHeight: 44,
+          }}
+        >
+          Next <ChevronRight size={16} />
+        </motion.button>
+      </div>
+    </div>
+  );
+}
