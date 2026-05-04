@@ -14,12 +14,13 @@ const router: IRouter = Router();
 
 router.post(
   "/",
-  allowOnly("selectedProductId", "pairingProductId", "foodPairingId"),
+  allowOnly("selectedProductId", "pairingProductId", "foodPairingId", "venueId"),
   async (req: Request, res: Response) => {
-    const { selectedProductId, pairingProductId, foodPairingId } = req.body as {
+    const { selectedProductId, pairingProductId, foodPairingId, venueId } = req.body as {
       selectedProductId?: string;
       pairingProductId?:  string;
       foodPairingId?:     string;
+      venueId?:           string;
     };
 
     if (!selectedProductId || typeof selectedProductId !== "string") {
@@ -27,22 +28,26 @@ router.post(
       return;
     }
 
-    // Attempt to resolve user from JWT — silently falls through if absent/invalid
     let userId: string | null = null;
+    let tokenVenueId: string | null = null;
     const authHeader = req.headers["authorization"];
     if (authHeader?.startsWith("Bearer ")) {
       try {
-        const payload = await verifyToken(authHeader.slice(7));
-        userId = payload.sub;
+        const payload = await verifyToken(authHeader.slice(7)) as unknown as { sub?: string; venueId?: string };
+        userId = payload.sub ?? null;
+        tokenVenueId = payload.venueId ?? null;
       } catch {
         // token invalid or expired — treat as anonymous
       }
     }
 
+    const effectiveVenueId = tokenVenueId ?? venueId ?? null;
+
     const [saved] = await db
       .insert(experiencesTable)
       .values({
         userId:            userId ?? "00000000-0000-0000-0000-000000000000",
+        venueId:           effectiveVenueId,
         selectedProductId,
         pairingProductId:  pairingProductId ?? null,
         foodPairingId:     foodPairingId    ?? null,

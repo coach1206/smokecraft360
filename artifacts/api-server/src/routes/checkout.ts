@@ -11,6 +11,8 @@
 
 import { Router }    from "express";
 import Stripe        from "stripe";
+import { eq }        from "drizzle-orm";
+import { db, productsTable, ordersTable } from "@workspace/db";
 import { allowOnly } from "../middleware/sanitize";
 
 const router = Router();
@@ -34,7 +36,7 @@ router.post(
   allowOnly("items", "venueId", "orderId"),
   async (req, res) => {
     const { items, venueId, orderId } = req.body as {
-      items?:   { name: string; price: number; quantity?: number }[];
+      items?:   { productId: string; name?: string; price?: number; quantity?: number }[];
       venueId?: string;
       orderId?: string;
     };
@@ -44,13 +46,38 @@ router.post(
       return;
     }
 
+    // ── Server-trusted pricing: resolve prices from DB, never trust client ──
+    const lineItems: { name: string; unitAmount: number; quantity: number }[] = [];
+
     for (const item of items) {
-      if (!item.name || typeof item.price !== "number" || item.price < 50) {
-        res.status(400).json({
-          error: "Each item must have a name and a price in cents (minimum 50)",
-        });
+      const productId = item.productId;
+      if (!productId) {
+        res.status(400).json({ error: "Each item must have a productId" });
         return;
       }
+
+      const [product] = await db
+        .select({ name: productsTable.name, costCents: productsTable.costCents })
+        .from(productsTable)
+        .where(eq(productsTable.id, productId))
+        .limit(1);
+
+      if (!product) {
+        res.status(404).json({ error: `Product not found: ${productId}` });
+        return;
+      }
+
+      const unitAmount = product.costCents ?? 0;
+      if (unitAmount < 50) {
+        res.status(400).json({ error: `Product "${product.name}" has no valid price configured` });
+        return;
+      }
+
+      lineItems.push({
+        name: product.name,
+        unitAmount,
+        quantity: item.quantity ?? 1,
+      });
     }
 
     let stripe: Stripe;
@@ -68,16 +95,16 @@ router.post(
       session = await stripe.checkout.sessions.create({
         mode:     "payment",
         currency: "usd",
-        line_items: items.map((item) => ({
+        line_items: lineItems.map((li) => ({
           price_data: {
             currency:     "usd",
             product_data: {
-              name:        item.name,
+              name:        li.name,
               description: "SmokeCraft 360 Experience",
             },
-            unit_amount: Math.round(item.price),
+            unit_amount: li.unitAmount,
           },
-          quantity: item.quantity ?? 1,
+          quantity: li.quantity,
         })),
         payment_intent_data: {
           description: "SmokeCraft 360 Experience",
@@ -90,7 +117,6 @@ router.post(
     } catch (err) {
       if (err instanceof Stripe.errors.StripeError) {
         req.log.error({ stripeCode: err.code, stripeType: err.type }, err.message);
-        // Map Stripe status codes: 4xx pass through, 5xx become 502
         const status = (err.statusCode ?? 502) >= 500 ? 502 : (err.statusCode ?? 502);
         res.status(status).json({ error: err.message, code: err.code });
         return;

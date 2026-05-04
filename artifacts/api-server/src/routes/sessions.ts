@@ -276,10 +276,10 @@ router.post(
       return;
     }
 
-    // Atomic: only close if the caller is the host AND status is still active.
+    // Atomic: only archive if the caller is the host AND status is still active.
     const [closed] = await db
       .update(sessionsTable)
-      .set({ status: "closed", closedAt: new Date() })
+      .set({ status: "archived" as any, closedAt: new Date() })
       .where(and(
         eq(sessionsTable.id, sessionId),
         eq(sessionsTable.hostUserId, userId),

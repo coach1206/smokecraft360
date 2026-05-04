@@ -83,6 +83,9 @@ import systemVersionRouter       from "./routes/systemVersion";
 import deviceHeartbeatRouter     from "./routes/deviceHeartbeat";
 import { startExperienceAutomation } from "./services/experienceAutomation";
 import { startSessionCleanupWorker } from "./lib/sessionCleanupWorker";
+import { startPayoutWorker }         from "./lib/payoutWorker";
+import { startRewardOptimizationWorker } from "./lib/rewardOptimizationWorker";
+import { requirePaymentsEnabled, requireRewardsEnabled } from "./middleware/killSwitch";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -225,7 +228,7 @@ app.use("/api/nda",                         ndaRouter);
 // optimization, profit calc, staff pitch. All gated to staff+.
 app.use("/api/ops",                         operationsRouter);
 app.use("/api/images",   recommendLimiter,  imagesRouter);
-app.use("/api",                             checkoutRouter);
+app.use("/api",             requirePaymentsEnabled, checkoutRouter);
 app.use("/api",                             demoRouter);
 app.use("/api/demand",                      demandEventsRouter);
 app.use("/api/demand",                      demandRouter);
@@ -236,8 +239,8 @@ app.use("/api/progression",                 progressionRouter);
 app.use("/api/venues",                      venueIntelligenceRouter);
 app.use("/api/signature-cigars",            signatureCigarsRouter);
 app.use("/api/manufacturers",               manufacturersRouter);
-app.use("/api/loyalty",                     loyaltyRouter);
-app.use("/api/rewards",                     rewardsAdminRouter);
+app.use("/api/loyalty",     requireRewardsEnabled,  loyaltyRouter);
+app.use("/api/rewards",    requireRewardsEnabled,  rewardsAdminRouter);
 app.use("/api/lounge-league",               loungeLeagueRouter);
 // Hardware lifecycle sidecar to /api/devices. The report router is mounted
 // at the literal /api/devices/hardware path BEFORE the per-device router
@@ -259,7 +262,7 @@ app.use("/api/network",                     networkInsightsRouter);
 app.use("/api/payouts",                     payoutsRouter);
 app.use("/api/admin/vendor",                vendorAdminRouter);
 app.use("/api/vendor/placements",           vendorPlacementsRouter);
-app.use("/api/payments",                    paymentsRouter);     // Elements-based PaymentIntent flow
+app.use("/api/payments",    requirePaymentsEnabled, paymentsRouter);     // Elements-based PaymentIntent flow
 // Subscriptions: license/status, create-checkout, portal, admin override
 // (router internally exposes /status, /create-checkout, /portal, /admin/:venueId/override)
 app.use("/api/license",                     subscriptionsRouter);   // mounts /status
@@ -280,6 +283,8 @@ if (process.env["NODE_ENV"] !== "test") {
   startAggregationWorker();
   startExperienceAutomation();
   startSessionCleanupWorker();
+  startPayoutWorker();
+  startRewardOptimizationWorker();
 }
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────

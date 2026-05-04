@@ -25,16 +25,17 @@ type ValidCategory = (typeof VALID_CATEGORIES)[number];
 
 // ── GET /api/products ─────────────────────────────────────────────────────────
 router.get("/", (req: Request, res: Response) => {
-  // Optional ?category= or ?type= filter so the multi-theme kiosk can request
-  // only the inventory matching the active theme's productType (e.g. cigar,
-  // wine, cocktail). `type` is accepted as an alias because the dynamic-template
-  // brief uses `?type=` while internal product fields use `category`. Unknown
-  // / missing param returns the full set unchanged.
   const raw = req.query["category"] ?? req.query["type"];
   const category = typeof raw === "string" ? raw.toLowerCase() : null;
-  const all = getAllInventory();
-  if (!category) { res.json(all); return; }
-  res.json(all.filter((p) => String(p.category ?? "").toLowerCase() === category));
+  const venueId = typeof req.query["venueId"] === "string" ? req.query["venueId"] : null;
+  let results = getAllInventory();
+  if (category) {
+    results = results.filter((p) => String(p.category ?? "").toLowerCase() === category);
+  }
+  if (venueId) {
+    results = results.filter((p) => (p as any).venueId === venueId || !(p as any).venueId);
+  }
+  res.json(results);
 });
 
 // ── POST /api/products ────────────────────────────────────────────────────────

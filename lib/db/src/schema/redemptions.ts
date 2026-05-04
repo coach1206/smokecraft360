@@ -18,6 +18,7 @@ export const redemptionsTable = pgTable("redemptions", {
   rewardId:    uuid("reward_id").notNull(),
   rewardName:  text("reward_name").notNull(),
   pointsSpent: integer("points_spent").notNull(),
+  venueId:     uuid("venue_id"),
   status:      text("status").notNull().default("pending").$type<RedemptionStatus>(),
   notes:       text("notes"),
   createdAt:   timestamp("created_at").notNull().defaultNow(),

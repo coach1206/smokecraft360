@@ -20,6 +20,7 @@ import {
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { requireRole }                          from "../middleware/roles";
 import { z }                                    from "zod";
+import { logAudit }                             from "../lib/audit";
 
 const router: IRouter = Router();
 
@@ -142,6 +143,14 @@ router.post(
     `);
 
     req.log.info({ userId, points, reason }, "loyalty points awarded");
+
+    await logAudit(req as any, {
+      action: "loyalty.points_awarded",
+      entityType: "user_loyalty_points",
+      entityId: userId,
+      after: { points, reason } as unknown as Record<string, unknown>,
+    });
+
     res.json({ awarded: points, reason });
   },
 );
@@ -219,7 +228,7 @@ router.post(
     const newTotalRedeemed = Number(debit.rows[0]!.points_redeemed);
     const newTotal         = Number(debit.rows[0]!.total_points);
 
-    // Record redemption
+    // Record redemption (with venue scoping)
     const [redemption] = await db
       .insert(redemptionsTable)
       .values({
@@ -227,9 +236,17 @@ router.post(
         rewardId:    reward.id,
         rewardName:  reward.name,
         pointsSpent: reward.pointsCost,
+        venueId:     reward.venueId ?? null,
         status:      "pending",
       })
       .returning();
+
+    await logAudit(req as any, {
+      action: "loyalty.reward_redeemed",
+      entityType: "redemption",
+      entityId: redemption.id,
+      after: { rewardId: reward.id, rewardName: reward.name, pointsSpent: reward.pointsCost } as unknown as Record<string, unknown>,
+    });
 
     res.json({
       message:    "Reward redeemed — pending staff fulfilment",
@@ -245,12 +262,28 @@ router.get(
   "/redemptions",
   requireAuth,
   requireRole("staff", "manager", "venue_owner", "super_admin"),
-  async (_req: AuthRequest, res: Response) => {
-    const rows = await db
-      .select()
-      .from(redemptionsTable)
-      .orderBy(desc(redemptionsTable.createdAt))
-      .limit(100);
+  async (req: AuthRequest, res: Response) => {
+    const venueId = req.user!.venueId;
+
+    let rows;
+    if (req.user!.role === "super_admin") {
+      rows = await db
+        .select()
+        .from(redemptionsTable)
+        .orderBy(desc(redemptionsTable.createdAt))
+        .limit(100);
+    } else {
+      if (!venueId) {
+        res.status(403).json({ error: "No venue context" });
+        return;
+      }
+      rows = await db
+        .select()
+        .from(redemptionsTable)
+        .where(eq(redemptionsTable.venueId, venueId))
+        .orderBy(desc(redemptionsTable.createdAt))
+        .limit(100);
+    }
     res.json(rows);
   },
 );
@@ -272,15 +305,37 @@ router.patch(
       res.status(400).json({ error: "Invalid payload" });
       return;
     }
-    const [updated] = await db
-      .update(redemptionsTable)
-      .set({ ...parse.data, updatedAt: new Date() })
-      .where(eq(redemptionsTable.id, String(req.params.id ?? "")))
-      .returning();
-    if (!updated) {
+
+    const redemptionId = String(req.params.id ?? "");
+    const [existing] = await db
+      .select({ venueId: redemptionsTable.venueId })
+      .from(redemptionsTable)
+      .where(eq(redemptionsTable.id, redemptionId))
+      .limit(1);
+
+    if (!existing) {
       res.status(404).json({ error: "Redemption not found" });
       return;
     }
+
+    if (req.user!.role !== "super_admin" && existing.venueId && req.user!.venueId !== existing.venueId) {
+      res.status(403).json({ error: "Redemption belongs to a different venue" });
+      return;
+    }
+
+    const [updated] = await db
+      .update(redemptionsTable)
+      .set({ ...parse.data, updatedAt: new Date() })
+      .where(eq(redemptionsTable.id, redemptionId))
+      .returning();
+
+    await logAudit(req as any, {
+      action: "redemption.status_updated",
+      entityType: "redemption",
+      entityId: redemptionId,
+      after: parse.data as unknown as Record<string, unknown>,
+    });
+
     res.json(updated);
   },
 );

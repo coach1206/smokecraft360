@@ -18,9 +18,11 @@ import { type Request, type Response }            from "express";
 import Stripe                                      from "stripe";
 import { and, eq, sql }                            from "drizzle-orm";
 import {
-  db, ordersTable, commissionsTable, venueInventoryTable,
+  db, ordersTable, commissionsTable, venueInventoryTable, stripeEventsTable,
 }                                                  from "@workspace/db";
 import { logger }                                  from "../lib/logger";
+import { logAudit }                                from "../lib/audit";
+import type { AuthRequest }                        from "../middleware/auth";
 import { activatePlacementFromSession }            from "./vendorPlacements";
 import { markSignatureRequestSubmitted }           from "./signatureCigars";
 import {
@@ -61,6 +63,22 @@ export async function stripeWebhookHandler(req: Request, res: Response): Promise
     res.status(400).json({ error: "Invalid webhook signature" });
     return;
   }
+
+  // ── Stripe event idempotency: reject duplicate event deliveries ────────────
+  try {
+    await db.insert(stripeEventsTable).values({ id: event.id });
+  } catch (err: any) {
+    if (err?.code === "23505") {
+      logger.info({ eventId: event.id, type: event.type }, "duplicate Stripe event — skipping");
+      res.json({ received: true });
+      return;
+    }
+    logger.error({ err, eventId: event.id }, "stripe_events insert failed — processing anyway");
+  }
+
+  // Best-effort audit log for all payment-related webhook events
+  const auditReq = req as unknown as AuthRequest;
+  (auditReq as any).user = { id: null, role: "system", venueId: null };
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
@@ -135,6 +153,14 @@ export async function stripeWebhookHandler(req: Request, res: Response): Promise
           .set({ status: "paid" as "completed", updatedAt: new Date() })
           .where(eq(ordersTable.id, orderId));
         logger.info({ orderId, sessionId: session.id }, "Order marked paid via Stripe webhook");
+
+        await logAudit(auditReq, {
+          action: "payment.success",
+          entityType: "order",
+          entityId: orderId,
+          after: { status: "paid", grossCents: gross, stripeSessionId: session.id } as unknown as Record<string, unknown>,
+          venueId: venueId,
+        });
       } catch (err) {
         logger.error({ err, orderId }, "Failed to update order status from webhook");
       }

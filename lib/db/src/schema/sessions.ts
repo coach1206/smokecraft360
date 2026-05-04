@@ -20,7 +20,7 @@
 import { pgTable, uuid, text, timestamp, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
-export const SESSION_STATUSES = ["active", "closed"] as const;
+export const SESSION_STATUSES = ["active", "completed", "expired", "archived", "cancelled"] as const;
 export type SessionStatus = typeof SESSION_STATUSES[number];
 
 export const sessionsTable = pgTable(

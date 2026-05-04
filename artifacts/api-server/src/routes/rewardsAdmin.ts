@@ -8,7 +8,7 @@
  */
 
 import { Router, type IRouter, type Response } from "express";
-import { eq, desc }                             from "drizzle-orm";
+import { eq, desc, or, isNull }                 from "drizzle-orm";
 import {
   db,
   rewardsTable,
@@ -17,6 +17,7 @@ import {
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { requireRole }                          from "../middleware/roles";
 import { z }                                    from "zod";
+import { logAudit }                             from "../lib/audit";
 
 const router: IRouter = Router();
 
@@ -35,11 +36,27 @@ const rewardSchema = z.object({
 router.get(
   "/",
   requireAuth,
-  async (_req: AuthRequest, res: Response) => {
-    const rows = await db
-      .select()
-      .from(rewardsTable)
-      .orderBy(desc(rewardsTable.createdAt));
+  async (req: AuthRequest, res: Response) => {
+    const venueId = req.user!.venueId;
+
+    let rows;
+    if (req.user!.role === "super_admin") {
+      rows = await db
+        .select()
+        .from(rewardsTable)
+        .orderBy(desc(rewardsTable.createdAt));
+    } else {
+      rows = await db
+        .select()
+        .from(rewardsTable)
+        .where(
+          or(
+            eq(rewardsTable.venueId, venueId ?? ""),
+            isNull(rewardsTable.venueId),
+          ),
+        )
+        .orderBy(desc(rewardsTable.createdAt));
+    }
     res.json(rows);
   },
 );
@@ -60,6 +77,14 @@ router.post(
       .insert(rewardsTable)
       .values(parse.data)
       .returning();
+
+    await logAudit(req, {
+      action: "reward.created",
+      entityType: "reward",
+      entityId: reward.id,
+      after: { name: reward.name, type: reward.type, pointsCost: reward.pointsCost } as unknown as Record<string, unknown>,
+    });
+
     res.status(201).json(reward);
   },
 );
@@ -85,6 +110,14 @@ router.patch(
       res.status(404).json({ error: "Reward not found" });
       return;
     }
+
+    await logAudit(req, {
+      action: "reward.updated",
+      entityType: "reward",
+      entityId: updated.id,
+      after: parse.data as unknown as Record<string, unknown>,
+    });
+
     res.json(updated);
   },
 );
@@ -105,6 +138,15 @@ router.delete(
       res.status(404).json({ error: "Reward not found" });
       return;
     }
+
+    await logAudit(req, {
+      action: "reward.deactivated",
+      entityType: "reward",
+      entityId: updated.id,
+      before: { active: true } as unknown as Record<string, unknown>,
+      after: { active: false } as unknown as Record<string, unknown>,
+    });
+
     res.json({ message: "Reward deactivated", reward: updated });
   },
 );

@@ -37,7 +37,7 @@ export async function runSessionCleanup(): Promise<CleanupResult> {
     await db.transaction(async (tx) => {
       const stale = await tx
         .update(sessionsTable)
-        .set({ status: "closed" as const, closedAt: new Date() })
+        .set({ status: "expired" as any, closedAt: new Date() })
         .where(
           and(
             eq(sessionsTable.status, "active"),

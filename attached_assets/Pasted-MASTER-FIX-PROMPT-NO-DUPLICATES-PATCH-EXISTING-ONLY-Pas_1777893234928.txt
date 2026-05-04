@@ -1,0 +1,231 @@
+MASTER FIX PROMPT (NO DUPLICATES, PATCH EXISTING ONLY)
+
+Paste this into Replit EXACTLY.
+
+⸻
+
+🚨 PROMPT START
+
+Upgrade the existing backend to FIX identified gaps WITHOUT creating duplicate systems.
+
+DO NOT create new tables if equivalents exist.
+DO NOT duplicate routes.
+PATCH existing routes, middleware, and schemas only.
+
+⸻
+
+1. TENANT ISOLATION (MANDATORY EVERYWHERE)
+
+PATCH these routes:
+
+GET /api/orders
+
+* Add WHERE venue_id = req.user.venueId
+
+PATCH /api/orders/:id/status
+
+* Before update:
+    SELECT order
+    VERIFY order.venue_id === req.user.venueId
+    If mismatch → 403
+
+GET /api/products
+
+* Add support for:
+    * global catalog (default)
+    * venue-specific inventory filter when venueId present
+
+GET /api/loyalty/redemptions
+
+* ADD venue_id column to table
+* Backfill existing rows if needed
+* Filter by venueId
+
+POST /api/experiences
+
+* Ensure venueId is written on insert
+
+⸻
+
+2. STRIPE EVENT IDEMPOTENCY (HARD LOCK)
+
+CREATE TABLE:
+
+stripe_events (
+id TEXT PRIMARY KEY,
+created_at TIMESTAMP DEFAULT NOW()
+)
+
+PATCH webhook:
+
+IF event.id EXISTS → EXIT early
+
+ELSE:
+
+* INSERT event.id
+* process event
+
+⸻
+
+3. CHECKOUT SECURITY FIX (CRITICAL)
+
+PATCH:
+
+POST /api/create-checkout-session
+
+REMOVE:
+
+* client-sent price usage
+
+REPLACE WITH:
+
+* fetch product price from DB
+* calculate server-side total
+* ignore client price completely
+
+⸻
+
+4. SESSION LIFECYCLE (EXPAND STATES)
+
+UPDATE session schema:
+
+ENUM:
+
+* active
+* completed
+* expired
+* archived
+* cancelled
+
+PATCH logic:
+
+* on payment success → completed
+* inactivity timeout → expired
+* manual close → archived
+
+⸻
+
+5. ENCRYPTION LAYER (DATA_AT_REST)
+
+CREATE utility:
+
+encryptField()
+decryptField()
+
+APPLY TO:
+
+* payouts
+* user identifiers (if sensitive)
+* API keys / tokens
+
+USE DATA_ENCRYPTION_KEY
+
+⸻
+
+6. AUDIT LOGGING (FULL COVERAGE)
+
+PATCH logging to include:
+
+* PAYMENT_CREATED
+* PAYMENT_SUCCESS (webhook)
+* REWARD_ISSUED
+* REWARD_REDEEMED
+* LOYALTY_POINTS_ADDED
+* LOYALTY_REDEMPTION
+
+ENFORCE:
+
+* append-only behavior
+* reject UPDATE / DELETE on audit table (DB constraint)
+
+⸻
+
+7. KILL SWITCHES (CRITICAL CONTROL)
+
+ADD feature flags:
+
+* payments_enabled
+* rewards_enabled
+
+PATCH:
+
+ALL payment routes:
+IF payments_enabled = false → return 503
+
+ALL reward routes:
+IF rewards_enabled = false → return 503
+
+⸻
+
+8. PAYOUT WORKER (MISSING)
+
+CREATE worker:
+
+* runs every hour
+* aggregates revenue_log
+* calculates payout
+* triggers Stripe transfer
+* logs payout in DB
+
+⸻
+
+9. REWARD OPTIMIZATION WORKER
+
+CREATE worker:
+
+* runs every 10 minutes
+* reads:
+    * avg order value
+    * reward usage rate
+
+ADJUST:
+
+* reward thresholds
+* discount % dynamically
+
+⸻
+
+10. AUDIT TABLE HARDENING
+
+ADD DB constraint:
+
+* prevent UPDATE
+* prevent DELETE
+
+OPTIONAL:
+
+* add hash chaining (previous_hash column)
+
+⸻
+
+11. PREVENT DUPLICATE SYSTEMS (IMPORTANT)
+
+Before creating ANY new:
+
+* check if equivalent exists
+* extend existing logic instead
+
+If duplicate detected:
+
+* merge into existing file
+* DO NOT create new route/module
+
+⸻
+
+FINAL RESULT
+
+System must now:
+
+* enforce venue isolation everywhere
+* never trust frontend pricing
+* reject duplicate Stripe events
+* track full session lifecycle
+* encrypt sensitive data
+* log all financial activity
+* allow instant shutdown of payments/rewards
+* auto-run payouts
+* auto-optimize rewards
+
+NO duplicate systems
+NO silent failures
+NO security gaps

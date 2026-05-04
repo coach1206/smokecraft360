@@ -74,7 +74,34 @@ A venue-level tuning system for reward, XP, and discount engines, stored as feat
 
 ### Session Cleanup Worker
 
-A background worker that periodically closes active sessions older than 4 hours, transactionally cancelling pending redemptions for affected users. Also removes abandoned session members (sets `leftAt`) during each sweep. The manual run endpoint (`POST /api/admin/workers/session-cleanup/run`) has rate limiting (5/min) and audit logging.
+A background worker that periodically expires active sessions older than 4 hours (status → "expired"), transactionally cancelling pending redemptions for affected users. Also removes abandoned session members (sets `leftAt`) during each sweep. The manual run endpoint (`POST /api/admin/workers/session-cleanup/run`) has rate limiting (5/min) and audit logging.
+
+### Production Hardening Layer
+
+#### Stripe Event Idempotency
+A `stripe_events` table records processed event IDs. The webhook handler inserts before processing; duplicate PK (23505) triggers early return. Combined with per-order "already paid" checks for defense-in-depth.
+
+#### Tenant Isolation
+All multi-tenant routes enforce venue scoping: orders (GET filter + PATCH ownership check), products (venueId query param), loyalty redemptions (venue-scoped listing + PATCH ownership guard), rewards (venue-scoped or global listing), and experiences (venueId from JWT or body).
+
+#### Checkout Server-Side Pricing
+`POST /api/create-checkout-session` requires `items[].productId` and resolves prices from the `products` table. Client-supplied prices are never trusted.
+
+#### Session Lifecycle
+Sessions use 5 statuses: `active`, `completed`, `expired`, `archived`, `cancelled`. Manual close → "archived", timeout → "expired", payment success → "completed".
+
+#### Kill Switches
+`requirePaymentsEnabled` and `requireRewardsEnabled` middleware check global feature flags (`payments-enabled`, `rewards-enabled`) with 30s cache. Returns 503 when disabled. Mounted on checkout, payments, loyalty, and rewards routes.
+
+#### Encryption Utility
+AES-256-GCM field-level encryption via `DATA_ENCRYPTION_KEY`. `tryEncrypt` refuses plaintext fallback (throws). Located at `artifacts/api-server/src/lib/encryption.ts`.
+
+#### Audit Logging
+Payment success, loyalty point awards, reward redemptions, reward CRUD, and redemption status updates all emit audit log entries. The `audit_log` table has DB triggers preventing UPDATE/DELETE (append-only).
+
+#### Background Workers
+- **Payout Worker** (hourly): Processes approved payout requests, validates against pending commission totals, marks commissions paid.
+- **Reward Optimization Worker** (10min): Analyzes 7-day order/redemption ratios and adjusts reward point costs (±10%) based on usage rate.
 
 ### Production Go-Live Control Layer
 

@@ -185,13 +185,25 @@ router.get(
   requireRole("venue_owner", "manager", "staff"),
   async (req: AuthRequest, res: Response) => {
     const { status } = req.query as { status?: string };
+    const venueId = req.user!.venueId;
 
-    let query = db.select().from(ordersTable).$dynamic();
+    const conditions = [];
+
+    if (req.user!.role !== "super_admin") {
+      if (!venueId) {
+        res.status(403).json({ error: "No venue context" });
+        return;
+      }
+      conditions.push(eq(ordersTable.venueId, venueId));
+    }
 
     if (status && (VALID_STATUSES as readonly string[]).includes(status)) {
-      query = query.where(
-        inArray(ordersTable.status, [status as OrderStatus]),
-      );
+      conditions.push(eq(ordersTable.status, status as OrderStatus));
+    }
+
+    let query = db.select().from(ordersTable).$dynamic();
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
     }
 
     const orders = await query.orderBy(desc(ordersTable.createdAt)).limit(100);
@@ -218,6 +230,10 @@ router.patch(
     const result = await db.transaction(async (tx) => {
       const [current] = await tx.select().from(ordersTable).where(eq(ordersTable.id, id)).limit(1);
       if (!current) return { error: "not_found" as const };
+
+      if (req.user!.role !== "super_admin" && current.venueId && req.user!.venueId !== current.venueId) {
+        return { error: "forbidden" as const };
+      }
 
       const from = current.status as OrderStatus;
       const to   = status as OrderStatus;
@@ -261,6 +277,7 @@ router.patch(
     if ("error" in result) {
       const map: Record<string, [number, string]> = {
         not_found:          [404, "Order not found"],
+        forbidden:          [403, "Order belongs to a different venue"],
         webhook_only:       [403, `Status "${status}" can only be set by Stripe webhook`],
         noop:               [400, `Order already in status "${status}"`],
         invalid_transition: [422, `Invalid transition from "${(result as { from?: string }).from}" → "${status}"`],
