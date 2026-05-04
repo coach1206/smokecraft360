@@ -1,0 +1,352 @@
+FINAL MASTER BUILD PROMPT
+AXIOM OS — CRAFT HUB UNIVERSAL EXPERIENCE ENGINE (FULL ADDITIVE DEPLOYMENT)
+🔴 MISSING / REQUIRED
+
+Before execution, confirm or include:
+
+Existing UI must remain unchanged (NO redesign, NO replacement)
+Extension-only architecture (all new systems mount as overlays/modules)
+React (Vite) + Framer Motion already in place
+Node + Express + TypeScript backend
+PostgreSQL (Drizzle ORM)
+JWT auth system
+WebSocket support (for live updates)
+ElevenLabs API key ready
+Web Audio API enabled
+Touchscreen support active (tablet/kiosk)
+
+If any are missing, build them first.
+
+🛑 FAILURE PREVENTION CHECKLIST
+Do NOT alter existing layouts, styling, or flows
+Do NOT replace any current components
+All features must be additive overlays or modules
+All crafts must use ONE shared engine
+AI must explain WHY, not just react
+Every interaction must trigger motion + sound
+Timer + save system must persist correctly
+Design system must work BEFORE and AFTER gameplay
+System is NOT complete unless:
+AI voice works
+Timer works
+Save/resume works
+Preview system works
+Design system works
+Scoring + pushback works
+Signature unlock works
+🧠 CORE DIRECTIVE
+
+Build a Universal Craft Experience Engine Layer that extends:
+
+SmokeCraft
+PourCraft
+BrewCraft
+VapeCraft
+
+All systems must behave identically across crafts, only visuals change.
+
+🔥 UNIVERSAL EXPERIENCE LOOP
+Pre-Design (Playground)
+Enter Craft Build
+Select Base → Structure → Profile → Pairing
+Real-time AI feedback
+Live scoring updates
+Time pressure applied
+Final evaluation
+Comparison vs top player
+Progress saved
+Signature unlock path
+🎨 PRE-BUILD DESIGN PLAYGROUND (NEW MODULE)
+PURPOSE
+
+Allow users to design BEFORE gameplay to create emotional attachment.
+
+INTERFACE
+Drag-and-drop canvas
+Touch gestures (drag, scale, rotate)
+Minimal UI, no complexity
+SMOKECRAFT (Band + Box)
+Drag text (brand name)
+Drag insignia (crown, crest, initials)
+Change colors (limited palette)
+Apply simple band layouts
+
+Box:
+
+Select wood tone
+Add engraving text
+Choose interior color
+POURCRAFT
+Select glass type
+Add garnish
+Name drink
+Apply label style
+BREWCRAFT
+Create label
+Set brand name
+Adjust color palette
+VAPECRAFT
+Create flavor branding
+Set label + color identity
+LOCK SYSTEM
+Playground = limited options
+Full customization = unlocked later
+SAVE SYSTEM
+Save as “Draft Concept”
+Load later
+AI DESIGN FEEDBACK
+Light critique
+Motivational push
+TRANSITION
+
+After design:
+
+“Now build something worthy of this.”
+
+Button:
+→ Enter Challenge
+
+🎮 LEVEL SYSTEM
+Beginner → guided, forgiving
+Novice → high reward + high penalty
+Advanced → precision required
+Master → strict, no help
+
+Dynamically affects:
+
+scoring
+AI tone
+penalties
+⚙️ SCORING ENGINE
+
+Score based on:
+
+Balance
+Contrast
+Complexity
+Execution
+Finish
+
+Rules:
+
+Start at 50
+Live updates
+Bad combos = heavy penalty
+Strong combos = high reward
+🎙️ AI VOICE COACH (REQUIRED)
+
+Use ElevenLabs
+
+BEHAVIOR
+Interrupt bad choices
+Challenge user
+Offer A/B/C fixes
+
+Example:
+
+“That’s not the move. Fix it.”
+
+Options:
+
+A Safe
+B Balanced
+C Risk
+TIME-AWARE AI
+Early: guide
+Mid: pressure
+Late: urgency
+🔊 AUDIO SYSTEM
+Tap sounds
+Swoosh transitions
+Error tones (“wrong” whisper)
+Success tones
+AI voice
+🎞️ MOTION SYSTEM
+ADD ONLY (NO VISUAL CHANGE)
+Card lift on tap
+Glow pulse
+Rollback animation (with swoosh)
+Shake on bad input
+Smooth transitions on good input
+🔥 REAL-TIME FEEDBACK
+
+Meters:
+
+Flavor
+Strength
+Balance
+
+Bad builds:
+
+flicker
+shake
+pulse warning
+🧱 VISUAL PREVIEW SYSTEM (ADD-ON PANEL)
+DO NOT REPLACE EXISTING UI
+
+Mount as side panel / overlay
+
+SMOKECRAFT
+6
+Live cigar updates
+Band always visible
+Box behind (locked → reveal)
+OTHER CRAFTS
+Drink / beer / vape visual evolves live
+Branding appears dynamically
+🎯 GOAL SYSTEM (ALWAYS VISIBLE)
+
+Display:
+
+Rank
+Progress bar
+
+Goal:
+
+“Unlock Your Signature Creation”
+
+🏆 SIGNATURE CREATION SYSTEM
+
+Unlocked after performance threshold.
+
+SMOKECRAFT
+Design cigar
+Full band editor
+Full box editor
+POURCRAFT
+Signature drink + presentation
+BREWCRAFT
+Beer + label
+VAPECRAFT
+Flavor line branding
+🎨 SIGNATURE DESIGN STUDIO (FULL SYSTEM)
+BAND DESIGNER
+Real-time rendering on cigar
+Edit:
+colors
+fonts
+insignia
+Drag + adjust placement
+BOX DESIGNER
+3D box (interactive)
+Select:
+wood type
+finish
+engraving
+interior
+AI DESIGN FEEDBACK
+Critique branding
+Align with blend
+SAVE + VERSIONING
+Save versions
+Rename designs
+Load anytime
+EXPORT
+PNG band
+Box mockup image
+🏪 VENUE SYSTEM
+Venue adopts top creations
+Dual branding:
+User
+Venue edition
+
+Display in:
+
+leaderboards
+venue screens
+😤 PRESSURE SYSTEM
+COMBO STREAK
+builds increase streak
+failure breaks streak
+COMPARISON
+
+Show:
+
+user vs top player
+
+AI:
+
+“You’re close… but not there yet.”
+
+⏳ SESSION TIME SYSTEM
+RULES
+Start on build
+30–40 min session
+Always visible
+STATES
+active
+idle
+final countdown
+EXPIRY
+lock build
+break streak
+minor penalty
+BONUS
+fast builds = reward
+💾 SAVE + RESUME
+auto-save every step
+restore full session
+
+AI:
+
+“Let’s see if you can finish this.”
+
+🧬 DATA INTELLIGENCE
+
+Track:
+
+user behavior
+mistakes
+preferences
+completion time
+AI USES DATA
+adaptive feedback
+prediction
+reduced guidance for skilled users
+📚 KNOWLEDGE SYSTEM
+
+Each item includes:
+
+description
+flavor
+origin
+“why this matters”
+
+Tap → AI explains
+
+🎥 CINEMATIC MOMENTS
+
+AI:
+
+“Imagine this on display… your name on it.”
+
+🗄️ DATABASE TABLES
+craft_items
+user_builds
+user_progress
+venue_data
+ai_feedback_logs
+session_states
+design_drafts
+🔧 FINAL REQUIREMENT
+
+System must be:
+
+additive only
+modular
+real-time reactive
+emotionally engaging
+scalable to all crafts
+💡 FINAL TRUTH
+
+This is no longer a feature set.
+
+This is:
+👉 A living, adaptive, competitive creation system
+
+Users will:
+
+design first
+chase improvement
+feel pressure
+earn identity
