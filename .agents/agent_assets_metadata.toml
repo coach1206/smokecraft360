@@ -300,3 +300,27 @@ id = "-shSOXJr2TXrJ-4mlvaZd"
 uri = "file://attached_assets/generated_images/pour_rich.png"
 type = "image"
 title = "generated_image"
+
+[[generated]]
+id = "e9zkVHuQHVLAY5B7Q-qm8"
+uri = "file://attached_assets/generated_images/vape_fruit.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "8lFDBipbhdv7JatsrFQs9"
+uri = "file://attached_assets/generated_images/vape_dessert.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "C5boKjQhiotMmC8iuVgGq"
+uri = "file://attached_assets/generated_images/vape_menthol.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "_5L-YUd6glAaSi2ebwZ_U"
+uri = "file://attached_assets/generated_images/vape_tobacco.png"
+type = "image"
+title = "generated_image"

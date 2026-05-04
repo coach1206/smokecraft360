@@ -7,7 +7,7 @@ export interface RecommendParams {
   // Engine accepts any registered category (see api-server engine/registry.ts
   // → datasets). Mirrors RecommendRequest in api-server/src/engine/types.ts.
   // Wine/cocktail are reserved verticals — slots exist but ship no products yet.
-  category: "cigar" | "alcohol" | "beer" | "wine" | "cocktail";
+  category: "cigar" | "alcohol" | "beer" | "wine" | "cocktail" | "vape";
   flavorPreferences: string[];
   strength: number;
   mood: string;
@@ -29,7 +29,7 @@ export type AvailabilityLabel =
 export interface ProductResult {
   id: string;
   name: string;
-  category: "cigar" | "alcohol" | "beer";
+  category: "cigar" | "alcohol" | "beer" | "vape";
   flavorNotes: string[];
   strength: number;
   moodTags: string[];
@@ -319,7 +319,7 @@ export async function fetchSessionForecast(params: {
 
 /** Fire-and-forget — records the user's preference snapshot for trend analytics. */
 export function trackPreferences(params: {
-  category:          "cigar" | "alcohol" | "beer";
+  category:          "cigar" | "alcohol" | "beer" | "vape";
   flavorPreferences: string[];
   strength:          number;
   mood:              string;

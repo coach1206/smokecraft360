@@ -1,6 +1,6 @@
 # Overview
 
-SmokeCraft is a luxury cigar and spirits recommendation platform designed for upscale lounges and venues. It offers personalized recommendations, inventory management, a loyalty and progression system, and fosters venue competition. The platform aims to integrate a sophisticated recommendation engine with robust user engagement features, targeting a discerning clientele, and expanding into a multi-craft "Experience Engine" for various luxury preferences.
+SmokeCraft is a luxury cigar and spirits recommendation platform for upscale venues. It offers personalized recommendations, inventory management, a loyalty system, and fosters venue competition. The platform aims to integrate a sophisticated recommendation engine with robust user engagement features, targeting a discerning clientele, and expanding into a multi-craft "Experience Engine" for various luxury preferences. Key capabilities include AI-driven recommendations, operational support for POS integration, and advanced personalization.
 
 # User Preferences
 
@@ -14,63 +14,51 @@ The project uses a pnpm workspace monorepo with TypeScript, separating the front
 
 ## Tech Stack
 
-- **Node.js**: 24
-- **TypeScript**: 5.9
-- **API Framework**: Express 5
-- **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: JWT (HS256, 7-day expiry) using `jose`, `bcryptjs` for password hashing. Supports various roles including `super_admin`, `venue_owner`, `manager`, `staff`, `brand_partner`, and `customer`.
-- **Validation**: Zod
-- **Build**: esbuild (ESM bundle)
+-   **Node.js**: 24
+-   **TypeScript**: 5.9
+-   **API Framework**: Express 5
+-   **Database**: PostgreSQL with Drizzle ORM
+-   **Authentication**: JWT (HS256, 7-day expiry) using `jose`, `bcryptjs` for password hashing. Supports various roles including `super_admin`, `venue_owner`, `manager`, `staff`, `brand_partner`, and `customer`.
+-   **Validation**: Zod
+-   **Build**: esbuild (ESM bundle)
 
 ## UI/UX and Design
 
-The application features a luxury aesthetic with a dark gold theme, glassmorphism cards, and a sophisticated typography palette (Cormorant Garamond, Inter, Playfair Display). A global design system uses CSS custom properties for consistent theming and effects. Key visual elements include `.glass-panel` classes for semi-transparent backgrounds and `sc-btn-primary`/`sc-btn-ghost` for buttons.
+The application features a luxury aesthetic with a dark gold theme, glassmorphism cards, and a sophisticated typography palette (Cormorant Garamond, Inter, Playfair Display). A global design system uses CSS custom properties for consistent theming and effects. Key visual elements include `.glass-panel` classes for semi-transparent backgrounds and `sc-btn-primary`/`sc-btn-ghost` for buttons. It includes a cinematic boot intro, browser TTS entry cues, and a global back button with an opt-in `AppLayout`.
 
 ## Core Features and Implementations
 
 ### Recommendation Engine
 
-Located in `artifacts/api-server/src/engine/`, it uses a scoring mechanism based on flavor, strength, mood, and boost levels. It includes modules for semantic cross-category pairing (cigar↔alcohol, cigar↔beer), food pairing, and a central product registry.
+Uses a scoring mechanism based on flavor, strength, mood, and boost levels. It includes modules for semantic cross-category pairing, food pairing, and a central product registry.
 
 ### AI Experience Engine
 
-A unified layer providing deterministic natural-language commentary, voice synthesis (via ElevenLabs), and real orderable menu suggestions based on the recommendation engine's output. It includes a `menu_items` Drizzle table, a templated `aiCommentary` builder, and a `menuSuggestion` tag-overlap ranker.
+A unified layer providing deterministic natural-language commentary, voice synthesis, and real orderable menu suggestions based on the recommendation engine's output. Includes a `menu_items` Drizzle table and a templated `aiCommentary` builder.
 
 ### Operations Layer
 
-This layer provides features for POS integration, reorder alerts, optimized menu layout, profit calculations, and staff sales pitches. It leverages existing database tables with new pure functions and API routes. Key features include tenant isolation for API routes, Zod validation for POS webhooks, and atomic inventory decrement on orders.
-
-### Frontend Cinematic Boot Intro
-
-A splash screen `BootIntro` component gates the main application, playing a cinematic sequence with audio and motion blur. It is designed to run once per session and offers skip controls.
-
-### Browser-TTS Entry Cues
-
-Utilizes the Web Speech API (`useBrowserSpeech` hook) for zero-cost, low-latency ambient voice cues on the entry portal (`Intro.tsx`), distinct from the server-side ElevenLabs TTS used for content delivery.
+Provides features for POS integration, reorder alerts, optimized menu layout, profit calculations, and staff sales pitches. It leverages existing database tables with new pure functions and API routes, incorporating tenant isolation and atomic inventory decrement.
 
 ### Image Engine
 
-A context-aware image resolution system (`services/imageContext.ts`, `services/imageResolver.ts`) that applies Cloudinary transforms based on context (e.g., time of day, mood), handles subtype-based fallbacks, and provides an API for image resolution.
+A context-aware image resolution system that applies Cloudinary transforms based on context, handles subtype-based fallbacks, and provides an API for image resolution.
 
 ### Network Intelligence Layer
 
-Introduces "Couples Mode" for blending two user profiles into a single recommendation, incorporates "Time-of-day context" into the recommendation engine for subtle nudges, and provides "Historical-data revenue forecast" and "Cross-venue low-stock digest" for business insights.
+Introduces "Couples Mode" for blending user profiles, incorporates "Time-of-day context" into recommendations, and provides "Historical-data revenue forecast" and "Cross-venue low-stock digest."
 
-### BrewCraft and PourCraft Pages
+### Craft-Specific Experiences
 
-Dedicated kiosk-style pages (`BrewCraft.tsx`, `PourCraft.tsx`) for beer and whisky-led pairing experiences. These pages leverage the existing `/api/recommend` endpoint and share layout primitives (`ExperienceFrame`), demonstrating a modular approach to expanding craft experiences.
+Dedicated kiosk-style pages (`BrewCraft.tsx`, `PourCraft.tsx`, `VapeCraft.tsx`) for craft-led pairing experiences, leveraging a modular approach for expansion and unique visual identities. Each page shares a 3-column layout (left step nav, center 4-card style picker with per-style hero photos, right `VoicePanel` AI sommelier) and reuses `ExperienceFrame`, `SuggestedMenu`, and `fetchRecommendations`. Categories: BrewCraft → `beer`, PourCraft → `alcohol`, VapeCraft → `vape`. VapeCraft uses a neon-vapor palette (purple/cyan/pink/amber per style) and degrades gracefully when the engine returns no match — the result block shows "venue inventory pending" until vape SKUs are seeded and the server-side Zod category enum is widened to include `vape`.
 
 ### Personalization & Revenue Intelligence
 
-Adds four systems:
-1.  **Taste Profile**: Derives user affinity vectors from `user_preferences`.
-2.  **Auto-Recommend**: Extends the engine to use taste profiles for a bounded affinity bonus.
-3.  **Session Revenue Forecast**: Pure function predicting session revenue based on user interactions.
-4.  **Smart Pricing**: Deterministic dynamic pricing based on user intent and session activity, capped within defined guardrails.
+Adds a taste profile system, auto-recommendation using affinity vectors, session revenue forecasting, and smart dynamic pricing.
 
 ### Database Schema
 
-Sixteen tables manage various aspects including users, products, experiences, loyalty, inventory, and lounge statistics. Notable tables include `users` (roles, progression), `products` (catalog), `experiences` (sessions), `user_progression`, `user_humidor`, `lounge_stats`, and `signatureRequests` (custom cigar requests).
+Sixteen tables manage various aspects including users, products, experiences, loyalty, inventory, and lounge statistics. Notable tables: `users` (roles, progression), `products` (catalog), `experiences` (sessions), `user_progression`, `user_humidor`, `lounge_stats`, `signatureRequests`. New tables for reservations, IP assets, NDA signatures, voice commands, audit logs, support tickets, support ticket messages, notifications, user memories, sessions, session members, offline queue, export logs, data conflicts, and device hardware.
 
 ### Authentication and Authorization
 
@@ -78,581 +66,75 @@ JWT-based authentication with `requireAuth` middleware and a `requireRole` facto
 
 ### Progression and Loyalty System
 
-A 5-tier user progression system (Explorer to Maestro del Fuego) tied to verified orders and XP thresholds, unlocking perks. A separate loyalty points system awards bonuses for orders. Rewards are venue-specific. The `Humidor` tracks personal purchase history.
+A 5-tier user progression system tied to verified orders and XP thresholds, unlocking perks. A separate loyalty points system awards bonuses for orders. Rewards are venue-specific.
 
 ### Device Management
 
-Supports mobile, tablet, and kiosk devices with registration, status tracking, and session management. Kiosk mode includes inactivity timers and full-screen integration. Device pricing plans are defined.
+Supports mobile, tablet, and kiosk devices with registration, status tracking, and session management. Kiosk mode includes inactivity timers and full-screen integration.
 
 ### Lounge League
 
 A competition system ranking venues based on performance metrics like orders and repeat customers, awarding badges.
 
-### Reservations (Brief 42 — B+C)
+### Reservations
 
-Distinct from instant orders. The `reservations` table (`lib/db/src/schema/reservations.ts`) holds RSVP / hold-the-spot requests with a `pending → accepted | rejected | cancelled → fulfilled | no_show` lifecycle. A `paymentMode` column carries one of `none | deposit | pay_at_venue` (folding the "pay at venue" option into the reservation rather than touching the existing Stripe checkout). `depositCents` + `depositPaymentIntentId` columns are present so a follow-up brief can wire Stripe deposits without another migration. Routes live at `/api/reservations` (POST create, GET /mine, GET /venue/:venueId, PATCH /:id/status). POST hard-binds `venueId` to `req.user.venueId` for venue staff (cross-tenant injection ignored). PATCH uses an atomic conditional UPDATE (WHERE id=? AND status=expectedCurrent) to prevent state-machine race conditions; the loser of a concurrent PATCH receives 409. Venue staff manage the queue from the new "Reservations" tab in the dashboard, which also captures walk-ins via a "+ New Reservation" form.
+Manages RSVP/hold-the-spot requests with a state machine (`pending → accepted | rejected | cancelled → fulfilled | no_show`), payment modes, and atomic conditional updates.
 
-### IP Vault + NDA (Brief IP=1 — surgical slice)
+### IP Vault + NDA
 
-Owner-only intellectual-property evidence registry inside SmokeCraft. The `ip_assets` table (`lib/db/src/schema/ipAssets.ts`) stores title, kind (`spec | design | code | trademark | doc | other`), description, optional `fileUrl` (https-only), optional `fileHash` (32-128 hex; SHA-256 etc), authorship attribution, status (`draft → registered | disputed → retired`), and registration metadata (`registeredAt`, `registeredBy`). Soft-delete via `retiredAt` so prior registrations stay auditable. Indexed on `status` and `kind`.
+An owner-only intellectual-property evidence registry for recording assets. Includes an NDA gate implemented on the `users` table for access control, and a separate Demo NDA flow for public access.
 
-NDA gate is implemented as three columns on `users` (`nda_signed_at`, `nda_signature_name`, `nda_signature_ip`) — single-signature, idempotent (re-signing returns the original timestamp via atomic conditional UPDATE WHERE `nda_signed_at IS NULL`). Routes at `/api/nda` (GET /me, POST /sign).
+### Voice Queue
 
-IP vault routes at `/api/ip-vault` are super_admin-only AND NDA-gated (412 Precondition Failed with `requiresNda: true` payload pointing the client at `/api/nda/sign` if missing): GET list (`?status=`, `?includeRetired=true`), GET one, POST create (draft), PATCH update (title/desc/status/notes/fileUrl/fileHash/authorship — guarded against retired rows), POST `/:id/register` (atomic draft → registered with WHERE status='draft' guard; 409 if already registered or not draft), DELETE soft-retire. The "IP Vault" dashboard tab renders an inline NDA signing modal first, then the asset list with Register / Mark Disputed / Retire actions per row and a New Asset form (title/kind/desc/fileUrl/fileHash/authorship/notes). 21/21 e2e probes passed.
+Backend for holding transcripts captured at kiosks for downstream worker processing, with atomic capped insert, claiming mechanism, and status updates.
 
-### Demo NDA Gate (additive — does NOT replace IP-vault NDA)
+### Audit-Log Reader
 
-Two distinct NDA flows now coexist:
+Provides paginated, role-gated access to the `audit_log` table, enforcing append-only behavior, tenant scoping, and PII redaction by default.
 
-1. **IP-vault NDA** (existing, untouched) — `GET/POST /api/nda/me` + `/sign`,
-   3 cols on `users` (`ndaSignedAt`, `ndaSignatureName`, `ndaSignatureIp`).
-   Lightweight, idempotent, name-only, requires login. Gates super_admin
-   access to the IP vault.
+### Help Center
 
-2. **Demo-gate NDA** (new) — full ceremony captured at `/demo` before login.
-   - Schema: `nda_signatures` (id, fullName, initials, signatureData base64,
-     agreed, ipAddress, deviceType, sessionId, createdAt + index on createdAt).
-   - `POST /api/nda/demo-sign` — public; validates fullName 2–200, initials
-     1–12, signatureData is base64 PNG/JPEG dataURL ≥ 2 KB and ≤ 256 KB,
-     `agreed===true`. Strips unknown fields via `allowOnly`. Server-generated
-     timestamp + IP + UA-classified deviceType.
-   - `GET /api/nda/signatures` — super_admin only, latest 100, omits
-     signatureData blob.
-   - `GET /api/nda/signatures/:id` — super_admin only, full row including blob.
-   - Frontend: `/demo` route → `<DemoNdaModal/>` with full name + initials
-     inputs, `<SignaturePad/>` (Pointer Events: mouse + touch + pen,
-     `touch-action:none`, hi-DPI scaled), agree checkbox. Submit disabled
-     until all fields complete and ink drawn. On success: sessionStorage flag
-     `demoNdaSigned=1`, fade-out 300ms, navigate `/intro`. Reload-resistant.
+Provides a system for venue staff to file support tickets and super_admins to triage them. Features include ticket creation, status transitions, assignment, message threading, and notification fan-out for status changes.
 
-## Voice Queue (G4)
+### Notifications Inbox Writes
 
-Backend-only slice. Inbound counterpart to `/api/voice/speak` (which is
-outbound TTS via ElevenLabs). Holds transcripts captured AT the kiosk
-for downstream worker processing (intent parsing, staff dispatch, etc.).
+Adds write endpoints for notifications to mark as read, read all, and dismiss, with tenant-scoped access and rate limiting.
 
-**Schema** (1 new table, no destructive changes):
-- `voice_commands` — `id`, `userId` (nullable, anon kiosk OK), `venueId`
-  (nullable), `transcript` (text, ≤1000 route-enforced), `status`
-  (`pending` | `claimed` | `completed` | `failed`), `claimedBy` (worker
-  user_id), `result` (jsonb), `errorMessage` (text), `retries` (int,
-  default 0), `createdAt`, `claimedAt`, `completedAt`. Index on
-  `(venueId, status, createdAt)` for the worker poll.
+### AI Memory
 
-**Routes** mounted at `/api/voice-queue`:
-- `POST /` — public enqueue (kiosks need to write without auth), but
-  every request MUST resolve a `venueId` (from body or Bearer token);
-  otherwise 400. This eliminates a shared global "anonymous bucket"
-  that one bad actor could DoS. Atomic capped INSERT — only counts
-  pending rows for that venue against the cap (completed/failed don't
-  crowd). 0 rows ⇒ 429.
-- `GET /` — staff/admin/super_admin only; lists caller's venue's
-  pending (or `?status=…`); super_admin can `?venueId=…` to override.
-- `POST /:id/claim` — staff+ atomic claim
-  (`UPDATE … WHERE status='pending' RETURNING …`). Two workers race
-  same id ⇒ exactly one 200, others 409.
-- `POST /:id/complete` — claimer-only atomic finish with optional
-  `{result}` jsonb. 0 rows ⇒ 404 (folds not-claimed-by-you / wrong
-  status / unknown into one code to avoid lifecycle leak).
-- `POST /:id/fail` — claimer-only atomic fail with `{errorMessage}`;
-  increments `retries`. Same 0-row → 404 fold.
-- `DELETE /:id` — super_admin purge.
+Provides recallable per-user "facts" for an AI assistant, stored in `user_memories` table, with atomic capped upsert and owner-scoped access.
 
-**Hard cap:** `MAX_PENDING_PER_VENUE = 200`. Verified by 5-way parallel
-enqueue at cap-1 → 1×201 + 4×429, count never exceeds 200; and 5-way
-parallel claim of the same id → 1×200 + 4×409.
+### Multi-User Sessions
 
-**New limiter:** `voiceQueueEnqueueLimiter` (15/min/IP) — kiosks should
-not flood. The per-venue 200-pending cap is the hard backstop, this is
-the noise filter.
+Provides a grouping primitive ("party") for users, with tables for `sessions` and `session_members`, unique active codes, and atomic member management.
 
-**Out of scope (call out for next slice):** SSE/socket worker push,
-server-side STT (this slice trusts the client to send the transcript
-text — Whisper/etc. integration is downstream), retry-with-backoff
-scheduler, dead-letter handling, frontend UI.
+### Reward Redemption
 
-## Audit-Log Reader (G6)
+Hardened existing reward redemption with atomic conditional debit to prevent overdrafts during concurrent redemptions.
 
-Backend-only slice. Schema `audit_log` and helper `lib/audit.ts#logAudit`
-already existed (writer-only — currently called from `routes/orders.ts`).
-This slice adds the missing reader so compliance / back-office can view
-the privileged-action trail. **Append-only is enforced by the absence of
-any write surface** — POST/PATCH/DELETE on `/api/audit-log` all return 404.
+### Offline Queue
 
-**Schema migration** (additive — no column changes):
-- `idx_audit_log_venue_created`  btree `(venue_id, created_at DESC)`
-- `idx_audit_log_action_created` btree `(action,    created_at DESC)`
-- `idx_audit_log_actor_created`  btree `(actor_id,  created_at DESC)`
+Kiosks buffer POST-style actions in localStorage when offline, replaying them on reconnect. The `offline_queue` table acts as a forensic audit trail and idempotency cache.
 
-EXPLAIN-verified that venue-scoped reads hit `idx_audit_log_venue_created`.
+### Exports
 
-**New router** `routes/auditLog.ts` mounted at `/api/audit-log`:
-- `GET /` — paginated read.
-  - **Auth:** `requireAuth` + `requireRole("venue_owner", "manager", "super_admin")`.
-  - **Tenant scope:** `super_admin` may pass `?venueId=…` or omit (sees
-    all venues). Non-super_admin is forced to `req.user.venueId`; any
-    `?venueId=` in the query is **silently ignored** (defensible: it's
-    not a 403 because the request itself is well-formed; the override
-    is treated as a no-op rather than a refusal). A non-super caller
-    with no venue context gets 403.
-  - **Filters** (all optional, AND-combined, validated → 400 on bad
-    input): `?action`, `?entityType`, `?actorId` (uuid), `?since` (ISO),
-    `?until` (ISO, half-open).
-  - **Pagination:** keyset cursor on `(createdAt DESC, id DESC)` to
-    avoid OFFSET cliff. Cursor format `<isoCreatedAt>_<uuid>`.
-    Garbage cursors silently parse-fail and return the first page.
-    `?limit=` default 50, hard cap 200. Implementation fetches
-    `limit+1` and emits `nextCursor=null` once exhausted.
-  - **Response:** `{ entries: AuditLog[], nextCursor: string|null }`.
+Audit-logged data exports for vendors, products, inventory, and orders in CSV or JSON. Includes an `export_logs` table to record export metadata, with role-gated access and inline streaming.
 
-**No new limiter.** Reads are role-gated (manager+) with a hard 200-row
-cap and keyset pagination — back-office traffic does not need IP
-throttling at this layer.
+### Data Conflicts
 
-**Architect-fixed in this slice (both HIGH):**
-- **Cursor µs precision.** `Date.toISOString()` is millisecond-only but
-  Postgres `timestamp` stores microseconds — same-millisecond rows
-  could be skipped by the keyset predicate. Fix: cursor `ts` is now a
-  µs-precision string emitted via Postgres
-  `to_char(created_at, 'YYYY-MM-DD"T"HH24:MI:SS.US')` (selected as an
-  internal `cursorTs` column that's stripped from the response shape).
-  On the next page the predicate casts it back: `created_at < $cur::timestamp`
-  / `created_at = $cur::timestamp AND id < $curId`. Verified end-to-end
-  with 5 rows seeded at the **exact same** `created_at` (forces the id
-  tie-break) — pagination 2+2+1 yields 5 unique ids, no overlap, no
-  skip.
-- **PII redaction by default.** `before_state` / `after_state` jsonb
-  may carry PII / tokens / payment artifacts. Default policy: only
-  `super_admin` sees the payloads; `venue_owner` / `manager` get
-  `null` for both fields (they still see actor / action / entityType /
-  entityId / venueId / createdAt — the full audit value-add minus the
-  diff blob). Verified: a venue_owner's response has both fields null
-  on a row whose `before_state` contains `{"secret":"redact-me"}`,
-  while super_admin sees the secret.
+A single store for cross-source data mismatches, recording competing values, entity context, and a resolve flow.
 
-**Verified:** 25/25 original e2e + 8/8 fix-verification e2e (including
-the two critical isolation checks from before: owner `?venueId=`
-silently ignored; POST/PATCH/DELETE all 404).
+### Device Hardware Tracking
 
-**Out of scope (call out for next slice):** retroactive `logAudit`
-adoption across the rest of the privileged endpoints (subscriptions
-overrides, payout approvals, fraud-flag actions — currently only
-`orders.ts` writes), per-action allowlist of safe `before_state` /
-`after_state` keys for non-super_admin readers (currently fully
-redacted), CSV export of filtered results, retention / cold-archive
-cron, frontend timeline UI.
+A 1:1 sidecar to `devices` table, `device_hardware`, storing serial numbers, manufacturers, warranty info, etc., with dedicated routes for tracking and expiring hardware reports.
 
-## Help Center — support tickets (Slice 1)
+### Package Update Policy
 
-Backend-only slice. New surface for venue staff to file support requests
-and for super_admins to triage them. Append-only ticket lifecycle (no
-DELETE endpoint exposed — verified 404 on DELETE/PUT) with status
-transitions gated by role.
+Strict policy for package updates, prioritizing surgical, non-destructive bumps and security overrides. Major version updates are deferred to dedicated migration slices.
 
-**New schema** `lib/db/src/schema/supportTickets.ts` (additive):
-- pgEnum `support_ticket_status` = `open | in_progress | resolved | closed`
-- pgEnum `support_ticket_priority` = `low | normal | high`
-- Columns: `id`, `venueId`, `openedBy`, `assignedTo` (nullable, super only),
-  `subject` (≤200), `body` (≤5000), `status` (default `open`), `priority`
-  (default `normal`), `createdAt`, `updatedAt`, `resolvedAt` (nullable).
-- Indexes:
-  - `idx_support_tickets_venue_status_created` `(venue_id, status, created_at DESC)`
-  - `idx_support_tickets_assigned_status` `(assigned_to, status)` for super triage
-- Pushed via `drizzle-kit push` (no manual SQL).
+### Cross-Venue Identity Layer
 
-**New limiter** `supportTicketWriteLimiter` (rateLimit.ts) — 10/min/IP on
-all POST/PATCH surfaces (POST /, PATCH /:id/status, PATCH /:id/assign).
-This is a per-user write-burst guard; the cap test passes only after the
-limiter window resets (test harness restarts the api-server between
-write-heavy batches).
-
-**New router** `routes/supportTickets.ts` mounted at `/api/support-tickets`:
-- `POST /` — open a ticket.
-  - **Auth:** `requireAuth` + `requireRole(venue_owner, manager, staff)`.
-  - **Tenant scope:** body `venueId` is **silently ignored**; the row's
-    `venueId` is always `req.user.venueId`. super_admin without a venue
-    context gets 403 (no tenant to assign).
-  - **Per-venue cap (atomic, G4 pattern):** `INSERT ... SELECT ... WHERE
-    (SELECT COUNT(*) FROM support_tickets WHERE venue_id = $v AND status
-    IN ('open','in_progress')) < 50`. Cap-overflow returns 429 with
-    body `{error: "Open ticket cap reached for this venue"}` —
-    distinguishable from the IP limiter's wording. Verified: 50 seeded
-    rows → 51st POST 429-cap; closing one → next POST 201.
-  - Validation: subject 1..200, body 1..5000, priority enum.
-- `GET /` — paginated list.
-  - **Auth:** `requireAuth` + `requireRole(venue_owner, manager, staff,
-    super_admin)`. customer 403.
-  - **Tenant scope:** non-super forced to own `venueId` (any `?venueId=`
-    is silently ignored — same defensible pattern as G6). super_admin
-    may pass `?venueId=` to scope or omit to see all.
-  - Filters: `?status=open|in_progress|resolved|closed` (validated → 400).
-  - **Pagination:** keyset cursor `(createdAt DESC, id DESC)` with
-    µs-precision (G6 pattern reused). Cursor format
-    `<isoCreatedAt-µs>_<uuid>`. Garbage cursors silently → first page.
-    `?limit=` default 50, hard cap 200. `cursorTs` internal column is
-    stripped from response. Verified end-to-end with 5 rows seeded at
-    the exact same `created_at`: 2+2+1 yields 5 unique ids, no skip.
-- `GET /:id` — single ticket. Cross-tenant returns 404 (no existence
-  leak). super_admin can read any.
-- `PATCH /:id/status` — transition status.
-  - **Venue-side roles** can only toggle `open ↔ closed` (basic ack/dismiss).
-  - **`in_progress` and `resolved`** are **super_admin-only** (the
-    answering side owns triage state). Owner attempts → 403.
-  - `resolvedAt` is stamped via `sql\`now()\`` when status enters
-    `resolved`, and cleared via `sql\`NULL\`` on any non-resolved status.
-  - Cross-tenant or unknown id → 404 (no existence leak).
-- `PATCH /:id/assign` — super_admin-only. Body `{assignedTo: uuid|null}`.
-  - Validates target user exists AND has role `super_admin` (cannot
-    park a ticket on a venue user) → 400 if not.
-  - `null` unassigns. Drizzle `.set({assignedTo: null})` correctly
-    emits `SET assigned_to = NULL` (verified manually + suite).
-  - Owner/manager attempts → 403.
-
-**Verified:** 47/47 e2e green across 4 batches with workflow restarts
-between batches to clear the in-memory rate-limit store. Tests cover:
-all role × method matrices, validation, tenant isolation (incl. body
-override), super venueId-scope toggle, status-transition role gating,
-resolvedAt round-trip, /assign null + non-super-target validation,
-per-venue cap atomicity, cap free-after-close, tied-µs cursor
-pagination, malformed cursor, cursorTs non-leak, append-only
-(DELETE/PUT 404).
-
-**Out of scope (Slice 2 — DONE):** see next section. Still deferred:
-CSV export of ticket threads, SLA timer, frontend UI.
-
-## Help Center — message thread + fan-out (Slice 2)
-
-Backend-only follow-on. Adds the back-and-forth thread on a ticket and
-fans out a venue-inbox notification when a super_admin moves a ticket
-forward. Append-only (no edit/delete on individual messages); same
-G3/G4/G5/G6 patterns reused with no new primitives.
-
-**New schema** `lib/db/src/schema/supportTicketMessages.ts` (additive):
-- Columns: `id`, `ticketId`, `authorId`, `body` (≤5000), `createdAt`.
-- Index `support_ticket_messages_ticket_created_idx` on
-  `(ticket_id, created_at ASC)` — natural thread reading order with
-  forward keyset pagination.
-- No `venueId` column — tenant scope lives on the parent ticket
-  (single source of truth; route layer joins to it on every request).
-- Pushed via `drizzle-kit push` (no manual SQL).
-
-**New router** `routes/supportTicketMessages.ts` mounted at
-`/api/support-tickets/:ticketId/messages` with `Router({mergeParams:true})`
-so the parent `:ticketId` parameter is visible to the nested router.
-- `POST /` — append a message.
-  - **Auth:** `requireAuth` + `requireRole(venue_owner, manager, staff,
-    super_admin)`. Customers/brand_partners → 403 (Help Center is for
-    venue staff and operators).
-  - **Tenant scope (inherited):** `resolveTicket()` helper does an
-    owner-gated SELECT on `support_tickets`; for non-super, predicate
-    is `(id=$ticketId AND venue_id=$callerVenue)`. Cross-tenant ⇒ 404
-    (G3/G5/G6 pattern, never leak existence). super_admin sees all.
-  - **Per-ticket cap (atomic, G4 pattern):**
-    `INSERT ... SELECT ... WHERE (SELECT COUNT(*) FROM
-    support_ticket_messages WHERE ticket_id=$t) < 200`. Cap-overflow
-    returns 429 with `{error:"Message cap reached for this ticket…",
-    capMessagesPerTicket:200}` — distinguishable from the IP limiter
-    wording.
-  - **Parent touch:** on success, a separate `UPDATE support_tickets
-    SET updated_at = now() WHERE id=$t` runs (no transaction wrapper —
-    the message row is already committed; the touch is best-effort
-    and idempotent).
-  - **Limiter:** reuses `supportTicketWriteLimiter` (10/min/IP, same
-    bucket as Slice 1) — write-burst protection is per the help-center
-    surface as a whole.
-- `GET /` — paginated thread, oldest first.
-  - Same auth + `resolveTicket()` tenant gate.
-  - **Pagination:** keyset on `(createdAt ASC, id ASC)` with µs
-    precision via `to_char(... 'YYYY-MM-DDTHH24:MI:SS.US')` —
-    same G6 round-trip as the audit log and Slice 1 ticket list, but
-    with the predicate flipped to `>` since we read forward through
-    history. `cursorTs` is stripped from the response shape.
-  - `limit` default 50, max 200; malformed cursor falls through to
-    the first page (no 400 — same forgiving behavior as Slice 1).
-
-**Notification fan-out** (modification to existing `PATCH
-/api/support-tickets/:id/status`):
-- Fires only when `req.user.role === 'super_admin'` AND the new status
-  is one of the FORWARD set `{in_progress, resolved, closed}`. Super
-  regressions back to `open` (e.g. reopening a closed ticket for
-  re-triage) deliberately do NOT fan-out — that's an internal queue
-  operation, not a customer-facing transition; notifying the venue
-  "your ticket is open" again would just be noise (architect-flagged
-  in Slice 2 review and locked by e2e #28).
-- When the gate passes, insert a row into `notifications` addressed
-  to `ticket.venueId` with
-  `channel='in_app'`, `title='Support ticket {status}'`,
-  `message='Your support ticket was marked {status} by support staff.'`,
-  `category='support_ticket_{status}'`. Wrapped in `try/catch` — a
-  fan-out failure logs via `req.log.warn` but never rolls back the
-  status change (the support row is the system of record).
-- Venue-side toggles (`open ↔ closed` by the venue itself) deliberately
-  skip the fan-out — notifying the venue about its own action would be
-  noise.
-- The PATCH response shape is unchanged: `id / status / updatedAt /
-  resolvedAt`. The internal `venueId` field added to the `RETURNING`
-  list is destructured out before the JSON response.
-
-**Mount order (app.ts):** the nested router is mounted on the more
-specific path `/api/support-tickets/:ticketId/messages` AFTER the
-parent `/api/support-tickets` mount; Express's path-most-specific
-match handles routing correctly because the message paths never
-collide with `:id`-style ticket actions (`/status`, `/assign`).
-
-**E2E coverage (29/29 green):** owner/manager/staff/super POST 201
-paths; customer POST 403; unauth 401; empty/oversized body 400;
-cross-tenant POST 404 (no leak); invalid uuid 400; unknown ticket 404;
-owner GET own thread; oldest-first ASC ordering; cross-tenant GET 404;
-super GET any 200; customer GET 403; **CRITICAL** tied-µs ASC keyset
-pagination 2+2+1=5 unique (proves the µs round-trip works in ASC
-direction with id tie-break); cursor µs preserved; `cursorTs` not
-leaked; malformed cursor → first page; **CRITICAL** per-ticket cap
-200 → 429 with cap-distinct error; POST touches parent
-`updated_at`; PUT/DELETE on messages collection 404 (append-only);
-fan-out on super in_progress writes one notif row; venue-side close
-does NOT fan-out; fan-out shape verified
-(`support_ticket_resolved | in_app | "Support ticket resolved"`);
-**LOCK** super regression `closed → open` does NOT fan-out (n=0,
-status returns 200) while a subsequent `open → in_progress` on the
-same ticket DOES fan-out (n=1) — proves the FORWARD-set guard is
-exact, not over-broad.
-
-**System Health audit (#2):** `routes/systemStatus.ts` reviewed
-in this turn — `GET /api/system/status`, super_admin only,
-read-only `Promise.all` over orders/fraud/commissions/payouts/dunning.
-No tenant data leakage (intentionally global), no PII, no mutations,
-no cap risk. Verdict: **HEALTHY, no changes** — anything else would
-be scope creep.
-
-**Out of scope (Slice 3+):** edit-window for own last message;
-@-mentions; CSV export of full thread; SLA timer (auto-stamp
-`responded_at` when first super reply lands); attachment uploads;
-frontend UI for the thread.
-
-## Notifications inbox writes (G5)
-
-Backend-only slice. Schema `notifications` and `GET /api/notifications`
-already existed (the GET stays in `routes/subscriptions.ts` — not moved,
-no destructive change). This slice adds the missing write endpoints so
-`readAt` can actually be set and rows can be dismissed.
-
-**No schema changes.** Existing `notifications` table is sufficient
-(`id`, `venueId`, `channel`, `title`, `message`, `status`, `category`,
-`readAt`, `createdAt`).
-
-**New router** `routes/notifications.ts` mounted at `/api/notifications`
-(coexists with the GET in subscriptionsRouter — Express dispatches by
-full path):
-- `PATCH /:id/read` — atomic owner-gated mark-as-read.
-  `UPDATE … WHERE id=? AND venueId=me AND readAt IS NULL RETURNING …`.
-  0 rows ⇒ 404 (folds wrong-tenant / unknown / already-read into one
-  code to avoid existence/lifecycle leak).
-- `POST /read-all` — bulk mark-all-unread for caller's venue.
-  Idempotent — returns `{markedCount}` (0 is a valid response).
-- `DELETE /:id` — atomic owner-gated dismiss. 0 rows ⇒ 404.
-
-All three writes are tenant-scoped via `req.user.venueId`; a caller
-without a venue context gets 403 (they cannot have notifications by
-design).
-
-**New limiter:** `notificationWriteLimiter` (60/min/IP), parity with
-G3 `memoryWriteLimiter`. GET stays unthrottled — the inbox can poll
-cheaply.
-
-**Verified:** 23/23 e2e — including 5-way parallel PATCH same id →
-1×200 + 4×404, 5-way parallel DELETE same id → 1×200 + 4×404, and
-critical tenant-isolation check that read-all on venue A leaves venue
-B's unreadCount untouched.
-
-**Out of scope (call out for next slice):** moving the existing GET
-out of `subscriptions.ts` into the new router (non-destructive
-cleanup), real SMTP delivery for `channel=email` rows (currently
-optimistic intent-only), admin manual-create endpoint, push/SSE
-fanout, frontend inbox UI.
-
-## AI Memory (G3)
-
-Backend-only slice. Provides recallable per-user "facts" an AI assistant
-can pull on subsequent visits — distinct from `userPreferences`, which is
-a fire-and-forget time-series of recommendation snapshots.
-
-**Schema** (1 new table, no destructive changes):
-- `user_memories` — `id`, `userId`, `venueId` (nullable), `key` (slug,
-  ≤64 chars), `value` (text, ≤500 chars), `source` (`manual` |
-  `inferred`), `confidence` (0..1, default 1.0), `createdAt`,
-  `updatedAt`, `lastUsedAt` (nullable). Unique on `(userId, key)` —
-  upserting the same key replaces value in place.
-
-**Routes** mounted at `/api/memories`, all authed and strictly
-owner-scoped (no admin override surface — that's a separate route file
-when needed):
-- `GET /` — current user's memories, ordered `lastUsedAt DESC NULLS
-  LAST, updatedAt DESC`, capped at 50 returned.
-- `POST /` — upsert by key. **Atomic capped upsert**: single
-  `INSERT … SELECT WHERE EXISTS(same key) OR (count < cap) ON CONFLICT
-  DO UPDATE …`. New keys are gated by the per-user cap; existing-key
-  upserts bypass the cap (in-place update). 0 rows returned ⇒ 409.
-- `PATCH /:id` — owner-gated atomic update of `value` / `confidence`,
-  and/or `touch:true` to set `lastUsedAt = now()`. 0 rows ⇒ 404.
-- `DELETE /:id` — owner-gated atomic delete. 0 rows ⇒ 404.
-
-**Hard cap:** `MAX_MEMORIES_PER_USER = 50`. Verified by 5-way parallel
-distinct-key insert at cap-1 → exactly 1×201, 4×409, final count = 50;
-and 5-way same-key race → 5×201, 1 row (atomic ON CONFLICT collapse).
-
-**Cross-user isolation verified:** PATCH/DELETE/GET on another user's
-memory returns 404 / empty list, not 403, to avoid leaking existence.
-
-**Out of scope (call out for next slice):** AI inference pipeline that
-auto-creates `source='inferred'` memories from chat/recs, surfacing
-memories inside `/api/recommend` prompts, frontend UI, vector embeddings
-/ semantic search, multi-tenant sharing.
-
-## Multi-User Sessions (G2)
-
-Backend-only slice. Provides the grouping primitive ("party") that future
-slices (group orders, joint loyalty, shared recommendations) will hang
-behaviour off.
-
-**Schema** (2 new tables, no destructive changes):
-- `sessions` — `id`, `venueId`, `hostUserId`, `code` (6-char A-Z0-9, no
-  ambiguous 0/O/1/I/L), `status` (`active` | `closed`), `createdAt`,
-  `closedAt`. **Partial unique index** `sessions_code_active_unique` on
-  `code WHERE status='active'` — codes are unique only among active
-  sessions and freed on close.
-- `session_members` — `(sessionId, userId)` unique-paired, `role`
-  (`host` | `guest`), `joinedAt`, `leftAt` (nullable; null = present).
-
-**Routes** mounted at `/api/sessions`:
-- `POST /` — host (any authed user) creates a session. Code generated
-  randomly, retried up to 5× on partial-index collision.
-- `POST /join` — guest joins by code. Body schema normalises to
-  uppercase. Behind `sessionJoinLimiter` (30/min/IP). **Atomic capped
-  insert**: `INSERT ... SELECT WHERE (live count) < MAX_MEMBERS ON
-  CONFLICT DO UPDATE SET left_at=NULL` — re-join is idempotent, cap
-  cannot be exceeded under concurrent floods.
-- `GET /:id` — visibility-gated to current (non-left) members only.
-- `POST /:id/leave` — guest can leave; host gets 409 (must close instead).
-- `POST /:id/close` — atomic host-only close (`UPDATE WHERE host AND
-  status='active'`). 0-row update path distinguishes 404 / 403 / 409.
-
-**Hard cap:** `MAX_MEMBERS = 20` per session. Enforced atomically inside
-the join INSERT; verified by 5-way parallel-join race test on a
-1-slot-free session → exactly 1 success, 4 × 409, final count = 20.
-
-**Out of scope (call out for next slice):** real-time presence/sockets,
-session-scoped chat, group-order tying, frontend UI.
-
-## Reward Redemption (G1)
-
-The schema (`rewardsTable`, `redemptionsTable`, `userLoyaltyPointsTable`),
-routes (`/api/loyalty/*`, `/api/rewards/*`), and admin tab
-(`LoyaltyRewardsTab`) were already in place from earlier work. This pass
-only added the missing race-safety hardening on `POST /api/loyalty/redeem`:
-
-- **Atomic conditional debit**: replaced the SELECT-balance → check →
-  UPDATE +cost flow (which let two parallel redeems both pass the check
-  and overdraft) with a single `UPDATE ... WHERE (total_points -
-  points_redeemed) >= cost RETURNING ...`. If the UPDATE returns 0 rows,
-  the race was lost OR the user genuinely lacks balance — re-fetch the
-  truth and return 402. Same atomic-claim pattern used by the offline
-  queue. Verified: 5 parallel redeems at exactly cost-equal balance →
-  exactly 1 succeeds, 4 × 402, final balance = 0, no overdraft.
-- **Pre-existing behaviour preserved**: tier gate (403), inactive reward
-  (404), invalid UUID (400), anon (401), fresh user with no balance row
-  (still 402, no crash). 16/16 happy-path probes still pass.
-
-## Package Update Policy (Brief D)
-
-Surgical, non-destructive updates only. The workspace runs `pnpm audit` clean
-(0 / 0 / 0 / 0 / 0) as of this snapshot.
-
-- **Catalog (`pnpm-workspace.yaml`)**: bumps applied to `@tailwindcss/vite`,
-  `tailwindcss`, `@tanstack/react-query`, `@types/node`, `framer-motion`,
-  `@replit/vite-plugin-cartographer`. `react` / `react-dom` are pinned to
-  exact `19.1.0` to stay compatible with Expo's required peer.
-- **Per-package patches**: `react-hook-form` (smokecraft + mockup-sandbox),
-  `orval`, `@types/pg`, `drizzle-kit`, `prettier`. `@types/bcryptjs`
-  removed (deprecated; bcryptjs ships its own types).
-- **Security overrides** (transitive vuln remediation, no API impact):
-  `brace-expansion ≥2.0.3`, `picomatch ≥4.0.4`, `yaml ≥2.8.3`,
-  `path-to-regexp ≥8.4.0`, `lodash ≥4.18.0`, `postcss ≥8.5.10`. These
-  cleared 7 moderate + 4 high CVEs in one pass.
-- **Refused (major versions = require dedicated migration slices)**:
-  `@hookform/resolvers` 3→5, `@vitejs/plugin-react` 5→6, `chokidar` 4→5,
-  `date-fns` 3→4, `pino` 9→10, `pino-http` 10→11, `react-resizable-panels`
-  2→4, `recharts` 2→3, `thread-stream` 3→4, `typescript` 5→6, `vite` 7→8,
-  `zod` 3→4, `esbuild` 0.27→0.28, `lucide-react` 0.545→1.x. Each is a
-  separate scoped task — never blanket-bump.
-
-## Offline Queue (Brief C — Enterprise OS slice)
-
-Kiosks buffer POST-style actions in localStorage when offline, then replay
-them on reconnect. The `offline_queue` table is the forensic audit trail
-PLUS the idempotency cache that prevents double-charging on retries.
-
-- Schema `lib/db/src/schema/offlineQueue.ts`: `id`, `idempotencyKey` (UUID,
-  uniquely indexed), `deviceId`, `venueId`, `kind` (`"order"`),
-  `payload` JSONB, `status` (`pending|synced|failed`), `attempts`,
-  `lastError`, `resultId`, `clientCreatedAt`, `syncedAt`, `createdAt`
-  (+ status & venue indexes).
-- Routes at `/api/offline-queue`:
-  - `POST /sync` — public (kiosk); `osLimiter`; body `{items:[...]}`
-    (max 100 per batch, each payload ≤ 16 KB). Per-item validation: UUID
-    `idempotencyKey`, known `kind`, object `payload`. Dispatches each via
-    `dispatchOne()` (currently inserts an order + best-effort inventory
-    decrement). Idempotent: prior `synced` rows return `{status:"duplicate", resultId}`
-    without re-dispatching. Returns per-item `{idempotencyKey, status, resultId?, error?}`.
-  - `GET /` — manager+; `?status=pending|synced|failed` and `?limit=` filters;
-    super_admin sees global, manager/owner tenant-scoped to their `venueId`.
-  - `DELETE /:id` — super_admin only; UUID-validated.
-- Client `artifacts/smokecraft/src/services/offlineQueue.ts`:
-  `enqueue(kind,payload)` (writes to `localStorage` with crypto-UUID key),
-  `pendingCount()`, `pendingItems()`, `drain(deviceId?)` (POSTs the buffer,
-  removes synced+duplicate items, leaves failed for retry), tiny pub/sub
-  `subscribe()`, `installOnlineListener()` (auto-drains on `window`
-  `online` event).
-- UI `OfflineQueueBanner` — fixed bottom-right chip, renders only when
-  pending > 0 or browser is offline. Red-tinted when offline; "Sync now"
-  button forces a drain. Mounted in App.tsx alongside DemoBanner.
-
-## Exports (Brief B — Enterprise OS slice)
-
-Audit-logged data exports for vendors / products / inventory / orders in CSV or JSON. The `export_logs` table (`lib/db/src/schema/exportLogs.ts`) records every export with `requestedBy`, `scope`, `format`, `venueId` (null for super_admin global pulls), arbitrary `filters` JSON blob, `rowCount`, `byteCount`, `status` (`completed | failed`), and an optional `errorMessage`. The export payload itself is **not** persisted — the source tables remain the system of record; the log is the audit trail.
-
-Routes at `/api/exports`: GET / lists the caller's recent exports (super_admin sees global; venue staff are tenant-scoped to their `venueId`); POST / executes the export inline, streams the file with `Content-Type` + `Content-Disposition: attachment` + `X-Export-Rows` / `X-Export-Bytes` headers, and writes the audit row in the same handler. Failures still write a `failed` row with `errorMessage` so partial pulls are traceable.
-
-Role gate per scope: super_admin can export every scope; `venue_owner` / `manager` can export only `inventory` + `orders`, scoped to their own `venueId` (vendors / products → 403). Cross-tenant injection is impossible because staff `venueScope` is taken from `req.user.venueId`, not from the body.
-
-The "Exports" dashboard tab (`ExportsTab.tsx`) shows scope/format selectors (filtered by role), optional `status / since / until` filters for the orders scope, a Run Export button that triggers a browser download via Blob + `<a download>`, and a tenant-scoped history list with row + byte counts and status badges. 20/20 e2e probes passed.
-
-### Data Conflicts (Brief A — Enterprise OS slice)
-
-Single store for cross-source data mismatches (vendor vs POS price, distributor vs admin inventory count, etc). The `data_conflicts` table (`lib/db/src/schema/dataConflicts.ts`) records two competing values with their sources (`vendor | pos | distributor | system | admin | manual`), entity context (`entityType`, `entityId`, `fieldName`, optional `venueId`) and a resolve flow (`open → resolved | dismissed` with `resolution: use_a | use_b | use_custom | dismissed` and a kept `resolvedValue`). Detection is decoupled from the route layer — any code path that notices a mismatch calls `recordConflict()` from `artifacts/api-server/src/services/conflictRecorder.ts` (no callers wired in this brief; added incrementally). Routes at `/api/conflicts` provide GET list (status filter), GET one, POST (super_admin manual entry), and PATCH /:id/resolve. Tenant scoping: `super_admin` sees all including cross-venue (null `venueId`) rows; `venue_owner` / `manager` see only their own `venueId` and are blocked from null-venue rows. Resolve uses the same atomic conditional UPDATE pattern as reservations (WHERE id=? AND status='open') — concurrent resolves get 409. Staff resolve from the new "Conflicts" dashboard tab with Use A / Use B / Custom / Dismiss buttons. 17/17 e2e probes passed.
-
-### Device Hardware Tracking (sidecar to /api/devices)
-
-Physical asset lifecycle layer separate from the existing logical device record. The `device_hardware` table (`lib/db/src/schema/deviceHardware.ts`) is a 1:1 sidecar to `devices` — `deviceId` is the PK — recording serial number, manufacturer, model, MAC, supplier, purchase date, purchase price (cents, capped at $10M), warranty expiry and free-form notes. Kept separate so the existing high-volume `devices` read path is unchanged and PII/procurement data lives on its own auth surface; the hardware row is OPTIONAL (mobile BYOD has nothing to record). `(warranty_expires_at)` is indexed to power the operator's "expiring soon" report. Routes at `/api/devices/:deviceId/hardware` (`PUT` upsert + `GET`, manager/owner/super for write, staff added for read) and `/api/devices/hardware/expiring` (super_admin only — mounted BEFORE the per-device router so the literal `hardware` segment isn't tried as a UUID; bounded date range hits the warranty index, `?days` clamped to 365, optional `?venueId` UUID filter, limit 500). Tenant scope is inherited via the parent device through a `resolveDevice` helper — cross-tenant access returns 404 (no existence leak, G3/G5/G6 pattern); super_admin sees all venues. PUT is idempotent: only fields the caller supplies are overwritten on conflict, explicit `null` clears, omitted keys preserve existing values, strict Zod (`evil` extras → 400). `deviceHardwareWriteLimiter` (20/min/IP) on PUT only — installer bursts get slack, hostile clients get choked. No FK cascade on `deviceId` (acceptable trade-off; route cleanup deletes both). 30/30 e2e probes passed; architect PASS.
-
-### PourCraft Per-Style Spirit Photos
-
-Parity follow-up to the per-craft identity slice — BrewCraft already had per-style beer hero photos (`brew_light/amber/ipa/dark.png`) on each of its four cards, but PourCraft cards rendered as flat gradients only. Generated four spirit hero photos in `attached_assets/generated_images/` matching each PourStyle's flavor/strength/mood: `pour_smooth.png` (bourbon tumbler with ice sphere, honey/vanilla notes), `pour_spicy.png` (rye old-fashioned with cinnamon stick + orange peel), `pour_smoky.png` (peated Islay scotch with smoke wisps on weathered slate), `pour_rich.png` (aged cognac snifter with dried figs in warm candle light). All 3:4 aspect ratio for tall card aspect, no people / no text / no labels in negative prompt to keep them brand-neutral. Wired through the same pattern as BrewCraft: `image` field added to `PourStyle` interface, populated per STYLE entry, card render switched from `background: style.gradient` to `backgroundImage: url(${style.image}), ${style.gradient}` so the gradient is preserved as fallback if an asset ever fails to load. Existing card overlay (180deg black gradient) keeps title legible on the busier photo background. typecheck clean.
-
-### Per-Craft Visual Identity (PourCraft / BrewCraft / VapeCraft backgrounds)
-
-Bug fix turn — both `BrewCraft.tsx` and `PourCraft.tsx` were importing the SAME asset (`@assets/locked_cards/experience_smokecraft.png`) as their lounge background, so all three crafts looked identical to smokecraft. And `/vapecraft` had no explicit route, so it fell through to the dynamic `/:theme` route → `Home.tsx` (the cigar wizard) — VapeCraft had no visual identity at all. Three surgical fixes: (1) `PourCraft.tsx` now imports `experience_pourcraft.png` (locked asset already existed), (2) `BrewCraft.tsx` now imports `generated_images/brewcraft_beer.png` (already used by `Intro.tsx` tile, so identity matches the entry point), (3) new `pages/VapeCraft.tsx` placeholder page with `experience_vapecraft.png` background + neon-vapor radial overlay (matches `theme_profiles.vapecraft.visual_style="neon-vapor"`) + honest "experience launching soon" framing + Cormorant serif heading + violet/lavender accent palette to differentiate from gold-on-charcoal smokecraft. New `<Route path="/vapecraft" component={VapeCraft} />` declared BEFORE `/:theme` in `App.tsx` so it can't be shadowed. Full VapeCraft flow (style cards + recommendation engine wiring analogous to BrewCraft/PourCraft) is a separate slice — vape has no inventory category in the engine yet and the style/strength preset model needs design input. typecheck clean.
-
-### Global Back Button + Opt-In AppLayout
-
-Surgical net-new layout primitives that satisfy the master prompt's "back button on every screen" and "global layout system" requirements WITHOUT the destructive 9-page migration the literal spec demanded. Two independent additive components: (1) `components/Layout/GlobalBackButton.tsx` mounted ONCE in `App.tsx` inside the wouter `<WouterRouter>` (so `useLocation` works), self-hides on entry routes (`/`, `/intro`, `/demo`, `/success`, `/cancel`) and when `window.history.length <= 1` so direct-load sessions don't show a no-op button. Wouter has no numeric `navigate(-1)` so it uses `window.history.back()`. Styled to match the existing dashboard aesthetic (rgba(230,210,175,0.92) text, gold-accent pill on charcoal w/ backdrop blur), NOT the raw `background:#000;color:#fff` sample from the spec — the codebase's design system is the source of truth. (2) `components/Layout/AppLayout.tsx` — opt-in wrapper for pages that want a consistent top-left title + full-bleed background + auto top padding clearing the BackButton. Does NOT inject its own back button (would double up with the global one). Pages with bespoke layouts (Dashboard, Home wizard, Intro) stay as-is; new pages or future refactors can adopt AppLayout without touching anything else. Importantly: the spec's "pages without AppLayout must not render" rule was REJECTED — that would brick the app mid-migration. `Home.tsx`'s in-flow "← Back" buttons (wizard step nav, NOT history nav) are untouched. typecheck clean. **Deferred:** Socket.io realtime — full multi-slice plan written to `.local/plans/socketio_realtime.md` (server bootstrap + JWT-authed handshake → rooms/emitter helpers → score_updated → order_placed → leaderboard_updated debounced → client provider with reconnection → polling cleanup). Suggested MVP cut: Slices 1+2+3+6 for ~1 day instead of ~3.
-
-### Cross-Venue Identity Layer (visits ledger)
-
-Data-layer foundation for "same user walks into different lounges, XP/status/preferences follow them." The user-keyed tables (`user_progression`, `user_loyalty_points`) were already cross-venue ready (UNIQUE on `user_id` only, no venue sharding) — this slice adds the missing piece: a record of WHERE a user has actually shown up. New `user_venue_visits` table (`lib/db/src/schema/userVenueVisits.ts`) has composite PK `(user_id, venue_id)` with `first_visit_at`, `last_visit_at`, `visit_count`. No surrogate id — natural key, no row is ever addressed singly. Indices: `(user_id, last_visit_at)` for the recent-visits read path, `(venue_id)` for venue-side analytics later. New `recordVisit(userId, venueId)` service (`artifacts/api-server/src/services/visitTracker.ts`) does an atomic INSERT … ON CONFLICT DO UPDATE that bumps `visit_count` and refreshes `last_visit_at`; failures are caught and logged (never thrown) so visit tracking can NEVER break a user-facing flow. Hook point: `POST /api/sessions` after the session row is inserted — the natural moment a user starts an experience at a venue. Fire-and-forget (`void recordVisit(...)`). New read route `GET /api/me/visits` (`artifacts/api-server/src/routes/me.ts`) returns the caller's visited venues (capped at 100, ordered `lastVisitAt DESC`) joined with `venues.name`, plus `homeVenueId` from the user row and a per-row `isHome` boolean — everything the kiosk needs to render "Welcome back from <home venue>" greetings and per-venue stats. Always scoped to `req.user.id`; no parameters, no cross-user leak surface. **Deferred (needs UX decision):** the actual cross-venue auth flow. Today `users.venueId` = home venue, JWT carries it, and `deviceTouch` middleware blocks a user from a non-home venue's kiosk — true venue switching needs a separate auth refactor with its own threat model. The visits ledger ships now so it's ready when that flow lands. 10/10 e2e probes passed: clean-slate → session 1 → 1 visit row with `isHome=true` → session 2 bumps count to 2 → manual cross-venue visit row surfaces in list with `isHome=false` → unauth 401 → super_admin call returns own visits only (caller-scoped, not cross-user) → 5 parallel sessions bump count by exactly 5 (race-safe upsert) → venue name joined.
-
-### Help Center UI (Slice 3 — frontend for support tickets + thread)
-
-Dashboard frontend slice that brings the already-shipped support ticket backend (Slices 1 + 2) under operator hands. New `HelpCenterTab` (`artifacts/smokecraft/src/components/Dashboard/HelpCenterTab.tsx`) follows the same `useState` + `services/api` fetch pattern as `ConflictsTab` (no react-query introduced — codebase convention preserved). Two views in one tab: list (status filter chips: open / in_progress / resolved / closed / all + refresh + venue-only "New" compose form) and detail (full body, status pill + priority pill, allowed transitions row, scrolling thread oldest-first with mine-vs-them bubble alignment, ⌘/Ctrl+Enter reply input). Role-gated UI mirrors the server's contract exactly: venue users (`venue_owner | manager | staff`) see only their own venue's tickets and may toggle their own tickets between `open ↔ closed`; `super_admin` sees all venues and exposes the full forward set (`in_progress | resolved | closed`) — same `VENUE_ALLOWED_STATUSES` set as `routes/supportTickets.ts`. Compose form is hidden for super_admin (they triage, not file). Reply input is suppressed when ticket is `closed` for venue users (super can still reply for re-triage). Cross-tenant 404s surface naturally — no special handling needed because the server already treats unknown-id and wrong-tenant the same (G3/G5/G6 pattern). Six new helpers appended to `services/api.ts` (`listSupportTickets`, `getSupportTicket`, `createSupportTicket`, `patchSupportTicketStatus`, `listSupportTicketMessages`, `postSupportTicketMessage`) with full TS types; URL/payload shapes match server Zod schemas verbatim. 19/19 e2e smoke green covering create / list / detail / venue+super message post / forward fan-out (notifications row landed) / forbidden venue→in_progress (403) / super resolve (resolvedAt stamped) / venue close (resolvedAt cleared) / cross-tenant ticket+messages 404 / unauth 401 / invalid filter 400 / super cross-venue listing / missing body 400. Wired into `pages/Dashboard.tsx` (`LifeBuoy` icon, `"help"` tab id, switch case alongside `conflicts`) — no rendering changes to other tabs, no shared state coupling.
+Adds `user_venue_visits` table to track where a user has visited, with an atomic upsert service (`recordVisit`) fired on session creation, and a read route for user's visit history.
 
 ## Frontend Architecture
 
@@ -676,3 +158,4 @@ Dashboard frontend slice that brings the already-shipped support ticket backend 
 -   **Vite**: Frontend build tool.
 -   **Google Fonts**: For typography.
 -   **ElevenLabs**: For voice synthesis (backend).
+-   **Cloudinary**: For image transformations.
