@@ -183,7 +183,7 @@ export default function ExperiencesModule() {
                   onClick={() => startExperience(exp)}
                   style={{
                     display: "flex", flexDirection: "column", justifyContent: "flex-end",
-                    aspectRatio: "3 / 4", padding: 0,
+                    aspectRatio: "1 / 2", padding: 0, minHeight: 420,
                     background: "#0a0806",
                     border: `1px solid ${exp.color}40`, borderRadius: 16,
                     cursor: "pointer", textAlign: "left",
