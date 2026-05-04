@@ -56,7 +56,7 @@ export const POS_MODE_INFO: Record<PosOperatingMode, { label: string; descriptio
   },
   full_pos: {
     label: "Full POS",
-    description: "Craft Command Center is your primary point-of-sale. Complete transaction processing, inventory, and reporting in one system.",
+    description: "Command Hub is your primary point-of-sale. Complete transaction processing, inventory, and reporting in one system.",
     color: "#34d399",
   },
 };

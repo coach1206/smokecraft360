@@ -167,7 +167,7 @@ export default function SystemStatusPanel({ open, onClose }: SystemStatusPanelPr
               textTransform: "uppercase", letterSpacing: "0.12em",
               textAlign: "center", flexShrink: 0,
             }}>
-              Craft Command Center · System Health
+              Axiom OS · System Health
             </div>
           </motion.div>
         </>

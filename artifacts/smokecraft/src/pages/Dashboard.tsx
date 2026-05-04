@@ -28,6 +28,7 @@ import { ConflictsTab }              from "@/components/Dashboard/ConflictsTab";
 import { HelpCenterTab }             from "@/components/Dashboard/HelpCenterTab";
 import { IpVaultTab }                from "@/components/Dashboard/IpVaultTab";
 import { ExportsTab }                from "@/components/Dashboard/ExportsTab";
+import { CardManager }               from "@/components/Dashboard/CardManager";
 import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
   type InventoryItem, type AnalyticsSummary,
@@ -40,11 +41,12 @@ import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
-type DashTab = "overview" | "products" | "reservations" | "conflicts" | "ip-vault" | "exports" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os" | "help";
+type DashTab = "overview" | "products" | "card-manager" | "reservations" | "conflicts" | "ip-vault" | "exports" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os" | "help";
 
 const TABS: { id: DashTab; label: string; icon: React.ReactNode; superAdminOnly?: boolean }[] = [
   { id: "overview",     label: "Overview",              icon: <BarChart3 size={12} />    },
   { id: "products",     label: "Products",              icon: <Package size={12} />      },
+  { id: "card-manager", label: "Card Manager",          icon: <ImagePlus size={12} />    },
   { id: "reservations", label: "Reservations",          icon: <CalendarClock size={12} /> },
   { id: "conflicts",    label: "Conflicts",             icon: <AlertTriangle size={12} /> },
   { id: "help",         label: "Help Center",           icon: <LifeBuoy size={12} />     },
@@ -64,7 +66,7 @@ const TABS: { id: DashTab; label: string; icon: React.ReactNode; superAdminOnly?
   { id: "lounge-league",label: "Lounge League",         icon: <Trophy size={12} />       },
   { id: "devices",      label: "Device Manager",        icon: <Monitor size={12} />      },
   { id: "analytics",    label: "Analytics",             icon: <Tag size={12} />          },
-  { id: "os",           label: "360 Enterprise OS",     icon: <Activity size={12} />     },
+  { id: "os",           label: "Axiom OS",              icon: <Activity size={12} />     },
 ];
 
 export default function Dashboard() {
@@ -403,6 +405,15 @@ export default function Dashboard() {
                   </motion.div>
                 )}
 
+                {/* ── Card Manager tab ──────────────────────────────────────── */}
+                {activeTab === "card-manager" && (
+                  <motion.div key="card-manager"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+                    <CardManager inventory={inventory} onRefresh={load} />
+                  </motion.div>
+                )}
+
                 {/* ── Reservations tab ───────────────────────────────────────── */}
                 {activeTab === "reservations" && <ReservationsTab />}
 
@@ -553,7 +564,7 @@ export default function Dashboard() {
                   </motion.div>
                 )}
 
-                {/* ── 360 Enterprise OS tab (super_admin only) ───────────────── */}
+                {/* ── Axiom OS tab (super_admin only) ───────────────── */}
                 {activeTab === "os" && user?.role === "super_admin" && (
                   <motion.div key="os"
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
@@ -563,7 +574,7 @@ export default function Dashboard() {
                 )}
                 {activeTab === "os" && user?.role !== "super_admin" && (
                   <div className="p-8 text-center text-zinc-400">
-                    The 360 Enterprise OS is restricted to <span className="text-emerald-300">super_admin</span> accounts.
+                    Axiom OS is restricted to <span className="text-emerald-300">super_admin</span> accounts.
                   </div>
                 )}
 

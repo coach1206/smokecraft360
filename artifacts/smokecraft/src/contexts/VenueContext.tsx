@@ -60,7 +60,7 @@ export const DEFAULT_BACKGROUNDS: Record<BackgroundKey, string> = {
 export const BACKGROUND_LABELS: Record<BackgroundKey, string> = {
   entry:       "Entry / Home",
   pinLogin:    "PIN Login",
-  dashboard:   "Command Center",
+  dashboard:   "Command Hub",
   pos:         "POS Terminal",
   analytics:   "Analytics",
   devices:     "Devices",

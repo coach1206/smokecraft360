@@ -7,6 +7,7 @@ import {
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter, POS_MODE_INFO } from "@/contexts/CommandCenterContext";
 import { useVenueContext } from "@/contexts/VenueContext";
+import { useEngagementContext } from "@/contexts/EngagementContext";
 import SystemStatusPanel from "@/components/SystemStatusPanel";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
@@ -58,6 +59,7 @@ export default function CommandCenter() {
   }
 
   const { getBackground } = useVenueContext();
+  const engagement = useEngagementContext();
   const statusColor = cc.systemStatus === "operational" ? "#34d399" : cc.systemStatus === "degraded" ? "#f59e0b" : "#ef4444";
 
   return (
@@ -73,9 +75,9 @@ export default function CommandCenter() {
             <ArrowLeft size={20} />
           </motion.button>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#d4af37" }}>Command Center</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#d4af37" }}>Command Hub</div>
             <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>
-              {pos.currentUser ? `${pos.currentUser.name} · ${pos.currentUser.role}` : "Craft Central"}
+              {pos.currentUser ? `${pos.currentUser.name} · ${pos.currentUser.role}` : "Axiom OS"}
             </div>
           </div>
         </div>
@@ -135,7 +137,7 @@ export default function CommandCenter() {
               transition={{ duration: 0.25, delay: Math.min(i * 0.03, 0.3) }}
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => navigate(tile.route)}
+              onClick={() => { engagement.trackAction("navigate", { tile: tile.id }); navigate(tile.route); }}
               style={{
                 display: "flex", alignItems: "center", gap: 14,
                 padding: "20px 18px",
@@ -173,8 +175,8 @@ export default function CommandCenter() {
         fontSize: 10, color: "rgba(232,224,200,0.2)", textTransform: "uppercase",
         letterSpacing: "0.15em", flexShrink: 0,
       }}>
-        <span><Activity size={10} style={{ marginRight: 4, verticalAlign: "middle" }} />Craft Command Center v1.0</span>
-        <span>Powered by 360 Enterprise Services</span>
+        <span><Activity size={10} style={{ marginRight: 4, verticalAlign: "middle" }} />Axiom OS · Command Hub v1.0</span>
+        <span>Powered by Axiom OS</span>
       </div>
 
       <SystemStatusPanel open={statusOpen} onClose={() => setStatusOpen(false)} />

@@ -400,7 +400,7 @@ function DashboardMetricsStep() {
   return (
     <StepCard>
       <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(232,224,200,0.5)", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-        Command Center Dashboard
+        Command Hub Dashboard
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 20 }}>
         {metrics.map((m, i) => (

@@ -53,6 +53,10 @@ The application features a luxury aesthetic with a dark gold theme, glassmorphis
     -   **Encryption Utility**: AES-256-GCM field-level encryption.
     -   **Audit Logging**: Append-only audit log for critical actions.
     -   **Background Workers**: Payout Worker and Reward Optimization Worker.
+-   **Engagement Loop**: Every user interaction awards points via `useEngagement` hook and `EngagementContext`. Actions: select(10pts), customize(15pts), confirm(25pts), purchase(50pts), navigate(5pts), experience_start(10pts), experience_answer(5pts), experience_complete(30pts), campaign_enter(20pts). Animated toast displays points earned. Authenticated users get loyalty points synced server-side. Key engagement events mapped to analytics events for persistence.
+-   **Admin Card Manager**: Dashboard tab for venue admins to upload/replace product card images per category (Cigars, Spirits, Beer, Vape). Uses existing Cloudinary upload pipeline. Accessible from Dashboard "Card Manager" tab.
+-   **Campaign Persistence**: Full DB-backed campaign entries via `campaign_entries` table. API routes: POST `/api/campaigns/:id/enter`, GET `/api/campaigns/:id/leaderboard`, GET `/api/campaigns/:id/entries`. Entries scoped to authenticated user (no cross-user data leakage). VenueId derived server-side from auth context.
+-   **Axiom OS Branding**: Platform rebranded from "Craft Central / 360 Enterprise" to "Axiom OS" hierarchy. Entry page: "Axiom OS" title + "Command Hub" subtitle. Command Center renamed to "Command Hub". Experiences header: "Craft Hub". Footer: "Powered by Axiom OS". All i18n locales updated (en/es/fr).
 -   **Partnership & Distribution Engine**: Non-destructive extension for brand partners and campaigns.
     -   **Brand Partners & Product Links**: Manages brand information and product associations.
     -   **Campaign Engine Extensions**: Supports various campaign types with budget enforcement and multiplier bounds validation.

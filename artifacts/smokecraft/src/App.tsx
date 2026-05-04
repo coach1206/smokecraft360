@@ -47,6 +47,7 @@ import GlobalBackButton                from "@/components/Layout/GlobalBackButto
 import InactivityGuard                 from "@/components/InactivityGuard";
 import PosAuditBridge                  from "@/components/PosAuditBridge";
 import { useSystemVersion }            from "@/hooks/useSystemVersion";
+import { EngagementProvider }          from "@/contexts/EngagementContext";
 
 const queryClient = new QueryClient();
 
@@ -123,6 +124,7 @@ function App() {
               <PresentationProvider>
                 <PosProvider>
                 <CommandCenterProvider>
+                <EngagementProvider>
                 <KioskModeProvider>
                   {!ready && <BootIntro onFinish={() => setReady(true)} />}
                   {ready && (
@@ -142,6 +144,7 @@ function App() {
                     </>
                   )}
                 </KioskModeProvider>
+                </EngagementProvider>
                 </CommandCenterProvider>
                 </PosProvider>
               </PresentationProvider>

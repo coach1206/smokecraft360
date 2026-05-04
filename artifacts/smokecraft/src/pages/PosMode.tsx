@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Minus, Plus, Trash2, ShoppingCart, CheckCircle2, Gift, AlertTriangle, XCircle, RotateCcw, Loader2, Undo2 } from "lucide-react";
 import { usePosContext, type Product, type PaymentStatus } from "@/contexts/PosContext";
 import { useVenueContext } from "@/contexts/VenueContext";
+import { useEngagementContext } from "@/contexts/EngagementContext";
 import KioskProductImage from "@/components/KioskProductImage";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
@@ -346,17 +347,21 @@ export default function PosMode() {
 
   const isLocked = pos.processingLock || overlayState?.type === "processing";
 
+  const engagement = useEngagementContext();
+
   function handleAdd(productId: string) {
     if (overlayState || checkoutCooldown || isLocked) return;
     const ok = pos.addToCart(productId);
     if (ok) {
       setAddedId(productId);
       setTimeout(() => setAddedId(null), 300);
+      engagement.trackAction("select", { productId });
     }
   }
 
   async function handleCheckout() {
     if (isLocked || pos.cart.length === 0) return;
+    engagement.trackAction("confirm");
     setOverlayState({ type: "processing" });
     const order = await pos.checkout();
     if (!order) {
@@ -365,6 +370,7 @@ export default function PosMode() {
     }
     if (order.status === "paid") {
       setOverlayState({ type: "success", order });
+      engagement.trackAction("purchase", { orderId: order.id });
     } else if (order.status === "failed") {
       setOverlayState({ type: "failed", orderId: order.id, error: order.failureReason ?? "Payment failed" });
     } else {

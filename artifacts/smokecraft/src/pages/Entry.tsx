@@ -91,11 +91,11 @@ export default function Entry() {
         <h1 style={{
           fontSize: 28, fontWeight: 700, color: "#d4af37", margin: "0 0 2px",
           fontFamily: "'Playfair Display', serif", letterSpacing: "0.03em",
-        }}>Craft Central</h1>
+        }}>Axiom OS</h1>
         <h2 style={{
           fontSize: 14, fontWeight: 400, color: "rgba(232,224,200,0.6)",
           margin: "0 0 4px", letterSpacing: "0.08em",
-        }}>Craft Command Center</h2>
+        }}>Command Hub</h2>
         <p style={{
           fontSize: 12, color: "rgba(232,224,200,0.35)", margin: 0,
           fontStyle: "italic",
@@ -188,7 +188,7 @@ export default function Entry() {
           letterSpacing: "0.2em", color: "rgba(232,224,200,0.2)",
           position: "relative", zIndex: 1,
         }}
-      >Powered by 360 Enterprise Services</motion.div>
+      >Powered by Axiom OS</motion.div>
     </BackgroundLayer>
   );
 }

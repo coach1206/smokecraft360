@@ -5,6 +5,7 @@ import { ArrowLeft, Sparkles, Wine, Beer, Wind, Plus, ChevronRight, Megaphone, C
 import { usePosContext, type Product } from "@/contexts/PosContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
 import { useVenueContext } from "@/contexts/VenueContext";
+import { useEngagementContext } from "@/contexts/EngagementContext";
 import KioskProductImage from "@/components/KioskProductImage";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
@@ -75,6 +76,7 @@ export default function ExperiencesModule() {
   const pos = usePosContext();
   const cc = useCommandCenter();
   const { getBackground } = useVenueContext();
+  const engagement = useEngagementContext();
   const [phase, setPhase] = useState<Phase>("select");
   const [activeExp, setActiveExp] = useState<ExperienceType | null>(null);
   const [questionIdx, setQuestionIdx] = useState(0);
@@ -88,10 +90,12 @@ export default function ExperiencesModule() {
     setQuestionIdx(0);
     setAnswers([]);
     setPhase("questions");
-  }, []);
+    engagement.trackAction("experience_start", { experienceId: exp.id });
+  }, [engagement]);
 
   const answerQuestion = useCallback((answer: string) => {
     if (!activeExp) return;
+    engagement.trackAction("experience_answer", { answer });
     const newAnswers = [...answers, answer];
     setAnswers(newAnswers);
     if (questionIdx < activeExp.questions.length - 1) {
@@ -101,13 +105,17 @@ export default function ExperiencesModule() {
       const shuffled = [...prods].sort(() => Math.random() - 0.5);
       setRecommended(shuffled.slice(0, 2));
       setPhase("result");
+      engagement.trackAction("experience_complete", { experienceId: activeExp.id });
     }
-  }, [activeExp, answers, questionIdx, pos.products]);
+  }, [activeExp, answers, questionIdx, pos.products, engagement]);
 
   const handleAddToOrder = useCallback((productId: string) => {
     const ok = pos.addToCart(productId);
-    if (ok) setAddedIds(prev => new Set(prev).add(productId));
-  }, [pos]);
+    if (ok) {
+      setAddedIds(prev => new Set(prev).add(productId));
+      engagement.trackAction("select", { productId });
+    }
+  }, [pos, engagement]);
 
   const createCampaign = useCallback((templateId: string, templateName: string) => {
     setCreatedCampaigns(prev => new Set(prev).add(templateId));
@@ -132,7 +140,7 @@ export default function ExperiencesModule() {
         </motion.button>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 18, fontWeight: 700, color: "#f59e0b" }}>
-            {phase === "campaigns" ? "Campaigns" : phase === "select" ? "Experiences" : activeExp?.title}
+            {phase === "campaigns" ? "Campaigns" : phase === "select" ? "Craft Hub" : activeExp?.title}
           </div>
           <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>
             {phase === "campaigns" ? "Create promotional campaigns" : phase === "select" ? "Choose your craft experience" : phase === "questions" ? `Question ${questionIdx + 1} of ${activeExp?.questions.length}` : "Your recommendation"}
