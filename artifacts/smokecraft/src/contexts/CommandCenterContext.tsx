@@ -177,7 +177,12 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
   const setDeviceRole = useCallback((deviceId: string, role: Device["role"]) => {
     setDevices(prev => prev.map(d => d.id === deviceId ? { ...d, role } : d));
     const dev = devices.find(d => d.id === deviceId);
-    if (dev) addAuditEntry("device.role", `Changed ${dev.name} role to ${role}`);
+    if (dev) {
+      addAuditEntry("device.role", `Changed ${dev.name} role to ${role}`);
+      if (role === "demo") {
+        addAuditEntry("demo.mode", `${dev.name} switched to demo mode`);
+      }
+    }
   }, [devices, addAuditEntry]);
 
   const shutdownDevice = useCallback((deviceId: string) => {
