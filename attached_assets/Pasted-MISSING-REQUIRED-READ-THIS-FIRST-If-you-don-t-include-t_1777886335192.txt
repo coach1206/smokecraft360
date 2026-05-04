@@ -1,0 +1,372 @@
+MISSING / REQUIRED (READ THIS FIRST)
+
+If you don’t include these now, you’ll be rebuilding later:
+
+1. Universal Experience Engine (shared across all modes)
+
+Right now you’re still thinking per-screen. That breaks scale.
+
+You need:
+
+one engine
+one flow system
+one reward system
+one behavior system
+
+Each mode only swaps:
+
+visuals
+flavor logic
+inventory source
+2. Revenue Psychology Layer (this is the money trigger)
+
+Not optional.
+
+Without this:
+people play… then walk away.
+
+3. Multi-Location Competition System
+
+This is what makes lounges push your system hard.
+
+No competition = no urgency = no growth.
+
+4. Identity + Session Tracking (lightweight)
+
+You don’t need logins, but you need:
+
+session memory
+repeat detection
+behavior tracking
+5. Admin Control Over Experience Intensity
+
+Every venue is different.
+
+They need to control:
+
+how aggressive rewards are
+how fast people level up
+discount thresholds
+🔥 UNIVERSAL SYSTEM ARCHITECTURE
+
+Everything runs through:
+
+Experience Core Engine
+├── Touch Feedback Layer
+├── Game Flow Engine
+├── AI Behavior Layer
+├── Revenue Trigger Engine
+├── Competition Engine
+├── Reward System
+├── Kiosk Mode Controller
+
+Each mode (Smoke / Pour / Brew / Vape) = configuration only
+
+💰 REVENUE PSYCHOLOGY TRIGGERS (THIS IS THE SECRET SAUCE)
+
+You’re not just showing products.
+
+You’re guiding behavior.
+
+🧠 1. PROGRESSION TENSION
+
+Show users they’re close to something:
+
+“You’re 80% to unlocking a reward”
+“One more choice unlocks something”
+
+People finish what they start
+
+🎯 2. VARIABLE REWARDS
+
+Not every outcome is the same.
+
+Sometimes:
+
+small discount
+sometimes free upgrade
+sometimes exclusive item
+
+Unpredictability = addiction
+
+🧲 3. STATUS + IDENTITY
+
+After session:
+
+“You’re a Bold Profile”
+“Smooth Operator”
+“Flavor Explorer”
+
+Now they feel something personal
+
+⏳ 4. TIME PRESSURE
+“This reward is valid for this round only”
+countdown bar (subtle)
+
+Forces action → faster conversions
+
+🪙 5. PERCEIVED VALUE BOOST
+
+Instead of:
+
+$12 drink
+
+Say:
+
+“$12 → Your Experience Price: $9”
+
+Now it feels earned
+
+🔁 6. RETURN HOOK
+
+At end:
+
+“Next session unlocks more”
+“Try a different path next time”
+
+Now they come back
+
+🏆 MULTI-LOCATION COMPETITION SYSTEM
+
+This is how you scale.
+
+🌍 GLOBAL LEADERBOARD
+
+Across all lounges:
+
+top scoring users
+top venues
+most active experiences
+🥇 VENUE RANKING
+
+Each lounge gets:
+
+engagement score
+sales conversion rate
+experience completion rate
+
+Display:
+
+“#3 Ranked Lounge This Week”
+
+That drives owner behavior.
+
+🔥 VENUE VS VENUE
+
+Weekly challenges:
+
+“Best Pairing Experience”
+“Most XP Generated”
+“Highest Customer Score”
+
+Winner gets:
+
+featured spotlight
+exclusive badge
+bragging rights
+🎖️ USER ACHIEVEMENTS
+
+Users unlock:
+
+“Cigar Master”
+“Flavor King”
+“Perfect Pair 100%”
+
+These stack over time.
+
+🧲 SOCIAL PROOF LOOP
+
+Show:
+
+“23 people tried this tonight”
+“Top choice in this lounge”
+
+People follow crowds.
+
+⚡ FINAL MASTER PROMPT (UNIVERSAL SYSTEM)
+
+Paste this exactly.
+
+PROMPT START
+
+Upgrade SmokeCraft 360 into a UNIVERSAL immersive experience system shared across:
+
+SmokeCraft
+PourCraft
+BrewCraft
+VapeCraft
+
+This is not a UI update.
+This is a full behavioral, revenue, and engagement system.
+
+DO NOT remove existing systems.
+DO NOT break inventory, POS, or recommendation engines.
+
+1. UNIVERSAL EXPERIENCE ENGINE
+
+Create:
+
+/client/src/engine/experienceCore.ts
+
+This engine must:
+
+control all interaction flow
+manage steps (vibe → strength → flavor → reveal)
+feed into recommendation engine
+work across all modes
+
+Each mode only changes:
+
+theme
+product dataset
+flavor logic
+2. TOUCH + STIMULATION LAYER
+
+Global system:
+
+press animation (scale bounce)
+ripple effect
+glow pulse
+sound feedback
+
+Apply to ALL interactive elements.
+
+3. IDLE ATTRACT LOOP
+
+After 10 seconds inactivity:
+
+auto-run full experience (25 sec)
+loop continuously
+
+Add:
+
+smoke drift
+light pulsing
+card breathing
+highlight sweeps
+4. KIOSK MODE CONTROLLER
+
+Create:
+
+kioskController.ts
+
+Include:
+
+fullscreen lock
+inactivity reset (30 sec)
+attract loop restart
+burn-in protection (UI shifting every 2–3 min)
+5. REVENUE TRIGGER ENGINE
+
+Create:
+
+revenueEngine.ts
+
+Include:
+
+progression tracking
+reward thresholds
+dynamic discount logic
+urgency timers
+
+Triggers:
+
+“almost unlocked”
+“reward unlocked”
+“limited-time offer”
+6. VARIABLE REWARD SYSTEM
+
+Not fixed outcomes.
+
+Randomized tiers:
+
+small discount
+medium upgrade
+premium reward
+
+Based on:
+
+session score
+selections
+venue settings
+7. USER SESSION IDENTITY
+
+Track per session:
+
+choices
+score
+behavior
+
+Generate:
+
+personality label
+flavor profile
+
+Display at end.
+
+8. COMPETITION ENGINE
+
+Create:
+
+competitionEngine.ts
+
+Track:
+
+venue performance
+user scores
+completion rates
+9. LEADERBOARDS
+
+Display:
+
+top users (local + global)
+top venues
+trending experiences
+10. VENUE VS VENUE SYSTEM
+
+Weekly challenges:
+
+highest engagement
+highest conversion
+best experience score
+
+Display rankings in UI.
+
+11. ACHIEVEMENT SYSTEM
+
+Unlock badges:
+
+flavor mastery
+perfect match
+repeat user
+
+Store locally and optionally sync.
+
+12. SOCIAL PROOF
+
+Show:
+
+“people tried this today”
+“top pick in this venue”
+13. AI EXPERIENCE FEEDBACK
+
+Dynamic text:
+
+typing effect
+adaptive responses
+evolving personality
+14. PERFORMANCE + SAFETY
+GPU optimized animations
+no lag
+smooth transitions
+full responsiveness
+FINAL RESULT
+
+System must:
+
+attract users when idle
+engage like a game
+guide decisions psychologically
+increase spending naturally
+create repeat behavior
+scale across venues
