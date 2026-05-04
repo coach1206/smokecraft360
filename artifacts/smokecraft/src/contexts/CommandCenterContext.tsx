@@ -41,6 +41,26 @@ export interface HourlyRevenue {
   amount: number;
 }
 
+export type PosOperatingMode = "overlay" | "hybrid" | "full_pos";
+
+export const POS_MODE_INFO: Record<PosOperatingMode, { label: string; description: string; color: string }> = {
+  overlay: {
+    label: "Overlay",
+    description: "Works alongside your existing POS. SmokeCraft handles recommendations, loyalty, and analytics while your current system processes transactions.",
+    color: "#5b8def",
+  },
+  hybrid: {
+    label: "Hybrid",
+    description: "Syncs inventory and orders with your external POS (Toast, Square, Clover, Lightspeed). Both systems stay in sync automatically.",
+    color: "#f59e0b",
+  },
+  full_pos: {
+    label: "Full POS",
+    description: "Craft Command Center is your primary point-of-sale. Complete transaction processing, inventory, and reporting in one system.",
+    color: "#34d399",
+  },
+};
+
 export interface CommandCenterState {
   devices: Device[];
   staff: StaffMember[];
@@ -49,6 +69,8 @@ export interface CommandCenterState {
   hourlyRevenue: HourlyRevenue[];
   systemStatus: "operational" | "degraded" | "critical";
   activeGuests: number;
+  posMode: PosOperatingMode;
+  setPosMode: (mode: PosOperatingMode) => void;
   toggleDeviceLock: (deviceId: string) => void;
   forceRefreshDevice: (deviceId: string) => void;
   setDeviceRole: (deviceId: string, role: Device["role"]) => void;
@@ -107,12 +129,21 @@ export function useCommandCenter(): CommandCenterState {
   return ctx;
 }
 
+function loadPosMode(): PosOperatingMode {
+  try {
+    const stored = localStorage.getItem("smokecraft_pos_mode");
+    if (stored === "overlay" || stored === "hybrid" || stored === "full_pos") return stored;
+  } catch {}
+  return "overlay";
+}
+
 export function CommandCenterProvider({ children }: { children: ReactNode }) {
   const [devices, setDevices] = useState<Device[]>(() => INITIAL_DEVICES.map(d => ({ ...d })));
   const [staff, setStaff] = useState<StaffMember[]>(() => INITIAL_STAFF.map(s => ({ ...s })));
   const [vendors] = useState<Vendor[]>(() => INITIAL_VENDORS.map(v => ({ ...v })));
   const [auditLog, setAuditLog] = useState<AuditEntry[]>(() => [...INITIAL_AUDIT]);
   const [hourlyRevenue] = useState<HourlyRevenue[]>(INITIAL_REVENUE);
+  const [posMode, setPosModeRaw] = useState<PosOperatingMode>(loadPosMode);
   const systemStatus: "operational" | "degraded" | "critical" = devices.filter(d => d.status === "offline").length >= 3 ? "critical" : devices.some(d => d.status === "offline") ? "degraded" : "operational";
   const activeGuests = 12;
 
@@ -123,6 +154,12 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
       timestamp: new Date().toISOString(),
     }, ...prev].slice(0, 50));
   }, []);
+
+  const setPosMode = useCallback((mode: PosOperatingMode) => {
+    setPosModeRaw(mode);
+    try { localStorage.setItem("smokecraft_pos_mode", mode); } catch {}
+    addAuditEntry("settings.pos_mode", `POS mode changed to ${POS_MODE_INFO[mode].label}`);
+  }, [addAuditEntry]);
 
   const toggleDeviceLock = useCallback((deviceId: string) => {
     setDevices(prev => prev.map(d => d.id === deviceId ? { ...d, locked: !d.locked } : d));
@@ -158,7 +195,7 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
   return (
     <CCContext.Provider value={{
       devices, staff, vendors, auditLog, hourlyRevenue,
-      systemStatus, activeGuests,
+      systemStatus, activeGuests, posMode, setPosMode,
       toggleDeviceLock, forceRefreshDevice, setDeviceRole,
       addAuditEntry, requestRestock, switchStaffStatus,
     }}>

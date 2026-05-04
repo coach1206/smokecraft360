@@ -1,8 +1,10 @@
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText } from "lucide-react";
-import { useCommandCenter } from "@/contexts/CommandCenterContext";
+import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers } from "lucide-react";
+import { useCommandCenter, POS_MODE_INFO, type PosOperatingMode } from "@/contexts/CommandCenterContext";
 import { usePosContext } from "@/contexts/PosContext";
+
+const POS_MODES: PosOperatingMode[] = ["overlay", "hybrid", "full_pos"];
 
 export default function SettingsModule() {
   const [, navigate] = useLocation();
@@ -13,6 +15,7 @@ export default function SettingsModule() {
   const onlineDevices = cc.devices.filter(d => d.status === "online").length;
   const lockedDevices = cc.devices.filter(d => d.locked).length;
   const activeStaff = cc.staff.filter(s => s.status === "active").length;
+  const modeInfo = POS_MODE_INFO[cc.posMode];
 
   return (
     <div style={{ height: "100dvh", display: "flex", flexDirection: "column", background: "linear-gradient(180deg, #1a1714 0%, #0f0d0a 100%)", color: "#e8e0c8", overflow: "hidden" }}>
@@ -21,9 +24,17 @@ export default function SettingsModule() {
           style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
           <ArrowLeft size={20} />
         </motion.button>
-        <div>
+        <div style={{ flex: 1 }}>
           <div style={{ fontSize: 18, fontWeight: 700, color: "#64748b" }}>System & Security</div>
           <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>Status, devices, and audit trail</div>
+        </div>
+        <div style={{
+          display: "flex", alignItems: "center", gap: 6,
+          padding: "6px 12px", borderRadius: 20,
+          background: `${modeInfo.color}15`, border: `1px solid ${modeInfo.color}30`,
+        }}>
+          <Layers size={12} color={modeInfo.color} />
+          <span style={{ fontSize: 11, fontWeight: 600, color: modeInfo.color }}>{modeInfo.label} Mode</span>
         </div>
       </div>
 
@@ -34,6 +45,7 @@ export default function SettingsModule() {
             { icon: Monitor, label: "Devices Online", value: `${onlineDevices}/${cc.devices.length}`, color: "#5b8def" },
             { icon: Shield, label: "Devices Locked", value: `${lockedDevices}`, color: lockedDevices > 0 ? "#ef4444" : "#34d399" },
             { icon: Clock, label: "Active Staff", value: `${activeStaff}`, color: "#a78bfa" },
+            { icon: Layers, label: "POS Mode", value: modeInfo.label, color: modeInfo.color },
           ].map((item, i) => {
             const Icon = item.icon;
             return (
@@ -57,6 +69,71 @@ export default function SettingsModule() {
               </motion.div>
             );
           })}
+        </div>
+
+        <div style={{
+          padding: "16px", borderRadius: 14,
+          background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+          marginBottom: 16,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+            <Layers size={14} color="rgba(232,224,200,0.5)" />
+            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>POS Operating Mode</span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {POS_MODES.map((mode) => {
+              const info = POS_MODE_INFO[mode];
+              const selected = cc.posMode === mode;
+              return (
+                <motion.button
+                  key={mode}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => cc.setPosMode(mode)}
+                  style={{
+                    display: "flex", alignItems: "flex-start", gap: 14,
+                    padding: "16px", borderRadius: 12, cursor: "pointer",
+                    background: selected ? `${info.color}10` : "rgba(255,255,255,0.02)",
+                    border: `2px solid ${selected ? info.color : "rgba(255,255,255,0.06)"}`,
+                    textAlign: "left", position: "relative", overflow: "hidden",
+                    transition: "border-color 0.2s, background 0.2s",
+                  }}
+                >
+                  <div style={{
+                    width: 22, height: 22, borderRadius: "50%", flexShrink: 0, marginTop: 1,
+                    border: `2px solid ${selected ? info.color : "rgba(255,255,255,0.15)"}`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "border-color 0.2s",
+                  }}>
+                    {selected && (
+                      <motion.div
+                        initial={{ scale: 0 }} animate={{ scale: 1 }}
+                        style={{ width: 12, height: 12, borderRadius: "50%", background: info.color }}
+                      />
+                    )}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: selected ? info.color : "#e8e0c8", marginBottom: 4 }}>
+                      {info.label}
+                    </div>
+                    <div style={{ fontSize: 12, color: "rgba(232,224,200,0.45)", lineHeight: 1.5 }}>
+                      {info.description}
+                    </div>
+                  </div>
+                  {selected && (
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, color: info.color,
+                      padding: "3px 8px", borderRadius: 6,
+                      background: `${info.color}20`,
+                      textTransform: "uppercase", letterSpacing: "0.08em",
+                      flexShrink: 0,
+                    }}>
+                      Active
+                    </span>
+                  )}
+                </motion.button>
+              );
+            })}
+          </div>
         </div>
 
         <div style={{

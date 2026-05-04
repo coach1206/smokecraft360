@@ -2,10 +2,10 @@ import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, ShoppingCart, Package, Gift, Sparkles, BarChart3,
-  Truck, Monitor, Users, Settings, Megaphone, Activity,
+  Truck, Monitor, Users, Settings, Megaphone, Activity, Layers,
 } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
-import { useCommandCenter } from "@/contexts/CommandCenterContext";
+import { useCommandCenter, POS_MODE_INFO } from "@/contexts/CommandCenterContext";
 
 const TILES = [
   { id: "orders", title: "Orders", desc: "Live POS terminal", icon: ShoppingCart, color: "#d4af37", route: "/pos", dataKey: "orders" as const },
@@ -82,6 +82,15 @@ export default function CommandCenter() {
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: 18, fontWeight: 700, color: "#e8e0c8" }}>{pos.orders.length}</div>
             <div style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Orders</div>
+          </div>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "4px 10px", borderRadius: 16,
+            background: `${POS_MODE_INFO[cc.posMode].color}12`,
+            border: `1px solid ${POS_MODE_INFO[cc.posMode].color}30`,
+          }}>
+            <Layers size={11} color={POS_MODE_INFO[cc.posMode].color} />
+            <span style={{ fontSize: 10, fontWeight: 600, color: POS_MODE_INFO[cc.posMode].color }}>{POS_MODE_INFO[cc.posMode].label}</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: 10, height: 10, borderRadius: "50%", background: statusColor, boxShadow: `0 0 8px ${statusColor}` }} />

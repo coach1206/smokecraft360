@@ -74,6 +74,8 @@ The application features a luxury aesthetic with a dark gold theme, glassmorphis
     -   **Payment State Machine**: Async checkout flow with `processing → paid/failed` lifecycle. Simulated ~1.8s payment delay with 10% failure rate. Processing spinner overlay, success confirmation, and failure recovery with retry. Processing lock (`lockRef` + `processingLock`) prevents double-clicks and blocks cart edits during checkout. All state reads use synchronized refs for race-free async operations.
     -   **Inventory Timing**: Stock reserved on cart-add (prevents overselling), permanently deducted on payment success, restored on payment failure or refund.
     -   **Refund Support**: Owner/Manager can refund paid orders from order history sidebar; role enforcement in both UI and context action layer. Refunded orders restore inventory.
+    -   **POS Operating Mode**: Three operating modes (`overlay` | `hybrid` | `full_pos`) persisted to localStorage via `CommandCenterContext`. Overlay = works beside existing POS, Hybrid = syncs with external POS, Full POS = SmokeCraft is primary POS. Mode selector UI in Settings with radio-style cards. Mode badge displayed in both Command Center dashboard header and Settings header.
+    -   **POS Adapter Layer**: `artifacts/api-server/src/posAdapters/` contains a `BasePosAdapter` interface and 5 stub adapters (Toast, Square, Clover, Lightspeed, Manual Import). Each adapter implements `syncProducts()`, `syncInventory()`, `syncOrders()`, `pushOrder()`, `pullReports()` with mock data. `posWebhook.ts` remains the real integration point for live POS events.
     -   State managed via `PosContext` (React context). Files: `Entry.tsx`, `PinLogin.tsx`, `PosMode.tsx`, `PosContext.tsx`.
 
 # External Dependencies
