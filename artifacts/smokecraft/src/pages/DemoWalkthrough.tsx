@@ -5,7 +5,7 @@ import {
   X, ChevronRight, ChevronLeft, ShoppingCart, Gift, Package,
   Monitor, BarChart3, Sparkles, Play, Pause, CheckCircle2,
   AlertTriangle, TrendingUp, Wifi, Shield, CreditCard,
-  Users, Briefcase, Presentation,
+  Users, Briefcase, Presentation, Save, Link, Trash2, Star,
 } from "lucide-react";
 import KioskProductImage from "@/components/KioskProductImage";
 import type { Product } from "@/contexts/PosContext";
@@ -60,6 +60,59 @@ const DEMO_PROFILES: DemoProfile[] = [
 ];
 
 const PROFILE_MAP = new Map(DEMO_PROFILES.map(p => [p.id, p]));
+
+const SAVED_PROFILES_KEY = "smokecraft_demo_profiles";
+
+interface SavedProfile {
+  id: string;
+  name: string;
+  description: string;
+  stepIds: string[];
+  speed: number;
+  createdAt: number;
+}
+
+function loadSavedProfiles(): SavedProfile[] {
+  try {
+    const raw = localStorage.getItem(SAVED_PROFILES_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (p: unknown): p is SavedProfile =>
+        typeof p === "object" && p !== null &&
+        typeof (p as SavedProfile).id === "string" &&
+        typeof (p as SavedProfile).name === "string" &&
+        Array.isArray((p as SavedProfile).stepIds),
+    );
+  } catch {
+    return [];
+  }
+}
+
+function persistSavedProfiles(profiles: SavedProfile[]) {
+  localStorage.setItem(SAVED_PROFILES_KEY, JSON.stringify(profiles));
+}
+
+function savedToDemoProfile(saved: SavedProfile): DemoProfile {
+  return {
+    id: saved.id,
+    name: saved.name,
+    description: saved.description,
+    icon: Star,
+    color: "#a78bfa",
+    stepIds: saved.stepIds,
+    speed: saved.speed,
+  };
+}
+
+function buildShareableUrl(stepIds: string[], speed: number): string {
+  const base = `${window.location.origin}${window.location.pathname}`;
+  const params = new URLSearchParams();
+  params.set("steps", stepIds.join(","));
+  params.set("speed", String(speed));
+  return `${base}?${params.toString()}`;
+}
 
 function parseDemoConfig(search: string): { stepIds: string[] | null; perStepSpeed: number | null; profileId: string | null } {
   const params = new URLSearchParams(search);
@@ -505,13 +558,100 @@ const ALL_STEPS: DemoStep[] = [
 
 const STEP_MAP = new Map(ALL_STEPS.map(s => [s.id, s]));
 
-function ProfileSelector({ onSelect, onSkip }: { onSelect: (profile: DemoProfile) => void; onSkip: () => void }) {
+function ProfileCard({
+  profile,
+  index,
+  onSelect,
+  onDelete,
+}: {
+  profile: DemoProfile;
+  index: number;
+  onSelect: (profile: DemoProfile) => void;
+  onDelete?: (id: string) => void;
+}) {
+  const Icon = profile.icon;
+  return (
+    <motion.button
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1 }}
+      whileHover={{ scale: 1.03, borderColor: profile.color }}
+      whileTap={{ scale: 0.97 }}
+      onClick={() => onSelect(profile)}
+      style={{
+        display: "flex", flexDirection: "column", alignItems: "center",
+        gap: 12, padding: "28px 24px", borderRadius: 20,
+        background: "rgba(255,255,255,0.03)",
+        border: `1px solid rgba(255,255,255,0.08)`,
+        color: "#e8e0c8", cursor: "pointer",
+        width: 210, textAlign: "center",
+        transition: "border-color 0.2s",
+        position: "relative",
+      }}
+    >
+      {onDelete && (
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={(e) => { e.stopPropagation(); onDelete(profile.id); }}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); onDelete(profile.id); } }}
+          style={{
+            position: "absolute", top: 8, right: 8,
+            width: 28, height: 28, borderRadius: 8,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
+            cursor: "pointer", color: "#ef4444",
+          }}
+        >
+          <Trash2 size={13} />
+        </div>
+      )}
+      <div style={{
+        width: 56, height: 56, borderRadius: 16,
+        background: `${profile.color}15`,
+        border: `1px solid ${profile.color}30`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <Icon size={26} color={profile.color} />
+      </div>
+      <div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: profile.color, marginBottom: 4 }}>
+          {profile.name}
+        </div>
+        <div style={{ fontSize: 12, color: "rgba(232,224,200,0.45)", lineHeight: 1.4 }}>
+          {profile.description}
+        </div>
+      </div>
+      <div style={{
+        fontSize: 11, color: "rgba(232,224,200,0.3)",
+        padding: "4px 10px", borderRadius: 8,
+        background: "rgba(255,255,255,0.03)",
+      }}>
+        {profile.stepIds.length} steps · {(profile.speed / 1000).toFixed(1)}s each
+      </div>
+    </motion.button>
+  );
+}
+
+function ProfileSelector({
+  onSelect,
+  onSkip,
+  savedProfiles,
+  onDeleteSaved,
+}: {
+  onSelect: (profile: DemoProfile) => void;
+  onSkip: () => void;
+  savedProfiles: SavedProfile[];
+  onDeleteSaved: (id: string) => void;
+}) {
+  const savedDemoProfiles = savedProfiles.map(savedToDemoProfile);
+
   return (
     <div style={{
       height: "100dvh", display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       background: "linear-gradient(180deg, #1a1714 0%, #0f0d0a 100%)",
-      color: "#e8e0c8", padding: 24,
+      color: "#e8e0c8", padding: 24, overflow: "auto",
     }}>
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -530,54 +670,33 @@ function ProfileSelector({ onSelect, onSkip }: { onSelect: (profile: DemoProfile
       </motion.div>
 
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center", maxWidth: 720, marginBottom: 32 }}>
-        {DEMO_PROFILES.map((profile, i) => {
-          const Icon = profile.icon;
-          return (
-            <motion.button
-              key={profile.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              whileHover={{ scale: 1.03, borderColor: profile.color }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => onSelect(profile)}
-              style={{
-                display: "flex", flexDirection: "column", alignItems: "center",
-                gap: 12, padding: "28px 24px", borderRadius: 20,
-                background: "rgba(255,255,255,0.03)",
-                border: `1px solid rgba(255,255,255,0.08)`,
-                color: "#e8e0c8", cursor: "pointer",
-                width: 210, textAlign: "center",
-                transition: "border-color 0.2s",
-              }}
-            >
-              <div style={{
-                width: 56, height: 56, borderRadius: 16,
-                background: `${profile.color}15`,
-                border: `1px solid ${profile.color}30`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <Icon size={26} color={profile.color} />
-              </div>
-              <div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: profile.color, marginBottom: 4 }}>
-                  {profile.name}
-                </div>
-                <div style={{ fontSize: 12, color: "rgba(232,224,200,0.45)", lineHeight: 1.4 }}>
-                  {profile.description}
-                </div>
-              </div>
-              <div style={{
-                fontSize: 11, color: "rgba(232,224,200,0.3)",
-                padding: "4px 10px", borderRadius: 8,
-                background: "rgba(255,255,255,0.03)",
-              }}>
-                {profile.stepIds.length} steps · {(profile.speed / 1000).toFixed(1)}s each
-              </div>
-            </motion.button>
-          );
-        })}
+        {DEMO_PROFILES.map((profile, i) => (
+          <ProfileCard key={profile.id} profile={profile} index={i} onSelect={onSelect} />
+        ))}
       </div>
+
+      {savedDemoProfiles.length > 0 && (
+        <>
+          <div style={{
+            fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.4)",
+            textTransform: "uppercase", letterSpacing: "0.1em",
+            marginBottom: 16,
+          }}>
+            Saved Profiles
+          </div>
+          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center", maxWidth: 720, marginBottom: 32 }}>
+            {savedDemoProfiles.map((profile, i) => (
+              <ProfileCard
+                key={profile.id}
+                profile={profile}
+                index={DEMO_PROFILES.length + i}
+                onSelect={onSelect}
+                onDelete={onDeleteSaved}
+              />
+            ))}
+          </div>
+        </>
+      )}
 
       <motion.button
         initial={{ opacity: 0 }}
@@ -599,11 +718,142 @@ function ProfileSelector({ onSelect, onSkip }: { onSelect: (profile: DemoProfile
   );
 }
 
+function SaveProfileDialog({
+  stepIds,
+  speed,
+  onSave,
+  onClose,
+}: {
+  stepIds: string[];
+  speed: number;
+  onSave: (name: string, description: string) => void;
+  onClose: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+
+  const handleSubmit = () => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    onSave(trimmed, description.trim());
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 1000,
+        background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: 20,
+      }}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "100%", maxWidth: 420, padding: 28, borderRadius: 20,
+          background: "#1a1714", border: "1px solid rgba(255,255,255,0.1)",
+        }}
+      >
+        <div style={{
+          fontSize: 20, fontWeight: 700, color: "#e8e0c8",
+          fontFamily: "'Playfair Display', serif", marginBottom: 4,
+        }}>
+          Save as Profile
+        </div>
+        <div style={{ fontSize: 12, color: "rgba(232,224,200,0.4)", marginBottom: 20 }}>
+          {stepIds.length} steps · {(speed / 1000).toFixed(1)}s per step
+        </div>
+
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ display: "block", fontSize: 12, color: "rgba(232,224,200,0.5)", marginBottom: 6, fontWeight: 600 }}>
+            Profile Name
+          </label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }}
+            placeholder="e.g. Quick Sales Pitch"
+            maxLength={50}
+            autoFocus
+            style={{
+              width: "100%", padding: "10px 14px", borderRadius: 12,
+              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              color: "#e8e0c8", fontSize: 14, outline: "none",
+              boxSizing: "border-box",
+            }}
+          />
+        </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ display: "block", fontSize: 12, color: "rgba(232,224,200,0.5)", marginBottom: 6, fontWeight: 600 }}>
+            Description (optional)
+          </label>
+          <input
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }}
+            placeholder="e.g. Focused on revenue and rewards"
+            maxLength={100}
+            style={{
+              width: "100%", padding: "10px 14px", borderRadius: 12,
+              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              color: "#e8e0c8", fontSize: 14, outline: "none",
+              boxSizing: "border-box",
+            }}
+          />
+        </div>
+
+        <div style={{ display: "flex", gap: 10 }}>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={onClose}
+            style={{
+              flex: 1, padding: "10px 16px", borderRadius: 12,
+              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              color: "rgba(232,224,200,0.6)", cursor: "pointer",
+              fontSize: 13, fontWeight: 600,
+            }}
+          >
+            Cancel
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSubmit}
+            disabled={!name.trim()}
+            style={{
+              flex: 1, padding: "10px 16px", borderRadius: 12,
+              background: name.trim() ? "linear-gradient(135deg, #a78bfa, #8b5cf6)" : "rgba(255,255,255,0.04)",
+              border: "none",
+              color: name.trim() ? "#fff" : "rgba(232,224,200,0.3)",
+              cursor: name.trim() ? "pointer" : "not-allowed",
+              fontSize: 13, fontWeight: 700,
+            }}
+          >
+            Save Profile
+          </motion.button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function DemoWalkthrough() {
   const [, navigate] = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [savedProfiles, setSavedProfiles] = useState<SavedProfile[]>(loadSavedProfiles);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [copiedUrl, setCopiedUrl] = useState(false);
 
   const urlConfig = useMemo(() => parseDemoConfig(window.location.search), []);
 
@@ -631,6 +881,16 @@ export default function DemoWalkthrough() {
     return filtered.length > 0 ? filtered : ALL_STEPS;
   }, [stepIds]);
 
+  const activeStepIds = useMemo(() => steps.map(s => s.id), [steps]);
+  const activeSpeed = perStepSpeed ?? DEFAULT_STEP_DURATION;
+
+  const isCustomConfig = useMemo(() => {
+    const builtInIds = new Set(DEMO_PROFILES.map(p => p.id));
+    if (selectedProfile && builtInIds.has(selectedProfile.id)) return false;
+    if (stepIds !== null || perStepSpeed !== null) return true;
+    return false;
+  }, [selectedProfile, stepIds, perStepSpeed]);
+
   const getStepDuration = useCallback((stepIndex: number): number => {
     if (perStepSpeed !== null) return perStepSpeed;
     return steps[stepIndex]?.duration ?? DEFAULT_STEP_DURATION;
@@ -655,6 +915,35 @@ export default function DemoWalkthrough() {
     setShowSelector(false);
   }, []);
 
+  const handleSaveProfile = useCallback((name: string, description: string) => {
+    const newProfile: SavedProfile = {
+      id: `custom_${Date.now()}`,
+      name,
+      description: description || `${activeStepIds.length} steps at ${(activeSpeed / 1000).toFixed(1)}s`,
+      stepIds: activeStepIds,
+      speed: activeSpeed,
+      createdAt: Date.now(),
+    };
+    const updated = [...savedProfiles, newProfile];
+    setSavedProfiles(updated);
+    persistSavedProfiles(updated);
+    setShowSaveDialog(false);
+  }, [savedProfiles, activeStepIds, activeSpeed]);
+
+  const handleDeleteSaved = useCallback((id: string) => {
+    const updated = savedProfiles.filter(p => p.id !== id);
+    setSavedProfiles(updated);
+    persistSavedProfiles(updated);
+  }, [savedProfiles]);
+
+  const handleCopyShareUrl = useCallback(() => {
+    const url = buildShareableUrl(activeStepIds, activeSpeed);
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedUrl(true);
+      setTimeout(() => setCopiedUrl(false), 2000);
+    });
+  }, [activeStepIds, activeSpeed]);
+
   useEffect(() => {
     if (showSelector || paused) return;
     const duration = getStepDuration(currentStep);
@@ -664,7 +953,7 @@ export default function DemoWalkthrough() {
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
-      if (showSelector) return;
+      if (showSelector || showSaveDialog) return;
       if (e.key === "ArrowRight") goNext();
       else if (e.key === "ArrowLeft") goPrev();
       else if (e.key === " ") { e.preventDefault(); setPaused(p => !p); }
@@ -672,10 +961,17 @@ export default function DemoWalkthrough() {
     }
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [goNext, goPrev, navigate, showSelector]);
+  }, [goNext, goPrev, navigate, showSelector, showSaveDialog]);
 
   if (showSelector) {
-    return <ProfileSelector onSelect={handleProfileSelect} onSkip={handleProfileSkip} />;
+    return (
+      <ProfileSelector
+        onSelect={handleProfileSelect}
+        onSkip={handleProfileSkip}
+        savedProfiles={savedProfiles}
+        onDeleteSaved={handleDeleteSaved}
+      />
+    );
   }
 
   const step = steps[currentStep];
@@ -728,20 +1024,50 @@ export default function DemoWalkthrough() {
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontSize: 12, color: "rgba(232,224,200,0.35)" }}>
             {currentStep + 1} / {steps.length}
           </span>
+          {isCustomConfig && (
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => { setPaused(true); setShowSaveDialog(true); }}
+              title="Save as Profile"
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "center",
+                gap: 6, height: 36, padding: "0 12px", borderRadius: 10,
+                background: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.25)",
+                color: "#a78bfa", cursor: "pointer", fontSize: 12, fontWeight: 600,
+              }}
+            >
+              <Save size={14} /> Save
+            </motion.button>
+          )}
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={handleCopyShareUrl}
+            title="Copy shareable URL"
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center",
+              gap: 6, height: 36, padding: "0 12px", borderRadius: 10,
+              background: copiedUrl ? "rgba(52,211,153,0.1)" : "rgba(255,255,255,0.04)",
+              border: `1px solid ${copiedUrl ? "rgba(52,211,153,0.25)" : "rgba(255,255,255,0.08)"}`,
+              color: copiedUrl ? "#34d399" : "rgba(232,224,200,0.5)",
+              cursor: "pointer", fontSize: 12, fontWeight: 600,
+            }}
+          >
+            {copiedUrl ? <><CheckCircle2 size={14} /> Copied</> : <><Link size={14} /> Share</>}
+          </motion.button>
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => setPaused(p => !p)}
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
-              width: 44, height: 44, borderRadius: 12,
+              width: 36, height: 36, borderRadius: 10,
               background: paused ? "rgba(245,158,11,0.1)" : "rgba(255,255,255,0.04)",
               border: `1px solid ${paused ? "rgba(245,158,11,0.3)" : "rgba(255,255,255,0.08)"}`,
               color: paused ? "#f59e0b" : "rgba(232,224,200,0.5)",
               cursor: "pointer",
             }}>
-            {paused ? <Play size={18} /> : <Pause size={18} />}
+            {paused ? <Play size={16} /> : <Pause size={16} />}
           </motion.button>
         </div>
       </div>
@@ -846,6 +1172,17 @@ export default function DemoWalkthrough() {
           {currentStep === steps.length - 1 ? "Restart" : "Next"} <ChevronRight size={16} />
         </motion.button>
       </div>
+
+      <AnimatePresence>
+        {showSaveDialog && (
+          <SaveProfileDialog
+            stepIds={activeStepIds}
+            speed={activeSpeed}
+            onSave={handleSaveProfile}
+            onClose={() => setShowSaveDialog(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
