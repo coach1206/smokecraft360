@@ -6,6 +6,7 @@ import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
 
 const MOCK_USERS = [
+  { pin: "1206", name: "JC Collins", role: "owner", email: "jccollins1206@yahoo.com" },
   { pin: "1111", name: "Jordan Mitchell", role: "owner" },
   { pin: "2222", name: "Alex Rivera", role: "manager" },
   { pin: "3333", name: "Casey Thompson", role: "staff" },
@@ -273,6 +274,7 @@ export default function PinLogin() {
         marginTop: 32, display: "flex", gap: 24,
         fontSize: 12, color: "rgba(232,224,200,0.25)",
       }}>
+        <span>Owner: 1206</span>
         <span>Owner: 1111</span>
         <span>Manager: 2222</span>
         <span>Staff: 3333</span>

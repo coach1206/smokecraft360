@@ -90,6 +90,7 @@ const INITIAL_DEVICES: Device[] = [
 ];
 
 const INITIAL_STAFF: StaffMember[] = [
+  { id: "staff-0", name: "JC Collins", role: "owner", status: "active", pin: "1206" },
   { id: "staff-1", name: "Jordan Mitchell", role: "owner", status: "active", pin: "1111" },
   { id: "staff-2", name: "Alex Rivera", role: "manager", status: "active", pin: "2222" },
   { id: "staff-3", name: "Casey Thompson", role: "staff", status: "active", pin: "3333" },
