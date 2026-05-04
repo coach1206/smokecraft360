@@ -68,6 +68,16 @@ Multi-choice quiz derived from pairing result data: flavor identification, stren
 
 Server-side point awarding with hardened security: reason allowlist (`taste_challenge`, `build_your_own`), per-reason max point caps (15/20), per-user per-reason cooldown (30s/60s) to prevent farming, and Zod-validated input. Requires authentication.
 
+### Lucient Core — Experience Decision Engine
+
+A real-time experience quality and revenue control layer integrated into the recommendation pipeline. Components:
+- **Behavior Profile** (`config/aiBehavior.ts`) — identity, principles, and mode constants for the "Lucient Core" system.
+- **Decision Engine** (`services/experienceDecisionEngine.ts`) — unified quality gate applied post-recommendation. Validates experience completeness, filters strength-mismatched pairings (threshold ≥3), gates featured items against canonical `isInStock()`, and provides beginner-level upsell caps ($150). Delegates to existing validators — no logic duplication.
+- **Quality Gate Hook** — wired into both `POST /api/recommend` and `POST /api/recommend/couples` as a post-filter on the pipeline output.
+- **Automation Service** (`services/experienceAutomation.ts`) — 30-minute interval optimization pass with start/stop lifecycle. Started at boot alongside the aggregation worker.
+- **Admin Routes** (`routes/experienceEngine.ts`) — `GET /api/experience-engine/status` (admin/owner/manager) and `POST /api/experience-engine/optimize` (super_admin only).
+- **Input Hardening** — `parseProfile()` now validates `flavorPreferences` entries are actual strings, rejecting numbers/objects with 400.
+
 ### Personalization & Revenue Intelligence
 
 Adds a taste profile system, auto-recommendation using affinity vectors, session revenue forecasting, and smart dynamic pricing.

@@ -1,6 +1,6 @@
 import { AI_BEHAVIOR_PROFILE, type BehaviorContext } from "../config/aiBehavior";
 import { type ScoredProduct, type RecommendResponse } from "../engine/types";
-import { getStockInfo } from "./venueInventoryStore";
+import { isInStock } from "./venueInventoryStore";
 import { logger } from "../lib/logger";
 
 const STRENGTH_MISMATCH_THRESHOLD = 3;
@@ -40,14 +40,9 @@ export function validateUpsell(
 
 export function validateInventoryItem(
   productId: string,
-  venueId: string | undefined,
+  venueId: string,
 ): boolean {
-  if (!venueId) return true;
-  const info = getStockInfo(venueId, productId);
-  if (!info) return true;
-  if (!info.available) return false;
-  if (info.quantity <= 0) return false;
-  return true;
+  return isInStock(venueId, productId);
 }
 
 export function applyQualityGate(

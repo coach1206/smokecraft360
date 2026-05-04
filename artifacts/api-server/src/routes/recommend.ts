@@ -54,7 +54,11 @@ function parseProfile(raw: Partial<RecommendRequest>): { ok: true; req: Recommen
   if (!raw.category || !validCategories.includes(String(raw.category).toLowerCase())) {
     return { ok: false, error: `"category" must be one of: ${validCategories.join(", ")}` };
   }
-  if (!Array.isArray(raw.flavorPreferences) || raw.flavorPreferences.length === 0) {
+  if (
+    !Array.isArray(raw.flavorPreferences) ||
+    raw.flavorPreferences.length === 0 ||
+    !raw.flavorPreferences.every((v: unknown) => typeof v === "string" && v.trim().length > 0)
+  ) {
     return { ok: false, error: '"flavorPreferences" must be a non-empty array of strings' };
   }
   if (typeof raw.strength !== "number" || raw.strength < 1 || raw.strength > 5) {

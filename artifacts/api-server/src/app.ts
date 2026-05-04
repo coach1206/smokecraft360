@@ -260,10 +260,12 @@ app.use("/api/license",                     subscriptionsRouter);   // mounts /s
 app.use("/api/subscriptions",               subscriptionsRouter);   // mounts /create-checkout, /portal, /admin/:venueId/override, /admin/:venueId/extend-grace, /notifications
 app.use("/api/billing",                     subscriptionsRouter);   // alias — exposes /portal at the brief's requested path
 app.use("/api",                             subscriptionsRouter);   // exposes /notifications at /api/notifications
+app.use("/api/experience-engine",          experienceEngineRouter);
 
-// Start background aggregation worker (hourly rollups for network/venue metrics)
+// Start background workers
 if (process.env["NODE_ENV"] !== "test") {
   startAggregationWorker();
+  startExperienceAutomation();
 }
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────
