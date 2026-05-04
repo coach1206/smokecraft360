@@ -75,6 +75,8 @@ import osCommandRouter          from "./routes/osCommand";
 import osFinancialsRouter       from "./routes/osFinancials";
 import { deviceTouch }          from "./middleware/deviceTouch";
 import { startAggregationWorker } from "./lib/aggregationWorker";
+import experienceEngineRouter    from "./routes/experienceEngine";
+import { startExperienceAutomation } from "./services/experienceAutomation";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 

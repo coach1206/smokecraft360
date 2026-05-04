@@ -6,6 +6,7 @@ import { RecommendRequest } from "../engine/types";
 import { verifyToken } from "../lib/jwt";
 import { getTasteProfile } from "../services/tasteProfile";
 import { blendProfiles } from "../services/coupleProfiles";
+import { applyQualityGate } from "../services/experienceDecisionEngine";
 
 const VALID_SHAPES   = ["robusto","corona","toro","churchill","torpedo","belicoso"] as const;
 const VALID_SESSIONS = ["quick","standard","extended","long"] as const;
@@ -130,7 +131,7 @@ router.post(
       ? await getTasteProfile(userId).catch(() => undefined)
       : undefined;
 
-    const result = getRecommendations({
+    const raw = getRecommendations({
       ...parsed.req,
       tasteProfile: tasteProfile && tasteProfile.sampleCount > 0
         ? {
@@ -142,6 +143,8 @@ router.post(
           }
         : undefined,
     });
+
+    const result = applyQualityGate(raw, parsed.req.venueId);
 
     req.log.info(
       {
@@ -191,7 +194,8 @@ router.post(
     }
 
     const blended = blendProfiles(a.req, b.req);
-    const result = getRecommendations(blended);
+    const raw = getRecommendations(blended);
+    const result = applyQualityGate(raw, blended.venueId);
 
     req.log.info(
       { category: blended.category, blendedStrength: blended.strength, flavors: blended.flavorPreferences.length },
