@@ -264,75 +264,145 @@ export default function ExperiencesModule() {
           )}
 
           {phase === "result" && activeExp && (
-            <motion.div key="result" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-              style={{ width: "100%", maxWidth: 600 }}>
-              <div style={{ textAlign: "center", marginBottom: 24 }}>
-                <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.15em", color: activeExp.color, marginBottom: 8 }}>Your Recommendation</div>
-                <h2 style={{ fontSize: 22, fontWeight: 600, color: "#e8e0c8", fontFamily: "'Playfair Display', serif", margin: "0 0 8px" }}>
-                  Based on your preferences
-                </h2>
-                <p style={{ fontSize: 13, color: "rgba(232,224,200,0.4)", fontStyle: "italic" }}>
-                  {answers.join(" · ")}
-                </p>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {recommended.map(prod => {
-                  const added = addedIds.has(prod.id);
-                  return (
-                    <motion.div key={prod.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                      style={{
-                        display: "flex", gap: 16, padding: 16, borderRadius: 16,
-                        background: "rgba(255,255,255,0.04)", border: `1px solid ${activeExp.color}20`,
-                        alignItems: "center",
-                      }}>
-                      <KioskProductImage
-                        src={prod.image}
-                        alt={prod.name}
-                        category={prod.category}
-                        width={90}
-                        height={90}
-                        borderRadius={12}
-                      />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 16, fontWeight: 600, color: "#e8e0c8", marginBottom: 4 }}>{prod.name}</div>
-                        <div style={{ fontSize: 20, fontWeight: 700, color: activeExp.color, marginBottom: 4 }}>${prod.price}</div>
-                        <div style={{ fontSize: 12, color: "rgba(232,224,200,0.4)", fontStyle: "italic" }}>
-                          {activeExp.pairings.default}
-                        </div>
-                      </div>
-                      <motion.button whileTap={{ scale: 0.9 }}
-                        onClick={() => handleAddToOrder(prod.id)}
-                        disabled={added}
+            <motion.div key="result" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
+              style={{ width: "100%", maxWidth: 880, position: "relative", zIndex: 2 }}>
+              {/* Dim/blur veil so the lounge background reads as ambience, not noise */}
+              <div style={{
+                position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none",
+                background: "radial-gradient(ellipse at center, rgba(10,8,6,0.55) 0%, rgba(10,8,6,0.88) 70%)",
+                backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+              }} />
+              <div style={{ position: "relative", zIndex: 2 }}>
+                <div style={{ textAlign: "center", marginBottom: 36 }}>
+                  <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.32em", color: activeExp.color, marginBottom: 14, fontWeight: 600 }}>Your Recommendation</div>
+                  <h2 style={{ fontSize: 34, fontWeight: 600, color: "#f4ecd4", fontFamily: "'Playfair Display', serif", margin: "0 0 12px", letterSpacing: "0.01em" }}>
+                    Based on your preferences
+                  </h2>
+                  <p style={{ fontSize: 13, color: "rgba(232,224,200,0.55)", fontStyle: "italic", letterSpacing: "0.05em" }}>
+                    {answers.join("  ·  ")}
+                  </p>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                  {recommended.map((prod, idx) => {
+                    const added = addedIds.has(prod.id);
+                    const p = prod as Product & {
+                      isSponsored?: boolean; campaignTag?: string; brandTag?: string;
+                      xpReward?: number; rewardLabel?: string;
+                    };
+                    return (
+                      <motion.div key={prod.id}
+                        initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.07, duration: 0.45 }}
                         style={{
-                          display: "flex", alignItems: "center", gap: 6,
-                          padding: "12px 18px", borderRadius: 12, fontSize: 13, fontWeight: 600,
-                          background: added ? "rgba(52,211,153,0.1)" : `linear-gradient(135deg, ${activeExp.color}, ${activeExp.color}cc)`,
-                          color: added ? "#34d399" : "#0a0806",
-                          border: added ? "1px solid rgba(52,211,153,0.3)" : "none",
-                          cursor: added ? "default" : "pointer", minHeight: 46, flexShrink: 0,
+                          display: "flex", gap: 22, padding: 22, borderRadius: 20,
+                          background: "linear-gradient(145deg, rgba(20,16,12,0.92), rgba(14,10,8,0.85))",
+                          border: `1px solid ${activeExp.color}38`,
+                          alignItems: "center", position: "relative", overflow: "hidden",
+                          boxShadow: `0 18px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.02) inset, 0 0 28px ${activeExp.color}15`,
                         }}>
-                        <Plus size={16} /> {added ? "Added" : "Add to Order"}
-                      </motion.button>
-                    </motion.div>
-                  );
-                })}
-              </div>
-              <div style={{ textAlign: "center", marginTop: 24 }}>
-                <motion.button whileTap={{ scale: 0.95 }} onClick={reset}
-                  style={{
-                    padding: "14px 32px", borderRadius: 12, fontSize: 14, fontWeight: 600,
-                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
-                    color: "rgba(232,224,200,0.5)", cursor: "pointer", minHeight: 48,
-                  }}>Try Another Experience</motion.button>
-                {addedIds.size > 0 && (
-                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => navigate("/pos")}
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                        {/* Subtle accent glow on the left edge */}
+                        <div style={{
+                          position: "absolute", left: 0, top: 0, bottom: 0, width: 3,
+                          background: `linear-gradient(180deg, transparent, ${activeExp.color}, transparent)`,
+                          opacity: 0.7,
+                        }} />
+                        <KioskProductImage
+                          src={prod.image}
+                          alt={prod.name}
+                          category={prod.category}
+                          width={130}
+                          height={130}
+                          borderRadius={14}
+                        />
+                        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                          {(p.isSponsored || p.campaignTag || p.brandTag) && (
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 2 }}>
+                              {p.isSponsored && (
+                                <span style={{
+                                  fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase",
+                                  padding: "4px 9px", borderRadius: 4,
+                                  background: "rgba(212,175,55,0.18)", color: "#d4af37",
+                                  border: "1px solid rgba(212,175,55,0.35)",
+                                }}>Sponsored</span>
+                              )}
+                              {p.brandTag && (
+                                <span style={{
+                                  fontSize: 9, fontWeight: 600, letterSpacing: "0.16em", textTransform: "uppercase",
+                                  padding: "4px 9px", borderRadius: 4,
+                                  background: "rgba(255,255,255,0.06)", color: "rgba(232,224,200,0.75)",
+                                  border: "1px solid rgba(255,255,255,0.12)",
+                                }}>{p.brandTag}</span>
+                              )}
+                              {p.campaignTag && (
+                                <span style={{
+                                  fontSize: 9, fontWeight: 600, letterSpacing: "0.16em", textTransform: "uppercase",
+                                  padding: "4px 9px", borderRadius: 4,
+                                  background: `${activeExp.color}18`, color: activeExp.color,
+                                  border: `1px solid ${activeExp.color}40`,
+                                }}>{p.campaignTag}</span>
+                              )}
+                            </div>
+                          )}
+                          <div style={{ fontSize: 22, fontWeight: 600, color: "#f4ecd4", fontFamily: "'Playfair Display', serif", lineHeight: 1.15 }}>{prod.name}</div>
+                          <div style={{ fontSize: 13, color: "rgba(232,224,200,0.55)", fontStyle: "italic", lineHeight: 1.45 }}>
+                            {activeExp.pairings.default}
+                          </div>
+                          <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginTop: 4 }}>
+                            <div style={{
+                              fontSize: 26, fontWeight: 700, color: activeExp.color,
+                              fontFamily: "'Playfair Display', serif",
+                              textShadow: `0 0 24px ${activeExp.color}55`,
+                            }}>${prod.price}</div>
+                            {(p.xpReward || p.rewardLabel) && (
+                              <div style={{
+                                fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase",
+                                color: "rgba(212,175,55,0.85)",
+                              }}>
+                                {p.rewardLabel ?? `+${p.xpReward} XP`}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <motion.button whileTap={{ scale: 0.93 }} whileHover={{ scale: 1.03 }}
+                          onClick={() => handleAddToOrder(prod.id)}
+                          disabled={added}
+                          style={{
+                            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                            padding: "16px 26px", borderRadius: 14, fontSize: 14, fontWeight: 700,
+                            letterSpacing: "0.06em", textTransform: "uppercase",
+                            background: added ? "rgba(52,211,153,0.12)" : `linear-gradient(135deg, ${activeExp.color}, ${activeExp.color}cc)`,
+                            color: added ? "#34d399" : "#0a0806",
+                            border: added ? "1px solid rgba(52,211,153,0.35)" : "none",
+                            cursor: added ? "default" : "pointer",
+                            minHeight: 56, minWidth: 168, flexShrink: 0,
+                            boxShadow: added ? "none" : `0 8px 24px ${activeExp.color}45`,
+                          }}>
+                          {added ? <><Check size={16} /> Added</> : <><Plus size={16} /> Add to Order</>}
+                        </motion.button>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+                <div style={{ textAlign: "center", marginTop: 36, display: "flex", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
+                  <motion.button whileTap={{ scale: 0.95 }} onClick={reset}
                     style={{
-                      marginLeft: 12, padding: "14px 32px", borderRadius: 12, fontSize: 14, fontWeight: 600,
-                      background: "linear-gradient(135deg, #d4af37, #a98828)",
-                      color: "#0a0806", border: "none", cursor: "pointer", minHeight: 48,
-                    }}>Go to POS →</motion.button>
-                )}
+                      padding: "16px 36px", borderRadius: 12, fontSize: 13, fontWeight: 600,
+                      letterSpacing: "0.16em", textTransform: "uppercase",
+                      background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.14)",
+                      color: "rgba(232,224,200,0.65)", cursor: "pointer", minHeight: 52,
+                    }}>Try Another Experience</motion.button>
+                  {addedIds.size > 0 && (
+                    <motion.button whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.02 }} onClick={() => navigate("/pos")}
+                      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                      style={{
+                        padding: "16px 36px", borderRadius: 12, fontSize: 13, fontWeight: 700,
+                        letterSpacing: "0.16em", textTransform: "uppercase",
+                        background: "linear-gradient(135deg, #d4af37, #a98828)",
+                        color: "#0a0806", border: "none", cursor: "pointer", minHeight: 52,
+                        boxShadow: "0 10px 28px rgba(212,175,55,0.4)",
+                      }}>Go to POS →</motion.button>
+                  )}
+                </div>
               </div>
             </motion.div>
           )}
