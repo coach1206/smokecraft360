@@ -5,6 +5,7 @@ import { ArrowLeft, Sparkles, Wine, Beer, Wind, Plus, ChevronRight, Megaphone, C
 import { usePosContext, type Product } from "@/contexts/PosContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
 import KioskProductImage from "@/components/KioskProductImage";
+import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 interface ExperienceType {
   id: string;
@@ -121,7 +122,7 @@ export default function ExperiencesModule() {
   }, []);
 
   return (
-    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", background: "linear-gradient(180deg, #1a1714 0%, #0f0d0a 100%)", color: "#e8e0c8", overflow: "hidden" }}>
+    <BackgroundLayer image="/images/cigar4.png" style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={phase === "select" ? () => navigate("/dashboard") : phase === "campaigns" ? () => setPhase("select") : reset}
           style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
@@ -341,6 +342,6 @@ export default function ExperiencesModule() {
           )}
         </AnimatePresence>
       </div>
-    </div>
+    </BackgroundLayer>
   );
 }

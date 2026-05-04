@@ -5,6 +5,7 @@ import { ArrowLeft, Monitor, Tablet, Smartphone, Lock, Unlock, RefreshCw, Wifi, 
 import { useCommandCenter, type Device } from "@/contexts/CommandCenterContext";
 import { usePosContext } from "@/contexts/PosContext";
 import ConfirmModal from "@/components/ConfirmModal";
+import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const typeIcons: Record<Device["type"], typeof Monitor> = { kiosk: Monitor, tablet: Tablet, mobile: Smartphone };
 const roleColors: Record<Device["role"], string> = { pos: "#d4af37", kiosk: "#5b8def", demo: "#34d399" };
@@ -162,7 +163,7 @@ export default function DevicesModule() {
   };
 
   return (
-    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", background: "linear-gradient(180deg, #1a1714 0%, #0f0d0a 100%)", color: "#e8e0c8", overflow: "hidden" }}>
+    <BackgroundLayer image="/images/cigar3.png" style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
@@ -205,6 +206,6 @@ export default function DevicesModule() {
         onConfirm={() => { confirm?.action(); setConfirm(null); }}
         onCancel={() => setConfirm(null)}
       />
-    </div>
+    </BackgroundLayer>
   );
 }

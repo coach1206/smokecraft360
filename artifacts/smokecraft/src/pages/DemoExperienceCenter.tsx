@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { hasSignedDemoNda } from "@/components/Demo/DemoNdaModal";
 import { ExperienceCenterGrid } from "@/components/Touchscreen";
+import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const ROUTE_MAP: Record<string, string> = {
   smokecraft: "/smokecraft",
@@ -26,10 +27,8 @@ export default function DemoExperienceCenter() {
   }
 
   return (
-    <div
-      style={{
+    <BackgroundLayer image="/images/lounge-bg.png" blur={2} style={{
         minHeight: "100dvh",
-        background: "linear-gradient(180deg, #0c0a07 0%, #080604 100%)",
         color: "#e8e0c8",
         display: "flex",
         flexDirection: "column",
@@ -94,6 +93,6 @@ export default function DemoExperienceCenter() {
           Back to Home
         </button>
       </div>
-    </div>
+    </BackgroundLayer>
   );
 }

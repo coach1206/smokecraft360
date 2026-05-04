@@ -1,6 +1,7 @@
 import { useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { TouchCard } from "@/components/Touchscreen";
+import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const ROLE_ROUTES: Record<string, string> = {
   super_admin: "/touch/admin",
@@ -34,10 +35,8 @@ export default function TouchscreenHome() {
   }
 
   return (
-    <div
-      style={{
+    <BackgroundLayer image="/images/lounge-bg.jpg" style={{
         minHeight: "100dvh",
-        background: "linear-gradient(180deg, #0c0a07 0%, #080604 100%)",
         color: "#e8e0c8",
         padding: "40px 20px env(safe-area-inset-bottom, 20px)",
         display: "flex",
@@ -101,6 +100,6 @@ export default function TouchscreenHome() {
       >
         Back to Home
       </button>
-    </div>
+    </BackgroundLayer>
   );
 }

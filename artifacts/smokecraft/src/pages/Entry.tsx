@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Building2, Shield, Package, Play, Presentation } from "lucide-react";
+import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const TILES = [
   {
@@ -12,6 +13,7 @@ const TILES = [
     color: "#d4af37",
     glow: "rgba(212,175,55,0.25)",
     route: "/pin-login",
+    image: "/images/lounge-bg.jpg",
   },
   {
     id: "admin",
@@ -21,6 +23,7 @@ const TILES = [
     color: "#5b8def",
     glow: "rgba(91,141,239,0.25)",
     route: "/touch/admin",
+    image: "/images/cigar3.png",
   },
   {
     id: "vendor",
@@ -30,6 +33,7 @@ const TILES = [
     color: "#a78bfa",
     glow: "rgba(167,139,250,0.25)",
     route: "/touch/vendor",
+    image: "/images/cigar2.png",
   },
   {
     id: "demo",
@@ -39,6 +43,7 @@ const TILES = [
     color: "#34d399",
     glow: "rgba(52,211,153,0.25)",
     route: "/demo",
+    image: "/images/scenes/bold.jpg",
   },
   {
     id: "investor-demo",
@@ -48,6 +53,7 @@ const TILES = [
     color: "#f59e0b",
     glow: "rgba(245,158,11,0.25)",
     route: "/demo-mode",
+    image: "/images/scenes/social.jpg",
   },
 ] as const;
 
@@ -61,20 +67,14 @@ export default function Entry() {
   }
 
   return (
-    <div style={{
+    <BackgroundLayer image="/images/lounge-bg.png" blur={3} style={{
       height: "100dvh",
-      background: "linear-gradient(160deg, #1a1714 0%, #0f0d0a 50%, #141210 100%)",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       padding: "24px",
-      position: "relative", overflow: "auto",
+      overflow: "auto",
       boxSizing: "border-box",
     }}>
-      <div style={{
-        position: "absolute", inset: 0, opacity: 0.03,
-        backgroundImage: "radial-gradient(rgba(212,175,55,0.4) 1px, transparent 1px)",
-        backgroundSize: "24px 24px", pointerEvents: "none",
-      }} />
 
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -131,7 +131,7 @@ export default function Entry() {
                   display: "flex", flexDirection: "column",
                   alignItems: "center", justifyContent: "center",
                   gap: 10, padding: "24px 16px",
-                  background: `linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))`,
+                  background: "transparent",
                   border: `1px solid ${tile.color}40`,
                   borderRadius: 18,
                   cursor: "pointer",
@@ -141,15 +141,23 @@ export default function Entry() {
               >
                 <div style={{
                   position: "absolute", inset: 0,
-                  background: `radial-gradient(circle at 50% 30%, ${tile.glow}, transparent 70%)`,
-                  opacity: 0.6, pointerEvents: "none",
+                  backgroundImage: `url(${tile.image})`,
+                  backgroundSize: "cover", backgroundPosition: "center",
+                  opacity: 0.3,
+                  pointerEvents: "none",
+                }} />
+                <div style={{
+                  position: "absolute", inset: 0,
+                  background: `linear-gradient(180deg, rgba(10,8,6,0.8) 0%, ${tile.color}15 100%)`,
+                  pointerEvents: "none",
                 }} />
                 <div style={{
                   width: 72, height: 72, borderRadius: 18,
-                  background: `${tile.color}15`,
+                  background: `${tile.color}20`,
                   border: `1.5px solid ${tile.color}40`,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   position: "relative",
+                  backdropFilter: "blur(4px)",
                 }}>
                   <Icon size={32} color={tile.color} strokeWidth={1.5} />
                 </div>
@@ -178,6 +186,6 @@ export default function Entry() {
           position: "relative", zIndex: 1,
         }}
       >Powered by 360 Enterprise Services</motion.div>
-    </div>
+    </BackgroundLayer>
   );
 }

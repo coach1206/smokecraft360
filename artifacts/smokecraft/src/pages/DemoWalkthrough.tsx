@@ -8,6 +8,7 @@ import {
   Users, Briefcase, Presentation, Save, Link, Trash2, Star,
 } from "lucide-react";
 import KioskProductImage from "@/components/KioskProductImage";
+import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 import type { Product } from "@/contexts/PosContext";
 
 const DEFAULT_STEP_DURATION = 5000;
@@ -647,10 +648,9 @@ function ProfileSelector({
   const savedDemoProfiles = savedProfiles.map(savedToDemoProfile);
 
   return (
-    <div style={{
+    <BackgroundLayer image="/images/lounge-bg.jpg" style={{
       height: "100dvh", display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
-      background: "linear-gradient(180deg, #1a1714 0%, #0f0d0a 100%)",
       color: "#e8e0c8", padding: 24, overflow: "auto",
     }}>
       <motion.div
@@ -714,7 +714,7 @@ function ProfileSelector({
       >
         Skip — Run Full Demo
       </motion.button>
-    </div>
+    </BackgroundLayer>
   );
 }
 
@@ -978,9 +978,8 @@ export default function DemoWalkthrough() {
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
-    <div style={{
+    <BackgroundLayer image="/images/lounge-bg.jpg" style={{
       height: "100dvh", display: "flex", flexDirection: "column",
-      background: "linear-gradient(180deg, #1a1714 0%, #0f0d0a 100%)",
       color: "#e8e0c8", overflow: "hidden",
     }}>
       <motion.div
@@ -1183,6 +1182,6 @@ export default function DemoWalkthrough() {
           />
         )}
       </AnimatePresence>
-    </div>
+    </BackgroundLayer>
   );
 }

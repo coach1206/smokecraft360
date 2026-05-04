@@ -26,6 +26,9 @@ The project uses a pnpm workspace monorepo with TypeScript, separating a React/V
 
 The application features a luxury aesthetic with a dark gold theme, glassmorphism cards, and sophisticated typography (Cormorant Garamond, Inter, Playfair Display). A global design system utilizes CSS custom properties for consistent theming. Key elements include `.glass-panel` classes, `sc-btn-primary`, `sc-btn-ghost`, and a premium animated brand intro splash.
 
+-   **BackgroundLayer**: Reusable `BackgroundLayer` component (`src/components/Layout/BackgroundLayer.tsx`) provides full-screen background images with dark gradient overlay and subtle ambient glow. Applied to all screens (Entry, PinLogin, Dashboard/CommandCenter, touchscreen pages, module pages, DemoWalkthrough, DemoExperienceCenter). The Intro page is exempt — it has its own video/attract-mode background system.
+-   **Image-Driven Tiles**: Command Center and Entry page tiles use background images (from `/images/`) with gradient overlays and icon overlays for readability, replacing the previous flat dark icon-only tiles.
+
 ## Core Features
 
 -   **Recommendation Engine & AI Experience Engine**: AI-driven recommendations based on flavor, strength, mood, and boost levels, with semantic cross-category and food pairing. The "AI Experience Engine" provides deterministic natural-language commentary, voice synthesis, and real-time menu suggestions.

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Lock } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
+import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const MOCK_USERS = [
   { pin: "1206", name: "JC Collins", role: "owner", email: "jccollins1206@yahoo.com" },
@@ -116,12 +117,11 @@ export default function PinLogin() {
   }, [pin, success, isLocked, failedAttempts, setCurrentUser, navigate, cc]);
 
   return (
-    <div style={{
+    <BackgroundLayer image="/images/lounge-bg.png" blur={5} style={{
       minHeight: "100dvh",
-      background: "linear-gradient(160deg, #1a1714 0%, #0f0d0a 50%, #141210 100%)",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
-      padding: "40px 24px", position: "relative",
+      padding: "40px 24px",
     }}>
       <motion.button
         onClick={() => navigate("/")}
@@ -285,6 +285,6 @@ export default function PinLogin() {
         fontSize: 10, textTransform: "uppercase",
         letterSpacing: "0.2em", color: "rgba(232,224,200,0.15)",
       }}>Powered by 360 Enterprise Services</div>
-    </div>
+    </BackgroundLayer>
   );
 }

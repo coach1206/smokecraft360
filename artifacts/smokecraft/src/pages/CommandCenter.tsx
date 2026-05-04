@@ -9,22 +9,23 @@ import {
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter, POS_MODE_INFO } from "@/contexts/CommandCenterContext";
 import SystemStatusPanel from "@/components/SystemStatusPanel";
+import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const TILES = [
-  { id: "smokecraft", title: "SmokeCraft", desc: "Launch cigar experience", icon: Flame, color: "#e85d26", route: "/smokecraft", dataKey: "smokecraft" as const },
-  { id: "brewcraft", title: "BrewCraft", desc: "Beer experience", icon: Beer, color: "#f59e0b", route: "/brewcraft", dataKey: "brewcraft" as const },
-  { id: "pourcraft", title: "PourCraft", desc: "Spirits experience", icon: Wine, color: "#a78bfa", route: "/pourcraft", dataKey: "pourcraft" as const },
-  { id: "vapecraft", title: "VapeCraft", desc: "Vape experience", icon: Wind, color: "#06b6d4", route: "/vapecraft", dataKey: "vapecraft" as const },
-  { id: "orders", title: "Orders", desc: "Live POS terminal", icon: ShoppingCart, color: "#d4af37", route: "/pos", dataKey: "orders" as const },
-  { id: "inventory", title: "Inventory", desc: "Stock control", icon: Package, color: "#5b8def", route: "/pos", dataKey: "inventory" as const },
-  { id: "rewards", title: "Rewards", desc: "Loyalty & rewards", icon: Gift, color: "#34d399", route: "/pos", dataKey: "rewards" as const },
-  { id: "experiences", title: "Experiences", desc: "Craft engine", icon: Sparkles, color: "#f59e0b", route: "/experiences", dataKey: "experiences" as const },
-  { id: "campaigns", title: "Campaigns", desc: "Promotions", icon: Megaphone, color: "#ec4899", route: "/analytics", dataKey: "campaigns" as const },
-  { id: "analytics", title: "Analytics", desc: "Revenue & insights", icon: BarChart3, color: "#8b5cf6", route: "/analytics", dataKey: "analytics" as const },
-  { id: "vendors", title: "Vendors", desc: "Suppliers & restock", icon: Truck, color: "#06b6d4", route: "/vendors", dataKey: "vendors" as const },
-  { id: "devices", title: "Devices", desc: "Device control", icon: Monitor, color: "#f97316", route: "/devices", dataKey: "devices" as const },
-  { id: "staff", title: "Staff", desc: "Team management", icon: Users, color: "#a78bfa", route: "/staff", dataKey: "staff" as const },
-  { id: "settings", title: "Settings", desc: "System & security", icon: Settings, color: "#64748b", route: "/settings", dataKey: "settings" as const },
+  { id: "smokecraft", title: "SmokeCraft", desc: "Launch cigar experience", icon: Flame, color: "#e85d26", route: "/smokecraft", dataKey: "smokecraft" as const, image: "/images/cigar.png" },
+  { id: "brewcraft", title: "BrewCraft", desc: "Beer experience", icon: Beer, color: "#f59e0b", route: "/brewcraft", dataKey: "brewcraft" as const, image: "/images/scenes/social.jpg" },
+  { id: "pourcraft", title: "PourCraft", desc: "Spirits experience", icon: Wine, color: "#a78bfa", route: "/pourcraft", dataKey: "pourcraft" as const, image: "/images/whiskey.png" },
+  { id: "vapecraft", title: "VapeCraft", desc: "Vape experience", icon: Wind, color: "#06b6d4", route: "/vapecraft", dataKey: "vapecraft" as const, image: "/images/scenes/bold.jpg" },
+  { id: "orders", title: "Orders", desc: "Live POS terminal", icon: ShoppingCart, color: "#d4af37", route: "/pos", dataKey: "orders" as const, image: "/images/scenes/reflective.jpg" },
+  { id: "inventory", title: "Inventory", desc: "Stock control", icon: Package, color: "#5b8def", route: "/pos", dataKey: "inventory" as const, image: "/images/cigar2.png" },
+  { id: "rewards", title: "Rewards", desc: "Loyalty & rewards", icon: Gift, color: "#34d399", route: "/pos", dataKey: "rewards" as const, image: "/images/scenes/relaxed.jpg" },
+  { id: "experiences", title: "Experiences", desc: "Craft engine", icon: Sparkles, color: "#f59e0b", route: "/experiences", dataKey: "experiences" as const, image: "/images/cigar1.png" },
+  { id: "campaigns", title: "Campaigns", desc: "Promotions", icon: Megaphone, color: "#ec4899", route: "/analytics", dataKey: "campaigns" as const, image: "/images/lounge-bg.jpg" },
+  { id: "analytics", title: "Analytics", desc: "Revenue & insights", icon: BarChart3, color: "#8b5cf6", route: "/analytics", dataKey: "analytics" as const, image: "/images/cigar3.png" },
+  { id: "vendors", title: "Vendors", desc: "Suppliers & restock", icon: Truck, color: "#06b6d4", route: "/vendors", dataKey: "vendors" as const, image: "/images/cigar4.png" },
+  { id: "devices", title: "Devices", desc: "Device control", icon: Monitor, color: "#f97316", route: "/devices", dataKey: "devices" as const, image: "/images/scenes/bold.jpg" },
+  { id: "staff", title: "Staff", desc: "Team management", icon: Users, color: "#a78bfa", route: "/staff", dataKey: "staff" as const, image: "/images/scenes/social.jpg" },
+  { id: "settings", title: "Settings", desc: "System & security", icon: Settings, color: "#64748b", route: "/settings", dataKey: "settings" as const, image: "/images/scenes/relaxed.jpg" },
 ] as const;
 
 export default function CommandCenter() {
@@ -60,11 +61,7 @@ export default function CommandCenter() {
   const statusColor = cc.systemStatus === "operational" ? "#34d399" : cc.systemStatus === "degraded" ? "#f59e0b" : "#ef4444";
 
   return (
-    <div style={{
-      height: "100dvh", display: "flex", flexDirection: "column",
-      background: "linear-gradient(180deg, #1a1714 0%, #0f0d0a 100%)",
-      color: "#e8e0c8", overflow: "hidden",
-    }}>
+    <BackgroundLayer image="/images/lounge-bg.jpg" style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)",
@@ -143,7 +140,7 @@ export default function CommandCenter() {
               style={{
                 display: "flex", alignItems: "center", gap: 14,
                 padding: "20px 18px",
-                background: "linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))",
+                background: "transparent",
                 border: `1px solid ${tile.color}30`,
                 borderRadius: 16, cursor: "pointer",
                 position: "relative", overflow: "hidden",
@@ -152,14 +149,22 @@ export default function CommandCenter() {
             >
               <div style={{
                 position: "absolute", inset: 0,
-                background: `radial-gradient(circle at 20% 50%, ${tile.color}15, transparent 60%)`,
+                backgroundImage: `url(${tile.image})`,
+                backgroundSize: "cover", backgroundPosition: "center",
+                opacity: 0.35,
+                pointerEvents: "none",
+              }} />
+              <div style={{
+                position: "absolute", inset: 0,
+                background: `linear-gradient(135deg, rgba(10,8,6,0.85) 0%, ${tile.color}18 100%)`,
                 pointerEvents: "none",
               }} />
               <div style={{
                 width: 52, height: 52, borderRadius: 14, flexShrink: 0,
-                background: `${tile.color}12`, border: `1px solid ${tile.color}30`,
+                background: `${tile.color}20`, border: `1px solid ${tile.color}40`,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 position: "relative",
+                backdropFilter: "blur(4px)",
               }}>
                 <Icon size={24} color={tile.color} strokeWidth={1.5} />
               </div>
@@ -184,6 +189,6 @@ export default function CommandCenter() {
       </div>
 
       <SystemStatusPanel open={statusOpen} onClose={() => setStatusOpen(false)} />
-    </div>
+    </BackgroundLayer>
   );
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { RoleHomeGrid } from "@/components/Touchscreen";
+import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 interface Section {
   id: string;
@@ -49,10 +50,8 @@ export default function AdminTouchscreen() {
   }
 
   return (
-    <div
-      style={{
+    <BackgroundLayer image="/images/cigar3.png" style={{
         minHeight: "100dvh",
-        background: "linear-gradient(180deg, #0c0a07 0%, #080604 100%)",
         color: "#e8e0c8",
         padding: "32px 20px env(safe-area-inset-bottom, 20px)",
       }}
@@ -98,6 +97,6 @@ export default function AdminTouchscreen() {
       ) : (
         <RoleHomeGrid sections={sections} onSelect={handleSelect} />
       )}
-    </div>
+    </BackgroundLayer>
   );
 }
