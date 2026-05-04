@@ -58,6 +58,7 @@ const TILES = [
     glow: "rgba(232,121,249,0.25)",
     route: "/experiences",
     image: "/images/scenes/craft-hub.png",
+    fit: "contain" as const,
   },
 ] as const;
 
@@ -146,7 +147,10 @@ export default function Entry() {
                 <div style={{
                   position: "absolute", inset: 0,
                   backgroundImage: `url(${tile.image})`,
-                  backgroundSize: "cover", backgroundPosition: "center",
+                  backgroundSize: "fit" in tile && tile.fit === "contain" ? "contain" : "cover",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                  backgroundColor: "fit" in tile && tile.fit === "contain" ? "#0a0806" : "transparent",
                   pointerEvents: "none",
                 }} />
                 <div style={{
