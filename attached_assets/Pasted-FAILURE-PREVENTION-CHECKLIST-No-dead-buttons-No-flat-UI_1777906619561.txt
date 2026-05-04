@@ -1,0 +1,519 @@
+FAILURE PREVENTION CHECKLIST
+
+* No dead buttons
+* No flat UI
+* No confusing navigation
+* No unsecured endpoints
+* No missing logs
+* No reward loopholes
+* No reliance on one POS integration
+* No tiny touch targets
+* No blank product images
+* No slow transitions
+
+⸻
+
+MASTER PROMPT (FULL SYSTEM)
+
+Build a premium, touchscreen-first Craft Command Center under:
+
+Profound Innovations → Craft Central → Craft Command Center
+
+Tagline:
+If you’ve got vision, we’ve got direction.
+
+Footer:
+Powered by 360 Enterprise Services
+
+⸻
+
+SYSTEM FLOW (FROM POWER ON)
+
+1. POWER SCREEN
+
+* Profound Innovations logo animates in
+* Soft glow + sound
+* Text:
+    “Powered by Profound Innovations”
+
+Transition smoothly to entry system
+
+⸻
+
+2. ACCESS PORTAL (ENTRY POINT)
+
+Route: /entry
+
+Four large tiles:
+
+Venue Access
+
+“For owners and staff”
+
+Admin Control
+
+“For system administrators”
+
+Vendor Access
+
+“For suppliers and partners”
+
+Demo Mode
+
+“Explore the system experience”
+
+Each tile:
+
+* Large icon
+* Glow effect
+* Tap animation
+* Expands into next interface
+
+⸻
+
+3. AUTH FLOW
+
+Venue Access
+
+* PIN login (staff)
+* Email login (owner/manager)
+
+Route based on role:
+
+Owner → Full Command Center
+Manager → Limited Command Center
+Staff → POS Mode
+
+⸻
+
+Admin Control
+
+* Full system access
+* All venues
+* All analytics
+* Security + logs
+
+⸻
+
+Vendor Access
+
+* Inventory supply panel
+* Restock system
+* Campaign participation
+
+⸻
+
+Demo Mode
+
+* Simulated environment
+* Auto walkthrough
+* Fake data (orders, rewards, inventory)
+
+⸻
+
+MAIN COMMAND CENTER UI
+
+STYLE
+
+* Deep charcoal base (not pure black)
+* Glass panels
+* Gold, blue, purple, green accents
+* Product images everywhere
+* Smooth animations
+* Not too dark, not too bright
+* Clean, readable
+
+⸻
+
+DASHBOARD
+
+Large tiles:
+
+Orders POS
+Tables
+Inventory
+Rewards
+Experiences
+Campaigns
+Analytics
+Vendors
+Devices
+Staff
+Settings
+Support
+
+Each tile:
+
+* Icon
+* Label
+* Micro-description
+* Live data
+* Glow/pulse state
+* Tap expands full-screen
+
+⸻
+
+POS MODE (FAMILIARITY LAYER)
+
+Layout:
+
+Left: active tickets
+Center: product grid (WITH IMAGES)
+Right: current order
+Bottom: checkout controls
+
+Include:
+
+Orders
+Tables
+Modifiers
+Discounts
+Taxes
+Tips
+Split payment
+Refunds
+Receipts
+Shift tracking
+
+Must feel like Toast/Square-level familiarity.
+
+⸻
+
+SMART COMMAND LAYER
+
+Enhance POS with:
+
+* Rewards auto-apply
+* Smart upsells
+* Experience triggers
+* Campaign overlays
+* Inventory intelligence
+
+Everything feels like an extension, not separate.
+
+⸻
+
+INVENTORY SYSTEM
+
+3 LAYERS
+
+Direct Integration
+
+Prepare connectors for major POS systems.
+
+Smart Import
+
+CSV / Excel / manual entry
+Auto-categorize products into:
+
+Liquor
+Cigars
+Beer
+Vape
+Food
+
+Shadow Inventory
+
+Track inventory through:
+
+Orders
+Rewards
+Experiences
+Manual adjustments
+
+⸻
+
+PRODUCT IMAGE SYSTEM
+
+Each product must support:
+
+* Image upload
+* Auto-fetch by product name
+* Category fallback
+
+Display in:
+
+POS
+Inventory
+Experiences
+Rewards
+Campaigns
+
+No blank images allowed.
+
+⸻
+
+EXPERIENCE ENGINE
+
+SmokeCraft
+PourCraft
+BeerCraft
+VapeCraft
+
+Each:
+
+* Touch-based flow
+* Product recommendations
+* Image-driven UI
+* Connects directly to order
+* Applies rewards automatically
+
+⸻
+
+REWARDS SYSTEM
+
+Tiers:
+
+Bronze
+Silver
+Gold
+Platinum
+Aficionado
+
+Features:
+
+Auto-apply rewards
+XP tracking
+Cooldowns
+Fraud protection
+
+Example prompts:
+
+“You’re one step away from your next reward.”
+
+⸻
+
+CAMPAIGN ENGINE
+
+Allow:
+
+Cigar brands
+Liquor distributors
+Beer companies
+Vape brands
+
+Track:
+
+Views
+Clicks
+Orders
+Revenue
+ROI
+
+⸻
+
+AI REVENUE BRAIN
+
+Displays:
+
+Best product to push
+Low inventory risks
+Top customer behavior
+Campaign performance
+Upsell opportunities
+
+⸻
+
+DEVICE CONTROL
+
+Each device:
+
+* Has device ID
+* Assigned to venue
+* Heartbeat every 60s
+
+Controls:
+
+Lock
+Unlock
+Refresh
+Disable
+Demo mode
+
+⸻
+
+SECURITY SYSTEM
+
+Authentication
+
+JWT
+bcrypt
+Session timeout
+PIN login
+
+⸻
+
+RBAC
+
+Owner
+Manager
+Staff
+
+⸻
+
+Payment Security
+
+Stripe only
+Webhook verification
+Idempotency
+Server-side validation
+
+⸻
+
+Inventory Protection
+
+Every change logged:
+
+User
+Device
+Before/after
+Reason
+Timestamp
+
+⸻
+
+Reward Fraud Protection
+
+Cooldowns
+Duplicate prevention
+XP locking
+Suspicious activity flags
+
+⸻
+
+Audit Logs
+
+Track everything.
+
+⸻
+
+API Security
+
+JWT required
+Rate limiting
+Validation
+No exposed errors
+
+⸻
+
+Kill Switch
+
+System-wide
+Venue-level
+Device-level
+
+⸻
+
+ROUTES
+
+/entry
+/login
+/pin-login
+/admin-login
+/vendor-login
+/demo
+
+/dashboard
+/pos
+/orders
+/tables
+/inventory
+/rewards
+/experiences
+/campaigns
+/vendors
+/devices
+/analytics
+/staff
+/settings
+/support
+
+⸻
+
+API ENDPOINTS
+
+Auth
+Orders
+Inventory
+Products
+Rewards
+Experiences
+Campaigns
+Vendors
+Devices
+Analytics
+Audit logs
+
+(fully structured as previously defined)
+
+⸻
+
+DATABASE
+
+venues
+users
+staff
+devices
+orders
+order_items
+tables
+products
+product_images
+inventory
+inventory_adjustments
+vendors
+rewards
+campaigns
+experience_sessions
+analytics
+audit_logs
+security_flags
+system_settings
+
+⸻
+
+ANIMATION
+
+Framer Motion:
+
+Tile glow
+Tap scale
+Slide transitions
+Live counters
+Pulse alerts
+Idle animation
+Demo walkthrough
+
+⸻
+
+TOUCHSCREEN RULES
+
+72px tap minimum
+No small controls
+Swipe navigation
+Large cards
+Instant response
+
+⸻
+
+FINAL POSITIONING
+
+This system starts as:
+
+A smarter layer beside their POS
+
+Then becomes:
+
+A full replacement POS + experience + revenue system
+
+⸻
+
+REAL TALK
+
+If built correctly:
+
+They won’t feel like they’re learning something new.
+
+They’ll feel like:
+
+“This is what my POS should have been.”
