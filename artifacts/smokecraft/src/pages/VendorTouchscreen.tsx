@@ -18,21 +18,23 @@ export default function VendorTouchscreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) return;
+    const fallback = () => {
+      setSections([
+        { id: "add_product", label: "Add Product", description: "Submit a new product", icon: "product", route: "/touch/vendor" },
+        { id: "my_products", label: "My Products", description: "View your catalog", icon: "catalog", route: "/touch/vendor" },
+        { id: "performance", label: "Performance", description: "Track campaigns", icon: "performance", route: "/touch/vendor" },
+        { id: "payouts", label: "Payouts", description: "View commissions", icon: "payouts", route: "/touch/vendor" },
+        { id: "campaigns", label: "Campaigns", description: "Manage sponsored", icon: "campaigns", route: "/touch/vendor" },
+      ]);
+      setLoading(false);
+    };
+    if (!token) { fallback(); return; }
     fetch("/api/touchscreen/vendor-home", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((data) => setSections(data.sections))
-      .catch(() => {
-        setSections([
-          { id: "add_product", label: "Add Product", description: "Submit a new product", icon: "product", route: "/touch/vendor" },
-          { id: "my_products", label: "My Products", description: "View your catalog", icon: "catalog", route: "/touch/vendor" },
-          { id: "performance", label: "Performance", description: "Track campaigns", icon: "performance", route: "/touch/vendor" },
-          { id: "payouts", label: "Payouts", description: "View commissions", icon: "payouts", route: "/touch/vendor" },
-          { id: "campaigns", label: "Campaigns", description: "Manage sponsored", icon: "campaigns", route: "/touch/vendor" },
-        ]);
-      })
+      .catch(fallback)
       .finally(() => setLoading(false));
   }, [token]);
 
@@ -68,19 +70,20 @@ export default function VendorTouchscreen() {
         </div>
         <button
           type="button"
-          onClick={() => navigate("/touch")}
+          onClick={() => navigate("/")}
           style={{
-            minHeight: 72,
-            padding: "0 24px",
+            minHeight: 44,
+            padding: "0 20px",
             background: "rgba(255,255,255,0.04)",
             border: "1px solid rgba(255,255,255,0.08)",
             borderRadius: 12,
-            color: "rgba(232,224,200,0.6)",
+            color: "#d4af37",
             fontSize: 13,
             cursor: "pointer",
+            fontWeight: 600,
           }}
         >
-          Home
+          &larr; Back
         </button>
       </div>
 

@@ -18,22 +18,24 @@ export default function AdminTouchscreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) return;
+    const fallback = () => {
+      setSections([
+        { id: "live_venues", label: "Live Venues", description: "Monitor active venues", icon: "venues", route: "/touch/admin" },
+        { id: "campaigns", label: "Campaign Control", description: "Manage campaigns", icon: "campaigns", route: "/touch/admin" },
+        { id: "devices", label: "Device Control", description: "Manage devices", icon: "devices", route: "/touch/admin" },
+        { id: "partners", label: "Brand Partners", description: "Vendor management", icon: "partners", route: "/touch/admin" },
+        { id: "fraud", label: "Fraud Review", description: "Risk detection", icon: "fraud", route: "/touch/admin" },
+        { id: "demo", label: "Demo Mode", description: "Launch demo", icon: "demo", route: "/demo" },
+      ]);
+      setLoading(false);
+    };
+    if (!token) { fallback(); return; }
     fetch("/api/touchscreen/admin-home", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((data) => setSections(data.sections))
-      .catch(() => {
-        setSections([
-          { id: "live_venues", label: "Live Venues", description: "Monitor active venues", icon: "venues", route: "/touch/admin" },
-          { id: "campaigns", label: "Campaign Control", description: "Manage campaigns", icon: "campaigns", route: "/touch/admin" },
-          { id: "devices", label: "Device Control", description: "Manage devices", icon: "devices", route: "/touch/admin" },
-          { id: "partners", label: "Brand Partners", description: "Vendor management", icon: "partners", route: "/touch/admin" },
-          { id: "fraud", label: "Fraud Review", description: "Risk detection", icon: "fraud", route: "/touch/admin" },
-          { id: "demo", label: "Demo Mode", description: "Launch demo", icon: "demo", route: "/demo" },
-        ]);
-      })
+      .catch(fallback)
       .finally(() => setLoading(false));
   }, [token]);
 
@@ -72,19 +74,20 @@ export default function AdminTouchscreen() {
         </div>
         <button
           type="button"
-          onClick={() => navigate("/touch")}
+          onClick={() => navigate("/")}
           style={{
-            minHeight: 72,
-            padding: "0 24px",
+            minHeight: 44,
+            padding: "0 20px",
             background: "rgba(255,255,255,0.04)",
             border: "1px solid rgba(255,255,255,0.08)",
             borderRadius: 12,
-            color: "rgba(232,224,200,0.6)",
+            color: "#d4af37",
             fontSize: 13,
             cursor: "pointer",
+            fontWeight: 600,
           }}
         >
-          Home
+          &larr; Back
         </button>
       </div>
 

@@ -128,14 +128,48 @@ export function DemoNdaModal({ onComplete, deviceId, venueId }: Props) {
         border: "1px solid rgba(212,175,55,0.35)", borderRadius: 16,
         padding: 32, maxWidth: 640, width: "100%", color: "#e8e0c8",
         boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
+        position: "relative",
       }}>
-        <h2 style={{ margin: 0, fontSize: 22, color: "#d4af37", letterSpacing: "0.04em" }}>
-          Confidentiality Agreement
-        </h2>
-        <p style={{ marginTop: 8, fontSize: 13, lineHeight: 1.55, opacity: 0.78 }}>
-          Access to the SmokeCraft 360 demo environment is provided in confidence.
-          By signing below, you agree not to disclose, reproduce, or reverse-engineer
-          any system, design, or data observed during this session.
+        <button
+          type="button"
+          onClick={() => { window.history.length > 1 ? window.history.back() : (window.location.href = "/"); }}
+          style={{
+            position: "absolute", top: 16, left: 16,
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "8px 16px", borderRadius: 10,
+            background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+            color: "#d4af37", fontSize: 13, fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >&larr; Back</button>
+
+        <div style={{
+          marginTop: 36, marginBottom: 20, padding: "20px 24px",
+          background: "rgba(212,175,55,0.06)",
+          border: "1px solid rgba(212,175,55,0.2)",
+          borderRadius: 12,
+        }}>
+          <h2 style={{ margin: "0 0 12px", fontSize: 24, color: "#d4af37", letterSpacing: "0.04em", fontFamily: "'Playfair Display', serif" }}>
+            Non-Disclosure Agreement
+          </h2>
+          <p style={{ margin: "0 0 10px", fontSize: 14, lineHeight: 1.65, opacity: 0.85 }}>
+            Access to the SmokeCraft 360 demo environment is provided in strict confidence.
+            By signing below, the undersigned agrees to the following terms:
+          </p>
+          <ol style={{ margin: 0, paddingLeft: 20, fontSize: 13, lineHeight: 1.7, opacity: 0.75 }}>
+            <li>You will not disclose, reproduce, or share any proprietary system designs, user interfaces, workflows, or data observed during this demo session with any third party.</li>
+            <li>You will not reverse-engineer, decompile, or attempt to derive the source code, algorithms, or trade secrets of the SmokeCraft 360 platform.</li>
+            <li>All materials, screenshots, recordings, or notes taken during this session remain the intellectual property of Profound Innovations / 360 Enterprise Services.</li>
+            <li>This agreement remains in effect for a period of two (2) years from the date of signing.</li>
+            <li>Violation of these terms may result in legal action and liability for damages.</li>
+          </ol>
+        </div>
+
+        <h3 style={{ margin: "0 0 4px", fontSize: 16, color: "#d4af37", letterSpacing: "0.04em" }}>
+          Sign Below
+        </h3>
+        <p style={{ margin: "0 0 8px", fontSize: 12, opacity: 0.5 }}>
+          Complete all fields to proceed to the demo experience.
         </p>
 
         <label style={lbl}>Full Name
