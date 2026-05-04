@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowLeft, Monitor, Tablet, Smartphone, Lock, Unlock, RefreshCw, Wifi, WifiOff, Battery, BatteryLow, Power } from "lucide-react";
+import { ArrowLeft, Monitor, Tablet, Smartphone, Lock, Unlock, RefreshCw, Wifi, WifiOff, Battery, BatteryLow, Power, ShieldAlert } from "lucide-react";
 import { useCommandCenter, type Device } from "@/contexts/CommandCenterContext";
+import { usePosContext } from "@/contexts/PosContext";
 import ConfirmModal from "@/components/ConfirmModal";
 
 const typeIcons: Record<Device["type"], typeof Monitor> = { kiosk: Monitor, tablet: Tablet, mobile: Smartphone };
@@ -143,11 +144,20 @@ function DeviceCard({ device, onConfirmAction }: { device: Device; onConfirmActi
 export default function DevicesModule() {
   const [, navigate] = useLocation();
   const cc = useCommandCenter();
+  const pos = usePosContext();
   const online = cc.devices.filter(d => d.status === "online").length;
+  const isPrivileged = pos.currentUser?.role === "owner" || pos.currentUser?.role === "manager";
 
   const [confirm, setConfirm] = useState<{ title: string; message: string; action: () => void; danger: boolean } | null>(null);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   const handleConfirmAction = (title: string, message: string, action: () => void, danger = false) => {
+    if (!isPrivileged) {
+      setAccessDenied(true);
+      setTimeout(() => setAccessDenied(false), 2500);
+      cc.addAuditEntry("access.denied", `Unauthorized attempt: ${title}`, pos.currentUser?.name);
+      return;
+    }
     setConfirm({ title, message, action, danger });
   };
 
@@ -170,6 +180,21 @@ export default function DevicesModule() {
           <DeviceCard key={device.id} device={device} onConfirmAction={handleConfirmAction} />
         ))}
       </div>
+
+      {accessDenied && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+          style={{
+            position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)",
+            zIndex: 9999, padding: "14px 24px", borderRadius: 14,
+            background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)",
+            backdropFilter: "blur(8px)", display: "flex", alignItems: "center", gap: 10,
+          }}
+        >
+          <ShieldAlert size={18} color="#ef4444" />
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#ef4444" }}>Access Denied — Owner or Manager role required</span>
+        </motion.div>
+      )}
 
       <ConfirmModal
         open={!!confirm}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowLeft, User, Crown, Shield, UserCog, Power } from "lucide-react";
+import { ArrowLeft, User, Crown, Shield, UserCog, Power, ShieldAlert } from "lucide-react";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
 import { usePosContext } from "@/contexts/PosContext";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -14,7 +14,9 @@ export default function StaffModule() {
   const cc = useCommandCenter();
   const pos = usePosContext();
 
+  const isPrivileged = pos.currentUser?.role === "owner" || pos.currentUser?.role === "manager";
   const [confirm, setConfirm] = useState<{ title: string; message: string; action: () => void; danger: boolean } | null>(null);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   function handleQuickSwitch(staffMember: { name: string; role: string; pin: string }) {
     pos.setCurrentUser(staffMember);
@@ -23,6 +25,12 @@ export default function StaffModule() {
   }
 
   function handleToggleStatus(memberId: string, memberName: string, currentStatus: string) {
+    if (!isPrivileged) {
+      setAccessDenied(true);
+      setTimeout(() => setAccessDenied(false), 2500);
+      cc.addAuditEntry("access.denied", `Unauthorized attempt: toggle staff status for ${memberName}`, pos.currentUser?.name);
+      return;
+    }
     if (currentStatus === "active") {
       setConfirm({
         title: "Deactivate Staff Member",
@@ -122,6 +130,21 @@ export default function StaffModule() {
           );
         })}
       </div>
+
+      {accessDenied && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+          style={{
+            position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)",
+            zIndex: 9999, padding: "14px 24px", borderRadius: 14,
+            background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)",
+            backdropFilter: "blur(8px)", display: "flex", alignItems: "center", gap: 10,
+          }}
+        >
+          <ShieldAlert size={18} color="#ef4444" />
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#ef4444" }}>Access Denied — Owner or Manager role required</span>
+        </motion.div>
+      )}
 
       <ConfirmModal
         open={!!confirm}

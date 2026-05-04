@@ -44,6 +44,7 @@ import { CommandCenterProvider } from "@/contexts/CommandCenterContext";
 import BootIntro, { hasSeenBootIntro } from "@/components/BootIntro";
 import GlobalBackButton                from "@/components/Layout/GlobalBackButton";
 import InactivityGuard                 from "@/components/InactivityGuard";
+import PosAuditBridge                  from "@/components/PosAuditBridge";
 import { useSystemVersion }            from "@/hooks/useSystemVersion";
 
 const queryClient = new QueryClient();
@@ -129,6 +130,7 @@ function App() {
                         <Router />
                       </WouterRouter>
                       <InactivityGuard />
+                      <PosAuditBridge />
                       <PresentationOverlay />
                       <DemoBanner />
                       <OfflineQueueBanner />
