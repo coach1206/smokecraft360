@@ -57,7 +57,7 @@ const TILES = [
     color: "#e879f9",
     glow: "rgba(232,121,249,0.25)",
     route: "/experiences",
-    image: "/images/scenes/craft-hub.jpg",
+    image: "/images/scenes/craft-hub.png",
   },
 ] as const;
 
