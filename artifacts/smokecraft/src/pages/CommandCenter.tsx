@@ -100,10 +100,11 @@ export default function CommandCenter() {
             onClick={() => setStatusOpen(true)}
             style={{
               display: "flex", alignItems: "center", gap: 6,
-              padding: "4px 10px", borderRadius: 16,
+              padding: "8px 14px", borderRadius: 16,
               background: `${statusColor}12`,
               border: `1px solid ${statusColor}30`,
               cursor: "pointer",
+              minHeight: 44,
             }}
           >
             <div style={{ width: 10, height: 10, borderRadius: "50%", background: statusColor, boxShadow: `0 0 8px ${statusColor}` }} />

@@ -54,7 +54,9 @@ export default function SystemStatusPanel({ open, onClose }: SystemStatusPanelPr
   const lowStock = pos.products.filter(p => p.stock <= 5).length;
   const totalProducts = pos.products.length;
   const modeInfo = POS_MODE_INFO[cc.posMode];
-  const lastAudit = cc.auditLog[0];
+  const lastAudit = cc.auditLog.length > 0
+    ? cc.auditLog.reduce((latest, e) => new Date(e.timestamp) > new Date(latest.timestamp) ? e : latest)
+    : null;
 
   const systemColor = cc.systemStatus === "operational" ? "#34d399" : cc.systemStatus === "degraded" ? "#f59e0b" : "#ef4444";
   const deviceColor = onlineDevices === totalDevices ? "#34d399" : onlineDevices >= totalDevices / 2 ? "#f59e0b" : "#ef4444";
