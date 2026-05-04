@@ -76,6 +76,7 @@ import osFinancialsRouter       from "./routes/osFinancials";
 import { deviceTouch }          from "./middleware/deviceTouch";
 import { startAggregationWorker } from "./lib/aggregationWorker";
 import experienceEngineRouter    from "./routes/experienceEngine";
+import experienceCompleteRouter  from "./routes/experienceComplete";
 import { startExperienceAutomation } from "./services/experienceAutomation";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -261,6 +262,7 @@ app.use("/api/subscriptions",               subscriptionsRouter);   // mounts /c
 app.use("/api/billing",                     subscriptionsRouter);   // alias — exposes /portal at the brief's requested path
 app.use("/api",                             subscriptionsRouter);   // exposes /notifications at /api/notifications
 app.use("/api/experience-engine",          experienceEngineRouter);
+app.use("/api/experience",                experienceCompleteRouter);
 
 // Start background workers
 if (process.env["NODE_ENV"] !== "test") {

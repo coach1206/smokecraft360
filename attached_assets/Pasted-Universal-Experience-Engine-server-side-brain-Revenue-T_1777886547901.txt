@@ -1,0 +1,285 @@
+Universal Experience Engine (server-side brain)
+Revenue Trigger Engine
+Session + Identity Tracking
+Competition System (venues + users)
+Reward System
+Kiosk / Attract tracking hooks
+API routes to drive your UI
+⚠️ MISSING / REQUIRED (DON’T SKIP)
+
+Before code, quick reality check:
+
+You NEED:
+
+venueId on every session (multi-location system won’t work without it)
+mode (smoke, pour, brew, vape)
+sessionId (anonymous is fine)
+consistent event tracking (view, tap, complete, reward)
+
+If you skip this → your competition + revenue system breaks.
+
+🧠 BACKEND STRUCTURE
+server/
+├── engine/
+│   ├── experienceEngine.ts
+│   ├── revenueEngine.ts
+│   ├── competitionEngine.ts
+│   ├── sessionEngine.ts
+│
+├── routes/
+│   ├── experienceRoutes.ts
+│   ├── rewardRoutes.ts
+│   ├── leaderboardRoutes.ts
+│
+├── db/
+│   ├── schema.ts
+🗄️ DATABASE SCHEMA (DRIZZLE STYLE)
+
+Add this to your schema:
+
+// sessions
+export const experienceSessions = pgTable("experience_sessions", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull(),
+  venueId: text("venue_id").notNull(),
+  mode: text("mode").notNull(), // smoke | pour | brew | vape
+  score: integer("score").default(0),
+  reward: text("reward"),
+  profile: text("profile"),
+  completed: boolean("completed").default(false),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+// events
+export const experienceEvents = pgTable("experience_events", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id"),
+  type: text("type"), // tap, swipe, complete
+  value: jsonb("value"),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+// venue stats
+export const venueStats = pgTable("venue_stats", {
+  id: serial("id").primaryKey(),
+  venueId: text("venue_id"),
+  totalSessions: integer("total_sessions").default(0),
+  completions: integer("completions").default(0),
+  totalRevenue: integer("total_revenue").default(0),
+  avgScore: integer("avg_score").default(0)
+});
+
+// leaderboard
+export const leaderboard = pgTable("leaderboard", {
+  id: serial("id").primaryKey(),
+  venueId: text("venue_id"),
+  sessionId: text("session_id"),
+  score: integer("score"),
+  createdAt: timestamp("created_at").defaultNow()
+});
+🧠 EXPERIENCE ENGINE (CORE LOGIC)
+
+server/engine/experienceEngine.ts
+
+export function calculateScore(choices: any) {
+  let score = 0;
+
+  if (choices.vibe === "social") score += 20;
+  if (choices.strength === "heavy") score += 30;
+  if (choices.flavor === "smoky") score += 40;
+
+  return score;
+}
+
+export function generateProfile(score: number) {
+  if (score > 80) return "Bold Dominant";
+  if (score > 50) return "Balanced Explorer";
+  return "Smooth Casual";
+}
+💰 REVENUE ENGINE
+
+server/engine/revenueEngine.ts
+
+export function generateReward(score: number) {
+  const rand = Math.random();
+
+  if (score > 80 && rand > 0.7) {
+    return { type: "premium", value: "Free Upgrade" };
+  }
+
+  if (score > 50) {
+    return { type: "discount", value: "10% Off" };
+  }
+
+  return { type: "small", value: "5% Off" };
+}
+🧠 SESSION ENGINE
+
+server/engine/sessionEngine.ts
+
+import { db } from "../db";
+import { experienceSessions } from "../db/schema";
+
+export async function createSession(sessionId: string, venueId: string, mode: string) {
+  return db.insert(experienceSessions).values({
+    sessionId,
+    venueId,
+    mode
+  });
+}
+🏆 COMPETITION ENGINE
+
+server/engine/competitionEngine.ts
+
+import { db } from "../db";
+import { leaderboard, venueStats } from "../db/schema";
+
+export async function updateLeaderboard(sessionId: string, venueId: string, score: number) {
+  await db.insert(leaderboard).values({
+    sessionId,
+    venueId,
+    score
+  });
+}
+
+export async function updateVenueStats(venueId: string, score: number) {
+  await db.execute(`
+    UPDATE venue_stats
+    SET total_sessions = total_sessions + 1,
+        avg_score = (avg_score + ${score}) / 2
+    WHERE venue_id = ${venueId}
+  `);
+}
+🌐 EXPERIENCE ROUTES
+
+server/routes/experienceRoutes.ts
+
+import express from "express";
+import { calculateScore, generateProfile } from "../engine/experienceEngine";
+import { generateReward } from "../engine/revenueEngine";
+import { updateLeaderboard, updateVenueStats } from "../engine/competitionEngine";
+import { db } from "../db";
+import { experienceSessions } from "../db/schema";
+
+const router = express.Router();
+
+router.post("/complete", async (req, res) => {
+  const { sessionId, venueId, mode, choices } = req.body;
+
+  const score = calculateScore(choices);
+  const profile = generateProfile(score);
+  const reward = generateReward(score);
+
+  await db.insert(experienceSessions).values({
+    sessionId,
+    venueId,
+    mode,
+    score,
+    reward: reward.value,
+    profile,
+    completed: true
+  });
+
+  await updateLeaderboard(sessionId, venueId, score);
+  await updateVenueStats(venueId, score);
+
+  res.json({
+    score,
+    profile,
+    reward
+  });
+});
+
+export default router;
+🏆 LEADERBOARD ROUTE
+
+server/routes/leaderboardRoutes.ts
+
+import express from "express";
+import { db } from "../db";
+import { leaderboard } from "../db/schema";
+
+const router = express.Router();
+
+router.get("/", async (req, res) => {
+  const top = await db.select().from(leaderboard).orderBy("score desc").limit(10);
+  res.json(top);
+});
+
+export default router;
+🎁 REWARD ROUTE (FOR POS HOOK)
+
+server/routes/rewardRoutes.ts
+
+import express from "express";
+
+const router = express.Router();
+
+router.post("/apply", async (req, res) => {
+  const { rewardType, orderId } = req.body;
+
+  // hook into POS later
+  console.log("Applying reward:", rewardType);
+
+  res.json({ success: true });
+});
+
+export default router;
+🔌 APP WIRING
+
+In your main server:
+
+import experienceRoutes from "./routes/experienceRoutes";
+import leaderboardRoutes from "./routes/leaderboardRoutes";
+import rewardRoutes from "./routes/rewardRoutes";
+
+app.use("/api/experience", experienceRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/reward", rewardRoutes);
+🔥 WHAT THIS GIVES YOU (REAL TALK)
+
+With just this backend:
+
+You now have:
+
+✔ Real scoring system
+✔ Real reward generation
+✔ Session tracking
+✔ Venue performance tracking
+✔ Leaderboards
+✔ Revenue triggers
+✔ POS-ready reward hooks
+
+⚠️ WHAT YOU MIGHT STILL BE MISSING
+
+I’m not going to leave you blind here:
+
+1. Fraud / Abuse Protection
+
+People spamming sessions → fake rewards
+
+Fix later with:
+
+rate limiting
+session cooldown
+2. Real POS Integration
+
+Right now rewards are “logical”
+
+You’ll need:
+
+Stripe / Square / Toast hook
+3. Analytics Dashboard (for YOU)
+
+You need to see:
+
+which modes perform best
+which rewards convert
+which venues dominate
+💭 FINAL WORD
+
+This backend right here?
+
+This is the difference between:
+
+👉 “cool touchscreen experience”
