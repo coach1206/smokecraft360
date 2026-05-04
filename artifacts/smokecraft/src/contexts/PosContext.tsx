@@ -58,7 +58,7 @@ interface PosState {
   retryCheckout: (orderId: string) => Promise<Order | null>;
   refundOrder: (orderId: string) => boolean;
   manualStockAdjust: (productId: string, delta: number, reason: string) => { needsConfirmation: boolean; error?: string };
-  confirmLargeAdjustment: (productId: string, delta: number, reason: string) => void;
+  confirmLargeAdjustment: (productId: string, delta: number, reason: string) => boolean;
   dismissReward: () => void;
   dismissRewardBlocked: () => void;
   clearPaymentError: () => void;
@@ -433,8 +433,11 @@ export function PosProvider({ children }: { children: ReactNode }) {
     return { needsConfirmation: false };
   }, [applyStockDelta]);
 
-  const confirmLargeAdjustment = useCallback((productId: string, delta: number, reason: string) => {
+  const confirmLargeAdjustment = useCallback((productId: string, delta: number, reason: string): boolean => {
+    const role = userRef.current?.role?.toLowerCase();
+    if (role !== "owner" && role !== "manager") return false;
     applyStockDelta(productId, delta, reason || "manual.adjustment.confirmed");
+    return true;
   }, [applyStockDelta]);
 
   useEffect(() => {

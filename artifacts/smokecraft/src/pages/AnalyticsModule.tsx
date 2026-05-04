@@ -401,11 +401,17 @@ export default function AnalyticsModule() {
         danger={false}
         onConfirm={() => {
           if (pendingConfirm) {
-            pos.confirmLargeAdjustment(pendingConfirm.productId, pendingConfirm.delta, pendingConfirm.reason);
-            setPendingConfirm(null);
-            setAdjustProduct(null);
-            setAdjustDelta(0);
-            setAdjustReason("");
+            const ok = pos.confirmLargeAdjustment(pendingConfirm.productId, pendingConfirm.delta, pendingConfirm.reason);
+            if (ok) {
+              setPendingConfirm(null);
+              setAdjustProduct(null);
+              setAdjustDelta(0);
+              setAdjustReason("");
+              setAdjustError(null);
+            } else {
+              setPendingConfirm(null);
+              setAdjustError("Access denied — only Owner or Manager can approve large adjustments");
+            }
           }
         }}
         onCancel={() => setPendingConfirm(null)}
