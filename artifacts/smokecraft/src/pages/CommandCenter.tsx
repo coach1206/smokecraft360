@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import {
@@ -6,6 +7,7 @@ import {
 } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter, POS_MODE_INFO } from "@/contexts/CommandCenterContext";
+import SystemStatusPanel from "@/components/SystemStatusPanel";
 
 const TILES = [
   { id: "orders", title: "Orders", desc: "Live POS terminal", icon: ShoppingCart, color: "#d4af37", route: "/pos", dataKey: "orders" as const },
@@ -24,6 +26,7 @@ export default function CommandCenter() {
   const [, navigate] = useLocation();
   const pos = usePosContext();
   const cc = useCommandCenter();
+  const [statusOpen, setStatusOpen] = useState(false);
 
   const todayRevenue = cc.hourlyRevenue.reduce((s, h) => s + h.amount, 0) + pos.orders.reduce((s, o) => s + o.total, 0);
   const onlineDevices = cc.devices.filter(d => d.status === "online").length;
@@ -92,10 +95,20 @@ export default function CommandCenter() {
             <Layers size={11} color={POS_MODE_INFO[cc.posMode].color} />
             <span style={{ fontSize: 10, fontWeight: 600, color: POS_MODE_INFO[cc.posMode].color }}>{POS_MODE_INFO[cc.posMode].label}</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setStatusOpen(true)}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "4px 10px", borderRadius: 16,
+              background: `${statusColor}12`,
+              border: `1px solid ${statusColor}30`,
+              cursor: "pointer",
+            }}
+          >
             <div style={{ width: 10, height: 10, borderRadius: "50%", background: statusColor, boxShadow: `0 0 8px ${statusColor}` }} />
-            <span style={{ fontSize: 11, color: statusColor, textTransform: "capitalize" }}>{cc.systemStatus}</span>
-          </div>
+            <span style={{ fontSize: 11, color: statusColor, textTransform: "capitalize", fontWeight: 600 }}>{cc.systemStatus}</span>
+          </motion.button>
         </div>
       </div>
 
@@ -159,6 +172,8 @@ export default function CommandCenter() {
         <span><Activity size={10} style={{ marginRight: 4, verticalAlign: "middle" }} />Craft Command Center v1.0</span>
         <span>Powered by 360 Enterprise Services</span>
       </div>
+
+      <SystemStatusPanel open={statusOpen} onClose={() => setStatusOpen(false)} />
     </div>
   );
 }

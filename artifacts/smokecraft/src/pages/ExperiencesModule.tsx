@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, Wine, Beer, Wind, Plus, ChevronRight, Megaphone, Check } from "lucide-react";
 import { usePosContext, type Product } from "@/contexts/PosContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
+import KioskProductImage from "@/components/KioskProductImage";
 
 interface ExperienceType {
   id: string;
@@ -242,14 +243,14 @@ export default function ExperiencesModule() {
                         background: "rgba(255,255,255,0.04)", border: `1px solid ${activeExp.color}20`,
                         alignItems: "center",
                       }}>
-                      <div style={{
-                        width: 90, height: 90, borderRadius: 12, overflow: "hidden",
-                        background: "#0a0806", flexShrink: 0,
-                      }}>
-                        <img src={prod.image} alt={prod.name}
-                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                      </div>
+                      <KioskProductImage
+                        src={prod.image}
+                        alt={prod.name}
+                        category={prod.category}
+                        width={90}
+                        height={90}
+                        borderRadius={12}
+                      />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 16, fontWeight: 600, color: "#e8e0c8", marginBottom: 4 }}>{prod.name}</div>
                         <div style={{ fontSize: 20, fontWeight: 700, color: activeExp.color, marginBottom: 4 }}>${prod.price}</div>

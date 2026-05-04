@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Minus, Plus, Trash2, ShoppingCart, CheckCircle2, Gift, AlertTriangle, XCircle, RotateCcw, Loader2, Undo2 } from "lucide-react";
 import { usePosContext, type Product, type PaymentStatus } from "@/contexts/PosContext";
+import KioskProductImage from "@/components/KioskProductImage";
 
 const CATEGORIES = [
   { id: "all", label: "All" },
@@ -33,7 +34,6 @@ const STATUS_LABELS: Record<PaymentStatus, string> = {
 };
 
 function ProductCard({ product, onAdd, disabled }: { product: Product; onAdd: () => void; disabled?: boolean }) {
-  const [imgError, setImgError] = useState(false);
   const isLow = product.stock <= LOW_STOCK_THRESHOLD && product.stock > 0;
   const isOut = product.stock <= 0;
   const isDisabled = isOut || disabled;
@@ -60,25 +60,12 @@ function ProductCard({ product, onAdd, disabled }: { product: Product; onAdd: ()
         transition: "all 0.2s ease",
       }}
     >
-      <div style={{
-        width: "100%", aspectRatio: "1", overflow: "hidden",
-        background: imgError ? `linear-gradient(135deg, ${accent}15, ${accent}08)` : "#0a0806",
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}>
-        {imgError ? (
-          <div style={{ fontSize: 36, color: accent, opacity: 0.3 }}>
-            {product.category === "cigar" ? "◆" : product.category === "spirit" ? "◇" : product.category === "beer" ? "●" : "■"}
-          </div>
-        ) : (
-          <img
-            src={product.image}
-            alt={product.name}
-            onError={() => setImgError(true)}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            loading="lazy"
-          />
-        )}
-      </div>
+      <KioskProductImage
+        src={product.image}
+        alt={product.name}
+        category={product.category}
+        style={{ width: "100%", aspectRatio: "1" }}
+      />
       <div style={{ padding: "10px 12px", textAlign: "left", flex: 1 }}>
         <div style={{
           fontSize: 13, fontWeight: 600, color: "#e8e0c8",
