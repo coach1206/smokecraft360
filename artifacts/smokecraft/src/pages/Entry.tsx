@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Building2, Shield, Package, Play, Presentation } from "lucide-react";
+import { Building2, Shield, Package, Play, Presentation, Sparkles } from "lucide-react";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 import { useVenueContext } from "@/contexts/VenueContext";
 
@@ -55,6 +55,16 @@ const TILES = [
     glow: "rgba(245,158,11,0.25)",
     route: "/demo-mode",
     image: "/images/scenes/social.jpg",
+  },
+  {
+    id: "craft-hub",
+    title: "Craft Hub",
+    desc: "Guided cigar, spirit, beer & vape journeys",
+    icon: Sparkles,
+    color: "#e879f9",
+    glow: "rgba(232,121,249,0.25)",
+    route: "/experiences",
+    image: "/images/scenes/celebration.jpg",
   },
 ] as const;
 
