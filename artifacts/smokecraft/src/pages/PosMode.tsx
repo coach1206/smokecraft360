@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Minus, Plus, Trash2, ShoppingCart, CheckCircle2, Gift, AlertTriangle } from "lucide-react";
-import { usePosContext, type Product } from "@/contexts/PosContext";
+import { ArrowLeft, Minus, Plus, Trash2, ShoppingCart, CheckCircle2, Gift, AlertTriangle, XCircle, RotateCcw, Loader2, Undo2 } from "lucide-react";
+import { usePosContext, type Product, type PaymentStatus } from "@/contexts/PosContext";
 
 const CATEGORIES = [
   { id: "all", label: "All" },
@@ -14,10 +14,29 @@ const CATEGORIES = [
 
 const LOW_STOCK_THRESHOLD = 5;
 
-function ProductCard({ product, onAdd }: { product: Product; onAdd: () => void }) {
+const STATUS_COLORS: Record<PaymentStatus, string> = {
+  pending: "#f59e0b",
+  processing: "#5b8def",
+  paid: "#34d399",
+  failed: "#ef4444",
+  refunded: "#a78bfa",
+  voided: "#6b7280",
+};
+
+const STATUS_LABELS: Record<PaymentStatus, string> = {
+  pending: "Pending",
+  processing: "Processing",
+  paid: "Paid",
+  failed: "Failed",
+  refunded: "Refunded",
+  voided: "Voided",
+};
+
+function ProductCard({ product, onAdd, disabled }: { product: Product; onAdd: () => void; disabled?: boolean }) {
   const [imgError, setImgError] = useState(false);
   const isLow = product.stock <= LOW_STOCK_THRESHOLD && product.stock > 0;
   const isOut = product.stock <= 0;
+  const isDisabled = isOut || disabled;
 
   const catColors: Record<string, string> = {
     cigar: "#d4af37", spirit: "#5b8def", beer: "#f59e0b", food: "#34d399",
@@ -26,17 +45,17 @@ function ProductCard({ product, onAdd }: { product: Product; onAdd: () => void }
 
   return (
     <motion.button
-      whileHover={isOut ? {} : { scale: 1.03, y: -2 }}
-      whileTap={isOut ? {} : { scale: 0.96 }}
-      onClick={isOut ? undefined : onAdd}
-      disabled={isOut}
+      whileHover={isDisabled ? {} : { scale: 1.03, y: -2 }}
+      whileTap={isDisabled ? {} : { scale: 0.96 }}
+      onClick={isDisabled ? undefined : onAdd}
+      disabled={isDisabled}
       style={{
         display: "flex", flexDirection: "column",
         background: "rgba(255,255,255,0.03)",
-        border: `1px solid ${isOut ? "rgba(255,255,255,0.04)" : `${accent}25`}`,
+        border: `1px solid ${isDisabled ? "rgba(255,255,255,0.04)" : `${accent}25`}`,
         borderRadius: 16, overflow: "hidden",
-        cursor: isOut ? "not-allowed" : "pointer",
-        opacity: isOut ? 0.4 : 1,
+        cursor: isDisabled ? "not-allowed" : "pointer",
+        opacity: isDisabled ? 0.4 : 1,
         position: "relative",
         transition: "all 0.2s ease",
       }}
@@ -95,7 +114,52 @@ function ProductCard({ product, onAdd }: { product: Product; onAdd: () => void }
   );
 }
 
-function CheckoutOverlay({ order, reward, onDismiss }: {
+function ProcessingOverlay() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      style={{
+        position: "fixed", inset: 0, zIndex: 200,
+        background: "rgba(0,0,0,0.85)",
+        backdropFilter: "blur(12px)",
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center", gap: 24,
+      }}
+    >
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+        style={{
+          width: 80, height: 80, borderRadius: "50%",
+          background: "rgba(91,141,239,0.12)",
+          border: "2px solid rgba(91,141,239,0.4)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}
+      >
+        <Loader2 size={40} color="#5b8def" />
+      </motion.div>
+      <motion.h2
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        style={{
+          fontSize: 24, fontWeight: 700, color: "#e8e0c8",
+          fontFamily: "'Playfair Display', serif", margin: 0,
+        }}
+      >Processing Payment</motion.h2>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0.3, 0.7, 0.3] }}
+        transition={{ repeat: Infinity, duration: 2 }}
+        style={{ fontSize: 14, color: "rgba(232,224,200,0.5)" }}
+      >Verifying with payment provider...</motion.div>
+    </motion.div>
+  );
+}
+
+function SuccessOverlay({ order, reward, onDismiss }: {
   order: { id: string; total: number; items: { product: Product; quantity: number }[] };
   reward: string | null;
   onDismiss: () => void;
@@ -141,7 +205,7 @@ function CheckoutOverlay({ order, reward, onDismiss }: {
           fontSize: 28, fontWeight: 700, color: "#e8e0c8",
           fontFamily: "'Playfair Display', serif", margin: 0,
         }}
-      >Order Complete</motion.h2>
+      >Payment Confirmed</motion.h2>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -180,13 +244,104 @@ function CheckoutOverlay({ order, reward, onDismiss }: {
   );
 }
 
+function FailedOverlay({ error, onRetry, onDismiss }: {
+  error: string;
+  onRetry: () => void;
+  onDismiss: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      style={{
+        position: "fixed", inset: 0, zIndex: 200,
+        background: "rgba(0,0,0,0.85)",
+        backdropFilter: "blur(12px)",
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center", gap: 20,
+      }}
+    >
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 200, damping: 15 }}
+        style={{
+          width: 100, height: 100, borderRadius: "50%",
+          background: "rgba(239,68,68,0.12)",
+          border: "2px solid rgba(239,68,68,0.4)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}
+      >
+        <XCircle size={48} color="#ef4444" />
+      </motion.div>
+      <motion.h2
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        style={{
+          fontSize: 24, fontWeight: 700, color: "#e8e0c8",
+          fontFamily: "'Playfair Display', serif", margin: 0,
+        }}
+      >Payment Failed</motion.h2>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        style={{
+          fontSize: 14, color: "rgba(239,68,68,0.7)",
+          maxWidth: 360, textAlign: "center", lineHeight: 1.5,
+        }}
+      >{error}</motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        style={{ display: "flex", gap: 12, marginTop: 12 }}
+      >
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={onDismiss}
+          style={{
+            padding: "14px 28px", borderRadius: 14,
+            background: "rgba(255,255,255,0.06)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            color: "rgba(232,224,200,0.6)", fontSize: 15, fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >Dismiss</motion.button>
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={onRetry}
+          style={{
+            padding: "14px 28px", borderRadius: 14,
+            background: "linear-gradient(135deg, #d4af37, #a98828)",
+            border: "none",
+            color: "#0a0806", fontSize: 15, fontWeight: 700,
+            cursor: "pointer", display: "flex", alignItems: "center", gap: 8,
+          }}
+        >
+          <RotateCcw size={16} />
+          Retry Payment
+        </motion.button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function PosMode() {
   const [, navigate] = useLocation();
   const pos = usePosContext();
   const [activeCategory, setActiveCategory] = useState("all");
-  const [completedOrder, setCompletedOrder] = useState<{
-    id: string; total: number; items: { product: Product; quantity: number }[];
-  } | null>(null);
+  const [overlayState, setOverlayState] = useState<
+    | { type: "processing" }
+    | { type: "success"; order: { id: string; total: number; items: { product: Product; quantity: number }[] } }
+    | { type: "failed"; orderId: string; error: string }
+    | null
+  >(null);
   const [checkoutCooldown, setCheckoutCooldown] = useState(false);
   const [addedId, setAddedId] = useState<string | null>(null);
 
@@ -198,8 +353,10 @@ export default function PosMode() {
   const cartCount = pos.cart.reduce((sum, c) => sum + c.quantity, 0);
   const rewardClose = cartTotal >= 50;
 
+  const isLocked = pos.processingLock || overlayState?.type === "processing";
+
   function handleAdd(productId: string) {
-    if (completedOrder || checkoutCooldown) return;
+    if (overlayState || checkoutCooldown || isLocked) return;
     const ok = pos.addToCart(productId);
     if (ok) {
       setAddedId(productId);
@@ -207,17 +364,48 @@ export default function PosMode() {
     }
   }
 
-  function handleCheckout() {
-    const order = pos.checkout();
-    if (order) setCompletedOrder(order);
+  async function handleCheckout() {
+    if (isLocked || pos.cart.length === 0) return;
+    setOverlayState({ type: "processing" });
+    const order = await pos.checkout();
+    if (!order) {
+      setOverlayState(null);
+      return;
+    }
+    if (order.status === "paid") {
+      setOverlayState({ type: "success", order });
+    } else if (order.status === "failed") {
+      setOverlayState({ type: "failed", orderId: order.id, error: order.failureReason ?? "Payment failed" });
+    } else {
+      setOverlayState(null);
+    }
+  }
+
+  async function handleRetry(orderId: string) {
+    setOverlayState({ type: "processing" });
+    const order = await pos.retryCheckout(orderId);
+    if (!order) {
+      setOverlayState({ type: "failed", orderId, error: pos.paymentError ?? "Retry failed" });
+      return;
+    }
+    if (order.status === "paid") {
+      setOverlayState({ type: "success", order });
+    } else if (order.status === "failed") {
+      setOverlayState({ type: "failed", orderId: order.id, error: order.failureReason ?? "Payment failed" });
+    } else {
+      setOverlayState(null);
+    }
   }
 
   function handleDismissOverlay() {
-    setCompletedOrder(null);
+    setOverlayState(null);
     pos.dismissReward();
+    pos.clearPaymentError();
     setCheckoutCooldown(true);
     setTimeout(() => setCheckoutCooldown(false), 500);
   }
+
+  const canRefund = pos.currentUser?.role === "Owner" || pos.currentUser?.role === "Manager";
 
   return (
     <div style={{
@@ -265,14 +453,14 @@ export default function PosMode() {
         flex: 1, display: "flex", overflow: "hidden", minHeight: 0,
       }}>
         <div style={{
-          width: 220, flexShrink: 0, borderRight: "1px solid rgba(255,255,255,0.06)",
+          width: 240, flexShrink: 0, borderRight: "1px solid rgba(255,255,255,0.06)",
           display: "flex", flexDirection: "column", overflow: "hidden",
         }}>
           <div style={{
             padding: "14px 16px 10px",
             fontSize: 12, textTransform: "uppercase", letterSpacing: "0.15em",
             color: "rgba(212,175,55,0.5)", fontWeight: 600,
-          }}>Completed Orders</div>
+          }}>Order History</div>
           <div style={{ flex: 1, overflowY: "auto", padding: "0 12px 12px" }}>
             {pos.orders.length === 0 ? (
               <div style={{
@@ -280,28 +468,86 @@ export default function PosMode() {
                 fontSize: 13, color: "rgba(232,224,200,0.2)",
               }}>No orders yet</div>
             ) : (
-              pos.orders.map(order => (
-                <motion.div
-                  key={order.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  style={{
-                    padding: "12px 14px", marginBottom: 8,
-                    background: "rgba(255,255,255,0.03)",
-                    border: "1px solid rgba(52,211,153,0.15)",
-                    borderRadius: 12,
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "#34d399" }}>{order.id}</span>
-                    <span style={{ fontSize: 12, color: "rgba(232,224,200,0.4)" }}>${order.total.toFixed(2)}</span>
-                  </div>
-                  <div style={{ fontSize: 11, color: "rgba(232,224,200,0.3)" }}>
-                    {order.items.length} item{order.items.length !== 1 ? "s" : ""}
-                    {order.rewardApplied && <span style={{ color: "#d4af37", marginLeft: 6 }}>★ Reward</span>}
-                  </div>
-                </motion.div>
-              ))
+              pos.orders.map(order => {
+                const statusColor = STATUS_COLORS[order.status];
+                return (
+                  <motion.div
+                    key={order.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    style={{
+                      padding: "12px 14px", marginBottom: 8,
+                      background: "rgba(255,255,255,0.03)",
+                      border: `1px solid ${statusColor}25`,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: statusColor }}>{order.id}</span>
+                      <span style={{ fontSize: 12, color: "rgba(232,224,200,0.4)" }}>${order.total.toFixed(2)}</span>
+                    </div>
+                    <div style={{
+                      display: "flex", justifyContent: "space-between", alignItems: "center",
+                      fontSize: 11, color: "rgba(232,224,200,0.3)",
+                    }}>
+                      <span>
+                        {order.items.length} item{order.items.length !== 1 ? "s" : ""}
+                        {order.rewardApplied && <span style={{ color: "#d4af37", marginLeft: 6 }}>★ Reward</span>}
+                      </span>
+                      <span style={{
+                        fontSize: 10, fontWeight: 600, color: statusColor,
+                        background: `${statusColor}15`,
+                        padding: "2px 8px", borderRadius: 6,
+                        textTransform: "uppercase", letterSpacing: "0.05em",
+                      }}>
+                        {STATUS_LABELS[order.status]}
+                      </span>
+                    </div>
+                    {order.status === "failed" && (
+                      <motion.button
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleRetry(order.id)}
+                        disabled={isLocked}
+                        style={{
+                          marginTop: 8, width: "100%", padding: "8px 0",
+                          borderRadius: 8,
+                          background: "rgba(212,175,55,0.12)",
+                          border: "1px solid rgba(212,175,55,0.25)",
+                          color: "#d4af37", fontSize: 11, fontWeight: 600,
+                          cursor: isLocked ? "not-allowed" : "pointer",
+                          display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                          opacity: isLocked ? 0.4 : 1,
+                        }}
+                      >
+                        <RotateCcw size={12} />
+                        Retry Payment
+                      </motion.button>
+                    )}
+                    {order.status === "paid" && canRefund && (
+                      <motion.button
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => pos.refundOrder(order.id)}
+                        style={{
+                          marginTop: 8, width: "100%", padding: "8px 0",
+                          borderRadius: 8,
+                          background: "rgba(167,139,250,0.08)",
+                          border: "1px solid rgba(167,139,250,0.2)",
+                          color: "#a78bfa", fontSize: 11, fontWeight: 600,
+                          cursor: "pointer",
+                          display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                        }}
+                      >
+                        <Undo2 size={12} />
+                        Refund
+                      </motion.button>
+                    )}
+                  </motion.div>
+                );
+              })
             )}
           </div>
         </div>
@@ -346,7 +592,7 @@ export default function PosMode() {
                 animate={addedId === product.id ? { scale: [1, 0.95, 1.02, 1] } : {}}
                 transition={{ duration: 0.25 }}
               >
-                <ProductCard product={product} onAdd={() => handleAdd(product.id)} />
+                <ProductCard product={product} onAdd={() => handleAdd(product.id)} disabled={isLocked} />
               </motion.div>
             ))}
           </div>
@@ -389,6 +635,8 @@ export default function PosMode() {
                       background: "rgba(255,255,255,0.03)",
                       border: "1px solid rgba(255,255,255,0.06)",
                       borderRadius: 12,
+                      opacity: isLocked ? 0.5 : 1,
+                      pointerEvents: isLocked ? "none" : "auto",
                     }}
                   >
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -500,34 +748,38 @@ export default function PosMode() {
 
             <div style={{ display: "flex", gap: 10 }}>
               <motion.button
-                whileTap={{ scale: 0.95 }}
+                whileTap={isLocked ? {} : { scale: 0.95 }}
                 onClick={() => pos.clearCart()}
-                disabled={pos.cart.length === 0}
+                disabled={pos.cart.length === 0 || isLocked}
                 style={{
                   flex: 1, minHeight: 56, borderRadius: 14,
                   background: "rgba(255,255,255,0.04)",
                   border: "1px solid rgba(255,255,255,0.08)",
-                  color: pos.cart.length === 0 ? "rgba(232,224,200,0.2)" : "rgba(232,224,200,0.5)",
-                  fontSize: 14, fontWeight: 600, cursor: pos.cart.length === 0 ? "not-allowed" : "pointer",
+                  color: (pos.cart.length === 0 || isLocked) ? "rgba(232,224,200,0.2)" : "rgba(232,224,200,0.5)",
+                  fontSize: 14, fontWeight: 600,
+                  cursor: (pos.cart.length === 0 || isLocked) ? "not-allowed" : "pointer",
                 }}
               >Clear</motion.button>
               <motion.button
-                whileHover={pos.cart.length > 0 ? { scale: 1.02 } : {}}
-                whileTap={pos.cart.length > 0 ? { scale: 0.97 } : {}}
+                whileHover={(pos.cart.length > 0 && !isLocked) ? { scale: 1.02 } : {}}
+                whileTap={(pos.cart.length > 0 && !isLocked) ? { scale: 0.97 } : {}}
                 onClick={handleCheckout}
-                disabled={pos.cart.length === 0}
+                disabled={pos.cart.length === 0 || isLocked}
                 style={{
                   flex: 2, minHeight: 56, borderRadius: 14,
-                  background: pos.cart.length > 0
+                  background: (pos.cart.length > 0 && !isLocked)
                     ? "linear-gradient(135deg, #d4af37, #a98828)"
                     : "rgba(212,175,55,0.12)",
-                  color: pos.cart.length > 0 ? "#0a0806" : "rgba(212,175,55,0.3)",
+                  color: (pos.cart.length > 0 && !isLocked) ? "#0a0806" : "rgba(212,175,55,0.3)",
                   fontSize: 16, fontWeight: 700,
-                  border: "none", cursor: pos.cart.length > 0 ? "pointer" : "not-allowed",
+                  border: "none",
+                  cursor: (pos.cart.length > 0 && !isLocked) ? "pointer" : "not-allowed",
                   letterSpacing: "0.03em",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 }}
               >
-                Checkout {cartTotal > 0 ? `$${rewardClose ? (cartTotal * 0.9).toFixed(2) : cartTotal.toFixed(2)}` : ""}
+                {isLocked && <Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} />}
+                {isLocked ? "Processing..." : `Checkout ${cartTotal > 0 ? `$${rewardClose ? (cartTotal * 0.9).toFixed(2) : cartTotal.toFixed(2)}` : ""}`}
               </motion.button>
             </div>
           </div>
@@ -535,14 +787,29 @@ export default function PosMode() {
       </div>
 
       <AnimatePresence>
-        {completedOrder && (
-          <CheckoutOverlay
-            order={completedOrder}
+        {overlayState?.type === "processing" && <ProcessingOverlay />}
+        {overlayState?.type === "success" && (
+          <SuccessOverlay
+            order={overlayState.order}
             reward={pos.rewardMessage}
             onDismiss={handleDismissOverlay}
           />
         )}
+        {overlayState?.type === "failed" && (
+          <FailedOverlay
+            error={overlayState.error}
+            onRetry={() => handleRetry(overlayState.orderId)}
+            onDismiss={handleDismissOverlay}
+          />
+        )}
       </AnimatePresence>
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }

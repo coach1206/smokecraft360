@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from "react";
 
 export interface Product {
   id: string;
@@ -14,13 +14,16 @@ export interface CartItem {
   quantity: number;
 }
 
+export type PaymentStatus = "pending" | "processing" | "paid" | "failed" | "refunded" | "voided";
+
 export interface Order {
   id: string;
   items: CartItem[];
   total: number;
-  status: "pending" | "completed";
+  status: PaymentStatus;
   createdAt: string;
   rewardApplied: boolean;
+  failureReason?: string;
 }
 
 interface PosState {
@@ -29,16 +32,23 @@ interface PosState {
   orders: Order[];
   currentUser: { name: string; role: string; pin: string } | null;
   rewardMessage: string | null;
+  processingLock: boolean;
+  paymentError: string | null;
   setCurrentUser: (u: { name: string; role: string; pin: string } | null) => void;
   addToCart: (productId: string) => boolean;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, delta: number) => void;
   clearCart: () => void;
-  checkout: () => Order | null;
+  checkout: () => Promise<Order | null>;
+  retryCheckout: (orderId: string) => Promise<Order | null>;
+  refundOrder: (orderId: string) => boolean;
   dismissReward: () => void;
+  clearPaymentError: () => void;
 }
 
 const REWARD_THRESHOLD = 50;
+const PAYMENT_SIMULATE_MS = 1800;
+const PAYMENT_FAILURE_RATE = 0.1;
 
 const INITIAL_PRODUCTS: Product[] = [
   { id: "cig-1", name: "Arturo Fuente Opus X", category: "cigar", price: 42, image: "https://images.unsplash.com/photo-1589561253898-768105ca91a8?w=300&h=300&fit=crop&q=80", stock: 8 },
@@ -67,6 +77,18 @@ export function usePosContext(): PosState {
   return ctx;
 }
 
+function simulatePayment(): Promise<{ success: boolean; error?: string }> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      if (Math.random() < PAYMENT_FAILURE_RATE) {
+        resolve({ success: false, error: "Payment declined — card issuer rejected the transaction" });
+      } else {
+        resolve({ success: true });
+      }
+    }, PAYMENT_SIMULATE_MS);
+  });
+}
+
 export function PosProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>(() =>
     INITIAL_PRODUCTS.map(p => ({ ...p }))
@@ -75,111 +97,229 @@ export function PosProvider({ children }: { children: ReactNode }) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [currentUser, setCurrentUser] = useState<{ name: string; role: string; pin: string } | null>(null);
   const [rewardMessage, setRewardMessage] = useState<string | null>(null);
+  const [processingLock, setProcessingLock] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const lockRef = useRef(false);
+  const cartRef = useRef<CartItem[]>([]);
+  const ordersRef = useRef<Order[]>([]);
+  const productsRef = useRef<Product[]>(INITIAL_PRODUCTS);
+  const userRef = useRef<{ name: string; role: string; pin: string } | null>(null);
+
+  const syncCart = useCallback((c: CartItem[]) => { cartRef.current = c; setCart(c); }, []);
+  const syncOrders = useCallback((o: Order[]) => { ordersRef.current = o; setOrders(o); }, []);
+  const syncProducts = useCallback((p: Product[]) => { productsRef.current = p; setProducts(p); }, []);
+  const syncUser = useCallback((u: { name: string; role: string; pin: string } | null) => { userRef.current = u; setCurrentUser(u); }, []);
 
   const addToCart = useCallback((productId: string): boolean => {
-    const prod = products.find(p => p.id === productId);
+    if (lockRef.current) return false;
+    const prod = productsRef.current.find(p => p.id === productId);
     if (!prod || prod.stock <= 0) return false;
 
-    setProducts(prev => prev.map(p =>
+    const updatedProducts = productsRef.current.map(p =>
       p.id === productId ? { ...p, stock: p.stock - 1 } : p
-    ));
+    );
+    syncProducts(updatedProducts);
 
-    setCart(prev => {
-      const existing = prev.find(c => c.product.id === productId);
-      if (existing) {
-        return prev.map(c =>
-          c.product.id === productId
-            ? { ...c, quantity: c.quantity + 1 }
-            : c
-        );
-      }
-      return [...prev, { product: prod, quantity: 1 }];
-    });
+    const existing = cartRef.current.find(c => c.product.id === productId);
+    if (existing) {
+      syncCart(cartRef.current.map(c =>
+        c.product.id === productId ? { ...c, quantity: c.quantity + 1 } : c
+      ));
+    } else {
+      syncCart([...cartRef.current, { product: prod, quantity: 1 }]);
+    }
     return true;
-  }, [products]);
+  }, [syncProducts, syncCart]);
 
   const removeFromCart = useCallback((productId: string) => {
-    setCart(prev => {
-      const item = prev.find(c => c.product.id === productId);
-      if (!item) return prev;
-      setProducts(pp => pp.map(p =>
-        p.id === productId ? { ...p, stock: p.stock + item.quantity } : p
-      ));
-      return prev.filter(c => c.product.id !== productId);
-    });
-  }, []);
+    if (lockRef.current) return;
+    const item = cartRef.current.find(c => c.product.id === productId);
+    if (!item) return;
+    syncProducts(productsRef.current.map(p =>
+      p.id === productId ? { ...p, stock: p.stock + item.quantity } : p
+    ));
+    syncCart(cartRef.current.filter(c => c.product.id !== productId));
+  }, [syncProducts, syncCart]);
 
   const updateQuantity = useCallback((productId: string, delta: number) => {
-    setCart(prev => {
-      const item = prev.find(c => c.product.id === productId);
-      if (!item) return prev;
-      const newQty = item.quantity + delta;
-      if (newQty <= 0) {
-        setProducts(pp => pp.map(p =>
-          p.id === productId ? { ...p, stock: p.stock + item.quantity } : p
-        ));
-        return prev.filter(c => c.product.id !== productId);
-      }
-      if (delta > 0) {
-        const prod = products.find(p => p.id === productId);
-        if (!prod || prod.stock <= 0) return prev;
-        setProducts(pp => pp.map(p =>
-          p.id === productId ? { ...p, stock: p.stock - 1 } : p
-        ));
-      } else {
-        setProducts(pp => pp.map(p =>
-          p.id === productId ? { ...p, stock: p.stock + 1 } : p
-        ));
-      }
-      return prev.map(c =>
-        c.product.id === productId ? { ...c, quantity: newQty } : c
-      );
-    });
-  }, [products]);
+    if (lockRef.current) return;
+    const item = cartRef.current.find(c => c.product.id === productId);
+    if (!item) return;
+    const newQty = item.quantity + delta;
+    if (newQty <= 0) {
+      syncProducts(productsRef.current.map(p =>
+        p.id === productId ? { ...p, stock: p.stock + item.quantity } : p
+      ));
+      syncCart(cartRef.current.filter(c => c.product.id !== productId));
+      return;
+    }
+    if (delta > 0) {
+      const prod = productsRef.current.find(p => p.id === productId);
+      if (!prod || prod.stock <= 0) return;
+      syncProducts(productsRef.current.map(p =>
+        p.id === productId ? { ...p, stock: p.stock - 1 } : p
+      ));
+    } else {
+      syncProducts(productsRef.current.map(p =>
+        p.id === productId ? { ...p, stock: p.stock + 1 } : p
+      ));
+    }
+    syncCart(cartRef.current.map(c =>
+      c.product.id === productId ? { ...c, quantity: newQty } : c
+    ));
+  }, [syncProducts, syncCart]);
 
   const clearCart = useCallback(() => {
-    setCart(prev => {
-      for (const item of prev) {
-        setProducts(pp => pp.map(p =>
-          p.id === item.product.id ? { ...p, stock: p.stock + item.quantity } : p
-        ));
-      }
-      return [];
-    });
-  }, []);
+    if (lockRef.current) return;
+    const currentCart = cartRef.current;
+    if (currentCart.length === 0) return;
+    let prods = productsRef.current;
+    for (const item of currentCart) {
+      prods = prods.map(p =>
+        p.id === item.product.id ? { ...p, stock: p.stock + item.quantity } : p
+      );
+    }
+    syncProducts(prods);
+    syncCart([]);
+  }, [syncProducts, syncCart]);
 
-  const checkout = useCallback((): Order | null => {
-    let createdOrder: Order | null = null;
-    setCart(currentCart => {
-      if (currentCart.length === 0) return currentCart;
-      const total = currentCart.reduce((sum, c) => sum + c.product.price * c.quantity, 0);
-      const rewardApplied = total >= REWARD_THRESHOLD;
-      const order: Order = {
-        id: `ORD-${Date.now().toString(36).toUpperCase()}`,
-        items: [...currentCart],
-        total: rewardApplied ? Math.round(total * 0.9 * 100) / 100 : total,
-        status: "completed",
-        createdAt: new Date().toISOString(),
-        rewardApplied,
-      };
-      createdOrder = order;
-      setOrders(prev => [order, ...prev]);
+  const restoreStockForItems = useCallback((items: CartItem[]) => {
+    let prods = productsRef.current;
+    for (const item of items) {
+      prods = prods.map(p =>
+        p.id === item.product.id ? { ...p, stock: p.stock + item.quantity } : p
+      );
+    }
+    syncProducts(prods);
+  }, [syncProducts]);
+
+  const checkout = useCallback(async (): Promise<Order | null> => {
+    if (lockRef.current) return null;
+
+    const snapshotCart = [...cartRef.current];
+    if (snapshotCart.length === 0) return null;
+
+    lockRef.current = true;
+    setProcessingLock(true);
+    setPaymentError(null);
+
+    const total = snapshotCart.reduce((sum, c) => sum + c.product.price * c.quantity, 0);
+    const rewardApplied = total >= REWARD_THRESHOLD;
+    const finalTotal = rewardApplied ? Math.round(total * 0.9 * 100) / 100 : total;
+
+    const order: Order = {
+      id: `ORD-${Date.now().toString(36).toUpperCase()}`,
+      items: snapshotCart.map(c => ({ ...c })),
+      total: finalTotal,
+      status: "processing",
+      createdAt: new Date().toISOString(),
+      rewardApplied,
+    };
+
+    syncOrders([order, ...ordersRef.current]);
+    syncCart([]);
+
+    const result = await simulatePayment();
+
+    if (result.success) {
+      order.status = "paid";
+      syncOrders(ordersRef.current.map(o => o.id === order.id ? { ...o, status: "paid" } : o));
       if (rewardApplied) {
-        setRewardMessage(`You unlocked a reward! 10% off applied — saved $${(total - order.total).toFixed(2)}`);
+        setRewardMessage(`You unlocked a reward! 10% off applied — saved $${(total - finalTotal).toFixed(2)}`);
       }
-      return [];
-    });
-    return createdOrder;
-  }, []);
+    } else {
+      order.status = "failed";
+      order.failureReason = result.error;
+      syncOrders(ordersRef.current.map(o =>
+        o.id === order.id ? { ...o, status: "failed", failureReason: result.error } : o
+      ));
+      restoreStockForItems(snapshotCart);
+      setPaymentError(result.error ?? "Payment failed");
+    }
+
+    lockRef.current = false;
+    setProcessingLock(false);
+    return order;
+  }, [restoreStockForItems, syncOrders, syncCart]);
+
+  const retryCheckout = useCallback(async (orderId: string): Promise<Order | null> => {
+    if (lockRef.current) return null;
+
+    const failedOrder = ordersRef.current.find(o => o.id === orderId && o.status === "failed");
+    if (!failedOrder) return null;
+
+    lockRef.current = true;
+    setProcessingLock(true);
+    setPaymentError(null);
+
+    for (const item of failedOrder.items) {
+      const prod = productsRef.current.find(p => p.id === item.product.id);
+      if (!prod || prod.stock < item.quantity) {
+        lockRef.current = false;
+        setProcessingLock(false);
+        setPaymentError("Insufficient stock — some items are no longer available");
+        return null;
+      }
+    }
+
+    let prods = productsRef.current;
+    for (const item of failedOrder.items) {
+      prods = prods.map(p =>
+        p.id === item.product.id ? { ...p, stock: p.stock - item.quantity } : p
+      );
+    }
+    syncProducts(prods);
+
+    syncOrders(ordersRef.current.map(o =>
+      o.id === orderId ? { ...o, status: "processing" as PaymentStatus, failureReason: undefined } : o
+    ));
+
+    const result = await simulatePayment();
+    const returnOrder: Order = { ...failedOrder, failureReason: undefined };
+
+    if (result.success) {
+      returnOrder.status = "paid";
+      syncOrders(ordersRef.current.map(o => o.id === orderId ? { ...o, status: "paid" as PaymentStatus } : o));
+      if (failedOrder.rewardApplied) {
+        const rawTotal = failedOrder.items.reduce((sum, c) => sum + c.product.price * c.quantity, 0);
+        setRewardMessage(`You unlocked a reward! 10% off applied — saved $${(rawTotal - failedOrder.total).toFixed(2)}`);
+      }
+    } else {
+      returnOrder.status = "failed";
+      returnOrder.failureReason = result.error;
+      syncOrders(ordersRef.current.map(o =>
+        o.id === orderId ? { ...o, status: "failed" as PaymentStatus, failureReason: result.error } : o
+      ));
+      restoreStockForItems(failedOrder.items);
+      setPaymentError(result.error ?? "Payment failed");
+    }
+
+    lockRef.current = false;
+    setProcessingLock(false);
+    return returnOrder;
+  }, [restoreStockForItems, syncProducts, syncOrders]);
+
+  const refundOrder = useCallback((orderId: string): boolean => {
+    const role = userRef.current?.role;
+    if (role !== "Owner" && role !== "Manager") return false;
+    const order = ordersRef.current.find(o => o.id === orderId && o.status === "paid");
+    if (!order) return false;
+    restoreStockForItems(order.items);
+    syncOrders(ordersRef.current.map(o => o.id === orderId ? { ...o, status: "refunded" as PaymentStatus } : o));
+    return true;
+  }, [restoreStockForItems, syncOrders]);
 
   const dismissReward = useCallback(() => setRewardMessage(null), []);
+  const clearPaymentError = useCallback(() => setPaymentError(null), []);
 
   return (
     <PosContext.Provider value={{
       products, cart, orders, currentUser,
-      rewardMessage, setCurrentUser,
+      rewardMessage, processingLock, paymentError,
+      setCurrentUser: syncUser,
       addToCart, removeFromCart, updateQuantity,
-      clearCart, checkout, dismissReward,
+      clearCart, checkout, retryCheckout, refundOrder,
+      dismissReward, clearPaymentError,
     }}>
       {children}
     </PosContext.Provider>
