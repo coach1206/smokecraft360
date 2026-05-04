@@ -52,6 +52,22 @@ Introduces "Couples Mode" for blending user profiles, incorporates "Time-of-day 
 
 Dedicated kiosk-style pages (`BrewCraft.tsx`, `PourCraft.tsx`, `VapeCraft.tsx`) for craft-led pairing experiences, leveraging a modular approach for expansion and unique visual identities. Each page shares a 3-column layout (left step nav, center 4-card style picker with per-style hero photos, right `VoicePanel` AI sommelier) and reuses `ExperienceFrame`, `SuggestedMenu`, and `fetchRecommendations`. Categories: BrewCraft → `beer`, PourCraft → `alcohol`, VapeCraft → `vape`. VapeCraft uses a neon-vapor palette (purple/cyan/pink/amber per style) and degrades gracefully when the engine returns no match — the result block shows "venue inventory pending" until vape SKUs are seeded and the server-side Zod category enum is widened to include `vape`.
 
+### BrewStory Engine (`components/BrewStory.tsx`)
+
+3-panel swipeable insight component (Origin / Taste Science / Insider Secret) rendered after BrewCraft pairing results. Content is deterministically generated from `ProductResult` data (name, flavorNotes, strength, pairingTags). Uses Framer Motion horizontal transitions, pointer-based swipe navigation, and tab buttons. Wired into BrewCraft result flow after the pairing block.
+
+### TasteChallenge System (`components/TasteChallenge.tsx`)
+
+Multi-choice quiz derived from pairing result data: flavor identification, strength guess, pairing match. Awards +15 points for correct answers, +5 for attempts via fire-and-forget POST to `/api/loyalty/award`. Shows per-question feedback (correct/incorrect) and a completion summary with total score. Wired into BrewCraft after BrewStory, before upsell.
+
+### Build Your Own Flow (`pages/BuildYourOwn.tsx`)
+
+4-step drink builder at `/build-your-own`: pick base spirit (whiskey/gin/rum/tequila/vodka with hero photos) → select up to 3 flavor modifiers → name the drink → rarity reveal with score/percentile + closest real inventory match via `/api/recommend`. Awards 20 loyalty points on reveal. Accessible via "Build My Drink" button in PourCraft header. BrewCraft step nav expanded from 3 to 5 steps: Pick → Pair → Story → Challenge → Elevate.
+
+### Loyalty Award Endpoint (`POST /api/loyalty/award`)
+
+Server-side point awarding with hardened security: reason allowlist (`taste_challenge`, `build_your_own`), per-reason max point caps (15/20), per-user per-reason cooldown (30s/60s) to prevent farming, and Zod-validated input. Requires authentication.
+
 ### Personalization & Revenue Intelligence
 
 Adds a taste profile system, auto-recommendation using affinity vectors, session revenue forecasting, and smart dynamic pricing.

@@ -1,0 +1,225 @@
+Enhance my existing Node.js + Express + TypeScript project (SmokeCraft 360) by integrating the AI behavior system (Lucient Core) into real backend decision points focused on experience quality, pairing intelligence, upsell optimization, and order flow.
+
+Do NOT redesign UI.
+Do NOT remove or overwrite existing features.
+Do NOT break POS, ordering, pricing, or inventory systems.
+
+This is NOT a generic AI system.
+This is a real-time experience + revenue control layer.
+
+---
+
+## GOAL
+
+1. Ensure all experiences are valid and high-quality
+2. Validate cigar + drink pairings
+3. Control upsell logic to increase revenue without harming experience
+4. Ensure inventory-based recommendations
+5. Maintain scoring + reward system integrity
+6. Improve order outcomes and repeat usage
+
+---
+
+## STEP 1 — BEHAVIOR PROFILE (UPDATE)
+
+Update or confirm:
+server/config/aiBehavior.ts
+
+export const AI_BEHAVIOR_PROFILE = {
+identity: "Lucient Core",
+principles: [
+"Prioritize premium user experience",
+"Reject poor or mismatched pairings",
+"Ensure all recommendations are available in inventory",
+"Maximize revenue through intelligent upsells",
+"Protect brand quality and consistency"
+],
+mode: "experience-control"
+};
+
+---
+
+## STEP 2 — EXPERIENCE DECISION ENGINE
+
+Create:
+server/services/smokeCraftDecisionEngine.ts
+
+Add:
+
+import { AI_BEHAVIOR_PROFILE } from "../config/aiBehavior";
+
+export function validateExperience(experience: any) {
+if (!experience) return false;
+if (!experience.cigar || !experience.drink) return false;
+return true;
+}
+
+export function validatePairing(pairing: any) {
+if (!pairing) return false;
+
+// simple flavor compatibility logic (expand later)
+if (pairing.strengthMismatch === true) return false;
+
+return true;
+}
+
+export function validateUpsell(user: any, product: any) {
+if (!user || !product) return false;
+
+if (user.level === "beginner" && product.price > 150) return false;
+
+return true;
+}
+
+export function validateInventory(item: any) {
+if (!item) return false;
+if (item.available === false) return false;
+if (item.quantity !== undefined && item.quantity <= 0) return false;
+
+return true;
+}
+
+export function buildBehaviorContext(context: string) {
+return {
+identity: AI_BEHAVIOR_PROFILE.identity,
+principles: AI_BEHAVIOR_PROFILE.principles,
+context
+};
+}
+
+---
+
+## STEP 3 — PAIRING + EXPERIENCE FLOW HOOK
+
+Where pairing or experience is generated:
+
+import { validatePairing, validateExperience } from "../services/smokeCraftDecisionEngine";
+
+Before returning result:
+
+if (!validateExperience(experience) || !validatePairing(pairing)) {
+console.warn("Invalid experience blocked");
+skip or regenerate pairing;
+}
+
+---
+
+## STEP 4 — UPSELL CONTROL HOOK
+
+Where upsells are suggested:
+
+import { validateUpsell } from "../services/smokeCraftDecisionEngine";
+
+if (!validateUpsell(user, product)) {
+skip upsell;
+}
+
+---
+
+## STEP 5 — INVENTORY FILTER
+
+Where products are shown or recommended:
+
+import { validateInventory } from "../services/smokeCraftDecisionEngine";
+
+if (!validateInventory(item)) {
+skip item;
+}
+
+---
+
+## STEP 6 — SCORING + REWARD INTEGRITY
+
+Where scoring system runs:
+
+Ensure:
+
+* Points are only awarded on completed actions
+* Rewards match tier thresholds
+* No duplicate scoring events
+
+Log invalid scoring attempts.
+
+---
+
+## STEP 7 — AUTOMATION ENGINE (OPTIONAL LIGHT)
+
+Create:
+server/services/smokeCraftAutomation.ts
+
+Add:
+
+import { buildBehaviorContext } from "./smokeCraftDecisionEngine";
+
+export async function runExperienceOptimization() {
+const behavior = buildBehaviorContext("experience");
+
+console.log("Optimizing experience flow:", behavior.identity);
+}
+
+export function startSmokeCraftAutomation() {
+console.log("SmokeCraft Engine Started");
+
+setInterval(runExperienceOptimization, 1000 * 60 * 30);
+}
+
+---
+
+## STEP 8 — ROUTES (ADMIN ONLY)
+
+Create:
+server/routes/smokeCraftEngine.ts
+
+Add:
+
+import express from "express";
+import { runExperienceOptimization } from "../services/smokeCraftAutomation";
+
+const router = express.Router();
+
+router.get("/status", (req, res) => {
+res.json({ active: true, system: "SmokeCraft Experience Engine" });
+});
+
+router.post("/optimize", async (req, res) => {
+await runExperienceOptimization();
+res.json({ ok: true });
+});
+
+export default router;
+
+---
+
+## STEP 9 — REGISTER + START
+
+In backend entry:
+
+import smokeCraftRoutes from "./routes/smokeCraftEngine";
+app.use("/api/smokecraft", smokeCraftRoutes);
+
+import { startSmokeCraftAutomation } from "./services/smokeCraftAutomation";
+startSmokeCraftAutomation();
+
+---
+
+## STEP 10 — SAFETY
+
+* Do not expose internal logic to frontend
+* Do not break ordering or POS
+* Do not modify payment flows
+* Keep everything modular
+* Ensure TypeScript compiles
+
+---
+
+## STEP 11 — VERIFY
+
+Confirm:
+
+* /api/smokecraft/status returns active
+* invalid pairings are blocked
+* bad upsells are skipped
+* out-of-stock items never appear
+* scoring system is consistent
+
+Return summary only.

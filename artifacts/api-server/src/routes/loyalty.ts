@@ -2,6 +2,7 @@
  * Loyalty routes
  *
  * GET  /api/loyalty              — current user's points balance + available rewards + recent redemptions
+ * POST /api/loyalty/award        — award points (taste challenge, build-your-own, etc.)
  * POST /api/loyalty/redeem       — redeem points for a reward
  * GET  /api/loyalty/redemptions  — admin: all redemptions for a venue
  * PATCH /api/loyalty/redemptions/:id — admin: update redemption status
@@ -94,6 +95,54 @@ router.get(
       available,
       recentRedemptions,
     });
+  },
+);
+
+// ── POST /api/loyalty/award ──────────────────────────────────────────────────
+
+const AWARD_RULES: Record<string, { max: number; cooldownMs: number }> = {
+  taste_challenge: { max: 15, cooldownMs: 30_000 },
+  build_your_own:  { max: 20, cooldownMs: 60_000 },
+};
+
+const awardSchema = z.object({
+  points: z.number().int().min(1).max(100),
+  reason: z.enum(["taste_challenge", "build_your_own"]),
+});
+
+const awardCooldowns = new Map<string, number>();
+
+router.post(
+  "/award",
+  requireAuth,
+  async (req: AuthRequest, res: Response) => {
+    const parse = awardSchema.safeParse(req.body);
+    if (!parse.success) {
+      res.status(400).json({ error: "points (1-100) and valid reason required" });
+      return;
+    }
+    const userId = req.user!.id;
+    const { reason } = parse.data;
+    const rule = AWARD_RULES[reason];
+    const points = Math.min(parse.data.points, rule.max);
+
+    const cooldownKey = `${userId}:${reason}`;
+    const lastAwarded = awardCooldowns.get(cooldownKey) ?? 0;
+    if (Date.now() - lastAwarded < rule.cooldownMs) {
+      res.status(429).json({ error: "Too many award requests, try again shortly" });
+      return;
+    }
+    awardCooldowns.set(cooldownKey, Date.now());
+
+    await db.execute(sql`
+      INSERT INTO user_loyalty_points (user_id, total_points, points_redeemed)
+      VALUES (${userId}::uuid, ${points}, 0)
+      ON CONFLICT (user_id)
+      DO UPDATE SET total_points = user_loyalty_points.total_points + ${points}
+    `);
+
+    req.log.info({ userId, points, reason }, "loyalty points awarded");
+    res.json({ awarded: points, reason });
   },
 );
 

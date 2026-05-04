@@ -324,3 +324,33 @@ id = "_5L-YUd6glAaSi2ebwZ_U"
 uri = "file://attached_assets/generated_images/vape_tobacco.png"
 type = "image"
 title = "generated_image"
+
+[[generated]]
+id = "nTrALw2lZtaZ9827WkL4V"
+uri = "file://attached_assets/generated_images/build_whiskey.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "DD8yCa9aKIxdaDIHMMcRw"
+uri = "file://attached_assets/generated_images/build_gin.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "GKAKhcY1vmIqMm2-GBUdI"
+uri = "file://attached_assets/generated_images/build_rum.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "gbyzldjUoMQK5RDW_2TqR"
+uri = "file://attached_assets/generated_images/build_tequila.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "O6lrCjsZ7lQCY3oE-uH8Y"
+uri = "file://attached_assets/generated_images/build_vodka.png"
+type = "image"
+title = "generated_image"

@@ -196,27 +196,50 @@ export default function PourCraft() {
         {/* Inline back button removed — replaced by GlobalBackButton mounted
             once in App.tsx (history-based navigation). */}
         <div />
-        <div style={{ textAlign: "right", textShadow: "0 2px 8px rgba(0,0,0,0.85)" }}>
-          <h1
+        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          <button
+            type="button"
+            data-testid="pourcraft-build-your-own"
+            onClick={() => navigate("/build-your-own")}
             style={{
-              fontFamily: "var(--app-font-serif, Georgia, serif)",
-              fontSize:   "clamp(28px, 3.2vw, 44px)",
-              margin:     0, fontWeight: 600,
-              color:      "#FFFFFF",
-              letterSpacing: "0.02em",
+              background: "rgba(212,175,55,0.12)",
+              border: "1px solid rgba(212,175,55,0.45)",
+              color: "#D4AF37",
+              padding: "10px 22px",
+              borderRadius: 999,
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: "0.24em",
+              textTransform: "uppercase",
+              cursor: "pointer",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
             }}
           >
-            PourCraft
-          </h1>
-          <p
-            style={{
-              margin: "4px 0 0", fontSize: 12,
-              letterSpacing: "0.32em", textTransform: "uppercase",
-              color: "#D4AF37", fontWeight: 600,
-            }}
-          >
-            Pick your pour · We'll pair the cigar
-          </p>
+            Build My Drink
+          </button>
+          <div style={{ textAlign: "right", textShadow: "0 2px 8px rgba(0,0,0,0.85)" }}>
+            <h1
+              style={{
+                fontFamily: "var(--app-font-serif, Georgia, serif)",
+                fontSize:   "clamp(28px, 3.2vw, 44px)",
+                margin:     0, fontWeight: 600,
+                color:      "#FFFFFF",
+                letterSpacing: "0.02em",
+              }}
+            >
+              PourCraft
+            </h1>
+            <p
+              style={{
+                margin: "4px 0 0", fontSize: 12,
+                letterSpacing: "0.32em", textTransform: "uppercase",
+                color: "#D4AF37", fontWeight: 600,
+              }}
+            >
+              Pick your pour · We'll pair the cigar
+            </p>
+          </div>
         </div>
       </header>
 

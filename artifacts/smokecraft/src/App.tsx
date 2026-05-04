@@ -16,6 +16,7 @@ import Dashboard       from "@/pages/Dashboard";
 import BrewCraft       from "@/pages/BrewCraft";
 import PourCraft       from "@/pages/PourCraft";
 import VapeCraft       from "@/pages/VapeCraft";
+import BuildYourOwn   from "@/pages/BuildYourOwn";
 import PaymentSuccess  from "@/pages/PaymentSuccess";
 import PaymentCancel   from "@/pages/PaymentCancel";
 import Demo            from "@/pages/Demo";
@@ -45,7 +46,8 @@ function Router() {
           Declared before /:theme so /vapecraft no longer falls through
           to the cigar wizard in Home.tsx. Full vapor flow is a separate
           slice once vape inventory + style presets are designed. */}
-      <Route path="/vapecraft"  component={VapeCraft}      />
+      <Route path="/vapecraft"       component={VapeCraft}      />
+      <Route path="/build-your-own"  component={BuildYourOwn}   />
       <Route path="/success"    component={PaymentSuccess} />
       <Route path="/cancel"     component={PaymentCancel}  />
       {/* /demo — NDA-gated entry to the demo experience. Renders the

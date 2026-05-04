@@ -5,6 +5,8 @@ import { fetchRecommendations, type RecommendResponse, type ProductResult } from
 import ExperienceFrame from "@/components/ExperienceFrame";
 import VoicePanel     from "@/components/AIPanel/VoicePanel";
 import SuggestedMenu  from "@/components/AIPanel/SuggestedMenu";
+import BrewStory      from "@/components/BrewStory";
+import TasteChallenge from "@/components/TasteChallenge";
 import loungeBg from "@assets/generated_images/brewcraft_beer.png";
 /* Per-style beer hero photos (39th brief — "still no beer"). AI-generated
  * to match each BrewStyle's flavor/strength: pale lager, amber ale, hazy
@@ -320,7 +322,9 @@ export default function BrewCraft() {
             </p>
             <StepRow num={1} label="Pick a style"   active={!result} done={!!result} />
             <StepRow num={2} label="See the pair"   active={!!result && !upsellVisible} done={upsellVisible} />
-            <StepRow num={3} label="Elevate it"     active={upsellVisible}              done={false} />
+            <StepRow num={3} label="The story"      active={!!result}                   done={false} />
+            <StepRow num={4} label="Test yourself"  active={!!result}                   done={false} />
+            <StepRow num={5} label="Elevate it"     active={upsellVisible}              done={false} />
           </ExperienceFrame>
         </aside>
 
@@ -509,6 +513,29 @@ export default function BrewCraft() {
                       <ResultBlock label="The Beer"     product={result.beer}  testId="brewcraft-beer"  />
                       <ResultBlock label="Paired Cigar" product={result.cigar} testId="brewcraft-cigar" />
                     </div>
+
+                    {/* BrewStory — 3-panel swipeable insight (Origin / Taste / Secret) */}
+                    {result.beer && (
+                      <div style={{ marginTop: 24 }}>
+                        <BrewStory
+                          product={result.beer}
+                          accent={result.style.accent}
+                          testId="brewcraft-story"
+                        />
+                      </div>
+                    )}
+
+                    {/* Taste Challenge — quiz derived from the pairing */}
+                    {result.beer && (
+                      <div style={{ marginTop: 16 }}>
+                        <TasteChallenge
+                          product={result.beer}
+                          cigar={result.cigar}
+                          accent={result.style.accent}
+                          testId="brewcraft-challenge"
+                        />
+                      </div>
+                    )}
 
                     {/* Timed PourCraft upsell */}
                     <AnimatePresence>
