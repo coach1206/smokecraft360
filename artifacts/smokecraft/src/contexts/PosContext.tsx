@@ -211,13 +211,16 @@ export function PosProvider({ children }: { children: ReactNode }) {
       id: `ORD-${Date.now().toString(36).toUpperCase()}`,
       items: snapshotCart.map(c => ({ ...c })),
       total: finalTotal,
-      status: "processing",
+      status: "pending",
       createdAt: new Date().toISOString(),
       rewardApplied,
     };
 
     syncOrders([order, ...ordersRef.current]);
     syncCart([]);
+
+    order.status = "processing";
+    syncOrders(ordersRef.current.map(o => o.id === order.id ? { ...o, status: "processing" } : o));
 
     const result = await simulatePayment();
 
@@ -271,7 +274,11 @@ export function PosProvider({ children }: { children: ReactNode }) {
     syncProducts(prods);
 
     syncOrders(ordersRef.current.map(o =>
-      o.id === orderId ? { ...o, status: "processing" as PaymentStatus, failureReason: undefined } : o
+      o.id === orderId ? { ...o, status: "pending" as PaymentStatus, failureReason: undefined } : o
+    ));
+
+    syncOrders(ordersRef.current.map(o =>
+      o.id === orderId ? { ...o, status: "processing" as PaymentStatus } : o
     ));
 
     const result = await simulatePayment();
