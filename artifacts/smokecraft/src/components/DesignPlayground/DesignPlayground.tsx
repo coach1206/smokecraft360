@@ -349,6 +349,11 @@ export default function DesignPlayground({ craft, onComplete }: Props) {
   const [saved,    setSaved]    = useState(false);
   const [critique, setCritique] = useState<string | null>(null);
 
+  // Pinch-to-scale — tablet two-finger gesture on the canvas
+  const [canvasScale, setCanvasScale]  = useState(1.0);
+  const pinchStartDistRef              = useRef<number | null>(null);
+  const pinchStartScaleRef             = useRef<number>(1.0);
+
   // Load latest draft on mount
   useEffect(() => {
     void (async () => {
@@ -402,6 +407,33 @@ export default function DesignPlayground({ craft, onComplete }: Props) {
       transition: { duration: 0.52, ease: [0.22, 1, 0.36, 1] },
     });
     onComplete();
+  };
+
+  // ── Pinch gesture handlers ────────────────────────────────────────────────
+
+  function getPinchDist(t1: React.Touch, t2: React.Touch): number {
+    const dx = t1.clientX - t2.clientX;
+    const dy = t1.clientY - t2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  const handleCanvasTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      pinchStartDistRef.current  = getPinchDist(e.touches[0], e.touches[1]);
+      pinchStartScaleRef.current = canvasScale;
+    }
+  };
+
+  const handleCanvasTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length !== 2 || pinchStartDistRef.current === null) return;
+    const dist  = getPinchDist(e.touches[0], e.touches[1]);
+    const ratio = dist / pinchStartDistRef.current;
+    const next  = Math.max(0.55, Math.min(2.5, pinchStartScaleRef.current * ratio));
+    setCanvasScale(next);
+  };
+
+  const handleCanvasTouchEnd = (e: React.TouchEvent) => {
+    if (e.touches.length < 2) pinchStartDistRef.current = null;
   };
 
   // Canvas product shape dimensions per craft
@@ -478,9 +510,13 @@ export default function DesignPlayground({ craft, onComplete }: Props) {
           minHeight: 0,
         }}>
 
-          {/* LEFT: drag canvas */}
+          {/* LEFT: drag canvas — drag elements to reposition, pinch with two
+               fingers on tablet to zoom the canvas in or out (0.55×–2.5×). */}
           <div
             ref={canvasRef}
+            onTouchStart={handleCanvasTouchStart}
+            onTouchMove={handleCanvasTouchMove}
+            onTouchEnd={handleCanvasTouchEnd}
             style={{
               position: "relative",
               borderRadius: 20,
@@ -488,6 +524,7 @@ export default function DesignPlayground({ craft, onComplete }: Props) {
               border: `1px solid ${config.accent}1A`,
               overflow: "hidden",
               display: "flex", alignItems: "center", justifyContent: "center",
+              touchAction: "none",
             }}
           >
             {/* Canvas accent glow */}
@@ -497,7 +534,7 @@ export default function DesignPlayground({ craft, onComplete }: Props) {
               pointerEvents: "none",
             }} />
 
-            {/* Centered product mock */}
+            {/* Centered product mock — scales with pinch gesture */}
             <div style={{
               position: "relative",
               width: productW, height: productH,
@@ -508,6 +545,8 @@ export default function DesignPlayground({ craft, onComplete }: Props) {
               display: "flex", alignItems: "center", justifyContent: "center",
               flexDirection: "column", gap: 6,
               flexShrink: 0,
+              transform: `scale(${canvasScale})`,
+              transformOrigin: "center",
             }}>
               {/* Inner decorative frame */}
               <div style={{
@@ -525,7 +564,10 @@ export default function DesignPlayground({ craft, onComplete }: Props) {
               </span>
             </div>
 
-            {/* Draggable: Brand name chip */}
+            {/* Draggable: Brand name chip
+                 Outer motion.div handles drag constraints on the unscaled canvas.
+                 Inner div applies canvasScale so the chip visually matches the
+                 product mock zoom level without disturbing drag bounds. */}
             <motion.div
               drag
               dragConstraints={canvasRef}
@@ -539,7 +581,7 @@ export default function DesignPlayground({ craft, onComplete }: Props) {
                 userSelect: "none",
                 zIndex: 10,
               }}
-              whileDrag={{ cursor: "grabbing", scale: 1.06 }}
+              whileDrag={{ cursor: "grabbing" }}
             >
               <div style={{
                 padding: "7px 15px", borderRadius: 999,
@@ -553,12 +595,14 @@ export default function DesignPlayground({ craft, onComplete }: Props) {
                 letterSpacing: "0.06em",
                 whiteSpace: "nowrap",
                 maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis",
+                transform: `scale(${canvasScale})`,
+                transformOrigin: "center",
               }}>
                 {brandName || "Your Brand"}
               </div>
             </motion.div>
 
-            {/* Draggable: Emblem chip */}
+            {/* Draggable: Emblem chip (same scale-inner pattern as brand chip) */}
             <motion.div
               drag
               dragConstraints={canvasRef}
@@ -572,7 +616,7 @@ export default function DesignPlayground({ craft, onComplete }: Props) {
                 userSelect: "none",
                 zIndex: 10,
               }}
-              whileDrag={{ cursor: "grabbing", scale: 1.06 }}
+              whileDrag={{ cursor: "grabbing" }}
             >
               <div style={{
                 width: 48, height: 48, borderRadius: "50%",
@@ -581,6 +625,8 @@ export default function DesignPlayground({ craft, onComplete }: Props) {
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 20,
                 boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
+                transform: `scale(${canvasScale})`,
+                transformOrigin: "center",
               }}>
                 {(emblem.label.split(" ")[1] ?? emblem.label.charAt(0)) || "✦"}
               </div>
@@ -593,7 +639,7 @@ export default function DesignPlayground({ craft, onComplete }: Props) {
               color: "rgba(232,224,200,0.22)", fontWeight: 600,
               pointerEvents: "none",
             }}>
-              Drag elements to arrange
+              Drag · Pinch to scale
             </p>
           </div>
 
