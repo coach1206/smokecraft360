@@ -153,9 +153,10 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
     if (saving) return;
     setSaving(true);
     const payload = { brandName, selectedColor, selectedEmblem, engravingText, selectFields };
-    // Fire-and-forget API save; always mirror to localStorage for guests
-    void upsertDesignDraft({ craft, draftName: brandName || "My Draft", payload });
+    // Mirror to localStorage first (works for guests and offline)
     try { localStorage.setItem(`playground_draft_${craft}`, JSON.stringify(payload)); } catch {}
+    // Await API persistence so "Draft Saved" reflects actual cloud result for auth users
+    await upsertDesignDraft({ craft, draftName: brandName || "My Draft", payload });
     setSaving(false);
     setSaved(true);
     setCritique(generateCritique(config, brandName, selectedColor));

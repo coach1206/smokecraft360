@@ -4,7 +4,7 @@ import DesignPlayground, {
   type PlaygroundConfig,
 } from "@/components/DesignPlayground/DesignPlayground";
 import { useLocation } from "wouter";
-import { motion, AnimatePresence, animate } from "framer-motion";
+import { motion, AnimatePresence, animate, useAnimation } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { CategoryToggle }    from "@/components/CategoryToggle";
 import { FlavorChips }       from "@/components/FlavorChips";
@@ -224,6 +224,14 @@ export default function Home() {
   const [, navigate] = useLocation();
 
   const [showPlayground, setShowPlayground] = useState(() => !hasSeenPlayground("smoke"));
+  const [wasPlayground]                       = useState(showPlayground);
+  const contentAnim                           = useAnimation();
+
+  useEffect(() => {
+    if (!showPlayground) {
+      void contentAnim.start({ opacity: 1, scale: 1, transition: { duration: 0.42, ease: [0.22, 1, 0.36, 1] } });
+    }
+  }, [showPlayground, contentAnim]);
 
   const [phase, setPhase]                     = useState<Phase>("welcome");
   const [error, setError]                     = useState<string | null>(null);
@@ -689,6 +697,11 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      <motion.div
+        initial={wasPlayground ? { opacity: 0.88, scale: 0.97 } : false}
+        animate={contentAnim}
+        style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}
+      >
       <DynamicBackground bgKey={bgKey} />
 
       {/* Kiosk picture-frame overlay — decorative gold border on lg+ */}
@@ -1999,6 +2012,7 @@ export default function Home() {
 
         </AnimatePresence>
       </div>
+      </motion.div>
     </div>
   );
 }
