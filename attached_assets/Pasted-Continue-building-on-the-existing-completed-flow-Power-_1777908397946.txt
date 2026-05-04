@@ -1,0 +1,264 @@
+Continue building on the existing completed flow (Power → Entry → PIN Login → POS → Inventory → Rewards → Checkout).
+
+DO NOT rebuild anything already working.
+DO NOT duplicate logic.
+EXTEND the current system into the full Craft Command Center.
+
+If any part is already implemented, treat it as DONE and build around it.
+
+---
+
+GOAL:
+
+Transform the working POS system into a full Command Center + Control System + Experience Engine without breaking existing flow.
+
+Everything must remain connected.
+
+---
+
+PHASE: COMMAND CENTER + CONTROL LAYER
+
+---
+
+1. DASHBOARD (Command Center View)
+
+Route: /dashboard
+
+Build a premium control dashboard for Owner and Manager roles.
+
+Layout:
+
+Top Bar:
+- Venue name
+- System status (green/yellow/red)
+- Today’s revenue (live)
+- Active guests
+- Alerts indicator
+
+Main Grid (large animated tiles):
+
+- Orders (Live POS)
+- Inventory Control
+- Rewards & Loyalty
+- Experiences
+- Campaigns
+- Analytics
+- Vendors
+- Devices
+- Staff
+- Settings
+
+Each tile:
+- Icon
+- Label
+- Short description
+- Live data (count, revenue, etc.)
+- Glow or pulse animation
+- Tap expands into full screen module
+
+Navigation:
+- Must use smooth animated transitions
+- No page reloads
+- Include back button on every module
+
+---
+
+2. DEVICE CONTROL SYSTEM
+
+Route: /devices
+
+Create a full device management interface.
+
+Each device must show:
+- Device name
+- Status (online/offline)
+- Battery level
+- Assigned role (POS, kiosk, demo)
+- Last heartbeat timestamp
+
+Controls per device:
+- Lock device
+- Unlock device
+- Force refresh
+- Enable demo mode
+- Disable device
+
+Backend:
+- Simulate heartbeat every 60 seconds
+- Track device ID and status
+- Log all actions to audit system
+
+UI:
+- Large touch-friendly cards
+- Status color coding
+- Real-time feel
+
+---
+
+3. EXPERIENCE ENGINE (SmokeCraft / PourCraft / BeerCraft / VapeCraft)
+
+Route: /experiences
+
+Build a touchscreen flow system.
+
+User flow:
+- Tap an experience (SmokeCraft, PourCraft, etc.)
+- Answer simple questions (tap choices only)
+- Show recommendation results using product images
+
+Result must:
+- Display recommended product(s)
+- Include images
+- Show pairing suggestions
+- Include “Add to Order” button
+
+Critical:
+- Must connect directly to POS cart
+- Must trigger rewards if applicable
+
+Example output:
+“Smooth medium-bodied cigar with whiskey pairing recommended”
+
+---
+
+4. ANALYTICS + AI REVENUE BRAIN
+
+Route: /analytics
+
+Create a visual insights panel.
+
+Display:
+
+- Revenue chart (mock data but animated)
+- Top selling products
+- Low stock alerts
+- Reward usage
+- Campaign performance
+
+Add “AI Insight Panel”:
+
+Show messages like:
+- “Push premium cigars tonight”
+- “Inventory low on top-selling item”
+- “Customers trending toward whiskey pairings”
+
+Must feel intelligent but simple.
+
+---
+
+5. VENDOR + RESTOCK SYSTEM
+
+Route: /vendors
+
+Build:
+
+- Vendor list
+- Product supply mapping
+- Restock request button
+
+Each product should:
+- Be linked to a vendor
+- Show reorder option
+
+When restock is triggered:
+- Log action
+- Simulate request sent
+
+---
+
+6. STAFF MANAGEMENT
+
+Route: /staff
+
+Display:
+- Staff list
+- Role (Owner, Manager, Staff)
+- Status (active/inactive)
+
+Add:
+- Role switching (UI only for now)
+- Quick user switch (for POS handoff)
+
+---
+
+7. SECURITY VISIBILITY LAYER
+
+Add UI indicators (do NOT rebuild backend security):
+
+- Session active indicator
+- Device connected indicator
+- Lock state visuals
+- Audit log preview (last 5 actions)
+
+Route: /settings or /support
+
+---
+
+8. NAVIGATION SYSTEM
+
+Add persistent navigation:
+
+- Back button everywhere
+- Smooth transitions between modules
+- Maintain state between screens
+- No reloads
+
+---
+
+9. ANIMATION + UI QUALITY (MANDATORY)
+
+- Keep everything touchscreen-first
+- Large tap areas only
+- Smooth transitions (200–300ms)
+- No flat or dead UI
+- Maintain color balance (not too dark, not too bright)
+- Maintain product images everywhere applicable
+
+---
+
+10. INTEGRATION RULE
+
+Everything must connect back to the existing system:
+
+- Experiences → POS cart
+- Inventory → POS stock
+- Rewards → checkout
+- Devices → system state
+- Dashboard → real data
+
+No isolated features.
+
+---
+
+FINAL GOAL:
+
+After this phase, the system should feel like:
+
+A full venue control system where an owner can:
+- Monitor operations
+- Control devices
+- Manage inventory
+- Run experiences
+- Track revenue
+- Make decisions
+
+All from one touchscreen interface.
+
+---
+
+DO NOT BREAK:
+
+- Existing POS flow
+- Inventory tracking
+- Rewards logic
+- Checkout behavior
+
+If something already exists, reuse it.
+
+---
+
+END STATE:
+
+The system should now feel like a real Command Center, not just a POS.
+
+---

@@ -1,0 +1,207 @@
+Add a Founder Lock Key security layer to the Craft Command Center / Profound Innovations system.
+
+This is NOT the staff PIN system.
+This is NOT normal user authentication.
+This is a manufacturer/developer ownership protection layer.
+
+GOAL:
+Give the original developer/manufacturer secure control over the software, demo access, NDA protection, emergency lockdown, licensing, and anti-tamper enforcement.
+
+SYSTEM NAME:
+Founder Lock Key
+
+PURPOSE:
+Protect the software owner from unauthorized takeover, cloning, reverse engineering, partner lockout, unauthorized admin creation, license abuse, and unauthorized access to protected demo/IP materials.
+
+REQUIREMENTS:
+
+1. Environment-Based Founder Key
+Create an environment variable:
+
+FOUNDER_LOCK_KEY_HASH
+
+Never store the raw Founder Lock Key in code.
+Never send the raw key to the frontend.
+Never log the raw key.
+
+Use bcrypt or Argon2 to verify submitted Founder Lock Key against the stored hash.
+
+2. Founder Verification Endpoint
+
+Add backend endpoint:
+
+POST /api/founder/verify-lock-key
+
+Request:
+lockKey
+
+Response:
+verified true/false
+
+If verified:
+Create a short-lived founder session token.
+
+Founder token expires quickly.
+Recommended: 15 minutes.
+
+3. Founder Control Panel
+
+Add route:
+
+/founder/security
+
+Access requires:
+Admin login
+AND valid Founder Lock Key verification
+
+This panel must include:
+
+System ownership status
+License status
+NDA protection status
+Device lock status
+Admin account list
+Audit log preview
+Emergency controls
+
+4. Emergency Lockdown Controls
+
+Founder can:
+
+Lock entire system
+Unlock entire system
+Lock one venue
+Lock one device
+Disable demo mode
+Disable vendor access
+Disable campaign access
+Disable checkout
+Force logout all users
+
+Every action must be audit logged.
+
+5. Anti-Takeover Protection
+
+Block these actions unless Founder Lock Key is verified:
+
+Creating a new Super Admin
+Changing platform ownership settings
+Disabling audit logs
+Changing license status
+Changing encryption settings
+Exporting protected system data
+Disabling NDA enforcement
+Changing Founder Lock settings
+Deleting admin accounts
+Transferring system ownership
+
+6. NDA Protection Binding
+
+If demo mode or investor mode is active:
+
+Require NDA signed before accessing protected screens.
+
+Protected screens include:
+
+Craft Central
+Command Center
+SmokeCraft
+PourCraft
+BeerCraft
+VapeCraft
+Experience flows
+Investor demo
+Vendor demo
+Admin demo
+
+Store:
+name
+signature
+initials
+timestamp
+deviceId
+venueId
+ip/session data if available
+
+7. Tamper Detection
+
+Create security flags for:
+
+Failed Founder Lock attempts
+Multiple failed attempts
+Attempt to access protected route without Founder verification
+Attempt to disable audit logs
+Attempt to remove NDA protection
+Attempt to create unauthorized Super Admin
+Attempt to change ownership settings
+
+8. Lockout Rules
+
+After 5 failed Founder Lock attempts:
+
+Lock founder verification for 30 minutes
+Log critical security event
+Show warning:
+“Founder Lock temporarily disabled due to failed attempts.”
+
+9. Audit Logging
+
+Log:
+
+founder.lock_verified
+founder.lock_failed
+founder.system_locked
+founder.system_unlocked
+founder.venue_locked
+founder.device_locked
+founder.checkout_disabled
+founder.demo_disabled
+founder.unauthorized_admin_attempt
+founder.nda_protection_changed
+founder.ownership_change_blocked
+
+10. UI Requirements
+
+Founder Lock screen must be simple and serious.
+
+No flashy UI.
+
+Show:
+
+Founder Lock Key input
+Verify button
+Security status
+Last verified time
+Failed attempt warning
+Emergency actions after verification
+
+11. Security Rules
+
+Never reveal the Founder Lock Key.
+Never show the hash.
+Never store the raw key.
+Never allow frontend-only verification.
+Verification must happen server-side.
+Founder token must be short-lived.
+All protected actions must re-check founder session.
+
+12. Baseline Requirement
+
+Founder Lock Key is now part of the permanent baseline.
+
+Any future build involving:
+
+NDA
+demo mode
+investor mode
+admin control
+software ownership
+licensing
+security
+device control
+platform handoff
+
+must respect Founder Lock Key enforcement.
+
+END GOAL:
+The founder/manufacturer keeps protected control of the software without exposing secrets, while still allowing venues, vendors, staff, and admins to use the system safely.

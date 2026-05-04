@@ -42,7 +42,7 @@ export default function PinLogin() {
         if (user.role === "staff") {
           navigate("/pos");
         } else {
-          navigate("/pos");
+          navigate("/dashboard");
         }
       }, 1000);
       return;

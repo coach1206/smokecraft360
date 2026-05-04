@@ -16,6 +16,13 @@ import Entry           from "@/pages/Entry";
 import PinLogin        from "@/pages/PinLogin";
 import PosMode         from "@/pages/PosMode";
 import Dashboard       from "@/pages/Dashboard";
+import CommandCenter   from "@/pages/CommandCenter";
+import DevicesModule   from "@/pages/DevicesModule";
+import ExperiencesModule from "@/pages/ExperiencesModule";
+import AnalyticsModule from "@/pages/AnalyticsModule";
+import VendorsModule   from "@/pages/VendorsModule";
+import StaffModule     from "@/pages/StaffModule";
+import SettingsModule  from "@/pages/SettingsModule";
 import BrewCraft       from "@/pages/BrewCraft";
 import PourCraft       from "@/pages/PourCraft";
 import VapeCraft       from "@/pages/VapeCraft";
@@ -33,6 +40,7 @@ import { OfflineQueueBanner }   from "@/components/Demo/OfflineQueueBanner";
 import { PresentationOverlay }   from "@/components/Presentation/PresentationOverlay";
 import { KioskModeProvider, KioskModeBanner } from "@/contexts/KioskModeContext";
 import { PosProvider } from "@/contexts/PosContext";
+import { CommandCenterProvider } from "@/contexts/CommandCenterContext";
 import BootIntro, { hasSeenBootIntro } from "@/components/BootIntro";
 import GlobalBackButton                from "@/components/Layout/GlobalBackButton";
 import { useSystemVersion }            from "@/hooks/useSystemVersion";
@@ -46,8 +54,15 @@ function Router() {
       <Route path="/intro"      component={Intro}          />
       <Route path="/entry"      component={Entry}          />
       <Route path="/pin-login"  component={PinLogin}       />
-      <Route path="/pos"        component={PosMode}        />
-      <Route path="/dashboard"  component={Dashboard}      />
+      <Route path="/pos"         component={PosMode}         />
+      <Route path="/dashboard"   component={CommandCenter}   />
+      <Route path="/admin-panel" component={Dashboard}       />
+      <Route path="/devices"     component={DevicesModule}   />
+      <Route path="/experiences" component={ExperiencesModule} />
+      <Route path="/analytics"   component={AnalyticsModule} />
+      <Route path="/vendors"     component={VendorsModule}   />
+      <Route path="/staff"       component={StaffModule}     />
+      <Route path="/settings"    component={SettingsModule}  />
       {/* BrewCraft — beer-led quick-pick flow. Declared before /:theme so
           the explicit path wins; if it ever needs to live under a theme
           (e.g. /smokecraft/brewcraft) it can be moved down. */}
@@ -103,6 +118,7 @@ function App() {
             <AuthProvider>
               <PresentationProvider>
                 <PosProvider>
+                <CommandCenterProvider>
                 <KioskModeProvider>
                   {!ready && <BootIntro onFinish={() => setReady(true)} />}
                   {ready && (
@@ -120,6 +136,7 @@ function App() {
                     </>
                   )}
                 </KioskModeProvider>
+                </CommandCenterProvider>
                 </PosProvider>
               </PresentationProvider>
             </AuthProvider>

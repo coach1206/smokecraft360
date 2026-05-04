@@ -1,0 +1,303 @@
+FINAL PHASE: Harden the existing Craft Command Center into a production-ready POS replacement foundation.
+
+DO NOT rebuild what already works.
+DO NOT duplicate files.
+DO NOT break the current flow:
+Power → Entry → PIN Login → POS → Inventory → Rewards → Checkout → Dashboard → Devices → Experiences → Analytics → Vendors → Staff.
+
+If a feature already exists, mark it DONE and extend it safely.
+
+GOAL:
+Turn the current system into a scalable venue operating system that can start beside an existing POS, then become a full POS replacement.
+
+1. PAYMENT HARDENING
+
+Add a production-ready payment state model.
+
+Order payment states:
+pending
+processing
+paid
+failed
+refunded
+voided
+
+Rules:
+Never trust frontend payment success.
+Checkout must create a server-side payment record.
+Payment completion must be confirmed server-side.
+Prevent duplicate checkout clicks.
+Add processing lock.
+Add failure recovery.
+Add refund-ready structure.
+
+Add API endpoints:
+POST /api/payments/create-intent
+POST /api/payments/confirm
+POST /api/payments/refund
+GET /api/payments/:orderId/status
+
+Use mock Stripe mode for now, but structure the code so real Stripe can be connected later without rewriting the app.
+
+2. POS REPLACEMENT MODE
+
+Add POS operating modes:
+
+overlay
+hybrid
+full_pos
+
+Overlay Mode:
+Craft Command Center works beside the venue’s current POS.
+
+Hybrid Mode:
+Orders, rewards, and inventory mirror external POS data.
+
+Full POS Mode:
+Craft Command Center becomes the primary POS.
+
+Add UI toggle for Owner/Admin:
+Settings → POS Operating Mode
+
+Add clear labels:
+“Overlay Mode: Works beside your current POS”
+“Hybrid Mode: Syncs with your current POS”
+“Full POS Mode: Run Craft Command Center as your POS”
+
+3. MULTI-VENUE STRUCTURE
+
+Add venue scoping everywhere.
+
+Every order, product, inventory item, reward, device, campaign, staff user, audit log, and analytics event must include venueId.
+
+Rules:
+Staff can only see their assigned venue.
+Manager can only see their assigned venue.
+Owner can see assigned venue.
+Admin can see all venues.
+
+Do not expose cross-venue data.
+
+4. AUDIT LOG HARDENING
+
+Expand audit logs to cover:
+
+login
+logout
+PIN login
+order created
+order updated
+checkout started
+payment confirmed
+payment failed
+refund issued
+inventory adjusted
+reward applied
+reward blocked
+device locked
+device unlocked
+device refreshed
+demo mode enabled
+campaign created
+restock requested
+role changed
+POS mode changed
+
+Show last 10 audit logs in Settings or Support.
+
+5. SECURITY GUARDS
+
+Add:
+
+rate limiting for login and payment endpoints
+session timeout warning
+auto-lock after inactivity
+failed PIN attempt tracking
+temporary lockout after repeated failed attempts
+owner/admin confirmation for risky actions
+device shutdown option
+
+Do not expose secrets in frontend.
+
+6. INVENTORY INTEGRITY
+
+Add inventory adjustment rules:
+
+Every manual adjustment requires:
+productId
+beforeStock
+afterStock
+reason
+userId
+deviceId
+venueId
+timestamp
+
+Large stock changes must require Owner or Manager role.
+
+When checkout completes:
+Deduct inventory only once.
+Prevent double inventory deduction.
+Log inventory movement.
+
+7. REWARD FRAUD PROTECTION
+
+Add reward protection:
+
+One reward per order unless Owner override.
+Cooldown per customer/session.
+Block duplicate reward application.
+Log blocked attempts.
+Do not apply reward until order is valid.
+
+8. DEVICE CONTROL FINALIZATION
+
+Device controls must actually update device state:
+
+lock
+unlock
+refresh
+disable
+enable demo mode
+
+Add visual states:
+Online
+Offline
+Locked
+Disabled
+Demo Mode
+Needs Refresh
+
+Heartbeat should update lastSeen.
+
+9. POS INTEGRATION READY LAYER
+
+Create adapter-ready structure for:
+
+Toast
+Square
+Clover
+Lightspeed
+Manual Import
+
+Do not connect real APIs yet.
+
+Create folder:
+server/posAdapters/
+
+Files:
+baseAdapter.ts
+toastAdapter.ts
+squareAdapter.ts
+cloverAdapter.ts
+lightspeedAdapter.ts
+manualImportAdapter.ts
+
+Each adapter should expose:
+syncProducts()
+syncInventory()
+syncOrders()
+pushOrder()
+pullReports()
+
+Return mock data for now.
+
+10. PRODUCT IMAGE SYSTEM FINALIZATION
+
+Ensure every product has:
+
+imageUrl
+fallbackImageUrl
+category
+experienceType
+
+If image is missing:
+show category fallback image.
+
+Never show broken images.
+
+Add lazy loading for product images.
+
+11. INVESTOR DEMO MODE
+
+Route: /demo-mode
+
+Demo Mode should:
+
+auto-walk through the system
+show simulated orders
+show reward unlock
+show inventory update
+show device control
+show dashboard metrics
+show experience recommendation
+
+Add clear banner:
+“Demo Mode: Simulated data”
+
+No real checkout in demo mode.
+
+12. UI POLISH
+
+Make every screen feel consistent:
+
+same spacing
+same glass card style
+same button styling
+same animations
+same back button
+same readable contrast
+same touch target sizing
+
+No flat white screens.
+No dead buttons.
+No tiny controls.
+
+13. SYSTEM STATUS PANEL
+
+Add global status panel showing:
+
+API online
+device heartbeat active
+inventory sync status
+payment mode
+POS operating mode
+security state
+last audit event
+
+14. FINAL TEST FLOW
+
+Add or document test flow:
+
+PIN 1111 owner login
+open Dashboard
+switch POS mode
+go to POS
+add product images to cart
+trigger reward over $50
+checkout
+confirm payment state paid
+verify cart clears
+verify inventory deducted once
+open Devices
+lock/unlock device
+open Experiences
+add recommendation to order
+open Analytics
+verify revenue updates
+open Settings
+verify audit logs
+
+END STATE:
+The system should now feel like a real production-ready venue operating system, not just a demo.
+
+It should be familiar like a POS, but stronger because it includes:
+inventory intelligence
+rewards
+experiences
+campaigns
+devices
+analytics
+security
+multi-venue control
+and POS replacement mode.
