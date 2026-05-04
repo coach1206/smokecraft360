@@ -12,7 +12,10 @@ import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 interface ExperienceType {
   id: string;
   title: string;
+  brand: string;
   desc: string;
+  tags: string;
+  image: string;
   icon: typeof Sparkles;
   color: string;
   category: Product["category"];
@@ -22,7 +25,9 @@ interface ExperienceType {
 
 const EXPERIENCES: ExperienceType[] = [
   {
-    id: "smokecraft", title: "SmokeCraft", desc: "Premium cigar experience",
+    id: "smokecraft", title: "SmokeCraft", brand: "SmokeCraft 360",
+    desc: "Premium cigar experience", tags: "CIGARS · SPIRITS · LOUNGE",
+    image: "/images/scenes/smokecraft-card.jpg",
     icon: Sparkles, color: "#d4af37", category: "cigar",
     questions: [
       { prompt: "What strength do you prefer?", options: ["Mild", "Medium", "Full Body"] },
@@ -32,7 +37,9 @@ const EXPERIENCES: ExperienceType[] = [
     pairings: { default: "Pairs beautifully with aged whiskey or cognac" },
   },
   {
-    id: "pourcraft", title: "PourCraft", desc: "Spirit & cocktail journey",
+    id: "pourcraft", title: "PourCraft", brand: "PourCraft 360",
+    desc: "Spirit & cocktail journey", tags: "WINE · COCKTAILS",
+    image: "/images/scenes/pourcraft-card.jpg",
     icon: Wine, color: "#8b5cf6", category: "spirit",
     questions: [
       { prompt: "Choose your spirit", options: ["Whiskey", "Cognac", "Tequila", "Bourbon"] },
@@ -42,7 +49,9 @@ const EXPERIENCES: ExperienceType[] = [
     pairings: { default: "Try with a medium-bodied cigar for the perfect pairing" },
   },
   {
-    id: "beercraft", title: "BeerCraft", desc: "Craft beer selection",
+    id: "beercraft", title: "BeerCraft", brand: "BrewCraft 360",
+    desc: "Craft beer selection", tags: "BEER · PAIRINGS · QUICK",
+    image: "/images/scenes/brewcraft-card.jpg",
     icon: Beer, color: "#f59e0b", category: "beer",
     questions: [
       { prompt: "What style appeals to you?", options: ["Lager", "Ale", "IPA", "Stout"] },
@@ -52,7 +61,9 @@ const EXPERIENCES: ExperienceType[] = [
     pairings: { default: "Complements a mild cigar or charcuterie board" },
   },
   {
-    id: "vapecraft", title: "VapeCraft", desc: "Vapor experience",
+    id: "vapecraft", title: "VapeCraft", brand: "VapeCraft 360",
+    desc: "Vapor experience", tags: "VAPOR · FLAVOR · MODERN",
+    image: "/images/scenes/vapecraft-card.jpg",
     icon: Wind, color: "#06b6d4", category: "cigar",
     questions: [
       { prompt: "Flavor direction?", options: ["Fruity", "Menthol", "Tobacco", "Dessert"] },
@@ -139,11 +150,11 @@ export default function ExperiencesModule() {
           <ArrowLeft size={20} />
         </motion.button>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#f59e0b" }}>
-            {phase === "campaigns" ? "Campaigns" : phase === "select" ? "Craft Hub" : activeExp?.title}
+          <div style={{ fontSize: 22, fontWeight: 700, color: "#e8e0c8", fontFamily: "'Playfair Display', serif", letterSpacing: "0.02em" }}>
+            {phase === "campaigns" ? "Campaigns" : phase === "select" ? "Craft Your Experience" : activeExp?.title}
           </div>
-          <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>
-            {phase === "campaigns" ? "Create promotional campaigns" : phase === "select" ? "Choose your craft experience" : phase === "questions" ? `Question ${questionIdx + 1} of ${activeExp?.questions.length}` : "Your recommendation"}
+          <div style={{ fontSize: 10, color: "rgba(232,224,200,0.45)", letterSpacing: "0.25em", textTransform: "uppercase", marginTop: 2 }}>
+            {phase === "campaigns" ? "Create promotional campaigns" : phase === "select" ? "Tap to begin your journey" : phase === "questions" ? `Question ${questionIdx + 1} of ${activeExp?.questions.length}` : "Your recommendation"}
           </div>
         </div>
         {phase === "select" && (
@@ -163,34 +174,47 @@ export default function ExperiencesModule() {
         <AnimatePresence mode="wait">
           {phase === "select" && (
             <motion.div key="select" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16, width: "100%", maxWidth: 800 }}>
-              {EXPERIENCES.map((exp, i) => {
-                const Icon = exp.icon;
-                return (
-                  <motion.button key={exp.id}
-                    initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.06 }}
-                    whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                    onClick={() => startExperience(exp)}
-                    style={{
-                      display: "flex", alignItems: "center", gap: 16, padding: "24px 20px",
-                      background: `linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))`,
-                      border: `1px solid ${exp.color}30`, borderRadius: 18,
-                      cursor: "pointer", textAlign: "left", minHeight: 100,
-                      position: "relative", overflow: "hidden",
-                    }}>
-                    <div style={{ position: "absolute", inset: 0, background: `radial-gradient(circle at 15% 50%, ${exp.color}12, transparent 60%)`, pointerEvents: "none" }} />
-                    <div style={{ width: 56, height: 56, borderRadius: 14, background: `${exp.color}12`, border: `1px solid ${exp.color}30`, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", flexShrink: 0 }}>
-                      <Icon size={26} color={exp.color} />
-                    </div>
-                    <div style={{ position: "relative", flex: 1 }}>
-                      <div style={{ fontSize: 17, fontWeight: 600, color: "#e8e0c8", marginBottom: 4 }}>{exp.title}</div>
-                      <div style={{ fontSize: 12, color: "rgba(232,224,200,0.4)" }}>{exp.desc}</div>
-                    </div>
-                    <ChevronRight size={20} color="rgba(232,224,200,0.2)" style={{ position: "relative" }} />
-                  </motion.button>
-                );
-              })}
+              style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 18, width: "100%", maxWidth: 1100 }}>
+              {EXPERIENCES.map((exp, i) => (
+                <motion.button key={exp.id}
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.08, duration: 0.4 }}
+                  whileHover={{ scale: 1.03, y: -4 }} whileTap={{ scale: 0.97 }}
+                  onClick={() => startExperience(exp)}
+                  style={{
+                    display: "flex", flexDirection: "column", justifyContent: "flex-end",
+                    aspectRatio: "3 / 4", padding: 0,
+                    background: "#0a0806",
+                    border: `1px solid ${exp.color}40`, borderRadius: 16,
+                    cursor: "pointer", textAlign: "left",
+                    position: "relative", overflow: "hidden",
+                    boxShadow: `0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px ${exp.color}10`,
+                  }}>
+                  <div style={{
+                    position: "absolute", inset: 0,
+                    backgroundImage: `url(${exp.image})`,
+                    backgroundSize: "cover", backgroundPosition: "center",
+                    pointerEvents: "none",
+                  }} />
+                  <div style={{
+                    position: "absolute", inset: 0,
+                    background: `linear-gradient(180deg, rgba(10,8,6,0.1) 0%, rgba(10,8,6,0.4) 50%, rgba(10,8,6,0.92) 100%)`,
+                    pointerEvents: "none",
+                  }} />
+                  <div style={{ position: "relative", padding: "18px 20px 20px", textAlign: "left" }}>
+                    <div style={{
+                      fontSize: 22, fontWeight: 700, color: "#fff",
+                      fontFamily: "'Playfair Display', serif",
+                      textShadow: "0 2px 8px rgba(0,0,0,0.8)",
+                      marginBottom: 6,
+                    }}>{exp.brand}</div>
+                    <div style={{
+                      fontSize: 9, color: exp.color, letterSpacing: "0.25em",
+                      textShadow: "0 1px 4px rgba(0,0,0,0.8)", fontWeight: 600,
+                    }}>{exp.tags}</div>
+                  </div>
+                </motion.button>
+              ))}
             </motion.div>
           )}
 
