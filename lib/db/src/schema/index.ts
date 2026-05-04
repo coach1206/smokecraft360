@@ -51,3 +51,4 @@ export * from "./userVenueVisits";
 export * from "./stripeEvents";
 export * from "./brandPartners";
 export * from "./brandProducts";
+export * from "./touchscreenFlowSessions";

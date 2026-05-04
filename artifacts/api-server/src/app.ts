@@ -84,6 +84,7 @@ import deviceHeartbeatRouter     from "./routes/deviceHeartbeat";
 import brandPartnersRouter      from "./routes/brandPartners";
 import distributionInsightsRouter from "./routes/distributionInsights";
 import roiReportingRouter        from "./routes/roiReporting";
+import touchscreenRouter         from "./routes/touchscreen";
 import { startExperienceAutomation } from "./services/experienceAutomation";
 import { startSessionCleanupWorker } from "./lib/sessionCleanupWorker";
 import { startPayoutWorker }         from "./lib/payoutWorker";
@@ -284,6 +285,7 @@ app.use("/api/admin",                    deviceHeartbeatRouter);
 app.use("/api/brand-partners",           brandPartnersRouter);
 app.use("/api/distribution",             distributionInsightsRouter);
 app.use("/api/admin",                    roiReportingRouter);
+app.use("/api/touchscreen",              touchscreenRouter);
 
 // Start background workers
 if (process.env["NODE_ENV"] !== "test") {

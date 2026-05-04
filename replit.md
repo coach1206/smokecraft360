@@ -1,6 +1,6 @@
 # Overview
 
-SmokeCraft is a luxury cigar and spirits recommendation platform designed for upscale venues. It provides AI-driven personalized recommendations, comprehensive inventory management, and a robust loyalty system. The platform aims to enhance user engagement, facilitate venue competition, and evolve into a multi-craft "Experience Engine" catering to a broad spectrum of luxury preferences. Its core purpose is to offer discerning clientele sophisticated recommendation capabilities and operational support, including POS integration and advanced personalization.
+SmokeCraft is a luxury cigar and spirits recommendation platform for upscale venues. It offers AI-driven personalized recommendations, comprehensive inventory management, and a robust loyalty system. The platform aims to enhance user engagement, facilitate venue competition, and evolve into a multi-craft "Experience Engine." Its core purpose is to provide discerning clientele with sophisticated recommendation capabilities and operational support, including POS integration and advanced personalization.
 
 # User Preferences
 
@@ -10,7 +10,7 @@ I prefer concise and direct communication. When making changes, prioritize core 
 
 ## Monorepo Structure
 
-The project utilizes a pnpm workspace monorepo, employing TypeScript. It separates the frontend, built with React and Vite, from the backend, an Express 5 API server.
+The project uses a pnpm workspace monorepo with TypeScript, separating a React/Vite frontend from an Express 5 API backend.
 
 ## Tech Stack
 
@@ -18,210 +18,71 @@ The project utilizes a pnpm workspace monorepo, employing TypeScript. It separat
 -   **TypeScript**: Version 5.9
 -   **API Framework**: Express 5
 -   **Database**: PostgreSQL with Drizzle ORM
--   **Authentication**: JWT (HS256, 7-day expiry) using `jose` for tokens and `bcryptjs` for password hashing. Supports multiple user roles (`super_admin`, `venue_owner`, `manager`, `staff`, `brand_partner`, `customer`).
+-   **Authentication**: JWT (HS256) with `jose` and `bcryptjs` for password hashing, supporting multiple user roles.
 -   **Validation**: Zod
--   **Build Tool**: esbuild (for ESM bundles)
+-   **Build Tool**: esbuild
 
 ## UI/UX and Design
 
-The application features a luxury aesthetic characterized by a dark gold theme, glassmorphism cards, and a sophisticated typography palette (Cormorant Garamond, Inter, Playfair Display). A global design system leverages CSS custom properties for consistent theming. Key visual elements include `.glass-panel` classes and distinctive button styles (`sc-btn-primary`, `sc-btn-ghost`). The brand intro splash incorporates a premium animated sequence with a radial gradient, SVG noise overlay, pulsing ambient glow, 3D chevron animation, and masked text reveal. A global back button and an opt-in `AppLayout` are also included.
-
-## Core Features and Implementations
-
-### Recommendation Engine & AI Experience Engine
-
-The platform incorporates an AI-driven recommendation engine that uses a scoring mechanism based on flavor, strength, mood, and boost levels, alongside semantic cross-category and food pairing modules. An "AI Experience Engine" provides deterministic natural-language commentary, voice synthesis, and real-time orderable menu suggestions based on the recommendation engine's output, utilizing a templated `aiCommentary` builder.
-
-### Operations Layer
-
-Provides features for POS integration, reorder alerts, optimized menu layout, profit calculations, and staff sales pitches, with tenant isolation and atomic inventory decrement.
-
-### Image Engine
-
-A context-aware system that applies Cloudinary transforms based on context and handles subtype-based fallbacks.
-
-### Network Intelligence Layer
-
-Introduces "Couples Mode" for blended user profiles, integrates "Time-of-day context" into recommendations, and offers "Historical-data revenue forecast" and "Cross-venue low-stock digest."
-
-### Craft-Specific Experiences
-
-Dedicated kiosk-style pages for `BrewCraft`, `PourCraft`, and `VapeCraft` offer craft-led pairing experiences. These pages share a modular 3-column layout and reuse components for recommendations.
-
-### Lucient Core — Experience Decision Engine
-
-A real-time experience quality and revenue control layer integrated into the recommendation pipeline. It includes a behavior profile, a decision engine for validating experience completeness and filtering recommendations, an automation service for optimization passes, and admin routes for status and optimization.
-
-### Personalization & Revenue Intelligence
-
-Features include a taste profile system, auto-recommendation via affinity vectors, session revenue forecasting, and dynamic pricing.
-
-### Database Schema
-
-The database schema includes tables for users, products, experiences, loyalty, inventory, lounge statistics, and various operational and administrative functions such as reservations, IP assets, audit logs, support tickets, notifications, user memories, and multi-user sessions.
-
-### Authentication and Authorization
-
-JWT-based authentication with `requireAuth` middleware and a `requireRole` factory ensures granular access control based on user roles.
-
-### Progression and Loyalty System
-
-A 5-tier user progression system tied to verified orders and XP thresholds, unlocking venue-specific perks, alongside a separate loyalty points system for order bonuses.
-
-### Admin Intensity Controls
-
-A venue-level tuning system for reward, XP, and discount engines, stored as feature flags with configurable metadata and enforced ranges. Includes transaction-safe read-modify-write operations and a 60-second in-memory cache.
-
-### Session Cleanup Worker
-
-A background worker that periodically expires active sessions older than 4 hours (status → "expired"), transactionally cancelling pending redemptions for affected users. Also removes abandoned session members (sets `leftAt`) during each sweep. The manual run endpoint (`POST /api/admin/workers/session-cleanup/run`) has rate limiting (5/min) and audit logging.
-
-### Production Hardening Layer
-
-#### Stripe Event Idempotency
-A `stripe_events` table records processed event IDs. The webhook handler inserts before processing; duplicate PK (23505) triggers early return. Combined with per-order "already paid" checks for defense-in-depth.
-
-#### Tenant Isolation
-All multi-tenant routes enforce venue scoping: orders (GET filter + PATCH ownership check), products (venueId query param), loyalty redemptions (venue-scoped listing + PATCH ownership guard), rewards (venue-scoped or global listing), and experiences (venueId from JWT or body).
-
-#### Checkout Server-Side Pricing
-`POST /api/create-checkout-session` requires `items[].productId` and resolves prices from the `products` table. Client-supplied prices are never trusted.
-
-#### Session Lifecycle
-Sessions use 5 statuses: `active`, `completed`, `expired`, `archived`, `cancelled`. Manual close → "archived", timeout → "expired", payment success → "completed".
-
-#### Kill Switches
-`requirePaymentsEnabled` and `requireRewardsEnabled` middleware check global feature flags (`payments-enabled`, `rewards-enabled`) with 30s cache. Returns 503 when disabled. Mounted on checkout, payments, loyalty, and rewards routes.
-
-#### Encryption Utility
-AES-256-GCM field-level encryption via `DATA_ENCRYPTION_KEY`. `tryEncrypt` refuses plaintext fallback (throws). Located at `artifacts/api-server/src/lib/encryption.ts`.
-
-#### Audit Logging
-Payment success, loyalty point awards, reward redemptions, reward CRUD, and redemption status updates all emit audit log entries. The `audit_log` table has DB triggers preventing UPDATE/DELETE (append-only).
-
-#### Background Workers
-- **Payout Worker** (hourly): Processes approved payout requests, validates against pending commission totals, marks commissions paid.
-- **Reward Optimization Worker** (10min): Analyzes 7-day order/redemption ratios and adjusts reward point costs (±10%) based on usage rate.
-
-### Partnership & Distribution Engine
-
-A non-destructive extension wiring brand partners and campaigns into the recommendation pipeline, POS payload, analytics attribution, and admin control layer.
-
-#### Brand Partners & Product Links
-- `brand_partners` table: name, tier (LOCAL/REGIONAL/NATIONAL), monthlyBudgetCents, currentMonthSpendCents, placementPriority, allowedCraftTypes, date windows
-- `brand_products` table: links products to brand partners with boostWeight, isFeatured, venueId scoping, campaignId
-- In-memory `brandPartnerStore` cache loaded at startup, highest-priority brand wins per product
-
-#### Campaign Engine Extensions
-- Extended campaign types: BRAND_SPOTLIGHT, DOUBLE_XP, FEATURED_PAIRING, VENUE_CHALLENGE, COMPETITION, DISTRIBUTOR_PUSH, SEASONAL_PROMO, GENERAL
-- Budget enforcement: currentSpendCents, currentRedemptions tracked per campaign; budgetLimit and maxRedemptions enforced
-- Admin actions: POST pause/resume/disable with audit logging
-- Multiplier bounds validation: boostMultiplier and xpMultiplier clamped to 0.1–3.0 on both POST and PATCH
-- createdBy/updatedBy tracking on campaigns
-
-#### Recommendation Pipeline Injection
-- `applyBrandBoost()` and `applyCampaignBoost()` run after base scoring in boostService
-- Hard cap: MAX_BOOST_POINTS=5, brand boost capped at 30% weight
-- Each result includes: isSponsored, campaignTag, brandTag fields
-- Never overrides base score; respects inventory and campaign status
-
-#### Server-Side Order Attribution
-- Orders derive brandId, campaignId, sponsored, campaignType, attributionSource from server state via `deriveOrderAttribution()`
-- Client cannot set partnership fields (stripped by allowOnly)
-- POS payload includes: brandName, campaignDiscountCents, campaignXpMultiplier
-
-#### Campaign Budget Enforcement Worker
-- Runs every 10 minutes, scans active campaigns
-- Enforces: budgetLimitCents, maxRedemptions, endDate expiry
-- Sets status to paused (budget/redemption exhausted) or completed (expired)
-- Admin endpoints: GET/POST `/api/admin/workers/campaign-budget/status|run-now`
-- Idempotent, structured logging, analytics events for budget warnings/exhaustion
-
-#### Campaign Fraud Detection
-- Reuses existing `fraud_flags` table with "anomaly" kind
-- Detects: rapid redemption velocity (3+ in 5min), hourly abuse (5+ in 1hr), campaign-wide spikes (20+ in 5min)
-- Auto-pauses campaigns on abuse spike detection
-- Fires `campaign_abuse_flagged` analytics events
-- Hooks into order verification (both PATCH verify and QR scan paths)
-
-#### ROI Reporting
-- `GET /api/admin/campaigns/:id/roi` — views, selections, conversions, revenue, discount cost, net revenue, conversion rate, budget remaining, top products, top venues, fraud signals
-- `GET /api/admin/brands/:id/roi` — same metrics aggregated across brand partner's products and campaigns
-
-#### Analytics Event Types Added
-- brand_view, brand_selected, campaign_triggered, campaign_conversion, campaign_reward_applied, campaign_budget_warning, campaign_budget_exhausted, campaign_abuse_flagged
-
-#### Feature Flags Added
-- brand_partnership_engine, campaign_engine, sponsored_placement, campaign_budget_worker, campaign_roi_reporting, campaign_abuse_detection
-
-#### Verification Atomicity
-- Both PATCH verify and QR verify-scan use atomic CAS: `WHERE verified=false` prevents double-counting
-- Campaign conversion recording and fraud checks fire on both verification paths via shared `postVerifyCampaignHooks()`
-
-### Production Go-Live Control Layer
-
-#### System Version & Force Refresh
-- `GET /api/system/version` — public endpoint returning current version, min supported version, and force-refresh flag.
-- `POST /api/admin/system/force-refresh` — super_admin-only toggle with audit logging.
-- `useSystemVersion()` hook in App.tsx checks version on load and triggers page reload when force-refresh is enabled.
-
-#### Device Heartbeat
-- `POST /api/device/heartbeat` — rate-limited (30/min), validates UUID deviceId/venueId match, updates device status and version, returns per-device force-refresh flag.
-- `GET /api/admin/devices` — auth-gated device listing (super_admin sees all, managers see own venue).
-- `POST /api/admin/device/:deviceId/refresh` — super_admin-only per-device force-refresh queue with audit logging.
-
-#### Feature Flag Frontend Sync
-- `useFeatureFlags()` hook wraps ThemeContext for convenient flag access.
-- `useFeatureFlag(name, default)` returns individual flag values.
-- Burn-in protection gated behind `burn_in_protection` feature flag in KioskModeContext.
-
-#### RippleButton
-Shared tactile feedback component (`RippleButton.tsx`) with gold ripple animation, applied to TasteChallenge answer buttons, SwipeableCard "Order Now" CTA, and VerifyOrdersTab "Verify" button. Supports passthrough HTML attributes via rest props.
-
-### Kiosk Burn-in Protection
-
-A pixel-shift anti-burn-in system active in kiosk mode, cycling through directional offsets during idle periods to prevent screen burn-in. Gated behind the `burn_in_protection` feature flag.
-
-### Device Management
-
-Supports mobile, tablet, and kiosk devices with registration, status tracking, and session management. Kiosk mode includes inactivity timers, full-screen integration, burn-in protection, and lockdown features.
-
-#### Device Heartbeat (Client → Server)
-The `useDeviceHeartbeat` hook (`hooks/useDeviceHeartbeat.ts`) fires every 60s in kiosk/tablet mode, sending `{ deviceId, venueId, version, status }` to `POST /api/device/heartbeat`. If the server responds with `forceRefresh: true`, the client immediately reloads. This completes the per-device remote refresh loop (admin queues refresh via `POST /api/device/:deviceId/refresh` → next heartbeat triggers reload).
-
-### Lounge League
-
-A competition system that ranks venues based on performance metrics and awards badges.
-
-### Multi-User Sessions
-
-A grouping primitive for users (parties) with dedicated tables for `sessions` and `session_members`, unique active codes, and atomic member management.
-
-### Offline Queue
-
-Kiosks buffer offline actions in local storage and replay them on reconnect, with an `offline_queue` table for forensic auditing and idempotency.
-
-### Exports
-
-Audit-logged data exports for vendors, products, inventory, and orders in CSV or JSON, with role-gated access and inline streaming.
-
-### Cross-Venue Identity Layer
-
-Tracks user venue visits in a `user_venue_visits` table, with an atomic upsert service for recording visits and a read route for user history.
+The application features a luxury aesthetic with a dark gold theme, glassmorphism cards, and sophisticated typography (Cormorant Garamond, Inter, Playfair Display). A global design system utilizes CSS custom properties for consistent theming. Key elements include `.glass-panel` classes, `sc-btn-primary`, `sc-btn-ghost`, and a premium animated brand intro splash.
+
+## Core Features
+
+-   **Recommendation Engine & AI Experience Engine**: AI-driven recommendations based on flavor, strength, mood, and boost levels, with semantic cross-category and food pairing. The "AI Experience Engine" provides deterministic natural-language commentary, voice synthesis, and real-time menu suggestions.
+-   **Operations Layer**: POS integration, reorder alerts, optimized menu layout, profit calculations, staff sales pitches, tenant isolation, and atomic inventory decrement.
+-   **Image Engine**: Context-aware Cloudinary transformations with subtype-based fallbacks.
+-   **Network Intelligence Layer**: "Couples Mode," "Time-of-day context" for recommendations, "Historical-data revenue forecast," and "Cross-venue low-stock digest."
+-   **Craft-Specific Experiences**: Kiosk-style pages for `BrewCraft`, `PourCraft`, and `VapeCraft` using a modular 3-column layout.
+-   **Lucient Core — Experience Decision Engine**: Real-time experience quality and revenue control, including a behavior profile, decision engine, automation service, and admin routes.
+-   **Personalization & Revenue Intelligence**: Taste profiles, auto-recommendations via affinity vectors, session revenue forecasting, and dynamic pricing.
+-   **Database Schema**: Comprehensive schema covering users, products, experiences, loyalty, inventory, lounge statistics, reservations, IP assets, audit logs, support tickets, notifications, user memories, and multi-user sessions.
+-   **Authentication and Authorization**: JWT-based authentication with `requireAuth` and `requireRole` middleware for granular access control.
+-   **Progression and Loyalty System**: 5-tier user progression and separate loyalty points system.
+-   **Admin Intensity Controls**: Venue-level tuning for reward, XP, and discount engines via feature flags.
+-   **Session Cleanup Worker**: Background worker for expiring old sessions and removing abandoned members.
+-   **Production Hardening Layer**:
+    -   **Stripe Event Idempotency**: Prevents duplicate Stripe event processing.
+    -   **Tenant Isolation**: Enforces venue scoping for multi-tenant routes.
+    -   **Checkout Server-Side Pricing**: Resolves prices from the database, never trusting client-supplied prices.
+    -   **Session Lifecycle**: Manages sessions with `active`, `completed`, `expired`, `archived`, `cancelled` statuses.
+    -   **Kill Switches**: Feature flags (`payments-enabled`, `rewards-enabled`) to disable parts of the system.
+    -   **Encryption Utility**: AES-256-GCM field-level encryption.
+    -   **Audit Logging**: Append-only audit log for critical actions.
+    -   **Background Workers**: Payout Worker and Reward Optimization Worker.
+-   **Partnership & Distribution Engine**: Non-destructive extension for brand partners and campaigns.
+    -   **Brand Partners & Product Links**: Manages brand information and product associations.
+    -   **Campaign Engine Extensions**: Supports various campaign types with budget enforcement and multiplier bounds validation.
+    -   **Recommendation Pipeline Injection**: Applies brand and campaign boosts to recommendations.
+    -   **Server-Side Order Attribution**: Attributes orders to brands and campaigns.
+    -   **Campaign Budget Enforcement Worker**: Scans and enforces campaign budgets and expiry.
+    -   **Campaign Fraud Detection**: Detects and flags suspicious redemption patterns.
+    -   **ROI Reporting**: Provides ROI metrics for campaigns and brands.
+-   **Production Go-Live Control Layer**:
+    -   **System Version & Force Refresh**: Allows remote control over client application versions and forced reloads.
+    -   **Device Heartbeat**: Tracks device status and enables per-device remote refresh.
+    -   **Feature Flag Frontend Sync**: Syncs feature flags to the frontend.
+-   **Kiosk Burn-in Protection**: Pixel-shift system for kiosk screens during idle periods.
+-   **Device Management**: Supports registration, status tracking, and session management for mobile, tablet, and kiosk devices.
+-   **Lounge League**: Competition system ranking venues.
+-   **Multi-User Sessions**: Manages groups of users (parties) with unique codes.
+-   **Offline Queue**: Buffers and replays offline actions for kiosks.
+-   **Exports**: Role-gated CSV/JSON data exports.
+-   **Cross-Venue Identity Layer**: Tracks user visits across venues.
+-   **Touchscreen Command Interface**: Role-based touchscreen home screens (`/touch`, `/touch/admin`, `/touch/venue`, `/touch/vendor`), step-based flow engine with 12 flow definitions, Experience Center (`/experience-center`) NDA-gated via existing `DemoNdaModal`, and backend API at `/api/touchscreen/*` with full auth, audit logging, and session persistence in `touchscreen_flow_sessions` table. All touch targets ≥72px, dark gold glass-card aesthetic.
 
 # External Dependencies
 
--   **pnpm**: Package manager for monorepo.
--   **TypeScript**: Programming language.
--   **Express**: Node.js web application framework.
--   **PostgreSQL**: Relational database.
--   **Drizzle ORM**: TypeScript ORM.
--   **jose**: JWT library.
--   **bcryptjs**: Password hashing.
--   **Zod**: Schema validation.
--   **esbuild**: JavaScript bundler.
--   **React**: Frontend library.
--   **Vite**: Frontend build tool.
--   **Google Fonts**: For typography.
--   **ElevenLabs**: For voice synthesis.
--   **Cloudinary**: For image transformations.
+-   **pnpm**
+-   **TypeScript**
+-   **Express**
+-   **PostgreSQL**
+-   **Drizzle ORM**
+-   **jose**
+-   **bcryptjs**
+-   **Zod**
+-   **esbuild**
+-   **React**
+-   **Vite**
+-   **Google Fonts**
+-   **ElevenLabs**
+-   **Cloudinary**

@@ -1,0 +1,99 @@
+import { useState } from "react";
+import { useLocation } from "wouter";
+import { hasSignedDemoNda } from "@/components/Demo/DemoNdaModal";
+import { ExperienceCenterGrid } from "@/components/Touchscreen";
+
+const ROUTE_MAP: Record<string, string> = {
+  smokecraft: "/smokecraft",
+  pourcraft: "/pourcraft",
+  brewcraft: "/brewcraft",
+  vapecraft: "/vapecraft",
+  investor: "/demo",
+};
+
+export default function DemoExperienceCenter() {
+  const [, navigate] = useLocation();
+  const [ndaSigned] = useState(() => hasSignedDemoNda());
+
+  if (!ndaSigned) {
+    queueMicrotask(() => navigate("/demo"));
+    return null;
+  }
+
+  function handleSelect(id: string) {
+    const route = ROUTE_MAP[id];
+    if (route) navigate(route);
+  }
+
+  return (
+    <div
+      style={{
+        minHeight: "100dvh",
+        background: "linear-gradient(180deg, #0c0a07 0%, #080604 100%)",
+        color: "#e8e0c8",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "40px 20px env(safe-area-inset-bottom, 20px)",
+      }}
+    >
+      <div style={{ textAlign: "center", marginBottom: 12 }}>
+        <div
+          style={{
+            fontSize: 11,
+            textTransform: "uppercase",
+            letterSpacing: "0.2em",
+            color: "rgba(212,175,55,0.6)",
+            marginBottom: 8,
+          }}
+        >
+          Profound Innovations
+        </div>
+        <h1
+          style={{
+            fontSize: 30,
+            fontWeight: 700,
+            color: "#d4af37",
+            margin: "0 0 8px",
+            fontFamily: "'Playfair Display', serif",
+            letterSpacing: "0.03em",
+          }}
+        >
+          Experience Center
+        </h1>
+        <p style={{ fontSize: 14, color: "rgba(232,224,200,0.5)", margin: 0, maxWidth: 420 }}>
+          Explore each craft experience. Tap a card to begin.
+        </p>
+      </div>
+
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 800,
+          marginTop: 20,
+        }}
+      >
+        <ExperienceCenterGrid onSelect={handleSelect} ndaSigned={ndaSigned} />
+      </div>
+
+      <div style={{ display: "flex", gap: 12, marginTop: 32 }}>
+        <button
+          type="button"
+          onClick={() => navigate("/touch")}
+          style={{
+            minHeight: 72,
+            padding: "0 28px",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 14,
+            color: "rgba(232,224,200,0.5)",
+            fontSize: 14,
+            cursor: "pointer",
+          }}
+        >
+          Back to Home
+        </button>
+      </div>
+    </div>
+  );
+}

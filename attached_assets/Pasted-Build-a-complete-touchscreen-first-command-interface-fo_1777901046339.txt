@@ -1,0 +1,228 @@
+Build a complete touchscreen-first command interface for my existing SmokeCraft / PourCraft / BrewCraft / VapeCraft / Profound Innovations 360 system.
+
+Do not remove existing features.
+Do not break Stripe, campaigns, rewards, venues, vendors, devices, recommendations, POS attribution, fraud controls, audit logs, or admin systems.
+Do not create duplicate files if existing files already handle the same responsibility.
+Patch or extend existing files cleanly.
+
+GOAL:
+Create a role-based touchscreen interface system for:
+1. Super Admin
+2. Venue Owner / Venue Staff
+3. Vendor / Brand Partner
+4. Kiosk / Tablet User
+5. Demo / Investor Mode
+
+The interface must feel simple, premium, visual, and touch-friendly. It should not feel like a spreadsheet dashboard. It should feel like guided cards, swipe flows, pictures, short instructions, and clear decisions.
+
+CORE REQUIREMENTS:
+
+1. Flow Engine
+Create a reusable flow engine that controls guided actions:
+- Add Product
+- Start Customer Experience
+- Build Recommendation
+- Confirm Order
+- Unlock Reward
+- Create Campaign
+- Upload Vendor Product
+- Approve Sponsored Campaign
+- Check Orders
+- Check Inventory
+- Demo Experience
+- NDA Signature Gate
+
+Each flow must support:
+- flowId
+- role
+- currentStep
+- saved progress
+- back
+- next
+- cancel
+- resume
+- completion callback
+- audit log event
+- offline queue support
+
+2. Role-Based Home Screens
+
+Admin Home:
+- Live Venues
+- Revenue Flow
+- Campaign Control
+- System Alerts
+- Device Control
+- Vendor / Brand Partners
+- Fraud / Risk Review
+- Demo Mode
+
+Venue Home:
+- Start Customer Experience
+- Today’s Orders
+- Inventory
+- Rewards
+- Staff Mode
+- Campaigns
+- Devices
+
+Vendor Home:
+- Add Product
+- My Products
+- Campaign Performance
+- Payouts
+- Brand Assets
+- Sponsored Campaigns
+
+Kiosk / Tablet Home:
+- Start Experience
+- Scan QR
+- Continue Session
+- View Rewards
+- Call Staff
+
+Demo Home:
+- Profound Innovations intro animation
+- NDA signature gate
+- Experience Center
+- SmokeCraft
+- PourCraft
+- BrewCraft
+- VapeCraft
+- Investor walkthrough mode
+
+3. NDA Gate
+When demoMode is true:
+- Show NDA before the Experience Center opens.
+- Require typed initials.
+- Require touchscreen signature canvas.
+- Store timestamp, user agent, device ID, session ID, and signature image.
+- Save to database.
+- Block access until signed.
+- Add audit log event: demo_nda_signed.
+
+4. Touchscreen UI Rules
+- Minimum button height: 72px.
+- Large card tiles.
+- Picture-first layout.
+- Short wording.
+- Premium dark lounge visual style.
+- Use realistic images, not icons, glyphs, or emoji.
+- Always include Back and Home.
+- Use swipe-friendly horizontal cards where useful.
+- Use motion transitions between steps.
+- Avoid tiny dropdowns.
+- Use tap chips for selections.
+
+5. Offline Tablet Mode
+Add local storage cache for:
+- current flow progress
+- venue inventory snapshot
+- active session
+- pending offline actions
+- NDA draft until sync succeeds
+
+When network returns:
+- sync queued actions
+- show sync status
+- never duplicate orders, rewards, campaign conversions, or signatures
+
+6. Backend API Routes
+Create or extend these routes:
+- GET /api/touchscreen/context
+- GET /api/touchscreen/flows
+- POST /api/touchscreen/flows/start
+- PATCH /api/touchscreen/flows/:sessionId
+- POST /api/touchscreen/flows/:sessionId/complete
+- POST /api/demo/nda-signature
+- GET /api/demo/session/:sessionId
+- GET /api/venue/touchscreen-home
+- GET /api/vendor/touchscreen-home
+- GET /api/admin/touchscreen-home
+
+All routes must:
+- enforce JWT auth where required
+- enforce venueId scoping
+- enforce vendorId scoping
+- support demo mode safely
+- write audit logs
+- return clean JSON errors
+- never expose another venue’s data
+
+7. Database
+Add tables only if missing:
+- touchscreen_flow_sessions
+- demo_nda_signatures
+- offline_action_queue
+- touchscreen_device_sessions
+
+Each table must include:
+- id
+- role
+- venueId where applicable
+- vendorId where applicable
+- userId where applicable
+- deviceId
+- sessionId
+- status
+- metadata JSON
+- createdAt
+- updatedAt
+
+8. Frontend Pages
+Create:
+- client/src/pages/TouchscreenHome.tsx
+- client/src/pages/AdminTouchscreen.tsx
+- client/src/pages/VenueTouchscreen.tsx
+- client/src/pages/VendorTouchscreen.tsx
+- client/src/pages/DemoExperienceCenter.tsx
+- client/src/pages/DemoNdaGate.tsx
+
+Create components:
+- TouchCard
+- TouchFlowShell
+- TouchStep
+- SignaturePad
+- OfflineSyncBanner
+- RoleHomeGrid
+- ExperienceCenterGrid
+- FlowProgressBar
+
+9. Routes
+Add frontend routes:
+- /touch
+- /touch/admin
+- /touch/venue
+- /touch/vendor
+- /demo
+- /demo/nda
+- /experience-center
+
+10. Visual Direction
+The system should look like a premium lounge operating system:
+- deep black background
+- warm gold accents
+- glass-card panels
+- large photography cards
+- cinematic motion
+- clear white text
+- no childish icons
+- no flat empty pages
+
+11. Must Preserve Baseline
+Keep all existing SmokeCraft systems:
+- reward optimization
+- campaign budget enforcement
+- POS attribution
+- brand partner campaign logic
+- recommendation engine
+- fraud protection
+- device heartbeat and refresh
+- admin intensity controls
+- venue scoping
+- Stripe idempotency
+- audit logging
+- kill switch
+- demo mode
+
+Deliver the full code changes with exact file paths.
