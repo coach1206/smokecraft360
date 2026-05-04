@@ -12,6 +12,9 @@ import { PresentationProvider } from "@/contexts/PresentationContext";
 import NotFound        from "@/pages/not-found";
 import Home            from "@/pages/Home";
 import Intro           from "@/pages/Intro";
+import Entry           from "@/pages/Entry";
+import PinLogin        from "@/pages/PinLogin";
+import PosMode         from "@/pages/PosMode";
 import Dashboard       from "@/pages/Dashboard";
 import BrewCraft       from "@/pages/BrewCraft";
 import PourCraft       from "@/pages/PourCraft";
@@ -29,6 +32,7 @@ import { DemoBanner }            from "@/components/Demo/DemoBanner";
 import { OfflineQueueBanner }   from "@/components/Demo/OfflineQueueBanner";
 import { PresentationOverlay }   from "@/components/Presentation/PresentationOverlay";
 import { KioskModeProvider, KioskModeBanner } from "@/contexts/KioskModeContext";
+import { PosProvider } from "@/contexts/PosContext";
 import BootIntro, { hasSeenBootIntro } from "@/components/BootIntro";
 import GlobalBackButton                from "@/components/Layout/GlobalBackButton";
 import { useSystemVersion }            from "@/hooks/useSystemVersion";
@@ -38,8 +42,11 @@ const queryClient = new QueryClient();
 function Router() {
   return (
     <Switch>
-      <Route path="/"           component={Intro}          />
+      <Route path="/"           component={Entry}          />
       <Route path="/intro"      component={Intro}          />
+      <Route path="/entry"      component={Entry}          />
+      <Route path="/pin-login"  component={PinLogin}       />
+      <Route path="/pos"        component={PosMode}        />
       <Route path="/dashboard"  component={Dashboard}      />
       {/* BrewCraft — beer-led quick-pick flow. Declared before /:theme so
           the explicit path wins; if it ever needs to live under a theme
@@ -95,12 +102,8 @@ function App() {
           <LicenseProvider>
             <AuthProvider>
               <PresentationProvider>
+                <PosProvider>
                 <KioskModeProvider>
-                  {/* Boot gate — BootIntro renders first; when it calls
-                      onFinish (auto at 4.8s or on skip) we flip `ready`
-                      and the routed app + chrome mount. On already-seen
-                      sessions ready starts true and we skip BootIntro
-                      entirely. */}
                   {!ready && <BootIntro onFinish={() => setReady(true)} />}
                   {ready && (
                     <>
@@ -117,6 +120,7 @@ function App() {
                     </>
                   )}
                 </KioskModeProvider>
+                </PosProvider>
               </PresentationProvider>
             </AuthProvider>
           </LicenseProvider>

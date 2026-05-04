@@ -18,7 +18,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 
-const HIDE_ON_PATHS = new Set<string>(["/", "/intro", "/demo", "/success", "/cancel"]);
+const HIDE_ON_PATHS = new Set<string>(["/", "/intro", "/entry", "/pin-login", "/pos", "/demo", "/success", "/cancel"]);
 
 export default function GlobalBackButton() {
   const [location] = useLocation();
