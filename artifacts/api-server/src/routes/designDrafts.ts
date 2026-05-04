@@ -2,9 +2,10 @@
  * /api/design-drafts — Pre-gameplay design playground persistence.
  *
  *   GET    /api/design-drafts?craft=smoke   — most recent 3 drafts for caller + craft
- *   POST   /api/design-drafts               — create or upsert a draft
- *   PATCH  /api/design-drafts/:id           — update payload / draftName
- *   DELETE /api/design-drafts/:id           — remove a draft (owner only)
+ *   POST   /api/design-drafts               — create a new draft
+ *   PATCH  /api/design-drafts               — idempotent upsert by (userId, craft):
+ *                                             updates the most recent draft or inserts one
+ *   DELETE /api/design-drafts/:id           — remove a specific draft (owner only)
  */
 
 import { Router, type IRouter, type Response } from "express";
@@ -24,7 +25,8 @@ const createSchema = z.object({
   lockedFields: z.array(z.string()).optional(),
 });
 
-const patchSchema = z.object({
+const upsertSchema = z.object({
+  craft:        craftEnum,
   draftName:    z.string().max(120).optional(),
   payload:      z.record(z.unknown()).optional(),
   lockedFields: z.array(z.string()).optional(),
@@ -81,43 +83,55 @@ router.post("/", requireAuth, async (req: AuthRequest, res: Response) => {
   res.status(201).json({ draft });
 });
 
-// ── PATCH /api/design-drafts/:id ───────────────────────────────────────────────
+// ── PATCH /api/design-drafts — idempotent upsert by (userId, craft) ────────────
 
-router.patch("/:id", requireAuth, async (req: AuthRequest, res: Response) => {
-  const userId  = req.user!.id;
-  const draftId = String(req.params["id"] ?? "");
-
-  if (!/^[0-9a-f-]{36}$/i.test(draftId)) {
-    res.status(400).json({ error: "Invalid draft id" });
-    return;
-  }
-
-  const parsed = patchSchema.safeParse(req.body);
+router.patch("/", requireAuth, async (req: AuthRequest, res: Response) => {
+  const parsed = upsertSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
     return;
   }
 
-  const updates: Record<string, unknown> = { updatedAt: new Date() };
-  if (parsed.data.draftName    !== undefined) updates["draftName"]    = parsed.data.draftName;
-  if (parsed.data.payload      !== undefined) updates["payload"]      = parsed.data.payload;
-  if (parsed.data.lockedFields !== undefined) updates["lockedFields"] = parsed.data.lockedFields;
+  const userId = req.user!.id;
+  const { craft, draftName, payload, lockedFields } = parsed.data;
 
-  const [updated] = await db
-    .update(designDraftsTable)
-    .set(updates)
+  // Find the most recent draft for this user + craft.
+  const [existing] = await db
+    .select({ id: designDraftsTable.id })
+    .from(designDraftsTable)
     .where(and(
-      eq(designDraftsTable.id, draftId),
       eq(designDraftsTable.userId, userId),
+      eq(designDraftsTable.craft, craft),
     ))
-    .returning();
+    .orderBy(desc(designDraftsTable.updatedAt))
+    .limit(1);
 
-  if (!updated) {
-    res.status(404).json({ error: "Draft not found or access denied" });
-    return;
+  const updates: Record<string, unknown> = { updatedAt: new Date() };
+  if (draftName    !== undefined) updates["draftName"]    = draftName;
+  if (payload      !== undefined) updates["payload"]      = payload;
+  if (lockedFields !== undefined) updates["lockedFields"] = lockedFields;
+
+  if (existing) {
+    const [updated] = await db
+      .update(designDraftsTable)
+      .set(updates)
+      .where(eq(designDraftsTable.id, existing.id))
+      .returning();
+    res.json({ draft: updated, created: false });
+  } else {
+    const [inserted] = await db
+      .insert(designDraftsTable)
+      .values({
+        userId,
+        venueId:      req.user!.venueId ?? null,
+        craft,
+        draftName:    draftName    ?? "My Draft",
+        payload:      payload      ?? {},
+        lockedFields: lockedFields ?? [],
+      })
+      .returning();
+    res.status(201).json({ draft: inserted, created: true });
   }
-
-  res.json({ draft: updated });
 });
 
 // ── DELETE /api/design-drafts/:id ──────────────────────────────────────────────

@@ -8,7 +8,7 @@ import brewDarkImg  from "@assets/generated_images/brew_dark.png";
 /**
  * BrewCraft — beer-led guided experience.
  *
- * Now uses the unified CraftFlow state machine (Intro → Style → Profile →
+ * Uses the unified CraftFlow state machine (Intro → Style → Profile →
  * Match → Reveal → Order). Visuals stay beer-specific via the config.
  */
 

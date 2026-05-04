@@ -10,6 +10,12 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: craft-builds
+    description: Craft Experience Engine build state
+  - name: design-drafts
+    description: Pre-gameplay design playground saves
+  - name: craft-sessions
+    description: Craft session timer and streak state
 paths:
   /healthz:
     get:
@@ -24,6 +30,304 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /craft-builds:
+    get:
+      operationId: getCraftBuild
+      tags: [craft-builds]
+      summary: Get latest build for a craft
+      parameters:
+        - in: query
+          name: craft
+          required: true
+          schema:
+            $ref: "#/components/schemas/CraftType"
+      responses:
+        "200":
+          description: Latest build or null
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  build:
+                    oneOf:
+                      - $ref: "#/components/schemas/CraftBuild"
+                      - type: "null"
+                required: [build]
+    post:
+      operationId: createCraftBuild
+      tags: [craft-builds]
+      summary: Create a new build
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCraftBuildRequest"
+      responses:
+        "201":
+          description: Created build
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  build:
+                    $ref: "#/components/schemas/CraftBuild"
+                required: [build]
+    patch:
+      operationId: upsertCraftBuild
+      tags: [craft-builds]
+      summary: Idempotent upsert by (userId, craft)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertCraftBuildRequest"
+      responses:
+        "200":
+          description: Updated build
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  build:
+                    $ref: "#/components/schemas/CraftBuild"
+                  created:
+                    type: boolean
+                required: [build, created]
+        "201":
+          description: Inserted build (first save)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  build:
+                    $ref: "#/components/schemas/CraftBuild"
+                  created:
+                    type: boolean
+                required: [build, created]
+
+  /design-drafts:
+    get:
+      operationId: getDesignDrafts
+      tags: [design-drafts]
+      summary: Get most recent 3 drafts for a craft
+      parameters:
+        - in: query
+          name: craft
+          required: true
+          schema:
+            $ref: "#/components/schemas/CraftType"
+      responses:
+        "200":
+          description: List of drafts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  drafts:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/DesignDraft"
+                required: [drafts]
+    post:
+      operationId: createDesignDraft
+      tags: [design-drafts]
+      summary: Create a new design draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDesignDraftRequest"
+      responses:
+        "201":
+          description: Created draft
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  draft:
+                    $ref: "#/components/schemas/DesignDraft"
+                required: [draft]
+    patch:
+      operationId: upsertDesignDraft
+      tags: [design-drafts]
+      summary: Idempotent upsert by (userId, craft)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertDesignDraftRequest"
+      responses:
+        "200":
+          description: Updated draft
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  draft:
+                    $ref: "#/components/schemas/DesignDraft"
+                  created:
+                    type: boolean
+                required: [draft, created]
+        "201":
+          description: Inserted draft
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  draft:
+                    $ref: "#/components/schemas/DesignDraft"
+                  created:
+                    type: boolean
+                required: [draft, created]
+
+  /design-drafts/{id}:
+    delete:
+      operationId: deleteDesignDraft
+      tags: [design-drafts]
+      summary: Delete a design draft
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  id:
+                    type: string
+                    format: uuid
+                required: [message, id]
+
+  /craft-sessions:
+    get:
+      operationId: getCraftSession
+      tags: [craft-sessions]
+      summary: Get current session for a craft
+      parameters:
+        - in: query
+          name: craft
+          required: true
+          schema:
+            $ref: "#/components/schemas/CraftType"
+      responses:
+        "200":
+          description: Current session or null
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session:
+                    oneOf:
+                      - $ref: "#/components/schemas/CraftSession"
+                      - type: "null"
+                required: [session]
+    post:
+      operationId: createCraftSession
+      tags: [craft-sessions]
+      summary: Start a new craft session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCraftSessionRequest"
+      responses:
+        "201":
+          description: Created session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session:
+                    $ref: "#/components/schemas/CraftSession"
+                required: [session]
+    patch:
+      operationId: upsertCraftSession
+      tags: [craft-sessions]
+      summary: Idempotent upsert by (userId, craft) — auto-save hot path
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertCraftSessionRequest"
+      responses:
+        "200":
+          description: Updated session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session:
+                    $ref: "#/components/schemas/CraftSession"
+                  created:
+                    type: boolean
+                required: [session, created]
+        "201":
+          description: Inserted session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session:
+                    $ref: "#/components/schemas/CraftSession"
+                  created:
+                    type: boolean
+                required: [session, created]
+
+  /craft-sessions/{id}:
+    delete:
+      operationId: deleteCraftSession
+      tags: [craft-sessions]
+      summary: Abandon and clear a craft session
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Cleared
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  id:
+                    type: string
+                    format: uuid
+                required: [message, id]
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +338,231 @@ components:
       required:
         - status
 
+    CraftType:
+      type: string
+      enum: [smoke, brew, pour, vape]
+
+    CraftPhase:
+      type: string
+      enum: [intro, style, profile, match, reveal]
+
+    CraftBuild:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        venueId:
+          type: string
+          format: uuid
+          nullable: true
+        sessionId:
+          type: string
+          format: uuid
+          nullable: true
+        craft:
+          $ref: "#/components/schemas/CraftType"
+        phase:
+          $ref: "#/components/schemas/CraftPhase"
+        styleChoice:
+          type: string
+          nullable: true
+        moodChoice:
+          type: string
+          nullable: true
+        profileAnswers:
+          type: object
+          additionalProperties: true
+        score:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, userId, craft, phase, createdAt, updatedAt]
+
+    CreateCraftBuildRequest:
+      type: object
+      properties:
+        craft:
+          $ref: "#/components/schemas/CraftType"
+        venueId:
+          type: string
+          format: uuid
+        sessionId:
+          type: string
+          format: uuid
+        phase:
+          $ref: "#/components/schemas/CraftPhase"
+        styleChoice:
+          type: string
+        moodChoice:
+          type: string
+        profileAnswers:
+          type: object
+          additionalProperties: true
+        score:
+          type: number
+      required: [craft]
+
+    UpsertCraftBuildRequest:
+      type: object
+      properties:
+        craft:
+          $ref: "#/components/schemas/CraftType"
+        phase:
+          $ref: "#/components/schemas/CraftPhase"
+        styleChoice:
+          type: string
+        moodChoice:
+          type: string
+        profileAnswers:
+          type: object
+          additionalProperties: true
+        score:
+          type: number
+      required: [craft]
+
+    DesignDraft:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        venueId:
+          type: string
+          format: uuid
+          nullable: true
+        craft:
+          $ref: "#/components/schemas/CraftType"
+        draftName:
+          type: string
+        payload:
+          type: object
+          additionalProperties: true
+        lockedFields:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, userId, craft, draftName, payload, lockedFields, createdAt, updatedAt]
+
+    CreateDesignDraftRequest:
+      type: object
+      properties:
+        craft:
+          $ref: "#/components/schemas/CraftType"
+        draftName:
+          type: string
+        payload:
+          type: object
+          additionalProperties: true
+        lockedFields:
+          type: array
+          items:
+            type: string
+      required: [craft, payload]
+
+    UpsertDesignDraftRequest:
+      type: object
+      properties:
+        craft:
+          $ref: "#/components/schemas/CraftType"
+        draftName:
+          type: string
+        payload:
+          type: object
+          additionalProperties: true
+        lockedFields:
+          type: array
+          items:
+            type: string
+      required: [craft]
+
+    CraftSession:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        venueId:
+          type: string
+          format: uuid
+          nullable: true
+        craft:
+          $ref: "#/components/schemas/CraftType"
+        buildId:
+          type: string
+          format: uuid
+          nullable: true
+        timerStartedAt:
+          type: string
+          format: date-time
+          nullable: true
+        timerDurationSecs:
+          type: integer
+        phase:
+          $ref: "#/components/schemas/CraftPhase"
+        streakCount:
+          type: integer
+        lastSavedAt:
+          type: string
+          format: date-time
+          nullable: true
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, userId, craft, timerDurationSecs, phase, streakCount, createdAt]
+
+    CreateCraftSessionRequest:
+      type: object
+      properties:
+        craft:
+          $ref: "#/components/schemas/CraftType"
+        buildId:
+          type: string
+          format: uuid
+        timerDurationSecs:
+          type: integer
+          minimum: 1800
+          maximum: 2400
+      required: [craft]
+
+    UpsertCraftSessionRequest:
+      type: object
+      properties:
+        craft:
+          $ref: "#/components/schemas/CraftType"
+        phase:
+          $ref: "#/components/schemas/CraftPhase"
+        streakCount:
+          type: integer
+          minimum: 0
+        buildId:
+          type: string
+          format: uuid
+        remainingMs:
+          type: integer
+          minimum: 0
+      required: [craft]

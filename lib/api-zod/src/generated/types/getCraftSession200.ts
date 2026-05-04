@@ -5,7 +5,8 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { CraftSession } from './craftSession';
 
-export interface HealthStatus {
-  status: string;
-}
+export type GetCraftSession200 = {
+  session: CraftSession | null;
+};

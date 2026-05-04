@@ -1,13 +1,13 @@
 /**
  * /api/craft-builds — per-step build state for the Craft Experience Engine.
  *
- *   GET    /api/craft-builds?craft=smoke   — latest build for the caller + craft
+ *   GET    /api/craft-builds?craft=smoke   — latest build for caller + craft
  *   POST   /api/craft-builds               — create a new build row
- *   PATCH  /api/craft-builds/:id           — update phase/score/choices (idempotent)
+ *   PATCH  /api/craft-builds               — idempotent upsert by (userId, craft)
  *
- * All endpoints require auth. PATCH is safe to call on every phase
- * transition — the updatedAt stamp advances but no duplicate rows are
- * created.
+ * PATCH is the hot path called on every phase transition. It finds the most
+ * recent build for (userId, craft) and updates it; if none exists, it
+ * inserts one. No row-ID knowledge required by the client.
  */
 
 import { Router, type IRouter, type Response } from "express";
@@ -18,8 +18,8 @@ import { z }                                    from "zod";
 
 const router: IRouter = Router();
 
-const craftEnum  = z.enum(CRAFT_TYPES);
-const phaseEnum  = z.enum(CRAFT_PHASES);
+const craftEnum = z.enum(CRAFT_TYPES);
+const phaseEnum = z.enum(CRAFT_PHASES);
 
 const createSchema = z.object({
   craft:          craftEnum,
@@ -32,7 +32,8 @@ const createSchema = z.object({
   score:          z.number().finite().min(0).max(10).optional(),
 });
 
-const patchSchema = z.object({
+const upsertSchema = z.object({
+  craft:          craftEnum,
   phase:          phaseEnum.optional(),
   styleChoice:    z.string().max(120).optional(),
   moodChoice:     z.string().max(120).optional(),
@@ -94,45 +95,61 @@ router.post("/", requireAuth, async (req: AuthRequest, res: Response) => {
   res.status(201).json({ build });
 });
 
-// ── PATCH /api/craft-builds/:id ────────────────────────────────────────────────
+// ── PATCH /api/craft-builds — idempotent upsert by (userId, craft) ─────────────
 
-router.patch("/:id", requireAuth, async (req: AuthRequest, res: Response) => {
-  const userId  = req.user!.id;
-  const buildId = String(req.params["id"] ?? "");
-
-  if (!/^[0-9a-f-]{36}$/i.test(buildId)) {
-    res.status(400).json({ error: "Invalid build id" });
-    return;
-  }
-
-  const parsed = patchSchema.safeParse(req.body);
+router.patch("/", requireAuth, async (req: AuthRequest, res: Response) => {
+  const parsed = upsertSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
     return;
   }
 
-  const updates: Record<string, unknown> = { updatedAt: new Date() };
-  if (parsed.data.phase          !== undefined) updates["phase"]          = parsed.data.phase;
-  if (parsed.data.styleChoice    !== undefined) updates["styleChoice"]    = parsed.data.styleChoice;
-  if (parsed.data.moodChoice     !== undefined) updates["moodChoice"]     = parsed.data.moodChoice;
-  if (parsed.data.profileAnswers !== undefined) updates["profileAnswers"] = parsed.data.profileAnswers;
-  if (parsed.data.score          !== undefined) updates["score"]          = String(parsed.data.score);
+  const userId = req.user!.id;
+  const { craft, phase, styleChoice, moodChoice, profileAnswers, score } = parsed.data;
 
-  const [updated] = await db
-    .update(craftBuildsTable)
-    .set(updates)
+  // Find the most recent build for this user + craft.
+  const [existing] = await db
+    .select({ id: craftBuildsTable.id })
+    .from(craftBuildsTable)
     .where(and(
-      eq(craftBuildsTable.id, buildId),
       eq(craftBuildsTable.userId, userId),
+      eq(craftBuildsTable.craft, craft),
     ))
-    .returning();
+    .orderBy(desc(craftBuildsTable.updatedAt))
+    .limit(1);
 
-  if (!updated) {
-    res.status(404).json({ error: "Build not found or access denied" });
-    return;
+  const updates: Record<string, unknown> = { updatedAt: new Date() };
+  if (phase          !== undefined) updates["phase"]          = phase;
+  if (styleChoice    !== undefined) updates["styleChoice"]    = styleChoice;
+  if (moodChoice     !== undefined) updates["moodChoice"]     = moodChoice;
+  if (profileAnswers !== undefined) updates["profileAnswers"] = profileAnswers;
+  if (score          !== undefined) updates["score"]          = String(score);
+
+  if (existing) {
+    // Update in place.
+    const [updated] = await db
+      .update(craftBuildsTable)
+      .set(updates)
+      .where(eq(craftBuildsTable.id, existing.id))
+      .returning();
+    res.json({ build: updated, created: false });
+  } else {
+    // Insert new row — treat this as the first save.
+    const [inserted] = await db
+      .insert(craftBuildsTable)
+      .values({
+        userId,
+        venueId:        req.user!.venueId ?? null,
+        craft,
+        phase:          (phase as typeof CRAFT_PHASES[number]) ?? "intro",
+        styleChoice:    styleChoice    ?? null,
+        moodChoice:     moodChoice     ?? null,
+        profileAnswers: profileAnswers ?? {},
+        score:          score != null ? String(score) : null,
+      })
+      .returning();
+    res.status(201).json({ build: inserted, created: true });
   }
-
-  res.json({ build: updated });
 });
 
 export default router;

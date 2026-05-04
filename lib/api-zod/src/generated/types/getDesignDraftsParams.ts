@@ -5,7 +5,8 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { CraftType } from './craftType';
 
-export interface HealthStatus {
-  status: string;
-}
+export type GetDesignDraftsParams = {
+craft: CraftType;
+};

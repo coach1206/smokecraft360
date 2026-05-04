@@ -11,14 +11,14 @@
  */
 
 import { pgTable, uuid, text, integer, timestamp, index } from "drizzle-orm/pg-core";
-import { type CraftType, type CraftPhase } from "./craftBuilds";
+import { craftBuildsTable, type CraftType, type CraftPhase } from "./craftBuilds";
 
 export const craftSessionStatesTable = pgTable("craft_session_states", {
   id:                uuid("id").primaryKey().defaultRandom(),
   userId:            uuid("user_id").notNull(),
   venueId:           uuid("venue_id"),
   craft:             text("craft").notNull().$type<CraftType>(),
-  buildId:           uuid("build_id"),
+  buildId:           uuid("build_id").references(() => craftBuildsTable.id, { onDelete: "set null" }),
   timerStartedAt:    timestamp("timer_started_at"),
   timerDurationSecs: integer("timer_duration_secs").notNull().default(2100),
   phase:             text("phase").notNull().default("intro").$type<CraftPhase>(),
