@@ -2067,3 +2067,59 @@ export async function postSupportTicketMessage(
   }
   return res.json();
 }
+
+// ── Design Drafts ──────────────────────────────────────────────────────────────
+
+export interface DesignDraft {
+  id:           string;
+  craft:        string;
+  draftName:    string;
+  payload:      Record<string, unknown>;
+  lockedFields: string[];
+  createdAt:    string;
+  updatedAt:    string;
+}
+
+/**
+ * GET /api/design-drafts?craft=X
+ * Returns up to 3 most-recent drafts for the authenticated user + craft.
+ * Gracefully returns [] for guests (unauthenticated) or on network failure.
+ */
+export async function fetchDesignDrafts(craft: string): Promise<DesignDraft[]> {
+  try {
+    const res = await fetch(
+      `/api/design-drafts?craft=${encodeURIComponent(craft)}`,
+      { headers: getAuthHeaders() },
+    );
+    if (!res.ok) return [];
+    const data = await res.json() as { drafts: DesignDraft[] };
+    return data.drafts ?? [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * PATCH /api/design-drafts — idempotent upsert by (userId, craft).
+ * Updates the most-recent draft or inserts a new one.
+ * Returns null for guests or on failure (caller falls back to localStorage).
+ */
+export async function upsertDesignDraft(params: {
+  craft:        string;
+  draftName?:   string;
+  payload:      Record<string, unknown>;
+  lockedFields?: string[];
+}): Promise<DesignDraft | null> {
+  try {
+    const res = await fetch("/api/design-drafts", {
+      method:  "PATCH",
+      headers: getAuthHeaders(),
+      body:    JSON.stringify(params),
+    });
+    if (!res.ok) return null;
+    const data = await res.json() as { draft: DesignDraft };
+    return data.draft ?? null;
+  } catch {
+    return null;
+  }
+}

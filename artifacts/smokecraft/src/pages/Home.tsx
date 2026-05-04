@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import DesignPlayground, { hasSeenPlayground, markPlaygroundSeen } from "@/components/DesignPlayground/DesignPlayground";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence, animate } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
@@ -168,6 +169,8 @@ export default function Home() {
    * PaymentSuccess/PaymentCancel all already have escape paths via existing
    * `navigate("/")` or `<a href="/">`; Home was the lone gap. */
   const [, navigate] = useLocation();
+
+  const [showPlayground, setShowPlayground] = useState(() => !hasSeenPlayground("smoke"));
 
   const [phase, setPhase]                     = useState<Phase>("welcome");
   const [error, setError]                     = useState<string | null>(null);
@@ -619,6 +622,19 @@ export default function Home() {
 
   return (
     <div className="min-h-[100dvh] w-full text-foreground flex flex-col relative overflow-hidden" style={{ background: "hsl(22 18% 5%)" }}>
+      {/* Pre-craft Design Playground — full-screen fixed overlay, shown once per session */}
+      <AnimatePresence>
+        {showPlayground && (
+          <DesignPlayground
+            craft="smoke"
+            onComplete={() => {
+              markPlaygroundSeen("smoke");
+              setShowPlayground(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       <DynamicBackground bgKey={bgKey} />
 
       {/* Kiosk picture-frame overlay — decorative gold border on lg+ */}

@@ -1,15 +1,20 @@
+import { useState }   from "react";
 import CraftFlow, { type CraftFlowConfig } from "@/components/CraftFlow";
-import loungeBg from "@assets/generated_images/brewcraft_beer.png";
-import brewLightImg from "@assets/generated_images/brew_light.png";
-import brewAmberImg from "@assets/generated_images/brew_amber.png";
-import brewIpaImg   from "@assets/generated_images/brew_ipa.png";
-import brewDarkImg  from "@assets/generated_images/brew_dark.png";
+import DesignPlayground, { hasSeenPlayground, markPlaygroundSeen } from "@/components/DesignPlayground/DesignPlayground";
+import loungeBg      from "@assets/generated_images/brewcraft_beer.png";
+import brewLightImg  from "@assets/generated_images/brew_light.png";
+import brewAmberImg  from "@assets/generated_images/brew_amber.png";
+import brewIpaImg    from "@assets/generated_images/brew_ipa.png";
+import brewDarkImg   from "@assets/generated_images/brew_dark.png";
 
 /**
  * BrewCraft — beer-led guided experience.
  *
  * Uses the unified CraftFlow state machine (Intro → Style → Profile →
  * Match → Reveal → Order). Visuals stay beer-specific via the config.
+ *
+ * The DesignPlayground overlay runs once per session before CraftFlow starts.
+ * Session-storage key "playground_seen_brew" suppresses it on repeat visits.
  */
 
 const CONFIG: CraftFlowConfig = {
@@ -45,13 +50,27 @@ const CONFIG: CraftFlowConfig = {
     { id: "dark",   title: "Dark & Heavy",       subtitle: "Roasted · Cocoa · Deep",       flavors: ["dark-chocolate","cocoa","smoky","cream"],  strength: 4, mood: "focused", gradient: "linear-gradient(155deg, #3a2412 0%, #1a0d06 60%, #050202 100%)", image: brewDarkImg,  glyph: "●" },
   ],
   moods: [
-    { id: "relaxed",  title: "Relaxed",  desc: "Slow sip, end-of-day exhale" },
-    { id: "social",   title: "Social",   desc: "Round of pints with the table" },
-    { id: "bold",     title: "Bold",     desc: "Loud flavor, no apologies" },
+    { id: "relaxed",  title: "Relaxed",  desc: "Slow sip, end-of-day exhale"   },
+    { id: "social",   title: "Social",   desc: "Round of pints with the table"  },
+    { id: "bold",     title: "Bold",     desc: "Loud flavor, no apologies"      },
     { id: "focused",  title: "Focused",  desc: "Quiet pour, deep concentration" },
   ],
 };
 
 export default function BrewCraft() {
+  const [showPlayground, setShowPlayground] = useState(() => !hasSeenPlayground("brew"));
+
+  if (showPlayground) {
+    return (
+      <DesignPlayground
+        craft="brew"
+        onComplete={() => {
+          markPlaygroundSeen("brew");
+          setShowPlayground(false);
+        }}
+      />
+    );
+  }
+
   return <CraftFlow config={CONFIG} />;
 }
