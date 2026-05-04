@@ -307,8 +307,8 @@ export function PosProvider({ children }: { children: ReactNode }) {
   }, [restoreStockForItems, syncProducts, syncOrders]);
 
   const refundOrder = useCallback((orderId: string): boolean => {
-    const role = userRef.current?.role;
-    if (role !== "Owner" && role !== "Manager") return false;
+    const role = userRef.current?.role?.toLowerCase();
+    if (role !== "owner" && role !== "manager") return false;
     const order = ordersRef.current.find(o => o.id === orderId && o.status === "paid");
     if (!order) return false;
     restoreStockForItems(order.items);
