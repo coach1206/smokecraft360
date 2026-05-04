@@ -22,8 +22,9 @@
 import { eq, sql } from "drizzle-orm";
 import { db, productsTable, analyticsEventsTable } from "@workspace/db";
 import type { Product, ScoredProduct } from "../engine/types";
-import { isActiveCampaign, CAMPAIGN_BOOST } from "./campaignStore";
+import { isActiveCampaign, CAMPAIGN_BOOST, getCampaignMeta } from "./campaignStore";
 import { getTrendBoost }                    from "./trendStore";
+import { getBrandBoostForProduct }          from "./brandPartnerStore";
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -184,10 +185,19 @@ export function applyBoosts(products: ScoredProduct[]): ScoredProduct[] {
     const campaignOn = isActiveCampaign(state.campaignId);
     const trend      = getTrendBoost(p.id);
 
-    // Boost only applied when product already has relevance (score > 0),
-    // so trending/sponsored products with zero relevance never surface.
-    const rawBoost = state.boostLevel + (state.sponsored ? 2 : 0) + (campaignOn ? CAMPAIGN_BOOST : 0) + trend;
+    const brandPartnerBoost = applyBrandBoost(p.id);
+    const campaignBoost     = applyCampaignBoost(state.campaignId);
+
+    const rawBoost = state.boostLevel
+      + (state.sponsored ? 2 : 0)
+      + (campaignOn ? CAMPAIGN_BOOST : 0)
+      + trend
+      + brandPartnerBoost.points
+      + campaignBoost.points;
     const boost    = p.score > 0 ? Math.min(rawBoost, MAX_BOOST_POINTS) : 0;
+
+    const effectiveBrandId = brandPartnerBoost.brandId ?? state.brandId;
+    const campaignMeta     = state.campaignId ? getCampaignMeta(state.campaignId) : undefined;
 
     return {
       ...p,
@@ -195,13 +205,35 @@ export function applyBoosts(products: ScoredProduct[]): ScoredProduct[] {
       boostApplied: boost,
       trendBoost:   trend,
       boostLevel:   state.boostLevel,
-      sponsored:    state.sponsored,
-      brandId:      state.brandId,
+      sponsored:    state.sponsored || brandPartnerBoost.isFeatured,
+      brandId:      effectiveBrandId,
       campaignId:   state.campaignId,
-      // Merge imageUrl from metaStore (DB-loaded) or keep existing value on the product
+      isSponsored:  state.sponsored || brandPartnerBoost.isFeatured,
+      campaignTag:  campaignMeta ? (campaignMeta as any).type ?? null : null,
+      brandTag:     effectiveBrandId ?? null,
       imageUrl:     meta?.imageUrl ?? p.imageUrl,
     };
   });
+}
+
+function applyBrandBoost(productId: string): { points: number; brandId?: string; isFeatured: boolean } {
+  const bp = getBrandBoostForProduct(productId);
+  if (!bp) return { points: 0, isFeatured: false };
+  const weight = Math.min(bp.boostWeight / 100, 0.3);
+  return {
+    points: Math.round(weight * MAX_BOOST_POINTS),
+    brandId: bp.brandId,
+    isFeatured: bp.isFeatured,
+  };
+}
+
+function applyCampaignBoost(campaignId: string | undefined): { points: number } {
+  if (!campaignId || !isActiveCampaign(campaignId)) return { points: 0 };
+  const meta = getCampaignMeta(campaignId);
+  if (!meta) return { points: 0 };
+  const multiplier = (meta as any).boostMultiplier ?? 1.0;
+  const extra = Math.round((multiplier - 1.0) * CAMPAIGN_BOOST);
+  return { points: Math.max(0, extra) };
 }
 
 // ── Write API ─────────────────────────────────────────────────────────────────

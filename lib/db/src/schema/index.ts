@@ -49,3 +49,5 @@ export * from "./supportTicketMessages";
 export * from "./deviceHardware";
 export * from "./userVenueVisits";
 export * from "./stripeEvents";
+export * from "./brandPartners";
+export * from "./brandProducts";

@@ -81,6 +81,8 @@ import adminIntensityRouter      from "./routes/adminIntensity";
 import adminWorkersRouter        from "./routes/adminWorkers";
 import systemVersionRouter       from "./routes/systemVersion";
 import deviceHeartbeatRouter     from "./routes/deviceHeartbeat";
+import brandPartnersRouter      from "./routes/brandPartners";
+import distributionInsightsRouter from "./routes/distributionInsights";
 import { startExperienceAutomation } from "./services/experienceAutomation";
 import { startSessionCleanupWorker } from "./lib/sessionCleanupWorker";
 import { startPayoutWorker }         from "./lib/payoutWorker";
@@ -277,6 +279,8 @@ app.use("/api/system",                   systemVersionRouter);
 app.use("/api/admin/system",             systemVersionRouter);
 app.use("/api/device",                   deviceHeartbeatRouter);
 app.use("/api/admin",                    deviceHeartbeatRouter);
+app.use("/api/brand-partners",           brandPartnersRouter);
+app.use("/api/distribution",             distributionInsightsRouter);
 
 // Start background workers
 if (process.env["NODE_ENV"] !== "test") {

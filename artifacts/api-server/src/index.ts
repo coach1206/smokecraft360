@@ -4,6 +4,7 @@ import { initInventory }        from "./engine/inventory";
 import { loadCampaigns }        from "./services/campaignStore";
 import { loadVenueInventory }   from "./services/venueInventoryStore";
 import { refreshTrends, scheduleTrendRefresh } from "./services/trendStore";
+import { loadBrandPartnerStore }               from "./services/brandPartnerStore";
 
 // ── Required environment variable guard ───────────────────────────────────────
 // Fail fast at startup rather than crashing mid-request or silently misbehaving.
@@ -43,6 +44,13 @@ try {
 
 // Load campaigns after inventory (non-fatal — campaigns are optional)
 await loadCampaigns();
+
+// Load brand partner store (non-fatal — partnership engine is optional)
+try {
+  await loadBrandPartnerStore();
+} catch (err) {
+  logger.warn({ err }, "Brand partner store load failed — partnership boosts disabled");
+}
 
 // Load per-venue inventory cache (non-fatal — falls back to all-available)
 try {

@@ -1,0 +1,269 @@
+Enhance the existing SmokeCraft 360 platform by adding a Partnership & Distribution Engine.
+
+This is a NON-DESTRUCTIVE EXTENSION.
+
+DO NOT:
+- rebuild existing systems
+- duplicate rewards, inventory, analytics, or pricing engines
+- bypass Stripe, POS adapters, or audit logging
+- trust client-side pricing or placement decisions
+
+Preserve all current systems:
+experience engine
+milestone engine
+reward pricing engine
+inventory + venue_inventory
+POS adapter
+Stripe checkout
+analytics
+audit logs
+feature flags
+tenant isolation
+admin intensity controls
+device/heartbeat system
+
+--------------------------------------------------
+OBJECTIVE
+--------------------------------------------------
+
+Integrate brand partnerships, venue campaigns, and distributor placement directly into:
+
+1. Experience Engine (recommendation phase)
+2. Result Screen (reward + pricing phase)
+3. POS Adapter (checkout + order payload)
+4. Analytics + Audit Logs
+
+This system must influence selection WITHOUT breaking authenticity.
+
+--------------------------------------------------
+1. BRAND PARTNER ENGINE
+--------------------------------------------------
+
+Create/extend table (reuse if similar exists):
+
+brand_partners:
+id
+name
+tier (LOCAL | REGIONAL | NATIONAL)
+active
+placementPriority
+allowedCraftTypes
+budgetMonthly
+startDate
+endDate
+
+brand_products (link to products):
+brandId
+productId
+boostWeight
+isFeatured
+campaignId (nullable)
+
+Rules:
+- never override core recommendation logic
+- only apply weighted boost (max 20–30%)
+- must respect inventory availability
+- must respect user preference scoring
+
+--------------------------------------------------
+2. CAMPAIGN ENGINE (VENUE + BRAND)
+--------------------------------------------------
+
+Extend existing campaigns system (DO NOT duplicate):
+
+Add campaign types:
+BRAND_SPOTLIGHT
+DOUBLE_XP
+FEATURED_PAIRING
+VENUE_CHALLENGE
+COMPETITION
+
+Each campaign includes:
+id
+type
+venueId
+brandId (optional)
+craftType
+boostMultiplier
+xpMultiplier
+rewardBonus
+startDate
+endDate
+status
+maxRedemptions
+budgetLimit
+
+Rules:
+- campaign effects are additive but capped by admin intensity controls
+- must log all campaign-triggered boosts
+
+--------------------------------------------------
+3. EXPERIENCE ENGINE INJECTION
+--------------------------------------------------
+
+Modify recommendation pipeline:
+
+Inside engine/recommend.ts (or equivalent):
+
+Add:
+applyBrandBoost()
+applyCampaignBoost()
+
+Logic:
+- run AFTER base scoring
+- apply weighted adjustments
+- never exceed configured cap
+- annotate results with:
+  isSponsored
+  campaignTag
+  brandTag
+
+--------------------------------------------------
+4. RESULT SCREEN INTEGRATION
+--------------------------------------------------
+
+Extend result response:
+
+Include:
+brandName (if applicable)
+campaignTag (if active)
+sponsoredLabel (boolean)
+
+Display:
+“Featured Pairing”
+“Double XP Active”
+“Brand Spotlight”
+
+Pricing:
+- still comes ONLY from rewardPricingEngine
+- never overridden by brand/campaign directly
+
+--------------------------------------------------
+5. POS ADAPTER EXTENSION
+--------------------------------------------------
+
+Extend POS payload (DO NOT replace):
+
+Add fields:
+
+brandId
+campaignId
+sponsored (boolean)
+campaignType
+
+Example payload:
+
+{
+  venueId,
+  userId,
+  productId,
+  basePriceCents,
+  discountCents,
+  finalPriceCents,
+  brandId,
+  campaignId,
+  sponsored: true,
+  campaignType: "BRAND_SPOTLIGHT"
+}
+
+Rules:
+- POS still receives FINAL calculated price
+- campaign must NOT alter payment logic directly
+- POS only reflects outcome, not decision logic
+
+--------------------------------------------------
+6. ANALYTICS + ATTRIBUTION
+--------------------------------------------------
+
+Extend analytics_events (DO NOT duplicate table):
+
+Track:
+
+eventType:
+BRAND_VIEW
+BRAND_SELECTED
+CAMPAIGN_TRIGGERED
+CAMPAIGN_CONVERSION
+
+Fields:
+userId
+venueId
+brandId
+productId
+campaignId
+timestamp
+
+Add aggregation support:
+brand performance
+campaign ROI
+conversion rate
+revenue attribution
+
+--------------------------------------------------
+7. ADMIN DASHBOARD EXTENSION
+--------------------------------------------------
+
+Add sections (do not remove existing):
+
+Brand Partners
+Campaign Manager
+Distribution Insights
+
+Admin can:
+- create/edit brand partners
+- assign products to brands
+- set placement priority
+- create campaigns
+- set campaign budgets + limits
+- view performance metrics
+
+Vendor (venue) can:
+- view active campaigns
+- view brand performance
+- NOT override global brand rules
+
+--------------------------------------------------
+8. SECURITY + CONTROL RULES
+--------------------------------------------------
+
+- all brand/campaign changes require admin role
+- all changes must write audit logs
+- apply rate limiting to campaign creation
+- validate all inputs
+- no client-side control of boosts
+- no direct DB writes from frontend
+
+--------------------------------------------------
+9. FEATURE FLAGS
+--------------------------------------------------
+
+Extend existing flags:
+
+brand_partnership_engine
+campaign_engine
+sponsored_placement
+
+Respect precedence:
+global > venue > theme > kill switch
+
+--------------------------------------------------
+10. COMPLETION REQUIREMENTS
+--------------------------------------------------
+
+Do not mark complete unless:
+
+- recommendations include optional brand/campaign boosts
+- result screen displays campaign/brand labels correctly
+- POS payload includes brand + campaign fields
+- analytics events log brand + campaign interactions
+- admin can create and manage campaigns
+- no duplicate systems created
+- no existing systems broken
+
+Return completion report:
+files changed
+routes added
+tables reused or extended
+audit actions added
+analytics events added
+manual test steps

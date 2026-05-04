@@ -1,0 +1,438 @@
+Audit the existing SmokeCraft 360 backend before making any changes.
+
+This is a NON-DESTRUCTIVE backend wiring upgrade.
+
+DO NOT:
+- rebuild existing systems
+- duplicate tables (analytics, rewards, inventory, sessions, feature flags, campaigns if present)
+- introduce raw SQL interpolation
+- bypass Stripe, POS adapter, audit logging, tenant isolation
+- trust any client-side pricing, campaign, or boost input
+
+Preserve ALL existing systems:
+
+tenant isolation (venueId)
+Stripe checkout + webhook authority
+server-side price resolution
+rewardPricingEngine
+milestone engine
+admin intensity controls
+featureFlags + kill switch
+analytics_events
+audit logging
+fraud_flags
+orders + redemptions
+inventory + venue_inventory
+campaigns (extend only if exists)
+POS adapter
+workers
+device/heartbeat system
+sessions lifecycle
+
+--------------------------------------------------
+OBJECTIVE
+--------------------------------------------------
+
+Wire a full Partnership + Distribution Engine into:
+
+1. Recommendation Engine
+2. Campaign Engine
+3. POS Adapter
+4. Analytics + Attribution
+5. Admin Control Layer
+
+Without breaking or duplicating anything.
+
+--------------------------------------------------
+1. BRAND PARTNER MODEL (EXTEND ONLY)
+--------------------------------------------------
+
+Audit schema first.
+
+If missing, add:
+
+brand_partners:
+id
+name
+tier (LOCAL | REGIONAL | NATIONAL)
+active
+placementPriority
+allowedCraftTypes
+monthlyBudgetCents
+currentMonthSpendCents
+startDate
+endDate
+createdAt
+updatedAt
+
+brand_product_links:
+id
+brandId
+productId
+venueId nullable
+boostWeight
+isFeatured
+active
+createdAt
+updatedAt
+
+Rules:
+- reuse existing product/brand tables if present
+- tenant-safe scoping
+- no duplicate product systems
+- do not override inventory or product ownership
+
+--------------------------------------------------
+2. CAMPAIGN ENGINE (EXTEND EXISTING)
+--------------------------------------------------
+
+Extend campaigns table ONLY if fields missing:
+
+campaignType:
+BRAND_SPOTLIGHT
+DOUBLE_XP
+FEATURED_PAIRING
+VENUE_CHALLENGE
+COMPETITION
+DISTRIBUTOR_PUSH
+SEASONAL_PROMO
+
+brandId nullable
+venueId nullable
+craftType nullable
+boostMultiplier
+xpMultiplier
+rewardBonusCents
+budgetLimitCents
+currentSpendCents
+maxRedemptions
+currentRedemptions
+startDate
+endDate
+status:
+DRAFT
+ACTIVE
+PAUSED
+EXPIRED
+BUDGET_EXHAUSTED
+DISABLED
+createdBy
+updatedBy
+
+Rules:
+- must respect admin intensity controls
+- must respect feature flags
+- must respect tenant isolation
+- must not boost out-of-stock products
+- must not exceed budgetLimitCents
+- must not exceed maxRedemptions
+
+--------------------------------------------------
+3. RECOMMENDATION ENGINE WIRING
+--------------------------------------------------
+
+In engine/recommend.ts:
+
+After base scoring:
+
+applyBrandBoost(results, context)
+applyCampaignBoost(results, context)
+
+Rules:
+- never override base score
+- max boost cap 30% (or admin intensity limit)
+- respect:
+  inventory
+  user preference
+  craftType
+  venueId
+  campaign status
+  campaign budget
+  feature flags
+
+Each result must include:
+
+brandId
+brandName
+campaignId
+campaignType
+isSponsored
+boostSource
+boostAmount
+sponsoredLabel
+
+Pricing must remain untouched.
+
+--------------------------------------------------
+4. CAMPAIGN APPLICATION LOGIC
+--------------------------------------------------
+
+Add service:
+
+getActiveCampaigns(venueId, craftType)
+
+Filter:
+- ACTIVE
+- within date range
+- correct venue/global scope
+
+Apply:
+boostMultiplier → recommendation scoring
+xpMultiplier → scoring engine
+rewardBonus → rewardPricingEngine
+
+Clamp ALL values using admin intensity controls.
+
+--------------------------------------------------
+5. POS ADAPTER EXTENSION
+--------------------------------------------------
+
+Extend payload only:
+
+brandId
+brandName
+campaignId
+campaignType
+sponsored
+attributionSource
+campaignDiscountCents
+campaignXpMultiplier
+campaignBudgetRemainingCents
+
+Rules:
+- finalPriceCents ALWAYS from rewardPricingEngine
+- POS NEVER calculates campaign logic
+- backward compatible payload
+
+--------------------------------------------------
+6. ANALYTICS + ATTRIBUTION
+--------------------------------------------------
+
+Use analytics_events.
+
+Add event types:
+
+BRAND_VIEW
+BRAND_SELECTED
+CAMPAIGN_TRIGGERED
+CAMPAIGN_REWARD_APPLIED
+CAMPAIGN_CONVERSION
+CAMPAIGN_BUDGET_WARNING
+CAMPAIGN_BUDGET_EXHAUSTED
+
+Track:
+
+userId
+venueId
+productId
+brandId
+campaignId
+eventType
+estimatedValueCents
+actualOrderValueCents
+discountCents
+finalPriceCents
+timestamp
+
+Rules:
+- spend increments ONLY on confirmed conversion/redemption
+- idempotent updates (no double counting)
+- reuse webhook + order confirmation logic
+
+--------------------------------------------------
+7. CAMPAIGN BUDGET ENFORCEMENT WORKER
+--------------------------------------------------
+
+Add worker:
+
+campaignBudgetEnforcementWorker
+
+Interval:
+every 10 minutes
+
+Must:
+- scan active campaigns
+- enforce budgetLimitCents
+- enforce maxRedemptions
+- enforce endDate
+- set status:
+  BUDGET_EXHAUSTED
+  EXPIRED
+  PAUSED
+- write structured logs
+- write audit logs
+- be idempotent
+
+Add endpoints:
+
+GET /api/admin/workers/campaign-budget/status
+POST /api/admin/workers/campaign-budget/run-now
+
+(super_admin only)
+
+--------------------------------------------------
+8. FRAUD PROTECTION FOR CAMPAIGNS
+--------------------------------------------------
+
+Use existing fraud system.
+
+Detect:
+
+same device repeated redemptions
+same user rapid redemption
+campaign abuse spikes
+session farming
+staff override abuse
+
+On detection:
+
+- insert fraud_flags
+- optionally pause campaign
+- log audit event
+
+Events:
+
+CAMPAIGN_ABUSE_FLAGGED
+CAMPAIGN_REDEMPTION_VELOCITY_WARNING
+CAMPAIGN_DEVICE_ABUSE_WARNING
+CAMPAIGN_STAFF_OVERRIDE_REVIEW_REQUIRED
+
+--------------------------------------------------
+9. ADMIN ROUTES (EXTEND)
+--------------------------------------------------
+
+GET /api/admin/brands
+POST /api/admin/brands
+PATCH /api/admin/brands/:id
+POST /api/admin/brands/:id/link-product
+
+GET /api/admin/campaigns
+POST /api/admin/campaigns
+PATCH /api/admin/campaigns/:id
+POST /api/admin/campaigns/:id/pause
+POST /api/admin/campaigns/:id/resume
+POST /api/admin/campaigns/:id/disable
+
+GET /api/admin/campaigns/:id/performance
+GET /api/admin/brands/:id/performance
+
+All routes must:
+- require auth + role checks
+- enforce venueId
+- validate inputs
+- rate limit
+- audit log mutations
+
+--------------------------------------------------
+10. ROI REPORTING
+--------------------------------------------------
+
+Endpoints:
+
+GET /api/admin/campaigns/:id/roi
+GET /api/admin/brands/:id/roi
+
+Return:
+
+views
+selections
+conversions
+revenue
+discount cost
+net revenue
+conversion rate
+budget remaining
+redemption remaining
+top products
+top venues
+fraud signals
+
+Use existing analytics + orders.
+
+--------------------------------------------------
+11. FEATURE FLAGS
+--------------------------------------------------
+
+Extend only:
+
+brand_partnership_engine
+campaign_engine
+sponsored_placement
+campaign_budget_worker
+campaign_roi_reporting
+campaign_abuse_detection
+
+Respect precedence:
+global > venue > theme > kill switch
+
+--------------------------------------------------
+12. AUDIT LOGGING
+--------------------------------------------------
+
+Log all admin mutations:
+
+BRAND_CREATED
+BRAND_UPDATED
+BRAND_DISABLED
+BRAND_LINKED_TO_PRODUCT
+CAMPAIGN_CREATED
+CAMPAIGN_UPDATED
+CAMPAIGN_PAUSED
+CAMPAIGN_RESUMED
+CAMPAIGN_DISABLED
+CAMPAIGN_BUDGET_UPDATED
+CAMPAIGN_LIMIT_UPDATED
+CAMPAIGN_WORKER_RUN_NOW
+CAMPAIGN_ATTRIBUTION_RECORDED
+
+--------------------------------------------------
+13. VALIDATION
+--------------------------------------------------
+
+Use zod or existing validation.
+
+Validate:
+
+budgetLimitCents >= 0
+boostMultiplier within limits
+xpMultiplier within limits
+rewardBonusCents within limits
+maxRedemptions >= 0
+valid craft types
+valid status values
+
+Fail closed.
+
+--------------------------------------------------
+14. COMPLETION REQUIREMENTS
+--------------------------------------------------
+
+System is complete only if:
+
+- recommendations include safe campaign/brand boosts
+- out-of-stock products are never boosted
+- POS payload includes attribution
+- analytics logs campaign/brand events
+- budget worker enforces limits correctly
+- fraud detection flags abuse
+- ROI endpoints return real data
+- audit logs capture all changes
+- feature flags can disable system safely
+- no duplicate systems created
+- all existing systems still pass tests
+
+Return:
+
+files changed
+routes added
+tables reused/extended
+fields added
+workers added
+feature flags added
+audit actions added
+analytics events added
+manual test steps
+security checks
+confirmation no duplication
+confirmation no system breakage
+remaining risks

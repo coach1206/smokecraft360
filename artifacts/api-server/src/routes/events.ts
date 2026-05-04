@@ -27,6 +27,10 @@ const VALID_CLIENT_EVENTS = new Set<EventType>([
   "pairing_selected",
   "food_selected",
   "order_created",
+  "brand_view",
+  "brand_selected",
+  "campaign_triggered",
+  "campaign_conversion",
 ]);
 
 async function tryGetUserId(req: Request): Promise<string | null> {

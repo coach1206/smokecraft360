@@ -35,16 +35,24 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 function campaignToMeta(row: typeof campaignsTable.$inferSelect) {
   return {
-    id:            row.id,
-    name:          row.name,
-    brandId:       row.brandId       ?? null,
-    distributorId: row.distributorId ?? null,
-    budgetCents:   row.budgetCents   ?? null,
-    impressionGoal:row.impressionGoal?? null,
-    startDate:     row.startDate     ?? null,
-    endDate:       row.endDate       ?? null,
-    status:        row.status,
-    active:        row.active,
+    id:              row.id,
+    name:            row.name,
+    type:            row.type ?? "GENERAL",
+    brandId:         row.brandId       ?? null,
+    distributorId:   row.distributorId ?? null,
+    venueId:         row.venueId       ?? null,
+    craftType:       row.craftType     ?? null,
+    boostMultiplier: row.boostMultiplier ?? 1.0,
+    xpMultiplier:    row.xpMultiplier  ?? 1.0,
+    rewardBonus:     row.rewardBonus   ?? 0,
+    budgetCents:     row.budgetCents   ?? null,
+    budgetLimit:     row.budgetLimit   ?? null,
+    impressionGoal:  row.impressionGoal ?? null,
+    maxRedemptions:  row.maxRedemptions ?? null,
+    startDate:       row.startDate     ?? null,
+    endDate:         row.endDate       ?? null,
+    status:          row.status,
+    active:          row.active,
   };
 }
 
@@ -87,23 +95,35 @@ router.post(
   "/",
   requireAuth,
   requireRole("super_admin", "venue_owner", "manager"),
-  allowOnly("name", "brandId", "distributorId", "status", "budgetCents",
-            "impressionGoal", "startDate", "endDate", "notes", "active"),
+  allowOnly("name", "type", "brandId", "distributorId", "venueId", "craftType",
+            "status", "boostMultiplier", "xpMultiplier", "rewardBonus",
+            "budgetCents", "budgetLimit", "impressionGoal", "maxRedemptions",
+            "startDate", "endDate", "notes", "active"),
   async (req: AuthRequest, res: Response) => {
     const {
-      name, brandId, distributorId, status,
-      budgetCents, impressionGoal, startDate, endDate, notes, active,
+      name, type, brandId, distributorId, venueId, craftType, status,
+      boostMultiplier, xpMultiplier, rewardBonus,
+      budgetCents, budgetLimit, impressionGoal, maxRedemptions,
+      startDate, endDate, notes, active,
     } = req.body as {
-      name?:          string;
-      brandId?:       string;
-      distributorId?: string;
-      status?:        "draft" | "active" | "paused" | "completed" | "cancelled";
-      budgetCents?:   number;
-      impressionGoal?:number;
-      startDate?:     string;
-      endDate?:       string;
-      notes?:         string;
-      active?:        boolean;
+      name?:            string;
+      type?:            string;
+      brandId?:         string;
+      distributorId?:   string;
+      venueId?:         string;
+      craftType?:       string;
+      status?:          "draft" | "active" | "paused" | "completed" | "cancelled";
+      boostMultiplier?: number;
+      xpMultiplier?:    number;
+      rewardBonus?:     number;
+      budgetCents?:     number;
+      budgetLimit?:     number;
+      impressionGoal?:  number;
+      maxRedemptions?:  number;
+      startDate?:       string;
+      endDate?:         string;
+      notes?:           string;
+      active?:          boolean;
     };
 
     if (!name?.trim()) {
@@ -113,17 +133,30 @@ router.post(
       res.status(400).json({ error: 'Invalid brandId' }); return;
     }
 
+    const VALID_TYPES = ["BRAND_SPOTLIGHT", "DOUBLE_XP", "FEATURED_PAIRING", "VENUE_CHALLENGE", "COMPETITION", "GENERAL"];
+    if (type && !VALID_TYPES.includes(type)) {
+      res.status(400).json({ error: `"type" must be one of: ${VALID_TYPES.join(", ")}` }); return;
+    }
+
     const [row] = await db.insert(campaignsTable).values({
-      name:          name.trim(),
-      brandId:       brandId       ?? null,
-      distributorId: distributorId ?? null,
-      status:        status        ?? "draft",
-      budgetCents:   budgetCents   ?? null,
-      impressionGoal:impressionGoal?? null,
-      startDate:     startDate     ? new Date(startDate) : null,
-      endDate:       endDate       ? new Date(endDate)   : null,
-      notes:         notes         ?? null,
-      active:        active        ?? false,
+      name:            name.trim(),
+      type:            (type as any) ?? "GENERAL",
+      brandId:         brandId       ?? null,
+      distributorId:   distributorId ?? null,
+      venueId:         venueId       ?? null,
+      craftType:       craftType     ?? null,
+      status:          status        ?? "draft",
+      boostMultiplier: boostMultiplier ?? 1.0,
+      xpMultiplier:    xpMultiplier  ?? 1.0,
+      rewardBonus:     rewardBonus   ?? 0,
+      budgetCents:     budgetCents   ?? null,
+      budgetLimit:     budgetLimit   ?? null,
+      impressionGoal:  impressionGoal ?? null,
+      maxRedemptions:  maxRedemptions ?? null,
+      startDate:       startDate     ? new Date(startDate) : null,
+      endDate:         endDate       ? new Date(endDate)   : null,
+      notes:           notes         ?? null,
+      active:          active        ?? false,
     }).returning();
 
     setCampaign(campaignToMeta(row));
@@ -158,33 +191,48 @@ router.patch(
   "/:id",
   requireAuth,
   requireRole("super_admin", "venue_owner", "manager"),
-  allowOnly("name", "brandId", "distributorId", "status", "budgetCents",
-            "impressionGoal", "startDate", "endDate", "notes", "active"),
+  allowOnly("name", "type", "brandId", "distributorId", "venueId", "craftType",
+            "status", "boostMultiplier", "xpMultiplier", "rewardBonus",
+            "budgetCents", "budgetLimit", "impressionGoal", "maxRedemptions",
+            "startDate", "endDate", "notes", "active"),
   async (req: AuthRequest, res: Response) => {
     const id = String(req.params.id ?? "");
     if (!UUID_RE.test(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
     const {
-      name, brandId, distributorId, status,
-      budgetCents, impressionGoal, startDate, endDate, notes, active,
+      name, type, brandId, distributorId, venueId, craftType, status,
+      boostMultiplier, xpMultiplier, rewardBonus,
+      budgetCents, budgetLimit, impressionGoal, maxRedemptions,
+      startDate, endDate, notes, active,
     } = req.body as Partial<{
-      name: string; brandId: string; distributorId: string;
+      name: string; type: string; brandId: string; distributorId: string;
+      venueId: string; craftType: string;
       status: "draft" | "active" | "paused" | "completed" | "cancelled";
-      budgetCents: number; impressionGoal: number;
+      boostMultiplier: number; xpMultiplier: number; rewardBonus: number;
+      budgetCents: number; budgetLimit: number;
+      impressionGoal: number; maxRedemptions: number;
       startDate: string; endDate: string; notes: string; active: boolean;
     }>;
 
     const updates: Partial<typeof campaignsTable.$inferInsert> = { updatedAt: new Date() };
-    if (name          !== undefined) updates.name           = name.trim();
-    if (brandId       !== undefined) updates.brandId        = brandId || null;
-    if (distributorId !== undefined) updates.distributorId  = distributorId || null;
-    if (status        !== undefined) updates.status         = status;
-    if (budgetCents   !== undefined) updates.budgetCents    = budgetCents;
-    if (impressionGoal!== undefined) updates.impressionGoal = impressionGoal;
-    if (startDate     !== undefined) updates.startDate      = startDate ? new Date(startDate) : null;
-    if (endDate       !== undefined) updates.endDate        = endDate   ? new Date(endDate)   : null;
-    if (notes         !== undefined) updates.notes          = notes;
-    if (active        !== undefined) updates.active         = active;
+    if (name            !== undefined) updates.name            = name.trim();
+    if (type            !== undefined) updates.type            = type as any;
+    if (brandId         !== undefined) updates.brandId         = brandId || null;
+    if (distributorId   !== undefined) updates.distributorId   = distributorId || null;
+    if (venueId         !== undefined) updates.venueId         = venueId || null;
+    if (craftType       !== undefined) updates.craftType       = craftType || null;
+    if (status          !== undefined) updates.status          = status;
+    if (boostMultiplier !== undefined) updates.boostMultiplier = boostMultiplier;
+    if (xpMultiplier    !== undefined) updates.xpMultiplier    = xpMultiplier;
+    if (rewardBonus     !== undefined) updates.rewardBonus     = rewardBonus;
+    if (budgetCents     !== undefined) updates.budgetCents     = budgetCents;
+    if (budgetLimit     !== undefined) updates.budgetLimit     = budgetLimit;
+    if (impressionGoal  !== undefined) updates.impressionGoal  = impressionGoal;
+    if (maxRedemptions  !== undefined) updates.maxRedemptions  = maxRedemptions;
+    if (startDate       !== undefined) updates.startDate       = startDate ? new Date(startDate) : null;
+    if (endDate         !== undefined) updates.endDate         = endDate   ? new Date(endDate)   : null;
+    if (notes           !== undefined) updates.notes           = notes;
+    if (active          !== undefined) updates.active          = active;
 
     const [row] = await db.update(campaignsTable)
       .set(updates)

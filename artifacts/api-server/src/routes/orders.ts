@@ -59,7 +59,8 @@ async function tryGetUserId(req: Request): Promise<string | null> {
 router.post(
   "/",
   allowOnly("cigarId", "cigarName", "drinkId", "drinkName", "foodId", "foodName",
-            "orderType", "tableNumber", "venueId"),
+            "orderType", "tableNumber", "venueId",
+            "brandId", "campaignId", "sponsored", "campaignType"),
   // Device-binding gate — when the kiosk sends X-Device-Id, the device row
   // must exist, be active, and belong to the same venue. Dashboard manual
   // orders that omit the header still pass through (legacy compatibility).
@@ -87,16 +88,21 @@ router.post(
     }
 
     const { cigarId, cigarName, drinkId, drinkName, foodId, foodName,
-            orderType, tableNumber, venueId } = req.body as {
-      cigarId?:    string;
-      cigarName?:  string;
-      drinkId?:    string;
-      drinkName?:  string;
-      foodId?:     string;
-      foodName?:   string;
-      orderType?:  string;
-      tableNumber?: string;
-      venueId?:    string;
+            orderType, tableNumber, venueId,
+            brandId, campaignId, sponsored, campaignType } = req.body as {
+      cigarId?:      string;
+      cigarName?:    string;
+      drinkId?:      string;
+      drinkName?:    string;
+      foodId?:       string;
+      foodName?:     string;
+      orderType?:    string;
+      tableNumber?:  string;
+      venueId?:      string;
+      brandId?:      string;
+      campaignId?:   string;
+      sponsored?:    boolean;
+      campaignType?: string;
     };
 
     if (!orderType || !(VALID_TYPES as readonly string[]).includes(orderType)) {
@@ -111,17 +117,21 @@ router.post(
     const userId = await tryGetUserId(req);
 
     const [order] = await db.insert(ordersTable).values({
-      userId:      userId     ?? undefined,
-      venueId:     venueId   ?? undefined,
-      cigarId:     cigarId   ?? undefined,
-      cigarName:   cigarName ?? undefined,
-      drinkId:     drinkId   ?? undefined,
-      drinkName:   drinkName ?? undefined,
-      foodId:      foodId    ?? undefined,
-      foodName:    foodName  ?? undefined,
-      orderType:   orderType as OrderType,
-      status:      "pending",
-      tableNumber: tableNumber ?? undefined,
+      userId:       userId     ?? undefined,
+      venueId:      venueId   ?? undefined,
+      cigarId:      cigarId   ?? undefined,
+      cigarName:    cigarName ?? undefined,
+      drinkId:      drinkId   ?? undefined,
+      drinkName:    drinkName ?? undefined,
+      foodId:       foodId    ?? undefined,
+      foodName:     foodName  ?? undefined,
+      orderType:    orderType as OrderType,
+      status:       "pending",
+      tableNumber:  tableNumber ?? undefined,
+      brandId:      brandId    ?? undefined,
+      campaignId:   campaignId ?? undefined,
+      sponsored:    sponsored === true,
+      campaignType: campaignType ?? undefined,
     }).returning();
 
     req.log.info({ orderId: order.id, orderType, userId }, "order created");

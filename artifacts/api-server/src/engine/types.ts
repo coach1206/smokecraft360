@@ -82,6 +82,12 @@ export interface ScoredProduct extends Product {
   availabilityLabel?: AvailabilityLabel;
   /** Set when this product is a fallback substitute for an out-of-stock ideal */
   fallbackFor?: string;
+  /** Partnership engine: true when brand partner or sponsored placement applies */
+  isSponsored?: boolean;
+  /** Partnership engine: campaign type tag (e.g. BRAND_SPOTLIGHT, DOUBLE_XP) */
+  campaignTag?: string | null;
+  /** Partnership engine: brand partner ID tag */
+  brandTag?:    string | null;
 }
 
 export interface FoodItem {

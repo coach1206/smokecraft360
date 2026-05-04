@@ -26,6 +26,10 @@ export const ordersTable = pgTable("orders", {
   verificationMethod: text("verification_method").$type<VerificationMethod>(),
   verifiedBy:         uuid("verified_by"),       // staff userId who verified
   xpAwarded:          boolean("xp_awarded").notNull().default(false),
+  brandId:            uuid("brand_id"),
+  campaignId:         uuid("campaign_id"),
+  sponsored:          boolean("sponsored").notNull().default(false),
+  campaignType:       text("campaign_type"),
   createdAt:          timestamp("created_at").notNull().defaultNow(),
   updatedAt:          timestamp("updated_at").notNull().defaultNow(),
 });

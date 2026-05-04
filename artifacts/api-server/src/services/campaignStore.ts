@@ -19,16 +19,24 @@ const activeCampaignIds = new Set<string>();
 
 /** Type for campaign metadata kept in memory. */
 export interface CampaignMeta {
-  id:            string;
-  name:          string;
-  brandId:       string | null;
-  distributorId: string | null;
-  budgetCents:   number | null;
-  impressionGoal:number | null;
-  startDate:     Date | null;
-  endDate:       Date | null;
-  status:        string;
-  active:        boolean;
+  id:              string;
+  name:            string;
+  type:            string;
+  brandId:         string | null;
+  distributorId:   string | null;
+  venueId:         string | null;
+  craftType:       string | null;
+  boostMultiplier: number;
+  xpMultiplier:    number;
+  rewardBonus:     number;
+  budgetCents:     number | null;
+  budgetLimit:     number | null;
+  impressionGoal:  number | null;
+  maxRedemptions:  number | null;
+  startDate:       Date | null;
+  endDate:         Date | null;
+  status:          string;
+  active:          boolean;
 }
 
 const campaignMeta = new Map<string, CampaignMeta>();
@@ -86,16 +94,24 @@ export async function loadCampaigns(): Promise<void> {
     const rows = await db.select().from(campaignsTable);
     for (const row of rows) {
       const meta: CampaignMeta = {
-        id:            row.id,
-        name:          row.name,
-        brandId:       row.brandId       ?? null,
-        distributorId: row.distributorId ?? null,
-        budgetCents:   row.budgetCents   ?? null,
-        impressionGoal:row.impressionGoal?? null,
-        startDate:     row.startDate     ?? null,
-        endDate:       row.endDate       ?? null,
-        status:        row.status,
-        active:        row.active,
+        id:              row.id,
+        name:            row.name,
+        type:            (row as any).type ?? "GENERAL",
+        brandId:         row.brandId       ?? null,
+        distributorId:   row.distributorId ?? null,
+        venueId:         (row as any).venueId ?? null,
+        craftType:       (row as any).craftType ?? null,
+        boostMultiplier: (row as any).boostMultiplier ?? 1.0,
+        xpMultiplier:    (row as any).xpMultiplier ?? 1.0,
+        rewardBonus:     (row as any).rewardBonus ?? 0,
+        budgetCents:     row.budgetCents   ?? null,
+        budgetLimit:     (row as any).budgetLimit ?? null,
+        impressionGoal:  row.impressionGoal ?? null,
+        maxRedemptions:  (row as any).maxRedemptions ?? null,
+        startDate:       row.startDate     ?? null,
+        endDate:         row.endDate       ?? null,
+        status:          row.status,
+        active:          row.active,
       };
       setCampaign(meta);
     }
