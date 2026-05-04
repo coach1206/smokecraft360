@@ -36,7 +36,13 @@ export interface VenueConfig {
   logoText:     string;
   tagline:      string;
   primaryColor: string;
+  logoUrl:      string | null;
   features:     VenueFeatures;
+}
+
+interface VenueContextValue {
+  config: VenueConfig;
+  updateBranding: (patch: Partial<Pick<VenueConfig, "logoText" | "tagline" | "primaryColor" | "logoUrl">>) => void;
 }
 
 const DEFAULT_CONFIG: VenueConfig = {
@@ -44,6 +50,7 @@ const DEFAULT_CONFIG: VenueConfig = {
   logoText:     "SmokeCraft 360",
   tagline:      "Connoisseur's Companion",
   primaryColor: "#D4AF37",
+  logoUrl:      null,
   features: {
     demoMode:    true,
     bandCreator: true,
@@ -53,7 +60,10 @@ const DEFAULT_CONFIG: VenueConfig = {
   },
 };
 
-const VenueContext = createContext<VenueConfig>(DEFAULT_CONFIG);
+const VenueContext = createContext<VenueContextValue>({
+  config: DEFAULT_CONFIG,
+  updateBranding: () => {},
+});
 
 /** Apply venue primary color as a CSS custom property so all gold accents
  *  can be overridden for white-label deployments. */
@@ -90,16 +100,26 @@ export function VenueProvider({ children }: { children: ReactNode }) {
         applyTheme(merged.primaryColor);
         localStorage.setItem("smokecraft_venue", venueId);
       })
-      .catch(() => {
-        // Fall back to defaults silently — never block the UI
-      });
+      .catch(() => {});
   }, []);
 
+  function updateBranding(patch: Partial<Pick<VenueConfig, "logoText" | "tagline" | "primaryColor" | "logoUrl">>) {
+    setConfig((prev) => {
+      const next = { ...prev, ...patch };
+      if (patch.primaryColor) applyTheme(patch.primaryColor);
+      return next;
+    });
+  }
+
   return (
-    <VenueContext.Provider value={config}>{children}</VenueContext.Provider>
+    <VenueContext.Provider value={{ config, updateBranding }}>{children}</VenueContext.Provider>
   );
 }
 
 export function useVenue(): VenueConfig {
+  return useContext(VenueContext).config;
+}
+
+export function useVenueContext(): VenueContextValue {
   return useContext(VenueContext);
 }

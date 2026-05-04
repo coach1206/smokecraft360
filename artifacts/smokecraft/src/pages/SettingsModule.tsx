@@ -1,17 +1,25 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers, ShieldAlert } from "lucide-react";
+import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers, ShieldAlert, Paintbrush, Image, Type, Palette, Check } from "lucide-react";
 import { useCommandCenter, POS_MODE_INFO, type PosOperatingMode } from "@/contexts/CommandCenterContext";
 import { usePosContext } from "@/contexts/PosContext";
+import { useVenueContext } from "@/contexts/VenueContext";
 import ConfirmModal from "@/components/ConfirmModal";
 
 const POS_MODES: PosOperatingMode[] = ["overlay", "hybrid", "full_pos"];
+
+const PRESET_COLORS = [
+  "#D4AF37", "#e85d26", "#ef4444", "#ec4899",
+  "#8b5cf6", "#6366f1", "#3b82f6", "#06b6d4",
+  "#14b8a6", "#22c55e", "#84cc16", "#f59e0b",
+];
 
 export default function SettingsModule() {
   const [, navigate] = useLocation();
   const cc = useCommandCenter();
   const pos = usePosContext();
+  const { config: venue, updateBranding } = useVenueContext();
 
   const statusColor = cc.systemStatus === "operational" ? "#34d399" : cc.systemStatus === "degraded" ? "#f59e0b" : "#ef4444";
   const onlineDevices = cc.devices.filter(d => d.status === "online").length;
@@ -22,6 +30,55 @@ export default function SettingsModule() {
   const isPrivileged = pos.currentUser?.role === "owner" || pos.currentUser?.role === "manager";
   const [pendingMode, setPendingMode] = useState<PosOperatingMode | null>(null);
   const [accessDenied, setAccessDenied] = useState(false);
+
+  const [brandName, setBrandName] = useState(venue.logoText);
+  const [brandTagline, setBrandTagline] = useState(venue.tagline);
+  const [brandColor, setBrandColor] = useState(venue.primaryColor);
+  const [brandLogoUrl, setBrandLogoUrl] = useState(venue.logoUrl ?? "");
+  const [brandSaved, setBrandSaved] = useState(false);
+  const [brandSaving, setBrandSaving] = useState(false);
+  const [brandError, setBrandError] = useState("");
+
+  async function saveBranding() {
+    if (!brandName.trim()) {
+      setBrandError("Venue name is required");
+      setTimeout(() => setBrandError(""), 3000);
+      return;
+    }
+    setBrandSaving(true);
+    setBrandError("");
+
+    updateBranding({
+      logoText: brandName.trim(),
+      tagline: brandTagline.trim(),
+      primaryColor: brandColor,
+      logoUrl: brandLogoUrl.trim() || null,
+    });
+
+    try {
+      const token = localStorage.getItem("smokecraft_token");
+      if (token && venue.id !== "default") {
+        await fetch(`/api/venues/${venue.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({
+            name: brandName.trim(),
+            tagline: brandTagline.trim(),
+            primaryColor: brandColor,
+            logoUrl: brandLogoUrl.trim() || null,
+          }),
+        });
+      }
+      setBrandSaved(true);
+      setTimeout(() => setBrandSaved(false), 2500);
+      cc.addAuditEntry("branding.update", `Updated venue branding: "${brandName.trim()}"`, pos.currentUser?.name);
+    } catch {
+      setBrandError("Failed to save — changes applied locally");
+      setTimeout(() => setBrandError(""), 4000);
+    } finally {
+      setBrandSaving(false);
+    }
+  }
 
   function handleModeSelect(mode: PosOperatingMode) {
     if (mode === cc.posMode) return;
@@ -93,6 +150,171 @@ export default function SettingsModule() {
               </motion.div>
             );
           })}
+        </div>
+
+        <div style={{
+          padding: "16px", borderRadius: 14,
+          background: "rgba(255,255,255,0.03)", border: `1px solid ${brandColor}20`,
+          marginBottom: 16,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+            <Paintbrush size={14} color={brandColor} />
+            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Venue Branding</span>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 16 }}>
+            <div>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                <Type size={12} /> Venue Name
+              </label>
+              <input
+                value={brandName}
+                onChange={(e) => setBrandName(e.target.value)}
+                style={{
+                  width: "100%", padding: "12px 14px", borderRadius: 10, fontSize: 14, fontWeight: 600,
+                  background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                  color: "#e8e0c8", outline: "none", boxSizing: "border-box",
+                }}
+                onFocus={(e) => { e.target.style.borderColor = `${brandColor}60`; }}
+                onBlur={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                <Type size={12} /> Tagline
+              </label>
+              <input
+                value={brandTagline}
+                onChange={(e) => setBrandTagline(e.target.value)}
+                style={{
+                  width: "100%", padding: "12px 14px", borderRadius: 10, fontSize: 14,
+                  background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                  color: "#e8e0c8", outline: "none", boxSizing: "border-box",
+                }}
+                onFocus={(e) => { e.target.style.borderColor = `${brandColor}60`; }}
+                onBlur={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; }}
+              />
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              <Image size={12} /> Logo Image URL
+            </label>
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              <input
+                value={brandLogoUrl}
+                onChange={(e) => setBrandLogoUrl(e.target.value)}
+                placeholder="https://example.com/logo.png"
+                style={{
+                  flex: 1, padding: "12px 14px", borderRadius: 10, fontSize: 13,
+                  background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                  color: "#e8e0c8", outline: "none",
+                }}
+                onFocus={(e) => { e.target.style.borderColor = `${brandColor}60`; }}
+                onBlur={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; }}
+              />
+              {brandLogoUrl && (
+                <div style={{
+                  width: 48, height: 48, borderRadius: 10, flexShrink: 0,
+                  background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                  display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
+                }}>
+                  <img
+                    src={brandLogoUrl}
+                    alt="Logo preview"
+                    style={{ maxWidth: 40, maxHeight: 40, objectFit: "contain" }}
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 18 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              <Palette size={12} /> Primary Color
+            </label>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+              {PRESET_COLORS.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setBrandColor(c)}
+                  style={{
+                    width: 32, height: 32, borderRadius: 8, cursor: "pointer",
+                    background: c, border: brandColor === c ? "2px solid #e8e0c8" : "2px solid transparent",
+                    boxShadow: brandColor === c ? `0 0 10px ${c}60` : "none",
+                    transition: "border-color 0.15s, box-shadow 0.15s",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                >
+                  {brandColor === c && <Check size={14} color="#fff" strokeWidth={3} />}
+                </button>
+              ))}
+              <input
+                type="color"
+                value={brandColor}
+                onChange={(e) => setBrandColor(e.target.value)}
+                style={{
+                  width: 32, height: 32, borderRadius: 8, cursor: "pointer",
+                  border: "1px solid rgba(255,255,255,0.15)", background: "transparent",
+                  padding: 0,
+                }}
+                title="Custom color"
+              />
+            </div>
+          </div>
+
+          <div style={{
+            padding: "14px 16px", borderRadius: 12, marginBottom: 14,
+            background: `${brandColor}08`, border: `1px solid ${brandColor}20`,
+            display: "flex", alignItems: "center", gap: 14,
+          }}>
+            {brandLogoUrl ? (
+              <img src={brandLogoUrl} alt="" style={{ width: 36, height: 36, borderRadius: 8, objectFit: "contain" }}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+            ) : (
+              <div style={{
+                width: 36, height: 36, borderRadius: 8,
+                background: `${brandColor}20`, border: `1px solid ${brandColor}30`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 16, fontWeight: 700, color: brandColor,
+              }}>
+                {brandName.charAt(0)}
+              </div>
+            )}
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: brandColor }}>{brandName || "Venue Name"}</div>
+              <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>{brandTagline || "Your tagline"}</div>
+            </div>
+            <div style={{ marginLeft: "auto", fontSize: 10, color: "rgba(232,224,200,0.3)", textTransform: "uppercase" }}>Preview</div>
+          </div>
+
+          {brandError && (
+            <div style={{
+              padding: "10px 14px", borderRadius: 10, marginBottom: 10,
+              background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)",
+              fontSize: 12, color: "#ef4444",
+            }}>
+              {brandError}
+            </div>
+          )}
+
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={saveBranding}
+            disabled={brandSaving}
+            style={{
+              width: "100%", padding: "14px", borderRadius: 12,
+              cursor: brandSaving ? "wait" : "pointer",
+              background: `linear-gradient(135deg, ${brandColor}, ${brandColor}cc)`,
+              border: "none", fontSize: 14, fontWeight: 700, color: "#fff",
+              letterSpacing: "0.05em",
+              opacity: brandSaving ? 0.6 : 1,
+            }}
+          >
+            {brandSaving ? "Saving..." : brandSaved ? "Branding Saved!" : "Save Branding"}
+          </motion.button>
         </div>
 
         <div style={{

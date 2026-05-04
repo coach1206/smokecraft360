@@ -30,13 +30,16 @@ router.post(
   "/",
   requireAuth,
   requireRole("super_admin"),
-  allowOnly("name", "type", "plan", "themeProfile"),
+  allowOnly("name", "type", "plan", "themeProfile", "tagline", "logoUrl", "primaryColor"),
   async (req: AuthRequest, res: Response) => {
-    const { name, type, plan, themeProfile } = req.body as {
+    const { name, type, plan, themeProfile, tagline, logoUrl, primaryColor } = req.body as {
       name?:         string;
       type?:         string;
       plan?:         string;
       themeProfile?: string;
+      tagline?:      string;
+      logoUrl?:      string;
+      primaryColor?: string;
     };
 
     if (!name || typeof name !== "string" || name.trim().length === 0) {
@@ -60,6 +63,9 @@ router.post(
         type:         type as typeof venuesTable.$inferInsert["type"],
         plan:         assignedPlan as typeof venuesTable.$inferInsert["plan"],
         themeProfile: themeProfile ?? null,
+        tagline:      tagline ?? null,
+        logoUrl:      logoUrl ?? null,
+        primaryColor: primaryColor ?? null,
       })
       .returning();
 
@@ -105,8 +111,9 @@ router.get("/:id", async (req, res: Response) => {
   res.json({
     id:           venue.id,
     logoText:     venue.name,
-    tagline:      "Powered by SmokeCraft",
-    primaryColor: "#D4AF37",
+    tagline:      venue.tagline ?? "Powered by SmokeCraft",
+    primaryColor: venue.primaryColor ?? "#D4AF37",
+    logoUrl:      venue.logoUrl ?? null,
     features: {
       demoMode:    venue.plan !== "basic",
       bandCreator: venue.plan === "premium",
@@ -128,16 +135,19 @@ router.patch(
   "/:id",
   requireAuth,
   requireRole("super_admin"),
-  allowOnly("name", "themeProfile", "active", "plan"),
+  allowOnly("name", "themeProfile", "active", "plan", "tagline", "logoUrl", "primaryColor"),
   async (req: AuthRequest, res: Response) => {
     const id = String(req.params["id"] ?? "");
     if (!id) { res.status(400).json({ error: "venue id is required" }); return; }
 
-    const { name, themeProfile, active, plan } = req.body as {
+    const { name, themeProfile, active, plan, tagline, logoUrl, primaryColor } = req.body as {
       name?:         string;
       themeProfile?: string | null;
       active?:       boolean;
       plan?:         "basic" | "mid" | "premium";
+      tagline?:      string;
+      logoUrl?:      string;
+      primaryColor?: string;
     };
 
     const [existing] = await db.select().from(venuesTable).where(eq(venuesTable.id, id)).limit(1);
@@ -157,11 +167,31 @@ router.patch(
       return;
     }
 
+    if (primaryColor !== undefined && !/^#[0-9a-fA-F]{6}$/.test(primaryColor)) {
+      res.status(400).json({ error: "primaryColor must be a valid hex color (e.g. #D4AF37)" });
+      return;
+    }
+
+    if (logoUrl !== undefined && logoUrl !== null && logoUrl.length > 0) {
+      try { new URL(logoUrl); } catch {
+        res.status(400).json({ error: "logoUrl must be a valid URL" });
+        return;
+      }
+    }
+
+    if (tagline !== undefined && tagline.length > 200) {
+      res.status(400).json({ error: "tagline must be 200 characters or fewer" });
+      return;
+    }
+
     const patch: Partial<typeof venuesTable.$inferInsert> = {};
     if (name         !== undefined) patch.name         = name;
     if (themeProfile !== undefined) patch.themeProfile = themeProfile;
     if (active       !== undefined) patch.active       = active;
     if (plan         !== undefined) patch.plan         = plan;
+    if (tagline      !== undefined) patch.tagline      = tagline;
+    if (logoUrl      !== undefined) patch.logoUrl      = logoUrl;
+    if (primaryColor !== undefined) patch.primaryColor = primaryColor;
 
     if (Object.keys(patch).length === 0) {
       res.status(400).json({ error: "No updatable fields supplied" });

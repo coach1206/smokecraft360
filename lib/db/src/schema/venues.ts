@@ -19,8 +19,9 @@ export const venuesTable = pgTable("venues", {
   plan:             venuePlanEnum("plan").notNull().default("basic"),
   themeProfile:     text("theme_profile"),
   active:           boolean("active").notNull().default(true),
-  // Stripe customer is created lazily on the venue's first subscription
-  // checkout and reused for all future billing portal / invoice operations.
+  tagline:          text("tagline"),
+  logoUrl:          text("logo_url"),
+  primaryColor:     text("primary_color"),
   stripeCustomerId: text("stripe_customer_id"),
   createdAt:        timestamp("created_at").notNull().defaultNow(),
 });

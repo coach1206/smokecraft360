@@ -1,0 +1,281 @@
+MISSING / REQUIRED (THIS IS WHY THINGS BREAK RIGHT NOW)
+
+Based on your screenshots:
+
+Tiles are UI-only in some places (not wired to routes)
+No centralized navigation system
+No shared tile component (each page behaves differently)
+NDA page is isolated (no nav control)
+No image system for tiles
+No route consistency (/smokecraft, /pos, etc.)
+No global state for mode/navigation
+
+If we don’t fix these at the root, you’ll keep seeing:
+👉 “button doesn’t go anywhere”
+👉 “screen feels dead”
+
+🔥 WHAT WE’RE DOING NOW (FULL SYSTEM FIX)
+
+We’re building:
+
+👉 Universal UI System + Navigation Engine + Tile System
+
+Everything plugs into this.
+
+🧠 MASTER SYSTEM PROMPT (FINAL VERSION — MERGED)
+
+Paste this into Replit exactly:
+
+PROMPT START
+
+Upgrade SmokeCraft 360 into a fully unified touchscreen operating system with:
+
+live navigation
+image-driven UI
+universal components
+touch-first behavior
+consistent routing across all modules
+
+DO NOT leave any tile or button without a working route.
+
+1. GLOBAL NAVIGATION SYSTEM (MANDATORY)
+
+Create:
+
+client/src/components/AppShell.tsx
+
+Includes:
+
+Back button (top-left, ALWAYS visible)
+Page title
+Mode indicator (Smoke / Pour / Brew / Vape)
+Day/Night toggle
+
+Back button must:
+
+use history.back()
+fallback to /dashboard if no history
+exist on ALL screens including NDA
+2. UNIVERSAL ROUTING (FIX YOUR CURRENT ISSUE)
+
+Ensure routes exist:
+
+/smokecraft
+/brewcraft
+/pourcraft
+/vapecraft
+/pos
+/vendor
+/admin
+/demo
+/investor
+/nda
+🔥 CRITICAL FIX
+
+Every tile must navigate using:
+
+onClick={() => navigate("/route-name")}
+
+NO tile should be static.
+
+3. UNIVERSAL TILE COMPONENT
+
+Create:
+
+client/src/components/TileCard.tsx
+
+Features:
+
+full background image
+gradient overlay
+title + subtitle
+glow border
+press animation
+ripple effect
+navigation on click
+Example:
+<TileCard
+  title="SmokeCraft"
+  subtitle="Cigar experience"
+  image="/images/cigar.jpg"
+  route="/smokecraft"
+/>
+4. IMAGE SYSTEM (YOU ASKED FOR THIS)
+
+Create folder:
+
+/public/images/
+
+Add images:
+
+cigar.jpg
+beer.jpg
+whiskey.jpg
+vape.jpg
+lounge.jpg
+dashboard.jpg
+
+Apply images to ALL tiles across:
+
+Command Center
+POS
+Vendor Portal
+Demo Mode
+5. TILE GRID (CONSISTENT EVERYWHERE)
+responsive grid
+same spacing
+same sizes
+no layout shifts
+6. NDA SCREEN FIX (CRITICAL)
+
+Update /nda page:
+
+add AppShell (so back button appears)
+add background image (blurred lounge)
+style NDA as glass panel
+signature pad remains
+add Enter button with glow animation
+7. POS NAVIGATION FIX (YOUR CURRENT BUG)
+
+Your POS grid must:
+
+load from real data
+each product clickable
+clicking adds item to order
+
+Ensure:
+
+onClick={() => addToCart(product)}
+8. TOUCH-FIRST INTERACTION SYSTEM
+
+Apply globally:
+
+press animation (scale bounce)
+ripple effect
+glow feedback
+sound feedback (optional)
+9. DAY / NIGHT MODE (GLOBAL)
+
+Create:
+
+themeContext.ts
+
+Night:
+
+black / gold
+
+Day:
+
+dark gray / lighter UI
+
+Apply to ALL components.
+
+10. BACKGROUND SYSTEM
+
+Create:
+
+BackgroundLayer.tsx
+
+Includes:
+
+gradient
+subtle smoke animation
+light bloom
+
+Used across all screens.
+
+11. NAVIGATION STATE (IMPORTANT)
+
+Create:
+
+useAppNavigation.ts
+
+Track:
+
+current mode
+last route
+session context
+12. ERROR PROTECTION (YOU DIDN’T ASK BUT NEED)
+
+If route fails:
+
+fallback to dashboard
+log error
+13. LOADING + FEEDBACK STATES
+
+Every navigation:
+
+quick fade transition
+no blank screens
+show loading shimmer if needed
+14. FINAL SYSTEM BEHAVIOR
+every tile clickable
+every screen connected
+no dead ends
+no missing navigation
+consistent UI everywhere
+image-driven interface
+usable without instructions
+
+PROMPT END
+
+🔥 WHAT THIS FIXES IMMEDIATELY
+
+From your screenshots:
+
+✅ Command Center
+tiles become clickable → go to real modules
+✅ POS screen
+items already working → now consistent UX
+✅ Vendor Portal
+tiles gain images + navigation
+✅ NDA screen
+no more trap → back button added
+⚠️ EXTRA (YOU DIDN’T ASK BUT NEED)
+
+I’m not letting you miss these:
+
+1. “Dead Screen Protection”
+
+If no interaction:
+
+subtle animation continues
+keeps system alive
+2. Route Debug Logging
+
+Add:
+
+console.log("Navigating to:", route);
+
+Helps catch broken links fast
+
+3. Click Validation
+
+If route missing:
+
+show toast: “Module not available”
+4. Visual Feedback for Selection
+
+When tile tapped:
+
+highlight briefly before navigation
+💭 REAL TALK
+
+Right now your system is:
+
+👉 visually strong
+👉 structurally inconsistent
+
+After this?
+
+It becomes:
+
+👉 consistent
+👉 connected
+👉 intuitive
+👉 touch-ready
+👉 production-level
+
+And most important:
+
+👉 no more “button doesn’t go anywhere” problems
