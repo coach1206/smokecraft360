@@ -405,7 +405,7 @@ export default function PosMode() {
     setTimeout(() => setCheckoutCooldown(false), 500);
   }
 
-  const canRefund = pos.currentUser?.role === "Owner" || pos.currentUser?.role === "Manager";
+  const canRefund = pos.currentUser?.role?.toLowerCase() === "owner" || pos.currentUser?.role?.toLowerCase() === "manager";
 
   return (
     <div style={{

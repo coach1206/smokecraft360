@@ -24,14 +24,28 @@ export interface Order {
   createdAt: string;
   rewardApplied: boolean;
   failureReason?: string;
+  stockDeducted?: boolean;
+}
+
+export interface InventoryLogEntry {
+  id: string;
+  productId: string;
+  productName: string;
+  beforeStock: number;
+  afterStock: number;
+  reason: string;
+  userId: string;
+  timestamp: string;
 }
 
 interface PosState {
   products: Product[];
   cart: CartItem[];
   orders: Order[];
+  inventoryLog: InventoryLogEntry[];
   currentUser: { name: string; role: string; pin: string } | null;
   rewardMessage: string | null;
+  rewardBlocked: string | null;
   processingLock: boolean;
   paymentError: string | null;
   setCurrentUser: (u: { name: string; role: string; pin: string } | null) => void;
@@ -42,13 +56,18 @@ interface PosState {
   checkout: () => Promise<Order | null>;
   retryCheckout: (orderId: string) => Promise<Order | null>;
   refundOrder: (orderId: string) => boolean;
+  manualStockAdjust: (productId: string, delta: number, reason: string) => { needsConfirmation: boolean; error?: string };
+  confirmLargeAdjustment: (productId: string, delta: number, reason: string) => void;
   dismissReward: () => void;
+  dismissRewardBlocked: () => void;
   clearPaymentError: () => void;
 }
 
 const REWARD_THRESHOLD = 50;
 const PAYMENT_SIMULATE_MS = 1800;
 const PAYMENT_FAILURE_RATE = 0.1;
+const REWARD_COOLDOWN_MS = 5 * 60 * 1000;
+const LARGE_ADJUSTMENT_THRESHOLD = 10;
 
 const INITIAL_PRODUCTS: Product[] = [
   { id: "cig-1", name: "Arturo Fuente Opus X", category: "cigar", price: 42, image: "https://images.unsplash.com/photo-1589561253898-768105ca91a8?w=300&h=300&fit=crop&q=80", stock: 8 },
@@ -95,8 +114,10 @@ export function PosProvider({ children }: { children: ReactNode }) {
   );
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [inventoryLog, setInventoryLog] = useState<InventoryLogEntry[]>([]);
   const [currentUser, setCurrentUser] = useState<{ name: string; role: string; pin: string } | null>(null);
   const [rewardMessage, setRewardMessage] = useState<string | null>(null);
+  const [rewardBlocked, setRewardBlocked] = useState<string | null>(null);
   const [processingLock, setProcessingLock] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const lockRef = useRef(false);
@@ -104,21 +125,41 @@ export function PosProvider({ children }: { children: ReactNode }) {
   const ordersRef = useRef<Order[]>([]);
   const productsRef = useRef<Product[]>(INITIAL_PRODUCTS);
   const userRef = useRef<{ name: string; role: string; pin: string } | null>(null);
+  const inventoryLogRef = useRef<InventoryLogEntry[]>([]);
+  const lastRewardTimeRef = useRef<number>(0);
 
   const syncCart = useCallback((c: CartItem[]) => { cartRef.current = c; setCart(c); }, []);
   const syncOrders = useCallback((o: Order[]) => { ordersRef.current = o; setOrders(o); }, []);
   const syncProducts = useCallback((p: Product[]) => { productsRef.current = p; setProducts(p); }, []);
   const syncUser = useCallback((u: { name: string; role: string; pin: string } | null) => { userRef.current = u; setCurrentUser(u); }, []);
 
+  const addInventoryLog = useCallback((productId: string, productName: string, before: number, after: number, reason: string) => {
+    const entry: InventoryLogEntry = {
+      id: `inv-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      productId,
+      productName,
+      beforeStock: before,
+      afterStock: after,
+      reason,
+      userId: userRef.current?.name ?? "System",
+      timestamp: new Date().toISOString(),
+    };
+    const updated = [entry, ...inventoryLogRef.current].slice(0, 200);
+    inventoryLogRef.current = updated;
+    setInventoryLog(updated);
+  }, []);
+
   const addToCart = useCallback((productId: string): boolean => {
     if (lockRef.current) return false;
     const prod = productsRef.current.find(p => p.id === productId);
     if (!prod || prod.stock <= 0) return false;
 
+    const before = prod.stock;
     const updatedProducts = productsRef.current.map(p =>
       p.id === productId ? { ...p, stock: p.stock - 1 } : p
     );
     syncProducts(updatedProducts);
+    addInventoryLog(productId, prod.name, before, before - 1, "cart.add");
 
     const existing = cartRef.current.find(c => c.product.id === productId);
     if (existing) {
@@ -129,45 +170,52 @@ export function PosProvider({ children }: { children: ReactNode }) {
       syncCart([...cartRef.current, { product: prod, quantity: 1 }]);
     }
     return true;
-  }, [syncProducts, syncCart]);
+  }, [syncProducts, syncCart, addInventoryLog]);
 
   const removeFromCart = useCallback((productId: string) => {
     if (lockRef.current) return;
     const item = cartRef.current.find(c => c.product.id === productId);
     if (!item) return;
+    const prod = productsRef.current.find(p => p.id === productId);
+    const before = prod?.stock ?? 0;
     syncProducts(productsRef.current.map(p =>
       p.id === productId ? { ...p, stock: p.stock + item.quantity } : p
     ));
+    addInventoryLog(productId, item.product.name, before, before + item.quantity, "cart.remove");
     syncCart(cartRef.current.filter(c => c.product.id !== productId));
-  }, [syncProducts, syncCart]);
+  }, [syncProducts, syncCart, addInventoryLog]);
 
   const updateQuantity = useCallback((productId: string, delta: number) => {
     if (lockRef.current) return;
     const item = cartRef.current.find(c => c.product.id === productId);
     if (!item) return;
     const newQty = item.quantity + delta;
+    const prod = productsRef.current.find(p => p.id === productId);
+    const before = prod?.stock ?? 0;
     if (newQty <= 0) {
       syncProducts(productsRef.current.map(p =>
         p.id === productId ? { ...p, stock: p.stock + item.quantity } : p
       ));
+      addInventoryLog(productId, item.product.name, before, before + item.quantity, "cart.remove");
       syncCart(cartRef.current.filter(c => c.product.id !== productId));
       return;
     }
     if (delta > 0) {
-      const prod = productsRef.current.find(p => p.id === productId);
       if (!prod || prod.stock <= 0) return;
       syncProducts(productsRef.current.map(p =>
         p.id === productId ? { ...p, stock: p.stock - 1 } : p
       ));
+      addInventoryLog(productId, item.product.name, before, before - 1, "cart.add");
     } else {
       syncProducts(productsRef.current.map(p =>
         p.id === productId ? { ...p, stock: p.stock + 1 } : p
       ));
+      addInventoryLog(productId, item.product.name, before, before + 1, "cart.reduce");
     }
     syncCart(cartRef.current.map(c =>
       c.product.id === productId ? { ...c, quantity: newQty } : c
     ));
-  }, [syncProducts, syncCart]);
+  }, [syncProducts, syncCart, addInventoryLog]);
 
   const clearCart = useCallback(() => {
     if (lockRef.current) return;
@@ -175,23 +223,29 @@ export function PosProvider({ children }: { children: ReactNode }) {
     if (currentCart.length === 0) return;
     let prods = productsRef.current;
     for (const item of currentCart) {
+      const prod = prods.find(p => p.id === item.product.id);
+      const before = prod?.stock ?? 0;
       prods = prods.map(p =>
         p.id === item.product.id ? { ...p, stock: p.stock + item.quantity } : p
       );
+      addInventoryLog(item.product.id, item.product.name, before, before + item.quantity, "cart.clear");
     }
     syncProducts(prods);
     syncCart([]);
-  }, [syncProducts, syncCart]);
+  }, [syncProducts, syncCart, addInventoryLog]);
 
-  const restoreStockForItems = useCallback((items: CartItem[]) => {
+  const restoreStockForItems = useCallback((items: CartItem[], reason: string) => {
     let prods = productsRef.current;
     for (const item of items) {
+      const prod = prods.find(p => p.id === item.product.id);
+      const before = prod?.stock ?? 0;
       prods = prods.map(p =>
         p.id === item.product.id ? { ...p, stock: p.stock + item.quantity } : p
       );
+      addInventoryLog(item.product.id, item.product.name, before, before + item.quantity, reason);
     }
     syncProducts(prods);
-  }, [syncProducts]);
+  }, [syncProducts, addInventoryLog]);
 
   const checkout = useCallback(async (): Promise<Order | null> => {
     if (lockRef.current) return null;
@@ -204,7 +258,20 @@ export function PosProvider({ children }: { children: ReactNode }) {
     setPaymentError(null);
 
     const total = snapshotCart.reduce((sum, c) => sum + c.product.price * c.quantity, 0);
-    const rewardApplied = total >= REWARD_THRESHOLD;
+
+    const now = Date.now();
+    const cooldownActive = (now - lastRewardTimeRef.current) < REWARD_COOLDOWN_MS;
+    let rewardApplied = false;
+
+    if (total >= REWARD_THRESHOLD) {
+      if (cooldownActive) {
+        const remaining = Math.ceil((REWARD_COOLDOWN_MS - (now - lastRewardTimeRef.current)) / 1000);
+        setRewardBlocked(`Reward cooldown active — ${remaining}s remaining. One reward per 5 minutes.`);
+      } else {
+        rewardApplied = true;
+      }
+    }
+
     const finalTotal = rewardApplied ? Math.round(total * 0.9 * 100) / 100 : total;
 
     const order: Order = {
@@ -214,6 +281,7 @@ export function PosProvider({ children }: { children: ReactNode }) {
       status: "pending",
       createdAt: new Date().toISOString(),
       rewardApplied,
+      stockDeducted: true,
     };
 
     syncOrders([order, ...ordersRef.current]);
@@ -228,6 +296,7 @@ export function PosProvider({ children }: { children: ReactNode }) {
       order.status = "paid";
       syncOrders(ordersRef.current.map(o => o.id === order.id ? { ...o, status: "paid" } : o));
       if (rewardApplied) {
+        lastRewardTimeRef.current = Date.now();
         setRewardMessage(`You unlocked a reward! 10% off applied — saved $${(total - finalTotal).toFixed(2)}`);
       }
     } else {
@@ -236,7 +305,7 @@ export function PosProvider({ children }: { children: ReactNode }) {
       syncOrders(ordersRef.current.map(o =>
         o.id === order.id ? { ...o, status: "failed", failureReason: result.error } : o
       ));
-      restoreStockForItems(snapshotCart);
+      restoreStockForItems(snapshotCart, "payment.failed");
       setPaymentError(result.error ?? "Payment failed");
     }
 
@@ -250,6 +319,8 @@ export function PosProvider({ children }: { children: ReactNode }) {
 
     const failedOrder = ordersRef.current.find(o => o.id === orderId && o.status === "failed");
     if (!failedOrder) return null;
+
+    if (failedOrder.stockDeducted) return null;
 
     lockRef.current = true;
     setProcessingLock(true);
@@ -267,14 +338,17 @@ export function PosProvider({ children }: { children: ReactNode }) {
 
     let prods = productsRef.current;
     for (const item of failedOrder.items) {
+      const prod = prods.find(p => p.id === item.product.id);
+      const before = prod?.stock ?? 0;
       prods = prods.map(p =>
         p.id === item.product.id ? { ...p, stock: p.stock - item.quantity } : p
       );
+      addInventoryLog(item.product.id, item.product.name, before, before - item.quantity, "checkout.retry");
     }
     syncProducts(prods);
 
     syncOrders(ordersRef.current.map(o =>
-      o.id === orderId ? { ...o, status: "pending" as PaymentStatus, failureReason: undefined } : o
+      o.id === orderId ? { ...o, status: "pending" as PaymentStatus, failureReason: undefined, stockDeducted: true } : o
     ));
 
     syncOrders(ordersRef.current.map(o =>
@@ -288,6 +362,7 @@ export function PosProvider({ children }: { children: ReactNode }) {
       returnOrder.status = "paid";
       syncOrders(ordersRef.current.map(o => o.id === orderId ? { ...o, status: "paid" as PaymentStatus } : o));
       if (failedOrder.rewardApplied) {
+        lastRewardTimeRef.current = Date.now();
         const rawTotal = failedOrder.items.reduce((sum, c) => sum + c.product.price * c.quantity, 0);
         setRewardMessage(`You unlocked a reward! 10% off applied — saved $${(rawTotal - failedOrder.total).toFixed(2)}`);
       }
@@ -295,38 +370,70 @@ export function PosProvider({ children }: { children: ReactNode }) {
       returnOrder.status = "failed";
       returnOrder.failureReason = result.error;
       syncOrders(ordersRef.current.map(o =>
-        o.id === orderId ? { ...o, status: "failed" as PaymentStatus, failureReason: result.error } : o
+        o.id === orderId ? { ...o, status: "failed" as PaymentStatus, failureReason: result.error, stockDeducted: false } : o
       ));
-      restoreStockForItems(failedOrder.items);
+      restoreStockForItems(failedOrder.items, "retry.failed");
       setPaymentError(result.error ?? "Payment failed");
     }
 
     lockRef.current = false;
     setProcessingLock(false);
     return returnOrder;
-  }, [restoreStockForItems, syncProducts, syncOrders]);
+  }, [restoreStockForItems, syncProducts, syncOrders, addInventoryLog]);
 
   const refundOrder = useCallback((orderId: string): boolean => {
     const role = userRef.current?.role?.toLowerCase();
     if (role !== "owner" && role !== "manager") return false;
     const order = ordersRef.current.find(o => o.id === orderId && o.status === "paid");
     if (!order) return false;
-    restoreStockForItems(order.items);
+    restoreStockForItems(order.items, "order.refunded");
     syncOrders(ordersRef.current.map(o => o.id === orderId ? { ...o, status: "refunded" as PaymentStatus } : o));
     return true;
   }, [restoreStockForItems, syncOrders]);
 
+  const applyStockDelta = useCallback((productId: string, delta: number, reason: string) => {
+    const prod = productsRef.current.find(p => p.id === productId);
+    if (!prod) return;
+    const before = prod.stock;
+    const after = Math.max(0, before + delta);
+    syncProducts(productsRef.current.map(p =>
+      p.id === productId ? { ...p, stock: after } : p
+    ));
+    addInventoryLog(productId, prod.name, before, after, reason);
+  }, [syncProducts, addInventoryLog]);
+
+  const manualStockAdjust = useCallback((productId: string, delta: number, reason: string): { needsConfirmation: boolean; error?: string } => {
+    const prod = productsRef.current.find(p => p.id === productId);
+    if (!prod) return { needsConfirmation: false, error: "Product not found" };
+
+    if (Math.abs(delta) > LARGE_ADJUSTMENT_THRESHOLD) {
+      const role = userRef.current?.role?.toLowerCase();
+      if (role !== "owner" && role !== "manager") {
+        return { needsConfirmation: true };
+      }
+    }
+
+    applyStockDelta(productId, delta, reason || "manual.adjustment");
+    return { needsConfirmation: false };
+  }, [applyStockDelta]);
+
+  const confirmLargeAdjustment = useCallback((productId: string, delta: number, reason: string) => {
+    applyStockDelta(productId, delta, reason || "manual.adjustment.confirmed");
+  }, [applyStockDelta]);
+
   const dismissReward = useCallback(() => setRewardMessage(null), []);
+  const dismissRewardBlocked = useCallback(() => setRewardBlocked(null), []);
   const clearPaymentError = useCallback(() => setPaymentError(null), []);
 
   return (
     <PosContext.Provider value={{
-      products, cart, orders, currentUser,
-      rewardMessage, processingLock, paymentError,
+      products, cart, orders, inventoryLog, currentUser,
+      rewardMessage, rewardBlocked, processingLock, paymentError,
       setCurrentUser: syncUser,
       addToCart, removeFromCart, updateQuantity,
       clearCart, checkout, retryCheckout, refundOrder,
-      dismissReward, clearPaymentError,
+      manualStockAdjust, confirmLargeAdjustment,
+      dismissReward, dismissRewardBlocked, clearPaymentError,
     }}>
       {children}
     </PosContext.Provider>
