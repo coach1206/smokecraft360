@@ -116,6 +116,14 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
   const pinchStartDistRef              = useRef<number | null>(null);
   const pinchStartScaleRef             = useRef<number>(1.0);
 
+  // Reset "Draft Saved" label when any field changes after a successful save
+  const fieldKey   = `${brandName}|${selectedColor}|${selectedEmblem}|${engravingText}|${Object.values(selectFields).join("|")}`;
+  const savedRef   = useRef(false);
+  savedRef.current = saved;
+  useEffect(() => {
+    if (savedRef.current) { setSaved(false); setSaveLocal(false); }
+  }, [fieldKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Load latest draft on mount
   useEffect(() => {
     void (async () => {
