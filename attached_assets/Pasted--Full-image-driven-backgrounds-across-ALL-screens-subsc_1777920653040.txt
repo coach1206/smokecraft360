@@ -1,0 +1,332 @@
+👉 Full image-driven backgrounds across ALL screens + subscreens
+👉 Unified system behavior (UI, pricing, AI, staff, control, kiosk)
+👉 No dead zones, no flat screens, no missing wiring
+
+This is the version you build from.
+
+⚠️ MISSING / REQUIRED (LOCKED BEFORE BUILD)
+
+This system enforces:
+
+Every screen has a background image (no blank/dark-only pages)
+Every tile has an image (no icon-only tiles)
+Every button navigates somewhere
+Every screen has a back button
+Every action is tied to a staff member
+Every price flows through the pricing engine
+AI NEVER overrides without approval
+Every change is logged + reversible
+System works in dark lounge AND day mode
+Subscreens follow SAME rules as main screens
+🔥 SUPER MASTER PROMPT (FINAL — EVERYTHING MERGED)
+
+Paste this into Replit:
+
+PROMPT START
+
+Build SmokeCraft 360 as a fully unified, image-driven touchscreen operating system with:
+
+immersive background system (ALL screens + subscreens)
+universal navigation + routing
+POS + pricing engine
+AI pricing advisor (approve/reject)
+staff identity + PIN system
+audit + override control system
+real-time analytics
+kiosk-ready experience
+
+This is NOT a UI update.
+This is a full production platform.
+
+1. GLOBAL APP SHELL (ALL SCREENS)
+
+Create AppShell.tsx
+
+Must include:
+
+Back button (top-left ALWAYS)
+Page title
+Mode indicator (Smoke / Brew / Pour / Vape)
+Day/Night toggle
+Logged-in staff display
+
+Apply to:
+
+ALL pages
+ALL subscreens
+NDA
+POS
+Admin
+Vendor
+EVERYTHING
+2. UNIVERSAL BACKGROUND SYSTEM (CRITICAL)
+
+Create BackgroundLayer.tsx
+
+EVERY screen MUST include:
+
+full-screen background image
+dark gradient overlay
+subtle smoke or ambient motion
+soft lighting bloom
+🔥 RULE
+
+NO SCREEN may render with a flat dark background.
+
+EXAMPLES
+Dashboard → luxury lounge interior
+POS → bar / product-focused environment
+Vendor → warehouse / supply visuals
+NDA → blurred lounge with glass overlay
+Experiences → cinematic lifestyle images
+3. UNIVERSAL TILE SYSTEM (IMAGE REQUIRED)
+
+Create TileCard.tsx
+
+ALL tiles MUST have:
+
+full background image
+gradient overlay
+title + subtitle
+glow border
+press animation
+ripple effect
+ENFORCE:
+if (!tile.image) throw new Error("Missing tile image");
+4. IMAGE LIBRARY
+
+Create:
+
+/public/images/
+
+Include:
+
+cigars
+whiskey
+cocktails
+beer
+vape smoke
+lounge scenes
+POS visuals
+vendor supply
+admin dashboards
+5. UNIVERSAL ROUTING (NO DEAD BUTTONS)
+
+Routes REQUIRED:
+
+/dashboard
+/experiences
+/smokecraft
+/brewcraft
+/pourcraft
+/vapecraft
+/pos
+/vendor
+/admin
+/demo
+/investor
+/nda
+
+ALL tiles use:
+
+onClick={() => navigate("/route")}
+6. TOUCH INTERACTION SYSTEM
+
+Apply globally:
+
+press scale animation
+ripple effect
+glow pulse
+brightness lift
+optional sound feedback
+7. DAY / NIGHT MODE
+
+Global theme system:
+
+Night:
+
+black + gold
+low light
+
+Day:
+
+dark gray + higher contrast
+
+Toggle in AppShell
+Smooth animated transition
+
+8. NDA EXPERIENCE (UPGRADED)
+background image (blurred lounge)
+glass panel container
+signature pad
+glowing confirm button
+BACK BUTTON INCLUDED
+9. POS SYSTEM
+image-based product cards
+click → add to cart
+real-time updates
+cart visible live
+10. PRICING SYSTEM (3-LAYER)
+
+Database:
+
+products {
+  id
+  name
+  basePrice
+  venuePrice
+  venueId
+  image
+}
+11. PRICING ENGINE
+display: venuePrice || basePrice
+reward applied AFTER
+12. CART LOCK
+price locked when added
+never recalculated
+13. VENUE PRICE CONTROL
+editable per product
+validation:
+min $5
+max $500
+14. BULK PRICING
+category % adjustment
+15. PRICE AUDIT
+
+Track:
+
+old price
+new price
+staffId
+timestamp
+16. AI PRICING ENGINE (ADVISOR)
+analyzes sales
+suggests pricing
+includes reason + confidence
+NEVER auto-applies
+17. AI SUGGESTIONS TABLE
+price_suggestions {
+  productId
+  venueId
+  currentPrice
+  suggestedPrice
+  reason
+  confidence
+  status
+}
+18. APPROVAL SYSTEM
+approve → apply
+reject → discard
+19. AI SAFETY
+±20% max change
+expire 24h
+20. STAFF SYSTEM
+staff {
+  id
+  name
+  role
+  pin
+  venueId
+}
+
+Roles:
+
+OWNER
+MANAGER
+CASHIER
+VENDOR
+21. PIN LOGIN
+touchscreen PIN entry
+session tracking
+22. PERMISSIONS
+
+Restrict:
+
+pricing
+AI approvals
+overrides
+23. SESSION CONTROL
+auto logout
+switch user
+24. ACTION LOG (IMMUTABLE)
+action_log {
+  actionType
+  staffId
+  venueId
+  data
+}
+25. OVERRIDE SYSTEM
+override_log {
+  originalActionId
+  staffId
+  overrideType
+  reason
+  beforeData
+  afterData
+}
+26. CONTROL ENGINE
+
+Allow:
+
+edit orders
+refunds
+void
+price override
+
+NEVER delete history
+
+27. ADMIN CONTROL CENTER
+
+Tabs:
+
+Activity Log
+Overrides
+Staff
+Pricing
+AI Suggestions
+28. HIGH-RISK SECURITY
+
+Require PIN for:
+
+refunds
+overrides
+pricing changes
+29. ANALYTICS
+
+Track:
+
+sales
+pricing performance
+staff performance
+AI effectiveness
+30. REAL-TIME SYSTEM
+live orders
+live revenue
+live sessions
+31. ERROR HANDLING
+fallback to dashboard
+log errors
+32. LOADING SYSTEM
+smooth transitions
+no blank states
+33. KIOSK MODE
+auto reset
+attract loop
+burn-in protection
+demo cycling
+FINAL SYSTEM BEHAVIOR
+
+System must:
+
+have zero flat screens
+have images on ALL screens and subscreens
+have zero dead navigation
+be usable without training
+feel immersive and alive
+allow full venue control
+provide AI guidance (not control)
+track every action
+allow full correction + override
+operate flawlessly in lounge environments
+
+PROMPT END

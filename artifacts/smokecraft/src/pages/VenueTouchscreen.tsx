@@ -18,27 +18,32 @@ export default function VenueTouchscreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) return;
+    const fallback = () => {
+      setSections([
+        { id: "experience", label: "Start Experience", description: "Begin a customer journey", icon: "experience", route: "/intro" },
+        { id: "orders", label: "Today's Orders", description: "View and manage orders", icon: "orders", route: "/pos" },
+        { id: "inventory", label: "Inventory", description: "Check stock levels", icon: "inventory", route: "/pos" },
+        { id: "rewards", label: "Rewards", description: "Manage loyalty", icon: "rewards", route: "/pos" },
+        { id: "staff", label: "Staff Mode", description: "Quick staff actions", icon: "staff", route: "/staff" },
+        { id: "campaigns", label: "Campaigns", description: "Active promotions", icon: "campaigns", route: "/analytics" },
+        { id: "devices", label: "Devices", description: "Manage venue devices", icon: "devices", route: "/devices" },
+      ]);
+      setLoading(false);
+    };
+    if (!token) { fallback(); return; }
     fetch("/api/touchscreen/venue-home", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((data) => setSections(data.sections))
-      .catch(() => {
-        setSections([
-          { id: "experience", label: "Start Experience", description: "Begin a customer journey", icon: "experience", route: "/intro" },
-          { id: "orders", label: "Today's Orders", description: "View and manage orders", icon: "orders", route: "/touch/venue" },
-          { id: "inventory", label: "Inventory", description: "Check stock levels", icon: "inventory", route: "/touch/venue" },
-          { id: "rewards", label: "Rewards", description: "Manage loyalty", icon: "rewards", route: "/touch/venue" },
-          { id: "campaigns", label: "Campaigns", description: "Active promotions", icon: "campaigns", route: "/touch/venue" },
-        ]);
-      })
+      .catch(fallback)
       .finally(() => setLoading(false));
   }, [token]);
 
   function handleSelect(sectionId: string) {
-    if (sectionId === "experience") {
-      navigate("/intro");
+    const section = sections.find((s) => s.id === sectionId);
+    if (section?.route && section.route !== "/touch/venue") {
+      navigate(section.route);
     }
   }
 

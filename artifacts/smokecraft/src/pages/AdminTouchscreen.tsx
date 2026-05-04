@@ -20,11 +20,13 @@ export default function AdminTouchscreen() {
   useEffect(() => {
     const fallback = () => {
       setSections([
-        { id: "live_venues", label: "Live Venues", description: "Monitor active venues", icon: "venues", route: "/touch/admin" },
-        { id: "campaigns", label: "Campaign Control", description: "Manage campaigns", icon: "campaigns", route: "/touch/admin" },
-        { id: "devices", label: "Device Control", description: "Manage devices", icon: "devices", route: "/touch/admin" },
-        { id: "partners", label: "Brand Partners", description: "Vendor management", icon: "partners", route: "/touch/admin" },
-        { id: "fraud", label: "Fraud Review", description: "Risk detection", icon: "fraud", route: "/touch/admin" },
+        { id: "live_venues", label: "Live Venues", description: "Monitor active venues", icon: "venues", route: "/analytics" },
+        { id: "revenue", label: "Revenue Flow", description: "Real-time revenue metrics", icon: "revenue", route: "/analytics" },
+        { id: "campaigns", label: "Campaign Control", description: "Manage campaigns", icon: "campaigns", route: "/experiences" },
+        { id: "alerts", label: "System Alerts", description: "View system notifications", icon: "alerts", route: "/settings" },
+        { id: "devices", label: "Device Control", description: "Manage devices", icon: "devices", route: "/devices" },
+        { id: "partners", label: "Brand Partners", description: "Vendor management", icon: "partners", route: "/vendors" },
+        { id: "fraud", label: "Fraud Review", description: "Risk detection", icon: "fraud", route: "/analytics" },
         { id: "demo", label: "Demo Mode", description: "Launch demo", icon: "demo", route: "/demo" },
       ]);
       setLoading(false);
@@ -41,8 +43,8 @@ export default function AdminTouchscreen() {
 
   function handleSelect(sectionId: string) {
     const section = sections.find((s) => s.id === sectionId);
-    if (section?.id === "demo") {
-      navigate("/demo");
+    if (section?.route && section.route !== "/touch/admin") {
+      navigate(section.route);
     }
   }
 

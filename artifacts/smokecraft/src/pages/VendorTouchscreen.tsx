@@ -20,11 +20,12 @@ export default function VendorTouchscreen() {
   useEffect(() => {
     const fallback = () => {
       setSections([
-        { id: "add_product", label: "Add Product", description: "Submit a new product", icon: "product", route: "/touch/vendor" },
-        { id: "my_products", label: "My Products", description: "View your catalog", icon: "catalog", route: "/touch/vendor" },
-        { id: "performance", label: "Performance", description: "Track campaigns", icon: "performance", route: "/touch/vendor" },
-        { id: "payouts", label: "Payouts", description: "View commissions", icon: "payouts", route: "/touch/vendor" },
-        { id: "campaigns", label: "Campaigns", description: "Manage sponsored", icon: "campaigns", route: "/touch/vendor" },
+        { id: "add_product", label: "Add Product", description: "Submit a new product", icon: "product", route: "/pos" },
+        { id: "my_products", label: "My Products", description: "View your catalog", icon: "catalog", route: "/pos" },
+        { id: "performance", label: "Performance", description: "Track campaigns", icon: "performance", route: "/analytics" },
+        { id: "payouts", label: "Payouts", description: "View commissions", icon: "payouts", route: "/analytics" },
+        { id: "assets", label: "Brand Assets", description: "Manage brand materials", icon: "assets", route: "/settings" },
+        { id: "campaigns", label: "Campaigns", description: "Manage sponsored", icon: "campaigns", route: "/experiences" },
       ]);
       setLoading(false);
     };
@@ -38,8 +39,11 @@ export default function VendorTouchscreen() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  function handleSelect(_sectionId: string) {
-    // placeholder
+  function handleSelect(sectionId: string) {
+    const section = sections.find((s) => s.id === sectionId);
+    if (section?.route && section.route !== "/touch/vendor") {
+      navigate(section.route);
+    }
   }
 
   return (

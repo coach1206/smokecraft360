@@ -269,13 +269,13 @@ router.get(
   async (_req: AuthRequest, res: Response) => {
     const data: AdminHomeData = {
       sections: [
-        { id: "live_venues", label: "Live Venues", description: "Monitor active venue sessions", icon: "venues", route: "/touch/admin" },
-        { id: "revenue", label: "Revenue Flow", description: "Real-time revenue metrics", icon: "revenue", route: "/touch/admin" },
-        { id: "campaigns", label: "Campaign Control", description: "Manage active campaigns", icon: "campaigns", route: "/touch/admin" },
-        { id: "alerts", label: "System Alerts", description: "View system notifications", icon: "alerts", route: "/touch/admin" },
-        { id: "devices", label: "Device Control", description: "Monitor and manage devices", icon: "devices", route: "/touch/admin" },
-        { id: "partners", label: "Brand Partners", description: "Vendor and brand management", icon: "partners", route: "/touch/admin" },
-        { id: "fraud", label: "Fraud Review", description: "Risk and abuse detection", icon: "fraud", route: "/touch/admin" },
+        { id: "live_venues", label: "Live Venues", description: "Monitor active venue sessions", icon: "venues", route: "/analytics" },
+        { id: "revenue", label: "Revenue Flow", description: "Real-time revenue metrics", icon: "revenue", route: "/analytics" },
+        { id: "campaigns", label: "Campaign Control", description: "Manage active campaigns", icon: "campaigns", route: "/experiences" },
+        { id: "alerts", label: "System Alerts", description: "View system notifications", icon: "alerts", route: "/settings" },
+        { id: "devices", label: "Device Control", description: "Monitor and manage devices", icon: "devices", route: "/devices" },
+        { id: "partners", label: "Brand Partners", description: "Vendor and brand management", icon: "partners", route: "/vendors" },
+        { id: "fraud", label: "Fraud Review", description: "Risk and abuse detection", icon: "fraud", route: "/analytics" },
         { id: "demo", label: "Demo Mode", description: "Launch investor demo", icon: "demo", route: "/demo" },
       ],
     };
@@ -290,13 +290,13 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     const data: VenueHomeData = {
       sections: [
-        { id: "experience", label: "Start Experience", description: "Begin a customer journey", icon: "experience", route: "/touch/venue" },
-        { id: "orders", label: "Today's Orders", description: "View and manage orders", icon: "orders", route: "/touch/venue" },
-        { id: "inventory", label: "Inventory", description: "Check stock levels", icon: "inventory", route: "/touch/venue" },
-        { id: "rewards", label: "Rewards", description: "Manage loyalty rewards", icon: "rewards", route: "/touch/venue" },
-        { id: "staff", label: "Staff Mode", description: "Quick staff actions", icon: "staff", route: "/touch/venue" },
-        { id: "campaigns", label: "Campaigns", description: "Active promotions", icon: "campaigns", route: "/touch/venue" },
-        { id: "devices", label: "Devices", description: "Manage venue devices", icon: "devices", route: "/touch/venue" },
+        { id: "experience", label: "Start Experience", description: "Begin a customer journey", icon: "experience", route: "/intro" },
+        { id: "orders", label: "Today's Orders", description: "View and manage orders", icon: "orders", route: "/pos" },
+        { id: "inventory", label: "Inventory", description: "Check stock levels", icon: "inventory", route: "/pos" },
+        { id: "rewards", label: "Rewards", description: "Manage loyalty rewards", icon: "rewards", route: "/pos" },
+        { id: "staff", label: "Staff Mode", description: "Quick staff actions", icon: "staff", route: "/staff" },
+        { id: "campaigns", label: "Campaigns", description: "Active promotions", icon: "campaigns", route: "/analytics" },
+        { id: "devices", label: "Devices", description: "Manage venue devices", icon: "devices", route: "/devices" },
       ],
     };
     res.json(data);
@@ -310,12 +310,12 @@ router.get(
   async (_req: AuthRequest, res: Response) => {
     const data: VendorHomeData = {
       sections: [
-        { id: "add_product", label: "Add Product", description: "Submit a new product", icon: "product", route: "/touch/vendor" },
-        { id: "my_products", label: "My Products", description: "View your product catalog", icon: "catalog", route: "/touch/vendor" },
-        { id: "performance", label: "Campaign Performance", description: "Track campaign metrics", icon: "performance", route: "/touch/vendor" },
-        { id: "payouts", label: "Payouts", description: "View commission payouts", icon: "payouts", route: "/touch/vendor" },
-        { id: "assets", label: "Brand Assets", description: "Manage brand materials", icon: "assets", route: "/touch/vendor" },
-        { id: "campaigns", label: "Sponsored Campaigns", description: "Create and manage campaigns", icon: "campaigns", route: "/touch/vendor" },
+        { id: "add_product", label: "Add Product", description: "Submit a new product", icon: "product", route: "/pos" },
+        { id: "my_products", label: "My Products", description: "View your product catalog", icon: "catalog", route: "/pos" },
+        { id: "performance", label: "Campaign Performance", description: "Track campaign metrics", icon: "performance", route: "/analytics" },
+        { id: "payouts", label: "Payouts", description: "View commission payouts", icon: "payouts", route: "/analytics" },
+        { id: "assets", label: "Brand Assets", description: "Manage brand materials", icon: "assets", route: "/settings" },
+        { id: "campaigns", label: "Sponsored Campaigns", description: "Create and manage campaigns", icon: "campaigns", route: "/experiences" },
       ],
     };
     res.json(data);
