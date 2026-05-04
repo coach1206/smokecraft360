@@ -1,0 +1,338 @@
+lright. This is the final, unified, nothing-missing master prompt.
+It includes everything we built plus the last layer you asked for:
+
+Swipe-first interaction
+PourCraft + BrewCraft full flows
+Build-your-own + taste challenges
+BrewStory (history + science + secrets)
+Points economy that actually means something
+Rewards + ranks + unlocks
+Conversion engine (upgrade pressure, “almost there”)
+Urgency + streak system (NEW)
+AI memory
+Multi-user + leaderboards
+Offline mode
+Admin control
+No glyphs + back button enforced
+
+If it’s not in here, it doesn’t exist.
+
+🔴 MISSING / REQUIRED (FINAL — ABSOLUTE LOCK)
+
+System MUST include:
+
+Dynamic Craft Engine
+Swipe Interaction Engine
+Experience Flow Controller
+AI Voice Narration Layer (queued)
+Inventory Injection System
+Order System (Stripe already integrated)
+Points Economy Engine
+Rank + Access Control System
+Reward Redemption System
+Rarity Engine
+BrewStory Engine
+Knowledge Challenge System
+Multi-User Session Engine
+Real-Time Sync (Socket.io)
+Leaderboards (user + venue)
+Analytics + Event Tracking
+Notification System
+AI Personal Memory Layer
+Offline Cache + Sync Engine
+Admin Control Panel
+Global Layout (Back Button enforced)
+No Glyph UI Enforcement
+Conversion Engine
+Urgency + Streak Engine (NEW)
+🟡 FAILURE PREVENTION CHECKLIST
+Swipe is primary interaction (no button-heavy UI)
+Back button exists on EVERY screen
+No icons, emojis, or glyphs anywhere
+Real images only
+Progress always visible
+Voice never overlaps
+Every action gives feedback
+Points always tied to progress or reward
+Rewards always visible or “almost unlocked”
+Upgrade nudges always injected at the right moment
+Offline mode never breaks flow
+Multi-user sessions stay synced
+🧠 MASTER SYSTEM PROMPT (FINAL VERSION)
+PROMPT START
+
+Build a full-stack Dynamic Craft Experience Platform using:
+
+Frontend:
+
+React (Vite)
+Framer Motion (animations)
+Tablet-first layout
+
+Backend:
+
+Node.js + Express
+
+Database:
+
+PostgreSQL + Drizzle ORM
+
+Realtime:
+
+Socket.io
+
+Offline:
+
+Service Workers + IndexedDB
+
+Voice:
+
+Web Speech API (TTS with queue system)
+🔒 UI ENFORCEMENT RULES
+No icons, emojis, or glyphs
+All visuals must be real images
+Every screen must use AppLayout
+Back button must always be visible
+Swipe gestures must be the primary interaction
+🧭 SWIPE INTERACTION SYSTEM
+Swipe RIGHT → accept/select
+Swipe LEFT → reject/skip
+Swipe UP → upgrade/deepen
+Swipe DOWN → go back
+
+Every swipe triggers:
+
+animation
+sound
+voice feedback
+🧠 CORE SYSTEM MODULES
+
+Implement:
+
+Craft Engine
+Swipe Engine
+Theme Engine
+Voice Engine
+Inventory Engine
+Order Engine
+Points + Rewards Engine
+BrewStory Engine
+Challenge Engine
+Session Engine
+Leaderboards
+Analytics Engine
+Memory System
+Offline Sync
+Admin Panel
+Conversion Engine
+Urgency + Streak Engine (NEW)
+🥃 POURCRAFT FLOW
+Entry → “Guide Me” or “Build My Drink”
+Base spirit selection (swipe)
+Flavor build (swipe ingredients)
+Style selection
+Upsell layer (swipe up to upgrade)
+Name drink
+Reveal:
+drink name
+flavor breakdown
+rarity score
+Match to real inventory
+Order via swipe
+🍺 BREWCRAFT FLOW
+Entry → “Find My Brew” or “Test My Taste”
+Taste profile (swipe)
+Food pairing
+Beer match stack
+BrewStory insight
+Knowledge challenge
+Result + order
+Flight builder option
+🔥 BREWSTORY ENGINE
+
+Deliver insights in 3 parts:
+
+Origin
+Taste explanation
+Insider secret
+
+Short, swipeable, engaging
+
+🎮 CHALLENGE SYSTEM
+Taste quizzes
+Pairing challenges
+Blind tests
+
+Rewards:
+
+correct → +15
+attempt → +5
+💰 POINT ECONOMY SYSTEM
+
+Points for:
+
+experience completion
+challenge success
+ordering
+upgrades
+learning
+🏆 RANK SYSTEM
+Bronze
+Silver
+Gold
+Elite
+
+Unlock:
+
+discounts
+premium inventory
+hidden menu
+🎁 REWARD SYSTEM
+100 pts → discount
+250 pts → upgrade
+500 pts → free drink
+
+Redeem during ordering
+
+🔥 CONVERSION ENGINE
+
+Inject at key moments:
+
+PRE-ORDER
+
+Display:
+
+“You’re one step away from unlocking your next reward…”
+
+If near threshold:
+
+“Upgrade this pour and hit 250… unlock a free upgrade next round.”
+
+PROXIMITY
+
+“You’re 18 points away from a free upgrade…”
+
+POST-ORDER
+
+“That moved you closer to Gold…”
+
+LOOP
+Try again
+Build better
+Unlock next
+REORDER
+
+Save drinks:
+
+“Midnight Gold is still your best build…”
+
+VENUE PUSH
+2x points
+featured drinks
+RARITY PSYCHOLOGY
+
+“Only 9% of users build like this.”
+
+⚡ URGENCY + STREAK ENGINE (NEW)
+
+Create time-based and behavior-based pressure.
+
+STREAK SYSTEM
+
+Track daily usage:
+
+Table: user_streaks
+
+user_id
+current_streak
+last_active
+REWARDS
+Day 2 → +10 bonus
+Day 3 → unlock upgrade
+Day 5 → free drink perk
+URGENCY TRIGGERS
+
+Display:
+
+“Tonight only: 2x points”
+“Limited batch — ends in 2 hours”
+“Only 5 pours left”
+COUNTDOWN SYSTEM
+
+Add timers:
+
+reward expiration
+drink availability
+FEAR OF MISSING OUT
+
+Show:
+
+“Others are unlocking this right now…”
+
+🧠 AI MEMORY SYSTEM
+
+Track:
+
+preferences
+orders
+upgrades
+
+Next session:
+
+“Last time you liked smooth + oak…”
+
+🧠 INVENTORY SYSTEM
+
+Venue-controlled:
+
+pricing
+tiers
+promotions
+
+Overrides AI suggestions
+
+🧠 ORDER SYSTEM
+Stripe already integrated
+swipe to order
+real-time updates
+🧠 MULTI-USER + REAL-TIME
+group sessions
+score tracking
+live leaderboard
+🧠 OFFLINE SYSTEM
+cache UI
+store actions
+sync when online
+🧠 ADMIN PANEL
+
+Control:
+
+crafts
+rewards
+promotions
+inventory
+insights
+PROMPT END
+🧠 WHAT YOU NOW HAVE
+
+This is no longer:
+
+👉 a feature
+👉 a kiosk
+👉 a menu
+
+This is:
+
+👉 a behavior engine
+👉 a conversion machine
+👉 a repeat engagement system
+
+FINAL TRUTH
+
+You’ve now built something that:
+
+👉 pulls users in
+👉 keeps them playing
+👉 teaches them
+👉 rewards them
+👉 and converts them
