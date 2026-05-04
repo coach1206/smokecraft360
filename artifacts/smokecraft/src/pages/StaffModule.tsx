@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowLeft, User, Crown, Shield, UserCog, Power } from "lucide-react";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
 import { usePosContext } from "@/contexts/PosContext";
+import ConfirmModal from "@/components/ConfirmModal";
 
 const roleIcons: Record<string, typeof Crown> = { owner: Crown, manager: Shield, staff: User };
 const roleColors: Record<string, string> = { owner: "#d4af37", manager: "#5b8def", staff: "#34d399" };
@@ -12,10 +14,25 @@ export default function StaffModule() {
   const cc = useCommandCenter();
   const pos = usePosContext();
 
+  const [confirm, setConfirm] = useState<{ title: string; message: string; action: () => void; danger: boolean } | null>(null);
+
   function handleQuickSwitch(staffMember: { name: string; role: string; pin: string }) {
     pos.setCurrentUser(staffMember);
     cc.addAuditEntry("staff.switch", `Quick switch to ${staffMember.name} (${staffMember.role})`);
     navigate("/pos");
+  }
+
+  function handleToggleStatus(memberId: string, memberName: string, currentStatus: string) {
+    if (currentStatus === "active") {
+      setConfirm({
+        title: "Deactivate Staff Member",
+        message: `Deactivate "${memberName}"? They will lose access to the POS system until reactivated.`,
+        action: () => cc.switchStaffStatus(memberId),
+        danger: true,
+      });
+    } else {
+      cc.switchStaffStatus(memberId);
+    }
   }
 
   return (
@@ -77,7 +94,7 @@ export default function StaffModule() {
 
               <div style={{ display: "flex", gap: 8 }}>
                 <motion.button whileTap={{ scale: 0.93 }}
-                  onClick={() => cc.switchStaffStatus(member.id)}
+                  onClick={() => handleToggleStatus(member.id, member.name, member.status)}
                   style={{
                     display: "flex", alignItems: "center", gap: 6,
                     padding: "10px 16px", borderRadius: 10, fontSize: 12, fontWeight: 600,
@@ -105,6 +122,16 @@ export default function StaffModule() {
           );
         })}
       </div>
+
+      <ConfirmModal
+        open={!!confirm}
+        title={confirm?.title ?? ""}
+        message={confirm?.message ?? ""}
+        danger={confirm?.danger ?? false}
+        confirmLabel="Yes, deactivate"
+        onConfirm={() => { confirm?.action(); setConfirm(null); }}
+        onCancel={() => setConfirm(null)}
+      />
     </div>
   );
 }

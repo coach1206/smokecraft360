@@ -43,6 +43,7 @@ import { PosProvider } from "@/contexts/PosContext";
 import { CommandCenterProvider } from "@/contexts/CommandCenterContext";
 import BootIntro, { hasSeenBootIntro } from "@/components/BootIntro";
 import GlobalBackButton                from "@/components/Layout/GlobalBackButton";
+import InactivityGuard                 from "@/components/InactivityGuard";
 import { useSystemVersion }            from "@/hooks/useSystemVersion";
 
 const queryClient = new QueryClient();
@@ -127,6 +128,7 @@ function App() {
                         <GlobalBackButton />
                         <Router />
                       </WouterRouter>
+                      <InactivityGuard />
                       <PresentationOverlay />
                       <DemoBanner />
                       <OfflineQueueBanner />

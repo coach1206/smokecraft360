@@ -1,12 +1,14 @@
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowLeft, Monitor, Tablet, Smartphone, Lock, Unlock, RefreshCw, Wifi, WifiOff, Battery, BatteryLow } from "lucide-react";
+import { ArrowLeft, Monitor, Tablet, Smartphone, Lock, Unlock, RefreshCw, Wifi, WifiOff, Battery, BatteryLow, Power } from "lucide-react";
 import { useCommandCenter, type Device } from "@/contexts/CommandCenterContext";
+import ConfirmModal from "@/components/ConfirmModal";
 
 const typeIcons: Record<Device["type"], typeof Monitor> = { kiosk: Monitor, tablet: Tablet, mobile: Smartphone };
 const roleColors: Record<Device["role"], string> = { pos: "#d4af37", kiosk: "#5b8def", demo: "#34d399" };
 
-function DeviceCard({ device }: { device: Device }) {
+function DeviceCard({ device, onConfirmAction }: { device: Device; onConfirmAction: (title: string, message: string, action: () => void, danger?: boolean) => void }) {
   const cc = useCommandCenter();
   const Icon = typeIcons[device.type];
   const isLowBat = device.battery <= 20;
@@ -75,7 +77,15 @@ function DeviceCard({ device }: { device: Device }) {
       </div>
 
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        <motion.button whileTap={{ scale: 0.93 }} onClick={() => cc.toggleDeviceLock(device.id)}
+        <motion.button whileTap={{ scale: 0.93 }}
+          onClick={() => onConfirmAction(
+            device.locked ? "Unlock Device" : "Lock Device",
+            device.locked
+              ? `Unlock "${device.name}"? The device will be accessible again.`
+              : `Lock "${device.name}"? The device will be inaccessible until unlocked.`,
+            () => cc.toggleDeviceLock(device.id),
+            !device.locked,
+          )}
           style={{
             display: "flex", alignItems: "center", gap: 6,
             padding: "10px 16px", borderRadius: 10, fontSize: 12, fontWeight: 600,
@@ -95,6 +105,23 @@ function DeviceCard({ device }: { device: Device }) {
           }}>
           <RefreshCw size={14} /> Refresh
         </motion.button>
+        {device.status === "online" && (
+          <motion.button whileTap={{ scale: 0.93 }}
+            onClick={() => onConfirmAction(
+              "Shutdown Device",
+              `Shut down "${device.name}"? The device will go offline and need to be physically restarted.`,
+              () => cc.shutdownDevice(device.id),
+              true,
+            )}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "10px 16px", borderRadius: 10, fontSize: 12, fontWeight: 600,
+              background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)",
+              color: "#ef4444", cursor: "pointer", minHeight: 42,
+            }}>
+            <Power size={14} /> Shutdown
+          </motion.button>
+        )}
         {["pos", "kiosk", "demo"].filter(r => r !== device.role).map(r => (
           <motion.button key={r} whileTap={{ scale: 0.93 }}
             onClick={() => cc.setDeviceRole(device.id, r as Device["role"])}
@@ -118,6 +145,12 @@ export default function DevicesModule() {
   const cc = useCommandCenter();
   const online = cc.devices.filter(d => d.status === "online").length;
 
+  const [confirm, setConfirm] = useState<{ title: string; message: string; action: () => void; danger: boolean } | null>(null);
+
+  const handleConfirmAction = (title: string, message: string, action: () => void, danger = false) => {
+    setConfirm({ title, message, action, danger });
+  };
+
   return (
     <div style={{ height: "100dvh", display: "flex", flexDirection: "column", background: "linear-gradient(180deg, #1a1714 0%, #0f0d0a 100%)", color: "#e8e0c8", overflow: "hidden" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
@@ -134,9 +167,19 @@ export default function DevicesModule() {
       </div>
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 14, alignContent: "start" }}>
         {cc.devices.map(device => (
-          <DeviceCard key={device.id} device={device} />
+          <DeviceCard key={device.id} device={device} onConfirmAction={handleConfirmAction} />
         ))}
       </div>
+
+      <ConfirmModal
+        open={!!confirm}
+        title={confirm?.title ?? ""}
+        message={confirm?.message ?? ""}
+        danger={confirm?.danger ?? false}
+        confirmLabel={confirm?.danger ? "Yes, proceed" : "Confirm"}
+        onConfirm={() => { confirm?.action(); setConfirm(null); }}
+        onCancel={() => setConfirm(null)}
+      />
     </div>
   );
 }

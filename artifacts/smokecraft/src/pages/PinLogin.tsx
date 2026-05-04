@@ -1,8 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Lock } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
+import { useCommandCenter } from "@/contexts/CommandCenterContext";
 
 const MOCK_USERS = [
   { pin: "1111", name: "Jordan Mitchell", role: "owner" },
@@ -12,16 +13,59 @@ const MOCK_USERS = [
 
 const KEYS = ["1","2","3","4","5","6","7","8","9","CLR","0","GO"];
 const MAX_PIN = 4;
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_SECONDS = 60;
+
+function getLockoutState(): { attempts: number; lockedUntil: number | null } {
+  try {
+    const raw = sessionStorage.getItem("smokecraft_pin_lockout");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return { attempts: parsed.attempts ?? 0, lockedUntil: parsed.lockedUntil ?? null };
+    }
+  } catch {}
+  return { attempts: 0, lockedUntil: null };
+}
+
+function saveLockoutState(attempts: number, lockedUntil: number | null) {
+  try {
+    sessionStorage.setItem("smokecraft_pin_lockout", JSON.stringify({ attempts, lockedUntil }));
+  } catch {}
+}
 
 export default function PinLogin() {
   const [, navigate] = useLocation();
   const { setCurrentUser } = usePosContext();
+  const cc = useCommandCenter();
   const [pin, setPin] = useState("");
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const initial = getLockoutState();
+  const [failedAttempts, setFailedAttempts] = useState(initial.attempts);
+  const [lockedUntil, setLockedUntil] = useState<number | null>(initial.lockedUntil);
+  const [lockCountdown, setLockCountdown] = useState(0);
+
+  const isLocked = lockedUntil !== null && Date.now() < lockedUntil;
+
+  useEffect(() => {
+    if (!lockedUntil) return;
+    const tick = () => {
+      const remaining = Math.max(0, Math.ceil((lockedUntil - Date.now()) / 1000));
+      setLockCountdown(remaining);
+      if (remaining <= 0) {
+        setLockedUntil(null);
+        setFailedAttempts(0);
+        saveLockoutState(0, null);
+      }
+    };
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [lockedUntil]);
+
   const handleKey = useCallback((key: string) => {
-    if (success) return;
+    if (success || isLocked) return;
     setError(false);
 
     if (key === "CLR") {
@@ -32,12 +76,29 @@ export default function PinLogin() {
     if (key === "GO") {
       const user = MOCK_USERS.find(u => u.pin === pin);
       if (!user) {
+        const newAttempts = failedAttempts + 1;
+        setFailedAttempts(newAttempts);
+        cc.addAuditEntry("auth.pin_failed", `Failed PIN attempt (${newAttempts}/${MAX_ATTEMPTS})`);
+
+        if (newAttempts >= MAX_ATTEMPTS) {
+          const until = Date.now() + LOCKOUT_SECONDS * 1000;
+          setLockedUntil(until);
+          saveLockoutState(newAttempts, until);
+          cc.addAuditEntry("auth.lockout", `PIN lockout activated — ${LOCKOUT_SECONDS}s cooldown after ${MAX_ATTEMPTS} failed attempts`);
+        } else {
+          saveLockoutState(newAttempts, null);
+        }
+
         setError(true);
         setTimeout(() => { setError(false); setPin(""); }, 800);
         return;
       }
+
+      setFailedAttempts(0);
+      saveLockoutState(0, null);
       setCurrentUser(user);
       setSuccess(user.role);
+      cc.addAuditEntry("auth.pin_login", `${user.name} logged in via PIN (${user.role})`, user.name);
       setTimeout(() => {
         if (user.role === "staff") {
           navigate("/pos");
@@ -51,7 +112,7 @@ export default function PinLogin() {
     if (pin.length < MAX_PIN) {
       setPin(prev => prev + key);
     }
-  }, [pin, success, setCurrentUser, navigate]);
+  }, [pin, success, isLocked, failedAttempts, setCurrentUser, navigate, cc]);
 
   return (
     <div style={{
@@ -125,7 +186,27 @@ export default function PinLogin() {
       </motion.div>
 
       <AnimatePresence>
-        {error && (
+        {isLocked && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            style={{
+              marginBottom: 16, padding: "12px 20px", borderRadius: 12,
+              background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
+              display: "flex", alignItems: "center", gap: 10,
+            }}
+          >
+            <Lock size={16} color="#ef4444" />
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#ef4444" }}>Account Locked</div>
+              <div style={{ fontSize: 12, color: "rgba(239,68,68,0.7)" }}>
+                Too many failed attempts. Try again in {lockCountdown}s
+              </div>
+            </div>
+          </motion.div>
+        )}
+        {!isLocked && error && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -134,7 +215,7 @@ export default function PinLogin() {
               marginBottom: 16, fontSize: 14,
               color: "#ef4444", fontWeight: 500,
             }}
-          >Invalid PIN — try again</motion.div>
+          >Invalid PIN — {MAX_ATTEMPTS - failedAttempts} attempts remaining</motion.div>
         )}
         {success && (
           <motion.div
@@ -152,6 +233,9 @@ export default function PinLogin() {
         display: "grid",
         gridTemplateColumns: "repeat(3, 1fr)",
         gap: 12, maxWidth: 320, width: "100%",
+        opacity: isLocked ? 0.4 : 1,
+        pointerEvents: isLocked ? "none" : "auto",
+        transition: "opacity 0.3s",
       }}>
         {KEYS.map(key => {
           const isAction = key === "CLR" || key === "GO";
@@ -163,7 +247,7 @@ export default function PinLogin() {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.92, backgroundColor: isGo ? "rgba(212,175,55,0.4)" : "rgba(255,255,255,0.12)" }}
               onClick={() => handleKey(key)}
-              disabled={!!success}
+              disabled={!!success || isLocked}
               style={{
                 minHeight: 80, fontSize: isAction ? 15 : 28,
                 fontWeight: isAction ? 600 : 400,

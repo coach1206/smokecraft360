@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers } from "lucide-react";
 import { useCommandCenter, POS_MODE_INFO, type PosOperatingMode } from "@/contexts/CommandCenterContext";
 import { usePosContext } from "@/contexts/PosContext";
+import ConfirmModal from "@/components/ConfirmModal";
 
 const POS_MODES: PosOperatingMode[] = ["overlay", "hybrid", "full_pos"];
 
@@ -16,6 +18,20 @@ export default function SettingsModule() {
   const lockedDevices = cc.devices.filter(d => d.locked).length;
   const activeStaff = cc.staff.filter(s => s.status === "active").length;
   const modeInfo = POS_MODE_INFO[cc.posMode];
+
+  const [pendingMode, setPendingMode] = useState<PosOperatingMode | null>(null);
+
+  function handleModeSelect(mode: PosOperatingMode) {
+    if (mode === cc.posMode) return;
+    setPendingMode(mode);
+  }
+
+  function confirmModeChange() {
+    if (pendingMode) {
+      cc.setPosMode(pendingMode);
+      setPendingMode(null);
+    }
+  }
 
   return (
     <div style={{ height: "100dvh", display: "flex", flexDirection: "column", background: "linear-gradient(180deg, #1a1714 0%, #0f0d0a 100%)", color: "#e8e0c8", overflow: "hidden" }}>
@@ -88,7 +104,7 @@ export default function SettingsModule() {
                 <motion.button
                   key={mode}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => cc.setPosMode(mode)}
+                  onClick={() => handleModeSelect(mode)}
                   style={{
                     display: "flex", alignItems: "flex-start", gap: 14,
                     padding: "16px", borderRadius: 12, cursor: "pointer",
@@ -191,6 +207,15 @@ export default function SettingsModule() {
           })}
         </div>
       </div>
+
+      <ConfirmModal
+        open={!!pendingMode}
+        title="Change POS Mode"
+        message={pendingMode ? `Switch to ${POS_MODE_INFO[pendingMode].label} mode? This affects how the system processes transactions and syncs with external POS systems.` : ""}
+        confirmLabel="Switch Mode"
+        onConfirm={confirmModeChange}
+        onCancel={() => setPendingMode(null)}
+      />
     </div>
   );
 }

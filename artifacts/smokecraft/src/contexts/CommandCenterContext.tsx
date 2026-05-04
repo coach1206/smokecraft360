@@ -74,6 +74,7 @@ export interface CommandCenterState {
   toggleDeviceLock: (deviceId: string) => void;
   forceRefreshDevice: (deviceId: string) => void;
   setDeviceRole: (deviceId: string, role: Device["role"]) => void;
+  shutdownDevice: (deviceId: string) => void;
   addAuditEntry: (action: string, details: string, user?: string) => void;
   requestRestock: (vendorId: string, productName: string) => void;
   switchStaffStatus: (staffId: string) => void;
@@ -179,6 +180,12 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
     if (dev) addAuditEntry("device.role", `Changed ${dev.name} role to ${role}`);
   }, [devices, addAuditEntry]);
 
+  const shutdownDevice = useCallback((deviceId: string) => {
+    setDevices(prev => prev.map(d => d.id === deviceId ? { ...d, status: "offline" } : d));
+    const dev = devices.find(d => d.id === deviceId);
+    if (dev) addAuditEntry("device.shutdown", `Shutdown ${dev.name}`);
+  }, [devices, addAuditEntry]);
+
   const requestRestock = useCallback((vendorId: string, productName: string) => {
     const ven = vendors.find(v => v.id === vendorId);
     if (ven) addAuditEntry("vendor.restock", `Restock request sent to ${ven.name} for ${productName}`);
@@ -196,7 +203,7 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
     <CCContext.Provider value={{
       devices, staff, vendors, auditLog, hourlyRevenue,
       systemStatus, activeGuests, posMode, setPosMode,
-      toggleDeviceLock, forceRefreshDevice, setDeviceRole,
+      toggleDeviceLock, forceRefreshDevice, setDeviceRole, shutdownDevice,
       addAuditEntry, requestRestock, switchStaffStatus,
     }}>
       {children}
