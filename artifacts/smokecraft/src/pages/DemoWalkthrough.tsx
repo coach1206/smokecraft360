@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -9,7 +9,37 @@ import {
 import KioskProductImage from "@/components/KioskProductImage";
 import type { Product } from "@/contexts/PosContext";
 
-const STEP_DURATION = 5000;
+const DEFAULT_STEP_DURATION = 5000;
+
+const SPEED_PRESETS: Record<string, number> = {
+  slow: 8000,
+  normal: 5000,
+  fast: 3000,
+  instant: 1500,
+};
+
+function parseDemoConfig(search: string): { stepIds: string[] | null; perStepSpeed: number | null } {
+  const params = new URLSearchParams(search);
+  const stepsParam = params.get("steps");
+  const speedParam = params.get("speed");
+
+  const stepIds = stepsParam ? stepsParam.split(",").map(s => s.trim()).filter(Boolean) : null;
+
+  let perStepSpeed: number | null = null;
+
+  if (speedParam) {
+    if (SPEED_PRESETS[speedParam]) {
+      perStepSpeed = SPEED_PRESETS[speedParam];
+    } else {
+      const parsed = parseInt(speedParam, 10);
+      if (!isNaN(parsed) && parsed >= 500) {
+        perStepSpeed = parsed;
+      }
+    }
+  }
+
+  return { stepIds, perStepSpeed };
+}
 
 const DEMO_PRODUCTS: Product[] = [
   { id: "d-cig-1", name: "Arturo Fuente Opus X", category: "cigar", price: 42, image: "https://images.unsplash.com/photo-1589561253898-768105ca91a8?w=300&h=300&fit=crop&q=80", stock: 8 },
@@ -25,6 +55,7 @@ interface DemoStep {
   subtitle: string;
   icon: typeof ShoppingCart;
   color: string;
+  duration: number;
   render: () => React.ReactNode;
 }
 
@@ -412,21 +443,38 @@ function SystemOverviewStep() {
   );
 }
 
+const ALL_STEPS: DemoStep[] = [
+  { id: "order", title: "Order Creation", subtitle: "Smart POS with instant checkout", icon: ShoppingCart, color: "#d4af37", duration: DEFAULT_STEP_DURATION, render: () => <OrderCreationStep /> },
+  { id: "reward", title: "Reward Unlock", subtitle: "Automated loyalty with fraud protection", icon: Gift, color: "#34d399", duration: DEFAULT_STEP_DURATION, render: () => <RewardUnlockStep /> },
+  { id: "inventory", title: "Inventory Tracking", subtitle: "Real-time stock with audit trail", icon: Package, color: "#5b8def", duration: DEFAULT_STEP_DURATION, render: () => <InventoryStep /> },
+  { id: "devices", title: "Device Control", subtitle: "Fleet management across venues", icon: Monitor, color: "#f97316", duration: DEFAULT_STEP_DURATION, render: () => <DeviceControlStep /> },
+  { id: "dashboard", title: "Dashboard Metrics", subtitle: "Revenue intelligence & insights", icon: BarChart3, color: "#8b5cf6", duration: DEFAULT_STEP_DURATION, render: () => <DashboardMetricsStep /> },
+  { id: "experience", title: "Experience Engine", subtitle: "AI-guided craft recommendations", icon: Sparkles, color: "#f59e0b", duration: DEFAULT_STEP_DURATION, render: () => <ExperienceStep /> },
+  { id: "system", title: "System Health", subtitle: "Security, status, and audit", icon: Shield, color: "#34d399", duration: DEFAULT_STEP_DURATION, render: () => <SystemOverviewStep /> },
+];
+
+const STEP_MAP = new Map(ALL_STEPS.map(s => [s.id, s]));
+
 export default function DemoWalkthrough() {
   const [, navigate] = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const steps: DemoStep[] = [
-    { id: "order", title: "Order Creation", subtitle: "Smart POS with instant checkout", icon: ShoppingCart, color: "#d4af37", render: () => <OrderCreationStep /> },
-    { id: "reward", title: "Reward Unlock", subtitle: "Automated loyalty with fraud protection", icon: Gift, color: "#34d399", render: () => <RewardUnlockStep /> },
-    { id: "inventory", title: "Inventory Tracking", subtitle: "Real-time stock with audit trail", icon: Package, color: "#5b8def", render: () => <InventoryStep /> },
-    { id: "devices", title: "Device Control", subtitle: "Fleet management across venues", icon: Monitor, color: "#f97316", render: () => <DeviceControlStep /> },
-    { id: "dashboard", title: "Dashboard Metrics", subtitle: "Revenue intelligence & insights", icon: BarChart3, color: "#8b5cf6", render: () => <DashboardMetricsStep /> },
-    { id: "experience", title: "Experience Engine", subtitle: "AI-guided craft recommendations", icon: Sparkles, color: "#f59e0b", render: () => <ExperienceStep /> },
-    { id: "system", title: "System Health", subtitle: "Security, status, and audit", icon: Shield, color: "#34d399", render: () => <SystemOverviewStep /> },
-  ];
+  const { stepIds, perStepSpeed } = useMemo(() => parseDemoConfig(window.location.search), []);
+
+  const steps: DemoStep[] = useMemo(() => {
+    if (!stepIds) return ALL_STEPS;
+    const filtered = stepIds
+      .map(id => STEP_MAP.get(id))
+      .filter((s): s is DemoStep => s !== undefined);
+    return filtered.length > 0 ? filtered : ALL_STEPS;
+  }, [stepIds]);
+
+  const getStepDuration = useCallback((stepIndex: number): number => {
+    if (perStepSpeed !== null) return perStepSpeed;
+    return steps[stepIndex]?.duration ?? DEFAULT_STEP_DURATION;
+  }, [perStepSpeed, steps]);
 
   const goNext = useCallback(() => {
     setCurrentStep(prev => (prev < steps.length - 1 ? prev + 1 : 0));
@@ -438,9 +486,10 @@ export default function DemoWalkthrough() {
 
   useEffect(() => {
     if (paused) return;
-    timerRef.current = setTimeout(goNext, STEP_DURATION);
+    const duration = getStepDuration(currentStep);
+    timerRef.current = setTimeout(goNext, duration);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
-  }, [currentStep, paused, goNext]);
+  }, [currentStep, paused, goNext, getStepDuration]);
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
