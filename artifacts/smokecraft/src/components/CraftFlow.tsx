@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Sparkles, ShoppingBag, ChevronRight, RotateCcw, Zap } from "lucide-react";
+import { Check, Sparkles, ShoppingBag, ChevronRight, RotateCcw, Zap, PenLine } from "lucide-react";
 import {
   fetchRecommendations,
   trackPreferences,
@@ -14,6 +14,7 @@ import LivePreviewPanel, { type LiveMeters } from "@/components/LivePreview/Live
 import AICoach from "@/components/AICoach/AICoach";
 import SessionTimer from "@/components/SessionTimer/SessionTimer";
 import { useSessionTimer } from "@/hooks/useSessionTimer";
+import SignatureStudio from "@/components/SignatureStudio/SignatureStudio";
 import {
   fetchCraftSession,
   startCraftSession,
@@ -168,6 +169,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const [resumeSession,  setResumeSession ] = useState<CraftSessionState | null>(null);
   const [fastBuildBadge, setFastBuildBadge] = useState(false);
   const [coachResuming,  setCoachResuming ] = useState(false);
+  const [studioOpen,     setStudioOpen    ] = useState(false);
 
   const phaseIndex = useMemo(() => {
     const order: Phase[] = ["intro", "style", "profile", "match", "reveal"];
@@ -868,6 +870,68 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                         ))}
                       </div>
                     )}
+
+                    {/* ── Signature Studio CTA ─────────────────────────── */}
+                    {scoreState.score >= 70 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0  }}
+                        transition={{ delay: 0.55, duration: 0.4 }}
+                        style={{ marginTop: 22 }}
+                        data-testid={`${config.testIdPrefix}-studio-cta`}
+                      >
+                        <div style={{
+                          padding: "18px 20px",
+                          borderRadius: 18,
+                          background: `linear-gradient(145deg, ${config.theme.accent}14, rgba(10,8,6,0.7))`,
+                          border: `1px solid ${config.theme.accent}40`,
+                          boxShadow: `0 20px 60px ${config.theme.accent}18`,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: 16,
+                        }}>
+                          <div>
+                            <div style={{
+                              display: "flex", alignItems: "center", gap: 6,
+                              fontSize: 9, letterSpacing: "0.32em", textTransform: "uppercase",
+                              color: config.theme.accent, fontWeight: 700, marginBottom: 5,
+                            }}>
+                              <Sparkles size={11} /> Signature Studio Unlocked
+                            </div>
+                            <p style={{
+                              margin: 0, fontSize: 13, fontWeight: 600, color: "#fff",
+                              fontFamily: "var(--app-font-serif, Georgia, serif)",
+                            }}>
+                              Design Your Signature
+                            </p>
+                            <p style={{ margin: "4px 0 0", fontSize: 11, color: "rgba(232,224,200,0.55)", lineHeight: 1.4 }}>
+                              Score {(scoreState.score / 10).toFixed(1)} — you've unlocked the full design studio.
+                            </p>
+                          </div>
+                          <motion.button
+                            type="button"
+                            data-testid={`${config.testIdPrefix}-studio-open`}
+                            onClick={() => setStudioOpen(true)}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.96 }}
+                            style={{
+                              background: `linear-gradient(135deg, ${config.theme.accent}, ${config.theme.accentSoft})`,
+                              color: "#0a0806", border: "none",
+                              padding: "12px 22px", borderRadius: 999,
+                              fontSize: 11, fontWeight: 700,
+                              letterSpacing: "0.22em", textTransform: "uppercase",
+                              cursor: "pointer",
+                              display: "inline-flex", alignItems: "center", gap: 8,
+                              boxShadow: `0 10px 28px ${config.theme.accent}50`,
+                              flexShrink: 0,
+                            }}
+                          >
+                            <PenLine size={13} /> Open Studio
+                          </motion.button>
+                        </div>
+                      </motion.div>
+                    )}
                   </>
                 )}
               </motion.div>
@@ -1185,6 +1249,16 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ── Signature Design Studio modal ─────────────────────────────── */}
+      <SignatureStudio
+        isOpen={studioOpen}
+        craft={craftType}
+        score={scoreState.score}
+        accentColor={config.theme.accent}
+        onClose={() => setStudioOpen(false)}
+        featuredName={resp?.featured?.[0]?.name}
+      />
     </div>
   );
 }

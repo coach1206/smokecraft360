@@ -2126,6 +2126,31 @@ export async function upsertDesignDraft(params: {
   }
 }
 
+/**
+ * POST /api/design-drafts — create a new draft record (for version history).
+ * Unlike upsertDesignDraft (PATCH), this always creates a new row.
+ * Returns null for guests or on failure.
+ */
+export async function saveDesignDraft(params: {
+  craft:         string;
+  draftName?:    string;
+  payload:       Record<string, unknown>;
+  lockedFields?: string[];
+}): Promise<DesignDraft | null> {
+  try {
+    const res = await fetch("/api/design-drafts", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+      body:    JSON.stringify(params),
+    });
+    if (!res.ok) return null;
+    const data = await res.json() as { draft: DesignDraft };
+    return data.draft ?? null;
+  } catch {
+    return null;
+  }
+}
+
 // ── Live Scoring ───────────────────────────────────────────────────────────────
 
 export interface ScoreInputs { flavor: number; strength: number; pairing: number }
