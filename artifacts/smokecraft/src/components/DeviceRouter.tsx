@@ -304,8 +304,8 @@ export function MobileShell({ children }: { children: ReactNode }) {
       }}>
         {navBtn("Back",    "←", "__back"  )}
         {navBtn("Home",    "⌂", "/"       )}
-        {navBtn("Menu",    "☰", "/menu"   )}
-        {navBtn("Loyalty", "✦", "/loyalty")}
+        {navBtn("Menu",    "☰", "/orders" )}
+        {navBtn("Loyalty", "✦", "/rewards")}
       </div>
     </div>
   );

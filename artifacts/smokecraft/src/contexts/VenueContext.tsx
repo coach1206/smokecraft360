@@ -66,7 +66,7 @@ export const BACKGROUND_LABELS: Record<BackgroundKey, string> = {
   entry:       "Entry / Home",
   pinLogin:    "PIN Login",
   dashboard:   "Command Hub",
-  pos:         "POS Terminal",
+  pos:         "Axiom Commerce",
   analytics:   "Analytics",
   devices:     "Devices",
   vendors:     "Vendors",

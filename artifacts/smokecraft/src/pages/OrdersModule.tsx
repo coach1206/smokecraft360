@@ -49,7 +49,7 @@ export default function OrdersModule() {
             color: ACCENT, fontSize: 12, fontWeight: 600, cursor: "pointer",
           }}
         >
-          <ExternalLink size={13} /> Open POS Terminal
+          <ExternalLink size={13} /> Open Commerce Station
         </motion.button>
       </div>
 

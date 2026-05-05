@@ -774,7 +774,7 @@ function SystemOverviewStep() {
 }
 
 const ALL_STEPS: DemoStep[] = [
-  { id: "order", title: "Order Creation", subtitle: "Smart POS with instant checkout", icon: ShoppingCart, color: "#d4af37", duration: DEFAULT_STEP_DURATION, render: () => <OrderCreationStep /> },
+  { id: "order", title: "Order Creation", subtitle: "Smart Commerce with instant checkout", icon: ShoppingCart, color: "#d4af37", duration: DEFAULT_STEP_DURATION, render: () => <OrderCreationStep /> },
   { id: "reward", title: "Reward Unlock", subtitle: "Automated loyalty with fraud protection", icon: Gift, color: "#34d399", duration: DEFAULT_STEP_DURATION, render: () => <RewardUnlockStep /> },
   { id: "inventory", title: "Inventory Tracking", subtitle: "Real-time stock with audit trail", icon: Package, color: "#5b8def", duration: DEFAULT_STEP_DURATION, render: () => <InventoryStep /> },
   { id: "devices", title: "Device Control", subtitle: "Fleet management across venues", icon: Monitor, color: "#f97316", duration: DEFAULT_STEP_DURATION, render: () => <DeviceControlStep /> },
