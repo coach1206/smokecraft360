@@ -252,7 +252,7 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
   const setPosMode = useCallback((mode: PosOperatingMode) => {
     setPosModeRaw(mode);
     try { localStorage.setItem("smokecraft_pos_mode", mode); } catch {}
-    addAuditEntry("settings.pos_mode", `POS mode changed to ${POS_MODE_INFO[mode].label}`);
+    addAuditEntry("settings.pos_mode", `Commerce mode changed to ${POS_MODE_INFO[mode].label}`);
   }, [addAuditEntry]);
 
   const toggleDeviceLock = useCallback((deviceId: string) => {

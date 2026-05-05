@@ -221,7 +221,7 @@ export default function DemoSimDashboard() {
         if (typeof data.orders  === "number") setOrders(data.orders);
         if (typeof data.rewards === "number") setRewards(data.rewards);
       } catch { /* ignore */ }
-    }, Math.max(speed, 1500));
+    }, Math.max(speed, 3000));
   }
 
   function startStoryRotation() {
@@ -400,7 +400,7 @@ export default function DemoSimDashboard() {
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
               <span style={{ fontSize: 12, color: C.muted }}>Event speed:</span>
-              {[{ label: "Slow", v: 4000 }, { label: "Normal", v: 2000 }, { label: "Fast", v: 1000 }].map(s => (
+              {[{ label: "Slow", v: 8000 }, { label: "Normal", v: 4000 }, { label: "Fast", v: 3000 }].map(s => (
                 <motion.button
                   key={s.v}
                   whileTap={{ scale: 0.95 }}

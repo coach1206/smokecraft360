@@ -87,7 +87,7 @@ export default function SettingsModule() {
     if (!isPrivileged) {
       setAccessDenied(true);
       setTimeout(() => setAccessDenied(false), 2500);
-      cc.addAuditEntry("access.denied", `Unauthorized attempt: change POS mode to ${POS_MODE_INFO[mode].label}`, pos.currentUser?.name);
+      cc.addAuditEntry("access.denied", `Unauthorized attempt: change Commerce mode to ${POS_MODE_INFO[mode].label}`, pos.currentUser?.name);
       return;
     }
     setPendingMode(mode);
