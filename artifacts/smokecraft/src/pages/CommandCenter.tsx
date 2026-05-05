@@ -26,6 +26,7 @@ const TILES = [
   { id: "devices", title: "Devices", desc: "Device control", color: "#f97316", route: "/devices", dataKey: "devices" as const, image: "/images/scenes/bold.jpg" },
   { id: "staff", title: "Staff", desc: "Team management", color: "#a78bfa", route: "/staff", dataKey: "staff" as const, image: "/images/scenes/social.jpg" },
   { id: "settings", title: "Settings", desc: "System & security", color: "#64748b", route: "/settings", dataKey: "settings" as const, image: "/images/scenes/relaxed.jpg" },
+  { id: "designer", title: "Designer", desc: "Signature customizer", color: "#d4af37", route: "/designer", dataKey: "designer" as const, image: "/images/cigar.png" },
 ] as const;
 
 export default function CommandCenter() {
@@ -54,6 +55,7 @@ export default function CommandCenter() {
       case "devices": return `${onlineDevices}/${cc.devices.length} online`;
       case "staff": return `${cc.staff.filter(s => s.status === "active").length} active`;
       case "settings": return cc.systemStatus;
+      case "designer": return "Band · Box · Preview";
       default: return "";
     }
   }

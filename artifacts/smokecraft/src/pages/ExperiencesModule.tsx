@@ -8,6 +8,7 @@ import { useVenueContext } from "@/contexts/VenueContext";
 import { useEngagementContext } from "@/contexts/EngagementContext";
 import KioskProductImage from "@/components/KioskProductImage";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
+import AgeGate         from "@/components/AgeGate/AgeGate";
 
 interface ExperienceType {
   id: string;
@@ -160,6 +161,7 @@ export default function ExperiencesModule() {
   const stepLabels = activeExp ? [...activeExp.questions.map((_q, i) => `Step ${i + 1}`), "Reveal"] : [];
 
   return (
+    <AgeGate>
     <BackgroundLayer image={getBackground("experiences")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={phase === "select" ? () => navigate("/dashboard") : phase === "campaigns" ? () => setPhase("select") : reset}
@@ -569,5 +571,6 @@ export default function ExperiencesModule() {
         </AnimatePresence>
       </div>
     </BackgroundLayer>
+    </AgeGate>
   );
 }
