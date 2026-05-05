@@ -97,6 +97,7 @@ import { startSessionCleanupWorker } from "./lib/sessionCleanupWorker";
 import { startPayoutWorker }         from "./lib/payoutWorker";
 import { startRewardOptimizationWorker } from "./lib/rewardOptimizationWorker";
 import { startCampaignBudgetWorker }    from "./lib/campaignBudgetWorker";
+import { startTournamentWorker }        from "./lib/tournamentWorker";
 import { requirePaymentsEnabled, requireRewardsEnabled } from "./middleware/killSwitch";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -315,6 +316,7 @@ if (process.env["NODE_ENV"] !== "test") {
   startPayoutWorker();
   startRewardOptimizationWorker();
   startCampaignBudgetWorker();
+  startTournamentWorker();
 }
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────

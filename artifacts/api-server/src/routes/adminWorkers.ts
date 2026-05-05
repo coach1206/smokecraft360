@@ -3,6 +3,7 @@ import { requireAuth, type AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/roles";
 import { getCleanupStatus, runSessionCleanup } from "../lib/sessionCleanupWorker";
 import { getCampaignBudgetWorkerStatus, runCampaignBudgetEnforcement } from "../lib/campaignBudgetWorker";
+import { getTournamentWorkerStatus, runTournamentEnforcement } from "../lib/tournamentWorker";
 import { logAudit } from "../lib/audit";
 import rateLimit from "express-rate-limit";
 
@@ -70,6 +71,35 @@ router.post(
     });
 
     const result = await runCampaignBudgetEnforcement();
+    res.json(result);
+  },
+);
+
+router.get(
+  "/tournament/status",
+  requireAuth,
+  requireRole("manager", "venue_owner", "super_admin"),
+  (_req: AuthRequest, res: Response) => {
+    res.json(getTournamentWorkerStatus());
+  },
+);
+
+router.post(
+  "/tournament/run-now",
+  requireAuth,
+  requireRole("super_admin"),
+  workerRunLimiter,
+  async (req: AuthRequest, res: Response) => {
+    req.log.info({ triggeredBy: req.user!.id }, "manual tournament enforcement triggered");
+
+    await logAudit(req, {
+      action: "worker.tournament.run_now",
+      entityType: "worker",
+      entityId: "tournament",
+      after: { triggeredBy: req.user!.id, manual: true } as unknown as Record<string, unknown>,
+    });
+
+    const result = await runTournamentEnforcement(["live", "daily", "weekly"]);
     res.json(result);
   },
 );
