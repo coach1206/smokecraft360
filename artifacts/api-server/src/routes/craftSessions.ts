@@ -29,6 +29,7 @@ const DEFAULT_DURATION = 2100;
 const createSchema = z.object({
   craft:             craftEnum,
   buildId:           z.string().uuid().optional(),
+  phase:             phaseEnum.optional(),
   timerDurationSecs: z.number().int().min(1800).max(2400).optional(),
 });
 
@@ -79,7 +80,7 @@ router.post("/", requireAuth, async (req: AuthRequest, res: Response) => {
   }
 
   const userId = req.user!.id;
-  const { craft, buildId, timerDurationSecs } = parsed.data;
+  const { craft, buildId, timerDurationSecs, phase } = parsed.data;
   const duration = timerDurationSecs ?? DEFAULT_DURATION;
   const now      = new Date();
   const expires  = new Date(now.getTime() + duration * 1000);
@@ -93,7 +94,7 @@ router.post("/", requireAuth, async (req: AuthRequest, res: Response) => {
       buildId:           buildId ?? null,
       timerStartedAt:    now,
       timerDurationSecs: duration,
-      phase:             "intro",
+      phase:             (phase as typeof CRAFT_PHASES[number]) ?? "style",
       streakCount:       0,
       lastSavedAt:       now,
       expiresAt:         expires,

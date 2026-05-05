@@ -49,13 +49,14 @@ export async function fetchCraftSession(
 export async function startCraftSession(
   craft: string,
   timerDurationSecs: number,
+  phase?: string,
 ): Promise<CraftSessionState | null> {
   if (!hasAuth()) return null;
   try {
     const res = await fetch("/api/craft-sessions", {
       method:  "POST",
       headers: { "Content-Type": "application/json", ...getAuthHeaders() },
-      body:    JSON.stringify({ craft, timerDurationSecs }),
+      body:    JSON.stringify({ craft, timerDurationSecs, phase }),
     });
     if (!res.ok) return null;
     const data = await res.json() as { session: CraftSessionState };

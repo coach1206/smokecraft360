@@ -203,6 +203,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   // Stable refs so callbacks don't re-create on every second tick
   const remainingSecsRef = useRef(remainingSecs);
   const streakCountRef   = useRef(streakCount);
+  const isResumingRef    = useRef(false);
   useEffect(() => { remainingSecsRef.current = remainingSecs; }, [remainingSecs]);
   useEffect(() => { streakCountRef.current   = streakCount;   }, [streakCount]);
 
@@ -321,8 +322,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         remainingMs: remainingSecsRef.current * 1000,
         streakCount: streakCountRef.current,
       });
-      // Fast-build bonus: >15 min remaining — apply +10, persist to build, show badge
-      if (remainingSecsRef.current > 900) {
+      // Fast-build bonus: >15 min remaining (skipped on resume re-run to prevent replay)
+      if (remainingSecsRef.current > 900 && !isResumingRef.current) {
         setScoreState(prev => {
           const newScore100 = Math.min(100, prev.score + 10);
           void upsertCraftBuild({
@@ -337,6 +338,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         setFastBuildBadge(true);
         setTimeout(() => setFastBuildBadge(false), 4500);
       }
+      isResumingRef.current = false;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load pairing");
       setPhase("reveal");
@@ -349,6 +351,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         remainingMs: remainingSecsRef.current * 1000,
         streakCount: streakCountRef.current,
       });
+      isResumingRef.current = false;
     }
   }, [config.category, craftType]);
 
@@ -375,6 +378,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     if (savedPhase === "match" || savedPhase === "reveal") {
       // Re-trigger recommendation fetch so reveal always has fresh results
       if (restoredStyle && restoredMood) {
+        isResumingRef.current = true;
         void runMatch(restoredStyle, restoredMood);
       } else if (restoredStyle) {
         setPhase("profile");
@@ -394,7 +398,14 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     if (resumeSession) void deleteCraftSession(resumeSession.id);
     setResumeSession(null);
     setResumeState("none");
-  }, [resumeSession]);
+    // Immediately begin a new session — skip the intro screen
+    const dur = 1800 + Math.floor(Math.random() * 481);
+    setTimerTotalSecs(dur);
+    resetTimer(dur, dur);
+    setTimerRunning(true);
+    setPhase("style");
+    void startCraftSession(craftType, dur, "style");
+  }, [resumeSession, craftType, resetTimer]);
 
   const handleStylePick = useCallback((s: CraftStyleCard) => {
     if (isExpired) return;
@@ -470,19 +481,16 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         padding: "24px 32px 12px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
-        {/* Session timer — hidden on intro phase */}
-        {phase !== "intro" && (
-          <SessionTimer
-            totalSecs={timerTotalSecs}
-            remainingSecs={remainingSecs}
-            streakCount={streakCount}
-            isIdle={isIdle}
-            isCountdown={isCountdown}
-            isExpired={isExpired}
-            accentColor={config.theme.accent}
-          />
-        )}
-        {phase === "intro" && <div />}
+        {/* Session timer — always visible; shows full ring before timer starts */}
+        <SessionTimer
+          totalSecs={timerTotalSecs}
+          remainingSecs={remainingSecs}
+          streakCount={streakCount}
+          isIdle={isIdle}
+          isCountdown={isCountdown}
+          isExpired={isExpired}
+          accentColor={config.theme.accent}
+        />
 
         <div style={{ textAlign: "right", textShadow: "0 2px 8px rgba(0,0,0,0.85)" }}>
           <h1 style={{
@@ -601,7 +609,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                     resetTimer(dur, dur);
                     setTimerRunning(true);
                     setPhase("style");
-                    void startCraftSession(craftType, dur);
+                    void startCraftSession(craftType, dur, "style");
                   }}
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.97 }}
