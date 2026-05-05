@@ -1,15 +1,18 @@
 /**
  * MoodControls — preset mood selectors for the Craft Hub.
  *
- * Clicking a preset updates the global UserPreferences, causing all four
- * DynamicCards to immediately re-filter their scene arrays to match.
+ * Selecting a preset updates BOTH:
+ *  - PreferenceContext (for UI active-state indicator)
+ *  - UserProfileContext (so getWeightedScenes() incorporates the new mood immediately)
  */
 
 import { motion } from "framer-motion";
 import { usePreferences, PRESET_MODES } from "@/contexts/PreferenceContext";
+import { useUserProfile }               from "@/contexts/UserProfileContext";
 
 export default function MoodControls() {
   const { activePresetId, setPreferences } = usePreferences();
+  const { updateProfile }                  = useUserProfile();
 
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -28,7 +31,16 @@ export default function MoodControls() {
             type="button"
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.94 }}
-            onClick={() => setPreferences(preset.preferences, preset.id)}
+            onClick={() => {
+              // Update UI preference context (active pill highlight)
+              setPreferences(preset.preferences, preset.id);
+              // Also push into persistent user profile so weighted engine picks it up
+              updateProfile({
+                mood:      preset.preferences.mood,
+                intensity: preset.preferences.intensity,
+                setting:   preset.preferences.setting,
+              });
+            }}
             style={{
               padding: "8px 14px", borderRadius: 999, cursor: "pointer",
               border: active

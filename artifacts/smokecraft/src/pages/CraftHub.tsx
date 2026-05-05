@@ -10,9 +10,11 @@
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import { PreferenceProvider } from "@/contexts/PreferenceContext";
-import MoodControls from "@/components/DynamicCard/MoodControls";
-import DynamicCard  from "@/components/DynamicCard/DynamicCard";
+import { PreferenceProvider }    from "@/contexts/PreferenceContext";
+import { UserProfileProvider }   from "@/contexts/UserProfileContext";
+import MoodControls              from "@/components/DynamicCard/MoodControls";
+import DynamicCard               from "@/components/DynamicCard/DynamicCard";
+import LiveEngineController      from "@/components/DynamicCard/LiveEngineController";
 import { CRAFT_MODULES } from "@/data/craftScenes";
 
 function CraftHubInner() {
@@ -175,8 +177,11 @@ function CraftHubInner() {
 
 export default function CraftHub() {
   return (
-    <PreferenceProvider>
-      <CraftHubInner />
-    </PreferenceProvider>
+    <UserProfileProvider>
+      <PreferenceProvider>
+        <LiveEngineController />
+        <CraftHubInner />
+      </PreferenceProvider>
+    </UserProfileProvider>
   );
 }

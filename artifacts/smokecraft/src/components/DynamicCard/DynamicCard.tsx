@@ -1,21 +1,23 @@
 /**
- * DynamicCard — preference-aware rotating lifestyle imagery card.
+ * DynamicCard — intelligent rotating lifestyle imagery card.
  *
- * Behaviour
- * ─────────
- * 1. Reads the active UserPreferences from PreferenceContext.
- * 2. Filters the supplied scene array via useVisualMatch so only scenes
- *    relevant to the current mood/intensity/setting are shown.
- * 3. Rotates through matched scenes every ROTATION_MS with a cross-fade.
- * 4. Applies a slow Ken Burns (zoom) animation to the current image.
- * 5. Resets to scene 0 whenever the matched scene list changes.
+ * Scene ordering pipeline
+ * ───────────────────────
+ * 1. Read UserProfile from UserProfileContext (persisted, reactive).
+ * 2. Run getWeightedScenes() — scores every scene across 4 signals
+ *    (preference, POS pairing, venue type, time-of-day), sorts descending.
+ * 3. The highest-ranked scene starts the rotation; all scenes are available
+ *    in weighted order so the most relevant imagery appears first.
+ * 4. Re-ranking fires automatically whenever UserProfile changes
+ *    (e.g. LiveEngineController delivers a new POS order every 5 s).
+ * 5. Image shows a slow Ken Burns zoom (6 s) with a 700 ms cross-fade between scenes.
  */
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
-import { usePreferences } from "@/contexts/PreferenceContext";
-import { useVisualMatch }  from "@/hooks/useVisualMatch";
-import type { CraftModule } from "@/data/craftScenes";
+import { useUserProfile }      from "@/contexts/UserProfileContext";
+import { getWeightedScenes }   from "@/lib/weightedEngine";
+import type { CraftModule, CraftScene } from "@/data/craftScenes";
 
 const ROTATION_MS = 3_500;
 const FADE_MS     = 700;
@@ -26,27 +28,32 @@ interface Props {
 }
 
 export default function DynamicCard({ module: mod, onClick }: Props) {
-  const { preferences }  = usePreferences();
-  const matchedScenes    = useVisualMatch(mod.scenes, preferences);
+  const { profile } = useUserProfile();
+
+  // Re-rank whenever profile changes
+  const rankedScenes = useMemo(
+    () => getWeightedScenes(mod.scenes, profile),
+    [mod.scenes, profile],
+  );
 
   const [current, setCurrent] = useState(0);
   const [fading,  setFading ] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval>  | null>(null);
   const fadeRef  = useRef<ReturnType<typeof setTimeout>   | null>(null);
 
-  // Reset to first scene when the matched list changes (new preference)
+  // Reset to best-ranked scene when ranked order changes
   useEffect(() => {
     setCurrent(0);
     setFading(false);
-  }, [matchedScenes]);
+  }, [rankedScenes]);
 
   const advance = useCallback(() => {
     setFading(true);
     fadeRef.current = setTimeout(() => {
-      setCurrent(prev => (prev + 1) % matchedScenes.length);
+      setCurrent(prev => (prev + 1) % rankedScenes.length);
       setFading(false);
     }, FADE_MS);
-  }, [matchedScenes.length]);
+  }, [rankedScenes.length]);
 
   useEffect(() => {
     timerRef.current = setInterval(advance, ROTATION_MS);
@@ -56,11 +63,11 @@ export default function DynamicCard({ module: mod, onClick }: Props) {
     };
   }, [advance]);
 
-  if (!matchedScenes.length) return null;
+  if (!rankedScenes.length) return null;
 
-  const scene    = matchedScenes[current];
-  const nextIdx  = (current + 1) % matchedScenes.length;
-  const nextScene = matchedScenes[nextIdx];
+  const scene: CraftScene     = rankedScenes[current];
+  const nextScene: CraftScene = rankedScenes[(current + 1) % rankedScenes.length];
+  const topScore              = rankedScenes[0]?.score ?? 0;
 
   return (
     <motion.div
@@ -87,15 +94,15 @@ export default function DynamicCard({ module: mod, onClick }: Props) {
         animate={{ scale: [1, 1.07, 1] }}
         transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
         style={{
-          position:  "absolute",
-          inset:     0,
-          width:     "100%",
-          height:    "100%",
-          objectFit: "cover",
+          position:       "absolute",
+          inset:          0,
+          width:          "100%",
+          height:         "100%",
+          objectFit:      "cover",
           objectPosition: "center",
-          opacity:   fading ? 0 : 1,
-          transition: `opacity ${FADE_MS}ms ease`,
-          willChange: "opacity, transform",
+          opacity:        fading ? 0 : 1,
+          transition:     `opacity ${FADE_MS}ms ease`,
+          willChange:     "opacity, transform",
         }}
       />
 
@@ -148,21 +155,32 @@ export default function DynamicCard({ module: mod, onClick }: Props) {
         {mod.badge}
       </div>
 
-      {/* ── Scene match count (top-right) ── */}
+      {/* ── Scene dots + score indicator (top-right) ── */}
       <div style={{
         position: "absolute", top: 14, right: 16,
         display: "flex", gap: 5, alignItems: "center",
       }}>
-        {matchedScenes.map((_, i) => (
-          <div key={i} style={{
-            width:      i === current ? 16 : 6,
-            height:     6,
+        {rankedScenes.map((s, i) => (
+          <div key={s.id} style={{
+            width:        i === current ? 16 : 6,
+            height:       6,
             borderRadius: 3,
-            background: i === current ? mod.color : "rgba(255,255,255,0.28)",
-            transition: "width 0.35s ease, background 0.35s ease",
+            background:   i === current ? mod.color : "rgba(255,255,255,0.28)",
+            transition:   "width 0.35s ease, background 0.35s ease",
           }} />
         ))}
       </div>
+
+      {/* ── Score pip — top-right corner, shows relevance signal ── */}
+      {topScore > 5 && (
+        <div style={{
+          position: "absolute", top: 38, right: 16,
+          fontSize: 9, color: `${mod.color}90`,
+          letterSpacing: "0.1em",
+        }}>
+          ▲{topScore}
+        </div>
+      )}
 
       {/* ── Bottom content ── */}
       <div style={{
@@ -180,7 +198,7 @@ export default function DynamicCard({ module: mod, onClick }: Props) {
           {mod.title}
         </div>
 
-        {/* Scene label */}
+        {/* Scene label + sub-label */}
         <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
           <div style={{
             width: 6, height: 6, borderRadius: "50%",
@@ -202,7 +220,7 @@ export default function DynamicCard({ module: mod, onClick }: Props) {
           )}
         </div>
 
-        {/* CTA */}
+        {/* CTA strip */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 3 }}>
           <div style={{
             fontSize: 10, fontWeight: 700,
