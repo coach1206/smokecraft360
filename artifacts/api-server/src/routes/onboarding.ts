@@ -14,6 +14,7 @@ import {
   db, onboardingSessionsTable, venuesTable,
   productsTable, featureFlagsTable,
   venueInventoryTable, campaignsTable, auditLogTable,
+  aiConfigurationsTable,
   type CampaignType,
 } from "@workspace/db";
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
@@ -202,7 +203,16 @@ router.post(
     const parsed = startSchema.safeParse(req.body);
     if (!parsed.success) { res.status(422).json({ error: parsed.error.flatten() }); return; }
 
-    const venueId = parsed.data.venueId ?? req.user?.venueId ?? null;
+    // Venue ownership guard: non-super_admins may only start onboarding for their own venue
+    const callerVenueId = req.user?.venueId ?? null;
+    if (
+      req.user?.role !== "super_admin" &&
+      parsed.data.venueId &&
+      parsed.data.venueId !== callerVenueId
+    ) {
+      res.status(403).json({ error: "Access denied: cannot start onboarding for a different venue" }); return;
+    }
+    const venueId = parsed.data.venueId ?? callerVenueId ?? null;
 
     const [session] = await db
       .insert(onboardingSessionsTable)
@@ -285,6 +295,33 @@ router.post(
     // 2. Seed default products + feature flags + inventory + campaign + audit
     if (venueId) {
       await seedVenueDefaults(venueId, selectedCrafts, req.user?.id);
+    }
+
+    // 2b. Seed initial AI configuration — applies pricing strategy immediately on go-live
+    if (venueId) {
+      try {
+        const vt  = typeof sessionData.venueType     === "string" && sessionData.venueType     ? String(sessionData.venueType)     : "cigar_lounge";
+        const loc = typeof sessionData.venueLocation === "string" && sessionData.venueLocation ? String(sessionData.venueLocation) : "US";
+        const sz  = typeof sessionData.venueSize     === "string" ? String(sessionData.venueSize) : "medium";
+        const pt  = sz === "large" ? "luxury" : sz === "small" ? "mid" : "premium";
+        const initialAiCfg = {
+          tonePreset:         "Refined, knowledgeable, and understated.",
+          pricingStrategy:    { tier: pt, targetMarginPct: pt === "luxury" ? 60 : pt === "premium" ? 50 : 40, location: loc },
+          experienceGoal:     "balanced",
+          focusCategories:    selectedCrafts.slice(0, 2),
+          maxRecommendations: sz === "large" ? 10 : sz === "medium" ? 7 : 5,
+          generatedAt:        new Date().toISOString(),
+          version:            "seed_1.0",
+        };
+        await db.insert(aiConfigurationsTable).values({
+          venueId,
+          configType:  "experience",
+          location:    loc,
+          pricingTier: pt,
+          config:      initialAiCfg as unknown as Record<string, unknown>,
+          isActive:    "true",
+        }).onConflictDoNothing();
+      } catch { /* non-fatal */ }
     }
 
     // 3. Mark session complete

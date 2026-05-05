@@ -1842,7 +1842,7 @@ export async function updateRedemptionStatus(id: string, status: string): Promis
 export interface DeviceItem {
   id:           string;
   venueId:      string;
-  type:         "mobile" | "tablet" | "kiosk";
+  type:         "mobile" | "tablet" | "kiosk" | "pos";
   nickname:     string;
   tableNumber:  string | null;
   status:       "active" | "inactive" | "offline";

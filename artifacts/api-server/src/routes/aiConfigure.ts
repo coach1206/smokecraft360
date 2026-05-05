@@ -11,7 +11,7 @@
  */
 
 import { Router, type IRouter, type Response } from "express";
-import { eq, desc }                             from "drizzle-orm";
+import { eq, desc, and }                        from "drizzle-orm";
 import { z }                                    from "zod";
 import { db, aiConfigurationsTable, featureFlagsTable } from "@workspace/db";
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
@@ -23,16 +23,17 @@ const router: IRouter = Router();
 const configureSchema = z.object({
   venueId:           z.string().uuid().optional(),
   venueName:         z.string().min(1).max(100).optional(),
-  venueType:         z.enum(["cigar_lounge", "bar", "restaurant", "hotel", "club", "retail"]).optional(),
+  /** Required: determines default tone, strength bias, and food-pairing eligibility */
+  venueType:         z.enum(["cigar_lounge", "bar", "restaurant", "hotel", "club", "retail"]),
   /** General size of menu / product catalog */
   menuSize:          z.enum(["small", "medium", "large"]).optional(),
   targetDemographic: z.enum(["upscale", "casual", "mixed", "business"]).optional(),
   focusCategories:   z.array(z.string()).optional(),
   experienceGoal:    z.enum(["revenue", "loyalty", "discovery", "balanced"]).optional(),
-  /** Geographic region, e.g. "US-East", "US-West", "Europe", "Asia" */
-  location:          z.string().optional(),
-  /** Price positioning of the venue */
-  pricingTier:       z.enum(["budget", "mid", "premium", "luxury"]).optional(),
+  /** Required: Geographic region, e.g. "US-East", "US-West", "Europe", "Asia" */
+  location:          z.string().min(1),
+  /** Required: Price positioning of the venue — drives margin targets and bundle logic */
+  pricingTier:       z.enum(["budget", "mid", "premium", "luxury"]),
 });
 
 type ConfigInput = z.infer<typeof configureSchema>;
@@ -86,7 +87,7 @@ interface StructuredConfig {
   version:     string;
 }
 
-function buildConfig(input: ConfigInput): StructuredConfig {
+export function buildConfig(input: ConfigInput): StructuredConfig {
   const {
     venueType        = "cigar_lounge",
     menuSize         = "medium",
@@ -128,25 +129,48 @@ function buildConfig(input: ConfigInput): StructuredConfig {
     luxury:  { targetMargin: 0.60, happyHourMult: 0.90, loyaltyDisc: 0.12, premiumMult: 1.30, suggestBundles: false },
   };
 
-  // Per-craft product recommendations
+  // Per-craft product recommendations (5–8 per craft)
   const craftRecs: Record<string, CraftProductRec[]> = {
     cigar: [
-      { name: "Arturo Fuente Opus X",     reason: "Top-rated full strength — anchors premium perception",       upsell: "Add a pairing spirit" },
-      { name: "Padron 1926 Serie #80",    reason: "Heritage brand, consistent bestseller",                      upsell: "Suggest limited edition" },
-      { name: "Cohiba Behike 52",         reason: "Aspirational SKU — drives AOV upward",                       upsell: "Membership add-on" },
+      { name: "Arturo Fuente Opus X",       reason: "Top-rated full strength — anchors premium perception",         upsell: "Add a pairing spirit"        },
+      { name: "Padron 1926 Serie #80",      reason: "Heritage brand, consistent bestseller",                        upsell: "Suggest limited edition"     },
+      { name: "Cohiba Behike 52",           reason: "Aspirational SKU — drives AOV upward",                         upsell: "Membership add-on"           },
+      { name: "Rocky Patel Vintage 1992",   reason: "Strong value-luxury ratio — converts first-time buyers",       upsell: "Flight of three cigars"      },
+      { name: "Oliva Serie V Melanio",      reason: "Award-winner accessible to new enthusiasts",                   upsell: "Pair with coffee flight"     },
+      { name: "My Father Le Bijou 1922",    reason: "Rich, full-bodied — resonates with connoisseurs",              upsell: "Private blend upgrade"       },
+      { name: "Liga Privada No. 9",         reason: "Trending enthusiast brand — drives social proof",              upsell: "Box purchase upsell"         },
+      { name: "Davidoff Aniversario No. 3", reason: "Prestige gifting SKU — highest per-unit margin",               upsell: "Gift packaging add-on"       },
     ],
     spirit: [
-      { name: "Macallan 18 Sherry Oak",   reason: "Defines the category for discerning guests",                 upsell: "Flight pairing with cigar" },
-      { name: "Glenfiddich 21 Gran Res.", reason: "Accessible luxury — strong price-to-prestige ratio",          upsell: "Double pour upsell" },
-      { name: "Buffalo Trace Antique",    reason: "Bourbon enthusiast magnet — broadens demographic",           upsell: "Suggest neat vs. rocks" },
+      { name: "Macallan 18 Sherry Oak",     reason: "Defines the category for discerning guests",                   upsell: "Flight pairing with cigar"   },
+      { name: "Glenfiddich 21 Gran Res.",   reason: "Accessible luxury — strong price-to-prestige ratio",            upsell: "Double pour upsell"          },
+      { name: "Buffalo Trace Antique",      reason: "Bourbon enthusiast magnet — broadens demographic",             upsell: "Suggest neat vs. rocks"      },
+      { name: "Pappy Van Winkle 15yr",      reason: "Aspirational pinnacle — generates word-of-mouth",              upsell: "Vertical tasting flight"     },
+      { name: "Clase Azul Reposado",        reason: "Artisan bottle drives impulse purchase and gifting",            upsell: "Pair with premium cigar"     },
+      { name: "Johnnie Walker Blue Label",  reason: "Status signal familiar to all demographics",                   upsell: "Ice sphere or rocks service" },
+      { name: "Hennessy Paradis",           reason: "High-ticket cognac — maximizes occasion revenue",              upsell: "Private lounge reservation"  },
     ],
     beer: [
-      { name: "Guinness Draught",         reason: "Familiar anchor — draws new guests into premium territory",  upsell: "Craft flight upsell" },
-      { name: "Pliny the Elder IPA",      reason: "Enthusiast pull — social sharing effect",                    upsell: "Pair with appetizer" },
+      { name: "Guinness Draught",           reason: "Familiar anchor — draws new guests into premium territory",    upsell: "Craft flight upsell"         },
+      { name: "Pliny the Elder IPA",        reason: "Enthusiast pull — social sharing effect",                      upsell: "Pair with appetizer"         },
+      { name: "Westvleteren 12",            reason: "Cult status — creates destination-worthy experience",           upsell: "Limited-release bundle"      },
+      { name: "Goose Island Bourbon County",reason: "Barrel-aged crossover appeals to whiskey fans",                upsell: "Cigar pairing suggestion"    },
+      { name: "Allagash White",             reason: "Sessionable crowd-pleaser broadens appeal",                    upsell: "Sampler flight upgrade"      },
+      { name: "Founders KBS",              reason: "High ABV collector beer — drives repeat loyalty visits",        upsell: "Members-only allocation"     },
     ],
     vape: [
-      { name: "Puffco Peak Pro",          reason: "High-margin hardware — drives attachment sales",             upsell: "Accessory bundle" },
-      { name: "Lost Mary OS5000",         reason: "Entry-level pull — converts guests to regulars",             upsell: "Membership upgrade" },
+      { name: "Puffco Peak Pro",            reason: "High-margin hardware — drives attachment sales",               upsell: "Accessory bundle"            },
+      { name: "Lost Mary OS5000",           reason: "Entry-level pull — converts guests to regulars",               upsell: "Membership upgrade"          },
+      { name: "Elf Bar BC5000",             reason: "High-velocity SKU — drives repeat foot traffic",               upsell: "Flavor subscription"         },
+      { name: "SMOK Morph 3",              reason: "Advanced mod for enthusiasts — high attachment rate",           upsell: "Coil + battery bundle"       },
+      { name: "Vaporesso XROS",            reason: "Sleek pod system popular with younger demographics",            upsell: "Extra pods upsell"           },
+    ],
+    food: [
+      { name: "Wagyu Beef Sliders",         reason: "Premium comfort food — pairs naturally with spirits",          upsell: "Add a spirit pairing"        },
+      { name: "Charcuterie Board",          reason: "High-margin shareable — extends dwell time",                   upsell: "Wine or spirit flight"       },
+      { name: "Lobster Bisque",             reason: "Aspirational starter — signals culinary prestige",              upsell: "Champagne pairing"           },
+      { name: "Truffle Fries",             reason: "Low-cost, high-margin add-on — easy impulse upsell",            upsell: "Aioli dipping sauces"        },
+      { name: "Smoked Salmon Crostini",    reason: "Light pairing for guests exploring spirits or wine",            upsell: "Add a rosé flight"           },
     ],
   };
 
@@ -181,7 +205,7 @@ function buildConfig(input: ConfigInput): StructuredConfig {
     crossSellEnabled:     cats.length > 1,
     pairingEnabled:       venueType !== "retail",
     foodPairingEnabled:   venueType === "restaurant" || venueType === "hotel",
-    maxRecommendations:   menuSize === "large" ? 6 : 3,
+    maxRecommendations:   menuSize === "large" ? 10 : menuSize === "medium" ? 7 : 5,
     experienceGoal,
     focusCategories:      cats,
 
@@ -262,6 +286,36 @@ router.post(
             metadata: { configId: row.id, pricingTier, experienceGoal: config.experienceGoal },
           })
           .onConflictDoNothing();
+      } catch { /* non-fatal */ }
+    }
+
+    // Apply pricing engine config immediately — true upsert semantics so re-runs always update
+    if (venueId) {
+      try {
+        const pricingMeta: Record<string, unknown> = {
+          configId:       row.id,
+          pricingTier,
+          targetMargin:   config.pricingStrategy.targetMargin,
+          happyHourMult:  config.pricingStrategy.happyHourMult,
+          loyaltyDisc:    config.pricingStrategy.loyaltyDisc,
+          premiumMult:    config.pricingStrategy.premiumMult,
+          suggestBundles: config.pricingStrategy.suggestBundles,
+          location,
+          appliedAt:      new Date().toISOString(),
+        };
+        const upd = await db
+          .update(featureFlagsTable)
+          .set({ enabled: true, metadata: pricingMeta, updatedAt: new Date() })
+          .where(and(
+            eq(featureFlagsTable.name,    "pricing_engine_config"),
+            eq(featureFlagsTable.venueId, venueId),
+          ))
+          .returning({ id: featureFlagsTable.id });
+        if (upd.length === 0) {
+          await db.insert(featureFlagsTable).values({
+            name: "pricing_engine_config", enabled: true, venueId, metadata: pricingMeta,
+          }).onConflictDoNothing();
+        }
       } catch { /* non-fatal */ }
     }
 

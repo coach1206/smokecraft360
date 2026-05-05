@@ -1,16 +1,17 @@
 /**
- * devices — registered venue hardware devices (mobile BYOD, tablet, kiosk).
+ * devices — registered venue hardware devices (mobile BYOD, tablet, kiosk, pos).
  *
- * Status flow: active ↔ inactive
+ * Status flow: active ↔ inactive ↔ offline
  * Types:
  *   mobile  — BYOD / QR scan (no hardware cost)
  *   tablet  — rented or purchased table unit
  *   kiosk   — full-screen front-of-house unit
+ *   pos     — dedicated point-of-sale terminal (physical register / POS hardware)
  */
 
 import { pgTable, uuid, text, timestamp, boolean } from "drizzle-orm/pg-core";
 
-export const DEVICE_TYPES   = ["mobile", "tablet", "kiosk"]           as const;
+export const DEVICE_TYPES   = ["mobile", "tablet", "kiosk", "pos"]    as const;
 export const DEVICE_STATUSES = ["active", "inactive", "offline"]        as const;
 export type DeviceType   = typeof DEVICE_TYPES[number];
 export type DeviceStatus = typeof DEVICE_STATUSES[number];

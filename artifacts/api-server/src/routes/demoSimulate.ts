@@ -183,36 +183,40 @@ router.post(
 );
 
 // ── GET /api/demo/simulate/feed ────────────────────────────────────────────────
-// Authenticated: SSE stream for a running simulation session
+// Authenticated: polling endpoint — returns last 50 DB-persisted events + running KPIs.
+// Mirrors /events exactly; clients should poll this on a timer (no SSE required).
 
 router.get(
   "/demo/simulate/feed",
   requireAuth,
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     const sessionId = String(req.query.sessionId ?? "");
     const session   = SIM_SESSIONS.get(sessionId);
 
-    if (!session || !session.active) {
-      res.status(404).json({ error: "Session not found or stopped" });
-      return;
-    }
+    let events: Array<Record<string, unknown>> = [];
+    try {
+      const rows = await db
+        .select()
+        .from(demoSimEventsTable)
+        .where(eq(demoSimEventsTable.sessionId, sessionId))
+        .orderBy(desc(demoSimEventsTable.createdAt))
+        .limit(50);
 
-    res.setHeader("Content-Type",      "text/event-stream");
-    res.setHeader("Cache-Control",     "no-cache");
-    res.setHeader("Connection",        "keep-alive");
-    res.setHeader("X-Accel-Buffering", "no");
-    res.flushHeaders();
+      events = rows.map(r => ({
+        id:        r.id,
+        type:      r.eventType,
+        payload:   r.payload,
+        timestamp: r.createdAt.toISOString(),
+      })).reverse();
+    } catch { /* DB unavailable */ }
 
-    session.clients.add(res);
-
-    // Send current KPI state immediately as first message
-    res.write(`data: ${JSON.stringify({
-      type: "kpi_snapshot",
-      revenue: session.revenue, orders: session.orders, rewards: session.rewards,
-      timestamp: new Date().toISOString(),
-    })}\n\n`);
-
-    req.on("close", () => { session.clients.delete(res); });
+    res.json({
+      active:  session?.active ?? false,
+      revenue: session?.revenue ?? 0,
+      orders:  session?.orders  ?? 0,
+      rewards: session?.rewards ?? 0,
+      events,
+    });
   },
 );
 

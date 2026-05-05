@@ -3,13 +3,14 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, ChevronRight, ChevronLeft, ShoppingCart, Gift, Package,
-  Monitor, BarChart3, Sparkles, Play, Pause, CheckCircle2,
+  Monitor, BarChart3, Sparkles, Play, Square, Pause, CheckCircle2,
   AlertTriangle, TrendingUp, Wifi, Shield, CreditCard,
   Users, Briefcase, Presentation, Save, Link, Trash2, Star,
 } from "lucide-react";
 import KioskProductImage from "@/components/KioskProductImage";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 import { useVenueContext } from "@/contexts/VenueContext";
+import { useAuth }        from "@/contexts/AuthContext";
 import { getAuthHeaders } from "@/services/auth";
 import type { Product } from "@/contexts/PosContext";
 
@@ -390,29 +391,51 @@ interface LiveKpi { revenue: number; orders: number; rewards: number; active: bo
 interface LiveEvent { id: string; type: string; payload: Record<string, unknown>; timestamp: string; }
 
 function DashboardMetricsStep() {
-  const [kpi,    setKpi]    = useState<LiveKpi>({ revenue: 0, orders: 0, rewards: 0, active: false });
-  const [events, setEvents] = useState<LiveEvent[]>([]);
-  const [simId,  setSimId]  = useState<string | null>(null);
+  const { user }              = useAuth();
+  const isSuperAdmin          = user?.role === "super_admin";
+  const [kpi,    setKpi]      = useState<LiveKpi>({ revenue: 0, orders: 0, rewards: 0, active: false });
+  const [events, setEvents]   = useState<LiveEvent[]>([]);
+  const [simId,  setSimId]    = useState<string | null>(null);
   const [polling, setPolling] = useState(false);
+  const [started, setStarted] = useState(false);
+  const [simError, setSimError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Attempt to start a demo sim session; fall back gracefully if not super_admin
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
+  async function startSim() {
+    setSimError(null);
+    try {
+      const r = await fetch("/api/demo/simulate/start", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        body:    JSON.stringify({ profile: "investor", speedMs: 3000 }),
+      });
+      if (!r.ok) {
+        setSimError(r.status === 403
+          ? "Super Admin access required to run the live simulation."
+          : "Could not start simulation.");
+        return;
+      }
+      const j = await r.json() as { sessionId: string };
+      setSimId(j.sessionId);
+      setStarted(true);
+    } catch { setSimError("Connection error — live data unavailable."); }
+  }
+
+  async function stopSim() {
+    if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+    if (simId) {
       try {
-        const r = await fetch("/api/demo/simulate/start", {
-          method: "POST",
+        await fetch("/api/demo/simulate/stop", {
+          method:  "POST",
           headers: { "Content-Type": "application/json", ...getAuthHeaders() },
-          body: JSON.stringify({ profile: "investor", speedMs: 3500 }),
+          body:    JSON.stringify({ sessionId: simId }),
         });
-        if (!r.ok) return; // not super_admin — show static KPIs instead
-        const j = await r.json() as { sessionId: string };
-        if (!cancelled) setSimId(j.sessionId);
-      } catch { /* no sim auth — static mode */ }
-    })();
-    return () => { cancelled = true; };
-  }, []);
+      } catch { /* ignore */ }
+    }
+    setStarted(false);
+    setSimId(null);
+    setPolling(false);
+  }
 
   // Poll /api/demo/simulate/events every 3 s while simId is known
   useEffect(() => {
@@ -474,17 +497,31 @@ function DashboardMetricsStep() {
         <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
           Live Dashboard
         </div>
-        {simId && (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: kpi.active ? "#34d399" : "rgba(232,224,200,0.3)" }}>
-            <motion.div
-              animate={{ scale: [1, 1.4, 1], opacity: [1, 0.5, 1] }}
-              transition={{ repeat: Infinity, duration: 1.4 }}
-              style={{ width: 7, height: 7, borderRadius: "50%", background: kpi.active ? "#34d399" : "rgba(232,224,200,0.2)" }}
-            />
-            {kpi.active ? "Live" : polling ? "Connecting…" : "Paused"}
-          </div>
-        )}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {started ? (
+            <motion.button whileTap={{ scale: 0.9 }} onClick={() => void stopSim()}
+              style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#ef4444", fontSize: 11, fontWeight: 700 }}>
+              <Square size={9} /> Stop
+            </motion.button>
+          ) : (
+            <motion.button whileTap={{ scale: 0.9 }} onClick={() => void startSim()}
+              style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.2)", color: "#34d399", fontSize: 11, fontWeight: 700 }}>
+              <Play size={9} /> {isSuperAdmin ? "Start Live" : "Demo"}
+            </motion.button>
+          )}
+          {simId && (
+            <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: kpi.active ? "#34d399" : "rgba(232,224,200,0.3)" }}>
+              <motion.div animate={{ scale: [1, 1.4, 1], opacity: [1, 0.5, 1] }} transition={{ repeat: Infinity, duration: 1.4 }} style={{ width: 6, height: 6, borderRadius: "50%", background: kpi.active ? "#34d399" : "rgba(232,224,200,0.2)" }} />
+              {kpi.active ? "Live" : "…"}
+            </div>
+          )}
+        </div>
       </div>
+      {simError && (
+        <div style={{ marginBottom: 12, padding: "7px 10px", borderRadius: 8, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", fontSize: 11, color: "#ef4444" }}>
+          {simError}
+        </div>
+      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 16 }}>
         {metrics.map((m, i) => (

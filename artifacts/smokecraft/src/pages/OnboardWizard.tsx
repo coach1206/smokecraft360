@@ -39,6 +39,7 @@ interface WizardData {
   selectedCrafts:    string[];
   aiTone:            string;
   aiGoal:            string;
+  pricingTier:       string;
   aiFocusCategories: string[];
 }
 
@@ -50,6 +51,7 @@ const INITIAL: WizardData = {
   selectedCrafts:    ["cigar", "spirit"],
   aiTone:            "upscale",
   aiGoal:            "balanced",
+  pricingTier:       "premium",
   aiFocusCategories: ["cigar", "spirit"],
 };
 
@@ -379,7 +381,7 @@ function StepAiPreview({ data, set }: { data: WizardData; set: (k: keyof WizardD
             focusCategories:   data.aiFocusCategories,
             experienceGoal:    data.aiGoal,
             location:          data.venueLocation || "US-East",
-            pricingTier:       "premium",
+            pricingTier:       data.pricingTier as "budget" | "mid" | "premium" | "luxury",
           }),
         });
         if (!r.ok) { setPreviewErr(true); return; }
@@ -389,7 +391,7 @@ function StepAiPreview({ data, set }: { data: WizardData; set: (k: keyof WizardD
       finally   { if (!cancelled) setLoading(false); }
     }, 600);
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [data.aiTone, data.aiGoal, data.aiFocusCategories, data.venueType, data.venueLocation, data.venueSize]);
+  }, [data.aiTone, data.aiGoal, data.aiFocusCategories, data.venueType, data.venueLocation, data.venueSize, data.pricingTier]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -420,6 +422,21 @@ function StepAiPreview({ data, set }: { data: WizardData; set: (k: keyof WizardD
             { value: "balanced",  label: "Balanced" },
           ].map(opt => (
             <OptionChip key={opt.value} label={opt.label} selected={data.aiGoal === opt.value} onClick={() => set("aiGoal", opt.value)} color="#a78bfa" />
+          ))}
+        </div>
+      </div>
+      <div>
+        <label style={{ fontSize: 12, color: C.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 10 }}>
+          Pricing Tier
+        </label>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {[
+            { value: "budget",  label: "Budget"    },
+            { value: "mid",     label: "Mid-Range" },
+            { value: "premium", label: "Premium"   },
+            { value: "luxury",  label: "Luxury"    },
+          ].map(opt => (
+            <OptionChip key={opt.value} label={opt.label} selected={data.pricingTier === opt.value} onClick={() => set("pricingTier", opt.value)} color="#f97316" />
           ))}
         </div>
       </div>
@@ -496,13 +513,69 @@ function StratCard({ label, value, color }: { label: string; value: string; colo
 }
 
 // ── Step 5: Go Live ────────────────────────────────────────────────────────────
-function StepGoLive({ data }: { data: WizardData }) {
+function StepGoLive({ data, launching }: { data: WizardData; launching: boolean }) {
+  const [count, setCount] = useState(5);
+  const [phase, setPhase] = useState<"idle" | "countdown" | "go">("idle");
+
+  useEffect(() => {
+    if (!launching) { setCount(5); setPhase("idle"); return; }
+    setPhase("countdown");
+    let c = 5;
+    setCount(c);
+    const t = setInterval(() => {
+      c--;
+      if (c <= 0) { clearInterval(t); setPhase("go"); }
+      else setCount(c);
+    }, 800);
+    return () => clearInterval(t);
+  }, [launching]);
+
+  if (launching) {
+    return (
+      <div style={{ textAlign: "center", padding: "48px 20px" }}>
+        <AnimatePresence mode="wait">
+          {phase !== "go" ? (
+            <motion.div
+              key={count}
+              initial={{ scale: 2.2, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.4, opacity: 0 }}
+              transition={{ duration: 0.35 }}
+              style={{ fontSize: 80, fontWeight: 900, color: C.gold, lineHeight: 1 }}
+            >
+              {count}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="go"
+              initial={{ scale: 0.3, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 280, damping: 16 }}
+              style={{ fontSize: 42, fontWeight: 900, color: "#34d399", letterSpacing: "0.06em" }}
+            >
+              GO LIVE!
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          style={{ marginTop: 20, fontSize: 12, color: C.dim }}
+        >
+          {phase === "go" ? "Applying your configuration…" : "Preparing Axiom OS…"}
+        </motion.div>
+      </div>
+    );
+  }
+
   const summary = [
     { label: "Venue",          value: data.venueName || "(unnamed)" },
     { label: "Type",           value: data.venueType.replace("_", " ") },
     { label: "Size",           value: data.venueSize },
     { label: "Region",         value: data.venueLocation || "Not specified" },
     { label: "Active Crafts",  value: data.selectedCrafts.join(", ") || "none" },
+    { label: "Pricing Tier",   value: data.pricingTier },
     { label: "AI Tone",        value: data.aiTone },
     { label: "Goal",           value: data.aiGoal },
     { label: "Focus",          value: data.aiFocusCategories.join(", ") || "all" },
@@ -618,6 +691,7 @@ export default function OnboardWizard() {
           focusCategories:   data.aiFocusCategories,
           experienceGoal:    data.aiGoal,
           location:          data.venueLocation || "US-East",
+          pricingTier:       data.pricingTier as "budget" | "mid" | "premium" | "luxury",
         }),
       });
 
@@ -638,7 +712,7 @@ export default function OnboardWizard() {
     craft_selection:   <StepCraftSelection   data={data} set={set} />,
     inventory_preview: <StepInventoryPreview data={data} />,
     ai_preview:        <StepAiPreview        data={data} set={set} />,
-    go_live:           <StepGoLive           data={data} />,
+    go_live:           <StepGoLive           data={data} launching={loading && isLast} />,
   };
 
   return (
