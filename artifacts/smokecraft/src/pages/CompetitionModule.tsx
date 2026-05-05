@@ -8,10 +8,12 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, Trophy, Zap, Calendar, Users,
-  ChevronRight, Medal, Crown, Star, RefreshCw, BarChart2, MapPin,
+  ChevronRight, Medal, Crown, Star, RefreshCw, BarChart2, MapPin, Plus, X,
 } from "lucide-react";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 import { useVenueContext } from "@/contexts/VenueContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { getAuthHeaders } from "@/services/auth";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -80,9 +82,12 @@ const BASE_URL = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
 
 async function apiFetch(path: string, opts?: RequestInit) {
   const res = await fetch(`${BASE_URL}/api${path}`, {
-    headers: { "Content-Type": "application/json" },
     credentials: "include",
     ...opts,
+    headers: {
+      ...getAuthHeaders(),
+      ...(opts?.headers ?? {}),
+    },
   });
   if (!res.ok) throw new Error(`API error ${res.status}`);
   return res.json();
@@ -442,11 +447,395 @@ function LeaderboardPanel({
   );
 }
 
+// ── Create Tournament Modal ────────────────────────────────────────────────────
+
+const CRAFT_TYPES = ["smoke", "whiskey", "bourbon", "wine", "cocktail", "beer", "spirits"];
+
+interface CreateFormState {
+  title: string;
+  description: string;
+  type: TournamentType;
+  craftType: string;
+  startAt: string;
+  maxEntrants: string;
+  prizeFirst: string;
+  prizeSecond: string;
+  prizeThird: string;
+}
+
+function CreateTournamentModal({
+  onClose,
+  onCreated,
+  existingTournaments,
+}: {
+  onClose: () => void;
+  onCreated: (t: Tournament) => void;
+  existingTournaments: Tournament[];
+}) {
+  const now = new Date();
+  const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 16);
+
+  const [form, setForm] = useState<CreateFormState>({
+    title: "",
+    description: "",
+    type: "venue",
+    craftType: "smoke",
+    startAt: localNow,
+    maxEntrants: "",
+    prizeFirst: "",
+    prizeSecond: "",
+    prizeThird: "",
+  });
+  const [errors, setErrors]   = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
+
+  function set<K extends keyof CreateFormState>(key: K, val: CreateFormState[K]) {
+    setForm(prev => ({ ...prev, [key]: val }));
+    setErrors(prev => { const next = { ...prev }; delete next[key]; return next; });
+  }
+
+  function validate(): boolean {
+    const errs: Record<string, string> = {};
+    if (!form.title.trim() || form.title.trim().length < 2) {
+      errs.title = "Title must be at least 2 characters.";
+    }
+    if (!form.type) {
+      errs.type = "Please select a tournament type.";
+    }
+    if (form.type === "live") {
+      const hasActiveLive = existingTournaments.some(
+        t => t.type === "live" && (t.status === "active" || t.status === "upcoming"),
+      );
+      if (hasActiveLive) {
+        errs.type = "A live tournament is already active or upcoming. Only one live tournament can run at a time.";
+      }
+    }
+    if (form.maxEntrants && (isNaN(Number(form.maxEntrants)) || Number(form.maxEntrants) < 1)) {
+      errs.maxEntrants = "Max entrants must be a positive number.";
+    }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  }
+
+  async function handleSubmit() {
+    if (!validate()) return;
+    setSubmitting(true);
+    try {
+      const body: Record<string, unknown> = {
+        title:       form.title.trim(),
+        type:        form.type,
+        craftType:   form.craftType || undefined,
+        description: form.description.trim() || undefined,
+        startAt:     form.startAt ? new Date(form.startAt).toISOString() : undefined,
+        maxEntrants: form.maxEntrants ? Number(form.maxEntrants) : undefined,
+        prizeFirst:  form.prizeFirst.trim() || undefined,
+        prizeSecond: form.prizeSecond.trim() || undefined,
+        prizeThird:  form.prizeThird.trim() || undefined,
+      };
+      const result = await apiFetch("/competitions", {
+        method: "POST",
+        body: JSON.stringify(body),
+      });
+      onCreated(result as Tournament);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      if (msg.includes("403")) {
+        setErrors({ _global: "You do not have permission to create tournaments." });
+      } else if (msg.includes("400")) {
+        setErrors({ _global: "Invalid form data. Please check your inputs." });
+      } else {
+        setErrors({ _global: "Failed to create tournament. Please try again." });
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const meta = TYPE_META[form.type];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      style={{
+        position: "fixed", inset: 0, zIndex: 900,
+        background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: 20,
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        style={{
+          background: "rgba(14,11,8,0.98)",
+          border: `1px solid ${meta.color}35`,
+          borderRadius: 20, width: "100%", maxWidth: 520,
+          maxHeight: "90dvh", overflowY: "auto",
+          boxShadow: `0 24px 80px rgba(0,0,0,0.8), 0 0 0 1px ${meta.color}15`,
+        }}
+      >
+        {/* Modal Header */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "18px 22px", borderBottom: `1px solid ${meta.color}20`,
+          background: `${meta.color}06`, flexShrink: 0,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: 10,
+              background: `${meta.color}18`, border: `1px solid ${meta.color}35`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <Plus size={18} color={meta.color} />
+            </div>
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#e8e0c8" }}>Create Tournament</div>
+              <div style={{ fontSize: 10, color: "rgba(232,224,200,0.4)" }}>Venue Command Hub</div>
+            </div>
+          </div>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={onClose}
+            style={{
+              width: 32, height: 32, borderRadius: 8, display: "flex",
+              alignItems: "center", justifyContent: "center",
+              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              color: "rgba(232,224,200,0.5)", cursor: "pointer",
+            }}
+          >
+            <X size={16} />
+          </motion.button>
+        </div>
+
+        {/* Form Body */}
+        <div style={{ padding: "20px 22px", display: "flex", flexDirection: "column", gap: 16 }}>
+          {errors._global && (
+            <div style={{
+              padding: "10px 14px", borderRadius: 10,
+              background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
+              fontSize: 12, color: "#ef4444",
+            }}>
+              {errors._global}
+            </div>
+          )}
+
+          {/* Title */}
+          <div>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+              Tournament Title <span style={{ color: "#ef4444" }}>*</span>
+            </label>
+            <input
+              value={form.title}
+              onChange={e => set("title", e.target.value)}
+              placeholder="e.g. Best Bourbon Build — Weekend Showdown"
+              maxLength={120}
+              style={{
+                width: "100%", padding: "10px 14px", borderRadius: 10, boxSizing: "border-box",
+                background: "rgba(255,255,255,0.04)", border: `1px solid ${errors.title ? "#ef4444" : "rgba(255,255,255,0.1)"}`,
+                color: "#e8e0c8", fontSize: 13, outline: "none",
+              }}
+            />
+            {errors.title && <div style={{ fontSize: 11, color: "#ef4444", marginTop: 4 }}>{errors.title}</div>}
+          </div>
+
+          {/* Type */}
+          <div>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+              Tournament Type <span style={{ color: "#ef4444" }}>*</span>
+            </label>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {(["live", "daily", "weekly", "venue", "grand"] as TournamentType[]).map(t => {
+                const tmeta = TYPE_META[t];
+                const active = form.type === t;
+                return (
+                  <motion.button
+                    key={t}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => set("type", t)}
+                    style={{
+                      padding: "6px 14px", borderRadius: 20, cursor: "pointer",
+                      fontSize: 11, fontWeight: 700, letterSpacing: "0.05em",
+                      background: active ? `${tmeta.color}22` : "rgba(255,255,255,0.03)",
+                      border: active ? `1px solid ${tmeta.color}60` : "1px solid rgba(255,255,255,0.08)",
+                      color: active ? tmeta.color : "rgba(232,224,200,0.4)",
+                    }}
+                  >
+                    {tmeta.label}
+                  </motion.button>
+                );
+              })}
+            </div>
+            {errors.type && <div style={{ fontSize: 11, color: "#ef4444", marginTop: 6 }}>{errors.type}</div>}
+            <div style={{ fontSize: 10, color: "rgba(232,224,200,0.3)", marginTop: 6 }}>
+              Duration: {form.type === "live" ? "30 min" : form.type === "daily" ? "24 hours" : form.type === "weekly" ? "7 days" : form.type === "venue" ? "75 days" : "180 days"}
+            </div>
+          </div>
+
+          {/* Craft Type */}
+          <div>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+              Craft Type
+            </label>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {CRAFT_TYPES.map(ct => {
+                const active = form.craftType === ct;
+                return (
+                  <motion.button
+                    key={ct}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => set("craftType", ct)}
+                    style={{
+                      padding: "5px 12px", borderRadius: 16, cursor: "pointer",
+                      fontSize: 11, fontWeight: 600, textTransform: "capitalize",
+                      background: active ? "rgba(212,175,55,0.15)" : "rgba(255,255,255,0.03)",
+                      border: active ? "1px solid rgba(212,175,55,0.5)" : "1px solid rgba(255,255,255,0.08)",
+                      color: active ? "#d4af37" : "rgba(232,224,200,0.4)",
+                    }}
+                  >
+                    {ct}
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Start Time */}
+          <div>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+              Start Time
+            </label>
+            <input
+              type="datetime-local"
+              value={form.startAt}
+              onChange={e => set("startAt", e.target.value)}
+              style={{
+                width: "100%", padding: "10px 14px", borderRadius: 10, boxSizing: "border-box",
+                background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+                color: "#e8e0c8", fontSize: 13, outline: "none",
+                colorScheme: "dark",
+              }}
+            />
+            <div style={{ fontSize: 10, color: "rgba(232,224,200,0.3)", marginTop: 4 }}>Leave at current time to start immediately.</div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+              Description <span style={{ color: "rgba(232,224,200,0.25)" }}>(optional)</span>
+            </label>
+            <textarea
+              value={form.description}
+              onChange={e => set("description", e.target.value)}
+              placeholder="Describe the competition rules or theme…"
+              maxLength={500}
+              rows={2}
+              style={{
+                width: "100%", padding: "10px 14px", borderRadius: 10, boxSizing: "border-box",
+                background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+                color: "#e8e0c8", fontSize: 13, outline: "none", resize: "vertical",
+                fontFamily: "inherit",
+              }}
+            />
+          </div>
+
+          {/* Prizes */}
+          <div>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+              Custom Prizes <span style={{ color: "rgba(232,224,200,0.25)" }}>(optional — defaults applied if blank)</span>
+            </label>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {(["prizeFirst", "prizeSecond", "prizeThird"] as const).map((key, i) => (
+                <div key={key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 14, flexShrink: 0 }}>{["🥇", "🥈", "🥉"][i]}</span>
+                  <input
+                    value={form[key]}
+                    onChange={e => set(key, e.target.value)}
+                    placeholder={`${["1st", "2nd", "3rd"][i]} place prize`}
+                    style={{
+                      flex: 1, padding: "8px 12px", borderRadius: 9,
+                      background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                      color: "#e8e0c8", fontSize: 12, outline: "none",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Max Entrants */}
+          <div>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+              Max Entrants <span style={{ color: "rgba(232,224,200,0.25)" }}>(optional)</span>
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={form.maxEntrants}
+              onChange={e => set("maxEntrants", e.target.value)}
+              placeholder="Unlimited"
+              style={{
+                width: "100%", padding: "10px 14px", borderRadius: 10, boxSizing: "border-box",
+                background: "rgba(255,255,255,0.04)", border: `1px solid ${errors.maxEntrants ? "#ef4444" : "rgba(255,255,255,0.1)"}`,
+                color: "#e8e0c8", fontSize: 13, outline: "none",
+              }}
+            />
+            {errors.maxEntrants && <div style={{ fontSize: 11, color: "#ef4444", marginTop: 4 }}>{errors.maxEntrants}</div>}
+          </div>
+        </div>
+
+        {/* Modal Footer */}
+        <div style={{
+          display: "flex", gap: 10, padding: "16px 22px",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(10,8,6,0.5)",
+        }}>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={onClose}
+            style={{
+              flex: 1, padding: "11px 20px", borderRadius: 12,
+              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              color: "rgba(232,224,200,0.5)", cursor: "pointer", fontSize: 13, fontWeight: 600,
+            }}
+          >
+            Cancel
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={handleSubmit}
+            disabled={submitting}
+            style={{
+              flex: 2, padding: "11px 20px", borderRadius: 12,
+              background: submitting ? "rgba(212,175,55,0.3)" : meta.color,
+              border: "none", color: submitting ? "rgba(232,224,200,0.5)" : "#000",
+              cursor: submitting ? "not-allowed" : "pointer",
+              fontSize: 13, fontWeight: 700,
+              opacity: submitting ? 0.8 : 1,
+            }}
+          >
+            {submitting ? "Creating…" : "Create Tournament"}
+          </motion.button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function CompetitionModule() {
   const [, navigate] = useLocation();
   const { getBackground } = useVenueContext();
+  const { user } = useAuth();
+
+  const canCreateTournament = user?.role === "super_admin" || user?.role === "venue_owner" || user?.role === "manager";
 
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loadingList, setLoadingList] = useState(true);
@@ -457,6 +846,7 @@ export default function CompetitionModule() {
   const [filterType, setFilterType]   = useState<TournamentType | "all">("all");
   const [toast, setToast]             = useState<string | null>(null);
   const [liveCtx, setLiveCtx]         = useState<LiveContext | null>(null);
+  const [showCreate, setShowCreate]   = useState(false);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -584,18 +974,36 @@ export default function CompetitionModule() {
           </div>
         </div>
 
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          onClick={loadTournaments}
-          style={{
-            display: "flex", alignItems: "center", justifyContent: "center",
-            width: 40, height: 40, borderRadius: 12,
-            background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-            color: "rgba(232,224,200,0.5)", cursor: "pointer",
-          }}
-        >
-          <RefreshCw size={16} />
-        </motion.button>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {canCreateTournament && (
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowCreate(true)}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "8px 14px", borderRadius: 12,
+                background: "rgba(212,175,55,0.15)", border: "1px solid rgba(212,175,55,0.35)",
+                color: "#d4af37", cursor: "pointer", fontSize: 12, fontWeight: 700,
+              }}
+            >
+              <Plus size={14} />
+              Create Tournament
+            </motion.button>
+          )}
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={loadTournaments}
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center",
+              width: 40, height: 40, borderRadius: 12,
+              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              color: "rgba(232,224,200,0.5)", cursor: "pointer",
+            }}
+          >
+            <RefreshCw size={16} />
+          </motion.button>
+        </div>
       </div>
 
       {/* Filter chips */}
@@ -831,6 +1239,21 @@ export default function CompetitionModule() {
           >
             {toast}
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Create Tournament Modal */}
+      <AnimatePresence>
+        {showCreate && (
+          <CreateTournamentModal
+            onClose={() => setShowCreate(false)}
+            existingTournaments={tournaments}
+            onCreated={(newTournament) => {
+              setTournaments(prev => [...prev, { ...newTournament, entrantCount: 0 }]);
+              setShowCreate(false);
+              showToast(`"${newTournament.title}" tournament created!`);
+            }}
+          />
         )}
       </AnimatePresence>
     </BackgroundLayer>
