@@ -1,0 +1,155 @@
+Execute LOCK VENUE MODE for CraftHub / Axiom OS.
+
+This is a production hardening phase. Do not add new features. Only stabilize and protect the system for real-world unattended kiosk use.
+
+---
+
+## 🎯 OBJECTIVE
+
+Transform system from:
+- demo-safe
+
+into:
+- venue-safe, resilient, and failure-tolerant
+
+---
+
+## 🧩 TASK 1 — SESSION CONTROL SYSTEM
+
+Implement kiosk session isolation.
+
+Requirements:
+- Generate sessionId (UUID) per user session
+- Track last interaction timestamp
+- Reset session when:
+  - 60 seconds inactivity
+  - user completes reveal
+  - user taps "Start Over"
+
+resetSession must:
+- clear all UI state
+- clear cart
+- clear selections
+- generate new sessionId
+
+---
+
+## 🧩 TASK 2 — TOKEN REFRESH SYSTEM
+
+Prevent token expiration failures.
+
+Requirements:
+- Detect expired token (401 responses)
+- Automatically call POST /api/auth/kiosk
+- Replace token
+- Retry original request
+
+Also:
+- refresh token proactively every 30 minutes
+
+---
+
+## 🧩 TASK 3 — KIOSK IDLE RESET UI
+
+Add recovery UI.
+
+Requirements:
+- Show overlay:
+  "Session expired — Tap to restart"
+- Include "Start New Experience" button
+- Reset system completely on tap
+
+---
+
+## 🧩 TASK 4 — PAYMENT PROTECTION
+
+Prevent duplicate payments.
+
+Frontend:
+- Disable checkout button after first tap
+- Show loading state
+- Block repeat taps
+
+Backend:
+- Require idempotencyKey per checkout request
+- Reject duplicate requests with same key
+
+---
+
+## 🧩 TASK 5 — NETWORK RETRY SYSTEM
+
+Handle unstable connections.
+
+Requirements:
+- Retry failed API requests (max 3 times)
+- Use exponential backoff (500ms → 1s → 2s)
+- Show retry UI after failure
+
+---
+
+## 🧩 TASK 6 — GLOBAL ERROR HANDLING
+
+Requirements:
+- Catch all API failures
+- Show user-friendly error message
+- Provide retry button
+- Never fail silently
+
+---
+
+## 🧩 TASK 7 — MULTI-USER SAFETY
+
+Requirements:
+- Ensure no user data persists between sessions
+- Clear:
+  - selections
+  - cart
+  - visual state
+  - session state
+
+---
+
+## 🧩 TASK 8 — PERFORMANCE GUARD
+
+Requirements:
+- Debounce rapid taps (300ms)
+- Prevent duplicate triggers
+- Throttle heavy actions
+
+---
+
+## 🧪 FINAL VALIDATION
+
+Simulate:
+
+1. Start session
+2. Idle timeout triggers reset
+3. New user starts clean session
+4. Token expires → auto refresh works
+5. Network drops → retry succeeds
+6. Rapid taps → only one checkout processed
+7. Session resets after completion
+
+---
+
+## 🚨 OUTPUT FORMAT
+
+Return:
+
+### ✅ LOCKED SYSTEMS
+### ⚠️ PARTIAL PROTECTIONS
+### ❌ FAILURE POINTS
+### 🔥 DEPLOYMENT READINESS
+
+---
+
+## ⚠️ RULES
+
+- No silent failures
+- No duplicate actions
+- No session overlap
+- No mock or fallback logic
+
+---
+
+Execute as a production engineer preparing this system for real-world venue deployment
