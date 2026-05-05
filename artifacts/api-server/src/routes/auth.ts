@@ -110,4 +110,65 @@ router.get("/me", requireAuth, async (req: AuthRequest, res: Response) => {
   res.json({ user: sanitizeUser(user) });
 });
 
+/**
+ * POST /api/auth/kiosk
+ *
+ * Provisions a device-scoped kiosk user on first boot, then re-issues a
+ * fresh JWT on every call — supports proactive 30-minute refresh from the
+ * frontend without user interaction. No password required; kiosk devices
+ * authenticate by deviceId only.
+ */
+router.post(
+  "/kiosk",
+  allowOnly("deviceId"),
+  async (req: Request, res: Response) => {
+    const { deviceId } = req.body as { deviceId?: string };
+
+    if (!deviceId || typeof deviceId !== "string" || deviceId.trim().length < 4) {
+      res.status(400).json({ error: "A valid deviceId (min 4 chars) is required" });
+      return;
+    }
+
+    const sanitized = deviceId.toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 64);
+    const email     = `kiosk-${sanitized}@kiosk.internal`;
+    const name      = `Kiosk ${sanitized.slice(0, 12)}`;
+
+    let [user] = await db.select().from(usersTable)
+      .where(eq(usersTable.email, email)).limit(1);
+
+    if (!user) {
+      // Random password — kiosk users never authenticate via password
+      const passwordHash = await bcrypt.hash(`kiosk-${Math.random()}`, BCRYPT_ROUNDS);
+      try {
+        [user] = await db.insert(usersTable).values({
+          name,
+          email,
+          passwordHash,
+          role: "customer" as UserRole,
+        }).returning();
+        req.log.info({ deviceId, userId: user.id }, "kiosk user created");
+      } catch {
+        // Race condition — another request created it first; re-fetch
+        [user] = await db.select().from(usersTable)
+          .where(eq(usersTable.email, email)).limit(1);
+        if (!user) {
+          res.status(500).json({ error: "Failed to provision kiosk device user" });
+          return;
+        }
+      }
+    }
+
+    const token = await signToken({
+      sub:     user.id,
+      email:   user.email,
+      role:    user.role,
+      name:    user.name,
+      venueId: user.venueId ?? null,
+    });
+
+    req.log.info({ deviceId, userId: user.id }, "kiosk auth issued");
+    res.json({ token, user: sanitizeUser(user) });
+  },
+);
+
 export default router;

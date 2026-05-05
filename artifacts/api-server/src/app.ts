@@ -113,7 +113,14 @@ function buildAllowedOrigins(): string[] {
     origins.push(`https://${process.env["REPLIT_DEV_DOMAIN"]}`);
   }
   if (process.env["NODE_ENV"] !== "production") {
-    origins.push("http://localhost:5173", "http://localhost:3000", "http://localhost:8080");
+    // Port-specific dev servers + port-80 proxy (used by Replit's shared reverse proxy)
+    origins.push(
+      "http://localhost",
+      "http://localhost:80",
+      "http://localhost:5173",
+      "http://localhost:3000",
+      "http://localhost:8080",
+    );
   }
   return origins;
 }

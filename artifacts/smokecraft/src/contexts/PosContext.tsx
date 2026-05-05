@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react";
+import { getStoredUser, fetchWithRetry } from "@/services/auth";
 
 export interface Product {
   id: string;
@@ -65,29 +66,32 @@ interface PosState {
 }
 
 const REWARD_THRESHOLD = 50;
-const PAYMENT_SIMULATE_MS = 1800;
-const PAYMENT_FAILURE_RATE = 0.1;
 const REWARD_COOLDOWN_MS = 5 * 60 * 1000;
 const LARGE_ADJUSTMENT_THRESHOLD = 10;
 
-const INITIAL_PRODUCTS: Product[] = [
-  { id: "cig-1", name: "Arturo Fuente Opus X", category: "cigar", price: 42, image: "https://images.unsplash.com/photo-1589561253898-768105ca91a8?w=300&h=300&fit=crop&q=80", stock: 8 },
-  { id: "cig-2", name: "Padron 1964 Anniversary", category: "cigar", price: 35, image: "https://images.unsplash.com/photo-1528823872057-9c018a7a7553?w=300&h=300&fit=crop&q=80", stock: 12 },
-  { id: "cig-3", name: "Cohiba Behike 52", category: "cigar", price: 45, image: "https://images.unsplash.com/photo-1574279606130-09958dc756f7?w=300&h=300&fit=crop&q=80", stock: 5 },
-  { id: "cig-4", name: "Liga Privada No. 9", category: "cigar", price: 28, image: "https://images.unsplash.com/photo-1603481588273-2f908a9a7a1b?w=300&h=300&fit=crop&q=80", stock: 15 },
-  { id: "spr-1", name: "Macallan 18 Sherry Oak", category: "spirit", price: 28, image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=300&h=300&fit=crop&q=80", stock: 10 },
-  { id: "spr-2", name: "Hennessy XO Cognac", category: "spirit", price: 24, image: "https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=300&h=300&fit=crop&q=80", stock: 7 },
-  { id: "spr-3", name: "Clase Azul Reposado", category: "spirit", price: 22, image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300&h=300&fit=crop&q=80", stock: 9 },
-  { id: "spr-4", name: "Woodford Reserve", category: "spirit", price: 16, image: "https://images.unsplash.com/photo-1570598912132-0ba1dc952b7d?w=300&h=300&fit=crop&q=80", stock: 18 },
-  { id: "beer-1", name: "Guinness Draught", category: "beer", price: 9, image: "https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=300&h=300&fit=crop&q=80", stock: 24 },
-  { id: "beer-2", name: "Sierra Nevada Pale Ale", category: "beer", price: 8, image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=300&h=300&fit=crop&q=80", stock: 20 },
-  { id: "beer-3", name: "Blue Moon Belgian White", category: "beer", price: 9, image: "https://images.unsplash.com/photo-1566633806327-68e152aaf26d?w=300&h=300&fit=crop&q=80", stock: 16 },
-  { id: "beer-4", name: "Lagunitas IPA", category: "beer", price: 10, image: "https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?w=300&h=300&fit=crop&q=80", stock: 14 },
-  { id: "food-1", name: "Wagyu Beef Sliders", category: "food", price: 24, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop&q=80", stock: 10 },
-  { id: "food-2", name: "Truffle Fries", category: "food", price: 14, image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=300&h=300&fit=crop&q=80", stock: 20 },
-  { id: "food-3", name: "Charcuterie Board", category: "food", price: 22, image: "https://images.unsplash.com/photo-1541529086526-db283c563270?w=300&h=300&fit=crop&q=80", stock: 8 },
-  { id: "food-4", name: "Smoked Salmon Crostini", category: "food", price: 18, image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=300&fit=crop&q=80", stock: 12 },
-];
+/** Maps API product category to POS Product category. */
+function mapCategory(raw: string): Product["category"] {
+  switch (raw.toLowerCase()) {
+    case "cigar":   return "cigar";
+    case "alcohol":
+    case "wine":
+    case "cocktail":
+    case "spirit":  return "spirit";
+    case "beer":    return "beer";
+    case "food":    return "food";
+    default:        return "cigar";
+  }
+}
+
+/** Derive a sensible default price from the product tier. */
+function tierPrice(tier?: string): number {
+  switch (tier) {
+    case "premium":  return 38;
+    case "mid":      return 22;
+    case "standard": return 12;
+    default:         return 18;
+  }
+}
 
 const PosContext = createContext<PosState | null>(null);
 
@@ -97,22 +101,8 @@ export function usePosContext(): PosState {
   return ctx;
 }
 
-function simulatePayment(): Promise<{ success: boolean; error?: string }> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (Math.random() < PAYMENT_FAILURE_RATE) {
-        resolve({ success: false, error: "Payment declined — card issuer rejected the transaction" });
-      } else {
-        resolve({ success: true });
-      }
-    }, PAYMENT_SIMULATE_MS);
-  });
-}
-
 export function PosProvider({ children }: { children: ReactNode }) {
-  const [products, setProducts] = useState<Product[]>(() =>
-    INITIAL_PRODUCTS.map(p => ({ ...p }))
-  );
+  const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [inventoryLog, setInventoryLog] = useState<InventoryLogEntry[]>([]);
@@ -125,7 +115,7 @@ export function PosProvider({ children }: { children: ReactNode }) {
   const lockRef = useRef(false);
   const cartRef = useRef<CartItem[]>([]);
   const ordersRef = useRef<Order[]>([]);
-  const productsRef = useRef<Product[]>(INITIAL_PRODUCTS);
+  const productsRef = useRef<Product[]>([]);
   const userRef = useRef<{ name: string; role: string; pin: string } | null>(null);
   const inventoryLogRef = useRef<InventoryLogEntry[]>([]);
   const lastRewardTimeRef = useRef<number>(0);
@@ -307,22 +297,61 @@ export function PosProvider({ children }: { children: ReactNode }) {
     order.status = "processing";
     syncOrders(ordersRef.current.map(o => o.id === order.id ? { ...o, status: "processing" } : o));
 
-    const result = await simulatePayment();
+    const idempotencyKey = typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-    if (result.success) {
-      order.status = "paid";
-      syncOrders(ordersRef.current.map(o => o.id === order.id ? { ...o, status: "paid" } : o));
-      if (rewardApplied) {
-        setRewardMessage(`You unlocked a reward! 10% off applied — saved $${(total - finalTotal).toFixed(2)}`);
+    const storedUser = getStoredUser();
+
+    try {
+      const res = await fetchWithRetry("/api/orders/basket", {
+        method: "POST",
+        body: JSON.stringify({
+          items: snapshotCart.map(c => ({
+            productId: c.product.id,
+            name:      c.product.name,
+            category:  c.product.category,
+            quantity:  c.quantity,
+            unitPrice: c.product.price,
+          })),
+          venueId:        storedUser?.venueId ?? undefined,
+          idempotencyKey,
+          orderType:      "table",
+          rewardApplied,
+          totalCents:     Math.round(finalTotal * 100),
+        }),
+      });
+
+      if (res.ok) {
+        const serverOrder = await res.json() as { id?: string };
+        const serverId = serverOrder.id ?? order.id;
+        order.status = "paid";
+        syncOrders(ordersRef.current.map(o =>
+          o.id === order.id ? { ...o, id: serverId, status: "paid" } : o
+        ));
+        if (rewardApplied) {
+          setRewardMessage(`You unlocked a reward! 10% off applied — saved $${(total - finalTotal).toFixed(2)}`);
+        }
+      } else {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        const errMsg = body.error ?? "Payment failed";
+        order.status = "failed";
+        order.failureReason = errMsg;
+        syncOrders(ordersRef.current.map(o =>
+          o.id === order.id ? { ...o, status: "failed", failureReason: errMsg, stockDeducted: false } : o
+        ));
+        restoreStockForItems(snapshotCart, "payment.failed");
+        setPaymentError(errMsg);
       }
-    } else {
+    } catch {
+      const errMsg = "Network error — please try again";
       order.status = "failed";
-      order.failureReason = result.error;
+      order.failureReason = errMsg;
       syncOrders(ordersRef.current.map(o =>
-        o.id === order.id ? { ...o, status: "failed", failureReason: result.error, stockDeducted: false } : o
+        o.id === order.id ? { ...o, status: "failed", failureReason: errMsg, stockDeducted: false } : o
       ));
       restoreStockForItems(snapshotCart, "payment.failed");
-      setPaymentError(result.error ?? "Payment failed");
+      setPaymentError(errMsg);
     }
 
     lockRef.current = false;
@@ -373,30 +402,69 @@ export function PosProvider({ children }: { children: ReactNode }) {
       o.id === orderId ? { ...o, status: "processing" as PaymentStatus } : o
     ));
 
-    const result = await simulatePayment();
+    const idempotencyKey = typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+    const storedUser = getStoredUser();
     const returnOrder: Order = { ...failedOrder, failureReason: undefined };
 
-    if (result.success) {
-      returnOrder.status = "paid";
-      syncOrders(ordersRef.current.map(o => o.id === orderId ? { ...o, status: "paid" as PaymentStatus } : o));
-      if (failedOrder.rewardApplied) {
-        const rawTotal = failedOrder.items.reduce((sum, c) => sum + c.product.price * c.quantity, 0);
-        setRewardMessage(`You unlocked a reward! 10% off applied — saved $${(rawTotal - failedOrder.total).toFixed(2)}`);
+    try {
+      const res = await fetchWithRetry("/api/orders/basket", {
+        method: "POST",
+        body: JSON.stringify({
+          items: failedOrder.items.map(c => ({
+            productId: c.product.id,
+            name:      c.product.name,
+            category:  c.product.category,
+            quantity:  c.quantity,
+            unitPrice: c.product.price,
+          })),
+          venueId:        storedUser?.venueId ?? undefined,
+          idempotencyKey,
+          orderType:      "table",
+          rewardApplied:  failedOrder.rewardApplied,
+          totalCents:     Math.round(failedOrder.total * 100),
+        }),
+      });
+
+      if (res.ok) {
+        const serverOrder = await res.json() as { id?: string };
+        const serverId = serverOrder.id ?? orderId;
+        returnOrder.status = "paid";
+        syncOrders(ordersRef.current.map(o =>
+          o.id === orderId ? { ...o, id: serverId, status: "paid" as PaymentStatus } : o
+        ));
+        if (failedOrder.rewardApplied) {
+          const rawTotal = failedOrder.items.reduce((sum, c) => sum + c.product.price * c.quantity, 0);
+          setRewardMessage(`You unlocked a reward! 10% off applied — saved $${(rawTotal - failedOrder.total).toFixed(2)}`);
+        }
+      } else {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        const errMsg = body.error ?? "Payment failed";
+        returnOrder.status = "failed";
+        returnOrder.failureReason = errMsg;
+        syncOrders(ordersRef.current.map(o =>
+          o.id === orderId ? { ...o, status: "failed" as PaymentStatus, failureReason: errMsg, stockDeducted: false } : o
+        ));
+        restoreStockForItems(failedOrder.items, "retry.failed");
+        setPaymentError(errMsg);
       }
-    } else {
+    } catch {
+      const errMsg = "Network error — please try again";
       returnOrder.status = "failed";
-      returnOrder.failureReason = result.error;
+      returnOrder.failureReason = errMsg;
       syncOrders(ordersRef.current.map(o =>
-        o.id === orderId ? { ...o, status: "failed" as PaymentStatus, failureReason: result.error, stockDeducted: false } : o
+        o.id === orderId ? { ...o, status: "failed" as PaymentStatus, failureReason: errMsg, stockDeducted: false } : o
       ));
       restoreStockForItems(failedOrder.items, "retry.failed");
-      setPaymentError(result.error ?? "Payment failed");
+      setPaymentError(errMsg);
     }
 
     lockRef.current = false;
     setProcessingLock(false);
     return returnOrder;
-  }, [restoreStockForItems, syncProducts, syncOrders, addInventoryLog, startRewardCooldown]);
+  }, [restoreStockForItems, syncProducts, syncOrders, addInventoryLog]);
 
   const refundOrder = useCallback((orderId: string): boolean => {
     const role = userRef.current?.role?.toLowerCase();
@@ -440,6 +508,35 @@ export function PosProvider({ children }: { children: ReactNode }) {
     applyStockDelta(productId, delta, reason || "manual.adjustment.confirmed");
     return true;
   }, [applyStockDelta]);
+
+  // Load real products from /api/products on mount
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const res = await fetchWithRetry("/api/products");
+        if (!res.ok) return;
+        const data = await res.json() as Array<Record<string, unknown>>;
+        if (!Array.isArray(data) || data.length === 0) return;
+
+        const mapped: Product[] = data
+          .map(p => ({
+            id:       String(p.id ?? ""),
+            name:     String(p.name ?? ""),
+            category: mapCategory(String(p.category ?? "")),
+            price:    typeof p.price === "number" ? p.price : tierPrice(p.tier as string | undefined),
+            image:    String(p.imageUrl ?? p.image ?? ""),
+            stock:    typeof p.quantity === "number" ? p.quantity as number :
+                      typeof p.stock    === "number" ? p.stock    as number : 20,
+          }))
+          .filter(p => p.id && p.name);
+
+        if (mapped.length > 0) syncProducts(mapped);
+      } catch {
+        // Keep empty state — no mock fallback
+      }
+    }
+    void loadProducts();
+  }, [syncProducts]);
 
   useEffect(() => {
     return () => {

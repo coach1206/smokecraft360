@@ -5,7 +5,7 @@ import { Clock, AlertTriangle } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
 
-const IDLE_TIMEOUT_MS = 5 * 60 * 1000;
+const IDLE_TIMEOUT_MS = 60 * 1000;
 const WARNING_DURATION_MS = 30 * 1000;
 const EXEMPT_PATHS = ["/", "/entry", "/pin-login", "/intro", "/demo"];
 
@@ -23,7 +23,7 @@ export default function InactivityGuard() {
   const currentUserRef = useRef(currentUser);
   currentUserRef.current = currentUser;
 
-  const isExempt = EXEMPT_PATHS.includes(location) || !currentUser;
+  const isExempt = EXEMPT_PATHS.includes(location);
   const isExemptRef = useRef(isExempt);
   isExemptRef.current = isExempt;
 
@@ -146,7 +146,7 @@ export default function InactivityGuard() {
               Session Timeout
             </div>
             <div style={{ fontSize: 13, color: "rgba(232,224,200,0.5)", marginBottom: 20 }}>
-              You've been inactive for 5 minutes. Your session will be locked automatically.
+              Session inactive. Restarting automatically in:
             </div>
 
             <div style={{
@@ -165,9 +165,29 @@ export default function InactivityGuard() {
                 fontSize: 15, fontWeight: 700,
                 background: "linear-gradient(135deg, #d4af37, #a98828)",
                 border: "none", color: "#0a0806", cursor: "pointer", minHeight: 52,
+                marginBottom: 10,
               }}
             >
               I'm Still Here
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                clearAllTimers();
+                warningActiveRef.current = false;
+                setShowWarning(false);
+                setCurrentUser(null);
+                navigate("/");
+              }}
+              style={{
+                width: "100%", padding: "14px", borderRadius: 12,
+                fontSize: 14, fontWeight: 600,
+                background: "rgba(239,68,68,0.08)",
+                border: "1px solid rgba(239,68,68,0.2)",
+                color: "rgba(239,68,68,0.8)", cursor: "pointer", minHeight: 48,
+              }}
+            >
+              Start New Experience
             </motion.button>
           </motion.div>
         </motion.div>

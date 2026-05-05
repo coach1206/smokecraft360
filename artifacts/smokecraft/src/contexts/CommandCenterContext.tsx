@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { getAuthHeaders } from "@/services/auth";
 
 export interface Device {
   id: string;
@@ -148,6 +149,37 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
   const [posMode, setPosModeRaw] = useState<PosOperatingMode>(loadPosMode);
   const systemStatus: "operational" | "degraded" | "critical" = devices.filter(d => d.status === "offline").length >= 3 ? "critical" : devices.some(d => d.status === "offline") ? "degraded" : "operational";
   const activeGuests = 12;
+
+  // Load real devices from /api/devices — falls back to INITIAL_DEVICES on error
+  useEffect(() => {
+    async function loadDevices() {
+      try {
+        const res = await fetch("/api/devices", { headers: getAuthHeaders() });
+        if (!res.ok) return;
+        const data = await res.json() as Array<{
+          id: string;
+          type?: string;
+          nickname?: string;
+          status?: string;
+          lastSeenAt?: string | null;
+        }>;
+        if (!Array.isArray(data) || data.length === 0) return;
+        setDevices(data.map(d => ({
+          id:            d.id,
+          name:          d.nickname ?? `Device ${d.id.slice(0, 8)}`,
+          type:          (["kiosk", "tablet", "mobile"].includes(d.type ?? "")) ? d.type as Device["type"] : "kiosk",
+          status:        d.status === "active" ? "online" : "offline",
+          battery:       100,
+          role:          d.type === "kiosk" ? "kiosk" : "pos",
+          lastHeartbeat: d.lastSeenAt ?? new Date().toISOString(),
+          locked:        false,
+        })));
+      } catch {
+        // Keep INITIAL_DEVICES on any error
+      }
+    }
+    void loadDevices();
+  }, []);
 
   const addAuditEntry = useCallback((action: string, details: string, user = "System") => {
     setAuditLog(prev => [{

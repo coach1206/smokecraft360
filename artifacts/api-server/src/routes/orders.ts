@@ -304,4 +304,135 @@ router.patch(
   },
 );
 
+// ── In-memory idempotency store (10-minute TTL) ──────────────────────────────
+// Prevents duplicate charges from rapid taps or network retries.
+// Each idempotencyKey is a UUID generated client-side per checkout attempt.
+const idemStore = new Map<string, number>();
+const IDEM_TTL_MS = 10 * 60 * 1000;
+
+function isDuplicateRequest(key: string): boolean {
+  const now = Date.now();
+  // Evict expired entries on each check (bounded by order rate)
+  for (const [k, ts] of idemStore) {
+    if (now - ts > IDEM_TTL_MS) idemStore.delete(k);
+  }
+  if (idemStore.has(key)) return true;
+  idemStore.set(key, now);
+  return false;
+}
+
+// ── POST /api/orders/basket ───────────────────────────────────────────────────
+/**
+ * Multi-item basket checkout.
+ *
+ * Accepts an items array from the POS cart, maps the first item per category
+ * to the existing ordersTable columns (cigarId/drinkId/foodId), decrements
+ * venue inventory for every item, and enforces idempotency to prevent
+ * duplicate charges from rapid taps or network retries.
+ */
+router.post(
+  "/basket",
+  async (req: Request, res: Response) => {
+    const { items, venueId, idempotencyKey, orderType, rewardApplied } = req.body as {
+      items?: Array<{
+        productId: string;
+        name:      string;
+        category:  string;
+        quantity:  number;
+        unitPrice: number;
+      }>;
+      venueId?:        string;
+      idempotencyKey?: string;
+      orderType?:      string;
+      rewardApplied?:  boolean;
+    };
+
+    if (!Array.isArray(items) || items.length === 0) {
+      res.status(400).json({ error: "items array is required and must not be empty" });
+      return;
+    }
+
+    // Idempotency gate — reject duplicate checkout requests
+    if (idempotencyKey) {
+      if (isDuplicateRequest(idempotencyKey)) {
+        res.status(409).json({ error: "Duplicate request — this checkout has already been processed" });
+        return;
+      }
+    }
+
+    const userId = await tryGetUserId(req);
+
+    // Map basket to existing table columns (first match per category)
+    const cigar = items.find(i => i.category === "cigar");
+    const drink = items.find(i =>
+      i.category === "spirit" || i.category === "alcohol" ||
+      i.category === "beer"   || i.category === "wine"
+    );
+    const food  = items.find(i => i.category === "food");
+
+    const type = orderType && (VALID_TYPES as readonly string[]).includes(orderType)
+      ? orderType as OrderType
+      : "table";
+
+    const rawCents   = items.reduce((s, i) => s + Math.round(i.unitPrice * i.quantity * 100), 0);
+    const finalCents = rewardApplied ? Math.round(rawCents * 0.9) : rawCents;
+
+    const productIds = [cigar?.productId, drink?.productId, food?.productId]
+      .filter((p): p is string => !!p);
+    const attribution = deriveOrderAttribution(productIds);
+
+    const [order] = await db.insert(ordersTable).values({
+      userId:               userId ?? undefined,
+      venueId:              venueId ?? undefined,
+      cigarId:              cigar?.productId ?? undefined,
+      cigarName:            cigar?.name ?? undefined,
+      drinkId:              drink?.productId ?? undefined,
+      drinkName:            drink?.name ?? undefined,
+      foodId:               food?.productId ?? undefined,
+      foodName:             food?.name ?? undefined,
+      orderType:            type,
+      status:               "paid",
+      brandId:              attribution.brandId ?? undefined,
+      brandName:            attribution.brandName ?? undefined,
+      campaignId:           attribution.campaignId ?? undefined,
+      sponsored:            attribution.sponsored,
+      campaignType:         attribution.campaignType ?? undefined,
+      attributionSource:    attribution.attributionSource ?? undefined,
+      campaignDiscountCents:attribution.campaignDiscountCents ?? undefined,
+      campaignXpMultiplier: attribution.campaignXpMultiplier ?? undefined,
+    }).returning();
+
+    req.log.info({ orderId: order.id, itemCount: items.length, userId, venueId }, "basket order created");
+
+    // Decrement inventory for every item — non-fatal on failure
+    if (venueId) {
+      for (const item of items) {
+        try {
+          const [updated] = await db
+            .update(venueInventoryTable)
+            .set({
+              quantity:  sql`GREATEST(0, ${venueInventoryTable.quantity} - ${item.quantity})`,
+              updatedAt: new Date(),
+            })
+            .where(and(
+              eq(venueInventoryTable.venueId,   venueId),
+              eq(venueInventoryTable.productId, item.productId),
+            ))
+            .returning();
+          if (updated) {
+            updateStockCache(venueId, item.productId, {
+              quantity:  updated.quantity,
+              available: updated.available && updated.quantity > 0,
+            });
+          }
+        } catch (err) {
+          req.log.warn({ err, venueId, productId: item.productId }, "basket inventory decrement failed (non-fatal)");
+        }
+      }
+    }
+
+    res.status(201).json({ ...order, totalCents: finalCents });
+  },
+);
+
 export default router;

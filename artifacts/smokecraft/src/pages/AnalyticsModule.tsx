@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, TrendingUp, Brain, AlertTriangle, Gift, Award, Package, ArrowUpRight, ArrowDownRight, Plus, Minus } from "lucide-react";
@@ -7,14 +7,6 @@ import { useCommandCenter } from "@/contexts/CommandCenterContext";
 import { useVenueContext } from "@/contexts/VenueContext";
 import ConfirmModal from "@/components/ConfirmModal";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
-
-const AI_INSIGHTS = [
-  { icon: TrendingUp, text: "Push premium cigars tonight — Arturo Fuente trending 40% above average", priority: "high" as const },
-  { icon: AlertTriangle, text: "Cohiba Behike 52 running low — only 5 remaining, restock recommended", priority: "critical" as const },
-  { icon: Brain, text: "Customers trending toward whiskey pairings — consider a spirit flight promo", priority: "medium" as const },
-  { icon: Gift, text: "Reward program driving 22% larger average orders — increase threshold to $75?", priority: "low" as const },
-  { icon: Award, text: "Top seller today: Macallan 18 — feature it on the main kiosk display", priority: "medium" as const },
-];
 
 const priorityColors = { critical: "#ef4444", high: "#f59e0b", medium: "#5b8def", low: "#34d399" };
 
@@ -48,9 +40,44 @@ export default function AnalyticsModule() {
   const totalRevenue = cc.hourlyRevenue.reduce((s, h) => s + h.amount, 0) + pos.orders.reduce((s, o) => s + o.total, 0);
   const maxHourly = Math.max(...cc.hourlyRevenue.map(h => h.amount), 1);
   const lowStockProducts = pos.products.filter(p => p.stock <= 5);
-  const totalOrders = pos.orders.length + 47;
+  const totalOrders = pos.orders.length;
   const avgOrder = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
-  const rewardsTriggered = pos.orders.filter(o => o.rewardApplied).length + 8;
+  const rewardsTriggered = pos.orders.filter(o => o.rewardApplied).length;
+
+  const dynamicInsights = useMemo(() => {
+    type Priority = keyof typeof priorityColors;
+    const insights: Array<{ icon: typeof Brain; text: string; priority: Priority }> = [];
+    const outOfStock  = pos.products.filter(p => p.stock === 0);
+    const lowStock    = pos.products.filter(p => p.stock > 0 && p.stock <= 5);
+    const orderCount  = pos.orders.length;
+    const rewardCount = pos.orders.filter(o => o.rewardApplied).length;
+    const revenue     = pos.orders.reduce((s, o) => s + o.total, 0);
+    const avg         = orderCount > 0 ? revenue / orderCount : 0;
+
+    if (outOfStock.length > 0) {
+      insights.push({ icon: Package, text: `${outOfStock.length} product${outOfStock.length > 1 ? "s" : ""} out of stock — update inventory to restore kiosk availability`, priority: "critical" });
+    }
+    if (lowStock.length > 0) {
+      insights.push({ icon: AlertTriangle, text: `${lowStock[0].name} running low — ${lowStock[0].stock} remaining, restock recommended`, priority: "critical" });
+    }
+    if (orderCount > 0 && avg > 40) {
+      insights.push({ icon: TrendingUp, text: `Average order $${avg.toFixed(0)} — above $40 target. Consider premium upsell prompts at the kiosk reveal`, priority: "high" });
+    }
+    if (rewardCount > 0) {
+      const pct = Math.round((rewardCount / orderCount) * 100);
+      insights.push({ icon: Gift, text: `Reward program active — ${pct}% of orders qualifying for loyalty discount`, priority: orderCount > 5 ? "medium" : "low" });
+    }
+    const topCigar = [...pos.products]
+      .filter(p => p.category === "cigar" && p.stock > 5)
+      .sort((a, b) => b.stock - a.stock)[0];
+    if (topCigar) {
+      insights.push({ icon: Award, text: `Feature ${topCigar.name} on the main kiosk display — strong availability (${topCigar.stock} in stock)`, priority: "medium" });
+    }
+    if (insights.length === 0) {
+      insights.push({ icon: Brain, text: orderCount === 0 ? "No orders yet — system is live and ready for guests" : "All systems operational — no immediate action required", priority: "low" });
+    }
+    return insights;
+  }, [pos.products, pos.orders]);
 
   const topProducts = [...pos.products]
     .sort((a, b) => (b.stock < a.stock ? -1 : 1))
@@ -155,7 +182,7 @@ export default function AnalyticsModule() {
                   <Brain size={16} color="#8b5cf6" />
                   <span style={{ fontSize: 13, fontWeight: 600, color: "#8b5cf6", textTransform: "uppercase", letterSpacing: "0.1em" }}>AI Revenue Brain</span>
                 </div>
-                {AI_INSIGHTS.map((insight, i) => {
+                {dynamicInsights.map((insight, i) => {
                   const Icon = insight.icon;
                   return (
                     <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + i * 0.1 }}

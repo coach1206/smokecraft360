@@ -112,3 +112,74 @@ export async function authMe(): Promise<AuthUser> {
   });
   return res.user;
 }
+
+// ── Kiosk device ID ───────────────────────────────────────────────────────────
+const DEVICE_ID_KEY = "sc_device_id";
+
+function ensureDeviceId(): string {
+  let id = localStorage.getItem(DEVICE_ID_KEY);
+  if (!id) {
+    id = typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `device-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+    localStorage.setItem(DEVICE_ID_KEY, id);
+  }
+  return id;
+}
+
+/**
+ * Bootstrap kiosk authentication.
+ *
+ * Calls POST /api/auth/kiosk to provision or refresh a device-scoped JWT.
+ * Safe to call at any time — always replaces the stored token with a fresh one.
+ * On network failure it is a no-op; the app continues in degraded mode.
+ */
+export async function bootstrapKioskAuth(): Promise<void> {
+  try {
+    const res = await fetch("/api/auth/kiosk", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json", ...getDeviceIdHeader() },
+      body:    JSON.stringify({ deviceId: ensureDeviceId() }),
+    });
+    if (!res.ok) return;
+    const data = await res.json() as AuthResponse;
+    storeAuth(data.token, data.user);
+  } catch {
+    // Non-fatal — kiosk operates in degraded mode if network is down at boot
+  }
+}
+
+/**
+ * Fetch with automatic 401 token refresh and exponential-backoff retry.
+ *
+ * - On 401: silently re-bootstrap kiosk auth and retry once immediately.
+ * - On network error: retry up to `retries` times (500ms → 1s → 2s backoff).
+ */
+export async function fetchWithRetry(
+  url: string,
+  init: RequestInit = {},
+  retries = 3,
+): Promise<Response> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const authHeaders = getAuthHeaders() as Record<string, string>;
+      const mergedHeaders = { ...authHeaders, ...(init.headers as Record<string, string> ?? {}) };
+      const res = await fetch(url, { ...init, headers: mergedHeaders });
+
+      if (res.status === 401 && attempt === 0) {
+        // Token expired — refresh and retry once immediately (no backoff)
+        await bootstrapKioskAuth();
+        continue;
+      }
+
+      return res;
+    } catch (err) {
+      lastError = err;
+      if (attempt < retries) {
+        await new Promise(r => setTimeout(r, 500 * Math.pow(2, attempt)));
+      }
+    }
+  }
+  throw lastError;
+}

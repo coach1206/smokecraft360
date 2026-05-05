@@ -273,16 +273,6 @@ export default function PinLogin() {
       </div>
 
       <div style={{
-        marginTop: 32, display: "flex", gap: 24,
-        fontSize: 12, color: "rgba(232,224,200,0.25)",
-      }}>
-        <span>Owner: 1206</span>
-        <span>Owner: 1111</span>
-        <span>Manager: 2222</span>
-        <span>Staff: 3333</span>
-      </div>
-
-      <div style={{
         position: "absolute", bottom: 20,
         fontSize: 10, textTransform: "uppercase",
         letterSpacing: "0.2em", color: "rgba(232,224,200,0.15)",

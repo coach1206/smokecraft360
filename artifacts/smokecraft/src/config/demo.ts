@@ -1,6 +1,7 @@
 /**
  * Demo Safe Mode — SmokeCraft 360
  *
+ * Set DEMO_MODE = false to connect to the real backend (production default).
  * Set DEMO_MODE = true to enable the full demo experience:
  *  - No real Stripe calls — payments are simulated
  *  - API failures fall back to rich mock data
@@ -9,7 +10,7 @@
  */
 
 // ── Toggle ────────────────────────────────────────────────────────────────────
-export const DEMO_MODE = true;
+export const DEMO_MODE = false;
 
 // ── Mock recommendation data (used as fallback when API is unavailable) ────────
 export const DEMO_RECOMMENDATIONS = {

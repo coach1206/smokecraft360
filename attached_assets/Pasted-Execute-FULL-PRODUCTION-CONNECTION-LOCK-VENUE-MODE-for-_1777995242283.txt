@@ -1,0 +1,247 @@
+Execute FULL PRODUCTION CONNECTION + LOCK VENUE MODE for CraftHub / Axiom OS.
+
+This is the FINAL SYSTEM ACTIVATION.
+
+Do not add new features.
+Do not leave mock systems.
+Do not skip validation.
+
+---
+
+# 🎯 OBJECTIVE
+
+Transform system from:
+- demo frontend + real backend
+
+into:
+- fully connected, venue-safe, production-ready system
+
+---
+
+# 🧩 PHASE 1 — KIOSK AUTH (CRITICAL BLOCKER)
+
+Create:
+
+POST /api/auth/kiosk
+
+Behavior:
+- accept deviceId (or generate)
+- find-or-create user
+- assign role: kiosk_user
+- attach venueId
+- return JWT
+
+---
+
+Frontend:
+
+Create bootstrapKioskAuth()
+
+On app load:
+- check localStorage for token
+- if missing → call /api/auth/kiosk
+- store token
+- attach to ALL API requests
+
+---
+
+# 🧩 PHASE 2 — TOKEN LIFECYCLE
+
+Implement API interceptor:
+
+IF 401:
+→ call /api/auth/kiosk
+→ replace token
+→ retry original request
+
+Also:
+- auto-refresh token every 30 minutes
+
+---
+
+# 🧩 PHASE 3 — DISABLE DEMO MODE
+
+Set:
+
+DEMO_MODE = false
+
+Remove ALL demo fallbacks:
+- recommendations
+- product data
+- analytics
+
+---
+
+# 🧩 PHASE 4 — REAL PRODUCT SYSTEM
+
+Replace PosContext:
+
+GET /api/products → populate UI
+
+Remove:
+- Unsplash products
+- static arrays
+- in-memory stock
+
+---
+
+# 🧩 PHASE 5 — REAL ORDER SYSTEM
+
+Create:
+
+POST /api/orders/basket
+
+Payload:
+{
+  items: [{productId, quantity}],
+  venueId,
+  userId,
+  idempotencyKey
+}
+
+---
+
+Backend must:
+- calculate totals (server-side only)
+- insert order
+- insert order items
+- enforce idempotencyKey (prevent duplicates)
+
+---
+
+Replace simulatePayment()
+
+→ call real endpoint  
+→ remove setTimeout + random failure  
+
+---
+
+# 🧩 PHASE 6 — PAYMENT PROTECTION
+
+Frontend:
+- disable checkout button after first tap
+- show loading state
+
+Backend:
+- reject duplicate idempotencyKey
+
+---
+
+# 🧩 PHASE 7 — SESSION CONTROL (KIOSK)
+
+Implement:
+
+- sessionId per user
+- lastInteractionTime tracking
+
+Auto reset:
+- 60 seconds inactivity
+- after reveal
+- manual reset
+
+resetSession():
+- clear all state
+- clear cart
+- clear selections
+
+---
+
+# 🧩 PHASE 8 — APPLY INACTIVITY GUARD TO GUESTS
+
+Remove:
+!currentUser exemption
+
+Apply to:
+ALL kiosk users
+
+Set:
+IDLE_TIMEOUT = 60000
+
+---
+
+# 🧩 PHASE 9 — NETWORK RESILIENCE
+
+Wrap API calls:
+
+- retry 3 times
+- exponential backoff
+- show retry UI if failed
+
+---
+
+# 🧩 PHASE 10 — REMOVE SECURITY LEAK
+
+Delete:
+PIN hints from PinLogin screen
+
+---
+
+# 🧩 PHASE 11 — BACKEND ROUTES
+
+Ensure exist and work:
+
+POST /api/orders/basket  
+POST /api/auth/kiosk  
+GET /api/products  
+POST /api/recommend  
+
+---
+
+# 🧩 PHASE 12 — ANALYTICS REAL DATA
+
+Replace:
+- +47 offset
+- +8 offset
+- static insights
+
+Use:
+GET /api/analytics
+
+---
+
+# 🧩 PHASE 13 — VALIDATION TEST (MANDATORY)
+
+Simulate:
+
+1. App loads → kiosk auth issued  
+2. User builds craft  
+3. Recommendation API called  
+4. Build saved  
+5. User adds items to cart  
+6. Checkout → real order saved  
+7. Duplicate tap → blocked  
+8. Idle → session resets  
+9. New user → clean state  
+10. Token expires → auto refresh  
+11. Network drop → retry works  
+
+---
+
+# 🚨 OUTPUT FORMAT
+
+Return:
+
+### ✅ FULLY CONNECTED SYSTEMS
+### ⚠️ PARTIAL SYSTEMS
+### ❌ FAILURES
+### 🔌 VERIFIED DATA FLOWS
+### 🧠 FINAL STATUS
+
+- Demo Ready
+- Tablet Ready
+- Venue Ready
+- Production Ready
+
+---
+
+# ⚠️ RULES
+
+- NO mock data
+- NO simulated payment
+- NO silent failures
+- NO session overlap
+- NO unsecured access
+
+---
+
+Execute as a senior production engineer deploying to a live venue environment

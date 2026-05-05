@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster }         from "@/components/ui/toaster";
@@ -56,6 +56,7 @@ import InactivityGuard                 from "@/components/InactivityGuard";
 import PosAuditBridge                  from "@/components/PosAuditBridge";
 import { useSystemVersion }            from "@/hooks/useSystemVersion";
 import { EngagementProvider }          from "@/contexts/EngagementContext";
+import { bootstrapKioskAuth }          from "@/services/auth";
 
 const queryClient = new QueryClient();
 
@@ -129,6 +130,13 @@ function App() {
    * state isn't torn down/remounted across the transition. */
   const [ready, setReady] = useState<boolean>(() => hasSeenBootIntro());
   useSystemVersion();
+
+  // Bootstrap kiosk auth on mount and refresh every 30 minutes
+  useEffect(() => {
+    void bootstrapKioskAuth();
+    const interval = setInterval(() => void bootstrapKioskAuth(), 30 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
