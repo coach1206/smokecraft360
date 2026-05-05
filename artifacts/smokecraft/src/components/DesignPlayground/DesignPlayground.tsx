@@ -70,18 +70,37 @@ const MOTIVATIONS: string[] = [
   "Design complete. One thing left: honor it.",
 ];
 
-function generateCritique(config: PlaygroundConfig, brandName: string, colorId: string): string {
-  const name    = brandName.trim() || "Untitled";
-  const swatch  = config.colorSwatches.find(c => c.id === colorId) ?? config.colorSwatches[0];
+function generateCritique(
+  config:       PlaygroundConfig,
+  brandName:    string,
+  colorId:      string,
+  selectFields: Record<string, string>,
+): string {
+  const name   = brandName.trim() || "Untitled";
+  const swatch = config.colorSwatches.find(c => c.id === colorId) ?? config.colorSwatches[0];
 
   const namePhrase = NAME_PHRASES[name.length % NAME_PHRASES.length] ?? NAME_PHRASES[0];
   const colorNote  = swatch.locked
     ? `The ${swatch.label} finish marks you as someone who already knows what lies ahead.`
     : (COLOR_NOTES[colorId] ?? `The ${swatch.label} palette strikes a distinctive mood that will set this apart.`);
 
-  const motivation = MOTIVATIONS[(name.length + (colorId.charCodeAt(0) ?? 65)) % MOTIVATIONS.length] ?? MOTIVATIONS[0];
+  // Incorporate the first unlocked style field (label style, wood tone, glass type, etc.)
+  const styleField = config.selectFields.find(sf => !sf.locked && selectFields[sf.id]);
+  const styleNote  = styleField
+    ? (() => {
+        const chosen = styleField.options.find(o => o.id === selectFields[styleField.id]);
+        return chosen
+          ? `Your ${styleField.label.toLowerCase()} — ${chosen.label} — anchors the character of this creation.`
+          : null;
+      })()
+    : null;
 
-  return `"${name}" ${namePhrase}. ${colorNote} ${motivation}`;
+  const seed       = name.length + (colorId.charCodeAt(0) ?? 65) + (styleField ? styleField.id.charCodeAt(0) : 0);
+  const motivation = MOTIVATIONS[seed % MOTIVATIONS.length] ?? MOTIVATIONS[0];
+
+  return styleNote
+    ? `"${name}" ${namePhrase}. ${colorNote} ${styleNote} ${motivation}`
+    : `"${name}" ${namePhrase}. ${colorNote} ${motivation}`;
 }
 
 interface Props {
@@ -171,7 +190,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
     setSaving(false);
     setSaved(localOk || cloudOk);      // only show saved if at least one path succeeded
     setSaveLocal(!cloudOk && localOk); // "Saved locally" = local confirmed, cloud unavailable
-    setCritique(generateCritique(config, brandName, selectedColor));
+    setCritique(generateCritique(config, brandName, selectedColor, selectFields));
   };
 
   const handleEnterChallenge = async () => {
