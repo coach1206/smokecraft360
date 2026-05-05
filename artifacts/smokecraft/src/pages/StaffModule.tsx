@@ -8,8 +8,19 @@ import { useVenueContext } from "@/contexts/VenueContext";
 import ConfirmModal from "@/components/ConfirmModal";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
+const C = {
+  header:    "rgba(245,242,235,0.96)",
+  border:    "rgba(0,0,0,0.08)",
+  text:      "#1A1410",
+  muted:     "rgba(26,20,16,0.45)",
+  dim:       "rgba(26,20,16,0.28)",
+  card:      "#FFFFFF",
+  back:      "#FFFFFF",
+  backBorder:"rgba(0,0,0,0.1)",
+};
+
 const roleIcons: Record<string, typeof Crown> = { owner: Crown, manager: Shield, staff: User };
-const roleColors: Record<string, string> = { owner: "#d4af37", manager: "#5b8def", staff: "#34d399" };
+const roleColors: Record<string, string> = { owner: "#9A7820", manager: "#5b8def", staff: "#22c55e" };
 
 export default function StaffModule() {
   const [, navigate] = useLocation();
@@ -47,20 +58,28 @@ export default function StaffModule() {
   }
 
   return (
-    <BackgroundLayer image={getBackground("staff")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
+    <BackgroundLayer image={getBackground("staff")} style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      {/* ── Header ── */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: `1px solid ${C.border}`, background: C.header, backdropFilter: "blur(12px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(0,0,0,0.06)" }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div>
           <div style={{ fontSize: 18, fontWeight: 700, color: "#a78bfa" }}>Staff Management</div>
-          <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>{cc.staff.filter(s => s.status === "active").length} active members</div>
+          <div style={{ fontSize: 11, color: C.muted }}>{cc.staff.filter(s => s.status === "active").length} active members</div>
         </div>
       </div>
 
+      {/* ── Staff grid ── */}
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 14, alignContent: "start" }}>
-        {cc.staff.map((member, i) => {
+        {cc.staff.length === 0 ? (
+          <div style={{ gridColumn: "1/-1", padding: 48, textAlign: "center", borderRadius: 16, background: C.card, border: `1px solid ${C.border}` }}>
+            <User size={32} color={C.dim} style={{ marginBottom: 12 }} />
+            <div style={{ fontSize: 15, fontWeight: 600, color: C.muted }}>No staff members yet</div>
+            <div style={{ fontSize: 13, color: C.dim, marginTop: 6 }}>Staff accounts will appear here once created</div>
+          </div>
+        ) : cc.staff.map((member, i) => {
           const RoleIcon = roleIcons[member.role] ?? User;
           const color = roleColors[member.role] ?? "#a78bfa";
           const isCurrent = pos.currentUser?.pin === member.pin;
@@ -69,37 +88,37 @@ export default function StaffModule() {
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
               style={{
                 padding: "20px", borderRadius: 16,
-                background: isCurrent
-                  ? `linear-gradient(145deg, ${color}10, ${color}05)`
-                  : "linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))",
-                border: `1px solid ${isCurrent ? `${color}40` : "rgba(255,255,255,0.06)"}`,
-                opacity: member.status === "inactive" ? 0.5 : 1,
+                background: C.card,
+                border: `1px solid ${isCurrent ? `${color}35` : C.border}`,
+                opacity: member.status === "inactive" ? 0.6 : 1,
+                boxShadow: isCurrent
+                  ? `0 0 0 2px ${color}18, 0 2px 8px rgba(0,0,0,0.07)`
+                  : "0 1px 4px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04)",
               }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <div style={{
                     width: 48, height: 48, borderRadius: 14,
-                    background: `${color}12`, border: `1px solid ${color}30`,
+                    background: `${color}10`, border: `1px solid ${color}25`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
                     <RoleIcon size={22} color={color} />
                   </div>
                   <div>
-                    <div style={{ fontSize: 16, fontWeight: 600, color: "#e8e0c8" }}>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: C.text }}>
                       {member.name}
-                      {isCurrent && <span style={{ fontSize: 10, color, marginLeft: 8 }}>ACTIVE</span>}
+                      {isCurrent && <span style={{ fontSize: 10, color, marginLeft: 8, fontWeight: 700 }}>ACTIVE</span>}
                     </div>
                     <div style={{
                       display: "inline-block", padding: "2px 8px", borderRadius: 6, marginTop: 4,
-                      background: `${color}12`, border: `1px solid ${color}25`,
+                      background: `${color}10`, border: `1px solid ${color}22`,
                       fontSize: 10, fontWeight: 700, color, textTransform: "uppercase", letterSpacing: "0.08em",
                     }}>{member.role}</div>
                   </div>
                 </div>
                 <div style={{
                   width: 10, height: 10, borderRadius: "50%",
-                  background: member.status === "active" ? "#34d399" : "#64748b",
-                  boxShadow: member.status === "active" ? "0 0 8px rgba(52,211,153,0.4)" : "none",
+                  background: member.status === "active" ? "#22c55e" : "#94a3b8",
                 }} />
               </div>
 
@@ -109,9 +128,9 @@ export default function StaffModule() {
                   style={{
                     display: "flex", alignItems: "center", gap: 6,
                     padding: "10px 16px", borderRadius: 10, fontSize: 12, fontWeight: 600,
-                    background: member.status === "active" ? "rgba(100,116,139,0.08)" : "rgba(52,211,153,0.08)",
-                    border: `1px solid ${member.status === "active" ? "rgba(100,116,139,0.2)" : "rgba(52,211,153,0.2)"}`,
-                    color: member.status === "active" ? "#64748b" : "#34d399",
+                    background: member.status === "active" ? "rgba(100,116,139,0.08)" : "rgba(34,197,94,0.08)",
+                    border: `1px solid ${member.status === "active" ? "rgba(100,116,139,0.2)" : "rgba(34,197,94,0.2)"}`,
+                    color: member.status === "active" ? "#64748b" : "#22c55e",
                     cursor: "pointer", minHeight: 42,
                   }}>
                   <Power size={14} /> {member.status === "active" ? "Deactivate" : "Activate"}
@@ -122,7 +141,7 @@ export default function StaffModule() {
                     style={{
                       display: "flex", alignItems: "center", gap: 6,
                       padding: "10px 16px", borderRadius: 10, fontSize: 12, fontWeight: 600,
-                      background: `${color}10`, border: `1px solid ${color}25`,
+                      background: `${color}10`, border: `1px solid ${color}22`,
                       color, cursor: "pointer", minHeight: 42,
                     }}>
                     <UserCog size={14} /> Switch to POS
@@ -140,8 +159,9 @@ export default function StaffModule() {
           style={{
             position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)",
             zIndex: 9999, padding: "14px 24px", borderRadius: 14,
-            background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)",
+            background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)",
             backdropFilter: "blur(8px)", display: "flex", alignItems: "center", gap: 10,
+            boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
           }}
         >
           <ShieldAlert size={18} color="#ef4444" />

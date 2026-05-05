@@ -7,6 +7,18 @@ import { useCommandCenter } from "@/contexts/CommandCenterContext";
 import { useVenueContext } from "@/contexts/VenueContext";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
+const C = {
+  header:    "rgba(245,242,235,0.96)",
+  border:    "rgba(0,0,0,0.08)",
+  text:      "#1A1410",
+  muted:     "rgba(26,20,16,0.45)",
+  dim:       "rgba(26,20,16,0.28)",
+  card:      "#FFFFFF",
+  back:      "#FFFFFF",
+  backBorder:"rgba(0,0,0,0.1)",
+  accent:    "#06b6d4",
+};
+
 export default function VendorsModule() {
   const [, navigate] = useLocation();
   const pos = usePosContext();
@@ -22,28 +34,37 @@ export default function VendorsModule() {
   }
 
   return (
-    <BackgroundLayer image={getBackground("vendors")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
+    <BackgroundLayer image={getBackground("vendors")} style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      {/* ── Header ── */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: `1px solid ${C.border}`, background: C.header, backdropFilter: "blur(12px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(0,0,0,0.06)" }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#06b6d4" }}>Vendors & Restock</div>
-          <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>{cc.vendors.length} suppliers connected</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: C.accent }}>Vendors & Restock</div>
+          <div style={{ fontSize: 11, color: C.muted }}>{cc.vendors.length} suppliers connected</div>
         </div>
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
-        {cc.vendors.map((vendor, vi) => {
+        {cc.vendors.length === 0 ? (
+          <div style={{ padding: 48, textAlign: "center", borderRadius: 16, background: C.card, border: `1px solid ${C.border}` }}>
+            <Truck size={32} color={C.dim} style={{ marginBottom: 12 }} />
+            <div style={{ fontSize: 15, fontWeight: 600, color: C.muted }}>No vendors connected</div>
+            <div style={{ fontSize: 13, color: C.dim, marginTop: 6 }}>Vendor accounts will appear here once created</div>
+          </div>
+        ) : cc.vendors.map((vendor, vi) => {
           const vendorProducts = pos.products.filter(p => vendor.productIds.includes(p.id));
           return (
             <motion.div key={vendor.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: vi * 0.06 }}
               style={{
                 padding: "20px", borderRadius: 16,
-                background: "linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))",
-                border: "1px solid rgba(6,182,212,0.15)",
+                background: C.card,
+                border: `1px solid rgba(6,182,212,0.18)`,
+                boxShadow: "0 1px 4px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04)",
               }}>
+              {/* Vendor header */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <div style={{
@@ -51,11 +72,11 @@ export default function VendorsModule() {
                     background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.2)",
                     display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
-                    <Truck size={22} color="#06b6d4" />
+                    <Truck size={22} color={C.accent} />
                   </div>
                   <div>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: "#e8e0c8" }}>{vendor.name}</div>
-                    <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>{vendor.contact}</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: C.text }}>{vendor.name}</div>
+                    <div style={{ fontSize: 11, color: C.muted }}>{vendor.contact}</div>
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -63,7 +84,7 @@ export default function VendorsModule() {
                   <span style={{ fontSize: 13, fontWeight: 600, color: "#f59e0b" }}>{vendor.rating}</span>
                 </div>
               </div>
-              <div style={{ fontSize: 11, color: "rgba(232,224,200,0.3)", marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: C.dim, marginBottom: 12 }}>
                 Last order: {vendor.lastOrder}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -75,18 +96,18 @@ export default function VendorsModule() {
                     <div key={prod.id} style={{
                       display: "flex", alignItems: "center", justifyContent: "space-between",
                       padding: "10px 14px", borderRadius: 10,
-                      background: isLow ? "rgba(245,158,11,0.04)" : "rgba(255,255,255,0.02)",
-                      border: `1px solid ${isLow ? "rgba(245,158,11,0.12)" : "rgba(255,255,255,0.04)"}`,
+                      background: isLow ? "rgba(245,158,11,0.05)" : "rgba(0,0,0,0.02)",
+                      border: `1px solid ${isLow ? "rgba(245,158,11,0.18)" : "rgba(0,0,0,0.06)"}`,
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, minWidth: 0 }}>
-                        <Package size={14} color="rgba(232,224,200,0.3)" />
-                        <span style={{ fontSize: 13, color: "#e8e0c8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</span>
-                        <span style={{ fontSize: 11, color: isLow ? "#f59e0b" : "rgba(232,224,200,0.3)", flexShrink: 0 }}>{prod.stock} in stock</span>
+                        <Package size={14} color={C.dim} />
+                        <span style={{ fontSize: 13, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</span>
+                        <span style={{ fontSize: 11, color: isLow ? "#f59e0b" : C.muted, flexShrink: 0 }}>{prod.stock} in stock</span>
                       </div>
                       <AnimatePresence mode="wait">
                         {sent ? (
                           <motion.div key="sent" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
-                            style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 8, background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.2)", color: "#34d399", fontSize: 11, fontWeight: 600 }}>
+                            style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 8, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", color: "#22c55e", fontSize: 11, fontWeight: 600 }}>
                             <Check size={12} /> Sent
                           </motion.div>
                         ) : (
@@ -95,9 +116,9 @@ export default function VendorsModule() {
                             style={{
                               display: "flex", alignItems: "center", gap: 4,
                               padding: "8px 14px", borderRadius: 8, fontSize: 11, fontWeight: 600,
-                              background: isLow ? "rgba(245,158,11,0.1)" : "rgba(6,182,212,0.08)",
+                              background: isLow ? "rgba(245,158,11,0.08)" : "rgba(6,182,212,0.08)",
                               border: `1px solid ${isLow ? "rgba(245,158,11,0.25)" : "rgba(6,182,212,0.2)"}`,
-                              color: isLow ? "#f59e0b" : "#06b6d4",
+                              color: isLow ? "#f59e0b" : C.accent,
                               cursor: "pointer", minHeight: 36,
                             }}>
                             <Send size={12} /> Restock

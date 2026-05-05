@@ -9,7 +9,25 @@ import { useVenueContext } from "@/contexts/VenueContext";
 import ConfirmModal from "@/components/ConfirmModal";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
-const priorityColors = { critical: "#ef4444", high: "#f59e0b", medium: "#5b8def", low: "#34d399" };
+const priorityColors = { critical: "#ef4444", high: "#f59e0b", medium: "#5b8def", low: "#22c55e" };
+
+const C = {
+  header:    "rgba(245,242,235,0.96)",
+  border:    "rgba(0,0,0,0.08)",
+  text:      "#1A1410",
+  muted:     "rgba(26,20,16,0.45)",
+  dim:       "rgba(26,20,16,0.28)",
+  gold:      "#9A7820",
+  card:      "#FFFFFF",
+  cardSoft:  "#FAF9F6",
+  rowAlt:    "rgba(0,0,0,0.02)",
+  rowBorder: "rgba(0,0,0,0.05)",
+  back:      "#FFFFFF",
+  backBorder:"rgba(0,0,0,0.1)",
+  inputBg:   "#FFFFFF",
+  inputBorder:"rgba(0,0,0,0.12)",
+  accent:    "#8b5cf6",
+};
 
 type AnalyticsTab = "overview" | "stock";
 
@@ -87,20 +105,14 @@ export default function AnalyticsModule() {
 
   const revenueStory = useMemo(() => {
     const stories: string[] = [];
-    if (totalRevenue > 0) {
-      stories.push(`$${totalRevenue.toLocaleString()} generated this session`);
-    }
-    if (peakHour && peakHour.amount > 0) {
-      stories.push(`Busiest hour: ${peakHour.hour} with $${peakHour.amount.toLocaleString()}`);
-    }
+    if (totalRevenue > 0) stories.push(`$${totalRevenue.toLocaleString()} generated this session`);
+    if (peakHour && peakHour.amount > 0) stories.push(`Busiest hour: ${peakHour.hour} with $${peakHour.amount.toLocaleString()}`);
     const cigarOrders = pos.orders.filter(o => o.items.some(i => i.product.category === "cigar"));
     if (cigarOrders.length > 0 && totalOrders > 0) {
       const pct = Math.round((cigarOrders.length / totalOrders) * 100);
       stories.push(`Cigar pairings drove ${pct}% of orders`);
     }
-    if (avgOrder > 0) {
-      stories.push(`${avgOrder > 40 ? "Above" : "Near"} target — $${avgOrder} average order value`);
-    }
+    if (avgOrder > 0) stories.push(`${avgOrder > 40 ? "Above" : "Near"} target — $${avgOrder} average order value`);
     return stories;
   }, [totalRevenue, peakHour, pos.orders, totalOrders, avgOrder]);
 
@@ -124,24 +136,26 @@ export default function AnalyticsModule() {
   );
 
   return (
-    <BackgroundLayer image={getBackground("analytics")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
+    <BackgroundLayer image={getBackground("analytics")} style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      {/* ── Header ── */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: `1px solid ${C.border}`, background: C.header, backdropFilter: "blur(12px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(0,0,0,0.06)" }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#8b5cf6" }}>Analytics & Insights</div>
-          <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>Revenue intelligence & AI brain</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: C.accent }}>Analytics & Insights</div>
+          <div style={{ fontSize: 11, color: C.muted }}>Revenue intelligence & AI brain</div>
         </div>
         <div style={{ display: "flex", gap: 6 }}>
           {([["overview", "Overview"], ["stock", "Stock Movements"]] as const).map(([key, label]) => (
             <motion.button key={key} whileTap={{ scale: 0.95 }} onClick={() => setTab(key)}
               style={{
                 padding: "8px 16px", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer",
-                background: tab === key ? "rgba(139,92,246,0.15)" : "rgba(255,255,255,0.04)",
-                border: `1px solid ${tab === key ? "rgba(139,92,246,0.3)" : "rgba(255,255,255,0.06)"}`,
-                color: tab === key ? "#8b5cf6" : "rgba(232,224,200,0.5)",
+                background: tab === key ? `${C.accent}15` : C.back,
+                border: `1px solid ${tab === key ? `${C.accent}35` : C.border}`,
+                color: tab === key ? C.accent : C.muted,
+                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
               }}>
               {label}
             </motion.button>
@@ -152,110 +166,99 @@ export default function AnalyticsModule() {
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px" }}>
         {tab === "overview" && (
           <>
+            {/* ── KPI Strip ── */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
               {([
-                { label: "Revenue",   value: totalRevenue,     prefix: "$", color: "#d4af37", live: true  },
+                { label: "Revenue",   value: totalRevenue,     prefix: "$", color: C.gold,    live: true  },
                 { label: "Orders",    value: totalOrders,      prefix: "",  color: "#5b8def", live: true  },
-                { label: "Avg Order", value: avgOrder,         prefix: "$", color: "#34d399", live: false },
+                { label: "Avg Order", value: avgOrder,         prefix: "$", color: "#22c55e", live: false },
                 { label: "Rewards",   value: rewardsTriggered, prefix: "",  color: "#f59e0b", live: false },
               ] as const).map((stat, i) => (
                 <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                   style={{
-                    padding: "16px", borderRadius: 14,
-                    background: "rgba(255,255,255,0.03)", border: `1px solid ${stat.color}20`,
+                    padding: "16px", borderRadius: 14, background: C.card,
+                    border: `1px solid ${stat.color}18`,
                     textAlign: "center",
+                    boxShadow: "0 1px 4px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04)",
                   }}>
                   <div style={{ fontSize: 24, fontWeight: 700, color: stat.color }}>
-                    <LiveKpi
-                      value={stat.value}
-                      prefix={stat.prefix}
-                      live={stat.live}
-                      liveColor={stat.color}
-                      duration={1200 - i * 80}
-                      style={{ fontSize: 24, fontWeight: 700, color: stat.color }}
-                    />
+                    <LiveKpi value={stat.value} prefix={stat.prefix} live={stat.live} liveColor={stat.color} duration={1200 - i * 80} style={{ fontSize: 24, fontWeight: 700, color: stat.color }} />
                   </div>
-                  <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4 }}>{stat.label}</div>
+                  <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4 }}>{stat.label}</div>
                 </motion.div>
               ))}
             </div>
 
-            {/* Revenue Story strip */}
+            {/* ── Revenue Story strip ── */}
             {revenueStory.length > 0 && (
               <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
                 style={{
-                  marginBottom: 20,
-                  padding: "12px 18px",
-                  borderRadius: 12,
-                  background: "linear-gradient(90deg, rgba(212,175,55,0.07), rgba(91,141,239,0.05))",
-                  border: "1px solid rgba(212,175,55,0.18)",
+                  marginBottom: 20, padding: "12px 18px", borderRadius: 12,
+                  background: `linear-gradient(90deg, ${C.gold}08, rgba(91,141,239,0.06))`,
+                  border: `1px solid ${C.gold}22`,
                   display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
                 }}
               >
-                <Zap size={13} color="#d4af37" style={{ flexShrink: 0 }} />
+                <Zap size={13} color={C.gold} style={{ flexShrink: 0 }} />
                 {revenueStory.map((s, i) => (
                   <span key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 12, color: "rgba(232,224,200,0.75)" }}>{s}</span>
-                    {i < revenueStory.length - 1 && (
-                      <span style={{ color: "rgba(232,224,200,0.2)", fontSize: 12 }}>·</span>
-                    )}
+                    <span style={{ fontSize: 12, color: C.text }}>{s}</span>
+                    {i < revenueStory.length - 1 && <span style={{ color: C.dim, fontSize: 12 }}>·</span>}
                   </span>
                 ))}
               </motion.div>
             )}
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <div style={{ padding: "16px", borderRadius: 14, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14 }}>Revenue by Hour</div>
+              {/* Revenue by Hour */}
+              <div style={{ padding: "16px", borderRadius: 14, background: C.card, border: `1px solid ${C.border}`, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14 }}>Revenue by Hour</div>
                 <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 140 }}>
                   {cc.hourlyRevenue.map((h, i) => (
                     <motion.div key={h.hour}
                       initial={{ height: 0 }} animate={{ height: `${(h.amount / maxHourly) * 100}%` }}
                       transition={{ delay: i * 0.04, duration: 0.4 }}
-                      style={{
-                        flex: 1, borderRadius: "4px 4px 0 0", minHeight: 4,
-                        background: `linear-gradient(180deg, #d4af37, #d4af3740)`,
-                        position: "relative",
-                      }}
+                      style={{ flex: 1, borderRadius: "4px 4px 0 0", minHeight: 4, background: `linear-gradient(180deg, ${C.gold}, ${C.gold}40)`, position: "relative" }}
                       title={`${h.hour}: $${h.amount}`}
                     />
                   ))}
                 </div>
                 <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
                   {cc.hourlyRevenue.map(h => (
-                    <div key={h.hour} style={{ flex: 1, fontSize: 8, color: "rgba(232,224,200,0.25)", textAlign: "center", overflow: "hidden" }}>
+                    <div key={h.hour} style={{ flex: 1, fontSize: 8, color: C.dim, textAlign: "center", overflow: "hidden" }}>
                       {h.hour.replace("am", "").replace("pm", "p")}
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div style={{ padding: "16px", borderRadius: 14, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14 }}>Top Selling Products</div>
+              {/* Top Selling Products */}
+              <div style={{ padding: "16px", borderRadius: 14, background: C.card, border: `1px solid ${C.border}`, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14 }}>Top Selling Products</div>
                 {topProducts.map((p, i) => (
                   <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "rgba(232,224,200,0.25)", width: 16 }}>{i + 1}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: C.dim, width: 16 }}>{i + 1}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, fontWeight: 500, color: "#e8e0c8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</div>
-                      <div style={{ height: 4, borderRadius: 2, background: "rgba(255,255,255,0.06)", marginTop: 3 }}>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</div>
+                      <div style={{ height: 4, borderRadius: 2, background: "rgba(0,0,0,0.06)", marginTop: 3 }}>
                         <motion.div initial={{ width: 0 }} animate={{ width: `${(p.sold / 24) * 100}%` }} transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
-                          style={{ height: "100%", borderRadius: 2, background: "linear-gradient(90deg, #d4af37, #d4af3780)" }} />
+                          style={{ height: "100%", borderRadius: 2, background: `linear-gradient(90deg, ${C.gold}, ${C.gold}80)` }} />
                       </div>
                     </div>
-                    <span style={{ fontSize: 12, color: "rgba(232,224,200,0.4)", flexShrink: 0 }}>{p.sold} sold</span>
+                    <span style={{ fontSize: 12, color: C.muted, flexShrink: 0 }}>{p.sold} sold</span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <div style={{ padding: "16px", borderRadius: 14, background: "linear-gradient(145deg, rgba(139,92,246,0.08), rgba(139,92,246,0.02))", border: "1px solid rgba(139,92,246,0.2)" }}>
+              {/* AI Revenue Brain */}
+              <div style={{ padding: "16px", borderRadius: 14, background: C.card, border: `1px solid ${C.accent}20`, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                  <Brain size={16} color="#8b5cf6" />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "#8b5cf6", textTransform: "uppercase", letterSpacing: "0.1em" }}>AI Revenue Brain</span>
+                  <Brain size={16} color={C.accent} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: C.accent, textTransform: "uppercase", letterSpacing: "0.1em" }}>AI Revenue Brain</span>
                 </div>
                 {dynamicInsights.map((insight, i) => {
                   const Icon = insight.icon;
@@ -263,36 +266,37 @@ export default function AnalyticsModule() {
                     <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + i * 0.1 }}
                       style={{
                         display: "flex", gap: 10, padding: "10px 12px", marginBottom: 8,
-                        borderRadius: 10, background: "rgba(255,255,255,0.03)",
-                        border: `1px solid ${priorityColors[insight.priority]}15`,
+                        borderRadius: 10, background: C.cardSoft,
+                        border: `1px solid ${priorityColors[insight.priority]}20`,
                       }}>
                       <Icon size={16} color={priorityColors[insight.priority]} style={{ flexShrink: 0, marginTop: 2 }} />
-                      <div style={{ fontSize: 12, color: "rgba(232,224,200,0.6)", lineHeight: 1.5 }}>{insight.text}</div>
+                      <div style={{ fontSize: 12, color: C.text, lineHeight: 1.5 }}>{insight.text}</div>
                     </motion.div>
                   );
                 })}
               </div>
 
-              <div style={{ padding: "16px", borderRadius: 14, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14 }}>
+              {/* Low Stock Alerts */}
+              <div style={{ padding: "16px", borderRadius: 14, background: C.card, border: `1px solid ${C.border}`, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14 }}>
                   Low Stock Alerts
                 </div>
                 {lowStockProducts.length === 0 ? (
-                  <div style={{ fontSize: 13, color: "rgba(232,224,200,0.3)", padding: 20, textAlign: "center" }}>All products well stocked</div>
+                  <div style={{ fontSize: 13, color: C.muted, padding: 20, textAlign: "center" }}>All products well stocked</div>
                 ) : (
                   lowStockProducts.map(p => (
                     <div key={p.id} style={{
                       display: "flex", justifyContent: "space-between", alignItems: "center",
                       padding: "10px 12px", marginBottom: 8, borderRadius: 10,
-                      background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.15)",
+                      background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.18)",
                     }}>
                       <div>
-                        <div style={{ fontSize: 13, fontWeight: 500, color: "#e8e0c8" }}>{p.name}</div>
-                        <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>{p.category}</div>
+                        <div style={{ fontSize: 13, fontWeight: 500, color: C.text }}>{p.name}</div>
+                        <div style={{ fontSize: 11, color: C.muted }}>{p.category}</div>
                       </div>
                       <div style={{
                         padding: "4px 10px", borderRadius: 8,
-                        background: p.stock <= 3 ? "rgba(239,68,68,0.12)" : "rgba(245,158,11,0.12)",
+                        background: p.stock <= 3 ? "rgba(239,68,68,0.1)" : "rgba(245,158,11,0.1)",
                         color: p.stock <= 3 ? "#ef4444" : "#f59e0b",
                         fontSize: 12, fontWeight: 700,
                       }}>{p.stock} left</div>
@@ -307,76 +311,61 @@ export default function AnalyticsModule() {
         {tab === "stock" && (
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-              <Package size={18} color="#d4af37" />
-              <span style={{ fontSize: 15, fontWeight: 700, color: "#e8e0c8" }}>Stock Movements</span>
-              <span style={{ fontSize: 12, color: "rgba(232,224,200,0.35)", marginLeft: "auto" }}>
+              <Package size={18} color={C.gold} />
+              <span style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Stock Movements</span>
+              <span style={{ fontSize: 12, color: C.muted, marginLeft: "auto" }}>
                 {pos.inventoryLog.length} entries
               </span>
             </div>
 
-            <div style={{
-              padding: 16, borderRadius: 14, marginBottom: 16,
-              background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
-            }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
+            {/* Manual Adjustment Panel */}
+            <div style={{ padding: 16, borderRadius: 14, marginBottom: 16, background: C.card, border: `1px solid ${C.border}`, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
                 Manual Stock Adjustment
               </div>
               <div style={{ display: "flex", gap: 10, alignItems: "flex-end", flexWrap: "wrap" }}>
                 <div style={{ flex: 1, minWidth: 160 }}>
-                  <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 4 }}>Product</div>
+                  <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Product</div>
                   <select
                     value={adjustProduct ?? ""}
                     onChange={e => { setAdjustProduct(e.target.value || null); setAdjustError(null); }}
                     style={{
                       width: "100%", padding: "10px 12px", borderRadius: 10, fontSize: 13,
-                      background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-                      color: "#e8e0c8", outline: "none",
+                      background: C.inputBg, border: `1px solid ${C.inputBorder}`,
+                      color: C.text, outline: "none",
                     }}
                   >
-                    <option value="" style={{ background: "#1a1714" }}>Select product...</option>
+                    <option value="">Select product...</option>
                     {pos.products.map(p => (
-                      <option key={p.id} value={p.id} style={{ background: "#1a1714" }}>
+                      <option key={p.id} value={p.id}>
                         {p.name} (stock: {p.stock})
                       </option>
                     ))}
                   </select>
                 </div>
                 <div style={{ width: 120 }}>
-                  <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 4 }}>Quantity</div>
+                  <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Quantity</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <motion.button whileTap={{ scale: 0.9 }} onClick={() => setAdjustDelta(d => d - 1)}
-                      style={{
-                        width: 36, height: 36, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center",
-                        background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#ef4444", cursor: "pointer",
-                      }}>
+                      style={{ width: 36, height: 36, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#ef4444", cursor: "pointer" }}>
                       <Minus size={14} />
                     </motion.button>
-                    <span style={{
-                      minWidth: 40, textAlign: "center", fontSize: 16, fontWeight: 700,
-                      color: adjustDelta > 0 ? "#34d399" : adjustDelta < 0 ? "#ef4444" : "#e8e0c8",
-                    }}>
+                    <span style={{ minWidth: 40, textAlign: "center", fontSize: 16, fontWeight: 700, color: adjustDelta > 0 ? "#22c55e" : adjustDelta < 0 ? "#ef4444" : C.text }}>
                       {adjustDelta > 0 ? "+" : ""}{adjustDelta}
                     </span>
                     <motion.button whileTap={{ scale: 0.9 }} onClick={() => setAdjustDelta(d => d + 1)}
-                      style={{
-                        width: 36, height: 36, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center",
-                        background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.2)", color: "#34d399", cursor: "pointer",
-                      }}>
+                      style={{ width: 36, height: 36, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", color: "#22c55e", cursor: "pointer" }}>
                       <Plus size={14} />
                     </motion.button>
                   </div>
                 </div>
                 <div style={{ flex: 1, minWidth: 140 }}>
-                  <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 4 }}>Reason</div>
+                  <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>Reason</div>
                   <input
                     value={adjustReason}
                     onChange={e => setAdjustReason(e.target.value)}
                     placeholder="e.g. restock, damaged, count correction"
-                    style={{
-                      width: "100%", padding: "10px 12px", borderRadius: 10, fontSize: 13,
-                      background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-                      color: "#e8e0c8", outline: "none",
-                    }}
+                    style={{ width: "100%", padding: "10px 12px", borderRadius: 10, fontSize: 13, background: C.inputBg, border: `1px solid ${C.inputBorder}`, color: C.text, outline: "none" }}
                   />
                 </div>
                 <motion.button
@@ -389,19 +378,16 @@ export default function AnalyticsModule() {
                     } else if (result.needsConfirmation) {
                       setPendingConfirm({ productId: adjustProduct, delta: adjustDelta, reason: adjustReason || "manual.adjustment" });
                     } else {
-                      setAdjustProduct(null);
-                      setAdjustDelta(0);
-                      setAdjustReason("");
-                      setAdjustError(null);
+                      setAdjustProduct(null); setAdjustDelta(0); setAdjustReason(""); setAdjustError(null);
                     }
                   }}
                   disabled={!adjustProduct || adjustDelta === 0}
                   style={{
                     padding: "10px 20px", borderRadius: 10, fontSize: 13, fontWeight: 600,
-                    background: (!adjustProduct || adjustDelta === 0) ? "rgba(212,175,55,0.1)" : "linear-gradient(135deg, #d4af37, #a98828)",
-                    color: (!adjustProduct || adjustDelta === 0) ? "rgba(212,175,55,0.3)" : "#0a0806",
+                    background: (!adjustProduct || adjustDelta === 0) ? "rgba(154,120,32,0.08)" : `linear-gradient(135deg, ${C.gold}, #7A5F14)`,
+                    color: (!adjustProduct || adjustDelta === 0) ? `${C.gold}60` : "#FFFFFF",
                     border: "none", cursor: (!adjustProduct || adjustDelta === 0) ? "not-allowed" : "pointer",
-                    whiteSpace: "nowrap",
+                    whiteSpace: "nowrap", boxShadow: (!adjustProduct || adjustDelta === 0) ? "none" : "0 2px 8px rgba(154,120,32,0.25)",
                   }}
                 >
                   Apply
@@ -410,9 +396,7 @@ export default function AnalyticsModule() {
               <AnimatePresence>
                 {adjustError && (
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
-                    style={{ marginTop: 8, fontSize: 12, color: "#ef4444" }}>
-                    {adjustError}
-                  </motion.div>
+                    style={{ marginTop: 8, fontSize: 12, color: "#ef4444" }}>{adjustError}</motion.div>
                 )}
                 {Math.abs(adjustDelta) > 10 && (
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
@@ -424,26 +408,20 @@ export default function AnalyticsModule() {
               </AnimatePresence>
             </div>
 
+            {/* Inventory Log Table */}
             {pos.inventoryLog.length === 0 ? (
-              <div style={{
-                padding: 40, textAlign: "center", borderRadius: 14,
-                background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
-              }}>
-                <Package size={32} color="rgba(232,224,200,0.15)" style={{ marginBottom: 12 }} />
-                <div style={{ fontSize: 14, color: "rgba(232,224,200,0.3)" }}>No stock movements yet</div>
-                <div style={{ fontSize: 12, color: "rgba(232,224,200,0.2)", marginTop: 4 }}>Add items to cart or process orders to see inventory changes</div>
+              <div style={{ padding: 40, textAlign: "center", borderRadius: 14, background: C.card, border: `1px solid ${C.border}`, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+                <Package size={32} color={C.dim} style={{ marginBottom: 12 }} />
+                <div style={{ fontSize: 14, color: C.muted }}>No stock movements yet</div>
+                <div style={{ fontSize: 12, color: C.dim, marginTop: 4 }}>Add items to cart or process orders to see inventory changes</div>
               </div>
             ) : (
-              <div style={{
-                borderRadius: 14, overflow: "hidden",
-                border: "1px solid rgba(255,255,255,0.06)",
-              }}>
+              <div style={{ borderRadius: 14, overflow: "hidden", border: `1px solid ${C.border}`, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
                 <div style={{
                   display: "grid", gridTemplateColumns: "1fr 80px 80px 70px 1fr 120px",
                   gap: 0, padding: "10px 14px",
-                  background: "rgba(255,255,255,0.04)",
-                  borderBottom: "1px solid rgba(255,255,255,0.06)",
-                  fontSize: 11, fontWeight: 600, color: "rgba(232,224,200,0.4)",
+                  background: C.cardSoft, borderBottom: `1px solid ${C.border}`,
+                  fontSize: 11, fontWeight: 600, color: C.muted,
                   textTransform: "uppercase", letterSpacing: "0.08em",
                 }}>
                   <div>Product</div>
@@ -458,35 +436,24 @@ export default function AnalyticsModule() {
                   const isIncrease = delta > 0;
                   return (
                     <motion.div key={entry.id}
-                      initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.02 }}
+                      initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.02 }}
                       style={{
                         display: "grid", gridTemplateColumns: "1fr 80px 80px 70px 1fr 120px",
                         gap: 0, padding: "10px 14px", alignItems: "center",
-                        borderBottom: "1px solid rgba(255,255,255,0.03)",
-                        background: i % 2 === 0 ? "rgba(255,255,255,0.01)" : "transparent",
+                        borderBottom: `1px solid ${C.rowBorder}`,
+                        background: i % 2 === 0 ? C.rowAlt : C.card,
                       }}>
-                      <div style={{ fontSize: 13, fontWeight: 500, color: "#e8e0c8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {entry.productName}
                       </div>
-                      <div style={{ textAlign: "center", fontSize: 13, color: "rgba(232,224,200,0.5)" }}>
-                        {entry.beforeStock}
-                      </div>
-                      <div style={{ textAlign: "center", fontSize: 13, color: "rgba(232,224,200,0.5)" }}>
-                        {entry.afterStock}
-                      </div>
-                      <div style={{
-                        display: "flex", alignItems: "center", justifyContent: "center", gap: 3,
-                        fontSize: 13, fontWeight: 700,
-                        color: isIncrease ? "#34d399" : "#ef4444",
-                      }}>
+                      <div style={{ textAlign: "center", fontSize: 13, color: C.muted }}>{entry.beforeStock}</div>
+                      <div style={{ textAlign: "center", fontSize: 13, color: C.muted }}>{entry.afterStock}</div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, fontSize: 13, fontWeight: 700, color: isIncrease ? "#22c55e" : "#ef4444" }}>
                         {isIncrease ? <ArrowUpRight size={13} /> : <ArrowDownRight size={13} />}
                         {isIncrease ? "+" : ""}{delta}
                       </div>
-                      <div style={{ fontSize: 12, color: "rgba(232,224,200,0.4)" }}>
-                        {REASON_LABELS[entry.reason] ?? entry.reason}
-                      </div>
-                      <div style={{ textAlign: "right", fontSize: 11, color: "rgba(232,224,200,0.3)" }}>
+                      <div style={{ fontSize: 12, color: C.muted }}>{REASON_LABELS[entry.reason] ?? entry.reason}</div>
+                      <div style={{ textAlign: "right", fontSize: 11, color: C.dim }}>
                         {new Date(entry.timestamp).toLocaleTimeString()} — {entry.userId}
                       </div>
                     </motion.div>
@@ -507,17 +474,10 @@ export default function AnalyticsModule() {
         onConfirm={() => {
           if (pendingConfirm) {
             const ok = pos.confirmLargeAdjustment(pendingConfirm.productId, pendingConfirm.delta, pendingConfirm.reason);
-            if (ok) {
-              setPendingConfirm(null);
-              setAdjustProduct(null);
-              setAdjustDelta(0);
-              setAdjustReason("");
-              setAdjustError(null);
-            } else {
-              setPendingConfirm(null);
-              setAdjustError("Access denied — only Owner or Manager can approve large adjustments");
-            }
+            if (!ok) setAdjustError("Adjustment failed — check stock levels");
+            else { setAdjustProduct(null); setAdjustDelta(0); setAdjustReason(""); setAdjustError(null); }
           }
+          setPendingConfirm(null);
         }}
         onCancel={() => setPendingConfirm(null)}
       />

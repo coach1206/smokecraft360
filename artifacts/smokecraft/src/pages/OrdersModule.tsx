@@ -1,13 +1,6 @@
 /**
- * OrdersModule — dedicated Orders & POS management page.
+ * OrdersModule — Orders & POS management page.
  * Route: /orders
- * Accent: #d4af37 (gold)
- *
- * Features:
- *  - Live order feed with status (pending / paid / cancelled)
- *  - Staff-tracked order rows (staffId, timestamp, total)
- *  - Verify orders inline
- *  - Quick-link to full POS terminal
  */
 import { useLocation }        from "wouter";
 import { motion }             from "framer-motion";
@@ -16,7 +9,7 @@ import { useVenueContext }    from "@/contexts/VenueContext";
 import BackgroundLayer        from "@/components/Layout/BackgroundLayer";
 import { VerifyOrdersTab }    from "@/components/Dashboard/VerifyOrdersTab";
 
-const ACCENT = "#d4af37";
+const ACCENT = "#9A7820";
 
 export default function OrdersModule() {
   const [, navigate] = useLocation();
@@ -25,25 +18,25 @@ export default function OrdersModule() {
   return (
     <BackgroundLayer
       image={getBackground("orders")}
-      style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}
+      style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}
     >
-      {/* Header */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         gap: 12, padding: "12px 20px",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
-        background: "rgba(10,8,6,0.82)", backdropFilter: "blur(10px)", flexShrink: 0,
+        borderBottom: "1px solid rgba(0,0,0,0.08)",
+        background: "rgba(245,242,235,0.96)", backdropFilter: "blur(12px)", flexShrink: 0,
+        boxShadow: "0 1px 0 rgba(0,0,0,0.06)",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.1)", color: "rgba(26,20,16,0.5)", cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
             <ArrowLeft size={20} />
           </motion.button>
           <div>
             <div style={{ fontSize: 18, fontWeight: 700, color: ACCENT, display: "flex", alignItems: "center", gap: 8 }}>
               <ShoppingCart size={18} /> Orders
             </div>
-            <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>Live order management · staff tracked</div>
+            <div style={{ fontSize: 11, color: "rgba(26,20,16,0.45)" }}>Live order management · staff tracked</div>
           </div>
         </div>
         <motion.button
@@ -52,7 +45,7 @@ export default function OrdersModule() {
           style={{
             display: "flex", alignItems: "center", gap: 7,
             padding: "8px 16px", borderRadius: 12,
-            background: `${ACCENT}18`, border: `1px solid ${ACCENT}40`,
+            background: `${ACCENT}12`, border: `1px solid ${ACCENT}35`,
             color: ACCENT, fontSize: 12, fontWeight: 600, cursor: "pointer",
           }}
         >
@@ -60,7 +53,6 @@ export default function OrdersModule() {
         </motion.button>
       </div>
 
-      {/* Content */}
       <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
         <VerifyOrdersTab />
       </div>

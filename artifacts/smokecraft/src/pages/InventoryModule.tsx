@@ -1,13 +1,6 @@
 /**
- * InventoryModule — dedicated Inventory management page.
+ * InventoryModule — Inventory management page.
  * Route: /inventory
- * Accent: #5b8def (blue)
- *
- * Features:
- *  - Predictive intelligence (top sellers, low stock, demand)
- *  - Restock suggestions with distributor linkage
- *  - Profit tracking per SKU
- *  - Stock alerts + out-of-stock list
  */
 import { useLocation }            from "wouter";
 import { motion }                 from "framer-motion";
@@ -25,27 +18,26 @@ export default function InventoryModule() {
   return (
     <BackgroundLayer
       image={getBackground("inventory")}
-      style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}
+      style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}
     >
-      {/* Header */}
       <div style={{
         display: "flex", alignItems: "center", gap: 12, padding: "12px 20px",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
-        background: "rgba(10,8,6,0.82)", backdropFilter: "blur(10px)", flexShrink: 0,
+        borderBottom: "1px solid rgba(0,0,0,0.08)",
+        background: "rgba(245,242,235,0.96)", backdropFilter: "blur(12px)", flexShrink: 0,
+        boxShadow: "0 1px 0 rgba(0,0,0,0.06)",
       }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.1)", color: "rgba(26,20,16,0.5)", cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div>
           <div style={{ fontSize: 18, fontWeight: 700, color: ACCENT, display: "flex", alignItems: "center", gap: 8 }}>
             <Package size={18} /> Inventory
           </div>
-          <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>Stock control · 3-layer intelligence · restock automation</div>
+          <div style={{ fontSize: 11, color: "rgba(26,20,16,0.45)" }}>Stock control · 3-layer intelligence · restock automation</div>
         </div>
       </div>
 
-      {/* Content */}
       <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
         <InventoryIntelligenceTab />
       </div>

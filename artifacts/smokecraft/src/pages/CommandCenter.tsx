@@ -12,12 +12,26 @@ import SystemStatusPanel from "@/components/SystemStatusPanel";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 import LiveKpi from "@/components/LiveKpi";
 
+const C = {
+  bg:        "#F5F2EB",
+  header:    "rgba(245,242,235,0.96)",
+  border:    "rgba(0,0,0,0.08)",
+  text:      "#1A1410",
+  muted:     "rgba(26,20,16,0.45)",
+  dim:       "rgba(26,20,16,0.28)",
+  gold:      "#9A7820",
+  card:      "#FFFFFF",
+  cardBorder:"rgba(0,0,0,0.09)",
+  back:      "#FFFFFF",
+  backBorder:"rgba(0,0,0,0.1)",
+};
+
 const TILES = [
   { id: "smokecraft", title: "SmokeCraft", desc: "Launch cigar experience", color: "#e85d26", route: "/smokecraft", dataKey: "smokecraft" as const, image: "/images/cigar.png" },
   { id: "brewcraft", title: "BrewCraft", desc: "Beer experience", color: "#f59e0b", route: "/brewcraft", dataKey: "brewcraft" as const, image: "/images/scenes/social.jpg" },
   { id: "pourcraft", title: "PourCraft", desc: "Spirits experience", color: "#a78bfa", route: "/pourcraft", dataKey: "pourcraft" as const, image: "/images/whiskey.png" },
   { id: "vapecraft", title: "VapeCraft", desc: "Vape experience", color: "#06b6d4", route: "/vapecraft", dataKey: "vapecraft" as const, image: "/images/scenes/bold.jpg" },
-  { id: "orders", title: "Orders", desc: "Live POS terminal", color: "#d4af37", route: "/orders", dataKey: "orders" as const, image: "/images/scenes/reflective.jpg" },
+  { id: "orders", title: "Orders", desc: "Live POS terminal", color: "#9A7820", route: "/orders", dataKey: "orders" as const, image: "/images/scenes/reflective.jpg" },
   { id: "inventory", title: "Inventory", desc: "Stock control", color: "#5b8def", route: "/inventory", dataKey: "inventory" as const, image: "/images/cigar2.png" },
   { id: "rewards", title: "Rewards", desc: "Loyalty & rewards", color: "#34d399", route: "/rewards", dataKey: "rewards" as const, image: "/images/scenes/relaxed.jpg" },
   { id: "experiences", title: "Experiences", desc: "Craft engine", color: "#f59e0b", route: "/experiences", dataKey: "experiences" as const, image: "/images/cigar1.png" },
@@ -27,8 +41,8 @@ const TILES = [
   { id: "devices", title: "Devices", desc: "Device control", color: "#f97316", route: "/devices", dataKey: "devices" as const, image: "/images/scenes/bold.jpg" },
   { id: "staff", title: "Staff", desc: "Team management", color: "#a78bfa", route: "/staff", dataKey: "staff" as const, image: "/images/scenes/social.jpg" },
   { id: "settings", title: "Settings", desc: "System & security", color: "#64748b", route: "/settings", dataKey: "settings" as const, image: "/images/scenes/relaxed.jpg" },
-  { id: "designer", title: "Designer", desc: "Signature customizer", color: "#d4af37", route: "/designer", dataKey: "designer" as const, image: "/images/cigar.png" },
-  { id: "competition", title: "Compete", desc: "Craft tournaments", color: "#d4af37", route: "/competition", dataKey: "competition" as const, image: "/images/scenes/reflective.jpg" },
+  { id: "designer", title: "Designer", desc: "Signature customizer", color: "#9A7820", route: "/designer", dataKey: "designer" as const, image: "/images/cigar.png" },
+  { id: "competition", title: "Compete", desc: "Craft tournaments", color: "#9A7820", route: "/competition", dataKey: "competition" as const, image: "/images/scenes/reflective.jpg" },
   { id: "craft-hub", title: "Craft Hub", desc: "All 360 experiences", color: "#06b6d4", route: "/craft-hub", dataKey: "craft-hub" as const, image: "/images/smoke/smoke_lounge.png" },
 ] as const;
 
@@ -67,45 +81,47 @@ export default function CommandCenter() {
 
   const { getBackground } = useVenueContext();
   const engagement = useEngagementContext();
-  const statusColor = cc.systemStatus === "operational" ? "#34d399" : cc.systemStatus === "degraded" ? "#f59e0b" : "#ef4444";
+  const statusColor = cc.systemStatus === "operational" ? "#22c55e" : cc.systemStatus === "degraded" ? "#f59e0b" : "#ef4444";
 
   return (
-    <BackgroundLayer image={getBackground("dashboard")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
+    <BackgroundLayer image={getBackground("dashboard")} style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      {/* ── Header ── */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)",
-        background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0,
+        padding: "12px 20px", borderBottom: `1px solid ${C.border}`,
+        background: C.header, backdropFilter: "blur(12px)", flexShrink: 0,
+        boxShadow: "0 1px 0 rgba(0,0,0,0.06)",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/")}
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
             <ArrowLeft size={20} />
           </motion.button>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#d4af37" }}>Command Hub</div>
-            <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: C.gold }}>Command Hub</div>
+            <div style={{ fontSize: 11, color: C.muted }}>
               {pos.currentUser ? `${pos.currentUser.name} · ${pos.currentUser.role}` : "Axiom OS"}
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#d4af37" }}>
-              <LiveKpi value={todayRevenue} prefix="$" live liveColor="#d4af37" duration={1200} style={{ fontSize: 18, fontWeight: 700, color: "#d4af37" }} />
+            <div style={{ fontSize: 18, fontWeight: 700, color: C.gold }}>
+              <LiveKpi value={todayRevenue} prefix="$" live liveColor={C.gold} duration={1200} style={{ fontSize: 18, fontWeight: 700, color: C.gold }} />
             </div>
-            <div style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Revenue</div>
+            <div style={{ fontSize: 10, color: C.dim, textTransform: "uppercase", letterSpacing: "0.1em" }}>Revenue</div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#e8e0c8" }}>
-              <LiveKpi value={cc.activeGuests} live liveColor="#34d399" duration={900} style={{ fontSize: 18, fontWeight: 700, color: "#e8e0c8" }} />
+            <div style={{ fontSize: 18, fontWeight: 700, color: C.text }}>
+              <LiveKpi value={cc.activeGuests} live liveColor="#22c55e" duration={900} style={{ fontSize: 18, fontWeight: 700, color: C.text }} />
             </div>
-            <div style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Guests</div>
+            <div style={{ fontSize: 10, color: C.dim, textTransform: "uppercase", letterSpacing: "0.1em" }}>Guests</div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#e8e0c8" }}>
-              <LiveKpi value={pos.orders.length} live liveColor="#5b8def" duration={800} style={{ fontSize: 18, fontWeight: 700, color: "#e8e0c8" }} />
+            <div style={{ fontSize: 18, fontWeight: 700, color: C.text }}>
+              <LiveKpi value={pos.orders.length} live liveColor="#5b8def" duration={800} style={{ fontSize: 18, fontWeight: 700, color: C.text }} />
             </div>
-            <div style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Orders</div>
+            <div style={{ fontSize: 10, color: C.dim, textTransform: "uppercase", letterSpacing: "0.1em" }}>Orders</div>
           </div>
           <div style={{
             display: "flex", alignItems: "center", gap: 6,
@@ -124,21 +140,21 @@ export default function CommandCenter() {
               padding: "8px 14px", borderRadius: 16,
               background: `${statusColor}12`,
               border: `1px solid ${statusColor}30`,
-              cursor: "pointer",
-              minHeight: 44,
+              cursor: "pointer", minHeight: 44,
             }}
           >
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: statusColor, boxShadow: `0 0 8px ${statusColor}` }} />
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: statusColor }} />
             <span style={{ fontSize: 11, color: statusColor, textTransform: "capitalize", fontWeight: 600 }}>{cc.systemStatus}</span>
           </motion.button>
         </div>
       </div>
 
+      {/* ── Tile grid ── */}
       <div style={{
         flex: 1, overflowY: "auto", padding: "16px 20px",
         display: "grid",
         gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-        gap: 14, alignContent: "start",
+        gap: 12, alignContent: "start",
       }}>
         {TILES.map((tile, i) => {
           const data = tileData(tile.dataKey);
@@ -159,6 +175,7 @@ export default function CommandCenter() {
                 borderRadius: 16, cursor: "pointer",
                 position: "relative", overflow: "hidden",
                 minHeight: 90, textAlign: "left",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
               }}
             >
               <div style={{
@@ -169,7 +186,7 @@ export default function CommandCenter() {
               }} />
               <div style={{
                 position: "absolute", inset: 0,
-                background: `linear-gradient(135deg, rgba(10,8,6,0.45) 0%, rgba(10,8,6,0.6) 50%, ${tile.color}25 100%)`,
+                background: `linear-gradient(135deg, rgba(245,242,235,0.55) 0%, rgba(245,242,235,0.7) 50%, ${tile.color}18 100%)`,
                 pointerEvents: "none",
               }} />
               {(tile.id === "smokecraft" || tile.id === "brewcraft" || tile.id === "pourcraft" || tile.id === "vapecraft") && (
@@ -178,27 +195,27 @@ export default function CommandCenter() {
                   fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
                   textTransform: "uppercase",
                   color: tile.color,
-                  background: `${tile.color}18`,
+                  background: "rgba(255,255,255,0.85)",
                   border: `1px solid ${tile.color}35`,
                   padding: "2px 8px", borderRadius: 999,
-                  textShadow: "none",
                 }}>🔥 Trending</div>
               )}
               <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 2, textShadow: "0 1px 4px rgba(0,0,0,0.7)" }}>{tile.title}</div>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", marginBottom: 4, textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>{tile.desc}</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: tile.color, textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}>{data}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#1A1410", marginBottom: 2, textShadow: "0 1px 3px rgba(255,255,255,0.8)" }}>{tile.title}</div>
+                <div style={{ fontSize: 11, color: "rgba(26,20,16,0.6)", marginBottom: 4, textShadow: "0 1px 2px rgba(255,255,255,0.7)" }}>{tile.desc}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: tile.color }}>{data}</div>
               </div>
             </motion.button>
           );
         })}
       </div>
 
+      {/* ── Footer ── */}
       <div style={{
-        padding: "10px 20px", borderTop: "1px solid rgba(255,255,255,0.06)",
+        padding: "10px 20px", borderTop: `1px solid ${C.border}`,
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        fontSize: 10, color: "rgba(232,224,200,0.2)", textTransform: "uppercase",
-        letterSpacing: "0.15em", flexShrink: 0,
+        fontSize: 10, color: C.dim, textTransform: "uppercase",
+        letterSpacing: "0.15em", flexShrink: 0, background: C.header,
       }}>
         <span><Activity size={10} style={{ marginRight: 4, verticalAlign: "middle" }} />Axiom OS · Command Hub v1.0</span>
         <span>Powered by Axiom OS</span>

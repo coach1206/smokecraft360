@@ -21,6 +21,11 @@ import { deriveOrderAttribution }                             from "../services/
 
 const router: IRouter = Router();
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function safeUuid(v: string | undefined | null): string | undefined {
+  return v && UUID_RE.test(v) ? v : undefined;
+}
+
 const VALID_TYPES   = ["table", "pickup", "delivery"] as const;
 const VALID_STATUSES = [
   "initiated", "pending", "in_progress", "completed", "cancelled",
@@ -115,8 +120,8 @@ router.post(
     const attribution = deriveOrderAttribution(productIds);
 
     const [order] = await db.insert(ordersTable).values({
-      userId:               userId     ?? undefined,
-      venueId:              venueId   ?? undefined,
+      userId:               safeUuid(userId),
+      venueId:              safeUuid(venueId),
       cigarId:              cigarId   ?? undefined,
       cigarName:            cigarName ?? undefined,
       drinkId:              drinkId   ?? undefined,
@@ -126,9 +131,9 @@ router.post(
       orderType:            orderType as OrderType,
       status:               "pending",
       tableNumber:          tableNumber ?? undefined,
-      brandId:              attribution.brandId ?? undefined,
+      brandId:              safeUuid(attribution.brandId),
       brandName:            attribution.brandName ?? undefined,
-      campaignId:           attribution.campaignId ?? undefined,
+      campaignId:           safeUuid(attribution.campaignId),
       sponsored:            attribution.sponsored,
       campaignType:         attribution.campaignType ?? undefined,
       attributionSource:    attribution.attributionSource ?? undefined,
@@ -382,8 +387,8 @@ router.post(
     const attribution = deriveOrderAttribution(productIds);
 
     const [order] = await db.insert(ordersTable).values({
-      userId:               userId ?? undefined,
-      venueId:              venueId ?? undefined,
+      userId:               safeUuid(userId),
+      venueId:              safeUuid(venueId),
       cigarId:              cigar?.productId ?? undefined,
       cigarName:            cigar?.name ?? undefined,
       drinkId:              drink?.productId ?? undefined,
@@ -392,9 +397,9 @@ router.post(
       foodName:             food?.name ?? undefined,
       orderType:            type,
       status:               "paid",
-      brandId:              attribution.brandId ?? undefined,
+      brandId:              safeUuid(attribution.brandId),
       brandName:            attribution.brandName ?? undefined,
-      campaignId:           attribution.campaignId ?? undefined,
+      campaignId:           safeUuid(attribution.campaignId),
       sponsored:            attribution.sponsored,
       campaignType:         attribution.campaignType ?? undefined,
       attributionSource:    attribution.attributionSource ?? undefined,

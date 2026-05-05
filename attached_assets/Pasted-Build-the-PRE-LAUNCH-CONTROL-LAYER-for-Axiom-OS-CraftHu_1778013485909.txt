@@ -1,0 +1,106 @@
+Build the PRE-LAUNCH CONTROL LAYER for Axiom OS / CraftHub.
+
+This layer prepares the system for real deployment without going live.
+
+SYSTEM MUST INCLUDE:
+
+1. DEMO MODE ENGINE
+Create a system-wide toggle:
+- demoMode: true/false
+
+When demoMode is true:
+- All APIs return simulated data
+- Event logs auto-generate fake activity
+- Payments are simulated
+- POS integrations use sandbox mode only
+- AI insights still generate using fake + seeded data
+
+2. FAKE DATA GENERATOR
+Create a service that generates:
+- sessions
+- product views
+- purchases
+- upsells
+- flavor preferences
+
+Run automatically every X seconds when demoMode is active.
+
+3. VENUE ONBOARDING WIZARD
+Create UI at /admin/onboarding
+
+Steps:
+- Step 1: Venue Info
+- Step 2: Select Package
+- Step 3: Select Features
+- Step 4: Set Pricing
+- Step 5: Assign Devices
+- Step 6: Load Demo Data (optional)
+- Step 7: Activate Venue
+
+4. POS SANDBOX LAYER
+Create a unified POS adapter:
+- mode: sandbox | live
+
+Support:
+- Square sandbox
+- Toast mock
+- Stripe fallback
+
+All transactions simulated in sandbox mode.
+
+5. SYSTEM DIAGNOSTICS PANEL
+Create /admin/system-status
+
+Display:
+- API health
+- database connection
+- feature flags
+- POS status
+- data logging activity
+- event volume
+- AI engine status
+
+6. FEATURE FLAG KILL SWITCH
+Admin must be able to:
+- disable ANY feature globally
+- disable ANY feature per venue
+- instantly stop POS
+- disable data collection
+- disable AI engine
+
+7. ADMIN SIMULATION MODE
+Admin can:
+- switch into any venue
+- simulate sessions
+- simulate purchases
+- test flows live
+
+8. DATA COMPLIANCE LAYER
+Add:
+- consent_required flag
+- anonymization enforcement
+- export restrictions
+
+Block any export of raw event_logs.
+
+9. SHOWROOM VENUES
+Seed:
+- Luxury Lounge
+- Mid-Level Bar
+- High Volume Venue
+
+Each preloaded with:
+- different data patterns
+- different feature sets
+
+10. ERROR MONITORING
+Create:
+- error_logs table
+- system alerts
+- auto logging of failures
+
+Deliver full:
+- backend services
+- frontend admin panels
+- simulation engine
+- seed scripts
