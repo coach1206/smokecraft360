@@ -1,16 +1,31 @@
 /**
- * POST /api/experiences
- *
- * Persists a completed recommendation session to the experiences table.
- * Auth is optional — links to the authenticated user when a valid JWT is
- * present; stored anonymously otherwise.
+ * GET  /api/experiences  — list recent experiences (auth required, manager+)
+ * POST /api/experiences  — persist a recommendation session (auth optional)
  */
 import { Router, type IRouter, type Request, type Response } from "express";
-import { db, experiencesTable } from "@workspace/db";
-import { verifyToken } from "../lib/jwt";
-import { allowOnly } from "../middleware/sanitize";
+import { desc }                                               from "drizzle-orm";
+import { db, experiencesTable }                               from "@workspace/db";
+import { verifyToken }                                        from "../lib/jwt";
+import { requireAuth, type AuthRequest }                      from "../middleware/auth";
+import { requireRole }                                        from "../middleware/roles";
+import { allowOnly }                                          from "../middleware/sanitize";
 
 const router: IRouter = Router();
+
+// ── GET /api/experiences ──────────────────────────────────────────────────────
+router.get(
+  "/",
+  requireAuth,
+  requireRole("manager", "venue_owner", "super_admin"),
+  async (_req: AuthRequest, res: Response) => {
+    const rows = await db
+      .select()
+      .from(experiencesTable)
+      .orderBy(desc(experiencesTable.createdAt))
+      .limit(100);
+    res.json(rows);
+  },
+);
 
 router.post(
   "/",

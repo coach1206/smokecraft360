@@ -143,12 +143,12 @@ function loadPosMode(): PosOperatingMode {
 export function CommandCenterProvider({ children }: { children: ReactNode }) {
   const [devices, setDevices] = useState<Device[]>(() => INITIAL_DEVICES.map(d => ({ ...d })));
   const [staff, setStaff] = useState<StaffMember[]>(() => INITIAL_STAFF.map(s => ({ ...s })));
-  const [vendors] = useState<Vendor[]>(() => INITIAL_VENDORS.map(v => ({ ...v })));
+  const [vendors, setVendors] = useState<Vendor[]>(() => INITIAL_VENDORS.map(v => ({ ...v })));
   const [auditLog, setAuditLog] = useState<AuditEntry[]>(() => [...INITIAL_AUDIT]);
   const [hourlyRevenue, setHourlyRevenue] = useState<HourlyRevenue[]>(INITIAL_REVENUE);
   const [posMode, setPosModeRaw] = useState<PosOperatingMode>(loadPosMode);
   const systemStatus: "operational" | "degraded" | "critical" = devices.filter(d => d.status === "offline").length >= 3 ? "critical" : devices.some(d => d.status === "offline") ? "degraded" : "operational";
-  const activeGuests = 12;
+  const activeGuests = devices.filter(d => d.status === "online").length;
 
   // Load real devices from /api/devices — falls back to INITIAL_DEVICES on error
   useEffect(() => {
@@ -205,6 +205,34 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
       }
     }
     void loadStaff();
+  }, []);
+
+  // Load real vendors from /api/distributors — falls back to INITIAL_VENDORS on error
+  useEffect(() => {
+    async function loadVendors() {
+      try {
+        const res = await fetch("/api/distributors", { headers: getAuthHeaders() });
+        if (!res.ok) return;
+        const data = await res.json() as Array<{
+          id: string;
+          name: string;
+          contactEmail?: string | null;
+          updatedAt?: string | null;
+        }>;
+        if (!Array.isArray(data) || data.length === 0) return;
+        setVendors(data.map(d => ({
+          id:         d.id,
+          name:       d.name,
+          contact:    d.contactEmail ?? "",
+          productIds: [],
+          lastOrder:  d.updatedAt ? new Date(d.updatedAt).toISOString().slice(0, 10) : "—",
+          rating:     4.5,
+        })));
+      } catch {
+        // Keep INITIAL_VENDORS on any error
+      }
+    }
+    void loadVendors();
   }, []);
 
   // Load real hourly revenue from /api/orders — compute per-hour totals

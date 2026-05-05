@@ -65,6 +65,37 @@ router.post(
   },
 );
 
+// ── GET /api/demand ───────────────────────────────────────────────────────────
+// Returns recent demand requests scoped to the caller's venue (or all for super_admin).
+router.get(
+  "/",
+  requireAuth,
+  requireRole("venue_owner", "manager", "super_admin"),
+  async (req: AuthRequest, res: Response) => {
+    const venueId = req.user!.venueId;
+    const limit   = Math.min(Number((req.query as Record<string, string>).limit ?? 50), 100);
+
+    let rows;
+    if (req.user!.role === "super_admin") {
+      rows = await db
+        .select()
+        .from(demandRequestsTable)
+        .orderBy(desc(demandRequestsTable.createdAt))
+        .limit(limit);
+    } else {
+      if (!venueId) { res.status(403).json({ error: "No venue context" }); return; }
+      rows = await db
+        .select()
+        .from(demandRequestsTable)
+        .where(eq(demandRequestsTable.venueId, venueId))
+        .orderBy(desc(demandRequestsTable.createdAt))
+        .limit(limit);
+    }
+
+    res.json(rows);
+  },
+);
+
 // ── GET /api/demand/:venueId ───────────────────────────────────────────────────
 
 router.get(

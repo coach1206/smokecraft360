@@ -13,6 +13,29 @@ import { requireRole } from "../middleware/roles";
 
 const router: IRouter = Router();
 
+// ── GET /api/distribution — summary (partner count + recent order count) ─────
+router.get(
+  "/",
+  requireAuth,
+  requireRole("manager", "venue_owner", "super_admin", "brand_partner"),
+  async (_req: AuthRequest, res: Response) => {
+    const [partnerCount] = await db
+      .select({ count: sql<number>`cast(count(*) as integer)` })
+      .from(brandPartnersTable);
+
+    const [orderCount] = await db
+      .select({ count: sql<number>`cast(count(*) as integer)` })
+      .from(ordersTable)
+      .where(gte(ordersTable.createdAt, new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)));
+
+    res.json({
+      activePartners: partnerCount?.count ?? 0,
+      ordersLast30Days: orderCount?.count ?? 0,
+      generatedAt: new Date().toISOString(),
+    });
+  },
+);
+
 router.get(
   "/brand-performance",
   requireAuth,
