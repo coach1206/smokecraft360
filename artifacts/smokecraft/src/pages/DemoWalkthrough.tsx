@@ -10,6 +10,7 @@ import {
 import KioskProductImage from "@/components/KioskProductImage";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 import { useVenueContext } from "@/contexts/VenueContext";
+import { getAuthHeaders } from "@/services/auth";
 import type { Product } from "@/contexts/PosContext";
 
 const DEFAULT_STEP_DURATION = 5000;
@@ -402,10 +403,10 @@ function DashboardMetricsStep() {
       try {
         const r = await fetch("/api/demo/simulate/start", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...getAuthHeaders() },
           body: JSON.stringify({ profile: "investor", speedMs: 3500 }),
         });
-        if (!r.ok) return; // not authorized — show static KPIs instead
+        if (!r.ok) return; // not super_admin — show static KPIs instead
         const j = await r.json() as { sessionId: string };
         if (!cancelled) setSimId(j.sessionId);
       } catch { /* no sim auth — static mode */ }
@@ -420,7 +421,7 @@ function DashboardMetricsStep() {
 
     async function poll() {
       try {
-        const r = await fetch(`/api/demo/simulate/events?sessionId=${simId}`);
+        const r = await fetch(`/api/demo/simulate/events?sessionId=${simId}`, { headers: getAuthHeaders() });
         if (!r.ok) return;
         const j = await r.json() as { revenue: number; orders: number; rewards: number; active: boolean; events: LiveEvent[] };
         setKpi({ revenue: j.revenue, orders: j.orders, rewards: j.rewards, active: j.active });
@@ -439,7 +440,7 @@ function DashboardMetricsStep() {
       if (simId) {
         fetch("/api/demo/simulate/stop", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...getAuthHeaders() },
           body: JSON.stringify({ sessionId: simId }),
         }).catch(() => {});
       }
@@ -1103,6 +1104,10 @@ export default function DemoWalkthrough() {
         <Play size={12} color="#f59e0b" style={{ marginRight: 8 }} />
         <span style={{ fontSize: 12, fontWeight: 700, color: "#f59e0b", textTransform: "uppercase", letterSpacing: "0.15em" }}>
           Demo Mode{selectedProfile ? `: ${selectedProfile.name}` : ": Simulated Data"}
+        </span>
+        <span style={{ margin: "0 10px", color: "rgba(245,158,11,0.3)", fontSize: 11 }}>·</span>
+        <span style={{ fontSize: 11, color: "rgba(245,158,11,0.65)", letterSpacing: "0.08em" }}>
+          Experience Commerce OS
         </span>
       </motion.div>
 

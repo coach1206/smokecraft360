@@ -2,15 +2,16 @@
  * DeviceRouter — device-aware UI context with shell wrappers.
  *
  * Detection priority:
- *  1. URL param `?deviceType=kiosk|pos|tablet|mobile`  — override for testing/kiosk deployments
- *  2. Screen width < 480  → mobile
- *  3. Screen width < 1024 → tablet
- *  4. Kiosk UA hint or large landscape screen → kiosk
- *  5. Otherwise → desktop (pos/desktop shell)
+ *  1. Registered device record lookup via `?deviceId=<uuid>` → calls API for device.type
+ *  2. URL param `?deviceType=kiosk|pos|tablet|mobile`  — direct override
+ *  3. Screen width < 480  → mobile
+ *  4. Screen width < 1024 → tablet
+ *  5. Kiosk UA hint or large landscape screen → kiosk
+ *  6. Otherwise → desktop
  *
  * Shell variants:
- *  - KioskShell   — full-screen, no scrollbars, pixel-shift safe
- *  - PosShell     — widescreen commerce layout
+ *  - KioskShell   — full-screen, no scrollbars, pixel-shift safe, back-nav trapped
+ *  - PosShell     — widescreen commerce layout, back-nav trapped
  *  - TabletShell  — touch-optimized layout
  *  - MobileShell  — compact mobile layout
  *  - DesktopShell — standard desktop layout
@@ -20,6 +21,7 @@ import {
   createContext, useContext, useState, useEffect,
   useCallback, type ReactNode, type CSSProperties,
 } from "react";
+import { getAuthHeaders } from "@/services/auth";
 
 export type DeviceMode = "kiosk" | "pos" | "tablet" | "mobile" | "desktop";
 
@@ -77,6 +79,25 @@ export function DeviceRouterProvider({ children }: { children: ReactNode }) {
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, [update]);
+
+  // Priority 1: look up the registered device record when ?deviceId= is present
+  useEffect(() => {
+    let cancelled = false;
+    const deviceId = new URLSearchParams(window.location.search).get("deviceId");
+    if (!deviceId) return;
+    (async () => {
+      try {
+        const r = await fetch(`/api/devices/${deviceId}/type`, { headers: getAuthHeaders() });
+        if (!r.ok) return;
+        const j = await r.json() as { type?: string };
+        const t = j.type?.toLowerCase() ?? "";
+        if (!cancelled && (t === "kiosk" || t === "pos" || t === "tablet" || t === "mobile")) {
+          setMode(t as DeviceMode);
+        }
+      } catch { /* fall through to heuristics */ }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const value: DeviceRouterCtx = {
     mode,
@@ -142,11 +163,32 @@ const desktopStyle: CSSProperties = {
   minHeight:"100vh",
 };
 
-export function KioskShell ({ children }: { children: ReactNode }) { return <div data-shell="kiosk"   style={kioskStyle}>  {children}</div>; }
-export function PosShell   ({ children }: { children: ReactNode }) { return <div data-shell="pos"     style={posStyle}>    {children}</div>; }
-export function TabletShell({ children }: { children: ReactNode }) { return <div data-shell="tablet"  style={tabletStyle}> {children}</div>; }
-export function MobileShell({ children }: { children: ReactNode }) { return <div data-shell="mobile"  style={mobileStyle}> {children}</div>; }
-export function DesktopShell({ children }: { children: ReactNode }){ return <div data-shell="desktop" style={desktopStyle}>{children}</div>; }
+/** KioskShell — traps browser back-navigation so users can't exit the kiosk unexpectedly */
+export function KioskShell({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    // Push a dummy history entry so the device can't navigate back out of kiosk mode
+    window.history.pushState(null, "", window.location.href);
+    const trap = () => window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", trap);
+    return () => window.removeEventListener("popstate", trap);
+  }, []);
+  return <div data-shell="kiosk" style={kioskStyle}>{children}</div>;
+}
+
+/** PosShell — traps back-navigation to prevent accidental exit during transactions */
+export function PosShell({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+    const trap = () => window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", trap);
+    return () => window.removeEventListener("popstate", trap);
+  }, []);
+  return <div data-shell="pos" style={posStyle}>{children}</div>;
+}
+
+export function TabletShell ({ children }: { children: ReactNode }) { return <div data-shell="tablet"  style={tabletStyle}> {children}</div>; }
+export function MobileShell ({ children }: { children: ReactNode }) { return <div data-shell="mobile"  style={mobileStyle}> {children}</div>; }
+export function DesktopShell({ children }: { children: ReactNode }) { return <div data-shell="desktop" style={desktopStyle}>{children}</div>; }
 
 // ── Hooks + helpers ───────────────────────────────────────────────────────────
 

@@ -9,7 +9,7 @@
  *  5. Go Live            — review & launch
  */
 
-import { useState, useCallback }       from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useLocation }                 from "wouter";
 import { motion, AnimatePresence }     from "framer-motion";
 import {
@@ -35,6 +35,7 @@ interface WizardData {
   venueName:         string;
   venueType:         string;
   venueSize:         string;
+  venueLocation:     string;
   selectedCrafts:    string[];
   aiTone:            string;
   aiGoal:            string;
@@ -45,6 +46,7 @@ const INITIAL: WizardData = {
   venueName:         "",
   venueType:         "cigar_lounge",
   venueSize:         "medium",
+  venueLocation:     "",
   selectedCrafts:    ["cigar", "spirit"],
   aiTone:            "upscale",
   aiGoal:            "balanced",
@@ -204,6 +206,23 @@ function StepVenueDetails({ data, set }: { data: WizardData; set: (k: keyof Wiza
           ))}
         </div>
       </div>
+      <div>
+        <label style={{ fontSize: 12, color: C.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 10 }}>
+          Region / Location
+        </label>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {[
+            { value: "US-East",  label: "US East" },
+            { value: "US-West",  label: "US West" },
+            { value: "US-South", label: "US South" },
+            { value: "Europe",   label: "Europe" },
+            { value: "Asia",     label: "Asia" },
+            { value: "Other",    label: "Other" },
+          ].map(opt => (
+            <OptionChip key={opt.value} label={opt.label} selected={data.venueLocation === opt.value} onClick={() => set("venueLocation", opt.value)} color="#34d399" />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -322,20 +341,55 @@ function StepInventoryPreview({ data }: { data: WizardData }) {
   );
 }
 
+interface AiPreviewConfig {
+  tonePreset:           string;
+  experienceGoal:       string;
+  upsellIntensity:      number;
+  loyaltyWeight:        number;
+  maxRecommendations:   number;
+  pricingStrategy?:     { tier?: string; targetMarginPct?: number };
+  experienceFlowWeights?: { flavor: number; strength: number; balance: number; mood: number };
+}
+
 // ── Step 4: AI Config Preview ─────────────────────────────────────────────────
 function StepAiPreview({ data, set }: { data: WizardData; set: (k: keyof WizardData, v: string | string[]) => void }) {
+  const [preview,  setPreview]  = useState<AiPreviewConfig | null>(null);
+  const [loading,  setLoading]  = useState(false);
+  const [previewErr, setPreviewErr] = useState(false);
+
   function toggleCat(c: string) {
     const cur = data.aiFocusCategories;
     set("aiFocusCategories", cur.includes(c) ? cur.filter(x => x !== c) : [...cur, c]);
   }
 
-  const strategy = data.aiGoal === "revenue"
-    ? "Maximize upsell opportunities — premium tier recommendations, high-margin pairings, dynamic pricing enabled."
-    : data.aiGoal === "loyalty"
-    ? "Build repeat visits — XP multipliers, reward triggers, personalized taste memory activated."
-    : data.aiGoal === "discovery"
-    ? "Drive exploration — cross-craft recommendations, flavor profile expansion, new arrivals surfacing."
-    : "Balanced approach — mix of upsell, loyalty, and discovery weighted equally.";
+  // Debounced live preview — call /api/ai/configure every time inputs change
+  useEffect(() => {
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      setPreviewErr(false);
+      try {
+        const r = await fetch("/api/ai/configure", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+          body:    JSON.stringify({
+            venueType:         data.venueType,
+            menuSize:          data.venueSize as "small" | "medium" | "large",
+            targetDemographic: data.aiTone,
+            focusCategories:   data.aiFocusCategories,
+            experienceGoal:    data.aiGoal,
+            location:          data.venueLocation || "US-East",
+            pricingTier:       "premium",
+          }),
+        });
+        if (!r.ok) { setPreviewErr(true); return; }
+        const j = await r.json() as { config?: AiPreviewConfig };
+        if (!cancelled) setPreview(j.config ?? null);
+      } catch { if (!cancelled) setPreviewErr(true); }
+      finally   { if (!cancelled) setLoading(false); }
+    }, 600);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [data.aiTone, data.aiGoal, data.aiFocusCategories, data.venueType, data.venueLocation, data.venueSize]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -379,14 +433,64 @@ function StepAiPreview({ data, set }: { data: WizardData; set: (k: keyof WizardD
           ))}
         </div>
       </div>
-      {/* AI strategy preview */}
+
+      {/* Live AI strategy cards */}
       <div style={{
         padding: "14px 16px", borderRadius: 12,
         background: "rgba(167,139,250,0.06)", border: "1px solid rgba(167,139,250,0.18)",
-        fontSize: 12, color: "rgba(232,224,200,0.6)", lineHeight: 1.6,
+        fontSize: 12, lineHeight: 1.6,
       }}>
-        <span style={{ color: "#a78bfa", fontWeight: 700 }}>AI Strategy: </span>{strategy}
+        {loading ? (
+          <span style={{ color: "rgba(167,139,250,0.5)" }}>Generating AI strategy…</span>
+        ) : previewErr ? (
+          <span style={{ color: "rgba(232,224,200,0.4)" }}>Preview available after authentication. Your config will be applied on launch.</span>
+        ) : preview ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <StratCard label="Tone"         value={preview.tonePreset}                          color="#a78bfa" />
+              <StratCard label="Goal"         value={preview.experienceGoal}                      color="#d4af37" />
+              <StratCard label="Upsell"       value={`${Math.round(preview.upsellIntensity * 100)}%`} color="#f59e0b" />
+              <StratCard label="Loyalty"      value={`${Math.round(preview.loyaltyWeight * 100)}%`}   color="#34d399" />
+              <StratCard label="Recs"         value={`${preview.maxRecommendations} items`}       color="#5b8def" />
+              {preview.pricingStrategy?.targetMarginPct != null && (
+                <StratCard label="Target Margin" value={`${preview.pricingStrategy.targetMarginPct}%`} color="#f97316" />
+              )}
+            </div>
+            {preview.experienceFlowWeights && (
+              <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 4 }}>
+                {Object.entries(preview.experienceFlowWeights).map(([k, v]) => (
+                  <div key={k} style={{ flex: 1, textAlign: "center" }}>
+                    <div style={{ fontSize: 10, color: "rgba(232,224,200,0.4)", textTransform: "uppercase", marginBottom: 3 }}>{k}</div>
+                    <div style={{
+                      height: 4, borderRadius: 2,
+                      background: "rgba(167,139,250,0.15)",
+                      overflow: "hidden",
+                    }}>
+                      <div style={{ width: `${Math.round(v * 100 / 0.35 * 100)}%`, height: "100%", background: "#a78bfa", borderRadius: 2, transition: "width 0.4s" }} />
+                    </div>
+                    <div style={{ fontSize: 10, color: "rgba(167,139,250,0.7)", marginTop: 3 }}>{Math.round(v * 100)}%</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <span style={{ color: "rgba(232,224,200,0.4)" }}>Select options above to preview your AI configuration.</span>
+        )}
       </div>
+    </div>
+  );
+}
+
+function StratCard({ label, value, color }: { label: string; value: string; color: string }) {
+  return (
+    <div style={{
+      padding: "8px 12px", borderRadius: 8,
+      background: `${color}08`, border: `1px solid ${color}20`,
+      textAlign: "center", minWidth: 72,
+    }}>
+      <div style={{ fontSize: 14, fontWeight: 700, color }}>{value}</div>
+      <div style={{ fontSize: 10, color: "rgba(232,224,200,0.4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: 2 }}>{label}</div>
     </div>
   );
 }
@@ -397,6 +501,7 @@ function StepGoLive({ data }: { data: WizardData }) {
     { label: "Venue",          value: data.venueName || "(unnamed)" },
     { label: "Type",           value: data.venueType.replace("_", " ") },
     { label: "Size",           value: data.venueSize },
+    { label: "Region",         value: data.venueLocation || "Not specified" },
     { label: "Active Crafts",  value: data.selectedCrafts.join(", ") || "none" },
     { label: "AI Tone",        value: data.aiTone },
     { label: "Goal",           value: data.aiGoal },
@@ -512,6 +617,7 @@ export default function OnboardWizard() {
           targetDemographic: data.aiTone,
           focusCategories:   data.aiFocusCategories,
           experienceGoal:    data.aiGoal,
+          location:          data.venueLocation || "US-East",
         }),
       });
 

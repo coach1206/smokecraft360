@@ -213,7 +213,17 @@ router.post(
     const parsed = configureSchema.safeParse(req.body);
     if (!parsed.success) { res.status(422).json({ error: parsed.error.flatten() }); return; }
 
-    const venueId    = parsed.data.venueId ?? req.user?.venueId ?? null;
+    // Venue ownership guard: non-super_admins may only configure their own venue
+    const resolvedVenueId = parsed.data.venueId ?? req.user?.venueId ?? null;
+    if (
+      req.user?.role !== "super_admin" &&
+      parsed.data.venueId &&
+      parsed.data.venueId !== req.user?.venueId
+    ) {
+      res.status(403).json({ error: "Access denied: cannot configure a different venue" }); return;
+    }
+
+    const venueId    = resolvedVenueId;
     const config     = buildConfig(parsed.data);
     const pricingTier = parsed.data.pricingTier ?? "premium";
     const location    = parsed.data.location ?? "US";

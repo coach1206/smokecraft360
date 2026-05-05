@@ -208,8 +208,8 @@ async function offlineSweep() {
           idempotencyKey:  `offline_sweep_${d.id}_${cutoff.getTime()}`,
           deviceId:        d.id,
           venueId:         d.venueId ?? undefined,
-          kind:            "force_refresh",
-          payload:         { deviceId: d.id, reason: "offline_sweep", cutoff: cutoff.toISOString() },
+          kind:            "reconnect",
+          payload:         { deviceId: d.id, action: "reconnect", reason: "missed_heartbeat", cutoff: cutoff.toISOString() },
           status:          "pending",
           clientCreatedAt: new Date(),
         }).onConflictDoNothing();
@@ -222,7 +222,7 @@ async function offlineSweep() {
   }
 }
 
-// Start the sweep loop when the module is loaded
-setInterval(offlineSweep, 30_000);
+// Start the sweep loop when the module is loaded (every 60s; marks offline after 90s of silence)
+setInterval(offlineSweep, 60_000);
 
 export default router;

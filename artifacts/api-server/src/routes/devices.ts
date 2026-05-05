@@ -373,6 +373,30 @@ router.post(
   },
 );
 
+// ── GET /api/devices/:id/type — lightweight device type lookup ────────────────
+// Used by DeviceRouter to determine shell based on registered device record.
+
+router.get(
+  "/:id/type",
+  requireAuth,
+  async (req: AuthRequest, res: Response) => {
+    const device = await db
+      .select({ id: devicesTable.id, type: devicesTable.type, venueId: devicesTable.venueId })
+      .from(devicesTable)
+      .where(eq(devicesTable.id, String(req.params.id ?? "")))
+      .limit(1);
+
+    if (!device[0]) { res.status(404).json({ error: "Device not found" }); return; }
+
+    // Non-super_admins may only look up devices in their own venue
+    if (req.user?.role !== "super_admin" && device[0].venueId && device[0].venueId !== req.user?.venueId) {
+      res.status(403).json({ error: "Access denied" }); return;
+    }
+
+    res.json({ id: device[0].id, type: device[0].type });
+  },
+);
+
 // ── GET /api/devices/venue-qr/:venueId ────────────────────────────────────────
 
 router.get(
