@@ -90,6 +90,7 @@ import craftBuildsRouter        from "./routes/craftBuilds";
 import designDraftsRouter       from "./routes/designDrafts";
 import craftSessionsRouter      from "./routes/craftSessions";
 import craftRouter              from "./routes/craft";
+import competitionsRouter       from "./routes/competitions";
 import { startExperienceAutomation } from "./services/experienceAutomation";
 import { startSessionCleanupWorker } from "./lib/sessionCleanupWorker";
 import { startPayoutWorker }         from "./lib/payoutWorker";
@@ -296,6 +297,7 @@ app.use("/api/craft-builds",            craftBuildsRouter);
 app.use("/api/design-drafts",           designDraftsRouter);
 app.use("/api/craft-sessions",          craftSessionsRouter);
 app.use("/api/craft",                   craftRouter);
+app.use("/api/competitions",            competitionsRouter);
 
 // Start background workers
 if (process.env["NODE_ENV"] !== "test") {

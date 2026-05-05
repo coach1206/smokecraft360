@@ -15,6 +15,7 @@ import { eq, and, desc }                        from "drizzle-orm";
 import { db, craftBuildsTable, CRAFT_TYPES, CRAFT_PHASES } from "@workspace/db";
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { z }                                    from "zod";
+import { syncActiveTournamentScores }           from "../lib/tournamentSync";
 
 const router: IRouter = Router();
 
@@ -132,6 +133,13 @@ router.patch("/", requireAuth, async (req: AuthRequest, res: Response) => {
       .set(updates)
       .where(eq(craftBuildsTable.id, existing.id))
       .returning();
+
+    // Auto-propagate score to any active tournament entries for this user+craft.
+    // Fire-and-forget — must not delay the response.
+    if (score !== undefined) {
+      void syncActiveTournamentScores(userId, craft);
+    }
+
     res.json({ build: updated, created: false });
   } else {
     // Insert new row — treat this as the first save.
@@ -148,6 +156,12 @@ router.patch("/", requireAuth, async (req: AuthRequest, res: Response) => {
         score:          score != null ? String(score) : null,
       })
       .returning();
+
+    // Auto-propagate score on first-save too
+    if (score !== undefined) {
+      void syncActiveTournamentScores(userId, craft);
+    }
+
     res.status(201).json({ build: inserted, created: true });
   }
 });

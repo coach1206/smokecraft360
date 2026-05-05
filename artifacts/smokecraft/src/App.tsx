@@ -42,6 +42,7 @@ import AdminTouchscreen     from "@/pages/AdminTouchscreen";
 import VenueTouchscreen     from "@/pages/VenueTouchscreen";
 import VendorTouchscreen    from "@/pages/VendorTouchscreen";
 import DemoExperienceCenter from "@/pages/DemoExperienceCenter";
+import CompetitionModule   from "@/pages/CompetitionModule";
 import { DemoBanner }            from "@/components/Demo/DemoBanner";
 import { OfflineQueueBanner }   from "@/components/Demo/OfflineQueueBanner";
 import { PresentationOverlay }   from "@/components/Presentation/PresentationOverlay";
@@ -105,6 +106,7 @@ function Router() {
       <Route path="/touch/venue"       component={VenueTouchscreen}     />
       <Route path="/touch/vendor"      component={VendorTouchscreen}    />
       <Route path="/experience-center" component={DemoExperienceCenter} />
+      <Route path="/competition"        component={CompetitionModule}    />
       {/* Dynamic per-theme entry URL (/smokecraft, /pourcraft, /grillcraft …).
           Declared LAST in the Switch so explicit app routes above always win;
           loadTheme() resolves the active theme from the first path segment.

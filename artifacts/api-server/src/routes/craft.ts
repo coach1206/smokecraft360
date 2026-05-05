@@ -63,9 +63,23 @@ router.get("/session/:id", async (req: Request, res: Response) => {
 });
 
 // ── GET /api/craft/leaderboard ────────────────────────────────────────────────
+//
+// Optional query params:
+//   ?craft=smoke|brew|pour|vape   — filter to a single craft type
+//   ?limit=N                      — max results (default 10, max 50)
 
-router.get("/leaderboard", async (_req: Request, res: Response) => {
-  // Top 10 users by highest craft build score, joining user name.
+router.get("/leaderboard", async (req: Request, res: Response) => {
+  const CRAFT_TYPES_SET = new Set(["smoke", "brew", "pour", "vape"]);
+  const craftParam = typeof req.query["craft"] === "string" ? req.query["craft"] : null;
+  const limitParam = Math.min(50, Math.max(1, parseInt(String(req.query["limit"] ?? "10"), 10) || 10));
+
+  const where = craftParam && CRAFT_TYPES_SET.has(craftParam)
+    ? and(
+        isNotNull(craftBuildsTable.score),
+        eq(craftBuildsTable.craft, craftParam as "smoke" | "brew" | "pour" | "vape"),
+      )
+    : isNotNull(craftBuildsTable.score);
+
   const rows = await db
     .select({
       userId: craftBuildsTable.userId,
@@ -75,13 +89,14 @@ router.get("/leaderboard", async (_req: Request, res: Response) => {
     })
     .from(craftBuildsTable)
     .leftJoin(usersTable, eq(craftBuildsTable.userId, usersTable.id))
-    .where(isNotNull(craftBuildsTable.score))
+    .where(where)
     .groupBy(craftBuildsTable.userId, usersTable.name, craftBuildsTable.craft)
     .orderBy(desc(sql`MAX(CAST(${craftBuildsTable.score} AS NUMERIC))`))
-    .limit(10);
+    .limit(limitParam);
 
   res.json(
-    rows.map(r => ({
+    rows.map((r, i) => ({
+      rank:  i + 1,
       name:  r.name ?? "Guest",
       score: Number(Number(r.score).toFixed(2)),
       craft: r.craft,
