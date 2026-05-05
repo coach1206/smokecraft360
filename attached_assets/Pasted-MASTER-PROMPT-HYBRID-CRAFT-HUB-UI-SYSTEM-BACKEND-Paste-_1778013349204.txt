@@ -1,0 +1,251 @@
+MASTER PROMPT — HYBRID CRAFT HUB + UI SYSTEM + BACKEND
+
+Paste this into Replit AI Agent exactly as-is:
+
+Build a unified “Craft Hub Command System” for SmokeCraft 360 using React (frontend) and Node.js + Express + PostgreSQL (backend). This must be a production-style system, not a mock UI.
+
+1. GLOBAL UI SYSTEM (APPLY TO ALL SCREENS)
+Replace all full-screen background images with:
+Base color: #F5F2EB (cream)
+Optional blurred image at max 5% opacity
+All UI elements must use:
+Solid cards (white or soft cream)
+Border radius: 16px
+Padding: 20–24px
+Subtle shadow (not glow)
+Layout:
+12-column grid
+Max width: 1280px
+Section spacing: 24px
+Card spacing: 16px
+Every screen must have:
+Top metrics bar
+Main content
+Action layer
+2. REMOVE DUPLICATE CRAFT HUB
+Delete old Craft Hub UI
+Keep ONLY one route:
+/craft-hub
+3. HYBRID CRAFT HUB (MAIN ENTRY SYSTEM)
+
+Create a cinematic + structured grid with 4 cards:
+
+SmokeCraft
+PourCraft
+BrewCraft
+VapeCraft
+Card Behavior
+
+Each card must:
+
+Display rotating AI images (array of URLs)
+Auto-transition every 6 seconds with fade
+Have gradient overlay:
+bottom: rgba(0,0,0,0.7)
+top: transparent
+Card Layout
+
+Top-left:
+
+Category tag
+
+Center:
+
+Title (e.g. SmokeCraft 360)
+
+Bottom:
+
+Session description
+
+Bottom-right:
+
+Button: “Enter Experience”
+
+Top-right:
+
+Dynamic badges:
+Trending
+High Revenue
+Most Used
+
+Bottom strip:
+
+AI insight text (fetched from backend)
+Click Action
+onClick → /experience/:type
+4. EXPERIENCE ENGINE ROUTE
+
+Create:
+
+/experience/:type
+
+When loaded:
+
+Fetch inventory based on type
+Apply pairing logic
+Log session start
+5. BACKEND STRUCTURE
+Tables
+
+users:
+
+id
+email
+role
+
+inventory:
+
+id
+name
+type (cigar, spirit, beer, vape)
+stock
+price
+vendor_id
+
+vendors:
+
+id
+name
+category
+
+analytics:
+
+id
+metric
+value
+timestamp
+
+sessions:
+
+id
+user_id
+experience_type
+started_at
+6. ROLE SYSTEM
+
+Middleware:
+
+const allowRoles = (roles) => (req, res, next) => {
+  if (!roles.includes(req.user.role)) {
+    return res.status(403).json({ error: 'ACCESS_DENIED' })
+  }
+  next()
+}
+
+Apply to:
+
+inventory
+analytics
+admin routes
+7. INVENTORY PANEL (FIXED VERSION)
+
+Route:
+
+/inventory
+
+UI:
+
+Top:
+
+Total items
+Low stock
+Inventory value
+
+Table:
+
+Product image
+Name
+Stock (color coded)
+Vendor
+Price
+Reorder button
+
+Right panel:
+
+AI restock suggestions
+8. ANALYTICS PANEL (READABLE VERSION)
+
+Route:
+
+/analytics
+
+Top metrics:
+
+Revenue
+Orders
+Avg Order
+Rewards
+
+Middle:
+
+Chart (left)
+Top products (right)
+
+Bottom:
+
+AI insights
+9. REWARDS PANEL (FIX FIX)
+
+REMOVE living room background
+
+Replace with:
+
+Clean card grid
+Reward name
+Points cost
+Redemption count
+Buttons: Edit / Disable
+10. DEVICE CONTROL (CLEANED)
+
+Keep functionality
+
+BUT:
+
+Remove heavy image background
+Place cards on solid surface
+Improve spacing
+11. API ENDPOINTS
+
+GET /api/experiences
+GET /api/inventory
+GET /api/vendors
+GET /api/analytics
+POST /api/session/start
+
+12. AI INSIGHT GENERATOR (SIMPLE LOGIC)
+
+Create function:
+
+generateInsight(type) {
+  return "Trending pairing driving high engagement"
+}
+
+Return this to frontend per card
+
+13. PERFORMANCE RULES
+Lazy load images
+Use debounce for API calls
+Cache analytics for 30 seconds
+14. FINAL RESULT REQUIREMENTS
+Only ONE Craft Hub
+All screens readable
+No floating text on images
+Cards consistent across system
+Real backend data flow
+Role-protected routes working
+🧠 WHAT THIS DOES FOR YOU
+
+After this runs:
+
+Your UI stops fighting itself
+Your system becomes navigable
+Your experience feels premium AND functional
+You stop patching screens forever
+🚀 AFTER YOU RUN THIS
+
+Next move (don’t guess, I’ll guide it):
+
+AI pairing engine (real logic)
+Vendor auto-reorder system
+POS revenue sync
+Campaign engine
