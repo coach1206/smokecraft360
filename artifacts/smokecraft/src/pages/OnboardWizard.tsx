@@ -765,7 +765,7 @@ export default function OnboardWizard() {
             <div style={{ fontSize: 22, fontWeight: 700, color: C.gold, fontFamily: "'Playfair Display', serif" }}>
               Axiom OS Setup
             </div>
-            <div style={{ fontSize: 12, color: C.dim }}>Configure your experience platform</div>
+            <div style={{ fontSize: 12, color: C.dim }}>Experience Commerce OS</div>
           </div>
         </div>
 

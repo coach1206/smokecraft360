@@ -10,7 +10,7 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { randomUUID }                     from "crypto";
 import { db, demoSimEventsTable }         from "@workspace/db";
-import { eq, desc }                       from "drizzle-orm";
+import { eq, desc, and, gt }              from "drizzle-orm";
 import { requireAuth, type AuthRequest }  from "../middleware/auth";
 import { requireRole }                    from "../middleware/roles";
 import { logger }                         from "../lib/logger";
@@ -283,42 +283,48 @@ router.post(
   },
 );
 
+// ── Shared poll handler — used by both /events and /feed ─────────────────────
+async function pollHandler(req: Request, res: Response): Promise<void> {
+  const sessionId  = String(req.query.sessionId ?? "");
+  const sinceParam = req.query.since ? String(req.query.since) : null;
+  const sinceDate  = sinceParam ? new Date(sinceParam) : null;
+  const session    = SIM_SESSIONS.get(sessionId);
+
+  let events: Array<Record<string, unknown>> = [];
+  try {
+    const rows = await db
+      .select()
+      .from(demoSimEventsTable)
+      .where(
+        and(
+          eq(demoSimEventsTable.sessionId, sessionId),
+          sinceDate ? gt(demoSimEventsTable.createdAt, sinceDate) : undefined,
+        ),
+      )
+      .orderBy(desc(demoSimEventsTable.createdAt))
+      .limit(50);
+
+    events = rows.map(r => ({
+      id:        r.id,
+      type:      r.eventType,
+      payload:   r.payload,
+      timestamp: r.createdAt.toISOString(),
+    })).reverse();
+  } catch { /* DB unavailable — return empty */ }
+
+  res.json({
+    active:  session?.active ?? false,
+    revenue: session?.revenue ?? 0,
+    orders:  session?.orders  ?? 0,
+    rewards: session?.rewards ?? 0,
+    events,
+  });
+}
+
 // ── GET /api/demo/simulate/events ─────────────────────────────────────────────
-// Authenticated: poll endpoint — returns last 50 DB-persisted events + running KPIs
+router.get("/demo/simulate/events", requireAuth, (req, res) => void pollHandler(req, res));
 
-router.get(
-  "/demo/simulate/events",
-  requireAuth,
-  async (req: Request, res: Response) => {
-    const sessionId = String(req.query.sessionId ?? "");
-    const session   = SIM_SESSIONS.get(sessionId);
-
-    // Fetch last 50 persisted events for this session
-    let events: Array<Record<string, unknown>> = [];
-    try {
-      const rows = await db
-        .select()
-        .from(demoSimEventsTable)
-        .where(eq(demoSimEventsTable.sessionId, sessionId))
-        .orderBy(desc(demoSimEventsTable.createdAt))
-        .limit(50);
-
-      events = rows.map(r => ({
-        id:        r.id,
-        type:      r.eventType,
-        payload:   r.payload,
-        timestamp: r.createdAt.toISOString(),
-      })).reverse();
-    } catch { /* DB unavailable — return in-memory */ }
-
-    res.json({
-      active:  session?.active ?? false,
-      revenue: session?.revenue ?? 0,
-      orders:  session?.orders  ?? 0,
-      rewards: session?.rewards ?? 0,
-      events,
-    });
-  },
-);
+// ── GET /api/demo/simulate/feed (alias used by DashboardMetricsStep) ──────────
+router.get("/demo/simulate/feed", requireAuth, (req, res) => void pollHandler(req, res));
 
 export default router;

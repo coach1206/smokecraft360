@@ -38,7 +38,7 @@ const configureSchema = z.object({
 
 type ConfigInput = z.infer<typeof configureSchema>;
 
-interface CraftProductRec { name: string; reason: string; upsell: string; }
+interface CraftProductRec { name: string; reason: string; upsell: string; suggestedPrice: number; }
 interface UpsellSequence  { from: string; to: string; trigger: string; value: string; }
 
 interface StructuredConfig {
@@ -132,45 +132,45 @@ export function buildConfig(input: ConfigInput): StructuredConfig {
   // Per-craft product recommendations (5–8 per craft)
   const craftRecs: Record<string, CraftProductRec[]> = {
     cigar: [
-      { name: "Arturo Fuente Opus X",       reason: "Top-rated full strength — anchors premium perception",         upsell: "Add a pairing spirit"        },
-      { name: "Padron 1926 Serie #80",      reason: "Heritage brand, consistent bestseller",                        upsell: "Suggest limited edition"     },
-      { name: "Cohiba Behike 52",           reason: "Aspirational SKU — drives AOV upward",                         upsell: "Membership add-on"           },
-      { name: "Rocky Patel Vintage 1992",   reason: "Strong value-luxury ratio — converts first-time buyers",       upsell: "Flight of three cigars"      },
-      { name: "Oliva Serie V Melanio",      reason: "Award-winner accessible to new enthusiasts",                   upsell: "Pair with coffee flight"     },
-      { name: "My Father Le Bijou 1922",    reason: "Rich, full-bodied — resonates with connoisseurs",              upsell: "Private blend upgrade"       },
-      { name: "Liga Privada No. 9",         reason: "Trending enthusiast brand — drives social proof",              upsell: "Box purchase upsell"         },
-      { name: "Davidoff Aniversario No. 3", reason: "Prestige gifting SKU — highest per-unit margin",               upsell: "Gift packaging add-on"       },
+      { name: "Arturo Fuente Opus X",       reason: "Top-rated full strength — anchors premium perception",         upsell: "Add a pairing spirit",        suggestedPrice:  45 },
+      { name: "Padron 1926 Serie #80",      reason: "Heritage brand, consistent bestseller",                        upsell: "Suggest limited edition",     suggestedPrice:  38 },
+      { name: "Cohiba Behike 52",           reason: "Aspirational SKU — drives AOV upward",                         upsell: "Membership add-on",           suggestedPrice: 125 },
+      { name: "Rocky Patel Vintage 1992",   reason: "Strong value-luxury ratio — converts first-time buyers",       upsell: "Flight of three cigars",      suggestedPrice:  22 },
+      { name: "Oliva Serie V Melanio",      reason: "Award-winner accessible to new enthusiasts",                   upsell: "Pair with coffee flight",     suggestedPrice:  18 },
+      { name: "My Father Le Bijou 1922",    reason: "Rich, full-bodied — resonates with connoisseurs",              upsell: "Private blend upgrade",       suggestedPrice:  28 },
+      { name: "Liga Privada No. 9",         reason: "Trending enthusiast brand — drives social proof",              upsell: "Box purchase upsell",         suggestedPrice:  25 },
+      { name: "Davidoff Aniversario No. 3", reason: "Prestige gifting SKU — highest per-unit margin",               upsell: "Gift packaging add-on",       suggestedPrice:  75 },
     ],
     spirit: [
-      { name: "Macallan 18 Sherry Oak",     reason: "Defines the category for discerning guests",                   upsell: "Flight pairing with cigar"   },
-      { name: "Glenfiddich 21 Gran Res.",   reason: "Accessible luxury — strong price-to-prestige ratio",            upsell: "Double pour upsell"          },
-      { name: "Buffalo Trace Antique",      reason: "Bourbon enthusiast magnet — broadens demographic",             upsell: "Suggest neat vs. rocks"      },
-      { name: "Pappy Van Winkle 15yr",      reason: "Aspirational pinnacle — generates word-of-mouth",              upsell: "Vertical tasting flight"     },
-      { name: "Clase Azul Reposado",        reason: "Artisan bottle drives impulse purchase and gifting",            upsell: "Pair with premium cigar"     },
-      { name: "Johnnie Walker Blue Label",  reason: "Status signal familiar to all demographics",                   upsell: "Ice sphere or rocks service" },
-      { name: "Hennessy Paradis",           reason: "High-ticket cognac — maximizes occasion revenue",              upsell: "Private lounge reservation"  },
+      { name: "Macallan 18 Sherry Oak",     reason: "Defines the category for discerning guests",                   upsell: "Flight pairing with cigar",   suggestedPrice:  45 },
+      { name: "Glenfiddich 21 Gran Res.",   reason: "Accessible luxury — strong price-to-prestige ratio",            upsell: "Double pour upsell",          suggestedPrice:  35 },
+      { name: "Buffalo Trace Antique",      reason: "Bourbon enthusiast magnet — broadens demographic",             upsell: "Suggest neat vs. rocks",      suggestedPrice:  28 },
+      { name: "Pappy Van Winkle 15yr",      reason: "Aspirational pinnacle — generates word-of-mouth",              upsell: "Vertical tasting flight",     suggestedPrice: 185 },
+      { name: "Clase Azul Reposado",        reason: "Artisan bottle drives impulse purchase and gifting",            upsell: "Pair with premium cigar",     suggestedPrice:  40 },
+      { name: "Johnnie Walker Blue Label",  reason: "Status signal familiar to all demographics",                   upsell: "Ice sphere or rocks service", suggestedPrice:  55 },
+      { name: "Hennessy Paradis",           reason: "High-ticket cognac — maximizes occasion revenue",              upsell: "Private lounge reservation",  suggestedPrice:  95 },
     ],
     beer: [
-      { name: "Guinness Draught",           reason: "Familiar anchor — draws new guests into premium territory",    upsell: "Craft flight upsell"         },
-      { name: "Pliny the Elder IPA",        reason: "Enthusiast pull — social sharing effect",                      upsell: "Pair with appetizer"         },
-      { name: "Westvleteren 12",            reason: "Cult status — creates destination-worthy experience",           upsell: "Limited-release bundle"      },
-      { name: "Goose Island Bourbon County",reason: "Barrel-aged crossover appeals to whiskey fans",                upsell: "Cigar pairing suggestion"    },
-      { name: "Allagash White",             reason: "Sessionable crowd-pleaser broadens appeal",                    upsell: "Sampler flight upgrade"      },
-      { name: "Founders KBS",              reason: "High ABV collector beer — drives repeat loyalty visits",        upsell: "Members-only allocation"     },
+      { name: "Guinness Draught",           reason: "Familiar anchor — draws new guests into premium territory",    upsell: "Craft flight upsell",         suggestedPrice:   9 },
+      { name: "Pliny the Elder IPA",        reason: "Enthusiast pull — social sharing effect",                      upsell: "Pair with appetizer",         suggestedPrice:  14 },
+      { name: "Westvleteren 12",            reason: "Cult status — creates destination-worthy experience",           upsell: "Limited-release bundle",      suggestedPrice:  28 },
+      { name: "Goose Island Bourbon County",reason: "Barrel-aged crossover appeals to whiskey fans",                upsell: "Cigar pairing suggestion",    suggestedPrice:  22 },
+      { name: "Allagash White",             reason: "Sessionable crowd-pleaser broadens appeal",                    upsell: "Sampler flight upgrade",      suggestedPrice:  12 },
+      { name: "Founders KBS",              reason: "High ABV collector beer — drives repeat loyalty visits",        upsell: "Members-only allocation",     suggestedPrice:  18 },
     ],
     vape: [
-      { name: "Puffco Peak Pro",            reason: "High-margin hardware — drives attachment sales",               upsell: "Accessory bundle"            },
-      { name: "Lost Mary OS5000",           reason: "Entry-level pull — converts guests to regulars",               upsell: "Membership upgrade"          },
-      { name: "Elf Bar BC5000",             reason: "High-velocity SKU — drives repeat foot traffic",               upsell: "Flavor subscription"         },
-      { name: "SMOK Morph 3",              reason: "Advanced mod for enthusiasts — high attachment rate",           upsell: "Coil + battery bundle"       },
-      { name: "Vaporesso XROS",            reason: "Sleek pod system popular with younger demographics",            upsell: "Extra pods upsell"           },
+      { name: "Puffco Peak Pro",            reason: "High-margin hardware — drives attachment sales",               upsell: "Accessory bundle",            suggestedPrice: 420 },
+      { name: "Lost Mary OS5000",           reason: "Entry-level pull — converts guests to regulars",               upsell: "Membership upgrade",          suggestedPrice:  18 },
+      { name: "Elf Bar BC5000",             reason: "High-velocity SKU — drives repeat foot traffic",               upsell: "Flavor subscription",         suggestedPrice:  16 },
+      { name: "SMOK Morph 3",              reason: "Advanced mod for enthusiasts — high attachment rate",           upsell: "Coil + battery bundle",       suggestedPrice:  89 },
+      { name: "Vaporesso XROS",            reason: "Sleek pod system popular with younger demographics",            upsell: "Extra pods upsell",           suggestedPrice:  32 },
     ],
     food: [
-      { name: "Wagyu Beef Sliders",         reason: "Premium comfort food — pairs naturally with spirits",          upsell: "Add a spirit pairing"        },
-      { name: "Charcuterie Board",          reason: "High-margin shareable — extends dwell time",                   upsell: "Wine or spirit flight"       },
-      { name: "Lobster Bisque",             reason: "Aspirational starter — signals culinary prestige",              upsell: "Champagne pairing"           },
-      { name: "Truffle Fries",             reason: "Low-cost, high-margin add-on — easy impulse upsell",            upsell: "Aioli dipping sauces"        },
-      { name: "Smoked Salmon Crostini",    reason: "Light pairing for guests exploring spirits or wine",            upsell: "Add a rosé flight"           },
+      { name: "Wagyu Beef Sliders",         reason: "Premium comfort food — pairs naturally with spirits",          upsell: "Add a spirit pairing",        suggestedPrice:  28 },
+      { name: "Charcuterie Board",          reason: "High-margin shareable — extends dwell time",                   upsell: "Wine or spirit flight",       suggestedPrice:  34 },
+      { name: "Lobster Bisque",             reason: "Aspirational starter — signals culinary prestige",              upsell: "Champagne pairing",           suggestedPrice:  22 },
+      { name: "Truffle Fries",             reason: "Low-cost, high-margin add-on — easy impulse upsell",            upsell: "Aioli dipping sauces",        suggestedPrice:  14 },
+      { name: "Smoked Salmon Crostini",    reason: "Light pairing for guests exploring spirits or wine",            upsell: "Add a rosé flight",           suggestedPrice:  18 },
     ],
   };
 

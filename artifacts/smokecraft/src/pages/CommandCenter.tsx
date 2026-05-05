@@ -217,7 +217,7 @@ export default function CommandCenter() {
         fontSize: 10, color: C.dim, textTransform: "uppercase",
         letterSpacing: "0.15em", flexShrink: 0, background: C.header,
       }}>
-        <span><Activity size={10} style={{ marginRight: 4, verticalAlign: "middle" }} />Axiom OS · Command Hub v1.0</span>
+        <span><Activity size={10} style={{ marginRight: 4, verticalAlign: "middle" }} />Experience Commerce OS · Command Hub</span>
         <span>Powered by Axiom OS</span>
       </div>
 

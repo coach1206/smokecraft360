@@ -448,7 +448,7 @@ function DashboardMetricsStep() {
         if (!r.ok) return;
         const j = await r.json() as { revenue: number; orders: number; rewards: number; active: boolean; events: LiveEvent[] };
         setKpi({ revenue: j.revenue, orders: j.orders, rewards: j.rewards, active: j.active });
-        setEvents(j.events.slice(-8).reverse());
+        setEvents(j.events.slice(-10).reverse());
       } catch { /* ignore */ }
     }
 
@@ -510,16 +510,18 @@ function DashboardMetricsStep() {
   }, [events, simId]);
 
   // Static fallback KPIs shown when sim is not running
-  const displayRevenue = simId ? `$${kpi.revenue.toLocaleString()}` : "$8,830";
-  const displayOrders  = simId ? String(kpi.orders)  : "56";
-  const displayRewards = simId ? String(kpi.rewards) : "12";
-  const displayAvg     = simId && kpi.orders > 0 ? `$${Math.round(kpi.revenue / kpi.orders)}` : "$158";
+  const displayRevenue  = simId ? `$${kpi.revenue.toLocaleString()}` : "$8,830";
+  const displayOrders   = simId ? String(kpi.orders) : "56";
+  const displayAvg      = simId && kpi.orders > 0 ? `$${Math.round(kpi.revenue / kpi.orders)}` : "$158";
+  const displayConvRate = simId && funnelData.entry > 0
+    ? `${Math.round((funnelData.purchase / funnelData.entry) * 100)}%`
+    : "47%";
 
   const metrics = [
-    { label: "Revenue",   value: displayRevenue, color: "#d4af37" },
-    { label: "Orders",    value: displayOrders,  color: "#5b8def" },
-    { label: "Avg Order", value: displayAvg,     color: "#34d399" },
-    { label: "Rewards",   value: displayRewards, color: "#f59e0b" },
+    { label: "Revenue",    value: displayRevenue,  color: "#d4af37" },
+    { label: "Orders",     value: displayOrders,   color: "#5b8def" },
+    { label: "Avg Order",  value: displayAvg,      color: "#34d399" },
+    { label: "Conversion", value: displayConvRate, color: "#f59e0b" },
   ];
 
   const eventLabel: Record<string, string> = {

@@ -47,12 +47,12 @@ export type PosOperatingMode = "overlay" | "hybrid" | "full_pos";
 export const POS_MODE_INFO: Record<PosOperatingMode, { label: string; description: string; color: string }> = {
   overlay: {
     label: "Overlay",
-    description: "Works alongside your existing POS. SmokeCraft handles recommendations, loyalty, and analytics while your current system processes transactions.",
+    description: "Works alongside your existing commerce system. Axiom OS handles recommendations, loyalty, and analytics while your current system processes transactions.",
     color: "#5b8def",
   },
   hybrid: {
     label: "Hybrid",
-    description: "Syncs inventory and orders with your external POS (Toast, Square, Clover, Lightspeed). Both systems stay in sync automatically.",
+    description: "Syncs inventory and orders with external commerce platforms (Toast, Square, Clover, Lightspeed). Both systems stay in sync automatically.",
     color: "#f59e0b",
   },
   full_pos: {
