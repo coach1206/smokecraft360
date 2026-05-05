@@ -12,7 +12,7 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { desc, eq, sql, and, isNotNull, gte }               from "drizzle-orm";
 import { z }                                                 from "zod";
-import { db, craftBuildsTable, usersTable, userPreferencesTable, craftSessionStatesTable } from "@workspace/db";
+import { db, craftBuildsTable, usersTable, userPreferencesTable, craftSessionStatesTable, designDraftsTable } from "@workspace/db";
 import { scoreBuild }                                        from "../engine/craftEngine";
 
 const router: IRouter = Router();
@@ -175,6 +175,51 @@ router.get("/intel/summary", async (_req: Request, res: Response) => {
   ];
 
   res.json({ topPreference, actions });
+});
+
+// ── POST /api/craft/visual-build ─────────────────────────────────────────────
+// Persists a designer visual build (wood/trim/interior/brand) to designDraftsTable.
+// userId falls back to an anonymous kiosk UUID when no session is present.
+
+const ANON_KIOSK_USER = "00000000-0000-0000-0000-000000000000" as const;
+
+const visualBuildSchema = z.object({
+  craft:    z.enum(["smoke", "brew", "pour", "vape"]).default("smoke"),
+  wood:     z.string().max(32),
+  trim:     z.string().max(32),
+  interior: z.string().max(32),
+  brand:    z.string().max(80).default("MY BRAND"),
+});
+
+router.post("/visual-build", async (req: Request, res: Response) => {
+  const parsed = visualBuildSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "invalid_input", detail: parsed.error.flatten() });
+    return;
+  }
+  const { craft, brand, ...config } = parsed.data;
+
+  // Use session userId when available (future auth); fall back to anonymous kiosk user
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userId: string = (req as any).session?.userId ?? ANON_KIOSK_USER;
+
+  const [saved] = await db
+    .insert(designDraftsTable)
+    .values({
+      userId,
+      craft,
+      draftName: brand || "My Signature",
+      payload:   { wood: config.wood, trim: config.trim, interior: config.interior, brand },
+    })
+    .returning();
+
+  res.status(201).json({
+    id:        saved.id,
+    craft,
+    brand,
+    ...config,
+    createdAt: saved.createdAt,
+  });
 });
 
 function capitalize(s: string): string {
