@@ -10,7 +10,7 @@
  *  - Version history showing 3 most recent saved drafts (History)
  *  - PNG export via html2canvas
  *  - Debounced autosave to /api/design-drafts
- *  - "Submit to Venue" → POST /api/design-drafts with submitted flag
+ *  - "Submit to Venue" → POST /api/signature-cigars
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence }                   from "framer-motion";
@@ -79,6 +79,12 @@ export interface SignatureStudioProps {
   initialStyleId?:  string;
   initialMoodId?:   string;
   featuredName?:    string;
+  /** Derived band design from CraftFlow style/mood selections (smoke only) */
+  initialSmokeDesign?: {
+    design:  { primaryColor: string; accentColor: string; emblem: string; textStyle: "serif" | "sans" | "italic" };
+    name:    string;
+    styleId: string;
+  };
 }
 
 type AllDesignState = {
@@ -89,13 +95,25 @@ type AllDesignState = {
 };
 
 function buildInitialSmokeState(
-  state: SmokeDesignState,
-  featuredName?: string,
+  state:              SmokeDesignState,
+  featuredName?:      string,
+  initialSmokeDesign?: SignatureStudioProps["initialSmokeDesign"],
 ): SmokeDesignState {
-  if (featuredName && !state.bandName) {
-    return { ...state, bandName: featuredName.slice(0, 28) };
+  let s = state;
+  // Seed from CraftFlow-derived style/mood selection
+  if (initialSmokeDesign) {
+    s = {
+      ...s,
+      bandName: initialSmokeDesign.name.slice(0, 28),
+      style:    initialSmokeDesign.styleId,
+      design:   { ...s.design, ...initialSmokeDesign.design },
+    };
   }
-  return state;
+  // Featured product name takes lower priority than explicit seed
+  if (featuredName && !s.bandName) {
+    s = { ...s, bandName: featuredName.slice(0, 28) };
+  }
+  return s;
 }
 
 function SmokeThumbnail({ state }: { state: SmokeDesignState }) {
@@ -127,10 +145,13 @@ export default function SignatureStudio({
   accentColor,
   onClose,
   featuredName,
+  initialStyleId:  _initialStyleId,
+  initialMoodId:   _initialMoodId,
+  initialSmokeDesign,
 }: SignatureStudioProps) {
   const [activeTab,    setActiveTab]    = useState<StudioTab>("design");
   const [designState,  setDesignState]  = useState<AllDesignState>({
-    smoke: buildInitialSmokeState(DEFAULT_SMOKE_STATE, featuredName),
+    smoke: buildInitialSmokeState(DEFAULT_SMOKE_STATE, featuredName, initialSmokeDesign),
     brew:  DEFAULT_BREW_STATE,
     pour:  DEFAULT_POUR_STATE,
     vape:  DEFAULT_VAPE_STATE,

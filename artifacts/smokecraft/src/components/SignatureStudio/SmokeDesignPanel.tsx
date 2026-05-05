@@ -403,7 +403,7 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
             </div>
 
             <div>
-              <p className="text-[8px] uppercase tracking-[0.2em] mb-2" style={{ color: MUTED }}>Finish</p>
+              <p className="text-[8px] uppercase tracking-[0.2em] mb-2" style={{ color: MUTED }}>Surface Finish</p>
               <div className="flex gap-2">
                 {(["matte", "gloss", "embossed"] as FinishStyle[]).map(f => (
                   <button key={f} onClick={() => setBox("finishStyle", f)}
@@ -416,6 +416,9 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
                   </button>
                 ))}
               </div>
+              <p className="text-[8px] mt-1.5" style={{ color: "rgba(180,155,100,0.3)" }}>
+                Cedar wood → choose Cedar under Wood Tone above.
+              </p>
             </div>
           </motion.div>
         )}

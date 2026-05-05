@@ -1258,6 +1258,9 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         accentColor={config.theme.accent}
         onClose={() => setStudioOpen(false)}
         featuredName={resp?.featured?.[0]?.name}
+        initialStyleId={selectedStyle?.id}
+        initialMoodId={selectedMood?.id}
+        initialSmokeDesign={smokeViz ?? undefined}
       />
     </div>
   );
