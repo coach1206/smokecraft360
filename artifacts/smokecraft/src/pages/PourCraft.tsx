@@ -88,7 +88,7 @@ const BASE_CONFIG: CraftFlowConfig = {
     revealHeadline: "Your Signature Pour",
     productLabel: "The Pour",
     pairingLabel: "Paired Cigar",
-    orderCta: "Order at POS",
+    orderCta: "Order at the Bar",
   },
   styles: [
     { id: "smooth", title: "Smooth & Mellow", subtitle: "Honey · Vanilla · Easy",      flavors: ["sweet","vanilla","honey","smooth"],       strength: 2, mood: "relaxed", gradient: "linear-gradient(155deg, #f0d68a 0%, #c89548 50%, #5a3818 100%)", image: pourSmoothImg, glyph: "◐" },

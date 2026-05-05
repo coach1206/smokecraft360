@@ -385,57 +385,159 @@ function DeviceControlStep() {
   );
 }
 
+interface LiveKpi { revenue: number; orders: number; rewards: number; active: boolean; }
+interface LiveEvent { id: string; type: string; payload: Record<string, unknown>; timestamp: string; }
+
 function DashboardMetricsStep() {
+  const [kpi,    setKpi]    = useState<LiveKpi>({ revenue: 0, orders: 0, rewards: 0, active: false });
+  const [events, setEvents] = useState<LiveEvent[]>([]);
+  const [simId,  setSimId]  = useState<string | null>(null);
+  const [polling, setPolling] = useState(false);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Attempt to start a demo sim session; fall back gracefully if not super_admin
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await fetch("/api/demo/simulate/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ profile: "investor", speedMs: 3500 }),
+        });
+        if (!r.ok) return; // not authorized — show static KPIs instead
+        const j = await r.json() as { sessionId: string };
+        if (!cancelled) setSimId(j.sessionId);
+      } catch { /* no sim auth — static mode */ }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Poll /api/demo/simulate/events every 3 s while simId is known
+  useEffect(() => {
+    if (!simId) return;
+    setPolling(true);
+
+    async function poll() {
+      try {
+        const r = await fetch(`/api/demo/simulate/events?sessionId=${simId}`);
+        if (!r.ok) return;
+        const j = await r.json() as { revenue: number; orders: number; rewards: number; active: boolean; events: LiveEvent[] };
+        setKpi({ revenue: j.revenue, orders: j.orders, rewards: j.rewards, active: j.active });
+        setEvents(j.events.slice(-6).reverse());
+      } catch { /* ignore */ }
+    }
+
+    poll();
+    pollRef.current = setInterval(poll, 3000);
+    return () => { if (pollRef.current) clearInterval(pollRef.current); setPolling(false); };
+  }, [simId]);
+
+  // Stop session on unmount
+  useEffect(() => {
+    return () => {
+      if (simId) {
+        fetch("/api/demo/simulate/stop", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId: simId }),
+        }).catch(() => {});
+      }
+    };
+  }, [simId]);
+
+  // Static fallback KPIs shown when sim is not running
+  const displayRevenue = simId ? `$${kpi.revenue.toLocaleString()}` : "$8,830";
+  const displayOrders  = simId ? String(kpi.orders)  : "56";
+  const displayRewards = simId ? String(kpi.rewards) : "12";
+  const displayAvg     = simId && kpi.orders > 0 ? `$${Math.round(kpi.revenue / kpi.orders)}` : "$158";
+
   const metrics = [
-    { label: "Revenue", value: "$8,830", color: "#d4af37" },
-    { label: "Orders", value: "56", color: "#5b8def" },
-    { label: "Avg Order", value: "$158", color: "#34d399" },
-    { label: "Rewards", value: "12", color: "#f59e0b" },
+    { label: "Revenue",   value: displayRevenue, color: "#d4af37" },
+    { label: "Orders",    value: displayOrders,  color: "#5b8def" },
+    { label: "Avg Order", value: displayAvg,     color: "#34d399" },
+    { label: "Rewards",   value: displayRewards, color: "#f59e0b" },
   ];
 
-  const hours = ["10a", "11a", "12p", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"];
-  const values = [120, 280, 450, 380, 310, 520, 680, 890, 1240, 1580, 1420, 960];
-  const max = Math.max(...values);
+  const eventLabel: Record<string, string> = {
+    order_placed:    "Order",
+    product_viewed:  "View",
+    reward_unlocked: "Reward",
+    revenue_update:  "Revenue",
+    device_ping:     "Device",
+  };
 
   return (
     <StepCard>
-      <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(232,224,200,0.5)", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-        Command Hub Dashboard
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+          Live Dashboard
+        </div>
+        {simId && (
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: kpi.active ? "#34d399" : "rgba(232,224,200,0.3)" }}>
+            <motion.div
+              animate={{ scale: [1, 1.4, 1], opacity: [1, 0.5, 1] }}
+              transition={{ repeat: Infinity, duration: 1.4 }}
+              style={{ width: 7, height: 7, borderRadius: "50%", background: kpi.active ? "#34d399" : "rgba(232,224,200,0.2)" }}
+            />
+            {kpi.active ? "Live" : polling ? "Connecting…" : "Paused"}
+          </div>
+        )}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 20 }}>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 16 }}>
         {metrics.map((m, i) => (
           <motion.div
             key={m.label}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.12 }}
-            style={{ padding: 14, borderRadius: 12, background: "rgba(255,255,255,0.03)", border: `1px solid ${m.color}20`, textAlign: "center" }}
+            transition={{ delay: i * 0.1 }}
+            style={{ padding: 12, borderRadius: 12, background: "rgba(255,255,255,0.03)", border: `1px solid ${m.color}20`, textAlign: "center" }}
           >
-            <div style={{ fontSize: 22, fontWeight: 700, color: m.color }}>{m.value}</div>
+            <motion.div
+              key={m.value}
+              initial={{ scale: 1.15, color: m.color }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3 }}
+              style={{ fontSize: 20, fontWeight: 700, color: m.color }}
+            >
+              {m.value}
+            </motion.div>
             <div style={{ fontSize: 10, color: "rgba(232,224,200,0.4)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4 }}>{m.label}</div>
           </motion.div>
         ))}
       </div>
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 100 }}>
-        {values.map((v, i) => (
-          <motion.div
-            key={hours[i]}
-            initial={{ height: 0 }}
-            animate={{ height: `${(v / max) * 100}%` }}
-            transition={{ delay: 0.5 + i * 0.06, duration: 0.4 }}
-            style={{
-              flex: 1, borderRadius: "3px 3px 0 0", minHeight: 3,
-              background: "linear-gradient(180deg, #d4af37, #d4af3740)",
-            }}
-            title={`${hours[i]}: $${v}`}
-          />
-        ))}
-      </div>
-      <div style={{ display: "flex", gap: 3, marginTop: 4 }}>
-        {hours.map(h => (
-          <div key={h} style={{ flex: 1, fontSize: 8, color: "rgba(232,224,200,0.25)", textAlign: "center" }}>{h}</div>
-        ))}
-      </div>
+
+      {/* Live event feed */}
+      {events.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+          <div style={{ fontSize: 10, color: "rgba(232,224,200,0.3)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>Recent Events</div>
+          {events.map(ev => {
+            const p = ev.payload as Record<string, unknown>;
+            return (
+              <motion.div
+                key={ev.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  padding: "7px 10px", borderRadius: 8,
+                  background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)",
+                  fontSize: 11,
+                }}
+              >
+                <span style={{ color: "#d4af37", fontWeight: 700, minWidth: 52 }}>{eventLabel[ev.type] ?? ev.type}</span>
+                <span style={{ color: "rgba(232,224,200,0.6)", flex: 1, paddingLeft: 8 }}>
+                  {String(p.guestName ?? "")} {p.productName ? `· ${String(p.productName)}` : ""}
+                </span>
+                {p.total != null && (
+                  <span style={{ color: "#34d399", fontWeight: 700 }}>${Number(p.total).toFixed(2)}</span>
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
     </StepCard>
   );
 }

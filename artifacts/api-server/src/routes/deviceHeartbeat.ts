@@ -2,8 +2,9 @@ import { Router, type IRouter, type Response } from "express";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
 import { requireRole } from "../middleware/roles";
 import { z } from "zod";
-import { db, devicesTable } from "@workspace/db";
-import { and, eq, desc } from "drizzle-orm";
+import { db, devicesTable, offlineQueueTable } from "@workspace/db";
+import { and, eq, desc, lte } from "drizzle-orm";
+import { randomUUID } from "crypto";
 import { logAudit } from "../lib/audit";
 import { logger } from "../lib/logger";
 import rateLimit from "express-rate-limit";
@@ -176,5 +177,52 @@ router.post(
     res.json({ deviceId, forceRefresh: true, message: "Device will refresh on next heartbeat" });
   },
 );
+
+// ── Offline sweep — runs every 30 s, marks devices offline after 90 s of silence ──
+
+async function offlineSweep() {
+  const cutoff = new Date(Date.now() - 90_000);
+  try {
+    const stale = await db
+      .select({ id: devicesTable.id, venueId: devicesTable.venueId })
+      .from(devicesTable)
+      .where(and(
+        lte(devicesTable.lastActiveAt, cutoff),
+        eq(devicesTable.status, "active"),
+      ));
+
+    if (stale.length === 0) return;
+
+    await db
+      .update(devicesTable)
+      .set({ status: "inactive", updatedAt: new Date() })
+      .where(and(
+        lte(devicesTable.lastActiveAt, cutoff),
+        eq(devicesTable.status, "active"),
+      ));
+
+    // Enqueue a reconnect action for each stale device
+    for (const d of stale) {
+      try {
+        await db.insert(offlineQueueTable).values({
+          idempotencyKey:  `offline_sweep_${d.id}_${cutoff.getTime()}`,
+          deviceId:        d.id,
+          venueId:         d.venueId ?? undefined,
+          kind:            "force_refresh",
+          payload:         { deviceId: d.id, reason: "offline_sweep", cutoff: cutoff.toISOString() },
+          status:          "pending",
+          clientCreatedAt: new Date(),
+        }).onConflictDoNothing();
+      } catch { /* non-fatal */ }
+    }
+
+    logger.info({ sweptCount: stale.length }, "offline sweep: marked devices inactive");
+  } catch (err) {
+    logger.error({ err }, "offline sweep failed");
+  }
+}
+
+// Start the sweep loop when the module is loaded
+setInterval(offlineSweep, 30_000);
 
 export default router;

@@ -2,22 +2,23 @@
  * OnboardWizard — 5-step venue onboarding wizard.
  *
  * Steps:
- *  1. Venue Info     — name, type, size
- *  2. Hardware       — device count & types
- *  3. Menu           — import or skip
- *  4. AI Config      — tone, goal, focus categories
- *  5. Go Live        — review & launch
+ *  1. Venue Details      — name, type, size
+ *  2. Craft Selection    — which crafts to enable (SmokeCraft, PourCraft, BrewCraft, VapeCraft)
+ *  3. Inventory Preview  — preview of default products for selected crafts
+ *  4. AI Config Preview  — tone, goal, focus — preview of AI strategy
+ *  5. Go Live            — review & launch
  */
 
-import { useState, useCallback } from "react";
-import { useLocation }           from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useCallback }       from "react";
+import { useLocation }                 from "wouter";
+import { motion, AnimatePresence }     from "framer-motion";
 import {
-  Building2, Monitor, Package, Sparkles, Rocket,
+  Building2, Layers, Package, Sparkles, Rocket,
   Check, ChevronRight, ChevronLeft, ArrowLeft,
+  Flame, Beer, Wine, Zap,
 } from "lucide-react";
-import BackgroundLayer from "@/components/Layout/BackgroundLayer";
-import { getAuthHeaders } from "@/services/auth";
+import BackgroundLayer                 from "@/components/Layout/BackgroundLayer";
+import { getAuthHeaders }             from "@/services/auth";
 
 const C = {
   bg:     "#0a0806",
@@ -34,9 +35,7 @@ interface WizardData {
   venueName:         string;
   venueType:         string;
   venueSize:         string;
-  deviceCount:       string;
-  deviceTypes:       string[];
-  menuImport:        string;
+  selectedCrafts:    string[];
   aiTone:            string;
   aiGoal:            string;
   aiFocusCategories: string[];
@@ -46,29 +45,65 @@ const INITIAL: WizardData = {
   venueName:         "",
   venueType:         "cigar_lounge",
   venueSize:         "medium",
-  deviceCount:       "2",
-  deviceTypes:       ["tablet"],
-  menuImport:        "skip",
+  selectedCrafts:    ["cigar", "spirit"],
   aiTone:            "upscale",
   aiGoal:            "balanced",
   aiFocusCategories: ["cigar", "spirit"],
 };
 
 const STEPS = [
-  { id: "venue_info", label: "Venue Info",  icon: Building2, color: "#d4af37" },
-  { id: "hardware",   label: "Hardware",    icon: Monitor,   color: "#5b8def" },
-  { id: "menu",       label: "Menu",        icon: Package,   color: "#34d399" },
-  { id: "ai_config",  label: "AI Config",   icon: Sparkles,  color: "#a78bfa" },
-  { id: "go_live",    label: "Go Live",     icon: Rocket,    color: "#f97316" },
+  { id: "venue_info",        label: "Venue Details",      icon: Building2, color: "#d4af37" },
+  { id: "craft_selection",   label: "Craft Selection",    icon: Layers,    color: "#5b8def" },
+  { id: "inventory_preview", label: "Inventory Preview",  icon: Package,   color: "#34d399" },
+  { id: "ai_preview",        label: "AI Config Preview",  icon: Sparkles,  color: "#a78bfa" },
+  { id: "go_live",           label: "Go Live",            icon: Rocket,    color: "#f97316" },
+];
+
+// Preview catalog — mirrors backend SEED_PRODUCTS
+const PREVIEW_CATALOG: Record<string, Array<{ name: string; tier: string; price: string }>> = {
+  cigar: [
+    { name: "Arturo Fuente Opus X",  tier: "premium",  price: "$42" },
+    { name: "Padron 1926 Serie #80", tier: "premium",  price: "$55" },
+    { name: "Oliva Serie V Melanio", tier: "standard", price: "$18" },
+  ],
+  spirit: [
+    { name: "Macallan 18 Sherry Oak", tier: "premium",  price: "$28" },
+    { name: "Buffalo Trace Bourbon",  tier: "standard", price: "$12" },
+    { name: "Clase Azul Reposado",    tier: "premium",  price: "$35" },
+  ],
+  beer: [
+    { name: "Guinness Draught",    tier: "standard", price: "$9" },
+    { name: "Pliny the Elder IPA", tier: "premium",  price: "$14" },
+  ],
+  wine: [
+    { name: "Caymus Cabernet 2021",   tier: "premium",  price: "$22" },
+    { name: "Whispering Angel Rosé",  tier: "standard", price: "$16" },
+  ],
+  food: [
+    { name: "Wagyu Beef Sliders", tier: "premium",  price: "$24" },
+    { name: "Charcuterie Board",  tier: "standard", price: "$18" },
+  ],
+  vape: [
+    { name: "Acid Kuba Kuba",        tier: "standard", price: "$12" },
+    { name: "CAO Flavours Honey",    tier: "mid",      price: "$15" },
+  ],
+};
+
+const CRAFT_META: Array<{ id: string; label: string; icon: typeof Beer; color: string; desc: string }> = [
+  { id: "cigar",  label: "SmokeCraft",  icon: Package, color: "#d4af37", desc: "Luxury cigar recommendations & pairings" },
+  { id: "spirit", label: "PourCraft",   icon: Wine,    color: "#5b8def", desc: "Spirits & whiskey concierge experience" },
+  { id: "beer",   label: "BrewCraft",   icon: Beer,    color: "#34d399", desc: "Craft beer discovery & flight builder" },
+  { id: "vape",   label: "VapeCraft",   icon: Zap,     color: "#a78bfa", desc: "Premium vape & e-liquid matching" },
+  { id: "food",   label: "Culinary",    icon: Layers,  color: "#f97316", desc: "Food pairings & menu integration" },
 ];
 
 function StepProgress({ current }: { current: number }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 0, marginBottom: 32 }}>
       {STEPS.map((step, i) => {
-        const Icon = step.icon;
-        const done    = i < current;
-        const active  = i === current;
+        const Icon  = step.icon;
+        const done  = i < current;
+        const active = i === current;
         return (
           <div key={step.id} style={{ display: "flex", alignItems: "center", flex: i < STEPS.length - 1 ? "1" : undefined }}>
             <div style={{
@@ -97,9 +132,7 @@ function StepProgress({ current }: { current: number }) {
   );
 }
 
-function OptionChip({
-  label, selected, onClick, color = C.gold,
-}: {
+function OptionChip({ label, selected, onClick, color = C.gold }: {
   label: string; selected: boolean; onClick: () => void; color?: string;
 }) {
   return (
@@ -119,7 +152,8 @@ function OptionChip({
   );
 }
 
-function StepVenueInfo({ data, set }: { data: WizardData; set: (k: keyof WizardData, v: string | string[]) => void }) {
+// ── Step 1: Venue Details ──────────────────────────────────────────────────────
+function StepVenueDetails({ data, set }: { data: WizardData; set: (k: keyof WizardData, v: string | string[]) => void }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <div>
@@ -135,8 +169,8 @@ function StepVenueInfo({ data, set }: { data: WizardData; set: (k: keyof WizardD
             background: "rgba(255,255,255,0.05)", border: `1px solid ${C.border}`,
             color: C.text, outline: "none", boxSizing: "border-box",
           }}
-          onFocus={e => { e.target.style.borderColor = C.gold; }}
-          onBlur={e => { e.target.style.borderColor = C.border; }}
+          onFocus={e  => { e.target.style.borderColor = C.gold; }}
+          onBlur={e   => { e.target.style.borderColor = C.border; }}
         />
       </div>
       <div>
@@ -146,11 +180,11 @@ function StepVenueInfo({ data, set }: { data: WizardData; set: (k: keyof WizardD
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {[
             { value: "cigar_lounge", label: "Cigar Lounge" },
-            { value: "bar", label: "Bar" },
-            { value: "restaurant", label: "Restaurant" },
-            { value: "hotel", label: "Hotel" },
-            { value: "club", label: "Club" },
-            { value: "retail", label: "Retail" },
+            { value: "bar",          label: "Bar" },
+            { value: "restaurant",   label: "Restaurant" },
+            { value: "hotel",        label: "Hotel" },
+            { value: "club",         label: "Club" },
+            { value: "retail",       label: "Retail" },
           ].map(opt => (
             <OptionChip key={opt.value} label={opt.label} selected={data.venueType === opt.value} onClick={() => set("venueType", opt.value)} />
           ))}
@@ -162,9 +196,9 @@ function StepVenueInfo({ data, set }: { data: WizardData; set: (k: keyof WizardD
         </label>
         <div style={{ display: "flex", gap: 8 }}>
           {[
-            { value: "small", label: "Small (1–2 staff)" },
+            { value: "small",  label: "Small (1–2 staff)" },
             { value: "medium", label: "Medium (3–10 staff)" },
-            { value: "large", label: "Large (11+ staff)" },
+            { value: "large",  label: "Large (11+ staff)" },
           ].map(opt => (
             <OptionChip key={opt.value} label={opt.label} selected={data.venueSize === opt.value} onClick={() => set("venueSize", opt.value)} />
           ))}
@@ -174,93 +208,135 @@ function StepVenueInfo({ data, set }: { data: WizardData; set: (k: keyof WizardD
   );
 }
 
-function StepHardware({ data, set }: { data: WizardData; set: (k: keyof WizardData, v: string | string[]) => void }) {
-  function toggleType(t: string) {
-    const cur = data.deviceTypes;
-    set("deviceTypes", cur.includes(t) ? cur.filter(x => x !== t) : [...cur, t]);
+// ── Step 2: Craft Selection ────────────────────────────────────────────────────
+function StepCraftSelection({ data, set }: { data: WizardData; set: (k: keyof WizardData, v: string | string[]) => void }) {
+  function toggle(id: string) {
+    const cur = data.selectedCrafts;
+    set("selectedCrafts", cur.includes(id) ? cur.filter(x => x !== id) : [...cur, id]);
   }
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <div>
-        <label style={{ fontSize: 12, color: C.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 8 }}>
-          Expected Device Count
-        </label>
-        <div style={{ display: "flex", gap: 8 }}>
-          {["1", "2", "3", "5", "10+"].map(n => (
-            <OptionChip key={n} label={n} selected={data.deviceCount === n} onClick={() => set("deviceCount", n)} color="#5b8def" />
-          ))}
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ fontSize: 13, color: C.muted, lineHeight: 1.6, marginBottom: 4 }}>
+        Select the experience modules to activate at your venue. Each craft has its own AI-guided recommendation engine and default product catalog.
+      </div>
+      {CRAFT_META.map(craft => {
+        const Icon     = craft.icon;
+        const selected = data.selectedCrafts.includes(craft.id);
+        return (
+          <motion.button
+            key={craft.id}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => toggle(craft.id)}
+            style={{
+              display: "flex", gap: 14, padding: "16px", borderRadius: 14, cursor: "pointer",
+              textAlign: "left",
+              background: selected ? `${craft.color}08` : C.card,
+              border: `2px solid ${selected ? craft.color : C.border}`,
+              transition: "all 0.2s",
+            }}
+          >
+            <div style={{
+              width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+              background: selected ? `${craft.color}15` : "rgba(255,255,255,0.04)",
+              border: `1px solid ${selected ? craft.color : "rgba(255,255,255,0.1)"}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <Icon size={18} color={selected ? craft.color : "rgba(232,224,200,0.3)"} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: selected ? craft.color : C.text, marginBottom: 3 }}>
+                {craft.label}
+              </div>
+              <div style={{ fontSize: 12, color: C.dim }}>{craft.desc}</div>
+            </div>
+            <div style={{
+              width: 22, height: 22, borderRadius: "50%", flexShrink: 0, alignSelf: "center",
+              border: `2px solid ${selected ? craft.color : "rgba(255,255,255,0.15)"}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              {selected && <div style={{ width: 12, height: 12, borderRadius: "50%", background: craft.color }} />}
+            </div>
+          </motion.button>
+        );
+      })}
+      {data.selectedCrafts.length === 0 && (
+        <div style={{ fontSize: 12, color: "#ef4444", textAlign: "center", paddingTop: 4 }}>
+          Select at least one craft module to continue.
         </div>
-      </div>
-      <div>
-        <label style={{ fontSize: 12, color: C.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 10 }}>
-          Device Types (select all that apply)
-        </label>
-        <div style={{ display: "flex", gap: 8 }}>
-          {["kiosk", "tablet", "mobile"].map(t => (
-            <OptionChip key={t} label={t.charAt(0).toUpperCase() + t.slice(1)} selected={data.deviceTypes.includes(t)} onClick={() => toggleType(t)} color="#5b8def" />
-          ))}
-        </div>
-      </div>
-      <div style={{
-        padding: "14px 16px", borderRadius: 12,
-        background: "rgba(91,141,239,0.06)", border: "1px solid rgba(91,141,239,0.15)",
-        fontSize: 12, color: "rgba(232,224,200,0.5)", lineHeight: 1.6,
-      }}>
-        Devices can be registered later from the Devices module. This step seeds your fleet estimate for AI configuration.
-      </div>
+      )}
     </div>
   );
 }
 
-function StepMenu({ data, set }: { data: WizardData; set: (k: keyof WizardData, v: string | string[]) => void }) {
+// ── Step 3: Inventory Preview ──────────────────────────────────────────────────
+function StepInventoryPreview({ data }: { data: WizardData }) {
+  const crafts = data.selectedCrafts.length > 0 ? data.selectedCrafts : ["cigar", "spirit"];
+  const tierColor = (tier: string) =>
+    tier === "premium" ? "#d4af37" : tier === "mid" ? "#a78bfa" : "#5b8def";
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ fontSize: 13, color: C.muted, lineHeight: 1.6, marginBottom: 4 }}>
-        Import an existing menu or start with the Axiom OS default catalog. You can add and edit products at any time.
+      <div style={{ fontSize: 13, color: C.muted, lineHeight: 1.6 }}>
+        These default products will be seeded into your inventory when you launch. You can add, edit, or remove them at any time.
       </div>
-      {[
-        { value: "skip",     label: "Start with default catalog",     desc: "Use our curated premium product library — ready immediately." },
-        { value: "csv",      label: "Import from CSV",                desc: "Upload a spreadsheet with your existing product names and prices." },
-        { value: "manual",   label: "Add products manually",          desc: "Build your menu from scratch using the inventory module." },
-      ].map(opt => (
-        <motion.button
-          key={opt.value}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => set("menuImport", opt.value)}
-          style={{
-            display: "flex", gap: 14, padding: "16px", borderRadius: 14, cursor: "pointer",
-            textAlign: "left",
-            background: data.menuImport === opt.value ? "rgba(52,211,153,0.08)" : C.card,
-            border: `2px solid ${data.menuImport === opt.value ? "#34d399" : C.border}`,
-            transition: "all 0.2s",
-          }}
-        >
-          <div style={{
-            width: 22, height: 22, borderRadius: "50%", flexShrink: 0, marginTop: 1,
-            border: `2px solid ${data.menuImport === opt.value ? "#34d399" : "rgba(255,255,255,0.15)"}`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            {data.menuImport === opt.value && (
-              <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#34d399" }} />
-            )}
-          </div>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: data.menuImport === opt.value ? "#34d399" : C.text, marginBottom: 4 }}>
-              {opt.label}
+      {crafts.map(craftId => {
+        const meta     = CRAFT_META.find(c => c.id === craftId);
+        const products = PREVIEW_CATALOG[craftId] ?? [];
+        if (!products.length) return null;
+        return (
+          <div key={craftId}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: meta?.color ?? C.gold, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+              {meta?.label ?? craftId}
             </div>
-            <div style={{ fontSize: 12, color: C.dim }}>{opt.desc}</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {products.map(p => (
+                <div key={p.name} style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  padding: "10px 14px", borderRadius: 10,
+                  background: C.card, border: `1px solid ${C.border}`,
+                }}>
+                  <div>
+                    <span style={{ fontSize: 13, color: C.text, fontWeight: 500 }}>{p.name}</span>
+                    <span style={{
+                      marginLeft: 8, fontSize: 10, fontWeight: 700, textTransform: "uppercase",
+                      color: tierColor(p.tier), letterSpacing: "0.08em",
+                    }}>{p.tier}</span>
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: C.gold }}>{p.price}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </motion.button>
-      ))}
+        );
+      })}
+      <div style={{
+        padding: "12px 16px", borderRadius: 12,
+        background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.15)",
+        fontSize: 12, color: "rgba(232,224,200,0.5)", lineHeight: 1.6,
+      }}>
+        {crafts.length > 0
+          ? `${crafts.reduce((n, c) => n + (PREVIEW_CATALOG[c]?.length ?? 0), 0)} products will be seeded across ${crafts.length} craft module${crafts.length > 1 ? "s" : ""}.`
+          : "No crafts selected — select crafts in the previous step."}
+      </div>
     </div>
   );
 }
 
-function StepAiConfig({ data, set }: { data: WizardData; set: (k: keyof WizardData, v: string | string[]) => void }) {
+// ── Step 4: AI Config Preview ─────────────────────────────────────────────────
+function StepAiPreview({ data, set }: { data: WizardData; set: (k: keyof WizardData, v: string | string[]) => void }) {
   function toggleCat(c: string) {
     const cur = data.aiFocusCategories;
     set("aiFocusCategories", cur.includes(c) ? cur.filter(x => x !== c) : [...cur, c]);
   }
+
+  const strategy = data.aiGoal === "revenue"
+    ? "Maximize upsell opportunities — premium tier recommendations, high-margin pairings, dynamic pricing enabled."
+    : data.aiGoal === "loyalty"
+    ? "Build repeat visits — XP multipliers, reward triggers, personalized taste memory activated."
+    : data.aiGoal === "discovery"
+    ? "Drive exploration — cross-craft recommendations, flavor profile expansion, new arrivals surfacing."
+    : "Balanced approach — mix of upsell, loyalty, and discovery weighted equally.";
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <div>
@@ -303,20 +379,29 @@ function StepAiConfig({ data, set }: { data: WizardData; set: (k: keyof WizardDa
           ))}
         </div>
       </div>
+      {/* AI strategy preview */}
+      <div style={{
+        padding: "14px 16px", borderRadius: 12,
+        background: "rgba(167,139,250,0.06)", border: "1px solid rgba(167,139,250,0.18)",
+        fontSize: 12, color: "rgba(232,224,200,0.6)", lineHeight: 1.6,
+      }}>
+        <span style={{ color: "#a78bfa", fontWeight: 700 }}>AI Strategy: </span>{strategy}
+      </div>
     </div>
   );
 }
 
+// ── Step 5: Go Live ────────────────────────────────────────────────────────────
 function StepGoLive({ data }: { data: WizardData }) {
   const summary = [
-    { label: "Venue",        value: data.venueName || "(unnamed)" },
-    { label: "Type",         value: data.venueType.replace("_", " ") },
-    { label: "Size",         value: data.venueSize },
-    { label: "Devices",      value: `${data.deviceCount} × ${data.deviceTypes.join(", ")}` },
-    { label: "Menu",         value: data.menuImport },
-    { label: "AI Tone",      value: data.aiTone },
-    { label: "Goal",         value: data.aiGoal },
-    { label: "Focus",        value: data.aiFocusCategories.join(", ") || "all" },
+    { label: "Venue",          value: data.venueName || "(unnamed)" },
+    { label: "Type",           value: data.venueType.replace("_", " ") },
+    { label: "Size",           value: data.venueSize },
+    { label: "Active Crafts",  value: data.selectedCrafts.join(", ") || "none" },
+    { label: "AI Tone",        value: data.aiTone },
+    { label: "Goal",           value: data.aiGoal },
+    { label: "Focus",          value: data.aiFocusCategories.join(", ") || "all" },
+    { label: "Products Seeded",value: `${data.selectedCrafts.reduce((n, c) => n + (PREVIEW_CATALOG[c]?.length ?? 0), 0)} items` },
   ];
   return (
     <div>
@@ -339,8 +424,10 @@ function StepGoLive({ data }: { data: WizardData }) {
   );
 }
 
+// ── Main Wizard ────────────────────────────────────────────────────────────────
+
 export default function OnboardWizard() {
-  const [, navigate] = useLocation();
+  const [, navigate]  = useLocation();
   const [step,    setStep]    = useState(0);
   const [data,    setData]    = useState<WizardData>(INITIAL);
   const [loading, setLoading] = useState(false);
@@ -361,40 +448,52 @@ export default function OnboardWizard() {
       if (res.ok) {
         const json = await res.json() as { id: string };
         setSessionId(json.id);
+        return json.id;
       }
     } catch { /* non-fatal */ }
+    return null;
   }
 
-  async function patchStep(stepId: string) {
-    if (!sessionId) return;
+  async function patchStep(sid: string, stepId: string) {
     try {
-      await fetch(`/api/onboarding/${sessionId}`, {
+      await fetch(`/api/onboarding/${sid}`, {
         method:  "PATCH",
         headers: { "Content-Type": "application/json", ...getAuthHeaders() },
-        body:    JSON.stringify({ step: stepId, data }),
+        body:    JSON.stringify({
+          step:           stepId,
+          data:           { venueName: data.venueName, venueType: data.venueType, venueSize: data.venueSize, aiTone: data.aiTone, aiGoal: data.aiGoal },
+          selectedCrafts: data.selectedCrafts,
+        }),
       });
     } catch { /* non-fatal */ }
   }
 
   async function handleNext() {
-    if (step === 0 && !sessionId) {
-      await startSession();
+    // Validate craft selection step
+    if (STEPS[step]?.id === "craft_selection" && data.selectedCrafts.length === 0) {
+      setError("Please select at least one craft module.");
+      return;
     }
-    if (sessionId) {
-      await patchStep(STEPS[step]!.id);
+    setError(null);
+
+    let sid = sessionId;
+    if (step === 0 && !sid) {
+      sid = await startSession();
     }
-    if (step < STEPS.length - 1) {
-      setStep(s => s + 1);
-    }
+    if (sid) await patchStep(sid, STEPS[step]!.id);
+    if (step < STEPS.length - 1) setStep(s => s + 1);
   }
 
   async function handleComplete() {
     setLoading(true);
     setError(null);
     try {
-      if (sessionId) {
-        await patchStep("go_live");
-        const completeRes = await fetch(`/api/onboarding/${sessionId}/complete`, {
+      let sid = sessionId;
+      if (!sid) sid = await startSession();
+
+      if (sid) {
+        await patchStep(sid, "go_live");
+        const completeRes = await fetch(`/api/onboarding/${sid}/complete`, {
           method:  "POST",
           headers: { "Content-Type": "application/json", ...getAuthHeaders() },
           body:    "{}",
@@ -425,15 +524,15 @@ export default function OnboardWizard() {
   }
 
   const currentStep = STEPS[step]!;
-  const Icon = currentStep.icon;
-  const isLast = step === STEPS.length - 1;
+  const Icon        = currentStep.icon;
+  const isLast      = step === STEPS.length - 1;
 
   const stepContent: Record<string, React.ReactNode> = {
-    venue_info: <StepVenueInfo data={data} set={set} />,
-    hardware:   <StepHardware  data={data} set={set} />,
-    menu:       <StepMenu      data={data} set={set} />,
-    ai_config:  <StepAiConfig  data={data} set={set} />,
-    go_live:    <StepGoLive    data={data} />,
+    venue_info:        <StepVenueDetails     data={data} set={set} />,
+    craft_selection:   <StepCraftSelection   data={data} set={set} />,
+    inventory_preview: <StepInventoryPreview data={data} />,
+    ai_preview:        <StepAiPreview        data={data} set={set} />,
+    go_live:           <StepGoLive           data={data} />,
   };
 
   return (
@@ -516,7 +615,7 @@ export default function OnboardWizard() {
           {step > 0 && (
             <motion.button
               whileTap={{ scale: 0.96 }}
-              onClick={() => setStep(s => s - 1)}
+              onClick={() => { setStep(s => s - 1); setError(null); }}
               style={{
                 flex: 1, padding: "14px", borderRadius: 14, cursor: "pointer",
                 background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`,
@@ -539,7 +638,10 @@ export default function OnboardWizard() {
               opacity: loading ? 0.6 : 1,
             }}
           >
-            {loading ? "Launching..." : isLast ? <><Rocket size={16} /> Launch Axiom OS</> : <>{STEPS[step + 1]?.label} <ChevronRight size={16} /></>}
+            {loading ? "Launching…" : isLast
+              ? <><Rocket size={16} /> Launch Axiom OS</>
+              : <>{STEPS[step + 1]?.label} <ChevronRight size={16} /></>
+            }
           </motion.button>
         </div>
       </div>

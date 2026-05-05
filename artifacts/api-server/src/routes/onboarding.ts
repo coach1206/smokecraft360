@@ -13,6 +13,7 @@ import { z }                                    from "zod";
 import {
   db, onboardingSessionsTable, venuesTable,
   productsTable, featureFlagsTable,
+  venueInventoryTable, campaignsTable, auditLogTable,
 } from "@workspace/db";
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { requireRole }                          from "../middleware/roles";
@@ -25,7 +26,7 @@ const startSchema = z.object({
 });
 
 const stepSchema = z.object({
-  step:           z.enum(["venue_info", "hardware", "menu", "ai_config", "go_live"]),
+  step:           z.enum(["venue_info", "craft_selection", "inventory_preview", "ai_preview", "go_live"]),
   data:           z.record(z.unknown()),
   selectedCrafts: z.array(z.string()).optional(),
 });
@@ -85,10 +86,12 @@ const DEFAULT_FLAGS = [
   { name: "vendor_campaigns",      enabled: false },
 ];
 
-async function seedVenueDefaults(venueId: string, selectedCrafts: string[]) {
+async function seedVenueDefaults(venueId: string, selectedCrafts: string[], actorId?: string) {
   const crafts = selectedCrafts.length > 0 ? selectedCrafts : ["cigar", "spirit"];
   const seeded = new Set<string>();
+  const seededProductIds: string[] = [];
 
+  // 1. Seed default products per craft
   for (const craft of crafts) {
     const key  = CRAFT_TO_SEED[craft.toLowerCase()] ?? craft.toLowerCase();
     if (seeded.has(key)) continue;
@@ -96,8 +99,9 @@ async function seedVenueDefaults(venueId: string, selectedCrafts: string[]) {
 
     for (const p of SEED_PRODUCTS[key] ?? []) {
       try {
+        const productId = randomUUID();
         await db.insert(productsTable).values({
-          id:          randomUUID(),
+          id:          productId,
           venueId,
           name:        p.name,
           category:    p.category,
@@ -105,10 +109,25 @@ async function seedVenueDefaults(venueId: string, selectedCrafts: string[]) {
           strength:    p.strength,
           flavorNotes: p.flavorNotes,
         }).onConflictDoNothing();
+        seededProductIds.push(productId);
       } catch { /* non-fatal */ }
     }
   }
 
+  // 2. Seed inventory levels for each seeded product
+  for (const productId of seededProductIds) {
+    try {
+      await db.insert(venueInventoryTable).values({
+        venueId,
+        productId,
+        quantity:   20,
+        available:  true,
+        priceCents: null,
+      }).onConflictDoNothing();
+    } catch { /* non-fatal */ }
+  }
+
+  // 3. Seed default feature flags
   for (const flag of DEFAULT_FLAGS) {
     try {
       await db.insert(featureFlagsTable).values({
@@ -118,6 +137,34 @@ async function seedVenueDefaults(venueId: string, selectedCrafts: string[]) {
       }).onConflictDoNothing();
     } catch { /* non-fatal */ }
   }
+
+  // 4. Seed a starter welcome campaign
+  try {
+    await db.insert(campaignsTable).values({
+      name:     "Welcome to Axiom OS",
+      type:     "GENERAL",
+      venueId,
+      status:   "draft",
+      boostMultiplier: 1.0,
+      xpMultiplier:    1.5,
+      rewardBonus:     10,
+      active:   false,
+      createdBy: actorId ?? undefined,
+    }).onConflictDoNothing();
+  } catch { /* non-fatal */ }
+
+  // 5. Write audit log entry for onboarding completion
+  try {
+    await db.insert(auditLogTable).values({
+      actorId:    actorId ?? null,
+      actorRole:  "system",
+      action:     "onboarding.complete",
+      entityType: "venue",
+      entityId:   venueId,
+      afterState: { crafts: selectedCrafts, productsSeeded: seededProductIds.length, flagsSeeded: DEFAULT_FLAGS.length },
+      venueId,
+    });
+  } catch { /* non-fatal */ }
 }
 
 // ── POST /api/onboarding/start ─────────────────────────────────────────────────
@@ -161,6 +208,11 @@ router.patch(
     if (!existing[0])                         { res.status(404).json({ error: "Session not found" }); return; }
     if (existing[0].status === "completed")   { res.status(409).json({ error: "Already completed" }); return; }
 
+    // Venue ownership guard: non-super_admins may only patch their own session
+    if (req.user?.role !== "super_admin" && existing[0].venueId && existing[0].venueId !== req.user?.venueId) {
+      res.status(403).json({ error: "Access denied" }); return;
+    }
+
     const merged        = { ...(existing[0].data as Record<string, unknown>), ...parsed.data.data };
     const selectedCrafts = parsed.data.selectedCrafts ?? (existing[0].selectedCrafts as string[]);
 
@@ -190,6 +242,11 @@ router.post(
     if (!existing[0])                        { res.status(404).json({ error: "Session not found" }); return; }
     if (existing[0].status === "completed")  { res.status(409).json({ error: "Already completed" }); return; }
 
+    // Venue ownership guard: non-super_admins may only complete their own session
+    if (req.user?.role !== "super_admin" && existing[0].venueId && existing[0].venueId !== req.user?.venueId) {
+      res.status(403).json({ error: "Access denied" }); return;
+    }
+
     const sessionData    = existing[0].data as Record<string, unknown>;
     const selectedCrafts = (existing[0].selectedCrafts as string[]) ?? [];
     const venueId        = existing[0].venueId ?? req.user?.venueId;
@@ -200,9 +257,9 @@ router.post(
       try { await db.update(venuesTable).set({ name: venueName }).where(eq(venuesTable.id, venueId)); } catch { /* non-fatal */ }
     }
 
-    // 2. Seed default products + feature flags
+    // 2. Seed default products + feature flags + inventory + campaign + audit
     if (venueId) {
-      await seedVenueDefaults(venueId, selectedCrafts);
+      await seedVenueDefaults(venueId, selectedCrafts, req.user?.id);
     }
 
     // 3. Mark session complete

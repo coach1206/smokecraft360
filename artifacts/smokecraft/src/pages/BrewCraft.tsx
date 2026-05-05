@@ -90,7 +90,7 @@ const BASE_CONFIG: CraftFlowConfig = {
     revealHeadline: "Your Brew Pairing",
     productLabel: "The Beer",
     pairingLabel: "Paired Cigar",
-    orderCta: "Order at POS",
+    orderCta: "Order at the Bar",
   },
   styles: [
     { id: "light",  title: "Light & Easy",       subtitle: "Crisp · Citrus · Sessionable", flavors: ["light","crisp","citrus","sweet"],          strength: 1, mood: "relaxed", gradient: "linear-gradient(155deg, #f5e8a0 0%, #e6c76a 45%, #8a6a1e 100%)", image: brewLightImg, glyph: "◐" },

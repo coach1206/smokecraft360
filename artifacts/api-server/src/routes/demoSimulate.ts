@@ -119,7 +119,7 @@ function broadcast(session: SimSession, data: string) {
 router.post(
   "/demo/simulate/start",
   requireAuth,
-  requireRole("super_admin", "venue_owner", "manager"),
+  requireRole("super_admin"),
   async (req: AuthRequest, res: Response) => {
     const profile = typeof req.body.profile === "string" ? req.body.profile : "investor";
     const speedMs = Math.max(3000, Math.min(Number(req.body.speedMs ?? 3500), 10000));
@@ -222,7 +222,7 @@ router.get(
 router.post(
   "/demo/simulate/stop",
   requireAuth,
-  requireRole("super_admin", "venue_owner", "manager"),
+  requireRole("super_admin"),
   (req: Request, res: Response) => {
     const sessionId = String(req.body.sessionId ?? "");
     const session   = SIM_SESSIONS.get(sessionId);

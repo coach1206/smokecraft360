@@ -87,7 +87,7 @@ const CONFIG: CraftFlowConfig = {
     matchingCopy: "Calibrating your vapor…",
     revealHeadline: "Your Flavor Match",
     productLabel: "The Vape",
-    orderCta: "Order at POS",
+    orderCta: "Order at the Bar",
   },
   styles: [
     { id: "fruit",   title: "Fruit & Bright",  subtitle: "Berry · Citrus · Tropical",   flavors: ["fruity","sweet","citrus","bright"],   strength: 1, mood: "social",  gradient: "linear-gradient(155deg, #ff7ab8 0%, #c0408c 50%, #3a0a30 100%)", image: vapeFruitImg,   glyph: "◐" },

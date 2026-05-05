@@ -461,7 +461,7 @@ export default function ExperiencesModule() {
                           background: "linear-gradient(135deg, #d4af37, #a98828)",
                           color: "#0a0806", border: "none", cursor: "pointer", minHeight: 54,
                           boxShadow: "0 12px 32px rgba(212,175,55,0.45)",
-                        }}>Go to POS →</motion.button>
+                        }}>Order Now →</motion.button>
                     </motion.div>
                   )}
                 </main>

@@ -269,6 +269,11 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     const venueId = String(req.params.venueId ?? "");
 
+    // Venue ownership guard: non-super_admins may only read their own venue config
+    if (req.user?.role !== "super_admin" && req.user?.venueId !== venueId) {
+      res.status(403).json({ error: "Access denied" }); return;
+    }
+
     const rows = await db
       .select()
       .from(aiConfigurationsTable)
