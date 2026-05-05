@@ -370,22 +370,28 @@ export default function LivePreviewPanel({
           <Meter label="Balance"  value={meters.balance}  accent={accentColor} />
         </div>
 
-        {/* Bad combo warning */}
+        {/* Bad combo warning — single-line tooltip */}
         {isBad && (
           <motion.div
-            initial={{ opacity: 0, y: 5 }}
+            initial={{ opacity: 0, y: 3 }}
             animate={{ opacity: 1, y: 0 }}
             style={{
-              padding:      "9px 11px",
-              borderRadius: 10,
-              background:   "rgba(180,28,28,0.16)",
-              border:       "1px solid rgba(220,60,60,0.32)",
-              fontSize:     11,
-              color:        "rgba(220,130,130,0.9)",
-              lineHeight:   1.55,
+              display:      "flex",
+              alignItems:   "center",
+              gap:          5,
+              padding:      "4px 9px",
+              borderRadius: 20,
+              background:   "rgba(180,28,28,0.14)",
+              border:       "1px solid rgba(220,60,60,0.28)",
+              fontSize:     10,
+              color:        "rgba(220,130,130,0.88)",
+              whiteSpace:   "nowrap",
+              overflow:     "hidden",
+              textOverflow: "ellipsis",
             }}
           >
-            This combination pulls the profile off-balance. Try a different style or mood for a stronger score.
+            <span style={{ fontSize: 10 }}>⚠</span>
+            Combo off-balance — try a different pairing
           </motion.div>
         )}
       </motion.div>
