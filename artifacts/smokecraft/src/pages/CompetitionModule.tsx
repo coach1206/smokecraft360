@@ -3,7 +3,7 @@
  * Route: /competition
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -14,6 +14,7 @@ import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 import { useVenueContext } from "@/contexts/VenueContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAuthHeaders } from "@/services/auth";
+import { socket } from "@/lib/socket";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -907,6 +908,33 @@ export default function CompetitionModule() {
     const id = setInterval(() => loadLeaderboard(selected.id), 15_000);
     return () => clearInterval(id);
   }, [selected, loadLeaderboard]);
+
+  // Keep a ref to the latest loadTournaments so socket handlers don't
+  // capture a stale closure.
+  const loadTournamentsRef = useRef(loadTournaments);
+  useEffect(() => { loadTournamentsRef.current = loadTournaments; }, [loadTournaments]);
+
+  // Subscribe to real-time tournament lifecycle events from the server.
+  useEffect(() => {
+    function onCompleted(payload: { type: string; title: string }) {
+      const name = payload.title || (TYPE_META[payload.type as TournamentType]?.label ?? payload.type);
+      showToast(`"${name}" ended — standings are being finalised.`);
+      loadTournamentsRef.current();
+    }
+
+    function onSpawned(payload: { type: string; title: string }) {
+      const name = payload.title || (TYPE_META[payload.type as TournamentType]?.label ?? payload.type);
+      showToast(`🏆 "${name}" has started — enter now!`);
+      loadTournamentsRef.current();
+    }
+
+    socket.on("tournament_completed", onCompleted);
+    socket.on("tournament_spawned", onSpawned);
+    return () => {
+      socket.off("tournament_completed", onCompleted);
+      socket.off("tournament_spawned", onSpawned);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleEnter() {
     if (!selected) return;

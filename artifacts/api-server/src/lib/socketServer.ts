@@ -12,6 +12,14 @@
  *   Broadcast whenever a new POS order arrives at POST /api/pos/order.
  *   LiveEngineController on every connected kiosk subscribes and re-ranks
  *   scene queues based on the new order type.
+ *
+ * tournament_completed  { tournamentId: string, type: string, title: string, ts: number }
+ *   Broadcast by tournamentWorker when a tournament is auto-closed.
+ *   CompetitionModule uses this to reload the tournament list and show a toast.
+ *
+ * tournament_spawned  { tournamentId: string, type: string, title: string, endAt: string, ts: number }
+ *   Broadcast by tournamentWorker when a replacement tournament is created.
+ *   CompetitionModule uses this to reload and notify players of the new round.
  */
 
 import { Server, type Socket } from "socket.io";

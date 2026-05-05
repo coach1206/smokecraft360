@@ -11,6 +11,7 @@
 import { and, eq, lt, or, inArray, gte, isNull } from "drizzle-orm";
 import { db, tournamentsTable } from "@workspace/db";
 import { logger } from "./logger";
+import { getIO } from "./socketServer";
 
 const LIVE_INTERVAL_MS    =  5 * 60 * 1000;
 const CYCLIC_INTERVAL_MS  = 60 * 60 * 1000;
@@ -135,6 +136,17 @@ export async function runTournamentEnforcement(
           "Tournament auto-completed by worker",
         );
 
+        try {
+          getIO().emit("tournament_completed", {
+            tournamentId: tournament.id,
+            type: tournament.type,
+            title: tournament.title,
+            ts: Date.now(),
+          });
+        } catch {
+          // Socket.io may not be initialised in test environments
+        }
+
         const type = tournament.type as CyclicType;
         if (type === "live" || type === "daily" || type === "weekly") {
           const window = nextWindow(type);
@@ -197,6 +209,18 @@ export async function runTournamentEnforcement(
             { newTournamentId: spawned?.id, type, title: tournament.title ?? defaultTitle(type) },
             "Replacement tournament spawned by worker",
           );
+
+          try {
+            getIO().emit("tournament_spawned", {
+              tournamentId: spawned?.id,
+              type,
+              title: tournament.title ?? defaultTitle(type),
+              endAt: window.endAt.toISOString(),
+              ts: Date.now(),
+            });
+          } catch {
+            // Socket.io may not be initialised in test environments
+          }
         }
       } catch (err) {
         errors++;
