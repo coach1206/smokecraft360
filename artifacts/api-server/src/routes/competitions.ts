@@ -24,7 +24,7 @@ import {
   tournamentsTable,
   tournamentEntriesTable,
 } from "@workspace/db";
-import { requireAuth, type AuthRequest } from "../middleware/auth";
+import { requireAuth, optionalAuth, type AuthRequest } from "../middleware/auth";
 import { logger } from "../lib/logger";
 import { getUserBestCraftScore, rerank } from "../lib/tournamentSync";
 
@@ -62,7 +62,42 @@ function defaultPrizes(type: TournamentType): { first: string; second: string; t
 
 // ── GET /api/competitions ─────────────────────────────────────────────────────
 
-router.get("/", async (_req: Request, res: Response) => {
+router.get("/", optionalAuth, async (req: Request, res: Response) => {
+  const mine = req.query.mine === "true" || req.query.createdBy === "me";
+
+  if (mine) {
+    const authReq = req as AuthRequest;
+    const userId = authReq.user?.id;
+    const role   = authReq.user?.role;
+
+    if (!userId) {
+      res.status(401).json({ error: "Authentication required" });
+      return;
+    }
+
+    if (role !== "super_admin" && role !== "venue_owner" && role !== "manager") {
+      res.status(403).json({ error: "Insufficient permissions" });
+      return;
+    }
+
+    const rows = await db
+      .select()
+      .from(tournamentsTable)
+      .where(eq(tournamentsTable.createdBy, userId))
+      .orderBy(desc(tournamentsTable.startAt));
+
+    const withCounts = await Promise.all(rows.map(async (t) => {
+      const [countRow] = await db
+        .select({ cnt: sql<number>`COUNT(*)` })
+        .from(tournamentEntriesTable)
+        .where(eq(tournamentEntriesTable.tournamentId, t.id));
+      return { ...t, entrantCount: Number(countRow?.cnt ?? 0) };
+    }));
+
+    res.json(withCounts);
+    return;
+  }
+
   const existing = await db
     .select({ id: tournamentsTable.id })
     .from(tournamentsTable)

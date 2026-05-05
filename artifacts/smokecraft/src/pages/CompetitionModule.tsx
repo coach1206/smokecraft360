@@ -829,6 +829,100 @@ function CreateTournamentModal({
   );
 }
 
+// ── Status badge ──────────────────────────────────────────────────────────────
+
+const STATUS_META: Record<TournamentStatus, { label: string; color: string }> = {
+  upcoming:  { label: "Upcoming",  color: "#8b5cf6" },
+  active:    { label: "Active",    color: "#22c55e" },
+  scoring:   { label: "Scoring",   color: "#f59e0b" },
+  completed: { label: "Completed", color: "#6b7280" },
+  cancelled: { label: "Cancelled", color: "#ef4444" },
+};
+
+function StatusBadge({ status }: { status: TournamentStatus }) {
+  const { label, color } = STATUS_META[status];
+  return (
+    <span style={{
+      fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase",
+      color, background: `${color}18`, border: `1px solid ${color}35`,
+      padding: "2px 8px", borderRadius: 999, flexShrink: 0,
+    }}>{label}</span>
+  );
+}
+
+// ── My Tournament Row ─────────────────────────────────────────────────────────
+
+function MyTournamentRow({
+  tournament,
+  onSelect,
+}: {
+  tournament: Tournament;
+  onSelect: (t: Tournament) => void;
+}) {
+  const meta = TYPE_META[tournament.type];
+  const Icon = meta.icon;
+
+  return (
+    <motion.button
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={() => onSelect(tournament)}
+      style={{
+        display: "flex", alignItems: "center", gap: 14,
+        padding: "14px 16px", borderRadius: 14, textAlign: "left",
+        background: "rgba(255,255,255,0.025)",
+        border: "1px solid rgba(255,255,255,0.07)",
+        cursor: "pointer", width: "100%",
+      }}
+    >
+      <div style={{
+        width: 38, height: 38, borderRadius: 10, flexShrink: 0,
+        background: `${meta.color}18`, border: `1px solid ${meta.color}30`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <Icon size={18} color={meta.color} />
+      </div>
+
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#e8e0c8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {tournament.title}
+          </span>
+          <StatusBadge status={tournament.status} />
+        </div>
+        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+          <span style={{
+            fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase",
+            color: meta.color,
+          }}>{meta.label}</span>
+          {tournament.craftType && (
+            <span style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", textTransform: "capitalize" }}>
+              · {tournament.craftType}
+            </span>
+          )}
+          <span style={{ fontSize: 10, color: "rgba(232,224,200,0.35)" }}>
+            Started {new Date(tournament.startAt).toLocaleDateString()}
+          </span>
+        </div>
+      </div>
+
+      <div style={{ textAlign: "right", flexShrink: 0 }}>
+        <div style={{ fontSize: 18, fontWeight: 800, color: "#e8e0c8" }}>
+          {tournament.entrantCount}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 3, justifyContent: "flex-end" }}>
+          <Users size={9} color="rgba(232,224,200,0.35)" />
+          <span style={{ fontSize: 9, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.08em" }}>entrants</span>
+        </div>
+      </div>
+
+      <ChevronRight size={14} color="rgba(232,224,200,0.25)" style={{ flexShrink: 0 }} />
+    </motion.button>
+  );
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function CompetitionModule() {
@@ -838,8 +932,11 @@ export default function CompetitionModule() {
 
   const canCreateTournament = user?.role === "super_admin" || user?.role === "venue_owner" || user?.role === "manager";
 
+  const [activeTab, setActiveTab]     = useState<"browse" | "mine">("browse");
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [myTournaments, setMyTournaments] = useState<Tournament[]>([]);
   const [loadingList, setLoadingList] = useState(true);
+  const [loadingMine, setLoadingMine] = useState(false);
   const [selected, setSelected]       = useState<Tournament | null>(null);
   const [entries, setEntries]         = useState<LeaderboardEntry[]>([]);
   const [loadingLB, setLoadingLB]     = useState(false);
@@ -863,6 +960,18 @@ export default function CompetitionModule() {
       // best-effort
     } finally {
       setLoadingList(false);
+    }
+  }, []);
+
+  const loadMyTournaments = useCallback(async () => {
+    setLoadingMine(true);
+    try {
+      const data = await apiFetch("/competitions?mine=true");
+      setMyTournaments(data);
+    } catch {
+      setMyTournaments([]);
+    } finally {
+      setLoadingMine(false);
     }
   }, []);
 
@@ -901,6 +1010,12 @@ export default function CompetitionModule() {
     loadTournaments();
     loadLiveContext();
   }, [loadTournaments, loadLiveContext]);
+
+  useEffect(() => {
+    if (activeTab === "mine" && canCreateTournament) {
+      loadMyTournaments();
+    }
+  }, [activeTab, canCreateTournament, loadMyTournaments]);
 
   useEffect(() => {
     if (!selected) return;
@@ -1021,7 +1136,7 @@ export default function CompetitionModule() {
           )}
           <motion.button
             whileTap={{ scale: 0.9 }}
-            onClick={loadTournaments}
+            onClick={() => activeTab === "mine" ? loadMyTournaments() : loadTournaments()}
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
               width: 40, height: 40, borderRadius: 12,
@@ -1034,38 +1149,174 @@ export default function CompetitionModule() {
         </div>
       </div>
 
-      {/* Filter chips */}
-      <div style={{
-        display: "flex", gap: 8, padding: "12px 20px",
-        borderBottom: "1px solid rgba(255,255,255,0.04)",
-        background: "rgba(10,8,6,0.6)", flexShrink: 0, overflowX: "auto",
-      }}>
-        {(["all", "live", "daily", "weekly", "venue", "grand"] as const).map(t => {
-          const active = filterType === t;
-          const color  = t === "all" ? "#d4af37" : TYPE_META[t].color;
-          return (
-            <motion.button
-              key={t}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setFilterType(t)}
-              style={{
-                padding: "6px 14px", borderRadius: 20, cursor: "pointer",
-                fontSize: 11, fontWeight: 700, letterSpacing: "0.05em",
-                textTransform: "capitalize", whiteSpace: "nowrap",
-                background: active ? `${color}20` : "rgba(255,255,255,0.03)",
-                border: active ? `1px solid ${color}50` : "1px solid rgba(255,255,255,0.08)",
-                color: active ? color : "rgba(232,224,200,0.4)",
-              }}
-            >
-              {t === "all" ? "All" : TYPE_META[t].label}
-            </motion.button>
-          );
-        })}
-      </div>
+      {/* Tab bar (only shown for privileged users) */}
+      {canCreateTournament && (
+        <div style={{
+          display: "flex", gap: 4, padding: "10px 20px",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(10,8,6,0.75)", flexShrink: 0,
+        }}>
+          {(["browse", "mine"] as const).map(tab => {
+            const isActive = activeTab === tab;
+            return (
+              <motion.button
+                key={tab}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => { setActiveTab(tab); setSelected(null); }}
+                style={{
+                  padding: "7px 18px", borderRadius: 10, cursor: "pointer",
+                  fontSize: 12, fontWeight: 700, letterSpacing: "0.03em",
+                  background: isActive ? "rgba(212,175,55,0.15)" : "rgba(255,255,255,0.03)",
+                  border: isActive ? "1px solid rgba(212,175,55,0.4)" : "1px solid rgba(255,255,255,0.07)",
+                  color: isActive ? "#d4af37" : "rgba(232,224,200,0.4)",
+                }}
+              >
+                {tab === "browse" ? "Browse" : "My Tournaments"}
+              </motion.button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Filter chips — only on browse tab */}
+      {activeTab === "browse" && (
+        <div style={{
+          display: "flex", gap: 8, padding: "12px 20px",
+          borderBottom: "1px solid rgba(255,255,255,0.04)",
+          background: "rgba(10,8,6,0.6)", flexShrink: 0, overflowX: "auto",
+        }}>
+          {(["all", "live", "daily", "weekly", "venue", "grand"] as const).map(t => {
+            const active = filterType === t;
+            const color  = t === "all" ? "#d4af37" : TYPE_META[t].color;
+            return (
+              <motion.button
+                key={t}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setFilterType(t)}
+                style={{
+                  padding: "6px 14px", borderRadius: 20, cursor: "pointer",
+                  fontSize: 11, fontWeight: 700, letterSpacing: "0.05em",
+                  textTransform: "capitalize", whiteSpace: "nowrap",
+                  background: active ? `${color}20` : "rgba(255,255,255,0.03)",
+                  border: active ? `1px solid ${color}50` : "1px solid rgba(255,255,255,0.08)",
+                  color: active ? color : "rgba(232,224,200,0.4)",
+                }}
+              >
+                {t === "all" ? "All" : TYPE_META[t].label}
+              </motion.button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Body */}
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-        {/* Tournament list */}
+
+        {/* My Tournaments tab */}
+        {activeTab === "mine" && (
+          <AnimatePresence mode="wait">
+            {selected ? (
+              <motion.div
+                key="leaderboard-mine"
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 40 }}
+                style={{ flex: 1, padding: "16px 20px", overflow: "hidden" }}
+              >
+                <LeaderboardPanel
+                  tournament={selected}
+                  entries={entries}
+                  loading={loadingLB}
+                  onEnter={handleEnter}
+                  entering={entering}
+                  onClose={() => setSelected(null)}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="mine-list"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 10 }}
+              >
+                <div style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4,
+                }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.15em" }}>
+                    All Tournaments You Created
+                  </div>
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={loadMyTournaments}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      width: 32, height: 32, borderRadius: 9,
+                      background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                      color: "rgba(232,224,200,0.4)", cursor: "pointer",
+                    }}
+                  >
+                    <RefreshCw size={13} />
+                  </motion.button>
+                </div>
+
+                {loadingMine ? (
+                  <div style={{ display: "flex", justifyContent: "center", padding: 48 }}>
+                    <RefreshCw size={24} color="rgba(232,224,200,0.3)" style={{ animation: "spin 1s linear infinite" }} />
+                  </div>
+                ) : myTournaments.length === 0 ? (
+                  <div style={{
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: 12,
+                    padding: "64px 20px", color: "rgba(232,224,200,0.3)", textAlign: "center",
+                  }}>
+                    <Trophy size={40} />
+                    <div style={{ fontSize: 15, fontWeight: 600 }}>No tournaments yet</div>
+                    <div style={{ fontSize: 12 }}>Use the Create Tournament button to run your first competition.</div>
+                  </div>
+                ) : (
+                  <>
+                    {/* Summary stats */}
+                    {(() => {
+                      const total     = myTournaments.length;
+                      const active    = myTournaments.filter(t => t.status === "active").length;
+                      const completed = myTournaments.filter(t => t.status === "completed").length;
+                      const totalEntrants = myTournaments.reduce((sum, t) => sum + t.entrantCount, 0);
+                      return (
+                        <div style={{
+                          display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 4,
+                        }}>
+                          {[
+                            { label: "Total", value: total, color: "#d4af37" },
+                            { label: "Active", value: active, color: "#22c55e" },
+                            { label: "Completed", value: completed, color: "#6b7280" },
+                            { label: "Entrants", value: totalEntrants, color: "#06b6d4" },
+                          ].map(({ label, value, color }) => (
+                            <div key={label} style={{
+                              padding: "10px 12px", borderRadius: 12, textAlign: "center",
+                              background: `${color}08`, border: `1px solid ${color}20`,
+                            }}>
+                              <div style={{ fontSize: 20, fontWeight: 800, color }}>{value}</div>
+                              <div style={{ fontSize: 9, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 2 }}>{label}</div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
+
+                    {myTournaments.map((t, i) => (
+                      <motion.div key={t.id} transition={{ delay: i * 0.04 }}>
+                        <MyTournamentRow tournament={t} onSelect={setSelected} />
+                      </motion.div>
+                    ))}
+                  </>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
+
+        {/* Browse tab — Tournament list */}
+        {activeTab === "browse" && (
         <div style={{
           flex: selected ? "0 0 380px" : "1",
           overflowY: "auto", padding: "16px 20px",
@@ -1123,9 +1374,10 @@ export default function CompetitionModule() {
             </>
           )}
         </div>
+        )}
 
-        {/* Right panel: leaderboard (if tournament selected) or live context */}
-        <AnimatePresence mode="wait">
+        {/* Right panel: leaderboard (if tournament selected) or live context — Browse tab only */}
+        {activeTab === "browse" && <AnimatePresence mode="wait">
           {selected ? (
             <motion.div
               key="leaderboard"
@@ -1246,7 +1498,7 @@ export default function CompetitionModule() {
               )}
             </motion.div>
           ) : null}
-        </AnimatePresence>
+        </AnimatePresence>}
       </div>
 
       {/* Toast */}
@@ -1278,6 +1530,7 @@ export default function CompetitionModule() {
             existingTournaments={tournaments}
             onCreated={(newTournament) => {
               setTournaments(prev => [...prev, { ...newTournament, entrantCount: 0 }]);
+              setMyTournaments(prev => [{ ...newTournament, entrantCount: 0 }, ...prev]);
               setShowCreate(false);
               showToast(`"${newTournament.title}" tournament created!`);
             }}
