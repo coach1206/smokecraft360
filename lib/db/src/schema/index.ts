@@ -63,3 +63,4 @@ export * from "./aiImageCache";
 export * from "./venueEntitlements";
 export * from "./entitlementAuditLogs";
 export * from "./behaviorEventLogs";
+export * from "./aiInsights";

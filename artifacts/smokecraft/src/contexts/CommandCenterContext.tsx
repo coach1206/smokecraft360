@@ -81,40 +81,7 @@ export interface CommandCenterState {
   switchStaffStatus: (staffId: string) => void;
 }
 
-const INITIAL_DEVICES: Device[] = [
-  { id: "dev-1", name: "Main Bar Kiosk", type: "kiosk", status: "online", battery: 100, role: "pos", lastHeartbeat: new Date().toISOString(), locked: false },
-  { id: "dev-2", name: "Lounge Tablet #1", type: "tablet", status: "online", battery: 78, role: "kiosk", lastHeartbeat: new Date().toISOString(), locked: false },
-  { id: "dev-3", name: "Lounge Tablet #2", type: "tablet", status: "online", battery: 45, role: "kiosk", lastHeartbeat: new Date().toISOString(), locked: false },
-  { id: "dev-4", name: "Demo iPad", type: "tablet", status: "offline", battery: 12, role: "demo", lastHeartbeat: new Date(Date.now() - 3600000).toISOString(), locked: true },
-  { id: "dev-5", name: "Manager Phone", type: "mobile", status: "online", battery: 92, role: "pos", lastHeartbeat: new Date().toISOString(), locked: false },
-  { id: "dev-6", name: "Patio Kiosk", type: "kiosk", status: "online", battery: 100, role: "pos", lastHeartbeat: new Date().toISOString(), locked: false },
-];
-
-const INITIAL_STAFF: StaffMember[] = [
-  { id: "staff-0", name: "JC Collins", role: "owner", status: "active", pin: "1206" },
-  { id: "staff-1", name: "Jordan Mitchell", role: "owner", status: "active", pin: "1111" },
-  { id: "staff-2", name: "Alex Rivera", role: "manager", status: "active", pin: "2222" },
-  { id: "staff-3", name: "Casey Thompson", role: "staff", status: "active", pin: "3333" },
-  { id: "staff-4", name: "Morgan Blake", role: "staff", status: "inactive", pin: "4444" },
-  { id: "staff-5", name: "Taylor Chen", role: "staff", status: "active", pin: "5555" },
-];
-
-const INITIAL_VENDORS: Vendor[] = [
-  { id: "ven-1", name: "Arturo Fuente International", contact: "orders@arturo.com", productIds: ["cig-1"], lastOrder: "2026-04-28", rating: 4.8 },
-  { id: "ven-2", name: "Premium Spirits Direct", contact: "supply@premiumspirits.com", productIds: ["spr-1", "spr-2", "spr-3", "spr-4"], lastOrder: "2026-05-01", rating: 4.5 },
-  { id: "ven-3", name: "Craft Beer Distributors", contact: "hello@craftbeerdist.com", productIds: ["beer-1", "beer-2", "beer-3", "beer-4"], lastOrder: "2026-04-30", rating: 4.7 },
-  { id: "ven-4", name: "Padron & Co. Imports", contact: "sales@padron.com", productIds: ["cig-2", "cig-3", "cig-4"], lastOrder: "2026-05-02", rating: 4.9 },
-  { id: "ven-5", name: "Artisan Kitchen Supply", contact: "orders@artisankitchen.co", productIds: ["food-1", "food-2", "food-3", "food-4"], lastOrder: "2026-05-03", rating: 4.6 },
-];
-
-const INITIAL_REVENUE: HourlyRevenue[] = [
-  { hour: "10am", amount: 120 }, { hour: "11am", amount: 280 },
-  { hour: "12pm", amount: 450 }, { hour: "1pm", amount: 380 },
-  { hour: "2pm", amount: 310 }, { hour: "3pm", amount: 520 },
-  { hour: "4pm", amount: 680 }, { hour: "5pm", amount: 890 },
-  { hour: "6pm", amount: 1240 }, { hour: "7pm", amount: 1580 },
-  { hour: "8pm", amount: 1420 }, { hour: "9pm", amount: 960 },
-];
+// All data comes from real API calls — no hardcoded fallbacks.
 
 const INITIAL_AUDIT: AuditEntry[] = [
   { id: "a1", action: "system.boot", user: "System", timestamp: new Date(Date.now() - 7200000).toISOString(), details: "System initialized" },
@@ -141,16 +108,16 @@ function loadPosMode(): PosOperatingMode {
 }
 
 export function CommandCenterProvider({ children }: { children: ReactNode }) {
-  const [devices, setDevices] = useState<Device[]>(() => INITIAL_DEVICES.map(d => ({ ...d })));
-  const [staff, setStaff] = useState<StaffMember[]>(() => INITIAL_STAFF.map(s => ({ ...s })));
-  const [vendors, setVendors] = useState<Vendor[]>(() => INITIAL_VENDORS.map(v => ({ ...v })));
+  const [devices, setDevices] = useState<Device[]>([]);
+  const [staff, setStaff] = useState<StaffMember[]>([]);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
   const [auditLog, setAuditLog] = useState<AuditEntry[]>(() => [...INITIAL_AUDIT]);
-  const [hourlyRevenue, setHourlyRevenue] = useState<HourlyRevenue[]>(INITIAL_REVENUE);
+  const [hourlyRevenue, setHourlyRevenue] = useState<HourlyRevenue[]>([]);
   const [posMode, setPosModeRaw] = useState<PosOperatingMode>(loadPosMode);
   const systemStatus: "operational" | "degraded" | "critical" = devices.filter(d => d.status === "offline").length >= 3 ? "critical" : devices.some(d => d.status === "offline") ? "degraded" : "operational";
   const activeGuests = devices.filter(d => d.status === "online").length;
 
-  // Load real devices from /api/devices — falls back to INITIAL_DEVICES on error
+  // Load real devices from /api/devices
   useEffect(() => {
     async function loadDevices() {
       try {
@@ -175,13 +142,13 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
           locked:        false,
         })));
       } catch {
-        // Keep INITIAL_DEVICES on any error
+        // Network error — devices panel stays empty until next load
       }
     }
     void loadDevices();
   }, []);
 
-  // Load real staff from /api/users?role=staff — falls back to INITIAL_STAFF on error
+  // Load real staff from /api/users?role=staff
   useEffect(() => {
     async function loadStaff() {
       try {
