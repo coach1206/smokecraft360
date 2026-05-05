@@ -1,0 +1,234 @@
+Perform a FULL VISUAL + EXPERIENCE INTEGRITY AUDIT for the CraftHub / Axiom OS platform.
+
+This is NOT a code audit.
+
+This is a user-facing, visual, interaction, and experience audit.
+
+Your job is to determine if the system FEELS real, consistent, and complete across all crafts.
+
+---
+
+## 🎯 AUDIT OBJECTIVES
+
+Identify:
+
+1. VISUAL QUALITY ISSUES
+2. EXPERIENCE FLOW BREAKS
+3. SUBCATEGORY MISMATCHES
+4. DEAD OR NON-RESPONSIVE UI
+5. INCONSISTENT DESIGN LANGUAGE
+6. MISSING VISUAL FEEDBACK
+7. LACK OF EMOTIONAL IMPACT
+
+---
+
+## 🧩 AREAS TO AUDIT (DO NOT SKIP)
+
+---
+
+### 🎨 1. VISUAL REALISM
+
+Check ALL crafts:
+
+SmokeCraft  
+PourCraft  
+BrewCraft  
+VapeCraft  
+
+Verify:
+
+- Are real product visuals used (not placeholders)?
+- Do objects have depth (shadows, lighting, layering)?
+- Are images consistent in angle and lighting?
+- Do overlays align correctly (no floating layers)?
+- Do textures feel realistic (wood, glass, liquid, vapor)?
+
+---
+
+### 🧠 2. CRAFT IDENTITY DIFFERENTIATION
+
+Each craft must feel like its own world.
+
+Check:
+
+SmokeCraft → warm, wood, gold, lounge  
+PourCraft → glass, liquid, reflections  
+BrewCraft → foam, texture, label energy  
+VapeCraft → vapor, glow, modern  
+
+Flag if:
+- any craft looks like a copy of another
+- same UI reused with only color change
+
+---
+
+### 🔘 3. INTERACTION RESPONSE
+
+For EVERY button / selection:
+
+Verify:
+
+- Does something visually change immediately?
+- Is there animation or feedback?
+- Does the product update (not just text)?
+
+Flag:
+- clicks with no visible change
+- delayed or confusing responses
+
+---
+
+### 🧩 4. SUBCATEGORY VALIDATION
+
+Check all selection categories:
+
+Example:
+- wood types
+- trims
+- interiors
+- liquids
+- garnishes
+- vapor types
+
+Verify:
+
+- Each option produces a DIFFERENT visual result
+- No duplicate visuals under different names
+- No missing asset mappings
+- Naming matches visual output
+
+---
+
+### 🧭 5. EXPERIENCE FLOW
+
+Each craft must follow:
+
+1. Intro
+2. Selection
+3. Build
+4. Refine
+5. Reveal
+
+Check:
+
+- Is user guided step-by-step?
+- Or dropped into a screen with no direction?
+- Is there progression or just options?
+
+---
+
+### 🎬 6. REVEAL MOMENT QUALITY
+
+Trigger reveal.
+
+Verify:
+
+- Does camera/scale change?
+- Does lighting change?
+- Does product feel “finished”?
+- Is there sound or visual emphasis?
+
+Flag:
+- weak or non-existent reveal
+- no emotional payoff
+
+---
+
+### 📱 7. TOUCHSCREEN USABILITY
+
+Check:
+
+- Are buttons large enough?
+- Is spacing comfortable?
+- Can this be used in a lounge setting?
+
+Flag:
+- small click targets
+- cluttered UI
+- hard-to-tap elements
+
+---
+
+### 🧪 8. VISUAL + DATA CONNECTION
+
+Verify:
+
+- Visual selections match backend config
+- Saved builds match what user saw
+- No mismatch between UI and stored data
+
+---
+
+### 🔄 9. CONSISTENCY ACROSS SCREENS
+
+Check:
+
+- fonts consistent?
+- colors consistent?
+- layout consistent?
+- transitions consistent?
+
+---
+
+### 🚫 10. DEAD OR EMPTY STATES
+
+Check:
+
+- empty inventory
+- missing visuals
+- blank panels
+
+Flag:
+- any screen that feels unfinished
+
+---
+
+## 🚨 OUTPUT FORMAT (STRICT)
+
+Return:
+
+### ✅ VISUALLY STRONG AREAS
+(what feels real and polished)
+
+### ⚠️ PARTIAL VISUAL SYSTEMS
+(working but not convincing)
+
+### ❌ VISUAL / UX FAILURES
+(breaks immersion)
+
+### 🧩 SUBCATEGORY ISSUES
+(incorrect or misleading options)
+
+### 🎬 EXPERIENCE FLOW PROBLEMS
+(where journey breaks)
+
+### 📱 USABILITY ISSUES
+(touchscreen problems)
+
+### 🕳️ MISSING VISUAL ASSETS
+(list exact missing items)
+
+### 🔥 HIGH PRIORITY FIXES
+(top issues to fix immediately)
+
+### 🧠 FINAL EXPERIENCE VERDICT
+
+Is the system:
+- Visually Demo-Ready
+- Experience MVP-Ready
+- Venue-Ready
+
+Explain WHY.
+
+---
+
+## ⚠️ RULES
+
+- Do NOT assume visuals are correct
+- Do NOT pass anything that feels generic
+- Do NOT accept “functional but boring”
+- This must feel like a premium, real-world product experience
+
+---
+
+Perform this audit like a product designer, UX lead, and venue operator combine

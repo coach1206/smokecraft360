@@ -1,0 +1,240 @@
+Execute a FULL VISUAL + EXPERIENCE CORE REBUILD for CraftHub / Axiom OS.
+
+This is NOT a UI tweak.
+
+This is a complete correction of:
+- product visualization
+- experience flow
+- craft identity
+- user journey
+
+---
+
+# 🎯 OBJECTIVE
+
+Transform the system from:
+- empty visual canvases + broken flow
+
+into:
+- fully immersive, guided, product-driven experience
+
+---
+
+# 🧩 TASK 1 — IMPLEMENT PRODUCT VISUAL RENDERING (ALL CRAFTS)
+
+Replace ALL empty canvas areas.
+
+Each craft MUST display a real product visual:
+
+---
+
+### SmokeCraft
+- Render cigar box (open + closed states)
+- Include cigars inside
+- Add smoke overlay (subtle animation)
+- Apply wood textures dynamically
+
+---
+
+### PourCraft
+- Render real glass (based on selection)
+- Liquid fills glass (color based on type)
+- Garnish appears in correct physical location
+- Add light reflection + condensation
+
+---
+
+### BrewCraft
+- Render pint glass OR bottle
+- Liquid color reflects beer type
+- Foam head overlay added
+- Label appears on glass/bottle
+
+---
+
+### VapeCraft
+- Render vape device or hookah
+- Vapor animates upward
+- Glow color tied to flavor profile
+
+---
+
+### RULES
+- NO empty canvas allowed
+- NO placeholder shapes
+- ALL selections must change visuals
+
+---
+
+# 🧩 TASK 2 — FIX CRAFTHUB TILE SYSTEM
+
+Fix:
+
+- VapeCraft card missing → restore with real image + CTA
+- Ensure all 4 crafts visible without scroll OR add scroll indicator
+- Add hover/tap animation (scale + glow)
+
+---
+
+# 🧩 TASK 3 — CORRECT ENTRY FLOW (CRITICAL)
+
+Fix routing:
+
+CraftHub → "Enter Experience" MUST go to:
+
+/intro → /selection → /build → /refine → /reveal
+
+NOT directly to designer.
+
+Designer becomes:
+👉 advanced mode AFTER experience
+
+---
+
+# 🧩 TASK 4 — IMPLEMENT GUIDED EXPERIENCE FLOW
+
+For ALL crafts:
+
+### Step 1 — Intro
+- cinematic entry (background + subtle motion)
+- voice optional
+- CTA: "Begin Experience"
+
+---
+
+### Step 2 — Selection
+- mood / strength / flavor
+- visual feedback on choices
+
+---
+
+### Step 3 — Build
+- product visual updates in real-time
+
+---
+
+### Step 4 — Refine
+- detailed customization (trim, garnish, label, etc.)
+
+---
+
+### Step 5 — Reveal (MANDATORY)
+
+---
+
+# 🧩 TASK 5 — BUILD CINEMATIC REVEAL SYSTEM
+
+On reveal:
+
+- zoom camera (scale transform)
+- lighting intensifies
+- glow appears
+- product centers
+- background slightly darkens
+- optional sound
+
+Display:
+- final product
+- name
+- score
+- recommendation
+- CTA (save / order / share)
+
+---
+
+# 🧩 TASK 6 — FIX POURCRAFT GARNISH BUG
+
+- Remove floating badge
+- Position garnish relative to glass rim
+- Ensure it follows real-world placement
+
+---
+
+# 🧩 TASK 7 — FIX POS PRODUCT IMAGES
+
+Replace ALL incorrect cigar images with:
+
+- real cigar photography
+- brand-accurate visuals
+- consistent lighting
+
+NO Unsplash mismatches allowed.
+
+---
+
+# 🧩 TASK 8 — BREWCRAFT COMPLETION
+
+- Add beer visuals (glass + bottle)
+- Add foam rendering
+- Enable hop profile selection
+- Seed beer tournaments
+
+---
+
+# 🧩 TASK 9 — COMPETITION SYSTEM BALANCE
+
+Seed tournaments for:
+
+- SmokeCraft
+- PourCraft
+- BrewCraft
+- VapeCraft
+
+Fix craft badges:
+- must match actual craftType
+
+---
+
+# 🧩 TASK 10 — REMOVE EARLY LOCK FRICTION
+
+- Do NOT show "Unlock" on first interaction
+- Delay gating until user engages
+
+---
+
+# 🧩 TASK 11 — DASHBOARD DATA CORRECTION
+
+Replace:
+- mock revenue
+- mock guests
+- mock orders
+
+With:
+- real analytics API data
+
+---
+
+# 🧪 FINAL VALIDATION
+
+User must be able to:
+
+1. Enter craft from CraftHub  
+2. Experience guided flow  
+3. See product visually evolve  
+4. Reach reveal moment  
+5. Save or order product  
+6. See entry reflected in leaderboard  
+
+---
+
+# 🚨 OUTPUT FORMAT
+
+Return:
+
+### ✅ FIXED VISUAL SYSTEMS
+### 🎬 WORKING EXPERIENCE FLOWS
+### ❌ REMAINING VISUAL GAPS
+### 🔥 FINAL EXPERIENCE STATUS
+
+---
+
+# ⚠️ RULES
+
+- NO empty visual states
+- NO placeholder graphics
+- NO broken flow paths
+- ALL interactions must affect visuals
+
+---
+
+Execute as a senior product designer + experience architect preparing system for real-world venue deployment
