@@ -36,7 +36,8 @@ export type BackgroundKey =
   | "analytics" | "devices" | "vendors" | "staff"
   | "experiences" | "settings" | "touchHome"
   | "adminTouch" | "venueTouch" | "vendorTouch"
-  | "demoCenter" | "demoWalk";
+  | "demoCenter" | "demoWalk"
+  | "orders" | "inventory" | "rewards" | "campaigns";
 
 export const DEFAULT_BACKGROUNDS: Record<BackgroundKey, string> = {
   entry:       "/images/lounge-bg.png",
@@ -55,6 +56,10 @@ export const DEFAULT_BACKGROUNDS: Record<BackgroundKey, string> = {
   vendorTouch: "/images/cigar2.png",
   demoCenter:  "/images/lounge-bg.png",
   demoWalk:    "/images/lounge-bg.jpg",
+  orders:      "/images/scenes/reflective.jpg",
+  inventory:   "/images/cigar2.png",
+  rewards:     "/images/scenes/relaxed.jpg",
+  campaigns:   "/images/lounge-bg.jpg",
 };
 
 export const BACKGROUND_LABELS: Record<BackgroundKey, string> = {
@@ -74,6 +79,10 @@ export const BACKGROUND_LABELS: Record<BackgroundKey, string> = {
   vendorTouch: "Vendor Portal",
   demoCenter:  "Demo Center",
   demoWalk:    "Demo Walkthrough",
+  orders:      "Orders",
+  inventory:   "Inventory",
+  rewards:     "Rewards",
+  campaigns:   "Campaigns",
 };
 
 export interface VenueConfig {
