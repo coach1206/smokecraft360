@@ -94,6 +94,8 @@ import competitionsRouter       from "./routes/competitions";
 import posOrdersRouter          from "./routes/posOrders";
 import usersRouter              from "./routes/users";
 import aiRouter                 from "./routes/ai";
+import entitlementsRouter       from "./routes/entitlements";
+import behaviorEventsRouter     from "./routes/behaviorEvents";
 import { startExperienceAutomation } from "./services/experienceAutomation";
 import { startSessionCleanupWorker } from "./lib/sessionCleanupWorker";
 import { startPayoutWorker }         from "./lib/payoutWorker";
@@ -318,6 +320,10 @@ app.use("/api/craft",                   craftRouter);
 app.use("/api/competitions",            competitionsRouter);
 app.use("/api",                         usersRouter);
 app.use("/api",                         aiRouter);
+app.use("/api/admin/entitlements",      entitlementsRouter);
+app.use("/api/entitlements",            entitlementsRouter);
+app.use("/api/events/behavior",         behaviorEventsRouter);
+app.use("/api/analytics",               behaviorEventsRouter);
 
 // Start background workers
 if (process.env["NODE_ENV"] !== "test") {

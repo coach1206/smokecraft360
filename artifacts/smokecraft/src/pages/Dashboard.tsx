@@ -22,6 +22,7 @@ import { LoungeLeagueTab }          from "@/components/Dashboard/LoungeLeagueTab
 import { SignatureCreationsTab }     from "@/components/Dashboard/SignatureCreationsTab";
 import { DeviceManagerTab }          from "@/components/Dashboard/DeviceManagerTab";
 import { OsTab }                     from "@/components/Dashboard/OsTab";
+import { EntitlementsTab }           from "@/components/Dashboard/EntitlementsTab";
 import { NewProductForm }            from "@/components/Dashboard/NewProductForm";
 import { ReservationsTab }           from "@/components/Dashboard/ReservationsTab";
 import { ConflictsTab }              from "@/components/Dashboard/ConflictsTab";
@@ -42,7 +43,7 @@ import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
-type DashTab = "overview" | "products" | "card-manager" | "reservations" | "conflicts" | "ip-vault" | "exports" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os" | "help";
+type DashTab = "overview" | "products" | "card-manager" | "reservations" | "conflicts" | "ip-vault" | "exports" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os" | "help" | "entitlements";
 
 const TABS: { id: DashTab; label: string; icon: React.ReactNode; superAdminOnly?: boolean }[] = [
   { id: "overview",     label: "Overview",              icon: <BarChart3 size={12} />    },
@@ -68,6 +69,7 @@ const TABS: { id: DashTab; label: string; icon: React.ReactNode; superAdminOnly?
   { id: "devices",      label: "Device Manager",        icon: <Monitor size={12} />      },
   { id: "analytics",    label: "Analytics",             icon: <Tag size={12} />          },
   { id: "os",           label: "Axiom OS",              icon: <Activity size={12} />     },
+  { id: "entitlements", label: "Feature Control",       icon: <ShieldCheck size={12} />, superAdminOnly: true },
 ];
 
 export default function Dashboard() {
@@ -658,6 +660,20 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </motion.div>
+                )}
+
+                {/* ── Feature Control Center (Entitlements) ─────────────── */}
+                {activeTab === "entitlements" && user?.role === "super_admin" && (
+                  <motion.div key="entitlements"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+                    <EntitlementsTab />
+                  </motion.div>
+                )}
+                {activeTab === "entitlements" && user?.role !== "super_admin" && (
+                  <div className="p-8 text-center text-zinc-400">
+                    Feature Control Center is restricted to <span className="text-yellow-400">super_admin</span> accounts.
+                  </div>
                 )}
 
               </AnimatePresence>

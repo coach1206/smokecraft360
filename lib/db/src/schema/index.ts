@@ -60,3 +60,6 @@ export * from "./tournaments";
 export * from "./craftShareEvents";
 export * from "./savedBuildCards";
 export * from "./aiImageCache";
+export * from "./venueEntitlements";
+export * from "./entitlementAuditLogs";
+export * from "./behaviorEventLogs";
