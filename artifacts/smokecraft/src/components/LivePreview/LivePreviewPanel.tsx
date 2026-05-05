@@ -3,6 +3,7 @@ import { motion, useAnimation, type Variants } from "framer-motion";
 import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown } from "lucide-react";
 import { CigarBandPreview } from "@/components/Band/CigarBandPreview";
 import type { BlendDesign } from "@/services/storage";
+import CraftRenderer from "@/components/CraftRenderer/CraftRenderer";
 
 export type LiveCraft = "smoke" | "brew" | "pour" | "vape";
 
@@ -18,6 +19,8 @@ interface Props {
   meters:       LiveMeters;
   styleLabel:   string;
   moodLabel:    string;
+  /** The raw style ID (e.g. "smooth", "spicy", "light", "dark") — used by CraftRenderer. */
+  styleId?:     string;
   /** When craft==="smoke": dynamically-derived band design (colors + insignia) from current style/mood. */
   smokeDesign?:  BlendDesign;
   smokeName?:    string;
@@ -117,9 +120,9 @@ function VapeSilhouette({ a }: { a: string }) {
 }
 
 function Silhouette({
-  craft, a, smokeDesign, smokeName, smokeStyleId,
+  craft, a, styleId, smokeDesign, smokeName, smokeStyleId,
 }: {
-  craft: LiveCraft; a: string;
+  craft: LiveCraft; a: string; styleId?: string;
   smokeDesign?: BlendDesign; smokeName?: string; smokeStyleId?: string;
 }) {
   if (craft === "smoke" && smokeDesign) {
@@ -135,8 +138,12 @@ function Silhouette({
     );
   }
   if (craft === "smoke") return <CigarSilhouette a={a} />;
-  if (craft === "pour")  return <GlassSilhouette a={a} />;
-  if (craft === "brew")  return <BottleSilhouette a={a} />;
+  if (craft === "pour")  return (
+    <CraftRenderer craft="pour" styleId={styleId} accentColor={a} width={96} />
+  );
+  if (craft === "brew")  return (
+    <CraftRenderer craft="brew" styleId={styleId} accentColor={a} width={88} />
+  );
   return <VapeSilhouette a={a} />;
 }
 
@@ -170,6 +177,7 @@ function Meter({ label, value, accent }: { label: string; value: number; accent:
 
 export default function LivePreviewPanel({
   craft, accentColor, dynamicColor,
+  styleId,
   smokeDesign, smokeName, smokeStyleId,
   score, prevScore, meters, styleLabel, moodLabel, visible,
 }: Props) {
@@ -323,6 +331,7 @@ export default function LivePreviewPanel({
           <Silhouette
             craft={craft}
             a={dynamicColor}
+            styleId={styleId}
             smokeDesign={smokeDesign}
             smokeName={smokeName}
             smokeStyleId={smokeStyleId}

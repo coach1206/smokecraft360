@@ -1193,6 +1193,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         dynamicColor={selectedStyle
           ? (extractGradientColor(selectedStyle.gradient) || config.theme.accent)
           : config.theme.accent}
+        styleId={selectedStyle?.id}
         smokeDesign={smokeViz?.design}
         smokeName={smokeViz?.name}
         smokeStyleId={smokeViz?.styleId}

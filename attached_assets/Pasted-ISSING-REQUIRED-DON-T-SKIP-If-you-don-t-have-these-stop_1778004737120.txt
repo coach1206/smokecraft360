@@ -1,0 +1,201 @@
+ISSING / REQUIRED (DON’T SKIP)
+
+If you don’t have these, stop and set them up first:
+
+OpenAI API key (for image generation)
+Backend route layer (Express already in your stack)
+A place to store generated images (Cloudinary, S3, or even /public for now)
+Basic recommendation signal (mood, strength, vibe, time, or user selection)
+
+If you skip storage, you’ll regenerate images every time and waste money.
+
+🛡️ FAILURE PREVENTION CHECKLIST
+API key is in .env (OPENAI_API_KEY)
+You are NOT calling image generation from frontend directly
+You cache/store generated images after first generation
+You don’t regenerate same prompt repeatedly
+You sanitize prompt input (no junk strings)
+🧠 PART 1 — AI IMAGE GENERATOR (BACKEND)
+Create route
+server/routes/ai-image.ts
+import express from "express";
+import OpenAI from "openai";
+
+const router = express.Router();
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+router.post("/generate-image", async (req, res) => {
+  try {
+    const { prompt } = req.body;
+
+    const result = await openai.images.generate({
+      model: "gpt-image-1",
+      prompt,
+      size: "1024x1024"
+    });
+
+    const imageBase64 = result.data[0].b64_json;
+
+    res.json({
+      image: `data:image/png;base64,${imageBase64}`
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Image generation failed" });
+  }
+});
+
+export default router;
+Register route
+server/index.ts
+import aiImageRoutes from "./routes/ai-image";
+
+app.use("/api/ai", aiImageRoutes);
+🎨 PART 2 — MASTER IMAGE PROMPTS (THIS IS YOUR SECRET SAUCE)
+
+These are NOT generic prompts. These are tuned for your brand.
+
+🔥 SmokeCraft Prompt
+Luxury cigar lounge scene, diverse group of people including Black, Hispanic, and female professionals, elegant environment, leather chairs, warm lighting, cinematic atmosphere, ultra-realistic, high-end lifestyle photography, shallow depth of field, no logos, no text
+🥃 PourCraft Prompt
+premium whiskey and cocktail scene, old fashioned glass with ice, bartender pouring drink, luxury bar environment, golden lighting reflections, cinematic, ultra-realistic, high-end beverage photography, no logos, no text
+🍺 BrewCraft Prompt
+craft beer variety display, IPA, stout, lager in different glasses, foam detail, beer flight on wooden table, warm pub lighting, ultra-realistic, cinematic food photography, no logos, no text
+💨 VapeCraft Prompt
+modern vape devices and hookah lounge scene, neon lighting, diverse group of people socializing, colorful vapor clouds, premium nightlife atmosphere, ultra-realistic, cinematic lighting, no logos, no text
+🧠 PART 3 — RECOMMENDATION ENGINE (THIS CONTROLS WHAT USERS SEE)
+Create logic
+server/services/recommendationEngine.ts
+export function getVisualProfile(input: any) {
+  const { mood, strength, timeOfDay } = input;
+
+  let profile = {
+    craft: "default",
+    promptModifier: ""
+  };
+
+  if (mood === "relax") {
+    profile.promptModifier = "calm, soft lighting, relaxed atmosphere";
+  }
+
+  if (mood === "social") {
+    profile.promptModifier = "group setting, lively energy";
+  }
+
+  if (strength === "strong") {
+    profile.promptModifier += ", bold, intense mood";
+  }
+
+  if (timeOfDay === "night") {
+    profile.promptModifier += ", dark, moody lighting";
+  }
+
+  return profile;
+}
+Create recommendation route
+server/routes/recommend.ts
+import express from "express";
+import { getVisualProfile } from "../services/recommendationEngine";
+
+const router = express.Router();
+
+router.post("/visual", (req, res) => {
+  const profile = getVisualProfile(req.body);
+
+  res.json(profile);
+});
+
+export default router;
+🔗 PART 4 — CONNECT IMAGE GENERATOR + RECOMMENDER
+
+Now we combine both.
+
+Updated generate route:
+import { getVisualProfile } from "../services/recommendationEngine";
+
+router.post("/generate-dynamic", async (req, res) => {
+  try {
+    const { basePrompt, userInput } = req.body;
+
+    const profile = getVisualProfile(userInput);
+
+    const finalPrompt = `${basePrompt}, ${profile.promptModifier}`;
+
+    const result = await openai.images.generate({
+      model: "gpt-image-1",
+      prompt: finalPrompt,
+      size: "1024x1024"
+    });
+
+    const imageBase64 = result.data[0].b64_json;
+
+    res.json({
+      image: `data:image/png;base64,${imageBase64}`,
+      prompt: finalPrompt
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Dynamic generation failed" });
+  }
+});
+💻 PART 5 — FRONTEND HOOK
+useDynamicImage.ts
+import { useEffect, useState } from "react";
+
+export function useDynamicImage(basePrompt: string, userInput: any) {
+  const [image, setImage] = useState("");
+
+  useEffect(() => {
+    async function fetchImage() {
+      const res = await fetch("/api/ai/generate-dynamic", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          basePrompt,
+          userInput
+        })
+      });
+
+      const data = await res.json();
+      setImage(data.image);
+    }
+
+    fetchImage();
+  }, [basePrompt, userInput]);
+
+  return image;
+}
+🧩 USE IT INSIDE YOUR CARD
+const image = useDynamicImage(smokePrompt, {
+  mood: "social",
+  strength: "strong",
+  timeOfDay: "night"
+});
+
+<img src={image} />
+💥 WHAT YOU JUST BUILT
+
+Not a slideshow.
+
+A system that:
+
+Generates visuals dynamically
+Matches user behavior
+Evolves per session
+Feels alive
+🧠 WHAT YOU MIGHT BE MISSING (IMPORTANT)
+
+Right now this generates images live.
+
+Next upgrade (you WILL want this):
+
+Cache images per prompt in DB
+Reuse instead of regenerating
+Tag images by mood/type
+Build a “visual library”
+
+That turns this into:
+👉 A content engine
+👉 A data asset
+👉 Something you can sell

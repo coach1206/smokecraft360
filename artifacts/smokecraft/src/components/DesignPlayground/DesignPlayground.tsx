@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { Lock, Sparkles, ChevronRight, Check, Save } from "lucide-react";
 import { fetchDesignDrafts, upsertDesignDraft } from "@/services/api";
+import CraftRenderer from "@/components/CraftRenderer/CraftRenderer";
 
 export type PlaygroundCraft = "smoke" | "brew" | "pour" | "vape";
 
@@ -318,34 +319,52 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
               pointerEvents: "none",
             }} />
 
-            {/* Product mock */}
-            <div style={{
-              position: "relative",
-              width: productW, height: productH,
-              borderRadius: productR,
-              background: `linear-gradient(155deg, ${swatch.primary}, ${swatch.accent}20)`,
-              border: `2px solid ${swatch.accent}50`,
-              boxShadow: `0 24px 72px rgba(0,0,0,0.65), 0 0 40px ${swatch.accent}18`,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              flexDirection: "column", gap: 6,
-              flexShrink: 0,
-              transform: `scale(${canvasScale})`,
-              transformOrigin: "center",
-            }}>
+            {/* Product mock — CraftRenderer for pour/brew, styled box for smoke/vape */}
+            {(craft === "pour" || craft === "brew") ? (
               <div style={{
-                position: "absolute", inset: 8,
-                border: `1px solid ${swatch.accent}30`,
-                borderRadius: Math.max(productR - 6, 4),
-                pointerEvents: "none",
-              }} />
-              <span style={{
-                fontSize: 10, fontWeight: 700,
-                letterSpacing: "0.3em", textTransform: "uppercase",
-                color: swatch.accent, opacity: 0.45,
+                position: "relative",
+                flexShrink: 0,
+                transform: `scale(${canvasScale})`,
+                transformOrigin: "center",
+                filter: `drop-shadow(0 24px 40px ${swatch.accent}35) drop-shadow(0 0 18px ${swatch.accent}20)`,
               }}>
-                {config.craftLabel.toUpperCase()}
-              </span>
-            </div>
+                <CraftRenderer
+                  craft={craft}
+                  styleId={undefined}
+                  accentColor={swatch.accent}
+                  fillLevel={65}
+                  width={craft === "pour" ? 130 : 140}
+                />
+              </div>
+            ) : (
+              <div style={{
+                position: "relative",
+                width: productW, height: productH,
+                borderRadius: productR,
+                background: `linear-gradient(155deg, ${swatch.primary}, ${swatch.accent}20)`,
+                border: `2px solid ${swatch.accent}50`,
+                boxShadow: `0 24px 72px rgba(0,0,0,0.65), 0 0 40px ${swatch.accent}18`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexDirection: "column", gap: 6,
+                flexShrink: 0,
+                transform: `scale(${canvasScale})`,
+                transformOrigin: "center",
+              }}>
+                <div style={{
+                  position: "absolute", inset: 8,
+                  border: `1px solid ${swatch.accent}30`,
+                  borderRadius: Math.max(productR - 6, 4),
+                  pointerEvents: "none",
+                }} />
+                <span style={{
+                  fontSize: 10, fontWeight: 700,
+                  letterSpacing: "0.3em", textTransform: "uppercase",
+                  color: swatch.accent, opacity: 0.45,
+                }}>
+                  {config.craftLabel.toUpperCase()}
+                </span>
+              </div>
+            )}
 
             {/* Draggable brand chip */}
             <motion.div
