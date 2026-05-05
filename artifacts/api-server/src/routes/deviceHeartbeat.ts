@@ -195,7 +195,7 @@ async function offlineSweep() {
 
     await db
       .update(devicesTable)
-      .set({ status: "inactive", updatedAt: new Date() })
+      .set({ status: "offline", updatedAt: new Date() })
       .where(and(
         lte(devicesTable.lastActiveAt, cutoff),
         eq(devicesTable.status, "active"),
@@ -216,7 +216,7 @@ async function offlineSweep() {
       } catch { /* non-fatal */ }
     }
 
-    logger.info({ sweptCount: stale.length }, "offline sweep: marked devices inactive");
+    logger.info({ sweptCount: stale.length }, "offline sweep: marked devices offline");
   } catch (err) {
     logger.error({ err }, "offline sweep failed");
   }

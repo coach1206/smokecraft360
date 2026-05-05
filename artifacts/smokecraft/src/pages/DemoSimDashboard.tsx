@@ -1,9 +1,15 @@
 /**
  * DemoSimDashboard — Investor Demo Simulation Engine UI
  *
- * Streams live simulated events from POST /api/demo/simulate/start
- * + GET /api/demo/simulate/feed (SSE) to show a real-time "pitch view"
- * of the Axiom OS revenue, orders, and rewards engine.
+ * super_admin only. Polls /api/demo/simulate/events (no SSE, so Bearer auth
+ * headers work correctly on every request).
+ *
+ * Features:
+ *  - Role gate: non-super_admin users see an access-denied screen
+ *  - KPIs: Revenue, Orders, Rewards, Conversion Rate (orders/views)
+ *  - Conversion funnel: Views → Ordered → Rewarded
+ *  - Storytelling overlay: contextual narrative cards that rotate as events flow
+ *  - Auth headers on every API call
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -11,10 +17,12 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, Play, Square, TrendingUp, ShoppingCart,
-  Gift, Activity, Zap, Wifi, WifiOff,
+  Gift, Activity, Zap, Lock, BarChart3, Eye, ChevronRight,
 } from "lucide-react";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 import { useVenueContext } from "@/contexts/VenueContext";
+import { useAuth }         from "@/contexts/AuthContext";
+import { getAuthHeaders }  from "@/services/auth";
 
 const C = {
   gold:   "#d4af37",
@@ -50,10 +58,20 @@ const EVENT_COLORS: Record<string, string> = {
 const EVENT_ICONS: Record<string, React.ElementType> = {
   order_placed:    ShoppingCart,
   reward_unlocked: Gift,
-  product_viewed:  Activity,
+  product_viewed:  Eye,
   revenue_update:  TrendingUp,
-  device_ping:     Wifi,
+  device_ping:     Activity,
 };
+
+const STORY_LINES = [
+  "Revenue engine is firing — your AI upsell prompts are converting.",
+  "Loyalty flywheel spinning — every order is building a return visit.",
+  "Cross-sell engine surfacing pairings across all craft modules.",
+  "Inventory telemetry live — stock levels adjusting in real time.",
+  "Guest profiles enriched with each interaction — AI learns instantly.",
+  "Conversion funnel optimizing automatically — no human config needed.",
+  "Experience Commerce OS powering seamless guest-to-transaction flow.",
+];
 
 function fmt$(n: number) {
   return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -65,11 +83,11 @@ function EventRow({ event }: { event: SimEvent }) {
   const p     = event.payload;
 
   let summary = "";
-  if (event.type === "order_placed")    summary = `${p.guest} ordered ${p.product} · $${p.total}`;
-  if (event.type === "reward_unlocked") summary = `${p.guest} unlocked ${p.tier} reward · saved $${p.savedAmount}`;
-  if (event.type === "product_viewed")  summary = `${p.product} viewed via ${p.source}`;
-  if (event.type === "revenue_update")  summary = `Hourly rate: $${p.hourlyRate}/hr · ${p.trend}`;
-  if (event.type === "device_ping")     summary = `${p.deviceName} — ${p.status} · ${p.battery}%`;
+  if (event.type === "order_placed")    summary = `${String(p.guest)} ordered ${String(p.product)} · $${String(p.total)}`;
+  if (event.type === "reward_unlocked") summary = `${String(p.guest)} unlocked ${String(p.tier)} reward · saved $${String(p.savedAmount)}`;
+  if (event.type === "product_viewed")  summary = `${String(p.product)} viewed via ${String(p.source)}`;
+  if (event.type === "revenue_update")  summary = `Hourly rate: $${String(p.hourlyRate)}/hr · ${String(p.trend)}`;
+  if (event.type === "device_ping")     summary = `${String(p.deviceName)} — ${String(p.status)} · ${String(p.battery)}%`;
 
   return (
     <motion.div
@@ -102,9 +120,39 @@ function EventRow({ event }: { event: SimEvent }) {
   );
 }
 
+function AccessDenied({ onBack }: { onBack: () => void }) {
+  return (
+    <div style={{
+      height: "100dvh", display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      background: "#0a0806", color: C.text, gap: 16,
+    }}>
+      <Lock size={40} color="rgba(239,68,68,0.6)" />
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#ef4444" }}>Super Admin Access Required</div>
+      <div style={{ fontSize: 13, color: C.muted, maxWidth: 320, textAlign: "center" }}>
+        The investor demo simulation engine is restricted to <strong style={{ color: C.gold }}>super_admin</strong> accounts only.
+      </div>
+      <motion.button
+        whileTap={{ scale: 0.97 }}
+        onClick={onBack}
+        style={{
+          padding: "10px 24px", borderRadius: 12, cursor: "pointer",
+          background: "rgba(255,255,255,0.05)", border: `1px solid ${C.border}`,
+          color: C.text, fontSize: 14, fontWeight: 600,
+          display: "flex", alignItems: "center", gap: 8,
+        }}
+      >
+        <ArrowLeft size={15} /> Back to Dashboard
+      </motion.button>
+    </div>
+  );
+}
+
 export default function DemoSimDashboard() {
   const [, navigate]       = useLocation();
   const { getBackground }  = useVenueContext();
+  const { user }           = useAuth();
+
   const [profile,     setProfile]     = useState("investor");
   const [sessionId,   setSessionId]   = useState<string | null>(null);
   const [running,     setRunning]     = useState(false);
@@ -112,21 +160,25 @@ export default function DemoSimDashboard() {
   const [revenue,     setRevenue]     = useState(0);
   const [orders,      setOrders]      = useState(0);
   const [rewards,     setRewards]     = useState(0);
-  const [connected,   setConnected]   = useState(false);
+  const [views,       setViews]       = useState(0);
   const [error,       setError]       = useState<string | null>(null);
   const [speed,       setSpeed]       = useState(2000);
-  const sseRef = useRef<EventSource | null>(null);
-  const eventsRef = useRef<SimEvent[]>([]);
+  const [storyIdx,    setStoryIdx]    = useState(0);
+
+  const pollRef     = useRef<ReturnType<typeof setInterval> | null>(null);
+  const storyRef    = useRef<ReturnType<typeof setInterval> | null>(null);
+  const eventsRef   = useRef<SimEvent[]>([]);
+  const lastSince   = useRef<string | null>(null);
+
+  // Role gate: only super_admin may use this page
+  const isSuperAdmin = user?.role === "super_admin";
 
   const appendEvent = useCallback((evt: SimEvent) => {
     eventsRef.current = [evt, ...eventsRef.current].slice(0, 80);
     setEvents([...eventsRef.current]);
-    if (evt.type === "order_placed")    setOrders(o => o + 1);
+    if (evt.type === "order_placed")    { setOrders(o => o + 1); setRevenue(r => r + Number(evt.payload.total ?? 0)); }
     if (evt.type === "reward_unlocked") setRewards(r => r + 1);
-    if (evt.type === "order_placed") {
-      const total = Number(evt.payload.total ?? 0);
-      setRevenue(r => r + total);
-    }
+    if (evt.type === "product_viewed")  setViews(v => v + 1);
   }, []);
 
   async function startSim() {
@@ -134,86 +186,81 @@ export default function DemoSimDashboard() {
     try {
       const res = await fetch("/api/demo/simulate/start", {
         method:  "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body:    JSON.stringify({ profile }),
       });
-      if (!res.ok) throw new Error("Failed to start simulation");
+      if (!res.ok) throw new Error(res.status === 403 ? "Access denied — super_admin only" : "Failed to start simulation");
       const json = await res.json() as { sessionId: string };
       setSessionId(json.sessionId);
       setRunning(true);
-      setRevenue(0); setOrders(0); setRewards(0);
+      setRevenue(0); setOrders(0); setRewards(0); setViews(0);
       eventsRef.current = [];
       setEvents([]);
-      openSSE(json.sessionId);
-    } catch {
-      setError("Could not start simulation. Check server status.");
+      lastSince.current = null;
+      startPolling(json.sessionId);
+      startStoryRotation();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not start simulation.");
     }
   }
 
-  function openSSE(sid: string) {
-    sseRef.current?.close();
-    const url = `/api/demo/simulate/feed?sessionId=${sid}&speed=${speed}`;
-    const es = new EventSource(url);
-    sseRef.current = es;
-    es.onopen = () => setConnected(true);
-    es.onmessage = (e) => {
-      try {
-        const evt = JSON.parse(e.data) as SimEvent;
-        appendEvent(evt);
-      } catch { /* ignore */ }
-    };
-    es.onerror = () => {
-      setConnected(false);
-      // Fall back to polling if SSE fails
-      if (running) startPolling(sid);
-    };
-  }
-
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const lastSince = useRef<string | null>(null);
-
   function startPolling(sid: string) {
-    if (pollRef.current) return;
+    if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
       try {
-        const qs = lastSince.current ? `&since=${lastSince.current}` : "";
-        const r = await fetch(`/api/demo/simulate/events?sessionId=${sid}${qs}`);
-        if (!r.ok) { stopSim(sid); return; }
-        const data = await r.json() as { events: SimEvent[] };
+        const qs = lastSince.current ? `&since=${encodeURIComponent(lastSince.current)}` : "";
+        const r  = await fetch(`/api/demo/simulate/events?sessionId=${sid}${qs}`, { headers: getAuthHeaders() });
+        if (!r.ok) { void stopSim(sid); return; }
+        const data = await r.json() as { revenue?: number; orders?: number; rewards?: number; events?: SimEvent[] };
         if (Array.isArray(data.events) && data.events.length > 0) {
           lastSince.current = data.events[data.events.length - 1]!.timestamp;
           data.events.forEach(e => appendEvent(e));
         }
+        // Sync aggregated KPIs if available (from /events endpoint)
+        if (typeof data.revenue === "number") setRevenue(data.revenue);
+        if (typeof data.orders  === "number") setOrders(data.orders);
+        if (typeof data.rewards === "number") setRewards(data.rewards);
       } catch { /* ignore */ }
-    }, speed);
+    }, Math.max(speed, 1500));
+  }
+
+  function startStoryRotation() {
+    if (storyRef.current) clearInterval(storyRef.current);
+    storyRef.current = setInterval(() => {
+      setStoryIdx(i => (i + 1) % STORY_LINES.length);
+    }, 5000);
   }
 
   async function stopSim(sid?: string) {
-    sseRef.current?.close();
-    sseRef.current = null;
-    if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+    if (pollRef.current)  { clearInterval(pollRef.current);  pollRef.current  = null; }
+    if (storyRef.current) { clearInterval(storyRef.current); storyRef.current = null; }
     const id = sid ?? sessionId;
     if (id) {
       try {
         await fetch("/api/demo/simulate/stop", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: id }),
+          method:  "POST",
+          headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+          body:    JSON.stringify({ sessionId: id }),
         });
       } catch { /* ignore */ }
     }
     setRunning(false);
-    setConnected(false);
     setSessionId(null);
   }
 
   useEffect(() => {
     return () => {
-      sseRef.current?.close();
-      if (pollRef.current) clearInterval(pollRef.current);
+      if (pollRef.current)  clearInterval(pollRef.current);
+      if (storyRef.current) clearInterval(storyRef.current);
     };
   }, []);
 
   const selectedProfile = PROFILE_OPTIONS.find(p => p.id === profile) ?? PROFILE_OPTIONS[0]!;
+  const convRate = views > 0 ? ((orders / views) * 100).toFixed(1) : "—";
+
+  if (!isSuperAdmin) {
+    return <AccessDenied onBack={() => navigate("/dashboard")} />;
+  }
 
   return (
     <BackgroundLayer image={getBackground("dashboard")} style={{
@@ -235,40 +282,95 @@ export default function DemoSimDashboard() {
             <div style={{ fontSize: 11, color: C.dim }}>Experience Commerce OS · Live Simulation Engine</div>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {running && (
-            <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 20, background: connected ? "rgba(52,211,153,0.1)" : "rgba(239,68,68,0.1)", border: `1px solid ${connected ? "rgba(52,211,153,0.3)" : "rgba(239,68,68,0.3)"}` }}>
-              {connected ? <Wifi size={11} color="#34d399" /> : <WifiOff size={11} color="#ef4444" />}
-              <span style={{ fontSize: 10, fontWeight: 600, color: connected ? "#34d399" : "#ef4444" }}>
-                {connected ? "Live" : "Reconnecting"}
-              </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 20, background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.3)" }}>
+              <Zap size={11} color="#34d399" />
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#34d399" }}>Live</span>
             </div>
           )}
         </div>
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: "20px", display: "flex", flexDirection: "column", gap: 16 }}>
-        {/* KPI Bar */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+
+        {/* KPI Bar — 4 metrics */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
           {[
-            { label: "Revenue",  value: fmt$(revenue),       color: C.gold,    icon: TrendingUp },
-            { label: "Orders",   value: String(orders),       color: "#5b8def", icon: ShoppingCart },
-            { label: "Rewards",  value: String(rewards),      color: "#34d399", icon: Gift },
+            { label: "Revenue",         value: fmt$(revenue),    color: C.gold,    icon: TrendingUp  },
+            { label: "Orders",          value: String(orders),   color: "#5b8def", icon: ShoppingCart },
+            { label: "Rewards",         value: String(rewards),  color: "#34d399", icon: Gift         },
+            { label: "Conversion Rate", value: convRate === "—" ? "—" : `${convRate}%`, color: "#a78bfa", icon: BarChart3 },
           ].map(kpi => {
             const Icon = kpi.icon;
             return (
               <div key={kpi.label} style={{
-                padding: "16px", borderRadius: 14,
+                padding: "14px", borderRadius: 14,
                 background: `${kpi.color}08`, border: `1px solid ${kpi.color}20`,
                 textAlign: "center",
               }}>
-                <Icon size={18} color={kpi.color} style={{ marginBottom: 6 }} />
-                <div style={{ fontSize: 26, fontWeight: 700, color: kpi.color }}>{kpi.value}</div>
+                <Icon size={16} color={kpi.color} style={{ marginBottom: 5 }} />
+                <div style={{ fontSize: 22, fontWeight: 700, color: kpi.color }}>{kpi.value}</div>
                 <div style={{ fontSize: 10, color: C.dim, textTransform: "uppercase", letterSpacing: "0.1em" }}>{kpi.label}</div>
               </div>
             );
           })}
         </div>
+
+        {/* Conversion Funnel */}
+        {running && (
+          <div style={{ padding: "14px 16px", borderRadius: 14, background: C.card, border: `1px solid ${C.border}` }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>
+              Conversion Funnel
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              {[
+                { label: "Viewed",  value: views,  color: "#5b8def" },
+                { label: "Ordered", value: orders, color: C.gold    },
+                { label: "Rewarded",value: rewards,color: "#34d399" },
+              ].map((stage, i) => (
+                <div key={stage.label} style={{ display: "flex", alignItems: "center", gap: 6, flex: i === 0 ? 1.5 : 1 }}>
+                  <div style={{
+                    flex: 1, padding: "10px 12px", borderRadius: 10, textAlign: "center",
+                    background: `${stage.color}08`, border: `1px solid ${stage.color}22`,
+                  }}>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: stage.color }}>{stage.value}</div>
+                    <div style={{ fontSize: 9, color: C.dim, textTransform: "uppercase", letterSpacing: "0.1em" }}>{stage.label}</div>
+                    {i > 0 && views > 0 && (
+                      <div style={{ fontSize: 8, color: `${stage.color}80`, marginTop: 2 }}>
+                        {((stage.value / Math.max(views, 1)) * 100).toFixed(1)}%
+                      </div>
+                    )}
+                  </div>
+                  {i < 2 && <ChevronRight size={14} color={C.dim} style={{ flexShrink: 0 }} />}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Storytelling overlay — rotates contextual narrative while sim runs */}
+        {running && (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={storyIdx}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.4 }}
+              style={{
+                padding: "12px 16px", borderRadius: 12,
+                background: "rgba(212,175,55,0.05)", border: "1px solid rgba(212,175,55,0.18)",
+                display: "flex", alignItems: "center", gap: 10,
+              }}
+            >
+              <Zap size={14} color={C.gold} style={{ flexShrink: 0 }} />
+              <span style={{ fontSize: 13, color: C.goldDim, fontStyle: "italic", lineHeight: 1.5 }}>
+                {STORY_LINES[storyIdx]}
+              </span>
+            </motion.div>
+          </AnimatePresence>
+        )}
 
         {/* Controls */}
         {!running ? (
@@ -321,7 +423,7 @@ export default function DemoSimDashboard() {
             )}
             <motion.button
               whileTap={{ scale: 0.97 }}
-              onClick={startSim}
+              onClick={() => void startSim()}
               style={{
                 width: "100%", padding: "14px", borderRadius: 12, cursor: "pointer",
                 background: `linear-gradient(135deg, ${selectedProfile.color}, ${selectedProfile.color}bb)`,
@@ -340,7 +442,7 @@ export default function DemoSimDashboard() {
             </div>
             <motion.button
               whileTap={{ scale: 0.96 }}
-              onClick={() => stopSim()}
+              onClick={() => void stopSim()}
               style={{
                 padding: "12px 20px", borderRadius: 12, cursor: "pointer",
                 background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)",

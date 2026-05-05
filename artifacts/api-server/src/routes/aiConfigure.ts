@@ -266,7 +266,8 @@ router.post(
     }
 
     logger.info({ venueId, configId: row.id, pricingTier }, "AI configuration generated and applied");
-    res.status(201).json({ ok: true, config: row });
+    // Return the built config object (not the DB row) so callers get the full strategy
+    res.status(201).json({ ok: true, config, id: row.id });
   },
 );
 

@@ -1845,7 +1845,7 @@ export interface DeviceItem {
   type:         "mobile" | "tablet" | "kiosk";
   nickname:     string;
   tableNumber:  string | null;
-  status:       "active" | "inactive";
+  status:       "active" | "inactive" | "offline";
   lastActiveAt: string | null;
   createdAt:    string;
   updatedAt:    string;

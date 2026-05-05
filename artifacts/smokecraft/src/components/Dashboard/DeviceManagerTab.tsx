@@ -174,8 +174,9 @@ function DeviceRow({
   const [resetting,  setResetting]  = useState(false);
   const [recovering, setRecovering] = useState(false);
   const [copied,     setCopied]     = useState(false);
-  const isActive = device.status === "active";
-  const color    = typeColor(device.type);
+  const isActive  = device.status === "active";
+  const isOffline = device.status === "offline";
+  const color     = typeColor(device.type);
 
   const handleReset = async () => {
     setResetting(true);
@@ -197,8 +198,8 @@ function DeviceRow({
 
   return (
     <motion.div className="rounded-xl overflow-hidden"
-      style={{ background: "rgba(255,255,255,0.025)", border: `1px solid ${isActive ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.04)"}` }}
-      initial={{ opacity: 0, y: 6 }} animate={{ opacity: isActive ? 1 : 0.55, y: 0 }}>
+      style={{ background: isOffline ? "rgba(239,68,68,0.04)" : "rgba(255,255,255,0.025)", border: `1px solid ${isOffline ? "rgba(239,68,68,0.25)" : isActive ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.04)"}` }}
+      initial={{ opacity: 0, y: 6 }} animate={{ opacity: isActive ? 1 : 0.7, y: 0 }}>
 
       <div className="flex items-center gap-4 p-4">
         {/* Type icon */}
@@ -229,14 +230,23 @@ function DeviceRow({
           </p>
         </div>
 
-        {/* Status dot */}
+        {/* Status badge — explicit Offline state in red */}
         <div className="flex items-center gap-1.5 flex-shrink-0">
-          <div className="w-1.5 h-1.5 rounded-full"
-            style={{ background: isActive ? "rgba(100,200,120,0.8)" : "rgba(200,100,100,0.6)" }} />
-          <span className="text-[7px] uppercase tracking-wider hidden sm:block"
-            style={{ color: isActive ? "rgba(100,200,120,0.7)" : "rgba(200,100,100,0.6)" }}>
-            {device.status}
-          </span>
+          {isOffline ? (
+            <span className="text-[7px] uppercase tracking-wider px-1.5 py-0.5 rounded-full font-semibold"
+              style={{ color: "#ef4444", background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.3)" }}>
+              Offline
+            </span>
+          ) : (
+            <>
+              <div className="w-1.5 h-1.5 rounded-full"
+                style={{ background: isActive ? "rgba(100,200,120,0.8)" : "rgba(200,100,100,0.6)" }} />
+              <span className="text-[7px] uppercase tracking-wider hidden sm:block"
+                style={{ color: isActive ? "rgba(100,200,120,0.7)" : "rgba(200,100,100,0.6)" }}>
+                {device.status}
+              </span>
+            </>
+          )}
         </div>
 
         {/* Actions */}
@@ -246,11 +256,13 @@ function DeviceRow({
             style={{ color: MUTED, border: "1px solid rgba(255,255,255,0.06)" }}>
             <RotateCcw size={11} className={resetting ? "animate-spin" : ""} />
           </button>
-          {!isActive && (
-            <button onClick={handleRecover} disabled={recovering} title="Recover device"
-              className="p-2 rounded-lg transition-colors"
-              style={{ color: recovering ? MUTED : "rgba(52,211,153,0.7)", border: "1px solid rgba(52,211,153,0.2)" }}>
+          {(isOffline || !isActive) && (
+            <button onClick={handleRecover} disabled={recovering}
+              title={isOffline ? "Send Recovery — device missed heartbeat" : "Recover device"}
+              className="p-2 rounded-lg transition-colors flex items-center gap-1"
+              style={{ color: recovering ? MUTED : (isOffline ? "#ef4444" : "rgba(52,211,153,0.7)"), border: `1px solid ${isOffline ? "rgba(239,68,68,0.3)" : "rgba(52,211,153,0.2)"}`, padding: isOffline ? "4px 8px" : undefined, fontSize: isOffline ? 9 : undefined, borderRadius: isOffline ? 6 : undefined }}>
               <HeartPulse size={11} className={recovering ? "animate-pulse" : ""} />
+              {isOffline && <span style={{ fontWeight: 600, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>Recovery</span>}
             </button>
           )}
           <button onClick={onStatusToggle} title={isActive ? "Deactivate" : "Activate"}
@@ -576,11 +588,12 @@ export function DeviceManagerTab() {
       ) : (
         <div className="space-y-3">
           {/* Summary row */}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             {[
-              { label: "Total",    value: devices.length,                               color: MUTED     },
-              { label: "Active",   value: devices.filter((d) => d.status === "active").length, color: "rgba(100,200,120,0.7)" },
-              { label: "Inactive", value: devices.filter((d) => d.status !== "active").length, color: "rgba(200,100,100,0.6)" },
+              { label: "Total",    value: devices.length, color: MUTED },
+              { label: "Active",   value: devices.filter((d) => d.status === "active").length,  color: "rgba(100,200,120,0.7)" },
+              { label: "Offline",  value: devices.filter((d) => d.status === "offline").length, color: "rgba(239,68,68,0.7)"   },
+              { label: "Inactive", value: devices.filter((d) => d.status === "inactive").length, color: "rgba(200,100,100,0.5)" },
             ].map(({ label, value, color }) => (
               <div key={label} className="rounded-xl p-3 text-center"
                 style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>

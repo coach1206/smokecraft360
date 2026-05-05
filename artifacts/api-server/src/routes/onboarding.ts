@@ -14,6 +14,7 @@ import {
   db, onboardingSessionsTable, venuesTable,
   productsTable, featureFlagsTable,
   venueInventoryTable, campaignsTable, auditLogTable,
+  type CampaignType,
 } from "@workspace/db";
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { requireRole }                          from "../middleware/roles";
@@ -138,22 +139,46 @@ async function seedVenueDefaults(venueId: string, selectedCrafts: string[], acto
     } catch { /* non-fatal */ }
   }
 
-  // 4. Seed a starter welcome campaign
-  try {
-    await db.insert(campaignsTable).values({
-      name:     "Welcome to Axiom OS",
-      type:     "GENERAL",
-      venueId,
-      status:   "draft",
-      boostMultiplier: 1.0,
-      xpMultiplier:    1.5,
-      rewardBonus:     10,
-      active:   false,
-      createdBy: actorId ?? undefined,
-    }).onConflictDoNothing();
-  } catch { /* non-fatal */ }
+  // 4. Seed welcome + per-craft starter campaigns
+  const campaignSeeds: Array<{ name: string; type: CampaignType; xpMultiplier: number; rewardBonus: number }> = [
+    { name: "Welcome to Axiom OS",  type: "GENERAL", xpMultiplier: 1.5, rewardBonus: 10  },
+    ...crafts.map(craft => ({
+      name:         `${craft.charAt(0).toUpperCase() + craft.slice(1)}Craft Launch Promotion`,
+      type:         "GENERAL" as CampaignType,
+      xpMultiplier: 2.0,
+      rewardBonus:  25,
+    })),
+  ];
+  for (const c of campaignSeeds) {
+    try {
+      await db.insert(campaignsTable).values({
+        name:            c.name,
+        type:            c.type,
+        venueId,
+        status:          "draft",
+        boostMultiplier: 1.0,
+        xpMultiplier:    c.xpMultiplier,
+        rewardBonus:     c.rewardBonus,
+        active:          false,
+        createdBy:       actorId ?? undefined,
+      }).onConflictDoNothing();
+    } catch { /* non-fatal */ }
+  }
 
-  // 5. Write audit log entry for onboarding completion
+  // 5. Seed pricing tier + vendor stub feature flags
+  const extraFlags = [
+    { name: "pricing_tier_premium",      enabled: true,  metadata: { tier: "premium", targetMarginPct: 55 } },
+    { name: "pricing_tier_dynamic",      enabled: false, metadata: { tier: "dynamic" } },
+    { name: "vendor_stub_connected",     enabled: true,  metadata: { provider: "stub", status: "sandbox" } },
+    { name: "vendor_stub_pos_toast",     enabled: false, metadata: { provider: "toast", status: "pending" } },
+  ];
+  for (const f of extraFlags) {
+    try {
+      await db.insert(featureFlagsTable).values({ name: f.name, enabled: f.enabled, venueId, metadata: f.metadata }).onConflictDoNothing();
+    } catch { /* non-fatal */ }
+  }
+
+  // 6. Write audit log entry for onboarding completion
   try {
     await db.insert(auditLogTable).values({
       actorId:    actorId ?? null,

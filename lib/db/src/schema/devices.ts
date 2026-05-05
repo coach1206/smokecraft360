@@ -10,8 +10,8 @@
 
 import { pgTable, uuid, text, timestamp, boolean } from "drizzle-orm/pg-core";
 
-export const DEVICE_TYPES   = ["mobile", "tablet", "kiosk"]    as const;
-export const DEVICE_STATUSES = ["active", "inactive"]           as const;
+export const DEVICE_TYPES   = ["mobile", "tablet", "kiosk"]           as const;
+export const DEVICE_STATUSES = ["active", "inactive", "offline"]        as const;
 export type DeviceType   = typeof DEVICE_TYPES[number];
 export type DeviceStatus = typeof DEVICE_STATUSES[number];
 
