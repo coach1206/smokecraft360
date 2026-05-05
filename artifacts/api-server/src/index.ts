@@ -1,5 +1,7 @@
+import http                     from "http";
 import app from "./app";
 import { logger }               from "./lib/logger";
+import { initSocketServer }     from "./lib/socketServer";
 import { initInventory }        from "./engine/inventory";
 import { loadCampaigns }        from "./services/campaignStore";
 import { loadVenueInventory }   from "./services/venueInventoryStore";
@@ -67,10 +69,18 @@ try {
   logger.warn({ err }, "Initial trend score load failed — will retry on schedule");
 }
 
-app.listen(port, (err) => {
+// ── HTTP server + Socket.io ────────────────────────────────────────────────────
+// Upgrade from app.listen() → http.createServer() so Socket.io can share
+// the same port as the REST API. The Socket.io server mounts at
+// /api/socket.io — routed correctly through Replit's shared proxy.
+
+const httpServer = http.createServer(app);
+initSocketServer(httpServer);
+
+httpServer.listen(port, (err?: Error) => {
   if (err) {
     logger.error({ err }, "Error listening on port");
     process.exit(1);
   }
-  logger.info({ port }, "Server listening");
+  logger.info({ port }, "Server listening (HTTP + Socket.io)");
 });

@@ -1,0 +1,185 @@
+// ====================== BACKEND: REAL POS WEBHOOK + WS ======================
+import express from "express";
+import http from "http";
+import crypto from "crypto";
+import { Server } from "socket.io";
+
+const app = express();
+app.use(express.json({ limit: "2mb" }));
+
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "*" } });
+
+// ---- ENV (set these in your env) ----
+// POS_WEBHOOK_SECRET = shared secret from your POS (Square/Toast/Stripe/etc)
+// ALLOWED_ORIGINS = comma-separated list for CORS if you want to lock it down
+const WEBHOOK_SECRET = process.env.POS_WEBHOOK_SECRET || "";
+
+// ---- SIMPLE HMAC VERIFY (works with most POS that support signing) ----
+function verifySignature(req: any): boolean {
+  if (!WEBHOOK_SECRET) return true; // if not set, skip (not recommended in prod)
+  const sig = req.headers["x-pos-signature"] || req.headers["x-square-signature"] || req.headers["stripe-signature"];
+  if (!sig) return false;
+
+  const payload = JSON.stringify(req.body);
+  const expected = crypto.createHmac("sha256", WEBHOOK_SECRET).update(payload).digest("hex");
+  // some providers send different formats; do a constant-time compare on hex when possible
+  try {
+    return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(String(sig)));
+  } catch {
+    return false;
+  }
+}
+
+// ---- MAP REAL PRODUCT NAMES → TYPES YOUR ENGINE UNDERSTANDS ----
+const productToType: Record<string, string> = {
+  // CIGARS
+  "Cohiba": "cigar",
+  "Montecristo No. 2": "cigar",
+  "Padron 1964": "cigar",
+
+  // WHISKEY / SPIRITS
+  "Macallan 12": "whiskey",
+  "Old Fashioned": "whiskey",
+  "Whiskey Neat": "whiskey",
+  "Hennessy VSOP": "whiskey",
+
+  // BEER
+  "IPA Draft": "beer",
+  "Guinness": "beer",
+  "Lager": "beer",
+
+  // VAPE / HOOKAH
+  "Hookah Mint": "vape",
+  "Hookah Double Apple": "vape",
+  "Vape Mango": "vape"
+};
+
+// ---- NORMALIZE DIFFERENT POS PAYLOADS → { orderType, items } ----
+function normalizeOrder(body: any) {
+  // Try common shapes (Square/Toast/Stripe/Custom). Adjust fields to your POS.
+  const items =
+    body?.data?.object?.order?.line_items ||
+    body?.order?.line_items ||
+    body?.items ||
+    body?.line_items ||
+    [];
+
+  const names: string[] = items.map((i: any) =>
+    i?.name || i?.item_name || i?.title || i?.catalog_object_id || ""
+  ).filter(Boolean);
+
+  let detectedType: string | null = null;
+
+  for (const n of names) {
+    if (productToType[n]) {
+      detectedType = productToType[n];
+      break;
+    }
+  }
+
+  // Fallback: try loose matching
+  if (!detectedType && names.length) {
+    const joined = names.join(" ").toLowerCase();
+    if (joined.includes("cigar")) detectedType = "cigar";
+    else if (joined.includes("whiskey") || joined.includes("bourbon")) detectedType = "whiskey";
+    else if (joined.includes("beer") || joined.includes("ipa") || joined.includes("lager") || joined.includes("stout")) detectedType = "beer";
+    else if (joined.includes("hookah") || joined.includes("vape")) detectedType = "vape";
+  }
+
+  return {
+    orderType: detectedType,
+    items: names
+  };
+}
+
+// ---- WEBHOOK ENDPOINT YOUR POS WILL CALL ----
+app.post("/api/pos/webhook", (req, res) => {
+  if (!verifySignature(req)) {
+    return res.status(401).json({ error: "invalid signature" });
+  }
+
+  const { orderType, items } = normalizeOrder(req.body);
+
+  if (!orderType) {
+    return res.status(200).json({ ok: true, ignored: true });
+  }
+
+  // Broadcast to all connected screens/devices
+  io.emit("pos_order", { orderType, items, ts: Date.now() });
+
+  return res.json({ ok: true });
+});
+
+// ---- SOCKET SERVER ----
+io.on("connection", (socket) => {
+  socket.emit("connected", { ok: true });
+});
+
+server.listen(4000, () => console.log("POS WS server on :4000"));
+
+// ====================== FRONTEND: SOCKET CLIENT ======================
+import { io as ClientIO } from "socket.io-client";
+export const socket = ClientIO("http://localhost:4000");
+
+// ====================== USER PROFILE (PERSISTENCE) ======================
+export const getUserProfile = () => {
+  const data = localStorage.getItem("userProfile");
+  return data ? JSON.parse(data) : {
+    mood: "social",
+    intensity: "strong",
+    setting: "night",
+    lastOrderType: null,
+    venueType: "lounge"
+  };
+};
+export const updateUserProfile = (updates: any) => {
+  const current = getUserProfile();
+  const updated = { ...current, ...updates };
+  localStorage.setItem("userProfile", JSON.stringify(updated));
+  return updated;
+};
+
+// ====================== PAIRING MAP ======================
+const pairingMap: any = {
+  cigar: ["premium","strong","night"],
+  whiskey: ["strong","premium","solo"],
+  beer: ["light","social"],
+  vape: ["tech","flavor","night"]
+};
+
+// ====================== LIVE CONTROLLER (REAL EVENTS → PROFILE) ======================
+import { useEffect } from "react";
+export function LiveEngineController() {
+  useEffect(() => {
+    let lastUpdate = 0;
+
+    socket.on("pos_order", (data: any) => {
+      // throttle to avoid UI spam
+      if (Date.now() - lastUpdate < 1500) return;
+
+      const tags = pairingMap[data.orderType] || [];
+
+      updateUserProfile({
+        lastOrderType: data.orderType,
+        mood: tags.includes("social") ? "social" : "solo",
+        intensity: tags.includes("strong") ? "strong" : "light",
+        setting: tags.includes("night") ? "night" : "day"
+      });
+
+      lastUpdate = Date.now();
+    });
+
+    return () => socket.off("pos_order");
+  }, []);
+
+  return null;
+}
+
+// ====================== HOW TO CONNECT YOUR REAL POS ======================
+// In your POS dashboard (Square/Toast/Stripe/etc):
+// 1) Create a webhook to POST to: https://YOUR_DOMAIN/api/pos/webhook
+// 2) Configure it to send order/checkout events
+// 3) Set the same secret in POS_WEBHOOK_SECRET (env) and in POS settings
+// 4) Ensure your server is publicly reachable (use your domain or a tunnel for testing)
+// That’s it. Real orders → webhook → WS → frontend updates instantly.

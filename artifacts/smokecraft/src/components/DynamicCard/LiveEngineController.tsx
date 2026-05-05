@@ -1,19 +1,31 @@
 /**
- * LiveEngineController — headless POS-feed sync component.
+ * LiveEngineController — real-time POS ↔ scene ranking bridge.
  *
- * In production this would subscribe to a WebSocket / SSE stream from the
- * POS system. In the current demo environment it simulates a live order
- * coming in every 5 seconds, which updates `lastOrderType` in UserProfileContext.
- * This triggers a re-rank of all DynamicCard scene queues via the weighted engine.
+ * Subscribes to `pos_order` events from the Socket.io server. When an order
+ * arrives, it updates `lastOrderType` (and derives mood/intensity/setting)
+ * in UserProfileContext, which triggers getWeightedScenes() to re-rank all
+ * four DynamicCard scene queues instantly.
  *
- * Mount once at the top of the CraftHub tree. Renders nothing.
+ * Fallback: if the socket has not connected within FALLBACK_DELAY_MS, a local
+ * simulated POS feed fires every SIMULATE_INTERVAL_MS so the engine keeps
+ * cycling even when the backend is unreachable (e.g. dev with no server).
+ *
+ * The 2-second debounce prevents rapid POS bursts from thrashing the UI.
+ *
+ * Mount once at the root of the CraftHub tree. Renders nothing.
  */
 
-import { useEffect } from "react";
-import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useEffect, useRef } from "react";
+import { socket }            from "@/lib/socket";
+import { useUserProfile }    from "@/contexts/UserProfileContext";
+import { PAIRING_MAP }       from "@/lib/weightedEngine";
+
+const DEBOUNCE_MS        = 2_000;
+const FALLBACK_DELAY_MS  = 8_000;  // wait this long for real socket before starting sim
+const SIMULATE_INTERVAL_MS = 5_000;
 
 const ORDER_TYPES = ["cigar", "whiskey", "beer", "vape"] as const;
-type OrderType = typeof ORDER_TYPES[number];
+type  OrderType   = typeof ORDER_TYPES[number];
 
 const ORDER_LABELS: Record<OrderType, string> = {
   cigar:   "🚬 Cigar order",
@@ -22,25 +34,92 @@ const ORDER_LABELS: Record<OrderType, string> = {
   vape:    "💨 Vape session",
 };
 
+function deriveProfile(orderType: OrderType) {
+  const tags = PAIRING_MAP[orderType] ?? [];
+  return {
+    lastOrderType: orderType,
+    mood:      tags.includes("social") ? "social" : "solo",
+    intensity: tags.includes("premium") ? "premium" : tags.includes("strong") ? "strong" : "light",
+    setting:   tags.includes("night") ? "night" : tags.includes("urban") ? "urban" : "day",
+  };
+}
+
 export default function LiveEngineController() {
-  const { recordOrder } = useUserProfile();
+  const { recordOrder, updateProfile } = useUserProfile();
+  const lastUpdateRef = useRef(0);
+  const simulatorRef  = useRef<ReturnType<typeof setInterval> | null>(null);
+  const connectedRef  = useRef(false);
+
+  const handleOrder = (orderType: string) => {
+    const now = Date.now();
+    if (now - lastUpdateRef.current < DEBOUNCE_MS) return;
+    lastUpdateRef.current = now;
+
+    const type = ORDER_TYPES.includes(orderType as OrderType)
+      ? (orderType as OrderType)
+      : ORDER_TYPES[Math.floor(Math.random() * ORDER_TYPES.length)];
+
+    recordOrder(type);
+    updateProfile(deriveProfile(type));
+
+    if (import.meta.env.DEV) {
+      console.debug(`[LiveEngine] ${ORDER_LABELS[type]} → profile updated`);
+    }
+  };
+
+  const startSimulator = () => {
+    if (simulatorRef.current) return; // already running
+    if (import.meta.env.DEV) {
+      console.debug("[LiveEngine] No socket connection — starting local POS simulator");
+    }
+    // Fire immediately on start
+    handleOrder(ORDER_TYPES[Math.floor(Math.random() * ORDER_TYPES.length)]);
+    simulatorRef.current = setInterval(() => {
+      handleOrder(ORDER_TYPES[Math.floor(Math.random() * ORDER_TYPES.length)]);
+    }, SIMULATE_INTERVAL_MS);
+  };
+
+  const stopSimulator = () => {
+    if (simulatorRef.current) {
+      clearInterval(simulatorRef.current);
+      simulatorRef.current = null;
+    }
+  };
 
   useEffect(() => {
-    // Initial signal on mount so scenes rank immediately
-    const initial = ORDER_TYPES[Math.floor(Math.random() * ORDER_TYPES.length)];
-    recordOrder(initial);
+    // ── Real-time socket handler ─────────────────────────────────────────────
+    const onPosOrder = (data: { orderType: string }) => {
+      connectedRef.current = true;
+      stopSimulator(); // stop sim if socket delivers real data
+      handleOrder(data.orderType);
+    };
 
-    const interval = setInterval(() => {
-      const orderType = ORDER_TYPES[Math.floor(Math.random() * ORDER_TYPES.length)];
-      recordOrder(orderType);
-      // Non-blocking dev hint — safe to remove in prod
-      if (import.meta.env.DEV) {
-        console.debug(`[LiveEngine] POS signal: ${ORDER_LABELS[orderType]}`);
-      }
-    }, 5_000);
+    socket.on("pos_order", onPosOrder);
 
-    return () => clearInterval(interval);
-  }, [recordOrder]);
+    socket.on("connect", () => {
+      connectedRef.current = true;
+      stopSimulator();
+    });
+
+    // ── Fallback simulator ───────────────────────────────────────────────────
+    // Start simulating after FALLBACK_DELAY_MS if no real connection yet.
+    const fallbackTimer = setTimeout(() => {
+      if (!connectedRef.current) startSimulator();
+    }, FALLBACK_DELAY_MS);
+
+    // If socket is already connected on mount, no fallback needed
+    if (socket.connected) {
+      connectedRef.current = true;
+    }
+
+    return () => {
+      socket.off("pos_order", onPosOrder);
+      socket.off("connect");
+      clearTimeout(fallbackTimer);
+      stopSimulator();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return null;
 }

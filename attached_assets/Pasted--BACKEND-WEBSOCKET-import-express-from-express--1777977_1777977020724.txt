@@ -1,0 +1,206 @@
+// ====================== BACKEND + WEBSOCKET ======================
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import { io as ClientIO } from "socket.io-client";
+import React, { useEffect, useState } from "react";
+
+const app = express();
+app.use(express.json());
+
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "*" } });
+
+app.post("/api/pos/order", (req, res) => {
+  const { orderType, items } = req.body;
+  console.log("POS ORDER RECEIVED:", orderType);
+  io.emit("pos_order", { orderType, items });
+  res.json({ success: true });
+});
+
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
+  socket.on("disconnect", () => console.log("Client disconnected:", socket.id));
+});
+
+server.listen(4000, () => console.log("Server running on port 4000"));
+
+// ====================== SOCKET CLIENT ======================
+export const socket = ClientIO("http://localhost:4000");
+
+// ====================== SCENES ======================
+export const smokeScenes = [
+  { img: "/images/smoke/black-professional.jpg", label: "Executive Lounge", tags: ["premium","solo","night"], weight: 1 },
+  { img: "/images/smoke/hispanic-lounge.jpg", label: "Evening Session", tags: ["social","night"], weight: 1 },
+  { img: "/images/smoke/urban-smoker.jpg", label: "Late Night", tags: ["urban","solo","night"], weight: 1 },
+  { img: "/images/smoke/woman-cigar.jpg", label: "Refined Taste", tags: ["premium","solo"], weight: 1 },
+  { img: "/images/smoke/mixed-group.jpg", label: "Social Circle", tags: ["social","group"], weight: 1 }
+];
+
+export const pourScenes = [
+  { img: "/images/pour/whiskey-neat.jpg", label: "Neat Pour", tags: ["strong","premium","solo"], weight: 1 },
+  { img: "/images/pour/old-fashioned.jpg", label: "Craft Cocktail", tags: ["premium","social"], weight: 1 },
+  { img: "/images/pour/cocktail-bar.jpg", label: "Bar Energy", tags: ["social","night"], weight: 1 },
+  { img: "/images/pour/wine-glass.jpg", label: "Wine Selection", tags: ["light","premium"], weight: 1 },
+  { img: "/images/pour/premium-lounge-drink.jpg", label: "Luxury Sip", tags: ["premium","night"], weight: 1 }
+];
+
+export const brewScenes = [
+  { img: "/images/brew/lager.jpg", label: "Classic Lager", tags: ["light","social"], weight: 1 },
+  { img: "/images/brew/dark-stout.jpg", label: "Dark Stout", tags: ["strong","solo"], weight: 1 },
+  { img: "/images/brew/craft-beer-flight.jpg", label: "Beer Flight", tags: ["social","group"], weight: 1 },
+  { img: "/images/brew/pouring-beer.jpg", label: "Fresh Pour", tags: ["light","social"], weight: 1 },
+  { img: "/images/brew/ipa-glass.jpg", label: "IPA Selection", tags: ["strong","premium"], weight: 1 }
+];
+
+export const vapeScenes = [
+  { img: "/images/vape/premium-vape-device.jpg", label: "Modern Device", tags: ["tech","solo","premium"], weight: 1 },
+  { img: "/images/vape/hookah-lounge-group.jpg", label: "Hookah Lounge", tags: ["social","group","night"], weight: 1 },
+  { img: "/images/vape/colorful-clouds.jpg", label: "Flavor Clouds", tags: ["flavor","light"], weight: 1 },
+  { img: "/images/vape/neon-vape-session.jpg", label: "Night Session", tags: ["night","urban"], weight: 1 }
+];
+
+// ====================== USER PROFILE ======================
+export const getUserProfile = () => {
+  const data = localStorage.getItem("userProfile");
+  return data ? JSON.parse(data) : {
+    mood: "social",
+    intensity: "strong",
+    setting: "night",
+    lastOrderType: null,
+    venueType: "lounge"
+  };
+};
+
+export const updateUserProfile = (updates: any) => {
+  const current = getUserProfile();
+  const updated = { ...current, ...updates };
+  localStorage.setItem("userProfile", JSON.stringify(updated));
+  return updated;
+};
+
+// ====================== PAIRING + VENUE ======================
+const pairingMap: any = {
+  cigar: ["premium","strong","night"],
+  whiskey: ["strong","premium","solo"],
+  beer: ["light","social"],
+  vape: ["tech","flavor","night"]
+};
+
+const venueThemes: any = {
+  lounge: ["premium","night"],
+  bar: ["social"],
+  club: ["urban","night"]
+};
+
+// ====================== WEIGHT ENGINE ======================
+export function getWeightedScenes(scenes: any[], profile: any) {
+  return scenes
+    .map(scene => {
+      let score = scene.weight || 1;
+
+      scene.tags.forEach((tag: string) => {
+        if (Object.values(profile).includes(tag)) score += 2;
+      });
+
+      if (profile.lastOrderType && pairingMap[profile.lastOrderType]) {
+        pairingMap[profile.lastOrderType].forEach((tag: string) => {
+          if (scene.tags.includes(tag)) score += 3;
+        });
+      }
+
+      venueThemes[profile.venueType]?.forEach((tag: string) => {
+        if (scene.tags.includes(tag)) score += 2;
+      });
+
+      const hour = new Date().getHours();
+      if (hour >= 18 && scene.tags.includes("night")) score += 1;
+      if (hour < 12 && scene.tags.includes("light")) score += 1;
+
+      return { ...scene, score };
+    })
+    .sort((a, b) => b.score - a.score);
+}
+
+// ====================== DYNAMIC CARD ======================
+export function DynamicCard({ title, subtitle, scenes }: any) {
+  const [profile, setProfile] = useState(getUserProfile());
+  const [index, setIndex] = useState(0);
+  const [sortedScenes, setSortedScenes] = useState<any[]>([]);
+
+  useEffect(() => {
+    setSortedScenes(getWeightedScenes(scenes, profile));
+    setIndex(0);
+  }, [profile, scenes]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex(prev => (prev + 1) % sortedScenes.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [sortedScenes]);
+
+  if (!sortedScenes.length) return null;
+
+  return (
+    <div className="card">
+      <img src={sortedScenes[index].img} className="card-image" />
+      <div className="overlay" />
+      <div className="scene-label">{sortedScenes[index].label}</div>
+      <div className="card-content">
+        <h2>{title}</h2>
+        <p>{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// ====================== LIVE ENGINE ======================
+export function LiveEngineController() {
+  useEffect(() => {
+    let lastUpdate = 0;
+
+    socket.on("pos_order", (data: any) => {
+      if (Date.now() - lastUpdate < 2000) return;
+
+      const tags = pairingMap[data.orderType] || [];
+
+      updateUserProfile({
+        lastOrderType: data.orderType,
+        mood: tags.includes("social") ? "social" : "solo",
+        intensity: tags.includes("strong") ? "strong" : "light",
+        setting: tags.includes("night") ? "night" : "day"
+      });
+
+      lastUpdate = Date.now();
+    });
+
+    return () => socket.off("pos_order");
+  }, []);
+
+  return null;
+}
+
+// ====================== APP ======================
+export default function App() {
+  return (
+    <>
+      <LiveEngineController />
+      <div className="grid">
+        <DynamicCard title="SmokeCraft 360" subtitle="Cigars • Lounge" scenes={smokeScenes} />
+        <DynamicCard title="PourCraft 360" subtitle="Cocktails • Spirits" scenes={pourScenes} />
+        <DynamicCard title="BrewCraft 360" subtitle="Beer • Pairings" scenes={brewScenes} />
+        <DynamicCard title="VapeCraft 360" subtitle="Vape • Hookah" scenes={vapeScenes} />
+      </div>
+    </>
+  );
+}
+
+// ====================== STYLES ======================
+.card { position: relative; height: 420px; border-radius: 20px; overflow: hidden; }
+.card-image { width: 100%; height: 100%; object-fit: cover; animation: zoom 6s ease-in-out infinite; }
+.overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0.2)); }
+.scene-label { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.6); padding: 6px 12px; color: white; border-radius: 8px; }
+.card-content { position: absolute; bottom: 20px; left: 20px; color: white; }
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 20px; }
+@keyframes zoom { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
