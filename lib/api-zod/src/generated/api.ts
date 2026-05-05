@@ -9,6 +9,22 @@ import * as zod from 'zod';
 
 
 /**
+ * Builds a brand-tuned prompt from craft+style, checks the Cloudinary cache, generates with gpt-image-1 on a miss, and returns the URL.
+ * @summary Generate or retrieve cached AI style card image
+ */
+export const GenerateAiImageBody = zod.object({
+  "craft": zod.string().describe('Craft type (pour, brew, smoke, vape)'),
+  "styleId": zod.string().describe('Style card identifier (e.g. smooth, spicy, light, amber)'),
+  "prompt": zod.string().optional().describe('Optional override prompt')
+})
+
+export const GenerateAiImageResponse = zod.object({
+  "url": zod.string().url().describe('Cloudinary CDN URL of the generated image'),
+  "cached": zod.boolean().describe('Whether the image was served from the cache')
+})
+
+
+/**
  * Returns server health status
  * @summary Health check
  */

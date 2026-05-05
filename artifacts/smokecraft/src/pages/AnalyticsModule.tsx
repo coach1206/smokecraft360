@@ -79,10 +79,24 @@ export default function AnalyticsModule() {
     return insights;
   }, [pos.products, pos.orders]);
 
-  const topProducts = [...pos.products]
-    .sort((a, b) => (b.stock < a.stock ? -1 : 1))
-    .slice(0, 5)
-    .map((p, i) => ({ ...p, sold: [24, 18, 15, 12, 9][i] ?? 5 }));
+  const soldCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const order of pos.orders) {
+      if (order.status === "failed" || order.status === "refunded") continue;
+      for (const item of order.items) {
+        counts[item.product.id] = (counts[item.product.id] ?? 0) + item.quantity;
+      }
+    }
+    return counts;
+  }, [pos.orders]);
+
+  const topProducts = useMemo(() =>
+    [...pos.products]
+      .map(p => ({ ...p, sold: soldCounts[p.id] ?? 0 }))
+      .sort((a, b) => b.sold - a.sold)
+      .slice(0, 5),
+    [pos.products, soldCounts],
+  );
 
   return (
     <BackgroundLayer image={getBackground("analytics")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>

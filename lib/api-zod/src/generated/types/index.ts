@@ -6,6 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './aiImageRequestBody';
+export * from './aiImageResult';
 export * from './craftBuild';
 export * from './craftBuildProfileAnswers';
 export * from './craftPhase';

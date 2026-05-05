@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { motion }   from "framer-motion";
+import { useState, useMemo } from "react";
+import { motion }            from "framer-motion";
 import CraftFlow, { type CraftFlowConfig } from "@/components/CraftFlow";
 import DesignPlayground, {
   hasSeenPlayground, markPlaygroundSeen,
   type PlaygroundConfig,
 } from "@/components/DesignPlayground/DesignPlayground";
+import { useCraftImages }   from "@/hooks/useDynamicImage";
 import loungeBg      from "@assets/locked_cards/experience_pourcraft.png";
 import pourSmoothImg from "@assets/generated_images/pour_smooth.png";
 import pourSpicyImg  from "@assets/generated_images/pour_spicy.png";
@@ -61,7 +62,9 @@ const PLAYGROUND_CONFIG: PlaygroundConfig = {
   lockedHint: "Aged Rare & Vintage finishes unlock in Signature Studio.",
 };
 
-const CONFIG: CraftFlowConfig = {
+const STYLE_IDS = ["smooth", "spicy", "smoky", "rich"] as const;
+
+const BASE_CONFIG: CraftFlowConfig = {
   testIdPrefix: "pourcraft",
   title: "PourCraft",
   tagline: "Pick your pour · we'll pair the cigar",
@@ -104,6 +107,16 @@ const CONFIG: CraftFlowConfig = {
 export default function PourCraft() {
   const [showPlayground, setShowPlayground] = useState(() => !hasSeenPlayground("pour"));
 
+  const aiImages = useCraftImages("pour", STYLE_IDS as unknown as string[]);
+
+  const config = useMemo<CraftFlowConfig>(() => ({
+    ...BASE_CONFIG,
+    styles: BASE_CONFIG.styles.map(s => ({
+      ...s,
+      image: aiImages[s.id] ?? s.image,
+    })),
+  }), [aiImages]);
+
   if (showPlayground) {
     return (
       <DesignPlayground
@@ -124,7 +137,7 @@ export default function PourCraft() {
       transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
       style={{ position: "fixed", inset: 0 }}
     >
-      <CraftFlow config={CONFIG} />
+      <CraftFlow config={config} />
     </motion.div>
   );
 }

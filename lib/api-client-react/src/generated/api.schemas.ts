@@ -138,6 +138,22 @@ export interface UpsertCraftSessionRequest {
   remainingMs?: number;
 }
 
+export interface AiImageRequestBody {
+  /** Craft type (pour, brew, smoke, vape) */
+  craft: string;
+  /** Style card identifier (e.g. smooth, spicy, light, amber) */
+  styleId: string;
+  /** Optional override prompt */
+  prompt?: string;
+}
+
+export interface AiImageResult {
+  /** Cloudinary CDN URL of the generated image */
+  url: string;
+  /** Whether the image was served from the cache */
+  cached: boolean;
+}
+
 export type GetCraftBuildParams = {
 craft: CraftType;
 };

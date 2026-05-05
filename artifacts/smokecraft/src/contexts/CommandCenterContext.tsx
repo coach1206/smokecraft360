@@ -145,7 +145,7 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
   const [staff, setStaff] = useState<StaffMember[]>(() => INITIAL_STAFF.map(s => ({ ...s })));
   const [vendors] = useState<Vendor[]>(() => INITIAL_VENDORS.map(v => ({ ...v })));
   const [auditLog, setAuditLog] = useState<AuditEntry[]>(() => [...INITIAL_AUDIT]);
-  const [hourlyRevenue] = useState<HourlyRevenue[]>(INITIAL_REVENUE);
+  const [hourlyRevenue, setHourlyRevenue] = useState<HourlyRevenue[]>(INITIAL_REVENUE);
   const [posMode, setPosModeRaw] = useState<PosOperatingMode>(loadPosMode);
   const systemStatus: "operational" | "degraded" | "critical" = devices.filter(d => d.status === "offline").length >= 3 ? "critical" : devices.some(d => d.status === "offline") ? "degraded" : "operational";
   const activeGuests = 12;
@@ -179,6 +179,71 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
       }
     }
     void loadDevices();
+  }, []);
+
+  // Load real staff from /api/users?role=staff — falls back to INITIAL_STAFF on error
+  useEffect(() => {
+    async function loadStaff() {
+      try {
+        const res = await fetch("/api/users?role=staff", { headers: getAuthHeaders() });
+        if (!res.ok) return;
+        const data = await res.json() as Array<{
+          id: string;
+          name: string;
+          role: string;
+        }>;
+        if (!Array.isArray(data) || data.length === 0) return;
+        setStaff(data.map(u => ({
+          id:     u.id,
+          name:   u.name,
+          role:   u.role === "manager" ? "manager" : u.role === "venue_owner" ? "owner" : "staff",
+          status: "active" as const,
+          pin:    "",
+        })));
+      } catch {
+        // Keep INITIAL_STAFF on any error
+      }
+    }
+    void loadStaff();
+  }, []);
+
+  // Load real hourly revenue from /api/orders — compute per-hour totals
+  useEffect(() => {
+    async function loadRevenue() {
+      try {
+        const res = await fetch("/api/orders", { headers: getAuthHeaders() });
+        if (!res.ok) return;
+        const data = await res.json() as Array<{
+          createdAt?: string;
+          totalCents?: number;
+          status?: string;
+        }>;
+        if (!Array.isArray(data) || data.length === 0) return;
+
+        const HOURS = ["10am","11am","12pm","1pm","2pm","3pm","4pm","5pm","6pm","7pm","8pm","9pm"];
+        const buckets: Record<string, number> = {};
+        HOURS.forEach(h => { buckets[h] = 0; });
+
+        for (const order of data) {
+          if (order.status === "cancelled" || order.status === "refunded") continue;
+          if (!order.createdAt || !order.totalCents) continue;
+          const d = new Date(order.createdAt);
+          const h = d.getHours();
+          let label: string | null = null;
+          if (h === 10) label = "10am";
+          else if (h === 11) label = "11am";
+          else if (h === 12) label = "12pm";
+          else if (h >= 1 && h <= 9) label = `${h}pm`;
+          if (label && label in buckets) buckets[label] += Math.round(order.totalCents / 100);
+        }
+
+        const revenue = HOURS.map(h => ({ hour: h, amount: buckets[h] ?? 0 }));
+        if (revenue.some(r => r.amount > 0)) setHourlyRevenue(revenue);
+      } catch {
+        // Keep INITIAL_REVENUE on any error
+      }
+    }
+    void loadRevenue();
   }, []);
 
   const addAuditEntry = useCallback((action: string, details: string, user = "System") => {

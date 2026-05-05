@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { motion }   from "framer-motion";
+import { useState, useMemo } from "react";
+import { motion }            from "framer-motion";
 import CraftFlow, { type CraftFlowConfig } from "@/components/CraftFlow";
 import DesignPlayground, {
   hasSeenPlayground, markPlaygroundSeen,
   type PlaygroundConfig,
 } from "@/components/DesignPlayground/DesignPlayground";
+import { useCraftImages }   from "@/hooks/useDynamicImage";
 import loungeBg      from "@assets/generated_images/brewcraft_beer.png";
 import brewLightImg  from "@assets/generated_images/brew_light.png";
 import brewAmberImg  from "@assets/generated_images/brew_amber.png";
@@ -63,7 +64,9 @@ const PLAYGROUND_CONFIG: PlaygroundConfig = {
   lockedHint: "Craft & Reserve palettes and hop-profile fine-tuning unlock in Signature Studio.",
 };
 
-const CONFIG: CraftFlowConfig = {
+const STYLE_IDS = ["light", "amber", "ipa", "dark"] as const;
+
+const BASE_CONFIG: CraftFlowConfig = {
   testIdPrefix: "brewcraft",
   title: "BrewCraft",
   tagline: "Pick your beer · we'll pour the experience",
@@ -106,6 +109,16 @@ const CONFIG: CraftFlowConfig = {
 export default function BrewCraft() {
   const [showPlayground, setShowPlayground] = useState(() => !hasSeenPlayground("brew"));
 
+  const aiImages = useCraftImages("brew", STYLE_IDS as unknown as string[]);
+
+  const config = useMemo<CraftFlowConfig>(() => ({
+    ...BASE_CONFIG,
+    styles: BASE_CONFIG.styles.map(s => ({
+      ...s,
+      image: aiImages[s.id] ?? s.image,
+    })),
+  }), [aiImages]);
+
   if (showPlayground) {
     return (
       <DesignPlayground
@@ -126,7 +139,7 @@ export default function BrewCraft() {
       transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
       style={{ position: "fixed", inset: 0 }}
     >
-      <CraftFlow config={CONFIG} />
+      <CraftFlow config={config} />
     </motion.div>
   );
 }

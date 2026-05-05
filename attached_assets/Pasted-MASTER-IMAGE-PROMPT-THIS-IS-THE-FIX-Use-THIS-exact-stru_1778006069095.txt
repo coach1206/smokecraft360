@@ -1,0 +1,174 @@
+MASTER IMAGE PROMPT (THIS IS THE FIX)
+
+Use THIS exact structure. Do not freestyle it.
+
+Ultra realistic studio photograph of a [GLASS_TYPE] filled with [DRINK_DESCRIPTION].
+
+Glass details:
+- crystal clear glass, physically accurate reflections and refractions
+- correct thickness, light bending through liquid
+- condensation droplets on outside of glass
+
+Drink details:
+- liquid color: [COLOR]
+- liquid clarity: [clear / cloudy / thick]
+- fill level: [low / medium / full]
+- ice: [none / large cubes / crushed ice / sphere]
+- garnish: [lime wedge / orange peel / cherry / mint / none]
+
+Lighting:
+- cinematic bar lighting
+- soft warm highlights
+- realistic reflections on surface
+- subtle shadows underneath glass
+
+Environment:
+- luxury bar setting OR dark neutral studio background
+- wood or marble surface
+- shallow depth of field (blurred background)
+
+Camera:
+- 50mm lens
+- high detail, sharp focus on glass
+- professional product photography
+
+Style:
+- hyper photorealistic
+- not CGI, not cartoon, not illustration
+- looks like a real drink served in a high-end lounge
+
+NO fake textures, NO plastic look, NO low detail
+⚡ EXAMPLE (WHAT YOUR SYSTEM SHOULD GENERATE)
+
+If user selects:
+
+whiskey
+rocks glass
+ice cube
+orange peel
+
+You send:
+
+Ultra realistic studio photograph of a heavy crystal rocks glass filled with amber whiskey.
+
+Glass details:
+- crystal clear glass with thick base
+- realistic light refraction
+- condensation droplets forming on the outside
+
+Drink details:
+- deep amber liquid
+- clear
+- medium fill level
+- large square ice cube
+- orange peel garnish
+
+Lighting:
+- warm cinematic bar lighting
+- golden highlights through the whiskey
+- soft shadows
+
+Environment:
+- luxury whiskey bar
+- dark wood surface
+- blurred background
+
+Camera:
+- 50mm lens
+- ultra sharp focus
+
+Style:
+- hyper photorealistic
+- indistinguishable from real photography
+🧠 BACKEND (YOU NEED THIS ROUTE)
+
+Drop this into your server:
+
+app.post("/api/generate-drink-image", async (req, res) => {
+  const { prompt } = req.body;
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/images/generations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-image-1",
+        prompt,
+        size: "1024x1024"
+      }),
+    });
+
+    const data = await response.json();
+
+    res.json({
+      image: data.data[0].url
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: "Image generation failed" });
+  }
+});
+🖥 FRONTEND (TRIGGER IT LIKE THIS)
+const generateImage = async (drinkConfig) => {
+  const prompt = buildPromptFromSelections(drinkConfig);
+
+  const res = await fetch("/api/generate-drink-image", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ prompt }),
+  });
+
+  const data = await res.json();
+
+  setGeneratedImage(data.image);
+};
+🧠 PROMPT BUILDER (CRITICAL)
+function buildPromptFromSelections(config) {
+  return `
+Ultra realistic studio photograph of a ${config.glass} filled with ${config.name}.
+
+Glass details:
+- crystal clear glass
+- realistic reflections and refractions
+
+Drink details:
+- liquid color: ${config.color}
+- liquid clarity: ${config.clarity}
+- fill level: ${config.fill}
+- ice: ${config.ice}
+- garnish: ${config.garnish}
+
+Lighting:
+- cinematic bar lighting
+- warm highlights
+
+Environment:
+- luxury bar setting
+- wood surface
+
+Camera:
+- 50mm lens
+- sharp focus
+
+Style:
+- hyper photorealistic
+- not CGI, not cartoon
+`;
+}
+💾 CACHE (DON’T SKIP THIS)
+
+If you don’t cache, your costs will eat you alive.
+
+const key = JSON.stringify(drinkConfig);
+
+if (cache[key]) {
+  return cache[key];
+}
+
+const image = await generate();
+cache[key] = image;

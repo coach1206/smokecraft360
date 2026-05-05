@@ -1,6 +1,8 @@
 import { Router, type IRouter } from "express";
 import healthRouter            from "./health";
 import authRouter              from "./auth";
+import aiRouter                from "./ai";
+import usersRouter             from "./users";
 import recommendRouter         from "./recommend";
 import productsRouter          from "./products";
 import analyticsRouter         from "./analytics";
@@ -21,6 +23,7 @@ const router: IRouter = Router();
 
 router.use(healthRouter);
 router.use(authRouter);
+router.use(usersRouter);
 router.use(recommendRouter);
 router.use(productsRouter);
 router.use(analyticsRouter);
@@ -36,5 +39,6 @@ router.use("/demand",          demandInsightsRouter); // /demand/insights must c
 router.use("/demand",          demandRouter);
 router.use("/network",         networkInsightsRouter);
 router.use("/distribution",    distributionRouter);
+router.use(aiRouter);
 
 export default router;

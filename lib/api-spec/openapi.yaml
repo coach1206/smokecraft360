@@ -16,7 +16,34 @@ tags:
     description: Pre-gameplay design playground saves
   - name: craft-sessions
     description: Craft session timer and streak state
+  - name: ai
+    description: AI image generation with Cloudinary caching
+
 paths:
+  /ai/generate-image:
+    post:
+      operationId: generateAiImage
+      tags: [ai]
+      summary: Generate or retrieve cached AI style card image
+      description: Builds a brand-tuned prompt from craft+style, checks the Cloudinary cache, generates with gpt-image-1 on a miss, and returns the URL.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiImageRequestBody"
+      responses:
+        "200":
+          description: Image URL (from cache or freshly generated)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiImageResult"
+        "400":
+          description: Invalid request body
+        "500":
+          description: Generation failed
+
   /healthz:
     get:
       operationId: healthCheck
@@ -566,3 +593,29 @@ components:
           type: integer
           minimum: 0
       required: [craft]
+
+    AiImageRequestBody:
+      type: object
+      properties:
+        craft:
+          type: string
+          description: Craft type (pour, brew, smoke, vape)
+        styleId:
+          type: string
+          description: Style card identifier (e.g. smooth, spicy, light, amber)
+        prompt:
+          type: string
+          description: Optional override prompt
+      required: [craft, styleId]
+
+    AiImageResult:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Cloudinary CDN URL of the generated image
+        cached:
+          type: boolean
+          description: Whether the image was served from the cache
+      required: [url, cached]

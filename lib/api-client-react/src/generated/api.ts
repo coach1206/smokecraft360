@@ -20,6 +20,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AiImageRequestBody,
+  AiImageResult,
   CreateCraftBuild201,
   CreateCraftBuildRequest,
   CreateCraftSession201,
@@ -57,6 +59,78 @@ type AwaitedInput<T> = PromiseLike<T> | T;
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
+
+/**
+ * Builds a brand-tuned prompt from craft+style, checks the Cloudinary cache, generates with gpt-image-1 on a miss, and returns the URL.
+ * @summary Generate or retrieve cached AI style card image
+ */
+export const getGenerateAiImageUrl = () => {
+
+
+
+
+  return `/api/ai/generate-image`
+}
+
+export const generateAiImage = async (aiImageRequestBody: AiImageRequestBody, options?: RequestInit): Promise<AiImageResult> => {
+
+  return customFetch<AiImageResult>(getGenerateAiImageUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      aiImageRequestBody,)
+  }
+);}
+
+
+
+
+export const getGenerateAiImageMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateAiImage>>, TError,{data: BodyType<AiImageRequestBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateAiImage>>, TError,{data: BodyType<AiImageRequestBody>}, TContext> => {
+
+const mutationKey = ['generateAiImage'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateAiImage>>, {data: BodyType<AiImageRequestBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  generateAiImage(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateAiImageMutationResult = NonNullable<Awaited<ReturnType<typeof generateAiImage>>>
+    export type GenerateAiImageMutationBody = BodyType<AiImageRequestBody>
+    export type GenerateAiImageMutationError = ErrorType<void>
+
+    /**
+ * @summary Generate or retrieve cached AI style card image
+ */
+export const useGenerateAiImage = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateAiImage>>, TError,{data: BodyType<AiImageRequestBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof generateAiImage>>,
+        TError,
+        {data: BodyType<AiImageRequestBody>},
+        TContext
+      > => {
+      return useMutation(getGenerateAiImageMutationOptions(options));
+    }
 
 /**
  * Returns server health status
