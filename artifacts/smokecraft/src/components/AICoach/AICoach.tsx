@@ -65,8 +65,12 @@ export default function AICoach({
   const [showFix,    setShowFix]    = useState<boolean>(false);
   const [fixOptions, setFixOptions] = useState<FixOption[]>([]);
 
-  /** Track the phase we last processed so we fire exactly once per transition. */
-  const lastPhaseRef = useRef<Phase>("intro");
+  /**
+   * Track the phase we last processed so we fire exactly once per transition.
+   * Initialised to an impossible value so the intro phase line IS spoken on
+   * first mount (audio only — the component still renders null during intro).
+   */
+  const lastPhaseRef = useRef<string>("__init__");
   /** Track whether we are currently in a bad-combo state. */
   const lastBadRef   = useRef<boolean>(false);
   /** Stable voice ref so effects don't need `voice` as a dep. */

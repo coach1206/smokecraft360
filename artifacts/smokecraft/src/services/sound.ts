@@ -94,7 +94,7 @@ async function exists(src: string): Promise<boolean> {
 
 async function play(src: string, volume = 0.55): Promise<void> {
   if (typeof window === "undefined") return;
-  if (!unlocked || isMuted()) return;
+  if (!unlocked || isMuted() || isCoachMuted()) return;
   const ok = await exists(src);
   const finalSrc = ok ? src : FALLBACK_SRC;
   try {
