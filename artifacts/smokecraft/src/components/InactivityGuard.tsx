@@ -117,12 +117,15 @@ export default function InactivityGuard() {
     <AnimatePresence>
       {showWarning && (
         <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           style={{
             position: "fixed", inset: 0, zIndex: 10000,
             background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)",
             display: "flex", alignItems: "center", justifyContent: "center",
             padding: 24,
+            pointerEvents: showWarning ? "auto" : "none",
           }}
         >
           <motion.div

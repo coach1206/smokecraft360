@@ -276,6 +276,7 @@ export default function PinLogin() {
         position: "absolute", bottom: 20,
         fontSize: 10, textTransform: "uppercase",
         letterSpacing: "0.2em", color: "rgba(232,224,200,0.15)",
+        pointerEvents: "none",
       }}>Powered by Axiom OS</div>
     </BackgroundLayer>
   );
