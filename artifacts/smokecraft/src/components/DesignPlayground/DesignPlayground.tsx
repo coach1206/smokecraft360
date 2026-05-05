@@ -113,7 +113,6 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const controls  = useAnimation();
 
-  // Design values
   const [brandName,    setBrandName]    = useState("");
   const [selectedColor, setSelectedColor] = useState(config.colorSwatches[0].id);
   const [selectedEmblem, setSelectedEmblem] = useState(config.emblemOptions[0].id);
@@ -123,8 +122,6 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
     return init;
   });
   const [engravingText, setEngravingText] = useState("");
-
-  // UI state
   const [saving,    setSaving]    = useState(false);
   const [saved,     setSaved]     = useState(false);
   const [saveLocal, setSaveLocal] = useState(false);
@@ -257,7 +254,6 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
         pointerEvents: "none",
       }} />
 
-      {/* ── Page content ───────────────────────────────────────────── */}
       <div style={{
         position: "relative", zIndex: 2,
         flex: 1, display: "flex", flexDirection: "column",
@@ -291,7 +287,6 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
           <Sparkles size={26} color={config.accent} style={{ opacity: 0.55 }} />
         </div>
 
-        {/* ── Two-column layout ─────────────────────────────────────── */}
         <div style={{
           flex: 1,
           display: "grid",
@@ -301,8 +296,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
           minHeight: 0,
         }}>
 
-          {/* LEFT: drag canvas — drag elements to reposition, pinch with two
-               fingers on tablet to zoom the canvas in or out (0.55×–2.5×). */}
+          {/* Canvas — drag chips to reposition, pinch to scale */}
           <div
             ref={canvasRef}
             onTouchStart={handleCanvasTouchStart}
@@ -318,14 +312,13 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
               touchAction: "none",
             }}
           >
-            {/* Canvas accent glow */}
             <div style={{
               position: "absolute", inset: 0,
               background: `radial-gradient(ellipse at 50% 40%, ${swatch.accent}10, transparent 65%)`,
               pointerEvents: "none",
             }} />
 
-            {/* Centered product mock — scales with pinch gesture */}
+            {/* Product mock */}
             <div style={{
               position: "relative",
               width: productW, height: productH,
@@ -339,7 +332,6 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
               transform: `scale(${canvasScale})`,
               transformOrigin: "center",
             }}>
-              {/* Inner decorative frame */}
               <div style={{
                 position: "absolute", inset: 8,
                 border: `1px solid ${swatch.accent}30`,
@@ -355,10 +347,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
               </span>
             </div>
 
-            {/* Draggable: Brand name chip
-                 Outer motion.div handles drag constraints on the unscaled canvas.
-                 Inner div applies canvasScale so the chip visually matches the
-                 product mock zoom level without disturbing drag bounds. */}
+            {/* Draggable brand chip */}
             <motion.div
               drag
               dragConstraints={canvasRef}
@@ -393,7 +382,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
               </div>
             </motion.div>
 
-            {/* Draggable: Emblem chip (same scale-inner pattern as brand chip) */}
+            {/* Draggable emblem chip */}
             <motion.div
               drag
               dragConstraints={canvasRef}
@@ -568,7 +557,6 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
               <span>{config.lockedHint}</span>
             </div>
 
-            {/* Spacer */}
             <div style={{ flex: 1, minHeight: 4 }} />
 
             {/* Save as Draft */}
