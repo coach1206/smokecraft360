@@ -1,0 +1,112 @@
+MOKECRAFT ROLLOUT TIERS (THE RIGHT WAY)
+
+This isn’t just “basic → pro → premium”
+
+This is:
+Hook → Control → Intelligence → Domination
+
+🥇 LEVEL 1 — FOUNDATION (HOOK THE VENUE)
+
+Goal: Get installed fast. Show immediate value. No friction.
+
+What goes in:
+Touchscreen Experience UI (SmokeCraft only)
+Basic pairing flow (flavor, strength, mood)
+Product selection (cigars only)
+Static pricing (manual set by venue)
+Simple POS checkout (Stripe)
+Basic inventory (manual count)
+Single device support
+What it does:
+Customer walks in
+Taps screen
+Gets a cigar recommendation
+Orders
+
+That’s it.
+
+Why this matters:
+
+This gets you into cigar lounges fast without scaring them.
+
+If they don’t adopt this level, nothing else matters.
+
+🥈 LEVEL 2 — CONTROL (MAKE THE OWNER FEEL POWER)
+
+Goal: Now you shift from “cool experience” → “I can run my business better”
+
+Add:
+Inventory system (linked to products)
+Vendor / distributor linking
+Role-based staff access (PIN system)
+Order tracking + logs
+Admin dashboard (venue control center)
+Price controls per product
+Basic analytics (sales, popular items)
+Multi-device sync
+What changes:
+
+Now the owner sees:
+
+Who sold what
+What’s running low
+What’s making money
+This is the moment:
+
+They stop seeing this as a “gimmick”
+…and start seeing it as a business system
+
+🥉 LEVEL 3 — INTELLIGENCE (THIS IS WHERE YOU SEPARATE)
+
+Goal: Now SmokeCraft starts thinking.
+
+Add:
+AI pairing engine (dynamic recommendations)
+Flavor tagging system (backend controlled)
+Customer journey tracking
+Recommendation weighting logic
+Campaign engine (promotions, featured cigars)
+Experience customization (editable question trees)
+Cross-craft expansion ready (PourCraft, etc.)
+Now the system:
+Learns what customers like
+Pushes higher-margin products
+Adjusts recommendations automatically
+This is your edge:
+
+This is where you quietly become dangerous to competitors
+
+🏆 LEVEL 4 — REVENUE ENGINE (NOW YOU’RE PRINTING MONEY)
+
+Goal: Turn SmokeCraft into a profit machine.
+
+Add:
+Dynamic pricing (AI-adjusted)
+Upsell engine (pairings, add-ons)
+Loyalty + rewards system
+Campaign competitions (your “best pairing wins” idea 🔥)
+Data monetization layer
+Distributor promotion slots (paid placement)
+Multi-venue performance tracking
+Now:
+Vendors want in
+Distributors pay for placement
+Venues compete
+Customers engage deeper
+
+This is where SmokeCraft becomes a platform, not a tool
+
+👑 LEVEL 5 — AXIOM OS FULL POWER (THE TAKEOVER)
+
+Goal: Full ecosystem control.
+
+Add:
+Multi-craft system (SmokeCraft, PourCraft, BrewCraft, VapeCraft)
+Central Command Hub (CraftHub UI)
+Device control system (kiosk management)
+AI behavior engine (venue-level optimization)
+Financial optimization system
+Real POS integration (not just Stripe frontend)
+Franchise / multi-location control
+Supplier intelligence system
+Data licensing layer
