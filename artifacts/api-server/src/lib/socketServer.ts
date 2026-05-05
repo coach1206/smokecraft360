@@ -20,6 +20,17 @@
  * tournament_spawned  { tournamentId: string, type: string, title: string, endAt: string, ts: number }
  *   Broadcast by tournamentWorker when a replacement tournament is created.
  *   CompetitionModule uses this to reload and notify players of the new round.
+ *
+ * tournament_created  { tournamentId: string, type: string, title: string, endAt: string, venueId: string | null, ts: number }
+ *   Broadcast by POST /api/competitions when a newly created tournament is immediately active.
+ *   Delivered to `venue:<venueId>` room when venueId is set; broadcast globally for cross-venue tournaments.
+ *   TouchscreenHome subscribes and shows a dismissible announcement banner to players.
+ *
+ * Events received (client → server)
+ * ──────────────────────────────────
+ * join_venue  { venueId: string }
+ *   Sent by kiosk clients on connect to join the venue-scoped room so they only
+ *   receive tournament_created events for their own venue.
  */
 
 import { Server, type Socket } from "socket.io";
@@ -48,6 +59,14 @@ export function initSocketServer(httpServer: HttpServer): Server {
     // Confirm connection to the client immediately — LiveEngineController
     // uses this to know the socket is live and can stop the local simulator.
     socket.emit("connected", { ok: true, ts: Date.now() });
+
+    // Allow clients to self-assign to a venue room for venue-scoped broadcasts.
+    socket.on("join_venue", ({ venueId }: { venueId: string }) => {
+      if (typeof venueId === "string" && venueId.length > 0) {
+        socket.join(`venue:${venueId}`);
+        logger.info({ socketId: socket.id, venueId }, "Kiosk joined venue room");
+      }
+    });
 
     socket.on("disconnect", (reason) => {
       logger.info({ socketId: socket.id, reason }, "Kiosk client disconnected");

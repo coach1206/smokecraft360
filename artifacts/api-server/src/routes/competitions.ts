@@ -27,6 +27,7 @@ import {
 import { requireAuth, optionalAuth, type AuthRequest } from "../middleware/auth";
 import { logger } from "../lib/logger";
 import { getUserBestCraftScore, rerank } from "../lib/tournamentSync";
+import { getIO } from "../lib/socketServer";
 
 const router: IRouter = Router();
 
@@ -204,6 +205,8 @@ router.post(
     const startAt = d.startAt ? new Date(d.startAt) : new Date();
     const endAt   = new Date(startAt.getTime() + tournamentDurationMs(d.type));
 
+    const status = startAt <= new Date() ? "active" : "upcoming";
+
     const [tournament] = await db
       .insert(tournamentsTable)
       .values({
@@ -212,7 +215,7 @@ router.post(
         type:        d.type,
         craftType:   d.craftType,
         venueId:     d.venueId,
-        status:      startAt <= new Date() ? "active" : "upcoming",
+        status,
         startAt,
         endAt,
         maxEntrants: d.maxEntrants,
@@ -223,6 +226,29 @@ router.post(
         createdBy:   req.user?.id,
       })
       .returning();
+
+    if (status === "active") {
+      try {
+        const io = getIO();
+        const payload = {
+          tournamentId: tournament.id,
+          type:         tournament.type,
+          title:        tournament.title,
+          endAt:        tournament.endAt.toISOString(),
+          venueId:      tournament.venueId ?? null,
+          ts:           Date.now(),
+        };
+        if (tournament.venueId) {
+          // Venue-specific tournament: only notify kiosks in that venue's room
+          io.to(`venue:${tournament.venueId}`).emit("tournament_created", payload);
+        } else {
+          // Global/cross-venue tournament: notify all connected kiosks
+          io.emit("tournament_created", payload);
+        }
+      } catch (err) {
+        logger.warn({ err }, "tournament_created socket emit failed");
+      }
+    }
 
     res.status(201).json(tournament);
   },
