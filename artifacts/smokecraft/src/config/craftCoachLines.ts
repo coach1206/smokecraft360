@@ -1,9 +1,13 @@
 /**
  * craftCoachLines.ts — static AI coach script library.
  *
- * Each craft has per-phase, per-event line arrays. The coach picks a random
- * line from the matching array at runtime so repeated plays feel fresh.
- * Edit lines here without touching component logic.
+ * Each craft has per-phase and per-event line arrays.
+ * Phase events:  phase_intro | phase_style | phase_profile | phase_match
+ * Reveal events: reveal_praise | reveal_challenge
+ * Combo events:  bad_combo | good_combo
+ *
+ * The coach picks a random line from the matching array at runtime so
+ * repeated plays feel fresh. Edit lines here without touching component logic.
  */
 
 export type CoachEvent =
@@ -11,9 +15,10 @@ export type CoachEvent =
   | "phase_style"
   | "phase_profile"
   | "phase_match"
-  | "phase_reveal_praise"
-  | "phase_reveal_challenge"
-  | "bad_combo";
+  | "reveal_praise"
+  | "reveal_challenge"
+  | "bad_combo"
+  | "good_combo";
 
 export type CraftCoachLines = Record<CoachEvent, string[]>;
 
@@ -44,12 +49,12 @@ const BASE: CraftCoachLines = {
     "Running the match now. Hold tight.",
     "Searching for your ideal combination…",
   ],
-  phase_reveal_praise: [
+  reveal_praise: [
     "Outstanding build. Your profile is dialed in.",
     "That's a strong combination. Well chosen.",
     "Excellent work. This pairing is built to impress.",
   ],
-  phase_reveal_challenge: [
+  reveal_challenge: [
     "You're close… but not there yet.",
     "Good effort. There's still room to refine.",
     "Interesting selection. Push further next time.",
@@ -58,6 +63,11 @@ const BASE: CraftCoachLines = {
     "This pairing is pulling the profile off-balance.",
     "That combination creates tension. Let me offer some fixes.",
     "I'm seeing a conflict here. Consider adjusting.",
+  ],
+  good_combo: [
+    "Now that's a winning combination.",
+    "Strong choice — the profile is locking in beautifully.",
+    "That pairing is working together. Keep going.",
   ],
 };
 
@@ -74,7 +84,7 @@ export const CRAFT_COACH_LINES: Record<string, CraftCoachLines> = {
       "Your mood pick shifts the entire character profile.",
       "The occasion defines everything. Choose wisely.",
     ],
-    phase_reveal_praise: [
+    reveal_praise: [
       "Excellent build. Your blend is dialed in perfectly.",
       "That's a sophisticated combination. Your palate is refined.",
       "A true signature. This pairing speaks volumes.",
@@ -83,6 +93,11 @@ export const CRAFT_COACH_LINES: Record<string, CraftCoachLines> = {
       "This blend and occasion are pulling against each other.",
       "The character conflict is showing. Let me suggest a correction.",
       "That pairing creates unnecessary tension in the profile.",
+    ],
+    good_combo: [
+      "That wrapper and strength are singing together.",
+      "Exceptional profile — the blend is dialed in.",
+      "Now that's a cigar worth building on.",
     ],
   },
   brew: {
@@ -97,10 +112,15 @@ export const CRAFT_COACH_LINES: Record<string, CraftCoachLines> = {
       "The mood shapes the pairing significantly. Choose deliberately.",
       "Good. Your beer style sets the stage.",
     ],
-    phase_reveal_praise: [
+    reveal_praise: [
       "Perfect pour. The hop and malt balance is dialed in.",
       "That combination reads as refined. Well selected.",
       "Outstanding. Your palate led you to the right place.",
+    ],
+    good_combo: [
+      "That hop profile and mood are in sync.",
+      "Strong combination — this pours with purpose.",
+      "The malt and character are aligning perfectly.",
     ],
   },
   pour: {
@@ -115,10 +135,15 @@ export const CRAFT_COACH_LINES: Record<string, CraftCoachLines> = {
       "The mood you pick defines the entire pour experience.",
       "Good. Now let the spirit match the moment.",
     ],
-    phase_reveal_praise: [
+    reveal_praise: [
       "Perfect selection. The spirit and occasion align beautifully.",
       "That's a well-constructed pairing. Refined taste.",
       "Excellent pour. The complexity is fully realized.",
+    ],
+    good_combo: [
+      "That finish and mood are a natural match.",
+      "Strong build — the spirit is speaking clearly.",
+      "The character and occasion are harmonizing.",
     ],
   },
   vape: {
@@ -133,15 +158,20 @@ export const CRAFT_COACH_LINES: Record<string, CraftCoachLines> = {
       "Your mood shapes the entire session experience.",
       "Good pick. Now let's lock in the experience.",
     ],
-    phase_reveal_praise: [
+    reveal_praise: [
       "Perfect session profile. Flavor and mood are aligned.",
       "That pairing is dialed in. Smooth selection.",
       "Excellent. The intensity and occasion match perfectly.",
     ],
+    good_combo: [
+      "The flavor and mood are complementing each other.",
+      "That profile is balanced well. Solid build.",
+      "Everything is aligning — good instinct.",
+    ],
   },
 };
 
-/** Get coach lines for a craft+event, falling back to the BASE set. */
+/** Get coach lines for a craft + event, falling back to the BASE set. */
 export function getCoachLines(craft: string, event: CoachEvent): string[] {
   return CRAFT_COACH_LINES[craft]?.[event] ?? BASE[event];
 }

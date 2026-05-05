@@ -786,6 +786,11 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         accentColor={config.theme.accent}
         score={scoreState.score}
         prevScore={scoreState.prevScore}
+        isBadCombo={
+          scoreState.score < 40 &&
+          scoreState.score < scoreState.prevScore &&
+          selectedMood !== null
+        }
         styles={config.styles}
         moods={config.moods}
         selectedStyle={selectedStyle}

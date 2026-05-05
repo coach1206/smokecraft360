@@ -19,8 +19,16 @@ export interface AICoachProps {
   craft:         CraftType;
   phase:         Phase;
   accentColor:   string;
+  /** Current composite score (0–100). */
   score:         number;
+  /** Score from the previous scoring call — used for milestone SFX. */
   prevScore:     number;
+  /**
+   * Explicit bad-combo signal from CraftFlow (score drop below threshold while
+   * a mood is selected). Passed as a prop rather than derived inside AICoach so
+   * the signal origin is clear and can evolve with the scoring engine.
+   */
+  isBadCombo:    boolean;
   styles:        CraftStyleCard[];
   moods:         CraftMoodCard[];
   selectedStyle: CraftStyleCard | null;
@@ -43,6 +51,7 @@ export default function AICoach({
   accentColor,
   score,
   prevScore,
+  isBadCombo,
   styles,
   moods,
   selectedStyle,
@@ -51,9 +60,9 @@ export default function AICoach({
 }: AICoachProps) {
   const voice = useVoice();
 
-  const [muted,     setMuted]     = useState<boolean>(() => isCoachMuted());
-  const [line,      setLine]      = useState<string>("");
-  const [showFix,   setShowFix]   = useState<boolean>(false);
+  const [muted,      setMuted]      = useState<boolean>(() => isCoachMuted());
+  const [line,       setLine]       = useState<string>("");
+  const [showFix,    setShowFix]    = useState<boolean>(false);
   const [fixOptions, setFixOptions] = useState<FixOption[]>([]);
 
   /** Track the phase we last processed so we fire exactly once per transition. */
@@ -64,9 +73,6 @@ export default function AICoach({
   const voiceRef     = useRef(voice);
   useEffect(() => { voiceRef.current = voice; });
 
-  // Bad-combo: score meaningfully low and dropping while a mood has been chosen.
-  const isBadCombo = score < 40 && score < prevScore && selectedMood !== null;
-
   // ------------------------------------------------------------------
   // Helpers
   // ------------------------------------------------------------------
@@ -76,55 +82,67 @@ export default function AICoach({
     void voiceRef.current.speak(text.slice(0, MAX_SPEAK));
   }, [muted]);
 
+  /**
+   * Build A/B/C fix options that always yield exactly 3 entries.
+   *
+   * A — Safe:     style whose .mood matches selectedMood, or the lightest
+   *               available style (different from current).
+   * B — Balanced: median-strength style (different from A if possible,
+   *               otherwise the heaviest as fallback).
+   * C — Risk it:  keep style, switch to a bolder mood (or first mood as
+   *               last resort so this option always exists).
+   */
   const buildFixOptions = useCallback((): FixOption[] => {
-    // A — Safe: a style whose .mood field matches the selected mood
+    const otherStyles = styles.filter(s => s.id !== selectedStyle?.id);
+    const sorted      = [...styles].sort((a, b) => a.strength - b.strength);
+
+    // A — Safe
     const safeStyle =
-      styles.find(s => selectedMood && s.mood === selectedMood.id && s.id !== selectedStyle?.id) ??
-      styles.find(s => s.strength <= 2 && s.id !== selectedStyle?.id);
+      otherStyles.find(s => selectedMood && s.mood === selectedMood.id) ??
+      sorted.find(s => s.id !== selectedStyle?.id) ??
+      styles[0];
 
-    // B — Balanced: median-strength style (different from safe if possible)
-    const sorted        = [...styles].sort((a, b) => a.strength - b.strength);
-    const balancedStyle = sorted[Math.floor(sorted.length / 2)];
+    // B — Balanced (median, avoid duplicating A)
+    const medianStyle = sorted[Math.floor(sorted.length / 2)];
+    const balancedStyle = medianStyle.id !== safeStyle?.id
+      ? medianStyle
+      : sorted[sorted.length - 1] ?? medianStyle;
 
-    // C — Risk it: keep style, switch to a "bold" or last mood
-    const boldMood = moods.find(m => m.id === "bold") ?? moods[moods.length - 1];
+    // C — Risk it (bolder mood; always available)
+    const boldMood =
+      moods.find(m => m.id === "bold") ??
+      moods.find(m => m.id !== selectedMood?.id) ??
+      moods[moods.length - 1] ??
+      moods[0];
 
-    const opts: FixOption[] = [];
+    const fallbackStyle = selectedStyle ?? styles[0];
 
-    if (safeStyle) {
-      opts.push({
+    return [
+      {
         label:  "A — Safe Fix",
         desc:   `Switch to "${safeStyle.title}"`,
         action: () => {
           playSFX("tap");
           onFixApplied(safeStyle, selectedMood);
         },
-      });
-    }
-
-    if (balancedStyle && balancedStyle.id !== safeStyle?.id) {
-      opts.push({
+      },
+      {
         label:  "B — Balanced",
         desc:   `Try "${balancedStyle.title}"`,
         action: () => {
           playSFX("tap");
           onFixApplied(balancedStyle, selectedMood);
         },
-      });
-    }
-
-    if (boldMood && selectedStyle) {
-      opts.push({
+      },
+      {
         label:  "C — Risk It",
-        desc:   `Keep style, switch to "${boldMood.title}" mood`,
+        desc:   boldMood ? `Keep style, switch to "${boldMood.title}" mood` : "Re-score current selection",
         action: () => {
           playSFX("tap");
-          if (selectedStyle) onFixApplied(selectedStyle, boldMood);
+          onFixApplied(fallbackStyle, boldMood ?? selectedMood);
         },
-      });
-    }
-
-    return opts;
+      },
+    ];
   }, [styles, moods, selectedStyle, selectedMood, onFixApplied]);
 
   // ------------------------------------------------------------------
@@ -134,21 +152,23 @@ export default function AICoach({
     if (lastPhaseRef.current === phase) return;
     lastPhaseRef.current = phase;
 
-    // Determine the right event key
+    // Use the correct event keys as defined in craftCoachLines.ts:
+    //   phase_intro | phase_style | phase_profile | phase_match
+    //   reveal_praise | reveal_challenge
     type EventKey =
       | "phase_intro"
       | "phase_style"
       | "phase_profile"
       | "phase_match"
-      | "phase_reveal_praise"
-      | "phase_reveal_challenge";
+      | "reveal_praise"
+      | "reveal_challenge";
 
     const eventMap: Record<Phase, EventKey> = {
       intro:   "phase_intro",
       style:   "phase_style",
       profile: "phase_profile",
       match:   "phase_match",
-      reveal:  score >= 60 ? "phase_reveal_praise" : "phase_reveal_challenge",
+      reveal:  score >= 60 ? "reveal_praise" : "reveal_challenge",
     };
     const event = eventMap[phase];
 
@@ -164,7 +184,7 @@ export default function AICoach({
   }, [phase]);
 
   // ------------------------------------------------------------------
-  // Bad-combo detection effect
+  // Explicit bad-combo signal from CraftFlow
   // ------------------------------------------------------------------
   useEffect(() => {
     if (isBadCombo && !lastBadRef.current) {
@@ -185,15 +205,25 @@ export default function AICoach({
   }, [isBadCombo, craft]);
 
   // ------------------------------------------------------------------
-  // Score-milestone effect (first time score crosses 70)
+  // Good-combo detection (score rises above 65 after being lower)
   // ------------------------------------------------------------------
-  const prevScoreRef = useRef(score);
+  const prevScoreRef = useRef(prevScore);
   useEffect(() => {
-    if (!muted && score >= 70 && prevScoreRef.current < 70) {
+    const wasLow    = prevScoreRef.current < 65;
+    const nowHigh   = score >= 65;
+    const isRising  = score > prevScoreRef.current;
+    if (!muted && wasLow && nowHigh && isRising && selectedMood !== null) {
+      const goodLine = pickCoachLine(getCoachLines(craft, "good_combo"));
+      setLine(goodLine);
+      playSFX("success");
+      speakLine(goodLine);
+    } else if (!muted && score >= 70 && prevScoreRef.current < 70) {
+      // Score milestone chime without changing the displayed line
       playSFX("success");
     }
     prevScoreRef.current = score;
-  }, [score, muted]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [score]);
 
   // ------------------------------------------------------------------
   // Mute toggle
@@ -206,7 +236,7 @@ export default function AICoach({
     else playSFX("tap");
   };
 
-  // Don't render anything during the intro phase — coach activates at style.
+  // Coach overlay is inactive during the intro phase.
   if (phase === "intro") return null;
 
   return (
@@ -231,23 +261,23 @@ export default function AICoach({
             exit={{    opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             style={{
-              marginBottom:    10,
-              background:      "rgba(10,6,4,0.94)",
-              border:          "1px solid rgba(210,70,70,0.32)",
-              borderRadius:    14,
-              padding:         "12px 14px",
-              backdropFilter:  "blur(14px)",
+              marginBottom:         10,
+              background:           "rgba(10,6,4,0.94)",
+              border:               "1px solid rgba(210,70,70,0.32)",
+              borderRadius:         14,
+              padding:              "12px 14px",
+              backdropFilter:       "blur(14px)",
               WebkitBackdropFilter: "blur(14px)",
-              pointerEvents:   "all",
+              pointerEvents:        "all",
             }}
           >
             <p style={{
-              margin:          "0 0 9px",
-              fontSize:        10,
-              letterSpacing:   "0.26em",
-              textTransform:   "uppercase",
-              color:           "rgba(220,130,130,0.9)",
-              fontWeight:      700,
+              margin:        "0 0 9px",
+              fontSize:      10,
+              letterSpacing: "0.26em",
+              textTransform: "uppercase",
+              color:         "rgba(220,130,130,0.9)",
+              fontWeight:    700,
             }}>
               Fix Options
             </p>
@@ -258,17 +288,17 @@ export default function AICoach({
                 type="button"
                 onClick={() => { opt.action(); setShowFix(false); }}
                 style={{
-                  display:       "block",
-                  width:         "100%",
-                  marginBottom:  6,
-                  padding:       "8px 11px",
-                  borderRadius:  9,
-                  border:        `1px solid ${accentColor}28`,
-                  background:    `${accentColor}0d`,
-                  cursor:        "pointer",
-                  textAlign:     "left",
-                  color:         "#E8E0C8",
-                  transition:    "background 0.15s",
+                  display:      "block",
+                  width:        "100%",
+                  marginBottom: 6,
+                  padding:      "8px 11px",
+                  borderRadius: 9,
+                  border:       `1px solid ${accentColor}28`,
+                  background:   `${accentColor}0d`,
+                  cursor:       "pointer",
+                  textAlign:    "left",
+                  color:        "#E8E0C8",
+                  transition:   "background 0.15s",
                 }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = `${accentColor}20`; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = `${accentColor}0d`; }}
@@ -317,16 +347,16 @@ export default function AICoach({
             exit={{    opacity: 0, x: -8  }}
             transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
             style={{
-              display:         "flex",
-              alignItems:      "flex-start",
-              gap:             10,
-              background:      "rgba(10,8,6,0.84)",
-              border:          `1px solid ${accentColor}26`,
-              borderRadius:    14,
-              padding:         "11px 12px",
-              backdropFilter:  "blur(14px)",
+              display:              "flex",
+              alignItems:           "flex-start",
+              gap:                  10,
+              background:           "rgba(10,8,6,0.84)",
+              border:               `1px solid ${accentColor}26`,
+              borderRadius:         14,
+              padding:              "11px 12px",
+              backdropFilter:       "blur(14px)",
               WebkitBackdropFilter: "blur(14px)",
-              pointerEvents:   "all",
+              pointerEvents:        "all",
             }}
           >
             {/* Avatar glyph */}
@@ -366,13 +396,13 @@ export default function AICoach({
               onClick={toggleMute}
               title={muted ? "Unmute coach" : "Mute coach"}
               style={{
-                flexShrink:  0,
-                background:  "transparent",
-                border:      "none",
-                cursor:      "pointer",
-                color:       muted ? "rgba(232,224,200,0.28)" : `${accentColor}bb`,
-                padding:     "2px 0 2px 4px",
-                lineHeight:  1,
+                flexShrink: 0,
+                background: "transparent",
+                border:     "none",
+                cursor:     "pointer",
+                color:      muted ? "rgba(232,224,200,0.28)" : `${accentColor}bb`,
+                padding:    "2px 0 2px 4px",
+                lineHeight: 1,
               }}
             >
               {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
