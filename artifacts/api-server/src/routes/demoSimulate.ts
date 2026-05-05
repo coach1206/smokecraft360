@@ -219,44 +219,6 @@ router.post(
   },
 );
 
-// ── GET /api/demo/simulate/feed ────────────────────────────────────────────────
-// Authenticated: polling endpoint — returns last 50 DB-persisted events + running KPIs.
-// Mirrors /events exactly; clients should poll this on a timer (no SSE required).
-
-router.get(
-  "/demo/simulate/feed",
-  requireAuth,
-  async (req: Request, res: Response) => {
-    const sessionId = String(req.query.sessionId ?? "");
-    const session   = SIM_SESSIONS.get(sessionId);
-
-    let events: Array<Record<string, unknown>> = [];
-    try {
-      const rows = await db
-        .select()
-        .from(demoSimEventsTable)
-        .where(eq(demoSimEventsTable.sessionId, sessionId))
-        .orderBy(desc(demoSimEventsTable.createdAt))
-        .limit(50);
-
-      events = rows.map(r => ({
-        id:        r.id,
-        type:      r.eventType,
-        payload:   r.payload,
-        timestamp: r.createdAt.toISOString(),
-      })).reverse();
-    } catch { /* DB unavailable */ }
-
-    res.json({
-      active:  session?.active ?? false,
-      revenue: session?.revenue ?? 0,
-      orders:  session?.orders  ?? 0,
-      rewards: session?.rewards ?? 0,
-      events,
-    });
-  },
-);
-
 // ── POST /api/demo/simulate/stop ──────────────────────────────────────────────
 // super_admin / manager: stop an active simulation session
 
