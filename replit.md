@@ -1,6 +1,6 @@
 # Overview
 
-SmokeCraft is a luxury cigar and spirits recommendation platform for upscale venues. It offers AI-driven personalized recommendations, comprehensive inventory management, and a robust loyalty system. The platform aims to enhance user engagement, facilitate venue competition, and evolve into a multi-craft "Experience Engine." Its core purpose is to provide discerning clientele with sophisticated recommendation capabilities and operational support, including POS integration and advanced personalization.
+SmokeCraft is a luxury cigar and spirits recommendation platform designed for upscale venues. It leverages AI for personalized recommendations, offers comprehensive inventory management, and includes a robust loyalty system. The platform aims to boost user engagement, foster competition among venues, and is envisioned to grow into a multi-craft "Experience Engine," providing sophisticated recommendation capabilities and operational support, including POS integration and advanced personalization for a discerning clientele.
 
 # User Preferences
 
@@ -10,7 +10,7 @@ I prefer concise and direct communication. When making changes, prioritize core 
 
 ## Monorepo Structure
 
-The project uses a pnpm workspace monorepo with TypeScript, separating a React/Vite frontend from an Express 5 API backend.
+The project utilizes a pnpm workspace monorepo, separating a React/Vite frontend from an Express 5 API backend, both written in TypeScript.
 
 ## Tech Stack
 
@@ -24,85 +24,58 @@ The project uses a pnpm workspace monorepo with TypeScript, separating a React/V
 
 ## UI/UX and Design
 
-The application features a luxury aesthetic with a dark gold theme, glassmorphism cards, and sophisticated typography (Cormorant Garamond, Inter, Playfair Display). A global design system utilizes CSS custom properties for consistent theming. Key elements include `.glass-panel` classes, `sc-btn-primary`, `sc-btn-ghost`, and a premium animated brand intro splash.
-
--   **BackgroundLayer**: Reusable `BackgroundLayer` component (`src/components/Layout/BackgroundLayer.tsx`) provides full-screen background images with dark gradient overlay and subtle ambient glow. Applied to all screens (Entry, PinLogin, Dashboard/CommandCenter, touchscreen pages, module pages, DemoWalkthrough, DemoExperienceCenter). The Intro page is exempt — it has its own video/attract-mode background system.
--   **Image-Driven Tiles**: Command Center and Entry page tiles use background images (from `/images/`) with gradient overlays and icon overlays for readability, replacing the previous flat dark icon-only tiles.
--   **Venue-Customizable Backgrounds**: Background images are managed through `VenueContext` (`getBackground(key)` / `updateBackground(key, url)`). All 16 screens read their backgrounds from the venue context with fallbacks to `DEFAULT_BACKGROUNDS`. Venue owners can customize any screen's background via the Settings page "Background Images" section by pasting image URLs. Customizations persist in localStorage scoped per venue ID (`venue_backgrounds_<venueId>`) and survive page refreshes.
+The application features a luxury aesthetic with a dark gold theme, glassmorphism cards, and sophisticated typography. A global design system uses CSS custom properties for consistent theming. Key elements include reusable `BackgroundLayer` components for full-screen backgrounds with gradient overlays, image-driven tiles with custom branding options, and a premium animated brand intro splash. Venue owners can customize background images via the Settings page.
 
 ## Core Features
 
--   **Recommendation Engine & AI Experience Engine**: AI-driven recommendations based on flavor, strength, mood, and boost levels, with semantic cross-category and food pairing. The "AI Experience Engine" provides deterministic natural-language commentary, voice synthesis, and real-time menu suggestions.
--   **Operations Layer**: POS integration, reorder alerts, optimized menu layout, profit calculations, staff sales pitches, tenant isolation, and atomic inventory decrement.
+-   **AI Experience Engine**: Provides AI-driven recommendations based on flavor, strength, mood, and other factors, with semantic cross-category and food pairing. It includes deterministic natural-language commentary and real-time menu suggestions.
+-   **Operations Layer**: Includes POS integration, reorder alerts, optimized menu layouts, profit calculations, staff sales pitches, tenant isolation, and atomic inventory decrement.
 -   **Image Engine**: Context-aware Cloudinary transformations with subtype-based fallbacks.
--   **Network Intelligence Layer**: "Couples Mode," "Time-of-day context" for recommendations, "Historical-data revenue forecast," and "Cross-venue low-stock digest."
--   **Craft-Specific Experiences**: Kiosk-style pages for `BrewCraft`, `PourCraft`, and `VapeCraft` using a modular 3-column layout.
--   **Lucient Core — Experience Decision Engine**: Real-time experience quality and revenue control, including a behavior profile, decision engine, automation service, and admin routes.
+-   **Network Intelligence Layer**: Features like "Couples Mode," "Time-of-day context" for recommendations, historical data revenue forecasting, and cross-venue low-stock digests.
+-   **Craft-Specific Experiences**: Modular kiosk-style pages for `BrewCraft`, `PourCraft`, and `VapeCraft`.
+-   **Lucient Core — Experience Decision Engine**: Manages real-time experience quality and revenue control through behavior profiles, a decision engine, and an automation service.
 -   **Personalization & Revenue Intelligence**: Taste profiles, auto-recommendations via affinity vectors, session revenue forecasting, and dynamic pricing.
--   **Database Schema**: Comprehensive schema covering users, products, experiences, loyalty, inventory, lounge statistics, reservations, IP assets, audit logs, support tickets, notifications, user memories, and multi-user sessions.
--   **Authentication and Authorization**: JWT-based authentication with `requireAuth` and `requireRole` middleware for granular access control.
--   **Progression and Loyalty System**: 5-tier user progression and separate loyalty points system.
+-   **Database Schema**: Comprehensive schema for users, products, experiences, loyalty, inventory, lounge statistics, reservations, IP assets, audit logs, support tickets, notifications, user memories, and multi-user sessions.
+-   **Authentication and Authorization**: JWT-based authentication with role-based access control.
+-   **Progression and Loyalty System**: A 5-tier user progression and a separate loyalty points system.
 -   **Admin Intensity Controls**: Venue-level tuning for reward, XP, and discount engines via feature flags.
--   **Session Cleanup Worker**: Background worker for expiring old sessions and removing abandoned members.
--   **Production Hardening Layer**:
-    -   **Stripe Event Idempotency**: Prevents duplicate Stripe event processing.
-    -   **Tenant Isolation**: Enforces venue scoping for multi-tenant routes.
-    -   **Checkout Server-Side Pricing**: Resolves prices from the database, never trusting client-supplied prices.
-    -   **Session Lifecycle**: Manages sessions with `active`, `completed`, `expired`, `archived`, `cancelled` statuses.
-    -   **Kill Switches**: Feature flags (`payments-enabled`, `rewards-enabled`) to disable parts of the system.
-    -   **Encryption Utility**: AES-256-GCM field-level encryption.
-    -   **Audit Logging**: Append-only audit log for critical actions.
-    -   **Background Workers**: Payout Worker and Reward Optimization Worker.
--   **Engagement Loop**: Every user interaction awards points via `useEngagement` hook and `EngagementContext`. Actions: select(10pts), customize(15pts), confirm(25pts), purchase(50pts), navigate(5pts), experience_start(10pts), experience_answer(5pts), experience_complete(30pts), campaign_enter(20pts). Animated toast displays points earned. Authenticated users get loyalty points synced server-side. Key engagement events mapped to analytics events for persistence.
--   **Admin Card Manager**: Dashboard tab for venue admins to upload/replace product card images per category (Cigars, Spirits, Beer, Vape). Uses existing Cloudinary upload pipeline. Accessible from Dashboard "Card Manager" tab.
--   **Campaign Persistence**: Full DB-backed campaign entries via `campaign_entries` table. API routes: POST `/api/campaigns/:id/enter`, GET `/api/campaigns/:id/leaderboard`, GET `/api/campaigns/:id/entries`. Entries scoped to authenticated user (no cross-user data leakage). VenueId derived server-side from auth context.
--   **Axiom OS Branding**: Platform rebranded from "Craft Central / 360 Enterprise" to "Axiom OS" hierarchy. Entry page: "Axiom OS" title + "Command Hub" subtitle. Command Center renamed to "Command Hub". Experiences header: "Craft Hub". Footer: "Powered by Axiom OS". All i18n locales updated (en/es/fr).
--   **Partnership & Distribution Engine**: Non-destructive extension for brand partners and campaigns.
-    -   **Brand Partners & Product Links**: Manages brand information and product associations.
-    -   **Campaign Engine Extensions**: Supports various campaign types with budget enforcement and multiplier bounds validation.
-    -   **Recommendation Pipeline Injection**: Applies brand and campaign boosts to recommendations.
-    -   **Server-Side Order Attribution**: Attributes orders to brands and campaigns.
-    -   **Campaign Budget Enforcement Worker**: Scans and enforces campaign budgets and expiry.
-    -   **Campaign Fraud Detection**: Detects and flags suspicious redemption patterns.
-    -   **ROI Reporting**: Provides ROI metrics for campaigns and brands.
--   **Production Go-Live Control Layer**:
-    -   **System Version & Force Refresh**: Allows remote control over client application versions and forced reloads.
-    -   **Device Heartbeat**: Tracks device status and enables per-device remote refresh.
-    -   **Feature Flag Frontend Sync**: Syncs feature flags to the frontend.
--   **Kiosk Burn-in Protection**: Pixel-shift system for kiosk screens during idle periods.
--   **Device Management**: Supports registration, status tracking, and session management for mobile, tablet, and kiosk devices.
--   **Lounge League**: Competition system ranking venues.
--   **Multi-User Sessions**: Manages groups of users (parties) with unique codes.
--   **Offline Queue**: Buffers and replays offline actions for kiosks. Supports `order` and `nda` kinds with kind-specific payload size limits (16KB for orders, 400KB for NDA signatures).
+-   **Production Hardening Layer**: Includes Stripe event idempotency, tenant isolation, server-side pricing, session lifecycle management, kill switches for system parts, AES-256-GCM field-level encryption, and an append-only audit log.
+-   **Engagement Loop**: Tracks user interactions, awards points, and integrates with server-side loyalty points for authenticated users.
+-   **Admin Card Manager**: Allows venue admins to upload and replace product card images.
+-   **Campaign Persistence**: Full DB-backed campaign entries with API routes for entry, leaderboards, and detailed entries.
+-   **Axiom OS Branding**: Renamed platform to "Axiom OS," with updated terminology and i18n locales.
+-   **Partnership & Distribution Engine**: Supports brand partners and campaigns with budget enforcement, fraud detection, and ROI reporting.
+-   **Production Go-Live Control Layer**: Enables remote control over client application versions, forced refreshes, device heartbeats, and feature flag synchronization.
+-   **Kiosk Burn-in Protection**: Pixel-shift system for kiosk screens.
+-   **Device Management**: Registration, status tracking, and session management for various devices.
+-   **Lounge League**: A competition system for ranking venues.
+-   **Multi-User Sessions**: Manages groups of users with unique codes.
+-   **Offline Queue**: Buffers and replays offline actions for kiosks, supporting orders and NDA signatures.
 -   **Exports**: Role-gated CSV/JSON data exports.
--   **Cross-Venue Identity Layer**: Tracks user visits across venues.
--   **Touchscreen Command Interface**: Role-based touchscreen home screens (`/touch`, `/touch/admin`, `/touch/venue`, `/touch/vendor`), step-based flow engine with 12 flow definitions, Experience Center (`/experience-center`) NDA-gated via existing `DemoNdaModal`, and backend API at `/api/touchscreen/*` with full auth, audit logging, and session persistence in `touchscreen_flow_sessions` table. All touch targets ≥72px, dark gold glass-card aesthetic.
--   **Demo → NDA → Experience Flow**: `/demo` mounts NDA gate modal, captures signature with deviceId/venueId, redirects to `/experience-center` on success. Offline-safe: queues NDA to offline queue when truly offline (navigator.onLine=false), syncs on reconnect. Kiosk-aware: pauses inactivity timer during NDA signing, heartbeat includes ndaSigned/sessionId state. Audit-logged (`nda.demo_signed`) and analytics-tracked (`nda_viewed`, `nda_signed`, `nda_synced` event types). Deep-link bypass blocked by sessionStorage check in DemoExperienceCenter.
--   **Craft Command Center (POS Flow)**: Complete end-to-end kiosk transaction flow. Entry Portal (`/` and `/entry`) with 4 animated tiles (Venue Access, Admin Control, Vendor Access, Demo Mode). PIN Login (`/pin-login`) with touch-optimized keypad and mock users (Owner:1111, Manager:2222, Staff:3333). POS Mode (`/pos`) with 3-panel layout: order history with status badges (left), product grid with category tabs (center), current order cart (right). Features 16 mock products across 4 categories (cigar/spirit/beer/food) with Unsplash images, live inventory tracking with low-stock warnings, reward trigger at $50+ (10% discount).
-    -   **Payment State Machine**: Async checkout flow with `processing → paid/failed` lifecycle. Simulated ~1.8s payment delay with 10% failure rate. Processing spinner overlay, success confirmation, and failure recovery with retry. Processing lock (`lockRef` + `processingLock`) prevents double-clicks and blocks cart edits during checkout. All state reads use synchronized refs for race-free async operations.
-    -   **Inventory Timing**: Stock reserved on cart-add (prevents overselling), permanently deducted on payment success, restored on payment failure or refund.
-    -   **Refund Support**: Owner/Manager can refund paid orders from order history sidebar; role enforcement in both UI and context action layer. Refunded orders restore inventory.
-    -   **Command Center Craft Tiles**: SmokeCraft, BrewCraft, PourCraft, VapeCraft tiles at top of Command Center dashboard for direct access to craft experiences after PIN login. Icons: Flame, Beer, Wine, Wind. Routes: /smokecraft, /brewcraft, /pourcraft, /vapecraft.
-    -   **Venue Branding Customization**: Settings module has Venue Branding section allowing owners to edit venue name, tagline, logo image URL, and primary accent color. 12 preset colors + custom color picker. Live preview shows brand identity. Changes applied instantly via VenueContext. DB schema: `venues.tagline`, `venues.logo_url`, `venues.primary_color` columns. API: PATCH /api/venues/:id accepts tagline, logoUrl, primaryColor fields.
-    -   **POS Operating Mode**: Three operating modes (`overlay` | `hybrid` | `full_pos`) persisted to localStorage via `CommandCenterContext`. Overlay = works beside existing POS, Hybrid = syncs with external POS, Full POS = SmokeCraft is primary POS. Mode selector UI in Settings with radio-style cards. Mode badge displayed in both Command Center dashboard header and Settings header.
-    -   **POS Adapter Layer**: `artifacts/api-server/src/posAdapters/` contains a `BasePosAdapter` interface and 5 stub adapters (Toast, Square, Clover, Lightspeed, Manual Import). Each adapter implements `syncProducts()`, `syncInventory()`, `syncOrders()`, `pushOrder()`, `pullReports()` with mock data. `posWebhook.ts` remains the real integration point for live POS events.
-    -   **Security Guards & Audit Hardening**: PIN lockout after 5 failed attempts with 60s cooldown (sessionStorage-based). Inactivity guard shows warning at 5min idle, auto-locks to `/pin-login` after 30s countdown. Reusable `ConfirmModal` component gates risky actions: device lock/shutdown, staff deactivation, POS mode changes. Role enforcement: owner/manager required for risky admin actions; staff users see "Access Denied" toast. `PosAuditBridge` provides reactive audit logging for full POS lifecycle (order.created, checkout.started, payment.confirmed/failed, order.refunded, reward.applied/blocked, inventory.adjusted, auth.login/logout). Campaign creation in ExperiencesModule with `campaign.created` audit. Full audit action taxonomy: auth.*, session.timeout, device.*, demo.mode, access.denied, order.*, checkout.*, payment.*, reward.*, inventory.adjusted, campaign.created, settings.pos_mode, staff.*, vendor.restock. Files: `ConfirmModal.tsx`, `InactivityGuard.tsx`, `PosAuditBridge.tsx`, `PinLogin.tsx`, `CommandCenterContext.tsx`, `DevicesModule.tsx`, `StaffModule.tsx`, `SettingsModule.tsx`, `ExperiencesModule.tsx`.
-    -   **Inventory Integrity & Reward Fraud Protection**: `InventoryLogEntry` type in PosContext tracks every stock change with productId, productName, beforeStock, afterStock, reason, userId, timestamp. Logged reasons: cart.add, cart.remove, cart.reduce, cart.clear, payment.failed, retry.failed, checkout.retry, order.refunded, manual.adjustment, manual.adjustment.confirmed. Large stock adjustments (>10 units) require owner/manager role; staff users get `needsConfirmation` response. Checkout idempotency via `stockDeducted` flag on Order prevents double inventory deduction on retries. Reward fraud protection: one reward per order, 5-minute cooldown between reward applications per session (`lastRewardTimeRef`), blocked attempts surface `rewardBlocked` state and audit `reward.cooldown`. Analytics module has "Stock Movements" tab showing inventory log table with before/after values, delta, reason labels, timestamps. Files: `PosContext.tsx`, `AnalyticsModule.tsx`, `PosAuditBridge.tsx`.
-    -   State managed via `PosContext` (React context). Files: `Entry.tsx`, `PinLogin.tsx`, `PosMode.tsx`, `PosContext.tsx`.
+-   **Cross-Venue Identity Layer**: Tracks user visits across different venues.
+-   **Touchscreen Command Interface**: Role-based touchscreen home screens, a step-based flow engine, and an NDA-gated Experience Center with backend API integration, audit logging, and session persistence.
+-   **Demo → NDA → Experience Flow**: Handles the flow from demo to NDA signing and redirection to the Experience Center, with offline queuing and audit logging.
+-   **Craft Command Center (POS Flow)**: Provides an end-to-end kiosk transaction flow including entry portals, PIN login, a 3-panel POS mode with product grids, cart management, and payment processing. Features include inventory tracking, reward triggers, refund support, and customizable venue branding.
+    -   **Payment State Machine**: Asynchronous checkout flow with simulated processing and failure rates, preventing double-clicks and cart edits during checkout.
+    -   **Inventory Management**: Stock is reserved on cart-add, deducted on payment success, and restored on failure or refund.
+    -   **POS Operating Mode**: Three modes (`overlay`, `hybrid`, `full_pos`) can be selected and persisted.
+    -   **POS Adapter Layer**: Provides an interface and stub adapters for integration with external POS systems like Toast, Square, and Clover.
+    -   **Security Guards & Audit Hardening**: Includes PIN lockout, inactivity guards, `ConfirmModal` for risky actions, role enforcement, and `PosAuditBridge` for comprehensive audit logging across the POS lifecycle.
+    -   **Inventory Integrity & Reward Fraud Protection**: Detailed inventory logging with stock changes, reasons, and role-based confirmation for large adjustments. Reward fraud protection includes one reward per order, cooldowns, and analytics for stock movements.
 
 # External Dependencies
 
--   **pnpm**
--   **TypeScript**
--   **Express**
--   **PostgreSQL**
--   **Drizzle ORM**
--   **jose**
--   **bcryptjs**
--   **Zod**
--   **esbuild**
--   **React**
--   **Vite**
--   **Google Fonts**
--   **ElevenLabs**
--   **Cloudinary**
+-   pnpm
+-   TypeScript
+-   Express
+-   PostgreSQL
+-   Drizzle ORM
+-   jose
+-   bcryptjs
+-   Zod
+-   esbuild
+-   React
+-   Vite
+-   Google Fonts
+-   ElevenLabs
+-   Cloudinary

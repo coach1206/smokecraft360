@@ -34,7 +34,7 @@ export interface PlaygroundConfig {
 
 export function hasSeenPlayground(craft: string): boolean {
   try { return sessionStorage.getItem(`playground_seen_${craft}`) === "1"; }
-  catch { return true; }
+  catch { return false; } // storage unavailable → show playground (default visible)
 }
 
 export function markPlaygroundSeen(craft: string): void {
