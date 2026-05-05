@@ -1,0 +1,161 @@
+Perform a FULL SYSTEM AUDIT of the CraftHub / Axiom OS platform.
+
+This is NOT a surface check. This is a deep operational audit.
+
+Your job is to analyze the ENTIRE system across:
+Frontend, Backend, Database, APIs, Logic, and UX behavior.
+
+---
+
+## 🔍 AUDIT OBJECTIVES
+
+Identify and clearly report:
+
+1. WHAT EXISTS
+- All active systems, modules, and features
+- Confirm which are fully functional vs partially implemented
+
+2. WHAT IS BROKEN
+- Non-working routes
+- UI elements with no backend connection
+- Errors in console or server logs
+- Failed API calls
+
+3. WHAT IS FAKE / PLACEHOLDER
+- Hardcoded values
+- Mock data
+- Static UI with no real logic behind it
+- Simulated responses instead of real processing
+
+4. WHAT IS MISSING (CRITICAL GAPS)
+- Systems required for production but not present
+- Missing integrations (POS, AI, leaderboard, analytics, auth, etc.)
+- Incomplete workflows (build → save → score → checkout)
+
+5. WHAT IS NOT CONNECTED
+- Frontend elements not wired to backend
+- Backend routes not used by frontend
+- Database tables not being written to or read from
+
+---
+
+## 🧩 SYSTEMS TO VERIFY (DO NOT SKIP ANY)
+
+### CORE EXPERIENCE
+- Craft Engine (SmokeCraft, PourCraft, BrewCraft, VapeCraft)
+- Visual Layering System (image stacking behavior)
+- Config State Management
+- Reveal Animation + Flow
+
+### DATA FLOW
+- Build Save System (/api/build)
+- Build Retrieval
+- Config Persistence
+- Export System
+
+### AUTH + USERS
+- Login system (JWT)
+- Role-based access (admin, staff, user)
+- Session handling
+
+### LEADERBOARD + COMPETITION
+- Score assignment logic
+- Ranking system
+- Leaderboard API
+- Real-time updates
+
+### AI ENGINE
+- Recommendation logic
+- Input → Output accuracy
+- Dynamic vs static responses
+
+### PRICING + POS
+- Price calculation logic
+- Checkout flow
+- Transaction creation
+- Payment readiness
+
+### ANALYTICS
+- Event tracking (/api/track)
+- Data logging
+- Reporting readiness
+
+### STAFF TRACKING
+- Staff actions logged
+- User attribution per build
+- Activity traceability
+
+### MULTI-VENUE SYSTEM
+- Venue isolation
+- Data separation
+- Venue-specific configs
+
+### ADMIN PANEL
+- Ability to edit pricing
+- View builds
+- Override/delete builds
+- View analytics
+
+---
+
+## 🧪 TEST REQUIREMENTS
+
+Simulate real usage:
+
+1. Create a full build (SmokeCraft or PourCraft)
+2. Trigger reveal
+3. Save build
+4. Fetch build from backend
+5. Check leaderboard update
+6. Trigger AI recommendation
+7. Run pricing calculation
+8. Attempt checkout
+9. Track analytics event
+
+---
+
+## 🚨 OUTPUT FORMAT (STRICT)
+
+Return results in this structure:
+
+### ✅ WORKING SYSTEMS
+(list all systems confirmed operational)
+
+### ⚠️ PARTIAL SYSTEMS
+(list systems partially working and what is missing)
+
+### ❌ BROKEN SYSTEMS
+(list non-functional systems with error details)
+
+### 🕳️ CRITICAL GAPS
+(list missing systems required for production)
+
+### 🔌 DISCONNECTED COMPONENTS
+(frontend ↔ backend mismatches)
+
+### 🧪 FAKE / MOCK SYSTEMS
+(any system not using real data or logic)
+
+### 🔥 HIGH PRIORITY FIXES
+(rank the top issues that must be fixed immediately)
+
+### 🧠 FINAL VERDICT
+Is this system:
+- Demo-ready
+- MVP-ready
+- Production-ready
+
+Explain WHY.
+
+---
+
+## ⚠️ IMPORTANT RULES
+
+- Do NOT assume anything is working
+- Do NOT skip backend verification
+- Do NOT ignore silent failures
+- Do NOT mark UI as “working” if it has no real data connection
+
+---
+
+Perform this audit like a senior system architect preparing a platform for real-world deployment and investor revi
