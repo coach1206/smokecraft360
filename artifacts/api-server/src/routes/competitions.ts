@@ -63,13 +63,12 @@ function defaultPrizes(type: TournamentType): { first: string; second: string; t
 
 // ── GET /api/competitions ─────────────────────────────────────────────────────
 
-router.get("/", optionalAuth, async (req: Request, res: Response) => {
+router.get("/", optionalAuth, async (req: AuthRequest, res: Response) => {
   const mine = req.query.mine === "true" || req.query.createdBy === "me";
 
   if (mine) {
-    const authReq = req as AuthRequest;
-    const userId = authReq.user?.id;
-    const role   = authReq.user?.role;
+    const userId = req.user?.id;
+    const role   = req.user?.role;
 
     if (!userId) {
       res.status(401).json({ error: "Authentication required" });
@@ -92,7 +91,14 @@ router.get("/", optionalAuth, async (req: Request, res: Response) => {
         .select({ cnt: sql<number>`COUNT(*)` })
         .from(tournamentEntriesTable)
         .where(eq(tournamentEntriesTable.tournamentId, t.id));
-      return { ...t, entrantCount: Number(countRow?.cnt ?? 0) };
+      return { 
+        ...t, 
+        entrantCount: Number(countRow?.cnt ?? 0),
+        isEntered: false,
+        userEntryId: null,
+        userScore: null,
+        userRank: null,
+      };
     }));
 
     res.json(withCounts);
@@ -119,12 +125,48 @@ router.get("/", optionalAuth, async (req: Request, res: Response) => {
     )
     .orderBy(asc(tournamentsTable.startAt));
 
+  // Fetch the authenticated user's entries in one query (if logged in)
+  const userId = req.user?.id ?? null;
+  let userEntryMap: Map<string, { id: string; score: number; rank: number | null }> = new Map();
+
+  if (userId) {
+    const ids = rows.map(r => r.id);
+    if (ids.length > 0) {
+      const userEntries = await db
+        .select({
+          tournamentId: tournamentEntriesTable.tournamentId,
+          id:           tournamentEntriesTable.id,
+          score:        tournamentEntriesTable.score,
+          rank:         tournamentEntriesTable.rank,
+        })
+        .from(tournamentEntriesTable)
+        .where(
+          and(
+            eq(tournamentEntriesTable.userId, userId),
+            sql`${tournamentEntriesTable.tournamentId} = ANY(ARRAY[${sql.join(ids.map(id => sql`${id}::uuid`), sql`, `)}])`,
+          ),
+        );
+      for (const e of userEntries) {
+        userEntryMap.set(e.tournamentId, { id: e.id, score: e.score, rank: e.rank });
+      }
+    }
+  }
+
   const withCounts = await Promise.all(rows.map(async (t) => {
     const [countRow] = await db
       .select({ cnt: sql<number>`COUNT(*)` })
       .from(tournamentEntriesTable)
       .where(eq(tournamentEntriesTable.tournamentId, t.id));
-    return { ...t, entrantCount: Number(countRow?.cnt ?? 0) };
+
+    const userEntry = userEntryMap.get(t.id) ?? null;
+    return {
+      ...t,
+      entrantCount:  Number(countRow?.cnt ?? 0),
+      isEntered:     userEntry !== null,
+      userEntryId:   userEntry?.id   ?? null,
+      userScore:     userEntry?.score ?? null,
+      userRank:      userEntry?.rank  ?? null,
+    };
   }));
 
   res.json(withCounts);

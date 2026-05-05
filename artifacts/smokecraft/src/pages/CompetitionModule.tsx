@@ -36,6 +36,10 @@ interface Tournament {
   prizeThird: string | null;
   featured: boolean;
   entrantCount: number;
+  isEntered:   boolean;
+  userEntryId: string | null;
+  userScore:   number | null;
+  userRank:    number | null;
 }
 
 interface LeaderboardEntry {
@@ -178,15 +182,34 @@ function TournamentCard({
       style={{
         display: "flex", flexDirection: "column", gap: 12,
         padding: 20, borderRadius: 16, textAlign: "left",
-        background: `${meta.color}08`,
-        border: `1px solid ${meta.color}35`,
+        background: tournament.isEntered ? `${meta.color}12` : `${meta.color}08`,
+        border: tournament.isEntered ? `1.5px solid ${meta.color}70` : `1px solid ${meta.color}35`,
         cursor: "pointer", width: "100%",
         position: "relative", overflow: "hidden",
       }}
     >
-      {tournament.featured && (
+      {tournament.isEntered && (
         <div style={{
           position: "absolute", top: 10, right: 12,
+          display: "flex", alignItems: "center", gap: 4,
+          fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase",
+          color: "#22c55e", background: "rgba(34,197,94,0.12)",
+          border: "1px solid rgba(34,197,94,0.35)", padding: "2px 8px", borderRadius: 999,
+        }}>
+          <span style={{ fontSize: 8 }}>✓</span> You&apos;re In
+        </div>
+      )}
+      {!tournament.isEntered && tournament.featured && (
+        <div style={{
+          position: "absolute", top: 10, right: 12,
+          fontSize: 9, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase",
+          color: meta.color, background: `${meta.color}18`,
+          border: `1px solid ${meta.color}35`, padding: "2px 8px", borderRadius: 999,
+        }}>Featured</div>
+      )}
+      {tournament.isEntered && tournament.featured && (
+        <div style={{
+          position: "absolute", top: 30, right: 12,
           fontSize: 9, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase",
           color: meta.color, background: `${meta.color}18`,
           border: `1px solid ${meta.color}35`, padding: "2px 8px", borderRadius: 999,
@@ -245,6 +268,26 @@ function TournamentCard({
         </div>
       </div>
 
+      {tournament.isEntered && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: 10,
+          padding: "7px 12px", borderRadius: 10,
+          background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.25)",
+        }}>
+          <span style={{ fontSize: 11, color: "#22c55e", fontWeight: 700 }}>✓ You&apos;re in</span>
+          {tournament.userRank !== null && (
+            <span style={{ fontSize: 11, color: "rgba(232,224,200,0.5)" }}>
+              · Rank <span style={{ color: "#e8e0c8", fontWeight: 700 }}>#{tournament.userRank}</span>
+            </span>
+          )}
+          {tournament.userScore !== null && (
+            <span style={{ fontSize: 11, color: "rgba(232,224,200,0.5)" }}>
+              · <span style={{ color: "#e8e0c8", fontWeight: 700 }}>{tournament.userScore}</span> pts
+            </span>
+          )}
+        </div>
+      )}
+
       {tournament.prizeFirst && (
         <div style={{
           display: "flex", alignItems: "center", gap: 8,
@@ -274,6 +317,7 @@ function LeaderboardPanel({
   onEnter,
   entering,
   onClose,
+  userId,
 }: {
   tournament: Tournament;
   entries: LeaderboardEntry[];
@@ -281,6 +325,7 @@ function LeaderboardPanel({
   onEnter: () => void;
   entering: boolean;
   onClose: () => void;
+  userId: string | null;
 }) {
   const meta = TYPE_META[tournament.type];
   const Icon = meta.icon;
@@ -315,23 +360,34 @@ function LeaderboardPanel({
             <ArrowLeft size={14} /> Back
           </motion.button>
 
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={onEnter}
-            disabled={entering || tournament.status !== "active"}
-            style={{
+          {tournament.isEntered ? (
+            <div style={{
               display: "flex", alignItems: "center", gap: 6,
               padding: "8px 18px", borderRadius: 12,
-              background: tournament.status === "active" ? meta.color : "rgba(255,255,255,0.06)",
-              border: "none", cursor: tournament.status === "active" && !entering ? "pointer" : "not-allowed",
-              color: tournament.status === "active" ? "#000" : "rgba(232,224,200,0.3)",
-              fontWeight: 700, fontSize: 13,
-              opacity: entering ? 0.7 : 1,
-            }}
-          >
-            {entering ? "Entering…" : tournament.status === "active" ? "Enter Competition" : "Not Active"}
-          </motion.button>
+              background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.35)",
+              color: "#22c55e", fontWeight: 700, fontSize: 13,
+            }}>
+              <span style={{ fontSize: 12 }}>✓</span> You&apos;re In
+            </div>
+          ) : (
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={onEnter}
+              disabled={entering || tournament.status !== "active"}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "8px 18px", borderRadius: 12,
+                background: tournament.status === "active" ? meta.color : "rgba(255,255,255,0.06)",
+                border: "none", cursor: tournament.status === "active" && !entering ? "pointer" : "not-allowed",
+                color: tournament.status === "active" ? "#000" : "rgba(232,224,200,0.3)",
+                fontWeight: 700, fontSize: 13,
+                opacity: entering ? 0.7 : 1,
+              }}
+            >
+              {entering ? "Entering…" : tournament.status === "active" ? "Enter Competition" : "Not Active"}
+            </motion.button>
+          )}
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -412,6 +468,7 @@ function LeaderboardPanel({
               const rank = entry.rank ?? i + 1;
               const rankColors: Record<number, string> = { 1: "#d4af37", 2: "#9ca3af", 3: "#b87333" };
               const c = rankColors[rank] ?? "rgba(232,224,200,0.6)";
+              const isMe = userId !== null && entry.userId === userId;
               return (
                 <motion.div
                   key={entry.id}
@@ -421,21 +478,35 @@ function LeaderboardPanel({
                   style={{
                     display: "flex", alignItems: "center", gap: 12,
                     padding: "12px 14px", borderRadius: 12,
-                    background: rank <= 3 ? `${c}08` : "rgba(255,255,255,0.02)",
-                    border: rank <= 3 ? `1px solid ${c}30` : "1px solid rgba(255,255,255,0.05)",
+                    background: isMe
+                      ? "rgba(34,197,94,0.07)"
+                      : rank <= 3 ? `${c}08` : "rgba(255,255,255,0.02)",
+                    border: isMe
+                      ? "1.5px solid rgba(34,197,94,0.35)"
+                      : rank <= 3 ? `1px solid ${c}30` : "1px solid rgba(255,255,255,0.05)",
                   }}
                 >
                   <RankBadge rank={rank} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#e8e0c8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {entry.userName ?? "Guest"}
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: isMe ? "#e8e0c8" : "#e8e0c8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {entry.userName ?? "Guest"}
+                      </div>
+                      {isMe && (
+                        <span style={{
+                          fontSize: 8, fontWeight: 700, letterSpacing: "0.1em",
+                          color: "#22c55e", background: "rgba(34,197,94,0.12)",
+                          border: "1px solid rgba(34,197,94,0.3)", padding: "1px 5px", borderRadius: 999,
+                          textTransform: "uppercase", flexShrink: 0,
+                        }}>You</span>
+                      )}
                     </div>
                     <div style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", marginTop: 2 }}>
                       Entered {new Date(entry.joinedAt).toLocaleDateString()}
                     </div>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 20, fontWeight: 800, color: c }}>{entry.score}</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: isMe ? "#22c55e" : c }}>{entry.score}</div>
                     <div style={{ fontSize: 9, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em" }}>pts</div>
                   </div>
                 </motion.div>
@@ -1055,7 +1126,7 @@ export default function CompetitionModule() {
     if (!selected) return;
     setEntering(true);
     try {
-      await apiFetch(`/competitions/${selected.id}/enter`, { method: "POST" });
+      const entry = await apiFetch(`/competitions/${selected.id}/enter`, { method: "POST" });
       // Immediately sync the authoritative craft-build score from the DB
       await apiFetch(`/competitions/${selected.id}/sync-score`, { method: "POST" })
         .catch(() => { /* best-effort — entry still succeeded */ });
@@ -1063,7 +1134,14 @@ export default function CompetitionModule() {
       await loadLeaderboard(selected.id);
       await loadTournaments();
       setSelected(prev => prev
-        ? { ...prev, entrantCount: prev.entrantCount + 1 }
+        ? {
+            ...prev,
+            entrantCount: prev.entrantCount + 1,
+            isEntered:    true,
+            userEntryId:  entry?.id ?? null,
+            userScore:    entry?.score ?? 0,
+            userRank:     entry?.rank  ?? null,
+          }
         : prev
       );
     } catch (err: unknown) {
@@ -1230,6 +1308,7 @@ export default function CompetitionModule() {
                   onEnter={handleEnter}
                   entering={entering}
                   onClose={() => setSelected(null)}
+                  userId={user?.id ?? null}
                 />
               </motion.div>
             ) : (
@@ -1397,6 +1476,7 @@ export default function CompetitionModule() {
                 onEnter={handleEnter}
                 entering={entering}
                 onClose={() => setSelected(null)}
+                userId={user?.id ?? null}
               />
             </motion.div>
           ) : liveCtx && (liveCtx.craftLeaderboard.length > 0 || liveCtx.loungeLeague.length > 0) ? (
@@ -1529,8 +1609,16 @@ export default function CompetitionModule() {
             onClose={() => setShowCreate(false)}
             existingTournaments={tournaments}
             onCreated={(newTournament) => {
-              setTournaments(prev => [...prev, { ...newTournament, entrantCount: 0 }]);
-              setMyTournaments(prev => [{ ...newTournament, entrantCount: 0 }, ...prev]);
+              const enrichedTournament = {
+                ...newTournament,
+                entrantCount: 0,
+                isEntered:    false,
+                userEntryId:  null,
+                userScore:    null,
+                userRank:     null,
+              };
+              setTournaments(prev => [...prev, enrichedTournament]);
+              setMyTournaments(prev => [enrichedTournament, ...prev]);
               setShowCreate(false);
               showToast(`"${newTournament.title}" tournament created!`);
             }}
