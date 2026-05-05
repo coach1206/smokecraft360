@@ -93,6 +93,12 @@ router.post("/", requireAuth, async (req: AuthRequest, res: Response) => {
     })
     .returning();
 
+  // Auto-propagate score to any active tournament entries for this user+craft.
+  // Fire-and-forget — must not delay the response.
+  if (score !== undefined) {
+    void syncActiveTournamentScores(userId, craft);
+  }
+
   res.status(201).json({ build });
 });
 

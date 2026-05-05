@@ -37,3 +37,26 @@ export async function requireAuth(
     res.status(401).json({ error: "Invalid or expired token" });
   }
 }
+
+/**
+ * Optional JWT middleware — attaches `req.user` when a valid Bearer token is
+ * present, but never returns 401. Routes that accept both authenticated and
+ * anonymous callers should use this instead of `requireAuth`.
+ */
+export async function optionalAuth(
+  req:  AuthRequest,
+  _res: Response,
+  next: NextFunction,
+): Promise<void> {
+  const header = req.headers["authorization"];
+  if (header?.startsWith("Bearer ")) {
+    try {
+      const token   = header.slice(7);
+      const payload = await verifyToken(token);
+      req.user = { id: payload.sub, email: payload.email, role: payload.role, name: payload.name, venueId: payload.venueId ?? null };
+    } catch {
+      // Invalid/expired token — treat as anonymous; do not reject
+    }
+  }
+  next();
+}

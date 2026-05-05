@@ -1,7 +1,7 @@
 /**
  * /api/craft — unified craft intelligence hub.
  *
- *   POST /api/craft/score              — score a build using the craft engine
+ *   POST /api/craft/score              — score a build; persists + syncs tournament if authed
  *   POST /api/craft/voice-feedback     — TTS voice coach line after scoring
  *   POST /api/craft/session/save       — save/update a craft session
  *   GET  /api/craft/session/:id        — load a craft session by id
@@ -16,6 +16,8 @@ import { z }                                                 from "zod";
 import { db, craftBuildsTable, usersTable, userPreferencesTable, craftSessionStatesTable, designDraftsTable } from "@workspace/db";
 import { scoreBuild }                                        from "../engine/craftEngine";
 import { resolveElevenLabsKey, DEFAULT_VOICES }             from "../lib/elevenlabs";
+import { optionalAuth, type AuthRequest }                   from "../middleware/auth";
+import { syncActiveTournamentScores }                       from "../lib/tournamentSync";
 
 const router: IRouter = Router();
 
@@ -28,15 +30,48 @@ const scoreSchema = z.object({
   finish:      z.number().finite().min(0).max(5),
   timeTaken:   z.number().finite().min(0),
   converted:   z.boolean().optional().default(false),
+  // Required — callers must declare which craft type is being scored.
+  // When combined with a valid Bearer token the result is persisted to
+  // craftBuildsTable and auto-propagated to any active tournament entries.
+  craft:       z.enum(["smoke", "brew", "pour", "vape"]),
 });
 
-router.post("/score", (req: Request, res: Response) => {
+router.post("/score", optionalAuth, async (req: AuthRequest, res: Response) => {
   const parsed = scoreSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
     return;
   }
-  res.json(scoreBuild(parsed.data));
+
+  const result = scoreBuild(parsed.data);
+  const { craft } = parsed.data;
+  const userId = req.user?.id;
+
+  // When the caller is authenticated, persist the build and fire-and-forget
+  // tournament sync so the leaderboard updates immediately after scoring.
+  // Anonymous callers still receive the computed score without any DB writes.
+  if (userId) {
+    try {
+      await db
+        .insert(craftBuildsTable)
+        .values({
+          userId,
+          craft,
+          phase:          "reveal",
+          score:          String(result.score),
+          venueId:        req.user?.venueId ?? null,
+          profileAnswers: {},
+        });
+
+      // Propagate to any active tournament entries for this user + craft type.
+      // Fire-and-forget — must not delay the score response.
+      void syncActiveTournamentScores(userId, craft);
+    } catch (err) {
+      req.log.warn({ err, userId, craft }, "craft/score: failed to persist build or sync tournament");
+    }
+  }
+
+  res.json(result);
 });
 
 // ── POST /api/craft/voice-feedback ────────────────────────────────────────────
