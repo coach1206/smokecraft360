@@ -1,0 +1,263 @@
+MISSING / REQUIRED (READ THIS FIRST)
+
+Before this works properly, you need:
+
+A venues table (you already have something similar, reuse if needed)
+Auth middleware (you already have JWT)
+Admin role check (super_admin or admin2)
+Existing feature usage points in frontend (we’ll wire the checker)
+
+If any of these are weak, this system still runs but won’t be locked tight.
+
+🧱 FAILURE PREVENTION CHECKLIST
+
+✔ Every feature must be checked in frontend AND backend
+✔ No feature should run without entitlement validation
+✔ Pricing must be stored per venue (not global)
+✔ Audit logs must track all changes
+✔ Feature dependencies must be enforced
+✔ Default fallback = NO ACCESS (fail closed)
+
+🧠 MASTER PROMPT (SYSTEM INTENT)
+
+Build a modular entitlement system for CraftHub / SmokeCraft that allows admins to:
+
+Assign packages or custom feature bundles per venue
+Override features individually (a la carte)
+Control pricing per venue (monthly, transaction %, setup fee)
+Enforce feature access across frontend and backend
+Track all changes with audit logs
+Support future Stripe billing integration
+
+System must be scalable, secure, and role-restricted.
+
+🗄️ DATABASE (DRIZZLE / POSTGRES)
+1. features table
+// db/schema/features.ts
+import { pgTable, text } from "drizzle-orm/pg-core";
+
+export const features = pgTable("features", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+});
+2. packages table
+// db/schema/packages.ts
+import { pgTable, text, jsonb } from "drizzle-orm/pg-core";
+
+export const packages = pgTable("packages", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  features: jsonb("features").notNull(), // array of feature IDs
+});
+3. venue_entitlements (CORE)
+// db/schema/venueEntitlements.ts
+import { pgTable, text, jsonb, numeric } from "drizzle-orm/pg-core";
+
+export const venueEntitlements = pgTable("venue_entitlements", {
+  venueId: text("venue_id").primaryKey(),
+  packageId: text("package_id"),
+  features: jsonb("features").notNull(), // overrides
+
+  monthlyPrice: numeric("monthly_price"),
+  transactionFee: numeric("transaction_fee"),
+  setupFee: numeric("setup_fee"),
+});
+4. audit logs
+// db/schema/entitlementLogs.ts
+import { pgTable, text, timestamp, jsonb } from "drizzle-orm/pg-core";
+
+export const entitlementLogs = pgTable("entitlement_logs", {
+  id: text("id").primaryKey(),
+  venueId: text("venue_id"),
+  adminId: text("admin_id"),
+  action: text("action"),
+  data: jsonb("data"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+⚙️ BACKEND (EXPRESS ROUTES)
+Admin: Assign package / features
+// routes/admin-entitlements.ts
+import express from "express";
+import { db } from "../db";
+import { venueEntitlements } from "../db/schema/venueEntitlements";
+import { entitlementLogs } from "../db/schema/entitlementLogs";
+import { v4 as uuid } from "uuid";
+
+const router = express.Router();
+
+router.post("/assign", async (req, res) => {
+  const { venueId, packageId, features, pricing, adminId } = req.body;
+
+  await db.insert(venueEntitlements).values({
+    venueId,
+    packageId,
+    features,
+    monthlyPrice: pricing.monthly,
+    transactionFee: pricing.transaction,
+    setupFee: pricing.setup,
+  }).onConflictDoUpdate({
+    target: venueEntitlements.venueId,
+    set: {
+      packageId,
+      features,
+      monthlyPrice: pricing.monthly,
+      transactionFee: pricing.transaction,
+      setupFee: pricing.setup,
+    }
+  });
+
+  await db.insert(entitlementLogs).values({
+    id: uuid(),
+    venueId,
+    adminId,
+    action: "UPDATED_ENTITLEMENTS",
+    data: { packageId, features, pricing },
+  });
+
+  res.json({ success: true });
+});
+
+export default router;
+Middleware: Feature Check (CRITICAL)
+// middleware/hasFeature.ts
+import { db } from "../db";
+import { venueEntitlements } from "../db/schema/venueEntitlements";
+
+export const hasFeature = (featureId: string) => {
+  return async (req, res, next) => {
+    const venueId = req.user.venueId;
+
+    const entitlement = await db.query.venueEntitlements.findFirst({
+      where: (v) => v.venueId.eq(venueId),
+    });
+
+    if (!entitlement || !entitlement.features.includes(featureId)) {
+      return res.status(403).json({ error: "Feature not enabled" });
+    }
+
+    next();
+  };
+};
+Example Protected Route
+router.get("/ai-pairing", hasFeature("AI_PAIRING"), (req, res) => {
+  res.json({ result: "AI pairing result here" });
+});
+🎨 FRONTEND (REACT ADMIN PANEL)
+Feature Selector UI
+// AdminEntitlements.tsx
+const FEATURES = [
+  "SMOKECRAFT",
+  "POURCRAFT",
+  "AI_PAIRING",
+  "DYNAMIC_PRICING",
+  "INVENTORY",
+  "ANALYTICS",
+  "LOYALTY",
+  "CAMPAIGNS"
+];
+
+export default function AdminEntitlements() {
+  const [selected, setSelected] = useState<string[]>([]);
+  const [pricing, setPricing] = useState({
+    monthly: 0,
+    transaction: 0,
+    setup: 0
+  });
+
+  const toggle = (feature: string) => {
+    setSelected(prev =>
+      prev.includes(feature)
+        ? prev.filter(f => f !== feature)
+        : [...prev, feature]
+    );
+  };
+
+  return (
+    <div>
+      <h2>Assign Features</h2>
+
+      {FEATURES.map(f => (
+        <label key={f}>
+          <input
+            type="checkbox"
+            checked={selected.includes(f)}
+            onChange={() => toggle(f)}
+          />
+          {f}
+        </label>
+      ))}
+
+      <h3>Pricing</h3>
+      <input placeholder="Monthly"
+        onChange={e => setPricing({...pricing, monthly: +e.target.value})} />
+      <input placeholder="Transaction %"
+        onChange={e => setPricing({...pricing, transaction: +e.target.value})} />
+      <input placeholder="Setup Fee"
+        onChange={e => setPricing({...pricing, setup: +e.target.value})} />
+
+      <button onClick={async () => {
+        await fetch("/api/admin/assign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            venueId: "venue_123",
+            features: selected,
+            pricing
+          })
+        });
+      }}>
+        Save
+      </button>
+    </div>
+  );
+}
+🔐 FRONTEND FEATURE LOCK
+export const useFeature = (feature: string) => {
+  const { features } = useContext(UserContext);
+  return features.includes(feature);
+};
+Example Usage
+if (!useFeature("AI_PAIRING")) {
+  return <UpgradePrompt />;
+}
+⚠️ WHAT YOU DIDN’T ASK FOR (BUT NEED)
+1. Feature Dependencies
+
+Add a simple rule map:
+
+const dependencies = {
+  AI_PAIRING: ["INVENTORY"],
+};
+
+Block invalid combos in admin panel.
+
+2. Upgrade Prompts (REVENUE DRIVER)
+
+When locked:
+
+“Unlock AI Pairing to increase high-margin cigar sales”
+
+3. Templates (SPEED)
+
+Save presets:
+
+Luxury Lounge
+Starter Bar
+High Volume Venue
+4. Stripe Ready (NEXT STEP)
+
+Later:
+
+Each feature = price ID
+Auto billing per selection
+🎯 FINAL TRUTH
+
+What you just built is not a settings panel.
+
+It’s:
+
+A deal-closing machine
+
+You can now walk into any venue and say:
+
+“Tell me what you want… I’ll build your system live.”

@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, TrendingUp, Brain, AlertTriangle, Gift, Award, Package, ArrowUpRight, ArrowDownRight, Plus, Minus } from "lucide-react";
+import { ArrowLeft, TrendingUp, Brain, AlertTriangle, Gift, Award, Package, ArrowUpRight, ArrowDownRight, Plus, Minus, Zap } from "lucide-react";
+import LiveKpi from "@/components/LiveKpi";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
 import { useVenueContext } from "@/contexts/VenueContext";
@@ -79,6 +80,30 @@ export default function AnalyticsModule() {
     return insights;
   }, [pos.products, pos.orders]);
 
+  const peakHour = useMemo(() => {
+    if (!cc.hourlyRevenue.length) return null;
+    return cc.hourlyRevenue.reduce((best, h) => h.amount > best.amount ? h : best, cc.hourlyRevenue[0]);
+  }, [cc.hourlyRevenue]);
+
+  const revenueStory = useMemo(() => {
+    const stories: string[] = [];
+    if (totalRevenue > 0) {
+      stories.push(`$${totalRevenue.toLocaleString()} generated this session`);
+    }
+    if (peakHour && peakHour.amount > 0) {
+      stories.push(`Busiest hour: ${peakHour.hour} with $${peakHour.amount.toLocaleString()}`);
+    }
+    const cigarOrders = pos.orders.filter(o => o.items.some(i => i.product.category === "cigar"));
+    if (cigarOrders.length > 0 && totalOrders > 0) {
+      const pct = Math.round((cigarOrders.length / totalOrders) * 100);
+      stories.push(`Cigar pairings drove ${pct}% of orders`);
+    }
+    if (avgOrder > 0) {
+      stories.push(`${avgOrder > 40 ? "Above" : "Near"} target — $${avgOrder} average order value`);
+    }
+    return stories;
+  }, [totalRevenue, peakHour, pos.orders, totalOrders, avgOrder]);
+
   const soldCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const order of pos.orders) {
@@ -128,23 +153,59 @@ export default function AnalyticsModule() {
         {tab === "overview" && (
           <>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
-              {[
-                { label: "Revenue", value: `$${totalRevenue.toLocaleString()}`, color: "#d4af37" },
-                { label: "Orders", value: `${totalOrders}`, color: "#5b8def" },
-                { label: "Avg Order", value: `$${avgOrder}`, color: "#34d399" },
-                { label: "Rewards", value: `${rewardsTriggered}`, color: "#f59e0b" },
-              ].map((stat, i) => (
+              {([
+                { label: "Revenue",   value: totalRevenue,     prefix: "$", color: "#d4af37", live: true  },
+                { label: "Orders",    value: totalOrders,      prefix: "",  color: "#5b8def", live: true  },
+                { label: "Avg Order", value: avgOrder,         prefix: "$", color: "#34d399", live: false },
+                { label: "Rewards",   value: rewardsTriggered, prefix: "",  color: "#f59e0b", live: false },
+              ] as const).map((stat, i) => (
                 <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                   style={{
                     padding: "16px", borderRadius: 14,
                     background: "rgba(255,255,255,0.03)", border: `1px solid ${stat.color}20`,
                     textAlign: "center",
                   }}>
-                  <div style={{ fontSize: 24, fontWeight: 700, color: stat.color }}>{stat.value}</div>
+                  <div style={{ fontSize: 24, fontWeight: 700, color: stat.color }}>
+                    <LiveKpi
+                      value={stat.value}
+                      prefix={stat.prefix}
+                      live={stat.live}
+                      liveColor={stat.color}
+                      duration={1200 - i * 80}
+                      style={{ fontSize: 24, fontWeight: 700, color: stat.color }}
+                    />
+                  </div>
                   <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4 }}>{stat.label}</div>
                 </motion.div>
               ))}
             </div>
+
+            {/* Revenue Story strip */}
+            {revenueStory.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                style={{
+                  marginBottom: 20,
+                  padding: "12px 18px",
+                  borderRadius: 12,
+                  background: "linear-gradient(90deg, rgba(212,175,55,0.07), rgba(91,141,239,0.05))",
+                  border: "1px solid rgba(212,175,55,0.18)",
+                  display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center",
+                }}
+              >
+                <Zap size={13} color="#d4af37" style={{ flexShrink: 0 }} />
+                {revenueStory.map((s, i) => (
+                  <span key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ fontSize: 12, color: "rgba(232,224,200,0.75)" }}>{s}</span>
+                    {i < revenueStory.length - 1 && (
+                      <span style={{ color: "rgba(232,224,200,0.2)", fontSize: 12 }}>·</span>
+                    )}
+                  </span>
+                ))}
+              </motion.div>
+            )}
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
               <div style={{ padding: "16px", borderRadius: 14, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>

@@ -10,6 +10,7 @@ import { useVenueContext } from "@/contexts/VenueContext";
 import { useEngagementContext } from "@/contexts/EngagementContext";
 import SystemStatusPanel from "@/components/SystemStatusPanel";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
+import LiveKpi from "@/components/LiveKpi";
 
 const TILES = [
   { id: "smokecraft", title: "SmokeCraft", desc: "Launch cigar experience", color: "#e85d26", route: "/smokecraft", dataKey: "smokecraft" as const, image: "/images/cigar.png" },
@@ -89,15 +90,21 @@ export default function CommandCenter() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#d4af37" }}>${todayRevenue.toLocaleString()}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#d4af37" }}>
+              <LiveKpi value={todayRevenue} prefix="$" live liveColor="#d4af37" duration={1200} style={{ fontSize: 18, fontWeight: 700, color: "#d4af37" }} />
+            </div>
             <div style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Revenue</div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#e8e0c8" }}>{cc.activeGuests}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#e8e0c8" }}>
+              <LiveKpi value={cc.activeGuests} live liveColor="#34d399" duration={900} style={{ fontSize: 18, fontWeight: 700, color: "#e8e0c8" }} />
+            </div>
             <div style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Guests</div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#e8e0c8" }}>{pos.orders.length}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#e8e0c8" }}>
+              <LiveKpi value={pos.orders.length} live liveColor="#5b8def" duration={800} style={{ fontSize: 18, fontWeight: 700, color: "#e8e0c8" }} />
+            </div>
             <div style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Orders</div>
           </div>
           <div style={{
