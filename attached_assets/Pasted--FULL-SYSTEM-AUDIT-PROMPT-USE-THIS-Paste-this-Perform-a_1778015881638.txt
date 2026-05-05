@@ -1,0 +1,232 @@
+🔍 FULL SYSTEM AUDIT PROMPT (USE THIS)
+
+Paste this:
+
+⸻
+
+Perform a full production-level audit of the current SmokeCraft 360 system.
+
+This is NOT a build task. Do NOT generate new features.
+Only inspect, verify, and report the current state of the system.
+
+⸻
+
+1. OBJECTIVE
+
+Provide a COMPLETE and HONEST breakdown of:
+
+* What is fully implemented and working
+* What is partially implemented (UI only, missing backend, or vice versa)
+* What is completely missing
+* What is duplicated or conflicting
+* What is broken or not connected
+
+Do not assume anything is working unless verified.
+
+⸻
+
+2. FRONTEND AUDIT
+
+Scan all pages and components.
+
+For each major module, report:
+
+* Craft Hub
+* Experience Engine
+* Inventory
+* Vendors
+* Rewards
+* Device Control
+* Analytics
+* Settings
+
+For EACH module, classify:
+
+1. ✅ Fully functional (UI + backend + data flow)
+2. ⚠️ Partial (UI only or backend only)
+3. ❌ Missing or broken
+
+Also identify:
+
+* Duplicate components (e.g. multiple Craft Hubs)
+* Screens with unreadable UI (text on images, no structure)
+* Pages that exist but are not routed
+* Buttons with no actions
+
+⸻
+
+3. BACKEND AUDIT
+
+Check all routes and services.
+
+Verify:
+
+* /api/inventory
+* /api/vendors
+* /api/analytics
+* /api/experiences
+* /api/session/start
+
+For each:
+
+* Is it implemented?
+* Does it return real data?
+* Is it connected to database?
+* Is it used by frontend?
+
+Classify each as:
+
+* Working
+* Partial
+* Missing
+
+⸻
+
+4. DATABASE AUDIT
+
+Verify existence and usage of:
+
+* users
+* inventory
+* vendors
+* analytics
+* sessions
+
+For each table:
+
+* Exists?
+* Has data?
+* Connected to API?
+* Used by frontend?
+
+⸻
+
+5. ROLE & ACCESS CONTROL AUDIT
+
+Check:
+
+* Is role middleware implemented?
+* Are routes protected?
+* Are users assigned roles?
+
+Report:
+
+* Working
+* Partial
+* Missing
+
+⸻
+
+6. DATA FLOW VERIFICATION (CRITICAL)
+
+Trace real flow:
+
+Craft Hub → Experience → Inventory → Analytics
+
+Verify:
+
+* Clicking a craft loads real data
+* Inventory is pulled dynamically
+* Actions update analytics
+* Sessions are logged
+
+If any step is broken, mark it clearly.
+
+⸻
+
+7. UI SYSTEM AUDIT
+
+Check consistency:
+
+* Are cards using the same design system?
+* Are there still heavy background images?
+* Are any screens unreadable?
+* Is layout using a grid or random spacing?
+
+⸻
+
+8. DUPLICATION & CONFLICT REPORT
+
+List:
+
+* Duplicate routes
+* Duplicate components
+* Conflicting UI systems
+* Old vs new versions still active
+
+⸻
+
+9. MISSING COMPONENTS
+
+List anything not implemented, including:
+
+* AI insight engine (real logic vs placeholder)
+* Vendor ↔ Inventory linking
+* Reorder system
+* POS integration
+* Real analytics calculations
+
+⸻
+
+10. HALF-DONE FEATURES (IMPORTANT)
+
+Identify features that were started but not completed.
+
+Examples:
+
+* UI exists but no API
+* API exists but not used
+* Button exists but no action
+* Data not saved to DB
+
+⸻
+
+11. FINAL OUTPUT FORMAT (STRICT)
+
+Return results in this structure:
+
+⸻
+
+✅ FULLY WORKING
+
+(list)
+
+⚠️ PARTIAL / HALF BUILT
+
+(list with what’s missing)
+
+❌ MISSING / BROKEN
+
+(list)
+
+🔁 DUPLICATES / CONFLICTS
+
+(list)
+
+🧠 DATA FLOW STATUS
+
+(working or broken + explanation)
+
+🎨 UI SYSTEM STATUS
+
+(consistency + issues)
+
+🚨 CRITICAL ISSUES TO FIX FIRST
+
+(top 5 only)
+
+⸻
+
+Do NOT suggest improvements yet.
+Only report the current state with precision.
+
+⸻
+
+🧠 WHY THIS WORKS
+
+This forces the system to:
+
+* stop pretending things are done
+* expose fake connections
+* show where UI ≠ backend
+* reveal duplicate logic
