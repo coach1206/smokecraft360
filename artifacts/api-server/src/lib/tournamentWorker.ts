@@ -8,7 +8,7 @@
  *   venue/grand — not auto-replaced (long-running; managed manually)
  */
 
-import { and, eq, lt, or, inArray, gte, isNull } from "drizzle-orm";
+import { and, eq, lt, lte, or, inArray, gte, isNull } from "drizzle-orm";
 import { db, tournamentsTable } from "@workspace/db";
 import { logger } from "./logger";
 import { getIO } from "./socketServer";
@@ -153,7 +153,10 @@ export async function runTournamentEnforcement(
           const prizes = defaultPrizes(type);
 
           // Idempotency guard: skip spawning if an active/upcoming tournament of
-          // the same type and venue scope already covers the current window.
+          // the same type and venue scope already overlaps the replacement window.
+          // Window-overlap condition: existing.startAt <= window.endAt AND
+          // existing.endAt >= window.startAt, ensuring a far-future tournament
+          // (e.g. next day's slot) does not incorrectly suppress this window's spawn.
           // This prevents duplicate rows when multiple stale expired entries of
           // the same type are processed in one run, or when multiple API
           // instances race to complete the same expired tournament.
@@ -171,7 +174,9 @@ export async function runTournamentEnforcement(
                   eq(tournamentsTable.status, "active"),
                   eq(tournamentsTable.status, "upcoming"),
                 ),
-                gte(tournamentsTable.endAt, now),
+                // existing tournament overlaps the replacement window
+                lte(tournamentsTable.startAt, window.endAt),
+                gte(tournamentsTable.endAt, window.startAt),
                 venueFilter,
               ),
             )
