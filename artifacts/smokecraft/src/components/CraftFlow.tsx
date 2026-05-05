@@ -269,7 +269,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     const newScore100 = Math.round(result.score * 10);
     setScoreState(prev => {
       if (newScore100 > prev.score) incrementStreak();
-      else if (newScore100 < prev.score - 4) breakStreak();
+      else breakStreak();
       return { score: newScore100, prevScore: prev.score };
     });
     setLiveMeters({
@@ -1123,8 +1123,6 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 onClick={() => {
                   if (selectedStyle && selectedMood) {
                     setPhase("reveal");
-                  } else if (selectedStyle) {
-                    void runMatch(selectedStyle, config.moods[0]);
                   } else {
                     reset();
                   }
