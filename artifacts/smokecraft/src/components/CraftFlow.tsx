@@ -5,9 +5,12 @@ import { Check, Sparkles, ShoppingBag, ChevronRight, RotateCcw } from "lucide-re
 import {
   fetchRecommendations,
   trackPreferences,
+  postScore,
+  upsertCraftBuild,
   type RecommendResponse,
   type ProductResult,
 } from "@/services/api";
+import LivePreviewPanel, { type LiveMeters } from "@/components/LivePreview/LivePreviewPanel";
 
 export type CraftCategory = "beer" | "alcohol" | "vape";
 
@@ -59,6 +62,22 @@ export interface CraftFlowConfig {
   moods: CraftMoodCard[];
   /** When true, suppress cross-category pairing in reveal (used by VapeCraft). */
   hidePairing?: boolean;
+  /** Craft type for DB build persistence. Derived from testIdPrefix when omitted. */
+  craftType?: "smoke" | "brew" | "pour" | "vape";
+}
+
+function deriveScoreInputs(style: CraftStyleCard, mood: CraftMoodCard | null) {
+  const flavorRaw   = Math.min(10, 2 + style.flavors.length * 1.5);
+  const strengthRaw = Math.min(10, Math.max(0, style.strength));
+  const moodMatch   = mood
+    ? (style.mood.toLowerCase().includes(mood.id.toLowerCase()) ? 1.0 : 0.65)
+    : 0.5;
+  const pairingRaw  = Math.min(10, (flavorRaw + strengthRaw) / 2 * moodMatch + 2);
+  return {
+    flavor:   Number(flavorRaw.toFixed(1)),
+    strength: Number(strengthRaw.toFixed(1)),
+    pairing:  Number(pairingRaw.toFixed(1)),
+  };
 }
 
 type Phase = "intro" | "style" | "profile" | "match" | "reveal";
@@ -72,6 +91,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const [selectedMood, setSelectedMood] = useState<CraftMoodCard | null>(null);
   const [resp, setResp] = useState<RecommendResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [scoreState, setScoreState] = useState({ score: 50, prevScore: 50 });
+  const [liveMeters, setLiveMeters] = useState<LiveMeters>({ flavor: 50, strength: 50, balance: 50 });
 
   const phaseIndex = useMemo(() => {
     const order: Phase[] = ["intro", "style", "profile", "match", "reveal"];
@@ -84,7 +105,41 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     setSelectedMood(null);
     setResp(null);
     setError(null);
+    setScoreState({ score: 50, prevScore: 50 });
+    setLiveMeters({ flavor: 50, strength: 50, balance: 50 });
   }, []);
+
+  const craftType = useMemo(() =>
+    config.craftType ?? (
+      config.testIdPrefix.startsWith("smoke") ? "smoke" as const :
+      config.testIdPrefix.startsWith("brew")  ? "brew"  as const :
+      config.testIdPrefix.startsWith("pour")  ? "pour"  as const :
+      "vape"  as const
+    ), [config.craftType, config.testIdPrefix]);
+
+  const updateScore = useCallback(async (
+    style:        CraftStyleCard,
+    mood:         CraftMoodCard | null,
+    currentPhase: Phase,
+  ) => {
+    const inputs = deriveScoreInputs(style, mood);
+    const result = await postScore(inputs);
+    if (!result) return;
+    const newScore100 = Math.round(result.score * 10);
+    setScoreState(prev => ({ score: newScore100, prevScore: prev.score }));
+    setLiveMeters({
+      flavor:   Math.round(inputs.flavor   * 10),
+      strength: Math.round(inputs.strength * 10),
+      balance:  Math.round(inputs.pairing  * 10),
+    });
+    void upsertCraftBuild({
+      craft:       craftType,
+      phase:       currentPhase,
+      styleChoice: style.id,
+      ...(mood ? { moodChoice: mood.id } : {}),
+      score:       result.score,
+    });
+  }, [craftType]);
 
   const runMatch = useCallback(async (style: CraftStyleCard, mood: CraftMoodCard) => {
     setPhase("match");
@@ -120,12 +175,16 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const handleStylePick = useCallback((s: CraftStyleCard) => {
     setSelectedStyle(s);
     setPhase("profile");
-  }, []);
+    void updateScore(s, null, "style");
+  }, [updateScore]);
 
   const handleMoodPick = useCallback((m: CraftMoodCard) => {
     setSelectedMood(m);
-    if (selectedStyle) void runMatch(selectedStyle, m);
-  }, [selectedStyle, runMatch]);
+    if (selectedStyle) {
+      void runMatch(selectedStyle, m);
+      void updateScore(selectedStyle, m, "profile");
+    }
+  }, [selectedStyle, runMatch, updateScore]);
 
   const featured = resp?.recommendations[0] ?? null;
   const secondary = (resp?.recommendations ?? []).slice(1, 4);
@@ -621,6 +680,17 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
           </aside>
         )}
       </div>
+
+      <LivePreviewPanel
+        craft={craftType}
+        accentColor={config.theme.accent}
+        score={scoreState.score}
+        prevScore={scoreState.prevScore}
+        meters={liveMeters}
+        styleLabel={selectedStyle?.title ?? ""}
+        moodLabel={selectedMood?.title ?? ""}
+        visible={phase !== "intro" && phase !== "reveal"}
+      />
     </div>
   );
 }

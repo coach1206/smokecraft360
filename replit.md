@@ -32,7 +32,9 @@ The application features a luxury aesthetic with a dark gold theme, glassmorphis
 -   **Operations Layer**: Includes POS integration, reorder alerts, optimized menu layouts, profit calculations, staff sales pitches, tenant isolation, and atomic inventory decrement.
 -   **Image Engine**: Context-aware Cloudinary transformations with subtype-based fallbacks.
 -   **Network Intelligence Layer**: Features like "Couples Mode," "Time-of-day context" for recommendations, historical data revenue forecasting, and cross-venue low-stock digests.
--   **Craft-Specific Experiences**: Modular kiosk-style pages for `BrewCraft`, `PourCraft`, and `VapeCraft`.
+-   **Craft-Specific Experiences**: Modular kiosk-style pages for `BrewCraft`, `PourCraft`, and `VapeCraft`. Each uses `CraftFlow.tsx` as the shared phase engine (`intro → style → profile → match → reveal`).
+-   **Live Preview + Scoring Panel**: A collapsible `position:fixed` right-edge `LivePreviewPanel` mounts additively over `CraftFlow`. Shows a per-craft SVG silhouette (beer bottle / whiskey glass / vape device / cigar), a 0–100 score bar, and three meter bars (Flavor / Strength / Balance). Score is computed via `POST /api/scoring` after each style/mood pick. Combo animations (shake + flickerRed on drop ≥10, glowPulse on rise ≥10) via Framer Motion `useAnimation`. Build state is persisted to `craft_builds` table via `PATCH /api/craft-builds` (silent 401 for guests).
+-   **Design Playground**: Pre-challenge branding studio for all four crafts; opens before CraftFlow. Supports drag/pinch, draft save/load, per-craft configs.
 -   **Lucient Core — Experience Decision Engine**: Manages real-time experience quality and revenue control through behavior profiles, a decision engine, and an automation service.
 -   **Personalization & Revenue Intelligence**: Taste profiles, auto-recommendations via affinity vectors, session revenue forecasting, and dynamic pricing.
 -   **Database Schema**: Comprehensive schema for users, products, experiences, loyalty, inventory, lounge statistics, reservations, IP assets, audit logs, support tickets, notifications, user memories, and multi-user sessions.

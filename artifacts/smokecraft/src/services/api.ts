@@ -2125,3 +2125,50 @@ export async function upsertDesignDraft(params: {
     return null;
   }
 }
+
+// ── Live Scoring ───────────────────────────────────────────────────────────────
+
+export interface ScoreInputs { flavor: number; strength: number; pairing: number }
+export interface ScoreResult { score: number; label: string }
+
+/** POST /api/scoring — public, no auth required. Returns null on failure. */
+export async function postScore(inputs: ScoreInputs): Promise<ScoreResult | null> {
+  try {
+    const res = await fetch("/api/scoring", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(inputs),
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as ScoreResult;
+  } catch {
+    return null;
+  }
+}
+
+// ── Craft Builds ──────────────────────────────────────────────────────────────
+
+export interface CraftBuildUpsert {
+  craft:        "smoke" | "brew" | "pour" | "vape";
+  phase?:       "intro" | "style" | "profile" | "match" | "reveal";
+  styleChoice?: string;
+  moodChoice?:  string;
+  score?:       number;
+}
+
+/**
+ * PATCH /api/craft-builds — idempotent upsert by (userId, craft).
+ * Returns false for guests (401) or on network failure; non-blocking.
+ */
+export async function upsertCraftBuild(params: CraftBuildUpsert): Promise<boolean> {
+  try {
+    const res = await fetch("/api/craft-builds", {
+      method:  "PATCH",
+      headers: getAuthHeaders(),
+      body:    JSON.stringify(params),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
