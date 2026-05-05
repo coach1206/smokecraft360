@@ -15,6 +15,9 @@ import AICoach from "@/components/AICoach/AICoach";
 import SessionTimer from "@/components/SessionTimer/SessionTimer";
 import { useSessionTimer } from "@/hooks/useSessionTimer";
 import SignatureStudio from "@/components/SignatureStudio/SignatureStudio";
+import Leaderboard  from "@/components/Leaderboard/Leaderboard";
+import ScoreOverlay from "@/components/ScoreOverlay/ScoreOverlay";
+import { playSound } from "@/utils/sounds";
 import {
   fetchCraftSession,
   startCraftSession,
@@ -161,13 +164,22 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const [error, setError] = useState<string | null>(null);
   const [scoreState, setScoreState] = useState({ score: 50, prevScore: 50 });
   const [liveMeters, setLiveMeters] = useState<LiveMeters>({ flavor: 50, strength: 50, balance: 50 });
-  const [intelStrip, setIntelStrip] = useState<{ trend: string; topCreator: string } | null>(null);
+  const [intelStrip,       setIntelStrip      ] = useState<{ trend: string; topCreator: string } | null>(null);
+  const [rankMessage,      setRankMessage     ] = useState<string | null>(null);
+  const [showScoreOverlay, setShowScoreOverlay] = useState(false);
+  const [craftScoreVal,    setCraftScoreVal   ] = useState(0);
+  const [craftFeedbackVal, setCraftFeedbackVal] = useState("");
 
   useEffect(() => {
-    fetch("/api/craft/intel/quick")
-      .then(r => r.ok ? r.json() as Promise<{ trend: string; topCreator: string }> : null)
-      .then(d => { if (d) setIntelStrip(d); })
-      .catch(() => {});
+    const fetchIntel = () => {
+      fetch("/api/craft/intel/quick")
+        .then(r => r.ok ? r.json() as Promise<{ trend: string; topCreator: string }> : null)
+        .then(d => { if (d) setIntelStrip(d); })
+        .catch(() => {});
+    };
+    fetchIntel();
+    const intelTimer = setInterval(fetchIntel, 10000);
+    return () => clearInterval(intelTimer);
   }, []);
 
   // Session timer state
@@ -215,8 +227,10 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const remainingSecsRef = useRef(remainingSecs);
   const streakCountRef   = useRef(streakCount);
   const isResumingRef    = useRef(false);
-  useEffect(() => { remainingSecsRef.current = remainingSecs; }, [remainingSecs]);
-  useEffect(() => { streakCountRef.current   = streakCount;   }, [streakCount]);
+  const scoreRef         = useRef(50);
+  useEffect(() => { remainingSecsRef.current = remainingSecs;    }, [remainingSecs]);
+  useEffect(() => { streakCountRef.current   = streakCount;      }, [streakCount]);
+  useEffect(() => { scoreRef.current         = scoreState.score; }, [scoreState.score]);
 
   // Debounce ref for non-critical autosave calls (avoids redundant rapid PATCH bursts)
   const saveDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -261,6 +275,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     setTimerRunning(false);
     resetTimer(timerTotalSecs);
     setFastBuildBadge(false);
+    setShowScoreOverlay(false);
+    setRankMessage(null);
   }, [timerTotalSecs, resetTimer]);
 
   const updateScore = useCallback(async (
@@ -289,6 +305,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
       strength: Math.round(inputs.strength * 10),
       balance:  Math.round(inputs.pairing  * 10),
     });
+    if (newScore100 > 70) playSound("success");
+    else if (newScore100 < 30) playSound("fail");
   }, [craftType, incrementStreak, breakStreak]);
 
   const runMatch = useCallback(async (style: CraftStyleCard, mood: CraftMoodCard) => {
@@ -350,6 +368,24 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         setTimeout(() => setFastBuildBadge(false), 4500);
       }
       isResumingRef.current = false;
+      // Score overlay — derive craft score (0–5) from session score (0–100)
+      {
+        const rawScore = scoreRef.current;
+        setCraftScoreVal(Number((rawScore / 20).toFixed(2)));
+        setCraftFeedbackVal(
+          rawScore < 25 ? "Weak blend. Structure missing." :
+          rawScore < 40 ? "Close. Pairing is off."         :
+          rawScore < 60 ? "Strong build. Refine finish."   :
+          "Elite blend. Feature-worthy."
+        );
+        setRankMessage(
+          rawScore > 75 ? "🔥 You're near the top. Push harder."      :
+          rawScore > 65 ? "✨ You're close to a feature-worthy build." :
+          rawScore < 30 ? "⚠️ You're falling behind."                 : null
+        );
+        setShowScoreOverlay(true);
+        setTimeout(() => setShowScoreOverlay(false), 4800);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load pairing");
       setPhase("reveal");
@@ -1050,6 +1086,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 </div>
                 <p style={{ fontSize: 12, color: "rgba(232,224,200,0.78)", lineHeight: 1.55, margin: 0 }}>{whyItWorks}</p>
               </div>
+              <Leaderboard accentColor={config.theme.accent} />
             </div>
           </aside>
         )}
@@ -1247,6 +1284,18 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
               </motion.button>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Score result overlay ────────────────────────────────────── */}
+      <AnimatePresence>
+        {showScoreOverlay && (
+          <ScoreOverlay
+            score={craftScoreVal}
+            feedback={craftFeedbackVal}
+            rankMessage={rankMessage}
+            accentColor={config.theme.accent}
+          />
         )}
       </AnimatePresence>
 
