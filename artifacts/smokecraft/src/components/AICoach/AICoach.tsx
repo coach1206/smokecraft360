@@ -29,6 +29,8 @@ export interface AICoachProps {
    * the signal origin is clear and can evolve with the scoring engine.
    */
   isBadCombo:    boolean;
+  /** When true the user has been idle; triggers a "Still thinking?" coach nudge. */
+  isIdle?:       boolean;
   styles:        CraftStyleCard[];
   moods:         CraftMoodCard[];
   selectedStyle: CraftStyleCard | null;
@@ -52,6 +54,7 @@ export default function AICoach({
   score,
   prevScore,
   isBadCombo,
+  isIdle,
   styles,
   moods,
   selectedStyle,
@@ -207,6 +210,24 @@ export default function AICoach({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBadCombo, craft]);
+
+  // ------------------------------------------------------------------
+  // Idle detection — nudge the user when they stop interacting
+  // ------------------------------------------------------------------
+  const lastIdleRef = useRef<boolean>(false);
+  useEffect(() => {
+    if (isIdle && !lastIdleRef.current && phase !== "intro" && phase !== "reveal") {
+      lastIdleRef.current = true;
+      const idleLine = pickCoachLine(getCoachLines(craft, "idle"));
+      setLine(idleLine);
+      if (!muted) {
+        speakLine(idleLine);
+      }
+    } else if (!isIdle) {
+      lastIdleRef.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isIdle, phase, craft]);
 
   // ------------------------------------------------------------------
   // Good-combo detection (score rises above 65 after being lower)

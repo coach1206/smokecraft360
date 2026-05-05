@@ -16,6 +16,7 @@ import SessionTimer from "@/components/SessionTimer/SessionTimer";
 import { useSessionTimer } from "@/hooks/useSessionTimer";
 import {
   fetchCraftSession,
+  startCraftSession,
   saveCraftSession,
   deleteCraftSession,
   type CraftSessionState,
@@ -183,6 +184,10 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   // --- Timer ---
 
   const onTimerExpire = useCallback(() => {
+    setScoreState(prev => ({
+      score:     Math.max(0, prev.score - 5),
+      prevScore: prev.score,
+    }));
     void saveCraftSession({ craft: craftType, remainingMs: 0, streakCount: 0 });
   }, [craftType]);
 
@@ -200,6 +205,13 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const streakCountRef   = useRef(streakCount);
   useEffect(() => { remainingSecsRef.current = remainingSecs; }, [remainingSecs]);
   useEffect(() => { streakCountRef.current   = streakCount;   }, [streakCount]);
+
+  // Debounce ref for non-critical autosave calls (avoids redundant rapid PATCH bursts)
+  const saveDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debouncedSave = useCallback((params: Parameters<typeof saveCraftSession>[0]) => {
+    if (saveDebounceRef.current) clearTimeout(saveDebounceRef.current);
+    saveDebounceRef.current = setTimeout(() => void saveCraftSession(params), 400);
+  }, []);
 
   // --- Resume check on mount ---
   useEffect(() => {
@@ -228,18 +240,36 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     setTimerTotalSecs(dur);
     resetTimer(dur, remSecs);
     setStreak(resumeSession.streakCount);
+    // Restore style/mood selections from localStorage so later phases render correctly
+    let restoredStyle: CraftStyleCard | null = null;
+    let restoredMood:  CraftMoodCard  | null = null;
+    try {
+      const saved = localStorage.getItem(`craftflow_sel_${craftType}`);
+      if (saved) {
+        const { styleId, moodId } = JSON.parse(saved) as { styleId?: string; moodId?: string };
+        restoredStyle = config.styles.find(s => s.id === styleId) ?? null;
+        restoredMood  = config.moods.find(m => m.id === moodId)  ?? null;
+      }
+    } catch { /* ignore parse errors */ }
+    if (restoredStyle) setSelectedStyle(restoredStyle);
+    if (restoredMood)  setSelectedMood(restoredMood);
     const savedPhase = resumeSession.phase as Phase;
-    if (savedPhase && savedPhase !== "intro") setPhase(savedPhase);
+    // Only restore to phases we have the prerequisite data for
+    const canRestorePhase =
+      savedPhase && savedPhase !== "intro" &&
+      (savedPhase === "style" || restoredStyle !== null);
+    setPhase(canRestorePhase ? savedPhase : "style");
     setTimerRunning(true);
     setResumeSession(null);
     setResumeState("none");
-  }, [resumeSession, resetTimer, setStreak]);
+  }, [resumeSession, resetTimer, setStreak, craftType, config.styles, config.moods]);
 
   const handleStartFresh = useCallback(() => {
     if (resumeSession) void deleteCraftSession(resumeSession.id);
+    localStorage.removeItem(`craftflow_sel_${craftType}`);
     setResumeSession(null);
     setResumeState("none");
-  }, [resumeSession]);
+  }, [resumeSession, craftType]);
 
   // ---
 
@@ -259,7 +289,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     setTimerRunning(false);
     resetTimer(timerTotalSecs);
     setFastBuildBadge(false);
-  }, [timerTotalSecs, resetTimer]);
+    localStorage.removeItem(`craftflow_sel_${craftType}`);
+  }, [timerTotalSecs, resetTimer, craftType]);
 
   const updateScore = useCallback(async (
     style:        CraftStyleCard,
@@ -327,8 +358,12 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         remainingMs: remainingSecsRef.current * 1000,
         streakCount: streakCountRef.current,
       });
-      // Fast-build bonus: >15 min remaining on reveal
+      // Fast-build bonus: >15 min remaining on reveal — apply +10 score and show badge
       if (remainingSecsRef.current > 900) {
+        setScoreState(prev => ({
+          score:     Math.min(100, prev.score + 10),
+          prevScore: prev.score,
+        }));
         setFastBuildBadge(true);
         setTimeout(() => setFastBuildBadge(false), 4500);
       }
@@ -350,27 +385,23 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     setSelectedStyle(s);
     setPhase("profile");
     void updateScore(s, null, "style");
-    void saveCraftSession({
+    localStorage.setItem(`craftflow_sel_${craftType}`, JSON.stringify({ styleId: s.id, moodId: null }));
+    debouncedSave({
       craft:       craftType,
       phase:       "profile",
       remainingMs: remainingSecsRef.current * 1000,
       streakCount: streakCountRef.current,
     });
-  }, [updateScore, craftType, isExpired]);
+  }, [updateScore, craftType, isExpired, debouncedSave]);
 
   const handleMoodPick = useCallback((m: CraftMoodCard) => {
     if (isExpired) return;
     setSelectedMood(m);
+    localStorage.setItem(`craftflow_sel_${craftType}`, JSON.stringify({ styleId: selectedStyle?.id ?? null, moodId: m.id }));
     if (selectedStyle) {
       void runMatch(selectedStyle, m);
       void updateScore(selectedStyle, m, "profile");
     }
-    void saveCraftSession({
-      craft:       craftType,
-      phase:       "match",
-      remainingMs: remainingSecsRef.current * 1000,
-      streakCount: streakCountRef.current,
-    });
   }, [selectedStyle, runMatch, updateScore, craftType, isExpired]);
 
   /**
@@ -555,7 +586,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                     resetTimer(dur, dur);
                     setTimerRunning(true);
                     setPhase("style");
-                    void saveCraftSession({ craft: craftType, phase: "style", remainingMs: dur * 1000 });
+                    void startCraftSession(craftType, dur);
                   }}
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.97 }}
@@ -932,6 +963,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
           scoreState.score < scoreState.prevScore &&
           selectedMood !== null
         }
+        isIdle={isIdle}
         styles={config.styles}
         moods={config.moods}
         selectedStyle={selectedStyle}

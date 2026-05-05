@@ -18,7 +18,8 @@ export type CoachEvent =
   | "reveal_praise"
   | "reveal_challenge"
   | "bad_combo"
-  | "good_combo";
+  | "good_combo"
+  | "idle";
 
 export type CraftCoachLines = Record<CoachEvent, string[]>;
 
@@ -68,6 +69,11 @@ const BASE: CraftCoachLines = {
     "Now that's a winning combination.",
     "Strong choice — the profile is locking in beautifully.",
     "That pairing is working together. Keep going.",
+  ],
+  idle: [
+    "Still thinking? The clock is ticking.",
+    "Take your time — but not too much of it.",
+    "I'm here when you're ready. The timer isn't as patient.",
   ],
 };
 
