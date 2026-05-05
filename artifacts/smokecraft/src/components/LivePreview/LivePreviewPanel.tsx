@@ -7,14 +7,16 @@ export type LiveCraft = "smoke" | "brew" | "pour" | "vape";
 export interface LiveMeters { flavor: number; strength: number; balance: number }
 
 interface Props {
-  craft:       LiveCraft;
-  accentColor: string;
-  score:       number;
-  prevScore:   number;
-  meters:      LiveMeters;
-  styleLabel:  string;
-  moodLabel:   string;
-  visible:     boolean;
+  craft:        LiveCraft;
+  accentColor:  string;
+  /** Derived from selectedStyle.gradient — drives the product silhouette fill color. */
+  dynamicColor: string;
+  score:        number;
+  prevScore:    number;
+  meters:       LiveMeters;
+  styleLabel:   string;
+  moodLabel:    string;
+  visible:      boolean;
 }
 
 const IDLE_SHADOW = "0 8px 40px rgba(0,0,0,0.65), 0 0 0 1px rgba(200,180,120,0.18)";
@@ -144,7 +146,7 @@ function Meter({ label, value, accent }: { label: string; value: number; accent:
 }
 
 export default function LivePreviewPanel({
-  craft, accentColor, score, prevScore, meters, styleLabel, moodLabel, visible,
+  craft, accentColor, dynamicColor, score, prevScore, meters, styleLabel, moodLabel, visible,
 }: Props) {
   const [isOpen, setIsOpen]   = useState(true);
   const controls              = useAnimation();
@@ -293,7 +295,7 @@ export default function LivePreviewPanel({
           border:         `1px solid ${accentColor}18`,
           borderRadius:   14,
         }}>
-          <Silhouette craft={craft} a={accentColor} />
+          <Silhouette craft={craft} a={dynamicColor} />
         </div>
 
         {/* Score bar */}

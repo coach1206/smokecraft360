@@ -80,6 +80,11 @@ function deriveScoreInputs(style: CraftStyleCard, mood: CraftMoodCard | null) {
   };
 }
 
+/** Extract the first (most vibrant) hex color from a CSS gradient string. */
+function extractGradientColor(gradient: string): string {
+  return gradient.match(/#[0-9a-fA-F]{6}/g)?.[0] ?? "";
+}
+
 type Phase = "intro" | "style" | "profile" | "match" | "reveal";
 
 const SIDEBAR_STEPS = ["Intro", "Style", "Profile", "Match", "Reveal"] as const;
@@ -124,6 +129,14 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   ) => {
     const inputs = deriveScoreInputs(style, mood);
     const result = await postScore(inputs);
+    // Always persist phase + selections — include score only when scoring succeeded.
+    void upsertCraftBuild({
+      craft:       craftType,
+      phase:       currentPhase,
+      styleChoice: style.id,
+      ...(mood    ? { moodChoice: mood.id    } : {}),
+      ...(result  ? { score:      result.score } : {}),
+    });
     if (!result) return;
     const newScore100 = Math.round(result.score * 10);
     setScoreState(prev => ({ score: newScore100, prevScore: prev.score }));
@@ -131,13 +144,6 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
       flavor:   Math.round(inputs.flavor   * 10),
       strength: Math.round(inputs.strength * 10),
       balance:  Math.round(inputs.pairing  * 10),
-    });
-    void upsertCraftBuild({
-      craft:       craftType,
-      phase:       currentPhase,
-      styleChoice: style.id,
-      ...(mood ? { moodChoice: mood.id } : {}),
-      score:       result.score,
     });
   }, [craftType]);
 
@@ -166,11 +172,13 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         setResp(r);
       }
       setPhase("reveal");
+      void upsertCraftBuild({ craft: craftType, phase: "reveal", styleChoice: style.id, moodChoice: mood.id });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load pairing");
       setPhase("reveal");
+      void upsertCraftBuild({ craft: craftType, phase: "reveal", styleChoice: style.id, moodChoice: mood.id });
     }
-  }, [config.category]);
+  }, [config.category, craftType]);
 
   const handleStylePick = useCallback((s: CraftStyleCard) => {
     setSelectedStyle(s);
@@ -684,6 +692,9 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
       <LivePreviewPanel
         craft={craftType}
         accentColor={config.theme.accent}
+        dynamicColor={selectedStyle
+          ? (extractGradientColor(selectedStyle.gradient) || config.theme.accent)
+          : config.theme.accent}
         score={scoreState.score}
         prevScore={scoreState.prevScore}
         meters={liveMeters}
