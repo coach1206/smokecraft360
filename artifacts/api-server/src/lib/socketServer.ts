@@ -36,6 +36,11 @@ export function initSocketServer(httpServer: HttpServer): Server {
 
   _io.on("connection", (socket: Socket) => {
     logger.info({ socketId: socket.id }, "Kiosk client connected");
+
+    // Confirm connection to the client immediately — LiveEngineController
+    // uses this to know the socket is live and can stop the local simulator.
+    socket.emit("connected", { ok: true, ts: Date.now() });
+
     socket.on("disconnect", (reason) => {
       logger.info({ socketId: socket.id, reason }, "Kiosk client disconnected");
     });

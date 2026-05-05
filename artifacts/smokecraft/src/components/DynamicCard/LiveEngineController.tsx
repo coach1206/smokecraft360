@@ -101,6 +101,18 @@ export default function LiveEngineController() {
       stopSimulator();
     });
 
+    // Server sends this immediately after handshake — confirms the real-time
+    // pipeline is fully ready, stops the fallback simulator immediately.
+    socket.on("connected", (data: { ok: boolean; ts: number }) => {
+      if (data.ok) {
+        connectedRef.current = true;
+        stopSimulator();
+        if (import.meta.env.DEV) {
+          console.debug("[LiveEngine] server confirmed — real-time pipeline active");
+        }
+      }
+    });
+
     // ── Fallback simulator ───────────────────────────────────────────────────
     // Start simulating after FALLBACK_DELAY_MS if no real connection yet.
     const fallbackTimer = setTimeout(() => {

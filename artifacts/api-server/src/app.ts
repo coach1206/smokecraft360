@@ -173,6 +173,13 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 // request contributes to liveness telemetry (architect feedback). Header
 // is optional; missing/invalid header is a no-op.
 app.use("/api", deviceTouch);
+
+// POS order + webhook routes are mounted BEFORE rejectDeepPayloads because
+// real POS vendors (Square, Toast) send payloads nested 5+ levels deep.
+// Both endpoints are Zod-validated before any property access so there is
+// no prototype-pollution risk from skipping the depth guard here.
+app.use("/api", posOrdersRouter);
+
 app.use(rejectDeepPayloads);
 // Parse Accept-Language → req.locale (en/es/fr). Passive: no body changes.
 app.use(localeMiddleware);
@@ -299,7 +306,6 @@ app.use("/api/design-drafts",           designDraftsRouter);
 app.use("/api/craft-sessions",          craftSessionsRouter);
 app.use("/api/craft",                   craftRouter);
 app.use("/api/competitions",            competitionsRouter);
-app.use("/api",                         posOrdersRouter);
 
 // Start background workers
 if (process.env["NODE_ENV"] !== "test") {
