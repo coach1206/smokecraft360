@@ -2100,9 +2100,11 @@ export async function fetchDesignDrafts(craft: string): Promise<DesignDraft[]> {
 }
 
 /**
- * PATCH /api/design-drafts — idempotent upsert by (userId, craft).
- * Updates the most-recent draft or inserts a new one.
- * Returns null for guests or on failure (caller falls back to localStorage).
+ * PATCH /api/design-drafts — intentional idempotent upsert by (userId, craft).
+ * PATCH is preferred over POST here because the backend route is craft-scoped:
+ * repeated saves update the same draft record rather than creating duplicates.
+ * Updates the most-recent draft or inserts a new one when none exists.
+ * Returns null for guests (401) or on failure; caller falls back to localStorage.
  */
 export async function upsertDesignDraft(params: {
   craft:        string;
