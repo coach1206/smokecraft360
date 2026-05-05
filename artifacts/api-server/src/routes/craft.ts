@@ -11,12 +11,13 @@
  */
 
 import { Router, type IRouter, type Request, type Response } from "express";
-import { desc, eq, sql, and, isNotNull, gte }               from "drizzle-orm";
+import { desc, eq, sql, and, isNotNull, gte, count }        from "drizzle-orm";
 import { z }                                                 from "zod";
-import { db, craftBuildsTable, usersTable, userPreferencesTable, craftSessionStatesTable, designDraftsTable } from "@workspace/db";
+import { db, craftBuildsTable, usersTable, userPreferencesTable, craftSessionStatesTable, designDraftsTable, craftShareEventsTable } from "@workspace/db";
 import { scoreBuild }                                        from "../engine/craftEngine";
 import { resolveElevenLabsKey, DEFAULT_VOICES }             from "../lib/elevenlabs";
-import { optionalAuth, type AuthRequest }                   from "../middleware/auth";
+import { optionalAuth, requireAuth, type AuthRequest }      from "../middleware/auth";
+import { requireRole }                                       from "../middleware/roles";
 import { syncActiveTournamentScores }                       from "../lib/tournamentSync";
 
 const router: IRouter = Router();
@@ -323,6 +324,86 @@ router.get("/intel/summary", async (_req: Request, res: Response) => {
 
   res.json({ topPreference, actions });
 });
+
+// ── POST /api/craft/share-event ───────────────────────────────────────────────
+//
+// Fire-and-forget share event. No auth required — anonymous builds can be
+// tracked. The client passes the event payload after a successful export.
+
+const shareEventSchema = z.object({
+  craftType:          z.enum(["smoke", "brew", "pour", "vape"]),
+  score:              z.number().finite().min(0).max(100),
+  recommendationName: z.string().min(1).max(200),
+  shareMethod:        z.enum(["download", "native"]),
+  sessionId:          z.string().uuid().optional(),
+});
+
+router.post("/share-event", async (req: Request, res: Response) => {
+  const parsed = shareEventSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
+    return;
+  }
+
+  const { craftType, score, recommendationName, shareMethod, sessionId } = parsed.data;
+
+  try {
+    await db.insert(craftShareEventsTable).values({
+      craftType,
+      score:              String(score),
+      recommendationName,
+      shareMethod,
+      sessionId:          sessionId ?? null,
+    });
+  } catch (err) {
+    req.log.warn({ err }, "craft/share-event: failed to persist");
+  }
+
+  res.status(201).json({ ok: true });
+});
+
+// ── GET /api/craft/share-stats ────────────────────────────────────────────────
+//
+// Aggregated share counts for the partner dashboard.
+// Requires venue_owner, manager, or super_admin.
+
+router.get(
+  "/share-stats",
+  requireAuth,
+  requireRole("venue_owner", "manager", "super_admin"),
+  async (_req: AuthRequest, res: Response) => {
+    const [totalRow] = await db
+      .select({ cnt: count() })
+      .from(craftShareEventsTable);
+
+    const byMethod = await db
+      .select({
+        method: craftShareEventsTable.shareMethod,
+        cnt:    count(),
+      })
+      .from(craftShareEventsTable)
+      .groupBy(craftShareEventsTable.shareMethod);
+
+    const byCraft = await db
+      .select({
+        craftType: craftShareEventsTable.craftType,
+        cnt:       count(),
+      })
+      .from(craftShareEventsTable)
+      .groupBy(craftShareEventsTable.craftType)
+      .orderBy(desc(count()));
+
+    const downloadCount = byMethod.find((r) => r.method === "download")?.cnt ?? 0;
+    const nativeCount   = byMethod.find((r) => r.method === "native")?.cnt ?? 0;
+
+    res.json({
+      totalShares:   totalRow?.cnt ?? 0,
+      downloadCount,
+      nativeCount,
+      byCraft:       byCraft.map((r) => ({ craftType: r.craftType, count: r.cnt })),
+    });
+  },
+);
 
 // ── POST /api/craft/visual-build ─────────────────────────────────────────────
 // Persists a designer visual build (wood/trim/interior/brand) to designDraftsTable.

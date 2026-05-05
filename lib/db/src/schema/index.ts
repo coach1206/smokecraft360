@@ -57,3 +57,4 @@ export * from "./craftBuilds";
 export * from "./designDrafts";
 export * from "./craftSessionStates";
 export * from "./tournaments";
+export * from "./craftShareEvents";

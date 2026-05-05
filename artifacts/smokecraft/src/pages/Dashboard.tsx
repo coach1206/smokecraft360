@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
   ArrowLeft, TrendingUp, Package, Sparkles, Zap, Plus, CalendarClock, AlertTriangle, FileLock, Download,
-  Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus,
+  Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus, Share2,
   Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown, Award, Gift, Monitor, Activity, LifeBuoy,
 } from "lucide-react";
 import { LiveOrders }                from "@/components/Dashboard/LiveOrders";
@@ -31,7 +31,8 @@ import { ExportsTab }                from "@/components/Dashboard/ExportsTab";
 import { CardManager }               from "@/components/Dashboard/CardManager";
 import {
   fetchInventory, fetchAnalytics, updateInventoryItem, uploadProductImage,
-  type InventoryItem, type AnalyticsSummary,
+  fetchShareStats,
+  type InventoryItem, type AnalyticsSummary, type ShareStats,
 } from "@/services/api";
 import { DEMO_MODE, DEMO_ANALYTICS } from "@/config/demo";
 import { cloudinaryOptimize }        from "@/lib/cloudinary";
@@ -73,15 +74,16 @@ export default function Dashboard() {
   const { t } = useTranslation();
   const { user, loading: authLoading, logout } = useAuth();
 
-  const [activeTab,  setActiveTab]  = useState<DashTab>("overview");
-  const [inventory,  setInventory]  = useState<InventoryItem[]>([]);
-  const [analytics,  setAnalytics]  = useState<AnalyticsSummary | null>(null);
-  const [filter,     setFilter]     = useState<CategoryFilter>("all");
-  const [loading,    setLoading]    = useState(false);
-  const [saving,     setSaving]     = useState<Record<string, boolean>>({});
-  const [saved,      setSaved]      = useState<Record<string, boolean>>({});
-  const [error,      setError]      = useState<string | null>(null);
-  const [showLogin,  setShowLogin]  = useState(false);
+  const [activeTab,   setActiveTab]   = useState<DashTab>("overview");
+  const [inventory,   setInventory]   = useState<InventoryItem[]>([]);
+  const [analytics,   setAnalytics]   = useState<AnalyticsSummary | null>(null);
+  const [shareStats,  setShareStats]  = useState<ShareStats | null>(null);
+  const [filter,      setFilter]      = useState<CategoryFilter>("all");
+  const [loading,     setLoading]     = useState(false);
+  const [saving,      setSaving]      = useState<Record<string, boolean>>({});
+  const [saved,       setSaved]       = useState<Record<string, boolean>>({});
+  const [error,       setError]       = useState<string | null>(null);
+  const [showLogin,   setShowLogin]   = useState(false);
   const [showNewProduct, setShowNewProduct] = useState(false);
 
   const authorized = user && canAccessDashboard(user.role);
@@ -99,9 +101,11 @@ export default function Dashboard() {
       ]);
       setInventory(inv);
       setAnalytics(ana);
+      fetchShareStats().then(setShareStats).catch(() => null);
     } catch (e) {
       if (DEMO_MODE) {
         setAnalytics(DEMO_ANALYTICS as AnalyticsSummary);
+        fetchShareStats().then(setShareStats).catch(() => null);
       } else {
         setError(e instanceof Error ? e.message : "Could not load data");
       }
@@ -336,6 +340,39 @@ export default function Dashboard() {
                         <StatCard icon={<BarChart3 size={16} />}  label="Total Impressions"      value={stats.totalImpressions}     />
                         <StatCard icon={<TrendingUp size={16} />} label="Sponsored Impressions"  value={stats.sponsoredImpressions} gold />
                         <StatCard icon={<TrendingUp size={16} />} label="Featured Impressions"   value={stats.featuredImpressions}  accent />
+                      </div>
+                    )}
+
+                    {shareStats && (
+                      <div className="rounded-xl p-6 space-y-4" style={{ background: "rgba(212,175,55,0.03)", border: "1px solid rgba(212,175,55,0.12)" }}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Share2 size={13} style={{ color: "rgba(212,175,55,0.6)" }} />
+                          <p className="text-[9px] uppercase tracking-[0.3em]" style={{ color: "rgba(212,175,55,0.6)" }}>Build Card Shares</p>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="text-center">
+                            <p className="font-serif text-2xl" style={{ color: "rgba(230,210,175,0.9)", fontWeight: 300 }}>{shareStats.totalShares}</p>
+                            <p className="text-[9px] uppercase tracking-[0.2em] mt-0.5" style={{ color: "rgba(180,155,100,0.45)" }}>Total Shares</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="font-serif text-2xl" style={{ color: "rgba(230,210,175,0.9)", fontWeight: 300 }}>{shareStats.downloadCount}</p>
+                            <p className="text-[9px] uppercase tracking-[0.2em] mt-0.5" style={{ color: "rgba(180,155,100,0.45)" }}>Downloads</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="font-serif text-2xl" style={{ color: "rgba(230,210,175,0.9)", fontWeight: 300 }}>{shareStats.nativeCount}</p>
+                            <p className="text-[9px] uppercase tracking-[0.2em] mt-0.5" style={{ color: "rgba(180,155,100,0.45)" }}>Native Shares</p>
+                          </div>
+                        </div>
+                        {shareStats.byCraft.length > 0 && (
+                          <div className="flex flex-wrap gap-2 pt-2 border-t" style={{ borderColor: "rgba(212,175,55,0.1)" }}>
+                            {shareStats.byCraft.map((row) => (
+                              <span key={row.craftType} className="px-2.5 py-1 rounded-full text-[9px] uppercase tracking-[0.12em]"
+                                style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)", color: "rgba(212,175,55,0.7)" }}>
+                                {row.craftType} · {row.count}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
 

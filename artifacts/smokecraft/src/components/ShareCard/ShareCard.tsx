@@ -2,6 +2,7 @@ import { useRef, useState, useCallback, type RefObject } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Download, Share2, X, Check } from "lucide-react";
 import html2canvas from "html2canvas";
+import { logShareEvent } from "@/services/api";
 
 export interface ShareCardProps {
   craftType: "smoke" | "brew" | "pour" | "vape" | string;
@@ -216,11 +217,17 @@ export default function ShareCard(props: ShareCardProps) {
       URL.revokeObjectURL(url);
       setStatus("done");
       setTimeout(() => setStatus("idle"), 2000);
+      void logShareEvent({
+        craftType:          props.craftType,
+        score:              props.score,
+        recommendationName: props.recommendationName,
+        shareMethod:        "download",
+      });
     } catch {
       setStatus("error");
       setTimeout(() => setStatus("idle"), 2500);
     }
-  }, [captureCanvas]);
+  }, [captureCanvas, props.craftType, props.score, props.recommendationName]);
 
   const handleShare = useCallback(async () => {
     setStatus("generating");
@@ -235,6 +242,12 @@ export default function ShareCard(props: ShareCardProps) {
         });
         setStatus("done");
         setTimeout(() => setStatus("idle"), 2000);
+        void logShareEvent({
+          craftType:          props.craftType,
+          score:              props.score,
+          recommendationName: props.recommendationName,
+          shareMethod:        "native",
+        });
       } else {
         await handleDownload();
       }
@@ -246,7 +259,7 @@ export default function ShareCard(props: ShareCardProps) {
         setTimeout(() => setStatus("idle"), 2500);
       }
     }
-  }, [captureCanvas, handleDownload, props.recommendationName]);
+  }, [captureCanvas, handleDownload, props.craftType, props.score, props.recommendationName]);
 
   return (
     <AnimatePresence>

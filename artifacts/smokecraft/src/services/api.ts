@@ -373,6 +373,41 @@ export async function persistExperience(
   }
 }
 
+// ── Share event tracking ──────────────────────────────────────────────────────
+
+export interface ShareEventParams {
+  craftType:          "smoke" | "brew" | "pour" | "vape" | string;
+  score:              number;
+  recommendationName: string;
+  shareMethod:        "download" | "native";
+  sessionId?:         string;
+}
+
+export interface ShareStats {
+  totalShares:   number;
+  downloadCount: number;
+  nativeCount:   number;
+  byCraft:       { craftType: string; count: number }[];
+}
+
+export async function logShareEvent(params: ShareEventParams): Promise<void> {
+  try {
+    await fetch("/api/craft/share-event", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(params),
+    });
+  } catch {
+    // fire-and-forget — never block the UI
+  }
+}
+
+export async function fetchShareStats(): Promise<ShareStats> {
+  const res = await fetch("/api/craft/share-stats", { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error("Failed to fetch share stats");
+  return res.json();
+}
+
 // ── Partner dashboard (authenticated) ────────────────────────────────────────
 
 export async function fetchInventory(): Promise<InventoryItem[]> {
