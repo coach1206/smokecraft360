@@ -66,13 +66,25 @@ export interface CraftFlowConfig {
   craftType?: "smoke" | "brew" | "pour" | "vape";
 }
 
-function deriveScoreInputs(style: CraftStyleCard, mood: CraftMoodCard | null) {
-  const flavorRaw   = Math.min(10, 2 + style.flavors.length * 1.5);
-  const strengthRaw = Math.min(10, Math.max(0, style.strength));
-  const moodMatch   = mood
+/**
+ * Derive three scoring inputs for the live preview engine.
+ * Craft-aware: smoke/pour weight flavor nuance more heavily; brew/vape weight intensity.
+ * Phase-aware: profile phase (mood confirmed) allows the full score range.
+ */
+function deriveScoreInputs(
+  craftType: "smoke" | "brew" | "pour" | "vape",
+  phase:     "intro" | "style" | "profile" | "match" | "reveal",
+  style:     CraftStyleCard,
+  mood:      CraftMoodCard | null,
+) {
+  const flavorWeight = craftType === "smoke" || craftType === "pour" ? 2.2 : 1.5;
+  const flavorRaw    = Math.min(10, 2 + style.flavors.length * flavorWeight);
+  const strengthRaw  = Math.min(10, Math.max(0, style.strength));
+  const moodMatch    = mood
     ? (style.mood.toLowerCase().includes(mood.id.toLowerCase()) ? 1.0 : 0.65)
     : 0.5;
-  const pairingRaw  = Math.min(10, (flavorRaw + strengthRaw) / 2 * moodMatch + 2);
+  const phaseMultiplier = phase === "profile" ? 1.0 : 0.88;
+  const pairingRaw   = Math.min(10, (flavorRaw + strengthRaw) / 2 * moodMatch * phaseMultiplier + 2);
   return {
     flavor:   Number(flavorRaw.toFixed(1)),
     strength: Number(strengthRaw.toFixed(1)),
@@ -83,6 +95,46 @@ function deriveScoreInputs(style: CraftStyleCard, mood: CraftMoodCard | null) {
 /** Extract the first (most vibrant) hex color from a CSS gradient string. */
 function extractGradientColor(gradient: string): string {
   return gradient.match(/#[0-9a-fA-F]{6}/g)?.[0] ?? "";
+}
+
+/** Map style strength index to COLOR_OPTIONS ids (gold→black→burgundy→crimson). */
+const SMOKE_COLOR_FOR_STRENGTH  = ["gold", "black", "burgundy", "crimson"] as const;
+/** Map style strength index to EMBLEM_OPTIONS ids. */
+const SMOKE_EMBLEM_FOR_STRENGTH = ["leaf", "flame", "star", "crown"] as const;
+/** Map style strength index to BLEND_STYLES ids. */
+const SMOKE_STYLE_FOR_STRENGTH  = ["smooth", "rich", "bold", "exotic"] as const;
+
+/**
+ * Derive a live CigarBandPreview design from the current style/mood selection.
+ * Mood overrides band color and insignia so both picks produce visible evolution.
+ */
+function styleToSmokeDesign(
+  style: CraftStyleCard | null,
+  mood:  CraftMoodCard  | null,
+): { design: { primaryColor: string; accentColor: string; emblem: string; textStyle: "serif" | "sans" | "italic" }; name: string; styleId: string } {
+  if (!style) {
+    return {
+      design: { primaryColor: "gold", accentColor: "", emblem: "crown", textStyle: "serif" },
+      name:    "Your Signature",
+      styleId: "smooth",
+    };
+  }
+  const idx = Math.max(0, Math.min(3, style.strength - 1));
+  const primaryColor =
+    mood?.id === "relaxed" ? "forest" :
+    mood?.id === "focused" ? "navy"   :
+    SMOKE_COLOR_FOR_STRENGTH[idx];
+  const emblem =
+    mood?.id === "relaxed" ? "leaf"   :
+    mood?.id === "social"  ? "star"   :
+    mood?.id === "bold"    ? "flame"  :
+    mood?.id === "focused" ? "crown"  :
+    SMOKE_EMBLEM_FOR_STRENGTH[idx];
+  return {
+    design:  { primaryColor, accentColor: "", emblem, textStyle: "serif" },
+    name:    style.title,
+    styleId: SMOKE_STYLE_FOR_STRENGTH[idx],
+  };
 }
 
 type Phase = "intro" | "style" | "profile" | "match" | "reveal";
@@ -122,12 +174,17 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
       "vape"  as const
     ), [config.craftType, config.testIdPrefix]);
 
+  const smokeViz = useMemo(
+    () => craftType === "smoke" ? styleToSmokeDesign(selectedStyle, selectedMood) : null,
+    [craftType, selectedStyle, selectedMood],
+  );
+
   const updateScore = useCallback(async (
     style:        CraftStyleCard,
     mood:         CraftMoodCard | null,
     currentPhase: Phase,
   ) => {
-    const inputs = deriveScoreInputs(style, mood);
+    const inputs = deriveScoreInputs(craftType, currentPhase, style, mood);
     const result = await postScore(inputs);
     // Always persist phase + selections — include score only when scoring succeeded.
     void upsertCraftBuild({
@@ -149,6 +206,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
 
   const runMatch = useCallback(async (style: CraftStyleCard, mood: CraftMoodCard) => {
     setPhase("match");
+    // Persist match-phase entry immediately — covers the "match" transition point.
+    void upsertCraftBuild({ craft: craftType, phase: "match", styleChoice: style.id, moodChoice: mood.id });
     setError(null);
     setResp(null);
     try {
@@ -695,6 +754,9 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         dynamicColor={selectedStyle
           ? (extractGradientColor(selectedStyle.gradient) || config.theme.accent)
           : config.theme.accent}
+        smokeDesign={smokeViz?.design}
+        smokeName={smokeViz?.name}
+        smokeStyleId={smokeViz?.styleId}
         score={scoreState.score}
         prevScore={scoreState.prevScore}
         meters={liveMeters}

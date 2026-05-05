@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useAnimation, type Variants } from "framer-motion";
 import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown } from "lucide-react";
+import { CigarBandPreview } from "@/components/Band/CigarBandPreview";
+import type { BlendDesign } from "@/services/storage";
 
 export type LiveCraft = "smoke" | "brew" | "pour" | "vape";
 
@@ -16,7 +18,11 @@ interface Props {
   meters:       LiveMeters;
   styleLabel:   string;
   moodLabel:    string;
-  visible:      boolean;
+  /** When craft==="smoke": dynamically-derived band design (colors + insignia) from current style/mood. */
+  smokeDesign?:  BlendDesign;
+  smokeName?:    string;
+  smokeStyleId?: string;
+  visible:       boolean;
 }
 
 const IDLE_SHADOW = "0 8px 40px rgba(0,0,0,0.65), 0 0 0 1px rgba(200,180,120,0.18)";
@@ -110,7 +116,24 @@ function VapeSilhouette({ a }: { a: string }) {
   );
 }
 
-function Silhouette({ craft, a }: { craft: LiveCraft; a: string }) {
+function Silhouette({
+  craft, a, smokeDesign, smokeName, smokeStyleId,
+}: {
+  craft: LiveCraft; a: string;
+  smokeDesign?: BlendDesign; smokeName?: string; smokeStyleId?: string;
+}) {
+  if (craft === "smoke" && smokeDesign) {
+    return (
+      <div style={{ transform: "scale(0.82)", transformOrigin: "center", lineHeight: 0 }}>
+        <CigarBandPreview
+          design={smokeDesign}
+          blendName={smokeName ?? "Signature Blend"}
+          style={smokeStyleId ?? "smooth"}
+          size="sm"
+        />
+      </div>
+    );
+  }
   if (craft === "smoke") return <CigarSilhouette a={a} />;
   if (craft === "pour")  return <GlassSilhouette a={a} />;
   if (craft === "brew")  return <BottleSilhouette a={a} />;
@@ -146,7 +169,9 @@ function Meter({ label, value, accent }: { label: string; value: number; accent:
 }
 
 export default function LivePreviewPanel({
-  craft, accentColor, dynamicColor, score, prevScore, meters, styleLabel, moodLabel, visible,
+  craft, accentColor, dynamicColor,
+  smokeDesign, smokeName, smokeStyleId,
+  score, prevScore, meters, styleLabel, moodLabel, visible,
 }: Props) {
   const [isOpen, setIsOpen]   = useState(true);
   const controls              = useAnimation();
@@ -295,7 +320,13 @@ export default function LivePreviewPanel({
           border:         `1px solid ${accentColor}18`,
           borderRadius:   14,
         }}>
-          <Silhouette craft={craft} a={dynamicColor} />
+          <Silhouette
+            craft={craft}
+            a={dynamicColor}
+            smokeDesign={smokeDesign}
+            smokeName={smokeName}
+            smokeStyleId={smokeStyleId}
+          />
         </div>
 
         {/* Score bar */}
