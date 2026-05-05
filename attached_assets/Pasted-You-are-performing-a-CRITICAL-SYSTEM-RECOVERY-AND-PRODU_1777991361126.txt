@@ -1,0 +1,235 @@
+You are performing a CRITICAL SYSTEM RECOVERY AND PRODUCTION ALIGNMENT for CraftHub / Axiom OS.
+
+This is not a feature build. This is a system correction.
+
+Your job is to CONNECT the frontend to the real backend and remove ALL mock systems.
+
+---
+
+## 🎯 PRIMARY OBJECTIVE
+
+Transform the system from:
+- mock frontend + real backend
+
+into:
+- fully connected, production-ready system
+
+---
+
+# 🧩 TASK 1 — IMPLEMENT KIOSK AUTH SYSTEM
+
+Create a lightweight authentication flow for kiosk users.
+
+Requirements:
+- No email/password required
+- Generate anonymous session with:
+  - deviceId OR UUID
+  - venueId
+- Return valid JWT token
+- Token must allow access to:
+  - /api/craft-builds
+  - /api/recommend
+  - /api/design-drafts
+  - /api/lounge-league
+
+### Create:
+POST /api/auth/kiosk
+
+Returns:
+{
+  token,
+  user: {
+    id,
+    role: "kiosk_user",
+    venueId
+  }
+}
+
+Frontend must:
+- auto-call this on app load
+- store token
+- attach token to ALL API calls
+
+---
+
+# 🧩 TASK 2 — CONNECT POS TO REAL BACKEND
+
+REMOVE PosContext mock system completely.
+
+Replace with:
+
+GET /api/products → populate POS catalog
+
+POST /api/orders
+Payload:
+{
+  items: [{productId, quantity}],
+  total,
+  venueId,
+  userId
+}
+
+POST /api/create-checkout-session
+- must use DB product pricing
+- no frontend price trust
+
+Persist:
+- orders
+- line items
+- timestamps
+
+---
+
+# 🧩 TASK 3 — FIX ORDERS SCHEMA
+
+Replace single-column model with:
+
+Orders:
+- id
+- userId
+- venueId
+- total_cents
+- status
+
+OrderItems:
+- id
+- orderId
+- productId
+- quantity
+- price_cents
+
+---
+
+# 🧩 TASK 4 — REPLACE ALL MOCK CONTEXTS
+
+### REMOVE:
+- CommandCenterContext static arrays
+- PosContext constants
+- hardcoded revenue / stats
+
+### REPLACE WITH:
+
+Devices → GET /api/devices  
+Staff → GET /api/users?role=staff  
+Vendors → GET /api/distributors  
+Analytics → GET /api/analytics  
+
+---
+
+# 🧩 TASK 5 — FIX ANALYTICS MODULE
+
+REMOVE:
+- +47 fake orders
+- +8 fake rewards
+- static product counts
+
+REPLACE WITH:
+- real aggregation from /api/analytics
+- real product performance
+- real revenue
+
+---
+
+# 🧩 TASK 6 — FIX ROUTE 404s
+
+Ensure these routes resolve:
+
+/api/experiences  
+/api/demand  
+/api/network  
+/api/distribution  
+
+Fix mount paths OR create aliases.
+
+---
+
+# 🧩 TASK 7 — ENABLE CRAFT BUILD PIPELINE
+
+Ensure full flow works:
+
+CraftFlow →
+POST /api/craft/score →
+PATCH /api/craft-builds →
+INSERT into craft_builds →
+INSERT into tournament_entries
+
+Leaderboard must update.
+
+---
+
+# 🧩 TASK 8 — CONNECT RECOMMENDATION ENGINE
+
+Ensure kiosk token can call:
+
+POST /api/recommend
+
+Remove demo fallback.
+
+Must:
+- use real venue inventory
+- return real results
+
+---
+
+# 🧩 TASK 9 — MULTI-VENUE ENFORCEMENT
+
+All API calls must include:
+
+- venueId
+- userId
+
+Ensure:
+- no cross-venue data leaks
+- analytics scoped per venue
+
+---
+
+# 🧩 TASK 10 — CONNECT VOICE SYSTEM
+
+Fix ElevenLabs integration:
+- ensure API key configured
+- fallback to silent mode only if unavailable
+
+---
+
+# 🧩 TASK 11 — ADD BREWCRAFT SUPPORT
+
+Insert into DB:
+- brewcraft theme_profile
+- beer products
+- category mapping
+
+---
+
+# 🧩 TASK 12 — FINAL VALIDATION TEST
+
+Simulate:
+
+1. kiosk login
+2. create craft
+3. score craft
+4. save build
+5. leaderboard update
+6. recommendation call
+7. create order
+8. checkout session
+9. analytics event
+
+ALL must succeed.
+
+---
+
+# 🚨 OUTPUT REQUIREMENT
+
+Return:
+
+### FIXED SYSTEMS
+### REMAINING ISSUES
+### CONFIRMED WORKING PIPELINES
+### FINAL SYSTEM STATUS (Demo / MVP / Production)
+
+---
+
+Do NOT leave any mock system in place.
+
+System must operate entirely on real backend data.
