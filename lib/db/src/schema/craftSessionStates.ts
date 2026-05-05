@@ -22,6 +22,8 @@ export const craftSessionStatesTable = pgTable("craft_session_states", {
   timerStartedAt:    timestamp("timer_started_at"),
   timerDurationSecs: integer("timer_duration_secs").notNull().default(2100),
   phase:             text("phase").notNull().default("intro").$type<CraftPhase>(),
+  styleId:           text("style_id"),
+  moodId:            text("mood_id"),
   streakCount:       integer("streak_count").notNull().default(0),
   lastSavedAt:       timestamp("last_saved_at"),
   expiresAt:         timestamp("expires_at"),

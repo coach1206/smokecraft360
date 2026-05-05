@@ -37,6 +37,10 @@ const upsertSchema = z.object({
   phase:        phaseEnum.optional(),
   streakCount:  z.number().int().min(0).optional(),
   buildId:      z.string().uuid().optional(),
+  /** Style card ID chosen by the user — persisted for resume. */
+  styleId:      z.string().max(64).optional(),
+  /** Mood card ID chosen by the user — persisted for resume. */
+  moodId:       z.string().max(64).optional(),
   /** Remaining milliseconds — used to recompute expiresAt on each save. */
   remainingMs:  z.number().int().min(0).optional(),
 });
@@ -109,7 +113,7 @@ router.patch("/", requireAuth, async (req: AuthRequest, res: Response) => {
   }
 
   const userId = req.user!.id;
-  const { craft, phase, streakCount, buildId, remainingMs } = parsed.data;
+  const { craft, phase, streakCount, buildId, styleId, moodId, remainingMs } = parsed.data;
 
   const [existing] = await db
     .select({ id: craftSessionStatesTable.id })
@@ -126,6 +130,8 @@ router.patch("/", requireAuth, async (req: AuthRequest, res: Response) => {
   if (phase       !== undefined) updates["phase"]       = phase;
   if (streakCount !== undefined) updates["streakCount"] = streakCount;
   if (buildId     !== undefined) updates["buildId"]     = buildId;
+  if (styleId     !== undefined) updates["styleId"]     = styleId;
+  if (moodId      !== undefined) updates["moodId"]      = moodId;
   if (remainingMs !== undefined) updates["expiresAt"]   = new Date(now.getTime() + remainingMs);
 
   if (existing) {
@@ -148,6 +154,8 @@ router.patch("/", requireAuth, async (req: AuthRequest, res: Response) => {
         venueId:           req.user!.venueId ?? null,
         craft,
         buildId:           buildId ?? null,
+        styleId:           styleId ?? null,
+        moodId:            moodId  ?? null,
         timerStartedAt:    now,
         timerDurationSecs: duration,
         phase:             (phase as typeof CRAFT_PHASES[number]) ?? "intro",

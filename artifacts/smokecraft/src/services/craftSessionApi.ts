@@ -14,6 +14,8 @@ export interface CraftSessionState {
   venueId:           string | null;
   craft:             string;
   buildId:           string | null;
+  styleId:           string | null;
+  moodId:            string | null;
   timerStartedAt:    string | null;
   timerDurationSecs: number;
   phase:             string;
@@ -66,6 +68,8 @@ export async function startCraftSession(
 export async function saveCraftSession(params: {
   craft:        string;
   phase?:       string;
+  styleId?:     string;
+  moodId?:      string;
   streakCount?: number;
   buildId?:     string;
   remainingMs?: number;

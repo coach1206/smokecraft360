@@ -231,47 +231,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     });
   }, [craftType]);
 
-  const handleResume = useCallback(() => {
-    if (!resumeSession) return;
-    const expiresAt = resumeSession.expiresAt ? new Date(resumeSession.expiresAt).getTime() : 0;
-    const remMs     = Math.max(0, expiresAt - Date.now());
-    const remSecs   = Math.floor(remMs / 1000);
-    const dur       = resumeSession.timerDurationSecs;
-    setTimerTotalSecs(dur);
-    resetTimer(dur, remSecs);
-    setStreak(resumeSession.streakCount);
-    // Restore style/mood selections from localStorage so later phases render correctly
-    let restoredStyle: CraftStyleCard | null = null;
-    let restoredMood:  CraftMoodCard  | null = null;
-    try {
-      const saved = localStorage.getItem(`craftflow_sel_${craftType}`);
-      if (saved) {
-        const { styleId, moodId } = JSON.parse(saved) as { styleId?: string; moodId?: string };
-        restoredStyle = config.styles.find(s => s.id === styleId) ?? null;
-        restoredMood  = config.moods.find(m => m.id === moodId)  ?? null;
-      }
-    } catch { /* ignore parse errors */ }
-    if (restoredStyle) setSelectedStyle(restoredStyle);
-    if (restoredMood)  setSelectedMood(restoredMood);
-    const savedPhase = resumeSession.phase as Phase;
-    // Only restore to phases we have the prerequisite data for
-    const canRestorePhase =
-      savedPhase && savedPhase !== "intro" &&
-      (savedPhase === "style" || restoredStyle !== null);
-    setPhase(canRestorePhase ? savedPhase : "style");
-    setTimerRunning(true);
-    setResumeSession(null);
-    setResumeState("none");
-  }, [resumeSession, resetTimer, setStreak, craftType, config.styles, config.moods]);
-
-  const handleStartFresh = useCallback(() => {
-    if (resumeSession) void deleteCraftSession(resumeSession.id);
-    localStorage.removeItem(`craftflow_sel_${craftType}`);
-    setResumeSession(null);
-    setResumeState("none");
-  }, [resumeSession, craftType]);
-
-  // ---
+  // (handleResume and handleStartFresh are defined after runMatch to avoid temporal dead zone)
 
   const smokeViz = useMemo(
     () => craftType === "smoke" ? styleToSmokeDesign(selectedStyle, selectedMood) : null,
@@ -289,8 +249,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     setTimerRunning(false);
     resetTimer(timerTotalSecs);
     setFastBuildBadge(false);
-    localStorage.removeItem(`craftflow_sel_${craftType}`);
-  }, [timerTotalSecs, resetTimer, craftType]);
+  }, [timerTotalSecs, resetTimer]);
 
   const updateScore = useCallback(async (
     style:        CraftStyleCard,
@@ -326,6 +285,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     void saveCraftSession({
       craft:        craftType,
       phase:        "match",
+      styleId:      style.id,
+      moodId:       mood.id,
       remainingMs:  remainingSecsRef.current * 1000,
       streakCount:  streakCountRef.current,
     });
@@ -355,15 +316,24 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
       void saveCraftSession({
         craft:       craftType,
         phase:       "reveal",
+        styleId:     style.id,
+        moodId:      mood.id,
         remainingMs: remainingSecsRef.current * 1000,
         streakCount: streakCountRef.current,
       });
-      // Fast-build bonus: >15 min remaining on reveal — apply +10 score and show badge
+      // Fast-build bonus: >15 min remaining — apply +10, persist to build, show badge
       if (remainingSecsRef.current > 900) {
-        setScoreState(prev => ({
-          score:     Math.min(100, prev.score + 10),
-          prevScore: prev.score,
-        }));
+        setScoreState(prev => {
+          const newScore100 = Math.min(100, prev.score + 10);
+          void upsertCraftBuild({
+            craft:       craftType,
+            phase:       "reveal",
+            styleChoice: style.id,
+            moodChoice:  mood.id,
+            score:       newScore100 / 10,
+          });
+          return { score: newScore100, prevScore: prev.score };
+        });
         setFastBuildBadge(true);
         setTimeout(() => setFastBuildBadge(false), 4500);
       }
@@ -374,21 +344,67 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
       void saveCraftSession({
         craft:       craftType,
         phase:       "reveal",
+        styleId:     style.id,
+        moodId:      mood.id,
         remainingMs: remainingSecsRef.current * 1000,
         streakCount: streakCountRef.current,
       });
     }
   }, [config.category, craftType]);
 
+  const handleResume = useCallback(() => {
+    if (!resumeSession) return;
+    const expiresAt = resumeSession.expiresAt ? new Date(resumeSession.expiresAt).getTime() : 0;
+    const remMs     = Math.max(0, expiresAt - Date.now());
+    const remSecs   = Math.floor(remMs / 1000);
+    const dur       = resumeSession.timerDurationSecs;
+    setTimerTotalSecs(dur);
+    resetTimer(dur, remSecs);
+    setStreak(resumeSession.streakCount);
+    // Hydrate style/mood entirely from server session state — the authoritative source
+    const restoredStyle = resumeSession.styleId
+      ? (config.styles.find(s => s.id === resumeSession.styleId) ?? null)
+      : null;
+    const restoredMood  = resumeSession.moodId
+      ? (config.moods.find(m => m.id === resumeSession.moodId) ?? null)
+      : null;
+    if (restoredStyle) setSelectedStyle(restoredStyle);
+    if (restoredMood)  setSelectedMood(restoredMood);
+    setTimerRunning(true);
+    const savedPhase = resumeSession.phase as Phase;
+    if (savedPhase === "match" || savedPhase === "reveal") {
+      // Re-trigger recommendation fetch so reveal always has fresh results
+      if (restoredStyle && restoredMood) {
+        void runMatch(restoredStyle, restoredMood);
+      } else if (restoredStyle) {
+        setPhase("profile");
+      } else {
+        setPhase("style");
+      }
+    } else if (savedPhase === "profile" && restoredStyle) {
+      setPhase("profile");
+    } else {
+      setPhase("style");
+    }
+    setResumeSession(null);
+    setResumeState("none");
+  }, [resumeSession, resetTimer, setStreak, config.styles, config.moods, runMatch]);
+
+  const handleStartFresh = useCallback(() => {
+    if (resumeSession) void deleteCraftSession(resumeSession.id);
+    setResumeSession(null);
+    setResumeState("none");
+  }, [resumeSession]);
+
   const handleStylePick = useCallback((s: CraftStyleCard) => {
     if (isExpired) return;
     setSelectedStyle(s);
     setPhase("profile");
     void updateScore(s, null, "style");
-    localStorage.setItem(`craftflow_sel_${craftType}`, JSON.stringify({ styleId: s.id, moodId: null }));
     debouncedSave({
       craft:       craftType,
       phase:       "profile",
+      styleId:     s.id,
       remainingMs: remainingSecsRef.current * 1000,
       streakCount: streakCountRef.current,
     });
@@ -397,12 +413,11 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const handleMoodPick = useCallback((m: CraftMoodCard) => {
     if (isExpired) return;
     setSelectedMood(m);
-    localStorage.setItem(`craftflow_sel_${craftType}`, JSON.stringify({ styleId: selectedStyle?.id ?? null, moodId: m.id }));
     if (selectedStyle) {
       void runMatch(selectedStyle, m);
       void updateScore(selectedStyle, m, "profile");
     }
-  }, [selectedStyle, runMatch, updateScore, craftType, isExpired]);
+  }, [selectedStyle, runMatch, updateScore, isExpired]);
 
   /**
    * Called by AICoach A/B/C fix card when the user picks a corrective option.
