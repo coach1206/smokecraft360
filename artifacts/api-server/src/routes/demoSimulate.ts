@@ -107,6 +107,37 @@ function selectEventType(): string {
   return "device_ping";
 }
 
+function buildUserInteractionPayload(): Record<string, unknown> {
+  const guest   = pickRandom(GUESTS);
+  const product = pickRandom(PRODUCTS);
+  return {
+    guest,
+    action:     pickRandom(["browsed_menu", "viewed_details", "hovered_product", "added_to_wishlist", "scanned_qr", "opened_recommendation"]),
+    product:    product.name,
+    category:   product.category,
+    durationMs: Math.floor(Math.random() * 12000) + 2000,
+    source:     pickRandom(["kiosk", "tablet", "mobile_qr", "staff_assist"]),
+  };
+}
+
+function buildAiRecommendationPayload(session: SimSession): Record<string, unknown> {
+  const items = [pickRandom(PRODUCTS), pickRandom(PRODUCTS)];
+  const guest = pickRandom(GUESTS);
+  return {
+    guest,
+    recommendedItems: items.map(p => ({
+      name:     p.name,
+      category: p.category,
+      score:    Math.round((Math.random() * 0.30 + 0.65) * 100) / 100,
+      reason:   pickRandom(["flavor_affinity", "previous_orders", "trending", "pairing_match", "loyalty_reward"]),
+    })),
+    modelVersion:   "axiom-rec-v2",
+    latencyMs:      Math.floor(Math.random() * 80) + 20,
+    sessionOrders:  session.orders,
+    sessionRevenue: session.revenue,
+  };
+}
+
 function broadcast(session: SimSession, data: string) {
   session.clients.forEach(client => {
     try { client.write(data); } catch { /* client disconnected */ }
@@ -137,33 +168,39 @@ router.post(
 
     SIM_SESSIONS.set(session.id, session);
 
-    // Start event generation immediately
+    // Start event generation — emit composite bundle (commerce + interaction + AI rec) per cadence
     session.interval = setInterval(async () => {
       if (!session.active) { clearInterval(session.interval); return; }
 
-      const type    = selectEventType();
-      const payload = buildEventPayload(type, session);
-      const event   = {
-        id:        randomUUID(),
-        sessionId: session.id,
-        type,
-        payload,
-        revenue:   session.revenue,
-        orders:    session.orders,
-        rewards:   session.rewards,
-        timestamp: new Date().toISOString(),
-      };
+      const commerceType = Math.random() < 0.45 ? "order_placed" : "product_viewed";
+      const bundle: Array<{ type: string; payload: Record<string, unknown> }> = [
+        { type: commerceType,        payload: buildEventPayload(commerceType, session) },
+        { type: "user_interaction",  payload: buildUserInteractionPayload()             },
+        { type: "ai_recommendation", payload: buildAiRecommendationPayload(session)    },
+      ];
 
-      // Persist event to DB
-      try {
-        await db.insert(demoSimEventsTable).values({
+      for (const item of bundle) {
+        const event = {
+          id:        randomUUID(),
           sessionId: session.id,
-          eventType: type,
-          payload:   { ...payload, ...event },
-        });
-      } catch { /* non-fatal */ }
+          type:      item.type,
+          payload:   item.payload,
+          revenue:   session.revenue,
+          orders:    session.orders,
+          rewards:   session.rewards,
+          timestamp: new Date().toISOString(),
+        };
 
-      broadcast(session, `data: ${JSON.stringify(event)}\n\n`);
+        try {
+          await db.insert(demoSimEventsTable).values({
+            sessionId: session.id,
+            eventType: item.type,
+            payload:   item.payload,
+          });
+        } catch { /* non-fatal */ }
+
+        broadcast(session, `data: ${JSON.stringify(event)}\n\n`);
+      }
     }, speedMs);
 
     // Auto-clean after 15 minutes

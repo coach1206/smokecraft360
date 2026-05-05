@@ -498,7 +498,7 @@ function DashboardMetricsStep() {
           Live Dashboard
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {started ? (
+          {isSuperAdmin && (started ? (
             <motion.button whileTap={{ scale: 0.9 }} onClick={() => void stopSim()}
               style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#ef4444", fontSize: 11, fontWeight: 700 }}>
               <Square size={9} /> Stop
@@ -506,9 +506,9 @@ function DashboardMetricsStep() {
           ) : (
             <motion.button whileTap={{ scale: 0.9 }} onClick={() => void startSim()}
               style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 8, cursor: "pointer", background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.2)", color: "#34d399", fontSize: 11, fontWeight: 700 }}>
-              <Play size={9} /> {isSuperAdmin ? "Start Live" : "Demo"}
+              <Play size={9} /> Start Live
             </motion.button>
-          )}
+          ))}
           {simId && (
             <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: kpi.active ? "#34d399" : "rgba(232,224,200,0.3)" }}>
               <motion.div animate={{ scale: [1, 1.4, 1], opacity: [1, 0.5, 1] }} transition={{ repeat: Infinity, duration: 1.4 }} style={{ width: 6, height: 6, borderRadius: "50%", background: kpi.active ? "#34d399" : "rgba(232,224,200,0.2)" }} />

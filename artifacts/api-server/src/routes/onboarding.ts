@@ -88,56 +88,55 @@ const DEFAULT_FLAGS = [
   { name: "vendor_campaigns",      enabled: false },
 ];
 
-async function seedVenueDefaults(venueId: string, selectedCrafts: string[], actorId?: string) {
+async function seedVenueDefaults(
+  venueId: string,
+  selectedCrafts: string[],
+  inventoryQtys: Record<string, number> = {},
+  actorId?: string,
+) {
   const crafts = selectedCrafts.length > 0 ? selectedCrafts : ["cigar", "spirit"];
-  const seeded = new Set<string>();
-  const seededProductIds: string[] = [];
+  const seeded  = new Set<string>();
+  const seededProducts: Array<{ id: string; name: string }> = [];
 
-  // 1. Seed default products per craft
+  // 1. Seed default products per craft — errors here are fatal (critical path)
   for (const craft of crafts) {
-    const key  = CRAFT_TO_SEED[craft.toLowerCase()] ?? craft.toLowerCase();
+    const key = CRAFT_TO_SEED[craft.toLowerCase()] ?? craft.toLowerCase();
     if (seeded.has(key)) continue;
     seeded.add(key);
 
     for (const p of SEED_PRODUCTS[key] ?? []) {
-      try {
-        const productId = randomUUID();
-        await db.insert(productsTable).values({
-          id:          productId,
-          venueId,
-          name:        p.name,
-          category:    p.category,
-          tier:        p.tier,
-          strength:    p.strength,
-          flavorNotes: p.flavorNotes,
-        }).onConflictDoNothing();
-        seededProductIds.push(productId);
-      } catch { /* non-fatal */ }
+      const productId = randomUUID();
+      await db.insert(productsTable).values({
+        id:          productId,
+        venueId,
+        name:        p.name,
+        category:    p.category,
+        tier:        p.tier,
+        strength:    p.strength,
+        flavorNotes: p.flavorNotes,
+      }).onConflictDoNothing();
+      seededProducts.push({ id: productId, name: p.name });
     }
   }
 
-  // 2. Seed inventory levels for each seeded product
-  for (const productId of seededProductIds) {
-    try {
-      await db.insert(venueInventoryTable).values({
-        venueId,
-        productId,
-        quantity:   20,
-        available:  true,
-        priceCents: null,
-      }).onConflictDoNothing();
-    } catch { /* non-fatal */ }
+  // 2. Seed inventory levels — quantities from wizard; default 20 — fatal on error
+  for (const { id: productId, name: productName } of seededProducts) {
+    await db.insert(venueInventoryTable).values({
+      venueId,
+      productId,
+      quantity:   inventoryQtys[productName] ?? 20,
+      available:  true,
+      priceCents: null,
+    }).onConflictDoNothing();
   }
 
-  // 3. Seed default feature flags
+  // 3. Seed default feature flags — fatal on error
   for (const flag of DEFAULT_FLAGS) {
-    try {
-      await db.insert(featureFlagsTable).values({
-        name:    flag.name,
-        enabled: flag.enabled,
-        venueId,
-      }).onConflictDoNothing();
-    } catch { /* non-fatal */ }
+    await db.insert(featureFlagsTable).values({
+      name:    flag.name,
+      enabled: flag.enabled,
+      venueId,
+    }).onConflictDoNothing();
   }
 
   // 4. Seed welcome + per-craft starter campaigns
@@ -187,7 +186,7 @@ async function seedVenueDefaults(venueId: string, selectedCrafts: string[], acto
       action:     "onboarding.complete",
       entityType: "venue",
       entityId:   venueId,
-      afterState: { crafts: selectedCrafts, productsSeeded: seededProductIds.length, flagsSeeded: DEFAULT_FLAGS.length },
+      afterState: { crafts: selectedCrafts, productsSeeded: seededProducts.length, flagsSeeded: DEFAULT_FLAGS.length },
       venueId,
     });
   } catch { /* non-fatal */ }
@@ -286,6 +285,14 @@ router.post(
     const selectedCrafts = (existing[0].selectedCrafts as string[]) ?? [];
     const venueId        = existing[0].venueId ?? req.user?.venueId;
 
+    // Inventory quantities: prefer body (last-step values), fall back to persisted session data
+    const inventoryQtys: Record<string, number> =
+      (typeof req.body.inventoryQtys === "object" && req.body.inventoryQtys !== null)
+        ? (req.body.inventoryQtys as Record<string, number>)
+        : (typeof sessionData.inventoryQtys === "object" && sessionData.inventoryQtys !== null)
+          ? (sessionData.inventoryQtys as Record<string, number>)
+          : {};
+
     // 1. Update venue name if provided
     const venueName = typeof sessionData.venueName === "string" ? sessionData.venueName : null;
     if (venueName && venueId) {
@@ -294,7 +301,7 @@ router.post(
 
     // 2. Seed default products + feature flags + inventory + campaign + audit
     if (venueId) {
-      await seedVenueDefaults(venueId, selectedCrafts, req.user?.id);
+      await seedVenueDefaults(venueId, selectedCrafts, inventoryQtys, req.user?.id);
     }
 
     // 2b. Seed initial AI configuration — applies pricing strategy immediately on go-live

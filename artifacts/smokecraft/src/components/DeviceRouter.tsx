@@ -21,6 +21,7 @@ import {
   createContext, useContext, useState, useEffect,
   useCallback, type ReactNode, type CSSProperties,
 } from "react";
+import { useLocation }    from "wouter";
 import { getAuthHeaders } from "@/services/auth";
 
 export type DeviceMode = "kiosk" | "pos" | "tablet" | "mobile" | "desktop";
@@ -163,31 +164,153 @@ const desktopStyle: CSSProperties = {
   minHeight:"100vh",
 };
 
-/** KioskShell — traps browser back-navigation so users can't exit the kiosk unexpectedly */
+/** KioskShell — traps back-navigation; adds slim status bar for venue/time context */
 export function KioskShell({ children }: { children: ReactNode }) {
+  const [time, setTime] = useState(
+    () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+  );
+
   useEffect(() => {
-    // Push a dummy history entry so the device can't navigate back out of kiosk mode
     window.history.pushState(null, "", window.location.href);
-    const trap = () => window.history.pushState(null, "", window.location.href);
+    const trap  = () => window.history.pushState(null, "", window.location.href);
+    const clock = setInterval(
+      () => setTime(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })),
+      30_000,
+    );
     window.addEventListener("popstate", trap);
-    return () => window.removeEventListener("popstate", trap);
+    return () => { window.removeEventListener("popstate", trap); clearInterval(clock); };
   }, []);
-  return <div data-shell="kiosk" style={kioskStyle}>{children}</div>;
+
+  return (
+    <div data-shell="kiosk" style={kioskStyle}>
+      <div data-shell-panel="kiosk-statusbar" style={{
+        position: "absolute", top: 0, left: 0, right: 0, zIndex: 9000,
+        height: 30, display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 16px", background: "rgba(0,0,0,0.65)", backdropFilter: "blur(8px)",
+        fontSize: 10, fontWeight: 700, color: "rgba(232,224,200,0.4)",
+        letterSpacing: "0.12em", textTransform: "uppercase", pointerEvents: "none",
+      }}>
+        <span>Axiom OS · Kiosk</span>
+        <span>{time}</span>
+      </div>
+      <div style={{ paddingTop: 30, height: "100%" }}>{children}</div>
+    </div>
+  );
 }
 
-/** PosShell — traps back-navigation to prevent accidental exit during transactions */
+/** PosShell — POS layout: top command bar with back-nav + POS mode indicator, then product grid content */
 export function PosShell({ children }: { children: ReactNode }) {
+  const [, navigate] = useLocation();
+
   useEffect(() => {
     window.history.pushState(null, "", window.location.href);
     const trap = () => window.history.pushState(null, "", window.location.href);
     window.addEventListener("popstate", trap);
     return () => window.removeEventListener("popstate", trap);
   }, []);
-  return <div data-shell="pos" style={posStyle}>{children}</div>;
+
+  return (
+    <div data-shell="pos" style={{ display: "flex", flexDirection: "column", width: "100vw", minHeight: "100vh" }}>
+      <div data-shell-panel="pos-topbar" style={{
+        display: "flex", alignItems: "center", gap: 12,
+        height: 48, flexShrink: 0, padding: "0 16px",
+        background: "rgba(0,0,0,0.88)", borderBottom: "1px solid rgba(212,175,55,0.12)",
+        backdropFilter: "blur(10px)", zIndex: 800,
+      }}>
+        <button
+          onClick={() => navigate("/")}
+          style={{
+            display: "flex", alignItems: "center", gap: 5,
+            padding: "5px 12px", borderRadius: 8, cursor: "pointer",
+            background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)",
+            color: "rgba(232,224,200,0.65)", fontSize: 12, fontWeight: 700,
+          }}
+        >
+          ← Back
+        </button>
+        <div style={{ width: 1, height: 18, background: "rgba(255,255,255,0.08)", flexShrink: 0 }} />
+        <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(212,175,55,0.7)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+          POS Mode
+        </span>
+        <div style={{ flex: 1 }} />
+        <span style={{ fontSize: 10, color: "rgba(232,224,200,0.25)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          Axiom OS
+        </span>
+      </div>
+      <div data-shell-panel="pos-main" style={{ flex: 1, overflow: "auto" }}>{children}</div>
+    </div>
+  );
 }
 
-export function TabletShell ({ children }: { children: ReactNode }) { return <div data-shell="tablet"  style={tabletStyle}> {children}</div>; }
-export function MobileShell ({ children }: { children: ReactNode }) { return <div data-shell="mobile"  style={mobileStyle}> {children}</div>; }
+/** TabletShell — touch-optimized layout with top navigation bar and explicit back affordance */
+export function TabletShell({ children }: { children: ReactNode }) {
+  const [, navigate] = useLocation();
+  return (
+    <div data-shell="tablet" style={{ display: "flex", flexDirection: "column", width: "100vw", minHeight: "100dvh", touchAction: "pan-y" }}>
+      <div data-shell-panel="tablet-topbar" style={{
+        display: "flex", alignItems: "center", gap: 10,
+        height: 44, flexShrink: 0, padding: "0 16px",
+        background: "rgba(0,0,0,0.78)", borderBottom: "1px solid rgba(255,255,255,0.07)",
+        backdropFilter: "blur(8px)",
+      }}>
+        <button
+          onClick={() => { if (window.history.length > 1) window.history.back(); else navigate("/"); }}
+          style={{
+            display: "flex", alignItems: "center", gap: 4,
+            padding: "5px 10px", borderRadius: 8, cursor: "pointer",
+            background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)",
+            color: "rgba(232,224,200,0.6)", fontSize: 12, fontWeight: 700,
+          }}
+        >
+          ← Back
+        </button>
+        <div style={{ flex: 1 }} />
+        <span style={{ fontSize: 10, color: "rgba(212,175,55,0.4)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>Tablet</span>
+      </div>
+      <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch" as CSSProperties["WebkitOverflowScrolling"] }}>{children}</div>
+    </div>
+  );
+}
+
+/** MobileShell — compact layout with persistent bottom navigation including back, home, menu, loyalty */
+export function MobileShell({ children }: { children: ReactNode }) {
+  const [location, navigate] = useLocation();
+  const navBtn = (label: string, icon: string, path: string) => (
+    <button
+      key={label}
+      onClick={() => path === "__back"
+        ? (window.history.length > 1 ? window.history.back() : navigate("/"))
+        : navigate(path)}
+      style={{
+        flex: 1, height: "100%", background: "none", border: "none", cursor: "pointer",
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        gap: 2, fontSize: 10, fontWeight: 600,
+        color: location === path ? "#d4af37" : "rgba(232,224,200,0.45)",
+      }}
+    >
+      <span style={{ fontSize: 18, lineHeight: 1 }}>{icon}</span>
+      {label}
+    </button>
+  );
+  return (
+    <div data-shell="mobile" style={{ display: "flex", flexDirection: "column", width: "100vw", minHeight: "100dvh", touchAction: "pan-y" }}>
+      <div style={{ flex: 1, overflowY: "auto", paddingBottom: 56 }}>{children}</div>
+      <div data-shell-panel="mobile-bottomnav" style={{
+        position: "fixed", bottom: 0, left: 0, right: 0, height: 56,
+        display: "flex", alignItems: "stretch",
+        background: "rgba(10,8,7,0.96)", borderTop: "1px solid rgba(255,255,255,0.07)",
+        backdropFilter: "blur(16px)", zIndex: 900,
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+      }}>
+        {navBtn("Back",    "←", "__back"  )}
+        {navBtn("Home",    "⌂", "/"       )}
+        {navBtn("Menu",    "☰", "/menu"   )}
+        {navBtn("Loyalty", "✦", "/loyalty")}
+      </div>
+    </div>
+  );
+}
+
 export function DesktopShell({ children }: { children: ReactNode }) { return <div data-shell="desktop" style={desktopStyle}>{children}</div>; }
 
 // ── Hooks + helpers ───────────────────────────────────────────────────────────

@@ -41,6 +41,7 @@ interface WizardData {
   aiGoal:            string;
   pricingTier:       string;
   aiFocusCategories: string[];
+  inventoryQtys:     Record<string, number>;
 }
 
 const INITIAL: WizardData = {
@@ -53,6 +54,7 @@ const INITIAL: WizardData = {
   aiGoal:            "balanced",
   pricingTier:       "premium",
   aiFocusCategories: ["cigar", "spirit"],
+  inventoryQtys:     {},
 };
 
 const STEPS = [
@@ -290,15 +292,32 @@ function StepCraftSelection({ data, set }: { data: WizardData; set: (k: keyof Wi
 }
 
 // ── Step 3: Inventory Preview ──────────────────────────────────────────────────
-function StepInventoryPreview({ data }: { data: WizardData }) {
+function StepInventoryPreview({ data, onQtyChange }: {
+  data: WizardData;
+  onQtyChange: (qtys: Record<string, number>) => void;
+}) {
   const crafts = data.selectedCrafts.length > 0 ? data.selectedCrafts : ["cigar", "spirit"];
   const tierColor = (tier: string) =>
     tier === "premium" ? "#d4af37" : tier === "mid" ? "#a78bfa" : "#5b8def";
 
+  function getQty(name: string) { return data.inventoryQtys[name] ?? 20; }
+  function adjustQty(name: string, delta: number) {
+    onQtyChange({ ...data.inventoryQtys, [name]: Math.max(0, Math.min(999, getQty(name) + delta)) });
+  }
+
+  const qBtn = (label: string, onClick: () => void): React.ReactNode => (
+    <button key={label} onClick={onClick} style={{
+      width: 24, height: 24, borderRadius: 6, cursor: "pointer", flexShrink: 0,
+      background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+      color: "rgba(232,224,200,0.7)", fontSize: 12, fontWeight: 700,
+      display: "flex", alignItems: "center", justifyContent: "center",
+    }}>{label}</button>
+  );
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ fontSize: 13, color: C.muted, lineHeight: 1.6 }}>
-        These default products will be seeded into your inventory when you launch. You can add, edit, or remove them at any time.
+        Set opening inventory quantities for each product. These values are seeded on launch and editable any time.
       </div>
       {crafts.map(craftId => {
         const meta     = CRAFT_META.find(c => c.id === craftId);
@@ -313,17 +332,20 @@ function StepInventoryPreview({ data }: { data: WizardData }) {
               {products.map(p => (
                 <div key={p.name} style={{
                   display: "flex", justifyContent: "space-between", alignItems: "center",
-                  padding: "10px 14px", borderRadius: 10,
+                  padding: "8px 14px", borderRadius: 10,
                   background: C.card, border: `1px solid ${C.border}`,
                 }}>
-                  <div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <span style={{ fontSize: 13, color: C.text, fontWeight: 500 }}>{p.name}</span>
-                    <span style={{
-                      marginLeft: 8, fontSize: 10, fontWeight: 700, textTransform: "uppercase",
-                      color: tierColor(p.tier), letterSpacing: "0.08em",
-                    }}>{p.tier}</span>
+                    <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: tierColor(p.tier), letterSpacing: "0.08em" }}>{p.tier}</span>
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: C.gold }}>{p.price}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
+                    {qBtn("−−", () => adjustQty(p.name, -5))}
+                    {qBtn("−",  () => adjustQty(p.name, -1))}
+                    <span style={{ minWidth: 32, textAlign: "center", fontSize: 13, fontWeight: 700, color: C.text }}>{getQty(p.name)}</span>
+                    {qBtn("+",  () => adjustQty(p.name, +1))}
+                    {qBtn("++", () => adjustQty(p.name, +5))}
+                  </div>
                 </div>
               ))}
             </div>
@@ -336,7 +358,7 @@ function StepInventoryPreview({ data }: { data: WizardData }) {
         fontSize: 12, color: "rgba(232,224,200,0.5)", lineHeight: 1.6,
       }}>
         {crafts.length > 0
-          ? `${crafts.reduce((n, c) => n + (PREVIEW_CATALOG[c]?.length ?? 0), 0)} products will be seeded across ${crafts.length} craft module${crafts.length > 1 ? "s" : ""}.`
+          ? `${crafts.reduce((n, c) => n + (PREVIEW_CATALOG[c]?.length ?? 0), 0)} products across ${crafts.length} craft module${crafts.length > 1 ? "s" : ""}.`
           : "No crafts selected — select crafts in the previous step."}
       </div>
     </div>
@@ -616,6 +638,10 @@ export default function OnboardWizard() {
     setData(prev => ({ ...prev, [k]: v }));
   }, []);
 
+  const setQtys = useCallback((qtys: Record<string, number>) => {
+    setData(prev => ({ ...prev, inventoryQtys: qtys }));
+  }, []);
+
   async function startSession() {
     try {
       const res = await fetch("/api/onboarding/start", {
@@ -639,7 +665,7 @@ export default function OnboardWizard() {
         headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body:    JSON.stringify({
           step:           stepId,
-          data:           { venueName: data.venueName, venueType: data.venueType, venueSize: data.venueSize, aiTone: data.aiTone, aiGoal: data.aiGoal },
+          data:           { venueName: data.venueName, venueType: data.venueType, venueSize: data.venueSize, aiTone: data.aiTone, aiGoal: data.aiGoal, inventoryQtys: data.inventoryQtys },
           selectedCrafts: data.selectedCrafts,
         }),
       });
@@ -674,7 +700,7 @@ export default function OnboardWizard() {
         const completeRes = await fetch(`/api/onboarding/${sid}/complete`, {
           method:  "POST",
           headers: { "Content-Type": "application/json", ...getAuthHeaders() },
-          body:    "{}",
+          body:    JSON.stringify({ inventoryQtys: data.inventoryQtys }),
         });
         if (!completeRes.ok) throw new Error("Complete failed");
       }
@@ -710,7 +736,7 @@ export default function OnboardWizard() {
   const stepContent: Record<string, React.ReactNode> = {
     venue_info:        <StepVenueDetails     data={data} set={set} />,
     craft_selection:   <StepCraftSelection   data={data} set={set} />,
-    inventory_preview: <StepInventoryPreview data={data} />,
+    inventory_preview: <StepInventoryPreview data={data} onQtyChange={setQtys} />,
     ai_preview:        <StepAiPreview        data={data} set={set} />,
     go_live:           <StepGoLive           data={data} launching={loading && isLast} />,
   };
