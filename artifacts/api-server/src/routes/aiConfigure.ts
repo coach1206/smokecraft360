@@ -269,7 +269,11 @@ router.post(
         configType: "experience",
         location,
         pricingTier,
-        config:     config as unknown as Record<string, unknown>,
+        config: {
+          inputParams:  parsed.data as Record<string, unknown>,
+          outputConfig: config as unknown as Record<string, unknown>,
+          appliedAt:    new Date().toISOString(),
+        },
         isActive:   "true",
       })
       .returning();

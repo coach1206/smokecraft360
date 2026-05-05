@@ -325,7 +325,11 @@ router.post(
           configType:  "experience",
           location:    loc,
           pricingTier: pt,
-          config:      initialAiCfg as unknown as Record<string, unknown>,
+          config: {
+            inputParams:  { venueType: vt, location: loc, pricingTier: pt, menuSize: sz },
+            outputConfig: initialAiCfg as Record<string, unknown>,
+            appliedAt:    new Date().toISOString(),
+          },
           isActive:    "true",
         }).onConflictDoNothing();
       } catch { /* non-fatal */ }

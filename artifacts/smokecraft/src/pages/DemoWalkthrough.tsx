@@ -391,13 +391,13 @@ interface LiveKpi { revenue: number; orders: number; rewards: number; active: bo
 interface LiveEvent { id: string; type: string; payload: Record<string, unknown>; timestamp: string; }
 
 function DashboardMetricsStep() {
-  const { user }              = useAuth();
-  const isSuperAdmin          = user?.role === "super_admin";
-  const [kpi,    setKpi]      = useState<LiveKpi>({ revenue: 0, orders: 0, rewards: 0, active: false });
-  const [events, setEvents]   = useState<LiveEvent[]>([]);
-  const [simId,  setSimId]    = useState<string | null>(null);
-  const [polling, setPolling] = useState(false);
-  const [started, setStarted] = useState(false);
+  const { user }               = useAuth();
+  const isSuperAdmin           = user?.role === "super_admin";
+  const [kpi,     setKpi]      = useState<LiveKpi>({ revenue: 0, orders: 0, rewards: 0, active: false });
+  const [events,  setEvents]   = useState<LiveEvent[]>([]);
+  const [simId,   setSimId]    = useState<string | null>(null);
+  const [polling, setPolling]  = useState(false);
+  const [started, setStarted]  = useState(false);
   const [simError, setSimError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -407,7 +407,7 @@ function DashboardMetricsStep() {
       const r = await fetch("/api/demo/simulate/start", {
         method:  "POST",
         headers: { "Content-Type": "application/json", ...getAuthHeaders() },
-        body:    JSON.stringify({ profile: "investor", speedMs: 3000 }),
+        body:    JSON.stringify({ profile: "investor", speedMs: 3500 }),
       });
       if (!r.ok) {
         setSimError(r.status === 403
@@ -437,23 +437,23 @@ function DashboardMetricsStep() {
     setPolling(false);
   }
 
-  // Poll /api/demo/simulate/events every 3 s while simId is known
+  // Poll /api/demo/simulate/feed every 4 s while simId is known
   useEffect(() => {
     if (!simId) return;
     setPolling(true);
 
     async function poll() {
       try {
-        const r = await fetch(`/api/demo/simulate/events?sessionId=${simId}`, { headers: getAuthHeaders() });
+        const r = await fetch(`/api/demo/simulate/feed?sessionId=${simId}`, { headers: getAuthHeaders() });
         if (!r.ok) return;
         const j = await r.json() as { revenue: number; orders: number; rewards: number; active: boolean; events: LiveEvent[] };
         setKpi({ revenue: j.revenue, orders: j.orders, rewards: j.rewards, active: j.active });
-        setEvents(j.events.slice(-6).reverse());
+        setEvents(j.events.slice(-8).reverse());
       } catch { /* ignore */ }
     }
 
     poll();
-    pollRef.current = setInterval(poll, 3000);
+    pollRef.current = setInterval(poll, 4000);
     return () => { if (pollRef.current) clearInterval(pollRef.current); setPolling(false); };
   }, [simId]);
 
@@ -470,6 +470,45 @@ function DashboardMetricsStep() {
     };
   }, [simId]);
 
+  // ── Derived 4-stage experience funnel ─────────────────────────────────────────
+  const funnelData = useMemo(() => {
+    const recCount = events.filter(e => e.type === "ai_recommendation").length;
+    return {
+      entry:          events.filter(e => e.type === "user_interaction" || e.type === "product_viewed").length,
+      recommendation: recCount,
+      cart:           Math.floor(recCount * 0.65),
+      purchase:       kpi.orders,
+    };
+  }, [events, kpi.orders]);
+
+  const funnelMax = Math.max(funnelData.entry, funnelData.purchase, 1);
+
+  const FUNNEL_STAGES: Array<{ key: keyof typeof funnelData; label: string; color: string }> = [
+    { key: "entry",          label: "Entry",          color: "#5b8def" },
+    { key: "recommendation", label: "Recommendation", color: "#a78bfa" },
+    { key: "cart",           label: "Add to Cart",    color: "#f59e0b" },
+    { key: "purchase",       label: "Purchase",       color: "#34d399" },
+  ];
+
+  // ── Storytelling overlay — narrative from most recent composite event ─────────
+  const storyText = useMemo(() => {
+    if (!simId || events.length === 0) return "Axiom OS is analyzing your venue in real time…";
+    const ev = events.find(e => ["ai_recommendation", "order_placed", "user_interaction"].includes(e.type));
+    if (!ev) return "Monitoring venue activity across all devices…";
+    const p = ev.payload;
+    if (ev.type === "ai_recommendation") {
+      const items = p.recommendedItems as Array<{ name: string }> | undefined;
+      return `Axiom AI matched ${String(p.guest ?? "a guest")} with ${items?.[0]?.name ?? "a premium selection"}.`;
+    }
+    if (ev.type === "order_placed") {
+      return `${String(p.guest ?? "A guest")} ordered ${String(p.product ?? "an item")} — revenue up $${Number(p.total ?? 0).toFixed(0)}.`;
+    }
+    if (ev.type === "user_interaction") {
+      return `${String(p.guest ?? "A guest")} is ${String(p.action ?? "").replace(/_/g, " ")} via ${String(p.source ?? "kiosk")}.`;
+    }
+    return "Processing live venue data…";
+  }, [events, simId]);
+
   // Static fallback KPIs shown when sim is not running
   const displayRevenue = simId ? `$${kpi.revenue.toLocaleString()}` : "$8,830";
   const displayOrders  = simId ? String(kpi.orders)  : "56";
@@ -484,11 +523,13 @@ function DashboardMetricsStep() {
   ];
 
   const eventLabel: Record<string, string> = {
-    order_placed:    "Order",
-    product_viewed:  "View",
-    reward_unlocked: "Reward",
-    revenue_update:  "Revenue",
-    device_ping:     "Device",
+    order_placed:      "Order",
+    product_viewed:    "View",
+    reward_unlocked:   "Reward",
+    revenue_update:    "Revenue",
+    device_ping:       "Device",
+    user_interaction:  "Engage",
+    ai_recommendation: "AI Rec",
   };
 
   return (
@@ -523,6 +564,7 @@ function DashboardMetricsStep() {
         </div>
       )}
 
+      {/* KPI cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 16 }}>
         {metrics.map((m, i) => (
           <motion.div
@@ -546,6 +588,48 @@ function DashboardMetricsStep() {
         ))}
       </div>
 
+      {/* 4-Stage Experience Funnel */}
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ fontSize: 10, color: "rgba(232,224,200,0.3)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 7 }}>Experience Funnel</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+          {FUNNEL_STAGES.map(stage => {
+            const count = funnelData[stage.key];
+            const pct   = funnelMax > 0 ? Math.min(100, (count / funnelMax) * 100) : 0;
+            return (
+              <div key={stage.key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ width: 90, fontSize: 10, fontWeight: 700, color: stage.color, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>{stage.label}</div>
+                <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.04)", overflow: "hidden" }}>
+                  <motion.div
+                    animate={{ width: `${pct}%` }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    style={{ height: "100%", borderRadius: 3, background: stage.color, opacity: 0.8 }}
+                  />
+                </div>
+                <div style={{ width: 22, textAlign: "right", fontSize: 11, fontWeight: 700, color: stage.color, flexShrink: 0 }}>{count}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Storytelling overlay */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={storyText}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.35 }}
+          style={{
+            marginBottom: 14, padding: "8px 12px", borderRadius: 10,
+            background: "rgba(212,175,55,0.05)", border: "1px solid rgba(212,175,55,0.12)",
+            fontSize: 11, color: "rgba(232,224,200,0.55)", fontStyle: "italic", lineHeight: 1.5,
+          }}
+        >
+          {storyText}
+        </motion.div>
+      </AnimatePresence>
+
       {/* Live event feed */}
       {events.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
@@ -566,7 +650,8 @@ function DashboardMetricsStep() {
               >
                 <span style={{ color: "#d4af37", fontWeight: 700, minWidth: 52 }}>{eventLabel[ev.type] ?? ev.type}</span>
                 <span style={{ color: "rgba(232,224,200,0.6)", flex: 1, paddingLeft: 8 }}>
-                  {String(p.guestName ?? "")} {p.productName ? `· ${String(p.productName)}` : ""}
+                  {String(p.guest ?? p.guestName ?? "")}
+                  {(p.product ?? p.productName) ? ` · ${String(p.product ?? p.productName ?? "")}` : ""}
                 </span>
                 {p.total != null && (
                   <span style={{ color: "#34d399", fontWeight: 700 }}>${Number(p.total).toFixed(2)}</span>

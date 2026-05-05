@@ -38,7 +38,7 @@ const router: IRouter = Router();
 // ── Zod schemas ────────────────────────────────────────────────────────────────
 
 const registerSchema = z.object({
-  type:        z.enum(["mobile", "tablet", "kiosk"] as [DeviceType, ...DeviceType[]]),
+  type:        z.enum(DEVICE_TYPES),
   nickname:    z.string().min(1).max(60),
   tableNumber: z.string().max(20).optional(),
 });
@@ -46,7 +46,7 @@ const registerSchema = z.object({
 const updateSchema = z.object({
   nickname:    z.string().min(1).max(60).optional(),
   tableNumber: z.string().max(20).nullable().optional(),
-  status:      z.enum(["active", "inactive"] as [DeviceStatus, ...DeviceStatus[]]).optional(),
+  status:      z.enum(DEVICE_STATUSES).optional(),
 });
 
 const sessionSchema = z.object({
