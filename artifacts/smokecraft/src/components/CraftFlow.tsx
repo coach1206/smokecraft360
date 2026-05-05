@@ -7,9 +7,11 @@ import {
   trackPreferences,
   postScore,
   upsertCraftBuild,
+  fetchCraftVoiceFeedback,
   type RecommendResponse,
   type ProductResult,
 } from "@/services/api";
+import { isCoachMuted } from "@/services/sound";
 import LivePreviewPanel, { type LiveMeters } from "@/components/LivePreview/LivePreviewPanel";
 import AICoach from "@/components/AICoach/AICoach";
 import SessionTimer from "@/components/SessionTimer/SessionTimer";
@@ -234,11 +236,27 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   useEffect(() => { streakCountRef.current   = streakCount;      }, [streakCount]);
   useEffect(() => { scoreRef.current         = scoreState.score; }, [scoreState.score]);
 
+  // Voice feedback refs — track in-flight audio so we can stop/replace on rapid re-score
+  const voiceFeedbackAudioRef = useRef<HTMLAudioElement | null>(null);
+  const voiceFeedbackUrlRef   = useRef<string | null>(null);
+
   // Debounce ref for non-critical autosave calls (avoids redundant rapid PATCH bursts)
   const saveDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debouncedSave = useCallback((params: Parameters<typeof saveCraftSession>[0]) => {
     if (saveDebounceRef.current) clearTimeout(saveDebounceRef.current);
     saveDebounceRef.current = setTimeout(() => void saveCraftSession(params), 400);
+  }, []);
+
+  // Cleanup voice feedback audio on unmount
+  useEffect(() => () => {
+    if (voiceFeedbackAudioRef.current) {
+      voiceFeedbackAudioRef.current.pause();
+      voiceFeedbackAudioRef.current = null;
+    }
+    if (voiceFeedbackUrlRef.current) {
+      URL.revokeObjectURL(voiceFeedbackUrlRef.current);
+      voiceFeedbackUrlRef.current = null;
+    }
   }, []);
 
   // --- Resume check on mount ---
@@ -309,6 +327,43 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     });
     if (newScore100 > 70) playSound("success");
     else if (newScore100 < 30) playSound("fail");
+
+    // Spoken voice-coach feedback — fire and forget, degrades silently when
+    // ElevenLabs is not configured or the coach is muted by the user.
+    if (!isCoachMuted()) {
+      void (async () => {
+        // Stop any in-flight voice line before fetching the new one
+        if (voiceFeedbackAudioRef.current) {
+          voiceFeedbackAudioRef.current.pause();
+          voiceFeedbackAudioRef.current = null;
+        }
+        if (voiceFeedbackUrlRef.current) {
+          URL.revokeObjectURL(voiceFeedbackUrlRef.current);
+          voiceFeedbackUrlRef.current = null;
+        }
+        const feedbackLabel =
+          newScore100 < 25 ? "Weak blend. Structure missing." :
+          newScore100 < 40 ? "Close. Pairing is off."         :
+          newScore100 < 60 ? "Strong build. Refine finish."   :
+          "Elite blend. Feature-worthy.";
+        const blob = await fetchCraftVoiceFeedback({ score: newScore100, feedback: feedbackLabel }).catch(() => null);
+        if (!blob || isCoachMuted()) return;
+        const url = URL.createObjectURL(blob);
+        voiceFeedbackUrlRef.current = url;
+        const audio = new Audio(url);
+        voiceFeedbackAudioRef.current = audio;
+        audio.onended = () => {
+          URL.revokeObjectURL(url);
+          voiceFeedbackUrlRef.current   = null;
+          voiceFeedbackAudioRef.current = null;
+        };
+        audio.play().catch(() => {
+          URL.revokeObjectURL(url);
+          voiceFeedbackUrlRef.current   = null;
+          voiceFeedbackAudioRef.current = null;
+        });
+      })();
+    }
   }, [craftType, incrementStreak, breakStreak]);
 
   const runMatch = useCallback(async (style: CraftStyleCard, mood: CraftMoodCard) => {

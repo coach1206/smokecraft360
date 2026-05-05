@@ -239,6 +239,30 @@ export async function fetchVoiceAudio(params: SpeakParams): Promise<Blob> {
   return resp.blob();
 }
 
+/**
+ * POST /api/craft/voice-feedback — AI coach spoken line after a craft score.
+ *
+ * The backend picks a coach line based on score threshold (low/mid/high) and
+ * optionally prepends the `feedback` label shown in the UI for richer speech.
+ * Returns an audio/mpeg Blob ready to play via URL.createObjectURL.
+ *
+ * Silently resolves to null when ElevenLabs is not configured (503) so the
+ * caller can degrade gracefully without surfacing an error to the user.
+ */
+export async function fetchCraftVoiceFeedback(params: {
+  score:    number;
+  feedback?: string;
+}): Promise<Blob | null> {
+  const resp = await fetch("/api/craft/voice-feedback", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(params),
+  });
+  if (resp.status === 503) return null;
+  if (!resp.ok) return null;
+  return resp.blob();
+}
+
 /* ------------------------------------------------------------------ */
 /*                    Menu suggestions (orderable)                     */
 /* ------------------------------------------------------------------ */

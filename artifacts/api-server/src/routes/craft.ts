@@ -2,6 +2,7 @@
  * /api/craft — unified craft intelligence hub.
  *
  *   POST /api/craft/score              — score a build using the craft engine
+ *   POST /api/craft/voice-feedback     — TTS voice coach line after scoring
  *   POST /api/craft/session/save       — save/update a craft session
  *   GET  /api/craft/session/:id        — load a craft session by id
  *   GET  /api/craft/leaderboard        — top scorers across all craft types
@@ -14,6 +15,7 @@ import { desc, eq, sql, and, isNotNull, gte }               from "drizzle-orm";
 import { z }                                                 from "zod";
 import { db, craftBuildsTable, usersTable, userPreferencesTable, craftSessionStatesTable, designDraftsTable } from "@workspace/db";
 import { scoreBuild }                                        from "../engine/craftEngine";
+import { resolveElevenLabsKey, DEFAULT_VOICES }             from "../lib/elevenlabs";
 
 const router: IRouter = Router();
 
@@ -35,6 +37,101 @@ router.post("/score", (req: Request, res: Response) => {
     return;
   }
   res.json(scoreBuild(parsed.data));
+});
+
+// ── POST /api/craft/voice-feedback ────────────────────────────────────────────
+//
+// Accepts { score: 0-100, feedback?: string } and returns audio/mpeg spoken by
+// the AI coach. Score drives line selection:
+//   < 40 → corrective/coaching line
+//   40-59 → encouraging/neutral line
+//   ≥ 60  → hype / celebratory line
+//
+// Optional `feedback` text (e.g. the UI label shown after scoring) is prepended
+// to the selected coach line for richer, contextual speech.
+
+const LOW_COACH_LINES = [
+  "Weak blend. Rethink the balance between strength and mood.",
+  "This pairing misses the mark. Try a lighter profile.",
+  "Your structure needs work. Consider a different approach.",
+  "The combo is off. Let me help you dial it in.",
+] as const;
+
+const MID_COACH_LINES = [
+  "Solid foundation. A small tweak could push this to elite.",
+  "You're close. Refine the pairing to unlock the full score.",
+  "Good instincts. The balance can still improve.",
+  "Strong build so far. Keep refining the finish.",
+] as const;
+
+const HIGH_COACH_LINES = [
+  "Outstanding craft. This blend is feature-worthy.",
+  "Elite pairing. You've nailed the balance perfectly.",
+  "Exceptional build. This one stands out from the competition.",
+  "Top-tier blend. You're in elite territory now.",
+] as const;
+
+const voiceFeedbackSchema = z.object({
+  score:    z.number().finite().min(0).max(100),
+  feedback: z.string().max(120).optional(),
+});
+
+router.post("/voice-feedback", async (req: Request, res: Response) => {
+  const parsed = voiceFeedbackSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "invalid_input", issues: parsed.error.issues });
+    return;
+  }
+  const { score, feedback } = parsed.data;
+
+  const pool   = score >= 60 ? HIGH_COACH_LINES : score >= 40 ? MID_COACH_LINES : LOW_COACH_LINES;
+  const picked = pool[Math.floor(Math.random() * pool.length)];
+  const text   = feedback ? `${feedback.trim()}. ${picked}` : picked;
+
+  const apiKey = await resolveElevenLabsKey();
+  if (!apiKey) {
+    res.status(503).json({
+      error:  "voice_not_configured",
+      detail: "ElevenLabs connector is not authorized. Visit Replit integrations to connect.",
+    });
+    return;
+  }
+
+  let upstream: globalThis.Response;
+  try {
+    upstream = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(DEFAULT_VOICES.female)}`,
+      {
+        method:  "POST",
+        headers: {
+          "xi-api-key":   apiKey,
+          "Content-Type": "application/json",
+          "Accept":       "audio/mpeg",
+        },
+        body: JSON.stringify({
+          text,
+          model_id: "eleven_monolingual_v1",
+        }),
+      },
+    );
+  } catch (err) {
+    req.log.error({ err }, "elevenlabs voice-feedback request threw");
+    res.status(502).json({ error: "voice_upstream_unreachable" });
+    return;
+  }
+
+  if (!upstream.ok) {
+    const detail = await upstream.text().catch(() => "");
+    req.log.warn({ status: upstream.status, detail: detail.slice(0, 200) }, "elevenlabs voice-feedback upstream error");
+    res.status(502).json({ error: "voice_upstream_failed", status: upstream.status });
+    return;
+  }
+
+  const audioBuffer = Buffer.from(await upstream.arrayBuffer());
+  res.setHeader("Content-Type", "audio/mpeg");
+  res.setHeader("Content-Length", String(audioBuffer.length));
+  res.setHeader("Cache-Control", "no-store");
+  res.send(audioBuffer);
 });
 
 // ── POST /api/craft/session/save ──────────────────────────────────────────────
