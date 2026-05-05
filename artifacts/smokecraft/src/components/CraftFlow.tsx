@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Sparkles, ShoppingBag, ChevronRight, RotateCcw, Zap, PenLine } from "lucide-react";
+import { Check, Sparkles, ShoppingBag, ChevronRight, RotateCcw, Zap, PenLine, Share2 } from "lucide-react";
 import {
   fetchRecommendations,
   trackPreferences,
@@ -25,6 +25,7 @@ import {
   deleteCraftSession,
   type CraftSessionState,
 } from "@/services/craftSessionApi";
+import ShareCard from "@/components/ShareCard/ShareCard";
 
 export type CraftCategory = "beer" | "alcohol" | "vape";
 
@@ -190,6 +191,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const [fastBuildBadge, setFastBuildBadge] = useState(false);
   const [coachResuming,  setCoachResuming ] = useState(false);
   const [studioOpen,     setStudioOpen    ] = useState(false);
+  const [showShareCard,  setShowShareCard ] = useState(false);
 
   const phaseIndex = useMemo(() => {
     const order: Phase[] = ["intro", "style", "profile", "match", "reveal"];
@@ -891,7 +893,26 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                             {(featured.flavorNotes ?? []).join(" · ")}
                           </p>
                         </div>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 12 }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 10, flexWrap: "wrap" }}>
+                          <motion.button
+                            type="button"
+                            data-testid={`${config.testIdPrefix}-share`}
+                            onClick={() => setShowShareCard(true)}
+                            whileHover={{ scale: 1.04 }}
+                            whileTap={{ scale: 0.96 }}
+                            style={{
+                              background: "transparent",
+                              border: `1px solid ${config.theme.accent}55`,
+                              color: config.theme.accent,
+                              padding: "11px 18px", borderRadius: 999,
+                              fontSize: 11, fontWeight: 700,
+                              letterSpacing: "0.22em", textTransform: "uppercase",
+                              cursor: "pointer",
+                              display: "inline-flex", alignItems: "center", gap: 7,
+                            }}
+                          >
+                            <Share2 size={13} /> Share Build
+                          </motion.button>
                           <motion.button
                             type="button"
                             data-testid={`${config.testIdPrefix}-order`}
@@ -1342,6 +1363,20 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         initialMoodId={selectedMood?.id}
         initialSmokeDesign={smokeViz ?? undefined}
       />
+
+      {/* ── Share Card modal ─────────────────────────────────────────────── */}
+      {showShareCard && featured && (
+        <ShareCard
+          craftType={craftType}
+          styleTitle={selectedStyle?.title ?? ""}
+          moodTitle={selectedMood?.title ?? ""}
+          recommendationName={featured.name}
+          score={scoreState.score}
+          accent={config.theme.accent}
+          accentSoft={config.theme.accentSoft}
+          onClose={() => setShowShareCard(false)}
+        />
+      )}
 
       {/* ── Bottom strip ─────────────────────────────────────────────────── */}
       <div style={{
