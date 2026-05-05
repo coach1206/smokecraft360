@@ -17,6 +17,12 @@ import {
 import { logger } from "./logger";
 import { getIO } from "./socketServer";
 
+export type ResyncResult = {
+  tournamentId: string;
+  entriesChecked: number;
+  entriesUpdated: number;
+};
+
 /**
  * Return the user's best craft score within [startAt, endAt].
  * Returns 0 if no qualifying builds exist.
@@ -170,5 +176,105 @@ export async function syncActiveTournamentScores(
   } catch (err) {
     // Fire-and-forget: log but never throw — must not break craft-builds response
     logger.warn({ err, userId, craft }, "syncActiveTournamentScores failed");
+  }
+}
+
+/**
+ * Re-derive the best score for every entrant of a single active tournament
+ * from the craft_builds table and correct any stale ranks.
+ *
+ * Only ever raises scores — the existing Math.max guard prevents demotions.
+ * Returns a summary of how many entries were checked and updated.
+ */
+export async function reconcileTournamentScores(
+  tournamentId: string,
+): Promise<ResyncResult> {
+  const [tournament] = await db
+    .select()
+    .from(tournamentsTable)
+    .where(eq(tournamentsTable.id, tournamentId))
+    .limit(1);
+
+  if (!tournament) {
+    throw new Error(`Tournament ${tournamentId} not found`);
+  }
+
+  const entries = await db
+    .select()
+    .from(tournamentEntriesTable)
+    .where(eq(tournamentEntriesTable.tournamentId, tournamentId));
+
+  let entriesUpdated = 0;
+
+  for (const entry of entries) {
+    const bestScore = await getUserBestCraftScore(
+      entry.userId,
+      tournament.craftType,
+      tournament.startAt,
+      tournament.endAt,
+    );
+
+    // Never demote — only write if the recomputed score is strictly better
+    const correctedScore = Math.max(entry.score, bestScore);
+    if (correctedScore > entry.score) {
+      await db
+        .update(tournamentEntriesTable)
+        .set({ score: correctedScore, updatedAt: new Date() })
+        .where(eq(tournamentEntriesTable.id, entry.id));
+      entriesUpdated++;
+    }
+  }
+
+  if (entriesUpdated > 0) {
+    await rerank(tournamentId);
+  }
+
+  return {
+    tournamentId,
+    entriesChecked: entries.length,
+    entriesUpdated,
+  };
+}
+
+/**
+ * Startup reconciliation pass — re-derives scores for all active tournaments.
+ * Called non-fatally during server boot so any scores lost due to in-flight
+ * syncs at restart time are recovered before the first request is served.
+ */
+export async function reconcileActiveTournamentScores(): Promise<void> {
+  try {
+    const activeTournaments = await db
+      .select({ id: tournamentsTable.id, title: tournamentsTable.title })
+      .from(tournamentsTable)
+      .where(eq(tournamentsTable.status, "active"));
+
+    if (activeTournaments.length === 0) {
+      logger.info("Tournament reconciliation: no active tournaments found");
+      return;
+    }
+
+    logger.info(
+      { count: activeTournaments.length },
+      "Tournament reconciliation: starting startup pass",
+    );
+
+    for (const t of activeTournaments) {
+      try {
+        const result = await reconcileTournamentScores(t.id);
+        logger.info(
+          { title: t.title, ...result },
+          "Tournament reconciliation: pass complete",
+        );
+      } catch (err) {
+        logger.warn(
+          { err, tournamentId: t.id, title: t.title },
+          "Tournament reconciliation: failed for tournament — skipping",
+        );
+      }
+    }
+
+    logger.info("Tournament reconciliation: startup pass finished");
+  } catch (err) {
+    logger.warn({ err }, "Tournament reconciliation: startup pass failed");
   }
 }

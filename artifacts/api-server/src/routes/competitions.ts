@@ -26,7 +26,7 @@ import {
 } from "@workspace/db";
 import { requireAuth, optionalAuth, type AuthRequest } from "../middleware/auth";
 import { logger } from "../lib/logger";
-import { getUserBestCraftScore, rerank } from "../lib/tournamentSync";
+import { getUserBestCraftScore, rerank, reconcileTournamentScores } from "../lib/tournamentSync";
 import { getIO } from "../lib/socketServer";
 
 const router: IRouter = Router();
@@ -427,6 +427,52 @@ router.post(
     await rerank(id).catch((err) => logger.warn({ err }, "sync-score rerank failed"));
 
     res.json({ ...updated, scoreSource: "craft_builds" });
+  },
+);
+
+// ── POST /api/competitions/:id/resync ─────────────────────────────────────────
+// Admin-only: re-derive every entrant's best score from craft_builds and
+// correct any stale ranks. No score demotions — Math.max guard is preserved.
+
+router.post(
+  "/:id/resync",
+  requireAuth,
+  async (req: AuthRequest, res: Response) => {
+    const role = req.user?.role;
+    if (role !== "super_admin" && role !== "venue_owner" && role !== "manager") {
+      res.status(403).json({ error: "Insufficient permissions" });
+      return;
+    }
+
+    const { id } = req.params as { id: string };
+
+    const [tournament] = await db
+      .select({ id: tournamentsTable.id, status: tournamentsTable.status })
+      .from(tournamentsTable)
+      .where(eq(tournamentsTable.id, id))
+      .limit(1);
+
+    if (!tournament) {
+      res.status(404).json({ error: "Tournament not found" });
+      return;
+    }
+
+    if (tournament.status !== "active") {
+      res.status(409).json({ error: "Tournament is not active" });
+      return;
+    }
+
+    try {
+      const result = await reconcileTournamentScores(id);
+      logger.info(
+        { ...result, triggeredBy: req.user?.id },
+        "Manual tournament resync complete",
+      );
+      res.json(result);
+    } catch (err) {
+      logger.error({ err, tournamentId: id }, "Tournament resync failed");
+      res.status(500).json({ error: "Resync failed" });
+    }
   },
 );
 
