@@ -1,0 +1,233 @@
+FINAL MASTER PROMPT (COMPLETE SYSTEM BUILD)
+🔴 MISSING / REQUIRED (DO NOT SKIP)
+
+If any of these are missing, system will fail:
+
+ElevenLabs API Key → ELEVENLABS_API_KEY
+Database connected (DATABASE_URL)
+Session secret (SESSION_SECRET)
+Node server running (Express already present)
+🧠 FAILURE PREVENTION CHECKLIST
+DO NOT overwrite existing CraftFlow UI
+ONLY add overlays, hooks, and new modules
+All new features must be:
+non-breaking
+modular
+toggle-able
+No fake scoring → must use real engine
+No raw data shown to owners → action-based only
+All APIs under /api/*
+Age gate enforced backend + frontend
+🧱 BACKEND SYSTEM (FULL)
+📁 CREATE: server/engine/craftEngine.ts
+export type BuildInput = {
+  strength: number;
+  flavorMatch: number;
+  balance: number;
+  finish: number;
+  timeTaken: number;
+  converted: boolean;
+};
+
+export function scoreBuild(input: BuildInput) {
+  const quality = (input.strength + input.flavorMatch) / 2;
+  const consistency = (input.balance + input.finish) / 2;
+
+  const speedScore =
+    input.timeTaken < 600 ? 5 :
+    input.timeTaken < 1200 ? 3 : 1;
+
+  const conversionScore = input.converted ? 5 : 2;
+
+  const finalScore =
+    quality * 0.4 +
+    input.balance * 0.2 +
+    consistency * 0.2 +
+    speedScore * 0.1 +
+    conversionScore * 0.1;
+
+  let feedback = "";
+  if (finalScore < 2.5) feedback = "Weak blend. Structure missing.";
+  else if (finalScore < 3.5) feedback = "Close. Pairing is off.";
+  else if (finalScore < 4.5) feedback = "Strong build. Refine finish.";
+  else feedback = "Elite blend. Feature-worthy.";
+
+  return {
+    score: Number(finalScore.toFixed(2)),
+    feedback
+  };
+}
+📁 CREATE: server/routes/craft.ts
+import { Router } from "express";
+import { scoreBuild } from "../engine/craftEngine";
+
+const router = Router();
+
+// SCORE
+router.post("/score", (req, res) => {
+  res.json(scoreBuild(req.body));
+});
+
+// SAVE SESSION
+router.post("/session/save", async (req, res) => {
+  // store in DB later
+  res.json({ status: "saved" });
+});
+
+// LOAD SESSION
+router.get("/session/:id", async (req, res) => {
+  res.json({ session: {} });
+});
+
+// LEADERBOARD
+router.get("/leaderboard", (req, res) => {
+  res.json([
+    { name: "James", score: 4.8 },
+    { name: "Alicia", score: 4.5 }
+  ]);
+});
+
+// QUICK INTEL
+router.get("/intel/quick", (req, res) => {
+  res.json({
+    trend: "Bold + Sweet",
+    topCreator: "James"
+  });
+});
+
+// FULL INTEL
+router.get("/intel/summary", (req, res) => {
+  res.json({
+    topPreference: "Bold + Sweet",
+    actions: [
+      "Stock more Maduro",
+      "Promote whiskey pairings",
+      "Reduce light cigars"
+    ]
+  });
+});
+
+export default router;
+📁 UPDATE: server/src/app.ts
+import craftRoutes from "../routes/craft";
+app.use("/api/craft", craftRoutes);
+🎮 FRONTEND SYSTEM (FULL INTEGRATION)
+🔝 INTEL STRIP
+const [intel, setIntel] = useState(null);
+
+useEffect(() => {
+  fetch("/api/craft/intel/quick")
+    .then(r => r.json())
+    .then(setIntel);
+}, []);
+{intel && (
+  <div className="intel-bar">
+    🔥 {intel.trend} | 🏆 {intel.topCreator}
+  </div>
+)}
+🟡 CARD BADGES
+
+Add inside each card:
+
+<span className="badge">🔥 Trending</span>
+🔻 BOTTOM STRIP
+<div className="bottom-strip">
+  Create. Compete. Get Featured.
+</div>
+🎯 BUILD COMPLETION HOOK
+fetch("/api/craft/score", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(buildData)
+})
+.then(r => r.json())
+.then(data => {
+  setScore(data.score);
+  setFeedback(data.feedback);
+});
+🧠 AI COACH (HOOK)
+
+Trigger voice feedback after scoring:
+
+low score → correction
+high score → hype
+
+(plug ElevenLabs later)
+
+⏱ SESSION SYSTEM
+auto-save every step
+resume ability
+timeout after inactivity
+🏆 COMPETITION ENGINE
+Live (30 min)
+Daily
+Weekly
+Venue (60–90 days)
+Grand (6 months)
+🎨 DESIGN STUDIO
+
+Route: /designer
+
+Features:
+
+band color
+box type
+logo upload
+preview panel
+🔞 AGE GATE
+
+Frontend:
+
+DOB input
+store flag
+
+Backend:
+
+reject if not verified
+📊 OWNER INTEL PANEL
+
+Route: /admin/intel
+
+Display ONLY:
+
+“Customers prefer: Bold + Sweet”
+“Do this: Stock Maduro”
+💰 AFTER HOURS SYSTEM
+pre-orders
+remote builds
+drops
+subscriptions
+📡 DATA ENGINE
+
+Track:
+
+selections
+retries
+time
+conversions
+🎥 VIRAL LOOP
+
+After build:
+
+generate share card
+allow export
+🔊 SOUND + FEEL
+swoosh transitions
+fail sound
+success tone
+🎯 FINAL SYSTEM RESULT
+
+This becomes:
+
+👉 experience engine
+👉 competition platform
+👉 revenue system
+👉 data intelligence machine
+
+🔥 FINAL TRUTH
+
+You’re not building software.
+
+You’re building:
+
+👉 a system that trains customers, monetizes behavior, and creates real products

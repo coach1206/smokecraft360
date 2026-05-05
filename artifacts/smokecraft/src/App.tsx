@@ -27,6 +27,7 @@ import OrdersModule    from "@/pages/OrdersModule";
 import InventoryModule from "@/pages/InventoryModule";
 import RewardsModule   from "@/pages/RewardsModule";
 import CampaignsModule from "@/pages/CampaignsModule";
+import OwnerIntelPanel from "@/pages/OwnerIntelPanel";
 import BrewCraft       from "@/pages/BrewCraft";
 import PourCraft       from "@/pages/PourCraft";
 import VapeCraft       from "@/pages/VapeCraft";
@@ -75,6 +76,7 @@ function Router() {
       <Route path="/inventory"   component={InventoryModule} />
       <Route path="/rewards"     component={RewardsModule}   />
       <Route path="/campaigns"   component={CampaignsModule} />
+      <Route path="/admin/intel" component={OwnerIntelPanel} />
       {/* BrewCraft — beer-led quick-pick flow. Declared before /:theme so
           the explicit path wins; if it ever needs to live under a theme
           (e.g. /smokecraft/brewcraft) it can be moved down. */}

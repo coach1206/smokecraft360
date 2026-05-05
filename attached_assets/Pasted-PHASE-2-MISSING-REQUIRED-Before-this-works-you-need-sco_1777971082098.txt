@@ -1,0 +1,153 @@
+PHASE 2 — MISSING / REQUIRED
+
+Before this works, you need:
+
+scoring endpoint working (/api/craft/score) ✅
+leaderboard endpoint (/api/craft/leaderboard) ✅
+state management in frontend (React hooks or context)
+🧠 FAILURE PREVENTION
+DO NOT re-render entire page on updates
+DO NOT spam API calls (use interval 5–10 sec)
+KEEP animations subtle (premium feel)
+🔥 1. LIVE LEADERBOARD (REAL-TIME)
+📁 FRONTEND: CREATE COMPONENT
+
+client/src/components/Leaderboard.tsx
+
+import { useEffect, useState } from "react";
+
+export default function Leaderboard() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = () => {
+      fetch("/api/craft/leaderboard")
+        .then(res => res.json())
+        .then(setData);
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="leaderboard">
+      <h3>Top Creators</h3>
+      {data.map((user: any, i) => (
+        <div key={i} className="leaderboard-item">
+          #{i + 1} {user.name} — {user.score}
+        </div>
+      ))}
+    </div>
+  );
+}
+📍 PLACE IT
+
+Add to your experience screen (side or bottom corner):
+
+<Leaderboard />
+🔥 2. SCORE FEEDBACK OVERLAY (THIS IS FEEL)
+📁 CREATE:
+
+ScoreOverlay.tsx
+
+export default function ScoreOverlay({ score, feedback }) {
+  return (
+    <div className="score-overlay">
+      <h1>{score}</h1>
+      <p>{feedback}</p>
+    </div>
+  );
+}
+📍 SHOW AFTER BUILD
+{score && <ScoreOverlay score={score} feedback={feedback} />}
+🔥 3. CARD ANIMATION SYSTEM (PREMIUM FEEL)
+CSS (ADD)
+.card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 20px rgba(212,175,55,0.5);
+}
+CLICK FEEDBACK
+onClick={() => {
+  playSound("swoosh");
+}}
+🔥 4. LIVE RANK PRESSURE (THIS IS ADDICTION)
+AFTER SCORING ADD:
+if (score > 4.5) {
+  setMessage("🔥 You're near the top. Push harder.");
+} else if (score < 3) {
+  setMessage("⚠️ You're falling behind.");
+}
+
+Display:
+
+<div className="rank-message">{message}</div>
+🔥 5. STREAK SYSTEM
+ADD STATE
+const [streak, setStreak] = useState(0);
+UPDATE AFTER GOOD BUILD
+if (score > 4) {
+  setStreak(prev => prev + 1);
+} else {
+  setStreak(0);
+}
+DISPLAY
+{streak > 1 && <div className="streak">🔥 {streak} Streak</div>}
+🔥 6. SOUND SYSTEM (CRITICAL FEEL)
+ADD SIMPLE HELPER
+function playSound(type) {
+  const sounds = {
+    swoosh: "/sounds/swoosh.mp3",
+    success: "/sounds/success.mp3",
+    fail: "/sounds/fail.mp3"
+  };
+
+  new Audio(sounds[type]).play();
+}
+TRIGGER
+good score → success
+bad score → fail
+🔥 7. “ALMOST THERE” EFFECT
+LOGIC
+if (score > 4.3 && score < 4.8) {
+  setMessage("✨ You're close to a feature-worthy build.");
+}
+
+👉 This keeps them from quitting
+
+🔥 8. AUTO REFRESH INTEL STRIP
+setInterval(() => {
+  fetch("/api/craft/intel/quick")
+    .then(r => r.json())
+    .then(setIntel);
+}, 10000);
+🔥 9. PERFORMANCE LOOP (THIS IS BUSINESS GOLD)
+
+Track:
+
+retries
+best score
+time per build
+
+Send to backend:
+
+fetch("/api/craft/session/save", {
+  method: "POST",
+  body: JSON.stringify(sessionData)
+});
+🔥 WHAT YOU JUST UNLOCKED
+
+Now your system has:
+
+✅ Live competition
+✅ Real-time ranking
+✅ Emotional feedback
+✅ Pressure + reward loop
+✅ Sound + motion
+✅ Retention mechanics

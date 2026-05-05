@@ -159,6 +159,18 @@ export default function CommandCenter() {
                 background: `linear-gradient(135deg, rgba(10,8,6,0.45) 0%, rgba(10,8,6,0.6) 50%, ${tile.color}25 100%)`,
                 pointerEvents: "none",
               }} />
+              {(tile.id === "smokecraft" || tile.id === "brewcraft" || tile.id === "pourcraft" || tile.id === "vapecraft") && (
+                <div style={{
+                  position: "absolute", top: 10, right: 12,
+                  fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: tile.color,
+                  background: `${tile.color}18`,
+                  border: `1px solid ${tile.color}35`,
+                  padding: "2px 8px", borderRadius: 999,
+                  textShadow: "none",
+                }}>🔥 Trending</div>
+              )}
               <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 2, textShadow: "0 1px 4px rgba(0,0,0,0.7)" }}>{tile.title}</div>
                 <div style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", marginBottom: 4, textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>{tile.desc}</div>

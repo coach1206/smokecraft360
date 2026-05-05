@@ -161,6 +161,14 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const [error, setError] = useState<string | null>(null);
   const [scoreState, setScoreState] = useState({ score: 50, prevScore: 50 });
   const [liveMeters, setLiveMeters] = useState<LiveMeters>({ flavor: 50, strength: 50, balance: 50 });
+  const [intelStrip, setIntelStrip] = useState<{ trend: string; topCreator: string } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/craft/intel/quick")
+      .then(r => r.ok ? r.json() as Promise<{ trend: string; topCreator: string }> : null)
+      .then(d => { if (d) setIntelStrip(d); })
+      .catch(() => {});
+  }, []);
 
   // Session timer state
   const [timerRunning,   setTimerRunning  ] = useState(false);
@@ -510,6 +518,29 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
           accentColor={config.theme.accent}
         />
       </header>
+
+      {/* ── Intel Strip ────────────────────────────────────────────────── */}
+      {intelStrip && (
+        <div style={{
+          maxWidth: 1640, margin: "0 auto 0",
+          padding: "0 32px 8px",
+        }}>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 20,
+            padding: "7px 20px",
+            borderRadius: 999,
+            background: `linear-gradient(90deg, ${config.theme.accent}18, rgba(10,8,6,0.55))`,
+            border: `1px solid ${config.theme.accent}35`,
+            backdropFilter: "blur(8px)",
+            fontSize: 12, color: "rgba(232,224,200,0.85)",
+            letterSpacing: "0.04em",
+          }}>
+            <span>🔥 <strong style={{ color: config.theme.accent }}>{intelStrip.trend}</strong></span>
+            <span style={{ opacity: 0.35 }}>·</span>
+            <span>🏆 <strong style={{ color: "#fff" }}>{intelStrip.topCreator}</strong></span>
+          </div>
+        </div>
+      )}
 
       {/* 3-column layout: sidebar / center / right (right shows in reveal only) */}
       <div style={{
@@ -1262,6 +1293,26 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         initialMoodId={selectedMood?.id}
         initialSmokeDesign={smokeViz ?? undefined}
       />
+
+      {/* ── Bottom strip ─────────────────────────────────────────────────── */}
+      <div style={{
+        position: "fixed", bottom: 0, left: 0, right: 0,
+        zIndex: 50,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "10px 24px",
+        background: `linear-gradient(90deg, rgba(10,8,6,0.92) 0%, ${config.theme.accent}18 50%, rgba(10,8,6,0.92) 100%)`,
+        borderTop: `1px solid ${config.theme.accent}22`,
+        backdropFilter: "blur(8px)",
+        pointerEvents: "none",
+      }}>
+        <span style={{
+          fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase",
+          color: config.theme.accent, fontWeight: 700,
+          opacity: 0.85,
+        }}>
+          Create. Compete. Get Featured.
+        </span>
+      </div>
     </div>
   );
 }
