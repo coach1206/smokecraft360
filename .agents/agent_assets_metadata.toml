@@ -486,6 +486,24 @@ uri = "file://artifacts/smokecraft/public/images/vape/vape_social.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "1ob3zoinQ03U-RngMwoGh"
+uri = "file://artifacts/smokecraft/public/images/smoke/smoke_woman.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Gqwx5FPwcXsEtxTeRPK3E"
+uri = "file://artifacts/smokecraft/public/images/pour/pour_wine.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Vl8-VxJsqwgUqBdxEStCE"
+uri = "file://artifacts/smokecraft/public/images/brew/brew_pouring.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "bcXlJZbThuFGk9x0tlMdt"
 uri = "file://.local/AXIOM_OS_OPERATIONS_MANUAL_SOURCE.md"
