@@ -132,12 +132,14 @@ const boxDesignSchema = z.object({
 // ── POST /api/signature-cigars ────────────────────────────────────────────────
 
 const submitSchema = z.object({
-  brandName:   z.string().min(2).max(28),
-  bandDesign:  bandDesignSchema,
-  cigarSpec:   cigarSpecSchema,
-  boxDesign:   boxDesignSchema.nullable().optional(),
-  description: z.string().max(300).optional(),
-  status:      z.enum(["draft", "submitted"]).optional().default("draft"),
+  brandName:     z.string().min(2).max(28),
+  bandDesign:    bandDesignSchema.optional(),
+  cigarSpec:     cigarSpecSchema.optional(),
+  boxDesign:     boxDesignSchema.nullable().optional(),
+  description:   z.string().max(300).optional(),
+  status:        z.enum(["draft", "submitted"]).optional().default("draft"),
+  craft:         z.enum(["smoke", "brew", "pour", "vape"]).optional().default("smoke"),
+  studioPayload: z.record(z.unknown()).optional(),
 });
 
 router.post(
@@ -147,21 +149,25 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     const userId = req.user!.id;
 
-    const isMaestro = await checkMaestro(userId);
-    if (!isMaestro) {
-      res.status(403).json({
-        error: "Signature cigar creation requires Maestro del Fuego status (60+ verified orders · 700+ XP)",
-      });
-      return;
-    }
-
     const parsed = submitSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: "Invalid submission", details: parsed.error.issues });
       return;
     }
 
-    const { brandName, bandDesign, cigarSpec, boxDesign, description, status } = parsed.data;
+    const { brandName, bandDesign, cigarSpec, boxDesign, description, status, craft, studioPayload } = parsed.data;
+    const isSmoke = craft === "smoke";
+
+    // Maestro check only required for smoke (cigar) submissions
+    if (isSmoke) {
+      const isMaestro = await checkMaestro(userId);
+      if (!isMaestro) {
+        res.status(403).json({
+          error: "Signature cigar creation requires Maestro del Fuego status (60+ verified orders · 700+ XP)",
+        });
+        return;
+      }
+    }
 
     // Brand name validation
     const nameError = validateBrandName(brandName);
@@ -179,20 +185,42 @@ router.post(
       return;
     }
 
+    // For non-smoke studio submissions, synthesize stub band/cigar data
+    const finalBandDesign = bandDesign ?? {
+      template:     "modern-minimal" as const,
+      primaryColor: "#0F1B35",
+      accentColor:  "#4A8AC4",
+      fontStyle:    "serif"         as const,
+      emblem:       "star",
+      brandName:    brandName.slice(0, 28).trim(),
+    };
+    const finalCigarSpec = cigarSpec ?? {
+      strength:        3,
+      flavorDirection: ["sweet"] as Array<"sweet" | "bold" | "spicy" | "creamy" | "earthy" | "floral">,
+      wrapperType:     "natural"  as const,
+    };
+
+    // For studio submissions of non-smoke crafts, store full design payload in boxDesign JSON
+    const finalBoxDesignStr = boxDesign
+      ? JSON.stringify(boxDesign)
+      : studioPayload
+        ? JSON.stringify({ craft, ...studioPayload })
+        : null;
+
     const [request] = await db
       .insert(signatureRequestsTable)
       .values({
         userId,
         brandName:  brandName.trim(),
-        bandDesign: JSON.stringify(bandDesign),
-        cigarSpec:  JSON.stringify(cigarSpec),
-        boxDesign:  boxDesign ? JSON.stringify(boxDesign) : null,
+        bandDesign: JSON.stringify(finalBandDesign),
+        cigarSpec:  JSON.stringify(finalCigarSpec),
+        boxDesign:  finalBoxDesignStr,
         description,
         status:     status as SignatureStatus,
       })
       .returning();
 
-    req.log.info({ requestId: request!.id, userId, brandName, status }, "Signature cigar created");
+    req.log.info({ requestId: request!.id, userId, brandName, status, craft }, "Signature design submitted");
     res.status(201).json(request);
   },
 );

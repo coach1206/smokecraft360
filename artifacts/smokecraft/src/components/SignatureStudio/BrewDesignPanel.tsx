@@ -1,8 +1,9 @@
 /**
  * BrewDesignPanel — BrewCraft beer label editor + bottle preview.
+ * Supports touch-drag label fine-positioning via pointer events on the SVG.
  */
-import { useId } from "react";
-import { motion } from "framer-motion";
+import { useId, useRef } from "react";
+import { motion }        from "framer-motion";
 
 export interface BrewDesignState {
   brandName:   string;
@@ -11,6 +12,7 @@ export interface BrewDesignState {
   bgColor:     string;
   textColor:   string;
   accentColor: string;
+  labelOffset: { x: number; y: number };
 }
 
 export const DEFAULT_BREW_STATE: BrewDesignState = {
@@ -20,6 +22,7 @@ export const DEFAULT_BREW_STATE: BrewDesignState = {
   bgColor:     "#1A2A1A",
   textColor:   "#F5E4A0",
   accentColor: "#6AB87A",
+  labelOffset: { x: 0, y: 0 },
 };
 
 const MUTED    = "rgba(180,155,100,0.45)";
@@ -48,11 +51,31 @@ function Label({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function BrewPreview({ state }: { state: BrewDesignState }) {
-  const labelX    = 55;
-  const labelY    = 95;
-  const labelW    = 90;
-  const labelH    = state.labelShape === "diamond" ? 72 : state.labelShape === "oval" ? 68 : 80;
+function getSVGPoint(e: React.PointerEvent, svgEl: SVGSVGElement): { x: number; y: number } {
+  const pt  = svgEl.createSVGPoint();
+  pt.x = e.clientX;
+  pt.y = e.clientY;
+  const inv = svgEl.getScreenCTM()?.inverse();
+  if (!inv) return { x: 0, y: 0 };
+  const t = pt.matrixTransform(inv);
+  return { x: t.x, y: t.y };
+}
+
+export function BrewPreview({
+  state,
+  onDrag,
+}: {
+  state:    BrewDesignState;
+  onDrag?:  (offset: { x: number; y: number }) => void;
+}) {
+  const off        = state.labelOffset ?? { x: 0, y: 0 };
+  const svgRef     = useRef<SVGSVGElement>(null);
+  const dragStart  = useRef<{ svgX: number; svgY: number; ox: number; oy: number } | null>(null);
+
+  const labelX = 55;
+  const labelY = 95;
+  const labelW = 90;
+  const labelH = state.labelShape === "diamond" ? 72 : state.labelShape === "oval" ? 68 : 80;
 
   const labelPath =
     state.labelShape === "oval"
@@ -61,11 +84,15 @@ export function BrewPreview({ state }: { state: BrewDesignState }) {
       ? `M${labelX + labelW / 2},${labelY} L${labelX + labelW},${labelY + labelH / 2} L${labelX + labelW / 2},${labelY + labelH} L${labelX},${labelY + labelH / 2} Z`
       : `M${labelX + 5},${labelY} h${labelW - 10} a5,5 0 0 1 5,5 v${labelH - 10} a5,5 0 0 1 -5,5 h-${labelW - 10} a5,5 0 0 1 -5,-5 v-${labelH - 10} a5,5 0 0 1 5,-5 Z`;
 
-  const brandDisplay = (state.brandName || "MY BREW").toUpperCase().slice(0, 14);
+  const brandDisplay   = (state.brandName || "MY BREW").toUpperCase().slice(0, 14);
   const taglineDisplay = (state.tagline || "Craft Reserve").slice(0, 20);
+
+  const textX = labelX + labelW / 2 + off.x;
+  const textY = labelY + labelH / 2 + off.y;
 
   return (
     <motion.svg
+      ref={svgRef}
       width={200} height={320}
       viewBox="0 0 200 320"
       initial={{ opacity: 0, scale: 0.95 }}
@@ -98,13 +125,9 @@ export function BrewPreview({ state }: { state: BrewDesignState }) {
         fill="url(#bottle-body)"
       />
       {/* Bottle neck */}
-      <path
-        d="M82,20 L82,80 L118,80 L118,20 Z"
-        fill="url(#bottle-neck)"
-      />
+      <path d="M82,20 L82,80 L118,80 L118,20 Z" fill="url(#bottle-neck)" />
       {/* Bottle cap */}
       <rect x="78" y="14" width="44" height="12" rx="3" fill={state.accentColor} opacity="0.9" />
-
       {/* Sheen */}
       <path
         d="M65,80 Q62,100 60,120 L60,270 Q60,285 70,290 L130,290 Q140,285 140,270 L140,120 Q138,100 135,80 Z"
@@ -113,41 +136,58 @@ export function BrewPreview({ state }: { state: BrewDesignState }) {
 
       {/* Label */}
       <path d={labelPath} fill={state.bgColor} stroke={state.accentColor} strokeWidth="1.5" opacity="0.97" />
-
-      {/* Label accent line */}
       <line x1={labelX + 8} y1={labelY + 14} x2={labelX + labelW - 8} y2={labelY + 14}
         stroke={state.accentColor} strokeWidth="0.8" opacity="0.7" />
       <line x1={labelX + 8} y1={labelY + labelH - 14} x2={labelX + labelW - 8} y2={labelY + labelH - 14}
         stroke={state.accentColor} strokeWidth="0.8" opacity="0.7" />
 
-      {/* Brand name */}
-      <text
-        x={labelX + labelW / 2}
-        y={labelY + labelH / 2 - 4}
-        textAnchor="middle"
-        fontFamily="'Cormorant Garamond', Georgia, serif"
-        fontSize="11"
-        fontWeight="600"
-        fill={state.textColor}
-        letterSpacing="2"
+      {/* Draggable label text group */}
+      <g
+        style={{ cursor: onDrag ? "grab" : "default", touchAction: "none" }}
+        onPointerDown={onDrag ? (e) => {
+          if (!svgRef.current) return;
+          (e.target as Element).setPointerCapture(e.pointerId);
+          const p = getSVGPoint(e, svgRef.current);
+          dragStart.current = { svgX: p.x, svgY: p.y, ox: off.x, oy: off.y };
+        } : undefined}
+        onPointerMove={onDrag ? (e) => {
+          if (!dragStart.current || !svgRef.current) return;
+          const p = getSVGPoint(e, svgRef.current);
+          onDrag({
+            x: dragStart.current.ox + p.x - dragStart.current.svgX,
+            y: dragStart.current.oy + p.y - dragStart.current.svgY,
+          });
+        } : undefined}
+        onPointerUp={() => { dragStart.current = null; }}
       >
-        {brandDisplay}
-      </text>
-
-      {/* Tagline */}
-      <text
-        x={labelX + labelW / 2}
-        y={labelY + labelH / 2 + 14}
-        textAnchor="middle"
-        fontFamily="Georgia, serif"
-        fontSize="6.5"
-        fontStyle="italic"
-        fill={state.accentColor}
-        opacity="0.9"
-        letterSpacing="0.6"
-      >
-        {taglineDisplay}
-      </text>
+        <text
+          x={textX} y={textY - 4}
+          textAnchor="middle"
+          fontFamily="'Cormorant Garamond', Georgia, serif"
+          fontSize="11" fontWeight="600"
+          fill={state.textColor}
+          letterSpacing="2"
+        >
+          {brandDisplay}
+        </text>
+        <text
+          x={textX} y={textY + 14}
+          textAnchor="middle"
+          fontFamily="Georgia, serif"
+          fontSize="6.5" fontStyle="italic"
+          fill={state.accentColor}
+          opacity="0.9" letterSpacing="0.6"
+        >
+          {taglineDisplay}
+        </text>
+        {onDrag && (
+          <rect
+            x={textX - 45} y={textY - 14}
+            width="90" height="34"
+            fill="transparent"
+          />
+        )}
+      </g>
     </motion.svg>
   );
 }
@@ -162,10 +202,13 @@ export function BrewDesignPanel({ state, onChange, tab }: Props) {
       <div className="flex flex-col items-center gap-3 py-4">
         <div className="p-8 rounded-2xl flex items-center justify-center"
           style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.05)", minHeight: 320 }}>
-          <BrewPreview state={state} />
+          <BrewPreview
+            state={state}
+            onDrag={(off) => set("labelOffset", off)}
+          />
         </div>
         <p className="text-[8px] uppercase tracking-[0.28em]" style={{ color: MUTED }}>
-          Bottle Label Preview
+          Bottle Label Preview · <span style={{ color: "rgba(212,175,55,0.4)" }}>Drag label to reposition</span>
         </p>
       </div>
     );
@@ -234,6 +277,21 @@ export function BrewDesignPanel({ state, onChange, tab }: Props) {
               </button>
             );
           })}
+        </div>
+      </div>
+
+      <div>
+        <Label>Label Position</Label>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => set("labelOffset", { x: 0, y: 0 })}
+            className="px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.15em]"
+            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: MUTED }}>
+            Reset Position
+          </button>
+          <span className="text-[9px]" style={{ color: "rgba(180,155,100,0.3)" }}>
+            or drag label in Preview tab
+          </span>
         </div>
       </div>
     </div>

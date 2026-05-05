@@ -21,6 +21,8 @@ import {
   saveDesignDraft,
   type DesignDraft,
 }                                                    from "@/services/api";
+import { getAuthHeaders }                            from "@/services/auth";
+import { COLOR_OPTIONS }                             from "@/components/Band/bandConstants";
 
 import {
   SmokeDesignPanel,
@@ -96,6 +98,28 @@ function buildInitialSmokeState(
   return state;
 }
 
+function SmokeThumbnail({ state }: { state: SmokeDesignState }) {
+  const color = COLOR_OPTIONS.find(c => c.id === state.design.primaryColor);
+  const name  = (state.bandName || "SIGNATURE").toUpperCase().slice(0, 12);
+  return (
+    <svg width={200} height={80} viewBox="0 0 200 80">
+      <rect x="6" y="16" width="188" height="48" rx="7"
+        fill={color?.primary ?? "#2A1F08"}
+        stroke={color?.accent ?? "#D4AF37"} strokeWidth="1.5"
+      />
+      <text x="100" y="44"
+        textAnchor="middle"
+        fontFamily="'Cormorant Garamond', Georgia, serif"
+        fontSize="11" fontWeight="600"
+        fill={color?.text ?? "#F5E4A0"}
+        letterSpacing="2.5"
+      >
+        {name}
+      </text>
+    </svg>
+  );
+}
+
 export default function SignatureStudio({
   isOpen,
   craft,
@@ -117,10 +141,12 @@ export default function SignatureStudio({
   const [saved,        setSaved]        = useState(false);
   const [submitting,   setSubmitting]   = useState(false);
   const [submitted,    setSubmitted]    = useState(false);
-  const [exporting,    setExporting]    = useState(false);
-  const [exportDone,   setExportDone]   = useState(false);
-  const [submitError,  setSubmitError]  = useState<string | null>(null);
-  const [draftName,    setDraftName]    = useState("");
+  const [exporting,          setExporting]          = useState(false);
+  const [exportDone,         setExportDone]         = useState(false);
+  const [exportUrl,          setExportUrl]          = useState<string | null>(null);
+  const [submitError,        setSubmitError]        = useState<string | null>(null);
+  const [draftName,          setDraftName]          = useState("");
+  const [selectedHistoryDraft, setSelectedHistoryDraft] = useState<string | null>(null);
 
   const previewRef     = useRef<HTMLDivElement>(null);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -201,7 +227,7 @@ export default function SignatureStudio({
     setActiveTab("design");
   }, [craft]);
 
-  // --- PNG export via html2canvas ---
+  // --- PNG export via html2canvas → Cloudinary upload ---
   const handleExport = useCallback(async () => {
     if (!previewRef.current) {
       setActiveTab("preview");
@@ -215,27 +241,57 @@ export default function SignatureStudio({
         useCORS: true,
         logging: false,
       });
-      const url  = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
+
       const name = (
         craft === "smoke" ? (currentDesign as SmokeDesignState).bandName :
         craft === "brew"  ? (currentDesign as BrewDesignState).brandName :
         craft === "pour"  ? (currentDesign as PourDesignState).labelName :
         (currentDesign as VapeDesignState).flavorName
       ) || CRAFT_LABEL[craft];
-      link.href     = url;
-      link.download = `${name.replace(/\s+/g, "_")}_signature.png`;
+      const slug = name.replace(/\s+/g, "_");
+
+      // 1. Download PNG locally
+      const dataUrl = canvas.toDataURL("image/png");
+      const link    = document.createElement("a");
+      link.href     = dataUrl;
+      link.download = `${slug}_signature.png`;
       link.click();
+
+      // 2. Upload to Cloudinary via /api/upload (best-effort, auth required)
+      const authHeaders = getAuthHeaders() as Record<string, string>;
+      if (authHeaders["Authorization"]) {
+        const blob = await new Promise<Blob>((resolve, reject) =>
+          canvas.toBlob(b => b ? resolve(b) : reject(new Error("toBlob failed")), "image/png"),
+        );
+        const fd = new FormData();
+        fd.append("image", blob, `${slug}_signature.png`);
+        const uploadRes = await fetch("/api/upload", {
+          method:  "POST",
+          headers: authHeaders,
+          body:    fd,
+        });
+        if (uploadRes.ok) {
+          const { url } = await uploadRes.json() as { url: string };
+          setExportUrl(url);
+          // Persist URL in draft payload (non-blocking)
+          void saveDesignDraft({
+            craft,
+            draftName: draftName || `${CRAFT_LABEL[craft]} Draft`,
+            payload:   { ...(currentDesign as unknown as Record<string, unknown>), exportUrl: url },
+          });
+        }
+      }
+
       setExportDone(true);
       setTimeout(() => setExportDone(false), 2500);
     } catch {
-      // silently fail — user still has the studio
+      // silently degrade — user still has the local download
     } finally {
       setExporting(false);
     }
-  }, [craft, currentDesign]);
+  }, [craft, currentDesign, draftName]);
 
-  // --- Submit to Venue ---
+  // --- Submit to Venue via POST /api/signature-cigars ---
   const handleSubmit = useCallback(async () => {
     setSubmitting(true);
     setSubmitError(null);
@@ -247,12 +303,50 @@ export default function SignatureStudio({
         (currentDesign as VapeDesignState).flavorName
       ) || "Untitled";
 
-      await saveDesignDraft({
+      const brandName = name.trim().slice(0, 28) || "Signature";
+
+      // Build payload — smoke can optionally supply band design from current state
+      const statePayload = currentDesign as unknown as Record<string, unknown>;
+      const body: Record<string, unknown> = {
+        brandName,
         craft,
-        draftName:    name,
-        payload:      { ...(currentDesign as unknown as Record<string, unknown>), submitted: true, submittedAt: new Date().toISOString(), score },
-        lockedFields: ["submitted"],
+        studioPayload: { ...statePayload, score, submittedAt: new Date().toISOString() },
+        description:   craft === "smoke"
+          ? ((currentDesign as SmokeDesignState).description ?? "").slice(0, 300)
+          : `${CRAFT_LABEL[craft]} studio submission · score ${Math.round(score / 10)} / 10`,
+        status: "submitted",
+      };
+
+      // For smoke, enrich with proper bandDesign so it bypasses the stub path
+      if (craft === "smoke") {
+        const s = currentDesign as SmokeDesignState;
+        const colorOpt = COLOR_OPTIONS.find(c => c.id === s.design.primaryColor);
+        body["bandDesign"] = {
+          template:     "classic-gold",
+          primaryColor: colorOpt?.primary ?? "#2A1F08",
+          accentColor:  colorOpt?.accent  ?? "#D4AF37",
+          fontStyle:    s.design.textStyle ?? "serif",
+          emblem:       s.design.emblem    ?? "crown",
+          brandName,
+        };
+        body["cigarSpec"] = {
+          strength:        3,
+          flavorDirection: ["sweet", "bold"] as Array<"sweet" | "bold">,
+          wrapperType:     "natural",
+        };
+      }
+
+      const res = await fetch("/api/signature-cigars", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        body:    JSON.stringify(body),
       });
+
+      if (!res.ok) {
+        const err = await res.json() as { error?: string };
+        throw new Error(err.error ?? "Submission failed");
+      }
+
       setSubmitted(true);
     } catch (e) {
       setSubmitError(e instanceof Error ? e.message : "Submission failed");
@@ -379,10 +473,13 @@ export default function SignatureStudio({
                         <div className="flex flex-col items-center gap-3 py-4">
                           <div className="p-8 rounded-2xl flex items-center justify-center"
                             style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.05)", minHeight: 300 }}>
-                            <BrewPreview state={currentDesign as BrewDesignState} />
+                            <BrewPreview
+                              state={currentDesign as BrewDesignState}
+                              onDrag={(off) => setCurrentDesign({ ...(currentDesign as BrewDesignState), labelOffset: off })}
+                            />
                           </div>
                           <p className="text-[8px] uppercase tracking-[0.28em]" style={{ color: MUTED }}>
-                            Bottle Label Preview
+                            Bottle Label Preview · <span style={{ color: "rgba(212,175,55,0.4)" }}>Drag label to reposition</span>
                           </p>
                         </div>
                       )}
@@ -390,10 +487,13 @@ export default function SignatureStudio({
                         <div className="flex flex-col items-center gap-3 py-4">
                           <div className="p-8 rounded-2xl flex items-center justify-center"
                             style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.05)", minHeight: 300 }}>
-                            <PourPreview state={currentDesign as PourDesignState} />
+                            <PourPreview
+                              state={currentDesign as PourDesignState}
+                              onDrag={(off) => setCurrentDesign({ ...(currentDesign as PourDesignState), labelOffset: off })}
+                            />
                           </div>
                           <p className="text-[8px] uppercase tracking-[0.28em]" style={{ color: MUTED }}>
-                            Signature Drink Preview
+                            Signature Drink Preview · <span style={{ color: "rgba(212,175,55,0.4)" }}>Drag label to reposition</span>
                           </p>
                         </div>
                       )}
@@ -401,10 +501,13 @@ export default function SignatureStudio({
                         <div className="flex flex-col items-center gap-3 py-4">
                           <div className="p-8 rounded-2xl flex items-center justify-center"
                             style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.05)", minHeight: 300 }}>
-                            <VapePreview state={currentDesign as VapeDesignState} />
+                            <VapePreview
+                              state={currentDesign as VapeDesignState}
+                              onDrag={(off) => setCurrentDesign({ ...(currentDesign as VapeDesignState), labelOffset: off })}
+                            />
                           </div>
                           <p className="text-[8px] uppercase tracking-[0.28em]" style={{ color: MUTED }}>
-                            Device Preview
+                            Device Preview · <span style={{ color: "rgba(212,175,55,0.4)" }}>Drag label to reposition</span>
                           </p>
                         </div>
                       )}
@@ -458,7 +561,7 @@ export default function SignatureStudio({
                     animate={{ opacity: 1, x: 0   }}
                     exit={{ opacity: 0, x: -12  }}
                     transition={{ duration: 0.2 }}
-                    className="py-4 space-y-3"
+                    className="py-4"
                   >
                     <p className="text-[9px] uppercase tracking-[0.24em] mb-4" style={{ color: MUTED }}>
                       Recent Drafts — {CRAFT_LABEL[craft]}
@@ -479,40 +582,95 @@ export default function SignatureStudio({
                         </p>
                       </div>
                     ) : (
-                      drafts.map((draft, i) => (
-                        <motion.div
-                          key={draft.id}
-                          initial={{ opacity: 0, y: 6 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.06 }}
-                          className="flex items-center justify-between gap-3 p-4 rounded-xl"
-                          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
-                        >
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-serif truncate" style={{ color: "rgba(220,200,165,0.85)" }}>
-                              {draft.draftName || "Untitled Draft"}
-                            </p>
-                            <p className="text-[9px] mt-0.5" style={{ color: MUTED }}>
-                              {new Date(draft.updatedAt).toLocaleString()}
-                              {Boolean(draft.payload["submitted"]) && (
-                                <span className="ml-2 text-[8px] uppercase tracking-[0.15em]"
-                                  style={{ color: "rgba(100,200,120,0.7)" }}>
-                                  · Submitted
-                                </span>
-                              )}
-                            </p>
-                          </div>
-                          <motion.button
-                            onClick={() => handleRestoreDraft(draft)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.16em]"
-                            style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)", color: GOLD_DIM }}
-                            whileHover={{ scale: 1.04 }}
-                            whileTap={{ scale: 0.96 }}
-                          >
-                            <RotateCcw size={10} /> Restore
-                          </motion.button>
-                        </motion.div>
-                      ))
+                      <>
+                        {/* Thumbnail strip */}
+                        <div className="flex gap-3 overflow-x-auto pb-3 -mx-1 px-1"
+                          style={{ scrollbarWidth: "none" }}>
+                          {drafts.map((draft, i) => {
+                            const isSelected = selectedHistoryDraft === draft.id;
+                            const payload    = draft.payload as unknown;
+                            return (
+                              <motion.button
+                                key={draft.id}
+                                onClick={() => setSelectedHistoryDraft(isSelected ? null : draft.id)}
+                                initial={{ opacity: 0, y: 6 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.07 }}
+                                className="flex-shrink-0 flex flex-col items-center gap-1.5 cursor-pointer"
+                                style={{ width: 88 }}
+                                whileHover={{ scale: 1.04 }}
+                                whileTap={{ scale: 0.97 }}
+                              >
+                                <div className="relative rounded-xl overflow-hidden"
+                                  style={{
+                                    width: 88, height: 108,
+                                    background: "rgba(0,0,0,0.4)",
+                                    border: isSelected
+                                      ? "1.5px solid rgba(212,175,55,0.65)"
+                                      : "1px solid rgba(255,255,255,0.09)",
+                                  }}>
+                                  {/* Mini preview */}
+                                  <div className="flex items-center justify-center"
+                                    style={{ transform: "scale(0.4)", transformOrigin: "top center", pointerEvents: "none", height: 270 }}>
+                                    {craft === "brew"  && <BrewPreview  state={payload as BrewDesignState}  />}
+                                    {craft === "pour"  && <PourPreview  state={payload as PourDesignState}  />}
+                                    {craft === "vape"  && <VapePreview  state={payload as VapeDesignState}  />}
+                                    {craft === "smoke" && <SmokeThumbnail state={payload as SmokeDesignState} />}
+                                  </div>
+                                  {/* Submitted badge */}
+                                  {Boolean((payload as Record<string, unknown>)["submitted"]) && (
+                                    <div className="absolute bottom-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center"
+                                      style={{ background: "rgba(100,200,120,0.9)" }}>
+                                      <Check size={8} color="#fff" />
+                                    </div>
+                                  )}
+                                  {isSelected && (
+                                    <div className="absolute inset-0 rounded-xl" style={{ background: "rgba(212,175,55,0.07)" }} />
+                                  )}
+                                </div>
+                                <p className="text-[9px] text-center w-full truncate" style={{ color: MUTED }}>
+                                  {draft.draftName || "Draft"}
+                                </p>
+                                <p className="text-[8px] text-center" style={{ color: "rgba(180,155,100,0.25)" }}>
+                                  {new Date(draft.updatedAt).toLocaleDateString()}
+                                </p>
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Selected draft detail */}
+                        {selectedHistoryDraft !== null && (() => {
+                          const draft = drafts.find(d => d.id === selectedHistoryDraft);
+                          if (!draft) return null;
+                          return (
+                            <motion.div
+                              initial={{ opacity: 0, y: 6 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="mt-3 p-4 rounded-xl flex items-center justify-between gap-3"
+                              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,175,55,0.15)" }}
+                            >
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-serif truncate" style={{ color: "rgba(220,200,165,0.9)" }}>
+                                  {draft.draftName || "Untitled Draft"}
+                                </p>
+                                <p className="text-[9px] mt-0.5" style={{ color: MUTED }}>
+                                  {new Date(draft.updatedAt).toLocaleString()}
+                                </p>
+                              </div>
+                              <motion.button
+                                onClick={() => handleRestoreDraft(draft)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.16em]"
+                                style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)", color: GOLD_DIM }}
+                                whileHover={{ scale: 1.04 }}
+                                whileTap={{ scale: 0.96 }}
+                              >
+                                <RotateCcw size={10} /> Restore
+                              </motion.button>
+                            </motion.div>
+                          );
+                        })()}
+                      </>
                     )}
                   </motion.div>
                 )}

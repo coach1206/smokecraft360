@@ -1,8 +1,9 @@
 /**
  * PourDesignPanel — PourCraft cocktail/spirit glass editor + glass preview.
+ * Supports touch-drag label fine-positioning via SVG pointer events.
  */
-import { useId } from "react";
-import { motion } from "framer-motion";
+import { useId, useRef } from "react";
+import { motion }        from "framer-motion";
 
 export interface PourDesignState {
   labelName:    string;
@@ -11,6 +12,7 @@ export interface PourDesignState {
   font:         "serif" | "sans";
   primaryColor: string;
   accentColor:  string;
+  labelOffset:  { x: number; y: number };
 }
 
 export const DEFAULT_POUR_STATE: PourDesignState = {
@@ -20,17 +22,18 @@ export const DEFAULT_POUR_STATE: PourDesignState = {
   font:         "serif",
   primaryColor: "#0F1B35",
   accentColor:  "#4A8AC4",
+  labelOffset:  { x: 0, y: 0 },
 };
 
 const MUTED    = "rgba(180,155,100,0.45)";
 const GOLD_DIM = "rgba(212,175,55,0.55)";
 
 const GLASS_OPTIONS = [
-  { id: "highball" as const, label: "Highball",  glyph: "⊓" },
-  { id: "coupe"    as const, label: "Coupe",     glyph: "♡" },
-  { id: "rocks"    as const, label: "Rocks",     glyph: "□" },
-  { id: "martini"  as const, label: "Martini",   glyph: "△" },
-  { id: "wine"     as const, label: "Wine",      glyph: "♦" },
+  { id: "highball" as const, label: "Highball" },
+  { id: "coupe"    as const, label: "Coupe"    },
+  { id: "rocks"    as const, label: "Rocks"    },
+  { id: "martini"  as const, label: "Martini"  },
+  { id: "wine"     as const, label: "Wine"     },
 ];
 
 const GARNISH_OPTIONS = [
@@ -43,21 +46,16 @@ const GARNISH_OPTIONS = [
 ];
 
 const COLOR_PALETTE = [
-  { primary: "#0F1B35", accent: "#4A8AC4", label: "Navy" },
-  { primary: "#2A1F08", accent: "#D4AF37", label: "Aged Oak" },
-  { primary: "#141010", accent: "#8B7355", label: "Charcoal" },
+  { primary: "#0F1B35", accent: "#4A8AC4", label: "Navy"      },
+  { primary: "#2A1F08", accent: "#D4AF37", label: "Aged Oak"  },
+  { primary: "#141010", accent: "#8B7355", label: "Charcoal"  },
   { primary: "#0F2018", accent: "#6AB87A", label: "Botanical" },
-  { primary: "#3A0F18", accent: "#C4708A", label: "Rose" },
-  { primary: "#1A1830", accent: "#8870C0", label: "Dusk" },
+  { primary: "#3A0F18", accent: "#C4708A", label: "Rose"      },
+  { primary: "#1A1830", accent: "#8870C0", label: "Dusk"      },
 ];
 
 const GARNISH_GLYPH: Record<PourDesignState["garnish"], string> = {
-  none:   "",
-  lemon:  "🍋",
-  lime:   "🍈",
-  mint:   "🌿",
-  cherry: "🍒",
-  olive:  "🫒",
+  none: "", lemon: "🍋", lime: "🍈", mint: "🌿", cherry: "🍒", olive: "🫒",
 };
 
 interface Props {
@@ -74,12 +72,33 @@ function Label({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function PourPreview({ state }: { state: PourDesignState }) {
-  const label = (state.labelName || "Signature").slice(0, 16);
-  const garnishColor = GARNISH_OPTIONS.find(g => g.id === state.garnish)?.color ?? "transparent";
-  const fontFamily = state.font === "serif" ? "'Cormorant Garamond', Georgia, serif" : "Inter, sans-serif";
+function getSVGPoint(e: React.PointerEvent, svgEl: SVGSVGElement): { x: number; y: number } {
+  const pt  = svgEl.createSVGPoint();
+  pt.x = e.clientX;
+  pt.y = e.clientY;
+  const inv = svgEl.getScreenCTM()?.inverse();
+  if (!inv) return { x: 0, y: 0 };
+  const t = pt.matrixTransform(inv);
+  return { x: t.x, y: t.y };
+}
 
-  // Different SVG shapes per glass type
+export function PourPreview({
+  state,
+  onDrag,
+}: {
+  state:   PourDesignState;
+  onDrag?: (offset: { x: number; y: number }) => void;
+}) {
+  const off       = state.labelOffset ?? { x: 0, y: 0 };
+  const svgRef    = useRef<SVGSVGElement>(null);
+  const dragStart = useRef<{ svgX: number; svgY: number; ox: number; oy: number } | null>(null);
+
+  const label        = (state.labelName || "Signature").slice(0, 16);
+  const garnishColor = GARNISH_OPTIONS.find(g => g.id === state.garnish)?.color ?? "transparent";
+  const fontFamily   = state.font === "serif"
+    ? "'Cormorant Garamond', Georgia, serif"
+    : "Inter, sans-serif";
+
   const glassPaths: Record<PourDesignState["glassType"], { body: string; liquid: string; stem?: string }> = {
     highball: {
       body:   "M72,40 L72,250 Q72,262 84,264 L116,264 Q128,262 128,250 L128,40 Z",
@@ -106,11 +125,17 @@ export function PourPreview({ state }: { state: PourDesignState }) {
     },
   };
 
-  const paths = glassPaths[state.glassType];
-  const liquidOpacity = 0.72;
+  const paths         = glassPaths[state.glassType];
+  const baseLabelY    = state.glassType === "martini" ? 108 : state.glassType === "coupe" ? 100 : 168;
+  const baseAccentY   = baseLabelY + 4;
+
+  const labelTX = 100 + off.x;
+  const labelTY = baseLabelY + off.y;
+  const accentY = baseAccentY + off.y;
 
   return (
     <motion.svg
+      ref={svgRef}
       width={200} height={300}
       viewBox="0 0 200 300"
       initial={{ opacity: 0, scale: 0.95 }}
@@ -124,45 +149,55 @@ export function PourPreview({ state }: { state: PourDesignState }) {
           <stop offset="100%" stopColor="rgba(255,255,255,0.04)" />
         </linearGradient>
         <linearGradient id="liquid-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor={state.accentColor} stopOpacity="0.5" />
+          <stop offset="0%"   stopColor={state.accentColor}  stopOpacity="0.5" />
           <stop offset="100%" stopColor={state.primaryColor} stopOpacity="0.85" />
         </linearGradient>
       </defs>
 
-      {/* Liquid */}
-      <path d={paths.liquid} fill="url(#liquid-fill)" opacity={liquidOpacity} />
-
-      {/* Glass body outline */}
+      <path d={paths.liquid} fill="url(#liquid-fill)" opacity={0.72} />
       <path d={paths.body} fill="url(#glass-fill)" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" />
-
-      {/* Stem (if present) */}
       {paths.stem && (
         <path d={paths.stem} fill="url(#glass-fill)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
       )}
 
-      {/* Label text on glass */}
-      <text
-        x="100"
-        y={state.glassType === "martini" ? "108" : state.glassType === "coupe" ? "100" : "168"}
-        textAnchor="middle"
-        fontFamily={fontFamily}
-        fontSize="9"
-        fill="rgba(255,255,255,0.92)"
-        letterSpacing="1.8"
+      {/* Draggable label group */}
+      <g
+        style={{ cursor: onDrag ? "grab" : "default", touchAction: "none" }}
+        onPointerDown={onDrag ? (e) => {
+          if (!svgRef.current) return;
+          (e.target as Element).setPointerCapture(e.pointerId);
+          const p = getSVGPoint(e, svgRef.current);
+          dragStart.current = { svgX: p.x, svgY: p.y, ox: off.x, oy: off.y };
+        } : undefined}
+        onPointerMove={onDrag ? (e) => {
+          if (!dragStart.current || !svgRef.current) return;
+          const p = getSVGPoint(e, svgRef.current);
+          onDrag({
+            x: dragStart.current.ox + p.x - dragStart.current.svgX,
+            y: dragStart.current.oy + p.y - dragStart.current.svgY,
+          });
+        } : undefined}
+        onPointerUp={() => { dragStart.current = null; }}
       >
-        {label.toUpperCase()}
-      </text>
+        <text
+          x={labelTX} y={labelTY}
+          textAnchor="middle"
+          fontFamily={fontFamily}
+          fontSize="9"
+          fill="rgba(255,255,255,0.92)"
+          letterSpacing="1.8"
+        >
+          {label.toUpperCase()}
+        </text>
+        <line x1={labelTX - 16} x2={labelTX + 16}
+          y1={accentY} y2={accentY}
+          stroke={state.accentColor} strokeWidth="0.8" opacity="0.7"
+        />
+        {onDrag && (
+          <rect x={labelTX - 40} y={labelTY - 12} width="80" height="20" fill="transparent" />
+        )}
+      </g>
 
-      {/* Accent line under label */}
-      <line x1="84" x2="116"
-        y1={state.glassType === "martini" ? "112" : state.glassType === "coupe" ? "104" : "172"}
-        y2={state.glassType === "martini" ? "112" : state.glassType === "coupe" ? "104" : "172"}
-        stroke={state.accentColor}
-        strokeWidth="0.8"
-        opacity="0.7"
-      />
-
-      {/* Garnish indicator */}
       {state.garnish !== "none" && (
         <>
           <circle cx="150" cy="55" r="8" fill={garnishColor} opacity="0.85" />
@@ -183,10 +218,13 @@ export function PourDesignPanel({ state, onChange, tab }: Props) {
       <div className="flex flex-col items-center gap-3 py-4">
         <div className="p-8 rounded-2xl flex items-center justify-center"
           style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.05)", minHeight: 300 }}>
-          <PourPreview state={state} />
+          <PourPreview
+            state={state}
+            onDrag={(off) => set("labelOffset", off)}
+          />
         </div>
         <p className="text-[8px] uppercase tracking-[0.28em]" style={{ color: MUTED }}>
-          Signature Drink Preview
+          Signature Drink Preview · <span style={{ color: "rgba(212,175,55,0.4)" }}>Drag label to reposition</span>
         </p>
       </div>
     );
@@ -277,6 +315,21 @@ export function PourDesignPanel({ state, onChange, tab }: Props) {
               {f === "serif" ? "Serif" : "Modern"}
             </button>
           ))}
+        </div>
+      </div>
+
+      <div>
+        <Label>Label Position</Label>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => set("labelOffset", { x: 0, y: 0 })}
+            className="px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.15em]"
+            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: MUTED }}>
+            Reset Position
+          </button>
+          <span className="text-[9px]" style={{ color: "rgba(180,155,100,0.3)" }}>
+            or drag label in Preview tab
+          </span>
         </div>
       </div>
     </div>
