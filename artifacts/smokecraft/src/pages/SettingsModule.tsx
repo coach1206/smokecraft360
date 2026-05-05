@@ -539,7 +539,7 @@ export default function SettingsModule() {
 
       <ConfirmModal
         open={!!pendingMode}
-        title="Change POS Mode"
+        title="Change Operating Mode"
         message={pendingMode ? `Switch to ${POS_MODE_INFO[pendingMode].label} mode? This affects how the system processes transactions and syncs with external POS systems.` : ""}
         confirmLabel="Switch Mode"
         onConfirm={confirmModeChange}

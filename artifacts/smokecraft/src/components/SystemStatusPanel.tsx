@@ -128,7 +128,7 @@ export default function SystemStatusPanel({ open, onClose }: SystemStatusPanelPr
                 color={inventoryColor}
               />
               <StatusRow icon={CreditCard} label="Payment Mode" value="Simulated" color="#5b8def" />
-              <StatusRow icon={Layers} label="POS Operating Mode" value={modeInfo.label} color={modeInfo.color} />
+              <StatusRow icon={Layers} label="Operating Mode" value={modeInfo.label} color={modeInfo.color} />
               <StatusRow
                 icon={Shield}
                 label="Security State"

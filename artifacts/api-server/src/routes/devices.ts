@@ -13,11 +13,13 @@
 
 import { Router, type IRouter, type Response }    from "express";
 import { eq, and, sql, desc, count, isNull }       from "drizzle-orm";
+import { randomUUID }                              from "crypto";
 import {
   db,
   devicesTable,
   deviceSessionsTable,
   venuesTable,
+  offlineQueueTable,
   type DeviceType,
   type DeviceStatus,
   type ResetReason,
@@ -27,6 +29,7 @@ import {
 import { requireAuth, type AuthRequest }           from "../middleware/auth";
 import { requireRole }                             from "../middleware/roles";
 import { logger }                                  from "../lib/logger";
+import { logAudit }                                from "../lib/audit";
 import { z }                                       from "zod";
 import QRCode                                      from "qrcode";
 
@@ -334,14 +337,39 @@ router.post(
 
     if (!device[0]) { res.status(404).json({ error: "Device not found" }); return; }
 
+    const recoveredAt = new Date();
+
     const [updated] = await db
       .update(devicesTable)
-      .set({ status: "active", lastActiveAt: new Date(), updatedAt: new Date() })
+      .set({ status: "active", lastActiveAt: recoveredAt, updatedAt: recoveredAt })
       .where(eq(devicesTable.id, String(req.params.id ?? "")))
       .returning();
 
+    // Enqueue a force_refresh action for the device to pick up on reconnect
+    try {
+      await db.insert(offlineQueueTable).values({
+        idempotencyKey: `device_recover_${updated.id}_${recoveredAt.getTime()}`,
+        deviceId:       updated.id,
+        venueId:        venueId ?? undefined,
+        kind:           "force_refresh",
+        payload:        { deviceId: updated.id, reason: "offline_recovery", triggeredAt: recoveredAt.toISOString() },
+        status:         "pending",
+        clientCreatedAt: recoveredAt,
+      }).onConflictDoNothing();
+    } catch { /* non-fatal */ }
+
+    // Audit log
+    await logAudit(req, {
+      action:     "device.recover",
+      entityType: "device",
+      entityId:   updated.id,
+      before:     { status: device[0].status },
+      after:      { status: "active" },
+      venueId,
+    });
+
     logger.info({ deviceId: updated.id, venueId }, "Device recovery initiated");
-    res.json({ ok: true, device: updated, recoveredAt: new Date() });
+    res.json({ ok: true, device: updated, recoveredAt });
   },
 );
 
