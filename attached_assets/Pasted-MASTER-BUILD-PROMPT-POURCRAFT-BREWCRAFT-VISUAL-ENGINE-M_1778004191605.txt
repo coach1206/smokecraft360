@@ -1,0 +1,236 @@
+MASTER BUILD PROMPT (POURCRAFT + BREWCRAFT VISUAL ENGINE)
+MISSING / REQUIRED (READ THIS FIRST)
+
+You are currently missing:
+
+Real glass image assets (required or nothing will render)
+Layered rendering system (glass + liquid + garnish)
+State → visual binding (UI selections don’t drive visuals yet)
+Animation layer (currently static, feels dead)
+Reusable engine across all crafts (you’ll need this for Smoke/Vape/Brew too)
+
+If any of these are skipped → system will still feel fake.
+
+FAILURE PREVENTION CHECKLIST
+
+Before writing code, enforce:
+
+Every UI selection MUST update the visual instantly
+No placeholder shapes allowed in final render
+Images must load locally (no broken URLs)
+Layers must stack correctly (glass → liquid → garnish → FX)
+All crafts must share ONE engine (not duplicated logic)
+Must support future AI rendering (don’t hard lock structure)
+MASTER PROMPT
+
+Build a Layered Drink Rendering Engine for PourCraft and BrewCraft that visually constructs a real drink using stacked image and visual layers.
+
+The system must replace the current placeholder center object with a fully rendered drink preview that updates in real-time based on user selections.
+
+CORE SYSTEM ARCHITECTURE
+COMPONENT: CraftRenderer.tsx
+
+This is the heart of the system.
+
+It must render:
+
+Glass layer (base image)
+Liquid layer (dynamic color + fill)
+Garnish layer (image overlays)
+FX layer (lighting, glow, reflections)
+STATE INPUT (FROM UI PANEL)
+
+Selections coming from right panel:
+
+selectedGlass
+selectedPalette
+selectedGarnish[]
+labelStyle
+IMAGE ASSET STRUCTURE (REQUIRED)
+
+Create local folders:
+
+/public/images/glasses/
+/public/images/garnish/
+/public/images/liquids/
+GLASS IMAGES
+
+You must include:
+
+rocks.png
+coupe.png
+highball.png
+snifter.png
+beer-pint.png
+beer-mug.png
+GARNISH IMAGES
+orange-peel.png
+lemon-twist.png
+cherry.png
+mint.png
+smoke.png
+foam.png (for beer)
+GLASS MAPPING
+const glassMap = {
+  rocks: "/images/glasses/rocks.png",
+  coupe: "/images/glasses/coupe.png",
+  highball: "/images/glasses/highball.png",
+  snifter: "/images/glasses/snifter.png",
+  pint: "/images/glasses/beer-pint.png",
+  mug: "/images/glasses/beer-mug.png"
+};
+LIQUID COLOR SYSTEM
+const liquidMap = {
+  whiskey: "#c97a2b",
+  cognac: "#a35a2a",
+  rum: "#6b3e26",
+  tequila: "#d9c27a",
+  gin: "#eaeaea",
+  amber: "#d07a28",
+  stout: "#1a1a1a",
+  pale: "#f2c94c",
+  wheat: "#f5deb3"
+};
+CORE RENDER CODE
+<div className="renderer">
+
+  <img src={glassMap[selectedGlass]} className="glass-layer" />
+
+  <div
+    className="liquid-layer"
+    style={{
+      background: liquidMap[selectedPalette],
+      height: getFillLevel(selectedGlass)
+    }}
+  />
+
+  {selectedGarnish.includes("orange") && (
+    <img src="/images/garnish/orange-peel.png" className="garnish-layer" />
+  )}
+
+  {selectedGarnish.includes("cherry") && (
+    <img src="/images/garnish/cherry.png" className="garnish-layer" />
+  )}
+
+</div>
+FILL LEVEL SYSTEM
+const getFillLevel = (glass) => {
+  switch(glass) {
+    case "rocks": return "55%";
+    case "coupe": return "70%";
+    case "highball": return "85%";
+    case "snifter": return "60%";
+    case "pint": return "90%";
+    case "mug": return "95%";
+  }
+};
+CSS LAYER STACK
+.renderer {
+  position: relative;
+  width: 320px;
+  height: 420px;
+}
+
+.glass-layer {
+  position: absolute;
+  width: 100%;
+  z-index: 3;
+}
+
+.liquid-layer {
+  position: absolute;
+  bottom: 0;
+  width: 80%;
+  left: 10%;
+  border-radius: 20px;
+  z-index: 2;
+  opacity: 0.85;
+  transition: all 0.4s ease;
+}
+
+.garnish-layer {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  z-index: 4;
+}
+ANIMATION LAYER (THIS MAKES IT FEEL REAL)
+
+Add:
+
+Liquid fill animation on change
+Garnish drop animation
+Subtle glow pulse
+.liquid-layer {
+  animation: fillUp 0.6s ease;
+}
+
+@keyframes fillUp {
+  from { height: 0; }
+  to { height: var(--target-height); }
+}
+BREWCRAFT DIFFERENCE
+
+Add foam layer:
+
+{isBeer && (
+  <div className="foam-layer"></div>
+)}
+.foam-layer {
+  position: absolute;
+  top: 5%;
+  width: 80%;
+  left: 10%;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  z-index: 5;
+}
+REMOVE THIS (IMPORTANT)
+
+Delete:
+
+capsule shape
+fake center object
+static placeholder glow
+FINAL RESULT
+
+User selects:
+→ glass
+→ drink type
+→ garnish
+
+And instantly sees:
+
+real glass
+correct liquid color
+garnish placed correctly
+smooth animation
+
+Now it feels like:
+crafting something physical
+
+WHAT YOU MIGHT BE FORGETTING (DON’T SKIP)
+
+You also need:
+
+SAVE SYSTEM
+POST /api/creations/save
+
+Store:
+
+glass
+palette
+garnish
+name
+generated image (optional)
+FUTURE (ALREADY STRUCTURED FOR)
+
+This engine must support later:
+
+AI image generation
+menu publishing
+POS linking
+“top creations” leaderboard

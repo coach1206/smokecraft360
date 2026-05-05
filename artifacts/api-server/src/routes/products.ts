@@ -20,7 +20,7 @@ const router: IRouter = Router();
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const CLOUDINARY_RE = /^https:\/\/res\.cloudinary\.com\//;
 
-const VALID_CATEGORIES = ["cigar", "alcohol", "wine", "cocktail", "food", "coffee", "tea", "scent", "candle"] as const;
+const VALID_CATEGORIES = ["cigar", "alcohol", "beer", "wine", "cocktail", "food", "coffee", "tea", "scent", "candle"] as const;
 type ValidCategory = (typeof VALID_CATEGORIES)[number];
 
 // ── GET /api/products ─────────────────────────────────────────────────────────
