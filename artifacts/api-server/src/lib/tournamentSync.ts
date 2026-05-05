@@ -47,7 +47,8 @@ export async function getUserBestCraftScore(
     .from(craftBuildsTable)
     .where(and(...conditions));
 
-  return Math.round(Number(row?.best ?? 0) * 100); // scale 0–5 float → 0–500 int pts
+  const scaled = Math.round(Number(row?.best ?? 0) * 100); // scale 0–5 float → 0–500 int pts
+  return Number.isNaN(scaled) ? 0 : scaled;
 }
 
 /**
