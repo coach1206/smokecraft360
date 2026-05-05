@@ -167,6 +167,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const [resumeState,    setResumeState   ] = useState<"loading" | "prompt" | "none">("none");
   const [resumeSession,  setResumeSession ] = useState<CraftSessionState | null>(null);
   const [fastBuildBadge, setFastBuildBadge] = useState(false);
+  const [coachResuming,  setCoachResuming ] = useState(false);
 
   const phaseIndex = useMemo(() => {
     const order: Phase[] = ["intro", "style", "profile", "match", "reveal"];
@@ -270,7 +271,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     const newScore100 = Math.round(result.score * 10);
     setScoreState(prev => {
       if (newScore100 > prev.score) incrementStreak();
-      else breakStreak();
+      else if (newScore100 < prev.score) breakStreak();
       return { score: newScore100, prevScore: prev.score };
     });
     setLiveMeters({
@@ -392,6 +393,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     }
     setResumeSession(null);
     setResumeState("none");
+    setCoachResuming(true);
+    setTimeout(() => setCoachResuming(false), 100);
   }, [resumeSession, resetTimer, setStreak, config.styles, config.moods, runMatch]);
 
   const handleStartFresh = useCallback(() => {
@@ -481,18 +484,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         padding: "24px 32px 12px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
-        {/* Session timer — always visible; shows full ring before timer starts */}
-        <SessionTimer
-          totalSecs={timerTotalSecs}
-          remainingSecs={remainingSecs}
-          streakCount={streakCount}
-          isIdle={isIdle}
-          isCountdown={isCountdown}
-          isExpired={isExpired}
-          accentColor={config.theme.accent}
-        />
-
-        <div style={{ textAlign: "right", textShadow: "0 2px 8px rgba(0,0,0,0.85)" }}>
+        <div style={{ textShadow: "0 2px 8px rgba(0,0,0,0.85)" }}>
           <h1 style={{
             fontFamily: "var(--app-font-serif, Georgia, serif)",
             fontSize: "clamp(28px, 3.2vw, 44px)",
@@ -505,6 +497,16 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
             color: config.theme.accent, fontWeight: 600,
           }}>{config.tagline}</p>
         </div>
+        {/* Session timer pill — top-right */}
+        <SessionTimer
+          totalSecs={timerTotalSecs}
+          remainingSecs={remainingSecs}
+          streakCount={streakCount}
+          isIdle={isIdle}
+          isCountdown={isCountdown}
+          isExpired={isExpired}
+          accentColor={config.theme.accent}
+        />
       </header>
 
       {/* 3-column layout: sidebar / center / right (right shows in reveal only) */}
@@ -987,6 +989,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
           selectedMood !== null
         }
         isIdle={isIdle}
+        isResuming={coachResuming}
         styles={config.styles}
         moods={config.moods}
         selectedStyle={selectedStyle}

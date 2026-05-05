@@ -31,6 +31,8 @@ export interface AICoachProps {
   isBadCombo:    boolean;
   /** When true the user has been idle; triggers a "Still thinking?" coach nudge. */
   isIdle?:       boolean;
+  /** When true the user just resumed a saved session; triggers a resume coach line. */
+  isResuming?:   boolean;
   styles:        CraftStyleCard[];
   moods:         CraftMoodCard[];
   selectedStyle: CraftStyleCard | null;
@@ -55,6 +57,7 @@ export default function AICoach({
   prevScore,
   isBadCombo,
   isIdle,
+  isResuming,
   styles,
   moods,
   selectedStyle,
@@ -210,6 +213,22 @@ export default function AICoach({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBadCombo, craft]);
+
+  // ------------------------------------------------------------------
+  // Resume detection — greet the user when returning to a saved session
+  // ------------------------------------------------------------------
+  const lastResumingRef = useRef<boolean>(false);
+  useEffect(() => {
+    if (isResuming && !lastResumingRef.current) {
+      lastResumingRef.current = true;
+      const resumeLine = pickCoachLine(getCoachLines(craft, "resume"));
+      setLine(resumeLine);
+      if (!muted) speakLine(resumeLine);
+    } else if (!isResuming) {
+      lastResumingRef.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isResuming, craft]);
 
   // ------------------------------------------------------------------
   // Idle detection — nudge the user when they stop interacting

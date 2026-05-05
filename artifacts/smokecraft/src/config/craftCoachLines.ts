@@ -19,7 +19,8 @@ export type CoachEvent =
   | "reveal_challenge"
   | "bad_combo"
   | "good_combo"
-  | "idle";
+  | "idle"
+  | "resume";
 
 export type CraftCoachLines = Record<CoachEvent, string[]>;
 
@@ -74,6 +75,11 @@ const BASE: CraftCoachLines = {
     "Still thinking? The clock is ticking.",
     "Take your time — but not too much of it.",
     "I'm here when you're ready. The timer isn't as patient.",
+  ],
+  resume: [
+    "Welcome back. Your session is right where you left it.",
+    "Good to see you again. Let's pick up where we left off.",
+    "Session restored. The clock is still running.",
   ],
 };
 
