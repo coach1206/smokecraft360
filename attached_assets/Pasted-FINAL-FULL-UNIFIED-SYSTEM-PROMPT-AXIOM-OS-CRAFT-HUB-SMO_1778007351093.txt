@@ -1,0 +1,232 @@
+FINAL — FULL UNIFIED SYSTEM PROMPT
+
+AXIOM OS · CRAFT HUB · SMOKECRAFT / POURCRAFT / BREWCRAFT / VAPECRAFT
+
+🚨 MISSING / REQUIRED (READ THIS FIRST)
+
+If ANY of these are not present → system will feel incomplete:
+
+Command Surface UI (cream layer)
+Layered Rendering Engine (glass/liquid/garnish)
+AI Image Engine (photoreal output)
+Experience Engine (guided flow logic)
+POS + Pricing Engine (real-time updates)
+Inventory + Vendor Link (live stock awareness)
+Leaderboard + Competition System
+Staff / Role Tracking System
+Device Control + Sync System
+Analytics + KPI Pulse System
+Route + Motion System
+Save + Profile + Menu System
+
+This is the full stack of the product. Not optional.
+
+✅ FAILURE PREVENTION CHECKLIST
+No text directly on images
+No transparent data containers
+Every action must trigger feedback
+Every selection must update visuals instantly
+Every page must feel like a different environment
+System must work even if AI fails
+Backend must be source of truth
+🧠 SYSTEM IDENTITY
+
+This is not a dashboard.
+
+This is:
+👉 A control center
+👉 A revenue engine
+👉 A live experience system
+
+🧱 PHASE 1 — COMMAND CENTER UI FOUNDATION
+Background Control
+.page-bg {
+  position: fixed;
+  inset: 0;
+  background: url('/images/lounge-bg.jpg') center/cover no-repeat;
+  filter: blur(8px) brightness(0.35);
+  z-index: 0;
+}
+Command Surface
+.command-surface {
+  position: relative;
+  z-index: 2;
+  background: #f5efe6;
+  border-radius: 24px;
+  padding: 28px;
+  margin: 24px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+}
+Card System
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px) scale(1.02);
+}
+Motion System (Apple-Level)
+.page {
+  animation: pageEnter 0.35s ease;
+}
+
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+⚡ PHASE 2 — LIVE KPI SYSTEM
+import CountUp from "react-countup";
+
+<CountUp end={8830} duration={1.2} prefix="$" />
+.kpi-live {
+  animation: pulse 2s infinite;
+}
+🍸 PHASE 3 — LAYERED RENDER ENGINE (DRINKS)
+Structure
+Glass Layer
+Liquid Layer
+Garnish Layer
+FX Layer
+<div className="renderer">
+  <img src={glassMap[selectedGlass]} />
+  <div className="liquid-layer" style={{ background: liquidMap[selectedPalette] }} />
+</div>
+🤖 PHASE 4 — AI IMAGE ENGINE
+Backend Route
+POST /api/generate-drink-image
+
+Prompt:
+
+Ultra realistic cocktail photography.
+Glass: rocks glass
+Liquid: whiskey
+Garnish: orange peel
+Luxury bar lighting, cinematic, condensation, depth of field
+NO illustration, NO cartoon
+Frontend
+<button onClick={generateImage}>
+  Generate Real Drink
+</button>
+🧠 PHASE 5 — EXPERIENCE ENGINE (CORE BRAIN)
+
+Controls:
+
+Question flow
+Flavor logic
+Pairing engine
+Recommendation weighting
+experienceFlow = [
+  { step: "mood" },
+  { step: "strength" },
+  { step: "flavor" }
+];
+UI Flow
+Step transitions animate
+Progress bar visible
+User sees journey
+💳 PHASE 6 — POS + PRICING ENGINE
+Real-Time Pricing
+price = base + markup + experienceBoost;
+UI
+Price updates instantly
+Add to cart animation
+Checkout transition
+📦 PHASE 7 — INVENTORY + VENDOR SYSTEM
+Low stock → red pulse
+Auto reorder suggestion
+Vendor mapping
+if (stock < threshold) alert("LOW STOCK");
+🏆 PHASE 8 — LEADERBOARD SYSTEM
+
+Tracks:
+
+Top creations
+Venue rankings
+Staff performance
+GET /api/leaderboard/top-creations
+
+UI:
+
+Animated ranking
+Weekly reset
+Highlight winners
+👥 PHASE 9 — STAFF + ROLE SYSTEM
+PIN login
+Role-based access
+Activity tracking
+staffActionLog = {
+  userId,
+  action,
+  timestamp
+};
+📱 PHASE 10 — DEVICE CONTROL SYSTEM
+Kiosk control
+Tablet sync
+Remote refresh
+POST /api/device/refresh
+📊 PHASE 11 — ANALYTICS + DATA STORY
+
+Not just charts:
+
+👉 “You made $1,200 more from whiskey pairings”
+👉 “This item is trending”
+
+💾 PHASE 12 — SAVE + PROFILE SYSTEM
+POST /api/creations/save
+
+Stores:
+
+drink config
+AI image
+userId
+🎬 PHASE 13 — MICRO INTERACTIONS
+liquid fill animation
+garnish drop
+card hover glow
+button press scale
+🧠 PHASE 14 — MULTI-CRAFT UNIFICATION
+
+ALL must behave the same:
+
+SmokeCraft
+PourCraft
+BrewCraft
+VapeCraft
+
+Same engine, different data.
+
+🔊 PHASE 15 — AI ASSISTANT (EGO BOT)
+explains analytics
+suggests actions
+guides staff
+🔐 PHASE 16 — HARDENING (ENTERPRISE)
+audit logs
+role restrictions
+error states
+offline mode
+⚠️ WHAT YOU WERE MISSING (REAL TALK)
+
+You had:
+👉 features
+
+You didn’t have:
+👉 system cohesion
+
+This fixes:
+
+clarity
+flow
+perception
+control
+🚀 FINAL RESULT
+
+After this:
+
+UI feels premium
+system feels alive
+users feel ownership
+venues see value

@@ -21,6 +21,7 @@ import SignatureStudio from "@/components/SignatureStudio/SignatureStudio";
 import Leaderboard  from "@/components/Leaderboard/Leaderboard";
 import ScoreOverlay from "@/components/ScoreOverlay/ScoreOverlay";
 import { playSound } from "@/utils/sounds";
+import CraftEngine, { type CraftType as EngineCraftType } from "@/components/CraftEngine/CraftEngine";
 import {
   fetchCraftSession,
   startCraftSession,
@@ -785,7 +786,16 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                   color: config.theme.accent, fontWeight: 700,
                 }}>Step 1 — {config.language.stylePrompt}</p>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20 }}>
-                  {config.styles.map((style, i) => (
+                  {config.styles.map((style, i) => {
+                    const engineType: EngineCraftType =
+                      config.category === "beer" ? "beer"    :
+                      config.category === "vape" ? "vape"    :
+                      style.id === "rich"        ? "wine"    : "whiskey";
+                    const engineColor = extractGradientColor(style.gradient) || "#8a6030";
+                    const hasIce      = engineType === "whiskey" || engineType === "wine";
+                    const hasSwirl    = engineType === "whiskey";
+
+                    return (
                     <motion.button
                       key={style.id}
                       type="button"
@@ -801,31 +811,44 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                         minHeight: 280, borderRadius: 22,
                         border: `1px solid ${config.theme.accent}55`,
                         cursor: "pointer", padding: 0, color: "inherit",
-                        backgroundImage: `url(${style.image}), ${style.gradient}`,
-                        backgroundSize: "cover", backgroundPosition: "center",
+                        background: style.gradient,
                         boxShadow: "0 18px 50px rgba(0,0,0,0.55)",
                         textAlign: "left",
                       }}
                     >
+                      {/* Physics animation + AI image crossfade */}
+                      <CraftEngine
+                        type={engineType}
+                        color={engineColor}
+                        image={style.image}
+                        ice={hasIce}
+                        swirl={hasSwirl}
+                        muted={i > 0}
+                      />
+
+                      {/* Cinematic gradient overlay (above canvas, below text) */}
                       <div style={{
                         position: "absolute", inset: 0,
-                        background: "linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.92) 100%)",
+                        background: "linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.38) 52%, rgba(0,0,0,0.90) 100%)",
                         pointerEvents: "none",
+                        zIndex: 2,
                       }} />
                       <div style={{
                         position: "absolute", top: 16, right: 20,
-                        fontSize: 56, lineHeight: 1, color: "rgba(255,255,255,0.2)",
+                        fontSize: 56, lineHeight: 1, color: "rgba(255,255,255,0.18)",
+                        zIndex: 3,
                       }} aria-hidden>{style.glyph}</div>
                       <div style={{
                         position: "relative", height: "100%",
                         display: "flex", flexDirection: "column",
                         justifyContent: "flex-end", padding: "24px 22px", minHeight: 280,
+                        zIndex: 3,
                       }}>
                         <div style={{ width: 32, height: 2, marginBottom: 14, background: `linear-gradient(90deg, ${config.theme.accent}, transparent)` }} />
                         <h3 style={{
                           fontFamily: "var(--app-font-serif, Georgia, serif)",
                           fontSize: 22, fontWeight: 600, margin: 0, color: "#FFFFFF",
-                          textShadow: "0 2px 8px rgba(0,0,0,0.7)",
+                          textShadow: "0 2px 12px rgba(0,0,0,0.85)",
                         }}>{style.title}</h3>
                         <p style={{
                           margin: "8px 0 0", fontSize: 11,
@@ -834,7 +857,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                         }}>{style.subtitle}</p>
                       </div>
                     </motion.button>
-                  ))}
+                  );
+                  })}
                 </div>
               </motion.div>
             )}
