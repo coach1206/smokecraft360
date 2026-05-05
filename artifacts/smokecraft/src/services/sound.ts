@@ -19,6 +19,12 @@
  *   click.mp3   — short tap (~50ms)
  *   swipe.mp3   — soft whoosh (~150ms) — falls back to startup.mp3 if missing
  *   select.mp3  — premium confirm chime — falls back to startup.mp3 if missing
+ *
+ * playSFX() — synthesized tones via Web Audio API, no file assets required.
+ *   tap     — soft click (card interaction)
+ *   swoosh  — phase transition sweep
+ *   error   — dissonant pulse (bad combo)
+ *   success — ascending chime (score milestone)
  */
 
 const CLICK_SRC  = "/sounds/click.mp3";
@@ -29,7 +35,8 @@ const SELECT_SRC = "/sounds/select.wav";
 // Fallback used if a sound file is missing entirely.
 const FALLBACK_SRC = "/sounds/click.mp3";
 
-const MUTE_KEY = "smokecraft_sound_muted";
+const MUTE_KEY       = "smokecraft_sound_muted";
+const COACH_MUTE_KEY = "craft_coach_muted";
 
 let unlocked = false;
 
@@ -54,6 +61,18 @@ export function setMuted(muted: boolean): void {
   try {
     if (muted) localStorage.setItem(MUTE_KEY, "1");
     else       localStorage.removeItem(MUTE_KEY);
+  } catch { /* private mode — ignore */ }
+}
+
+/** Coach-specific mute persisted under a separate key from the card-tap mute. */
+export function isCoachMuted(): boolean {
+  try { return localStorage.getItem(COACH_MUTE_KEY) === "1"; } catch { return false; }
+}
+
+export function setCoachMuted(muted: boolean): void {
+  try {
+    if (muted) localStorage.setItem(COACH_MUTE_KEY, "1");
+    else       localStorage.removeItem(COACH_MUTE_KEY);
   } catch { /* private mode — ignore */ }
 }
 
@@ -88,3 +107,110 @@ async function play(src: string, volume = 0.55): Promise<void> {
 export function playClick():  void { void play(CLICK_SRC,  0.45); }
 export function playSwipe():  void { void play(SWIPE_SRC,  0.55); }
 export function playSelect(): void { void play(SELECT_SRC, 0.65); }
+
+// ---------------------------------------------------------------------------
+// Web Audio API — synthesized SFX (no external file assets)
+// ---------------------------------------------------------------------------
+
+/** Lazily-created shared AudioContext. Recreated if closed (e.g. after suspend). */
+let _audioCtx: AudioContext | null = null;
+
+function getSFXContext(): AudioContext | null {
+  if (typeof window === "undefined") return null;
+  try {
+    if (!_audioCtx || _audioCtx.state === "closed") {
+      const Ctor =
+        window.AudioContext ??
+        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!Ctor) return null;
+      _audioCtx = new Ctor();
+    }
+    return _audioCtx;
+  } catch {
+    return null;
+  }
+}
+
+export type SFXType = "tap" | "swoosh" | "error" | "success";
+
+/**
+ * Play a short synthesized tone — no file assets required.
+ * Gated on the same `unlocked` flag and the coach-specific mute.
+ */
+export function playSFX(type: SFXType): void {
+  if (typeof window === "undefined") return;
+  if (!unlocked || isCoachMuted()) return;
+  const ctx = getSFXContext();
+  if (!ctx) return;
+
+  try {
+    const now = ctx.currentTime;
+
+    if (type === "tap") {
+      // Soft click: brief sine burst at 820 Hz, 50 ms
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(820, now);
+      gain.gain.setValueAtTime(0.16, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
+      osc.start(now);
+      osc.stop(now + 0.055);
+      return;
+    }
+
+    if (type === "swoosh") {
+      // Descending frequency sweep 620 → 180 Hz, 220 ms
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(620, now);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.22);
+      gain.gain.setValueAtTime(0.11, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+      osc.start(now);
+      osc.stop(now + 0.22);
+      return;
+    }
+
+    if (type === "error") {
+      // Dissonant descending sawtooth pulse, 180 ms
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(155, now);
+      osc.frequency.exponentialRampToValueAtTime(110, now + 0.18);
+      gain.gain.setValueAtTime(0.10, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      osc.start(now);
+      osc.stop(now + 0.18);
+      return;
+    }
+
+    if (type === "success") {
+      // Ascending chime: C4 → E4 → G4 (261 → 330 → 392 Hz), staggered 100 ms apart
+      const freqs   = [261.63, 329.63, 392.0];
+      const spacing = 0.1;
+      freqs.forEach((freq, i) => {
+        const t    = now + i * spacing;
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.13, t + 0.018);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+        osc.start(t);
+        osc.stop(t + 0.22);
+      });
+    }
+  } catch { /* never let audio failures surface */ }
+}

@@ -11,6 +11,7 @@ import {
   type ProductResult,
 } from "@/services/api";
 import LivePreviewPanel, { type LiveMeters } from "@/components/LivePreview/LivePreviewPanel";
+import AICoach from "@/components/AICoach/AICoach";
 
 export type CraftCategory = "beer" | "alcohol" | "vape";
 
@@ -252,6 +253,20 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
       void updateScore(selectedStyle, m, "profile");
     }
   }, [selectedStyle, runMatch, updateScore]);
+
+  /**
+   * Called by AICoach A/B/C fix card when the user picks a corrective option.
+   * Swaps the style and/or mood and re-scores immediately.
+   */
+  const handleFixApplied = useCallback((
+    newStyle: CraftStyleCard,
+    newMood:  CraftMoodCard | null,
+  ) => {
+    setSelectedStyle(newStyle);
+    const mood = newMood ?? selectedMood;
+    if (newMood) setSelectedMood(newMood);
+    void updateScore(newStyle, mood, mood ? "profile" : "style");
+  }, [updateScore, selectedMood]);
 
   const featured = resp?.recommendations[0] ?? null;
   const secondary = (resp?.recommendations ?? []).slice(1, 4);
@@ -763,6 +778,19 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         styleLabel={selectedStyle?.title ?? ""}
         moodLabel={selectedMood?.title ?? ""}
         visible={phase !== "intro" && phase !== "reveal"}
+      />
+
+      <AICoach
+        craft={craftType}
+        phase={phase}
+        accentColor={config.theme.accent}
+        score={scoreState.score}
+        prevScore={scoreState.prevScore}
+        styles={config.styles}
+        moods={config.moods}
+        selectedStyle={selectedStyle}
+        selectedMood={selectedMood}
+        onFixApplied={handleFixApplied}
       />
     </div>
   );
