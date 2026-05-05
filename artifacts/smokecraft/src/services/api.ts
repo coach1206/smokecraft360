@@ -2230,6 +2230,51 @@ export async function postScore(inputs: ScoreInputs): Promise<ScoreResult | null
   }
 }
 
+// ── Saved Build Cards (Loyalty Profile) ───────────────────────────────────────
+
+export interface SavedBuildCard {
+  id:                 string;
+  userId:             string;
+  craftType:          "smoke" | "brew" | "pour" | "vape";
+  styleTitle:         string;
+  moodTitle:          string;
+  recommendationName: string;
+  score:              string;
+  savedAt:            string;
+}
+
+export async function saveBuildCard(params: {
+  craftType:          "smoke" | "brew" | "pour" | "vape";
+  styleTitle:         string;
+  moodTitle:          string;
+  recommendationName: string;
+  score:              number;
+}): Promise<SavedBuildCard | null> {
+  try {
+    const res = await fetch("/api/loyalty/builds", {
+      method:  "POST",
+      headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+      body:    JSON.stringify(params),
+    });
+    if (!res.ok) return null;
+    const data = await res.json() as { card: SavedBuildCard };
+    return data.card;
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchSavedBuilds(): Promise<SavedBuildCard[]> {
+  try {
+    const res = await fetch("/api/loyalty/builds", { headers: getAuthHeaders() });
+    if (!res.ok) return [];
+    const data = await res.json() as { builds: SavedBuildCard[] };
+    return data.builds;
+  } catch {
+    return [];
+  }
+}
+
 // ── Craft Builds ──────────────────────────────────────────────────────────────
 
 export interface CraftBuildUpsert {

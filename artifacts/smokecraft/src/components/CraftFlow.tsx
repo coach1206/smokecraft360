@@ -7,6 +7,7 @@ import {
   trackPreferences,
   postScore,
   upsertCraftBuild,
+  saveBuildCard,
   fetchCraftVoiceFeedback,
   type RecommendResponse,
   type ProductResult,
@@ -409,9 +410,11 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         streakCount: streakCountRef.current,
       });
       // Fast-build bonus: >15 min remaining (skipped on resume re-run to prevent replay)
+      let finalScore = scoreRef.current;
       if (remainingSecsRef.current > 900 && !isResumingRef.current) {
         setScoreState(prev => {
           const newScore100 = Math.min(100, prev.score + 10);
+          finalScore = newScore100;
           void upsertCraftBuild({
             craft:       craftType,
             phase:       "reveal",
@@ -425,6 +428,22 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         setTimeout(() => setFastBuildBadge(false), 4500);
       }
       isResumingRef.current = false;
+      // Auto-save build card to loyalty profile after all score mutations
+      // (fire-and-forget; silently skipped for guests)
+      {
+        const featuredRec = (config.category === "vape"
+          ? r.recommendations.filter((p) => p.category === "vape")[0]
+          : r.recommendations[0]) ?? null;
+        if (featuredRec) {
+          void saveBuildCard({
+            craftType,
+            styleTitle:         style.title,
+            moodTitle:          mood.title,
+            recommendationName: featuredRec.name,
+            score:              finalScore,
+          });
+        }
+      }
       // Score overlay — derive craft score (0–5) from session score (0–100)
       {
         const rawScore = scoreRef.current;

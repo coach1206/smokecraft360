@@ -6,6 +6,8 @@
  * POST /api/loyalty/redeem       — redeem points for a reward
  * GET  /api/loyalty/redemptions  — admin: all redemptions for a venue
  * PATCH /api/loyalty/redemptions/:id — admin: update redemption status
+ * GET  /api/loyalty/builds       — saved build cards for the current user
+ * POST /api/loyalty/builds       — save a completed build card to the loyalty profile
  */
 
 import { Router, type IRouter, type Response } from "express";
@@ -17,6 +19,8 @@ import {
   redemptionsTable,
   userProgressionTable,
   userVenueVisitsTable,
+  savedBuildCardsTable,
+  CRAFT_TYPES_SAVED,
 }                                               from "@workspace/db";
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { requireRole }                          from "../middleware/roles";
@@ -385,6 +389,61 @@ router.patch(
     });
 
     res.json(updated);
+  },
+);
+
+// ── GET /api/loyalty/builds — list all saved build cards for the caller ────────
+
+router.get(
+  "/builds",
+  requireAuth,
+  async (req: AuthRequest, res: Response) => {
+    const userId = req.user!.id;
+    const builds = await db
+      .select()
+      .from(savedBuildCardsTable)
+      .where(eq(savedBuildCardsTable.userId, userId))
+      .orderBy(desc(savedBuildCardsTable.savedAt));
+    res.json({ builds });
+  },
+);
+
+// ── POST /api/loyalty/builds — save a completed build card ─────────────────────
+
+const saveBuildSchema = z.object({
+  craftType:          z.enum(CRAFT_TYPES_SAVED),
+  styleTitle:         z.string().max(200).default(""),
+  moodTitle:          z.string().max(200).default(""),
+  recommendationName: z.string().max(300).default(""),
+  score:              z.number().finite().min(0).max(100).default(0),
+});
+
+router.post(
+  "/builds",
+  requireAuth,
+  async (req: AuthRequest, res: Response) => {
+    const parsed = saveBuildSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
+      return;
+    }
+
+    const userId = req.user!.id;
+    const { craftType, styleTitle, moodTitle, recommendationName, score } = parsed.data;
+
+    const [card] = await db
+      .insert(savedBuildCardsTable)
+      .values({
+        userId,
+        craftType,
+        styleTitle,
+        moodTitle,
+        recommendationName,
+        score: String(score),
+      })
+      .returning();
+
+    res.status(201).json({ card });
   },
 );
 
