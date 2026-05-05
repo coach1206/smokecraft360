@@ -1,7 +1,7 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Sparkles, ShoppingBag, ChevronRight, RotateCcw } from "lucide-react";
+import { Check, Sparkles, ShoppingBag, ChevronRight, RotateCcw, Zap } from "lucide-react";
 import {
   fetchRecommendations,
   trackPreferences,
@@ -12,6 +12,14 @@ import {
 } from "@/services/api";
 import LivePreviewPanel, { type LiveMeters } from "@/components/LivePreview/LivePreviewPanel";
 import AICoach from "@/components/AICoach/AICoach";
+import SessionTimer from "@/components/SessionTimer/SessionTimer";
+import { useSessionTimer } from "@/hooks/useSessionTimer";
+import {
+  fetchCraftSession,
+  saveCraftSession,
+  deleteCraftSession,
+  type CraftSessionState,
+} from "@/services/craftSessionApi";
 
 export type CraftCategory = "beer" | "alcohol" | "vape";
 
@@ -152,20 +160,17 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const [scoreState, setScoreState] = useState({ score: 50, prevScore: 50 });
   const [liveMeters, setLiveMeters] = useState<LiveMeters>({ flavor: 50, strength: 50, balance: 50 });
 
+  // Session timer state
+  const [timerRunning,   setTimerRunning  ] = useState(false);
+  const [timerTotalSecs, setTimerTotalSecs] = useState(2100);
+  const [resumeState,    setResumeState   ] = useState<"loading" | "prompt" | "none">("none");
+  const [resumeSession,  setResumeSession ] = useState<CraftSessionState | null>(null);
+  const [fastBuildBadge, setFastBuildBadge] = useState(false);
+
   const phaseIndex = useMemo(() => {
     const order: Phase[] = ["intro", "style", "profile", "match", "reveal"];
     return order.indexOf(phase);
   }, [phase]);
-
-  const reset = useCallback(() => {
-    setPhase("intro");
-    setSelectedStyle(null);
-    setSelectedMood(null);
-    setResp(null);
-    setError(null);
-    setScoreState({ score: 50, prevScore: 50 });
-    setLiveMeters({ flavor: 50, strength: 50, balance: 50 });
-  }, []);
 
   const craftType = useMemo(() =>
     config.craftType ?? (
@@ -175,10 +180,86 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
       "vape"  as const
     ), [config.craftType, config.testIdPrefix]);
 
+  // --- Timer ---
+
+  const onTimerExpire = useCallback(() => {
+    void saveCraftSession({ craft: craftType, remainingMs: 0, streakCount: 0 });
+  }, [craftType]);
+
+  const {
+    remainingSecs, isIdle, isExpired, isCountdown, streakCount,
+    incrementStreak, breakStreak, setStreak, resetTimer,
+  } = useSessionTimer({
+    totalSecs:  timerTotalSecs,
+    running:    timerRunning,
+    onExpire:   onTimerExpire,
+  });
+
+  // Stable refs so callbacks don't re-create on every second tick
+  const remainingSecsRef = useRef(remainingSecs);
+  const streakCountRef   = useRef(streakCount);
+  useEffect(() => { remainingSecsRef.current = remainingSecs; }, [remainingSecs]);
+  useEffect(() => { streakCountRef.current   = streakCount;   }, [streakCount]);
+
+  // --- Resume check on mount ---
+  useEffect(() => {
+    setResumeState("loading");
+    fetchCraftSession(craftType).then(session => {
+      if (!session) { setResumeState("none"); return; }
+      const expiresAt = session.expiresAt ? new Date(session.expiresAt).getTime() : 0;
+      const createdAt = session.createdAt ? new Date(session.createdAt).getTime() : 0;
+      const remMs     = Math.max(0, expiresAt - Date.now());
+      const ageMs     = Date.now() - createdAt;
+      if (remMs > 0 && ageMs < 24 * 60 * 60 * 1000) {
+        setResumeSession(session);
+        setResumeState("prompt");
+      } else {
+        setResumeState("none");
+      }
+    });
+  }, [craftType]);
+
+  const handleResume = useCallback(() => {
+    if (!resumeSession) return;
+    const expiresAt = resumeSession.expiresAt ? new Date(resumeSession.expiresAt).getTime() : 0;
+    const remMs     = Math.max(0, expiresAt - Date.now());
+    const remSecs   = Math.floor(remMs / 1000);
+    const dur       = resumeSession.timerDurationSecs;
+    setTimerTotalSecs(dur);
+    resetTimer(dur, remSecs);
+    setStreak(resumeSession.streakCount);
+    const savedPhase = resumeSession.phase as Phase;
+    if (savedPhase && savedPhase !== "intro") setPhase(savedPhase);
+    setTimerRunning(true);
+    setResumeSession(null);
+    setResumeState("none");
+  }, [resumeSession, resetTimer, setStreak]);
+
+  const handleStartFresh = useCallback(() => {
+    if (resumeSession) void deleteCraftSession(resumeSession.id);
+    setResumeSession(null);
+    setResumeState("none");
+  }, [resumeSession]);
+
+  // ---
+
   const smokeViz = useMemo(
     () => craftType === "smoke" ? styleToSmokeDesign(selectedStyle, selectedMood) : null,
     [craftType, selectedStyle, selectedMood],
   );
+
+  const reset = useCallback(() => {
+    setPhase("intro");
+    setSelectedStyle(null);
+    setSelectedMood(null);
+    setResp(null);
+    setError(null);
+    setScoreState({ score: 50, prevScore: 50 });
+    setLiveMeters({ flavor: 50, strength: 50, balance: 50 });
+    setTimerRunning(false);
+    resetTimer(timerTotalSecs);
+    setFastBuildBadge(false);
+  }, [timerTotalSecs, resetTimer]);
 
   const updateScore = useCallback(async (
     style:        CraftStyleCard,
@@ -187,7 +268,6 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   ) => {
     const inputs = deriveScoreInputs(craftType, currentPhase, style, mood);
     const result = await postScore(inputs);
-    // Always persist phase + selections — include score only when scoring succeeded.
     void upsertCraftBuild({
       craft:       craftType,
       phase:       currentPhase,
@@ -197,18 +277,27 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     });
     if (!result) return;
     const newScore100 = Math.round(result.score * 10);
-    setScoreState(prev => ({ score: newScore100, prevScore: prev.score }));
+    setScoreState(prev => {
+      if (newScore100 > prev.score) incrementStreak();
+      else if (newScore100 < prev.score - 4) breakStreak();
+      return { score: newScore100, prevScore: prev.score };
+    });
     setLiveMeters({
       flavor:   Math.round(inputs.flavor   * 10),
       strength: Math.round(inputs.strength * 10),
       balance:  Math.round(inputs.pairing  * 10),
     });
-  }, [craftType]);
+  }, [craftType, incrementStreak, breakStreak]);
 
   const runMatch = useCallback(async (style: CraftStyleCard, mood: CraftMoodCard) => {
     setPhase("match");
-    // Persist match-phase entry immediately — covers the "match" transition point.
     void upsertCraftBuild({ craft: craftType, phase: "match", styleChoice: style.id, moodChoice: mood.id });
+    void saveCraftSession({
+      craft:        craftType,
+      phase:        "match",
+      remainingMs:  remainingSecsRef.current * 1000,
+      streakCount:  streakCountRef.current,
+    });
     setError(null);
     setResp(null);
     try {
@@ -224,7 +313,6 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         strength: style.strength,
         mood: mood.id,
       });
-      // For vape, only accept truly-vape rows (engine may return empty).
       if (config.category === "vape") {
         const onlyVape = r.recommendations.filter((p) => p.category === "vape");
         setResp(onlyVape.length ? { ...r, recommendations: onlyVape } : { ...r, recommendations: [] });
@@ -233,26 +321,57 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
       }
       setPhase("reveal");
       void upsertCraftBuild({ craft: craftType, phase: "reveal", styleChoice: style.id, moodChoice: mood.id });
+      void saveCraftSession({
+        craft:       craftType,
+        phase:       "reveal",
+        remainingMs: remainingSecsRef.current * 1000,
+        streakCount: streakCountRef.current,
+      });
+      // Fast-build bonus: >15 min remaining on reveal
+      if (remainingSecsRef.current > 900) {
+        setFastBuildBadge(true);
+        setTimeout(() => setFastBuildBadge(false), 4500);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load pairing");
       setPhase("reveal");
       void upsertCraftBuild({ craft: craftType, phase: "reveal", styleChoice: style.id, moodChoice: mood.id });
+      void saveCraftSession({
+        craft:       craftType,
+        phase:       "reveal",
+        remainingMs: remainingSecsRef.current * 1000,
+        streakCount: streakCountRef.current,
+      });
     }
   }, [config.category, craftType]);
 
   const handleStylePick = useCallback((s: CraftStyleCard) => {
+    if (isExpired) return;
     setSelectedStyle(s);
     setPhase("profile");
     void updateScore(s, null, "style");
-  }, [updateScore]);
+    void saveCraftSession({
+      craft:       craftType,
+      phase:       "profile",
+      remainingMs: remainingSecsRef.current * 1000,
+      streakCount: streakCountRef.current,
+    });
+  }, [updateScore, craftType, isExpired]);
 
   const handleMoodPick = useCallback((m: CraftMoodCard) => {
+    if (isExpired) return;
     setSelectedMood(m);
     if (selectedStyle) {
       void runMatch(selectedStyle, m);
       void updateScore(selectedStyle, m, "profile");
     }
-  }, [selectedStyle, runMatch, updateScore]);
+    void saveCraftSession({
+      craft:       craftType,
+      phase:       "match",
+      remainingMs: remainingSecsRef.current * 1000,
+      streakCount: streakCountRef.current,
+    });
+  }, [selectedStyle, runMatch, updateScore, craftType, isExpired]);
 
   /**
    * Called by AICoach A/B/C fix card when the user picks a corrective option.
@@ -305,7 +424,20 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         padding: "24px 32px 12px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
-        <div />
+        {/* Session timer — hidden on intro phase */}
+        {phase !== "intro" && (
+          <SessionTimer
+            totalSecs={timerTotalSecs}
+            remainingSecs={remainingSecs}
+            streakCount={streakCount}
+            isIdle={isIdle}
+            isCountdown={isCountdown}
+            isExpired={isExpired}
+            accentColor={config.theme.accent}
+          />
+        )}
+        {phase === "intro" && <div />}
+
         <div style={{ textAlign: "right", textShadow: "0 2px 8px rgba(0,0,0,0.85)" }}>
           <h1 style={{
             fontFamily: "var(--app-font-serif, Georgia, serif)",
@@ -327,6 +459,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         padding: "12px 32px 60px",
         display: "grid", gap: 24,
         gridTemplateColumns: phase === "reveal" ? "260px 1fr 360px" : "260px 1fr",
+        pointerEvents: (isExpired && phase !== "reveal") ? "none" : "auto",
       }}>
         {/* LEFT — Sidebar with step progression */}
         <aside>
@@ -382,6 +515,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 cursor: phase === "intro" ? "default" : "pointer",
                 fontWeight: 600,
                 display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
+                pointerEvents: "auto",
               }}
             >
               <RotateCcw size={12} /> Start Over
@@ -415,7 +549,14 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 <motion.button
                   type="button"
                   data-testid={`${config.testIdPrefix}-begin`}
-                  onClick={() => setPhase("style")}
+                  onClick={() => {
+                    const dur = 1800 + Math.floor(Math.random() * 481);
+                    setTimerTotalSecs(dur);
+                    resetTimer(dur, dur);
+                    setTimerRunning(true);
+                    setPhase("style");
+                    void saveCraftSession({ craft: craftType, phase: "style", remainingMs: dur * 1000 });
+                  }}
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.97 }}
                   style={{
@@ -797,6 +938,197 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         selectedMood={selectedMood}
         onFixApplied={handleFixApplied}
       />
+
+      {/* ── Resume modal ─────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {resumeState === "prompt" && resumeSession && (
+          <motion.div
+            key="resume-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: "fixed", inset: 0, zIndex: 200,
+              background: "rgba(0,0,0,0.72)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.88, y: 28 }}
+              animate={{ scale: 1,    y: 0  }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 280, damping: 22 }}
+              style={{
+                padding: "44px 48px", borderRadius: 28, textAlign: "center",
+                background: "rgba(12,9,7,0.97)",
+                border: `1px solid ${config.theme.accent}45`,
+                boxShadow: `0 50px 120px ${config.theme.accent}18`,
+                maxWidth: 420,
+              }}
+            >
+              <div style={{ fontSize: 44, marginBottom: 14 }}>⚗️</div>
+              <h2 style={{
+                fontFamily: "var(--app-font-serif, Georgia, serif)",
+                fontSize: 26, color: "#fff", margin: "0 0 10px",
+              }}>Resume Your Build?</h2>
+              {(() => {
+                const expiresAt = resumeSession.expiresAt
+                  ? new Date(resumeSession.expiresAt).getTime() : 0;
+                const remSecs = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+                const m = Math.floor(remSecs / 60);
+                const s = remSecs % 60;
+                return (
+                  <p style={{ color: "rgba(232,224,200,0.65)", fontSize: 14, lineHeight: 1.6, margin: "0 0 6px" }}>
+                    You have{" "}
+                    <span style={{ color: config.theme.accent, fontWeight: 700 }}>
+                      {m}:{String(s).padStart(2, "0")}
+                    </span>{" "}
+                    remaining on your last session.
+                  </p>
+                );
+              })()}
+              <p style={{
+                color: "rgba(232,224,200,0.38)", fontSize: 12,
+                margin: "0 0 30px", fontStyle: "italic",
+              }}>
+                "Let's see if you can finish this."
+              </p>
+              <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={handleResume}
+                  style={{
+                    background: `linear-gradient(135deg, ${config.theme.accent}, ${config.theme.accentSoft})`,
+                    color: "#0a0806", border: "none",
+                    padding: "12px 28px", borderRadius: 999,
+                    fontSize: 12, fontWeight: 700,
+                    letterSpacing: "0.22em", textTransform: "uppercase",
+                    cursor: "pointer",
+                  }}
+                >Resume</motion.button>
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={handleStartFresh}
+                  style={{
+                    background: "transparent",
+                    color: "rgba(232,224,200,0.62)",
+                    border: "1px solid rgba(232,224,200,0.22)",
+                    padding: "12px 28px", borderRadius: 999,
+                    fontSize: 12, fontWeight: 600,
+                    letterSpacing: "0.22em", textTransform: "uppercase",
+                    cursor: "pointer",
+                  }}
+                >Start Fresh</motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Expiry overlay ───────────────────────────────────────────── */}
+      <AnimatePresence>
+        {isExpired && phase !== "reveal" && (
+          <motion.div
+            key="expiry-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{
+              position: "fixed", inset: 0, zIndex: 120,
+              background: "rgba(0,0,0,0.84)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              backdropFilter: "blur(6px)",
+              WebkitBackdropFilter: "blur(6px)",
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 24 }}
+              animate={{ scale: 1,   y: 0  }}
+              transition={{ type: "spring", stiffness: 280, damping: 22 }}
+              style={{
+                padding: "48px 52px", borderRadius: 28, textAlign: "center",
+                background: "rgba(20,10,6,0.97)",
+                border: "1px solid rgba(239,68,68,0.38)",
+                boxShadow: "0 40px 100px rgba(239,68,68,0.18)",
+                maxWidth: 440,
+              }}
+            >
+              <div style={{ fontSize: 52, marginBottom: 16 }}>⏰</div>
+              <h2 style={{
+                fontFamily: "var(--app-font-serif, Georgia, serif)",
+                fontSize: 30, color: "#fff", margin: "0 0 10px",
+              }}>Time's Up</h2>
+              <p style={{
+                color: "rgba(232,224,200,0.58)", fontSize: 14, lineHeight: 1.6,
+                margin: "0 0 32px",
+              }}>
+                Your session has expired. See what you crafted — your streak resets on the next build.
+              </p>
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  if (selectedStyle && selectedMood) {
+                    setPhase("reveal");
+                  } else if (selectedStyle) {
+                    void runMatch(selectedStyle, config.moods[0]);
+                  } else {
+                    reset();
+                  }
+                }}
+                style={{
+                  background: "linear-gradient(135deg, #EF4444, #B91C1C)",
+                  color: "#fff", border: "none",
+                  padding: "14px 34px", borderRadius: 999,
+                  fontSize: 12, fontWeight: 700,
+                  letterSpacing: "0.26em", textTransform: "uppercase",
+                  cursor: "pointer",
+                  boxShadow: "0 14px 40px rgba(239,68,68,0.35)",
+                }}
+              >
+                See Your Result
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Fast-build "Speed Craft!" badge ─────────────────────────── */}
+      <AnimatePresence>
+        {fastBuildBadge && (
+          <motion.div
+            key="fast-build-badge"
+            initial={{ scale: 0.4, opacity: 0, y: 60 }}
+            animate={{ scale: 1,   opacity: 1, y: 0  }}
+            exit={{ scale: 0.75, opacity: 0, y: -20 }}
+            transition={{ type: "spring", stiffness: 320, damping: 20 }}
+            style={{
+              position: "fixed",
+              bottom: 110,
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 160,
+              padding: "16px 32px",
+              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              borderRadius: 999,
+              display: "inline-flex", alignItems: "center", gap: 10,
+              fontSize: 14, fontWeight: 800, color: "#0a0806",
+              letterSpacing: "0.22em", textTransform: "uppercase",
+              boxShadow: "0 24px 64px rgba(245,158,11,0.55)",
+              whiteSpace: "nowrap",
+              cursor: "default",
+            }}
+          >
+            <Zap size={16} /> Speed Craft! +10
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

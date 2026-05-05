@@ -8,6 +8,7 @@ import venueAnalyticsRouter from "./venueAnalytics";
 import eventsRouter        from "./events";
 import experiencesRouter   from "./experiences";
 import preferencesRouter   from "./preferences";
+import craftSessionsRouter from "./craftSessions";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(venueAnalyticsRouter);
 router.use(eventsRouter);
 router.use(experiencesRouter);
 router.use(preferencesRouter);
+router.use("/craft-sessions", craftSessionsRouter);
 
 export default router;

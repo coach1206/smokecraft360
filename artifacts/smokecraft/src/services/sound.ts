@@ -131,7 +131,7 @@ function getSFXContext(): AudioContext | null {
   }
 }
 
-export type SFXType = "tap" | "swoosh" | "error" | "success";
+export type SFXType = "tap" | "swoosh" | "error" | "success" | "tick";
 
 /**
  * Play a short synthesized tone — no file assets required.
@@ -211,6 +211,21 @@ export function playSFX(type: SFXType): void {
         osc.start(t);
         osc.stop(t + 0.22);
       });
+      return;
+    }
+
+    if (type === "tick") {
+      // Sharp, brief high-pitch click: 1350 Hz sine, 22 ms — subtle countdown cue
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(1350, now);
+      gain.gain.setValueAtTime(0.07, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.022);
+      osc.start(now);
+      osc.stop(now + 0.022);
     }
   } catch { /* never let audio failures surface */ }
 }
