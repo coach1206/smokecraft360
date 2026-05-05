@@ -26,6 +26,11 @@
  *   Delivered to `venue:<venueId>` room when venueId is set; broadcast globally for cross-venue tournaments.
  *   TouchscreenHome subscribes and shows a dismissible announcement banner to players.
  *
+ * tournament_rank_changed  { userId: string, tournamentId: string, tournamentTitle: string, newRank: number, oldRank: number | null, ts: number }
+ *   Broadcast by syncActiveTournamentScores whenever a craft-build score update
+ *   changes a user's leaderboard position. CompetitionModule filters by userId
+ *   and shows a non-blocking toast: "↑ Your rank in 'Weekly Craft League' moved to #2".
+ *
  * Events received (client → server)
  * ──────────────────────────────────
  * join_venue  { venueId: string }

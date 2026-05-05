@@ -1100,6 +1100,18 @@ export default function CompetitionModule() {
   const loadTournamentsRef = useRef(loadTournaments);
   useEffect(() => { loadTournamentsRef.current = loadTournaments; }, [loadTournaments]);
 
+  // Keep a stable ref to the current user so the socket handler can access it
+  // without re-registering on every auth state change.
+  const userRef = useRef(user);
+  useEffect(() => { userRef.current = user; }, [user]);
+
+  // Keep a stable ref to the selected tournament for leaderboard reloads.
+  const selectedRef = useRef(selected);
+  useEffect(() => { selectedRef.current = selected; }, [selected]);
+
+  const loadLeaderboardRef = useRef(loadLeaderboard);
+  useEffect(() => { loadLeaderboardRef.current = loadLeaderboard; }, [loadLeaderboard]);
+
   // Subscribe to real-time tournament lifecycle events from the server.
   useEffect(() => {
     function onCompleted(payload: { type: string; title: string }) {
@@ -1114,11 +1126,37 @@ export default function CompetitionModule() {
       loadTournamentsRef.current();
     }
 
+    function onRankChanged(payload: {
+      userId: string;
+      tournamentId: string;
+      tournamentTitle: string;
+      newRank: number;
+      oldRank: number | null;
+    }) {
+      // Only show the notification to the user whose rank actually changed.
+      if (payload.userId !== userRef.current?.id) return;
+
+      const rankLabel = payload.newRank === 1 ? "#1 🏆" : `#${payload.newRank}`;
+      const direction = payload.oldRank === null
+        ? ""
+        : payload.newRank < payload.oldRank
+          ? "↑ "
+          : "↓ ";
+      showToast(`${direction}Your rank in "${payload.tournamentTitle}" moved to ${rankLabel}`);
+
+      // Refresh the leaderboard panel if this tournament is currently open.
+      if (selectedRef.current?.id === payload.tournamentId) {
+        loadLeaderboardRef.current(payload.tournamentId);
+      }
+    }
+
     socket.on("tournament_completed", onCompleted);
     socket.on("tournament_spawned", onSpawned);
+    socket.on("tournament_rank_changed", onRankChanged);
     return () => {
       socket.off("tournament_completed", onCompleted);
       socket.off("tournament_spawned", onSpawned);
+      socket.off("tournament_rank_changed", onRankChanged);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

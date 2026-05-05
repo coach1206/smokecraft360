@@ -15,6 +15,7 @@ import {
   tournamentsTable,
 } from "@workspace/db";
 import { logger } from "./logger";
+import { getIO } from "./socketServer";
 
 /**
  * Return the user's best craft score within [startAt, endAt].
@@ -79,6 +80,9 @@ export async function rerank(tournamentId: string): Promise<void> {
  * Called fire-and-forget from the craft-builds PATCH/POST handlers whenever
  * a score field is present — ensures the leaderboard stays live without
  * requiring an explicit sync-score call.
+ *
+ * After a rank change, emits a `tournament_rank_changed` socket event so the
+ * frontend can show a real-time toast notification.
  */
 export async function syncActiveTournamentScores(
   userId: string,
@@ -90,10 +94,12 @@ export async function syncActiveTournamentScores(
       .select({
         entryId:      tournamentEntriesTable.id,
         entryScore:   tournamentEntriesTable.score,
+        entryRank:    tournamentEntriesTable.rank,
         tournamentId: tournamentEntriesTable.tournamentId,
         startAt:      tournamentsTable.startAt,
         endAt:        tournamentsTable.endAt,
         craftType:    tournamentsTable.craftType,
+        title:        tournamentsTable.title,
       })
       .from(tournamentEntriesTable)
       .innerJoin(
@@ -120,6 +126,8 @@ export async function syncActiveTournamentScores(
 
       // Only write + rerank if score actually improved (never demote)
       if (newScore > entry.entryScore) {
+        const oldRank = entry.entryRank;
+
         await db
           .update(tournamentEntriesTable)
           .set({ score: newScore, updatedAt: new Date() })
@@ -128,6 +136,35 @@ export async function syncActiveTournamentScores(
         await rerank(entry.tournamentId).catch((err) =>
           logger.warn({ err, tournamentId: entry.tournamentId }, "auto-sync rerank failed"),
         );
+
+        // Fetch the user's new rank after the rerank
+        const [updated] = await db
+          .select({ rank: tournamentEntriesTable.rank })
+          .from(tournamentEntriesTable)
+          .where(eq(tournamentEntriesTable.id, entry.entryId));
+
+        const newRank = updated?.rank ?? null;
+
+        // Emit a socket event if the rank changed
+        if (newRank !== null && newRank !== oldRank) {
+          try {
+            getIO().emit("tournament_rank_changed", {
+              userId,
+              tournamentId: entry.tournamentId,
+              tournamentTitle: entry.title,
+              newRank,
+              oldRank,
+              ts: Date.now(),
+            });
+            logger.info(
+              { userId, tournamentId: entry.tournamentId, oldRank, newRank },
+              "tournament_rank_changed emitted",
+            );
+          } catch (socketErr) {
+            // Socket may not be initialised in test/worker contexts — non-fatal
+            logger.warn({ socketErr }, "tournament_rank_changed emit skipped (no socket)");
+          }
+        }
       }
     }
   } catch (err) {
