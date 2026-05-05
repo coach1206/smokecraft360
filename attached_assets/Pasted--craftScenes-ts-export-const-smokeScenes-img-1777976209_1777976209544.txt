@@ -1,0 +1,199 @@
+// ====================== craftScenes.ts ======================
+export const smokeScenes = [
+  { img: "/images/smoke/black-professional.jpg", label: "Executive Lounge", tags: ["premium","solo","night"] },
+  { img: "/images/smoke/hispanic-lounge.jpg", label: "Evening Session", tags: ["social","night"] },
+  { img: "/images/smoke/urban-smoker.jpg", label: "Late Night", tags: ["urban","solo","night"] },
+  { img: "/images/smoke/woman-cigar.jpg", label: "Refined Taste", tags: ["premium","solo"] },
+  { img: "/images/smoke/mixed-group.jpg", label: "Social Circle", tags: ["social","group"] }
+];
+
+export const pourScenes = [
+  { img: "/images/pour/whiskey-neat.jpg", label: "Neat Pour", tags: ["strong","premium","solo"] },
+  { img: "/images/pour/old-fashioned.jpg", label: "Craft Cocktail", tags: ["premium","social"] },
+  { img: "/images/pour/cocktail-bar.jpg", label: "Bar Energy", tags: ["social","night"] },
+  { img: "/images/pour/wine-glass.jpg", label: "Wine Selection", tags: ["light","premium"] },
+  { img: "/images/pour/premium-lounge-drink.jpg", label: "Luxury Sip", tags: ["premium","night"] }
+];
+
+export const brewScenes = [
+  { img: "/images/brew/lager.jpg", label: "Classic Lager", tags: ["light","social"] },
+  { img: "/images/brew/dark-stout.jpg", label: "Dark Stout", tags: ["strong","solo"] },
+  { img: "/images/brew/craft-beer-flight.jpg", label: "Beer Flight", tags: ["social","group"] },
+  { img: "/images/brew/pouring-beer.jpg", label: "Fresh Pour", tags: ["light","social"] },
+  { img: "/images/brew/ipa-glass.jpg", label: "IPA Selection", tags: ["strong","premium"] }
+];
+
+export const vapeScenes = [
+  { img: "/images/vape/premium-vape-device.jpg", label: "Modern Device", tags: ["tech","solo","premium"] },
+  { img: "/images/vape/hookah-lounge-group.jpg", label: "Hookah Lounge", tags: ["social","group","night"] },
+  { img: "/images/vape/colorful-clouds.jpg", label: "Flavor Clouds", tags: ["flavor","light"] },
+  { img: "/images/vape/neon-vape-session.jpg", label: "Night Session", tags: ["night","urban"] }
+];
+
+// ====================== UserPreferenceContext.tsx ======================
+import React, { createContext, useContext, useState } from "react";
+
+const PreferenceContext = createContext<any>(null);
+
+export const PreferenceProvider = ({ children }: any) => {
+  const [preferences, setPreferences] = useState({
+    mood: "social",
+    intensity: "strong",
+    setting: "night"
+  });
+
+  return (
+    <PreferenceContext.Provider value={{ preferences, setPreferences }}>
+      {children}
+    </PreferenceContext.Provider>
+  );
+};
+
+export const usePreferences = () => useContext(PreferenceContext);
+
+// ====================== useVisualMatch.ts ======================
+export function useVisualMatch(scenes: any[], preferences: any) {
+  if (!scenes || scenes.length === 0) return [];
+  const filtered = scenes.filter(scene =>
+    scene.tags?.some((tag: string) =>
+      Object.values(preferences).includes(tag)
+    )
+  );
+  return filtered.length > 0 ? filtered : scenes;
+}
+
+// ====================== DynamicCard.tsx ======================
+import { useEffect, useState } from "react";
+import { usePreferences } from "./UserPreferenceContext";
+import { useVisualMatch } from "./useVisualMatch";
+
+export default function DynamicCard({ title, subtitle, scenes }: any) {
+  const { preferences } = usePreferences();
+  const matchedScenes = useVisualMatch(scenes, preferences);
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    setIndex(0);
+  }, [matchedScenes]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex(prev => (prev + 1) % matchedScenes.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [matchedScenes]);
+
+  if (!matchedScenes.length) return null;
+
+  return (
+    <div className="card">
+      <img src={matchedScenes[index].img} className="card-image" />
+      <div className="overlay" />
+      <div className="scene-label">{matchedScenes[index].label}</div>
+      <div className="card-content">
+        <h2>{title}</h2>
+        <p>{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// ====================== Controls.tsx ======================
+import { usePreferences } from "./UserPreferenceContext";
+
+export function Controls() {
+  const { setPreferences } = usePreferences();
+
+  return (
+    <div style={{ padding: "20px" }}>
+      <button onClick={() => setPreferences({ mood: "social", intensity: "light", setting: "day" })}>
+        Chill Mode
+      </button>
+      <button onClick={() => setPreferences({ mood: "solo", intensity: "strong", setting: "night" })}>
+        Deep Session
+      </button>
+    </div>
+  );
+}
+
+// ====================== Experiences.tsx ======================
+import DynamicCard from "./DynamicCard";
+import { smokeScenes, pourScenes, brewScenes, vapeScenes } from "./craftScenes";
+
+export default function Experiences() {
+  return (
+    <div className="grid">
+      <DynamicCard title="SmokeCraft 360" subtitle="Cigars • Lounge" scenes={smokeScenes} />
+      <DynamicCard title="PourCraft 360" subtitle="Cocktails • Spirits" scenes={pourScenes} />
+      <DynamicCard title="BrewCraft 360" subtitle="Beer • Pairings" scenes={brewScenes} />
+      <DynamicCard title="VapeCraft 360" subtitle="Vape • Hookah" scenes={vapeScenes} />
+    </div>
+  );
+}
+
+// ====================== App.tsx ======================
+import { PreferenceProvider } from "./UserPreferenceContext";
+import Experiences from "./Experiences";
+import { Controls } from "./Controls";
+
+export default function App() {
+  return (
+    <PreferenceProvider>
+      <Controls />
+      <Experiences />
+    </PreferenceProvider>
+  );
+}
+
+// ====================== styles.css ======================
+.card {
+  position: relative;
+  height: 420px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: zoom 6s ease-in-out infinite;
+  transition: opacity 1s ease-in-out;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0.2));
+}
+
+.card-content {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: white;
+}
+
+.scene-label {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  padding: 6px 12px;
+  font-size: 12px;
+  background: rgba(0,0,0,0.6);
+  border-radius: 8px;
+  color: white;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+@keyframes zoom {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}

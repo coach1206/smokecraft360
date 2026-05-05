@@ -378,6 +378,114 @@ uri = "file://attached_assets/generated_images/generated_image_3.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "nYE9UYQID5Ap7hFVd6HpE"
+uri = "file://artifacts/smokecraft/public/images/smoke/smoke_lounge.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "-NrcZNsgs3dRDr0zNgH4e"
+uri = "file://artifacts/smokecraft/public/images/smoke/smoke_group.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "haa7wfqh5363GC0hRGygd"
+uri = "file://artifacts/smokecraft/public/images/smoke/smoke_solo.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "7DXYk5VbSKVoO-WXGFREP"
+uri = "file://artifacts/smokecraft/public/images/smoke/smoke_urban.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "RpUmQ6MC-lKoNixhMHppx"
+uri = "file://artifacts/smokecraft/public/images/smoke/smoke_selection.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "CQwg948SAdje2SYFATjl8"
+uri = "file://artifacts/smokecraft/public/images/pour/pour_whiskey.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "qNXlfCJSzN5b4Yx7ercYA"
+uri = "file://artifacts/smokecraft/public/images/pour/pour_cocktail.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "P-BcL2_8s7PYm8P_jcXGU"
+uri = "file://artifacts/smokecraft/public/images/pour/pour_tasting.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "u04J5QpV3Ajj86HAMclbP"
+uri = "file://artifacts/smokecraft/public/images/pour/pour_bar.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "fw4AT0VEXJBzxw0QKWG7U"
+uri = "file://artifacts/smokecraft/public/images/pour/pour_aged.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "UyO7uh9zsTvARnG27TiHD"
+uri = "file://artifacts/smokecraft/public/images/brew/brew_flight.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "E-lGEReYOwD2MEBihInCh"
+uri = "file://artifacts/smokecraft/public/images/brew/brew_taproom.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "bOxGiEw_FZEhfvriDFFyx"
+uri = "file://artifacts/smokecraft/public/images/brew/brew_outdoor.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "fdnRLWAdwAuujO19j_YOy"
+uri = "file://artifacts/smokecraft/public/images/brew/brew_barrel.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "-_AXfVVl26aFpOXisR_ln"
+uri = "file://artifacts/smokecraft/public/images/vape/vape_hookah.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "1NwIh06E1B7YX_gNSJu4s"
+uri = "file://artifacts/smokecraft/public/images/vape/vape_modern.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "6xPU9HGi3VEXfJlN-5Ffp"
+uri = "file://artifacts/smokecraft/public/images/vape/vape_device.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "JmWmCJhaEKyXEogkmmDBu"
+uri = "file://artifacts/smokecraft/public/images/vape/vape_social.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "bcXlJZbThuFGk9x0tlMdt"
 uri = "file://.local/AXIOM_OS_OPERATIONS_MANUAL_SOURCE.md"

@@ -28,6 +28,7 @@ const TILES = [
   { id: "settings", title: "Settings", desc: "System & security", color: "#64748b", route: "/settings", dataKey: "settings" as const, image: "/images/scenes/relaxed.jpg" },
   { id: "designer", title: "Designer", desc: "Signature customizer", color: "#d4af37", route: "/designer", dataKey: "designer" as const, image: "/images/cigar.png" },
   { id: "competition", title: "Compete", desc: "Craft tournaments", color: "#d4af37", route: "/competition", dataKey: "competition" as const, image: "/images/scenes/reflective.jpg" },
+  { id: "craft-hub", title: "Craft Hub", desc: "All 360 experiences", color: "#06b6d4", route: "/craft-hub", dataKey: "craft-hub" as const, image: "/images/smoke/smoke_lounge.png" },
 ] as const;
 
 export default function CommandCenter() {
@@ -58,6 +59,7 @@ export default function CommandCenter() {
       case "settings": return cc.systemStatus;
       case "designer": return "Band · Box · Preview";
       case "competition": return "Live now";
+      case "craft-hub":  return "4 modules · 18 scenes";
       default: return "";
     }
   }
