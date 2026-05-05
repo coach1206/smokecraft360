@@ -501,7 +501,7 @@ function SystemOverviewStep() {
     { icon: Package, label: "Inventory", value: "2 Low Stock", color: "#f59e0b" },
     { icon: CreditCard, label: "Payment", value: "Simulated", color: "#5b8def" },
     { icon: Shield, label: "Security", value: "All Clear", color: "#34d399" },
-    { icon: TrendingUp, label: "POS Mode", value: "Overlay", color: "#5b8def" },
+    { icon: TrendingUp, label: "Operating Mode", value: "Overlay", color: "#5b8def" },
   ];
 
   return (

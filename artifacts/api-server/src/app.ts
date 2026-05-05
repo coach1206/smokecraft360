@@ -97,6 +97,9 @@ import aiRouter                 from "./routes/ai";
 import entitlementsRouter       from "./routes/entitlements";
 import behaviorEventsRouter     from "./routes/behaviorEvents";
 import dataIntelligenceRouter   from "./routes/dataIntelligence";
+import onboardingRouter         from "./routes/onboarding";
+import aiConfigureRouter        from "./routes/aiConfigure";
+import demoSimulateRouter       from "./routes/demoSimulate";
 import { startExperienceAutomation } from "./services/experienceAutomation";
 import { startSessionCleanupWorker } from "./lib/sessionCleanupWorker";
 import { startPayoutWorker }         from "./lib/payoutWorker";
@@ -326,6 +329,9 @@ app.use("/api/entitlements",            entitlementsRouter);
 app.use("/api/events/behavior",         behaviorEventsRouter);
 app.use("/api/analytics",               behaviorEventsRouter);
 app.use("/api/data-intelligence",       dataIntelligenceRouter);
+app.use("/api",                         onboardingRouter);
+app.use("/api",                         aiConfigureRouter);
+app.use("/api",                         demoSimulateRouter);
 
 // Start background workers
 if (process.env["NODE_ENV"] !== "test") {

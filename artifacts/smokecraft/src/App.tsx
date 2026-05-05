@@ -50,6 +50,9 @@ import { PresentationOverlay }   from "@/components/Presentation/PresentationOve
 import { KioskModeProvider, KioskModeBanner } from "@/contexts/KioskModeContext";
 import { PosProvider } from "@/contexts/PosContext";
 import { CommandCenterProvider } from "@/contexts/CommandCenterContext";
+import { DeviceRouterProvider }  from "@/components/DeviceRouter";
+import OnboardWizard      from "@/pages/OnboardWizard";
+import DemoSimDashboard   from "@/pages/DemoSimDashboard";
 import BootIntro, { hasSeenBootIntro } from "@/components/BootIntro";
 import GlobalBackButton                from "@/components/Layout/GlobalBackButton";
 import InactivityGuard                 from "@/components/InactivityGuard";
@@ -110,6 +113,8 @@ function Router() {
       <Route path="/experience-center" component={DemoExperienceCenter} />
       <Route path="/competition"        component={CompetitionModule}    />
       <Route path="/craft-hub"          component={CraftHub}             />
+      <Route path="/onboard"            component={OnboardWizard}        />
+      <Route path="/demo-sim"           component={DemoSimDashboard}     />
       {/* Dynamic per-theme entry URL (/smokecraft, /pourcraft, /grillcraft …).
           Declared LAST in the Switch so explicit app routes above always win;
           loadTheme() resolves the active theme from the first path segment.
@@ -150,6 +155,7 @@ function App() {
                 <CommandCenterProvider>
                 <EngagementProvider>
                 <KioskModeProvider>
+                <DeviceRouterProvider>
                   {!ready && <BootIntro onFinish={() => setReady(true)} />}
                   {ready && (
                     <>
@@ -167,6 +173,7 @@ function App() {
                       <Toaster />
                     </>
                   )}
+                </DeviceRouterProvider>
                 </KioskModeProvider>
                 </EngagementProvider>
                 </CommandCenterProvider>

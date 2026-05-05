@@ -31,7 +31,7 @@ const TILES = [
   { id: "brewcraft", title: "BrewCraft", desc: "Beer experience", color: "#f59e0b", route: "/brewcraft", dataKey: "brewcraft" as const, image: "/images/scenes/social.jpg" },
   { id: "pourcraft", title: "PourCraft", desc: "Spirits experience", color: "#a78bfa", route: "/pourcraft", dataKey: "pourcraft" as const, image: "/images/whiskey.png" },
   { id: "vapecraft", title: "VapeCraft", desc: "Vape experience", color: "#06b6d4", route: "/vapecraft", dataKey: "vapecraft" as const, image: "/images/scenes/bold.jpg" },
-  { id: "orders", title: "Orders", desc: "Live POS terminal", color: "#9A7820", route: "/orders", dataKey: "orders" as const, image: "/images/scenes/reflective.jpg" },
+  { id: "orders", title: "Orders", desc: "Revenue Terminal", color: "#9A7820", route: "/orders", dataKey: "orders" as const, image: "/images/scenes/reflective.jpg" },
   { id: "inventory", title: "Inventory", desc: "Stock control", color: "#5b8def", route: "/inventory", dataKey: "inventory" as const, image: "/images/cigar2.png" },
   { id: "rewards", title: "Rewards", desc: "Loyalty & rewards", color: "#34d399", route: "/rewards", dataKey: "rewards" as const, image: "/images/scenes/relaxed.jpg" },
   { id: "experiences", title: "Experiences", desc: "Craft engine", color: "#f59e0b", route: "/experiences", dataKey: "experiences" as const, image: "/images/cigar1.png" },

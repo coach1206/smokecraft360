@@ -315,6 +315,36 @@ router.post(
   },
 );
 
+// ── POST /api/devices/:id/recover ─────────────────────────────────────────────
+// Marks a device as active after it was offline, queues a recovery ping.
+
+router.post(
+  "/:id/recover",
+  requireAuth,
+  requireRole("manager", "venue_owner", "super_admin"),
+  async (req: AuthRequest, res: Response) => {
+    const venueId = req.user?.venueId;
+    if (!venueId) { res.status(400).json({ error: "No venueId on token" }); return; }
+
+    const device = await db
+      .select()
+      .from(devicesTable)
+      .where(and(eq(devicesTable.id, String(req.params.id ?? "")), eq(devicesTable.venueId, venueId)))
+      .limit(1);
+
+    if (!device[0]) { res.status(404).json({ error: "Device not found" }); return; }
+
+    const [updated] = await db
+      .update(devicesTable)
+      .set({ status: "active", lastActiveAt: new Date(), updatedAt: new Date() })
+      .where(eq(devicesTable.id, String(req.params.id ?? "")))
+      .returning();
+
+    logger.info({ deviceId: updated.id, venueId }, "Device recovery initiated");
+    res.json({ ok: true, device: updated, recoveredAt: new Date() });
+  },
+);
+
 // ── GET /api/devices/venue-qr/:venueId ────────────────────────────────────────
 
 router.get(

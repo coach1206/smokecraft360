@@ -15,11 +15,11 @@ import {
   Monitor, Tablet, Smartphone, Plus, RefreshCw, Trash2,
   Power, PowerOff, BarChart3, QrCode, Copy, Check,
   ChevronDown, ChevronUp, Clock, ShoppingBag, RotateCcw,
-  Wifi, WifiOff,
+  Wifi, WifiOff, HeartPulse,
 } from "lucide-react";
 import {
   fetchDevices, registerDevice, updateDevice, deleteDevice,
-  resetDevice, fetchDeviceMetrics,
+  resetDevice, recoverDevice, fetchDeviceMetrics,
   type DeviceItem, type DeviceMetrics,
 } from "@/services/api";
 import { DEVICE_PRICING, PLAN_BUNDLES, venuePlanToBundle } from "@/config/devicePricing";
@@ -162,16 +162,18 @@ function MetricsPanel({ deviceId }: { deviceId: string }) {
 // ── Device row ─────────────────────────────────────────────────────────────────
 
 function DeviceRow({
-  device, onStatusToggle, onDelete, onReset,
+  device, onStatusToggle, onDelete, onReset, onRecover,
 }: {
   device:          DeviceItem;
   onStatusToggle:  () => void;
   onDelete:        () => void;
   onReset:         () => void;
+  onRecover:       () => void;
 }) {
-  const [expanded,  setExpanded]  = useState(false);
-  const [resetting, setResetting] = useState(false);
-  const [copied,    setCopied]    = useState(false);
+  const [expanded,   setExpanded]   = useState(false);
+  const [resetting,  setResetting]  = useState(false);
+  const [recovering, setRecovering] = useState(false);
+  const [copied,     setCopied]     = useState(false);
   const isActive = device.status === "active";
   const color    = typeColor(device.type);
 
@@ -179,6 +181,12 @@ function DeviceRow({
     setResetting(true);
     await onReset();
     setResetting(false);
+  };
+
+  const handleRecover = async () => {
+    setRecovering(true);
+    await onRecover();
+    setRecovering(false);
   };
 
   const copyId = () => {
@@ -238,6 +246,13 @@ function DeviceRow({
             style={{ color: MUTED, border: "1px solid rgba(255,255,255,0.06)" }}>
             <RotateCcw size={11} className={resetting ? "animate-spin" : ""} />
           </button>
+          {!isActive && (
+            <button onClick={handleRecover} disabled={recovering} title="Recover device"
+              className="p-2 rounded-lg transition-colors"
+              style={{ color: recovering ? MUTED : "rgba(52,211,153,0.7)", border: "1px solid rgba(52,211,153,0.2)" }}>
+              <HeartPulse size={11} className={recovering ? "animate-pulse" : ""} />
+            </button>
+          )}
           <button onClick={onStatusToggle} title={isActive ? "Deactivate" : "Activate"}
             className="p-2 rounded-lg transition-colors"
             style={{ color: isActive ? "rgba(100,200,120,0.6)" : "rgba(200,100,100,0.6)", border: "1px solid rgba(255,255,255,0.06)" }}>
@@ -469,6 +484,11 @@ export function DeviceManagerTab() {
     void load();
   };
 
+  const handleRecover = async (id: string) => {
+    try { await recoverDevice(id); } catch { /* ignore */ }
+    void load();
+  };
+
   // Plan derived from user's venue
   const planKey    = venuePlanToBundle((user as any)?.venuePlan ?? "basic");
   const plan       = PLAN_BUNDLES[planKey];
@@ -577,6 +597,7 @@ export function DeviceManagerTab() {
               onStatusToggle={() => handleToggle(d)}
               onDelete={() => handleDelete(d.id)}
               onReset={() => handleReset(d.id)}
+              onRecover={() => handleRecover(d.id)}
             />
           ))}
         </div>

@@ -1916,6 +1916,16 @@ export async function resetDevice(id: string): Promise<{ ok: boolean; resetAt: s
   return res.json();
 }
 
+export async function recoverDevice(id: string): Promise<{ ok: boolean; recoveredAt: string }> {
+  const res = await fetch(`/api/devices/${id}/recover`, {
+    method:  "POST",
+    headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+    body:    "{}",
+  });
+  if (!res.ok) throw new Error("Failed to recover device");
+  return res.json();
+}
+
 export async function fetchDeviceMetrics(id: string): Promise<DeviceMetrics> {
   const res = await fetch(`/api/devices/${id}/metrics`, { headers: getAuthHeaders() });
   if (!res.ok) throw new Error("Failed to fetch device metrics");

@@ -56,8 +56,8 @@ export const POS_MODE_INFO: Record<PosOperatingMode, { label: string; descriptio
     color: "#f59e0b",
   },
   full_pos: {
-    label: "Full POS",
-    description: "Command Hub is your primary point-of-sale. Complete transaction processing, inventory, and reporting in one system.",
+    label: "Full Commerce Mode",
+    description: "Command Hub is your primary commerce platform. Complete transaction processing, inventory, and reporting in one system.",
     color: "#34d399",
   },
 };

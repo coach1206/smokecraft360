@@ -128,7 +128,7 @@ export default function SettingsModule() {
             { icon: Monitor, label: "Devices Online", value: `${onlineDevices}/${cc.devices.length}`, color: "#5b8def" },
             { icon: Shield, label: "Devices Locked", value: `${lockedDevices}`, color: lockedDevices > 0 ? "#ef4444" : "#34d399" },
             { icon: Clock, label: "Active Staff", value: `${activeStaff}`, color: "#a78bfa" },
-            { icon: Layers, label: "POS Mode", value: modeInfo.label, color: modeInfo.color },
+            { icon: Layers, label: "Operating Mode", value: modeInfo.label, color: modeInfo.color },
           ].map((item, i) => {
             const Icon = item.icon;
             return (
@@ -408,7 +408,7 @@ export default function SettingsModule() {
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
             <Layers size={14} color="rgba(232,224,200,0.5)" />
-            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>POS Operating Mode</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Operating Mode</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {POS_MODES.map((mode) => {
