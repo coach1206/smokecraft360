@@ -1,0 +1,278 @@
+FINAL NEXT BUILD PROMPT
+PHASE 3.5 — AUTOMATED INTELLIGENCE + CAMPAIGN TRIGGER ENGINE
+
+DO NOT redesign:
+- CraftHub homepage
+- Revenue Engine UI
+- cinematic atmosphere system
+- collectible card architecture
+- mentor system visuals
+- OLED visual language
+- tactile raised-button system
+
+This phase is NOT:
+a visual redesign.
+
+This phase IS:
+teaching Axiom OS how to think and react automatically.
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+Transform Axiom OS from:
+a manual hospitality tool
+
+into:
+an intelligent hospitality operating system that proactively helps venues increase revenue, recover traffic, reactivate customers, and automate engagement.
+
+The system should begin behaving like:
+an AI hospitality operator assistant.
+
+==================================================
+BUILD THE AUTOMATED INTELLIGENCE ENGINE
+==================================================
+
+Create:
+AXIOM AUTOMATED INTELLIGENCE ENGINE.
+
+Purpose:
+monitor venue activity continuously and intelligently recommend OR trigger actions automatically.
+
+This engine should analyze:
+- traffic
+- loyalty behavior
+- event participation
+- customer inactivity
+- atmosphere engagement
+- inventory movement
+- revenue trends
+- social participation
+- time-of-day behavior
+- repeat customer activity
+
+==================================================
+BUILD THE CAMPAIGN TRIGGER ENGINE
+==================================================
+
+Create:
+IF/THEN hospitality automations.
+
+Examples:
+
+IF:
+traffic drops below normal Thursday baseline
+THEN:
+suggest or launch Reserve Pairing Night.
+
+IF:
+VIP customer inactive for 14 days
+THEN:
+send mentor invitation campaign.
+
+IF:
+inventory stagnant for 10+ days
+THEN:
+create pairing recommendation promotion.
+
+IF:
+rain/weather detected + low reservations
+THEN:
+activate “Tonight’s Lounge Escape” campaign.
+
+IF:
+social engagement rising
+THEN:
+promote live atmosphere event.
+
+==================================================
+AUTOMATED CAMPAIGN TYPES
+==================================================
+
+Support:
+- SMS campaigns
+- email campaigns
+- Instagram posts
+- Instagram stories
+- Facebook campaigns
+- push notifications
+- member alerts
+- mentor invitations
+- reserve-access alerts
+- unfinished blend reminders
+- event invitations
+
+==================================================
+BUILD AI SOCIAL MEDIA ENGINE
+==================================================
+
+Axiom should eventually generate:
+social media content automatically.
+
+Examples:
+- tonight’s atmosphere
+- featured blend
+- pairing spotlight
+- reserve event
+- mentor quote
+- VIP invitation
+- slow-hour activation
+- live lounge energy
+
+Use:
+real venue imagery,
+cinematic overlays,
+and premium typography.
+
+Style:
+luxury hospitality,
+NOT generic marketing.
+
+==================================================
+BUILD LIVE LOUNGE ENERGY SYSTEM
+==================================================
+
+Create:
+real-time atmosphere indicators.
+
+Display:
+- Lounge Energy Level
+- Tonight’s Atmosphere
+- Active Pairings
+- Featured Blend
+- Live Event Status
+- Reserve Session Count
+- Social Engagement Pulse
+
+The venue should feel:
+alive and active.
+
+==================================================
+BUILD PREDICTIVE RETURN ENGINE
+==================================================
+
+Axiom should predict:
+which customers are likely to:
+- return
+- disengage
+- spend more socially
+- attend events
+- respond to campaigns
+
+Track:
+- mentor engagement
+- visit frequency
+- atmosphere participation
+- spending behavior
+- social behavior
+- event participation
+
+==================================================
+BUILD AUTOMATED GUEST RECOVERY
+==================================================
+
+System automatically identifies:
+inactive customers.
+
+Triggers:
+- mentor follow-ups
+- reserve invitations
+- atmosphere reminders
+- unfinished blend recovery
+- personalized recommendations
+- VIP re-engagement campaigns
+
+==================================================
+BUILD INVENTORY INTELLIGENCE AUTOMATION
+==================================================
+
+System monitors:
+- low movement inventory
+- overstock
+- low-stock risk
+- high-performing products
+
+Mentors naturally begin:
+promoting pairings tied to inventory needing movement.
+
+Purpose:
+increase inventory movement WITHOUT looking discount-driven.
+
+==================================================
+BUILD VIP + PRESTIGE AUTOMATION
+==================================================
+
+Create:
+exclusive hospitality experiences automatically.
+
+Examples:
+- Founder Circle
+- Reserve Society
+- Mentor Vault Access
+- Hidden Pairing Invitations
+- VIP Atmosphere Sessions
+- Elite Reserve Events
+
+NO:
+cheap gamification.
+
+Luxury exclusivity ONLY.
+
+==================================================
+BUILD ENVIRONMENTAL REACTION ENGINE
+==================================================
+
+Environment should react dynamically to:
+- atmosphere intensity
+- social energy
+- event participation
+- customer volume
+- VIP activity
+- mentor tone
+
+Examples:
+- lighting warmth changes
+- ambient particles intensify
+- music atmosphere adapts
+- OLED glow behavior shifts
+- lounge mood transitions
+
+The venue should feel:
+alive and emotionally responsive.
+
+==================================================
+UI/UX REQUIREMENTS
+==================================================
+
+ALL modules MUST:
+- use real-world imagery
+- maintain cinematic depth
+- use tactile raised controls
+- include persistent Back navigation
+- preserve matte-black OLED luxury language
+- avoid clutter
+- preserve Apple × Tesla × Star Trek hospitality feel
+
+NO:
+flat dashboards,
+corporate analytics screens,
+or generic SaaS layouts.
+
+==================================================
+FINAL TARGET
+==================================================
+
+Customer feeling:
+“This place understands me.”
+
+Venue owner feeling:
+“This system helps me make money automatically.”
+
+Axiom OS feeling:
+an invisible hospitality intelligence layer quietly operating the venue in the background.
+
+This phase transforms Axiom OS from:
+hospitality software
+
+into:
+an adaptive hospitality intelligence ecosystem.
