@@ -1,0 +1,280 @@
+FINAL FIX PROMPT — HUMAN FOUNDATION + MASTER MEMORY BACKBONE
+(THIS FIXES THE CORE MISSING PIECES)
+
+STOP adding new visual systems.
+
+STOP adding new experience layers.
+
+The platform’s biggest problem is:
+the system does not truly know, remember, or evolve with the user yet.
+
+Everything else depends on fixing THIS first.
+
+This phase ONLY builds:
+THE HUMAN FOUNDATION.
+
+==================================================
+CORE PROBLEM
+==================================================
+
+Right now:
+users enter,
+swipe,
+leave,
+and disappear.
+
+The platform currently lacks:
+- persistent identity
+- memory continuity
+- mentor continuity
+- return value
+- user evolution
+- atmosphere persistence
+- profile intelligence
+
+The experience looks premium,
+but there is NO long-term human backbone underneath it.
+
+FIX THIS FIRST.
+
+==================================================
+BUILD ORDER — DO IN THIS EXACT ORDER
+==================================================
+
+1. Session Enrollment Engine
+2. Identity System
+3. Session Memory Engine
+4. Mentor Assignment Engine
+5. Return Experience System
+6. QR Resume System
+7. Atmosphere Preference Engine
+8. Profile Graph Storage
+9. Fast Return Flow
+10. CRM + Retention Backbone
+
+DO NOT skip this order.
+
+==================================================
+1. SESSION ENROLLMENT ENGINE
+==================================================
+
+Build:
+cinematic one-question-at-a-time onboarding.
+
+DO NOT use:
+generic forms,
+account pages,
+or signup screens.
+
+This should feel:
+like entering a luxury experience.
+
+Headline:
+“Every great session begins with understanding the guest.”
+
+Collect:
+- first name
+- last initial
+- phone number
+- optional email
+- age range
+- country/region
+- atmosphere preference
+- experience level
+- smooth vs bold
+- adventurous vs classic
+
+One question at a time.
+
+Smooth transitions only.
+
+==================================================
+2. IDENTITY SYSTEM
+==================================================
+
+Create TWO identity layers.
+
+PUBLIC IDENTITY:
+First Name + Last Initial + Last 4 Digits
+
+Examples:
+Marcus T • 4827
+
+PRIVATE SYSTEM ID:
+encrypted UUID internally.
+
+This powers:
+- session continuity
+- CRM
+- analytics
+- memory
+- purchases
+- retention
+- mentor history
+
+==================================================
+3. SESSION MEMORY ENGINE
+==================================================
+
+Build:
+persistent user memory.
+
+Save:
+- mentor assignment
+- flavor preferences
+- atmosphere preferences
+- blend evolution
+- session history
+- unfinished blends
+- emotional tendencies
+- regional preferences
+
+Returning users should NEVER feel:
+new again.
+
+==================================================
+4. MENTOR ASSIGNMENT ENGINE
+==================================================
+
+After enrollment:
+assign mentor intelligently.
+
+Use:
+- atmosphere preference
+- flavor tendencies
+- experience level
+- regional preference
+
+Mentor relationship must persist across sessions.
+
+Example:
+“Welcome back Marcus T.”
+“Juan Valez has your previous blend waiting.”
+
+==================================================
+5. RETURN EXPERIENCE SYSTEM
+==================================================
+
+Users must feel:
+their next session matters.
+
+DO NOT say:
+“Create account.”
+
+Instead:
+“Save your atmosphere and continue your blend anytime.”
+
+“We’ll preserve your mentor and flavor evolution.”
+
+==================================================
+6. QR RESUME SYSTEM
+==================================================
+
+Generate:
+QR continuation system.
+
+Users scan QR and instantly restore:
+- mentor
+- atmosphere
+- unfinished blends
+- profile history
+- current session
+
+This creates:
+luxury continuity.
+
+==================================================
+7. ATMOSPHERE PREFERENCE ENGINE
+==================================================
+
+Store:
+- social vs solo
+- smooth vs bold
+- reflective vs energetic
+- late-night vs daytime
+- exploration vs classic
+
+Use this to adapt:
+- mentors
+- environments
+- recommendations
+- pacing
+- atmosphere
+
+==================================================
+8. AXIOM PROFILE GRAPH
+==================================================
+
+Build:
+central persistent intelligence graph.
+
+Track:
+- flavor drift
+- mentor affinity
+- session pacing
+- atmosphere evolution
+- blend chemistry
+- social behavior
+- purchase behavior
+- preference changes
+
+THIS becomes:
+the core intelligence asset.
+
+==================================================
+9. FAST RETURN FLOW
+==================================================
+
+At kiosk:
+users return using:
+- First Name
+- Last 4 digits
+
+Instantly restore:
+- mentor
+- atmosphere
+- unfinished blends
+- previous session state
+
+NO passwords.
+NO friction.
+
+==================================================
+10. CRM + RETENTION BACKBONE
+==================================================
+
+Use saved profiles for:
+- future session invitations
+- mentor follow-ups
+- seasonal atmosphere events
+- blend continuation reminders
+- lounge recommendations
+- personalized pairing suggestions
+
+The user should feel:
+remembered and evolving.
+
+==================================================
+FINAL RESULT
+==================================================
+
+After this phase:
+the platform finally becomes:
+persistent,
+intelligent,
+and emotionally continuous.
+
+The system will now:
+KNOW the user.
+
+Everything else:
+behavior intelligence,
+venue analytics,
+mentor evolution,
+prestige,
+group sessions,
+manufacturer insights—
+
+can now properly build on top of this foundation.
+
+THIS is the real missing backbone.

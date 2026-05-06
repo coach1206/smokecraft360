@@ -64,6 +64,7 @@ import InactivityGuard                 from "@/components/InactivityGuard";
 import PosAuditBridge                  from "@/components/PosAuditBridge";
 import { useSystemVersion }            from "@/hooks/useSystemVersion";
 import { EngagementProvider }          from "@/contexts/EngagementContext";
+import { GuestProfileProvider }        from "@/contexts/GuestProfileContext";
 import { bootstrapKioskAuth }          from "@/services/auth";
 import { EnvironmentProvider }         from "@/contexts/EnvironmentContext";
 import { OrchestratorProvider }       from "@/contexts/OrchestratorContext";
@@ -156,6 +157,7 @@ function App() {
          <ThemeProvider>
           <LicenseProvider>
             <AuthProvider>
+              <GuestProfileProvider>
               <PresentationProvider>
                 <PosProvider>
                 <CommandCenterProvider>
@@ -186,6 +188,7 @@ function App() {
                 </CommandCenterProvider>
                 </PosProvider>
               </PresentationProvider>
+              </GuestProfileProvider>
             </AuthProvider>
           </LicenseProvider>
          </ThemeProvider>

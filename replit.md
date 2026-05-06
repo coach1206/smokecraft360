@@ -52,6 +52,7 @@ The application features a luxury aesthetic with a dark gold theme, glassmorphis
 -   **Axiom OS Branding**: Renamed platform to "Axiom OS," with updated terminology and i18n locales.
 -   **Partnership & Distribution Engine**: Supports brand partners and campaigns with budget enforcement, fraud detection, and ROI reporting.
 -   **Production Go-Live Control Layer**: Enables remote control over client application versions, forced refreshes, device heartbeats, and feature flag synchronization.
+-   **Human Foundation**: Persistent kiosk guest identity system. `EnrollmentFlow` collects firstName, lastInitial, atmosphere/boldness/experience in a cinematic one-at-a-time Q flow. `assignMentor()` maps palate preferences to one of 11 fictional mentors (4 craft types). `MentorReveal` shows the assigned mentor before the swipe experience. `GuestProfileContext` persists identity to sessionStorage. Fast return via CraftHub "RETURNING?" button (firstName + last-4 digits). Tables: `guest_profiles`, `guest_sessions`. API: `POST /api/enrollment/enroll`, `/return`, `PATCH /:id/memory`.
 -   **Kiosk Burn-in Protection**: Pixel-shift system for kiosk screens.
 -   **Device Management**: Registration, status tracking, and session management for various devices.
 -   **Lounge League**: A competition system for ranking venues.

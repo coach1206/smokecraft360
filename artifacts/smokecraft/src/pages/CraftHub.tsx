@@ -14,13 +14,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
-import { Sparkles, Cpu, Activity } from "lucide-react";
+import { Sparkles, Cpu, Activity, RotateCcw, X } from "lucide-react";
 import { PreferenceProvider }   from "@/contexts/PreferenceContext";
 import { UserProfileProvider }  from "@/contexts/UserProfileContext";
 import MoodControls             from "@/components/DynamicCard/MoodControls";
 import DynamicCard              from "@/components/DynamicCard/DynamicCard";
 import LiveEngineController     from "@/components/DynamicCard/LiveEngineController";
 import { CRAFT_MODULES }        from "@/data/craftScenes";
+import { useGuestProfile }      from "@/contexts/GuestProfileContext";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
@@ -157,11 +158,206 @@ function GlowRing({ color }: { color: string }) {
   );
 }
 
+// ── Fast Return Modal ─────────────────────────────────────────────────────────
+
+function FastReturnModal({ onClose }: { onClose: () => void }) {
+  const { fastReturn, guestProfile, mentor } = useGuestProfile();
+  const [firstName,   setFirstName]  = useState("");
+  const [phoneLast4,  setPhoneLast4] = useState("");
+  const [busy,        setBusy]       = useState(false);
+  const [error,       setError]      = useState("");
+  const [success,     setSuccess]    = useState(false);
+
+  async function handleReturn() {
+    if (!firstName.trim() || phoneLast4.length !== 4) {
+      setError("Please enter your first name and the last 4 digits.");
+      return;
+    }
+    setBusy(true);
+    setError("");
+    const found = await fastReturn(firstName.trim(), phoneLast4);
+    setBusy(false);
+    if (!found) {
+      setError("No session found. Check your name and digits.");
+      return;
+    }
+    setSuccess(true);
+    setTimeout(onClose, 1800);
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      style={{
+        position:        "fixed",
+        inset:           0,
+        zIndex:          300,
+        background:      "rgba(4,3,2,0.92)",
+        backdropFilter:  "blur(8px)",
+        display:         "flex",
+        alignItems:      "center",
+        justifyContent:  "center",
+        padding:         24,
+      }}
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 20, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          background:   "rgba(12,8,4,0.95)",
+          border:       `1px solid ${C.goldDim}`,
+          borderRadius: 16,
+          padding:      "32px 28px",
+          width:        "100%",
+          maxWidth:     360,
+          position:     "relative",
+        }}
+      >
+        {/* Close */}
+        <button
+          onClick={onClose}
+          style={{
+            position:   "absolute", top: 14, right: 14,
+            background: "none", border: "none",
+            color:      C.dim, cursor: "pointer", padding: 4,
+          }}
+        >
+          <X size={16} />
+        </button>
+
+        {success ? (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{ textAlign: "center" }}
+          >
+            <p style={{
+              fontFamily:    "'Cormorant Garamond', Georgia, serif",
+              fontSize:      "1.6rem",
+              fontWeight:    300,
+              color:         C.text,
+              marginBottom:  8,
+            }}>
+              Welcome back,<br />{guestProfile?.firstName}.
+            </p>
+            {mentor && (
+              <p style={{
+                fontSize:   "0.75rem",
+                color:      C.goldDim,
+                letterSpacing: "0.08em",
+              }}>
+                {mentor.name} is ready for you.
+              </p>
+            )}
+          </motion.div>
+        ) : (
+          <>
+            <p style={{
+              fontFamily:    "var(--app-font-serif, Georgia, serif)",
+              fontSize:      "1.1rem",
+              fontWeight:    700,
+              color:         C.text,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              marginBottom:  6,
+            }}>
+              Return to Session
+            </p>
+            <p style={{
+              fontSize:      11,
+              color:         C.muted,
+              marginBottom:  24,
+              lineHeight:    1.5,
+            }}>
+              Enter your first name and the last 4 digits you used to enroll.
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <input
+                value={firstName}
+                onChange={e => { setFirstName(e.target.value); setError(""); }}
+                onKeyDown={e => { if (e.key === "Enter") handleReturn(); }}
+                placeholder="First name"
+                style={{
+                  background:   "rgba(201,168,76,0.05)",
+                  border:       `1px solid rgba(201,168,76,0.2)`,
+                  borderRadius: 8,
+                  padding:      "11px 14px",
+                  color:        C.text,
+                  fontFamily:   "inherit",
+                  fontSize:     14,
+                  outline:      "none",
+                  caretColor:   C.gold,
+                }}
+              />
+              <input
+                value={phoneLast4}
+                maxLength={4}
+                onChange={e => {
+                  setPhoneLast4(e.target.value.replace(/\D/g, "").slice(0, 4));
+                  setError("");
+                }}
+                onKeyDown={e => { if (e.key === "Enter") handleReturn(); }}
+                placeholder="Last 4 digits"
+                inputMode="numeric"
+                style={{
+                  background:    "rgba(201,168,76,0.05)",
+                  border:        `1px solid rgba(201,168,76,0.2)`,
+                  borderRadius:  8,
+                  padding:       "11px 14px",
+                  color:         C.text,
+                  fontFamily:    "inherit",
+                  fontSize:      14,
+                  letterSpacing: "0.3em",
+                  outline:       "none",
+                  caretColor:    C.gold,
+                }}
+              />
+
+              {error && (
+                <p style={{ fontSize: 11, color: "rgba(220,80,80,0.8)" }}>{error}</p>
+              )}
+
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={handleReturn}
+                disabled={busy}
+                style={{
+                  background:    `rgba(201,168,76,0.10)`,
+                  border:        `1px solid ${C.goldDim}`,
+                  borderRadius:  8,
+                  padding:       "12px",
+                  color:         C.gold,
+                  fontFamily:    "inherit",
+                  fontSize:      12,
+                  fontWeight:    700,
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  cursor:        busy ? "not-allowed" : "pointer",
+                  opacity:       busy ? 0.6 : 1,
+                }}
+              >
+                {busy ? "Searching…" : "Find My Session"}
+              </motion.button>
+            </div>
+          </>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ── Main hub page ─────────────────────────────────────────────────────────────
 
 function CraftHubInner() {
   const [, navigate]   = useLocation();
   const glowCtrl       = useAnimation();
+  const { guestProfile } = useGuestProfile();
+  const [showReturn, setShowReturn] = useState(false);
   // Portal opening transition — set when a craft card is clicked
   const [portal, setPortal] = useState<{ route: string; color: string } | null>(null);
 
@@ -219,6 +415,60 @@ function CraftHubInner() {
         flexShrink:     0,
         gap:            16,
       }}>
+        {/* Left — returning guest or identity badge */}
+        <motion.div
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          {guestProfile ? (
+            <div style={{
+              display:    "flex",
+              alignItems: "center",
+              gap:        7,
+              padding:    "5px 10px",
+              background: "rgba(201,168,76,0.07)",
+              border:     `1px solid rgba(201,168,76,0.22)`,
+              borderRadius: 8,
+            }}>
+              <div style={{
+                width: 18, height: 18, borderRadius: "50%",
+                background: "rgba(201,168,76,0.15)",
+                border: `1px solid rgba(201,168,76,0.4)`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 8, color: C.gold, fontWeight: 700,
+              }}>
+                {guestProfile.firstName[0]}
+              </div>
+              <span style={{ fontSize: 10, color: C.goldDim, letterSpacing: "0.06em" }}>
+                {guestProfile.publicId}
+              </span>
+            </div>
+          ) : (
+            <motion.button
+              whileTap={{ scale: 0.96 }}
+              onClick={() => setShowReturn(true)}
+              style={{
+                display:       "flex",
+                alignItems:    "center",
+                gap:           6,
+                background:    "none",
+                border:        `1px solid rgba(201,168,76,0.18)`,
+                borderRadius:  8,
+                padding:       "5px 10px",
+                color:         C.dim,
+                fontSize:      10,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                cursor:        "pointer",
+              }}
+            >
+              <RotateCcw size={10} color={C.goldDim} />
+              Returning?
+            </motion.button>
+          )}
+        </motion.div>
+
         {/* Brand identity — center */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
           <motion.div
@@ -406,6 +656,11 @@ function CraftHubInner() {
           OPERATIONAL · {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
         </div>
       </footer>
+
+      {/* ── Fast Return Modal ── */}
+      <AnimatePresence>
+        {showReturn && <FastReturnModal onClose={() => setShowReturn(false)} />}
+      </AnimatePresence>
 
       {/* ── Portal opening curtain — expands when a craft card is clicked ── */}
       <AnimatePresence>

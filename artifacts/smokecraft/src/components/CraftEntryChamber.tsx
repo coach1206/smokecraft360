@@ -6,6 +6,14 @@
  * Session loading happens in the background behind this component;
  * the user experiences atmosphere first, then chooses when to begin.
  *
+ * Flow:
+ *   "Begin Experience" → if no guestProfile → EnrollmentFlow
+ *                     → after enroll → MentorReveal
+ *                     → "Begin Session" → onBegin()
+ *
+ *   If guestProfile already set (fast return or same session):
+ *                     → MentorReveal immediately → onBegin()
+ *
  * Props:
  *   type     — craft type slug ("smoke" | "pour" | "brew" | "vape")
  *   theme    — CraftTheme from craftThemes.ts (accent, bgImage, etc.)
@@ -17,6 +25,9 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, Zap, Compass } from "lucide-react";
 import type { CraftTheme } from "@/lib/craftThemes";
+import { useGuestProfile }  from "@/contexts/GuestProfileContext";
+import EnrollmentFlow       from "@/components/EnrollmentFlow";
+import MentorReveal         from "@/components/MentorReveal";
 
 // ── Per-craft chamber configuration ──────────────────────────────────────────
 
@@ -293,253 +304,352 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
   const cfg    = CHAMBER[type] ?? CHAMBER.smoke;
   const accent = theme.accent;
 
+  const { guestProfile, mentor, isReturning } = useGuestProfile();
+
+  // "enrollment" → "mentor" → (dismissed via onBegin)
+  const [scene, setScene] = useState<"chamber" | "enrollment" | "mentor">("chamber");
+
+  function handleBeginClick() {
+    if (guestProfile && mentor) {
+      // Returning guest or same-session — go straight to mentor reveal
+      setScene("mentor");
+    } else {
+      // New guest — run enrollment flow
+      setScene("enrollment");
+    }
+  }
+
+  function handleEnrolled() {
+    // EnrollmentFlow has called enroll(); context now has profile + mentor
+    setScene("mentor");
+  }
+
+  function handleSkipEnrollment() {
+    // Anonymous mode — bypass directly into the experience
+    onBegin();
+  }
+
+  function handleMentorBegin() {
+    setScene("chamber");
+    onBegin();
+  }
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 0.97 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      style={{
-        position:   "fixed",
-        inset:      0,
-        background: "#060402",
-        overflow:   "hidden",
-        zIndex:     50,
-      }}
-    >
-      {/* ── Atmospheric background ── */}
-      <RotatingBackground images={cfg.images} accent={accent} />
-
-      {/* ── Particles ── */}
-      <ChamberParticles accent={accent} />
-
-      {/* ── Back button ── */}
-      <motion.button
-        type="button"
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.4 }}
-        onClick={onBack}
-        style={{
-          position:       "absolute",
-          top:            18, left: 20,
-          zIndex:         10,
-          display:        "flex",
-          alignItems:     "center",
-          gap:            7,
-          background:     "rgba(0,0,0,0.45)",
-          border:         "1px solid rgba(255,255,255,0.1)",
-          borderRadius:   10,
-          padding:        "8px 14px",
-          color:          "rgba(240,232,212,0.55)",
-          fontSize:       12,
-          cursor:         "pointer",
-          backdropFilter: "blur(12px)",
-          letterSpacing:  "0.06em",
-        }}
-      >
-        <ArrowLeft size={13} /> Portal
-      </motion.button>
-
-      {/* ── Central content ── */}
-      <div style={{
-        position:       "absolute",
-        inset:          0,
-        display:        "flex",
-        flexDirection:  "column",
-        alignItems:     "center",
-        justifyContent: "center",
-        padding:        "60px 40px 40px",
-        gap:            0,
-      }}>
-        {/* Glow ring emblem */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.6 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.15, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          style={{ marginBottom: 28, position: "relative" }}
-        >
-          <motion.div
-            animate={{
-              boxShadow: [
-                `0 0 0px ${accent}00`,
-                `0 0 48px ${accent}55`,
-                `0 0 0px ${accent}00`,
-              ],
-            }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-            style={{
-              width:        72, height: 72,
-              borderRadius: "50%",
-              background:   `${accent}10`,
-              border:       `1px solid ${accent}60`,
-              display:      "flex",
-              alignItems:   "center",
-              justifyContent: "center",
-            }}
-          >
-            <Sparkles size={30} color={accent} />
-          </motion.div>
-        </motion.div>
-
-        {/* Title */}
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            fontFamily:    "var(--app-font-serif, Georgia, serif)",
-            fontSize:      "clamp(26px, 5vw, 44px)",
-            fontWeight:    800,
-            color:         "rgba(240,232,212,0.96)",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            textAlign:     "center",
-            lineHeight:    1.05,
-            marginBottom:  10,
-          }}
-        >
-          {cfg.title}
-        </motion.div>
-
-        {/* Engine label */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.38 }}
-          style={{
-            fontSize:      11,
-            color:         accent,
-            letterSpacing: "0.28em",
-            textTransform: "uppercase",
-            textAlign:     "center",
-            marginBottom:  18,
-            fontWeight:    600,
-          }}
-        >
-          {cfg.engine}
-        </motion.div>
-
-        {/* Divider */}
-        <motion.div
-          initial={{ scaleX: 0, opacity: 0 }}
-          animate={{ scaleX: 1, opacity: 1 }}
-          transition={{ delay: 0.45, duration: 0.55 }}
-          style={{
-            width:       120,
-            height:      1,
-            background:  `linear-gradient(90deg, transparent, ${accent}80, transparent)`,
-            marginBottom: 18,
-          }}
-        />
-
-        {/* Tagline */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          style={{
-            fontSize:      14,
-            color:         "rgba(240,232,212,0.50)",
-            textAlign:     "center",
-            maxWidth:      380,
-            lineHeight:    1.65,
-            letterSpacing: "0.02em",
-            marginBottom:  8,
-          }}
-        >
-          {cfg.tagline}
-        </motion.p>
-
-        {/* Atmosphere tags */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.58 }}
-          style={{
-            fontSize:      10,
-            color:         `${accent}70`,
-            textAlign:     "center",
-            letterSpacing: "0.16em",
-            textTransform: "uppercase",
-            marginBottom:  44,
-          }}
-        >
-          {cfg.atmosphere}
-        </motion.p>
-
-        {/* Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.62, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            display:       "flex",
-            flexDirection: "column",
-            gap:           10,
-            width:         "100%",
-            maxWidth:      340,
-          }}
-        >
-          <GlassButton
-            label="Begin Experience"
-            sub="Guided preference discovery"
-            icon={<Sparkles size={18} />}
-            accent={accent}
-            onClick={onBegin}
-            primary
-          />
-          <GlassButton
-            label="Quick Match"
-            sub="Skip to top recommendations"
-            icon={<Zap size={16} />}
-            accent={accent}
-            onClick={onBegin}
-          />
-          <GlassButton
-            label="Explore Lounge"
-            sub="Browse the full experience"
-            icon={<Compass size={16} />}
-            accent={accent}
-            onClick={onBegin}
-          />
-        </motion.div>
-      </div>
-
-      {/* ── Bottom ambient status bar ── */}
+    <>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
+        exit={{ opacity: 0, scale: 0.97 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
         style={{
-          position:       "absolute",
-          bottom:         0, left: 0, right: 0,
-          padding:        "12px 24px",
-          display:        "flex",
-          alignItems:     "center",
-          justifyContent: "center",
-          gap:            24,
-          borderTop:      "1px solid rgba(255,255,255,0.05)",
-          background:     "rgba(6,4,2,0.65)",
-          backdropFilter: "blur(12px)",
+          position:   "fixed",
+          inset:      0,
+          background: "#060402",
+          overflow:   "hidden",
+          zIndex:     50,
         }}
       >
-        {["Taste Profile", "AI Ranking", "Inventory Sync"].map((label, i) => (
-          <div key={label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <motion.div
-              style={{ width: 4, height: 4, borderRadius: "50%", background: accent }}
-              animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.5, 1] }}
-              transition={{ duration: 2.2, delay: i * 0.5, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <span style={{
-              fontSize: 9, color: "rgba(240,232,212,0.28)",
-              letterSpacing: "0.18em", textTransform: "uppercase",
+        {/* ── Atmospheric background ── */}
+        <RotatingBackground images={cfg.images} accent={accent} />
+
+        {/* ── Particles ── */}
+        <ChamberParticles accent={accent} />
+
+        {/* ── Back button ── */}
+        <motion.button
+          type="button"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4 }}
+          onClick={onBack}
+          style={{
+            position:       "absolute",
+            top:            18, left: 20,
+            zIndex:         10,
+            display:        "flex",
+            alignItems:     "center",
+            gap:            7,
+            background:     "rgba(0,0,0,0.45)",
+            border:         "1px solid rgba(255,255,255,0.1)",
+            borderRadius:   10,
+            padding:        "8px 14px",
+            color:          "rgba(240,232,212,0.55)",
+            fontSize:       12,
+            cursor:         "pointer",
+            backdropFilter: "blur(12px)",
+            letterSpacing:  "0.06em",
+          }}
+        >
+          <ArrowLeft size={13} /> Portal
+        </motion.button>
+
+        {/* ── Guest identity badge (if enrolled) ── */}
+        {guestProfile && (
+          <motion.div
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            style={{
+              position:       "absolute",
+              top:            18, right: 20,
+              zIndex:         10,
+              display:        "flex",
+              alignItems:     "center",
+              gap:            7,
+              background:     "rgba(0,0,0,0.45)",
+              border:         `1px solid ${accent}30`,
+              borderRadius:   10,
+              padding:        "8px 14px",
+              backdropFilter: "blur(12px)",
+            }}
+          >
+            <div style={{
+              width:          20, height: 20,
+              borderRadius:   "50%",
+              background:     `${accent}20`,
+              border:         `1px solid ${accent}50`,
+              display:        "flex",
+              alignItems:     "center",
+              justifyContent: "center",
+              fontSize:       9,
+              color:          accent,
+              fontWeight:     700,
             }}>
-              {label}
+              {guestProfile.firstName[0]}
+            </div>
+            <span style={{
+              fontSize:      10,
+              color:         `${accent}80`,
+              letterSpacing: "0.08em",
+            }}>
+              {guestProfile.publicId}
             </span>
-          </div>
-        ))}
+          </motion.div>
+        )}
+
+        {/* ── Central content ── */}
+        <div style={{
+          position:       "absolute",
+          inset:          0,
+          display:        "flex",
+          flexDirection:  "column",
+          alignItems:     "center",
+          justifyContent: "center",
+          padding:        "60px 40px 40px",
+          gap:            0,
+        }}>
+          {/* Glow ring emblem */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.15, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            style={{ marginBottom: 28, position: "relative" }}
+          >
+            <motion.div
+              animate={{
+                boxShadow: [
+                  `0 0 0px ${accent}00`,
+                  `0 0 48px ${accent}55`,
+                  `0 0 0px ${accent}00`,
+                ],
+              }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+              style={{
+                width:        72, height: 72,
+                borderRadius: "50%",
+                background:   `${accent}10`,
+                border:       `1px solid ${accent}60`,
+                display:      "flex",
+                alignItems:   "center",
+                justifyContent: "center",
+              }}
+            >
+              <Sparkles size={30} color={accent} />
+            </motion.div>
+          </motion.div>
+
+          {/* Title */}
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              fontFamily:    "var(--app-font-serif, Georgia, serif)",
+              fontSize:      "clamp(26px, 5vw, 44px)",
+              fontWeight:    800,
+              color:         "rgba(240,232,212,0.96)",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              textAlign:     "center",
+              lineHeight:    1.05,
+              marginBottom:  10,
+            }}
+          >
+            {cfg.title}
+          </motion.div>
+
+          {/* Engine label */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.38 }}
+            style={{
+              fontSize:      11,
+              color:         accent,
+              letterSpacing: "0.28em",
+              textTransform: "uppercase",
+              textAlign:     "center",
+              marginBottom:  18,
+              fontWeight:    600,
+            }}
+          >
+            {cfg.engine}
+          </motion.div>
+
+          {/* Divider */}
+          <motion.div
+            initial={{ scaleX: 0, opacity: 0 }}
+            animate={{ scaleX: 1, opacity: 1 }}
+            transition={{ delay: 0.45, duration: 0.55 }}
+            style={{
+              width:       120,
+              height:      1,
+              background:  `linear-gradient(90deg, transparent, ${accent}80, transparent)`,
+              marginBottom: 18,
+            }}
+          />
+
+          {/* Tagline */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            style={{
+              fontSize:      14,
+              color:         "rgba(240,232,212,0.50)",
+              textAlign:     "center",
+              maxWidth:      380,
+              lineHeight:    1.65,
+              letterSpacing: "0.02em",
+              marginBottom:  8,
+            }}
+          >
+            {cfg.tagline}
+          </motion.p>
+
+          {/* Atmosphere tags */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.58 }}
+            style={{
+              fontSize:      10,
+              color:         `${accent}70`,
+              textAlign:     "center",
+              letterSpacing: "0.16em",
+              textTransform: "uppercase",
+              marginBottom:  44,
+            }}
+          >
+            {cfg.atmosphere}
+          </motion.p>
+
+          {/* Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.62, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              display:       "flex",
+              flexDirection: "column",
+              gap:           10,
+              width:         "100%",
+              maxWidth:      340,
+            }}
+          >
+            <GlassButton
+              label={guestProfile ? "Continue Session" : "Begin Experience"}
+              sub={guestProfile ? `Welcome back, ${guestProfile.firstName}` : "Guided preference discovery"}
+              icon={<Sparkles size={18} />}
+              accent={accent}
+              onClick={handleBeginClick}
+              primary
+            />
+            <GlassButton
+              label="Quick Match"
+              sub="Skip to top recommendations"
+              icon={<Zap size={16} />}
+              accent={accent}
+              onClick={onBegin}
+            />
+            <GlassButton
+              label="Explore Lounge"
+              sub="Browse the full experience"
+              icon={<Compass size={16} />}
+              accent={accent}
+              onClick={onBegin}
+            />
+          </motion.div>
+        </div>
+
+        {/* ── Bottom ambient status bar ── */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+          style={{
+            position:       "absolute",
+            bottom:         0, left: 0, right: 0,
+            padding:        "12px 24px",
+            display:        "flex",
+            alignItems:     "center",
+            justifyContent: "center",
+            gap:            24,
+            borderTop:      "1px solid rgba(255,255,255,0.05)",
+            background:     "rgba(6,4,2,0.65)",
+            backdropFilter: "blur(12px)",
+          }}
+        >
+          {["Taste Profile", "AI Ranking", "Inventory Sync"].map((label, i) => (
+            <div key={label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <motion.div
+                style={{ width: 4, height: 4, borderRadius: "50%", background: accent }}
+                animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.5, 1] }}
+                transition={{ duration: 2.2, delay: i * 0.5, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <span style={{
+                fontSize: 9, color: "rgba(240,232,212,0.28)",
+                letterSpacing: "0.18em", textTransform: "uppercase",
+              }}>
+                {label}
+              </span>
+            </div>
+          ))}
+        </motion.div>
       </motion.div>
-    </motion.div>
+
+      {/* ── Enrollment overlay ── */}
+      <AnimatePresence>
+        {scene === "enrollment" && (
+          <EnrollmentFlow
+            craftType={type}
+            onComplete={handleEnrolled}
+            onSkip={handleSkipEnrollment}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Mentor reveal overlay ── */}
+      <AnimatePresence>
+        {scene === "mentor" && mentor && (
+          <MentorReveal
+            mentor={mentor}
+            guestName={guestProfile?.firstName ?? ""}
+            isReturning={isReturning}
+            onBegin={handleMentorBegin}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 }

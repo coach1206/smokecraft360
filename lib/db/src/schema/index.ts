@@ -73,3 +73,5 @@ export * from "./swipeOrders";
 export * from "./experienceControlSettings";
 export * from "./orchestratorEvents";
 export * from "./systemValidation";
+export * from "./guestProfiles";
+export * from "./guestSessions";
