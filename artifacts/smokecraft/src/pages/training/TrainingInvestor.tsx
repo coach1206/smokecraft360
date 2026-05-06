@@ -20,7 +20,7 @@ import Maxwell                                      from "@/components/Maxwell";
 import TrainingBanner                               from "@/components/training/TrainingBanner";
 import { DEMO_KPIS, LIVE_EVENTS, MAXWELL_INTROS }  from "@/data/trainingData";
 import { VOICEOVER_SCRIPTS }                        from "@/data/voiceoverScripts";
-import { logTrainingEvent }                         from "@/hooks/useTrainingApi";
+import { logTrainingEvent, useTrainingData, trainingFetch } from "@/hooks/useTrainingApi";
 
 const T = {
   bg:     "#06040a",
@@ -261,6 +261,8 @@ function SlideContent({ slide }: { slide: typeof SLIDES[number] }) {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
+type TrainingSummary = { revenueTonight: number; tabsOpen: number; aiConfidence: number };
+
 export default function TrainingInvestor() {
   const [, navigate]  = useLocation();
   const [slide, setSlide]     = useState(0);
@@ -268,6 +270,21 @@ export default function TrainingInvestor() {
   const [eventIdx, setEventIdx] = useState(0);
   const [visibleEvents, setVisibleEvents] = useState(LIVE_EVENTS.slice(0, 3));
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const { data: summaryData } = useTrainingData<{ summary: TrainingSummary }>("analytics/summary");
+  const s = summaryData?.summary;
+
+  useEffect(() => {
+    trainingFetch<{ events: Array<{ id: string; type: string; text: string; ts: string }> }>(
+      "demo-state/events",
+    )
+      .then(({ data }) => {
+        if (data.events?.length) {
+          setVisibleEvents(data.events.slice(0, 3).map((e) => ({ message: e.text, type: e.type, priority: "normal" })));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     logTrainingEvent({ eventType: "page_view", page: "investor" });
@@ -458,11 +475,11 @@ export default function TrainingInvestor() {
             Live — Vault Cigar Lounge
           </div>
 
-          {/* Mini KPIs */}
+          {/* Mini KPIs — real data with static fallback */}
           {[
-            { label: "Revenue/hr", value: "$620", color: T.green },
-            { label: "AI Score",   value: "97/100", color: T.purple },
-            { label: "Tabs Live",  value: "6",     color: T.gold },
+            { label: "Revenue/hr", value: s ? `$${Math.round((s.revenueTonight ?? 4960) / 8).toLocaleString()}` : "$620", color: T.green },
+            { label: "AI Score",   value: s ? `${s.aiConfidence ?? 97}/100`  : "97/100", color: T.purple },
+            { label: "Tabs Live",  value: s ? String(s.tabsOpen ?? 6)        : "6",      color: T.gold   },
           ].map(({ label, value, color }) => (
             <motion.div key={label}
               animate={{ borderColor: [`${color}20`, `${color}50`, `${color}20`] }}

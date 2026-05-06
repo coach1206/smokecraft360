@@ -139,11 +139,13 @@ function GlassCard({
   return (
     <div
       style={{
-        background: T.surface,
-        border:     `1px solid ${T.border}`,
-        borderRadius: 12,
-        backdropFilter: "blur(12px)",
-        boxShadow: glow ? `0 0 24px ${glow}22, inset 0 1px 0 rgba(255,255,255,0.06)` : "inset 0 1px 0 rgba(255,255,255,0.06)",
+        background: "linear-gradient(145deg, rgba(255,255,255,0.076) 0%, rgba(255,255,255,0.026) 100%)",
+        border:     `1px solid rgba(255,210,120,0.16)`,
+        borderRadius: 14,
+        backdropFilter: "blur(20px)",
+        boxShadow: glow
+          ? `0 0 28px ${glow}22, 0 8px 32px rgba(0,0,0,0.52), 0 2px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.22)`
+          : `0 8px 32px rgba(0,0,0,0.52), 0 2px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.22)`,
         ...style,
       }}
     >
@@ -198,17 +200,18 @@ function KpiTile({ kpi }: { kpi: any }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       style={{
-        minWidth: 130,
-        padding: "10px 14px",
-        background: "rgba(201,168,76,0.05)",
-        border:     `1px solid ${T.border}`,
-        borderRadius: 10,
+        minWidth: 136,
+        padding: "12px 16px",
+        background: "linear-gradient(145deg, rgba(201,168,76,0.11) 0%, rgba(201,168,76,0.04) 100%)",
+        border:     `1px solid rgba(255,210,120,0.22)`,
+        borderRadius: 12,
         display: "flex",
         flexDirection: "column",
         gap: 4,
         position: "relative",
         overflow: "hidden",
         flexShrink: 0,
+        boxShadow: "0 4px 16px rgba(0,0,0,0.45), 0 1px 3px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.09)",
       }}
     >
       <motion.div
@@ -469,7 +472,7 @@ export default function MasterOperations() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: `linear-gradient(160deg, ${T.bg} 0%, #0E0B08 100%)`,
+      background: `radial-gradient(ellipse 140% 70% at 25% 0%, #1C1710 0%, #0E0B08 55%, #060402 100%)`,
       display: "flex",
       flexDirection: "column",
       fontFamily: "'Inter', 'SF Pro Display', sans-serif",
@@ -484,14 +487,14 @@ export default function MasterOperations() {
         position: "sticky",
         top: 0,
         zIndex: 50,
-        background: `linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)`,
-        backdropFilter: "blur(20px)",
-        borderBottom: `1px solid rgba(255,210,120,0.10)`,
+        background: `linear-gradient(180deg, #1E1A14 0%, #12100Ef4 100%)`,
+        backdropFilter: "blur(24px)",
+        borderBottom: `1px solid rgba(255,210,120,0.12)`,
         padding: "12px 20px",
         display: "flex",
         alignItems: "center",
         gap: 14,
-        boxShadow: "0 1px 0 rgba(255,210,120,0.06), 0 4px 24px rgba(0,0,0,0.4)",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 0 rgba(255,210,120,0.10), 0 8px 32px rgba(0,0,0,0.55)",
       }}>
         {/* Brand mark */}
         <div style={{ flexShrink: 0, marginRight: 8 }}>
@@ -533,7 +536,7 @@ export default function MasterOperations() {
           width: 240,
           flexShrink: 0,
           borderRight: `1px solid rgba(255,210,120,0.10)`,
-          background: "linear-gradient(180deg, #12100E 0%, #0E0B08 100%)",
+          background: "linear-gradient(180deg, #1A1612 0%, #0C0A07 100%)",
           overflowY: "auto",
           padding: "16px 0",
         }}>
@@ -792,8 +795,8 @@ export default function MasterOperations() {
         <div style={{
           width: 280,
           flexShrink: 0,
-          borderLeft: `1px solid ${T.border}`,
-          background: "rgba(0,0,0,0.3)",
+          borderLeft: `1px solid rgba(255,210,120,0.14)`,
+          background: "linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.42) 100%)",
           display: "flex",
           flexDirection: "column",
         }}>

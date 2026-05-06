@@ -117,15 +117,15 @@ export default function CommandCenter() {
   const statusColor = cc.systemStatus === "operational" ? "#22c55e" : cc.systemStatus === "degraded" ? "#f59e0b" : "#ef4444";
 
   return (
-    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: "linear-gradient(160deg, #080604 0%, #0E0B08 100%)", position: "relative" }}>
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: "radial-gradient(ellipse 120% 60% at 40% 0%, #1C1710 0%, #0E0B08 55%, #050402 100%)", position: "relative" }}>
       <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
       <CCParticles />
       {/* ── Header ── */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "12px 20px", borderBottom: `1px solid ${C.border}`,
-        background: C.header, backdropFilter: "blur(16px)", flexShrink: 0,
-        boxShadow: "0 1px 0 rgba(255,210,120,0.08), 0 4px 24px rgba(0,0,0,0.4)",
+        padding: "12px 20px", borderBottom: `1px solid rgba(255,210,120,0.14)`,
+        background: C.header, backdropFilter: "blur(20px)", flexShrink: 0,
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07), inset 0 -1px 0 rgba(0,0,0,0.30), 0 1px 0 rgba(255,210,120,0.12), 0 8px 32px rgba(0,0,0,0.55)",
         position: "relative", zIndex: 10,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -200,19 +200,22 @@ export default function CommandCenter() {
               key={tile.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, delay: Math.min(i * 0.03, 0.3) }}
-              whileHover={{ scale: 1.02, y: -2 }}
+              transition={{ duration: 0.18, ease: "easeOut", delay: Math.min(i * 0.03, 0.3) }}
+              whileHover={{
+                scale: 1.025, y: -4,
+                boxShadow: `0 16px 48px rgba(0,0,0,0.70), 0 4px 12px rgba(0,0,0,0.50), 0 0 0 1px ${tile.color}44, inset 0 1px 0 rgba(255,255,255,0.14)`,
+              }}
               whileTap={{ scale: 0.97 }}
               onClick={() => { engagement.trackAction("navigate", { tile: tile.id }); navigate(tile.route); }}
               style={{
                 display: "flex", alignItems: "center", gap: 14,
                 padding: "20px 18px",
-                background: "transparent",
-                border: `1px solid ${tile.color}30`,
-                borderRadius: 16, cursor: "pointer",
+                background: "linear-gradient(155deg, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0.028) 100%)",
+                border: `1px solid rgba(255,255,255,0.11)`,
+                borderRadius: 18, cursor: "pointer",
                 position: "relative", overflow: "hidden",
                 minHeight: 90, textAlign: "left",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.55), 0 1px 4px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -1px 0 rgba(0,0,0,0.20)",
               }}
             >
               <div style={{
@@ -223,7 +226,7 @@ export default function CommandCenter() {
               }} />
               <div style={{
                 position: "absolute", inset: 0,
-                background: `linear-gradient(135deg, rgba(8,6,4,0.38) 0%, rgba(8,6,4,0.18) 50%, ${tile.color}28 100%)`,
+                background: `linear-gradient(160deg, rgba(8,6,4,0.58) 0%, rgba(8,6,4,0.24) 60%, ${tile.color}32 100%)`,
                 pointerEvents: "none",
               }} />
               {(tile.id === "smokecraft" || tile.id === "brewcraft" || tile.id === "pourcraft" || tile.id === "vapecraft") && (

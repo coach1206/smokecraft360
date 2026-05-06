@@ -11,7 +11,7 @@ import Maxwell                   from "@/components/Maxwell";
 import TrainingBanner             from "@/components/training/TrainingBanner";
 import { DEMO_VENUE, DEMO_KPIS, MAXWELL_INTROS } from "@/data/trainingData";
 import { VOICEOVER_SCRIPTS }     from "@/data/voiceoverScripts";
-import { logTrainingEvent }      from "@/hooks/useTrainingApi";
+import { logTrainingEvent, ensureTrainingSession } from "@/hooks/useTrainingApi";
 
 const T = {
   bg: "#06040a", card: "rgba(255,255,255,0.04)", border: "rgba(201,168,76,0.15)",
@@ -125,6 +125,7 @@ export default function TrainingSales() {
 
   useEffect(() => {
     logTrainingEvent({ eventType: "page_view", page: "sales" });
+    void ensureTrainingSession("sales").catch(() => {});
   }, []);
   const current = PITCH_SLIDES[slide]!;
   const Icon = current.icon;
