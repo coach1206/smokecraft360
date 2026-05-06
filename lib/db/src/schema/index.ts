@@ -81,3 +81,6 @@ export * from "./failedWebhooks";
 export * from "./paymentEvents";
 export * from "./reconciliationAlerts";
 export * from "./receipts";
+export * from "./trainingSessions";
+export * from "./trainingProgress";
+export * from "./trainingCertifications";

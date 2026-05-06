@@ -1,0 +1,358 @@
+MASTER PROMPT — AXIOM OS TRAINING MODE
+
+Powered by CraftHub
+
+SmokeCraft • PourCraft • BrewCraft • VapeCraft
+
+Build a fully immersive TRAINING MODE system inside Axiom OS.
+
+This is NOT a tutorial page.
+
+This is a fully simulated intelligent venue environment used for:
+
+• employee onboarding
+• investor demos
+• sales presentations
+• venue walkthroughs
+• touchscreen training
+• franchise demos
+• distributor showcases
+• conference presentations
+
+The system must feel like a real operating venue.
+
+The environment should appear alive.
+
+Animations should feel smooth, premium, calm, futuristic, and intelligent.
+
+Use Apple-level motion polish mixed with Tesla-style system intelligence.
+
+No flat dashboards.
+No dead UI.
+No generic admin panels.
+
+⸻
+
+CREATE FAKE VENUE
+
+Generate a premium simulated venue called:
+
+“Vault Cigar Lounge”
+
+Theme:
+Luxury modern cigar + cocktail lounge.
+
+Populate with:
+
+• fake customers
+• fake reservations
+• fake orders
+• fake employees
+• fake campaigns
+• fake inventory
+• fake distributor activity
+• fake loyalty activity
+• fake analytics events
+
+The venue should continuously update every few seconds.
+
+Examples:
+
+“VIP reservation confirmed”
+
+“Buffalo Trace trending tonight”
+
+“Pairing confidence increased to 94%”
+
+“Macanudo inventory running low”
+
+“Recommendation engine adapted to customer behavior”
+
+⸻
+
+EMPLOYEE TRAINING MODE
+
+Create role-based onboarding paths for:
+
+• Bartender
+• Cigar Specialist
+• Vape Specialist
+• Server
+• Floor Manager
+• Venue Owner
+• Inventory Manager
+• Cashier
+
+Each role gets:
+
+• interactive walkthroughs
+• touchscreen guidance
+• AI narration
+• scenario missions
+• simulated customer interactions
+• fake POS flows
+• recommendation training
+• inventory handling
+• rewards system walkthrough
+• campaign participation walkthrough
+
+The system should explain:
+
+WHAT they are doing
+WHY it matters
+WHAT happens next
+
+⸻
+
+INVESTOR DEMO MODE
+
+Create cinematic auto-demo mode.
+
+The platform should automatically walk investors through:
+
+• customer journey
+• AI recommendation engine
+• behavioral intelligence
+• upsell system
+• loyalty engine
+• analytics engine
+• predictive personalization
+• campaign engine
+• distributor opportunities
+• multi-venue scaling
+• subscription revenue model
+• marketplace opportunities
+• device ecosystem
+
+Add:
+
+• animated KPI dashboards
+• live heatmaps
+• simulated revenue growth
+• venue comparison dashboards
+• engagement graphs
+• AI prediction overlays
+
+The experience should feel like:
+
+Apple × Tesla × Hospitality × AI intelligence.
+
+⸻
+
+SALES DEMO MODE
+
+Create guided venue-owner presentation mode.
+
+The system should automatically showcase:
+
+• increased engagement
+• increased spend per customer
+• emotional personalization
+• customer retention
+• inventory intelligence
+• recommendation engine
+• rewards engine
+• campaign system
+• operational simplification
+
+Use cinematic guided transitions.
+
+Everything should feel calm and premium.
+
+⸻
+
+VENUE WALKTHROUGH MODE
+
+Create touchscreen walkthrough flow:
+
+1. Welcome
+2. Venue setup
+3. Inventory setup
+4. Staff onboarding
+5. Campaign setup
+6. Customer experience demo
+7. Analytics overview
+8. Revenue engine
+9. Device control
+10. Full launch simulation
+
+Large touch targets.
+Picture-driven navigation.
+Minimal typing.
+
+⸻
+
+TRAINING SCENARIO ENGINE
+
+Create interactive training missions.
+
+Examples:
+
+Scenario 1:
+First-time customer pairing
+
+Scenario 2:
+Inventory shortage recovery
+
+Scenario 3:
+Upsell opportunity
+
+Scenario 4:
+VIP guest handling
+
+Scenario 5:
+Distributor campaign night
+
+Scenario 6:
+Rewards redemption issue
+
+Scenario 7:
+High-volume rush hour
+
+Scenario 8:
+Recommendation mismatch correction
+
+Every scenario should include:
+
+• guidance
+• scoring
+• coaching
+• recovery suggestions
+• completion tracking
+
+⸻
+
+MAXWELL AI TRAINER
+
+Add AI assistant called:
+
+“Maxwell”
+
+Behavior:
+
+• calm
+• premium
+• intelligent
+• instructional
+• emotionally controlled
+
+Examples:
+
+“Great choice. Notice how the pairing engine adjusted to the customer’s flavor profile.”
+
+“The inventory system updated automatically after checkout.”
+
+“Now let’s walk through how this increases venue revenue.”
+
+Maxwell should guide users naturally throughout training.
+
+⸻
+
+VISUAL EXPERIENCE
+
+Use:
+
+• cream/off-white readable panels
+• dark luxury backgrounds
+• realistic photography
+• smooth glass effects
+• cinematic motion
+• live glowing KPI cards
+• soft pulsing analytics
+• ambient movement
+• layered depth
+
+Do NOT use:
+
+• emojis
+• flat UI
+• generic icons
+• washed-out dashboards
+• dead charts
+
+⸻
+
+SOUND DESIGN
+
+Add:
+
+• subtle ambient lounge audio
+• smooth UI tones
+• realistic pour sounds
+• cigar cutter sounds
+• vape ambience
+• soft confirmation tones
+
+All sounds should feel premium and controlled.
+
+⸻
+
+REQUIRED FRONTEND ROUTES
+
+/training
+/training/employee
+/training/investor
+/training/sales
+/training/walkthrough
+/training/scenarios
+/training/certifications
+
+⸻
+
+REQUIRED BACKEND SYSTEMS
+
+Create:
+
+• training_sessions
+• training_progress
+• training_certifications
+• fake_orders
+• fake_inventory_activity
+• demo_analytics
+• scenario_engine
+• demo_reset_engine
+
+⸻
+
+REQUIRED API ROUTES
+
+/api/training/start
+/api/training/reset
+/api/training/scenarios
+/api/training/progress
+/api/training/certification
+/api/demo/live-events
+/api/demo/fake-orders
+/api/demo/fake-analytics
+/api/demo/reset
+
+⸻
+
+DEMO SAFETY RULES
+
+ALL demo activity must stay isolated from production.
+
+Use:
+
+• sandbox database mode
+• auto-reset demo environment
+• rollback-safe transactions
+• fake Stripe transactions
+• fake analytics generation
+
+No real customer data.
+No production corruption.
+
+⸻
+
+FINAL EXPERIENCE GOAL
+
+The experience should make people say:
+
+“This doesn’t feel like software.”
+
+“This feels like the future of hospitality.”
+
+“This system understands behavior.”
+
+“This venue feels intelligent.”

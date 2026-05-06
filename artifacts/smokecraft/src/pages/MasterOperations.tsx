@@ -22,7 +22,7 @@ import {
   Wind, ShieldCheck, Terminal, BarChart3, Monitor, Building2, FileText,
   Users, Gift, Crown, CalendarDays, Upload, Settings,
   Wifi, WifiOff, AlertTriangle, CheckCircle, Circle,
-  ChevronRight, Activity, Zap, DollarSign, Star,
+  ChevronRight, Activity, Zap, DollarSign, Star, BookOpen,
 } from "lucide-react";
 
 // ── design tokens ─────────────────────────────────────────────────────────────
@@ -69,6 +69,7 @@ const NAV_ITEMS = [
   { id: "axiom-pay",    label: "Axiom Pay",            desc: "Tabs · Fulfillment · Connect", icon: DollarSign,      route: "/axiom-pay",               group: "operations" },
   { id: "launch",       label: "Launch Readiness",     desc: "Pre-launch health & risk",     icon: ShieldCheck,     route: "/launch-readiness",        group: "operations" },
   { id: "finance-recon",label: "Reconciliation",      desc: "Revenue · Payouts · Alerts",   icon: BarChart3,       route: "/finance-reconciliation",  group: "operations" },
+  { id: "training",     label: "Training Mode",        desc: "Employee · Investor · Demo",   icon: BookOpen,        route: "/training",                group: "operations" },
   { id: "legal",        label: "Legal",                desc: "ToS · Privacy · AUP",          icon: FileText,        route: "/legal",                   group: "operations" },
   { id: "devices",      label: "Devices",              desc: "Kiosk & hardware health",     icon: Monitor,         route: "/devices",                 group: "venue" },
   { id: "venues",       label: "Venues",               desc: "Venue management",            icon: Building2,       route: "/admin-panel",             group: "venue" },

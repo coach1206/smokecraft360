@@ -86,6 +86,13 @@ import LaunchReadiness                from "@/pages/LaunchReadiness";
 import Legal                          from "@/pages/Legal";
 import AxiomReceipt                   from "@/pages/AxiomReceipt";
 import FinanceReconciliation          from "@/pages/FinanceReconciliation";
+import TrainingHub                    from "@/pages/training/TrainingHub";
+import TrainingEmployee               from "@/pages/training/TrainingEmployee";
+import TrainingInvestor               from "@/pages/training/TrainingInvestor";
+import TrainingSales                  from "@/pages/training/TrainingSales";
+import TrainingWalkthrough            from "@/pages/training/TrainingWalkthrough";
+import TrainingScenarios              from "@/pages/training/TrainingScenarios";
+import TrainingCertifications         from "@/pages/training/TrainingCertifications";
 
 const queryClient = new QueryClient();
 
@@ -120,8 +127,15 @@ function Router() {
       <Route path="/axiom-pay"               component={AxiomPay}                />
       <Route path="/launch-readiness"        component={LaunchReadiness}          />
       <Route path="/legal"                   component={Legal}                    />
-      <Route path="/receipt/:tabId"          component={AxiomReceipt}             />
-      <Route path="/finance-reconciliation"  component={FinanceReconciliation}    />
+      <Route path="/receipt/:tabId"              component={AxiomReceipt}              />
+      <Route path="/finance-reconciliation"    component={FinanceReconciliation}     />
+      <Route path="/training"                  component={TrainingHub}               />
+      <Route path="/training/employee"         component={TrainingEmployee}          />
+      <Route path="/training/investor"         component={TrainingInvestor}          />
+      <Route path="/training/sales"            component={TrainingSales}             />
+      <Route path="/training/walkthrough"      component={TrainingWalkthrough}       />
+      <Route path="/training/scenarios"        component={TrainingScenarios}         />
+      <Route path="/training/certifications"   component={TrainingCertifications}    />
       <Route path="/admin/intel"               component={OwnerIntelPanel}         />
       <Route path="/admin/experience-control" component={ExperienceControlPanel}  />
       {/* Legacy craft routes — redirect into the Universal Swipe Engine */}
