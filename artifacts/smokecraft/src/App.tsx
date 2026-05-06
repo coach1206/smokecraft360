@@ -65,7 +65,7 @@ const queryClient = new QueryClient();
 function Router() {
   return (
     <Switch>
-      <Route path="/"           component={Entry}          />
+      <Route path="/"           component={ExperiencesModule} />
       <Route path="/intro"      component={Intro}          />
       <Route path="/entry"      component={Entry}          />
       <Route path="/pin-login"  component={PinLogin}       />
