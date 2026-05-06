@@ -54,7 +54,7 @@ const QUESTIONS: Question[] = [
     id:          "lastInitial",
     prompt:      "And your last initial?",
     sub:         "Combined with your name to create your private lounge identity.",
-    placeholder: "A",
+    placeholder: "e.g. A",
     maxLength:   1,
     transform:   (v) => v.toUpperCase().replace(/[^A-Z]/g, ""),
     validate:    (v) => /^[A-Z]$/.test(v.trim()),
@@ -304,14 +304,35 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
             {/* Text input */}
             {question.type === "text" && (
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {/* Hint for last-initial step */}
+                {step === 1 && (
+                  <p style={{
+                    textAlign:     "center",
+                    fontSize:      "0.7rem",
+                    color:         "rgba(201,168,76,0.45)",
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    margin:        0,
+                  }}>
+                    Single letter only — A through Z
+                  </p>
+                )}
                 <input
                   ref={inputRef}
                   value={textVal}
                   maxLength={(question as TextQuestion).maxLength ?? 100}
+                  inputMode="text"
                   onChange={e => {
                     const q = question as TextQuestion;
-                    setTextVal(q.transform ? q.transform(e.target.value) : e.target.value);
-                    setError("");
+                    const raw = e.target.value;
+                    const transformed = q.transform ? q.transform(raw) : raw;
+                    // If transform stripped everything and user typed something, show hint
+                    if (q.transform && raw.length > 0 && transformed.length === 0) {
+                      setError(step === 1 ? "Please enter a letter (A–Z), not a number." : "Please enter a valid answer.");
+                    } else {
+                      setError("");
+                    }
+                    setTextVal(transformed);
                   }}
                   onKeyDown={e => { if (e.key === "Enter") handleTextSubmit(); }}
                   placeholder={(question as TextQuestion).placeholder}
