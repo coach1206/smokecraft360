@@ -1,0 +1,400 @@
+FINAL MASTER BUILD PROMPT
+AXIOM CORE SECURITY + VENUE ONBOARDING + LICENSE MANAGEMENT SYSTEM
+(PRIVATE CORE INFRASTRUCTURE + SUBSCRIPTION GOVERNANCE + OPERATIONAL ACTIVATION)
+
+IMPORTANT:
+This phase is CRITICAL.
+
+This is NOT:
+a cosmetic feature update.
+
+This phase creates:
+the protected business infrastructure underneath Axiom OS.
+
+Build BOTH:
+1. PRIVATE AXIOM CORE INFRASTRUCTURE
+2. VENUE ONBOARDING + LICENSE SYSTEM
+3. SUBSCRIPTION + RENEWAL GOVERNANCE
+4. FEATURE PACKAGE ACTIVATION SYSTEM
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+Separate:
+PUBLIC OPERATIONAL ECOSYSTEM
+
+from:
+
+PRIVATE AXIOM CORE INFRASTRUCTURE.
+
+At the same time:
+build full venue onboarding,
+subscription governance,
+license activation,
+package control,
+and operational setup workflows.
+
+==================================================
+PART 1 — PRIVATE AXIOM CORE INFRASTRUCTURE
+==================================================
+
+Create:
+hidden developer/operator infrastructure layer.
+
+This layer is ONLY for:
+- platform owner
+- super admin
+- internal operators
+- infrastructure management
+
+==================================================
+PRIVATE CORE ROUTES
+==================================================
+
+Create hidden private routes:
+- /_axiom/core
+- /_axiom/security
+- /_axiom/deploy
+- /_axiom/licenses
+- /_axiom/tenants
+- /_axiom/system
+- /_axiom/recovery
+- /_axiom/infrastructure
+
+NEVER expose these routes:
+- in navigation
+- in public UI
+- in role menus
+- in sitemap
+- in discoverable frontend routing
+
+==================================================
+PRIVATE CORE FEATURES
+==================================================
+
+Private Core controls:
+- OTA deployment infrastructure
+- environment secrets
+- API management
+- encryption controls
+- tenant management
+- system-wide governance
+- feature flags
+- infrastructure monitoring
+- audit forensics
+- emergency controls
+- recovery systems
+- hidden admin tooling
+- license enforcement
+- subscription controls
+- package activation
+- operational override systems
+
+==================================================
+SECURITY REQUIREMENTS
+==================================================
+
+Implement:
+- MFA authentication
+- IP protection
+- elevated-auth verification
+- re-authentication for dangerous actions
+- role escalation protection
+- tenant isolation
+- hidden route protection
+- token validation
+- session expiration
+- forced logout support
+- suspicious activity monitoring
+
+==================================================
+AUDIT SYSTEM
+==================================================
+
+Track:
+- failed access attempts
+- deployment actions
+- permission changes
+- emergency actions
+- hidden route access
+- infrastructure changes
+- security violations
+- subscription overrides
+- license modifications
+
+==================================================
+PART 2 — VENUE ONBOARDING SYSTEM
+==================================================
+
+Create:
+AXIOM VENUE ACTIVATION WORKFLOW.
+
+Purpose:
+guide new venues through complete onboarding and operational activation.
+
+==================================================
+ONBOARDING ROUTE
+==================================================
+
+Create:
+/onboarding
+
+Accessible by:
+- Super Admin
+- Venue Owner
+- Authorized Operators
+
+==================================================
+VENUE ONBOARDING FLOW
+==================================================
+
+Build cinematic step-by-step onboarding workflow.
+
+Steps:
+
+1. Venue Information
+- venue name
+- location
+- timezone
+- venue type
+- operating hours
+- seating capacity
+- contact information
+
+2. Branding Setup
+- logo upload
+- environment theme
+- venue colors
+- atmosphere profile
+- welcome messaging
+
+3. Package Selection
+- Core Package
+- Premium Package
+- Enterprise Package
+- Custom Package
+
+4. Feature Activation
+Enable/disable:
+- Presence Engine
+- Marketing Engine
+- Loyalty System
+- Environment Engine
+- OTA Control
+- VIP Lounge
+- Enterprise Intelligence
+- Multi-Venue
+- Geofence Features
+- SMS Campaigns
+- Mentor System
+- Campaign Automation
+
+5. Device Setup
+- kiosks
+- tablets
+- lounge displays
+- POS systems
+- OTA registration
+- heartbeat verification
+
+6. Staff Enrollment
+- owner accounts
+- manager accounts
+- employee accounts
+- role assignment
+
+7. Payment + Licensing
+- Stripe subscription
+- billing cycle
+- auto-renewal setup
+- payment verification
+- tax configuration
+
+8. Final Activation
+- system health check
+- deployment sync
+- environment activation
+- OTA confirmation
+- launch checklist
+
+==================================================
+ONBOARDING CHECKLIST SYSTEM
+==================================================
+
+Every onboarding phase should have:
+- progress tracking
+- checkmarks
+- warning indicators
+- completion percentage
+- required vs optional tasks
+- AI guidance prompts
+
+Examples:
+✅ Device Connected
+⚠ Loyalty Not Configured
+✅ Payment Active
+⚠ SMS Automation Disabled
+
+==================================================
+PART 3 — PACKAGE + FEATURE GOVERNANCE
+==================================================
+
+Build:
+feature package system.
+
+==================================================
+PACKAGE TIERS
+==================================================
+
+CORE PACKAGE:
+basic operations + environment.
+
+PREMIUM PACKAGE:
+marketing + loyalty + mentor systems.
+
+ENTERPRISE PACKAGE:
+multi-venue + intelligence + OTA + manufacturer insights.
+
+CUSTOM PACKAGE:
+modular feature selection.
+
+==================================================
+FEATURE FLAG ACTIVATION
+==================================================
+
+Features activate dynamically by:
+- package tier
+- license status
+- payment status
+- operational permissions
+
+==================================================
+PART 4 — LICENSE + SUBSCRIPTION MANAGEMENT
+==================================================
+
+Build:
+AXIOM LICENSE GOVERNANCE SYSTEM.
+
+==================================================
+LICENSE TRACKING
+==================================================
+
+Track:
+- active licenses
+- expired licenses
+- grace periods
+- payment failures
+- subscription renewals
+- OTA eligibility
+- feature eligibility
+
+==================================================
+AUTOMATIC RENEWAL
+==================================================
+
+Implement:
+automatic recurring billing.
+
+Use:
+existing Stripe infrastructure.
+
+Support:
+- monthly subscriptions
+- annual subscriptions
+- enterprise contracts
+- auto-renewal
+- renewal reminders
+- failed payment recovery
+
+==================================================
+PAYMENT FAILURE LOGIC
+==================================================
+
+If payment fails:
+1. notify venue owner
+2. retry billing automatically
+3. enter grace period
+4. restrict premium features if unresolved
+5. disable OTA deployment after threshold
+6. eventually suspend operational access
+
+DO NOT instantly lock venue out.
+
+==================================================
+GRACE PERIOD SYSTEM
+==================================================
+
+Support:
+- configurable grace periods
+- partial feature restriction
+- operational warning mode
+- admin override
+
+==================================================
+LICENSE CONTROL CENTER
+==================================================
+
+Create:
+/_axiom/licenses
+
+Show:
+- active subscriptions
+- renewal dates
+- payment health
+- package tier
+- feature eligibility
+- OTA eligibility
+- suspension risk
+- grace period countdown
+
+==================================================
+PART 5 — OPERATIONAL MONITORING
+==================================================
+
+Build:
+venue operational monitoring layer.
+
+Track:
+- deployment health
+- payment health
+- device compliance
+- environment uptime
+- automation uptime
+- campaign activity
+- OTA compliance
+- operational risk
+
+==================================================
+UI/UX REQUIREMENTS
+==================================================
+
+The onboarding + licensing experience should feel:
+premium,
+guided,
+clear,
+and operationally intelligent.
+
+NOT:
+boring enterprise software.
+
+Use:
+- cinematic onboarding flow
+- progress visualization
+- tactile controls
+- OLED operational glow
+- luxury operational aesthetics
+- intelligent guidance prompts
+
+==================================================
+FINAL TARGET
+==================================================
+
+VENUE OWNER FEELING:
+“This system guides me through setup professionally.”
+
+SUPER ADMIN FEELING:
+“I have complete protected operational control.”
+
+AXIOM OS FEELING:
+a fully governed, protected, subscription-driven hospitality operating ecosystem with enterprise-grade onboarding, licensing, and operational infrastructure.

@@ -51,6 +51,7 @@ const TILES = [
   { id: "central-command", title: "Central Command", desc: "Remote ops · OTA · Fleet",       color: "#60a5fa", route: "/central-command", dataKey: "central-command" as const, image: "/images/scenes/bold.jpg" },
   { id: "environment",          title: "Environment",   desc: "Atmosphere · Energy · Reaction",    color: "#a78bfa", route: "/environment",            dataKey: "environment" as const,          image: "/images/scenes/reflective.jpg" },
   { id: "enterprise-intel",    title: "Intel",         desc: "Enterprise Intelligence · Analytics", color: "#34d399", route: "/enterprise-intelligence", dataKey: "enterprise-intel" as const,     image: "/images/scenes/bold.jpg" },
+  { id: "master-ops",          title: "Master Ops",    desc: "Unified operational command center",  color: "#c9a84c", route: "/operations",              dataKey: "master-ops" as const,           image: "/images/scenes/reflective.jpg" },
 ] as const;
 
 export default function CommandCenter() {

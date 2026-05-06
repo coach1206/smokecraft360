@@ -1,0 +1,432 @@
+FINAL MASTER BUILD PROMPT
+AXIOM CONTINUITY + AXIOM PAY + VENUE ORDER ORCHESTRATION SYSTEM
+(FRICTIONLESS GUEST EXPERIENCE + PAYMENT + ADMIN CONTROL INTEGRATION)
+
+IMPORTANT:
+DO NOT redesign:
+- CraftHub experience
+- mentor systems
+- Presence Engine
+- Environmental Engine
+- Intelligence Engine
+- Governance
+- Central Command
+- Enterprise Dashboard
+- OLED luxury visual language
+- tactile interaction system
+
+This phase extends:
+guest continuity,
+ordering,
+payments,
+tabs,
+POS synchronization,
+and operational control.
+
+Build BOTH:
+- frontend experience layer
+AND
+- backend orchestration infrastructure.
+
+NO mock buttons.
+NO fake checkout flows.
+NO disconnected ordering systems.
+
+==================================================
+CORE EXPERIENCE PHILOSOPHY
+==================================================
+
+Axiom OS should deliver:
+frictionless hospitality continuity.
+
+Guests should feel:
+recognized,
+guided,
+remembered,
+and connected
+
+WITHOUT:
+mandatory app downloads,
+complicated onboarding,
+or clunky e-commerce experiences.
+
+==================================================
+NO APP REQUIRED PHILOSOPHY
+==================================================
+
+Guests should NOT be forced to:
+download an app.
+
+Use lightweight continuity systems:
+- SMS continuity
+- wallet pass continuity
+- QR continuity
+- loyalty identity
+- geofence recognition
+- reservation continuity
+- mentor continuity
+- progressive web experience
+
+The venue itself becomes:
+the intelligent experience layer.
+
+==================================================
+PRIMARY GUEST FLOW
+==================================================
+
+1. Guest enters venue
+2. Presence Engine recognizes guest
+3. Mentor/session continuity loads
+4. Pairing experience begins
+5. Guest receives recommendation
+6. Guest selects:
+- Add To Session
+- Send To Table
+- Open Tab
+- Pay Now
+- Save For Later
+
+==================================================
+ORDER ORCHESTRATION SYSTEM
+==================================================
+
+Build:
+AXIOM ORDER LAYER.
+
+Track:
+- active session orders
+- guest tabs
+- loyalty credits
+- open balances
+- table assignment
+- bartender queue
+- server queue
+- payment status
+- fulfillment status
+
+==================================================
+POS INTEGRATION FLOW
+==================================================
+
+Recommended initial architecture:
+
+Axiom sends orders into:
+- venue POS queue
+- bartender dashboard
+- server tablet
+- fulfillment queue
+
+Venue can continue:
+normal hospitality checkout flow.
+
+DO NOT disrupt:
+existing venue operations.
+
+==================================================
+AXIOM PAY SYSTEM
+==================================================
+
+Build:
+AXIOM PAY.
+
+Purpose:
+allow direct guest payments through:
+- kiosk
+- QR
+- wallet pass
+- guest session
+- progressive web experience
+
+==================================================
+PAYMENT METHODS
+==================================================
+
+Support:
+- Stripe Checkout
+- Stripe Elements
+- Apple Pay
+- Google Pay
+- card payments
+- saved cards
+- loyalty credits
+- reserve membership credits
+
+==================================================
+STRIPE CONNECT ARCHITECTURE
+==================================================
+
+Use:
+Stripe Connect.
+
+Purpose:
+automatically split payments between:
+- venue
+- Axiom platform fee
+
+Examples:
+Venue: 95%
+Axiom: 5%
+
+Track:
+- payouts
+- fees
+- refunds
+- disputes
+- failed payments
+- payout schedules
+
+==================================================
+OPEN TAB SYSTEM
+==================================================
+
+Build:
+luxury hospitality tab continuity.
+
+Guests should:
+- open tab once
+- continue adding pairings
+- move between lounge areas
+- maintain mentor continuity
+- close tab later
+
+Tab follows:
+guest identity + session continuity.
+
+==================================================
+TABLE + SESSION CONTINUITY
+==================================================
+
+Guest continuity should follow:
+- kiosk
+- lounge seating
+- event areas
+- VIP sections
+- bartender interaction
+- reserve sessions
+
+Maintain:
+- pairings
+- loyalty
+- mentor continuity
+- atmosphere continuity
+- open tab state
+
+==================================================
+STAFF + SERVER INTEGRATION
+==================================================
+
+Build:
+staff operational tablet layer.
+
+Show:
+- active guest sessions
+- VIP guests
+- open tabs
+- pairing recommendations
+- fulfillment queue
+- atmosphere suggestions
+- mentor recommendations
+
+==================================================
+ADMIN DASHBOARD INTEGRATION
+==================================================
+
+FULLY integrate into:
+AXIOM MASTER OPERATIONS DASHBOARD.
+
+==================================================
+ADD NEW ADMIN MODULES
+==================================================
+
+Create:
+- Payments Control
+- Open Tabs
+- POS Queue
+- Venue Orders
+- Stripe Connect
+- Fulfillment Queue
+- Loyalty Redemption
+- Payment Health
+- Revenue Splits
+- Refund Center
+
+==================================================
+ADMIN DASHBOARD LIVE METRICS
+==================================================
+
+Add:
+- Open Tabs Count
+- Revenue Pending
+- Active Payments
+- Stripe Health
+- Failed Payments
+- Loyalty Redemptions
+- Avg Spend Per Guest
+- VIP Spend Rate
+- Tab Conversion Rate
+
+==================================================
+BACKEND ARCHITECTURE REQUIREMENTS
+==================================================
+
+Build FULL backend orchestration.
+
+==================================================
+1. ORDER APIs
+==================================================
+
+Create:
+- /api/orders/create
+- /api/orders/session
+- /api/orders/queue
+- /api/orders/complete
+- /api/orders/cancel
+
+==================================================
+2. PAYMENT APIs
+==================================================
+
+Create:
+- /api/payments/create-checkout
+- /api/payments/open-tab
+- /api/payments/close-tab
+- /api/payments/status
+- /api/payments/refund
+
+==================================================
+3. STRIPE CONNECT
+==================================================
+
+Implement:
+- connected venue accounts
+- payout handling
+- fee splits
+- webhook validation
+- payment retries
+- dispute handling
+- refund logic
+
+==================================================
+4. TAB CONTINUITY SYSTEM
+==================================================
+
+Persist:
+- guest tab state
+- active session state
+- table assignment
+- venue continuity
+- loyalty linkage
+
+==================================================
+5. STAFF FULFILLMENT APIs
+==================================================
+
+Create:
+- bartender queue
+- server queue
+- fulfillment updates
+- ready-for-delivery status
+- completion tracking
+
+==================================================
+6. ADMIN PAYMENT CONTROL
+==================================================
+
+Allow:
+- refund management
+- payment monitoring
+- payout review
+- split review
+- failed payment handling
+- suspension handling
+
+==================================================
+7. LICENSE + PAYMENT GOVERNANCE
+==================================================
+
+Connect:
+venue subscription system to:
+- Stripe recurring billing
+- auto-renewals
+- grace periods
+- payment retries
+- operational restrictions
+
+==================================================
+8. REAL-TIME LIVE STATE
+==================================================
+
+Use:
+polling/websocket updates for:
+- active tabs
+- payment updates
+- queue updates
+- fulfillment changes
+- loyalty usage
+- payment failures
+
+==================================================
+9. SECURITY REQUIREMENTS
+==================================================
+
+ALL payments MUST:
+- remain server-authoritative
+- use webhook verification
+- use encrypted token handling
+- prevent frontend spoofing
+- maintain audit logging
+- support fraud monitoring
+
+==================================================
+10. WALLET PASS CONTINUITY
+==================================================
+
+Use:
+Apple Wallet + Google Wallet passes.
+
+Support:
+- loyalty identity
+- VIP recognition
+- tab continuity
+- reserve access
+- payment continuity
+- QR recognition
+
+==================================================
+UI/UX REQUIREMENTS
+==================================================
+
+The payment + ordering experience should feel:
+luxury,
+smooth,
+and invisible.
+
+NOT:
+cheap e-commerce checkout.
+
+Use:
+- cinematic transitions
+- OLED warmth
+- tactile controls
+- floating payment drawer
+- soft glow confirmations
+- premium interaction pacing
+
+==================================================
+FINAL TARGET
+==================================================
+
+CUSTOMER FEELING:
+“This experience feels seamless and premium.”
+
+STAFF FEELING:
+“This helps us deliver hospitality smoothly.”
+
+VENUE OWNER FEELING:
+“This system drives revenue while simplifying operations.”
+
+SUPER ADMIN FEELING:
+“I can monitor and control payments, tabs, and fulfillment across the ecosystem.”
+
+AXIOM OS FEELING:
+a frictionless luxury hospitality operating ecosystem with intelligent continuity, integrated payments, operational orchestration, and centralized control.

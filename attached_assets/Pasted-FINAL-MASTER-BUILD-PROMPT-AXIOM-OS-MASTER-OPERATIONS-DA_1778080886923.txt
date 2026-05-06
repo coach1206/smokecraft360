@@ -1,0 +1,405 @@
+FINAL MASTER BUILD PROMPT
+AXIOM OS MASTER OPERATIONS DASHBOARD
+(FRONTEND + BACKEND FULL SYSTEM ARCHITECTURE)
+
+IMPORTANT:
+This is NOT just a UI build.
+
+This is:
+the centralized operational command system for the entire Axiom ecosystem.
+
+Build BOTH:
+- frontend operational dashboard
+AND
+- backend orchestration infrastructure.
+
+DO NOT create:
+fake metrics,
+dead buttons,
+mock cards,
+or disconnected interfaces.
+
+EVERY dashboard component must connect to:
+real backend systems,
+real APIs,
+real permissions,
+real live state,
+and real orchestration logic.
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+Create:
+AXIOM MASTER OPERATIONS DASHBOARD.
+
+Purpose:
+allow:
+- Super Admins
+- Venue Owners
+- Managers
+- Employees
+
+to operate the entire hospitality ecosystem from one intelligent operational interface.
+
+==================================================
+FRONTEND DASHBOARD REQUIREMENTS
+==================================================
+
+Create:
+cinematic luxury operational dashboard.
+
+Visual style:
+Apple × Tesla × Star Trek
+for hospitality intelligence operations.
+
+==================================================
+GLOBAL UI REQUIREMENTS
+==================================================
+
+Use:
+- OLED black backgrounds
+- warm gold ambient glow
+- layered glass panels
+- tactile raised controls
+- sliders
+- faders
+- rotary dials
+- cinematic transitions
+- subtle environmental overlays
+- responsive motion
+- live operational indicators
+
+NO:
+flat SaaS UI.
+
+NO:
+corporate admin dashboard look.
+
+==================================================
+TOP KPI STRIP
+==================================================
+
+Always visible:
+- Guests Today
+- VIP Arrivals
+- Revenue Today
+- Lounge Energy
+- Return Guest Rate
+- Campaign Engagement
+- Device Health
+- OTA Status
+- Loyalty Activations
+- Environment State
+
+Each tile MUST:
+- pulse softly
+- update live
+- include trend delta
+- include plain-English explanation
+- include operational glow state
+
+==================================================
+LEFT OPERATIONS SIDEBAR
+==================================================
+
+Include:
+- Command Center
+- Presence Engine
+- Revenue Engine
+- Intelligence Engine
+- Marketing Engine
+- Environment
+- Governance
+- Central Command
+- Enterprise Intelligence
+- Devices
+- Venues
+- Employees
+- Loyalty
+- VIP Lounge
+- Events
+- OTA Deployments
+- Analytics
+- Settings
+
+Each item:
+- icon
+- helper description
+- live status indicator
+- glow state
+
+==================================================
+MAIN OPERATIONAL DASHBOARD
+==================================================
+
+Create:
+live operational home screen.
+
+Show:
+- venue atmosphere
+- active energy state
+- VIP activity
+- campaign activity
+- environment state
+- OTA deployment state
+- automation activity
+- device health
+- guest activity
+- mentor activity
+
+==================================================
+LIVE OPERATIONAL FEED
+==================================================
+
+Right-side intelligence feed.
+
+Show:
+- VIP arrivals
+- campaign launches
+- automation triggers
+- device alerts
+- OTA deployments
+- governance approvals
+- environment changes
+- mentor interactions
+- revenue opportunities
+
+==================================================
+TACTILE CONTROL SYSTEM
+==================================================
+
+ALL controls MUST feel:
+physical and premium.
+
+Include:
+- raised buttons
+- cinematic sliders
+- OLED faders
+- rotary dials
+- physical toggle switches
+- glow response states
+
+==================================================
+SELF-EXPLANATORY UX
+==================================================
+
+Every module MUST include:
+- What This Does
+- Why It Matters
+- Recommended Action
+- AI Guidance
+- Hover Explanations
+
+Dashboard should teach itself visually.
+
+==================================================
+ROLE-BASED UI
+==================================================
+
+EMPLOYEE:
+simple hospitality tools only.
+
+MANAGER:
+operational oversight.
+
+VENUE OWNER:
+venue intelligence + automations.
+
+SUPER ADMIN:
+full ecosystem control.
+
+==================================================
+BACKEND ARCHITECTURE REQUIREMENTS
+==================================================
+
+Build FULL backend orchestration.
+
+NO mock APIs.
+
+NO placeholder endpoints.
+
+==================================================
+1. MASTER DASHBOARD API
+==================================================
+
+Create:
+/api/dashboard/overview
+
+Return:
+- venue health
+- active guests
+- VIP activity
+- environment state
+- revenue stats
+- OTA status
+- loyalty activity
+- campaign activity
+- automation state
+- device health
+
+==================================================
+2. ENGINE STATUS API
+==================================================
+
+Create:
+/api/engines/status
+
+Return statuses for:
+- Presence Engine
+- Revenue Engine
+- Marketing Engine
+- Environment Engine
+- OTA Engine
+- Governance Engine
+- Intelligence Engine
+
+States:
+- ACTIVE
+- STANDBY
+- WARNING
+- ERROR
+
+==================================================
+3. LIVE EVENT FEED API
+==================================================
+
+Create:
+/api/dashboard/feed
+
+Return:
+- VIP arrivals
+- campaign launches
+- deployments
+- automation triggers
+- device alerts
+- environment changes
+- approvals
+- mentor interactions
+
+==================================================
+4. ROLE-BASED ACCESS CONTROL
+==================================================
+
+Backend MUST enforce:
+- tenant isolation
+- role permissions
+- venue-scoped access
+- deployment permissions
+- governance permissions
+
+Frontend hiding alone is NOT enough.
+
+==================================================
+5. REAL-TIME LIVE STATE
+==================================================
+
+Implement:
+polling and/or websocket live updates.
+
+Support:
+- environment changes
+- guest arrivals
+- OTA deployment updates
+- automation triggers
+- device status changes
+- campaign activity
+
+==================================================
+6. DEVICE + OTA ORCHESTRATION
+==================================================
+
+Build:
+- deployment queues
+- OTA rollout tracking
+- rollback handling
+- heartbeat monitoring
+- remote action execution
+- failure recovery
+
+==================================================
+7. ENVIRONMENT CONTROL API
+==================================================
+
+Create:
+/api/environment/state
+
+Allow:
+- environment switching
+- VIP pulse activation
+- atmosphere control
+- event mode activation
+- automation toggles
+- environmental intensity adjustment
+
+==================================================
+8. GOVERNANCE + AUDIT SYSTEM
+==================================================
+
+Track:
+- deployments
+- approvals
+- role changes
+- remote actions
+- environment changes
+- campaign launches
+- OTA activity
+
+Maintain:
+tamper-resistant audit logs.
+
+==================================================
+9. MARKETING ORCHESTRATION
+==================================================
+
+Build:
+- SendGrid orchestration
+- SMS workflows
+- campaign scheduling
+- social scheduling
+- automation queues
+- retry handling
+- analytics tracking
+
+==================================================
+10. ENTERPRISE INTELLIGENCE PIPELINE
+==================================================
+
+Build:
+- aggregation workers
+- behavioral scoring
+- atmosphere analytics
+- predictive modeling
+- trend intelligence
+- multi-venue processing
+
+==================================================
+11. PERFORMANCE + SCALING
+==================================================
+
+Optimize:
+- websocket handling
+- query performance
+- dashboard rendering
+- analytics caching
+- deployment synchronization
+- live feed performance
+
+==================================================
+FINAL TARGET
+==================================================
+
+EMPLOYEE FEELING:
+“This helps me handle guests easily.”
+
+MANAGER FEELING:
+“I can operate the venue intelligently.”
+
+VENUE OWNER FEELING:
+“I can manage my business remotely from anywhere.”
+
+SUPER ADMIN FEELING:
+“I control the entire ecosystem from one operational command center.”
+
+AXIOM OS FEELING:
+a living luxury hospitality operating system with centralized intelligence, governance, automation, and environmental awareness.
