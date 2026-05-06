@@ -26,7 +26,8 @@ import SettingsModule  from "@/pages/SettingsModule";
 import OrdersModule    from "@/pages/OrdersModule";
 import InventoryModule from "@/pages/InventoryModule";
 import RewardsModule   from "@/pages/RewardsModule";
-import CampaignsModule from "@/pages/CampaignsModule";
+import CampaignsModule  from "@/pages/CampaignsModule";
+import RevenueEngine    from "@/pages/RevenueEngine";
 import OwnerIntelPanel from "@/pages/OwnerIntelPanel";
 import ExperiencePage      from "@/pages/ExperiencePage";
 import RevealPage          from "@/pages/RevealPage";
@@ -93,6 +94,7 @@ function Router() {
       <Route path="/inventory"   component={InventoryModule} />
       <Route path="/rewards"     component={RewardsModule}   />
       <Route path="/campaigns"   component={CampaignsModule} />
+      <Route path="/revenue"     component={RevenueEngine}   />
       <Route path="/admin/intel"               component={OwnerIntelPanel}         />
       <Route path="/admin/experience-control" component={ExperienceControlPanel}  />
       {/* Legacy craft routes — redirect into the Universal Swipe Engine */}

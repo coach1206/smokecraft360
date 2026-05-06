@@ -1,0 +1,331 @@
+FINAL NEXT BUILD PHASE
+PHASE 3 — AXIOM REVENUE ENGINE
+(THE “AXIOM PAYS FOR ITSELF” PHASE)
+
+DO NOT redesign:
+- CraftHub homepage
+- mentor experience
+- discovery cards
+- cinematic atmosphere
+- enrollment flow
+- mentor reveal
+- collectible card engine
+
+This phase is NOT about:
+more UI experiments.
+
+This phase IS about:
+turning Axiom OS into a revenue-producing hospitality engine.
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+Build:
+THE AXIOM REVENUE ENGINE.
+
+A centralized automation system that helps venues:
+- increase traffic
+- recover slow hours
+- increase repeat visits
+- move inventory
+- generate after-hours revenue
+- automate customer engagement
+- improve retention
+- increase atmosphere participation
+
+The venue owner should eventually feel:
+
+“If Axiom OS is turned off, we lose money.”
+
+==================================================
+THE REVENUE ENGINE MUST FEEL
+==================================================
+
+NOT:
+marketing software.
+
+NOT:
+CRM software.
+
+NOT:
+email campaign software.
+
+It should feel like:
+an intelligent hospitality growth system.
+
+Visual style:
+- cinematic
+- matte-black luxury
+- Apple × Tesla × Star Trek
+- real imagery
+- depth perception
+- floating glass layers
+- tactile raised buttons
+- warm OLED lighting
+- smooth transitions
+- alive and reactive
+
+==================================================
+BUILD THE REVENUE COMMAND CENTER
+==================================================
+
+Create ONE unified command center.
+
+DO NOT create:
+multiple disconnected dashboards.
+
+Everything routes through:
+AXIOM REVENUE ENGINE.
+
+==================================================
+MAIN COMMAND CENTER MODULES
+==================================================
+
+1. Atmosphere Activation
+2. Guest Recovery
+3. Social Campaign Engine
+4. Slow-Hour Recovery
+5. Event Activation
+6. After-Hours Revenue
+7. Membership + Prestige
+8. Inventory Movement
+9. Return Probability
+10. Lounge Energy Intelligence
+
+==================================================
+1. ATMOSPHERE ACTIVATION ENGINE
+==================================================
+
+System automatically creates:
+targeted atmosphere campaigns.
+
+Examples:
+- reserve pairing nights
+- bourbon + cigar sessions
+- smooth jazz atmosphere
+- brew social nights
+- late-night lounge sessions
+- VIP atmosphere events
+
+Campaigns should feel:
+personalized and exclusive.
+
+==================================================
+2. GUEST RECOVERY ENGINE
+==================================================
+
+System detects:
+customers likely to return.
+
+Automatically triggers:
+- mentor invitations
+- unfinished blend reminders
+- personalized recommendations
+- reserve access alerts
+- social event invitations
+
+Examples:
+“Your mentor prepared a new reserve pairing.”
+
+“Your saved blend is waiting tonight.”
+
+==================================================
+3. SOCIAL CAMPAIGN ENGINE
+==================================================
+
+Integrate:
+- Instagram
+- Facebook
+- TikTok
+- Email
+- SMS/Text messaging
+
+System can automatically:
+- create promotions
+- generate event announcements
+- post social content
+- send atmosphere alerts
+- announce reserve events
+- reactivate customers
+
+==================================================
+4. SLOW-HOUR RECOVERY ENGINE
+==================================================
+
+System detects:
+slow venue traffic.
+
+Automatically launches:
+- happy-hour campaigns
+- reserve specials
+- event activations
+- social pairing promotions
+- VIP invitations
+- inventory movement campaigns
+
+Purpose:
+recover dead hours automatically.
+
+==================================================
+5. EVENT ACTIVATION ENGINE
+==================================================
+
+Create:
+social engagement experiences.
+
+Examples:
+- Blend of the Night
+- Reserve Pairing Events
+- Mentor-Led Tastings
+- Atmosphere Sessions
+- Regional Craft Nights
+- Whiskey + Smoke Sessions
+- Brew Social Flights
+
+==================================================
+6. AFTER-HOURS REVENUE ENGINE
+==================================================
+
+Venue closes…
+Axiom continues generating revenue.
+
+Examples:
+- next-day reservations
+- reserve pickup orders
+- future pairing reservations
+- limited releases
+- member-only drops
+- mentor-curated experiences
+- private booking reservations
+
+Goal:
+24-hour monetization.
+
+==================================================
+7. MEMBERSHIP + PRESTIGE ENGINE
+==================================================
+
+Create:
+luxury exclusivity systems.
+
+Examples:
+- Reserve Society
+- Founder Access
+- Mentor Vault
+- Elite Pairing Access
+- Hidden Reserve Sessions
+- Priority Lounge Access
+
+NO cartoon gamification.
+
+Luxury prestige ONLY.
+
+==================================================
+8. INVENTORY MOVEMENT ENGINE
+==================================================
+
+System detects:
+inventory not moving.
+
+Mentors naturally begin recommending:
+pairings tied to that inventory.
+
+Purpose:
+move products intelligently WITHOUT looking discount-driven.
+
+==================================================
+9. RETURN PROBABILITY ENGINE
+==================================================
+
+Predict:
+which guests are most likely to return.
+
+Track:
+- visit frequency
+- atmosphere engagement
+- event participation
+- mentor engagement
+- spending behavior
+- social behavior
+
+Use this for:
+precision hospitality campaigns.
+
+==================================================
+10. LOUNGE ENERGY INTELLIGENCE
+==================================================
+
+System tracks:
+- social energy
+- active atmosphere participation
+- event engagement
+- return traffic
+- atmosphere heatmaps
+- customer engagement trends
+
+The venue should visually feel:
+alive and active.
+
+==================================================
+UI/UX REQUIREMENTS
+==================================================
+
+EVERY tile and card MUST include:
+real-world cinematic imagery.
+
+NO:
+glyphs,
+flat icons,
+or dead dashboards.
+
+Use:
+- premium lounge imagery
+- nightlife atmosphere
+- social energy visuals
+- humidor imagery
+- whiskey wall visuals
+- real hospitality photography
+- event atmosphere scenes
+
+==================================================
+BUTTON + TOUCH SYSTEM
+==================================================
+
+NO flat buttons.
+
+Use:
+raised tactile controls.
+
+Buttons should feel:
+physical,
+premium,
+and exciting to touch.
+
+==================================================
+NAVIGATION RULES
+==================================================
+
+EVERY screen MUST include:
+persistent Back navigation.
+
+NO dead-end interfaces.
+
+==================================================
+FINAL OBJECTIVE
+==================================================
+
+Customer feeling:
+“This place understands me.”
+
+Venue owner feeling:
+“This system helps me make money automatically.”
+
+Manufacturer/distributor feeling:
+“This platform understands customer behavior better than traditional analytics.”
+
+This phase transforms Axiom OS from:
+experience software
+
+into:
+a hospitality revenue operating system.
