@@ -1,0 +1,643 @@
+MISSING / REQUIRED
+Old selection UI must be removed
+Impact: if old modal or panel selectors stay active, the swipe engine will conflict with the new flow.
+/craft-hub must be the only Craft Hub route
+Impact: duplicate Craft Hubs confuse users and split analytics.
+/experience/:type must use one universal swipe engine
+Impact: SmokeCraft, PourCraft, BrewCraft, and VapeCraft will drift apart if each has its own flow.
+Memory + revenue brain must connect to inventory, sessions, analytics, and recommendations
+Impact: without that wiring, the system looks smart but does not actually learn or optimize.
+FAILURE PREVENTION CHECKLIST
+
+Before coding, Replit must:
+
+Search for duplicate Craft Hub components and remove all but the rotating image version.
+Replace all old selection panels with the swipe card engine.
+Keep one card system across Craft Hub, inventory, vendors, rewards, devices, and analytics.
+Make sure no text sits directly on raw background images.
+Use solid readable panels for dashboards.
+Wire every swipe into database memory.
+Wire every recommendation into inventory and revenue scoring.
+Run typecheck after changes.
+Start the server and verify routes.
+MASTER PROMPT
+Build Memory + Revenue Brain for Universal Swipe Experience Engine
+
+Paste this into Replit:
+
+Build the full Memory + Revenue Brain for SmokeCraft 360 / Craft Hub 360.
+
+This must merge with the existing Universal Swipe Experience Engine and become the core intelligence layer for:
+
+SmokeCraft 360
+PourCraft 360
+BrewCraft 360
+VapeCraft 360
+
+The system must support Tinder-style swiping, adaptive pairing, long-term user memory, inventory-aware recommendations, revenue optimization, analytics tracking, and clean readable UI.
+
+Use:
+
+Frontend: React + Vite + Tailwind
+Backend: Node.js + Express + TypeScript
+Database: PostgreSQL
+ORM: Drizzle if already used in this project, otherwise use the existing DB layer
+
+Do not create duplicate Craft Hubs.
+Do not create duplicate experience engines.
+Do not leave mock constants if real DB tables exist.
+Do not use heavy full-screen background images behind dashboard data.
+Do not let text sit directly on raw images.
+
+Keep only:
+
+/craft-hub
+/experience/:type
+/reveal/:sessionId
+/analytics
+/inventory
+/vendors
+/rewards
+/devices
+/settings
+
+==================================================
+1. GLOBAL UI LAW
+==================================================
+
+Apply this across the platform:
+
+Background:
+#F5F2EB or dark premium shell only where cinematic cards are used.
+
+Dashboard pages:
+Use cream or off-white background.
+Use solid cards.
+No lifestyle image behind data.
+
+Cinematic experience pages:
+Images may live inside cards only.
+All image cards must have gradient overlay.
+Text must sit inside readable blur/solid text panels.
+
+Card system:
+border-radius: 20px
+padding: 20px to 24px
+solid background for dashboard cards
+soft shadow
+clear action buttons
+hover lift
+tap scale
+
+Motion:
+Smooth fade transitions
+Swipe follows finger/mouse
+Swipe right means ADD
+Swipe left means SKIP
+Cards should feel like a premium playing card deck
+
+==================================================
+2. DATABASE SCHEMA
+==================================================
+
+Create or verify these tables.
+
+users:
+id serial primary key
+email text unique
+role text default 'guest'
+created_at timestamp default now()
+
+experience_items:
+id serial primary key
+title text not null
+description text
+image text
+type text not null
+category text
+tags text[] not null default '{}'
+intensity int default 5
+base_score int default 50
+cost numeric default 0
+retail_price numeric default 0
+inventory_item_id int
+active boolean default true
+created_at timestamp default now()
+
+inventory:
+id serial primary key
+name text not null
+type text not null
+vendor_id int
+stock int default 0
+low_stock_threshold int default 5
+cost numeric default 0
+price numeric default 0
+margin numeric default 0
+image text
+tags text[] default '{}'
+active boolean default true
+created_at timestamp default now()
+
+vendors:
+id serial primary key
+name text not null
+category text
+reliability_score int default 80
+avg_delivery_days int default 3
+last_order_at timestamp
+active boolean default true
+
+experience_sessions:
+id serial primary key
+user_id int
+experience_type text not null
+status text default 'active'
+started_at timestamp default now()
+completed_at timestamp
+taste_profile jsonb default '{}'
+revenue_profile jsonb default '{}'
+final_recommendations jsonb default '[]'
+
+session_swipes:
+id serial primary key
+session_id int not null
+user_id int
+item_id int not null
+experience_type text not null
+action text not null
+tags text[] default '{}'
+score_delta int default 0
+created_at timestamp default now()
+
+user_taste_memory:
+id serial primary key
+user_id int not null
+tag text not null
+weight int default 0
+last_action text
+updated_at timestamp default now()
+unique(user_id, tag)
+
+user_revenue_memory:
+id serial primary key
+user_id int not null
+experience_type text not null
+avg_margin numeric default 0
+preferred_price_band text default 'mid'
+conversion_score int default 0
+lifetime_sessions int default 0
+updated_at timestamp default now()
+unique(user_id, experience_type)
+
+recommendation_events:
+id serial primary key
+session_id int
+user_id int
+experience_type text
+inventory_item_id int
+recommendation_score int
+reason text
+shown boolean default true
+accepted boolean default false
+created_at timestamp default now()
+
+analytics_events:
+id serial primary key
+user_id int
+session_id int
+event_type text not null
+event_payload jsonb default '{}'
+created_at timestamp default now()
+
+==================================================
+3. BACKEND ROUTES
+==================================================
+
+Create these routes:
+
+POST /api/experience/session/start
+GET /api/experience/:type/cards
+POST /api/experience/swipe
+GET /api/experience/session/:sessionId/recommendations
+POST /api/experience/session/:sessionId/complete
+GET /api/memory/:userId
+GET /api/revenue-brain/:userId/:type
+GET /api/analytics/experience
+GET /api/inventory/by-type/:type
+
+All routes must return clean JSON.
+
+All protected admin routes must use role middleware:
+venue_owner
+manager
+super_admin
+
+Customer-facing swipe routes may allow guest/demo user mode.
+
+==================================================
+4. MEMORY BRAIN LOGIC
+==================================================
+
+Create service:
+
+server/services/memoryBrain.ts
+
+Functions:
+
+updateTasteMemory(userId, tags, action)
+
+Rules:
+
+If swipe right / add:
+increase each tag weight by +3
+
+If swipe left / skip:
+decrease each tag weight by -1
+
+Never let weight go below -10.
+Never let weight go above 100.
+
+getTasteProfile(userId)
+
+Return:
+topTags
+weakTags
+avoidTags
+profileSummary
+
+Example:
+{
+  topTags: ["smoky", "oak", "bold"],
+  weakTags: ["sweet"],
+  avoidTags: ["light"],
+  profileSummary: "Prefers bold, smoky, oak-forward experiences"
+}
+
+==================================================
+5. REVENUE BRAIN LOGIC
+==================================================
+
+Create service:
+
+server/services/revenueBrain.ts
+
+Purpose:
+Recommendations should not only match taste.
+They should also help the venue make money without feeling manipulative.
+
+Create:
+
+scoreRevenueOpportunity(item, inventoryItem)
+
+Factors:
+margin
+stock availability
+vendor reliability
+low stock penalty
+premium item boost
+popular tag boost
+
+Formula:
+
+tasteScore = tag match score from user memory
+marginScore = inventory margin percentage
+stockScore = stock > threshold ? 20 : -30
+reliabilityScore = vendor reliability / 5
+premiumBoost = price > average price ? 10 : 0
+
+finalScore =
+tasteScore * 0.45
++ marginScore * 0.25
++ stockScore * 0.15
++ reliabilityScore * 0.10
++ premiumBoost * 0.05
+
+Return:
+score
+reason
+
+Reason examples:
+"Matches smoky and oak preferences with strong margin"
+"High taste match but low stock, recommendation softened"
+"Premium pairing selected because user shows bold-profile behavior"
+
+==================================================
+6. ADAPTIVE PAIRING ENGINE
+==================================================
+
+Create service:
+
+server/services/adaptivePairingEngine.ts
+
+Function:
+
+getAdaptiveCards(userId, type, sessionId)
+
+Process:
+1. Fetch active experience_items by type.
+2. Fetch user_taste_memory.
+3. Score cards by matching tags.
+4. Remove already swiped cards in current session.
+5. Sort by score.
+6. Return top cards.
+
+Function:
+
+getFinalRecommendations(sessionId)
+
+Process:
+1. Read swipes.
+2. Build taste profile from accepted tags.
+3. Match accepted tags against inventory.
+4. Score inventory using revenueBrain.
+5. Return top 3 recommendations.
+
+Each recommendation must include:
+item name
+image
+price
+stock
+score
+reason
+pairing note
+recommended action
+
+==================================================
+7. SWIPE ENGINE FRONTEND
+==================================================
+
+Create or update:
+
+client/src/components/swipe/SwipeEngine.tsx
+client/src/components/swipe/SwipeCard.tsx
+client/src/components/swipe/CardStack.tsx
+client/src/pages/ExperiencePage.tsx
+client/src/pages/RevealPage.tsx
+
+SwipeEngine requirements:
+
+Works for:
+smoke
+pour
+brew
+vape
+
+Swipe right:
+POST /api/experience/swipe action=add
+
+Swipe left:
+POST /api/experience/swipe action=skip
+
+After each swipe:
+Update local card stack
+Fetch refreshed adaptive cards
+Show micro feedback:
+"Added to your taste profile"
+"Skipped"
+"Learning your preference"
+
+Card must look like premium playing card:
+vertical aspect ratio
+rounded corners
+image background
+dark gradient overlay
+top label
+large title
+description
+bottom action zone
+stacked 3-card effect
+
+Fallback buttons:
+Skip
+Add
+
+Animations:
+drag rotation
+release fly-out
+next card slide-up
+smooth fade
+
+==================================================
+8. REVEAL PAGE
+==================================================
+
+Create:
+
+/reveal/:sessionId
+
+This page shows final recommendations.
+
+Layout:
+
+Top:
+"Your Crafted Match"
+
+Main:
+3 recommendation cards
+
+Each card:
+product image
+name
+price
+taste match percentage
+profit-aware reason hidden from customer wording
+customer-friendly reason
+stock status
+button: Add to Order
+
+Customer wording should not say:
+"We chose this because margin is high"
+
+Instead say:
+"Chosen because it matches your smoky, oak-forward profile"
+
+Admin analytics can show the revenue reason separately.
+
+==================================================
+9. ANALYTICS WIRING
+==================================================
+
+Create dashboard widgets:
+
+Most selected tags
+Most skipped tags
+Top experience type
+Average session length
+Recommendation acceptance rate
+Revenue opportunity score
+Low stock blocked recommendations
+
+Route:
+
+GET /api/analytics/experience
+
+Return clean metrics.
+
+Use solid readable cards only.
+No background images behind charts.
+
+==================================================
+10. INVENTORY WIRING
+==================================================
+
+Inventory recommendations must only show active inventory.
+
+If stock is below low_stock_threshold:
+Do not fully block it, but apply penalty.
+If stock is zero:
+Do not recommend it.
+
+If no inventory match:
+Return fallback:
+"No stocked match found. Add inventory tags to improve recommendations."
+
+==================================================
+11. CRAFT THEMING
+==================================================
+
+Create:
+
+client/src/lib/craftThemes.ts
+
+Themes:
+
+SmokeCraft:
+type = smoke
+colors: ember, black, gold
+visual words: cigar, lounge, smoke
+
+PourCraft:
+type = pour
+colors: amber, glass, copper
+visual words: whiskey, cocktail, spirit
+
+BrewCraft:
+type = brew
+colors: gold, foam, lager
+visual words: beer, foam, social
+
+VapeCraft:
+type = vape
+colors: violet, cyan, vapor
+visual words: vape, cloud, neon
+
+Use this theme to style card accent colors only.
+Do not break the global layout system.
+
+==================================================
+12. SEED DATA
+==================================================
+
+Add seed data for each craft:
+
+Smoke:
+Smoky
+Bold
+Earthy
+Creamy
+Spicy
+Sweet
+
+Pour:
+Oak
+Vanilla
+Peat
+Caramel
+Citrus
+Spiced
+
+Brew:
+Hoppy
+Crisp
+Malty
+Dark Roast
+Fruity
+Smooth
+
+Vape:
+Mint
+Berry
+Cream
+Tropical
+Cool
+Dense Cloud
+
+Each must include:
+title
+description
+image placeholder path
+tags
+intensity
+type
+
+Add matching inventory seed data with:
+stock
+cost
+price
+margin
+tags
+
+==================================================
+13. SECURITY
+==================================================
+
+Validate all body input.
+
+Do not trust client userId blindly if auth exists.
+Use req.user.id when available.
+
+Add rate limit to swipe route:
+max 120 swipes per 10 minutes per user/IP
+
+Log suspicious swipe flooding into analytics_events.
+
+==================================================
+14. SYSTEM FLOW
+==================================================
+
+Craft Hub
+→ user selects craft
+→ /experience/:type starts session
+→ swipe engine loads adaptive cards
+→ every swipe updates taste memory
+→ revenue brain re-scores next options
+→ final recommendations pull from real inventory
+→ reveal page shows customer-friendly matches
+→ analytics records behavior and revenue signals
+
+==================================================
+15. ACCEPTANCE TESTS
+==================================================
+
+After build, verify:
+
+1. Only one /craft-hub exists.
+2. Smoke, Pour, Brew, Vape all use same SwipeEngine.
+3. Swipe right stores add event.
+4. Swipe left stores skip event.
+5. user_taste_memory changes after swipes.
+6. Recommendations change after multiple swipes.
+7. Zero-stock inventory is not recommended.
+8. Low-stock items are penalized.
+9. Reveal page shows top 3 recommendations.
+10. Analytics page shows selected/skipped tags.
+11. TypeScript passes.
+12. App runs without route conflicts.
+
+==================================================
+16. FINAL RESULT
+==================================================
+
+The final system must feel like:
+
+Tinder-style card motion
+Premium playing card deck
+Adaptive AI taste learning
+Revenue-aware recommendation engine
+Inventory-connected final pairing
+Clean dashboard analytics
+One universal experience engine across all crafts
+
+Do not stop at UI.
+Wire the database, backend routes, frontend components, session tracking, memory updates, recommendation scoring, reveal page, and analytics.
