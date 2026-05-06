@@ -50,9 +50,10 @@ interface Axiom360State {
   setCraft:   (craft: CraftType) => void;
   setTableId: (id: string | null) => void;
 
-  setOccupancy:        (pct: number)  => void;
-  toggleDynamicPricing: ()            => void;
-  toggleMember:         ()            => void;
+  setOccupancy:         (pct: number)   => void;
+  toggleDynamicPricing: ()             => void;
+  loginMember:          ()             => void;
+  logoutMember:         ()             => void;
   addRevenueLift:       (delta: number) => void;
 
   /**
@@ -82,7 +83,8 @@ export const useAxiom360 = create<Axiom360State>()(
 
       setOccupancy:         (pct)   => set({ venueOccupancy: Math.max(0, Math.min(100, pct)) }),
       toggleDynamicPricing: ()      => set((s) => ({ isDynamicPricingActive: !s.isDynamicPricingActive })),
-      toggleMember:         ()      => set((s) => ({ isMemberLoggedIn: !s.isMemberLoggedIn })),
+      loginMember:          ()      => set({ isMemberLoggedIn: true }),
+      logoutMember:         ()      => set({ isMemberLoggedIn: false }),
       addRevenueLift:       (delta) => set((s) => ({ revenueLift: s.revenueLift + delta })),
 
       handoff: () =>

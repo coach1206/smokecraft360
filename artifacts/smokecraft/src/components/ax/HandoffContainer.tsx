@@ -806,7 +806,8 @@ function PatronView({
     venueOccupancy,
     isDynamicPricingActive,
     isMemberLoggedIn,
-    toggleMember,
+    loginMember,
+    logoutMember,
     addRevenueLift,
   } = useAxiom360();
 
@@ -1083,7 +1084,7 @@ function PatronView({
 
         {/* Member Access toggle */}
         <button
-          onClick={() => { toggleMember(); setBurstKey((k) => k + 1); }}
+          onClick={() => { isMemberLoggedIn ? logoutMember() : loginMember(); setBurstKey((k) => k + 1); }}
           style={{
             marginLeft: "auto",
             display: "flex", alignItems: "center", gap: 5,
