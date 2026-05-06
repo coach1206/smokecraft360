@@ -274,7 +274,13 @@ function FailedWebhooksPanel() {
     setActing(null);
   };
 
-  if (loading) return <div style={{ color: T.textMuted, fontSize: 12, padding: 16 }}>Loading…</div>;
+  if (loading) return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, padding: "8px 0" }}>
+      {Array.from({ length: 3 }, (_, i) => (
+        <div key={i} style={{ height: 52, background: "rgba(255,255,255,0.04)", borderRadius: 8, border: "1px solid rgba(201,168,76,0.1)", animation: "pulse 1.6s ease-in-out infinite", animationDelay: `${i * 0.2}s` }} />
+      ))}
+    </div>
+  );
   if (webhooks.length === 0) return (
     <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 0", color: T.green }}>
       <CheckCircle size={14} />

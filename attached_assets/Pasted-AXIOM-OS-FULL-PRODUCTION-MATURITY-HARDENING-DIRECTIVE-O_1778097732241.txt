@@ -1,0 +1,434 @@
+AXIOM OS — FULL PRODUCTION MATURITY + HARDENING DIRECTIVE
+(ONE PASS • NO MISSING SYSTEMS • NO FOLLOW-UP GAPS)
+
+FINAL DIRECTIVE:
+From this point forward, stop treating Axiom OS like a feature prototype.
+
+Treat it like:
+a real enterprise hospitality operating system entering production maturity phase.
+
+DO NOT:
+- add random disconnected features
+- add cosmetic-only upgrades
+- create isolated modules
+- leave placeholder systems unfinished
+- leave backend/frontend disconnected
+- leave “future-phase” holes hidden
+- leave partial implementations
+- leave demo-only operational states
+
+EVERY frontend system MUST connect to:
+- real backend routes
+- real DB structures
+- real operational logic
+- real inventory/media systems
+- real analytics pipelines
+- real role permissions
+- real fail states
+
+NO orphan UI.
+
+NO fake dashboards.
+
+NO placeholder operational layers.
+
+==================================================
+MASTER OBJECTIVE
+==================================================
+
+Transform Axiom OS into:
+a fully unified premium hospitality operating ecosystem with:
+- production-grade frontend maturity
+- operational consistency
+- real data integrity
+- enterprise hardening foundations
+- touch-first UX
+- image-driven inventory intelligence
+- unified design architecture
+- backend/frontend parity
+- scalable system structure
+
+The platform should feel:
+- expensive
+- operationally intelligent
+- visually guided
+- touch-friendly
+- stable
+- trustworthy
+- modern
+- emotionally polished
+- enterprise capable
+
+==================================================
+PHASE 1 — UNIVERSAL DESIGN SYSTEM
+(CRITICAL FOUNDATION)
+==================================================
+
+BUILD:
+- centralized design token system
+- reusable component library
+- universal card system
+- universal KPI modules
+- universal modal system
+- universal forms
+- universal spacing rules
+- universal typography scale
+- shared hover/focus states
+- shared transitions
+- shared layout system
+- universal table/grid system
+- reusable operational widgets
+
+REQUIREMENT:
+Every module must visually feel like:
+ONE operating system.
+
+==================================================
+PHASE 2 — FRONTEND MATURITY / UX HARDENING
+(CRITICAL)
+==================================================
+
+REBUILD ALL FRONTEND LAYERS FOR:
+- readability
+- operational clarity
+- touch-first usability
+- information hierarchy
+- visual consistency
+- premium polish
+
+REMOVE:
+- dead empty spaces
+- flat dull panels
+- tiny text
+- disconnected layouts
+- inconsistent spacing
+- text-heavy operational zones
+- weak dashboard hierarchy
+
+ADD:
+- layered cards
+- material depth
+- visual grouping
+- clean dashboard density
+- organized operational sections
+- large touch-friendly controls
+- premium spacing rhythm
+- clear operational hierarchy
+- strong visual anchors
+
+EVERY PAGE MUST ANSWER:
+“What am I controlling?”
+visually and instantly.
+
+==================================================
+PHASE 3 — REAL DATA TRUTH LAYER
+(CRITICAL)
+==================================================
+
+REMOVE ALL:
+- mock operational values
+- seeded fake metrics
+- placeholder analytics
+- fake device states
+- fake campaign stats
+
+REQUIRE:
+- DB → API → UI parity
+- live telemetry
+- real operational status
+- live analytics
+- real inventory counts
+- real session states
+- real venue/device state
+
+EVERY DASHBOARD:
+must display REAL operational truth.
+
+==================================================
+PHASE 4 — UNIVERSAL MEDIA + IMAGE SYSTEM
+(CRITICAL)
+==================================================
+
+CREATE:
+FULL MEDIA MANAGEMENT INFRASTRUCTURE
+
+SUPPORT:
+- drag/drop upload
+- file browser upload
+- internet image import
+- reusable media library
+- crop/resize tools
+- tagging/categorization
+- image assignment workflows
+- optimized image delivery
+
+ALLOW:
+- JPG
+- PNG
+- WEBP
+
+IMAGE SOURCES:
+- local uploads
+- URL imports
+- internal library
+- future cloud integrations
+
+ALL INVENTORY / TILES / CARDS:
+must support:
+- primary image
+- secondary image
+- hover image
+- recommendation image
+- category image
+
+AUTO-WIRE imagery into:
+- POS
+- recommendations
+- campaigns
+- dashboards
+- inventory
+- loyalty
+- experience systems
+
+==================================================
+PHASE 5 — OPERATIONAL DASHBOARD REBUILD
+(CRITICAL)
+==================================================
+
+MASTER OPS:
+Rebuild as:
+premium operational control center.
+
+REQUIRE:
+- large operational modules
+- organized dashboard zones
+- device fleet panels
+- operational alerts
+- analytics sections
+- venue status
+- deployment tracking
+- system health
+- activity feeds
+
+NO giant empty areas.
+
+ALL ADMIN SCREENS:
+must become:
+- touch-friendly
+- image-supported
+- operationally obvious
+- visually guided
+
+==================================================
+PHASE 6 — ERROR HANDLING + FAIL STATES
+(CRITICAL)
+==================================================
+
+BUILD:
+- offline handling
+- retry systems
+- API timeout handling
+- fallback UI states
+- graceful degradation
+- image fallback systems
+- device disconnect handling
+- operational recovery messaging
+
+NO broken silent failures.
+
+==================================================
+PHASE 7 — ROLE + SECURITY HARDENING
+(HIGH PRIORITY)
+==================================================
+
+BUILD:
+- advanced permissions
+- action logging
+- operational restrictions
+- session hardening
+- audit visibility
+- role inheritance
+- admin restrictions
+- protected operational actions
+
+REQUIRE:
+all sensitive actions logged.
+
+==================================================
+PHASE 8 — QA + TESTING LAYER
+(HIGH PRIORITY)
+==================================================
+
+BUILD:
+- stress testing
+- concurrency testing
+- kiosk testing
+- tablet testing
+- browser testing
+- long-session testing
+- venue testing
+- operational edge-case testing
+
+REQUIRE:
+system stability under real-world use.
+
+==================================================
+PHASE 9 — CLOUD + DEPLOYMENT HARDENING
+(HIGH PRIORITY)
+==================================================
+
+BUILD:
+- monitoring
+- centralized logging
+- backup systems
+- rollback systems
+- uptime monitoring
+- deployment pipelines
+- environment separation
+- alerting infrastructure
+
+==================================================
+PHASE 10 — DEVICE ECOSYSTEM HARDENING
+(HIGH PRIORITY)
+==================================================
+
+BUILD:
+- kiosk mode
+- tablet optimization
+- printer reliability
+- remote diagnostics
+- fleet management
+- device recovery
+- Wi-Fi orchestration foundation
+- Bluetooth infrastructure foundation
+
+PREPARE:
+future environmental intelligence systems.
+
+==================================================
+PHASE 11 — INVENTORY + POS HARDENING
+(HIGH PRIORITY)
+==================================================
+
+BUILD:
+- advanced modifiers
+- inventory relationships
+- low-stock automation
+- vendor syncing
+- operational fail states
+- edge-case workflows
+- kitchen/bar coordination
+
+==================================================
+PHASE 12 — REPORTING + ANALYTICS MATURITY
+(MEDIUM-HIGH)
+==================================================
+
+BUILD:
+- executive reporting
+- venue reports
+- financial reports
+- export systems
+- predictive insights
+- campaign analytics
+- operational summaries
+
+==================================================
+PHASE 13 — ONBOARDING + TRAINING SYSTEMS
+(MEDIUM)
+==================================================
+
+BUILD:
+- setup wizard
+- contextual help
+- walkthroughs
+- onboarding guides
+- smart operational hints
+- training overlays
+
+SYSTEM SHOULD:
+teach itself.
+
+==================================================
+PHASE 14 — PERFORMANCE OPTIMIZATION
+(MEDIUM)
+==================================================
+
+BUILD:
+- lazy loading
+- image optimization
+- render optimization
+- memory cleanup
+- dashboard scaling optimization
+- animation optimization
+
+==================================================
+PHASE 15 — CRAFT EXPERIENCE STANDARDIZATION
+(CRITICAL EXPERIENCE LAYER)
+==================================================
+
+ALL crafts must share:
+- same experience structure
+- same interaction quality
+- same recommendation engine
+- same onboarding flow
+- same operational polish
+
+BUT maintain:
+distinct emotional atmosphere.
+
+SmokeCraft:
+luxury cigar ritual
+
+PourCraft:
+luxury spirit ritual
+
+BrewCraft:
+luxury brewery ritual
+
+VapeCraft:
+luxury futuristic vapor ritual
+
+==================================================
+PHASE 16 — FINAL POLISH + AXIOM SWAG
+(FINAL REFINEMENT)
+==================================================
+
+Axiom personality should come from:
+- confidence
+- atmosphere
+- premium material depth
+- operational elegance
+- smooth interaction
+- emotional warmth
+- refined motion
+- visual storytelling
+
+NOT:
+cheap flashy effects.
+
+==================================================
+FINAL PRODUCTION RULE
+==================================================
+
+From now on:
+EVERY feature request must include:
+- frontend layer
+- backend routes
+- DB structure
+- permissions
+- fail states
+- image handling
+- analytics
+- responsive behavior
+- operational logic
+- admin tooling
+- testing considerations
+
+NO partial systems.
+
+NO hidden dependencies.
+
+NO “we’ll add that later.”
+
+EVERYTHING required for production maturity must be included upfront.

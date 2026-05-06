@@ -135,6 +135,7 @@ import demoEngineRouter          from "./routes/demoEngine";
 import trainingAccountsRouter    from "./routes/trainingAccounts";
 import { startFailedWebhookWorker }   from "./lib/failedWebhookWorker.js";
 import { startReconciliationWorker }  from "./lib/reconciliationWorker.js";
+import { notFoundHandler, globalErrorHandler } from "./middleware/responseFormat";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -407,25 +408,8 @@ if (process.env["NODE_ENV"] !== "test") {
   startReconciliationWorker();
 }
 
-// ── 404 catch-all ─────────────────────────────────────────────────────────────
-app.use((_req: Request, res: Response) => {
-  res.status(404).json({ error: "Not found" });
-});
-
-// ── Global error handler ──────────────────────────────────────────────────────
-app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
-  const log = (req as typeof req & { log?: typeof logger }).log ?? logger;
-  log.error({ err }, "Unhandled error");
-  if (res.headersSent) return;
-
-  // Honor explicit status from express/body-parser errors (PayloadTooLarge=413, SyntaxError on JSON=400, etc.)
-  const e      = err as Error & { status?: number; statusCode?: number; type?: string };
-  const status = e.status ?? e.statusCode ?? 500;
-  const message =
-    status === 413 ? "Payload too large" :
-    status === 400 ? "Invalid request"   :
-    "Something went wrong";
-  res.status(status).json({ error: message });
-});
+// ── 404 + global error handler ────────────────────────────────────────────────
+app.use(notFoundHandler);
+app.use(globalErrorHandler);
 
 export default app;

@@ -17,8 +17,9 @@ import { useLocation }                              from "wouter";
 import {
   ArrowLeft, CreditCard, Layers, Zap, BarChart3, RefreshCw,
   ExternalLink, CheckCircle, AlertTriangle, Clock, ChevronRight,
-  DollarSign, Users, Activity, Wifi,
+  DollarSign, Users, Activity, Wifi, ShieldOff,
 } from "lucide-react";
+import { AxEmptyState, AxLoadingState } from "../components/ax";
 
 // ── design tokens ─────────────────────────────────────────────────────────────
 
@@ -207,17 +208,38 @@ function OverviewTab({ venueId }: { venueId: string | null }) {
   const pendingDollars = Math.round((tabSummary?.pendingRevenueCents ?? 0) / 100);
   const paidDollars    = Math.round((tabSummary?.paidTodayCents ?? 0) / 100);
 
+  if (!loading && !tabSummary && !fqMetrics) {
+    return (
+      <AxEmptyState
+        icon={ShieldOff}
+        title="Authentication Required"
+        body="Sign in as manager, venue_owner, or super_admin to access the payments overview."
+        color={T.gold}
+      />
+    );
+  }
+
   return (
     <div>
-      {/* KPI grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12, marginBottom: 20 }}>
-        <KpiCard label="Open Tabs"        value={tabSummary?.openTabs ?? 0}     color={T.gold}   delta="+live" />
-        <KpiCard label="Revenue Pending"  value={pendingDollars}                 unit="$" color={T.amber} delta="authorized" />
-        <KpiCard label="Paid Today"       value={paidDollars}                    unit="$" color={T.green} delta="+confirmed" />
-        <KpiCard label="Queue Pending"    value={fqMetrics?.pending ?? 0}        color={T.blue}   delta="awaiting staff" />
-        <KpiCard label="Queue Active"     value={fqMetrics?.active ?? 0}         color={T.purple} delta="in progress" />
-        <KpiCard label="Delivered Today"  value={fqMetrics?.deliveredToday ?? 0} color={T.green}  delta="fulfilled" />
-      </div>
+      {/* KPI grid — 3-col primary metrics */}
+      {loading ? (
+        <AxLoadingState rows={0} columns={3} rowHeight={96} />
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 12 }}>
+          <KpiCard label="Open Tabs"       value={tabSummary?.openTabs ?? 0}     color={T.gold}   delta="+live" />
+          <KpiCard label="Revenue Pending" value={pendingDollars}                 unit="$" color={T.amber} delta="authorized" />
+          <KpiCard label="Paid Today"      value={paidDollars}                    unit="$" color={T.green} delta="+confirmed" />
+        </div>
+      )}
+
+      {/* Secondary metrics — fulfillment */}
+      {!loading && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
+          <KpiCard label="Queue Pending"   value={fqMetrics?.pending ?? 0}        color={T.blue}   delta="awaiting staff" />
+          <KpiCard label="Queue Active"    value={fqMetrics?.active ?? 0}         color={T.purple} delta="in progress" />
+          <KpiCard label="Delivered Today" value={fqMetrics?.deliveredToday ?? 0} color={T.green}  delta="fulfilled" />
+        </div>
+      )}
 
       {/* Stripe Connect status */}
       <GlassCard style={{ padding: "16px 20px", marginBottom: 16 }}>
@@ -249,7 +271,7 @@ function OverviewTab({ venueId }: { venueId: string | null }) {
           </div>
         ) : (
           <div style={{ color: T.textMuted, fontSize: 11 }}>
-            {venueId ? "Loading Connect status…" : "Select a venue to see Connect status"}
+            {venueId ? "Loading Connect status…" : "Connect a Stripe account via venue settings to enable payouts"}
           </div>
         )}
       </GlassCard>
@@ -863,7 +885,7 @@ export default function AxiomPay() {
       </div>
 
       {/* Content */}
-      <div style={{ padding: "24px 24px", maxWidth: 900 }}>
+      <div style={{ padding: "24px 24px", maxWidth: 1100 }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}

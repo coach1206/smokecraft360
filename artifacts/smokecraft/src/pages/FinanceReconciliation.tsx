@@ -17,11 +17,13 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence }                  from "framer-motion";
 import { useLocation }                              from "wouter";
 import {
-  ArrowLeft, RefreshCw, Activity, AlertTriangle,
+  RefreshCw, Activity, AlertTriangle,
   CheckCircle, XCircle, CreditCard, DollarSign,
   Clock, Zap, TrendingUp, BarChart3, Shield,
-  ChevronRight, Lightbulb, Users, Package,
+  Lightbulb, Package,
 } from "lucide-react";
+import { AxEmptyState, AxLoadingState, AxLayout } from "../components/ax";
+import type { AxLayoutTab } from "../components/ax/AxLayout";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
@@ -230,8 +232,8 @@ function AlertRow({ alert, onAck, onResolve }: {
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 
-const TABS = [
-  { id: "overview",   label: "Overview",      icon: BarChart3    },
+const BASE_TABS: AxLayoutTab[] = [
+  { id: "overview",   label: "Overview",      icon: BarChart3     },
   { id: "alerts",     label: "Alert Queue",   icon: AlertTriangle },
   { id: "orphans",    label: "Orphan Tabs",   icon: Clock         },
   { id: "payouts",    label: "Payout Status", icon: DollarSign    },
@@ -476,110 +478,90 @@ export default function FinanceReconciliation() {
     setRunning(false);
   };
 
-  return (
-    <div style={{ minHeight: "100vh", background: T.bg, color: T.text, fontFamily: "'Inter','SF Pro Display',sans-serif" }}>
+  const openAlertCount = alerts.filter((a) => a.status !== "resolved").length;
 
-      {/* ── Header ── */}
-      <div style={{
-        position: "sticky", top: 0, zIndex: 40,
-        background: `${T.bg}ee`, backdropFilter: "blur(20px)",
-        borderBottom: `1px solid ${T.border}`,
-        padding: "12px 24px",
-        display: "flex", alignItems: "center", gap: 14,
-      }}>
-        <button onClick={() => navigate("/operations")} style={{
+  const tabs: AxLayoutTab[] = BASE_TABS.map((t) =>
+    t.id === "alerts" ? { ...t, badge: openAlertCount } : t,
+  );
+
+  const rightSlot = (
+    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      {lastFetch && (
+        <span style={{ fontSize: 10, color: T.textMuted }}>
+          Updated {lastFetch.toLocaleTimeString()}
+        </span>
+      )}
+      <button
+        onClick={() => { setLoading(true); void loadAll(); }}
+        style={{
           background: "transparent", border: `1px solid ${T.border}`,
-          borderRadius: 8, color: T.textMuted, fontSize: 11,
-          padding: "6px 10px", cursor: "pointer",
+          borderRadius: 6, color: T.textMuted, fontSize: 10,
+          padding: "5px 10px", cursor: "pointer",
           display: "flex", alignItems: "center", gap: 4,
+        }}
+      >
+        <RefreshCw size={10} /> Refresh
+      </button>
+      {overview && overview.alerts.critical > 0 && (
+        <span style={{
+          background: `${T.red}18`, border: `1px solid ${T.red}40`,
+          borderRadius: 6, color: T.red, fontSize: 10, fontWeight: 700,
+          padding: "3px 9px",
         }}>
-          <ArrowLeft size={12} /> Back
-        </button>
-        <div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: T.gold, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.06em" }}>
-            Financial Reconciliation
-          </div>
-          <div style={{ fontSize: 10, color: T.textMuted, letterSpacing: "0.12em", textTransform: "uppercase" }}>
-            Revenue · Payouts · Webhooks · Alerts
-          </div>
-        </div>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10 }}>
-          {lastFetch && <span style={{ fontSize: 10, color: T.textMuted }}>Updated {lastFetch.toLocaleTimeString()}</span>}
-          <button onClick={() => { setLoading(true); void loadAll(); }} style={{
-            background: "transparent", border: `1px solid ${T.border}`,
-            borderRadius: 6, color: T.textMuted, fontSize: 10,
-            padding: "5px 10px", cursor: "pointer",
-            display: "flex", alignItems: "center", gap: 4,
-          }}>
-            <RefreshCw size={10} /> Refresh
-          </button>
-          {overview && (overview.alerts.critical > 0) && (
-            <span style={{
-              background: `${T.red}18`, border: `1px solid ${T.red}40`,
-              borderRadius: 6, color: T.red, fontSize: 10, fontWeight: 700,
-              padding: "3px 9px",
-            }}>
-              {overview.alerts.critical} CRITICAL
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* ── Tab bar ── */}
-      <div style={{
-        display: "flex", borderBottom: `1px solid ${T.border}`,
-        padding: "0 24px", overflowX: "auto", gap: 0,
-      }}>
-        {TABS.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => setTab(id)}
-            style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "12px 16px", border: "none",
-              borderBottom: tab === id ? `2px solid ${T.gold}` : "2px solid transparent",
-              background: "transparent", cursor: "pointer",
-              fontSize: 11, fontWeight: tab === id ? 600 : 400,
-              color: tab === id ? T.gold : T.textMuted,
-              whiteSpace: "nowrap", transition: "color 0.15s",
-            }}
-          >
-            <Icon size={11} />
-            {label}
-            {id === "alerts" && alerts.filter((a) => a.status !== "resolved").length > 0 && (
-              <span style={{
-                background: T.red, color: "#fff", borderRadius: "50%",
-                fontSize: 9, fontWeight: 700,
-                width: 14, height: 14, display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                {alerts.filter((a) => a.status !== "resolved").length}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      <div style={{ padding: "24px", maxWidth: 1100 }}>
-        {loading ? (
-          <div style={{ color: T.textMuted, fontSize: 12 }}>Loading financial data…</div>
-        ) : (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={tab}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-            >
-              {tab === "overview"  && overview  && <OverviewPanel data={overview} onRun={runRecon} running={running} />}
-              {tab === "alerts"    && <AlertsPanel alerts={alerts} onAck={ackAlert} onResolve={resolveAlert} />}
-              {tab === "orphans"   && orphans    && <OrphansPanel stuckTabs={orphans.stuckTabs} orphanTabs={orphans.orphanTabs} />}
-              {tab === "payouts"   && <PayoutsPanel payouts={payouts} />}
-              {tab === "insights"  && <InsightsPanel insights={insights} />}
-            </motion.div>
-          </AnimatePresence>
-        )}
-      </div>
+          {overview.alerts.critical} CRITICAL
+        </span>
+      )}
     </div>
+  );
+
+  return (
+    <AxLayout
+      title="Financial Reconciliation"
+      subtitle="Revenue · Payouts · Webhooks · Alerts"
+      onBack={() => navigate("/operations")}
+      backLabel="Operations"
+      tabs={tabs}
+      activeTab={tab}
+      onTabChange={setTab}
+      live
+      rightSlot={rightSlot}
+      maxWidth={1100}
+    >
+      {loading ? (
+        <AxLoadingState rows={2} columns={4} rowHeight={88} message="Loading financial data…" />
+      ) : (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tab}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            {tab === "overview" && !overview && (
+              <AxEmptyState
+                icon={Shield}
+                title="Authentication Required"
+                body="Sign in as manager, venue_owner, or super_admin to view financial reconciliation data."
+                color={T.gold}
+              />
+            )}
+            {tab === "overview" && overview  && <OverviewPanel data={overview} onRun={runRecon} running={running} />}
+            {tab === "alerts"   && <AlertsPanel alerts={alerts} onAck={ackAlert} onResolve={resolveAlert} />}
+            {tab === "orphans"  && !orphans && (
+              <AxEmptyState
+                icon={Clock}
+                title="No Orphan Data"
+                body="Orphan tab detection requires an authenticated session. Log in to view stuck and orphan tabs."
+                color={T.amber}
+              />
+            )}
+            {tab === "orphans"  && orphans   && <OrphansPanel stuckTabs={orphans.stuckTabs} orphanTabs={orphans.orphanTabs} />}
+            {tab === "payouts"  && <PayoutsPanel payouts={payouts} />}
+            {tab === "insights" && <InsightsPanel insights={insights} />}
+          </motion.div>
+        </AnimatePresence>
+      )}
+    </AxLayout>
   );
 }

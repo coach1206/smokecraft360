@@ -1,0 +1,335 @@
+AXIOM OS — STEP 1 OF 10
+UNIVERSAL DESIGN SYSTEM + COMPONENT STANDARDIZATION
+
+CRITICAL OBJECTIVE:
+Create ONE unified frontend system powering ALL Axiom OS modules.
+
+Current issue:
+different sections of the platform still feel like separate products.
+
+This step creates:
+- universal frontend architecture
+- universal UI language
+- reusable operational components
+- scalable frontend structure
+- enterprise-grade consistency
+
+==================================================
+PART 1 — DESIGN TOKEN SYSTEM
+==================================================
+
+CREATE:
+/client/src/design-system/tokens/
+
+BUILD:
+- colors.ts
+- spacing.ts
+- typography.ts
+- shadows.ts
+- radius.ts
+- motion.ts
+- zIndex.ts
+- breakpoints.ts
+
+CENTRALIZE:
+- all colors
+- all spacing
+- all typography
+- all shadows
+- all animation timing
+- all border radius
+- all breakpoints
+
+REMOVE:
+hardcoded styles across components.
+
+==================================================
+PART 2 — UNIVERSAL COMPONENT LIBRARY
+==================================================
+
+CREATE:
+/client/src/components/ui/
+
+BUILD REUSABLE COMPONENTS:
+
+1. AppCard
+- universal card system
+- variants:
+  - KPI
+  - dashboard
+  - inventory
+  - analytics
+  - operational
+  - media
+- built-in elevation system
+- hover states
+- image support
+- responsive sizing
+
+2. AppButton
+- primary
+- secondary
+- danger
+- ghost
+- touch-friendly sizing
+- loading states
+
+3. AppModal
+- universal modal system
+- backdrop blur
+- mobile-safe
+- keyboard-safe
+
+4. KPIBlock
+- standardized KPI cards
+- icon support
+- trend support
+- status colors
+- delta indicators
+
+5. AppTable
+- reusable operational table
+- pagination
+- loading state
+- empty state
+- responsive collapse
+
+6. AppTabs
+- standardized dashboard tabs
+- touch optimized
+
+7. StatusBadge
+- online/offline
+- warning/error
+- active/inactive
+
+8. EmptyState
+- image support
+- action CTA
+- operational guidance
+
+9. AppInput
+- universal forms
+- validation states
+- error handling
+- accessibility support
+
+10. AppLayout
+- dashboard shell
+- content containers
+- responsive spacing
+
+==================================================
+PART 3 — UNIVERSAL TYPOGRAPHY SYSTEM
+==================================================
+
+CREATE:
+Typography hierarchy.
+
+LOCK:
+- page headers
+- section headers
+- card titles
+- body text
+- labels
+- helper text
+
+MINIMUMS:
+Body text:
+16px
+
+Labels:
+14px
+
+Headers:
+24–48px
+
+REQUIRE:
+high readability in dim lounge environments.
+
+==================================================
+PART 4 — UNIVERSAL SPACING SYSTEM
+==================================================
+
+LOCK:
+- margins
+- padding
+- card spacing
+- section spacing
+- grid gaps
+- dashboard rhythm
+
+REMOVE:
+random spacing values.
+
+USE:
+8px spacing scale system.
+
+==================================================
+PART 5 — UNIVERSAL DEPTH SYSTEM
+==================================================
+
+CREATE:
+shared material/elevation system.
+
+LEVELS:
+- surface-1
+- surface-2
+- floating
+- modal
+- overlay
+
+INCLUDE:
+- shadows
+- gradients
+- border treatments
+- hover elevation
+- glass treatment
+
+REMOVE:
+flat dull rectangles.
+
+==================================================
+PART 6 — UNIVERSAL MOTION SYSTEM
+==================================================
+
+STANDARDIZE:
+- hover timing
+- transitions
+- easing
+- card movement
+- panel animation
+- modal transitions
+
+RULE:
+smooth and subtle.
+
+NO excessive animation.
+
+==================================================
+PART 7 — UNIVERSAL IMAGE SYSTEM
+==================================================
+
+CREATE:
+shared image rendering system.
+
+SUPPORT:
+- inventory images
+- hero images
+- tile images
+- dashboard visuals
+- fallback images
+
+CREATE:
+ImageCard wrapper with:
+- lazy loading
+- fallback handling
+- aspect ratio protection
+- hover zoom
+- skeleton loading
+
+==================================================
+PART 8 — MASTER LAYOUT SYSTEM
+==================================================
+
+CREATE:
+shared dashboard shell architecture.
+
+STANDARDIZE:
+- top bars
+- side navigation
+- content width
+- dashboard grids
+- section grouping
+- panel spacing
+
+ALL pages must inherit:
+same operational rhythm.
+
+==================================================
+PART 9 — BACKEND SUPPORT STRUCTURE
+==================================================
+
+CREATE:
+shared API response format.
+
+STANDARDIZE:
+{
+ success,
+ data,
+ error,
+ meta,
+ pagination
+}
+
+CREATE:
+shared error handler middleware.
+
+CREATE:
+shared validation layer.
+
+STANDARDIZE:
+loading/error/empty states.
+
+==================================================
+PART 10 — DATABASE / MEDIA PREP
+==================================================
+
+CREATE:
+media_assets table.
+
+FIELDS:
+- id
+- url
+- type
+- category
+- uploaded_by
+- created_at
+- metadata
+- tags
+- dimensions
+- size
+- craft_type
+
+PREP:
+future media library.
+
+==================================================
+PART 11 — RESPONSIVE HARDENING
+==================================================
+
+OPTIMIZE:
+- tablets
+- kiosks
+- desktops
+- touch interactions
+
+ENSURE:
+- touch-safe sizing
+- readable spacing
+- responsive dashboards
+
+==================================================
+PART 12 — CLEANUP PASS
+==================================================
+
+REMOVE:
+- duplicate components
+- inconsistent styles
+- dead UI code
+- hardcoded layouts
+- inline style chaos
+
+==================================================
+FINAL RESULT
+==================================================
+
+After completion:
+ALL Axiom OS modules should feel like:
+ONE premium operating system.
+
+NOT:
+multiple disconnected dashboards.
+
+This step becomes the foundation
+for every remaining production-hardening phase.

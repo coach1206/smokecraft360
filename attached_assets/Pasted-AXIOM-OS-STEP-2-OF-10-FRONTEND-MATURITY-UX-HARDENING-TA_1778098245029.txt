@@ -1,0 +1,289 @@
+AXIOM OS — STEP 2 OF 10
+FRONTEND MATURITY + UX HARDENING
+
+TARGET STATUS AFTER COMPLETION:
+82–85% production maturity.
+
+CRITICAL OBJECTIVE:
+Transform the frontend from:
+“advanced startup prototype”
+
+INTO:
+“premium enterprise hospitality operating system.”
+
+This step is focused on:
+- operational clarity
+- usability maturity
+- touch-first refinement
+- visual hierarchy
+- dashboard intelligence
+- frontend consistency
+- premium interaction quality
+
+==================================================
+PART 1 — INFORMATION HIERARCHY REBUILD
+==================================================
+
+CURRENT ISSUE:
+Many screens still:
+- feel sparse
+- lack focus
+- waste space
+- lack visual priority
+- confuse the eye
+
+REBUILD ALL DASHBOARDS FOR:
+- strong hierarchy
+- clear focal points
+- operational grouping
+- predictable flow
+- visual scanning
+
+EVERY PAGE MUST:
+immediately answer:
+- what is this?
+- what matters?
+- what needs action?
+- what changed?
+- what is healthy?
+- where do I go next?
+
+==================================================
+PART 2 — DASHBOARD DENSITY REBALANCE
+==================================================
+
+REMOVE:
+- giant empty spaces
+- floating isolated rows
+- disconnected cards
+
+ADD:
+- structured operational zones
+- grouped content blocks
+- balanced dashboard density
+- large operational modules
+- visual rhythm
+
+RULE:
+Pages should feel:
+organized and active,
+NOT cluttered or empty.
+
+==================================================
+PART 3 — TOUCH-FIRST UX HARDENING
+==================================================
+
+REBUILD:
+- button sizing
+- interaction spacing
+- touch targets
+- gesture comfort
+- operational navigation
+
+ENSURE:
+all major controls are:
+- easy to tap
+- easy to scan
+- easy to operate quickly
+
+OPTIMIZE FOR:
+- tablets
+- kiosks
+- hospitality touchscreens
+
+==================================================
+PART 4 — UNIVERSAL CARD MATURITY
+==================================================
+
+CURRENT ISSUE:
+Some cards still feel:
+- flat
+- text-heavy
+- visually weak
+- inconsistent
+
+REBUILD ALL CARDS:
+- KPI cards
+- inventory cards
+- recommendation cards
+- operational panels
+- analytics panels
+- campaign cards
+
+ADD:
+- stronger imagery
+- better spacing
+- visual hierarchy
+- operational clarity
+- status visibility
+- premium depth
+
+REMOVE:
+- generic dashboard boxes.
+
+==================================================
+PART 5 — EMPTY STATE SYSTEM
+==================================================
+
+CREATE:
+production-grade empty states.
+
+WHEN DATA IS EMPTY:
+show:
+- contextual guidance
+- suggested actions
+- onboarding help
+- imagery
+- operational explanations
+
+NO DEAD EMPTY SCREENS.
+
+==================================================
+PART 6 — IMAGE-DRIVEN UI MATURITY
+==================================================
+
+EXPAND:
+visual inventory system.
+
+ENSURE:
+EVERY:
+- inventory item
+- recommendation
+- campaign
+- dashboard tile
+- venue card
+- experience card
+
+supports:
+- real imagery
+- fallback imagery
+- dynamic image rendering
+
+RESULT:
+platform becomes:
+visual-first.
+
+==================================================
+PART 7 — MASTER OPS REBUILD
+==================================================
+
+FULLY REBUILD:
+- Master Ops
+- Command Center
+- Presence Engine
+- Revenue Engine
+- Intelligence Dashboard
+- Marketing Dashboard
+
+REQUIRE:
+- operational grouping
+- structured telemetry
+- readable analytics
+- touch-first controls
+- visual hierarchy
+- image-supported systems
+- consistent layouts
+
+REMOVE:
+developer-dashboard feeling.
+
+==================================================
+PART 8 — CRAFT EXPERIENCE MATURITY
+==================================================
+
+STANDARDIZE:
+SmokeCraft
+PourCraft
+BrewCraft
+VapeCraft
+
+ALL must share:
+- same quality level
+- same interaction quality
+- same onboarding polish
+- same card maturity
+- same operational consistency
+
+BUT:
+maintain distinct emotional atmosphere.
+
+==================================================
+PART 9 — NAVIGATION HARDENING
+==================================================
+
+STANDARDIZE:
+- back buttons
+- breadcrumbs
+- side navigation
+- dashboard navigation
+- mobile responsiveness
+- section transitions
+
+ENSURE:
+users never feel lost.
+
+==================================================
+PART 10 — VISUAL RHYTHM + POLISH
+==================================================
+
+STANDARDIZE:
+- spacing rhythm
+- panel alignment
+- animation timing
+- hover behavior
+- section spacing
+- typography rhythm
+
+ENSURE:
+the platform feels:
+intentional and refined.
+
+==================================================
+PART 11 — FRONTEND PERFORMANCE PREP
+==================================================
+
+BEGIN:
+- lazy loading
+- image optimization
+- render cleanup
+- animation optimization
+- dashboard render balancing
+
+PREPARE:
+for production-scale frontend usage.
+
+==================================================
+PART 12 — BACKEND ALIGNMENT
+==================================================
+
+ENSURE:
+every frontend state connects to:
+- real API routes
+- real backend logic
+- real DB state
+
+REMOVE:
+- fake UI states
+- disconnected frontend flows
+- orphan components
+
+==================================================
+FINAL RESULT
+==================================================
+
+After completion:
+Axiom OS should feel like:
+a real premium hospitality operating system.
+
+The frontend should feel:
+- clear
+- organized
+- expensive
+- smooth
+- visual
+- touch-friendly
+- operationally intelligent
+- emotionally polished
+
+NOT:
+a prototype dashboard system.

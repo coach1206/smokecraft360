@@ -675,7 +675,25 @@ export default function MasterOperations() {
                   </div>
                 </>
               ) : (
-                <div style={{ height: 60, background: T.surface, borderRadius: 8 }} />
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div style={{ display: "flex", gap: 20, marginBottom: 4 }}>
+                    {[
+                      { label: "Active",   val: "—", color: T.green },
+                      { label: "Inactive", val: "—", color: T.amber },
+                      { label: "Offline",  val: "—", color: T.red   },
+                    ].map((s) => (
+                      <div key={s.label}>
+                        <div style={{ fontSize: 20, fontWeight: 700, color: s.color, fontFamily: "'Cormorant Garamond', serif", opacity: 0.4 }}>
+                          {s.val}
+                        </div>
+                        <div style={{ fontSize: 11, color: T.textMuted }}>{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ fontSize: 11, color: T.textMuted, fontStyle: "italic" }}>
+                    Sign in to view fleet status
+                  </div>
+                </div>
               )}
             </GlassCard>
 

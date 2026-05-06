@@ -11,8 +11,9 @@ import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, Brain, TrendingUp, TrendingDown, BarChart2,
-  Users, Zap, ShoppingBag, Package, Star, Cpu,
+  Users, Zap, ShoppingBag, Package, Star, Cpu, Lock,
 } from "lucide-react";
+import { AxEmptyState, AxLoadingState } from "../components/ax";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -285,24 +286,16 @@ export default function SwipeIntelligence() {
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 24px 60px" }}>
 
         {loading ? (
-          <div style={{ textAlign: "center", padding: "80px 0", color: C.muted }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: "50%",
-              border: "2px solid rgba(0,0,0,0.1)",
-              borderTop: "2px solid #1A1410",
-              animation: "spin 0.8s linear infinite",
-              margin: "0 auto 16px",
-            }} />
-            Loading behavioral data…
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-          </div>
+          <AxLoadingState rows={2} columns={3} rowHeight={96} message="Loading behavioral data…" />
         ) : error ? (
-          <div style={{
-            textAlign: "center", padding: "80px 0", color: C.red,
-            fontSize: 14,
-          }}>
-            {error === "401" ? "Sign in as admin to view analytics" : `Error: ${error}`}
-          </div>
+          <AxEmptyState
+            icon={Lock}
+            title={error === "401" ? "Authentication Required" : "Analytics Unavailable"}
+            body={error === "401"
+              ? "Sign in as manager, venue_owner, or super_admin to view swipe intelligence analytics."
+              : `Data could not be loaded: ${error}`}
+            color={C.gold}
+          />
         ) : (
           <>
             {/* ── OVERVIEW TAB ── */}
@@ -572,15 +565,7 @@ export default function SwipeIntelligence() {
                 transition={{ duration: 0.3 }}
               >
                 {orchLoading ? (
-                  <div style={{ textAlign: "center", padding: "80px 0", color: C.muted }}>
-                    <div style={{
-                      width: 32, height: 32, borderRadius: "50%",
-                      border: "2px solid rgba(0,0,0,0.1)",
-                      borderTop: "2px solid #1A1410",
-                      animation: "spin 0.8s linear infinite", margin: "0 auto 12px",
-                    }} />
-                    Loading orchestration data…
-                  </div>
+                  <AxLoadingState rows={1} columns={3} rowHeight={88} message="Loading orchestration data…" />
                 ) : !orchData || Number(orchData.totals?.totalSessions ?? 0) === 0 ? (
                   <div style={{
                     background: C.card, border: `1px solid ${C.border}`,
