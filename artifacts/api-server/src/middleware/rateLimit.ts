@@ -25,6 +25,37 @@ const shared = {
 export const authLimiter      = rateLimit(shared);
 export const recommendLimiter = rateLimit(shared);
 
+/* Login-specific brute-force guard — tighter than the broad authLimiter.
+ * 10 login attempts per 15-minute window per IP is generous for legitimate
+ * users (who essentially never fat-finger a password 10 times in 15 minutes)
+ * while making credential-stuffing attacks economically unviable. */
+export const loginLimiter = rateLimit({
+  windowMs:        15 * 60 * 1_000, // 15 minutes
+  limit:           10,
+  standardHeaders: "draft-7" as const,
+  legacyHeaders:   false,
+  message:         { error: "Too many login attempts — please wait 15 minutes and try again" },
+  skipSuccessfulRequests: true, // only count failures
+});
+
+/* Financial endpoint limiter — tabs + stripe-connect.
+ * Payment operations are naturally low-frequency human actions.
+ * 30/min/IP prevents script abuse while never impeding real guests. */
+export const financialLimiter = rateLimit({
+  ...shared,
+  limit:   30,
+  message: { error: "Too many payment requests — please slow down" },
+});
+
+/* Webhook admin/retry limiter — admin-only retry endpoint.
+ * Very low cap: a human clicking "retry" 5 times a minute is already
+ * aggressive; blocks bulk automation of the retry queue from outside. */
+export const webhookAdminLimiter = rateLimit({
+  ...shared,
+  limit:   20,
+  message: { error: "Too many webhook admin requests" },
+});
+
 /* Voice TTS layer: 15/min/IP — every call is a paid ElevenLabs character
  * burn, so we cap aggressively. A kiosk speaking the commentary once per
  * recommend (and occasionally on persona swap) stays well under this. */

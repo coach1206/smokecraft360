@@ -77,3 +77,4 @@ export * from "./guestProfiles";
 export * from "./guestSessions";
 export * from "./guestTabs";
 export * from "./fulfillmentQueue";
+export * from "./failedWebhooks";

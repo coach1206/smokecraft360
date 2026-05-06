@@ -1,9 +1,10 @@
 import express, { type Express, type Request, type Response, type NextFunction } from "express";
 import cors     from "cors";
+import helmet  from "helmet";
 import pinoHttp from "pino-http";
 import { logger } from "./lib/logger";
 import { rejectDeepPayloads }             from "./middleware/sanitize";
-import { authLimiter, recommendLimiter, osLimiter, voiceLimiter } from "./middleware/rateLimit";
+import { authLimiter, recommendLimiter, osLimiter, voiceLimiter, loginLimiter, financialLimiter } from "./middleware/rateLimit";
 import { localeMiddleware }                 from "./middleware/locale";
 
 import healthRouter        from "./routes/health";
@@ -124,6 +125,9 @@ import { requirePaymentsEnabled, requireRewardsEnabled } from "./middleware/kill
 import guestTabsRouter      from "./routes/guestTabs";
 import fulfillmentRouter    from "./routes/fulfillmentQueue";
 import stripeConnectRouter  from "./routes/stripeConnect";
+import failedWebhooksRouter from "./routes/failedWebhooks";
+import launchReadinessRouter from "./routes/launchReadiness";
+import { startFailedWebhookWorker } from "./lib/failedWebhookWorker";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -181,6 +185,10 @@ app.use(
   }),
 );
 
+// Helmet sets security-relevant HTTP headers (X-Frame-Options, HSTS,
+// X-Content-Type-Options, etc.). Content-Security-Policy is disabled
+// here — the API is pure JSON; CSP is handled on the Vite frontend layer.
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors(corsOptions));
 
 // Stripe webhook must receive the raw body for signature verification —
@@ -220,7 +228,10 @@ app.use(localeMiddleware);
 // ── Routes ────────────────────────────────────────────────────────────────────
 
 app.use("/api",                             healthRouter);
-app.use("/api/auth",      authLimiter,      authRouter);
+// loginLimiter is tighter (10/15-min, skip successes) and layered BEFORE
+// authLimiter on the specific login path to enforce brute-force protection.
+app.use("/api/auth/login",  loginLimiter);
+app.use("/api/auth",        authLimiter,   authRouter);
 app.use("/api/recommend", recommendLimiter, recommendRouter);
 app.use("/api/products",                    productsRouter);
 app.use("/api/analytics",                   venueAnalyticsRouter);
@@ -250,9 +261,9 @@ app.use("/api/environment",                 environmentRouter);
 app.use("/api/enterprise-intelligence",    enterpriseIntelligenceRouter);
 app.use("/api/dashboard",                 dashboardRouter);
 app.use("/api/engines",                   enginesRouter);
-app.use("/api/tabs",                      requirePaymentsEnabled, guestTabsRouter);
+app.use("/api/tabs",                      financialLimiter, requirePaymentsEnabled, guestTabsRouter);
 app.use("/api/fulfillment",               fulfillmentRouter);
-app.use("/api/stripe-connect",            stripeConnectRouter);
+app.use("/api/stripe-connect",            financialLimiter, stripeConnectRouter);
 app.use("/api/scoring",                     scoringRouter);
 app.use("/api/system",                      systemStatusRouter);
 app.use("/api/me",                          meRouter);
@@ -340,6 +351,8 @@ app.use("/api/admin/experience-control", experienceControlRouter);
 app.use("/api/orchestrator",                  orchestratorRouter);
 app.use("/api/admin/system-validation",      systemValidationRouter);
 app.use("/api/admin/operator-readiness",    operatorReadinessRouter);
+app.use("/api/admin/failed-webhooks",      failedWebhooksRouter);
+app.use("/api/admin/launch-readiness",     launchReadinessRouter);
 app.use("/api/admin/workers",             adminWorkersRouter);
 app.use("/api/system",                   systemVersionRouter);
 app.use("/api/admin/system",             systemVersionRouter);
@@ -377,6 +390,7 @@ if (process.env["NODE_ENV"] !== "test") {
   startRewardOptimizationWorker();
   startCampaignBudgetWorker();
   startTournamentWorker();
+  startFailedWebhookWorker();
 }
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────

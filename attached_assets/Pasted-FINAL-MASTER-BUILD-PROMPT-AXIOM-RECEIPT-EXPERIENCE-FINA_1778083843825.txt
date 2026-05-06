@@ -1,0 +1,299 @@
+FINAL MASTER BUILD PROMPT
+AXIOM RECEIPT EXPERIENCE + FINANCIAL RECONCILIATION + OPERATIONAL FINANCIAL INTELLIGENCE
+(POST-PAYMENT CONTINUITY + FINANCIAL STABILITY + ENTERPRISE RECONCILIATION)
+
+IMPORTANT:
+DO NOT redesign:
+- Axiom Pay
+- Stripe Connect architecture
+- Operations Dashboard
+- Presence Engine
+- Environmental Engine
+- Intelligence Engine
+- Governance
+- Central Command
+- OLED luxury visual language
+
+This phase extends:
+financial maturity,
+relationship continuity,
+and operational financial intelligence.
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+Transform:
+payments and transactions
+
+into:
+hospitality continuity experiences.
+
+At the same time:
+build enterprise-grade financial reconciliation infrastructure.
+
+==================================================
+PART 1 — AXIOM RECEIPT EXPERIENCE
+==================================================
+
+IMPORTANT:
+Receipts should NOT feel:
+like generic POS receipts.
+
+Receipts should feel:
+premium,
+personalized,
+and continuity-driven.
+
+==================================================
+RECEIPT EXPERIENCE FLOW
+==================================================
+
+After payment completion:
+show cinematic Axiom Session Summary.
+
+==================================================
+RECEIPT CONTENT
+==================================================
+
+Include:
+- guest name
+- session date/time
+- venue name
+- atmosphere mode experienced
+- pairings enjoyed
+- cigar/drink selections
+- mentor notes
+- loyalty earned
+- VIP progress
+- favorite flavor profile
+- return invitation
+- upcoming event suggestions
+- reserve recommendations
+
+==================================================
+SESSION CONTINUITY ELEMENTS
+==================================================
+
+Add:
+- “Your Experience Tonight”
+- “Recommended Next Session”
+- “Based On Your Preferences”
+- “Reserve Invitation”
+- “Return Guest Reward”
+
+==================================================
+DELIVERY METHODS
+==================================================
+
+Support:
+- SMS receipt
+- email receipt
+- QR receipt
+- wallet pass update
+- printable luxury receipt
+- kiosk receipt view
+
+==================================================
+VISUAL STYLE
+==================================================
+
+Use:
+- cinematic typography
+- OLED black + warm gold
+- subtle atmosphere imagery
+- luxury hospitality design
+- smooth reveal animation
+
+==================================================
+PART 2 — FINANCIAL RECONCILIATION SYSTEM
+==================================================
+
+Build:
+enterprise reconciliation infrastructure.
+
+==================================================
+CREATE
+==================================================
+
+/finance-reconciliation
+
+Accessible:
+- super_admin
+- finance_admin
+- approved operators
+
+==================================================
+TRACK + RECONCILE
+==================================================
+
+Monitor:
+- successful payments
+- failed payments
+- payout failures
+- stuck payouts
+- refund mismatches
+- orphan tabs
+- webhook failures
+- duplicate webhook events
+- unresolved disputes
+- split-payment mismatches
+- stale payment intents
+- unpaid fulfilled tabs
+
+==================================================
+FINANCIAL HEALTH METRICS
+==================================================
+
+Display:
+- total processed revenue
+- payout completion rate
+- failed payment rate
+- dispute rate
+- webhook health
+- refund volume
+- unresolved payment alerts
+- reconciliation success score
+
+==================================================
+PART 3 — PAYMENT EVENT TIMELINE
+==================================================
+
+Every transaction should have:
+full financial lifecycle timeline.
+
+Track:
+- tab opened
+- items added
+- payment authorized
+- webhook received
+- payout initiated
+- payout completed
+- loyalty credited
+- receipt delivered
+- refund processed
+- dispute created
+
+==================================================
+PART 4 — AUTOMATED RECONCILIATION WORKERS
+==================================================
+
+Create workers for:
+- webhook retry recovery
+- orphan payment detection
+- payout verification
+- stale tab cleanup
+- refund verification
+- duplicate transaction detection
+- Stripe sync validation
+
+==================================================
+PART 5 — FINANCIAL ALERT ENGINE
+==================================================
+
+Generate alerts for:
+CRITICAL:
+- payout failures
+- Stripe webhook outages
+- duplicate charges
+- dispute spikes
+
+HIGH:
+- elevated refund rate
+- stale tabs
+- payout delays
+
+MEDIUM:
+- reconciliation lag
+- delayed syncs
+
+==================================================
+PART 6 — ADMIN FINANCIAL COMMAND CENTER
+==================================================
+
+Integrate into:
+Master Operations Dashboard.
+
+Add:
+- Payment Health
+- Revenue Integrity
+- Payout Status
+- Reconciliation Queue
+- Financial Risk
+- Stripe Health
+- Active Disputes
+- Revenue Flow
+
+==================================================
+PART 7 — AI FINANCIAL INSIGHTS
+==================================================
+
+Generate operational recommendations.
+
+Examples:
+- “Refund rates increased after Peak Energy mode.”
+- “VIP guests show 32% higher tab completion.”
+- “Stale tabs spike during high-volume events.”
+- “Recommended payout review for Venue 12.”
+
+==================================================
+PART 8 — RECEIPT CONTINUITY INTELLIGENCE
+==================================================
+
+Use receipt data to:
+- improve mentor continuity
+- improve recommendations
+- improve loyalty targeting
+- improve return engagement
+- improve event invitations
+
+==================================================
+PART 9 — SECURITY + AUDIT REQUIREMENTS
+==================================================
+
+ALL financial actions MUST:
+- remain server-authoritative
+- maintain immutable audit logs
+- support rollback visibility
+- support dispute investigation
+- support operator attribution
+
+==================================================
+PART 10 — UI/UX REQUIREMENTS
+==================================================
+
+Financial interfaces should feel:
+premium,
+clear,
+stable,
+and operationally intelligent.
+
+NOT:
+banking software.
+
+Use:
+- cinematic operational visuals
+- OLED depth
+- tactile interaction
+- layered intelligence panels
+- operational glow states
+- smooth transitions
+
+==================================================
+FINAL TARGET
+==================================================
+
+CUSTOMER FEELING:
+“This venue experience feels personalized and premium.”
+
+VENUE OWNER FEELING:
+“I trust the payment and operational system.”
+
+FINANCE ADMIN FEELING:
+“I can monitor the entire financial ecosystem safely.”
+
+SUPER ADMIN FEELING:
+“I have enterprise-grade visibility into revenue integrity and financial operations.”
+
+AXIOM OS FEELING:
+a luxury hospitality operating ecosystem with intelligent financial continuity, operational trust, and enterprise-grade reconciliation infrastructure.
