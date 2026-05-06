@@ -198,7 +198,7 @@ export default function CommandCenter() {
               }} />
               <div style={{
                 position: "absolute", inset: 0,
-                background: `linear-gradient(135deg, rgba(245,242,235,0.55) 0%, rgba(245,242,235,0.7) 50%, ${tile.color}18 100%)`,
+                background: `linear-gradient(135deg, rgba(8,6,4,0.62) 0%, rgba(8,6,4,0.38) 50%, ${tile.color}22 100%)`,
                 pointerEvents: "none",
               }} />
               {(tile.id === "smokecraft" || tile.id === "brewcraft" || tile.id === "pourcraft" || tile.id === "vapecraft") && (
@@ -207,15 +207,15 @@ export default function CommandCenter() {
                   fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
                   textTransform: "uppercase",
                   color: tile.color,
-                  background: "rgba(255,255,255,0.85)",
-                  border: `1px solid ${tile.color}35`,
+                  background: "rgba(8,6,4,0.72)",
+                  border: `1px solid ${tile.color}55`,
                   padding: "2px 8px", borderRadius: 999,
                 }}>🔥 Trending</div>
               )}
               <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#1A1410", marginBottom: 2, textShadow: "0 1px 3px rgba(255,255,255,0.8)" }}>{tile.title}</div>
-                <div style={{ fontSize: 11, color: "rgba(26,20,16,0.6)", marginBottom: 4, textShadow: "0 1px 2px rgba(255,255,255,0.7)" }}>{tile.desc}</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: tile.color }}>{data}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#F5E7C8", marginBottom: 2, textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}>{tile.title}</div>
+                <div style={{ fontSize: 11, color: "rgba(210,190,155,0.75)", marginBottom: 4, textShadow: "0 1px 4px rgba(0,0,0,0.85)" }}>{tile.desc}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: tile.color, textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>{data}</div>
               </div>
             </motion.button>
           );
