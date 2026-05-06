@@ -1,0 +1,209 @@
+LOCK CURRENT ARCHITECTURE.
+
+Do NOT add new progression systems, AI psychology layers, reward loops, profile evolution systems, or additional gameplay mechanics yet.
+
+The current collectible-card architecture is finally correct and should now enter VISUAL REFINEMENT PHASE ONLY.
+
+Preserve exactly:
+
+* floating collectible card scale
+* environmental continuity
+* card stack anticipation depth
+* integrated PASS / DISCOVER strip
+* drag mechanics
+* orchestrator logic
+* scoring pipeline
+* glow trails
+* ambient systems
+* “See Your Match” reveal timing
+* cinematic lounge environments
+
+DO NOT redesign the flow again.
+
+ONLY refine the card execution quality.
+
+==================================================
+CARD VISUAL REFINEMENT PHASE
+============================
+
+CURRENT ISSUE:
+The collectible card structure is correct, but the card itself still lacks emotional gravity, visual stimulation, and sensory richness.
+
+Users are not emotionally pulled into the next discovery because the card imagery and composition still feel too empty and subdued.
+
+==================================================
+
+1. STRENGTHEN CARD VISUAL CENTER
+   ==================================================
+
+The card needs a dominant emotional focal point.
+
+Currently:
+too much dead negative space.
+
+Add:
+
+* stronger sensory imagery
+* closer macro textures
+* richer composition framing
+* visual layering
+* atmospheric detail
+
+Examples:
+
+* ember closeups
+* smoke curl interaction
+* whiskey reflections
+* citrus mist
+* cedar wood grain
+* ice cracking
+* leather texture
+* vapor diffusion
+* foam bubbles
+* glowing ash
+* glass condensation
+
+The card should immediately trigger:
+sensory curiosity.
+
+==================================================
+2. INCREASE IMAGE VISIBILITY
+============================
+
+Current imagery is still too dark and recessed.
+
+Adjust:
+
+* image opacity from 60% → 72–80%
+* increase local contrast
+* increase texture sharpness
+* reduce black crush
+* preserve cinematic shadows
+
+Goal:
+rich cinematic detail WITHOUT flattening the mood.
+
+==================================================
+3. REMOVE EMPTY CARD FEEL
+=========================
+
+The card should feel layered and alive.
+
+Add:
+
+* faint drifting particles INSIDE card bounds
+* subtle animated smoke interaction
+* environmental glow bleed
+* micro reflections
+* moving depth gradients
+* tiny floating embers
+* edge lighting movement
+
+The card should feel:
+active and breathing.
+
+NOT:
+a static UI panel.
+
+==================================================
+4. ADD COMPOSITIONAL BALANCE
+============================
+
+The screen currently feels:
+small card + giant empty environment.
+
+Keep the card size.
+
+DO NOT enlarge it.
+
+Instead:
+add supporting environmental balance.
+
+Examples:
+
+* faint secondary card silhouettes
+* blurred flavor artifacts
+* holographic ambient rings
+* drifting craft particles
+* subtle environmental motion anchors
+* cinematic depth objects
+
+The world should visually support the card.
+
+==================================================
+5. STRENGTHEN DISCOVER MOMENT
+=============================
+
+The DISCOVER action needs emotional payoff.
+
+When hovering or dragging toward DISCOVER:
+
+* image brightness subtly increases
+* particles intensify
+* glow warms
+* sensory detail sharpens
+* card slightly lifts physically
+
+The card should feel:
+responsive and alive.
+
+==================================================
+6. IMPROVE ATMOSPHERIC COPY
+===========================
+
+Current text is still too informational.
+
+Keep it short but emotionally cinematic.
+
+Examples:
+
+Instead of:
+“Citrus notes with clean finish”
+
+Use:
+“Bright enough to wake the room.”
+
+Instead of:
+“Smoky whiskey warmth”
+
+Use:
+“The kind of smoke that stays after midnight.”
+
+The card should create:
+emotion
+identity
+curiosity
+
+NOT:
+a tasting spreadsheet.
+
+==================================================
+7. MAINTAIN CURRENT SCALE
+=========================
+
+IMPORTANT:
+Do NOT enlarge the card again.
+
+The collectible scale is finally correct.
+
+The solution is:
+visual richness and environmental balancing.
+
+NOT:
+making the card giant again.
+
+==================================================
+FINAL TARGET
+============
+
+The collectible card should feel like:
+a rare sensory artifact floating inside a living cinematic world.
+
+The user should feel:
+curious
+immersed
+emotionally pulled forward
+excited to discover the next card
+
+WITHOUT turning the system back into:
+a fullscreen swipe app.

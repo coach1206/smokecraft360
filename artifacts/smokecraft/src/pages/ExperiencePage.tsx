@@ -115,6 +115,17 @@ interface SwipeCardProps {
   onSwipeLeft:  () => void;
 }
 
+// Micro-particles that breathe inside the card (embers / smoke wisps)
+const CARD_EMBERS = [
+  { x: 16, y:  6, size: 2.4, drift: 62, op: 0.52, dur: 3.2, delay: 0.0 },
+  { x: 32, y:  9, size: 1.4, drift: 80, op: 0.36, dur: 4.2, delay: 0.7 },
+  { x: 50, y:  4, size: 2.9, drift: 54, op: 0.46, dur: 2.9, delay: 1.4 },
+  { x: 66, y: 11, size: 1.7, drift: 72, op: 0.38, dur: 3.7, delay: 0.3 },
+  { x: 80, y:  7, size: 2.1, drift: 66, op: 0.43, dur: 3.9, delay: 1.1 },
+  { x: 26, y: 14, size: 1.1, drift: 46, op: 0.28, dur: 4.6, delay: 2.0 },
+  { x: 58, y:  3, size: 1.8, drift: 58, op: 0.32, dur: 5.0, delay: 2.7 },
+];
+
 function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }: SwipeCardProps) {
   const x       = useMotionValue(isTop ? 280 : 0);
   const rotate  = useTransform(x, [-300, 300], [-16, 16]);
@@ -126,6 +137,9 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
     [-120, 0, 120],
     ["rgba(148,163,184,0.10)", "rgba(0,0,0,0)", "rgba(201,168,76,0.14)"],
   );
+  // DISCOVER responsiveness: image brightens + card lifts as user drags right
+  const imgOp       = useTransform(x, [-80, 0, 110], [0.64, 0.76, 0.90]);
+  const discoverLift = useTransform(x, [-60, 0, 110], [2, 0, -5]);
   const exiting = useRef(false);
 
   useEffect(() => {
@@ -165,7 +179,7 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
         x:        isTop ? x : 0,
         rotate:   isTop ? rotate : 0,
         scale,
-        y:        isTop ? 0 : yShift,
+        y:        isTop ? discoverLift : yShift,
         opacity,
         position: "absolute",
         inset:    0,
@@ -202,19 +216,19 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
 
         {/* ── Sensory background image ── */}
         {item.image ? (
-          <div style={{
+          <motion.div style={{
             position: "absolute", inset: 0,
             backgroundImage:    `url(${item.image})`,
             backgroundSize:     "cover",
             backgroundPosition: "center top",
-            opacity:            0.60,
+            opacity:            isTop ? imgOp : 0.72,
             willChange:         "transform",
           }} />
         ) : (
           <div style={{
             position:   "absolute",
             inset:      0,
-            background: `linear-gradient(160deg, rgba(14,9,3,1) 0%, ${theme.accent}22 100%)`,
+            background: `linear-gradient(160deg, rgba(14,9,3,1) 0%, ${theme.accent}26 100%)`,
           }} />
         )}
 
@@ -222,10 +236,10 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none",
           background: `linear-gradient(180deg,
-            rgba(6,4,1,0.78) 0%,
-            rgba(6,4,1,0.12) 25%,
-            rgba(6,4,1,0.10) 58%,
-            rgba(6,4,1,0.94) 100%)`,
+            rgba(6,4,1,0.70) 0%,
+            rgba(6,4,1,0.08) 22%,
+            rgba(6,4,1,0.06) 55%,
+            rgba(5,3,1,0.88) 100%)`,
         }} />
 
         {/* ── Holographic shimmer sweep (top card only) ── */}
@@ -247,6 +261,26 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
         {stackIndex === 0 && (
           <CraftRealism type={item.type} accent={theme.accent} />
         )}
+
+        {/* ── Card micro-particles: embers / wisps breathing inside card ── */}
+        {stackIndex === 0 && CARD_EMBERS.map((e, i) => (
+          <motion.div
+            key={i}
+            style={{
+              position: "absolute",
+              width: e.size, height: e.size,
+              borderRadius: "50%",
+              background: theme.accent,
+              left: `${e.x}%`,
+              bottom: `${e.y}%`,
+              pointerEvents: "none",
+              zIndex: 16,
+              filter: "blur(0.7px)",
+            }}
+            animate={{ y: [0, -e.drift], opacity: [0, e.op, e.op * 0.55, 0] }}
+            transition={{ duration: e.dur, repeat: Infinity, delay: e.delay, ease: "easeOut" }}
+          />
+        ))}
 
         {/* ── Top strip: category chips + intensity dots ── */}
         <div style={{
@@ -836,35 +870,35 @@ export default function ExperiencePage() {
 
 const FALLBACK_CARDS: Record<string, ExperienceItem[]> = {
   smoke: [
-    { id: "s1", title: "Smoky & Bold",     description: "Rich, full-bodied with deep smoke notes",    image: "/images/smoke/smoke_lounge.png", type: "smoke", tags: ["smoky","bold","earthy"],    intensity: 8, baseScore: 70 },
-    { id: "s2", title: "Creamy & Smooth",  description: "Buttery finish with hints of cream",          image: "/images/smoke/smoke_solo.png",   type: "smoke", tags: ["creamy","smooth","sweet"],   intensity: 4, baseScore: 50 },
-    { id: "s3", title: "Spicy & Complex",  description: "Pepper-forward with layered complexity",      image: "/images/smoke/smoke_woman.png",  type: "smoke", tags: ["spicy","complex","bold"],     intensity: 7, baseScore: 65 },
-    { id: "s4", title: "Cedar & Wood",     description: "Natural wood with aromatic finish",           image: null,                            type: "smoke", tags: ["cedar","woody","aromatic"],   intensity: 5, baseScore: 52 },
-    { id: "s5", title: "Sweet & Mild",     description: "Light, approachable sweetness",               image: null,                            type: "smoke", tags: ["sweet","mild","light"],       intensity: 2, baseScore: 40 },
-    { id: "s6", title: "Earthy & Natural", description: "Grounded, medium-bodied with cedar",          image: null,                            type: "smoke", tags: ["earthy","cedar","medium"],     intensity: 5, baseScore: 55 },
+    { id: "s1", title: "Smoky & Bold",     description: "The kind of smoke that stays long after midnight.",          image: "/images/smoke/smoke_lounge.png", type: "smoke", tags: ["smoky","bold","earthy"],    intensity: 8, baseScore: 70 },
+    { id: "s2", title: "Creamy & Smooth",  description: "Smooth enough to make silence feel luxurious.",              image: "/images/smoke/smoke_solo.png",   type: "smoke", tags: ["creamy","smooth","sweet"],   intensity: 4, baseScore: 50 },
+    { id: "s3", title: "Spicy & Complex",  description: "Bold enough to interrupt a conversation.",                   image: "/images/smoke/smoke_woman.png",  type: "smoke", tags: ["spicy","complex","bold"],     intensity: 7, baseScore: 65 },
+    { id: "s4", title: "Cedar & Wood",     description: "Aged cedar and slow warmth. The room changes when it opens.",image: null,                            type: "smoke", tags: ["cedar","woody","aromatic"],   intensity: 5, baseScore: 52 },
+    { id: "s5", title: "Sweet & Mild",     description: "Easy enough to forget you're being seduced.",               image: null,                            type: "smoke", tags: ["sweet","mild","light"],       intensity: 2, baseScore: 40 },
+    { id: "s6", title: "Earthy & Natural", description: "Grounded. Deep. The kind you return to.",                   image: null,                            type: "smoke", tags: ["earthy","cedar","medium"],     intensity: 5, baseScore: 55 },
   ],
   pour: [
-    { id: "p1", title: "Oak & Vanilla",    description: "Classic barrel-aged sweetness",               image: "/images/pour/pour_bar.png",      type: "pour",  tags: ["oak","vanilla","sweet"],      intensity: 5, baseScore: 60 },
-    { id: "p2", title: "Peated & Smoky",   description: "Rich Scottish peat with lingering smoke",     image: null,                            type: "pour",  tags: ["peat","smoky","bold"],        intensity: 8, baseScore: 72 },
-    { id: "p3", title: "Caramel & Spice",  description: "Warm caramel with a spiced finish",           image: null,                            type: "pour",  tags: ["caramel","spiced","warm"],    intensity: 6, baseScore: 63 },
-    { id: "p4", title: "Citrus & Bright",  description: "Lively citrus with a clean finish",           image: null,                            type: "pour",  tags: ["citrus","light","crisp"],      intensity: 3, baseScore: 45 },
-    { id: "p5", title: "Rich & Full",      description: "Full-bodied with dark fruit and tannins",     image: null,                            type: "pour",  tags: ["rich","bold","dark"],          intensity: 7, baseScore: 68 },
-    { id: "p6", title: "Floral & Delicate",description: "Light floral notes, easy to enjoy",           image: null,                            type: "pour",  tags: ["floral","light","delicate"],   intensity: 2, baseScore: 40 },
+    { id: "p1", title: "Oak & Vanilla",    description: "Barrel-kissed warmth. Meant to be lingered over.",          image: "/images/pour/pour_bar.png",      type: "pour",  tags: ["oak","vanilla","sweet"],      intensity: 5, baseScore: 60 },
+    { id: "p2", title: "Peated & Smoky",   description: "Peat and old leather. Something you remember years later.", image: null,                            type: "pour",  tags: ["peat","smoky","bold"],        intensity: 8, baseScore: 72 },
+    { id: "p3", title: "Caramel & Spice",  description: "Spiced heat that warms from the inside out.",               image: null,                            type: "pour",  tags: ["caramel","spiced","warm"],    intensity: 6, baseScore: 63 },
+    { id: "p4", title: "Citrus & Bright",  description: "Bright enough to wake the room.",                           image: null,                            type: "pour",  tags: ["citrus","light","crisp"],      intensity: 3, baseScore: 45 },
+    { id: "p5", title: "Rich & Full",      description: "Dark fruit and depth. The pour that earns its glass.",      image: null,                            type: "pour",  tags: ["rich","bold","dark"],          intensity: 7, baseScore: 68 },
+    { id: "p6", title: "Floral & Delicate",description: "Barely there. Which is exactly why it stays with you.",    image: null,                            type: "pour",  tags: ["floral","light","delicate"],   intensity: 2, baseScore: 40 },
   ],
   brew: [
-    { id: "b1", title: "Hoppy & Bitter",   description: "Bold hop character with a clean bitter finish", image: null, type: "brew", tags: ["hoppy","crisp","bitter"],     intensity: 7, baseScore: 62 },
-    { id: "b2", title: "Crisp & Light",    description: "Easy-drinking, refreshing and clean",          image: null, type: "brew", tags: ["crisp","light","smooth"],     intensity: 2, baseScore: 40 },
-    { id: "b3", title: "Malty & Toasted",  description: "Deep malt backbone with toasted notes",        image: null, type: "brew", tags: ["malty","toasted","smooth"],   intensity: 5, baseScore: 55 },
-    { id: "b4", title: "Dark Roast",       description: "Roasted coffee and chocolate",                 image: null, type: "brew", tags: ["dark roast","chocolate"],      intensity: 8, baseScore: 70 },
-    { id: "b5", title: "Fruity & Juicy",   description: "Fresh tropical hop haze",                     image: null, type: "brew", tags: ["fruity","tropical","juicy"],  intensity: 4, baseScore: 52 },
-    { id: "b6", title: "Wheat & Smooth",   description: "Classic wheat, light and sessionable",         image: null, type: "brew", tags: ["smooth","wheat","light"],     intensity: 3, baseScore: 45 },
+    { id: "b1", title: "Hoppy & Bitter",   description: "Bitter with intention. The kind that grows on you.",        image: null, type: "brew", tags: ["hoppy","crisp","bitter"],     intensity: 7, baseScore: 62 },
+    { id: "b2", title: "Crisp & Light",    description: "Cold and clean. Let the moment do the work.",              image: null, type: "brew", tags: ["crisp","light","smooth"],     intensity: 2, baseScore: 40 },
+    { id: "b3", title: "Malty & Toasted",  description: "Toasted malt and quiet warmth. Something worth slowing down for.", image: null, type: "brew", tags: ["malty","toasted","smooth"],   intensity: 5, baseScore: 55 },
+    { id: "b4", title: "Dark Roast",       description: "Coffee and chocolate in the same breath. Unapologetically heavy.", image: null, type: "brew", tags: ["dark roast","chocolate"],      intensity: 8, baseScore: 70 },
+    { id: "b5", title: "Fruity & Juicy",   description: "Tropical haze and fresh pull. Summer in a glass.",         image: null, type: "brew", tags: ["fruity","tropical","juicy"],  intensity: 4, baseScore: 52 },
+    { id: "b6", title: "Wheat & Smooth",   description: "Light enough for afternoon. Rich enough to remember.",     image: null, type: "brew", tags: ["smooth","wheat","light"],     intensity: 3, baseScore: 45 },
   ],
   vape: [
-    { id: "v1", title: "Mint & Cool",      description: "Crisp menthol, icy-clean finish",              image: null, type: "vape", tags: ["mint","cool","crisp"],        intensity: 6, baseScore: 60 },
-    { id: "v2", title: "Berry & Sweet",    description: "Ripe mixed berry, dessert-like",               image: null, type: "vape", tags: ["berry","sweet","fruity"],     intensity: 5, baseScore: 55 },
-    { id: "v3", title: "Cream & Smooth",   description: "Silky vanilla cream",                         image: null, type: "vape", tags: ["cream","smooth","vanilla"],   intensity: 4, baseScore: 50 },
-    { id: "v4", title: "Tropical Burst",   description: "Mango, pineapple and exotic blend",            image: null, type: "vape", tags: ["tropical","fruity","exotic"], intensity: 6, baseScore: 58 },
-    { id: "v5", title: "Dense Cloud",      description: "Maximum vapor, subtle taste",                  image: null, type: "vape", tags: ["dense cloud","smooth","cool"], intensity: 7, baseScore: 65 },
-    { id: "v6", title: "Cool Citrus",      description: "Bright citrus with cooling menthol",           image: null, type: "vape", tags: ["citrus","cool","fresh"],      intensity: 5, baseScore: 52 },
+    { id: "v1", title: "Mint & Cool",      description: "Icy-clean. Like stepping outside after a long night.",     image: null, type: "vape", tags: ["mint","cool","crisp"],        intensity: 6, baseScore: 60 },
+    { id: "v2", title: "Berry & Sweet",    description: "Ripe and deep. Dessert you can carry with you.",           image: null, type: "vape", tags: ["berry","sweet","fruity"],     intensity: 5, baseScore: 55 },
+    { id: "v3", title: "Cream & Smooth",   description: "Velvet smooth. No edges, no apologies.",                  image: null, type: "vape", tags: ["cream","smooth","vanilla"],   intensity: 4, baseScore: 50 },
+    { id: "v4", title: "Tropical Burst",   description: "Mango and heat. Somewhere you've never been but recognize.", image: null, type: "vape", tags: ["tropical","fruity","exotic"], intensity: 6, baseScore: 58 },
+    { id: "v5", title: "Dense Cloud",      description: "Maximum presence. Minimum explanation needed.",            image: null, type: "vape", tags: ["dense cloud","smooth","cool"], intensity: 7, baseScore: 65 },
+    { id: "v6", title: "Cool Citrus",      description: "Citrus edge with a cooling pull. Sharp and honest.",       image: null, type: "vape", tags: ["citrus","cool","fresh"],      intensity: 5, baseScore: 52 },
   ],
 };
