@@ -430,6 +430,96 @@ router.post(
   },
 );
 
+// ── PATCH /api/competitions/:id/status ───────────────────────────────────────
+// Owner/admin: cancel an upcoming/active tournament or close an active/scoring
+// one early. Only the creator or a super_admin may change status.
+
+const statusPatchSchema = z.object({
+  status: z.enum(["cancelled", "completed"]),
+});
+
+const VALID_TRANSITIONS: Partial<Record<string, readonly string[]>> = {
+  upcoming:  ["cancelled"],
+  active:    ["cancelled", "completed"],
+  scoring:   ["completed"],
+};
+
+router.patch(
+  "/:id/status",
+  requireAuth,
+  async (req: AuthRequest, res: Response) => {
+    const role   = req.user?.role;
+    const userId = req.user?.id;
+
+    if (!userId) { res.status(401).json({ error: "Not authenticated" }); return; }
+    if (role !== "super_admin" && role !== "venue_owner" && role !== "manager") {
+      res.status(403).json({ error: "Insufficient permissions" }); return;
+    }
+
+    const parsed = statusPatchSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues });
+      return;
+    }
+
+    const { id } = req.params as { id: string };
+    const newStatus = parsed.data.status;
+
+    const [tournament] = await db
+      .select()
+      .from(tournamentsTable)
+      .where(eq(tournamentsTable.id, id))
+      .limit(1);
+
+    if (!tournament) { res.status(404).json({ error: "Tournament not found" }); return; }
+
+    // Only the creator or a super_admin may update status
+    if (role !== "super_admin" && tournament.createdBy !== userId) {
+      res.status(403).json({ error: "You do not own this tournament" }); return;
+    }
+
+    const allowed = VALID_TRANSITIONS[tournament.status] ?? [];
+    if (!allowed.includes(newStatus)) {
+      res.status(409).json({
+        error: `Cannot transition from "${tournament.status}" to "${newStatus}"`,
+      });
+      return;
+    }
+
+    const [updated] = await db
+      .update(tournamentsTable)
+      .set({ status: newStatus, updatedAt: new Date() })
+      .where(eq(tournamentsTable.id, id))
+      .returning();
+
+    try {
+      const io = getIO();
+      const eventName = newStatus === "cancelled" ? "tournament_cancelled" : "tournament_completed";
+      const payload = {
+        tournamentId: updated.id,
+        type:         updated.type,
+        title:        updated.title,
+        status:       newStatus,
+        ts:           Date.now(),
+      };
+      if (updated.venueId) {
+        io.to(`venue:${updated.venueId}`).emit(eventName, payload);
+      } else {
+        io.emit(eventName, payload);
+      }
+    } catch (err) {
+      logger.warn({ err }, "status-change socket emit failed");
+    }
+
+    logger.info(
+      { tournamentId: id, from: tournament.status, to: newStatus, by: userId },
+      "Tournament status changed",
+    );
+
+    res.json(updated);
+  },
+);
+
 // ── POST /api/competitions/:id/resync ─────────────────────────────────────────
 // Admin-only: re-derive every entrant's best score from craft_builds and
 // correct any stale ranks. No score demotions — Math.max guard is preserved.

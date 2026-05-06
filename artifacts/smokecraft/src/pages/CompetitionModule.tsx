@@ -926,71 +926,208 @@ function StatusBadge({ status }: { status: TournamentStatus }) {
 function MyTournamentRow({
   tournament,
   onSelect,
+  onStatusChange,
+  onError,
 }: {
   tournament: Tournament;
   onSelect: (t: Tournament) => void;
+  onStatusChange: (id: string, status: "cancelled" | "completed") => void;
+  onError: (msg: string) => void;
 }) {
   const meta = TYPE_META[tournament.type];
   const Icon = meta.icon;
 
+  const [pending, setPending]     = useState<"cancel" | "close" | null>(null);
+  const [working, setWorking]     = useState(false);
+
+  const canCancel = tournament.status === "upcoming" || tournament.status === "active";
+  const canClose  = tournament.status === "active"   || tournament.status === "scoring";
+
+  async function executeAction(action: "cancel" | "close") {
+    const newStatus = action === "cancel" ? "cancelled" : "completed";
+    setWorking(true);
+    try {
+      await apiFetch(`/competitions/${tournament.id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      onStatusChange(tournament.id, newStatus);
+    } catch (err) {
+      const msg = err instanceof Error && err.message.includes("409")
+        ? "This tournament can no longer be changed."
+        : "Could not update tournament — please try again.";
+      onError(msg);
+      setPending(null);
+    } finally {
+      setWorking(false);
+    }
+  }
+
   return (
-    <motion.button
+    <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={() => onSelect(tournament)}
       style={{
-        display: "flex", alignItems: "center", gap: 14,
-        padding: "14px 16px", borderRadius: 14, textAlign: "left",
+        display: "flex", flexDirection: "column", gap: 0,
+        borderRadius: 14,
         background: "rgba(255,255,255,0.025)",
         border: "1px solid rgba(255,255,255,0.07)",
-        cursor: "pointer", width: "100%",
+        overflow: "hidden",
       }}
     >
-      <div style={{
-        width: 38, height: 38, borderRadius: 10, flexShrink: 0,
-        background: `${meta.color}18`, border: `1px solid ${meta.color}30`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}>
-        <Icon size={18} color={meta.color} />
-      </div>
-
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#e8e0c8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {tournament.title}
-          </span>
-          <StatusBadge status={tournament.status} />
+      {/* Clickable main row */}
+      <motion.button
+        whileHover={{ backgroundColor: "rgba(255,255,255,0.035)" }}
+        whileTap={{ scale: 0.99 }}
+        onClick={() => onSelect(tournament)}
+        style={{
+          display: "flex", alignItems: "center", gap: 14,
+          padding: "14px 16px", textAlign: "left",
+          background: "transparent", border: "none",
+          cursor: "pointer", width: "100%",
+        }}
+      >
+        <div style={{
+          width: 38, height: 38, borderRadius: 10, flexShrink: 0,
+          background: `${meta.color}18`, border: `1px solid ${meta.color}30`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <Icon size={18} color={meta.color} />
         </div>
-        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-          <span style={{
-            fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase",
-            color: meta.color,
-          }}>{meta.label}</span>
-          {tournament.craftType && (
-            <span style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", textTransform: "capitalize" }}>
-              · {tournament.craftType}
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#e8e0c8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {tournament.title}
             </span>
+            <StatusBadge status={tournament.status} />
+          </div>
+          <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+            <span style={{
+              fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase",
+              color: meta.color,
+            }}>{meta.label}</span>
+            {tournament.craftType && (
+              <span style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", textTransform: "capitalize" }}>
+                · {tournament.craftType}
+              </span>
+            )}
+            <span style={{ fontSize: 10, color: "rgba(232,224,200,0.35)" }}>
+              Started {new Date(tournament.startAt).toLocaleDateString()}
+            </span>
+          </div>
+        </div>
+
+        <div style={{ textAlign: "right", flexShrink: 0 }}>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#e8e0c8" }}>
+            {tournament.entrantCount}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 3, justifyContent: "flex-end" }}>
+            <Users size={9} color="rgba(232,224,200,0.35)" />
+            <span style={{ fontSize: 9, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.08em" }}>entrants</span>
+          </div>
+        </div>
+
+        <ChevronRight size={14} color="rgba(232,224,200,0.25)" style={{ flexShrink: 0 }} />
+      </motion.button>
+
+      {/* Action bar — only for actionable statuses */}
+      {(canCancel || canClose) && (
+        <div style={{
+          display: "flex", gap: 8, padding: "8px 16px 10px",
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+        }}>
+          {canClose && (
+            pending === "close" ? (
+              <div style={{ display: "flex", gap: 6, flex: 1 }}>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  disabled={working}
+                  onClick={() => executeAction("close")}
+                  style={{
+                    flex: 1, padding: "6px 10px", borderRadius: 8, cursor: working ? "not-allowed" : "pointer",
+                    background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.4)",
+                    color: "#22c55e", fontSize: 11, fontWeight: 700,
+                    opacity: working ? 0.6 : 1,
+                  }}
+                >
+                  {working ? "Closing…" : "Confirm Close"}
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setPending(null)}
+                  style={{
+                    padding: "6px 10px", borderRadius: 8, cursor: "pointer",
+                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+                    color: "rgba(232,224,200,0.4)", fontSize: 11, fontWeight: 600,
+                  }}
+                >
+                  Keep
+                </motion.button>
+              </div>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => { setPending("close"); }}
+                style={{
+                  padding: "6px 14px", borderRadius: 8, cursor: "pointer",
+                  background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.25)",
+                  color: "#22c55e", fontSize: 11, fontWeight: 700,
+                }}
+              >
+                Close Now
+              </motion.button>
+            )
           )}
-          <span style={{ fontSize: 10, color: "rgba(232,224,200,0.35)" }}>
-            Started {new Date(tournament.startAt).toLocaleDateString()}
-          </span>
-        </div>
-      </div>
 
-      <div style={{ textAlign: "right", flexShrink: 0 }}>
-        <div style={{ fontSize: 18, fontWeight: 800, color: "#e8e0c8" }}>
-          {tournament.entrantCount}
+          {canCancel && (
+            pending === "cancel" ? (
+              <div style={{ display: "flex", gap: 6, flex: 1 }}>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  disabled={working}
+                  onClick={() => executeAction("cancel")}
+                  style={{
+                    flex: 1, padding: "6px 10px", borderRadius: 8, cursor: working ? "not-allowed" : "pointer",
+                    background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.4)",
+                    color: "#ef4444", fontSize: 11, fontWeight: 700,
+                    opacity: working ? 0.6 : 1,
+                  }}
+                >
+                  {working ? "Cancelling…" : "Confirm Cancel"}
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setPending(null)}
+                  style={{
+                    padding: "6px 10px", borderRadius: 8, cursor: "pointer",
+                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+                    color: "rgba(232,224,200,0.4)", fontSize: 11, fontWeight: 600,
+                  }}
+                >
+                  Keep
+                </motion.button>
+              </div>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => { setPending("cancel"); }}
+                style={{
+                  padding: "6px 14px", borderRadius: 8, cursor: "pointer",
+                  background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)",
+                  color: "#ef4444", fontSize: 11, fontWeight: 700,
+                }}
+              >
+                Cancel Tournament
+              </motion.button>
+            )
+          )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 3, justifyContent: "flex-end" }}>
-          <Users size={9} color="rgba(232,224,200,0.35)" />
-          <span style={{ fontSize: 9, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.08em" }}>entrants</span>
-        </div>
-      </div>
-
-      <ChevronRight size={14} color="rgba(232,224,200,0.25)" style={{ flexShrink: 0 }} />
-    </motion.button>
+      )}
+    </motion.div>
   );
 }
 
@@ -1422,7 +1559,18 @@ export default function CompetitionModule() {
 
                     {myTournaments.map((t, i) => (
                       <motion.div key={t.id} transition={{ delay: i * 0.04 }}>
-                        <MyTournamentRow tournament={t} onSelect={setSelected} />
+                        <MyTournamentRow
+                          tournament={t}
+                          onSelect={setSelected}
+                          onStatusChange={(id, status) => {
+                            setMyTournaments(prev =>
+                              prev.map(row => row.id === id ? { ...row, status } : row),
+                            );
+                            const label = status === "cancelled" ? "cancelled" : "closed";
+                            showToast(`Tournament ${label} successfully.`);
+                          }}
+                          onError={showToast}
+                        />
                       </motion.div>
                     ))}
                   </>
