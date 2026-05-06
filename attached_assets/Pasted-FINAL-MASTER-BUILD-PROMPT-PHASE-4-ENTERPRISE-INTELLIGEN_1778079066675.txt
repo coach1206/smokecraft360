@@ -1,0 +1,350 @@
+FINAL MASTER BUILD PROMPT
+PHASE 4 — ENTERPRISE INTELLIGENCE DASHBOARD
+(THE STRATEGIC HOSPITALITY INTELLIGENCE LAYER)
+
+IMPORTANT:
+DO NOT redesign:
+- CraftHub experience
+- mentor systems
+- Presence Engine
+- Intelligence Engine
+- Environmental Engine
+- Governance layer
+- Central Command
+- Marketing Engine
+- OLED luxury visual language
+- tactile raised-button interactions
+- cinematic atmosphere systems
+
+This phase is NOT:
+a generic analytics dashboard.
+
+This phase IS:
+the long-term strategic intelligence and hospitality insight layer.
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+Build:
+AXIOM ENTERPRISE INTELLIGENCE DASHBOARD.
+
+Purpose:
+transform venue activity, atmosphere behavior, guest behavior, loyalty engagement, event participation, and campaign performance into actionable hospitality intelligence for:
+- venue owners
+- enterprise operators
+- manufacturers
+- distributors
+- strategic partners
+
+The system should help identify:
+- what people respond to
+- what creates loyalty
+- what creates atmosphere engagement
+- what drives return visits
+- what drives spending behavior
+- what environments perform best
+- what products emotionally connect
+- what campaigns actually work
+
+==================================================
+FOUNDATION PRINCIPLE
+==================================================
+
+This should feel:
+like luxury hospitality intelligence.
+
+NOT:
+spreadsheet software.
+
+NOT:
+corporate BI dashboards.
+
+The experience should feel:
+cinematic,
+alive,
+premium,
+and emotionally intelligent.
+
+==================================================
+BUILD:
+AXIOM INTELLIGENCE CORE
+==================================================
+
+Create:
+centralized hospitality intelligence aggregation layer.
+
+Pull data from:
+- Presence Engine
+- Intelligence Engine
+- Revenue Engine
+- Marketing Engine
+- Environment Engine
+- Loyalty systems
+- POS systems
+- mentor systems
+- campaign systems
+- event systems
+- guest engagement systems
+
+==================================================
+1. VENUE INTELLIGENCE DASHBOARD
+==================================================
+
+Create:
+live venue intelligence overview.
+
+Track:
+- guest activity
+- loyalty engagement
+- atmosphere intensity
+- event participation
+- social energy
+- peak engagement hours
+- return frequency
+- guest linger time
+- campaign engagement
+- reservation activity
+- VIP activity
+
+==================================================
+2. FLAVOR + PRODUCT INTELLIGENCE
+==================================================
+
+Track:
+- most selected flavor profiles
+- trending pairings
+- evolving guest tastes
+- regional preferences
+- flavor engagement trends
+- seasonal behavior
+- product popularity
+- underperforming products
+- atmosphere/product correlations
+
+Examples:
+- “Guests in elevated lounge states prefer Maduro + bourbon pairings.”
+- “Late-night reserve atmosphere increases premium whiskey engagement by 28%.”
+
+==================================================
+3. EMOTIONAL ENGAGEMENT ANALYTICS
+==================================================
+
+Track:
+- atmosphere response
+- environment engagement
+- mentor engagement
+- VIP response behavior
+- social interaction patterns
+- emotional continuity indicators
+- return-engagement patterns
+- loyalty attachment strength
+
+Purpose:
+understand what emotionally connects guests to the venue.
+
+==================================================
+4. CAMPAIGN + MARKETING INTELLIGENCE
+==================================================
+
+Track:
+- campaign performance
+- open rates
+- click-through rates
+- event conversion
+- recovery campaign effectiveness
+- loyalty reactivation success
+- social engagement
+- atmosphere promotion performance
+- revenue impact
+
+==================================================
+5. MANUFACTURER + DISTRIBUTOR INTELLIGENCE
+==================================================
+
+Create:
+enterprise insight layer for strategic partners.
+
+Track:
+- regional flavor trends
+- product movement trends
+- venue engagement patterns
+- social atmosphere trends
+- product pairing intelligence
+- loyalty/product relationships
+- event-driven product engagement
+- emotional product response patterns
+
+Purpose:
+provide real hospitality intelligence to manufacturers and distributors.
+
+==================================================
+6. PREDICTIVE HOSPITALITY MODELING
+==================================================
+
+Build:
+predictive intelligence systems.
+
+Predict:
+- likely returning guests
+- event attendance
+- loyalty decline
+- campaign performance
+- atmosphere effectiveness
+- inventory movement
+- slow periods
+- high-value guest activity
+
+==================================================
+7. SOCIAL ENERGY + COMMUNITY INTELLIGENCE
+==================================================
+
+Track:
+- social participation
+- event momentum
+- lounge energy trends
+- atmosphere participation
+- VIP social activity
+- community engagement
+- guest sharing behavior
+
+==================================================
+8. MULTI-VENUE INTELLIGENCE
+==================================================
+
+Support:
+cross-venue comparisons.
+
+Track:
+- top-performing venues
+- atmosphere effectiveness by venue
+- loyalty trends by venue
+- campaign success by venue
+- event performance by venue
+- product trends by venue
+
+==================================================
+9. HEATMAP + TREND VISUALIZATION
+==================================================
+
+Create:
+cinematic intelligence visualizations.
+
+Examples:
+- atmosphere heatmaps
+- engagement timelines
+- VIP activity maps
+- flavor trend maps
+- event energy timelines
+- loyalty intensity charts
+- emotional engagement trends
+
+==================================================
+10. LIVE INTELLIGENCE FEED
+==================================================
+
+Build:
+real-time insight feed.
+
+Examples:
+- “VIP engagement increased 18% during Quiet Reserve mode.”
+- “Founder Circle atmosphere generated strongest linger times.”
+- “Mentor-led reserve events increased repeat attendance.”
+
+==================================================
+11. ROLE-BASED INTELLIGENCE ACCESS
+==================================================
+
+SUPER ADMIN:
+full ecosystem intelligence.
+
+VENUE OWNER:
+their venue intelligence only.
+
+MANAGERS:
+operational insights only.
+
+MANUFACTURER/DISTRIBUTOR:
+approved intelligence datasets only.
+
+==================================================
+12. PRIVACY + GOVERNANCE
+==================================================
+
+ALL analytics must:
+- remain privacy-safe
+- avoid personal exposure
+- aggregate sensitive data
+- respect tenant isolation
+- respect governance controls
+
+NO invasive surveillance behavior.
+
+==================================================
+13. PERFORMANCE + DATA ARCHITECTURE
+==================================================
+
+Optimize:
+- aggregation pipelines
+- analytics queries
+- chart rendering
+- historical indexing
+- insight caching
+- event processing
+- predictive modeling pipelines
+
+==================================================
+14. INTELLIGENCE CONTROL CENTER
+==================================================
+
+Create:
+/enterprise-intelligence
+
+Tabs:
+- Venue Intelligence
+- Flavor Intelligence
+- Emotional Engagement
+- Campaign Intelligence
+- VIP Intelligence
+- Social Energy
+- Manufacturer Insights
+- Predictive Trends
+- Multi-Venue Analytics
+
+==================================================
+VISUAL STYLE
+==================================================
+
+Use:
+- cinematic glass panels
+- OLED operational glow
+- animated insight cards
+- depth perception
+- premium visual layering
+- real-world imagery
+- subtle animated intelligence indicators
+
+NO:
+generic spreadsheets.
+
+NO:
+flat BI software.
+
+NO:
+corporate dashboard ugliness.
+
+==================================================
+FINAL TARGET
+==================================================
+
+VENUE OWNER FEELING:
+“I finally understand what drives my customers.”
+
+MANUFACTURER FEELING:
+“This gives us real hospitality intelligence we’ve never had before.”
+
+DISTRIBUTOR FEELING:
+“We can finally see atmosphere and behavior trends in real environments.”
+
+AXIOM OS FEELING:
+an intelligent hospitality ecosystem that understands atmosphere, emotion, behavior, engagement, and revenue at a strategic level.

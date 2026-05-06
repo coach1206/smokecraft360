@@ -79,6 +79,7 @@ import { PersistentAmbientLayer }      from "@/components/PersistentAmbientLayer
 import { ParticleSystem }              from "@/components/ParticleSystem";
 import { GlobalAmbientOverlay }        from "@/components/GlobalAmbientOverlay";
 import EnvironmentEnginePage          from "@/pages/EnvironmentEngine";
+import EnterpriseIntelligence         from "@/pages/EnterpriseIntelligence";
 
 const queryClient = new QueryClient();
 
@@ -107,7 +108,8 @@ function Router() {
       <Route path="/presence"      component={PresenceEngine}     />
       <Route path="/governance"      component={EnterpriseGovernance}   />
       <Route path="/central-command" component={CentralCommand}         />
-      <Route path="/environment"     component={EnvironmentEnginePage}  />
+      <Route path="/environment"            component={EnvironmentEnginePage}  />
+      <Route path="/enterprise-intelligence" component={EnterpriseIntelligence} />
       <Route path="/admin/intel"               component={OwnerIntelPanel}         />
       <Route path="/admin/experience-control" component={ExperienceControlPanel}  />
       {/* Legacy craft routes — redirect into the Universal Swipe Engine */}

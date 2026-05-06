@@ -49,7 +49,8 @@ const TILES = [
   { id: "craft-hub",   title: "Craft Hub",    desc: "All 360 experiences",  color: "#06b6d4", route: "/craft-hub",   dataKey: "craft-hub" as const,   image: "/images/smoke/smoke_lounge.png" },
   { id: "governance",      title: "Governance",      desc: "RBAC · Kill Switches",  color: "#ef4444", route: "/governance",      dataKey: "governance" as const,      image: "/images/scenes/reflective.jpg" },
   { id: "central-command", title: "Central Command", desc: "Remote ops · OTA · Fleet",       color: "#60a5fa", route: "/central-command", dataKey: "central-command" as const, image: "/images/scenes/bold.jpg" },
-  { id: "environment",     title: "Environment",     desc: "Atmosphere · Energy · Reaction", color: "#a78bfa", route: "/environment",     dataKey: "environment" as const,     image: "/images/scenes/reflective.jpg" },
+  { id: "environment",          title: "Environment",   desc: "Atmosphere · Energy · Reaction",    color: "#a78bfa", route: "/environment",            dataKey: "environment" as const,          image: "/images/scenes/reflective.jpg" },
+  { id: "enterprise-intel",    title: "Intel",         desc: "Enterprise Intelligence · Analytics", color: "#34d399", route: "/enterprise-intelligence", dataKey: "enterprise-intel" as const,     image: "/images/scenes/bold.jpg" },
 ] as const;
 
 export default function CommandCenter() {
@@ -83,7 +84,8 @@ export default function CommandCenter() {
       case "craft-hub":  return "4 modules · 18 scenes";
       case "governance":      return "RBAC · Audit · Switches";
       case "central-command": return "OTA · Fleet · Remote";
-      case "environment":     return "Atmosphere · Energy · VIP";
+      case "environment":       return "Atmosphere · Energy · VIP";
+      case "enterprise-intel": return "9 intelligence layers";
       default: return "";
     }
   }
