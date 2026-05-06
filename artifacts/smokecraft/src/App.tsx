@@ -29,7 +29,8 @@ import RewardsModule   from "@/pages/RewardsModule";
 import CampaignsModule  from "@/pages/CampaignsModule";
 import RevenueEngine       from "@/pages/RevenueEngine";
 import IntelligencePanel  from "@/pages/IntelligencePanel";
-import PresenceEngine     from "@/pages/PresenceEngine";
+import PresenceEngine          from "@/pages/PresenceEngine";
+import EnterpriseGovernance   from "@/pages/EnterpriseGovernance";
 import { AxiomIntelligenceProvider } from "@/contexts/AxiomIntelligenceContext";
 import { AxiomPresenceProvider }     from "@/contexts/AxiomPresenceContext";
 import OwnerIntelPanel from "@/pages/OwnerIntelPanel";
@@ -101,6 +102,7 @@ function Router() {
       <Route path="/revenue"       component={RevenueEngine}      />
       <Route path="/intelligence"  component={IntelligencePanel}  />
       <Route path="/presence"      component={PresenceEngine}     />
+      <Route path="/governance"    component={EnterpriseGovernance} />
       <Route path="/admin/intel"               component={OwnerIntelPanel}         />
       <Route path="/admin/experience-control" component={ExperienceControlPanel}  />
       {/* Legacy craft routes — redirect into the Universal Swipe Engine */}

@@ -46,7 +46,8 @@ const TILES = [
   { id: "settings", title: "Settings", desc: "System & security", color: "#64748b", route: "/settings", dataKey: "settings" as const, image: "/images/scenes/relaxed.jpg" },
   { id: "designer", title: "Designer", desc: "Signature customizer", color: "#9A7820", route: "/designer", dataKey: "designer" as const, image: "/images/cigar.png" },
   { id: "competition", title: "Compete", desc: "Craft tournaments", color: "#9A7820", route: "/competition", dataKey: "competition" as const, image: "/images/scenes/reflective.jpg" },
-  { id: "craft-hub", title: "Craft Hub", desc: "All 360 experiences", color: "#06b6d4", route: "/craft-hub", dataKey: "craft-hub" as const, image: "/images/smoke/smoke_lounge.png" },
+  { id: "craft-hub",   title: "Craft Hub",    desc: "All 360 experiences",  color: "#06b6d4", route: "/craft-hub",   dataKey: "craft-hub" as const,   image: "/images/smoke/smoke_lounge.png" },
+  { id: "governance",  title: "Governance",   desc: "RBAC · Kill Switches", color: "#ef4444", route: "/governance",  dataKey: "governance" as const,  image: "/images/scenes/reflective.jpg" },
 ] as const;
 
 export default function CommandCenter() {
@@ -78,6 +79,7 @@ export default function CommandCenter() {
       case "designer": return "Band · Box · Preview";
       case "competition": return "Live now";
       case "craft-hub":  return "4 modules · 18 scenes";
+      case "governance": return "RBAC · Audit · Switches";
       default: return "";
     }
   }

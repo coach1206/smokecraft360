@@ -1,0 +1,317 @@
+FINAL NEXT BUILD PROMPT
+PHASE 6 — AXIOM DEPLOYMENT + DEVICE MANAGEMENT LAYER
+(CENTRALIZED REMOTE OPERATIONS + OTA INFRASTRUCTURE)
+
+DO NOT redesign:
+- CraftHub
+- Revenue Engine
+- Intelligence Engine
+- Presence Engine
+- mentor system
+- OLED visual language
+- cinematic hospitality atmosphere
+- tactile interaction system
+
+This phase is NOT:
+a customer-facing redesign.
+
+This phase IS:
+the true operational OS layer.
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+Transform Axiom OS into:
+a remotely managed hospitality operating ecosystem.
+
+Allow:
+Super Admins,
+Venue Owners,
+and approved Managers
+
+to remotely control, configure, monitor, and update venue systems from ANY location.
+
+Examples:
+- Dominican Republic
+- mobile device
+- laptop
+- remote office
+- another venue
+
+NO physical on-site access required for normal operational updates.
+
+==================================================
+BUILD:
+AXIOM CENTRAL COMMAND
+==================================================
+
+Create:
+a centralized remote operations layer.
+
+Purpose:
+control ALL connected venues, kiosks, tablets, devices, campaigns, atmosphere systems, and automations remotely.
+
+==================================================
+CORE SYSTEMS
+==================================================
+
+Build:
+- remote deployment system
+- OTA update engine
+- centralized venue management
+- remote configuration management
+- device health monitoring
+- live sync engine
+- kiosk/device control
+- remote refresh/restart
+- environment configuration
+- feature flag deployment
+- multi-venue operations layer
+- centralized command dashboard
+
+==================================================
+1. OTA UPDATE ENGINE
+==================================================
+
+Build:
+Over-The-Air update infrastructure.
+
+Allow remote deployment of:
+- UI updates
+- mentor updates
+- campaign updates
+- atmosphere profiles
+- feature releases
+- bug fixes
+- loyalty logic
+- AI behavior changes
+- visual refinements
+- event templates
+- pricing/automation logic
+
+WITHOUT:
+manual reinstall.
+
+==================================================
+2. VERSION MANAGEMENT SYSTEM
+==================================================
+
+Every venue + device must track:
+- current version
+- deployment history
+- update status
+- rollback status
+- last sync
+- failed updates
+- patch notes
+
+Support:
+- Production
+- Staging
+- Beta/Test channels
+
+==================================================
+3. REMOTE CONFIGURATION ENGINE
+==================================================
+
+Allow remote modification of:
+- automation intensity
+- atmosphere intensity
+- mentor behavior
+- campaign permissions
+- loyalty rules
+- geofence settings
+- event modes
+- visual themes
+- feature toggles
+- notification systems
+- VIP settings
+
+WITHOUT requiring code redeploy.
+
+==================================================
+4. DEVICE MANAGEMENT SYSTEM
+==================================================
+
+Monitor:
+- kiosks
+- tablets
+- POS terminals
+- display systems
+- lounge displays
+
+Track:
+- online/offline state
+- last heartbeat
+- sync health
+- active sessions
+- internet quality
+- crash logs
+- device performance
+- idle state
+- app version
+
+==================================================
+REMOTE DEVICE ACTIONS
+==================================================
+
+Allow:
+- remote refresh
+- remote restart
+- lock kiosk
+- unlock kiosk
+- force sync
+- force logout
+- deploy update
+- disable device
+- maintenance mode
+- emergency shutdown
+
+==================================================
+5. ROLE-BASED REMOTE CONTROL
+==================================================
+
+SUPER ADMIN:
+full platform control across all venues.
+
+VENUE OWNER:
+control only their venues remotely.
+
+MANAGERS:
+limited operational controls remotely.
+
+STAFF:
+NO deployment authority.
+
+==================================================
+6. LIVE VENUE OPERATIONS MAP
+==================================================
+
+Create:
+Central Venue Operations Dashboard.
+
+Show:
+- all active venues
+- venue status
+- device health
+- atmosphere state
+- active guests
+- campaign activity
+- revenue pulse
+- alert states
+- sync health
+- active automations
+
+Visual style:
+cinematic operations intelligence.
+
+NOT:
+corporate IT dashboard.
+
+==================================================
+7. REMOTE CAMPAIGN CONTROL
+==================================================
+
+Allow remote:
+- campaign launches
+- atmosphere activations
+- VIP event pushes
+- mentor campaigns
+- loyalty activations
+- social campaigns
+- SMS/email launches
+
+From:
+desktop,
+tablet,
+or mobile.
+
+==================================================
+8. EMERGENCY CONTROL SYSTEM
+==================================================
+
+Build:
+platform-wide safety systems.
+
+Support:
+- emergency kill switches
+- venue isolation
+- automation disable
+- geofence disable
+- campaign shutdown
+- rollback deployment
+- security lock mode
+
+==================================================
+9. LIVE SYNC + CLOUD STATE
+==================================================
+
+All venues should maintain:
+real-time cloud synchronization.
+
+Changes pushed remotely should:
+appear nearly instantly across:
+- kiosks
+- displays
+- staff dashboards
+- command centers
+- venue systems
+
+==================================================
+10. AUDIT + DEPLOYMENT LOGGING
+==================================================
+
+Track:
+- who pushed updates
+- who modified settings
+- deployment history
+- rollback events
+- failed deployments
+- remote actions
+- device actions
+- admin actions
+
+Maintain:
+tamper-resistant operational audit trail.
+
+==================================================
+UI/UX REQUIREMENTS
+==================================================
+
+The Central Command layer should feel:
+Apple × Tesla × Star Trek
+for luxury hospitality operations.
+
+NO:
+generic IT dashboards.
+
+Use:
+- cinematic real-world imagery
+- OLED operational glow
+- floating glass panels
+- layered depth
+- tactile raised controls
+- operational atmosphere visuals
+- live animated intelligence indicators
+
+The system should feel:
+alive,
+powerful,
+and centralized.
+
+==================================================
+FINAL TARGET
+==================================================
+
+SUPER ADMIN FEELING:
+“I control the entire ecosystem remotely.”
+
+VENUE OWNER FEELING:
+“I can manage my business from anywhere.”
+
+MANAGER FEELING:
+“I can operate and respond remotely without being physically present.”
+
+AXIOM OS FEELING:
+a fully centralized luxury hospitality operating infrastructure with live remote operational control.
