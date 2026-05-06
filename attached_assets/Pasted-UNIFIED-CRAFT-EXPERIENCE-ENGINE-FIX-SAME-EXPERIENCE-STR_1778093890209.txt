@@ -1,0 +1,293 @@
+UNIFIED CRAFT EXPERIENCE ENGINE FIX
+(SAME EXPERIENCE STRUCTURE • DIFFERENT CULTURAL ATMOSPHERE)
+
+CRITICAL ISSUE:
+Right now all crafts inherit SmokeCraft emotional DNA.
+
+RESULT:
+- PourCraft feels like SmokeCraft with alcohol
+- BrewCraft feels like SmokeCraft with beer
+- VapeCraft feels like futuristic SmokeCraft
+
+THIS IS WRONG.
+
+GOAL:
+Keep the SAME immersive premium experience system,
+BUT culturally translate the atmosphere for each craft.
+
+DO NOT rebuild the logic system.
+
+KEEP:
+- onboarding engine
+- mentor system
+- swipe engine
+- recommendation engine
+- backend
+- routes
+- AI framework
+- animation architecture
+- transition system
+- experience flow
+- interaction logic
+
+ONLY CHANGE:
+- emotional atmosphere
+- environment visuals
+- imagery
+- color system
+- motion styling
+- particles
+- mentor personality tone
+- environmental animations
+- product rendering
+- sound atmosphere
+- cultural identity
+
+==================================================
+UNIVERSAL EXPERIENCE FLOW
+==================================================
+
+ALL crafts must use the SAME structure:
+
+1. Cinematic intro
+2. Personalized onboarding
+3. Mentor assignment
+4. Atmosphere calibration
+5. Flavor discovery
+6. Swipe exploration
+7. AI recommendation
+8. Product reveal
+9. Experience continuation
+10. Environmental immersion
+
+The FLOW remains identical.
+
+ONLY the CULTURAL EXPERIENCE changes.
+
+==================================================
+SMOKECRAFT
+==================================================
+
+EMOTIONAL DNA:
+Luxury cigar ritual.
+
+VISUALS:
+- warm ember glow
+- walnut woods
+- leather textures
+- cigar lounges
+- smoke particles
+- soft amber lighting
+
+MOTION:
+- slow drifting
+- calm cinematic pacing
+
+PRODUCTS:
+- luxury cigars
+- cedar boxes
+- embers
+- smoke trails
+
+MENTOR:
+wise • calm • legacy-driven
+
+==================================================
+POURCRAFT
+==================================================
+
+EMOTIONAL DNA:
+Luxury spirit ritual.
+
+REMOVE:
+- cigar lounge feel
+- smoke atmosphere
+- heavy wood dominance
+
+ADD:
+- crystal reflections
+- liquid motion
+- rooftop luxury bar aesthetics
+- whiskey pours
+- cocktail movement
+- premium nightlife energy
+- elegant bottle lighting
+- moving ice reflections
+
+COLOR SYSTEM:
+- polished bronze
+- dark espresso
+- reflective gold
+- crystal highlights
+
+MOTION:
+- fluid
+- elegant
+- liquid-inspired
+
+PRODUCTS:
+- animated whiskey pours
+- cocktail visuals
+- ice interaction
+- reflective glassware
+- premium spirits photography
+
+MENTOR:
+smooth • refined • elegant
+
+==================================================
+BREWCRAFT
+==================================================
+
+EMOTIONAL DNA:
+Luxury craft beer ritual.
+
+REMOVE:
+- cigar lounge atmosphere
+- dark whiskey energy
+
+ADD:
+- modern brewery aesthetics
+- energetic social atmosphere
+- active taproom visuals
+- brewery movement
+- beer foam animations
+- carbonation particles
+- warm social lighting
+
+COLOR SYSTEM:
+- cream
+- copper
+- brewery gold
+- brushed steel
+
+MOTION:
+- upbeat
+- social
+- lively
+
+PRODUCTS:
+- real beer photography
+- foam rising animations
+- condensation effects
+- active brewery visuals
+- flight boards
+- social drink presentation
+
+MENTOR:
+welcoming • energetic • social
+
+==================================================
+VAPECRAFT
+==================================================
+
+EMOTIONAL DNA:
+Luxury futuristic vape ritual.
+
+REMOVE:
+- whiskey lounge visuals
+- cigar atmosphere
+- wood-heavy styling
+
+ADD:
+- futuristic lounge aesthetics
+- neon environments
+- vapor particle systems
+- reactive fog
+- floating UI layers
+- atmospheric glow
+- holographic visuals
+- cyber luxury atmosphere
+
+COLOR SYSTEM:
+- ultraviolet
+- cyan
+- obsidian black
+- chrome silver
+- electric magenta
+
+MOTION:
+- floating
+- atmospheric
+- reactive
+
+PRODUCTS:
+- glowing vape devices
+- vapor cloud effects
+- LED reflections
+- futuristic product renders
+- animated smoke trails
+
+MENTOR:
+futuristic • sensory • intelligent
+
+==================================================
+UNIVERSAL TECHNICAL SYSTEM
+==================================================
+
+Create ONE shared experience engine.
+
+Then create:
+craftThemes = {
+  smokeCraft,
+  pourCraft,
+  brewCraft,
+  vapeCraft
+}
+
+Each theme dynamically controls:
+- colors
+- typography
+- particles
+- motion presets
+- imagery
+- environments
+- mentor personality
+- card styling
+- transitions
+- glow effects
+- atmospheric behavior
+
+The ENGINE stays identical.
+
+ONLY the emotional presentation changes.
+
+==================================================
+INTERACTIVITY REQUIREMENTS
+==================================================
+
+ALL crafts must have:
+- floating motion
+- cinematic transitions
+- reactive hover effects
+- environmental movement
+- parallax depth
+- animated overlays
+- smooth card transitions
+- immersive storytelling
+- premium Apple/Tesla-level polish
+
+NO STATIC SCREENS.
+
+==================================================
+FINAL RESULT
+==================================================
+
+Users should feel:
+
+SmokeCraft
+= luxury cigar world
+
+PourCraft
+= luxury spirit world
+
+BrewCraft
+= luxury brewery world
+
+VapeCraft
+= futuristic vapor world
+
+BUT…
+
+all clearly powered by the same
+AXIOM OS immersive experience engine.

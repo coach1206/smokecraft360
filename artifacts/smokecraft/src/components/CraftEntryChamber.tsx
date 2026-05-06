@@ -79,9 +79,9 @@ const CHAMBER: Record<string, ChamberConfig> = {
   },
   vape: {
     title:      "VapeCraft 360",
-    engine:     "Vapor Intelligence Engine",
-    tagline:    "Engineered for the modern connoisseur.",
-    atmosphere: "Premium blends  ·  Ambient clouds  ·  Signature sessions",
+    engine:     "Sensory Atmosphere Engine",
+    tagline:    "Your flavor frequency, detected and dialed in.",
+    atmosphere: "Neon blends  ·  Reactive atmosphere  ·  AI-powered sessions",
     images: [
       "/images/vape/vape_hookah.png",
       "/images/vape/vape_modern.png",
@@ -135,9 +135,13 @@ function ChamberParticles({ accent }: { accent: string }) {
 const BG_INTERVAL = 4_200;
 const BG_FADE     = 900;
 
-function RotatingBackground({ images, accent }: { images: string[]; accent: string }) {
+function RotatingBackground({ images, accent, isVape = false }: { images: string[]; accent: string; isVape?: boolean }) {
   const [idx,    setIdx]    = useState(0);
   const [fading, setFading] = useState(false);
+  const cyan    = "#06b6d4";
+  const magenta = "#e879f9";
+  const darkRgb = isVape ? "3,0,10" : "6,4,2";
+  const imgOp   = isVape ? 0.12 : 0.32;
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -162,7 +166,7 @@ function RotatingBackground({ images, accent }: { images: string[]; accent: stri
           backgroundImage:    `url(${images[idx]})`,
           backgroundSize:     "cover",
           backgroundPosition: "center",
-          opacity: fading ? 0 : 0.32,
+          opacity: fading ? 0 : imgOp,
           transition: `opacity ${BG_FADE}ms ease`,
           willChange: "transform, opacity",
         }}
@@ -171,16 +175,54 @@ function RotatingBackground({ images, accent }: { images: string[]; accent: stri
       <div style={{
         position: "absolute", inset: 0,
         background: `
-          radial-gradient(ellipse 80% 60% at 50% 30%, ${accent}18 0%, transparent 70%),
+          radial-gradient(ellipse 80% 60% at 50% 30%, ${accent}${isVape ? "28" : "18"} 0%, transparent 70%),
           linear-gradient(180deg,
-            rgba(6,4,2,0.65)  0%,
-            rgba(6,4,2,0.35) 30%,
-            rgba(6,4,2,0.50) 60%,
-            rgba(6,4,2,0.88) 100%
+            rgba(${darkRgb},0.75)  0%,
+            rgba(${darkRgb},0.45) 30%,
+            rgba(${darkRgb},0.55) 60%,
+            rgba(${darkRgb},0.92) 100%
           )
         `,
         pointerEvents: "none",
       }} />
+      {/* Vape-only: neon atmosphere layers */}
+      {isVape && (
+        <>
+          <motion.div
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            style={{
+              position:   "absolute",
+              inset:      0,
+              background: `radial-gradient(ellipse 70% 50% at 25% 80%, ${accent}30 0%, transparent 65%)`,
+              filter:     "blur(12px)",
+              pointerEvents: "none",
+            }}
+          />
+          <motion.div
+            animate={{ opacity: [0, 0.45, 0] }}
+            transition={{ duration: 10, repeat: Infinity, delay: 3.5, ease: "easeInOut" }}
+            style={{
+              position:   "absolute",
+              inset:      0,
+              background: `radial-gradient(ellipse 65% 45% at 78% 15%, ${cyan}28 0%, transparent 65%)`,
+              filter:     "blur(10px)",
+              pointerEvents: "none",
+            }}
+          />
+          <motion.div
+            animate={{ opacity: [0, 0.35, 0] }}
+            transition={{ duration: 7, repeat: Infinity, delay: 6, ease: "easeInOut" }}
+            style={{
+              position:   "absolute",
+              inset:      0,
+              background: `radial-gradient(ellipse 50% 40% at 55% 90%, ${magenta}22 0%, transparent 60%)`,
+              filter:     "blur(8px)",
+              pointerEvents: "none",
+            }}
+          />
+        </>
+      )}
     </>
   );
 }
@@ -351,13 +393,13 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
         style={{
           position:   "fixed",
           inset:      0,
-          background: "#060402",
+          background: type === "vape" ? "#030008" : "#060402",
           overflow:   "hidden",
           zIndex:     50,
         }}
       >
         {/* ── Atmospheric background ── */}
-        <RotatingBackground images={cfg.images} accent={accent} />
+        <RotatingBackground images={cfg.images} accent={accent} isVape={type === "vape"} />
 
         {/* ── Particles ── */}
         <ChamberParticles accent={accent} />

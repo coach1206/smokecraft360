@@ -1,0 +1,346 @@
+AXIOM OS — PHASE 1 VISUAL WORLD REBUILD
+(LOOK RIGHT FIRST • FEEL RIGHT SECOND)
+
+CRITICAL DIRECTIVE:
+STOP adding advanced psychology systems, gamification, deep AI behavior, or sensory progression layers for now.
+
+The platform is still in VISUAL WORLD BUILDING phase.
+
+If the world itself does not feel:
+- premium
+- immersive
+- emotionally believable
+- cinematic
+- readable
+- alive
+
+…then the deeper emotional systems will fail.
+
+PRIORITY NOW:
+LOCK THE VISUAL EXPERIENCE FOUNDATION.
+
+==================================================
+MASTER OBJECTIVE
+==================================================
+
+Transform Axiom OS from:
+“dark disconnected admin screens”
+
+INTO:
+a unified premium immersive hospitality operating system inspired by:
+- Tesla UI
+- Apple design language
+- luxury lounges
+- cinematic environments
+- futuristic hospitality technology
+
+The platform must immediately feel:
+alive
+premium
+interactive
+immersive
+readable
+luxurious
+and emotionally intelligent.
+
+==================================================
+PHASE 1 — LOCK UNIVERSAL AXIOM OS DESIGN DNA
+==================================================
+
+Create ONE unified OS identity system shared across all modules.
+
+==================================================
+GLOBAL VISUAL RULES
+==================================================
+
+REMOVE:
+- pure black voids
+- tiny unreadable fonts
+- dead empty spaces
+- flat admin cards
+- disconnected layouts
+- random module styling
+- static pages
+- generic dashboard feeling
+- low-contrast gold text
+- placeholder UI energy
+
+ADD:
+- cinematic depth
+- environmental imagery
+- premium typography
+- smoked glass layers
+- floating panels
+- warm operational lighting
+- subtle atmospheric motion
+- contextual visual storytelling
+- intelligent glow systems
+- animated environmental life
+
+==================================================
+GLOBAL COLOR FOUNDATION
+==================================================
+
+Primary backgrounds:
+#080604
+#12100E
+#181512
+
+Panel surfaces:
+#211D19
+#2A241E
+
+Typography:
+#F5E7C8
+#DCC8A5
+#BFA37A
+
+Accent lighting:
+soft amber gold
+low bloom
+warm reflections
+
+NO PURE BLACK.
+
+==================================================
+TYPOGRAPHY SYSTEM
+==================================================
+
+Minimum body text:
+16px
+
+Navigation:
+17–18px
+
+Section titles:
+22–28px
+
+Hero titles:
+36–48px
+
+Typography must be:
+- readable in dim lounges
+- readable by 45+ year old users
+- high contrast
+- elegant
+- spaced correctly
+- operationally clear
+
+The system should NEVER require squinting.
+
+==================================================
+GLOBAL MOTION SYSTEM
+==================================================
+
+EVERY screen must feel alive.
+
+Add:
+- subtle ambient particles
+- breathing glow systems
+- slow environmental movement
+- animated reflections
+- cinematic transitions
+- floating panel movement
+- hover reactions
+- parallax depth
+- atmospheric blur motion
+- soft telemetry animation
+
+Nothing should feel static.
+
+Tesla smoothness.
+Apple polish.
+
+==================================================
+UNIVERSAL PAGE STRUCTURE
+==================================================
+
+Every page must contain:
+
+1. ENVIRONMENT HERO
+2. MODULE TITLE + STATUS
+3. PRIMARY VISUAL OBJECT
+4. LIVE INTERACTIVE CONTENT
+5. AI INSIGHT PANEL
+6. ACTIVITY FEED
+7. SYSTEM STATUS FOOTER
+
+Every screen should instantly communicate:
+“What am I controlling?”
+
+WITHOUT relying only on text.
+
+==================================================
+VISUAL CONTEXT SYSTEM
+==================================================
+
+EVERY module needs contextual environmental imagery.
+
+NO generic backgrounds.
+
+==================================================
+SMOKECRAFT
+==================================================
+
+Theme:
+Luxury cigar ritual.
+
+Environment:
+- ember glow
+- walnut lounge
+- smoke atmosphere
+- leather textures
+- luxury humidor visuals
+
+==================================================
+POURCRAFT
+==================================================
+
+Theme:
+Luxury spirit ritual.
+
+Environment:
+- crystal reflections
+- rooftop cocktail lounge
+- animated whiskey pours
+- moving liquid reflections
+- elegant nightlife atmosphere
+
+REMOVE:
+SmokeCraft wood/smoke dominance.
+
+==================================================
+BREWCRAFT
+==================================================
+
+Theme:
+Luxury brewery ritual.
+
+Environment:
+- energetic taproom
+- brewery movement
+- social warmth
+- foam animation
+- carbonation particles
+- active social atmosphere
+
+REMOVE:
+dark cigar lounge energy.
+
+==================================================
+VAPECRAFT
+==================================================
+
+Theme:
+Futuristic sensory ritual.
+
+Environment:
+- neon lounge
+- vapor particles
+- holographic lighting
+- reactive fog
+- cyber luxury
+- atmospheric glow
+
+REMOVE:
+SmokeCraft DNA completely.
+
+==================================================
+UNIFIED EXPERIENCE STRUCTURE
+==================================================
+
+ALL crafts keep:
+- same onboarding flow
+- same swipe/discovery engine
+- same recommendation engine
+- same mentor structure
+- same interaction logic
+- same AI architecture
+- same backend
+
+ONLY the emotional atmosphere changes.
+
+==================================================
+CARD SYSTEM REBUILD
+==================================================
+
+ALL discovery cards must:
+- float
+- feel tactile
+- react to hover
+- contain rich sensory imagery
+- glow subtly
+- animate softly
+- have depth and reflections
+
+REMOVE:
+flat dead cards.
+
+ADD:
+- moving smoke
+- liquid reflections
+- foam movement
+- vapor drift
+- cinematic overlays
+- atmospheric detail
+
+Cards should feel:
+collectible
+premium
+alive
+
+==================================================
+ADMIN / COMMAND CENTER HARDENING
+==================================================
+
+Admin pages should feel:
+premium operational intelligence.
+
+NOT:
+developer dashboards.
+
+Add:
+- contextual imagery
+- command-center visuals
+- telemetry motion
+- live system pulse
+- AI operational overlays
+- depth layering
+- elegant graph systems
+- environmental storytelling
+
+==================================================
+EMPTY STATE RULE
+==================================================
+
+NO EMPTY DEAD SCREENS.
+
+Even when no data exists:
+show:
+- AI suggestions
+- ambient operational previews
+- environmental movement
+- simulated activity
+- contextual visuals
+
+The system should always feel:
+alive and operational.
+
+==================================================
+FINAL TARGET
+==================================================
+
+The moment someone sees Axiom OS they should immediately think:
+
+“This feels expensive.”
+“This feels intelligent.”
+“This feels immersive.”
+“This feels futuristic.”
+“This feels easy to use.”
+“This does not look like normal POS software.”
+
+FIRST:
+make it LOOK right.
+
+THEN:
+make it FEEL emotionally transformative.

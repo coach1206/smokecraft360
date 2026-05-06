@@ -179,8 +179,8 @@ export const CRAFT_MODULES: CraftModule[] = [
     scenes: BREW_SCENES,
   },
   {
-    id: "vape", title: "VapeCraft 360", tagline: "Hookah, vape, and vapor lounge sessions",
-    color: "#06b6d4", route: "/experience/vape", badge: "💨  VAPOR",
+    id: "vape", title: "VapeCraft 360", tagline: "Futuristic sensory immersion — enter the dimension",
+    color: "#a855f7", route: "/experience/vape", badge: "💨  VAPOR",
     scenes: VAPE_SCENES,
   },
 ];

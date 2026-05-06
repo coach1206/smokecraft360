@@ -171,6 +171,7 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
   const scale   = 1 - stackIndex * 0.05;
   const yShift  = stackIndex * 14;
   const opacity = stackIndex === 0 ? 1 : stackIndex === 1 ? 0.52 : 0.26;
+  const vigRgb  = theme.type === "vape" ? "3,0,10" : "6,4,1";
 
   return (
     <motion.div
@@ -210,7 +211,7 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
         inset:        0,
         borderRadius: 20,
         overflow:     "hidden",
-        background:   "rgba(9,6,2,0.94)",
+        background:   theme.cardBg,
         border:       `1px solid ${theme.accent}${stackIndex === 0 ? "38" : "18"}`,
         boxShadow: stackIndex === 0
           ? `0 44px 110px rgba(0,0,0,0.94), 0 0 0 1px ${theme.accent}10, 0 0 56px ${theme.accent}08, inset 0 1px 0 rgba(255,255,255,0.055)`
@@ -231,7 +232,9 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
           <div style={{
             position:   "absolute",
             inset:      0,
-            background: `linear-gradient(160deg, rgba(14,9,3,1) 0%, ${theme.accent}26 100%)`,
+            background: theme.type === "vape"
+              ? `linear-gradient(160deg, rgba(3,0,10,1) 0%, ${theme.accent}32 55%, #06b6d428 100%)`
+              : `linear-gradient(160deg, rgba(14,9,3,1) 0%, ${theme.accent}26 100%)`,
           }} />
         )}
 
@@ -239,10 +242,10 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none",
           background: `linear-gradient(180deg,
-            rgba(6,4,1,0.70) 0%,
-            rgba(6,4,1,0.08) 22%,
-            rgba(6,4,1,0.06) 55%,
-            rgba(5,3,1,0.88) 100%)`,
+            rgba(${vigRgb},0.70) 0%,
+            rgba(${vigRgb},0.08) 22%,
+            rgba(${vigRgb},0.06) 55%,
+            rgba(${vigRgb},0.88) 100%)`,
         }} />
 
         {/* ── Holographic shimmer sweep (top card only) ── */}

@@ -1,0 +1,252 @@
+VAPECRAFT FULL IDENTITY REBUILD — REMOVE SMOKECRAFT DNA
+
+CRITICAL ISSUE:
+VapeCraft currently feels like SmokeCraft with different text.
+The emotional atmosphere is wrong.
+
+REMOVE:
+- cigar lounge vibes
+- whiskey room aesthetics
+- brown/gold heavy warmth
+- wood-heavy environments
+- static cards
+- traditional luxury pacing
+- smoke-style ambiance
+- amber dominance
+- masculine cigar atmosphere
+
+VAPECRAFT SHOULD FEEL LIKE:
+Apple + Tesla + futuristic sensory lounge + premium cyber atmosphere.
+
+EMOTIONAL TARGET:
+- immersive
+- electric
+- fluid
+- atmospheric
+- reactive
+- alive
+- modern
+- futuristic luxury
+- sensory driven
+- AI powered environment
+
+========================================
+FULL VAPECRAFT VISUAL REBUILD
+========================================
+
+CREATE A COMPLETELY UNIQUE VAPECRAFT VISUAL LANGUAGE.
+
+NEW COLOR SYSTEM:
+Primary:
+- obsidian black
+- deep graphite
+- ultraviolet purple
+- electric cyan
+- neon blue
+- plasma magenta
+- chrome silver
+
+REMOVE:
+- heavy amber
+- whiskey gold dominance
+- cigar brown palette
+
+LIGHTING:
+- soft animated LED glow
+- moving environmental gradients
+- ambient reactive light pulses
+- holographic edge lighting
+- animated neon reflections
+- breathing glow animations
+
+BACKGROUND ENVIRONMENT:
+REPLACE whiskey lounge backgrounds.
+
+NEW BACKGROUNDS:
+- futuristic vape lounge
+- neon atmospheric rooms
+- premium cyber lounge
+- modern LED environments
+- luxury nightclub aesthetics
+- floating haze environments
+- animated vapor atmosphere
+- reflective glass architecture
+- reactive fog layers
+- moving light streaks
+
+BACKGROUND MUST:
+- slowly animate
+- breathe subtly
+- shift gradients
+- react to interactions
+- never feel static
+
+========================================
+INTERACTION ENGINE
+========================================
+
+MAKE VAPECRAFT FEEL ALIVE.
+
+ADD:
+- floating vapor particles
+- reactive fog movement
+- animated flavor energy trails
+- moving depth layers
+- touch-reactive glow
+- hover distortion effects
+- smooth holographic transitions
+- glassmorphism panels
+- animated flavor pulses
+- floating particles behind cards
+- soft environmental movement
+
+CARD SYSTEM:
+Current cards are dead.
+
+REBUILD THEM AS:
+- floating holographic panels
+- animated glass cards
+- reactive edge lighting
+- depth/parallax movement
+- vapor movement around cards
+- animated flavor aura
+- dynamic reflections
+- touch pulse interaction
+- subtle 3D tilt
+
+CARDS SHOULD:
+- gently float
+- react to mouse movement
+- glow on hover
+- shift lighting dynamically
+- animate transitions smoothly
+
+========================================
+PRODUCT VISUALS
+========================================
+
+REMOVE static generic cards.
+
+ADD:
+- real premium vape photography
+- macro close-up device renders
+- glowing vape devices
+- vapor cloud animations
+- flavor color overlays
+- animated smoke trails
+- reflective materials
+- liquid glow effects
+- realistic device lighting
+
+PRODUCT TYPES:
+- modern disposables
+- premium pod systems
+- luxury hookahs
+- futuristic smart vape devices
+- LED glow devices
+- cyberpunk-inspired hardware
+
+========================================
+AI EXPERIENCE LAYER
+========================================
+
+MAKE THE AI FEEL LIKE A LIVE ATMOSPHERE ENGINE.
+
+ADD DYNAMIC AI TEXT:
+Examples:
+- “Environment adapting to your flavor profile.”
+- “Analyzing cooling preference.”
+- “Atmosphere synced.”
+- “Your session is evolving.”
+- “Detecting high-energy flavor patterns.”
+- “Neon fruit profile detected.”
+- “Vapor rhythm calibrated.”
+
+AI should feel:
+- intelligent
+- calm
+- futuristic
+- observant
+- premium
+- emotionally aware
+
+========================================
+ANIMATION SYSTEM
+========================================
+
+EVERYTHING MUST MOVE.
+
+ADD:
+- smooth transitions
+- cinematic fades
+- liquid UI motion
+- floating panels
+- reactive particles
+- slow breathing animations
+- depth transitions
+- ambient environmental movement
+- smooth scene gliding
+- interactive hover physics
+- parallax background motion
+
+NO STATIC SCREENS.
+
+Tesla-level smoothness.
+Apple-level polish.
+
+========================================
+AUDIO REACTION SYSTEM
+========================================
+
+OPTIONAL BUT PREP FOR:
+- soft ambient synth tones
+- vapor hiss sounds
+- subtle UI clicks
+- atmospheric lounge audio
+- reactive sound pulses
+- inhale/exhale transitions
+
+========================================
+SEPARATE VAPECRAFT IDENTITY
+========================================
+
+SmokeCraft:
+warm luxury ember
+
+PourCraft:
+refined barrel sophistication
+
+BrewCraft:
+social energetic motion
+
+VapeCraft:
+futuristic sensory immersion
+
+The SECOND the user enters VapeCraft:
+the entire emotional environment must shift.
+
+========================================
+IMPORTANT
+========================================
+
+Do NOT rebuild platform architecture.
+
+KEEP:
+- Axiom OS framework
+- routing system
+- backend logic
+- onboarding logic
+- recommendation engine
+
+ONLY REBUILD:
+- emotional identity
+- visual language
+- environment system
+- animations
+- interactivity
+- atmosphere
+- motion behavior
+- product presentation
+
+FINAL RESULT:
+VapeCraft should feel like entering a futuristic AI-powered sensory chamber instead of a cigar lounge clone.

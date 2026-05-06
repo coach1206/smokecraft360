@@ -53,13 +53,13 @@ export const CRAFT_THEMES: Record<CraftType, CraftTheme> = {
   vape: {
     type:        "vape",
     label:       "VapeCraft 360",
-    tagline:     "Craft your cloud",
-    accent:      "#8b5cf6",
-    accentSoft:  "#6d40d4",
+    tagline:     "Enter the vapor dimension",
+    accent:      "#a855f7",
+    accentSoft:  "#06b6d4",
     bgImage:     "/images/vape/vape_lounge.png",
-    cardBg:      "rgba(8,4,16,0.88)",
+    cardBg:      "rgba(3,0,10,0.95)",
     badgeLabel:  "VAPOR",
-    visualWords: ["vape", "cloud", "neon"],
+    visualWords: ["neon", "futuristic", "electric"],
   },
 };
 

@@ -249,66 +249,144 @@ export function FoamRise({ accent }: RealisticsProps) {
   );
 }
 
-// ── VapeCraft: Vapor Drift + Neon Ambient ────────────────────────────────────
+// ── VapeCraft: Neon Vapor Atmosphere ─────────────────────────────────────────
 
 export function VaporDrift({ accent }: RealisticsProps) {
+  const cyan    = "#06b6d4";
+  const magenta = "#e879f9";
+
   return (
     <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-      {/* Neon ambient glow */}
+
+      {/* ── Shifting neon atmosphere — breathes between purple / cyan / magenta ── */}
       <motion.div
-        animate={{ opacity: [0.2, 0.4, 0.2], scale: [1, 1.08, 1] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        animate={{
+          opacity: [0.7, 1, 0.7],
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         style={{
           position:   "absolute",
-          bottom:     -20, left: "15%",
-          width:      "70%", height: "50%",
-          background: `radial-gradient(ellipse, ${accent}50 0%, ${accent}18 50%, transparent 80%)`,
-          filter:     "blur(20px)",
-          willChange: "opacity, transform",
+          inset:      0,
+          background: `radial-gradient(ellipse 90% 60% at 30% 85%, ${accent}42 0%, ${cyan}18 45%, transparent 75%)`,
+          filter:     "blur(10px)",
+          willChange: "opacity",
         }}
       />
-      {/* Vapor cloud layers */}
-      {[0, 1, 2].map(i => (
+      <motion.div
+        animate={{ opacity: [0, 0.6, 0] }}
+        transition={{ duration: 9, repeat: Infinity, delay: 3, ease: "easeInOut" }}
+        style={{
+          position:   "absolute",
+          inset:      0,
+          background: `radial-gradient(ellipse 80% 70% at 70% 15%, ${cyan}40 0%, ${accent}14 45%, transparent 75%)`,
+          filter:     "blur(8px)",
+          willChange: "opacity",
+        }}
+      />
+      <motion.div
+        animate={{ opacity: [0, 0.45, 0] }}
+        transition={{ duration: 7, repeat: Infinity, delay: 5.5, ease: "easeInOut" }}
+        style={{
+          position:   "absolute",
+          inset:      0,
+          background: `radial-gradient(ellipse 85% 55% at 55% 90%, ${magenta}32 0%, ${accent}18 40%, transparent 70%)`,
+          filter:     "blur(8px)",
+          willChange: "opacity",
+        }}
+      />
+
+      {/* ── Neon vapor clouds — colored wisps rising ── */}
+      {([
+        { x: 8,  yPct: 30, w: 180, h: 90,  color: accent,  dur: 7.0, del: 0.0 },
+        { x: 45, yPct: 20, w: 140, h: 70,  color: cyan,    dur: 9.2, del: 1.8 },
+        { x: 62, yPct: 38, w: 160, h: 80,  color: magenta, dur: 8.4, del: 3.5 },
+      ] as const).map((c, i) => (
         <motion.div
-          key={i}
+          key={`cloud-${i}`}
           animate={{
-            y:       [0, -20 - i * 15],
-            x:       [(i % 2 === 0 ? 0 : 10), (i % 2 === 0 ? 15 : -5)],
-            opacity: [0, 0.18 - i * 0.04, 0],
-            scale:   [0.6, 1.4 + i * 0.3, 1.8],
+            y:       [0, -(28 + i * 12), 0],
+            x:       [0, 8 - i * 4, 0],
+            opacity: [0, 0.22 - i * 0.05, 0],
+            scale:   [0.65, 1.5 + i * 0.22, 0.75],
           }}
-          transition={{
-            duration: 5 + i * 1.5,
-            repeat:   Infinity,
-            delay:    i * 1.2,
-            ease:     "easeOut",
-          }}
+          transition={{ duration: c.dur, repeat: Infinity, delay: c.del, ease: "easeOut" }}
           style={{
             position:     "absolute",
-            bottom:       `${25 + i * 10}%`,
-            left:         `${20 + i * 15}%`,
-            width:        100 + i * 40,
-            height:       60 + i * 20,
-            background:   "rgba(255,255,255,0.08)",
+            left:         `${c.x}%`,
+            bottom:       `${c.yPct}%`,
+            width:        c.w,
+            height:       c.h,
+            background:   `radial-gradient(ellipse, ${c.color}35 0%, transparent 72%)`,
             borderRadius: "50%",
-            filter:       "blur(16px)",
+            filter:       "blur(18px)",
             willChange:   "transform, opacity",
           }}
         />
       ))}
-      {/* Neon edge shimmer */}
+
+      {/* ── Horizontal scan lines — sweep across card ── */}
+      {[0, 1, 2].map(i => (
+        <motion.div
+          key={`scan-${i}`}
+          animate={{ opacity: [0, 0.28, 0], x: ["-100%", "220%"] }}
+          transition={{ duration: 3.4 + i * 1.1, repeat: Infinity, delay: i * 2.8, ease: "linear" }}
+          style={{
+            position:   "absolute",
+            left:       0,
+            top:        `${20 + i * 28}%`,
+            width:      "42%",
+            height:     1,
+            background: `linear-gradient(90deg, transparent, ${i === 1 ? cyan : i === 2 ? magenta : accent}90, transparent)`,
+            willChange: "transform, opacity",
+          }}
+        />
+      ))}
+
+      {/* ── Left edge neon line ── */}
       <motion.div
-        animate={{ opacity: [0, 0.3, 0], x: [0, 8, 0] }}
-        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ opacity: [0.08, 0.55, 0.08], scaleY: [0.55, 1, 0.65] }}
+        transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
         style={{
-          position:   "absolute",
-          top: 0, left: 0,
-          width:      "3px",
-          height:     "100%",
-          background: `linear-gradient(180deg, transparent, ${accent}, transparent)`,
-          willChange: "opacity, transform",
+          position:         "absolute",
+          top: "8%", left: 0,
+          width:            2,
+          height:           "84%",
+          background:       `linear-gradient(180deg, transparent, ${accent}CC, ${cyan}AA, transparent)`,
+          willChange:       "opacity, transform",
+          transformOrigin:  "center",
         }}
       />
+
+      {/* ── Right edge neon line ── */}
+      <motion.div
+        animate={{ opacity: [0.08, 0.42, 0.08], scaleY: [0.65, 1, 0.5] }}
+        transition={{ duration: 3.9, repeat: Infinity, ease: "easeInOut", delay: 1.1 }}
+        style={{
+          position:         "absolute",
+          top: "8%", right: 0,
+          width:            2,
+          height:           "84%",
+          background:       `linear-gradient(180deg, transparent, ${cyan}CC, ${magenta}99, transparent)`,
+          willChange:       "opacity, transform",
+          transformOrigin:  "center",
+        }}
+      />
+
+      {/* ── Holographic sweep shimmer ── */}
+      <motion.div
+        animate={{ opacity: [0, 0.32, 0], x: ["-35%", "140%"] }}
+        transition={{ duration: 2.9, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.8 }}
+        style={{
+          position:   "absolute",
+          top:        0,
+          left:       0,
+          width:      "44%",
+          height:     "100%",
+          background: `linear-gradient(108deg, transparent 0%, ${accent}22 38%, ${cyan}18 62%, transparent 100%)`,
+          willChange: "transform, opacity",
+        }}
+      />
+
     </div>
   );
 }

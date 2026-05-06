@@ -13,8 +13,8 @@ import vapeTobaccoImg from "@assets/generated_images/vape_tobacco.png";
 
 const PLAYGROUND_CONFIG: PlaygroundConfig = {
   craft: "vape", craftLabel: "VapeCraft",
-  accent: "#B496E6", accentSoft: "#FF7AB8",
-  tint: "rgba(118,80,180,0.5)",
+  accent: "#a855f7", accentSoft: "#06b6d4",
+  tint: "rgba(100,40,200,0.5)",
   background: "/images/scenes/bold.jpg",
   brandNameLabel: "Flavor Name",
   brandNamePlaceholder: "Name your flavor identity…",
@@ -71,14 +71,14 @@ const CONFIG: CraftFlowConfig = {
   background: vapeBg,
   hidePairing: true,
   theme: {
-    accent: "#B496E6",
-    accentSoft: "#FF7AB8",
-    tint: "rgba(118,80,180,0.4)",
-    bodyTextOverlay: "rgba(0,0,0,0.55)",
+    accent: "#a855f7",
+    accentSoft: "#06b6d4",
+    tint: "rgba(100,40,200,0.4)",
+    bodyTextOverlay: "rgba(0,0,0,0.60)",
   },
   language: {
-    introHeadline: "A guided cloud, calibrated to your flavor.",
-    introBody: "Five quick steps. Pick your vapor profile, dial in the mood, and we'll surface the e-liquid that matches.",
+    introHeadline: "A sensory environment, calibrated to your frequency.",
+    introBody: "Five quick steps. Define your vapor profile, set the atmosphere, and the AI surfaces the exact match.",
     introCta: "Start Crafting",
     stepStyleLabel: "Vapor Style",
     stepProfileLabel: "Mood",
