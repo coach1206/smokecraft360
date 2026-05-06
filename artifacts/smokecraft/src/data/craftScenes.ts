@@ -165,22 +165,22 @@ export const VAPE_SCENES: CraftScene[] = [
 export const CRAFT_MODULES: CraftModule[] = [
   {
     id: "smoke", title: "SmokeCraft 360", tagline: "Signature cigar experiences, curated for you",
-    color: "#e85d26", route: "/smokecraft", badge: "🚬  CIGAR",
+    color: "#e85d26", route: "/experience/smoke", badge: "🚬  CIGAR",
     scenes: SMOKE_SCENES,
   },
   {
     id: "pour", title: "PourCraft 360", tagline: "Premium spirits & craft cocktails",
-    color: "#a78bfa", route: "/pourcraft", badge: "🥃  SPIRITS",
+    color: "#a78bfa", route: "/experience/pour", badge: "🥃  SPIRITS",
     scenes: POUR_SCENES,
   },
   {
     id: "brew", title: "BrewCraft 360", tagline: "Craft beer, barrel-aged and beyond",
-    color: "#f59e0b", route: "/brewcraft", badge: "🍺  BREW",
+    color: "#f59e0b", route: "/experience/brew", badge: "🍺  BREW",
     scenes: BREW_SCENES,
   },
   {
     id: "vape", title: "VapeCraft 360", tagline: "Hookah, vape, and vapor lounge sessions",
-    color: "#06b6d4", route: "/vapecraft", badge: "💨  VAPOR",
+    color: "#06b6d4", route: "/experience/vape", badge: "💨  VAPOR",
     scenes: VAPE_SCENES,
   },
 ];

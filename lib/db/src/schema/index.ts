@@ -68,3 +68,4 @@ export * from "./onboardingSessions";
 export * from "./aiConfigurations";
 export * from "./demoSimEvents";
 export * from "./purchaseOrders";
+export * from "./swipeExperience";

@@ -28,9 +28,8 @@ import InventoryModule from "@/pages/InventoryModule";
 import RewardsModule   from "@/pages/RewardsModule";
 import CampaignsModule from "@/pages/CampaignsModule";
 import OwnerIntelPanel from "@/pages/OwnerIntelPanel";
-import BrewCraft       from "@/pages/BrewCraft";
-import PourCraft       from "@/pages/PourCraft";
-import VapeCraft       from "@/pages/VapeCraft";
+import ExperiencePage  from "@/pages/ExperiencePage";
+import RevealPage      from "@/pages/RevealPage";
 import BuildYourOwn   from "@/pages/BuildYourOwn";
 import DesignerPage   from "@/pages/DesignerPage";
 import PaymentSuccess  from "@/pages/PaymentSuccess";
@@ -83,18 +82,14 @@ function Router() {
       <Route path="/rewards"     component={RewardsModule}   />
       <Route path="/campaigns"   component={CampaignsModule} />
       <Route path="/admin/intel" component={OwnerIntelPanel} />
-      {/* BrewCraft — beer-led quick-pick flow. Declared before /:theme so
-          the explicit path wins; if it ever needs to live under a theme
-          (e.g. /smokecraft/brewcraft) it can be moved down. */}
-      <Route path="/brewcraft"  component={BrewCraft}      />
-      {/* PourCraft — whisky/spirit-led pairing flow. Same explicit-route
-          pattern as /brewcraft so the dynamic /:theme handler can't shadow it. */}
-      <Route path="/pourcraft"  component={PourCraft}      />
-      {/* VapeCraft — placeholder page with vape-environment visuals.
-          Declared before /:theme so /vapecraft no longer falls through
-          to the cigar wizard in Home.tsx. Full vapor flow is a separate
-          slice once vape inventory + style presets are designed. */}
-      <Route path="/vapecraft"       component={VapeCraft}      />
+      {/* Legacy craft routes — redirect into the Universal Swipe Engine */}
+      <Route path="/brewcraft"       component={() => { window.location.replace("/experience/brew"); return null; }} />
+      <Route path="/pourcraft"       component={() => { window.location.replace("/experience/pour"); return null; }} />
+      <Route path="/vapecraft"       component={() => { window.location.replace("/experience/vape"); return null; }} />
+      <Route path="/smokecraft"      component={() => { window.location.replace("/experience/smoke"); return null; }} />
+      {/* Universal Swipe Experience Engine */}
+      <Route path="/experience/:type"      component={ExperiencePage} />
+      <Route path="/reveal/:sessionId"     component={RevealPage}     />
       <Route path="/build-your-own"  component={BuildYourOwn}   />
       <Route path="/designer"        component={DesignerPage}   />
       <Route path="/success"    component={PaymentSuccess} />
