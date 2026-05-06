@@ -560,6 +560,8 @@ function StaffPanel({
   const [, navigate] = useLocation();
   const craft = CRAFTS.find((c) => c.id === currentCraft);
 
+  const [resetPending, setResetPending] = useState(false);
+
   const {
     occupancy,
     isDynamicActive,
@@ -567,6 +569,7 @@ function StaffPanel({
     totalLift,
     updateOccupancy,
     toggleDynamic,
+    resetSession,
   } = useAxiomStore();
 
   const occupancyColor =
@@ -873,6 +876,39 @@ function StaffPanel({
           Return to Patron
         </button>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {/* Reset Session — two-tap confirmation guard */}
+          {resetPending ? (
+            <motion.button
+              initial={{ scale: 0.92 }}
+              animate={{ scale: 1 }}
+              onClick={() => { resetSession(); setResetPending(false); }}
+              onPointerLeave={() => setResetPending(false)}
+              style={{
+                padding: "4px 12px", borderRadius: 8, cursor: "pointer",
+                background: "rgba(248,113,113,0.14)",
+                border: "1px solid rgba(248,113,113,0.55)",
+                color: "#f87171", fontSize: 9, fontWeight: 700,
+                letterSpacing: "0.16em", textTransform: "uppercase",
+                outline: "none",
+              }}
+            >
+              ✓ Confirm Wipe
+            </motion.button>
+          ) : (
+            <button
+              onClick={() => setResetPending(true)}
+              style={{
+                padding: "4px 12px", borderRadius: 8, cursor: "pointer",
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.10)",
+                color: "rgba(240,232,212,0.30)", fontSize: 9, fontWeight: 700,
+                letterSpacing: "0.16em", textTransform: "uppercase",
+                outline: "none",
+              }}
+            >
+              Reset Session
+            </button>
+          )}
           {/* Audio toggle */}
           <AudioToggle />
           <div className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(240,232,212,0.22)" }}>

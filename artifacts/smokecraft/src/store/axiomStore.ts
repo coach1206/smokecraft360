@@ -23,6 +23,7 @@ interface AxiomState {
   toggleMember:    () => void;
   addXP:           (val: number) => void;
   processSale:     (basePrice: number, finalPrice: number) => void;
+  resetSession:    () => void;
 }
 
 export const useAxiomStore = create<AxiomState>()(
@@ -56,6 +57,9 @@ export const useAxiomStore = create<AxiomState>()(
 
       processSale: (base, final) =>
         set((state) => ({ totalLift: state.totalLift + (final - base) })),
+
+      resetSession: () =>
+        set({ xp: 0, rank: 'Novice', totalLift: 0 }),
     }),
     { name: 'axiom-360-storage' },
   ),

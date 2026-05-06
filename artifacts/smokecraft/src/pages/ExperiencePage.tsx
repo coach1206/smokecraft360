@@ -135,6 +135,17 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
   const rotate  = useTransform(x, [-300, 300], [-16, 16]);
   const addOp   = useTransform(x, [30, 110], [0, 1]);
   const skipOp  = useTransform(x, [-110, -30], [1, 0]);
+
+  // 2-second image failsafe — if the asset doesn't resolve in time, fall back
+  // to the craft gradient so the card is never blank.
+  const [imgError, setImgError] = useState(false);
+  const imgTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => {
+    if (!item.image) return;
+    setImgError(false);
+    imgTimeoutRef.current = setTimeout(() => setImgError(true), 2000);
+    return () => clearTimeout(imgTimeoutRef.current);
+  }, [item.image]);
   // Glow trail: warm gold on right drag, cool white-blue on left drag
   const glowBg  = useTransform(
     x,
@@ -221,16 +232,26 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
           : "0 14px 40px rgba(0,0,0,0.72)",
       }}>
 
-        {/* ── Sensory background image ── */}
-        {item.image ? (
-          <motion.div style={{
-            position: "absolute", inset: 0,
-            backgroundImage:    `url(${item.image})`,
-            backgroundSize:     "cover",
-            backgroundPosition: "center top",
-            opacity:            isTop ? imgOp : 0.72,
-            willChange:         "transform",
-          }} />
+        {/* ── Sensory background image — with 2-second load failsafe ── */}
+        {item.image && !imgError ? (
+          <>
+            {/* Hidden probe: resolves timeout on load, sets error flag on failure */}
+            <img
+              src={item.image}
+              alt=""
+              onLoad={() => clearTimeout(imgTimeoutRef.current)}
+              onError={() => { clearTimeout(imgTimeoutRef.current); setImgError(true); }}
+              style={{ display: "none" }}
+            />
+            <motion.div style={{
+              position: "absolute", inset: 0,
+              backgroundImage:    `url(${item.image})`,
+              backgroundSize:     "cover",
+              backgroundPosition: "center top",
+              opacity:            isTop ? imgOp : 0.72,
+              willChange:         "transform",
+            }} />
+          </>
         ) : (
           <div style={{
             position:   "absolute",
