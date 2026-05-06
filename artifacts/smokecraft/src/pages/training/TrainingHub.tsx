@@ -15,6 +15,7 @@ import {
   Star, DollarSign, Brain, Package,
 } from "lucide-react";
 import Maxwell                              from "@/components/Maxwell";
+import TrainingBanner                      from "@/components/training/TrainingBanner";
 import { DEMO_VENUE, DEMO_KPIS, LIVE_EVENTS, MAXWELL_INTROS } from "@/data/trainingData";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
@@ -304,6 +305,7 @@ export default function TrainingHub() {
           <span style={{ fontSize: 10, color: T.green }}>Live Simulation</span>
         </div>
       </div>
+      <TrainingBanner />
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 0, minHeight: "calc(100vh - 61px)", position: "relative", zIndex: 1 }}>
 

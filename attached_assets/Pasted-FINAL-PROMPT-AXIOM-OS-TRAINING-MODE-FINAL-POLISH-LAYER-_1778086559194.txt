@@ -1,0 +1,105 @@
+FINAL PROMPT — AXIOM OS TRAINING MODE FINAL POLISH LAYER
+
+MISSING / REQUIRED
+
+Training Mode is already built with Vault Cigar Lounge simulation, Maxwell AI trainer, seven frontend routes, live synthetic KPIs, training scenarios, certifications, and backend demo APIs.
+
+What is still required is the final enterprise polish layer:
+
+1. Printable employee onboarding manuals
+2. Manager sign-off workflow
+3. Investor demo voiceover script
+4. Sales demo talking points
+5. Venue walkthrough script
+6. Fake role-based training accounts
+7. Admin reset demo venue control
+8. PDF certificate export
+9. Demo-safe banner on every training route
+10. Offline fallback mode for sales/investor demos
+11. Visual help cards inside training modules
+
+FAILURE PREVENTION CHECKLIST
+
+Do not remove the existing Training Mode routes.
+Do not change the current visual design unless required.
+Do not touch production data.
+Do not replace the current synthetic simulation engine.
+Do not break MasterOperations.
+Do not remove Maxwell AI.
+Do not remove the Vault Cigar Lounge simulation.
+Do not create dead buttons.
+Do not add placeholder manuals.
+Do not use lorem ipsum.
+Do not create generic training text.
+
+TASK
+
+Upgrade the existing Axiom OS Training Mode with the final polish layer.
+
+Add printable training manuals for each role:
+
+Bartender
+Cigar Specialist
+Vape Specialist
+Server
+Floor Manager
+Venue Owner
+Inventory Manager
+Cashier
+
+Each manual must include:
+
+Role overview
+Daily responsibilities
+Step-by-step system instructions
+Common mistakes
+Recovery steps
+Scenario practice
+Manager checklist
+Completion requirements
+
+Add manager sign-off so a manager can approve completed employee training.
+
+Add PDF export for:
+
+Employee completion certificate
+Role training manual
+Investor demo summary
+Venue walkthrough summary
+
+Add fake training accounts:
+
+training.owner@vaultdemo.com
+training.manager@vaultdemo.com
+training.server@vaultdemo.com
+training.cashier@vaultdemo.com
+training.inventory@vaultdemo.com
+training.investor@vaultdemo.com
+
+All accounts must be sandbox-only and never affect production users.
+
+Add a clear banner to all /training routes:
+
+“Training Mode Active — Synthetic Demo Data Only”
+
+Add admin controls inside MasterOperations:
+
+Reset Vault Demo
+Start Investor Demo
+Start Sales Demo
+Start Employee Training
+Export Training Packet
+Toggle Offline Demo Mode
+
+Add offline fallback mode so investor and sales demos can still run with stored local synthetic data if APIs fail.
+
+Add visual help cards throughout employee training using realistic venue imagery, simple diagrams, and step-by-step cards.
+
+Add full voiceover scripts for:
+
+Investor demo
+Sales demo
+Venue walkthrough
+Employee onboarding intro
+
+Final result should feel like a complete training, onboarding, sales, and investor presentation system, not just software screens.

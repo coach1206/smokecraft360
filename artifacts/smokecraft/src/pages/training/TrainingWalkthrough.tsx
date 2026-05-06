@@ -6,8 +6,10 @@
 import { useState }              from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation }           from "wouter";
-import { ArrowLeft, ArrowRight, CheckCircle, Building2, Package, Users, Megaphone, Star, BarChart3, DollarSign, Monitor, Zap, Play } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, Building2, Package, Users, Megaphone, Star, BarChart3, DollarSign, Monitor, Zap, Play, FileText, X } from "lucide-react";
 import Maxwell                   from "@/components/Maxwell";
+import TrainingBanner             from "@/components/training/TrainingBanner";
+import { VOICEOVER_SCRIPTS }     from "@/data/voiceoverScripts";
 
 const T = {
   bg: "#06040a", card: "rgba(255,255,255,0.04)", border: "rgba(201,168,76,0.15)",
@@ -94,6 +96,9 @@ export default function TrainingWalkthrough() {
   const [completed, setCompleted] = useState<Set<number>>(new Set());
   const current = STEPS[step]!;
   const Icon = current.icon;
+  const [showScript, setShowScript] = useState(false);
+  const script = VOICEOVER_SCRIPTS["walkthrough"];
+  const cue = script?.cues[step];
 
   function advance() {
     setCompleted((c) => new Set([...c, step]));
@@ -126,7 +131,7 @@ export default function TrainingWalkthrough() {
           </div>
         </div>
         {/* Step dots */}
-        <div style={{ display: "flex", gap: 3 }}>
+        <div style={{ display: "flex", gap: 3, alignItems: "center" }}>
           {STEPS.map((_, i) => (
             <div key={i} style={{
               width: completed.has(i) ? 14 : i === step ? 18 : 6,
@@ -135,8 +140,52 @@ export default function TrainingWalkthrough() {
               transition: "all 0.2s",
             }} onClick={() => setStep(i)} />
           ))}
+          <button onClick={() => setShowScript((s) => !s)} style={{
+            background: showScript ? `${T.gold}18` : "rgba(255,255,255,0.04)",
+            border: `1px solid ${showScript ? T.gold + "50" : "rgba(255,255,255,0.12)"}`,
+            borderRadius: 7, color: showScript ? T.gold : T.muted, padding: "5px 9px", cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 3, fontSize: 9, marginLeft: 6,
+          }}>
+            <FileText size={9} /> Script
+          </button>
         </div>
       </div>
+
+      {/* Script overlay */}
+      <AnimatePresence>
+        {showScript && cue && (
+          <motion.div
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 24 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: "fixed", right: 0, top: 0, bottom: 0, width: 360,
+              background: "#09060f", borderLeft: "1px solid rgba(201,168,76,0.2)",
+              zIndex: 60, overflowY: "auto", padding: "20px 22px",
+              boxShadow: "-8px 0 32px rgba(0,0,0,0.6)",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <div>
+                <div style={{ fontSize: 9, color: T.gold, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.16em" }}>
+                  Walkthrough Script
+                </div>
+                <div style={{ fontSize: 9, color: T.muted, marginTop: 2 }}>
+                  Step {step + 1} · {cue.duration}
+                </div>
+              </div>
+              <button onClick={() => setShowScript(false)} style={{ background: "transparent", border: "none", cursor: "pointer", color: T.muted, padding: 4 }}>
+                <X size={14} />
+              </button>
+            </div>
+            <div style={{ height: 1, background: "rgba(201,168,76,0.15)", marginBottom: 16 }} />
+            <div style={{ fontSize: 11.5, color: "rgba(240,232,212,0.85)", lineHeight: 2, whiteSpace: "pre-wrap" }}>
+              {cue.script}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Progress bar */}
       <div style={{ height: 2, background: "rgba(255,255,255,0.06)" }}>
@@ -147,6 +196,7 @@ export default function TrainingWalkthrough() {
         />
       </div>
 
+      <TrainingBanner />
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "40px 24px" }}>
         <AnimatePresence mode="wait">
           <motion.div

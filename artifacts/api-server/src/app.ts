@@ -132,6 +132,7 @@ import financeReconciliationRouter from "./routes/financeReconciliation";
 import paymentTimelineRouter     from "./routes/paymentTimeline";
 import trainingRouter            from "./routes/training";
 import demoEngineRouter          from "./routes/demoEngine";
+import trainingAccountsRouter    from "./routes/trainingAccounts";
 import { startFailedWebhookWorker }   from "./lib/failedWebhookWorker.js";
 import { startReconciliationWorker }  from "./lib/reconciliationWorker.js";
 
@@ -362,6 +363,7 @@ app.use("/api/admin/launch-readiness",     launchReadinessRouter);
 app.use("/api/receipts",                   receiptsRouter);
 app.use("/api/finance-reconciliation",     financeReconciliationRouter);
 app.use("/api/payment-timeline",           paymentTimelineRouter);
+app.use("/api/training/accounts",          trainingAccountsRouter);
 app.use("/api/training",                   trainingRouter);
 app.use("/api/demo",                       demoEngineRouter);
 app.use("/api/admin/workers",             adminWorkersRouter);

@@ -8,6 +8,8 @@ import { motion }                from "framer-motion";
 import { useLocation }           from "wouter";
 import { ArrowLeft, Award, CheckCircle, Lock, BookOpen, Users, Map, BarChart3 } from "lucide-react";
 import Maxwell                   from "@/components/Maxwell";
+import TrainingBanner             from "@/components/training/TrainingBanner";
+import PrintExport                from "@/components/training/PrintExport";
 import { TRAINING_ROLES_CONFIG, TRAINING_SCENARIOS, MAXWELL_INTROS } from "@/data/trainingData";
 
 const T = {
@@ -213,7 +215,14 @@ export default function TrainingCertifications() {
             {earned} earned · {ALL_CERTS.length} available
           </div>
         </div>
-        <div style={{ marginLeft: "auto" }}>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 8, position: "relative" }}>
+          <div style={{ position: "relative" }}>
+            <PrintExport
+              type="certificate"
+              data={{ name: "Training Participant", roleTitle: "Axiom OS Staff", managerName: "Floor Manager" }}
+              label="Export PDF"
+            />
+          </div>
           <button onClick={() => navigate("/training/scenarios")} style={{
             background: `${T.gold}15`, border: `1px solid ${T.gold}30`,
             borderRadius: 8, color: T.gold, fontSize: 11, fontWeight: 600,
@@ -224,6 +233,7 @@ export default function TrainingCertifications() {
           </button>
         </div>
       </div>
+      <TrainingBanner />
 
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "28px 24px" }}>
         <StatsStrip earned={earned} total={ALL_CERTS.length} pts={pts} />

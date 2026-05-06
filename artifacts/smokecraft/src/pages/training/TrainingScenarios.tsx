@@ -12,6 +12,7 @@ import {
   Clock, ChevronRight, Target, Trophy,
 } from "lucide-react";
 import Maxwell                   from "@/components/Maxwell";
+import TrainingBanner             from "@/components/training/TrainingBanner";
 import { TRAINING_SCENARIOS, MAXWELL_INTROS } from "@/data/trainingData";
 
 const T = {
@@ -161,7 +162,7 @@ export default function TrainingScenarios() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ fontSize: 11, color: T.gold, fontWeight: 600 }}>{score} pts</div>
-            <div style={{ display: "flex", gap: 3 }}>
+            <div style={{ display: "flex", gap: 3 }} data-scenario-dots>
               {scenario.steps.map((_, i) => (
                 <div key={i} style={{
                   width: 18, height: 4, borderRadius: 2,
@@ -172,6 +173,7 @@ export default function TrainingScenarios() {
             </div>
           </div>
         </div>
+        <TrainingBanner />
 
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "36px 24px" }}>
           <AnimatePresence mode="wait">
@@ -280,6 +282,7 @@ export default function TrainingScenarios() {
           </div>
         </div>
       </div>
+      <TrainingBanner />
 
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "28px 24px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))", gap: 12 }}>

@@ -6,9 +6,11 @@
 import { useState }              from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation }           from "wouter";
-import { ArrowLeft, ArrowRight, TrendingUp, Heart, DollarSign, Zap, BarChart3, Star } from "lucide-react";
+import { ArrowLeft, ArrowRight, TrendingUp, Heart, DollarSign, Zap, BarChart3, Star, FileText, X } from "lucide-react";
 import Maxwell                   from "@/components/Maxwell";
+import TrainingBanner             from "@/components/training/TrainingBanner";
 import { DEMO_VENUE, DEMO_KPIS, MAXWELL_INTROS } from "@/data/trainingData";
+import { VOICEOVER_SCRIPTS }     from "@/data/voiceoverScripts";
 
 const T = {
   bg: "#06040a", card: "rgba(255,255,255,0.04)", border: "rgba(201,168,76,0.15)",
@@ -118,8 +120,11 @@ const PITCH_SLIDES = [
 export default function TrainingSales() {
   const [, navigate] = useLocation();
   const [slide, setSlide] = useState(0);
+  const [showScript, setShowScript] = useState(false);
   const current = PITCH_SLIDES[slide]!;
   const Icon = current.icon;
+  const script = VOICEOVER_SCRIPTS["sales"];
+  const cue = script?.cues[slide];
 
   return (
     <div style={{ minHeight: "100vh", background: T.bg, color: T.text, fontFamily: "'Inter',sans-serif" }}>
@@ -162,7 +167,52 @@ export default function TrainingSales() {
             }} />
           ))}
         </div>
+        <button onClick={() => setShowScript((s) => !s)} style={{
+          background: showScript ? `${T.gold}18` : "rgba(255,255,255,0.04)",
+          border: `1px solid ${showScript ? T.gold + "50" : "rgba(255,255,255,0.12)"}`,
+          borderRadius: 7, color: showScript ? T.gold : T.muted, padding: "6px 10px", cursor: "pointer",
+          display: "flex", alignItems: "center", gap: 4, fontSize: 10,
+        }}>
+          <FileText size={10} /> Script
+        </button>
       </div>
+      <TrainingBanner />
+
+      {/* Sales script overlay */}
+      <AnimatePresence>
+        {showScript && cue && (
+          <motion.div
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 24 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: "fixed", right: 0, top: 0, bottom: 0, width: 380,
+              background: "#09060f", borderLeft: "1px solid rgba(201,168,76,0.2)",
+              zIndex: 60, overflowY: "auto", padding: "20px 22px",
+              boxShadow: "-8px 0 32px rgba(0,0,0,0.6)",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <div>
+                <div style={{ fontSize: 9, color: T.gold, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.16em" }}>
+                  Sales Talking Points
+                </div>
+                <div style={{ fontSize: 9, color: T.muted, marginTop: 2 }}>
+                  {cue.slide} · {cue.duration}
+                </div>
+              </div>
+              <button onClick={() => setShowScript(false)} style={{ background: "transparent", border: "none", cursor: "pointer", color: T.muted, padding: 4 }}>
+                <X size={14} />
+              </button>
+            </div>
+            <div style={{ height: 1, background: "rgba(201,168,76,0.15)", marginBottom: 16 }} />
+            <div style={{ fontSize: 11.5, color: "rgba(240,232,212,0.85)", lineHeight: 2, whiteSpace: "pre-wrap" }}>
+              {cue.script}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "36px 24px", position: "relative", zIndex: 1 }}>
         <AnimatePresence mode="wait">

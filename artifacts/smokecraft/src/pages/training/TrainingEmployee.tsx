@@ -6,8 +6,10 @@
 import { useState }       from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation }    from "wouter";
-import { ArrowLeft, ArrowRight, CheckCircle, ChevronRight, Play } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, ChevronRight, Play, UserCheck, BookOpen, Eye, Lightbulb } from "lucide-react";
 import Maxwell            from "@/components/Maxwell";
+import TrainingBanner     from "@/components/training/TrainingBanner";
+import SignOffModal       from "@/components/training/SignOffModal";
 import { TRAINING_ROLES_CONFIG, MAXWELL_INTROS } from "@/data/trainingData";
 
 const T = {
@@ -89,6 +91,7 @@ export default function TrainingEmployee() {
   const [selected, setSelected]   = useState<string | null>(null);
   const [stepIdx, setStepIdx]     = useState(0);
   const [completed, setCompleted] = useState<Set<number>>(new Set());
+  const [showSignOff, setShowSignOff] = useState(false);
 
   const role = selected ? TRAINING_ROLES_CONFIG.find((r) => r.id === selected) : null;
   const steps = selected ? (ROLE_CONTENT[selected] ?? []) : [];
@@ -128,6 +131,7 @@ export default function TrainingEmployee() {
             ))}
           </div>
         </div>
+        <TrainingBanner />
 
         <div style={{ maxWidth: 720, margin: "0 auto", padding: "36px 24px" }}>
           <AnimatePresence mode="wait">
@@ -152,6 +156,50 @@ export default function TrainingEmployee() {
                   {step?.body}
                 </div>
               </div>
+
+              {/* Step help note */}
+              <div style={{
+                background: "rgba(96,165,250,0.05)", border: "1px solid rgba(96,165,250,0.18)",
+                borderRadius: 9, padding: "11px 14px", marginBottom: 16,
+                display: "flex", gap: 8, alignItems: "flex-start",
+              }}>
+                <Eye size={11} color="#60a5fa" style={{ flexShrink: 0, marginTop: 2 }} />
+                <span style={{ fontSize: 10.5, color: "#60a5fa", lineHeight: 1.6 }}>
+                  <strong>On screen: </strong>
+                  {stepIdx === 0
+                    ? `Look for the ${role.title} section in your Axiom OS staff view — it will be your primary work surface.`
+                    : stepIdx === 1
+                    ? "The system highlights the relevant action area with a subtle gold indicator when guidance is active."
+                    : stepIdx === 2
+                    ? "Guest profiles appear as cards with taste indicators shown as small colored bars below the guest name."
+                    : stepIdx === 3
+                    ? "Confirmation dialogs always show a summary of what will happen before you commit to any action."
+                    : stepIdx === 4
+                    ? "Notifications appear in the top-right badge area of your staff view — tap to expand details."
+                    : "The completion indicator turns green when this step is fully recorded in your training progress."}
+                </span>
+              </div>
+
+              {/* Tip note */}
+              {stepIdx % 3 === 0 && (
+                <div style={{
+                  background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.18)",
+                  borderRadius: 9, padding: "11px 14px", marginBottom: 16,
+                  display: "flex", gap: 8, alignItems: "flex-start",
+                }}>
+                  <Lightbulb size={11} color="#f59e0b" style={{ flexShrink: 0, marginTop: 2 }} />
+                  <span style={{ fontSize: 10.5, color: "#f59e0b", lineHeight: 1.6 }}>
+                    <strong>Manager tip: </strong>
+                    {role.id === "bartender"
+                      ? "The fastest bartenders check the upsell indicator before approaching any table mid-service."
+                      : role.id === "cigar_specialist"
+                      ? "The best consultations start with listening, not recommending. Ask two questions before suggesting anything."
+                      : role.id === "floor_manager"
+                      ? "Revenue pacing is easier to correct at 30% deviation than at 50%. Check early, act early."
+                      : "Consistency is the most important quality in any venue role. Do it right every time, not just when observed."}
+                  </span>
+                </div>
+              )}
 
               {/* Navigation */}
               <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
@@ -179,14 +227,14 @@ export default function TrainingEmployee() {
                 ) : (
                   <button onClick={() => {
                     setCompleted((c) => new Set([...c, stepIdx]));
-                    navigate("/training/certifications");
+                    setShowSignOff(true);
                   }} style={{
-                    background: T.green, border: "none",
+                    background: T.gold, border: "none",
                     borderRadius: 9, color: "#06040a", padding: "10px 22px",
                     cursor: "pointer", fontSize: 12, fontWeight: 700,
                     display: "flex", alignItems: "center", gap: 6,
                   }}>
-                    <CheckCircle size={13} /> Complete Training
+                    <UserCheck size={13} /> Request Sign-Off
                   </button>
                 )}
               </div>
@@ -198,6 +246,15 @@ export default function TrainingEmployee() {
           message={`Module ${step?.step}: ${step?.title}. ${step?.body?.slice(0, 80)}…`}
           context={`${role.title} · Step ${stepIdx + 1}`}
         />
+        {showSignOff && (
+          <SignOffModal
+            role={selected ?? ""}
+            roleTitle={role.title}
+            modulesCount={steps.length}
+            onClose={() => setShowSignOff(false)}
+            onApprove={() => { setShowSignOff(false); navigate("/training/certifications"); }}
+          />
+        )}
       </div>
     );
   }
@@ -227,6 +284,7 @@ export default function TrainingEmployee() {
           </div>
         </div>
       </div>
+      <TrainingBanner />
 
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>

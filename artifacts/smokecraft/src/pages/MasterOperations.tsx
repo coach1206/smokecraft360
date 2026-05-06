@@ -23,6 +23,7 @@ import {
   Users, Gift, Crown, CalendarDays, Upload, Settings,
   Wifi, WifiOff, AlertTriangle, CheckCircle, Circle,
   ChevronRight, Activity, Zap, DollarSign, Star, BookOpen,
+  RotateCcw, UserCheck, Download,
 } from "lucide-react";
 
 // ── design tokens ─────────────────────────────────────────────────────────────
@@ -715,6 +716,47 @@ export default function MasterOperations() {
                 </div>
               </motion.div>
             ))}
+          </GlassCard>
+
+          {/* ── Training Controls ── */}
+          <GlassCard style={{ padding: "16px 18px", marginTop: 16 }}>
+            <div style={{
+              fontSize: 9, fontWeight: 700, color: T.textMuted,
+              textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 12,
+              display: "flex", alignItems: "center", gap: 6,
+            }}>
+              <BookOpen size={10} /> Training Controls
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {([
+                { label: "Reset Vault Demo",       icon: RotateCcw,   color: "#f59e0b", action: () => { fetch("/api/training/reset", { method: "POST" }).catch(() => {}); } },
+                { label: "Investor Demo",           icon: BarChart3,   color: T.gold,   action: () => navigate("/training/investor") },
+                { label: "Sales Demo",              icon: TrendingUp,  color: T.green,  action: () => navigate("/training/sales") },
+                { label: "Employee Training",       icon: UserCheck,   color: "#a78bfa", action: () => navigate("/training/employee") },
+                { label: "Export Training Packet",  icon: Download,    color: T.blue,   action: () => window.open("/training/certifications") },
+                { label: "Toggle Offline Mode",     icon: WifiOff,     color: "#f87171", action: () => {
+                  if (localStorage.getItem("axiom_offline_demo")) {
+                    localStorage.removeItem("axiom_offline_demo");
+                  } else {
+                    localStorage.setItem("axiom_offline_demo", "1");
+                  }
+                }},
+              ] as Array<{ label: string; icon: React.ElementType; color: string; action: () => void }>).map(({ label, icon: Icon, color, action }) => (
+                <button
+                  key={label}
+                  onClick={action}
+                  style={{
+                    background: `${color}0c`, border: `1px solid ${color}22`,
+                    borderRadius: 8, padding: "9px 11px", cursor: "pointer",
+                    color, fontSize: 9.5, fontWeight: 600, textAlign: "left",
+                    display: "flex", alignItems: "center", gap: 6,
+                    transition: "background 0.15s",
+                  }}
+                >
+                  <Icon size={10} style={{ flexShrink: 0 }} /> {label}
+                </button>
+              ))}
+            </div>
           </GlassCard>
         </div>
 
