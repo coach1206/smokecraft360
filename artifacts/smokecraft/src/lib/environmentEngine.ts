@@ -23,6 +23,26 @@ export type LightingMood =
 
 export type PerformanceMode = "cinematic" | "balanced" | "low-power";
 
+export type EnergyState =
+  | "quiet_reserve"
+  | "social_warmth"
+  | "elevated_lounge"
+  | "peak_energy"
+  | "vip_session"
+  | "late_night_reserve"
+  | "event_atmosphere"
+  | "mentor_session";
+
+export type EventAtmosphere =
+  | "none"
+  | "reserve_pairing"
+  | "whiskey_smoke"
+  | "vip_lounge"
+  | "brew_social"
+  | "founder_circle";
+
+export type MentorPersonality = "bold" | "smooth" | "balanced";
+
 export interface ExperienceControlSettings {
   atmosphereIntensity: number;   // 0–100
   particleDensity:     number;   // 0–100
@@ -50,6 +70,13 @@ export interface EnvironmentState {
   soundVolume:      number;            // 0–100 from control panel
   performanceMode:  PerformanceMode;   // cinematic | balanced | low-power
   controlSettings:  ExperienceControlSettings | null; // currently active settings
+  // Phase 2 — Environmental Reaction Engine
+  energyState:       EnergyState;
+  eventAtmosphere:   EventAtmosphere;
+  mentorPersonality: MentorPersonality;
+  vipArrivalActive:  boolean;          // transient — not persisted
+  automationEnabled: boolean;
+  warmthTint:        number;           // 0–1 overlay warm tint strength
 }
 
 type EnvironmentListener = (state: EnvironmentState) => void;
@@ -59,7 +86,50 @@ const PERSIST_KEYS: (keyof EnvironmentState)[] = [
   "craftType", "dominantTags", "tagWeights",
   "lightingMood", "intensity", "particleDensity",
   "bgBrightness", "glowStrength", "lastCraftSeen",
+  "energyState", "eventAtmosphere", "mentorPersonality", "automationEnabled", "warmthTint",
 ];
+
+// ── Phase 2: Energy state visual parameters ───────────────────────────────────
+
+export const ENERGY_STATE_CONFIG: Record<EnergyState, {
+  label:         string;
+  description:   string;
+  glowMult:      number;   // multiplier on base glowStrength
+  particleMult:  number;   // multiplier on base particleDensity
+  motionCalmness:number;   // 0–100 (100=slowest)
+  warmthShift:   number;   // delta to bgBrightness (negative = darker)
+  warmthTint:    number;   // 0–1 overlay warm tint opacity
+  icon:          string;
+}> = {
+  quiet_reserve:      { label: "Quiet Reserve",       description: "Minimal, reserved atmosphere",  glowMult: 0.42, particleMult: 0.20, motionCalmness: 90, warmthShift: -0.05, warmthTint: 0.06, icon: "◌" },
+  social_warmth:      { label: "Social Warmth",        description: "Relaxed, warm social energy",   glowMult: 0.65, particleMult: 0.55, motionCalmness: 60, warmthShift:  0.02, warmthTint: 0.14, icon: "◐" },
+  elevated_lounge:    { label: "Elevated Lounge",      description: "Elevated energy, richer tones", glowMult: 0.80, particleMult: 0.70, motionCalmness: 44, warmthShift:  0.04, warmthTint: 0.20, icon: "◑" },
+  peak_energy:        { label: "Peak Energy",          description: "Maximum energy and presence",   glowMult: 1.00, particleMult: 0.95, motionCalmness: 18, warmthShift:  0.06, warmthTint: 0.28, icon: "●" },
+  vip_session:        { label: "VIP Session",          description: "Luxury, slow, rich gold",       glowMult: 0.90, particleMult: 0.32, motionCalmness: 78, warmthShift:  0.08, warmthTint: 0.30, icon: "★" },
+  late_night_reserve: { label: "Late-Night Reserve",   description: "Deep OLED, cinematic reserve",  glowMult: 0.55, particleMult: 0.16, motionCalmness: 93, warmthShift: -0.09, warmthTint: 0.04, icon: "◗" },
+  event_atmosphere:   { label: "Event Atmosphere",     description: "Event-driven, energized",       glowMult: 0.88, particleMult: 0.82, motionCalmness: 30, warmthShift:  0.04, warmthTint: 0.22, icon: "◈" },
+  mentor_session:     { label: "Mentor Session",       description: "Personality-driven atmosphere", glowMult: 0.72, particleMult: 0.44, motionCalmness: 68, warmthShift:  0.02, warmthTint: 0.16, icon: "◇" },
+};
+
+export const EVENT_ATMOSPHERE_CONFIG: Record<EventAtmosphere, {
+  label:            string;
+  color:            string;
+  lightingMoodBias: LightingMood | null;
+  description:      string;
+}> = {
+  none:            { label: "None",                 color: "#444444", lightingMoodBias: null,            description: "No active event" },
+  reserve_pairing: { label: "Reserve Pairing Night",color: "#8B6914", lightingMoodBias: "warm_amber",   description: "Premium cigar & spirits pairing" },
+  whiskey_smoke:   { label: "Whiskey & Smoke",      color: "#c9a84c", lightingMoodBias: "deep_shadow",  description: "Whiskey tasting in a smoky reserve" },
+  vip_lounge:      { label: "VIP Lounge Session",   color: "#d4af37", lightingMoodBias: "golden_soft",  description: "Exclusive VIP experience" },
+  brew_social:     { label: "Brew Social Night",    color: "#4a7c59", lightingMoodBias: "crystal_clean",description: "Social craft beer event" },
+  founder_circle:  { label: "Founder Circle",       color: "#7c4dff", lightingMoodBias: "deep_shadow",  description: "Exclusive founder gathering" },
+};
+
+const MENTOR_MOOD_BIAS: Record<MentorPersonality, LightingMood> = {
+  bold:     "warm_amber",
+  smooth:   "golden_soft",
+  balanced: "neutral",
+};
 
 // ── Tag → lighting mood mapping ───────────────────────────────────────────────
 
@@ -118,22 +188,29 @@ export const DEFAULT_CONTROL_SETTINGS: ExperienceControlSettings = {
 
 function defaultState(): EnvironmentState {
   return {
-    craftType:       "smoke",
-    dominantTags:    [],
-    tagWeights:      {},
-    lightingMood:    "warm_amber",
-    intensity:       30,
-    particleDensity: 0.5,
-    bgBrightness:    0.42,
-    glowStrength:    0.50,
-    sessionSwipes:   0,
-    lastCraftSeen:   null,
-    returnVisit:     false,
-    motionCalmness:  DEFAULT_CONTROL_SETTINGS.motionCalmness,
-    revealPacing:    DEFAULT_CONTROL_SETTINGS.revealPacing,
-    soundVolume:     DEFAULT_CONTROL_SETTINGS.soundVolume,
-    performanceMode: DEFAULT_CONTROL_SETTINGS.performanceMode,
-    controlSettings: null,
+    craftType:         "smoke",
+    dominantTags:      [],
+    tagWeights:        {},
+    lightingMood:      "warm_amber",
+    intensity:         30,
+    particleDensity:   0.5,
+    bgBrightness:      0.42,
+    glowStrength:      0.50,
+    sessionSwipes:     0,
+    lastCraftSeen:     null,
+    returnVisit:       false,
+    motionCalmness:    DEFAULT_CONTROL_SETTINGS.motionCalmness,
+    revealPacing:      DEFAULT_CONTROL_SETTINGS.revealPacing,
+    soundVolume:       DEFAULT_CONTROL_SETTINGS.soundVolume,
+    performanceMode:   DEFAULT_CONTROL_SETTINGS.performanceMode,
+    controlSettings:   null,
+    // Phase 2
+    energyState:       "social_warmth",
+    eventAtmosphere:   "none",
+    mentorPersonality: "balanced",
+    vipArrivalActive:  false,
+    automationEnabled: true,
+    warmthTint:        0.14,
   };
 }
 
@@ -438,6 +515,95 @@ export class EnvironmentEngine {
       controlSettings: settings,
     };
     this.notify();
+  }
+
+  // ── Phase 2: Social Energy Engine ────────────────────────────────────────────
+
+  setEnergyState(state: EnergyState): void {
+    const cfg  = ENERGY_STATE_CONFIG[state];
+    const base = this.state.controlSettings;
+
+    // Compute base values from control settings or current state
+    const baseGlow   = base ? (0.05 + (base.atmosphereIntensity / 100) * 0.85) : this.state.glowStrength;
+    const baseParts  = base ? (base.particleDensity / 100)                     : this.state.particleDensity;
+    const baseBright = base ? (0.20 + (base.atmosphereIntensity / 100) * 0.45)  : this.state.bgBrightness;
+
+    this.state = {
+      ...this.state,
+      energyState:     state,
+      glowStrength:    Math.min(1, baseGlow  * cfg.glowMult),
+      particleDensity: Math.min(1, baseParts * cfg.particleMult),
+      bgBrightness:    Math.max(0.20, Math.min(0.85, baseBright + cfg.warmthShift)),
+      motionCalmness:  cfg.motionCalmness,
+      warmthTint:      cfg.warmthTint,
+    };
+    this._applyAtmosphereBias();
+    this.persist();
+    this.notify();
+  }
+
+  setEventAtmosphere(atmosphere: EventAtmosphere): void {
+    this.state = { ...this.state, eventAtmosphere: atmosphere };
+    this._applyAtmosphereBias();
+    this.persist();
+    this.notify();
+  }
+
+  setMentorPersonality(personality: MentorPersonality): void {
+    // Only override lightingMood if in mentor_session energy state
+    const moodOverride = this.state.energyState === "mentor_session"
+      ? MENTOR_MOOD_BIAS[personality]
+      : this.state.lightingMood;
+    this.state = {
+      ...this.state,
+      mentorPersonality: personality,
+      lightingMood:      moodOverride,
+    };
+    this.persist();
+    this.notify();
+  }
+
+  triggerVipArrival(): void {
+    const savedGlow = this.state.glowStrength;
+    // Immediate boost
+    this.state = {
+      ...this.state,
+      vipArrivalActive: true,
+      energyState:      "vip_session",
+      glowStrength:     Math.min(1, savedGlow * 1.45),
+      warmthTint:       ENERGY_STATE_CONFIG["vip_session"].warmthTint,
+    };
+    this.notify();
+    // Settle to VIP baseline at 1.2s
+    setTimeout(() => {
+      this.state = { ...this.state, glowStrength: Math.min(1, savedGlow * 1.15) };
+      this.notify();
+    }, 1200);
+    // Clear VIP active flag at 3.5s, settle to elevated lounge
+    setTimeout(() => {
+      this.state = {
+        ...this.state,
+        vipArrivalActive: false,
+        glowStrength:     savedGlow,
+      };
+      this.notify();
+    }, 3500);
+  }
+
+  setAutomation(enabled: boolean): void {
+    this.state = { ...this.state, automationEnabled: enabled };
+    if (enabled) this.applyTimeOfDay();
+    this.persist();
+    this.notify();
+  }
+
+  private _applyAtmosphereBias(): void {
+    const evt = this.state.eventAtmosphere;
+    if (evt === "none") return;
+    const cfg = EVENT_ATMOSPHERE_CONFIG[evt];
+    if (cfg.lightingMoodBias) {
+      this.state = { ...this.state, lightingMood: cfg.lightingMoodBias };
+    }
   }
 
   // ── Session continuity ────────────────────────────────────────────────────────

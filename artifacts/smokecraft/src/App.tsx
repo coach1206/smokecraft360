@@ -77,6 +77,8 @@ import { EnvironmentProvider }         from "@/contexts/EnvironmentContext";
 import { OrchestratorProvider }       from "@/contexts/OrchestratorContext";
 import { PersistentAmbientLayer }      from "@/components/PersistentAmbientLayer";
 import { ParticleSystem }              from "@/components/ParticleSystem";
+import { GlobalAmbientOverlay }        from "@/components/GlobalAmbientOverlay";
+import EnvironmentEnginePage          from "@/pages/EnvironmentEngine";
 
 const queryClient = new QueryClient();
 
@@ -103,8 +105,9 @@ function Router() {
       <Route path="/revenue"       component={RevenueEngine}      />
       <Route path="/intelligence"  component={IntelligencePanel}  />
       <Route path="/presence"      component={PresenceEngine}     />
-      <Route path="/governance"      component={EnterpriseGovernance} />
-      <Route path="/central-command" component={CentralCommand}       />
+      <Route path="/governance"      component={EnterpriseGovernance}   />
+      <Route path="/central-command" component={CentralCommand}         />
+      <Route path="/environment"     component={EnvironmentEnginePage}  />
       <Route path="/admin/intel"               component={OwnerIntelPanel}         />
       <Route path="/admin/experience-control" component={ExperienceControlPanel}  />
       {/* Legacy craft routes — redirect into the Universal Swipe Engine */}
@@ -181,6 +184,7 @@ function App() {
                   <EnvironmentProvider>
                   <OrchestratorProvider>
                     <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                      <GlobalAmbientOverlay />
                       <PersistentAmbientLayer />
                       <ParticleSystem />
                       <GlobalBackButton />

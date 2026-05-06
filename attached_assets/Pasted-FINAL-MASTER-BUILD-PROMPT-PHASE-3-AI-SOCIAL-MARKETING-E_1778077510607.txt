@@ -1,0 +1,385 @@
+FINAL MASTER BUILD PROMPT
+PHASE 3 — AI SOCIAL + MARKETING ENGINE
+(THE AUTOMATED REVENUE + ENGAGEMENT LAYER)
+
+IMPORTANT:
+DO NOT redesign:
+- CraftHub experience
+- mentor systems
+- collectible card flows
+- Presence Engine
+- Intelligence Engine
+- Governance layer
+- Central Command
+- Environmental Engine
+- OLED luxury visual language
+- tactile raised-button interactions
+
+This phase is NOT:
+generic social media tools.
+
+This phase IS:
+transforming Axiom OS into an automated hospitality marketing and customer reactivation ecosystem.
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+Build:
+AXIOM SOCIAL + MARKETING ENGINE.
+
+Purpose:
+allow Axiom OS to intelligently:
+- generate traffic
+- reactivate guests
+- increase repeat visits
+- recover slow hours
+- promote events
+- trigger atmosphere campaigns
+- automate engagement
+- help venues generate revenue automatically
+
+The system should feel:
+luxury,
+personal,
+intelligent,
+and emotionally aware.
+
+NOT:
+spammy marketing software.
+
+==================================================
+FOUNDATION PRINCIPLE
+==================================================
+
+ALL campaigns must feel:
+hospitality-driven,
+mentor-guided,
+and atmosphere-aware.
+
+NO:
+cheap coupons,
+aggressive discount spam,
+or generic promo blasts.
+
+==================================================
+REUSE EXISTING INFRASTRUCTURE
+==================================================
+
+Use and extend:
+- existing SendGrid integration
+- existing automation engine
+- existing trigger systems
+- existing campaign architecture
+- existing loyalty systems
+- existing Presence Engine
+- existing Intelligence Engine
+- existing Revenue Engine
+- existing mentor system
+- existing role governance
+- existing notification systems
+- existing scheduling systems
+
+DO NOT rebuild working systems.
+
+Extend them.
+
+==================================================
+BUILD:
+AXIOM MARKETING CORE
+==================================================
+
+Create:
+centralized hospitality marketing orchestration engine.
+
+==================================================
+1. MULTI-CHANNEL CAMPAIGN ENGINE
+==================================================
+
+Support:
+- Instagram Posts
+- Instagram Stories
+- Facebook Posts
+- TikTok Campaign Concepts
+- SendGrid Email Campaigns
+- SMS Campaigns
+- Push Notifications
+- Loyalty Alerts
+- Mentor Invitations
+- Reserve Invitations
+
+==================================================
+2. AI CAMPAIGN GENERATION
+==================================================
+
+Axiom should automatically generate:
+- event campaigns
+- atmosphere promotions
+- mentor quotes
+- VIP invitations
+- reserve announcements
+- pairing spotlights
+- featured blend promotions
+- slow-hour recovery campaigns
+- social energy campaigns
+- after-hours engagement
+- unfinished blend reminders
+
+==================================================
+3. AI CONTENT STYLE ENGINE
+==================================================
+
+Generated content should feel:
+- cinematic
+- premium
+- emotionally warm
+- sophisticated
+- lounge-oriented
+- atmosphere-driven
+
+Visual tone:
+Apple × Tesla × Luxury Hospitality.
+
+NO:
+cheap nightclub flyers.
+
+NO:
+generic restaurant ads.
+
+==================================================
+4. AUTOMATED TRIGGER CAMPAIGNS
+==================================================
+
+Use existing Intelligence Engine triggers.
+
+Examples:
+
+IF:
+slow traffic detected
+THEN:
+launch atmosphere recovery campaign.
+
+IF:
+VIP inactive 14 days
+THEN:
+mentor invitation campaign.
+
+IF:
+event energy rising
+THEN:
+promote live social atmosphere.
+
+IF:
+inventory overstocked
+THEN:
+launch pairing recommendation campaign.
+
+==================================================
+5. CUSTOMER RECOVERY ENGINE
+==================================================
+
+Build:
+Guest Recovery Automation.
+
+Detect:
+- inactive guests
+- unfinished sessions
+- missed events
+- loyalty dropoff
+- declining visit frequency
+
+Trigger:
+- mentor follow-ups
+- reserve invitations
+- atmosphere reminders
+- loyalty rewards
+- personalized pairing recommendations
+
+==================================================
+6. SOCIAL ENERGY ENGINE
+==================================================
+
+Track:
+- social campaign engagement
+- event momentum
+- atmosphere participation
+- guest sharing behavior
+- VIP social activity
+- campaign interaction rates
+
+Use this to:
+increase campaign intelligence over time.
+
+==================================================
+7. CAMPAIGN SCHEDULING SYSTEM
+==================================================
+
+Support:
+- scheduled campaigns
+- recurring campaigns
+- time-of-day campaigns
+- event-trigger campaigns
+- weather-trigger campaigns
+- slow-hour campaigns
+- VIP-only campaigns
+- reserve-member campaigns
+
+==================================================
+8. SENDGRID + SMS INTEGRATION
+==================================================
+
+Use existing SendGrid infrastructure already on file.
+
+Extend:
+- dynamic email templates
+- atmosphere-based messaging
+- mentor-branded messaging
+- loyalty reminders
+- event invitations
+- reservation continuity
+- personalized welcome-back messaging
+
+Also support:
+SMS automation workflows.
+
+==================================================
+9. AI SOCIAL CONTENT GENERATOR
+==================================================
+
+Auto-generate:
+- captions
+- atmosphere headlines
+- mentor commentary
+- reserve descriptions
+- event announcements
+- pairing highlights
+- loyalty callouts
+- cinematic social copy
+
+==================================================
+10. CAMPAIGN ANALYTICS
+==================================================
+
+Track:
+- engagement rates
+- open rates
+- click-through rates
+- RSVP rates
+- event conversion
+- loyalty conversion
+- guest reactivation
+- return visits
+- revenue impact
+
+==================================================
+11. MARKETING CONTROL CENTER
+==================================================
+
+Create:
+/marketing
+
+Accessible from CommandCenter.
+
+Tabs:
+- Live Campaigns
+- Scheduled Campaigns
+- Recovery Campaigns
+- VIP Campaigns
+- Atmosphere Campaigns
+- Analytics
+- Automation Rules
+- Content Studio
+
+==================================================
+12. ROLE-BASED GOVERNANCE
+==================================================
+
+SUPER ADMIN:
+full campaign ecosystem control.
+
+VENUE OWNER:
+campaign approvals,
+automation permissions,
+brand tone controls.
+
+MANAGERS:
+limited campaign execution.
+
+STAFF:
+NO marketing authority.
+
+==================================================
+13. AUTOMATION SAFETY
+==================================================
+
+Respect:
+existing Governance + Kill Switch systems.
+
+Support:
+- auto-fire permissions
+- approval-required campaigns
+- SMS shutdown
+- social shutdown
+- emergency disable
+- automation intensity profiles
+
+==================================================
+14. ENVIRONMENT + PRESENCE INTEGRATION
+==================================================
+
+Campaigns should influence:
+- environment states
+- atmosphere modes
+- mentor greetings
+- lounge energy profiles
+
+Presence Engine should trigger:
+personalized campaign experiences.
+
+==================================================
+15. PERFORMANCE + SCALING
+==================================================
+
+Optimize:
+- queue handling
+- scheduled jobs
+- social posting pipelines
+- notification delivery
+- retry handling
+- API rate limits
+- campaign batching
+
+==================================================
+VISUAL STYLE
+==================================================
+
+The Marketing Engine should feel:
+like a luxury hospitality campaign studio.
+
+Use:
+- cinematic visuals
+- real-world imagery
+- OLED warmth
+- floating glass layers
+- tactile controls
+- animated campaign states
+- atmosphere-aware motion
+
+NO:
+corporate email dashboard feel.
+
+==================================================
+FINAL TARGET
+==================================================
+
+CUSTOMER FEELING:
+“This venue understands my vibe and keeps me connected.”
+
+VENUE OWNER FEELING:
+“This system helps generate traffic and revenue automatically.”
+
+STAFF FEELING:
+“The venue always feels active and alive.”
+
+AXIOM OS FEELING:
+an emotionally intelligent hospitality marketing ecosystem continuously driving engagement, loyalty, and revenue behind the scenes.

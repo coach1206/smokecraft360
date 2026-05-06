@@ -1,0 +1,353 @@
+FINAL MASTER BUILD PROMPT
+PHASE 2 — ENVIRONMENTAL REACTION ENGINE
+(THE EMOTIONAL NERVOUS SYSTEM OF AXIOM OS)
+
+IMPORTANT:
+DO NOT redesign:
+- CraftHub homepage
+- collectible discovery cards
+- mentor architecture
+- Revenue Engine
+- Intelligence Engine
+- Presence Engine
+- Governance layer
+- Central Command layer
+- OLED luxury visual language
+- tactile raised-button interactions
+
+This phase is NOT:
+a standard UI feature phase.
+
+This phase IS:
+the emotional environmental intelligence layer.
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+Build:
+AXIOM ENVIRONMENTAL REACTION ENGINE.
+
+Purpose:
+make the venue itself react intelligently and emotionally to:
+- guest presence
+- social energy
+- VIP arrivals
+- event states
+- mentor atmosphere
+- time of day
+- engagement intensity
+- lounge mood
+
+The venue should feel:
+alive,
+responsive,
+cinematic,
+luxurious,
+and emotionally adaptive.
+
+==================================================
+FOUNDATION PRINCIPLE
+==================================================
+
+DO NOT create:
+cheesy nightclub effects,
+over-aggressive animations,
+or distracting visuals.
+
+This should feel:
+elegant,
+subtle,
+premium,
+and intelligent.
+
+Think:
+Apple × Tesla × Star Trek
+inside a luxury hospitality environment.
+
+==================================================
+BUILD:
+GLOBAL ENVIRONMENT OVERLAY ENGINE
+==================================================
+
+Create:
+persistent ambient environmental overlay system.
+
+This overlay exists globally across:
+- CraftHub
+- Revenue Engine
+- Presence Engine
+- Intelligence Engine
+- Governance
+- Central Command
+- lounge displays
+- kiosk systems
+
+==================================================
+ENVIRONMENTAL INPUTS
+==================================================
+
+Environment reacts dynamically to:
+- guest arrivals
+- VIP arrivals
+- lounge occupancy
+- social activity
+- active campaigns
+- event intensity
+- mentor atmosphere
+- loyalty activation
+- quiet reserve sessions
+- high-energy social events
+- late-night lounge transitions
+- atmosphere profile selection
+
+==================================================
+1. SOCIAL ENERGY ENGINE
+==================================================
+
+Build:
+real-time lounge energy state system.
+
+Energy states:
+- Quiet Reserve
+- Social Warmth
+- Elevated Lounge
+- Peak Energy
+- VIP Session
+- Late-Night Reserve
+- Event Atmosphere
+- Mentor Session
+
+==================================================
+ENVIRONMENTAL REACTIONS
+==================================================
+
+Environment subtly adapts:
+- OLED glow intensity
+- ambient lighting warmth
+- particle density
+- overlay pacing
+- animation speed
+- environmental shimmer
+- lounge pulse rhythm
+- transition pacing
+
+==================================================
+2. VIP ARRIVAL REACTION SYSTEM
+==================================================
+
+When VIP guest arrives:
+environment subtly reacts.
+
+Examples:
+- warm ambient glow pulse
+- mentor atmosphere transition
+- reserve accent colors
+- environment soft-focus shift
+- lounge energy elevation
+
+NO:
+flashy casino effects.
+
+Keep:
+luxury subtlety.
+
+==================================================
+3. MENTOR + ENVIRONMENT SYNCHRONIZATION
+==================================================
+
+Mentor personalities influence:
+environmental mood.
+
+Examples:
+
+BOLD mentor:
+- warmer tones
+- stronger amber glow
+- richer contrast
+
+SMOOTH mentor:
+- softer gradients
+- slower transitions
+- lower particle intensity
+
+BALANCED mentor:
+- neutral cinematic atmosphere
+- stable pacing
+
+==================================================
+4. TIME-OF-DAY ATMOSPHERE ENGINE
+==================================================
+
+Environment automatically adapts based on:
+- morning
+- afternoon
+- evening
+- late night
+
+Examples:
+Late night:
+- deeper shadows
+- richer OLED warmth
+- slower pacing
+- cinematic reserve feel
+
+==================================================
+5. EVENT ATMOSPHERE MODES
+==================================================
+
+Events dynamically alter:
+environment state.
+
+Examples:
+- Reserve Pairing Night
+- Whiskey & Smoke
+- VIP Lounge Session
+- Brew Social Night
+- Founder Circle Event
+
+Each event has:
+custom environmental profile.
+
+==================================================
+6. AMBIENT PARTICLE SYSTEM
+==================================================
+
+Build:
+adaptive cinematic particle system.
+
+Particles react to:
+- energy state
+- social intensity
+- event mode
+- atmosphere type
+
+Examples:
+- ember particles
+- soft vapor motion
+- OLED shimmer dust
+- cinematic haze
+
+Must remain:
+subtle and elegant.
+
+==================================================
+7. ENVIRONMENTAL AUDIO ARCHITECTURE
+==================================================
+
+Build:
+adaptive ambient audio state engine.
+
+Support:
+- lounge ambience
+- reserve atmosphere
+- subtle transitions
+- event mood shifts
+- mentor atmosphere synchronization
+
+DO NOT autoplay loud media.
+
+This should feel:
+cinematic and premium.
+
+==================================================
+8. ENVIRONMENTAL CONTROL PANEL
+==================================================
+
+Create:
+/environment
+
+Accessible from CommandCenter.
+
+Allow:
+- manual atmosphere override
+- event atmosphere selection
+- environment intensity adjustment
+- OLED warmth controls
+- social energy sensitivity
+- ambient effect controls
+- automation enable/disable
+- emergency environment reset
+
+==================================================
+9. GLOBAL OVERLAY REACTION SYSTEM
+==================================================
+
+Subtle overlays react globally across platform.
+
+Examples:
+- quiet shimmer movement
+- OLED edge breathing
+- ambient glow pacing
+- environmental warmth
+- atmospheric pulse states
+
+This creates:
+the “alive operating system” feel.
+
+==================================================
+10. LIVE ENVIRONMENT INTELLIGENCE
+==================================================
+
+Track:
+- atmosphere engagement
+- event atmosphere effectiveness
+- VIP atmosphere response
+- guest linger time
+- emotional pacing
+- environment intensity trends
+- social energy trends
+
+Feed this data into:
+Enterprise Intelligence layer.
+
+==================================================
+UI/UX REQUIREMENTS
+==================================================
+
+ALL environmental systems MUST:
+- remain subtle
+- preserve readability
+- maintain luxury feel
+- avoid distraction
+- support cinematic immersion
+- preserve tactile UI philosophy
+- use real-world visual references
+
+NO:
+cheap gaming aesthetics.
+
+NO:
+Vegas casino energy.
+
+NO:
+cartoon nightclub visuals.
+
+==================================================
+VISUAL TARGET
+==================================================
+
+The venue should feel:
+like a luxury intelligent hospitality environment from the near future.
+
+People should FEEL:
+“This place is alive.”
+
+Without fully understanding:
+why.
+
+==================================================
+FINAL TARGET
+==================================================
+
+CUSTOMER FEELING:
+“This place feels different.”
+
+VIP FEELING:
+“This environment recognizes me.”
+
+VENUE OWNER FEELING:
+“This creates emotional atmosphere and keeps people engaged longer.”
+
+AXIOM OS FEELING:
+a living hospitality intelligence ecosystem with adaptive emotional atmosphere behavior.
