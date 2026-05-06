@@ -1,0 +1,337 @@
+FINAL MASTER BUILD PROMPT
+AXIOM OS — FINAL CORE ECOSYSTEM COMPLETION
+(ENVIRONMENTAL ENGINE + AI MARKETING + ENTERPRISE HARDENING + ENTERPRISE INTELLIGENCE)
+
+IMPORTANT:
+DO NOT redesign existing systems.
+
+PRESERVE:
+- CraftHub homepage
+- collectible card architecture
+- cinematic mentor system
+- OLED hospitality visual language
+- tactile raised-button interactions
+- Revenue Engine
+- Intelligence Engine
+- Presence Engine
+- luxury Apple × Tesla × Star Trek hospitality feel
+
+This phase is about:
+CONNECTING,
+AUTOMATING,
+HARDENING,
+and FINALIZING
+the ecosystem.
+
+==================================================
+PRIMARY OBJECTIVE
+==================================================
+
+Transform Axiom OS from:
+an intelligent hospitality platform
+
+into:
+a fully connected hospitality operating ecosystem that:
+- automates engagement
+- increases venue revenue
+- adapts emotionally
+- recognizes guests
+- powers loyalty
+- reacts intelligently
+- operates continuously
+- generates actionable hospitality intelligence
+
+==================================================
+USE EXISTING INFRASTRUCTURE
+==================================================
+
+REUSE existing architecture and APIs already implemented from prior systems wherever possible.
+
+Use existing:
+- SendGrid integration
+- notification infrastructure
+- campaign systems
+- automation workflows
+- analytics systems
+- event engines
+- CRM continuity systems
+- RBAC/governance architecture
+- feature flags
+- audit systems
+- kill-switch architecture
+- Stripe/payment infrastructure
+- loyalty systems
+- trigger systems
+- scheduling systems
+- social posting architecture
+- geofence concepts
+- dashboard infrastructure
+- tenant isolation systems
+- webhook systems
+- admin intensity controls
+
+DO NOT rebuild existing working infrastructure.
+
+Extend and adapt it into:
+Axiom hospitality intelligence architecture.
+
+==================================================
+PHASE 1 — ENVIRONMENTAL REACTION ENGINE
+==================================================
+
+Build:
+AXIOM ENVIRONMENTAL ENGINE.
+
+Purpose:
+make the venue environment itself react intelligently.
+
+==================================================
+ENVIRONMENTAL SYSTEMS
+==================================================
+
+Build:
+- adaptive lighting states
+- atmosphere mood profiles
+- lounge energy detection
+- mentor/environment synchronization
+- event atmosphere modes
+- VIP arrival atmosphere shifts
+- reserve session atmosphere transitions
+- ambient OLED glow adaptation
+- dynamic particle intensity
+- late-night atmosphere logic
+- emotional atmosphere pacing
+- social energy atmosphere reactions
+
+==================================================
+ENVIRONMENTAL INPUTS
+==================================================
+
+Environment reacts to:
+- guest presence
+- VIP arrivals
+- social activity
+- atmosphere intensity
+- active events
+- mentor state
+- loyalty activity
+- lounge occupancy
+- time of day
+- music profile
+- event energy
+
+==================================================
+PHASE 2 — AI SOCIAL MEDIA + MARKETING ENGINE
+==================================================
+
+Build:
+AXIOM SOCIAL + MARKETING ENGINE.
+
+Purpose:
+turn Axiom into an automated hospitality marketing employee.
+
+==================================================
+SOCIAL + CAMPAIGN SYSTEMS
+==================================================
+
+Integrate:
+- Instagram
+- Facebook
+- TikTok
+- SendGrid email campaigns
+- SMS campaigns
+- push notifications
+- loyalty messaging
+- mentor outreach
+- reserve-member notifications
+
+==================================================
+AUTOMATED CAMPAIGN TYPES
+==================================================
+
+Build:
+- slow-hour recovery campaigns
+- VIP invitations
+- mentor pairing campaigns
+- atmosphere alerts
+- event promotions
+- reserve release campaigns
+- unfinished blend reminders
+- loyalty reactivation
+- social atmosphere promotions
+- inventory movement campaigns
+- after-hours promotions
+- birthday/VIP campaigns
+
+==================================================
+AI CONTENT GENERATION
+==================================================
+
+Axiom should automatically generate:
+- social posts
+- atmosphere announcements
+- event campaigns
+- mentor quotes
+- reserve invitations
+- pairing highlights
+- promotional imagery overlays
+- venue engagement messaging
+
+Style:
+luxury hospitality ONLY.
+
+NO:
+cheap promotional design.
+
+==================================================
+CAMPAIGN TRIGGER ENGINE
+==================================================
+
+Continue using:
+Hybrid Automation Logic.
+
+LOW-RISK:
+auto-fire.
+
+HIGH-IMPACT:
+approval-required.
+
+Use existing:
+automation trigger infrastructure.
+
+==================================================
+PHASE 3 — ENTERPRISE HARDENING + GOVERNANCE
+==================================================
+
+Build:
+AXIOM ENTERPRISE CONTROL LAYER.
+
+==================================================
+HARDENING SYSTEMS
+==================================================
+
+Implement:
+- advanced RBAC
+- multi-venue tenant isolation
+- venue-scoped permissions
+- automation permission controls
+- admin intensity settings
+- operational kill switches
+- audit logging
+- automation approval queues
+- feature flags
+- webhook validation
+- rate limiting
+- encrypted sensitive data
+- session protection
+- backup/recovery workflows
+- operational monitoring
+- performance optimization
+
+==================================================
+ROLE TIERS
+==================================================
+
+Support:
+1. Super Admin
+2. Venue Owner/Admin
+3. Manager
+4. Staff/Host
+
+UI dynamically adapts per role.
+
+==================================================
+PHASE 4 — ENTERPRISE HOSPITALITY INTELLIGENCE
+==================================================
+
+Build:
+AXIOM ENTERPRISE INTELLIGENCE LAYER.
+
+==================================================
+INTELLIGENCE SYSTEMS
+==================================================
+
+Track:
+- flavor trends
+- atmosphere trends
+- emotional engagement
+- loyalty trends
+- VIP behavior
+- event engagement
+- inventory movement
+- campaign performance
+- social momentum
+- retention behavior
+- guest return behavior
+- spending psychology
+- social atmosphere dynamics
+- mentor engagement
+- emotional response patterns
+
+==================================================
+ENTERPRISE ANALYTICS
+==================================================
+
+Create:
+- manufacturer intelligence dashboards
+- distributor intelligence dashboards
+- regional trend intelligence
+- venue performance intelligence
+- hospitality engagement analytics
+- predictive hospitality modeling
+
+==================================================
+PHASE 5 — FINAL EXPERIENCE POLISH
+==================================================
+
+Refine:
+- tactile interactions
+- cinematic transitions
+- atmosphere pacing
+- UI simplification
+- emotional warmth
+- motion smoothing
+- environmental layering
+- animation polish
+- operational responsiveness
+- friction reduction
+- onboarding flow
+- mentor pacing
+- OLED visual consistency
+
+==================================================
+GLOBAL UI RULES
+==================================================
+
+EVERY module MUST:
+- use real-world cinematic imagery
+- preserve OLED luxury atmosphere
+- include depth perception
+- use tactile raised controls
+- preserve smooth cinematic transitions
+- include persistent Back navigation
+- avoid flat dashboards
+- avoid generic SaaS appearance
+
+Design target:
+Apple × Tesla × Star Trek
+for luxury hospitality intelligence.
+
+==================================================
+FINAL TARGET
+==================================================
+
+CUSTOMER FEELING:
+“This place understands and remembers me.”
+
+VENUE OWNER FEELING:
+“This system helps me make money automatically.”
+
+STAFF FEELING:
+“This system helps us deliver elite hospitality.”
+
+MANUFACTURER/DISTRIBUTOR FEELING:
+“This platform gives us real hospitality intelligence.”
+
+AXIOM OS FEELING:
+an intelligent luxury hospitality operating ecosystem quietly running the venue behind the scenes.
