@@ -38,7 +38,9 @@ import {
 } from "lucide-react";
 import { useAxiom360 }   from "@/store/axiom360Store";
 import type { CraftType } from "@/store/axiom360Store";
-import { useAxiomStore }   from "@/store/axiomStore";
+import { useAxiomStore }          from "@/store/axiomStore";
+import { calculateDynamicPrice }  from "@/lib/pricing";
+import type { PriceInfo }         from "@/lib/pricing";
 import {
   xpProgress, xpToNextRank,
   RANK_CONFIG,
@@ -94,38 +96,6 @@ const CRAFT_BASE_PRICE: Record<string, number> = {
   vape:  18,
 };
 
-type PriceModifier = "base" | "surge" | "discount" | "locked";
-
-interface PriceInfo {
-  price:    number;
-  modifier: PriceModifier;
-  label:    string;
-}
-
-function computePrice(
-  craftId:   string,
-  occupancy: number,
-  isActive:  boolean,
-  isMember:  boolean,
-): PriceInfo {
-  const base = CRAFT_BASE_PRICE[craftId] ?? 20;
-  if (isMember)
-    return { price: base, modifier: "locked",   label: "Price Locked"     };
-  if (!isActive)
-    return { price: base, modifier: "base",     label: "Base Rate"        };
-  if (occupancy > 80)
-    return { price: +(base * 1.12).toFixed(2),  modifier: "surge",    label: "Premium Demand"   };
-  if (occupancy < 25)
-    return { price: +(base * 0.85).toFixed(2),  modifier: "discount", label: "Volume Incentive" };
-  return   { price: base, modifier: "base",     label: "Base Rate"        };
-}
-
-const PRICE_MODIFIER_COLOR: Record<PriceModifier, string> = {
-  locked:   "#4ade80",
-  surge:    "#f87171",
-  discount: "#C9A84C",
-  base:     "rgba(240,232,212,0.32)",
-};
 
 // ── Scene rotation hook ───────────────────────────────────────────────────────
 // Returns the currently-displayed image URL for a craft card.
@@ -437,12 +407,14 @@ function CraftCard({
             textAlign: "right",
           }}
         >
-          <div style={{
-            fontSize: 6.5, fontWeight: 700, letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            color: PRICE_MODIFIER_COLOR[priceInfo.modifier],
-            marginBottom: 1,
-          }}>
+          <div
+            className={priceInfo.color}
+            style={{
+              fontSize: 6.5, fontWeight: 700, letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              marginBottom: 1,
+            }}
+          >
             {priceInfo.label}
           </div>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "flex-end", gap: 1 }}>
@@ -1146,7 +1118,7 @@ function PatronView({
     () => Object.fromEntries(
       CRAFTS.map((c) => [
         c.id,
-        computePrice(c.id, occupancy, isDynamicActive, isMember),
+        calculateDynamicPrice(CRAFT_BASE_PRICE[c.id] ?? 20, occupancy, isDynamicActive, isMember),
       ]),
     ),
     [occupancy, isDynamicActive, isMember],
@@ -1185,10 +1157,9 @@ function PatronView({
     playClick();
     addXP(50);
     // Accumulate surge lift whenever a patron enters the experience during peak
-    if (isDynamicActive && !isMember && occupancy > 80) {
-      const base = CRAFT_BASE_PRICE[craft.id] ?? 20;
-      processSale(base, +(base * 1.12).toFixed(2));
-    }
+    const _base = CRAFT_BASE_PRICE[craft.id] ?? 20;
+    const _info = calculateDynamicPrice(_base, occupancy, isDynamicActive, isMember);
+    if (_info.price !== _base) processSale(_base, _info.price);
     setTimeout(() => setPortal({ route: craft.route, color: craft.color }), 320);
   }
 
@@ -1377,7 +1348,7 @@ function PatronView({
             craft={craft}
             idx={i}
             onTap={() => handleCraftTap(craft)}
-            priceInfo={craftPrices[craft.id] ?? computePrice(craft.id, occupancy, isDynamicActive, isMember)}
+            priceInfo={craftPrices[craft.id] ?? calculateDynamicPrice(CRAFT_BASE_PRICE[craft.id] ?? 20, occupancy, isDynamicActive, isMember)}
           />
         ))}
       </div>
