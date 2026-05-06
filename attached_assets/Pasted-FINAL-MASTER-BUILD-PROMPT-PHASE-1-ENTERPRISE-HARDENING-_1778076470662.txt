@@ -1,0 +1,358 @@
+FINAL MASTER BUILD PROMPT
+PHASE 1 — ENTERPRISE HARDENING + DEPLOYMENT LAYER
+(REMOTE OPERATIONS + GOVERNANCE + OTA INFRASTRUCTURE)
+
+IMPORTANT:
+DO NOT redesign:
+- CraftHub experience
+- mentor systems
+- collectible cards
+- Revenue Engine
+- Presence Engine
+- Intelligence Engine
+- cinematic hospitality UI
+- OLED luxury visual language
+- tactile raised-button system
+
+This phase is NOT:
+a visual redesign.
+
+This phase IS:
+transforming Axiom OS into a production-grade remotely managed hospitality operating ecosystem.
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+Build:
+AXIOM ENTERPRISE CONTROL + DEPLOYMENT LAYER.
+
+Purpose:
+allow Super Admins, Venue Owners, and approved Managers to remotely control, configure, update, monitor, and govern venue systems from ANY location.
+
+Examples:
+- Dominican Republic
+- mobile phone
+- tablet
+- laptop
+- remote office
+- another venue
+
+NO on-site access required for normal operations.
+
+==================================================
+PRIMARY GOALS
+==================================================
+
+Transform Axiom OS into:
+- remotely manageable
+- operationally secure
+- role-governed
+- venue-scoped
+- cloud-synced
+- deployment-controlled
+- enterprise-safe
+- scalable infrastructure
+
+==================================================
+BUILD:
+AXIOM CENTRAL COMMAND
+==================================================
+
+Create:
+centralized cloud operations layer.
+
+Purpose:
+manage all venues, kiosks, devices, campaigns, automations, and environments remotely from one operational command center.
+
+==================================================
+1. ADVANCED RBAC SYSTEM
+==================================================
+
+Refine and harden role-based access control.
+
+Support:
+1. Super Admin
+2. Venue Owner/Admin
+3. Manager
+4. Staff/Host
+
+==================================================
+ROLE PERMISSIONS
+==================================================
+
+SUPER ADMIN:
+- full ecosystem control
+- all venues
+- deployment authority
+- OTA authority
+- AI rule control
+- enterprise analytics
+- feature flags
+- emergency controls
+
+VENUE OWNER:
+- control only their venues
+- approve campaigns
+- manage automations
+- configure atmosphere systems
+- manage memberships
+- manage staff permissions
+- remote venue management
+
+MANAGER:
+- operational venue control
+- event operations
+- guest management
+- reservation oversight
+- limited automation control
+
+STAFF/HOST:
+- guest-facing operational tools only
+- arrivals
+- VIP greetings
+- reservations
+- session continuity
+
+==================================================
+2. TENANT ISOLATION
+==================================================
+
+ALL venue systems MUST become:
+fully tenant-scoped.
+
+Isolate:
+- guest data
+- campaigns
+- loyalty systems
+- automations
+- atmosphere profiles
+- analytics
+- event systems
+- deployment settings
+- device groups
+
+Prevent:
+cross-venue data leakage.
+
+==================================================
+3. OTA UPDATE ENGINE
+==================================================
+
+Build:
+Over-The-Air deployment infrastructure.
+
+Allow remote deployment of:
+- UI updates
+- feature releases
+- mentor updates
+- atmosphere packs
+- campaign packs
+- AI logic updates
+- loyalty updates
+- visual refinements
+- event templates
+- automation rules
+
+WITHOUT requiring manual reinstall.
+
+==================================================
+4. VERSION MANAGEMENT SYSTEM
+==================================================
+
+Track:
+- current app version
+- deployment history
+- patch history
+- rollback state
+- failed deployments
+- update channels
+- deployment health
+
+Support:
+- Production
+- Staging
+- Beta/Test
+
+==================================================
+5. REMOTE DEVICE MANAGEMENT
+==================================================
+
+Monitor:
+- kiosks
+- tablets
+- POS systems
+- lounge displays
+- wall displays
+
+Track:
+- online/offline
+- last heartbeat
+- sync health
+- active sessions
+- app crashes
+- internet quality
+- performance metrics
+- idle state
+- app version
+
+==================================================
+REMOTE ACTIONS
+==================================================
+
+Allow:
+- remote refresh
+- restart device
+- force sync
+- maintenance mode
+- lock/unlock kiosk
+- force logout
+- deploy update
+- disable device
+- emergency shutdown
+
+==================================================
+6. LIVE CLOUD SYNC
+==================================================
+
+Build:
+real-time synchronization layer.
+
+Remote changes should instantly update:
+- kiosks
+- staff dashboards
+- venue displays
+- campaigns
+- atmosphere systems
+- automation systems
+
+==================================================
+7. FEATURE FLAGS + REMOTE CONFIG
+==================================================
+
+Allow remote control of:
+- automation intensity
+- atmosphere intensity
+- mentor behavior
+- campaign permissions
+- geofence settings
+- loyalty systems
+- event systems
+- notification systems
+- visual themes
+- environment modes
+
+WITHOUT requiring code redeploy.
+
+==================================================
+8. AUTOMATION GOVERNANCE
+==================================================
+
+Venue owners MUST control:
+- what auto-fires
+- what requires approval
+- SMS permissions
+- social posting permissions
+- geofence permissions
+- mentor outreach permissions
+- loyalty campaign permissions
+
+==================================================
+9. KILL SWITCH + SAFETY SYSTEMS
+==================================================
+
+Build emergency controls for:
+- SMS shutdown
+- campaign shutdown
+- geofence shutdown
+- automation shutdown
+- environment shutdown
+- social posting shutdown
+- mentor messaging shutdown
+
+Support:
+venue-level and platform-level overrides.
+
+==================================================
+10. AUDIT + OPERATIONAL LOGGING
+==================================================
+
+Track ALL critical actions:
+- deployments
+- automation approvals
+- campaign launches
+- admin changes
+- device actions
+- remote operations
+- kill-switch events
+- configuration changes
+
+Maintain:
+tamper-resistant audit trails.
+
+==================================================
+11. CENTRAL VENUE OPERATIONS DASHBOARD
+==================================================
+
+Build:
+AXIOM CENTRAL COMMAND.
+
+Show:
+- all active venues
+- device health
+- venue sync status
+- active campaigns
+- live automations
+- guest activity
+- loyalty activity
+- environment state
+- deployment state
+- alert systems
+
+==================================================
+VISUAL STYLE
+==================================================
+
+NO:
+corporate IT dashboards.
+
+Use:
+- cinematic hospitality visuals
+- OLED operational glow
+- layered glassmorphism
+- depth perception
+- tactile raised controls
+- animated intelligence indicators
+- real-world hospitality imagery
+
+Design target:
+Apple × Tesla × Star Trek
+for luxury hospitality operations.
+
+==================================================
+GLOBAL REQUIREMENTS
+==================================================
+
+EVERY screen MUST:
+- include Back navigation
+- support responsive layouts
+- preserve cinematic transitions
+- maintain premium emotional feel
+- remain uncluttered
+- adapt by role automatically
+
+==================================================
+FINAL TARGET
+==================================================
+
+SUPER ADMIN FEELING:
+“I control the ecosystem remotely from anywhere.”
+
+VENUE OWNER FEELING:
+“I can manage my business without physically being there.”
+
+STAFF FEELING:
+“This helps us deliver better hospitality.”
+
+AXIOM OS FEELING:
+a fully centralized luxury hospitality operating infrastructure with enterprise-grade remote operations and deployment control.
