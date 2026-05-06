@@ -20,7 +20,7 @@ export default function BackgroundLayer({
         position: "relative",
         minHeight: "100dvh",
         overflow: "hidden",
-        background: "#F5F2EB",
+        background: "#0a0806",
         ...style,
       }}
     >
