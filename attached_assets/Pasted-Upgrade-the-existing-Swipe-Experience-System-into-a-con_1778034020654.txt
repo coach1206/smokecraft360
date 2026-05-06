@@ -1,0 +1,335 @@
+Upgrade the existing Swipe Experience System into a continuous immersive sensory environment.
+
+The platform architecture is already complete:
+
+- Universal Swipe Engine
+- Memory Brain
+- Revenue Brain
+- Adaptive Pairing
+- RevealPage
+- Swipe Intelligence
+- Realism Layer
+- Add-To-Order
+- Inventory-aware recommendations
+
+DO NOT rebuild these systems.
+
+This phase is about:
+IMMERSION
+CONTINUITY
+EMOTIONAL EXPERIENCE
+AI VISUAL ENVIRONMENTS
+
+==================================================
+1. CONTINUOUS EXPERIENCE ENVIRONMENT
+==================================================
+
+The app should no longer feel like:
+“separate pages”
+
+It should feel like:
+“one continuous living atmosphere”
+
+==================================================
+IMPLEMENT:
+==================================================
+
+- persistent ambient lighting
+- continuous motion layers
+- dynamic background transitions
+- environmental atmosphere memory
+- seamless page-to-page transitions
+
+The environment should smoothly morph between:
+- swipe
+- reveal
+- ordering
+- analytics
+
+without hard visual resets.
+
+==================================================
+2. ENVIRONMENT REACTIVITY ENGINE
+==================================================
+
+Create:
+
+client/src/lib/environmentEngine.ts
+
+The environment should subtly react to:
+- user swipe choices
+- flavor profile
+- craft type
+- session intensity
+- time of day
+
+==================================================
+EXAMPLES
+==================================================
+
+If user prefers:
+SMOKY / BOLD
+→ warmer ember lighting
+→ heavier smoke
+→ darker shadows
+
+If user prefers:
+CRISP / LIGHT
+→ brighter environment
+→ cleaner reflections
+→ softer motion
+
+If user prefers:
+VAPE / NEON
+→ increased ambient glow
+→ deeper vapor density
+→ reactive light pulses
+
+==================================================
+3. AI VISUAL GENERATION PIPELINE
+==================================================
+
+Create architecture for dynamic AI-generated visuals.
+
+Create:
+
+/lib/visualScenePrompts.ts
+
+Each craft type should generate:
+- cinematic scene prompts
+- lighting prompts
+- flavor atmosphere prompts
+- texture prompts
+- camera framing prompts
+
+==================================================
+EXAMPLE
+==================================================
+
+SmokeCraft:
+“luxury cigar lounge, cinematic ember glow, rich mahogany, smoke haze, warm gold lighting, shallow depth of field”
+
+PourCraft:
+“high-end whiskey lounge, crystal reflections, amber liquid motion, cinematic cocktail atmosphere”
+
+==================================================
+4. DYNAMIC SCENE ROTATION
+==================================================
+
+Implement rotating cinematic environments.
+
+NOT slideshow behavior.
+
+Use:
+- soft crossfades
+- layered depth motion
+- cinematic zoom drift
+- parallax movement
+
+Every session should feel slightly different.
+
+==================================================
+5. SESSION CONTINUITY MEMORY
+==================================================
+
+When user returns:
+
+System should instantly restore:
+- preferred atmosphere
+- preferred craft
+- strongest tags
+- visual intensity
+- prior reveal tone
+
+Show subtle message:
+“Welcome back to your atmosphere”
+
+==================================================
+6. EMOTIONAL TRANSITION ENGINE
+==================================================
+
+Transitions should feel cinematic.
+
+==================================================
+IMPLEMENT:
+==================================================
+
+Swipe completion:
+→ environment darkens slightly
+→ particles increase
+→ reveal emerges slowly
+
+Reveal accepted:
+→ glow pulse
+→ ambient highlight
+→ environment soft-focus transition
+
+Add-To-Order:
+→ satisfying confirmation animation
+→ subtle cinematic camera push
+→ reward glow
+
+==================================================
+7. SOUND ENGINE FOUNDATION
+==================================================
+
+Wire real Howler.js audio system.
+
+Create:
+client/src/lib/soundEngine.ts
+
+==================================================
+AMBIENT LOOPS
+==================================================
+
+SmokeCraft:
+- ember crackle
+- low jazz ambience
+- subtle lounge chatter
+
+PourCraft:
+- ice clink
+- whiskey pour
+- ambient piano
+
+BrewCraft:
+- soft crowd energy
+- carbonation hiss
+- glass taps
+
+VapeCraft:
+- ambient synth
+- vapor inhale
+- low atmospheric hum
+
+==================================================
+RULES
+==================================================
+
+- sounds must be subtle
+- volume adaptive
+- fade transitions
+- no autoplay until interaction
+
+==================================================
+8. CINEMATIC CAMERA FEEL
+==================================================
+
+Add subtle:
+- zoom drift
+- focus breathing
+- depth motion
+- cinematic framing
+
+The app should feel filmed, not rendered.
+
+==================================================
+9. ADVANCED CARD REALISM
+==================================================
+
+Upgrade swipe cards further.
+
+==================================================
+ADD:
+==================================================
+
+- reflective highlights
+- moving condensation
+- ember flicker
+- foam overflow realism
+- vapor turbulence
+- liquid viscosity physics
+
+Cards should feel tangible.
+
+==================================================
+10. MICRO DETAIL SYSTEM
+==================================================
+
+Implement:
+- particle systems
+- dust motes
+- ember particles
+- glow pulses
+- soft light flicker
+- ambient haze
+
+==================================================
+11. REVEAL EXPERIENCE EVOLUTION
+==================================================
+
+RevealPage should become:
+“the climax moment”
+
+==================================================
+ADD:
+==================================================
+
+- cinematic entrance
+- layered stagger timing
+- environment dimming
+- recommendation spotlight
+- dramatic reveal pacing
+
+==================================================
+12. ORDER CONFIRMATION EXPERIENCE
+==================================================
+
+After Add-To-Order:
+
+DO NOT show normal modal.
+
+Show:
+- cinematic confirmation
+- glowing reservation badge
+- animated success pulse
+- subtle environment reaction
+
+==================================================
+13. PERFORMANCE HARDENING
+==================================================
+
+Maintain:
+- 60fps target
+- transform-only animations
+- lazy loading
+- motion throttling
+- memory cleanup
+
+==================================================
+14. FINAL TARGET EXPERIENCE
+==================================================
+
+The final feeling should be:
+
+Apple-level motion polish
+Netflix-level cinematic transitions
+Luxury lounge atmosphere
+AI-guided emotional environment
+Tinder-level interaction simplicity
+
+The user should feel:
+guided
+immersed
+understood
+rewarded
+
+NOT:
+like they are using software.
+
+==================================================
+15. ACCEPTANCE TESTS
+==================================================
+
+Verify:
+
+- environment reacts to taste profile
+- transitions are seamless
+- sound hooks function
+- sessions restore atmosphere
+- visuals rotate dynamically
+- all crafts preserve unique identity
+- no FPS drops
+- no hard page resets
+- swipe cards feel alive
+- reveal feels cinematic

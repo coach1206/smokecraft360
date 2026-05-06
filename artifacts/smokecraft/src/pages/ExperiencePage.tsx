@@ -18,6 +18,8 @@ import {
 import { ArrowLeft, ChevronRight, ChevronLeft, Sparkles, Check, X } from "lucide-react";
 import { getCraftTheme, type CraftTheme } from "@/lib/craftThemes";
 import { CraftRealism } from "@/components/CraftRealism";
+import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
+import { SessionReturnBanner } from "@/components/CinematicTransition";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -314,14 +316,29 @@ export default function ExperiencePage() {
   const type      = params.type ?? "smoke";
   const [, navigate] = useLocation();
   const theme     = getCraftTheme(type);
+  const envCtx    = useEnvironmentSafe();
 
-  const [sessionId,  setSessionId]  = useState<string | null>(null);
-  const [cards,      setCards]      = useState<ExperienceItem[]>([]);
-  const [loading,    setLoading]    = useState(true);
-  const [swiping,    setSwiping]    = useState(false);
-  const [swipeCount, setSwipeCount] = useState(0);
-  const [feedback,   setFeedback]   = useState<{ text: string; type: "add" | "skip" } | null>(null);
-  const [done,       setDone]       = useState(false);
+  const [sessionId,    setSessionId]    = useState<string | null>(null);
+  const [cards,        setCards]        = useState<ExperienceItem[]>([]);
+  const [loading,      setLoading]      = useState(true);
+  const [swiping,      setSwiping]      = useState(false);
+  const [swipeCount,   setSwipeCount]   = useState(0);
+  const [feedback,     setFeedback]     = useState<{ text: string; type: "add" | "skip" } | null>(null);
+  const [done,         setDone]         = useState(false);
+  const [returnBanner, setReturnBanner] = useState(false);
+
+  // Signal craft type to environment engine on mount
+  useEffect(() => {
+    if (!envCtx) return;
+    const craftType = (["smoke","pour","brew","vape"].includes(type) ? type : "smoke") as import("@/lib/environmentEngine").CraftType;
+    envCtx.setCraft(craftType);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    if (envCtx.env.returnVisit && envCtx.env.lastCraftSeen === craftType) {
+      setReturnBanner(true);
+      timer = setTimeout(() => setReturnBanner(false), 4500);
+    }
+    return () => { if (timer !== undefined) clearTimeout(timer); };
+  }, [type]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Session + cards bootstrap ─────────────────────────────────────────────
 
@@ -363,6 +380,12 @@ export default function ExperiencePage() {
     });
     setTimeout(() => setFeedback(null), 1800);
 
+    // Signal environment engine
+    if (envCtx && card.tags?.length) {
+      if (action === "add") envCtx.onSwipeAdd(card.tags);
+      else                  envCtx.onSwipeSkip(card.tags);
+    }
+
     if (sessionId) {
       apiPost("/api/swipe-experience/swipe", {
         sessionId,
@@ -388,6 +411,7 @@ export default function ExperiencePage() {
   async function handleFinish() {
     if (!sessionId) { navigate("/"); return; }
     apiPost(`/api/swipe-experience/session/${sessionId}/complete`, {}).catch(() => {});
+    envCtx?.onRevealStart();
     navigate(`/reveal/${sessionId}`);
   }
 
@@ -421,6 +445,13 @@ export default function ExperiencePage() {
   // ── Render: Main ─────────────────────────────────────────────────────────
 
   return (
+    <>
+    <SessionReturnBanner
+      visible={returnBanner}
+      craftType={type}
+      accentColor={theme.accent}
+      onDismiss={() => setReturnBanner(false)}
+    />
     <div style={{
       position:   "fixed",
       inset:      0,
@@ -710,6 +741,7 @@ export default function ExperiencePage() {
         </div>
       )}
     </div>
+    </>
   );
 }
 

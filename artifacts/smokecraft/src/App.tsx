@@ -59,6 +59,9 @@ import PosAuditBridge                  from "@/components/PosAuditBridge";
 import { useSystemVersion }            from "@/hooks/useSystemVersion";
 import { EngagementProvider }          from "@/contexts/EngagementContext";
 import { bootstrapKioskAuth }          from "@/services/auth";
+import { EnvironmentProvider }         from "@/contexts/EnvironmentContext";
+import { PersistentAmbientLayer }      from "@/components/PersistentAmbientLayer";
+import { ParticleSystem }              from "@/components/ParticleSystem";
 
 const queryClient = new QueryClient();
 
@@ -146,8 +149,10 @@ function App() {
                 <EngagementProvider>
                 <KioskModeProvider>
                 <DeviceRouterProvider>
-                  <>
+                  <EnvironmentProvider>
                     <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                      <PersistentAmbientLayer />
+                      <ParticleSystem />
                       <GlobalBackButton />
                       <InactivityGuard />
                       <Router />
@@ -159,7 +164,7 @@ function App() {
                     <KioskModeBanner />
                     <LicenseGate />
                     <Toaster />
-                  </>
+                  </EnvironmentProvider>
                 </DeviceRouterProvider>
                 </KioskModeProvider>
                 </EngagementProvider>

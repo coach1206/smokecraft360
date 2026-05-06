@@ -13,6 +13,7 @@ import { useParams, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, ShoppingBag, Star, Check, Package, AlertTriangle } from "lucide-react";
 import { getCraftTheme } from "@/lib/craftThemes";
+import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -71,6 +72,7 @@ export default function RevealPage() {
   const params     = useParams<{ sessionId: string }>();
   const sessionId  = params.sessionId;
   const [, navigate] = useLocation();
+  const envCtx     = useEnvironmentSafe();
 
   const [recs,      setRecs]      = useState<Recommendation[]>([]);
   const [loading,   setLoading]   = useState(true);
@@ -81,6 +83,11 @@ export default function RevealPage() {
   const [confirm,   setConfirm]   = useState<OrderConfirmation | null>(null);
 
   const theme = getCraftTheme(craftType);
+
+  // Signal reveal climax to environment engine on mount
+  useEffect(() => {
+    envCtx?.onRevealStart();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Fetch recommendations ─────────────────────────────────────────────────
 
@@ -128,6 +135,7 @@ export default function RevealPage() {
           itemId,
           priceCents: rec.item.priceCents ?? 0,
         });
+        envCtx?.onOrderConfirm();
       }
     } catch {
       setOrderError(prev => ({ ...prev, [itemId]: "Failed to add — please try again" }));
