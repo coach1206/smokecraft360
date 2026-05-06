@@ -6,31 +6,52 @@ import {
 } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter, POS_MODE_INFO } from "@/contexts/CommandCenterContext";
-import { useVenueContext } from "@/contexts/VenueContext";
 import { useEngagementContext } from "@/contexts/EngagementContext";
 import SystemStatusPanel from "@/components/SystemStatusPanel";
-import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 import LiveKpi from "@/components/LiveKpi";
+import { useVenueContext } from "@/contexts/VenueContext";
+
+// ── Ambient particles ──────────────────────────────────────────────────────────
+
+const CC_PARTICLES = Array.from({ length: 18 }, (_, i) => ({
+  id: i, x: Math.random() * 100, y: Math.random() * 100,
+  r: 0.8 + Math.random() * 1.8, dur: 9 + Math.random() * 14,
+  del: Math.random() * 10, op: 0.04 + Math.random() * 0.10,
+}));
+
+function CCParticles() {
+  return (
+    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", overflow: "hidden", zIndex: 0 }}>
+      {CC_PARTICLES.map(p => (
+        <motion.div key={p.id}
+          style={{ position: "absolute", left: `${p.x}%`, top: `${p.y}%`, width: p.r * 2, height: p.r * 2, borderRadius: "50%", background: C.gold, opacity: p.op }}
+          animate={{ y: [0, -26, 8, -16, 0], x: [0, 9, -7, 12, 0], opacity: [p.op, p.op * 2.2, p.op * 0.35, p.op * 1.7, p.op] }}
+          transition={{ duration: p.dur, delay: p.del, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
+    </div>
+  );
+}
 
 const C = {
-  bg:        "#F5F2EB",
-  header:    "rgba(245,242,235,0.96)",
-  border:    "rgba(0,0,0,0.08)",
-  text:      "#1A1410",
-  muted:     "rgba(26,20,16,0.45)",
-  dim:       "rgba(26,20,16,0.28)",
-  gold:      "#9A7820",
-  card:      "#FFFFFF",
-  cardBorder:"rgba(0,0,0,0.09)",
-  back:      "#FFFFFF",
-  backBorder:"rgba(0,0,0,0.1)",
+  bg:        "#080604",
+  header:    "rgba(18,16,14,0.97)",
+  border:    "rgba(255,210,120,0.12)",
+  text:      "#F5E7C8",
+  muted:     "rgba(240,232,212,0.50)",
+  dim:       "rgba(240,232,212,0.30)",
+  gold:      "#C9A84C",
+  card:      "rgba(255,255,255,0.045)",
+  cardBorder:"rgba(255,210,120,0.14)",
+  back:      "#211D19",
+  backBorder:"rgba(255,210,120,0.18)",
 };
 
 const TILES = [
   { id: "smokecraft", title: "SmokeCraft", desc: "Launch cigar experience", color: "#e85d26", route: "/smokecraft", dataKey: "smokecraft" as const, image: "/images/cigar.png" },
   { id: "brewcraft", title: "BrewCraft", desc: "Beer experience", color: "#f59e0b", route: "/brewcraft", dataKey: "brewcraft" as const, image: "/images/scenes/social.jpg" },
   { id: "pourcraft", title: "PourCraft", desc: "Spirits experience", color: "#a78bfa", route: "/pourcraft", dataKey: "pourcraft" as const, image: "/images/whiskey.png" },
-  { id: "vapecraft", title: "VapeCraft", desc: "Vape experience", color: "#06b6d4", route: "/vapecraft", dataKey: "vapecraft" as const, image: "/images/scenes/bold.jpg" },
+  { id: "vapecraft", title: "VapeCraft", desc: "Vape experience", color: "#a855f7", route: "/vapecraft", dataKey: "vapecraft" as const, image: "/images/vape/vape_modern.png" },
   { id: "orders", title: "Orders", desc: "Revenue Terminal", color: "#9A7820", route: "/orders", dataKey: "orders" as const, image: "/images/scenes/reflective.jpg" },
   { id: "inventory", title: "Inventory", desc: "Stock control", color: "#5b8def", route: "/inventory", dataKey: "inventory" as const, image: "/images/cigar2.png" },
   { id: "rewards", title: "Rewards", desc: "Loyalty & rewards", color: "#34d399", route: "/rewards", dataKey: "rewards" as const, image: "/images/scenes/relaxed.jpg" },
@@ -91,18 +112,21 @@ export default function CommandCenter() {
     }
   }
 
-  const { getBackground } = useVenueContext();
+  useVenueContext();
   const engagement = useEngagementContext();
   const statusColor = cc.systemStatus === "operational" ? "#22c55e" : cc.systemStatus === "degraded" ? "#f59e0b" : "#ef4444";
 
   return (
-    <BackgroundLayer image={getBackground("dashboard")} style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: "linear-gradient(160deg, #080604 0%, #0E0B08 100%)", position: "relative" }}>
+      <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
+      <CCParticles />
       {/* ── Header ── */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "12px 20px", borderBottom: `1px solid ${C.border}`,
-        background: C.header, backdropFilter: "blur(12px)", flexShrink: 0,
-        boxShadow: "0 1px 0 rgba(0,0,0,0.06)",
+        background: C.header, backdropFilter: "blur(16px)", flexShrink: 0,
+        boxShadow: "0 1px 0 rgba(255,210,120,0.08), 0 4px 24px rgba(0,0,0,0.4)",
+        position: "relative", zIndex: 10,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/")}
@@ -167,6 +191,7 @@ export default function CommandCenter() {
         display: "grid",
         gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
         gap: 12, alignContent: "start",
+        position: "relative", zIndex: 1,
       }}>
         {TILES.map((tile, i) => {
           const data = tileData(tile.dataKey);
@@ -213,9 +238,9 @@ export default function CommandCenter() {
                 }}>🔥 Trending</div>
               )}
               <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#F5E7C8", marginBottom: 2, textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}>{tile.title}</div>
-                <div style={{ fontSize: 11, color: "rgba(210,190,155,0.75)", marginBottom: 4, textShadow: "0 1px 4px rgba(0,0,0,0.85)" }}>{tile.desc}</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: tile.color, textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>{data}</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: "#F5E7C8", marginBottom: 3, textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}>{tile.title}</div>
+                <div style={{ fontSize: 13, color: "rgba(210,190,155,0.72)", marginBottom: 5, textShadow: "0 1px 4px rgba(0,0,0,0.85)" }}>{tile.desc}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: tile.color, textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>{data}</div>
               </div>
             </motion.button>
           );
@@ -226,14 +251,15 @@ export default function CommandCenter() {
       <div style={{
         padding: "10px 20px", borderTop: `1px solid ${C.border}`,
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        fontSize: 10, color: C.dim, textTransform: "uppercase",
+        fontSize: 11, color: C.dim, textTransform: "uppercase",
         letterSpacing: "0.15em", flexShrink: 0, background: C.header,
+        position: "relative", zIndex: 10,
       }}>
-        <span><Activity size={10} style={{ marginRight: 4, verticalAlign: "middle" }} />Experience Commerce OS · Command Hub</span>
+        <span><Activity size={11} style={{ marginRight: 5, verticalAlign: "middle" }} />Experience Commerce OS · Command Hub</span>
         <span>Powered by Axiom OS</span>
       </div>
 
       <SystemStatusPanel open={statusOpen} onClose={() => setStatusOpen(false)} />
-    </BackgroundLayer>
+    </div>
   );
 }

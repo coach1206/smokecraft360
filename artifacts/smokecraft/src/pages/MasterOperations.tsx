@@ -103,6 +103,28 @@ function relTime(ts: string | Date): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
+// ── Ambient particle layer ────────────────────────────────────────────────────
+
+const OPS_PARTICLES = Array.from({ length: 24 }, (_, i) => ({
+  id: i, x: Math.random() * 100, y: Math.random() * 100,
+  r: 0.7 + Math.random() * 2, dur: 10 + Math.random() * 16,
+  del: Math.random() * 12, op: 0.03 + Math.random() * 0.08,
+}));
+
+function OpsParticles() {
+  return (
+    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", overflow: "hidden", zIndex: 0 }}>
+      {OPS_PARTICLES.map(p => (
+        <motion.div key={p.id}
+          style={{ position: "absolute", left: `${p.x}%`, top: `${p.y}%`, width: p.r * 2, height: p.r * 2, borderRadius: "50%", background: T.gold, opacity: p.op }}
+          animate={{ y: [0, -30, 9, -18, 0], x: [0, 11, -8, 14, 0], opacity: [p.op, p.op * 2.5, p.op * 0.3, p.op * 1.8, p.op] }}
+          transition={{ duration: p.dur, delay: p.del, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
+    </div>
+  );
+}
+
 // ── Small reusable components ─────────────────────────────────────────────────
 
 function GlassCard({
@@ -218,23 +240,23 @@ function EngineCard({ engine }: { engine: any }) {
   return (
     <GlassCard glow={color} style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <span style={{ fontSize: 12, fontWeight: 600, color: T.text, letterSpacing: "0.04em" }}>
+        <span style={{ fontSize: 14, fontWeight: 600, color: T.text, letterSpacing: "0.04em" }}>
           {engine.name}
         </span>
         <span style={{
-          fontSize: 9, fontWeight: 700, color, letterSpacing: "0.12em",
+          fontSize: 11, fontWeight: 700, color, letterSpacing: "0.12em",
           background: `${color}18`, border: `1px solid ${color}44`,
           borderRadius: 4, padding: "2px 6px",
         }}>
           {engine.status}
         </span>
       </div>
-      <span style={{ fontSize: 10, color: T.textMuted }}>{engine.desc}</span>
+      <span style={{ fontSize: 12, color: T.textMuted }}>{engine.desc}</span>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <span style={{ fontSize: 10, color: T.textMuted }}>
+        <span style={{ fontSize: 12, color: T.textMuted }}>
           ↑ {engine.uptime}% uptime
         </span>
-        <span style={{ fontSize: 10, color: T.textMuted }}>
+        <span style={{ fontSize: 12, color: T.textMuted }}>
           {engine.eventsToday} events today
         </span>
       </div>
@@ -242,7 +264,7 @@ function EngineCard({ engine }: { engine: any }) {
         height: 1, background: `linear-gradient(90deg, ${color}44, transparent)`,
         marginTop: 2,
       }} />
-      <span style={{ fontSize: 10, color: T.textMuted, fontStyle: "italic" }}>
+      <span style={{ fontSize: 12, color: T.textMuted, fontStyle: "italic" }}>
         {engine.lastEvent}
       </span>
     </GlassCard>
@@ -281,14 +303,14 @@ function FeedEvent({ event, index }: { event: any; index: number }) {
         <StatusDot color={color} pulse={event.severity === "high"} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: T.text, lineHeight: 1.4 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: T.text, lineHeight: 1.4 }}>
           {event.title}
         </div>
-        <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2 }}>
+        <div style={{ fontSize: 12, color: T.textMuted, marginTop: 2 }}>
           {event.detail}
         </div>
       </div>
-      <span style={{ fontSize: 9, color: T.textMuted, flexShrink: 0, paddingTop: 2 }}>
+      <span style={{ fontSize: 11, color: T.textMuted, flexShrink: 0, paddingTop: 2 }}>
         {relTime(event.ts)}
       </span>
     </motion.div>
@@ -456,6 +478,7 @@ export default function MasterOperations() {
     }}>
       {/* Ambient page glow */}
       <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
+      <OpsParticles />
       {/* ── TOP KPI STRIP ── */}
       <div style={{
         position: "sticky",
@@ -472,10 +495,10 @@ export default function MasterOperations() {
       }}>
         {/* Brand mark */}
         <div style={{ flexShrink: 0, marginRight: 8 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: T.gold, letterSpacing: "0.18em", textTransform: "uppercase" }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: T.gold, letterSpacing: "0.18em", textTransform: "uppercase" }}>
             Axiom OS
           </div>
-          <div style={{ fontSize: 10, color: T.textMuted, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+          <div style={{ fontSize: 12, color: T.textMuted, letterSpacing: "0.12em", textTransform: "uppercase" }}>
             Master Ops
           </div>
         </div>
@@ -494,9 +517,9 @@ export default function MasterOperations() {
         <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8 }}>
           <StatusDot color={T.green} pulse />
           <div>
-            <div style={{ fontSize: 11, color: T.green, fontWeight: 700, letterSpacing: "0.08em" }}>LIVE</div>
+            <div style={{ fontSize: 13, color: T.green, fontWeight: 700, letterSpacing: "0.08em" }}>LIVE</div>
             {lastPoll && (
-              <div style={{ fontSize: 10, color: T.textMuted }}>{relTime(lastPoll)}</div>
+              <div style={{ fontSize: 11, color: T.textMuted }}>{relTime(lastPoll)}</div>
             )}
           </div>
         </div>
@@ -520,7 +543,7 @@ export default function MasterOperations() {
             return (
               <div key={group} style={{ marginBottom: 12 }}>
                 <div style={{
-                  fontSize: 10, fontWeight: 700, color: "rgba(179,155,119,0.5)",
+                  fontSize: 11, fontWeight: 700, color: "rgba(179,155,119,0.5)",
                   textTransform: "uppercase", letterSpacing: "0.18em",
                   padding: "8px 20px 4px",
                 }}>
@@ -553,14 +576,14 @@ export default function MasterOperations() {
                       <Icon size={16} color={isActive ? T.gold : T.textMuted} strokeWidth={isActive ? 2 : 1.5} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{
-                          fontSize: 14, fontWeight: isActive ? 600 : 400,
+                          fontSize: 15, fontWeight: isActive ? 600 : 400,
                           color: isActive ? T.gold : T.text,
                           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
                         }}>
                           {item.label}
                         </div>
                         <div style={{
-                          fontSize: 11, color: T.textMuted,
+                          fontSize: 12, color: T.textMuted,
                           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
                         }}>
                           {item.desc}
@@ -586,7 +609,7 @@ export default function MasterOperations() {
           {/* Engine status grid */}
           <div style={{ marginBottom: 16 }}>
             <div style={{
-              fontSize: 10, fontWeight: 700, color: T.textMuted,
+              fontSize: 13, fontWeight: 700, color: T.textMuted,
               textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 10,
             }}>
               Engine Health
@@ -618,7 +641,7 @@ export default function MasterOperations() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
             {/* Device health */}
             <GlassCard style={{ padding: "16px 18px" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 10 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 10 }}>
                 Device Health
               </div>
               {overview?.devices ? (
@@ -633,7 +656,7 @@ export default function MasterOperations() {
                         <div style={{ fontSize: 20, fontWeight: 700, color: s.color, fontFamily: "'Cormorant Garamond', serif" }}>
                           {s.val}
                         </div>
-                        <div style={{ fontSize: 10, color: T.textMuted }}>{s.label}</div>
+                        <div style={{ fontSize: 12, color: T.textMuted }}>{s.label}</div>
                       </div>
                     ))}
                   </div>
@@ -644,7 +667,7 @@ export default function MasterOperations() {
                       style={{ height: "100%", background: `linear-gradient(90deg, ${T.green}, ${T.gold})`, borderRadius: 2 }}
                     />
                   </div>
-                  <div style={{ fontSize: 10, color: T.textMuted, marginTop: 6 }}>
+                  <div style={{ fontSize: 12, color: T.textMuted, marginTop: 6 }}>
                     {kpis.deviceHealth?.value ?? 95}% operational · {overview.devices.total} total
                   </div>
                 </>
@@ -655,7 +678,7 @@ export default function MasterOperations() {
 
             {/* OTA status */}
             <GlassCard style={{ padding: "16px 18px" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 10 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 10 }}>
                 OTA Status
               </div>
               {[
@@ -666,15 +689,15 @@ export default function MasterOperations() {
                 <div key={c.channel} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <StatusDot color={c.color} pulse={c.status === "ACTIVE"} />
-                    <span style={{ fontSize: 11, color: T.text }}>{c.channel}</span>
+                    <span style={{ fontSize: 13, color: T.text }}>{c.channel}</span>
                   </div>
                   <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                    <span style={{ fontSize: 10, color: T.textMuted, fontFamily: "monospace" }}>{c.version}</span>
-                    <span style={{ fontSize: 9, color: c.color, fontWeight: 600 }}>{c.status}</span>
+                    <span style={{ fontSize: 12, color: T.textMuted, fontFamily: "monospace" }}>{c.version}</span>
+                    <span style={{ fontSize: 11, color: c.color, fontWeight: 600 }}>{c.status}</span>
                   </div>
                 </div>
               ))}
-              <div style={{ marginTop: 8, fontSize: 10, color: T.textMuted }}>
+              <div style={{ marginTop: 8, fontSize: 12, color: T.textMuted }}>
                 Fleet compliance: <span style={{ color: T.gold }}>97%</span>
               </div>
             </GlassCard>
@@ -683,10 +706,10 @@ export default function MasterOperations() {
           {/* Campaign activity */}
           <GlassCard style={{ padding: "16px 18px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.12em" }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.12em" }}>
                 Active Campaign Activity
               </div>
-              <span style={{ fontSize: 10, color: T.gold }}>
+              <span style={{ fontSize: 12, color: T.gold }}>
                 {overview?.campaigns?.active ?? 0} active
               </span>
             </div>
@@ -710,11 +733,11 @@ export default function MasterOperations() {
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <Star size={10} color={c.color} fill={c.color} />
                   <div>
-                    <div style={{ fontSize: 11, color: T.text }}>{c.name}</div>
-                    <div style={{ fontSize: 9, color: T.textMuted }}>{c.type.replace(/_/g, " ")}</div>
+                    <div style={{ fontSize: 14, color: T.text }}>{c.name}</div>
+                    <div style={{ fontSize: 11, color: T.textMuted }}>{c.type.replace(/_/g, " ")}</div>
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: 16, fontSize: 11 }}>
+                <div style={{ display: "flex", gap: 16, fontSize: 13 }}>
                   <span style={{ color: T.green }}>Lift {c.lift}</span>
                   <span style={{ color: T.textMuted }}>CVR {c.cvr}</span>
                 </div>
@@ -725,7 +748,7 @@ export default function MasterOperations() {
           {/* ── Training Controls ── */}
           <GlassCard style={{ padding: "16px 18px", marginTop: 16 }}>
             <div style={{
-              fontSize: 9, fontWeight: 700, color: T.textMuted,
+              fontSize: 12, fontWeight: 700, color: T.textMuted,
               textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 12,
               display: "flex", alignItems: "center", gap: 6,
             }}>
@@ -752,8 +775,8 @@ export default function MasterOperations() {
                   onClick={action}
                   style={{
                     background: `${color}0c`, border: `1px solid ${color}22`,
-                    borderRadius: 8, padding: "9px 11px", cursor: "pointer",
-                    color, fontSize: 9.5, fontWeight: 600, textAlign: "left",
+                    borderRadius: 8, padding: "10px 12px", cursor: "pointer",
+                    color, fontSize: 12, fontWeight: 600, textAlign: "left",
                     display: "flex", alignItems: "center", gap: 6,
                     transition: "background 0.15s",
                   }}
@@ -783,10 +806,10 @@ export default function MasterOperations() {
             flexShrink: 0,
           }}>
             <div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.12em" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.12em" }}>
                 Live Feed
               </div>
-              <div style={{ fontSize: 9, color: T.textMuted, marginTop: 1 }}>
+              <div style={{ fontSize: 12, color: T.textMuted, marginTop: 1 }}>
                 Polls every 15 s
               </div>
             </div>
@@ -803,7 +826,7 @@ export default function MasterOperations() {
             flexShrink: 0,
           }}>
             {Object.entries(FEED_COLORS).slice(0, 6).map(([cat, color]) => (
-              <span key={cat} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 9, color: T.textMuted }}>
+              <span key={cat} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: T.textMuted }}>
                 <span style={{ width: 6, height: 6, borderRadius: "50%", background: color, display: "inline-block" }} />
                 {cat}
               </span>
@@ -815,7 +838,7 @@ export default function MasterOperations() {
               {feed.map((evt, i) => <FeedEvent key={evt.id} event={evt} index={i} />)}
             </AnimatePresence>
             {!feed.length && loading && (
-              <div style={{ padding: 20, color: T.textMuted, fontSize: 11, textAlign: "center" }}>
+              <div style={{ padding: 20, color: T.textMuted, fontSize: 13, textAlign: "center" }}>
                 Loading feed…
               </div>
             )}
