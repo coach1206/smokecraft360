@@ -38,6 +38,11 @@ import {
 } from "lucide-react";
 import { useAxiom360 }   from "@/store/axiom360Store";
 import type { CraftType } from "@/store/axiom360Store";
+import {
+  usePrestige,
+  xpProgress, xpToNextRank,
+  RANK_CONFIG,
+} from "@/store/prestigeStore";
 import { Pulse }          from "./Pulse";
 import {
   SMOKE_SCENES, POUR_SCENES, BREW_SCENES, VAPE_SCENES,
@@ -801,6 +806,8 @@ function PatronView({
   const [burstKey,    setBurstKey]           = useState(0);
   const [portal,      setPortal]             = useState<{ route: string; color: string } | null>(null);
   const [stimulationVisible, setStimulation] = useState(false);
+  const [rankUpVisible, setRankUpVisible]    = useState(false);
+  const [rankUpLabel,   setRankUpLabel]      = useState("");
 
   const {
     venueOccupancy,
@@ -810,6 +817,19 @@ function PatronView({
     logoutMember,
     addRevenueLift,
   } = useAxiom360();
+
+  const { xp, rank, addXP } = usePrestige();
+  const prevRankRef = useRef(rank);
+
+  // Detect rank-up and trigger the toast
+  useEffect(() => {
+    if (rank === prevRankRef.current) return;
+    prevRankRef.current = rank;
+    setRankUpLabel(rank);
+    setRankUpVisible(true);
+    const id = setTimeout(() => setRankUpVisible(false), 3800);
+    return () => clearTimeout(id);
+  }, [rank]);
 
   // Pulse color: explicit mood chip > craft-derived mood > default amber
   const pulseColor = activeMood
@@ -858,6 +878,8 @@ function PatronView({
     setActiveMood(CRAFT_MOOD[craft.id] ?? "bold");
     setBurstKey((k) => k + 1);
     onCraftSelect(craft);
+    // Award XP for each craft selection (rank-up detection runs in useEffect)
+    addXP(50);
     // Accumulate surge lift whenever a patron enters the experience during peak
     if (isDynamicPricingActive && !isMemberLoggedIn && venueOccupancy > 80) {
       const base = CRAFT_BASE_PRICE[craft.id] ?? 20;
@@ -1082,6 +1104,48 @@ function PatronView({
           </div>
         ))}
 
+        {/* ── Prestige rank badge ── */}
+        {(() => {
+          const cfg  = RANK_CONFIG[rank];
+          const prog = xpProgress(xp);
+          const next = xpToNextRank(xp);
+          return (
+            <div
+              style={{
+                display: "flex", flexDirection: "column", alignItems: "center",
+                gap: 2, marginLeft: "auto",
+              }}
+              title={next ? `${next} XP to next rank` : "Maximum rank achieved"}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <span style={{ fontSize: 8, color: cfg.color }}>{cfg.glyph}</span>
+                <span style={{
+                  fontSize: 7.5, fontWeight: 700, letterSpacing: "0.18em",
+                  textTransform: "uppercase", color: cfg.color,
+                }}>
+                  {rank}
+                </span>
+              </div>
+              {/* XP progress bar */}
+              <div style={{
+                width: 52, height: 2, borderRadius: 99,
+                background: "rgba(255,255,255,0.08)",
+                overflow: "hidden",
+              }}>
+                <motion.div
+                  animate={{ width: `${prog * 100}%` }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                  style={{
+                    height: "100%", borderRadius: 99,
+                    background: cfg.color,
+                    boxShadow: `0 0 4px ${cfg.color}88`,
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Member Access toggle */}
         <button
           onClick={() => { isMemberLoggedIn ? logoutMember() : loginMember(); setBurstKey((k) => k + 1); }}
@@ -1118,6 +1182,56 @@ function PatronView({
           Hold top-center 3s · Staff
         </div>
       </footer>
+
+      {/* ── Rank-up toast ── */}
+      <AnimatePresence>
+        {rankUpVisible && (
+          <motion.div
+            initial={{ y: -48, opacity: 0, scale: 0.92 }}
+            animate={{ y: 0,   opacity: 1, scale: 1 }}
+            exit={{    y: -48, opacity: 0, scale: 0.92 }}
+            transition={{ type: "spring", stiffness: 420, damping: 32 }}
+            style={{
+              position: "absolute", top: 56, left: "50%", transform: "translateX(-50%)",
+              zIndex: 60,
+              background: "linear-gradient(135deg, rgba(18,14,10,0.97), rgba(24,18,12,0.95))",
+              border: `1px solid ${RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#C9A84C"}55`,
+              borderRadius: 12, padding: "10px 20px",
+              backdropFilter: "blur(20px)",
+              boxShadow: `0 6px 28px rgba(0,0,0,0.6), 0 0 16px ${RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#C9A84C"}22`,
+              display: "flex", alignItems: "center", gap: 10,
+              whiteSpace: "nowrap",
+            }}
+          >
+            <motion.span
+              animate={{ rotate: [0, 18, -14, 8, 0], scale: [1, 1.35, 1] }}
+              transition={{ duration: 0.7 }}
+              style={{
+                fontSize: 18,
+                color: RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#C9A84C",
+              }}
+            >
+              {RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.glyph ?? "✦"}
+            </motion.span>
+            <div>
+              <div style={{
+                fontSize: 7.5, fontWeight: 700, letterSpacing: "0.28em",
+                textTransform: "uppercase",
+                color: RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#C9A84C",
+                marginBottom: 1,
+              }}>
+                Rank Achieved
+              </div>
+              <div style={{
+                fontSize: 13, fontWeight: 700, color: "#F0E8D4",
+                letterSpacing: "0.06em",
+              }}>
+                {rankUpLabel}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Session Stimulation notification (fires at 40 min) ── */}
       <AnimatePresence>
