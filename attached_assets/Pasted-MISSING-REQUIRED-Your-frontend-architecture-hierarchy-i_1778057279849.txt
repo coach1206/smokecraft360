@@ -1,0 +1,635 @@
+MISSING / REQUIRED
+Your frontend architecture hierarchy is broken right now. The system accidentally elevated the swipe engine above the actual CraftHub ecosystem. The following must be restored immediately or the platform will continue feeling like a niche cigar app instead of a premium operating system.
+Critical missing or inverted systems:
+
+
+CraftHub cinematic homepage hierarchy
+
+
+Axiom OS command-center identity
+
+
+Multi-craft ecosystem structure
+
+
+Environmental storytelling layer
+
+
+Product-first recommendation visuals
+
+
+Proper experience progression flow
+
+
+Premium discovery interaction model
+
+
+Real “hub” navigation architecture
+
+
+AI intelligence visualization layer
+
+
+Emotional onboarding sequence
+
+
+Current issue:
+The UI is currently behaving like:
+“Tinder for cigars.”
+It SHOULD behave like:
+“An intelligent luxury hospitality operating system.”
+FAILURE PREVENTION CHECKLIST
+Before rebuilding:
+
+
+DO NOT delete backend logic
+
+
+DO NOT remove recommendation engine
+
+
+DO NOT remove swipe intelligence data collection
+
+
+ONLY reposition the experience architecture
+
+
+Preserve all analytics/event tracking
+
+
+Preserve all recommendation scoring
+
+
+Preserve all inventory integrations
+
+
+Preserve all pairing systems
+
+
+Preserve all experience engine logic
+
+
+Preserve all admin routes
+
+
+Preserve all orchestration systems
+
+
+Critical visual rules:
+
+
+No giant empty black containers
+
+
+No flat gold bars
+
+
+No generic swipe interactions
+
+
+No dating-app motion patterns
+
+
+No hidden product visuals
+
+
+No “tool-first” homepage layouts
+
+
+No static dark screens
+
+
+The system must now feel:
+
+
+cinematic
+
+
+predictive
+
+
+emotionally intelligent
+
+
+premium
+
+
+calm
+
+
+immersive
+
+
+operational
+
+
+investor-grade
+
+
+MASTER FIX PROMPT
+You are rebuilding the frontend experience architecture for Axiom OS powered by CraftHub.
+The current UI hierarchy is incorrect.
+The swipe recommendation engine was accidentally promoted to the primary homepage experience, causing the platform to feel like a dating app for cigars instead of a premium hospitality intelligence operating system.
+DO NOT remove backend logic.
+DO NOT remove the experience engine.
+DO NOT remove recommendation systems.
+DO NOT remove analytics.
+ONLY correct the frontend architecture and emotional flow.
+==================================================
+PHASE 1 — RESTORE CRAFTHUB HOMEPAGE
+Rebuild CraftHub homepage as a cinematic operating-system portal.
+The homepage should feel like:
+Apple keynote meets luxury lounge meets AI control center.
+The homepage is NOT:
+a swipe interface.
+The homepage IS:
+the intelligent ecosystem entrance.
+Create:
+FULLSCREEN CINEMATIC HERO
+
+
+animated smoke atmosphere
+
+
+subtle moving particles
+
+
+warm cinematic lighting
+
+
+depth blur layers
+
+
+ultra smooth transitions
+
+
+slow environmental movement
+
+
+premium hardware-style typography
+
+
+floating AI system indicators
+
+
+ambient glow pulses
+
+
+Top center:
+AXIOM OS
+Powered by CraftHub
+Subheading:
+“Adaptive Hospitality Intelligence”
+Hero sections rotate softly:
+
+
+SmokeCraft
+
+
+PourCraft
+
+
+BrewCraft
+
+
+VapeCraft
+
+
+Each section includes:
+
+
+realistic products
+
+
+venue atmosphere
+
+
+luxury environmental imagery
+
+
+soft AI overlay indicators
+
+
+live recommendation pulses
+
+
+subtle motion graphics
+
+
+==================================================
+PHASE 2 — RESTORE MULTI-CRAFT COMMAND CENTER
+Homepage must display 4 premium interactive portals:
+SMOKECRAFT
+POURCRAFT
+BREWCRAFT
+VAPECRAFT
+These are NOT flat tiles.
+Each portal is:
+
+
+cinematic
+
+
+animated
+
+
+alive
+
+
+layered
+
+
+atmospheric
+
+
+Each craft card should include:
+
+
+realistic image background
+
+
+animated environmental effects
+
+
+hover glow response
+
+
+soft camera drift
+
+
+real product imagery
+
+
+floating AI insights
+
+
+operational status indicators
+
+
+SmokeCraft:
+
+
+cigars
+
+
+cedar
+
+
+ember glow
+
+
+smoke drift
+
+
+PourCraft:
+
+
+whiskey swirl
+
+
+glass reflections
+
+
+liquid physics
+
+
+ice movement
+
+
+BrewCraft:
+
+
+foam animation
+
+
+condensation
+
+
+tap reflections
+
+
+brewery atmosphere
+
+
+VapeCraft:
+
+
+reactive vapor
+
+
+neon diffusion
+
+
+ambient haze
+
+
+modern lounge feel
+
+
+==================================================
+PHASE 3 — MOVE SWIPE ENGINE BACK INSIDE EXPERIENCE
+The swipe engine belongs INSIDE SmokeCraft.
+DO NOT use Tinder-like interaction behavior.
+Replace swipe mechanic with:
+PREMIUM DISCOVERY CARDS.
+Interaction style:
+
+
+layered rotating cards
+
+
+tactile movement
+
+
+slow cinematic transitions
+
+
+luxury reveal motion
+
+
+predictive recommendation guidance
+
+
+NO:
+
+
+harsh left/right swipes
+
+
+dating app movement
+
+
+rapid gestures
+
+
+YES:
+
+
+guided discovery
+
+
+emotional preference learning
+
+
+sommelier-style curation
+
+
+==================================================
+PHASE 4 — FIX EXPERIENCE FLOW
+Correct flow architecture:
+CRAFT HUB
+↓
+Select Craft Experience
+↓
+Enter Cinematic Intro Scene
+↓
+Guided Preference Discovery
+↓
+AI Intelligence Analysis
+↓
+Premium Product Reveal
+↓
+Pairings + Venue Recommendations
+↓
+Add To Order / Reservation
+The recommendation page should ONLY appear AFTER preference discovery.
+==================================================
+PHASE 5 — REBUILD RECOMMENDATION VISUALS
+Recommendation screen must prioritize:
+REAL PRODUCTS.
+NOT shadowy human portraits.
+Each recommendation card must include:
+
+
+realistic cigar render
+
+
+premium product lighting
+
+
+wrapper texture detail
+
+
+ember animation
+
+
+smoke curl animation
+
+
+pairing visuals
+
+
+venue atmosphere
+
+
+AI overlay:
+
+
+match confidence
+
+
+flavor radar
+
+
+pairing compatibility
+
+
+recommendation reasoning
+
+
+predictive taste indicators
+
+
+Taste bars should:
+
+
+animate smoothly
+
+
+pulse subtly
+
+
+glow softly
+
+
+feel computational
+
+
+==================================================
+PHASE 6 — ADD AMBIENT INTELLIGENCE LAYER
+The entire system should feel alive.
+Add:
+
+
+breathing UI motion
+
+
+floating particles
+
+
+smoke diffusion
+
+
+adaptive lighting
+
+
+intelligent hover reactions
+
+
+environmental transitions
+
+
+dynamic glow changes
+
+
+emotional pacing system
+
+
+Everything should:
+GLIDE.
+Nothing should:
+SNAP.
+==================================================
+PHASE 7 — RESTORE COMMAND CENTER FEEL
+CraftHub should feel like:
+a hospitality operating system.
+Add:
+
+
+live venue activity indicators
+
+
+recommendation engine status
+
+
+AI orchestration indicators
+
+
+predictive guest insights
+
+
+operational overlays
+
+
+experience engine pulse
+
+
+The user should feel:
+“The venue understands me.”
+==================================================
+PHASE 8 — VISUAL HIERARCHY FIX
+Typography:
+
+
+strong luxury headlines
+
+
+softer metadata
+
+
+brighter focal metrics
+
+
+controlled spacing
+
+
+reduced clutter
+
+
+Color palette:
+
+
+warm charcoal
+
+
+matte black
+
+
+cream accents
+
+
+amber highlights
+
+
+subtle gold only
+
+
+environmental glow tones
+
+
+DO NOT:
+
+
+oversaturate gold
+
+
+drown content in darkness
+
+
+flatten card depth
+
+
+==================================================
+PHASE 9 — MOTION SYSTEM
+Add:
+
+
+Apple-level easing curves
+
+
+Tesla-style smooth transitions
+
+
+cinematic fade interpolation
+
+
+inertia-based movement
+
+
+atmospheric scene blending
+
+
+Transitions should feel:
+calm
+confident
+intelligent
+==================================================
+PHASE 10 — FINAL EXPERIENCE TARGET
+The final feeling should be:
+“An AI-powered luxury hospitality operating system that intelligently guides premium experiences.”
+NOT:
+“a cigar swipe app.”
+Preserve:
+
+
+backend architecture
+
+
+analytics
+
+
+recommendation engine
+
+
+inventory systems
+
+
+pairing systems
+
+
+orchestration systems
+
+
+admin systems
+
+
+learning systems
+
+
+Only rebuild:
+frontend hierarchy
+visual psychology
+interaction flow
+experience pacing
+environmental storytelling
+brand architecture

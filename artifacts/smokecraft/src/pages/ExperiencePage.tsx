@@ -81,11 +81,11 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
   const rotate  = useTransform(x, [-300, 300], [-16, 16]);
   const addOp   = useTransform(x, [30, 110], [0, 1]);
   const skipOp  = useTransform(x, [-110, -30], [1, 0]);
-  // Glow trail: green on right drag, red on left drag
+  // Glow trail: warm gold on right drag, cool white-blue on left drag
   const glowBg  = useTransform(
     x,
     [-120, 0, 120],
-    ["rgba(239,68,68,0.12)", "rgba(0,0,0,0)", "rgba(52,211,153,0.12)"],
+    ["rgba(148,163,184,0.10)", "rgba(0,0,0,0)", "rgba(201,168,76,0.14)"],
   );
   const exiting = useRef(false);
 
@@ -267,47 +267,50 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
           </div>
         </div>
 
-        {/* ADD overlay */}
+        {/* DISCOVER overlay — warm gold, premium feel */}
         {isTop && (
           <motion.div style={{
             position:      "absolute",
             top:           24, left: 24,
             opacity:       addOp,
-            background:    "rgba(52,211,153,0.14)",
-            border:        "2px solid #34d399",
+            background:    "rgba(201,168,76,0.14)",
+            border:        "1.5px solid rgba(201,168,76,0.7)",
             borderRadius:  12,
-            padding:       "8px 16px",
+            padding:       "8px 18px",
             display:       "flex",
             alignItems:    "center",
-            gap:           6,
-            fontSize:      14, fontWeight: 800,
-            color:         "#34d399",
-            letterSpacing: "0.12em",
-            backdropFilter: "blur(6px)",
+            gap:           7,
+            fontSize:      12, fontWeight: 800,
+            color:         "#c9a84c",
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            backdropFilter: "blur(10px)",
+            boxShadow:     "0 0 16px rgba(201,168,76,0.18)",
           }}>
-            <Check size={16} strokeWidth={3} /> ADD
+            <Check size={14} strokeWidth={2.5} /> Discover
           </motion.div>
         )}
 
-        {/* SKIP overlay */}
+        {/* PASS overlay — soft cool tone, understated */}
         {isTop && (
           <motion.div style={{
             position:      "absolute",
             top:           24, right: 24,
             opacity:       skipOp,
-            background:    "rgba(239,68,68,0.14)",
-            border:        "2px solid #ef4444",
+            background:    "rgba(148,163,184,0.10)",
+            border:        "1.5px solid rgba(148,163,184,0.45)",
             borderRadius:  12,
-            padding:       "8px 16px",
+            padding:       "8px 18px",
             display:       "flex",
             alignItems:    "center",
-            gap:           6,
-            fontSize:      14, fontWeight: 800,
-            color:         "#ef4444",
-            letterSpacing: "0.12em",
-            backdropFilter: "blur(6px)",
+            gap:           7,
+            fontSize:      12, fontWeight: 800,
+            color:         "rgba(203,213,225,0.85)",
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            backdropFilter: "blur(10px)",
           }}>
-            SKIP <X size={16} strokeWidth={3} />
+            Pass <X size={14} strokeWidth={2.5} />
           </motion.div>
         )}
       </div>
@@ -554,7 +557,7 @@ export default function ExperiencePage() {
         fontSize: 11, color: "rgba(240,232,216,0.28)",
         letterSpacing: "0.08em", flexShrink: 0,
       }}>
-        ← Skip &nbsp;&nbsp;·&nbsp;&nbsp; Add →
+        ← Pass &nbsp;&nbsp;·&nbsp;&nbsp; Discover →
       </div>
 
       {/* Card stack */}
@@ -676,12 +679,12 @@ export default function ExperiencePage() {
               transform: "translateX(-50%)",
               zIndex: 50,
               background: feedback.type === "add"
-                ? "rgba(52,211,153,0.12)"
-                : "rgba(239,68,68,0.10)",
-              border: `1px solid ${feedback.type === "add" ? "rgba(52,211,153,0.3)" : "rgba(239,68,68,0.25)"}`,
+                ? "rgba(201,168,76,0.12)"
+                : "rgba(148,163,184,0.08)",
+              border: `1px solid ${feedback.type === "add" ? "rgba(201,168,76,0.4)" : "rgba(148,163,184,0.25)"}`,
               borderRadius: 12, padding: "10px 22px",
               fontSize: 13, fontWeight: 600,
-              color: feedback.type === "add" ? "#34d399" : "rgba(240,232,216,0.55)",
+              color: feedback.type === "add" ? "#c9a84c" : "rgba(203,213,225,0.65)",
               whiteSpace: "nowrap",
               backdropFilter: "blur(10px)",
             }}
@@ -702,7 +705,7 @@ export default function ExperiencePage() {
           padding: "0 20px 36px",
           flexShrink: 0,
         }}>
-          {/* Skip */}
+          {/* Pass */}
           <motion.button
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.88 }}
@@ -710,14 +713,14 @@ export default function ExperiencePage() {
             disabled={swiping}
             style={{
               width: 60, height: 60, borderRadius: "50%",
-              background: "rgba(239,68,68,0.1)",
-              border: "2px solid rgba(239,68,68,0.3)",
+              background: "rgba(148,163,184,0.07)",
+              border: "1.5px solid rgba(148,163,184,0.28)",
               display: "flex", alignItems: "center", justifyContent: "center",
               cursor: "pointer",
-              boxShadow: "0 4px 16px rgba(239,68,68,0.15)",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
             }}
           >
-            <ChevronLeft size={26} color="#ef4444" strokeWidth={2.5} />
+            <ChevronLeft size={26} color="rgba(203,213,225,0.7)" strokeWidth={2} />
           </motion.button>
 
           {/* Finish early — appears after 6 swipes */}
@@ -745,7 +748,7 @@ export default function ExperiencePage() {
             )}
           </AnimatePresence>
 
-          {/* Add */}
+          {/* Discover */}
           <motion.button
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.88 }}
@@ -753,14 +756,14 @@ export default function ExperiencePage() {
             disabled={swiping}
             style={{
               width: 60, height: 60, borderRadius: "50%",
-              background: "rgba(52,211,153,0.1)",
-              border: "2px solid rgba(52,211,153,0.3)",
+              background: "rgba(201,168,76,0.12)",
+              border: "1.5px solid rgba(201,168,76,0.45)",
               display: "flex", alignItems: "center", justifyContent: "center",
               cursor: "pointer",
-              boxShadow: "0 4px 16px rgba(52,211,153,0.15)",
+              boxShadow: "0 4px 20px rgba(201,168,76,0.22)",
             }}
           >
-            <ChevronRight size={26} color="#34d399" strokeWidth={2.5} />
+            <ChevronRight size={26} color="#c9a84c" strokeWidth={2} />
           </motion.button>
         </div>
       )}
