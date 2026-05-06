@@ -27,7 +27,9 @@ import OrdersModule    from "@/pages/OrdersModule";
 import InventoryModule from "@/pages/InventoryModule";
 import RewardsModule   from "@/pages/RewardsModule";
 import CampaignsModule  from "@/pages/CampaignsModule";
-import RevenueEngine    from "@/pages/RevenueEngine";
+import RevenueEngine       from "@/pages/RevenueEngine";
+import IntelligencePanel  from "@/pages/IntelligencePanel";
+import { AxiomIntelligenceProvider } from "@/contexts/AxiomIntelligenceContext";
 import OwnerIntelPanel from "@/pages/OwnerIntelPanel";
 import ExperiencePage      from "@/pages/ExperiencePage";
 import RevealPage          from "@/pages/RevealPage";
@@ -94,7 +96,8 @@ function Router() {
       <Route path="/inventory"   component={InventoryModule} />
       <Route path="/rewards"     component={RewardsModule}   />
       <Route path="/campaigns"   component={CampaignsModule} />
-      <Route path="/revenue"     component={RevenueEngine}   />
+      <Route path="/revenue"       component={RevenueEngine}      />
+      <Route path="/intelligence"  component={IntelligencePanel}  />
       <Route path="/admin/intel"               component={OwnerIntelPanel}         />
       <Route path="/admin/experience-control" component={ExperienceControlPanel}  />
       {/* Legacy craft routes — redirect into the Universal Swipe Engine */}
@@ -163,6 +166,7 @@ function App() {
               <PresentationProvider>
                 <PosProvider>
                 <CommandCenterProvider>
+                <AxiomIntelligenceProvider>
                 <EngagementProvider>
                 <KioskModeProvider>
                 <DeviceRouterProvider>
@@ -187,6 +191,7 @@ function App() {
                 </DeviceRouterProvider>
                 </KioskModeProvider>
                 </EngagementProvider>
+                </AxiomIntelligenceProvider>
                 </CommandCenterProvider>
                 </PosProvider>
               </PresentationProvider>
