@@ -27,10 +27,10 @@ const phaseEnum = z.enum(CRAFT_PHASES);
 // they can reach the DB or the tournament leaderboard.
 const scoreField = z
   .number()
-  .refine((v) => !Number.isNaN(v), { message: "Score must not be NaN" })
-  .refine((v) => Number.isFinite(v), { message: "Score must be finite" })
   .min(0)
   .max(10)
+  .refine((v) => !Number.isNaN(v), { message: "Score must not be NaN" })
+  .refine((v) => Number.isFinite(v), { message: "Score must be finite" })
   .optional();
 
 const createSchema = z.object({
