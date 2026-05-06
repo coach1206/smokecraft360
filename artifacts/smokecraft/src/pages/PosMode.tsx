@@ -432,7 +432,7 @@ export default function PosMode() {
             <span style={{ fontSize: 18, fontWeight: 700, color: "#d4af37" }}>POS</span>
             {pos.currentUser && (
               <span style={{ fontSize: 12, color: "rgba(232,224,200,0.4)", marginLeft: 10 }}>
-                {pos.currentUser.name} ({pos.currentUser.role})
+                · {pos.currentUser.name} ({pos.currentUser.role})
               </span>
             )}
           </div>
