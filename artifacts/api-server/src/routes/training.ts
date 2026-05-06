@@ -174,7 +174,7 @@ router.post("/signoff", async (req: Request, res: Response) => {
     roleTitle,
     modulesCount,
     managerName:   managerName.trim(),
-    managerPinHash: pinHash,
+    managerPin:    pinHash,
     demoMode:      true,
   }).returning();
 
@@ -450,6 +450,34 @@ router.post("/accounts/activate", requireAuth, requireRole("super_admin", "venue
   }
   logger.info({ results }, "training accounts activated");
   res.json({ results, notice: "Sandbox accounts created. Password: VaultDemo2025!" });
+});
+
+// ── GET /session/current — return the most recent training session for the authed user ──
+
+router.get("/session/current", requireAuth, async (req: AuthRequest, res: Response) => {
+  const userId = String(req.user?.id ?? "");
+  if (!userId) { res.status(401).json({ error: "unauthorized" }); return; }
+
+  const [session] = await db
+    .select()
+    .from(trainingSessionsTable)
+    .where(eq(trainingSessionsTable.userId, userId))
+    .orderBy(desc(trainingSessionsTable.startedAt))
+    .limit(1);
+
+  if (!session) { res.json({ session: null }); return; }
+
+  const progress = await db
+    .select()
+    .from(trainingProgressTable)
+    .where(eq(trainingProgressTable.sessionId, session.id));
+
+  const certs = await db
+    .select()
+    .from(trainingCertificationsTable)
+    .where(eq(trainingCertificationsTable.userId, userId));
+
+  res.json({ session, progress, certifications: certs });
 });
 
 // ── POST /reset — wipe all training data (manager+ can run) ──────────────────

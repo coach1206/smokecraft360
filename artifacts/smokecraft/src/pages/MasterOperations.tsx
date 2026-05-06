@@ -29,18 +29,18 @@ import {
 // ── design tokens ─────────────────────────────────────────────────────────────
 
 const T = {
-  bg:        "#06040a",
-  surface:   "rgba(255,255,255,0.04)",
-  border:    "rgba(201,168,76,0.18)",
-  gold:      "#c9a84c",
-  goldBright:"#d4af37",
-  text:      "rgba(240,232,212,0.92)",
-  textMuted: "rgba(240,232,212,0.48)",
-  green:     "#34d399",
-  amber:     "#f59e0b",
-  red:       "#ef4444",
-  blue:      "#60a5fa",
-  purple:    "#a78bfa",
+  bg:        "#080604",
+  surface:   "rgba(255,255,255,0.045)",
+  border:    "rgba(255,210,120,0.14)",
+  gold:      "#C9A84C",
+  goldBright:"#D4AF37",
+  text:      "#F5E7C8",
+  textMuted: "#B39B77",
+  green:     "#34D399",
+  amber:     "#F59E0B",
+  red:       "#F87171",
+  blue:      "#60A5FA",
+  purple:    "#A78BFA",
 };
 
 // ── API helper ────────────────────────────────────────────────────────────────
@@ -447,32 +447,36 @@ export default function MasterOperations() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: T.bg,
+      background: `linear-gradient(160deg, ${T.bg} 0%, #0E0B08 100%)`,
       display: "flex",
       flexDirection: "column",
       fontFamily: "'Inter', 'SF Pro Display', sans-serif",
       color: T.text,
+      position: "relative",
     }}>
+      {/* Ambient page glow */}
+      <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
       {/* ── TOP KPI STRIP ── */}
       <div style={{
         position: "sticky",
         top: 0,
         zIndex: 50,
-        background: `${T.bg}ee`,
+        background: `linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)`,
         backdropFilter: "blur(20px)",
-        borderBottom: `1px solid ${T.border}`,
-        padding: "10px 16px",
+        borderBottom: `1px solid rgba(255,210,120,0.10)`,
+        padding: "12px 20px",
         display: "flex",
         alignItems: "center",
-        gap: 12,
+        gap: 14,
+        boxShadow: "0 1px 0 rgba(255,210,120,0.06), 0 4px 24px rgba(0,0,0,0.4)",
       }}>
         {/* Brand mark */}
         <div style={{ flexShrink: 0, marginRight: 8 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: T.gold, letterSpacing: "0.2em", textTransform: "uppercase" }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: T.gold, letterSpacing: "0.18em", textTransform: "uppercase" }}>
             Axiom OS
           </div>
-          <div style={{ fontSize: 9, color: T.textMuted, letterSpacing: "0.12em" }}>
-            MASTER OPS
+          <div style={{ fontSize: 10, color: T.textMuted, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+            Master Ops
           </div>
         </div>
 
@@ -480,45 +484,45 @@ export default function MasterOperations() {
         <div style={{ display: "flex", gap: 8, overflowX: "auto", flex: 1, paddingBottom: 2 }}>
           {loading
             ? Array.from({ length: 6 }, (_, i) => (
-                <div key={i} style={{ minWidth: 120, height: 60, background: "rgba(255,255,255,0.03)", borderRadius: 10, flexShrink: 0 }} />
+                <div key={i} style={{ minWidth: 130, height: 64, background: "rgba(255,255,255,0.04)", borderRadius: 10, flexShrink: 0 }} />
               ))
             : kpiList.map((kpi: any, i: number) => <KpiTile key={i} kpi={kpi} />)
           }
         </div>
 
         {/* Live indicator */}
-        <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 6 }}>
+        <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8 }}>
           <StatusDot color={T.green} pulse />
           <div>
-            <div style={{ fontSize: 9, color: T.green, fontWeight: 600 }}>LIVE</div>
+            <div style={{ fontSize: 11, color: T.green, fontWeight: 700, letterSpacing: "0.08em" }}>LIVE</div>
             {lastPoll && (
-              <div style={{ fontSize: 9, color: T.textMuted }}>{relTime(lastPoll)}</div>
+              <div style={{ fontSize: 10, color: T.textMuted }}>{relTime(lastPoll)}</div>
             )}
           </div>
         </div>
       </div>
 
       {/* ── BODY ── */}
-      <div style={{ display: "flex", flex: 1, overflow: "hidden", height: "calc(100vh - 80px)" }}>
+      <div style={{ display: "flex", flex: 1, overflow: "hidden", height: "calc(100vh - 80px)", position: "relative", zIndex: 1 }}>
 
         {/* ── LEFT SIDEBAR ── */}
         <div style={{
-          width: 220,
+          width: 240,
           flexShrink: 0,
-          borderRight: `1px solid ${T.border}`,
-          background: "rgba(0,0,0,0.4)",
+          borderRight: `1px solid rgba(255,210,120,0.10)`,
+          background: "linear-gradient(180deg, #12100E 0%, #0E0B08 100%)",
           overflowY: "auto",
-          padding: "12px 0",
+          padding: "16px 0",
         }}>
           {navGroups.map((group) => {
             const items = NAV_ITEMS.filter((n) => n.group === group);
             if (!items.length) return null;
             return (
-              <div key={group} style={{ marginBottom: 8 }}>
+              <div key={group} style={{ marginBottom: 12 }}>
                 <div style={{
-                  fontSize: 9, fontWeight: 700, color: T.textMuted,
-                  textTransform: "uppercase", letterSpacing: "0.15em",
-                  padding: "6px 16px 4px",
+                  fontSize: 10, fontWeight: 700, color: "rgba(179,155,119,0.5)",
+                  textTransform: "uppercase", letterSpacing: "0.18em",
+                  padding: "8px 20px 4px",
                 }}>
                   {groupLabels[group]}
                 </div>
@@ -536,33 +540,33 @@ export default function MasterOperations() {
                         width: "100%",
                         display: "flex",
                         alignItems: "center",
-                        gap: 10,
-                        padding: "8px 16px",
-                        background: isActive ? `${T.gold}12` : "transparent",
-                        borderLeft: isActive ? `2px solid ${T.gold}` : "2px solid transparent",
+                        gap: 12,
+                        padding: "11px 20px",
+                        background: isActive ? `rgba(201,168,76,0.10)` : "transparent",
+                        borderLeft: isActive ? `3px solid ${T.gold}` : "3px solid transparent",
                         border: "none",
                         cursor: "pointer",
                         textAlign: "left",
-                        transition: "all 0.15s",
+                        transition: "all 0.18s ease",
                       }}
                     >
-                      <Icon size={14} color={isActive ? T.gold : T.textMuted} strokeWidth={isActive ? 2 : 1.5} />
+                      <Icon size={16} color={isActive ? T.gold : T.textMuted} strokeWidth={isActive ? 2 : 1.5} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{
-                          fontSize: 12, fontWeight: isActive ? 600 : 400,
+                          fontSize: 14, fontWeight: isActive ? 600 : 400,
                           color: isActive ? T.gold : T.text,
                           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
                         }}>
                           {item.label}
                         </div>
                         <div style={{
-                          fontSize: 9, color: T.textMuted,
+                          fontSize: 11, color: T.textMuted,
                           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
                         }}>
                           {item.desc}
                         </div>
                       </div>
-                      {isActive && <ChevronRight size={10} color={T.gold} />}
+                      {isActive && <ChevronRight size={12} color={T.gold} />}
                     </button>
                   );
                 })}

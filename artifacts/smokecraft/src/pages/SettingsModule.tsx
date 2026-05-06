@@ -6,7 +6,6 @@ import { useCommandCenter, POS_MODE_INFO, type PosOperatingMode } from "@/contex
 import { usePosContext } from "@/contexts/PosContext";
 import { useVenueContext, BACKGROUND_LABELS, DEFAULT_BACKGROUNDS, type BackgroundKey } from "@/contexts/VenueContext";
 import ConfirmModal from "@/components/ConfirmModal";
-import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const POS_MODES: PosOperatingMode[] = ["overlay", "hybrid", "full_pos"];
 
@@ -101,15 +100,21 @@ export default function SettingsModule() {
   }
 
   return (
-    <BackgroundLayer image={getBackground("settings")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#F5E7C8", overflow: "hidden", background: "#080604" }}>
+      <div style={{
+        display: "flex", alignItems: "center", gap: 12, padding: "14px 24px",
+        borderBottom: "1px solid rgba(255,210,120,0.10)",
+        background: "linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)",
+        backdropFilter: "blur(16px)", flexShrink: 0,
+        boxShadow: "0 1px 0 rgba(255,210,120,0.06), 0 4px 20px rgba(0,0,0,0.3)",
+      }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "#211D19", border: "1px solid rgba(255,210,120,0.18)", color: "#B39B77", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#64748b" }}>System & Security</div>
-          <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>Status, devices, and audit trail</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: "#C9A84C" }}>System & Security</div>
+          <div style={{ fontSize: 13, color: "#B39B77" }}>Status, devices, and audit trail</div>
         </div>
         <div style={{
           display: "flex", alignItems: "center", gap: 6,
@@ -545,6 +550,6 @@ export default function SettingsModule() {
         onConfirm={confirmModeChange}
         onCancel={() => setPendingMode(null)}
       />
-    </BackgroundLayer>
+    </div>
   );
 }

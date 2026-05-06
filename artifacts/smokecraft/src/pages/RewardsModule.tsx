@@ -5,42 +5,37 @@
 import { useLocation }          from "wouter";
 import { motion }               from "framer-motion";
 import { ArrowLeft, Gift }      from "lucide-react";
-import { useVenueContext }      from "@/contexts/VenueContext";
-import BackgroundLayer          from "@/components/Layout/BackgroundLayer";
 import { LoyaltyRewardsTab }   from "@/components/Dashboard/LoyaltyRewardsTab";
 
 const ACCENT = "#34d399";
 
 export default function RewardsModule() {
   const [, navigate] = useLocation();
-  const { getBackground } = useVenueContext();
 
   return (
-    <BackgroundLayer
-      image={getBackground("rewards")}
-      style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}
-    >
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: "#080604", color: "#F5E7C8" }}>
       <div style={{
-        display: "flex", alignItems: "center", gap: 12, padding: "12px 20px",
-        borderBottom: "1px solid rgba(0,0,0,0.08)",
-        background: "rgba(245,242,235,0.96)", backdropFilter: "blur(12px)", flexShrink: 0,
-        boxShadow: "0 1px 0 rgba(0,0,0,0.06)",
+        display: "flex", alignItems: "center", gap: 12, padding: "14px 24px",
+        borderBottom: "1px solid rgba(255,210,120,0.10)",
+        background: "linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)",
+        backdropFilter: "blur(16px)", flexShrink: 0,
+        boxShadow: "0 1px 0 rgba(255,210,120,0.06), 0 4px 20px rgba(0,0,0,0.3)",
       }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.1)", color: "rgba(26,20,16,0.5)", cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "#211D19", border: "1px solid rgba(255,210,120,0.18)", color: "#B39B77", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: ACCENT, display: "flex", alignItems: "center", gap: 8 }}>
-            <Gift size={18} /> Rewards
+          <div style={{ fontSize: 20, fontWeight: 700, color: "#34D399", display: "flex", alignItems: "center", gap: 8 }}>
+            <Gift size={18} /> Loyalty & Rewards
           </div>
-          <div style={{ fontSize: 11, color: "rgba(26,20,16,0.45)" }}>Loyalty engine · points · redemptions</div>
+          <div style={{ fontSize: 13, color: "#B39B77" }}>Loyalty engine · points · redemptions</div>
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px" }}>
         <LoyaltyRewardsTab />
       </div>
-    </BackgroundLayer>
+    </div>
   );
 }

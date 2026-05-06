@@ -12,43 +12,37 @@
 import { useLocation }          from "wouter";
 import { motion }               from "framer-motion";
 import { ArrowLeft, Megaphone } from "lucide-react";
-import { useVenueContext }      from "@/contexts/VenueContext";
-import BackgroundLayer          from "@/components/Layout/BackgroundLayer";
 import { CampaignsTab }        from "@/components/Dashboard/CampaignsTab";
 
 const ACCENT = "#ec4899";
 
 export default function CampaignsModule() {
   const [, navigate] = useLocation();
-  const { getBackground } = useVenueContext();
 
   return (
-    <BackgroundLayer
-      image={getBackground("campaigns")}
-      style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}
-    >
-      {/* Header */}
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#F5E7C8", overflow: "hidden", background: "#080604" }}>
       <div style={{
-        display: "flex", alignItems: "center", gap: 12, padding: "12px 20px",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
-        background: "rgba(10,8,6,0.82)", backdropFilter: "blur(10px)", flexShrink: 0,
+        display: "flex", alignItems: "center", gap: 12, padding: "14px 24px",
+        borderBottom: "1px solid rgba(255,210,120,0.10)",
+        background: "linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)",
+        backdropFilter: "blur(16px)", flexShrink: 0,
+        boxShadow: "0 1px 0 rgba(255,210,120,0.06), 0 4px 20px rgba(0,0,0,0.3)",
       }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "#211D19", border: "1px solid rgba(255,210,120,0.18)", color: "#B39B77", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: ACCENT, display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ fontSize: 20, fontWeight: 700, color: ACCENT, display: "flex", alignItems: "center", gap: 8 }}>
             <Megaphone size={18} /> Campaigns
           </div>
-          <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>Promotions · time-based rules · conversion tracking</div>
+          <div style={{ fontSize: 13, color: "#B39B77" }}>Promotions · time-based rules · conversion tracking</div>
         </div>
       </div>
 
-      {/* Content */}
       <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
         <CampaignsTab />
       </div>
-    </BackgroundLayer>
+    </div>
   );
 }

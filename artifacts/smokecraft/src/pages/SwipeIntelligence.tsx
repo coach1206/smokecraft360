@@ -28,19 +28,19 @@ async function apiGet(path: string) {
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
 const C = {
-  bg:       "#F5F3EF",
-  card:     "#FFFFFF",
-  border:   "rgba(0,0,0,0.07)",
-  text:     "#1A1410",
-  muted:    "rgba(26,20,16,0.45)",
-  dim:      "rgba(26,20,16,0.28)",
-  gold:     "#9A7820",
-  accent:   "#1A1410",
-  green:    "#16a34a",
-  red:      "#dc2626",
-  orange:   "#ea580c",
-  purple:   "#7c3aed",
-  blue:     "#1d4ed8",
+  bg:       "#080604",
+  card:     "rgba(255,255,255,0.045)",
+  border:   "rgba(255,210,120,0.12)",
+  text:     "#F5E7C8",
+  muted:    "#B39B77",
+  dim:      "rgba(179,155,119,0.45)",
+  gold:     "#C9A84C",
+  accent:   "#D4AF37",
+  green:    "#34D399",
+  red:      "#F87171",
+  orange:   "#FB923C",
+  purple:   "#A78BFA",
+  blue:     "#60A5FA",
 };
 
 const CRAFT_COLORS: Record<string, string> = {

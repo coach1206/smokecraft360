@@ -12,21 +12,22 @@ import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 const priorityColors = { critical: "#ef4444", high: "#f59e0b", medium: "#5b8def", low: "#22c55e" };
 
 const C = {
-  header:    "rgba(245,242,235,0.96)",
-  border:    "rgba(0,0,0,0.08)",
-  text:      "#1A1410",
-  muted:     "rgba(26,20,16,0.45)",
-  dim:       "rgba(26,20,16,0.28)",
-  gold:      "#9A7820",
-  card:      "#FFFFFF",
-  cardSoft:  "#FAF9F6",
-  rowAlt:    "rgba(0,0,0,0.02)",
-  rowBorder: "rgba(0,0,0,0.05)",
-  back:      "#FFFFFF",
-  backBorder:"rgba(0,0,0,0.1)",
-  inputBg:   "#FFFFFF",
-  inputBorder:"rgba(0,0,0,0.12)",
-  accent:    "#8b5cf6",
+  header:    "linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)",
+  border:    "rgba(255,210,120,0.12)",
+  text:      "#F5E7C8",
+  muted:     "#B39B77",
+  dim:       "rgba(179,155,119,0.45)",
+  gold:      "#C9A84C",
+  card:      "rgba(255,255,255,0.045)",
+  cardSoft:  "rgba(255,255,255,0.028)",
+  rowAlt:    "rgba(255,255,255,0.02)",
+  rowBorder: "rgba(255,210,120,0.08)",
+  back:      "#211D19",
+  backBorder:"rgba(255,210,120,0.18)",
+  inputBg:   "#181512",
+  inputBorder:"rgba(255,210,120,0.18)",
+  accent:    "#A78BFA",
+  bg:        "#080604",
 };
 
 type AnalyticsTab = "overview" | "stock";
@@ -136,26 +137,25 @@ export default function AnalyticsModule() {
   );
 
   return (
-    <BackgroundLayer image={getBackground("analytics")} style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: C.bg, color: C.text }}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: `1px solid ${C.border}`, background: C.header, backdropFilter: "blur(12px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(0,0,0,0.06)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 24px", borderBottom: `1px solid rgba(255,210,120,0.10)`, background: C.header, backdropFilter: "blur(16px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(255,210,120,0.06), 0 4px 20px rgba(0,0,0,0.3)" }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: C.accent }}>Analytics & Insights</div>
-          <div style={{ fontSize: 11, color: C.muted }}>Revenue intelligence & AI brain</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: C.accent }}>Analytics & Insights</div>
+          <div style={{ fontSize: 13, color: C.muted }}>Revenue intelligence & AI brain</div>
         </div>
-        <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ display: "flex", gap: 8 }}>
           {([["overview", "Overview"], ["stock", "Stock Movements"]] as const).map(([key, label]) => (
             <motion.button key={key} whileTap={{ scale: 0.95 }} onClick={() => setTab(key)}
               style={{
-                padding: "8px 16px", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer",
-                background: tab === key ? `${C.accent}15` : C.back,
-                border: `1px solid ${tab === key ? `${C.accent}35` : C.border}`,
+                padding: "9px 18px", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer",
+                background: tab === key ? "rgba(167,139,250,0.15)" : C.back,
+                border: `1px solid ${tab === key ? "rgba(167,139,250,0.4)" : C.border}`,
                 color: tab === key ? C.accent : C.muted,
-                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
               }}>
               {label}
             </motion.button>
@@ -165,11 +165,10 @@ export default function AnalyticsModule() {
             onClick={() => navigate("/analytics/swipe-intelligence")}
             style={{
               display: "flex", alignItems: "center", gap: 6,
-              padding: "8px 16px", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer",
-              background: "#1A1410",
-              border: "1px solid rgba(212,175,55,0.3)",
-              color: "#d4af37",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+              padding: "9px 18px", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer",
+              background: "rgba(201,168,76,0.10)",
+              border: "1px solid rgba(201,168,76,0.30)",
+              color: "#D4AF37",
             }}
           >
             <Brain size={13} /> Swipe IQ
@@ -177,7 +176,7 @@ export default function AnalyticsModule() {
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px" }}>
         {tab === "overview" && (
           <>
             {/* ── KPI Strip ── */}
@@ -495,6 +494,6 @@ export default function AnalyticsModule() {
         }}
         onCancel={() => setPendingConfirm(null)}
       />
-    </BackgroundLayer>
+    </div>
   );
 }

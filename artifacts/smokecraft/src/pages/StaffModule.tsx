@@ -9,14 +9,15 @@ import ConfirmModal from "@/components/ConfirmModal";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const C = {
-  header:    "rgba(245,242,235,0.96)",
-  border:    "rgba(0,0,0,0.08)",
-  text:      "#1A1410",
-  muted:     "rgba(26,20,16,0.45)",
-  dim:       "rgba(26,20,16,0.28)",
-  card:      "#FFFFFF",
-  back:      "#FFFFFF",
-  backBorder:"rgba(0,0,0,0.1)",
+  header:    "linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)",
+  border:    "rgba(255,210,120,0.12)",
+  text:      "#F5E7C8",
+  muted:     "#B39B77",
+  dim:       "rgba(179,155,119,0.40)",
+  card:      "rgba(255,255,255,0.045)",
+  back:      "#211D19",
+  backBorder:"rgba(255,210,120,0.18)",
+  bg:        "#080604",
 };
 
 const roleIcons: Record<string, typeof Crown> = { owner: Crown, manager: Shield, staff: User };
@@ -58,26 +59,26 @@ export default function StaffModule() {
   }
 
   return (
-    <BackgroundLayer image={getBackground("staff")} style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: C.bg, color: C.text }}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: `1px solid ${C.border}`, background: C.header, backdropFilter: "blur(12px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(0,0,0,0.06)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 24px", borderBottom: `1px solid rgba(255,210,120,0.10)`, background: C.header, backdropFilter: "blur(16px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(255,210,120,0.06), 0 4px 20px rgba(0,0,0,0.3)" }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#a78bfa" }}>Staff Management</div>
-          <div style={{ fontSize: 11, color: C.muted }}>{cc.staff.filter(s => s.status === "active").length} active members</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: "#A78BFA" }}>Staff Management</div>
+          <div style={{ fontSize: 13, color: C.muted }}>{cc.staff.filter(s => s.status === "active").length} active members</div>
         </div>
       </div>
 
       {/* ── Staff grid ── */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 14, alignContent: "start" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 14, alignContent: "start" }}>
         {cc.staff.length === 0 ? (
           <div style={{ gridColumn: "1/-1", padding: 48, textAlign: "center", borderRadius: 16, background: C.card, border: `1px solid ${C.border}` }}>
             <User size={32} color={C.dim} style={{ marginBottom: 12 }} />
-            <div style={{ fontSize: 15, fontWeight: 600, color: C.muted }}>No staff members yet</div>
-            <div style={{ fontSize: 13, color: C.dim, marginTop: 6 }}>Staff accounts will appear here once created</div>
+            <div style={{ fontSize: 16, fontWeight: 600, color: C.muted }}>No staff members yet</div>
+            <div style={{ fontSize: 14, color: C.dim, marginTop: 6 }}>Staff accounts will appear here once created</div>
           </div>
         ) : cc.staff.map((member, i) => {
           const RoleIcon = roleIcons[member.role] ?? User;
@@ -178,6 +179,6 @@ export default function StaffModule() {
         onConfirm={() => { confirm?.action(); setConfirm(null); }}
         onCancel={() => setConfirm(null)}
       />
-    </BackgroundLayer>
+    </div>
   );
 }

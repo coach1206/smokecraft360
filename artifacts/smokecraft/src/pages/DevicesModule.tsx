@@ -4,19 +4,18 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Monitor, Tablet, Smartphone, Lock, Unlock, RefreshCw, Wifi, WifiOff, Battery, BatteryLow, Power, ShieldAlert } from "lucide-react";
 import { useCommandCenter, type Device } from "@/contexts/CommandCenterContext";
 import { usePosContext } from "@/contexts/PosContext";
-import { useVenueContext } from "@/contexts/VenueContext";
 import ConfirmModal from "@/components/ConfirmModal";
-import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const C = {
-  header:    "rgba(245,242,235,0.96)",
-  border:    "rgba(0,0,0,0.08)",
-  text:      "#1A1410",
-  muted:     "rgba(26,20,16,0.45)",
-  dim:       "rgba(26,20,16,0.28)",
-  card:      "#FFFFFF",
-  back:      "#FFFFFF",
-  backBorder:"rgba(0,0,0,0.1)",
+  header:    "linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)",
+  border:    "rgba(255,210,120,0.12)",
+  text:      "#F5E7C8",
+  muted:     "#B39B77",
+  dim:       "rgba(179,155,119,0.40)",
+  card:      "rgba(255,255,255,0.045)",
+  back:      "#211D19",
+  backBorder:"rgba(255,210,120,0.18)",
+  bg:        "#080604",
 };
 
 const typeIcons: Record<Device["type"], typeof Monitor> = { kiosk: Monitor, tablet: Tablet, mobile: Smartphone };
@@ -164,7 +163,6 @@ export default function DevicesModule() {
   const [, navigate] = useLocation();
   const cc = useCommandCenter();
   const pos = usePosContext();
-  const { getBackground } = useVenueContext();
   const online = cc.devices.filter(d => d.status === "online").length;
   const isPrivileged = pos.currentUser?.role === "owner" || pos.currentUser?.role === "manager";
 
@@ -182,7 +180,7 @@ export default function DevicesModule() {
   };
 
   return (
-    <BackgroundLayer image={getBackground("devices")} style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: C.bg }}>
       {/* ── Header ── */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", borderBottom: `1px solid ${C.border}`, background: C.header, backdropFilter: "blur(12px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(0,0,0,0.06)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -237,6 +235,6 @@ export default function DevicesModule() {
         onConfirm={() => { confirm?.action(); setConfirm(null); }}
         onCancel={() => setConfirm(null)}
       />
-    </BackgroundLayer>
+    </div>
   );
 }
