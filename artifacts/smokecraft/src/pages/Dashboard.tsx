@@ -202,7 +202,7 @@ export default function Dashboard() {
                   style={{ background: "rgba(212,175,55,0.06)", border: "1px solid rgba(212,175,55,0.15)" }}>
                   <User size={12} style={{ color: "rgba(212,175,55,0.55)" }} />
                   <span className="text-[10px]" style={{ color: "rgba(210,185,140,0.7)" }}>{user.name}</span>
-                  <span className="text-[8px] uppercase tracking-[0.1em] px-1.5 py-0.5 rounded-full"
+                  <span className="text-[11px] uppercase tracking-[0.1em] px-1.5 py-0.5 rounded-full"
                     style={{ background: "rgba(212,175,55,0.1)", color: "rgba(212,175,55,0.6)" }}>
                     {user.role.replace("_", " ")}
                   </span>
@@ -306,22 +306,10 @@ export default function Dashboard() {
 
               {/* Tab navigation */}
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                <div className="flex gap-1 p-1 rounded-xl w-fit"
-                  style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <div className="ax-tab-bar w-full">
                   {TABS.filter((t) => !t.superAdminOnly || user?.role === "super_admin").map((tab) => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[10px] uppercase tracking-[0.15em] transition-all duration-200 whitespace-nowrap"
-                      style={activeTab === tab.id
-                        ? {
-                            background: "rgba(212,175,55,0.12)",
-                            border: "1px solid rgba(212,175,55,0.28)",
-                            color: "rgba(212,175,55,0.9)",
-                          }
-                        : {
-                            border: "1px solid transparent",
-                            color: "rgba(180,155,100,0.45)",
-                          }
-                      }>
+                      className={`ax-tab${activeTab === tab.id ? " active" : ""}`}>
                       {tab.icon}{t(`dashboard.tabs.${tab.id}`, tab.label)}
                     </button>
                   ))}
@@ -348,30 +336,30 @@ export default function Dashboard() {
                     )}
 
                     {shareStats && (
-                      <div className="rounded-xl p-6 space-y-4" style={{ background: "rgba(212,175,55,0.03)", border: "1px solid rgba(212,175,55,0.12)" }}>
+                      <div className="rounded-xl p-6 space-y-4" style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.14)" }}>
                         <div className="flex items-center gap-2 mb-2">
-                          <Share2 size={13} style={{ color: "rgba(212,175,55,0.6)" }} />
-                          <p className="text-[9px] uppercase tracking-[0.3em]" style={{ color: "rgba(212,175,55,0.6)" }}>Build Card Shares</p>
+                          <Share2 size={14} style={{ color: "rgba(212,175,55,0.62)" }} />
+                          <p className="text-[11px] uppercase tracking-[0.22em]" style={{ color: "rgba(212,175,55,0.62)" }}>Build Card Shares</p>
                         </div>
                         <div className="grid grid-cols-3 gap-4">
                           <div className="text-center">
                             <p className="font-serif text-2xl" style={{ color: "rgba(230,210,175,0.9)", fontWeight: 300 }}>{shareStats.totalShares}</p>
-                            <p className="text-[9px] uppercase tracking-[0.2em] mt-0.5" style={{ color: "rgba(180,155,100,0.45)" }}>Total Shares</p>
+                            <p className="text-[11px] uppercase tracking-[0.16em] mt-1" style={{ color: "rgba(180,155,100,0.48)" }}>Total Shares</p>
                           </div>
                           <div className="text-center">
                             <p className="font-serif text-2xl" style={{ color: "rgba(230,210,175,0.9)", fontWeight: 300 }}>{shareStats.downloadCount}</p>
-                            <p className="text-[9px] uppercase tracking-[0.2em] mt-0.5" style={{ color: "rgba(180,155,100,0.45)" }}>Downloads</p>
+                            <p className="text-[11px] uppercase tracking-[0.16em] mt-1" style={{ color: "rgba(180,155,100,0.48)" }}>Downloads</p>
                           </div>
                           <div className="text-center">
                             <p className="font-serif text-2xl" style={{ color: "rgba(230,210,175,0.9)", fontWeight: 300 }}>{shareStats.nativeCount}</p>
-                            <p className="text-[9px] uppercase tracking-[0.2em] mt-0.5" style={{ color: "rgba(180,155,100,0.45)" }}>Native Shares</p>
+                            <p className="text-[11px] uppercase tracking-[0.16em] mt-1" style={{ color: "rgba(180,155,100,0.48)" }}>Native Shares</p>
                           </div>
                         </div>
                         {shareStats.byCraft.length > 0 && (
                           <div className="flex flex-wrap gap-2 pt-2 border-t" style={{ borderColor: "rgba(212,175,55,0.1)" }}>
                             {shareStats.byCraft.map((row) => (
-                              <span key={row.craftType} className="px-2.5 py-1 rounded-full text-[9px] uppercase tracking-[0.12em]"
-                                style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)", color: "rgba(212,175,55,0.7)" }}>
+                              <span key={row.craftType} className="px-3 py-1 rounded-full text-[11px] uppercase tracking-[0.10em]"
+                                style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)", color: "rgba(212,175,55,0.72)" }}>
                                 {row.craftType} · {row.count}
                               </span>
                             ))}
@@ -395,7 +383,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between">
                       <div>
                         <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>Product Visibility</h2>
-                        <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+                        <p className="text-[11px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(180,155,100,0.42)" }}>
                           Adjust boost, sponsored placement, and product images
                         </p>
                       </div>
@@ -404,7 +392,7 @@ export default function Dashboard() {
                           style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
                           {(["all", "cigar", "alcohol"] as CategoryFilter[]).map((f) => (
                             <button key={f} onClick={() => setFilter(f)}
-                              className="px-3 py-1.5 text-[9px] uppercase tracking-[0.15em] rounded-full transition-all duration-200"
+                              className="px-3 py-1.5 text-[11px] uppercase tracking-[0.15em] rounded-full transition-all duration-200"
                               style={filter === f
                                 ? { background: "rgba(212,175,55,0.15)", color: "rgba(212,175,55,0.85)", border: "1px solid rgba(212,175,55,0.3)" }
                                 : { color: "rgba(180,155,100,0.5)" }
@@ -414,7 +402,7 @@ export default function Dashboard() {
                         <button
                           onClick={() => setShowNewProduct(true)}
                           data-testid="dashboard-new-product"
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] uppercase tracking-[0.15em] transition-all duration-200"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] uppercase tracking-[0.15em] transition-all duration-200"
                           style={{
                             background: "rgba(212,175,55,0.18)",
                             color:      "rgba(230,200,120,0.95)",
@@ -482,7 +470,7 @@ export default function Dashboard() {
                       <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
                         Brands &amp; Distributors
                       </h2>
-                      <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+                      <p className="text-[11px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
                         Brand partner directory · product attribution · campaign readiness
                       </p>
                     </div>
@@ -499,7 +487,7 @@ export default function Dashboard() {
                       <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
                         Campaigns
                       </h2>
-                      <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+                      <p className="text-[11px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
                         Sponsored placement · product assignment · performance tracking
                       </p>
                     </div>
@@ -516,7 +504,7 @@ export default function Dashboard() {
                       <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
                         Brand Insights
                       </h2>
-                      <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+                      <p className="text-[11px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
                         Customer behavior · product performance · flavor trends · brand analytics
                       </p>
                     </div>
@@ -636,12 +624,12 @@ export default function Dashboard() {
 
                     <div className="mb-2">
                       <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>Performance Analytics</h2>
-                      <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>Persistent across server restarts</p>
+                      <p className="text-[11px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>Persistent across server restarts</p>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="rounded-xl p-5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                        <p className="text-[9px] uppercase tracking-[0.22em] mb-4" style={{ color: "rgba(180,155,100,0.45)" }}>Top Impressions</p>
+                        <p className="text-[11px] uppercase tracking-[0.22em] mb-4" style={{ color: "rgba(180,155,100,0.45)" }}>Top Impressions</p>
                         {analytics.topPerformers.length === 0
                           ? <p className="text-xs italic" style={{ color: "rgba(180,155,100,0.3)" }}>No impressions yet — run some recommendations</p>
                           : <div className="space-y-3">{analytics.topPerformers.map((p) => (
@@ -650,7 +638,7 @@ export default function Dashboard() {
                         }
                       </div>
                       <div className="rounded-xl p-5" style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.12)" }}>
-                        <p className="text-[9px] uppercase tracking-[0.22em] mb-4 flex items-center gap-2" style={{ color: "rgba(212,175,55,0.55)" }}>
+                        <p className="text-[11px] uppercase tracking-[0.22em] mb-4 flex items-center gap-2" style={{ color: "rgba(212,175,55,0.55)" }}>
                           <Sparkles size={9} />Sponsored Performance
                         </p>
                         {analytics.sponsored.length === 0
@@ -702,15 +690,15 @@ function StatCard({ icon, label, value, accent, gold }: {
   icon: React.ReactNode; label: string; value: number; accent?: boolean; gold?: boolean;
 }) {
   return (
-    <div className="p-4 rounded-xl flex items-center gap-3"
+    <div className="p-5 rounded-xl flex items-center gap-4"
       style={{
-        background: gold ? "rgba(212,175,55,0.06)" : "rgba(255,255,255,0.025)",
-        border: gold ? "1px solid rgba(212,175,55,0.18)" : accent ? "1px solid rgba(212,175,55,0.1)" : "1px solid rgba(255,255,255,0.06)",
+        background: gold ? "rgba(212,175,55,0.07)" : "rgba(255,255,255,0.03)",
+        border: gold ? "1px solid rgba(212,175,55,0.20)" : accent ? "1px solid rgba(212,175,55,0.12)" : "1px solid rgba(255,255,255,0.07)",
       }}>
       <div style={{ color: gold ? "rgba(212,175,55,0.7)" : "rgba(180,155,100,0.5)" }}>{icon}</div>
       <div>
-        <p className="text-xl font-serif" style={{ color: gold ? "rgba(230,210,175,0.9)" : "rgba(210,190,155,0.8)", fontWeight: 300 }}>{value}</p>
-        <p className="text-[9px] uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.4)" }}>{label}</p>
+        <p className="text-2xl font-serif" style={{ color: gold ? "rgba(230,210,175,0.9)" : "rgba(210,190,155,0.8)", fontWeight: 300 }}>{value}</p>
+        <p className="text-[11px] uppercase tracking-[0.16em] mt-0.5" style={{ color: "rgba(180,155,100,0.45)" }}>{label}</p>
       </div>
     </div>
   );
@@ -754,37 +742,37 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <p className="font-serif text-sm truncate" style={{ color: "rgba(220,200,165,0.85)" }}>{item.name}</p>
+          <p className="font-serif text-base truncate" style={{ color: "rgba(220,200,165,0.85)" }}>{item.name}</p>
           {item.sponsored && (
-            <span className="text-[8px] uppercase tracking-[0.15em] px-1.5 py-0.5 rounded-full flex items-center gap-1 flex-shrink-0"
-              style={{ background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.25)", color: "rgba(212,175,55,0.75)" }}>
-              <Sparkles size={7} />Sponsored
+            <span className="text-[11px] uppercase tracking-[0.12em] px-2 py-0.5 rounded-full flex items-center gap-1 flex-shrink-0"
+              style={{ background: "rgba(212,175,55,0.10)", border: "1px solid rgba(212,175,55,0.25)", color: "rgba(212,175,55,0.78)" }}>
+              <Sparkles size={9} />Sponsored
             </span>
           )}
           {item.imageUrl && (
-            <span className="text-[8px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full flex-shrink-0"
-              style={{ background: "rgba(100,200,120,0.08)", border: "1px solid rgba(100,200,120,0.2)", color: "rgba(100,200,120,0.6)" }}>
+            <span className="text-[11px] uppercase tracking-[0.10em] px-2 py-0.5 rounded-full flex-shrink-0"
+              style={{ background: "rgba(100,200,120,0.08)", border: "1px solid rgba(100,200,120,0.2)", color: "rgba(100,200,120,0.62)" }}>
               ✓ Image
             </span>
           )}
         </div>
         <div className="flex items-center gap-2 mt-1">
-          <span className="text-[8px] uppercase tracking-[0.12em]" style={{ color: "rgba(180,155,100,0.4)" }}>{item.category}</span>
-          <span style={{ color: "rgba(180,155,100,0.2)" }}>·</span>
-          <span className="text-[8px] uppercase tracking-[0.12em]" style={{ color: "rgba(180,155,100,0.4)" }}>{item.tier}</span>
+          <span className="text-[11px] uppercase tracking-[0.10em]" style={{ color: "rgba(180,155,100,0.42)" }}>{item.category}</span>
+          <span style={{ color: "rgba(180,155,100,0.22)" }}>·</span>
+          <span className="text-[11px] uppercase tracking-[0.10em]" style={{ color: "rgba(180,155,100,0.42)" }}>{item.tier}</span>
           {item.impressions > 0 && (
-            <><span style={{ color: "rgba(180,155,100,0.2)" }}>·</span>
-            <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.38)" }}>{item.impressions} impressions</span></>
+            <><span style={{ color: "rgba(180,155,100,0.22)" }}>·</span>
+            <span className="text-[11px]" style={{ color: "rgba(180,155,100,0.40)" }}>{item.impressions} impressions</span></>
           )}
         </div>
       </div>
 
       <div className="flex flex-col items-center gap-1.5">
-        <p className="text-[8px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.35)" }}>Boost</p>
+        <p className="text-[11px] uppercase tracking-[0.13em]" style={{ color: "rgba(180,155,100,0.38)" }}>Boost</p>
         <div className="flex gap-1">
           {[0, 1, 2, 3].map((lvl) => (
             <button key={lvl} onClick={() => onBoostChange(lvl)}
-              className="w-7 h-7 rounded text-xs font-medium transition-all duration-200"
+              className="w-8 h-8 rounded text-xs font-medium transition-all duration-200"
               style={item.boostLevel === lvl
                 ? { background: "rgba(212,175,55,0.2)", border: "1px solid rgba(212,175,55,0.5)", color: "rgba(212,175,55,0.9)" }
                 : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.4)" }
@@ -800,7 +788,7 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
           : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }
         }>
         <Sparkles size={12} style={{ color: item.sponsored ? "rgba(212,175,55,0.8)" : "rgba(180,155,100,0.35)" }} />
-        <span className="text-[8px] uppercase tracking-[0.1em]"
+        <span className="text-[11px] uppercase tracking-[0.1em]"
           style={{ color: item.sponsored ? "rgba(212,175,55,0.7)" : "rgba(180,155,100,0.35)" }}>
           {item.sponsored ? "On" : "Off"}
         </span>

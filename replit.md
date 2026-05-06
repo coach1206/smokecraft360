@@ -24,7 +24,7 @@ The project utilizes a pnpm workspace monorepo, separating a React/Vite frontend
 
 ## UI/UX and Design
 
-The application features a luxury aesthetic with a dark gold theme, glassmorphism cards, and sophisticated typography. A global design system uses CSS custom properties for consistent theming. Key elements include reusable `BackgroundLayer` components for full-screen backgrounds with gradient overlays, image-driven tiles with custom branding options, and a premium animated brand intro splash. Venue owners can customize background images via the Settings page.
+Axiom OS dark espresso design system. Global body defaults to `#080604` (dark espresso) — no per-page light background overrides needed. All CSS variables in `index.css` are dark-first (`--background: 22 18% 4%`, `--foreground: 38 28% 88%`, etc.). Key utility classes: `ax-glass` / `ax-glass-gold` / `ax-card` (material depth dark glass), `ax-tab-bar` / `ax-tab` (touch-first tab nav, min-height 40px), `ax-btn-primary` / `ax-btn-ghost` (56px touch targets), `ax-badge-*` (status chips), `ax-glow-top` (ambient page glow). Legacy `sc-*` / `glass-panel` / `glass-card` classes aliased to dark equivalents for backward compat. Warm gold `#C9A84C` / cream `#F5E7C8` / muted `#B39B77` typography hierarchy. Minimum body text 11px enforced across Dashboard; key label/badge text lifted from 8-9px. Framer Motion ambient particles + Cormorant Garamond serif display type used consistently across all dashboards.
 
 ## Core Features
 

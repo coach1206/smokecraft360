@@ -1,0 +1,399 @@
+AXIOM OS — COMPLETE UI/UX IDENTITY REBUILD
+(PREMIUM • FUNCTIONAL • VISUAL • TOUCH-FIRST • AXIOM SWAG)
+
+CRITICAL OBJECTIVE
+
+Rebuild the ENTIRE Axiom OS frontend presentation layer into a premium hospitality operating system that combines:
+
+- Apple-level simplicity
+- Tesla-level operational polish
+- luxury hospitality atmosphere
+- touch-first usability
+- visual inventory intelligence
+- modern POS structure
+- emotional immersion
+- Axiom personality and swag
+
+The platform must feel:
+premium
+alive
+organized
+smooth
+intelligent
+easy to use
+visually guided
+and operationally powerful.
+
+==================================================
+IMPORTANT
+==================================================
+
+DO NOT:
+- rebuild backend systems
+- remove functionality
+- remove engines
+- remove routing
+- remove workflows
+- create fake sci-fi dashboards
+- create cluttered gaming UI
+- overload effects
+
+KEEP:
+- all existing logic
+- recommendation systems
+- AI systems
+- onboarding systems
+- operations systems
+- device systems
+- loyalty systems
+- inventory systems
+
+ONLY rebuild:
+- frontend architecture
+- visual language
+- operational layout
+- card systems
+- imagery systems
+- interaction polish
+- spacing
+- hierarchy
+- touch usability
+- material depth
+- emotional presentation
+
+==================================================
+CORE AXIOM DESIGN LANGUAGE
+==================================================
+
+AXIOM OS should feel like:
+“Apple designed a luxury hospitality intelligence system.”
+
+The UI must balance:
+clean simplicity
++
+premium atmosphere.
+
+==================================================
+GLOBAL UI RULES
+==================================================
+
+1. TOUCH-FIRST DESIGN
+Everything must feel:
+easy to tap
+easy to scan
+easy to understand.
+
+Design for:
+- tablets
+- kiosks
+- venue touchscreens
+- lounge operations
+- hospitality staff
+
+Increase:
+- card sizes
+- button sizes
+- spacing
+- padding
+- readability
+
+==================================================
+2. MATERIAL DEPTH SYSTEM
+==================================================
+
+ALL cards, tiles, panels, and interfaces must feel:
+- layered
+- tactile
+- elevated
+- premium
+- dimensional
+
+ADD:
+- soft shadows
+- subtle gradients
+- material surfaces
+- smoked glass layering
+- edge lighting
+- slight reflections
+- hover elevation
+- depth separation
+
+REMOVE:
+- flat dull rectangles
+- lifeless panels
+- empty black voids
+
+The UI should feel:
+solid and expensive.
+
+==================================================
+3. CLEAN OPERATIONAL STRUCTURE
+==================================================
+
+Use:
+- large visual modules
+- organized dashboard sections
+- clear operational zones
+- clean hierarchy
+- simple navigation
+- grouped systems
+
+Users should instantly understand:
+- what they are looking at
+- what needs attention
+- what is active
+- what actions are available
+
+WITHOUT needing training.
+
+==================================================
+4. VISUAL-FIRST EXPERIENCE
+==================================================
+
+The system must rely heavily on:
+- imagery
+- icons
+- visual indicators
+- inventory photos
+- venue visuals
+- operational graphics
+- status visuals
+
+NOT walls of text.
+
+EVERY:
+- tile
+- card
+- inventory item
+- recommendation
+- dashboard section
+
+should support REAL imagery.
+
+==================================================
+5. UNIVERSAL VISUAL ASSET SYSTEM
+==================================================
+
+Create a universal media/image management system.
+
+Allow uploads from:
+- computer
+- internal media library
+- internet URLs
+
+Support:
+- JPG
+- PNG
+- WEBP
+
+Features:
+- upload
+- replace
+- crop
+- organize
+- categorize
+- search
+- preview
+- assign to inventory/products/cards
+
+Images should automatically populate:
+- inventory
+- POS
+- recommendations
+- dashboards
+- campaigns
+- experiences
+- loyalty systems
+
+==================================================
+6. GLOBAL COLOR FOUNDATION
+==================================================
+
+Primary backgrounds:
+- dark espresso
+- charcoal
+- graphite
+- smoked black
+
+Typography:
+- warm cream
+- soft ivory
+- muted gold accents
+
+Avoid:
+- pure black
+- neon overload
+- overly bright saturation
+
+==================================================
+7. TYPOGRAPHY SYSTEM
+==================================================
+
+Minimum body text:
+16px
+
+Navigation:
+17–18px
+
+Section headers:
+22–30px
+
+Hero headers:
+36–48px
+
+Typography must be:
+- highly readable
+- touch-friendly
+- low-light optimized
+- clean
+- premium
+- easy on older eyes
+
+==================================================
+8. MOTION + INTERACTION
+==================================================
+
+The system should feel alive WITHOUT becoming distracting.
+
+ADD:
+- smooth transitions
+- hover reactions
+- soft card movement
+- subtle environmental motion
+- animated status indicators
+- polished interactions
+- Tesla-style smoothness
+- Apple-style refinement
+
+REMOVE:
+- excessive cinematic effects
+- fake holograms
+- cluttered animations
+
+==================================================
+9. MASTER OPS REBUILD
+==================================================
+
+Master Ops should feel like:
+a premium hospitality control center.
+
+Add:
+- structured operational grids
+- device fleet management
+- venue status panels
+- alerts/issues section
+- analytics cards
+- operational timelines
+- live status modules
+- activity feeds
+
+NO giant empty spaces.
+
+==================================================
+10. UNIFIED EXPERIENCE ENGINE
+==================================================
+
+ALL crafts should use:
+the SAME premium experience structure.
+
+Shared:
+- onboarding
+- swipe/discovery
+- recommendation engine
+- mentor system
+- transitions
+- interaction logic
+
+BUT each craft gets:
+its own emotional atmosphere.
+
+==================================================
+SMOKECRAFT
+==================================================
+
+Theme:
+luxury cigar ritual
+
+Visuals:
+- ember glow
+- walnut
+- leather
+- smoke atmosphere
+
+==================================================
+POURCRAFT
+==================================================
+
+Theme:
+luxury spirit ritual
+
+Visuals:
+- crystal reflections
+- cocktail lounges
+- liquid movement
+- premium nightlife
+
+==================================================
+BREWCRAFT
+==================================================
+
+Theme:
+luxury brewery ritual
+
+Visuals:
+- energetic taproom
+- social warmth
+- foam textures
+- brewery visuals
+
+==================================================
+VAPECRAFT
+==================================================
+
+Theme:
+luxury futuristic vapor ritual
+
+Visuals:
+- neon atmosphere
+- vapor movement
+- cyber lounge
+- reactive fog
+- glowing devices
+
+==================================================
+11. AXIOM SWAG
+==================================================
+
+Axiom personality should come from:
+- confidence
+- polish
+- atmosphere
+- smoothness
+- emotional warmth
+- refined lighting
+- premium depth
+- visual storytelling
+- intelligent motion
+
+NOT:
+cheap flashy effects.
+
+==================================================
+FINAL EXPERIENCE GOAL
+==================================================
+
+The platform should immediately feel:
+- expensive
+- modern
+- premium
+- alive
+- intelligent
+- emotionally engaging
+- operationally powerful
+- easy to use
+
+The user should feel:
+“This is the future of hospitality operations.”
+
+NOT:
+“another admin dashboard.”
