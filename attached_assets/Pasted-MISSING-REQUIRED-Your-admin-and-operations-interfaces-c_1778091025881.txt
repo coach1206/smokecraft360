@@ -1,0 +1,385 @@
+MISSING / REQUIRED
+
+Your admin and operations interfaces currently fail low-light hospitality usability standards.
+
+Critical issues:
+
+* typography too small for 40+ year old venue operators
+* black levels too deep causing panel loss
+* insufficient visual hierarchy
+* empty operational space
+* no environmental anchoring imagery
+* weak panel separation
+* poor contrast in dim environments
+* experience-layer styling incorrectly applied to admin systems
+* dashboards feel lifeless instead of intelligent
+* operational sections lack visual identity
+* navigation density too compressed
+* telemetry lacks visual emphasis
+* command center pages do not feel “alive”
+
+This is NOT a feature problem.
+
+This is:
+LOW-LIGHT OPERATIONAL UX HARDENING.
+
+==================================================
+FAILURE PREVENTION CHECKLIST
+============================
+
+DO NOT:
+
+* brighten the entire UI white
+* remove cinematic luxury aesthetic
+* flatten the visual system
+* convert into generic SaaS dashboard
+* use pure neon cyberpunk styling
+* shrink typography further
+* keep pure-black panel backgrounds
+* use low-opacity gray text
+* create giant empty void spaces
+* apply collectible-card styling to operations pages
+
+MUST:
+
+* preserve premium luxury feel
+* improve readability dramatically
+* maintain dark hospitality atmosphere
+* support 45+ year old eyes in low light
+* create operational hierarchy
+* add environmental context imagery
+* add visual telemetry
+* make screens feel intelligent and alive
+* improve scanning speed
+* improve command-center clarity
+* maintain OLED-style elegance without readability loss
+
+==================================================
+MASTER FIX PROMPT
+LOW-LIGHT HOSPITALITY ADMIN UX HARDENING
+========================================
+
+Rebuild ALL admin / operations / governance / analytics / presence / command-center interfaces using LOW-LIGHT HOSPITALITY UX standards.
+
+This is NOT a redesign.
+
+This is:
+operational readability hardening.
+
+==================================================
+
+1. GLOBAL DARK SYSTEM REBUILD
+   ==================================================
+
+REMOVE:
+
+* flat pure black backgrounds (#000000)
+* invisible panels
+* ultra-dark washed sections
+
+REPLACE WITH layered dark tones:
+
+Primary background:
+#080604
+
+Secondary surfaces:
+#12100E
+
+Panel surfaces:
+#181512
+
+Elevated panels:
+#211D19
+
+Interactive surfaces:
+#2A241E
+
+Borders:
+rgba(255,210,120,0.12)
+
+Glow accents:
+amber gold with low bloom
+
+Goal:
+preserve cinematic darkness while restoring depth separation.
+
+==================================================
+2. TYPOGRAPHY HARDENING
+=======================
+
+ALL admin typography must be rebuilt for:
+45+ year old venue operators in low ambient lighting.
+
+Minimum standards:
+
+Body text:
+16px minimum
+
+Operational labels:
+17–18px
+
+Section headers:
+22–28px
+
+Critical KPI values:
+30–42px
+
+Navigation:
+16px medium weight minimum
+
+Increase:
+
+* letter spacing slightly
+* line height
+* font weight
+* contrast ratio
+
+REMOVE:
+tiny thin gray text.
+
+Typography colors:
+
+Primary:
+#F5E7C8
+
+Secondary:
+#D6C3A1
+
+Muted:
+#B39B77
+
+Inactive:
+rgba(245,231,200,0.42)
+
+Typography should feel:
+luxury print readability.
+
+==================================================
+3. OPERATIONAL HIERARCHY SYSTEM
+===============================
+
+Every page must establish:
+
+PRIMARY ZONE
+Most important operational content
+
+SECONDARY ZONE
+Support systems and telemetry
+
+UTILITY ZONE
+Controls, actions, exports, settings
+
+PASSIVE ZONE
+Background intelligence and environmental motion
+
+The eye should instantly know:
+where to look first.
+
+==================================================
+4. ADMIN PAGES MUST FEEL ALIVE
+==============================
+
+Current problem:
+dead black voids.
+
+Add ambient operational systems:
+
+* soft animated telemetry lines
+* pulsing intelligence nodes
+* slow-moving signal grids
+* atmospheric particle drift
+* subtle graph movement
+* ambient edge glows
+* real-time status pulses
+* operational shimmer reflections
+* moving depth gradients
+
+Everything should feel:
+powered and active.
+
+NOT:
+static.
+
+==================================================
+5. VISUAL CONTEXT IMAGERY
+=========================
+
+Every operational section must include contextual imagery.
+
+These are NOT decorative.
+
+They orient the brain.
+
+==================================================
+PRESENCE ENGINE
+===============
+
+Add:
+
+* blurred VIP lounge imagery
+* subtle guest silhouettes
+* atmospheric arrival visuals
+* ambient hospitality overlays
+* soft crowd movement backgrounds
+
+==================================================
+CENTRAL COMMAND
+===============
+
+Add:
+
+* network topology maps
+* device constellation visuals
+* command-center telemetry imagery
+* operational routing visuals
+* deployment flow overlays
+
+==================================================
+REVENUE ENGINE
+==============
+
+Add:
+
+* animated financial graph overlays
+* premium whiskey/bar textures
+* transaction pulse effects
+* revenue heatmap visuals
+
+==================================================
+INVENTORY SYSTEM
+================
+
+Add:
+
+* humidor shelving imagery
+* bottle wall visuals
+* premium storage textures
+* subtle inventory movement visuals
+
+==================================================
+GOVERNANCE / SECURITY
+=====================
+
+Add:
+
+* vault-inspired depth
+* layered glass panels
+* verification glow systems
+* encrypted-grid overlays
+* secure-access visual motifs
+
+==================================================
+6. PANEL DEPTH REBUILD
+======================
+
+All panels must feel layered.
+
+Add:
+
+* soft internal gradients
+* glass diffusion
+* edge illumination
+* subtle reflections
+* low-opacity atmospheric blur
+* elevated depth shadows
+
+Panels should feel:
+machined and premium.
+
+NOT:
+flat rectangles.
+
+==================================================
+7. EMPTY SPACE BALANCING
+========================
+
+Current screens have:
+too much dead negative space.
+
+DO NOT clutter.
+
+Instead add:
+
+* telemetry overlays
+* environmental motion
+* supporting imagery
+* depth particles
+* ambient data visuals
+* intelligence layers
+
+Goal:
+controlled density.
+
+==================================================
+8. NAVIGATION HARDENING
+=======================
+
+Navigation needs:
+
+* larger tap targets
+* stronger active states
+* brighter hover states
+* thicker icons
+* clearer section grouping
+* improved spacing
+
+The navigation should feel:
+immediately understandable in dim environments.
+
+==================================================
+9. LIVE SYSTEM ENERGY
+=====================
+
+All admin pages need:
+ambient intelligence motion.
+
+Examples:
+
+* heartbeat pulses
+* signal sweeps
+* node breathing
+* telemetry drift
+* live graph updates
+* operational scanning bars
+* AI engine activity indicators
+
+The system should feel:
+aware.
+
+==================================================
+10. OLED HOSPITALITY FINISH
+===========================
+
+Final feeling should be:
+
+Apple-level clarity
++
+high-end cigar lounge atmosphere
++
+luxury hospitality operations
++
+NASA-lite command center precision
+
+This is:
+Operational Luxury UI.
+
+NOT:
+generic SaaS dark mode.
+
+==================================================
+FINAL RULE
+==========
+
+Experience pages:
+emotional and cinematic.
+
+Admin pages:
+clear, intelligent, operational, readable, alive.
+
+The operator should feel:
+calm
+confident
+in control
+aware of the venue instantly
+
+without eye strain in dark hospitality environments.
