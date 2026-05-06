@@ -78,6 +78,7 @@ import { startAggregationWorker } from "./lib/aggregationWorker";
 import experienceEngineRouter    from "./routes/experienceEngine";
 import experienceCompleteRouter  from "./routes/experienceComplete";
 import adminIntensityRouter      from "./routes/adminIntensity";
+import experienceControlRouter  from "./routes/experienceControl";
 import adminWorkersRouter        from "./routes/adminWorkers";
 import systemVersionRouter       from "./routes/systemVersion";
 import deviceHeartbeatRouter     from "./routes/deviceHeartbeat";
@@ -311,6 +312,7 @@ app.use("/api",                             subscriptionsRouter);   // exposes /
 app.use("/api/experience-engine",          experienceEngineRouter);
 app.use("/api/experience",                experienceCompleteRouter);
 app.use("/api/admin/intensity",           adminIntensityRouter);
+app.use("/api/admin/experience-control", experienceControlRouter);
 app.use("/api/admin/workers",             adminWorkersRouter);
 app.use("/api/system",                   systemVersionRouter);
 app.use("/api/admin/system",             systemVersionRouter);

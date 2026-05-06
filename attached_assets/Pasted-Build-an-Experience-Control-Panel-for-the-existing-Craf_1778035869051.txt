@@ -1,0 +1,152 @@
+Build an Experience Control Panel for the existing CraftHub / Axiom immersive swipe system.
+
+Do not rebuild the swipe engine.
+Do not rebuild the realism layer.
+Do not create duplicate routes.
+
+Create a protected admin route:
+
+/admin/experience-control
+
+Purpose:
+Allow venue owners, managers, and super_admin users to tune the immersive environment without editing code.
+
+Controls required:
+
+1. Atmosphere Intensity
+Range: 0 to 100
+Controls glow strength, background brightness, and cinematic depth.
+
+2. Particle Density
+Range: 0 to 100
+Controls embers, vapor, bubbles, condensation, dust, and foam details.
+
+3. Motion Calmness
+Range: 0 to 100
+Higher value means slower, smoother, calmer movement.
+Lower value means more energetic motion.
+
+4. Reveal Pacing
+Range: 0 to 100
+Controls how dramatic or fast the RevealPage animation feels.
+
+5. Sound Volume
+Range: 0 to 100
+Controls ambient and interaction sound levels through soundEngine.ts.
+
+6. Performance Mode
+Options:
+cinematic
+balanced
+low-power
+
+cinematic = maximum atmosphere
+balanced = default
+low-power = reduced particles and lower motion for tablets/kiosks
+
+7. Craft Overrides
+Allow per-craft override for:
+SmokeCraft
+PourCraft
+BrewCraft
+VapeCraft
+
+Each craft can override:
+atmosphereIntensity
+particleDensity
+motionCalmness
+revealPacing
+soundVolume
+performanceMode
+
+Database:
+Create table experience_control_settings:
+
+id
+venue_id nullable
+craft_type nullable
+atmosphere_intensity int default 70
+particle_density int default 65
+motion_calmness int default 55
+reveal_pacing int default 70
+sound_volume int default 40
+performance_mode text default 'balanced'
+created_at timestamp default now()
+updated_at timestamp default now()
+
+Backend:
+Create routes:
+
+GET /api/admin/experience-control
+POST /api/admin/experience-control
+PATCH /api/admin/experience-control/:id
+
+Protect routes with:
+venue_owner
+manager
+super_admin
+
+Frontend:
+Create page:
+
+/admin/experience-control
+
+UI requirements:
+Use clean premium dashboard cards.
+No heavy image backgrounds.
+Use sliders with live preview.
+Use tabs:
+Global
+SmokeCraft
+PourCraft
+BrewCraft
+VapeCraft
+
+Add live preview panel showing:
+particle density preview
+glow preview
+motion preview
+sound status
+performance mode badge
+
+Wiring:
+EnvironmentEngine must read the saved settings and apply them to:
+glow strength
+particle density
+background brightness
+motion pacing
+wake-up speed
+
+ParticleSystem must respect:
+particleDensity
+performanceMode
+
+PersistentAmbientLayer must respect:
+atmosphereIntensity
+motionCalmness
+performanceMode
+
+SoundEngine must respect:
+soundVolume
+performanceMode
+
+RevealPage must respect:
+revealPacing
+
+Fallback:
+If no saved settings exist, use current defaults.
+
+Acceptance tests:
+1. Admin page loads.
+2. Sliders update visually.
+3. Save writes to database.
+4. ExperiencePage reads settings.
+5. Particle density changes after setting update.
+6. Low-power mode reduces particles.
+7. Sound volume is applied.
+8. Reveal pacing changes timing.
+9. Per-craft override works.
+10. No existing swipe behavior breaks.
+
+Final result:
+The system should now be tunable like a real venue operating system, not hardcoded animation.

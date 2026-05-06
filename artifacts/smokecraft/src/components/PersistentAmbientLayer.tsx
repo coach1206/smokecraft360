@@ -111,6 +111,7 @@ export const PersistentAmbientLayer = memo(function PersistentAmbientLayer() {
           }}
         >
           {/* Humanized Ken Burns — 4 waypoints, micro-rotation, asymmetric timing */}
+          {/* motionCalmness 0→18s (energetic) … 100→52s (very calm) */}
           <motion.div
             animate={{
               scale:  KB_SCALE,
@@ -119,7 +120,7 @@ export const PersistentAmbientLayer = memo(function PersistentAmbientLayer() {
               rotate: KB_ROTATE,
             }}
             transition={{
-              duration: 34,
+              duration: 18 + ((env?.motionCalmness ?? 55) / 100) * 34,
               repeat:   Infinity,
               ease:     "easeInOut",
               times:    KB_TIMES,

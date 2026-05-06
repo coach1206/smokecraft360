@@ -44,6 +44,7 @@ import VendorTouchscreen    from "@/pages/VendorTouchscreen";
 import DemoExperienceCenter from "@/pages/DemoExperienceCenter";
 import CompetitionModule   from "@/pages/CompetitionModule";
 import CraftHub            from "@/pages/CraftHub";
+import ExperienceControlPanel from "@/pages/ExperienceControlPanel";
 import { DemoBanner }            from "@/components/Demo/DemoBanner";
 import { OfflineQueueBanner }   from "@/components/Demo/OfflineQueueBanner";
 import { PresentationOverlay }   from "@/components/Presentation/PresentationOverlay";
@@ -85,7 +86,8 @@ function Router() {
       <Route path="/inventory"   component={InventoryModule} />
       <Route path="/rewards"     component={RewardsModule}   />
       <Route path="/campaigns"   component={CampaignsModule} />
-      <Route path="/admin/intel" component={OwnerIntelPanel} />
+      <Route path="/admin/intel"               component={OwnerIntelPanel}         />
+      <Route path="/admin/experience-control" component={ExperienceControlPanel}  />
       {/* Legacy craft routes — redirect into the Universal Swipe Engine */}
       <Route path="/brewcraft"       component={() => { window.location.replace("/experience/brew"); return null; }} />
       <Route path="/pourcraft"       component={() => { window.location.replace("/experience/pour"); return null; }} />

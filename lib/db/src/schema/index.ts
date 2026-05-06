@@ -70,3 +70,4 @@ export * from "./demoSimEvents";
 export * from "./purchaseOrders";
 export * from "./swipeExperience";
 export * from "./swipeOrders";
+export * from "./experienceControlSettings";

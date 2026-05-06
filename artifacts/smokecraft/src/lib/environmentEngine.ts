@@ -21,6 +21,17 @@ export type LightingMood =
   | "golden_soft"   // sweet / vanilla / caramel → warm softness
   | "neutral";      // default
 
+export type PerformanceMode = "cinematic" | "balanced" | "low-power";
+
+export interface ExperienceControlSettings {
+  atmosphereIntensity: number;   // 0–100
+  particleDensity:     number;   // 0–100
+  motionCalmness:      number;   // 0–100 (100 = slowest/calmest)
+  revealPacing:        number;   // 0–100 (100 = most dramatic)
+  soundVolume:         number;   // 0–100
+  performanceMode:     PerformanceMode;
+}
+
 export interface EnvironmentState {
   craftType:       CraftType;
   dominantTags:    string[];           // top 5 tags by weight
@@ -33,6 +44,12 @@ export interface EnvironmentState {
   sessionSwipes:   number;
   lastCraftSeen:   string | null;
   returnVisit:     boolean;
+  // Experience Control Panel settings (venue-tunable)
+  motionCalmness:   number;            // 0–100 from control panel
+  revealPacing:     number;            // 0–100 from control panel
+  soundVolume:      number;            // 0–100 from control panel
+  performanceMode:  PerformanceMode;   // cinematic | balanced | low-power
+  controlSettings:  ExperienceControlSettings | null; // currently active settings
 }
 
 type EnvironmentListener = (state: EnvironmentState) => void;
@@ -90,6 +107,15 @@ export const MOOD_VISUALS: Record<LightingMood, {
 
 // ── Default state ─────────────────────────────────────────────────────────────
 
+export const DEFAULT_CONTROL_SETTINGS: ExperienceControlSettings = {
+  atmosphereIntensity: 70,
+  particleDensity:     65,
+  motionCalmness:      55,
+  revealPacing:        70,
+  soundVolume:         40,
+  performanceMode:     "balanced",
+};
+
 function defaultState(): EnvironmentState {
   return {
     craftType:       "smoke",
@@ -103,6 +129,11 @@ function defaultState(): EnvironmentState {
     sessionSwipes:   0,
     lastCraftSeen:   null,
     returnVisit:     false,
+    motionCalmness:  DEFAULT_CONTROL_SETTINGS.motionCalmness,
+    revealPacing:    DEFAULT_CONTROL_SETTINGS.revealPacing,
+    soundVolume:     DEFAULT_CONTROL_SETTINGS.soundVolume,
+    performanceMode: DEFAULT_CONTROL_SETTINGS.performanceMode,
+    controlSettings: null,
   };
 }
 
@@ -319,6 +350,36 @@ export class EnvironmentEngine {
 
       if (step >= STEPS) clearInterval(timer);
     }, INTERVAL_MS);
+  }
+
+  // ── Experience Control Panel settings ────────────────────────────────────────
+
+  /**
+   * applyControlSettings — maps venue-tunable 0–100 panel values to internal
+   * engine state. Called by EnvironmentContext after fetching from the API.
+   * Per-craft overrides can be applied on top of the global row.
+   */
+  applyControlSettings(settings: ExperienceControlSettings, craftType?: CraftType): void {
+    // Only apply per-craft if it matches the currently active craft
+    if (craftType !== undefined && craftType !== this.state.craftType) return;
+
+    // Map 0–100 slider values to internal 0–1 ranges
+    const glowStrength    = 0.05 + (settings.atmosphereIntensity / 100) * 0.85;
+    const particleDensity = settings.particleDensity / 100;
+    const bgBrightness    = 0.20 + (settings.atmosphereIntensity / 100) * 0.45;
+
+    this.state = {
+      ...this.state,
+      glowStrength,
+      particleDensity,
+      bgBrightness,
+      motionCalmness:  settings.motionCalmness,
+      revealPacing:    settings.revealPacing,
+      soundVolume:     settings.soundVolume,
+      performanceMode: settings.performanceMode,
+      controlSettings: settings,
+    };
+    this.notify();
   }
 
   // ── Session continuity ────────────────────────────────────────────────────────

@@ -1,0 +1,326 @@
+Build a Predictive Experience Orchestrator for the existing CraftHub / Axiom immersive swipe system.
+
+The current platform already includes:
+
+- Universal Swipe Engine
+- Memory Brain
+- Revenue Brain
+- Adaptive Pairing Engine
+- EnvironmentEngine
+- Organic Motion Layer
+- Realism Layer
+- Experience Control Panel
+- Swipe Intelligence
+- Add-To-Order flow
+
+DO NOT rebuild existing systems.
+
+This phase adds:
+predictive behavioral orchestration.
+
+==================================================
+1. PURPOSE
+==================================================
+
+The platform should no longer only react.
+
+It should begin:
+anticipating behavior.
+
+The system must dynamically influence:
+- atmosphere
+- pacing
+- recommendations
+- reveal timing
+- upsell pressure
+- cinematic intensity
+
+based on:
+- session behavior
+- swipe velocity
+- selection consistency
+- time of day
+- craft type
+- venue mode
+- prior sessions
+
+==================================================
+2. CREATE ORCHESTRATOR SERVICE
+==================================================
+
+Create:
+
+server/services/predictiveOrchestrator.ts
+
+Purpose:
+Generate a real-time orchestration profile for each session.
+
+==================================================
+3. SESSION SIGNAL ANALYSIS
+==================================================
+
+Track:
+
+- average swipe speed
+- hesitation time
+- swipe streaks
+- repeated tag preference
+- reveal engagement
+- order conversion probability
+- premium affinity
+- session depth
+
+==================================================
+4. CREATE ORCHESTRATION PROFILE
+==================================================
+
+Example output:
+
+{
+  mood: "immersed",
+  pacing: "slow-cinematic",
+  confidence: 82,
+  premiumIntent: 74,
+  socialEnergy: 40,
+  recommendationPressure: 58,
+  atmosphereIntensity: 76
+}
+
+==================================================
+5. ATMOSPHERE ADAPTATION
+==================================================
+
+The orchestrator should influence:
+EnvironmentEngine dynamically.
+
+==================================================
+EXAMPLES
+==================================================
+
+If user:
+- swipes slowly
+- engages deeply
+- prefers bold/smoky
+→ increase cinematic pacing
+→ deepen atmosphere
+→ increase reveal drama
+
+If user:
+- swipes rapidly
+- skips often
+→ simplify pacing
+→ reduce animation length
+→ increase recommendation clarity
+
+==================================================
+6. PREMIUM INTENT DETECTION
+==================================================
+
+Build premium affinity scoring.
+
+Signals:
+- preference for high-margin items
+- repeated premium selections
+- longer reveal engagement
+- slower interaction pacing
+
+If premiumIntent high:
+- subtly elevate premium pairings
+- deepen luxury atmosphere
+- increase reveal sophistication
+
+DO NOT make upsells obvious.
+
+==================================================
+7. SOCIAL ENERGY DETECTION
+==================================================
+
+Estimate whether user behavior feels:
+- focused/private
+- exploratory
+- social/high-energy
+
+Use:
+- swipe speed
+- selection diversity
+- session timing
+- craft type
+
+==================================================
+8. RECOMMENDATION PRESSURE ENGINE
+==================================================
+
+The system should dynamically adjust:
+how aggressively it recommends.
+
+==================================================
+LOW PRESSURE
+==================================================
+
+- softer reveal pacing
+- minimal prompts
+- atmospheric guidance
+
+==================================================
+HIGH PRESSURE
+==================================================
+
+- stronger CTA emphasis
+- tighter reveal timing
+- stronger pairing confidence
+
+==================================================
+9. VENUE MODE INTEGRATION
+==================================================
+
+Read:
+experience_control_settings
+
+Allow venue-wide orchestration modes:
+
+Options:
+- lounge
+- nightlife
+- premium
+- social
+- calm
+- event
+
+Each mode biases:
+atmosphere
+motion
+recommendation pressure
+reveal pacing
+
+==================================================
+10. FRONTEND ORCHESTRATION CONTEXT
+==================================================
+
+Create:
+
+client/src/context/OrchestratorContext.tsx
+
+Provide:
+- orchestration profile
+- current mood state
+- recommendation pressure
+- cinematic intensity
+- premium intent
+
+==================================================
+11. ENVIRONMENT REACTIVITY
+==================================================
+
+EnvironmentEngine should now react to:
+orchestrator output.
+
+==================================================
+EXAMPLES
+==================================================
+
+immersed:
+- slower movement
+- deeper shadows
+- cinematic haze
+
+social:
+- brighter environment
+- more motion energy
+- faster transitions
+
+premium:
+- richer glow
+- slower reveals
+- luxury pacing
+
+==================================================
+12. REVEAL PAGE INTELLIGENCE
+==================================================
+
+RevealPage should adapt dynamically.
+
+==================================================
+HIGH PREMIUM INTENT
+==================================================
+
+- slower reveal cadence
+- spotlight effect
+- richer ambient lighting
+
+==================================================
+LOW ENGAGEMENT
+==================================================
+
+- faster reveal
+- clearer CTA
+- simplified motion
+
+==================================================
+13. ORDER FLOW ADAPTATION
+==================================================
+
+Add-To-Order confirmation should adapt.
+
+==================================================
+PREMIUM USERS
+==================================================
+
+- luxurious confirmation
+- slower cinematic pulse
+
+==================================================
+FAST USERS
+==================================================
+
+- cleaner, quicker confirmation
+
+==================================================
+14. ANALYTICS EXPANSION
+==================================================
+
+Add orchestration metrics to Swipe Intelligence.
+
+Display:
+- average premium intent
+- session mood distribution
+- orchestration conversion rate
+- pacing effectiveness
+- recommendation pressure performance
+
+==================================================
+15. PERFORMANCE RULES
+==================================================
+
+Maintain:
+60fps target
+lightweight calculations
+debounced orchestration updates
+no excessive rerenders
+
+==================================================
+16. ACCEPTANCE TESTS
+==================================================
+
+Verify:
+- orchestration profile updates live
+- environment changes dynamically
+- premium users get richer pacing
+- fast users get simplified pacing
+- venue modes influence behavior
+- reveal timing adapts
+- analytics display orchestration data
+- no FPS degradation
+- no duplicate logic systems
+
+==================================================
+17. FINAL TARGET
+==================================================
+
+The final system should feel like:
+
+an intelligent host
+guiding the guest emotionally,
+cinematically,
+and commercially
+
+without the user consciously noticing.

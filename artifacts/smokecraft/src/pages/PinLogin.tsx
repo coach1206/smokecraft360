@@ -283,7 +283,7 @@ export default function PinLogin() {
                 key={key}
                 onClick={() => handleKey(key)}
                 disabled={!!success || isLocked}
-                whileHover={{ scale: 1.04, brightness: 1.1 }}
+                whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.91 }}
                 style={{
                   minHeight: 72,

@@ -21,12 +21,15 @@ import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
  * revealCardDelay — non-uniform stagger delays for recommendation cards.
  * First card enters at 0.38s, subsequent cards ~0.17s apart with micro-variance.
  * Deterministic per index so it's stable across re-renders.
+ *
+ * pacing 0–100: 0 = fastest (×0.5), 100 = most dramatic (×1.5).
  */
-function revealCardDelay(idx: number): number {
-  const base = 0.38 + idx * 0.17;
-  const r    = Math.sin(idx * 127.1 + 42 * 311.7) * 43758.5453;
+function revealCardDelay(idx: number, pacing = 70): number {
+  const scale  = 0.5 + (pacing / 100);
+  const base   = (0.38 + idx * 0.17) * scale;
+  const r      = Math.sin(idx * 127.1 + 42 * 311.7) * 43758.5453;
   const jitter = (r - Math.floor(r) - 0.5) * 0.09;
-  return Math.max(0.22, base + jitter);
+  return Math.max(0.14, base + jitter);
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -313,7 +316,7 @@ export default function RevealPage() {
               ordered={ordered.has(rec.item.id)}
               error={orderError[rec.item.id]}
               onOrder={() => handleOrder(rec)}
-              delay={revealCardDelay(idx)}
+              delay={revealCardDelay(idx, envCtx?.env?.revealPacing ?? 70)}
             />
           ))
         )}

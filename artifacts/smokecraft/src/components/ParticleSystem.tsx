@@ -496,7 +496,11 @@ export const ParticleSystem = memo(function ParticleSystem() {
   const craft   = env.craftType;
   const accent  = CRAFT_THEMES[craft]?.accent ?? "#d4af37";
 
-  const baseCount = Math.round(density * 12); // max 12 — controlled density
+  // Performance mode scales particle count: cinematic ×1.4 / balanced ×1 / low-power ×0.3
+  const perfScale = env.performanceMode === "cinematic" ? 1.4
+    : env.performanceMode === "low-power" ? 0.3
+    : 1.0;
+  const baseCount = Math.round(density * 12 * perfScale); // max 12 at balanced
   if (baseCount === 0) return null;
 
   return (

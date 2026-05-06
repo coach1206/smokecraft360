@@ -9,6 +9,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { environmentEngine, type EnvironmentState, type CraftType } from "@/lib/environmentEngine";
 import { soundEngine } from "@/lib/soundEngine";
+import { fetchExperienceControl } from "@/services/experienceControl";
 
 interface EnvironmentContextValue {
   env:            EnvironmentState;
@@ -37,6 +38,26 @@ export function EnvironmentProvider({ children }: { children: React.ReactNode })
       setTimeout(() => environmentEngine.wakeUpAtmosphere(), 200);
     }
     return unsub;
+  }, []);
+
+  // Fetch venue Experience Control settings and apply to engine
+  useEffect(() => {
+    fetchExperienceControl()
+      .then(data => {
+        if (data.global) {
+          environmentEngine.applyControlSettings({
+            atmosphereIntensity: data.global.atmosphereIntensity,
+            particleDensity:     data.global.particleDensity,
+            motionCalmness:      data.global.motionCalmness,
+            revealPacing:        data.global.revealPacing,
+            soundVolume:         data.global.soundVolume,
+            performanceMode:     data.global.performanceMode,
+          });
+          // Apply sound volume to engine
+          soundEngine.setVolume(data.global.soundVolume / 100);
+        }
+      })
+      .catch(() => { /* unauthenticated or no settings — use engine defaults */ });
   }, []);
 
   // Init sound on first interaction (respects browser autoplay policy)
