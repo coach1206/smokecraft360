@@ -20,6 +20,7 @@ import Maxwell                                      from "@/components/Maxwell";
 import TrainingBanner                               from "@/components/training/TrainingBanner";
 import { DEMO_KPIS, LIVE_EVENTS, MAXWELL_INTROS }  from "@/data/trainingData";
 import { VOICEOVER_SCRIPTS }                        from "@/data/voiceoverScripts";
+import { logTrainingEvent }                         from "@/hooks/useTrainingApi";
 
 const T = {
   bg:     "#06040a",
@@ -268,8 +269,16 @@ export default function TrainingInvestor() {
   const [visibleEvents, setVisibleEvents] = useState(LIVE_EVENTS.slice(0, 3));
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  useEffect(() => {
+    logTrainingEvent({ eventType: "page_view", page: "investor" });
+  }, []);
+
   const advance = useCallback(() => {
-    setSlide((s) => (s + 1) % SLIDES.length);
+    setSlide((s) => {
+      const next = (s + 1) % SLIDES.length;
+      logTrainingEvent({ eventType: "slide_advance", page: "investor", stepIndex: next, metadata: { slideId: SLIDES[next]?.id } });
+      return next;
+    });
   }, []);
 
   useEffect(() => {

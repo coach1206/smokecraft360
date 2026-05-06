@@ -1,19 +1,22 @@
 /**
  * TrainingScenarios — /training/scenarios
  * Interactive scenario mission engine with 8 training scenarios.
- * Maxwell guides each step. Score tracked per session.
+ * Maxwell guides each step. Score and completions persisted to DB.
  */
 
-import { useState }              from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useLocation }           from "wouter";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence }      from "framer-motion";
+import { useLocation }                  from "wouter";
 import {
-  ArrowLeft, ArrowRight, CheckCircle, Star,
-  Clock, ChevronRight, Target, Trophy,
+  ArrowLeft, ArrowRight, CheckCircle, Clock,
+  ChevronRight, Target, Trophy, WifiOff,
 } from "lucide-react";
-import Maxwell                   from "@/components/Maxwell";
-import TrainingBanner             from "@/components/training/TrainingBanner";
+import Maxwell        from "@/components/Maxwell";
+import TrainingBanner from "@/components/training/TrainingBanner";
 import { TRAINING_SCENARIOS, MAXWELL_INTROS } from "@/data/trainingData";
+import {
+  logTrainingEvent, trainingFetch, ensureTrainingSession, getAuthHeaders,
+} from "@/hooks/useTrainingApi";
 
 const T = {
   bg: "#06040a", card: "rgba(255,255,255,0.04)", border: "rgba(201,168,76,0.15)",
@@ -23,43 +26,111 @@ const T = {
 };
 
 const DIFFICULTY_COLOR: Record<string, string> = {
-  beginner:     T.green,
-  intermediate: T.amber,
-  advanced:     T.red,
+  beginner: T.green, intermediate: T.amber, advanced: T.red,
+};
+const CATEGORY_COLOR: Record<string, string> = {
+  customer: T.gold, operations: T.blue, revenue: T.green, ai: T.purple,
 };
 
-const CATEGORY_COLOR: Record<string, string> = {
-  customer:   T.gold,
-  operations: T.blue,
-  revenue:    T.green,
-  ai:         T.purple,
-};
+const POINTS_PER_STEP = 20;
 
 export default function TrainingScenarios() {
-  const [, navigate]           = useLocation();
+  const [, navigate]    = useLocation();
   const [active, setActive]    = useState<string | null>(null);
   const [stepIdx, setStepIdx]  = useState(0);
   const [score, setScore]      = useState(0);
   const [done, setDone]        = useState(false);
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [offlineMode, setOfflineMode]   = useState(false);
+  const [sessionId, setSessionId]       = useState<string | null>(null);
+  const stepStartRef = useRef<number>(Date.now());
 
   const scenario = active ? TRAINING_SCENARIOS.find((s) => s.id === active) ?? null : null;
   const step     = scenario ? scenario.steps[stepIdx] ?? null : null;
 
-  const POINTS_PER_STEP = 20;
+  // ── On mount: start session + load completed IDs ──────────────────────────
+
+  useEffect(() => {
+    logTrainingEvent({ eventType: "page_view", page: "scenarios" });
+
+    // Load completed scenario IDs from localStorage (fast path)
+    const cached = localStorage.getItem("axiom_training_completed_scenarios");
+    if (cached) {
+      try { setCompletedIds(new Set(JSON.parse(cached) as string[])); } catch { /* */ }
+    }
+
+    // Get/create session
+    ensureTrainingSession("scenarios").then((id) => {
+      setSessionId(id);
+      // Load progress from DB if authenticated
+      const uid = localStorage.getItem("axiom_training_user_id");
+      if (!uid) return;
+      fetch(`/api/training/progress/${uid}`, { headers: getAuthHeaders() })
+        .then((r) => r.json())
+        .then((data: { progress: Array<{ scenarioId: string; completed: boolean }> }) => {
+          const dbCompleted = new Set(
+            data.progress.filter((p) => p.completed).map((p) => p.scenarioId)
+          );
+          setCompletedIds((prev) => new Set([...prev, ...dbCompleted]));
+          setOfflineMode(false);
+        })
+        .catch(() => setOfflineMode(true));
+    }).catch(() => setOfflineMode(true));
+  }, []);
+
+  // ── Persist completedIds to localStorage ──────────────────────────────────
+
+  useEffect(() => {
+    localStorage.setItem("axiom_training_completed_scenarios", JSON.stringify([...completedIds]));
+  }, [completedIds]);
 
   function startScenario(id: string) {
     setActive(id);
     setStepIdx(0);
     setScore(0);
     setDone(false);
+    stepStartRef.current = Date.now();
+    logTrainingEvent({ eventType: "scenario_start", page: "scenarios", scenarioId: id, sessionId: sessionId ?? undefined });
+  }
+
+  async function persistProgress(scenarioId: string, stepIndex: number, completed: boolean, finalScore: number) {
+    if (!sessionId) return;
+    const scenario = TRAINING_SCENARIOS.find((s) => s.id === scenarioId);
+    const totalSteps = scenario?.steps.length ?? 1;
+    const durationMs = Date.now() - stepStartRef.current;
+
+    try {
+      await fetch("/api/training/progress", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ sessionId, scenarioId, stepIndex, totalSteps, score: finalScore, completed }),
+      });
+      logTrainingEvent({
+        eventType: completed ? "scenario_complete" : "step_complete",
+        page: "scenarios",
+        scenarioId,
+        stepIndex,
+        score: finalScore,
+        durationMs,
+        sessionId: sessionId ?? undefined,
+      });
+      setOfflineMode(false);
+    } catch {
+      setOfflineMode(true);
+      // Store to queue for replay — handled by logTrainingEvent's offline path
+    }
+    stepStartRef.current = Date.now();
   }
 
   function nextStep() {
-    setScore((s) => s + POINTS_PER_STEP);
+    const newScore = score + POINTS_PER_STEP;
+    setScore(newScore);
     if (scenario && stepIdx < scenario.steps.length - 1) {
+      void persistProgress(active!, stepIdx + 1, false, newScore);
       setStepIdx((i) => i + 1);
     } else {
+      const finalScore = newScore;
+      void persistProgress(active!, stepIdx, true, finalScore);
       setDone(true);
       setCompletedIds((prev) => new Set([...prev, active!]));
     }
@@ -72,103 +143,79 @@ export default function TrainingScenarios() {
     setDone(false);
   }
 
-  // ── Scenario detail / active ───────────────────────────────────────────────
+  // ── Scenario complete screen ───────────────────────────────────────────────
+
+  if (active && scenario && done) {
+    const finalScore = score + POINTS_PER_STEP;
+    const maxScore   = scenario.steps.length * POINTS_PER_STEP;
+    const pct        = Math.round((finalScore / maxScore) * 100);
+    return (
+      <div style={{ minHeight: "100vh", background: T.bg, color: T.text, fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ maxWidth: 480, width: "100%", padding: 32, textAlign: "center" }}>
+          <motion.div
+            animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 1.2, repeat: 3 }}
+            style={{
+              width: 72, height: 72, borderRadius: "50%",
+              background: `radial-gradient(circle, ${T.gold}30 0%, transparent 70%)`,
+              border: `1px solid ${T.gold}50`,
+              display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px",
+            }}
+          >
+            <Trophy size={28} color={T.gold} />
+          </motion.div>
+          <div style={{ fontSize: 28, fontFamily: "'Cormorant Garamond',serif", color: T.gold, marginBottom: 6 }}>Scenario Complete</div>
+          <div style={{ fontSize: 13, color: T.muted, marginBottom: 8 }}>{scenario.title}</div>
+          {offlineMode && (
+            <div style={{ display: "flex", alignItems: "center", gap: 5, justifyContent: "center", marginBottom: 12, fontSize: 10, color: T.amber }}>
+              <WifiOff size={10} /> Progress saved locally — will sync when reconnected
+            </div>
+          )}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 28 }}>
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 10, padding: "14px" }}>
+              <div style={{ fontSize: 28, fontWeight: 700, color: T.green, fontFamily: "'Cormorant Garamond',serif" }}>{finalScore}</div>
+              <div style={{ fontSize: 9, color: T.muted, textTransform: "uppercase", letterSpacing: "0.12em" }}>Points Earned</div>
+            </div>
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 10, padding: "14px" }}>
+              <div style={{ fontSize: 28, fontWeight: 700, color: pct >= 80 ? T.green : pct >= 60 ? T.amber : T.red, fontFamily: "'Cormorant Garamond',serif" }}>{pct}%</div>
+              <div style={{ fontSize: 9, color: T.muted, textTransform: "uppercase", letterSpacing: "0.12em" }}>Score</div>
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+            <button onClick={exitScenario} style={{ background: "transparent", border: `1px solid ${T.border}`, borderRadius: 9, color: T.muted, padding: "10px 20px", cursor: "pointer", fontSize: 12 }}>
+              Back to Scenarios
+            </button>
+            <button onClick={() => navigate("/training/certifications")} style={{ background: T.gold, border: "none", borderRadius: 9, color: "#06040a", padding: "10px 22px", cursor: "pointer", fontSize: 12, fontWeight: 700 }}>
+              View Certifications
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ── Active scenario ────────────────────────────────────────────────────────
 
   if (active && scenario) {
     const diffColor = DIFFICULTY_COLOR[scenario.difficulty] ?? T.muted;
-    const finalScore = done ? score + POINTS_PER_STEP : score;
-    const maxScore   = scenario.steps.length * POINTS_PER_STEP;
-    const pct        = Math.round((finalScore / maxScore) * 100);
-
-    if (done) {
-      return (
-        <div style={{ minHeight: "100vh", background: T.bg, color: T.text, fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            style={{ maxWidth: 480, width: "100%", padding: 32, textAlign: "center" }}
-          >
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 1.2, repeat: 3 }}
-              style={{
-                width: 72, height: 72, borderRadius: "50%",
-                background: `radial-gradient(circle, ${T.gold}30 0%, transparent 70%)`,
-                border: `1px solid ${T.gold}50`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                margin: "0 auto 20px",
-              }}
-            >
-              <Trophy size={28} color={T.gold} />
-            </motion.div>
-            <div style={{ fontSize: 28, fontFamily: "'Cormorant Garamond',serif", color: T.gold, marginBottom: 6 }}>
-              Scenario Complete
-            </div>
-            <div style={{ fontSize: 13, color: T.muted, marginBottom: 28 }}>{scenario.title}</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 28 }}>
-              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 10, padding: "14px" }}>
-                <div style={{ fontSize: 28, fontWeight: 700, color: T.green, fontFamily: "'Cormorant Garamond',serif" }}>
-                  {finalScore}
-                </div>
-                <div style={{ fontSize: 9, color: T.muted, textTransform: "uppercase", letterSpacing: "0.12em" }}>Points Earned</div>
-              </div>
-              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 10, padding: "14px" }}>
-                <div style={{ fontSize: 28, fontWeight: 700, color: pct >= 80 ? T.green : pct >= 60 ? T.amber : T.red, fontFamily: "'Cormorant Garamond',serif" }}>
-                  {pct}%
-                </div>
-                <div style={{ fontSize: 9, color: T.muted, textTransform: "uppercase", letterSpacing: "0.12em" }}>Score</div>
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-              <button onClick={exitScenario} style={{
-                background: "transparent", border: `1px solid ${T.border}`,
-                borderRadius: 9, color: T.muted, padding: "10px 20px", cursor: "pointer", fontSize: 12,
-              }}>
-                Back to Scenarios
-              </button>
-              <button onClick={() => navigate("/training/certifications")} style={{
-                background: T.gold, border: "none", borderRadius: 9,
-                color: "#06040a", padding: "10px 22px", cursor: "pointer", fontSize: 12, fontWeight: 700,
-              }}>
-                View Certifications
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      );
-    }
-
     return (
       <div style={{ minHeight: "100vh", background: T.bg, color: T.text, fontFamily: "'Inter',sans-serif" }}>
-        {/* Header */}
         <div style={{
-          position: "sticky", top: 0, zIndex: 40,
-          background: `${T.bg}ee`, backdropFilter: "blur(20px)",
-          borderBottom: `1px solid ${T.border}`, padding: "12px 24px",
-          display: "flex", alignItems: "center", gap: 14,
+          position: "sticky", top: 0, zIndex: 40, background: `${T.bg}ee`, backdropFilter: "blur(20px)",
+          borderBottom: `1px solid ${T.border}`, padding: "12px 24px", display: "flex", alignItems: "center", gap: 14,
         }}>
-          <button onClick={exitScenario} style={{
-            background: "transparent", border: `1px solid ${T.border}`,
-            borderRadius: 8, color: T.muted, fontSize: 11,
-            padding: "6px 10px", cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
-          }}>
+          <button onClick={exitScenario} style={{ background: "transparent", border: `1px solid ${T.border}`, borderRadius: 8, color: T.muted, fontSize: 11, padding: "6px 10px", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
             <ArrowLeft size={12} /> Scenarios
           </button>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: T.text }}>{scenario.title}</div>
-            <div style={{ fontSize: 9, color: diffColor, textTransform: "uppercase", letterSpacing: "0.12em" }}>
-              {scenario.difficulty} · {scenario.category}
-            </div>
+            <div style={{ fontSize: 9, color: diffColor, textTransform: "uppercase", letterSpacing: "0.12em" }}>{scenario.difficulty} · {scenario.category}</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            {offlineMode && <WifiOff size={12} color={T.amber} />}
             <div style={{ fontSize: 11, color: T.gold, fontWeight: 600 }}>{score} pts</div>
-            <div style={{ display: "flex", gap: 3 }} data-scenario-dots>
+            <div style={{ display: "flex", gap: 3 }}>
               {scenario.steps.map((_, i) => (
-                <div key={i} style={{
-                  width: 18, height: 4, borderRadius: 2,
-                  background: i < stepIdx ? T.green : i === stepIdx ? diffColor : "rgba(255,255,255,0.1)",
-                  transition: "background 0.2s",
-                }} />
+                <div key={i} style={{ width: 18, height: 4, borderRadius: 2, background: i < stepIdx ? T.green : i === stepIdx ? diffColor : "rgba(255,255,255,0.1)", transition: "background 0.2s" }} />
               ))}
             </div>
           </div>
@@ -177,65 +224,29 @@ export default function TrainingScenarios() {
 
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "36px 24px" }}>
           <AnimatePresence mode="wait">
-            <motion.div
-              key={stepIdx}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.35 }}
-            >
+            <motion.div key={stepIdx} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.35 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-                <div style={{
-                  width: 28, height: 28, borderRadius: 8,
-                  background: `${diffColor}18`, border: `1px solid ${diffColor}40`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 11, fontWeight: 700, color: diffColor,
-                }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: `${diffColor}18`, border: `1px solid ${diffColor}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: diffColor }}>
                   {stepIdx + 1}
                 </div>
-                <div style={{ fontSize: 10, color: T.muted }}>
-                  Step {stepIdx + 1} of {scenario.steps.length}
-                </div>
+                <div style={{ fontSize: 10, color: T.muted }}>Step {stepIdx + 1} of {scenario.steps.length}</div>
               </div>
 
-              {/* Step card */}
-              <div style={{
-                background: `${diffColor}08`, border: `1px solid ${diffColor}25`,
-                borderRadius: 14, padding: "28px 30px", marginBottom: 16,
-              }}>
-                <div style={{ fontSize: 20, fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, color: T.text, marginBottom: 14 }}>
-                  {step?.title}
-                </div>
-                <div style={{ fontSize: 13, color: T.light, lineHeight: 1.75 }}>
-                  {step?.description}
-                </div>
+              <div style={{ background: `${diffColor}08`, border: `1px solid ${diffColor}25`, borderRadius: 14, padding: "28px 30px", marginBottom: 16 }}>
+                <div style={{ fontSize: 20, fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, color: T.text, marginBottom: 14 }}>{step?.title}</div>
+                <div style={{ fontSize: 13, color: T.light, lineHeight: 1.75 }}>{step?.description}</div>
               </div>
 
-              {/* Maxwell guidance card */}
-              <div style={{
-                background: "rgba(167,139,250,0.06)", border: "1px solid rgba(167,139,250,0.2)",
-                borderRadius: 11, padding: "16px 18px", marginBottom: 24,
-              }}>
-                <div style={{ fontSize: 9, color: T.purple, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 6 }}>
-                  Maxwell
-                </div>
-                <div style={{ fontSize: 11.5, color: T.light, lineHeight: 1.7, fontStyle: "italic" }}>
-                  "{step?.maxwell}"
-                </div>
+              <div style={{ background: "rgba(167,139,250,0.06)", border: "1px solid rgba(167,139,250,0.2)", borderRadius: 11, padding: "16px 18px", marginBottom: 24 }}>
+                <div style={{ fontSize: 9, color: T.purple, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 6 }}>Maxwell</div>
+                <div style={{ fontSize: 11.5, color: T.light, lineHeight: 1.7, fontStyle: "italic" }}>"{step?.maxwell}"</div>
               </div>
 
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <button onClick={nextStep} style={{
-                  background: diffColor, border: "none",
-                  borderRadius: 9, color: "#06040a", padding: "11px 26px",
-                  cursor: "pointer", fontSize: 12, fontWeight: 700,
-                  display: "flex", alignItems: "center", gap: 7,
-                }}>
-                  {stepIdx < scenario.steps.length - 1 ? (
-                    <><CheckCircle size={13} /> Step Complete <ArrowRight size={12} /></>
-                  ) : (
-                    <><Trophy size={13} /> Finish Scenario</>
-                  )}
+                <button onClick={nextStep} style={{ background: diffColor, border: "none", borderRadius: 9, color: "#06040a", padding: "11px 26px", cursor: "pointer", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 7 }}>
+                  {stepIdx < scenario.steps.length - 1
+                    ? <><CheckCircle size={13} /> Step Complete <ArrowRight size={12} /></>
+                    : <><Trophy size={13} /> Finish Scenario</>}
                 </button>
               </div>
             </motion.div>
@@ -252,32 +263,21 @@ export default function TrainingScenarios() {
   return (
     <div style={{ minHeight: "100vh", background: T.bg, color: T.text, fontFamily: "'Inter',sans-serif" }}>
       <div style={{
-        position: "sticky", top: 0, zIndex: 40,
-        background: `${T.bg}ee`, backdropFilter: "blur(20px)",
-        borderBottom: `1px solid ${T.border}`, padding: "12px 24px",
-        display: "flex", alignItems: "center", gap: 14,
+        position: "sticky", top: 0, zIndex: 40, background: `${T.bg}ee`, backdropFilter: "blur(20px)",
+        borderBottom: `1px solid ${T.border}`, padding: "12px 24px", display: "flex", alignItems: "center", gap: 14,
       }}>
-        <button onClick={() => navigate("/training")} style={{
-          background: "transparent", border: `1px solid ${T.border}`,
-          borderRadius: 8, color: T.muted, fontSize: 11,
-          padding: "6px 10px", cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
-        }}>
+        <button onClick={() => navigate("/training")} style={{ background: "transparent", border: `1px solid ${T.border}`, borderRadius: 8, color: T.muted, fontSize: 11, padding: "6px 10px", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
           <ArrowLeft size={12} /> Training
         </button>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: T.gold, fontFamily: "'Cormorant Garamond',serif" }}>
-            Training Scenarios
-          </div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: T.gold, fontFamily: "'Cormorant Garamond',serif" }}>Training Scenarios</div>
           <div style={{ fontSize: 9, color: T.muted, textTransform: "uppercase", letterSpacing: "0.12em" }}>
-            {completedIds.size} of {TRAINING_SCENARIOS.length} complete
+            {completedIds.size} of {TRAINING_SCENARIOS.length} complete {offlineMode ? "· offline" : "· synced"}
           </div>
         </div>
-        <div style={{ marginLeft: "auto" }}>
-          <div style={{
-            background: `${T.gold}15`, border: `1px solid ${T.gold}30`,
-            borderRadius: 7, padding: "5px 12px",
-            fontSize: 11, color: T.gold, fontWeight: 600,
-          }}>
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+          {offlineMode && <WifiOff size={12} color={T.amber} />}
+          <div style={{ background: `${T.gold}15`, border: `1px solid ${T.gold}30`, borderRadius: 7, padding: "5px 12px", fontSize: 11, color: T.gold, fontWeight: 600 }}>
             {completedIds.size * 100} pts earned
           </div>
         </div>
@@ -289,21 +289,17 @@ export default function TrainingScenarios() {
           {TRAINING_SCENARIOS.map((sc, i) => {
             const diffColor = DIFFICULTY_COLOR[sc.difficulty] ?? T.muted;
             const catColor  = CATEGORY_COLOR[sc.category]   ?? T.muted;
-            const done      = completedIds.has(sc.id);
+            const isDone    = completedIds.has(sc.id);
             return (
               <motion.button
                 key={sc.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                whileHover={{ scale: 1.015 }}
-                whileTap={{ scale: 0.985 }}
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.985 }}
                 onClick={() => startScenario(sc.id)}
                 style={{
-                  background: done ? `${T.green}08` : T.card,
-                  border: `1px solid ${done ? T.green + "40" : T.border}`,
-                  borderRadius: 12, padding: "18px 20px", cursor: "pointer",
-                  textAlign: "left", transition: "all 0.2s",
+                  background: isDone ? `${T.green}08` : T.card,
+                  border: `1px solid ${isDone ? T.green + "40" : T.border}`,
+                  borderRadius: 12, padding: "18px 20px", cursor: "pointer", textAlign: "left", transition: "all 0.2s",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
@@ -311,31 +307,17 @@ export default function TrainingScenarios() {
                     <div style={{ fontSize: 13, fontWeight: 700, color: T.text, marginBottom: 3 }}>{sc.title}</div>
                     <div style={{ fontSize: 10, color: T.muted }}>{sc.subtitle}</div>
                   </div>
-                  {done && <CheckCircle size={16} color={T.green} />}
+                  {isDone && <CheckCircle size={16} color={T.green} />}
                 </div>
                 <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
-                  <span style={{
-                    fontSize: 9, color: diffColor, background: `${diffColor}15`,
-                    border: `1px solid ${diffColor}30`, borderRadius: 4,
-                    padding: "2px 7px", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.1em",
-                  }}>{sc.difficulty}</span>
-                  <span style={{
-                    fontSize: 9, color: catColor, background: `${catColor}15`,
-                    border: `1px solid ${catColor}30`, borderRadius: 4,
-                    padding: "2px 7px", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.1em",
-                  }}>{sc.category}</span>
+                  <span style={{ fontSize: 9, color: diffColor, background: `${diffColor}15`, border: `1px solid ${diffColor}30`, borderRadius: 4, padding: "2px 7px", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.1em" }}>{sc.difficulty}</span>
+                  <span style={{ fontSize: 9, color: catColor,  background: `${catColor}15`,  border: `1px solid ${catColor}30`,  borderRadius: 4, padding: "2px 7px", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.1em" }}>{sc.category}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div style={{ display: "flex", gap: 12 }}>
-                    <span style={{ fontSize: 9, color: T.muted, display: "flex", alignItems: "center", gap: 4 }}>
-                      <Clock size={9} /> {sc.estimatedMin} min
-                    </span>
-                    <span style={{ fontSize: 9, color: T.muted, display: "flex", alignItems: "center", gap: 4 }}>
-                      <Target size={9} /> {sc.steps.length} steps
-                    </span>
-                    <span style={{ fontSize: 9, color: T.gold }}>
-                      {sc.steps.length * 20} pts
-                    </span>
+                    <span style={{ fontSize: 9, color: T.muted, display: "flex", alignItems: "center", gap: 4 }}><Clock size={9} /> {sc.estimatedMin} min</span>
+                    <span style={{ fontSize: 9, color: T.muted, display: "flex", alignItems: "center", gap: 4 }}><Target size={9} /> {sc.steps.length} steps</span>
+                    <span style={{ fontSize: 9, color: T.gold }}>{sc.steps.length * 20} pts</span>
                   </div>
                   <ChevronRight size={12} color={T.muted} />
                 </div>

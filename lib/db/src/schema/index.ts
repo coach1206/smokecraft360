@@ -84,3 +84,5 @@ export * from "./receipts";
 export * from "./trainingSessions";
 export * from "./trainingProgress";
 export * from "./trainingCertifications";
+export * from "./trainingSignOffs";
+export * from "./trainingAnalyticsEvents";

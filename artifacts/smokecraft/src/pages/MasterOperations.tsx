@@ -729,7 +729,8 @@ export default function MasterOperations() {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
               {([
-                { label: "Reset Vault Demo",       icon: RotateCcw,   color: "#f59e0b", action: () => { fetch("/api/training/reset", { method: "POST" }).catch(() => {}); } },
+                { label: "Reset Vault Demo",       icon: RotateCcw,   color: "#f59e0b", action: () => { const tok = localStorage.getItem("axiom_jwt") ?? localStorage.getItem("auth_token"); fetch("/api/training/reset", { method: "POST", headers: { "Content-Type": "application/json", ...(tok ? { Authorization: `Bearer ${tok}` } : {}) } }).catch(() => {}); } },
+                { label: "Activate Demo Accounts", icon: UserCheck,   color: "#34d399", action: () => { const tok = localStorage.getItem("axiom_jwt") ?? localStorage.getItem("auth_token"); fetch("/api/training/accounts/activate", { method: "POST", headers: { "Content-Type": "application/json", ...(tok ? { Authorization: `Bearer ${tok}` } : {}) } }).then(() => alert("Demo accounts activated. Login: vault.manager@demo.com / VaultDemo2025!")).catch(() => alert("Activation failed — try logging in as super_admin first.")); } },
                 { label: "Investor Demo",           icon: BarChart3,   color: T.gold,   action: () => navigate("/training/investor") },
                 { label: "Sales Demo",              icon: TrendingUp,  color: T.green,  action: () => navigate("/training/sales") },
                 { label: "Employee Training",       icon: UserCheck,   color: "#a78bfa", action: () => navigate("/training/employee") },

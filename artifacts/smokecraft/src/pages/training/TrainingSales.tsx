@@ -3,7 +3,7 @@
  * Guided venue-owner sales presentation with cinematic transitions.
  */
 
-import { useState }              from "react";
+import { useState, useEffect }   from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation }           from "wouter";
 import { ArrowLeft, ArrowRight, TrendingUp, Heart, DollarSign, Zap, BarChart3, Star, FileText, X } from "lucide-react";
@@ -11,6 +11,7 @@ import Maxwell                   from "@/components/Maxwell";
 import TrainingBanner             from "@/components/training/TrainingBanner";
 import { DEMO_VENUE, DEMO_KPIS, MAXWELL_INTROS } from "@/data/trainingData";
 import { VOICEOVER_SCRIPTS }     from "@/data/voiceoverScripts";
+import { logTrainingEvent }      from "@/hooks/useTrainingApi";
 
 const T = {
   bg: "#06040a", card: "rgba(255,255,255,0.04)", border: "rgba(201,168,76,0.15)",
@@ -121,6 +122,10 @@ export default function TrainingSales() {
   const [, navigate] = useLocation();
   const [slide, setSlide] = useState(0);
   const [showScript, setShowScript] = useState(false);
+
+  useEffect(() => {
+    logTrainingEvent({ eventType: "page_view", page: "sales" });
+  }, []);
   const current = PITCH_SLIDES[slide]!;
   const Icon = current.icon;
   const script = VOICEOVER_SCRIPTS["sales"];
@@ -300,8 +305,13 @@ export default function TrainingSales() {
             <ArrowLeft size={12} /> Previous
           </button>
           <button onClick={() => {
-            if (slide < PITCH_SLIDES.length - 1) setSlide((s) => s + 1);
-            else navigate("/training");
+            if (slide < PITCH_SLIDES.length - 1) {
+              const next = slide + 1;
+              setSlide(next);
+              logTrainingEvent({ eventType: "slide_advance", page: "sales", stepIndex: next, metadata: { slideId: PITCH_SLIDES[next]?.id } });
+            } else {
+              navigate("/training");
+            }
           }} style={{
             background: slide === PITCH_SLIDES.length - 1 ? T.green : current.color,
             border: "none", borderRadius: 9, color: "#06040a",

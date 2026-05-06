@@ -1,21 +1,28 @@
 /**
  * TrainingEmployee — /training/employee
  * Role-based onboarding paths for all 8 venue roles.
+ * Session and step progression persisted to real backend DB.
  */
 
-import { useState }       from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useLocation }    from "wouter";
-import { ArrowLeft, ArrowRight, CheckCircle, ChevronRight, Play, UserCheck, BookOpen, Eye, Lightbulb } from "lucide-react";
-import Maxwell            from "@/components/Maxwell";
-import TrainingBanner     from "@/components/training/TrainingBanner";
-import SignOffModal       from "@/components/training/SignOffModal";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence }      from "framer-motion";
+import { useLocation }                  from "wouter";
+import {
+  ArrowLeft, ArrowRight, CheckCircle, ChevronRight,
+  UserCheck, Eye, Lightbulb, WifiOff,
+} from "lucide-react";
+import Maxwell        from "@/components/Maxwell";
+import TrainingBanner from "@/components/training/TrainingBanner";
+import SignOffModal   from "@/components/training/SignOffModal";
 import { TRAINING_ROLES_CONFIG, MAXWELL_INTROS } from "@/data/trainingData";
+import {
+  logTrainingEvent, ensureTrainingSession, getAuthHeaders,
+} from "@/hooks/useTrainingApi";
 
 const T = {
   bg: "#06040a", card: "rgba(255,255,255,0.04)", border: "rgba(201,168,76,0.15)",
   gold: "#c9a84c", text: "rgba(240,232,212,0.92)", muted: "rgba(240,232,212,0.48)",
-  light: "rgba(240,232,212,0.75)", green: "#34d399",
+  light: "rgba(240,232,212,0.75)", green: "#34d399", amber: "#f59e0b",
 };
 
 const ROLE_CONTENT: Record<string, Array<{ step: string; title: string; body: string }>> = {
@@ -60,15 +67,15 @@ const ROLE_CONTENT: Record<string, Array<{ step: string; title: string; body: st
     { step: "7", title: "Escalation Protocols", body: "Escalation triggers: guest complaint unresolved after 5 minutes, tab dispute over $100, inventory theft indicator, system downtime over 2 minutes." },
   ],
   venue_owner: [
-    { step: "1", title: "Analytics Overview", body: "Your Master Operations dashboard is the command center. Revenue, staff performance, inventory health, AI confidence, and loyalty metrics — all in one view." },
-    { step: "2", title: "Campaign Management", body: "Distributor campaigns drive incremental revenue with zero manual work. Set budget caps, track ROI in real time, and receive auto-generated performance reports." },
-    { step: "3", title: "Staff Management", body: "View per-staff performance metrics: upsell rate, guest satisfaction, sessions completed. Use this data for coaching conversations, not just evaluations." },
-    { step: "4", title: "Financial Overview", body: "The Financial Reconciliation dashboard shows your payout pipeline, reconciliation score, and any alerts. A score above 90 means your financial systems are healthy." },
-    { step: "5", title: "Feature Flags", body: "You control which Axiom features are active at your venue — upsell engine, loyalty system, swipe experience, POS mode. Toggle any flag without a code deployment." },
-    { step: "6", title: "Inventory Strategy", body: "Use the 30-day consumption averages to set intelligent reorder thresholds. The system will flag items before they run out, not after." },
-    { step: "7", title: "Lounge League", body: "Compete with other venues in the Axiom network. League standings update in real time based on revenue, engagement, and AI performance metrics." },
-    { step: "8", title: "Scaling to Multiple Venues", body: "The multi-venue dashboard provides consolidated reporting across all locations. Each venue is fully isolated — data never bleeds across properties." },
-    { step: "9", title: "Franchise Operations", body: "Central Command enables remote OTA updates, forced refreshes, and device heartbeat monitoring across all your venues simultaneously." },
+    { step: "1",  title: "Analytics Overview", body: "Your Master Operations dashboard is the command center. Revenue, staff performance, inventory health, AI confidence, and loyalty metrics — all in one view." },
+    { step: "2",  title: "Campaign Management", body: "Distributor campaigns drive incremental revenue with zero manual work. Set budget caps, track ROI in real time, and receive auto-generated performance reports." },
+    { step: "3",  title: "Staff Management", body: "View per-staff performance metrics: upsell rate, guest satisfaction, sessions completed. Use this data for coaching conversations, not just evaluations." },
+    { step: "4",  title: "Financial Overview", body: "The Financial Reconciliation dashboard shows your payout pipeline, reconciliation score, and any alerts. A score above 90 means your financial systems are healthy." },
+    { step: "5",  title: "Feature Flags", body: "You control which Axiom features are active at your venue — upsell engine, loyalty system, swipe experience, POS mode. Toggle any flag without a code deployment." },
+    { step: "6",  title: "Inventory Strategy", body: "Use the 30-day consumption averages to set intelligent reorder thresholds. The system will flag items before they run out, not after." },
+    { step: "7",  title: "Lounge League", body: "Compete with other venues in the Axiom network. League standings update in real time based on revenue, engagement, and AI performance metrics." },
+    { step: "8",  title: "Scaling to Multiple Venues", body: "The multi-venue dashboard provides consolidated reporting across all locations. Each venue is fully isolated — data never bleeds across properties." },
+    { step: "9",  title: "Franchise Operations", body: "Central Command enables remote OTA updates, forced refreshes, and device heartbeat monitoring across all your venues simultaneously." },
     { step: "10", title: "Revenue Strategy Review", body: "Monthly: review the AI insights panel for structural revenue opportunities. The system identifies patterns you cannot see manually — act on them." },
   ],
   inventory_manager: [
@@ -88,150 +95,163 @@ const ROLE_CONTENT: Record<string, Array<{ step: string; title: string; body: st
 
 export default function TrainingEmployee() {
   const [, navigate] = useLocation();
-  const [selected, setSelected]   = useState<string | null>(null);
-  const [stepIdx, setStepIdx]     = useState(0);
-  const [completed, setCompleted] = useState<Set<number>>(new Set());
+  const [selected, setSelected]       = useState<string | null>(null);
+  const [stepIdx, setStepIdx]         = useState(0);
+  const [completed, setCompleted]     = useState<Set<number>>(new Set());
   const [showSignOff, setShowSignOff] = useState(false);
+  const [offlineMode, setOfflineMode] = useState(false);
+  const [sessionId, setSessionId]     = useState<string | null>(null);
+  const stepStartRef = useRef<number>(Date.now());
 
-  const role = selected ? TRAINING_ROLES_CONFIG.find((r) => r.id === selected) : null;
+  const role  = selected ? TRAINING_ROLES_CONFIG.find((r) => r.id === selected) : null;
   const steps = selected ? (ROLE_CONTENT[selected] ?? []) : [];
+
+  useEffect(() => {
+    logTrainingEvent({ eventType: "page_view", page: "employee" });
+  }, []);
+
+  // Start session when role is selected
+  useEffect(() => {
+    if (!selected) return;
+    stepStartRef.current = Date.now();
+    logTrainingEvent({ eventType: "page_view", page: "employee", role: selected });
+    ensureTrainingSession("employee", selected)
+      .then((id) => { setSessionId(id); setOfflineMode(false); })
+      .catch(() => setOfflineMode(true));
+  }, [selected]);
+
+  async function persistStep(idx: number, isComplete: boolean) {
+    if (!sessionId || !selected) return;
+    const durationMs = Date.now() - stepStartRef.current;
+    const score = (idx + 1) * 15;
+    stepStartRef.current = Date.now();
+
+    try {
+      await fetch("/api/training/progress", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          sessionId,
+          scenarioId: `employee_${selected}`,
+          stepIndex: idx,
+          totalSteps: steps.length,
+          score,
+          completed: isComplete,
+        }),
+      });
+      logTrainingEvent({
+        eventType: "step_complete",
+        page: "employee",
+        role: selected,
+        stepIndex: idx,
+        score,
+        durationMs,
+        sessionId: sessionId ?? undefined,
+      });
+      setOfflineMode(false);
+    } catch {
+      setOfflineMode(true);
+    }
+  }
 
   if (selected && role) {
     const step = steps[stepIdx];
     return (
       <div style={{ minHeight: "100vh", background: T.bg, color: T.text, fontFamily: "'Inter',sans-serif" }}>
         <div style={{
-          position: "sticky", top: 0, zIndex: 40,
-          background: `${T.bg}ee`, backdropFilter: "blur(20px)",
-          borderBottom: `1px solid ${T.border}`, padding: "12px 24px",
-          display: "flex", alignItems: "center", gap: 14,
+          position: "sticky", top: 0, zIndex: 40, background: `${T.bg}ee`, backdropFilter: "blur(20px)",
+          borderBottom: `1px solid ${T.border}`, padding: "12px 24px", display: "flex", alignItems: "center", gap: 14,
         }}>
-          <button onClick={() => { setSelected(null); setStepIdx(0); setCompleted(new Set()); }} style={{
-            background: "transparent", border: `1px solid ${T.border}`,
-            borderRadius: 8, color: T.muted, fontSize: 11,
+          <button onClick={() => { setSelected(null); setStepIdx(0); setCompleted(new Set()); setSessionId(null); }} style={{
+            background: "transparent", border: `1px solid ${T.border}`, borderRadius: 8, color: T.muted, fontSize: 11,
             padding: "6px 10px", cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
           }}>
             <ArrowLeft size={12} /> Roles
           </button>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: role.color, fontFamily: "'Cormorant Garamond',serif" }}>
-              {role.title} Training
-            </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: role.color, fontFamily: "'Cormorant Garamond',serif" }}>{role.title} Training</div>
             <div style={{ fontSize: 9, color: T.muted, textTransform: "uppercase", letterSpacing: "0.12em" }}>
-              Step {stepIdx + 1} of {steps.length} · {role.duration}
+              Step {stepIdx + 1} of {steps.length} · {role.duration} {offlineMode ? "· offline" : "· synced"}
             </div>
           </div>
-          <div style={{ display: "flex", gap: 4 }}>
-            {steps.map((_, i) => (
-              <div key={i} style={{
-                width: 20, height: 4, borderRadius: 2,
-                background: completed.has(i) ? T.green : i === stepIdx ? role.color : "rgba(255,255,255,0.1)",
-                cursor: "pointer", transition: "background 0.2s",
-              }} onClick={() => setStepIdx(i)} />
-            ))}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {offlineMode && <WifiOff size={12} color={T.amber} />}
+            <div style={{ display: "flex", gap: 4 }}>
+              {steps.map((_, i) => (
+                <div key={i} onClick={() => setStepIdx(i)} style={{
+                  width: 20, height: 4, borderRadius: 2, cursor: "pointer", transition: "background 0.2s",
+                  background: completed.has(i) ? T.green : i === stepIdx ? role.color : "rgba(255,255,255,0.1)",
+                }} />
+              ))}
+            </div>
           </div>
         </div>
         <TrainingBanner />
 
         <div style={{ maxWidth: 720, margin: "0 auto", padding: "36px 24px" }}>
           <AnimatePresence mode="wait">
-            <motion.div
-              key={stepIdx}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.35 }}
-            >
-              <div style={{
-                background: `${role.color}0a`, border: `1px solid ${role.color}30`,
-                borderRadius: 16, padding: "32px 36px", marginBottom: 20,
-              }}>
-                <div style={{ fontSize: 11, color: role.color, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 8 }}>
-                  Module {step?.step}
-                </div>
-                <div style={{ fontSize: 24, fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, color: T.text, marginBottom: 18 }}>
-                  {step?.title}
-                </div>
-                <div style={{ fontSize: 13.5, color: T.light, lineHeight: 1.8 }}>
-                  {step?.body}
-                </div>
+            <motion.div key={stepIdx} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.35 }}>
+              <div style={{ background: `${role.color}0a`, border: `1px solid ${role.color}30`, borderRadius: 16, padding: "32px 36px", marginBottom: 20 }}>
+                <div style={{ fontSize: 11, color: role.color, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 8 }}>Module {step?.step}</div>
+                <div style={{ fontSize: 24, fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, color: T.text, marginBottom: 18 }}>{step?.title}</div>
+                <div style={{ fontSize: 13.5, color: T.light, lineHeight: 1.8 }}>{step?.body}</div>
               </div>
 
-              {/* Step help note */}
-              <div style={{
-                background: "rgba(96,165,250,0.05)", border: "1px solid rgba(96,165,250,0.18)",
-                borderRadius: 9, padding: "11px 14px", marginBottom: 16,
-                display: "flex", gap: 8, alignItems: "flex-start",
-              }}>
+              <div style={{ background: "rgba(96,165,250,0.05)", border: "1px solid rgba(96,165,250,0.18)", borderRadius: 9, padding: "11px 14px", marginBottom: 16, display: "flex", gap: 8, alignItems: "flex-start" }}>
                 <Eye size={11} color="#60a5fa" style={{ flexShrink: 0, marginTop: 2 }} />
                 <span style={{ fontSize: 10.5, color: "#60a5fa", lineHeight: 1.6 }}>
                   <strong>On screen: </strong>
-                  {stepIdx === 0
-                    ? `Look for the ${role.title} section in your Axiom OS staff view — it will be your primary work surface.`
-                    : stepIdx === 1
-                    ? "The system highlights the relevant action area with a subtle gold indicator when guidance is active."
-                    : stepIdx === 2
-                    ? "Guest profiles appear as cards with taste indicators shown as small colored bars below the guest name."
-                    : stepIdx === 3
-                    ? "Confirmation dialogs always show a summary of what will happen before you commit to any action."
-                    : stepIdx === 4
-                    ? "Notifications appear in the top-right badge area of your staff view — tap to expand details."
+                  {stepIdx === 0 ? `Look for the ${role.title} section in your Axiom OS staff view — it will be your primary work surface.`
+                    : stepIdx === 1 ? "The system highlights the relevant action area with a subtle gold indicator when guidance is active."
+                    : stepIdx === 2 ? "Guest profiles appear as cards with taste indicators shown as small colored bars below the guest name."
+                    : stepIdx === 3 ? "Confirmation dialogs always show a summary of what will happen before you commit to any action."
+                    : stepIdx === 4 ? "Notifications appear in the top-right badge area of your staff view — tap to expand details."
                     : "The completion indicator turns green when this step is fully recorded in your training progress."}
                 </span>
               </div>
 
-              {/* Tip note */}
               {stepIdx % 3 === 0 && (
-                <div style={{
-                  background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.18)",
-                  borderRadius: 9, padding: "11px 14px", marginBottom: 16,
-                  display: "flex", gap: 8, alignItems: "flex-start",
-                }}>
+                <div style={{ background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.18)", borderRadius: 9, padding: "11px 14px", marginBottom: 16, display: "flex", gap: 8, alignItems: "flex-start" }}>
                   <Lightbulb size={11} color="#f59e0b" style={{ flexShrink: 0, marginTop: 2 }} />
                   <span style={{ fontSize: 10.5, color: "#f59e0b", lineHeight: 1.6 }}>
                     <strong>Manager tip: </strong>
-                    {role.id === "bartender"
-                      ? "The fastest bartenders check the upsell indicator before approaching any table mid-service."
-                      : role.id === "cigar_specialist"
-                      ? "The best consultations start with listening, not recommending. Ask two questions before suggesting anything."
-                      : role.id === "floor_manager"
-                      ? "Revenue pacing is easier to correct at 30% deviation than at 50%. Check early, act early."
+                    {role.id === "bartender" ? "The fastest bartenders check the upsell indicator before approaching any table mid-service."
+                      : role.id === "cigar_specialist" ? "The best consultations start with listening, not recommending. Ask two questions before suggesting anything."
+                      : role.id === "floor_manager" ? "Revenue pacing is easier to correct at 30% deviation than at 50%. Check early, act early."
                       : "Consistency is the most important quality in any venue role. Do it right every time, not just when observed."}
                   </span>
                 </div>
               )}
 
-              {/* Navigation */}
               <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
                 {stepIdx > 0 && (
                   <button onClick={() => setStepIdx((s) => s - 1)} style={{
-                    background: "transparent", border: `1px solid ${T.border}`,
-                    borderRadius: 9, color: T.muted, padding: "10px 20px",
-                    cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", gap: 6,
+                    background: "transparent", border: `1px solid ${T.border}`, borderRadius: 9, color: T.muted,
+                    padding: "10px 20px", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", gap: 6,
                   }}>
                     <ArrowLeft size={12} /> Previous
                   </button>
                 )}
                 {stepIdx < steps.length - 1 ? (
-                  <button onClick={() => {
+                  <button onClick={async () => {
                     setCompleted((c) => new Set([...c, stepIdx]));
+                    await persistStep(stepIdx, false);
                     setStepIdx((s) => s + 1);
                   }} style={{
-                    background: role.color, border: "none",
-                    borderRadius: 9, color: "#06040a", padding: "10px 22px",
-                    cursor: "pointer", fontSize: 12, fontWeight: 700,
+                    background: role.color, border: "none", borderRadius: 9, color: "#06040a",
+                    padding: "10px 22px", cursor: "pointer", fontSize: 12, fontWeight: 700,
                     display: "flex", alignItems: "center", gap: 6,
                   }}>
                     Continue <ArrowRight size={12} />
                   </button>
                 ) : (
-                  <button onClick={() => {
+                  <button onClick={async () => {
                     setCompleted((c) => new Set([...c, stepIdx]));
+                    await persistStep(stepIdx, true);
                     setShowSignOff(true);
                   }} style={{
-                    background: T.gold, border: "none",
-                    borderRadius: 9, color: "#06040a", padding: "10px 22px",
-                    cursor: "pointer", fontSize: 12, fontWeight: 700,
+                    background: T.gold, border: "none", borderRadius: 9, color: "#06040a",
+                    padding: "10px 22px", cursor: "pointer", fontSize: 12, fontWeight: 700,
                     display: "flex", alignItems: "center", gap: 6,
                   }}>
                     <UserCheck size={13} /> Request Sign-Off
@@ -242,10 +262,7 @@ export default function TrainingEmployee() {
           </AnimatePresence>
         </div>
 
-        <Maxwell
-          message={`Module ${step?.step}: ${step?.title}. ${step?.body?.slice(0, 80)}…`}
-          context={`${role.title} · Step ${stepIdx + 1}`}
-        />
+        <Maxwell message={`Module ${step?.step}: ${step?.title}. ${step?.body?.slice(0, 80)}…`} context={`${role.title} · Step ${stepIdx + 1}`} />
         {showSignOff && (
           <SignOffModal
             role={selected ?? ""}
@@ -263,66 +280,45 @@ export default function TrainingEmployee() {
   return (
     <div style={{ minHeight: "100vh", background: T.bg, color: T.text, fontFamily: "'Inter',sans-serif" }}>
       <div style={{
-        position: "sticky", top: 0, zIndex: 40,
-        background: `${T.bg}ee`, backdropFilter: "blur(20px)",
-        borderBottom: `1px solid ${T.border}`, padding: "12px 24px",
-        display: "flex", alignItems: "center", gap: 14,
+        position: "sticky", top: 0, zIndex: 40, background: `${T.bg}ee`, backdropFilter: "blur(20px)",
+        borderBottom: `1px solid ${T.border}`, padding: "12px 24px", display: "flex", alignItems: "center", gap: 14,
       }}>
         <button onClick={() => navigate("/training")} style={{
-          background: "transparent", border: `1px solid ${T.border}`,
-          borderRadius: 8, color: T.muted, fontSize: 11,
+          background: "transparent", border: `1px solid ${T.border}`, borderRadius: 8, color: T.muted, fontSize: 11,
           padding: "6px 10px", cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
         }}>
           <ArrowLeft size={12} /> Training
         </button>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: T.gold, fontFamily: "'Cormorant Garamond',serif" }}>
-            Employee Training
-          </div>
-          <div style={{ fontSize: 9, color: T.muted, textTransform: "uppercase", letterSpacing: "0.12em" }}>
-            Select your role to begin
-          </div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: T.gold, fontFamily: "'Cormorant Garamond',serif" }}>Employee Training</div>
+          <div style={{ fontSize: 9, color: T.muted, textTransform: "uppercase", letterSpacing: "0.12em" }}>Select your role to begin</div>
         </div>
       </div>
       <TrainingBanner />
 
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
-          {TRAINING_ROLES_CONFIG.map((role, i) => (
-            <motion.button
-              key={role.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.06 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => { setSelected(role.id); setStepIdx(0); }}
-              style={{
-                background: T.card, border: `1px solid ${T.border}`,
-                borderRadius: 13, padding: "20px", cursor: "pointer",
-                textAlign: "left", transition: "border-color 0.2s",
-              }}
+          {TRAINING_ROLES_CONFIG.map((r, i) => (
+            <motion.button key={r.id}
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              onClick={() => { setSelected(r.id); setStepIdx(0); setCompleted(new Set()); }}
+              style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 13, padding: "20px", cursor: "pointer", textAlign: "left", transition: "border-color 0.2s" }}
             >
-              <div style={{
-                width: 8, height: 8, borderRadius: "50%",
-                background: role.color, marginBottom: 12,
-                boxShadow: `0 0 8px ${role.color}60`,
-              }} />
-              <div style={{ fontSize: 15, fontWeight: 700, color: T.text, marginBottom: 3 }}>{role.title}</div>
-              <div style={{ fontSize: 10, color: role.color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 10 }}>
-                {role.subtitle}
-              </div>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: r.color, marginBottom: 12, boxShadow: `0 0 8px ${r.color}60` }} />
+              <div style={{ fontSize: 15, fontWeight: 700, color: T.text, marginBottom: 3 }}>{r.title}</div>
+              <div style={{ fontSize: 10, color: r.color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 10 }}>{r.subtitle}</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 14 }}>
-                {role.focus.map((f) => (
+                {r.focus.map((f) => (
                   <div key={f} style={{ fontSize: 10, color: T.muted, display: "flex", alignItems: "center", gap: 5 }}>
-                    <div style={{ width: 3, height: 3, borderRadius: "50%", background: role.color, flexShrink: 0 }} />
+                    <div style={{ width: 3, height: 3, borderRadius: "50%", background: r.color, flexShrink: 0 }} />
                     {f}
                   </div>
                 ))}
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ fontSize: 9, color: T.muted }}>{role.duration} · {role.modules} modules</div>
-                <ChevronRight size={12} color={role.color} />
+                <div style={{ fontSize: 9, color: T.muted }}>{r.duration} · {r.modules} modules</div>
+                <ChevronRight size={12} color={r.color} />
               </div>
             </motion.button>
           ))}
