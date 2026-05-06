@@ -1,0 +1,288 @@
+FINAL NEXT BUILD PROMPT
+PHASE 4 — AXIOM PRESENCE ENGINE
+(VIP ARRIVAL + GEO-AWARE HOSPITALITY INTELLIGENCE)
+
+DO NOT redesign:
+- CraftHub homepage
+- Revenue Engine
+- Intelligence Engine
+- collectible card architecture
+- cinematic UI direction
+- tactile raised-button system
+- mentor visual language
+- OLED hospitality interface style
+
+This phase is NOT:
+another dashboard build.
+
+This phase IS:
+bringing Axiom OS into the real physical hospitality environment.
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+Build:
+AXIOM PRESENCE ENGINE.
+
+Purpose:
+allow the venue to intelligently recognize, welcome, and respond to returning guests in real time while preserving a luxury, emotionally intelligent hospitality experience.
+
+The system should feel:
+warm,
+personal,
+VIP-focused,
+and intelligent.
+
+NEVER:
+creepy,
+surveillance-like,
+or invasive.
+
+==================================================
+FOUNDATION PRINCIPLE
+==================================================
+
+Guests MUST opt in.
+
+NO “phone capturing.”
+NO hidden tracking.
+
+Everything must be:
+permission-based,
+hospitality-first,
+and premium-feeling.
+
+The guest should feel:
+recognized and appreciated.
+
+NOT:
+monitored.
+
+==================================================
+BUILD THE PRESENCE ENGINE
+==================================================
+
+Create:
+AxiomPresenceEngine.ts
+
+Core systems:
+- geofence arrival detection
+- VIP recognition
+- mentor arrival greetings
+- smart atmosphere loading
+- lounge continuity
+- host alert system
+- Apple Wallet integration
+- Google Wallet integration
+- WiFi continuity recognition
+- arrival-trigger campaigns
+- loyalty presence activation
+
+==================================================
+1. GEOFENCE ARRIVAL SYSTEM
+==================================================
+
+Guests who opt in create:
+a virtual hospitality radius around the venue.
+
+When a guest enters the radius:
+Axiom detects:
+“VIP guest nearby.”
+
+Possible actions:
+- mentor welcome triggers
+- host dashboard alert
+- atmosphere preload
+- reserve invitation
+- personalized greeting
+- event recommendation
+- loyalty activation
+
+Example:
+“Welcome back Marcus T · 4827.”
+“Juan Valez prepared a reserve Maduro pairing tonight.”
+
+==================================================
+2. VIP ARRIVAL RECOGNITION
+==================================================
+
+Create:
+VIP Arrival Layer.
+
+The venue should immediately know:
+- returning guest arrived
+- VIP guest arrived
+- mentor-linked guest arrived
+- reserve member arrived
+- high-value guest arrived
+
+Display:
+real-time arrival cards with cinematic visuals.
+
+==================================================
+3. MENTOR ARRIVAL GREETINGS
+==================================================
+
+Mentors should acknowledge:
+returning guests intelligently.
+
+Examples:
+“Your atmosphere profile aligns with tonight’s reserve session.”
+
+“You left a blend unfinished last week.”
+
+“Your preferred pairing just became available.”
+
+Dialogue should feel:
+calm,
+experienced,
+and premium.
+
+==================================================
+4. SMART ATMOSPHERE PRELOAD
+==================================================
+
+When guest arrives:
+Axiom prepares:
+- preferred atmosphere
+- mentor profile
+- pairings
+- recommended lounge areas
+- active events matching profile
+- preferred blend styles
+
+The venue should feel:
+responsive and alive.
+
+==================================================
+5. WIFI CONTINUITY RECOGNITION
+==================================================
+
+When returning guest reconnects to:
+venue WiFi
+
+Axiom can:
+- restore session continuity
+- activate loyalty systems
+- load atmosphere profile
+- trigger mentor recognition
+
+==================================================
+6. APPLE WALLET + GOOGLE WALLET
+==================================================
+
+Create:
+CraftHub Reserve Pass.
+
+Wallet pass supports:
+- VIP entry
+- reserve access
+- mentor identity
+- loyalty continuity
+- event invitations
+- geofence arrival triggers
+
+The experience should feel:
+modern and premium.
+
+==================================================
+7. HOST + STAFF ARRIVAL DASHBOARD
+==================================================
+
+Create:
+Arrival Intelligence Panel.
+
+Staff can see:
+- guest arrival
+- VIP status
+- mentor pairing
+- atmosphere preference
+- loyalty level
+- active reservations
+- preferred pairings
+
+This helps staff create:
+personalized hospitality experiences.
+
+==================================================
+8. ARRIVAL-BASED AUTOMATION
+==================================================
+
+Arrival can trigger:
+- SMS welcome
+- mentor greeting
+- reserve invitation
+- atmosphere recommendation
+- event invitation
+- loyalty bonus
+- pairing suggestions
+- social session alerts
+
+==================================================
+9. TABLE + SESSION CONTINUITY
+==================================================
+
+Guests should be able to:
+resume lounge sessions seamlessly.
+
+Examples:
+- saved blends
+- unfinished pairings
+- reserve selections
+- mentor conversations
+- atmosphere continuity
+
+==================================================
+10. PRESENCE-BASED INTELLIGENCE
+==================================================
+
+Track:
+- arrival frequency
+- peak return periods
+- social attendance
+- event engagement
+- loyalty activation
+- atmosphere response
+- VIP activity
+- return behavior
+
+This becomes:
+real-world hospitality intelligence.
+
+==================================================
+UI/UX REQUIREMENTS
+==================================================
+
+ALL Presence Engine visuals MUST:
+- use cinematic real-world imagery
+- preserve OLED luxury atmosphere
+- include depth perception
+- use tactile raised interactions
+- maintain smooth cinematic transitions
+- preserve hospitality warmth
+
+NO:
+corporate location tracking visuals.
+
+NO:
+maps everywhere.
+
+NO:
+surveillance-style UI.
+
+This should feel:
+luxury hospitality recognition.
+
+==================================================
+FINAL TARGET
+==================================================
+
+Customer feeling:
+“This place remembers me.”
+
+Venue owner feeling:
+“This system helps us deliver elite hospitality automatically.”
+
+Axiom OS feeling:
+an intelligent hospitality layer quietly recognizing and responding to guests in real time.
