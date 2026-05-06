@@ -1,29 +1,30 @@
 /**
- * SmokeCraft Service Worker
+ * Axiom OS — Service Worker
  *
  * Strategies:
  *   /api/*           → network-first, cache on success (offline fallback)
- *   everything else  → stale-while-revalidate (cache-first, refresh in bg)
+ *   everything else  → stale-while-revalidate (app shell served instantly)
  *
- * Offline event queue:
- *   POST /api/events requests that fail while offline are queued in
- *   localStorage (key: smokecraft_sw_event_queue) and replayed when
- *   the worker receives a "SYNC_EVENTS" message from the app.
+ * This enables full standalone PWA installation on iPad / Android tablets
+ * with cache-first loading after first visit, and offline resilience for
+ * the patron-facing kiosk shell.
  */
 
-const CACHE = "smokecraft-v2";
+const CACHE = "axiom-os-v1";
 
-// ── Install ─────────────────────────────────────────────────────────────────
+const PRECACHE = ["/", "/manifest.json", "/favicon.svg"];
+
+// ── Install ───────────────────────────────────────────────────────────────────
 self.addEventListener("install", (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE).then((cache) =>
-      cache.addAll(["/", "/index.html"]).catch(() => {}),
+      cache.addAll(PRECACHE).catch(() => {}),
     ),
   );
 });
 
-// ── Activate ─────────────────────────────────────────────────────────────────
+// ── Activate ──────────────────────────────────────────────────────────────────
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     Promise.all([
@@ -76,15 +77,9 @@ async function staleWhileRevalidate(request) {
   return cached ?? fetchPromise;
 }
 
-// ── Message: sync queued events ───────────────────────────────────────────────
+// ── Message: background sync hook ─────────────────────────────────────────────
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SYNC_EVENTS") {
-    event.waitUntil(syncQueuedEvents());
+    event.waitUntil(Promise.resolve());
   }
 });
-
-async function syncQueuedEvents() {
-  // The event queue lives in main-thread localStorage, so we can't access it
-  // directly from the SW. The app posts the events directly when it comes
-  // online — this handler is a future hook for Background Sync API support.
-}

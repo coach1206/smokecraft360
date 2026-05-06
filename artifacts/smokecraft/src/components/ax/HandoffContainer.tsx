@@ -43,6 +43,10 @@ import {
   xpProgress, xpToNextRank,
   RANK_CONFIG,
 } from "@/store/prestigeStore";
+import {
+  playClick, playClink,
+  setAudioEnabled, getAudioEnabled,
+} from "@/lib/audioEngine";
 import { Pulse }          from "./Pulse";
 import {
   SMOKE_SCENES, POUR_SCENES, BREW_SCENES, VAPE_SCENES,
@@ -497,6 +501,37 @@ function CraftCard({
   );
 }
 
+// ── Audio toggle ──────────────────────────────────────────────────────────────
+// Self-contained component so it can mount independently in the staff footer.
+// Updates the module-level audioEngine flag; no prop drilling required.
+
+function AudioToggle() {
+  const [on, setOn] = useState(() => getAudioEnabled());
+  return (
+    <button
+      onClick={() => {
+        const next = !on;
+        setOn(next);
+        setAudioEnabled(next);
+      }}
+      title={on ? "Sound on — tap to mute" : "Sound muted — tap to enable"}
+      style={{
+        fontSize: 13,
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+        color: on ? "rgba(201,168,76,0.65)" : "rgba(255,255,255,0.18)",
+        padding: "2px 4px",
+        lineHeight: 1,
+        transition: "color 0.18s",
+        outline: "none",
+      }}
+    >
+      {on ? "🔊" : "🔇"}
+    </button>
+  );
+}
+
 // ── Staff dashboard panel ─────────────────────────────────────────────────────
 
 function StaffPanel({
@@ -526,6 +561,34 @@ function StaffPanel({
   // Occupancy arc dial parameters
   const R = 30; const CIRC = 2 * Math.PI * R;
   const arcFilled = CIRC * (venueOccupancy / 100) * (240 / 360);
+
+  // ── Founder's Command View ──────────────────────────────────────────────────
+  const [founderVisible, setFounderVisible] = useState(false);
+  const founderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function startFounderPress() {
+    founderTimerRef.current = setTimeout(() => {
+      setFounderVisible(true);
+    }, 2000);
+  }
+
+  function clearFounderPress() {
+    if (founderTimerRef.current) {
+      clearTimeout(founderTimerRef.current);
+      founderTimerRef.current = null;
+    }
+  }
+
+  // Member conversion potential scales with occupancy
+  const memberConversionPotential = Math.round(
+    (venueOccupancy / 100) * (isDynamicPricingActive ? 64 : 38)
+  );
+
+  const SENTIMENT = [
+    { emoji: "😊", label: "Satisfied",    pct: 68, color: "#4ade80" },
+    { emoji: "😐", label: "Neutral",      pct: 22, color: "#C9A84C" },
+    { emoji: "😞", label: "Disappointed", pct: 10, color: "#f87171" },
+  ];
 
   return (
     <motion.div
@@ -573,11 +636,17 @@ function StaffPanel({
         </div>
         <div
           className="font-bold leading-tight"
+          onPointerDown={startFounderPress}
+          onPointerUp={clearFounderPress}
+          onPointerLeave={clearFounderPress}
+          onPointerCancel={clearFounderPress}
+          title="Hold 2 s for Founder access"
           style={{
             fontFamily: "'Cormorant Garamond', Georgia, serif",
             fontSize: "clamp(24px, 3.5vw, 34px)",
             color: "#C9A84C",
             letterSpacing: "0.05em",
+            cursor: "default",
           }}
         >
           Staff Dashboard
@@ -785,10 +854,199 @@ function StaffPanel({
           <ChevronLeft size={13} />
           Return to Patron
         </button>
-        <div className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(240,232,212,0.22)" }}>
-          Axiom 360 OS
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {/* Audio toggle */}
+          <AudioToggle />
+          <div className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(240,232,212,0.22)" }}>
+            Axiom 360 OS
+          </div>
         </div>
       </div>
+
+      {/* ── Founder's Command View ── */}
+      <AnimatePresence>
+        {founderVisible && (
+          <motion.div
+            key="founder-view"
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.97 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            style={{
+              position: "absolute", inset: 0, zIndex: 30,
+              background: "linear-gradient(160deg, #1a1208 0%, #0a0806 100%)",
+              display: "flex", flexDirection: "column",
+              overflow: "hidden",
+              fontFamily: "'Inter', system-ui, sans-serif",
+            }}
+          >
+            {/* Brushed graphite texture */}
+            <div className="absolute inset-0 brushed-graphite pointer-events-none" style={{ opacity: 0.5, zIndex: 0 }} />
+            {/* Gold border inset */}
+            <div style={{
+              position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
+              border: "1px solid rgba(201,168,76,0.18)",
+            }} />
+
+            {/* Content */}
+            <div className="relative z-10 flex-1 overflow-y-auto px-7 py-6">
+
+              {/* Header */}
+              <div style={{ marginBottom: 22 }}>
+                <div style={{
+                  fontSize: 7.5, color: "rgba(201,168,76,0.5)",
+                  letterSpacing: "0.4em", textTransform: "uppercase", marginBottom: 5,
+                }}>
+                  ✦ &nbsp;Founder's Command View
+                </div>
+                <div style={{
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  fontSize: "clamp(20px, 2.8vw, 28px)",
+                  fontWeight: 700, color: "#F0E8D4", letterSpacing: "0.04em",
+                }}>
+                  Owner ROI Dashboard
+                </div>
+              </div>
+
+              {/* ── Metric cards ── */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
+
+                {/* Revenue Lift */}
+                <div style={{
+                  background: "rgba(74,222,128,0.05)",
+                  border: "1px solid rgba(74,222,128,0.18)",
+                  borderRadius: 12, padding: "14px 16px",
+                }}>
+                  <div style={{
+                    fontSize: 7, color: "rgba(74,222,128,0.55)",
+                    letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: 8,
+                  }}>
+                    Revenue Lift Today
+                  </div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
+                    <span style={{ fontSize: 10, color: "rgba(74,222,128,0.7)", fontWeight: 700 }}>$</span>
+                    <motion.span
+                      key={revenueLift}
+                      initial={{ y: -6, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      style={{ fontSize: 34, fontWeight: 800, color: "#4ade80", letterSpacing: "-0.03em", lineHeight: 1 }}
+                    >
+                      {revenueLift.toFixed(0)}
+                    </motion.span>
+                  </div>
+                  <div style={{ fontSize: 8, color: "rgba(240,232,212,0.25)", marginTop: 5 }}>
+                    vs flat static pricing
+                  </div>
+                </div>
+
+                {/* Member Conversion Potential */}
+                <div style={{
+                  background: "rgba(167,139,250,0.05)",
+                  border: "1px solid rgba(167,139,250,0.18)",
+                  borderRadius: 12, padding: "14px 16px",
+                }}>
+                  <div style={{
+                    fontSize: 7, color: "rgba(167,139,250,0.55)",
+                    letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: 8,
+                  }}>
+                    Member Potential
+                  </div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
+                    <span style={{ fontSize: 10, color: "rgba(167,139,250,0.7)", fontWeight: 700 }}>$</span>
+                    <motion.span
+                      key={memberConversionPotential}
+                      initial={{ y: -6, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      style={{ fontSize: 34, fontWeight: 800, color: "#a78bfa", letterSpacing: "-0.03em", lineHeight: 1 }}
+                    >
+                      {memberConversionPotential}
+                    </motion.span>
+                  </div>
+                  <div style={{ fontSize: 8, color: "rgba(240,232,212,0.25)", marginTop: 5 }}>
+                    {isDynamicPricingActive ? "surge-mode uplift / hr" : "standard uplift / hr"}
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Patron Sentiment Map ── */}
+              <div style={{
+                background: "rgba(255,255,255,0.025)",
+                border: "1px solid rgba(255,255,255,0.07)",
+                borderRadius: 12, padding: "16px 18px",
+              }}>
+                <div style={{
+                  fontSize: 7, color: "rgba(240,232,212,0.32)",
+                  letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 14,
+                }}>
+                  Patron Sentiment Map
+                </div>
+                {SENTIMENT.map(({ emoji, label, pct, color }, i) => (
+                  <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: i < 2 ? 10 : 0 }}>
+                    <span style={{ fontSize: 15, width: 22, flexShrink: 0 }}>{emoji}</span>
+                    <div style={{
+                      width: 82, fontSize: 8, color: "rgba(240,232,212,0.4)",
+                      letterSpacing: "0.08em", flexShrink: 0,
+                    }}>
+                      {label}
+                    </div>
+                    <div style={{
+                      flex: 1, height: 7, background: "rgba(255,255,255,0.06)",
+                      borderRadius: 99, overflow: "hidden",
+                    }}>
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct}%` }}
+                        transition={{ duration: 0.75, delay: i * 0.1, ease: "easeOut" }}
+                        style={{
+                          height: "100%", borderRadius: 99,
+                          background: color,
+                          boxShadow: `0 0 6px ${color}55`,
+                        }}
+                      />
+                    </div>
+                    <div style={{
+                      fontSize: 9, fontWeight: 700, color,
+                      width: 30, textAlign: "right", flexShrink: 0,
+                    }}>
+                      {pct}%
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{
+              borderTop: "1px solid rgba(255,255,255,0.07)",
+              padding: "12px 24px",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              background: "rgba(0,0,0,0.2)", flexShrink: 0, position: "relative", zIndex: 10,
+            }}>
+              <button
+                onClick={() => setFounderVisible(false)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 5,
+                  fontSize: 9, fontWeight: 700, letterSpacing: "0.16em",
+                  textTransform: "uppercase", cursor: "pointer", outline: "none",
+                  background: "rgba(255,255,255,0.05)",
+                  border: "1px solid rgba(255,255,255,0.10)",
+                  color: "rgba(240,232,212,0.45)",
+                  padding: "5px 14px", borderRadius: 99,
+                }}
+              >
+                <ChevronLeft size={10} />
+                Back
+              </button>
+              <div style={{
+                fontSize: 7.5, color: "rgba(201,168,76,0.3)",
+                letterSpacing: "0.2em", textTransform: "uppercase",
+              }}>
+                Founder Access Only
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
@@ -827,6 +1085,7 @@ function PatronView({
     prevRankRef.current = rank;
     setRankUpLabel(rank);
     setRankUpVisible(true);
+    playClink();
     const id = setTimeout(() => setRankUpVisible(false), 3800);
     return () => clearTimeout(id);
   }, [rank]);
@@ -879,6 +1138,7 @@ function PatronView({
     setBurstKey((k) => k + 1);
     onCraftSelect(craft);
     // Award XP for each craft selection (rank-up detection runs in useEffect)
+    playClick();
     addXP(50);
     // Accumulate surge lift whenever a patron enters the experience during peak
     if (isDynamicPricingActive && !isMemberLoggedIn && venueOccupancy > 80) {

@@ -1,21 +1,30 @@
 {
-  "name": "SmokeCraft 360",
-  "short_name": "SmokeCraft",
+  "name": "Axiom OS — Experience Engine",
+  "short_name": "Axiom OS",
   "description": "Premium cigar and spirits recommendations — curated for the connoisseur.",
   "start_url": "/",
+  "id": "/",
   "display": "standalone",
-  "orientation": "any",
-  "theme_color": "#D4AF37",
-  "background_color": "#0b0b0b",
+  "orientation": "landscape",
+  "background_color": "#080604",
+  "theme_color": "#C9A84C",
   "scope": "/",
-  "lang": "en",
+  "lang": "en-US",
+  "dir": "ltr",
   "categories": ["lifestyle", "food"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     },
     {
       "src": "/opengraph.jpg",
@@ -24,6 +33,5 @@
       "purpose": "any"
     }
   ],
-  "screenshots": [],
-  "prefer_related_applications": false
+  "screenshots": []
 }

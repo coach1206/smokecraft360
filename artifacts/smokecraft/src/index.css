@@ -718,4 +718,54 @@
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='256' height='256' filter='url(%23g)' opacity='1'/></svg>");
   }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+   * KIOSK ARMOR
+   *
+   * Prevents patrons from triggering browser-native text-selection,
+   * long-press copy/paste callouts, and tap flash highlights on any
+   * element in the kiosk shell.
+   *
+   * GPU composition: promoting #root to its own compositor layer means
+   * every Framer Motion transform runs on the GPU without individual
+   * will-change hints — critical for zero-lag performance on tablet SoCs.
+   * ═══════════════════════════════════════════════════════════════════════ */
+
+  /* Disable all selection and touch callouts globally */
+  *, *::before, *::after {
+    -webkit-user-select:         none;
+    user-select:                 none;
+    -webkit-touch-callout:       none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Re-enable selection inside actual text inputs */
+  input,
+  textarea,
+  [contenteditable="true"] {
+    -webkit-user-select:   text;
+    user-select:           text;
+    -webkit-touch-callout: default;
+  }
+
+  /* ── brushed-graphite (seamless) ──────────────────────────────────────
+   * Identical pattern to the .brushed-graphite class above, applied
+   * directly to the Staff Panel via a CSS var so both surfaces are
+   * guaranteed to be pixel-perfect matches regardless of zoom level.
+   * ──────────────────────────────────────────────────────────────────── */
+  :root {
+    --brushed-graphite-bg: repeating-linear-gradient(
+      0deg,
+      transparent,              transparent 3px,
+      rgba(255,255,255,0.011)   3px,
+      rgba(255,255,255,0.011)   4px
+    );
+  }
+
+  /* GPU composition root — promotes the entire app to a single GPU layer */
+  #root {
+    transform:                   translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility:         hidden;
+  }
 }
