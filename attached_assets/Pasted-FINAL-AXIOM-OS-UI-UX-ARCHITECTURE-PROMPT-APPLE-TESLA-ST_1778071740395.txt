@@ -1,0 +1,320 @@
+FINAL AXIOM OS UI/UX ARCHITECTURE PROMPT
+(APPLE × TESLA × STAR TREK HOSPITALITY OPERATING SYSTEM)
+
+DO NOT build this like:
+- POS software
+- admin dashboards
+- enterprise SaaS
+- flat UI
+- corporate analytics tools
+- generic CRM systems
+
+Axiom OS must feel like:
+a luxury hospitality operating system from the near future.
+
+The system should emotionally feel:
+alive,
+premium,
+cinematic,
+intelligent,
+and tactile.
+
+==================================================
+CORE VISUAL PHILOSOPHY
+==================================================
+
+Design language:
+Apple × Tesla × Star Trek
+with luxury hospitality energy.
+
+NOT:
+science-fiction fantasy.
+
+This should feel:
+real,
+premium,
+future-forward,
+minimal,
+and emotionally immersive.
+
+Everything must feel:
+- smooth
+- soft
+- elevated
+- layered
+- responsive
+- cinematic
+- emotionally warm
+
+==================================================
+UI DEPTH + MATERIAL SYSTEM
+==================================================
+
+NO flat UI.
+
+NO dead panels.
+
+NO cheap dashboard cards.
+
+ALL interface surfaces should have:
+- layered depth
+- matte-black glass textures
+- subtle environmental reflections
+- OLED glow edges
+- soft shadow elevation
+- depth perception
+- floating panel behavior
+- ambient breathing motion
+
+Every screen should feel:
+physically dimensional.
+
+==================================================
+BUTTON + TOUCH SYSTEM
+==================================================
+
+DO NOT use:
+flat buttons,
+tiny toggles,
+or generic sliders/faders.
+
+Use:
+raised tactile interaction surfaces.
+
+Buttons should feel:
+touchable,
+mechanical,
+premium,
+and satisfying.
+
+Interaction behavior:
+- slight elevation on hover
+- soft compression on press
+- ambient glow pulse on activation
+- subtle haptic-style visual feedback
+- shadow depth movement
+- smooth physical easing
+
+Users should FEEL:
+interaction excitement.
+
+Buttons should resemble:
+luxury hardware controls.
+
+==================================================
+COMMAND CENTER DESIGN
+==================================================
+
+The command center must NOT feel:
+like software.
+
+It should feel:
+like a hospitality intelligence bridge.
+
+Every tile and card MUST include:
+real-world cinematic imagery.
+
+NO:
+glyphs,
+flat icons,
+or empty abstract gradients.
+
+Use:
+real-life premium visuals connected directly to the feature.
+
+==================================================
+COMMAND CENTER TILE EXAMPLES
+==================================================
+
+Social Campaign Engine →
+real nightlife/social media campaign imagery.
+
+Revenue Recovery →
+luxury lounge with active customer atmosphere.
+
+Mentor Intelligence →
+craft mentor environment with cigars/spirits atmosphere.
+
+Guest Continuity →
+customer returning to premium lounge.
+
+Atmosphere Activation →
+cinematic lounge energy scene.
+
+Flavor Intelligence →
+macro cigar, whiskey, beer, vapor sensory imagery.
+
+Inventory Intelligence →
+premium humidor, bottle wall, taproom visuals.
+
+Event Activation →
+live pairing night/social energy imagery.
+
+==================================================
+ENVIRONMENTAL DESIGN
+==================================================
+
+Every environment should feel:
+alive.
+
+Add:
+- ambient particles
+- slow atmospheric movement
+- environmental breathing glow
+- soft cinematic lighting
+- subtle smoke/vapor movement
+- reflective surfaces
+- depth shadows
+- warm OLED gradients
+
+The world should NEVER feel static.
+
+==================================================
+NAVIGATION RULES
+==================================================
+
+EVERY screen MUST contain:
+persistent Back navigation.
+
+Users should NEVER:
+feel trapped.
+
+Navigation should feel:
+fluid and continuous.
+
+Transitions:
+- glide
+- fade
+- cinematic zoom
+- soft expansion
+- intelligent motion easing
+
+NEVER:
+hard cuts.
+
+==================================================
+INTERFACE LANGUAGE SYSTEM
+==================================================
+
+DO NOT use:
+corporate terminology.
+
+Replace software language with:
+hospitality intelligence language.
+
+Examples:
+
+“Analytics Dashboard” →
+“Lounge Intelligence”
+
+“CRM” →
+“Guest Continuity”
+
+“Marketing Campaigns” →
+“Attraction Engine”
+
+“Notifications” →
+“Atmosphere Signals”
+
+“Automation” →
+“Venue Intelligence”
+
+“Inventory Management” →
+“Craft Supply Intelligence”
+
+“Customer Retention” →
+“Guest Loyalty Flow”
+
+==================================================
+3-CORE-SYSTEM ARCHITECTURE
+==================================================
+
+The platform should remain streamlined.
+
+ONLY 3 major systems visible:
+
+==================================================
+1. CRAFTHUB EXPERIENCE ENGINE
+==================================================
+
+Customer-facing emotional layer.
+
+Includes:
+- SmokeCraft
+- PourCraft
+- BrewCraft
+- VapeCraft
+- mentors
+- discovery
+- atmosphere
+- pairings
+- blend chemistry
+- prestige
+- reservations
+- saved sessions
+
+Purpose:
+emotion,
+engagement,
+loyalty,
+and atmosphere.
+
+==================================================
+2. AXIOM REVENUE ENGINE
+==================================================
+
+Venue growth + revenue automation layer.
+
+Includes:
+- social campaign automation
+- SMS/email campaigns
+- slow-hour recovery
+- after-hours monetization
+- event activation
+- inventory movement
+- customer reactivation
+- loyalty recovery
+- membership campaigns
+
+Purpose:
+help venues increase revenue and engagement.
+
+This system should feel:
+beautiful,
+simple,
+and automatic.
+
+==================================================
+3. AXIOM INTELLIGENCE CENTER
+==================================================
+
+Owner + enterprise intelligence layer.
+
+Includes:
+- atmosphere analytics
+- loyalty intelligence
+- flavor trends
+- emotional engagement
+- spending patterns
+- social behavior
+- campaign intelligence
+- predictive customer behavior
+
+Purpose:
+hospitality intelligence and business optimization.
+
+==================================================
+FINAL EXPERIENCE TARGET
+==================================================
+
+CUSTOMER FEELING:
+“This place understands me.”
+
+VENUE OWNER FEELING:
+“This system helps me make money.”
+
+MANUFACTURER/DISTRIBUTOR FEELING:
+“This platform understands customer behavior better than traditional analytics.”
+
+Axiom OS should ultimately feel like:
+an intelligent luxury hospitality ecosystem quietly operating behind the scenes of premium venues.
