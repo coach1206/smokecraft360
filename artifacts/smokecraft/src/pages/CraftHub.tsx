@@ -516,17 +516,39 @@ function CraftHubInner() {
           </motion.div>
         </div>
 
-        {/* Right — module count */}
+        {/* Right — staff button + module count */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          style={{ display: "flex", alignItems: "center", gap: 7 }}
+          style={{ display: "flex", alignItems: "center", gap: 12 }}
         >
-          <Sparkles size={14} color={C.goldDim} />
-          <span style={{ fontSize: 10, color: C.dim, letterSpacing: "0.14em" }}>
-            {CRAFT_MODULES.length} craft modules
-          </span>
+          <button
+            onClick={() => navigate("/operations")}
+            style={{
+              background: "rgba(201,168,76,0.12)",
+              border: "1px solid rgba(201,168,76,0.4)",
+              borderRadius: 8,
+              cursor: "pointer",
+              fontSize: 11,
+              fontWeight: 700,
+              color: C.gold,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              padding: "8px 18px",
+              fontFamily: "inherit",
+              minHeight: 36,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Staff Login
+          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+            <Sparkles size={14} color={C.goldDim} />
+            <span style={{ fontSize: 10, color: C.dim, letterSpacing: "0.14em" }}>
+              {CRAFT_MODULES.length} craft modules
+            </span>
+          </div>
         </motion.div>
       </header>
 
@@ -665,26 +687,33 @@ function CraftHubInner() {
             </span>
           </div>
         ))}
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 14 }}>
-          {/* Staff link — navigates to /operations */}
-          <button
-            onClick={() => navigate("/operations")}
-            style={{
-              background: "transparent", border: "none", cursor: "pointer",
-              fontSize: 8, color: "rgba(240,232,212,0.18)", letterSpacing: "0.18em",
-              textTransform: "uppercase", padding: "4px 6px",
-              fontFamily: "inherit",
-            }}
-          >
-            STAFF
-          </button>
-          {/* Tap 5× for staff escape on kiosk screens */}
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10 }}>
           <div
             onClick={handleStaffTap}
             style={{ fontSize: 9, color: C.dim, letterSpacing: "0.12em", cursor: "default", userSelect: "none" }}
           >
             OPERATIONAL · {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </div>
+          <button
+            onClick={() => navigate("/operations")}
+            style={{
+              background: "rgba(201,168,76,0.12)",
+              border: "1px solid rgba(201,168,76,0.35)",
+              borderRadius: 8,
+              cursor: "pointer",
+              fontSize: 11,
+              fontWeight: 700,
+              color: C.gold,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              padding: "8px 16px",
+              fontFamily: "inherit",
+              minWidth: 80,
+              minHeight: 36,
+            }}
+          >
+            Staff ›
+          </button>
         </div>
       </footer>
 
