@@ -81,6 +81,7 @@ import { GlobalAmbientOverlay }        from "@/components/GlobalAmbientOverlay";
 import EnvironmentEnginePage          from "@/pages/EnvironmentEngine";
 import EnterpriseIntelligence         from "@/pages/EnterpriseIntelligence";
 import MasterOperations               from "@/pages/MasterOperations";
+import AxiomPay                       from "@/pages/AxiomPay";
 
 const queryClient = new QueryClient();
 
@@ -112,6 +113,7 @@ function Router() {
       <Route path="/environment"            component={EnvironmentEnginePage}  />
       <Route path="/enterprise-intelligence" component={EnterpriseIntelligence} />
       <Route path="/operations"              component={MasterOperations}        />
+      <Route path="/axiom-pay"               component={AxiomPay}                />
       <Route path="/admin/intel"               component={OwnerIntelPanel}         />
       <Route path="/admin/experience-control" component={ExperienceControlPanel}  />
       {/* Legacy craft routes — redirect into the Universal Swipe Engine */}

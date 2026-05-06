@@ -75,3 +75,5 @@ export * from "./orchestratorEvents";
 export * from "./systemValidation";
 export * from "./guestProfiles";
 export * from "./guestSessions";
+export * from "./guestTabs";
+export * from "./fulfillmentQueue";

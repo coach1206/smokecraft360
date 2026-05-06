@@ -66,6 +66,7 @@ const NAV_ITEMS = [
   { id: "governance",   label: "Governance",           desc: "Roles, audit & compliance",   icon: ShieldCheck,     route: "/governance",              group: "operations" },
   { id: "central",      label: "Central Command",      desc: "OTA & remote device control", icon: Upload,          route: "/central-command",         group: "operations" },
   { id: "enterprise",   label: "Enterprise Intel",     desc: "9-tab intelligence suite",    icon: BarChart3,       route: "/enterprise-intelligence", group: "operations" },
+  { id: "axiom-pay",    label: "Axiom Pay",            desc: "Tabs · Fulfillment · Connect", icon: DollarSign,      route: "/axiom-pay",               group: "operations" },
   { id: "devices",      label: "Devices",              desc: "Kiosk & hardware health",     icon: Monitor,         route: "/devices",                 group: "venue" },
   { id: "venues",       label: "Venues",               desc: "Venue management",            icon: Building2,       route: "/admin-panel",             group: "venue" },
   { id: "staff",        label: "Employees",            desc: "Team access & management",    icon: Users,           route: "/staff",                   group: "venue" },

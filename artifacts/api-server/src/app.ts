@@ -121,6 +121,9 @@ import { startRewardOptimizationWorker } from "./lib/rewardOptimizationWorker";
 import { startCampaignBudgetWorker }    from "./lib/campaignBudgetWorker";
 import { startTournamentWorker }        from "./lib/tournamentWorker";
 import { requirePaymentsEnabled, requireRewardsEnabled } from "./middleware/killSwitch";
+import guestTabsRouter      from "./routes/guestTabs";
+import fulfillmentRouter    from "./routes/fulfillmentQueue";
+import stripeConnectRouter  from "./routes/stripeConnect";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -247,6 +250,9 @@ app.use("/api/environment",                 environmentRouter);
 app.use("/api/enterprise-intelligence",    enterpriseIntelligenceRouter);
 app.use("/api/dashboard",                 dashboardRouter);
 app.use("/api/engines",                   enginesRouter);
+app.use("/api/tabs",                      requirePaymentsEnabled, guestTabsRouter);
+app.use("/api/fulfillment",               fulfillmentRouter);
+app.use("/api/stripe-connect",            stripeConnectRouter);
 app.use("/api/scoring",                     scoringRouter);
 app.use("/api/system",                      systemStatusRouter);
 app.use("/api/me",                          meRouter);

@@ -19,6 +19,7 @@ import Stripe                                      from "stripe";
 import { and, eq, sql }                            from "drizzle-orm";
 import {
   db, ordersTable, commissionsTable, venueInventoryTable, stripeEventsTable,
+  guestTabsTable,
 }                                                  from "@workspace/db";
 import { logger }                                  from "../lib/logger";
 import { logAudit }                                from "../lib/audit";
@@ -351,6 +352,40 @@ export async function stripeWebhookHandler(req: Request, res: Response): Promise
     const sub = event.data.object as Stripe.Subscription;
     try { await syncSubscriptionFromStripe(sub); logger.info({ subId: sub.id, status: sub.status }, "Subscription synced"); }
     catch (err) { logger.error({ err, subId: sub.id }, "Failed to sync subscription"); }
+  }
+
+  // ── Axiom Pay: guest tab payment confirmation ──────────────────────────────
+  if (event.type === "payment_intent.succeeded") {
+    const pi     = event.data.object as Stripe.PaymentIntent;
+    const tabId  = pi.metadata?.tabId;
+    const purpose = pi.metadata?.purpose;
+
+    if (purpose === "guest_tab" && tabId) {
+      try {
+        await db
+          .update(guestTabsTable)
+          .set({
+            paymentStatus: "paid",
+            status:        "closed",
+            stripeChargeId: typeof pi.latest_charge === "string" ? pi.latest_charge : null,
+            closedAt:       new Date(),
+            paidAt:         new Date(),
+          } as any)
+          .where(eq(guestTabsTable.id, tabId));
+
+        await logAudit(auditReq, {
+          action:     "tab.payment.confirmed",
+          entityType: "guest_tab",
+          entityId:   tabId,
+          venueId:    pi.metadata?.venueId ?? null,
+          after:      { intentId: pi.id, amountCents: pi.amount_received },
+        });
+
+        logger.info({ tabId, intentId: pi.id }, "Guest tab payment confirmed via webhook");
+      } catch (err) {
+        logger.error({ err, tabId, intentId: pi.id }, "Failed to confirm tab payment from webhook");
+      }
+    }
   }
 
   res.json({ received: true });

@@ -22,8 +22,11 @@ export const venuesTable = pgTable("venues", {
   tagline:          text("tagline"),
   logoUrl:          text("logo_url"),
   primaryColor:     text("primary_color"),
-  stripeCustomerId: text("stripe_customer_id"),
-  createdAt:        timestamp("created_at").notNull().defaultNow(),
+  stripeCustomerId:         text("stripe_customer_id"),
+  stripeConnectAccountId:   text("stripe_connect_account_id"),
+  stripeConnectOnboarded:   boolean("stripe_connect_onboarded").notNull().default(false),
+  platformFeeBps:           text("platform_fee_bps").default("500"), // basis points: 500 = 5.00%
+  createdAt:                timestamp("created_at").notNull().defaultNow(),
 });
 
 export const insertVenueSchema = createInsertSchema(venuesTable).omit({ id: true, createdAt: true });
