@@ -38,6 +38,7 @@ export default function BackgroundLayer({
             opacity: 0.05,
             filter: blur > 0 ? `blur(${blur}px)` : "blur(4px)",
             transform: "scale(1.05)",
+            pointerEvents: "none",
           }}
         />
       )}
