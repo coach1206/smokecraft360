@@ -41,6 +41,7 @@ import type { CraftType } from "@/store/axiom360Store";
 import { useAxiomStore }          from "@/store/axiomStore";
 import { calculateDynamicPrice }  from "@/lib/pricing";
 import type { PriceInfo }         from "@/lib/pricing";
+import { FoundersDashboard }      from "./FoundersDashboard";
 import {
   xpProgress, xpToNextRank,
   RANK_CONFIG,
@@ -926,63 +927,8 @@ function StaffPanel({
               </div>
 
               {/* ── Metric cards ── */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
-
-                {/* Revenue Lift */}
-                <div style={{
-                  background: "rgba(74,222,128,0.05)",
-                  border: "1px solid rgba(74,222,128,0.18)",
-                  borderRadius: 12, padding: "14px 16px",
-                }}>
-                  <div style={{
-                    fontSize: 7, color: "rgba(74,222,128,0.55)",
-                    letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: 8,
-                  }}>
-                    Revenue Lift Today
-                  </div>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
-                    <span style={{ fontSize: 10, color: "rgba(74,222,128,0.7)", fontWeight: 700 }}>$</span>
-                    <motion.span
-                      key={totalLift}
-                      initial={{ y: -6, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      style={{ fontSize: 34, fontWeight: 800, color: "#4ade80", letterSpacing: "-0.03em", lineHeight: 1 }}
-                    >
-                      {totalLift.toFixed(0)}
-                    </motion.span>
-                  </div>
-                  <div style={{ fontSize: 8, color: "rgba(240,232,212,0.25)", marginTop: 5 }}>
-                    vs flat static pricing
-                  </div>
-                </div>
-
-                {/* Member Conversion Potential */}
-                <div style={{
-                  background: "rgba(167,139,250,0.05)",
-                  border: "1px solid rgba(167,139,250,0.18)",
-                  borderRadius: 12, padding: "14px 16px",
-                }}>
-                  <div style={{
-                    fontSize: 7, color: "rgba(167,139,250,0.55)",
-                    letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: 8,
-                  }}>
-                    Member Potential
-                  </div>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
-                    <span style={{ fontSize: 10, color: "rgba(167,139,250,0.7)", fontWeight: 700 }}>$</span>
-                    <motion.span
-                      key={memberConversionPotential}
-                      initial={{ y: -6, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      style={{ fontSize: 34, fontWeight: 800, color: "#a78bfa", letterSpacing: "-0.03em", lineHeight: 1 }}
-                    >
-                      {memberConversionPotential}
-                    </motion.span>
-                  </div>
-                  <div style={{ fontSize: 8, color: "rgba(240,232,212,0.25)", marginTop: 5 }}>
-                    {isDynamicActive ? "surge-mode uplift / hr" : "standard uplift / hr"}
-                  </div>
-                </div>
+              <div style={{ marginBottom: 20 }}>
+                <FoundersDashboard />
               </div>
 
               {/* ── Patron Sentiment Map ── */}
