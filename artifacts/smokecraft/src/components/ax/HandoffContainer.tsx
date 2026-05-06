@@ -38,8 +38,8 @@ import {
 } from "lucide-react";
 import { useAxiom360 }   from "@/store/axiom360Store";
 import type { CraftType } from "@/store/axiom360Store";
+import { useAxiomStore }   from "@/store/axiomStore";
 import {
-  usePrestige,
   xpProgress, xpToNextRank,
   RANK_CONFIG,
 } from "@/store/prestigeStore";
@@ -588,20 +588,20 @@ function StaffPanel({
   const craft = CRAFTS.find((c) => c.id === currentCraft);
 
   const {
-    venueOccupancy,
-    isDynamicPricingActive,
-    isMemberLoggedIn,
-    revenueLift,
-    setOccupancy,
-    toggleDynamicPricing,
-  } = useAxiom360();
+    occupancy,
+    isDynamicActive,
+    isMember,
+    totalLift,
+    updateOccupancy,
+    toggleDynamic,
+  } = useAxiomStore();
 
   const occupancyColor =
-    venueOccupancy > 80 ? "#f87171" : venueOccupancy < 25 ? "#C9A84C" : "#4ade80";
+    occupancy > 80 ? "#f87171" : occupancy < 25 ? "#C9A84C" : "#4ade80";
 
   // Occupancy arc dial parameters
   const R = 30; const CIRC = 2 * Math.PI * R;
-  const arcFilled = CIRC * (venueOccupancy / 100) * (240 / 360);
+  const arcFilled = CIRC * (occupancy / 100) * (240 / 360);
 
   // ── Founder's Command View ──────────────────────────────────────────────────
   const [founderVisible, setFounderVisible] = useState(false);
@@ -622,7 +622,7 @@ function StaffPanel({
 
   // Member conversion potential scales with occupancy
   const memberConversionPotential = Math.round(
-    (venueOccupancy / 100) * (isDynamicPricingActive ? 64 : 38)
+    (occupancy / 100) * (isDynamicActive ? 64 : 38)
   );
 
   const SENTIMENT = [
@@ -736,24 +736,24 @@ function StaffPanel({
           </span>
           {/* Master toggle */}
           <button
-            onClick={toggleDynamicPricing}
+            onClick={toggleDynamic}
             style={{
               display: "flex", alignItems: "center", gap: 6,
               fontSize: 7.5, fontWeight: 700, letterSpacing: "0.16em",
               textTransform: "uppercase", cursor: "pointer", outline: "none",
-              background: isDynamicPricingActive ? "rgba(201,168,76,0.14)" : "rgba(255,255,255,0.05)",
-              border: `1px solid ${isDynamicPricingActive ? "rgba(201,168,76,0.45)" : "rgba(255,255,255,0.10)"}`,
-              color: isDynamicPricingActive ? "#C9A84C" : "rgba(240,232,212,0.3)",
+              background: isDynamicActive ? "rgba(201,168,76,0.14)" : "rgba(255,255,255,0.05)",
+              border: `1px solid ${isDynamicActive ? "rgba(201,168,76,0.45)" : "rgba(255,255,255,0.10)"}`,
+              color: isDynamicActive ? "#C9A84C" : "rgba(240,232,212,0.3)",
               padding: "3px 10px", borderRadius: 99, transition: "all 0.22s",
             }}
           >
             <div style={{
               width: 5, height: 5, borderRadius: "50%",
-              background: isDynamicPricingActive ? "#4ade80" : "rgba(255,255,255,0.18)",
-              boxShadow: isDynamicPricingActive ? "0 0 6px #4ade8088" : "none",
+              background: isDynamicActive ? "#4ade80" : "rgba(255,255,255,0.18)",
+              boxShadow: isDynamicActive ? "0 0 6px #4ade8088" : "none",
               transition: "all 0.22s",
             }} />
-            {isDynamicPricingActive ? "Engine ON" : "Engine OFF"}
+            {isDynamicActive ? "Engine ON" : "Engine OFF"}
           </button>
         </div>
 
@@ -781,7 +781,7 @@ function StaffPanel({
                 fill="#F0E8D4" fontSize="13" fontWeight="700"
                 style={{ fontFamily: "'Inter', system-ui" }}
               >
-                {venueOccupancy}%
+                {occupancy}%
               </text>
             </svg>
             <span style={{ fontSize: 7, color: "rgba(240,232,212,0.28)", letterSpacing: "0.18em", textTransform: "uppercase", marginTop: -4 }}>
@@ -789,8 +789,8 @@ function StaffPanel({
             </span>
             {/* Occupancy slider */}
             <input
-              type="range" min={0} max={100} value={venueOccupancy}
-              onChange={(e) => setOccupancy(Number(e.target.value))}
+              type="range" min={0} max={100} value={occupancy}
+              onChange={(e) => updateOccupancy(Number(e.target.value))}
               style={{ width: 68, marginTop: 4, accentColor: occupancyColor, cursor: "pointer" }}
             />
           </div>
@@ -805,7 +805,7 @@ function StaffPanel({
               <div style={{ display: "flex", alignItems: "baseline", gap: 3 }}>
                 <span style={{ fontSize: 7, color: "#4ade8088", fontWeight: 400 }}>$</span>
                 <span style={{ fontSize: 20, fontWeight: 700, color: "#4ade80", letterSpacing: "-0.02em", lineHeight: 1 }}>
-                  {revenueLift.toFixed(0)}
+                  {totalLift.toFixed(0)}
                 </span>
                 <span style={{ fontSize: 7.5, color: "rgba(74,222,128,0.5)", marginLeft: 2 }}>
                   vs static
@@ -818,14 +818,14 @@ function StaffPanel({
               <div style={{ fontSize: 7, color: "rgba(240,232,212,0.32)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 2 }}>
                 Member Conversion
               </div>
-              {isMemberLoggedIn ? (
+              {isMember ? (
                 <div style={{ fontSize: 10, fontWeight: 700, color: "#4ade80", letterSpacing: "0.06em" }}>
                   ✓ Member Active
                 </div>
               ) : (
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: "#a78bfa", letterSpacing: "-0.01em" }}>
-                    ${(venueOccupancy > 80 ? 28 * 0.12 : 0).toFixed(0)} avg savings/session
+                    ${(occupancy > 80 ? 28 * 0.12 : 0).toFixed(0)} avg savings/session
                   </div>
                   <div style={{ fontSize: 7.5, color: "rgba(167,139,250,0.45)", marginTop: 1 }}>
                     Non-member sessions paying surge
@@ -838,8 +838,8 @@ function StaffPanel({
 
         {/* State label */}
         <div style={{ marginTop: 8, fontSize: 7.5, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase",
-          color: venueOccupancy > 80 ? "#f87171" : venueOccupancy < 25 ? "#C9A84C" : "rgba(240,232,212,0.25)" }}>
-          {venueOccupancy > 80 ? "▲ JUMPING — 12% Surge Active" : venueOccupancy < 25 ? "▼ SLOW — 15% Volume Incentive Active" : "● Normal Demand"}
+          color: occupancy > 80 ? "#f87171" : occupancy < 25 ? "#C9A84C" : "rgba(240,232,212,0.25)" }}>
+          {occupancy > 80 ? "▲ JUMPING — 12% Surge Active" : occupancy < 25 ? "▼ SLOW — 15% Volume Incentive Active" : "● Normal Demand"}
         </div>
       </div>
 
@@ -971,12 +971,12 @@ function StaffPanel({
                   <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
                     <span style={{ fontSize: 10, color: "rgba(74,222,128,0.7)", fontWeight: 700 }}>$</span>
                     <motion.span
-                      key={revenueLift}
+                      key={totalLift}
                       initial={{ y: -6, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       style={{ fontSize: 34, fontWeight: 800, color: "#4ade80", letterSpacing: "-0.03em", lineHeight: 1 }}
                     >
-                      {revenueLift.toFixed(0)}
+                      {totalLift.toFixed(0)}
                     </motion.span>
                   </div>
                   <div style={{ fontSize: 8, color: "rgba(240,232,212,0.25)", marginTop: 5 }}>
@@ -1008,7 +1008,7 @@ function StaffPanel({
                     </motion.span>
                   </div>
                   <div style={{ fontSize: 8, color: "rgba(240,232,212,0.25)", marginTop: 5 }}>
-                    {isDynamicPricingActive ? "surge-mode uplift / hr" : "standard uplift / hr"}
+                    {isDynamicActive ? "surge-mode uplift / hr" : "standard uplift / hr"}
                   </div>
                 </div>
               </div>
@@ -1113,15 +1113,13 @@ function PatronView({
   const [rankUpLabel,   setRankUpLabel]      = useState("");
 
   const {
-    venueOccupancy,
-    isDynamicPricingActive,
-    isMemberLoggedIn,
-    loginMember,
-    logoutMember,
-    addRevenueLift,
-  } = useAxiom360();
-
-  const { xp, rank, addXP } = usePrestige();
+    occupancy,
+    isDynamicActive,
+    isMember,
+    toggleMember,
+    processSale,
+    xp, rank, addXP,
+  } = useAxiomStore();
   const prevRankRef = useRef(rank);
 
   // Detect rank-up and trigger the toast
@@ -1148,10 +1146,10 @@ function PatronView({
     () => Object.fromEntries(
       CRAFTS.map((c) => [
         c.id,
-        computePrice(c.id, venueOccupancy, isDynamicPricingActive, isMemberLoggedIn),
+        computePrice(c.id, occupancy, isDynamicActive, isMember),
       ]),
     ),
-    [venueOccupancy, isDynamicPricingActive, isMemberLoggedIn],
+    [occupancy, isDynamicActive, isMember],
   ) as Record<string, PriceInfo>;
 
   // Session stimulation — fires after 40 minutes of uninterrupted patron time
@@ -1187,9 +1185,9 @@ function PatronView({
     playClick();
     addXP(50);
     // Accumulate surge lift whenever a patron enters the experience during peak
-    if (isDynamicPricingActive && !isMemberLoggedIn && venueOccupancy > 80) {
+    if (isDynamicActive && !isMember && occupancy > 80) {
       const base = CRAFT_BASE_PRICE[craft.id] ?? 20;
-      addRevenueLift(+(base * 0.12).toFixed(2));
+      processSale(base, +(base * 1.12).toFixed(2));
     }
     setTimeout(() => setPortal({ route: craft.route, color: craft.color }), 320);
   }
@@ -1379,7 +1377,7 @@ function PatronView({
             craft={craft}
             idx={i}
             onTap={() => handleCraftTap(craft)}
-            priceInfo={craftPrices[craft.id] ?? computePrice(craft.id, venueOccupancy, isDynamicPricingActive, isMemberLoggedIn)}
+            priceInfo={craftPrices[craft.id] ?? computePrice(craft.id, occupancy, isDynamicActive, isMember)}
           />
         ))}
       </div>
@@ -1454,21 +1452,21 @@ function PatronView({
 
         {/* Member Access toggle */}
         <button
-          onClick={() => { isMemberLoggedIn ? logoutMember() : loginMember(); setBurstKey((k) => k + 1); }}
+          onClick={() => { toggleMember(); setBurstKey((k) => k + 1); }}
           style={{
             marginLeft: "auto",
             display: "flex", alignItems: "center", gap: 5,
             fontSize: 7.5, fontWeight: 700, letterSpacing: "0.16em",
             textTransform: "uppercase", cursor: "pointer", outline: "none",
-            background: isMemberLoggedIn ? "rgba(74,222,128,0.12)" : "rgba(255,255,255,0.05)",
-            border: `1px solid ${isMemberLoggedIn ? "rgba(74,222,128,0.45)" : "rgba(255,255,255,0.12)"}`,
-            color: isMemberLoggedIn ? "#4ade80" : "rgba(240,232,212,0.32)",
+            background: isMember ? "rgba(74,222,128,0.12)" : "rgba(255,255,255,0.05)",
+            border: `1px solid ${isMember ? "rgba(74,222,128,0.45)" : "rgba(255,255,255,0.12)"}`,
+            color: isMember ? "#4ade80" : "rgba(240,232,212,0.32)",
             padding: "3px 10px", borderRadius: 99,
             transition: "all 0.28s ease",
-            boxShadow: isMemberLoggedIn ? "0 0 8px rgba(74,222,128,0.2)" : "none",
+            boxShadow: isMember ? "0 0 8px rgba(74,222,128,0.2)" : "none",
           }}
         >
-          {isMemberLoggedIn ? (
+          {isMember ? (
             <>
               <span style={{ fontSize: 8 }}>⬤</span>
               Price Locked
