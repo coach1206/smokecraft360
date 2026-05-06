@@ -22,6 +22,17 @@ const router: IRouter = Router();
 const craftEnum = z.enum(CRAFT_TYPES);
 const phaseEnum = z.enum(CRAFT_PHASES);
 
+// Shared score validator: rejects NaN, Infinity, and out-of-range values
+// explicitly so corrupt payloads are caught at the route boundary before
+// they can reach the DB or the tournament leaderboard.
+const scoreField = z
+  .number()
+  .refine((v) => !Number.isNaN(v), { message: "Score must not be NaN" })
+  .refine((v) => Number.isFinite(v), { message: "Score must be finite" })
+  .min(0)
+  .max(10)
+  .optional();
+
 const createSchema = z.object({
   craft:          craftEnum,
   venueId:        z.string().uuid().optional(),
@@ -30,7 +41,7 @@ const createSchema = z.object({
   styleChoice:    z.string().max(120).optional(),
   moodChoice:     z.string().max(120).optional(),
   profileAnswers: z.record(z.unknown()).optional(),
-  score:          z.number().finite().min(0).max(10).optional(),
+  score:          scoreField,
 });
 
 const upsertSchema = z.object({
@@ -39,7 +50,7 @@ const upsertSchema = z.object({
   styleChoice:    z.string().max(120).optional(),
   moodChoice:     z.string().max(120).optional(),
   profileAnswers: z.record(z.unknown()).optional(),
-  score:          z.number().finite().min(0).max(10).optional(),
+  score:          scoreField,
 });
 
 // ── GET /api/craft-builds ──────────────────────────────────────────────────────

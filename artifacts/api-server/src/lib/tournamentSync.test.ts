@@ -209,7 +209,7 @@ describe("getUserBestCraftScore", () => {
     expect(score).toBe(0);
   });
 
-  it("returns 0 when the best value is non-numeric (corrupt data)", async () => {
+  it("returns 0 when the best value is a non-numeric string (corrupt data)", async () => {
     mocks.selectQueue.push([{ best: "not-a-number" }]);
     const score = await getUserBestCraftScore(
       "user-1",
@@ -219,6 +219,32 @@ describe("getUserBestCraftScore", () => {
     );
     // The NaN guard ensures a corrupt DB value never propagates as NaN;
     // it is safely coerced to 0 so no score is awarded for a bad row.
+    expect(score).toBe(0);
+  });
+
+  it("returns 0 when the best value is numeric NaN (e.g. from a CAST failure)", async () => {
+    mocks.selectQueue.push([{ best: NaN }]);
+    const score = await getUserBestCraftScore(
+      "user-1",
+      "smoke",
+      new Date("2025-01-01"),
+      new Date("2025-12-31"),
+    );
+    // NaN * 100 = NaN → Math.round(NaN) = NaN → Number.isNaN guard → 0
+    expect(score).toBe(0);
+  });
+
+  it("returns 0 when the best value is Infinity (overflow guard)", async () => {
+    mocks.selectQueue.push([{ best: Infinity }]);
+    const score = await getUserBestCraftScore(
+      "user-1",
+      "smoke",
+      new Date("2025-01-01"),
+      new Date("2025-12-31"),
+    );
+    // Math.round(Infinity * 100) = Infinity → Number.isFinite(Infinity) is false → 0.
+    // The DB check constraint prevents Infinity from being written, but this guard
+    // ensures corrupt values can never leak into the leaderboard even at runtime.
     expect(score).toBe(0);
   });
 });

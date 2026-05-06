@@ -55,7 +55,7 @@ export async function getUserBestCraftScore(
     .where(and(...conditions));
 
   const scaled = Math.round(Number(row?.best ?? 0) * 100); // scale 0–5 float → 0–500 int pts
-  return Number.isNaN(scaled) ? 0 : scaled;
+  return Number.isFinite(scaled) ? scaled : 0;
 }
 
 /**
