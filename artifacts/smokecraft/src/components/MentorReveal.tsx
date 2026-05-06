@@ -22,6 +22,8 @@ interface MentorRevealProps {
   guestName:   string;
   isReturning: boolean;
   onBegin:     () => void;
+  /** Memory-aware opening line for returning guests (computed from flavorHistory). */
+  memoryLine?: string;
 }
 
 // ── Craft accent colours ──────────────────────────────────────────────────────
@@ -77,7 +79,7 @@ function MentorAvatar({ name, accent }: { name: string; accent: string }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function MentorReveal({ mentor, guestName, isReturning, onBegin }: MentorRevealProps) {
+export default function MentorReveal({ mentor, guestName, isReturning, onBegin, memoryLine }: MentorRevealProps) {
   const accent     = CRAFT_ACCENT[mentor.craftType] ?? "#d4af37";
   const [ready, setReady] = useState(false);
 
@@ -185,7 +187,26 @@ export default function MentorReveal({ mentor, guestName, isReturning, onBegin }
         {mentor.philosophy}
       </motion.p>
 
-      {/* Greeting */}
+      {/* Memory line label (returning guests only) */}
+      {isReturning && memoryLine && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.92 }}
+          style={{
+            fontFamily:    "'Inter', sans-serif",
+            fontSize:      "0.62rem",
+            letterSpacing: "0.16em",
+            textTransform: "uppercase",
+            color:         `${accent}45`,
+            marginBottom:  10,
+          }}
+        >
+          What I remember
+        </motion.p>
+      )}
+
+      {/* Greeting / Memory line */}
       <motion.blockquote
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -203,7 +224,7 @@ export default function MentorReveal({ mentor, guestName, isReturning, onBegin }
           marginBottom:  44,
         }}
       >
-        "{mentor.greeting}"
+        "{isReturning && memoryLine ? memoryLine : mentor.greeting}"
       </motion.blockquote>
 
       {/* Begin button */}

@@ -22,6 +22,9 @@ import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
 import { useOrchestratorSafe } from "@/contexts/OrchestratorContext";
 import { SessionReturnBanner } from "@/components/CinematicTransition";
 import { CraftEntryChamber } from "@/components/CraftEntryChamber";
+import MentorCommentary from "@/components/MentorCommentary";
+import { useGuestProfile } from "@/contexts/GuestProfileContext";
+import { generateMentorLine, generateWhyThisWorks } from "@/lib/mentorIntelligence";
 
 // ── Ambient particles — same visual language as CraftHub ──────────────────────
 
@@ -464,6 +467,13 @@ export default function ExperiencePage() {
   // Session bootstrap runs in background while chamber is displayed.
   const [showChamber,  setShowChamber]  = useState(true);
 
+  // ── Intelligence layer — mentor commentary on ADD swipes ─────────────────
+  const { guestProfile, mentor }     = useGuestProfile();
+  const [addedTags,   setAddedTags]   = useState<string[]>([]);
+  const [addedCount,  setAddedCount]  = useState(0);
+  const [commentary,  setCommentary]  = useState<{ line: string; whyNote: string | null } | null>(null);
+  const commentaryTimer               = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
   // Signal craft type to environment engine on mount; reset orchestrator session
   useEffect(() => {
     if (!envCtx) return;
@@ -513,11 +523,38 @@ export default function ExperiencePage() {
     setCards(prev => prev.slice(1));
     const newCount = swipeCount + 1;
     setSwipeCount(newCount);
-    setFeedback({
-      text: action === "add" ? "Added to your taste profile" : "Skipped",
-      type: action,
-    });
-    setTimeout(() => setFeedback(null), 1800);
+
+    if (action === "skip") {
+      setFeedback({ text: "Skipped", type: "skip" });
+      setTimeout(() => setFeedback(null), 1600);
+    } else {
+      // ADD — show mentor commentary instead of generic toast
+      if (mentor) {
+        const newTags      = card.tags ?? [];
+        const nextAddCount = addedCount + 1;
+        const whyNote      = addedTags.length > 0 ? generateWhyThisWorks(newTags, addedTags) : null;
+        const line = generateMentorLine({
+          mentorStyle:     mentor.style as "balanced" | "bold" | "smooth" | "aromatic",
+          mentorId:        mentor.id,
+          newTags,
+          allAddedTags:    [...addedTags, ...newTags],
+          addedCount:      nextAddCount,
+          craftType:       type,
+          guestBoldness:   guestProfile?.boldnessPreference ?? null,
+          guestAtmosphere: guestProfile?.atmospherePreference ?? null,
+          flavorHistory:   guestProfile?.flavorHistory ?? [],
+        });
+        setCommentary({ line, whyNote });
+        if (commentaryTimer.current !== undefined) clearTimeout(commentaryTimer.current);
+        commentaryTimer.current = setTimeout(() => setCommentary(null), 3600);
+        setAddedTags(prev => [...prev, ...newTags]);
+        setAddedCount(nextAddCount);
+      } else {
+        // Fallback if no mentor (anonymous)
+        setFeedback({ text: "Added to your taste profile", type: "add" });
+        setTimeout(() => setFeedback(null), 1600);
+      }
+    }
 
     // Signal environment engine
     if (envCtx && card.tags?.length) {
@@ -769,7 +806,19 @@ export default function ExperiencePage() {
         </div>{/* /fixed-size inner box */}
       </div>
 
-      {/* Feedback toast */}
+      {/* Mentor commentary — appears on each ADD swipe */}
+      <AnimatePresence>
+        {commentary && mentor && (
+          <MentorCommentary
+            mentor={mentor}
+            line={commentary.line}
+            whyNote={commentary.whyNote}
+            accentColor={theme.accent}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Feedback toast — SKIP only */}
       <AnimatePresence>
         {feedback && (
           <motion.div

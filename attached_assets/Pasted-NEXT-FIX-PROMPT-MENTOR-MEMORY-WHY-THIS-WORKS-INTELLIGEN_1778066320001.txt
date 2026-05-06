@@ -1,0 +1,264 @@
+NEXT FIX PROMPT — MENTOR MEMORY + “WHY THIS WORKS” INTELLIGENCE ENGINE
+(PHASE 2 — MAKE THE SYSTEM FEEL TRULY INTELLIGENT)
+
+The Human Foundation is now complete:
+- Enrollment works
+- Identity works
+- Returning users work
+- Mentor assignment works
+- Session persistence works
+
+NOW the next major problem is:
+
+The mentors still feel mostly static.
+
+The system remembers the user…
+but it does not yet FEEL like it remembers them intelligently.
+
+This phase fixes:
+mentor intelligence,
+blend guidance,
+craft chemistry,
+and emotional continuity.
+
+DO NOT redesign visuals.
+
+DO NOT rebuild the homepage.
+
+DO NOT change the collectible-card architecture.
+
+ONLY upgrade:
+the intelligence layer.
+
+==================================================
+CORE PROBLEM
+==================================================
+
+Right now:
+users return…
+
+…but the mentor does not yet feel:
+aware,
+adaptive,
+or experienced.
+
+The system stores memory,
+but the mentor does not USE memory intelligently enough.
+
+Users still need to feel:
+“This mentor actually knows me.”
+
+==================================================
+BUILD THE MENTOR MEMORY ENGINE
+==================================================
+
+Create:
+persistent mentor memory system.
+
+Mentors must now reference:
+- previous sessions
+- flavor history
+- atmosphere tendencies
+- blend evolution
+- experimentation patterns
+- mentor chemistry
+- previous pairings
+- behavioral drift
+
+Examples:
+“Last session you leaned heavily into darker profiles.”
+
+“You usually avoid sharper mint finishes.”
+
+“You’ve been exploring smoother lounge atmospheres lately.”
+
+“This profile is bolder than your normal sessions.”
+
+Mentors should feel:
+aware and evolving.
+
+==================================================
+BUILD THE “WHY THIS WORKS” ENGINE
+==================================================
+
+The AI must explain:
+WHY combinations work together.
+
+This is CRITICAL.
+
+The system should teach:
+craft logic naturally.
+
+Examples:
+“That cedar profile slows the sharper cocoa edge.”
+
+“The vanilla softens the room aroma and lengthens the finish.”
+
+“That darker wrapper supports stronger bourbon warmth.”
+
+“Mint cools the inhale but weakens the oak structure.”
+
+“Leather and cocoa create a deeper lingering atmosphere.”
+
+Users should feel:
+they are learning craftsmanship.
+
+NOT:
+getting random recommendations.
+
+==================================================
+BUILD LIVE BLEND CHEMISTRY
+==================================================
+
+Track:
+- Harmony
+- Warmth
+- Complexity
+- Boldness
+- Aroma
+- Finish
+- Session Length
+
+Display evolving blend intelligence LIVE.
+
+Example:
+Harmony: 82%
+Complexity: 91%
+
+Mentor Commentary:
+“You’re close to a reserve-level balance.”
+
+==================================================
+BUILD FLAVOR EVOLUTION TRACKING
+==================================================
+
+The system must detect:
+taste evolution over time.
+
+Examples:
+“You’re gradually moving toward smoother profiles.”
+
+“You’ve become more experimental over the last 4 sessions.”
+
+“Your atmosphere preference has shifted toward social energy.”
+
+This creates:
+long-term emotional continuity.
+
+==================================================
+BUILD DEVIATION DETECTION
+==================================================
+
+Detect meaningful changes.
+
+Examples:
+“Tonight’s session is brighter than your usual atmosphere.”
+
+“You normally avoid lighter finishes.”
+
+“This is a more adventurous blend than your standard profile.”
+
+This makes the system feel:
+alive and observant.
+
+==================================================
+BUILD ADAPTIVE MENTOR DIALOGUE
+==================================================
+
+Mentor dialogue must now adapt dynamically based on:
+- session history
+- user tendencies
+- atmosphere profile
+- experience level
+- regional preference
+- previous sessions
+
+The mentor should NOT repeat generic lines.
+
+==================================================
+BUILD ATMOSPHERE-AWARE GUIDANCE
+==================================================
+
+Mentors should reference:
+the emotional atmosphere being created.
+
+Examples:
+“This feels like a slower late-night session.”
+
+“That combination creates a more social lounge energy.”
+
+“You’re building something reflective tonight.”
+
+==================================================
+BUILD CONTEXTUAL PAIRING INTELLIGENCE
+==================================================
+
+The AI should understand:
+cross-craft relationships.
+
+Examples:
+- cigar + bourbon chemistry
+- beer + vape chemistry
+- atmosphere + flavor interaction
+- room aroma influence
+- social atmosphere influence
+
+The platform should feel:
+multi-sensory and interconnected.
+
+==================================================
+BUILD EDUCATIONAL MICRO-INSIGHTS
+==================================================
+
+Add tiny elegant learning moments.
+
+Topics:
+- wrapper influence
+- fermentation
+- barrel aging
+- retrohale
+- aroma layering
+- room chemistry
+- vapor cooling
+- flavor pacing
+
+Insights should feel:
+natural and conversational.
+
+NEVER:
+classroom-like.
+
+==================================================
+MENTOR BEHAVIOR RULES
+==================================================
+
+Mentors MUST:
+- speak sparingly
+- preserve silence
+- avoid over-explaining
+- guide calmly
+- feel experienced
+- occasionally challenge the user
+
+Examples:
+“You could do that… but I wouldn’t.”
+
+“That wrapper rewards patience.”
+
+==================================================
+FINAL RESULT
+==================================================
+
+After this phase:
+the system no longer simply remembers users.
+
+It UNDERSTANDS them.
+
+The mentor becomes:
+adaptive,
+aware,
+experienced,
+and emotionally intelligent.
+
+The platform finally begins feeling:
+alive.

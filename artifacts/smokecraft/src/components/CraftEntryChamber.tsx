@@ -21,13 +21,14 @@
  *   onBack   — callback to return to CraftHub
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, Zap, Compass } from "lucide-react";
 import type { CraftTheme } from "@/lib/craftThemes";
-import { useGuestProfile }  from "@/contexts/GuestProfileContext";
-import EnrollmentFlow       from "@/components/EnrollmentFlow";
-import MentorReveal         from "@/components/MentorReveal";
+import { useGuestProfile }      from "@/contexts/GuestProfileContext";
+import EnrollmentFlow            from "@/components/EnrollmentFlow";
+import MentorReveal              from "@/components/MentorReveal";
+import { generateReturnGreeting } from "@/lib/mentorIntelligence";
 
 // ── Per-craft chamber configuration ──────────────────────────────────────────
 
@@ -305,6 +306,12 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
   const accent = theme.accent;
 
   const { guestProfile, mentor, isReturning } = useGuestProfile();
+
+  // Memory-aware return greeting — computed once when profile + mentor are known
+  const memoryLine = useMemo(() => {
+    if (!isReturning || !guestProfile || !mentor) return undefined;
+    return generateReturnGreeting(guestProfile, mentor);
+  }, [isReturning, guestProfile, mentor]);
 
   // "enrollment" → "mentor" → (dismissed via onBegin)
   const [scene, setScene] = useState<"chamber" | "enrollment" | "mentor">("chamber");
@@ -647,6 +654,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             guestName={guestProfile?.firstName ?? ""}
             isReturning={isReturning}
             onBegin={handleMentorBegin}
+            memoryLine={memoryLine}
           />
         )}
       </AnimatePresence>

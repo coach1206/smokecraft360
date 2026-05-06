@@ -15,6 +15,12 @@ import { ArrowLeft, Sparkles, ShoppingBag, Star, Check, Package, AlertTriangle }
 import { getCraftTheme } from "@/lib/craftThemes";
 import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
 import { useOrchestratorSafe } from "@/contexts/OrchestratorContext";
+import { useGuestProfile } from "@/contexts/GuestProfileContext";
+import {
+  computeBlendChemistry, blendSummaryLabel,
+  detectEvolution, detectDeviation,
+  type BlendChemistry,
+} from "@/lib/mentorIntelligence";
 
 // ── Organic reveal stagger ────────────────────────────────────────────────────
 
@@ -100,6 +106,10 @@ export default function RevealPage() {
   const [ordered,   setOrdered]   = useState<Set<string>>(new Set());
   const [orderError, setOrderError] = useState<Record<string, string>>({});
   const [confirm,   setConfirm]   = useState<OrderConfirmation | null>(null);
+  const [chemistry, setChemistry] = useState<BlendChemistry | null>(null);
+  const [intelInsight, setIntelInsight] = useState<string | null>(null);
+
+  const { guestProfile, mentor } = useGuestProfile();
 
   const theme = getCraftTheme(craftType);
 
@@ -115,14 +125,31 @@ export default function RevealPage() {
     (async () => {
       try {
         const data = await apiGet(`/api/swipe-experience/session/${sessionId}/recommendations`);
-        setRecs(data.recommendations ?? []);
+        const loaded: Recommendation[] = data.recommendations ?? [];
+        setRecs(loaded);
         const cat = data.recommendations?.[0]?.item?.category;
-        if (cat === "cigar")   setCraftType("smoke");
-        else if (cat === "alcohol") setCraftType("pour");
-        else if (cat === "beer")    setCraftType("brew");
+        const ct = cat === "cigar" ? "smoke"
+                 : cat === "alcohol" ? "pour"
+                 : cat === "beer"    ? "brew"
+                 : "smoke";
+        setCraftType(ct);
+
+        // Compute blend intelligence from recommendation tags
+        const allTags = loaded.flatMap(r => r.item.tags);
+        if (allTags.length > 0) {
+          const chem = computeBlendChemistry(allTags, ct);
+          setChemistry(chem);
+          // Deviation / evolution insight if guest has history
+          if (guestProfile) {
+            const dev = detectDeviation(allTags, guestProfile);
+            const evo = !dev ? detectEvolution(guestProfile.flavorHistory, allTags) : null;
+            setIntelInsight(dev ?? evo);
+          }
+        }
       } catch { /* use empty */ }
       setLoading(false);
     })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
   // ── Add to order ──────────────────────────────────────────────────────────
@@ -311,6 +338,16 @@ export default function RevealPage() {
         </p>
       </motion.div>
 
+      {/* Mentor Intelligence — blend chemistry + insight */}
+      {chemistry && (
+        <MentorIntelSection
+          chemistry={chemistry}
+          mentorName={mentor?.name ?? null}
+          intelInsight={intelInsight}
+          accentColor={theme.accent}
+        />
+      )}
+
       {/* Cards */}
       <div style={{
         position: "relative", zIndex: 10,
@@ -370,6 +407,139 @@ export default function RevealPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+// ── Mentor intelligence section ───────────────────────────────────────────────
+
+interface MentorIntelProps {
+  chemistry:    BlendChemistry;
+  mentorName:   string | null;
+  intelInsight: string | null;
+  accentColor:  string;
+}
+
+function ChemMeter({ label, value, accent }: { label: string; value: number; accent: string }) {
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+        <span style={{
+          fontSize: 8, letterSpacing: "0.2em", textTransform: "uppercase" as const,
+          color: "rgba(232,224,200,0.38)", fontWeight: 600,
+        }}>{label}</span>
+        <span style={{ fontSize: 9, color: accent, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
+          {value}
+        </span>
+      </div>
+      <div style={{ height: 3, borderRadius: 2, background: "rgba(255,255,255,0.07)" }}>
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${value}%` }}
+          transition={{ duration: 0.9, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            height: "100%", borderRadius: 2,
+            background: `linear-gradient(90deg, ${accent}55, ${accent})`,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function MentorIntelSection({ chemistry, mentorName, intelInsight, accentColor }: MentorIntelProps) {
+  const label    = blendSummaryLabel(chemistry);
+  const initials = mentorName
+    ? mentorName.split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase()
+    : null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, delay: 0.38 }}
+      style={{
+        position:        "relative",
+        zIndex:          10,
+        margin:          "0 20px 16px",
+        background:      "rgba(10,7,4,0.78)",
+        border:          `1px solid ${accentColor}18`,
+        borderRadius:    16,
+        padding:         "15px 16px",
+        backdropFilter:  "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+      }}
+    >
+      {/* Header row */}
+      <div style={{
+        display: "flex", alignItems: "center",
+        justifyContent: "space-between", marginBottom: 14,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {initials && (
+            <div style={{
+              width: 26, height: 26, borderRadius: "50%", flexShrink: 0,
+              background: `${accentColor}12`,
+              border: `1px solid ${accentColor}32`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontSize: 10, color: accentColor, letterSpacing: "0.04em",
+            }}>
+              {initials}
+            </div>
+          )}
+          <span style={{
+            fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase",
+            color: `${accentColor}65`, fontWeight: 600,
+          }}>
+            Session Intelligence
+          </span>
+        </div>
+        <span style={{
+          fontSize: 10, fontWeight: 700, color: accentColor, letterSpacing: "0.06em",
+          padding: "3px 10px", borderRadius: 20,
+          background: `${accentColor}0E`,
+          border: `1px solid ${accentColor}28`,
+        }}>
+          {label}
+        </span>
+      </div>
+
+      {/* Chemistry meters */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14, marginBottom: 12 }}>
+        <ChemMeter label="Harmony"    value={chemistry.harmony}    accent={accentColor} />
+        <ChemMeter label="Warmth"     value={chemistry.warmth}     accent={accentColor} />
+        <ChemMeter label="Complexity" value={chemistry.complexity} accent={accentColor} />
+      </div>
+
+      {/* Mentor note */}
+      {chemistry.mentorNote && (
+        <p style={{
+          margin: 0, fontSize: 12,
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
+          fontStyle: "italic", fontWeight: 300, lineHeight: 1.52,
+          color: "rgba(240,232,212,0.50)",
+          borderLeft: `1.5px solid ${accentColor}22`,
+          paddingLeft: 10,
+        }}>
+          {chemistry.mentorNote}
+        </p>
+      )}
+
+      {/* Evolution / deviation insight */}
+      {intelInsight && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1 }}
+          style={{
+            margin: "9px 0 0", fontSize: 11, lineHeight: 1.55,
+            color: "rgba(240,232,212,0.28)", fontStyle: "italic",
+          }}
+        >
+          {intelInsight}
+        </motion.p>
+      )}
+    </motion.div>
   );
 }
 
