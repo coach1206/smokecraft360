@@ -1,0 +1,371 @@
+MISSING / REQUIRED
+
+The current Axiom OS admin ecosystem suffers from:
+- inconsistent visual identity
+- extremely dark low-contrast screens
+- small unreadable typography
+- no contextual environmental imagery
+- dead empty-state layouts
+- disconnected module aesthetics
+- weak emotional engagement
+- no unified OS shell
+- inconsistent spacing and hierarchy
+- placeholder-style enterprise visuals
+- lack of “premium operational intelligence” feeling
+
+The system currently behaves like:
+multiple disconnected admin dashboards.
+
+It MUST become:
+a unified cinematic operational intelligence operating system inspired by:
+- Tesla UI philosophy
+- Apple Human Interface principles
+- luxury hospitality environments
+- military-grade command systems
+- high-end lounge atmosphere
+
+This rebuild is NOT cosmetic only.
+
+This is a full visual identity and UX continuity reconstruction across ALL admin/operations modules.
+
+FAILURE PREVENTION CHECKLIST
+
+DO NOT:
+- use pure black backgrounds
+- use tiny fonts under 16px
+- leave giant dead empty spaces
+- reuse the same blurred whiskey image everywhere
+- create flat dashboard cards
+- use generic admin layouts
+- create “developer tool” energy
+- create cyberpunk hacker visuals
+- use washed out unreadable gold text
+- use placeholder empty states
+- allow modules to feel disconnected
+
+ALWAYS:
+- maintain cinematic operational continuity
+- use contextual imagery per module
+- maintain large readable typography
+- use layered charcoal / espresso / smoked-glass palettes
+- preserve emotional warmth
+- create visible depth
+- maintain operational clarity
+- make every screen instantly understandable
+- create one unified OS shell
+- maintain Tesla/Apple premium minimalism
+- ensure readability for 45+ year old users in dim lounges
+
+MASTER OBJECTIVE
+
+Transform the ENTIRE Axiom OS operational ecosystem into a premium cinematic command environment where every module feels alive, intelligent, luxurious, and emotionally immersive.
+
+The system must feel like:
+“Apple designed a hospitality intelligence operating system.”
+
+GLOBAL OS SHELL REQUIREMENTS
+
+Create ONE persistent visual operating environment shared across all modules:
+
+GLOBAL DESIGN DNA:
+- matte charcoal base layers
+- espresso gradients
+- smoked glass cards
+- warm gold accent lighting
+- subtle atmospheric fog depth
+- adaptive cinematic lighting
+- premium blur layering
+- OLED-inspired contrast
+- ambient environmental motion
+- soft reflections
+- realistic shadow depth
+- animated glow pulses
+- subtle particle movement
+- premium motion transitions
+- floating interface architecture
+
+TYPOGRAPHY SYSTEM:
+- minimum 16px body text
+- minimum 20px section headers
+- 32–48px hero headers
+- semibold operational labels
+- increased spacing between sections
+- stronger visual hierarchy
+- luxury serif headers where appropriate
+- clean Apple-style sans serif operational text
+
+ANIMATION RULES:
+- smooth Tesla-style transitions
+- no harsh pops
+- fade-glide movement
+- intelligent easing curves
+- operational pulse animations
+- ambient breathing effects
+- live system glow reactions
+- subtle motion even during idle states
+
+UNIVERSAL PAGE STRUCTURE
+
+Every module page must contain:
+
+1. HERO ENVIRONMENT
+2. ENGINE STATUS STRIP
+3. PRIMARY VISUAL OBJECT
+4. LIVE OPERATIONAL CONTENT
+5. AI INSIGHT AREA
+6. ACTIVITY FEED
+7. SYSTEM STATUS FOOTER
+
+NO PAGE SHOULD EVER FEEL EMPTY.
+
+EMPTY STATE RULES
+
+Replace all dead empty states like:
+- “No devices”
+- “No campaigns”
+- “No arrivals”
+
+WITH:
+- simulated operational previews
+- ambient AI suggestions
+- contextual illustrations
+- animated placeholders
+- recommendation prompts
+- visual operational states
+- atmospheric movement
+
+The OS must always feel alive.
+
+MODULE-SPECIFIC VISUAL IDENTITIES
+
+PRESENCE ENGINE
+Theme:
+Luxury hospitality arrival intelligence
+
+Add:
+- valet arrival imagery
+- guest silhouette animations
+- concierge visuals
+- ambient lounge entrance scenes
+- reservation previews
+- warm hospitality lighting
+- arrival pulse animations
+- profile card previews
+- emotional greeting atmosphere
+
+Should feel like:
+high-end hotel concierge intelligence.
+
+INTELLIGENCE ENGINE
+Theme:
+AI venue awareness system
+
+Add:
+- command center visuals
+- predictive AI overlays
+- live venue monitoring graphics
+- operational pulse indicators
+- AI event reactions
+- dynamic recommendation streams
+- intelligent motion graphics
+
+Should feel like:
+a live AI observing venue behavior in real time.
+
+REVENUE ENGINE
+Theme:
+Hospitality monetization command center
+
+Add:
+- live social lounge imagery
+- whiskey pours
+- premium event visuals
+- revenue pulse graphs
+- emotional engagement tracking
+- reservation energy indicators
+- dynamic profit visualizations
+
+Should feel like:
+luxury hospitality growth intelligence.
+
+CAMPAIGNS
+Theme:
+Luxury marketing activation center
+
+Add:
+- active campaign reels
+- event imagery
+- social engagement previews
+- campaign performance visuals
+- promotional environment photography
+- conversion prediction cards
+- marketing momentum indicators
+
+Should feel like:
+an executive hospitality marketing war room.
+
+ANALYTICS
+Theme:
+Premium operational analytics
+
+Replace sterile white cards with:
+- warm matte glass
+- elegant chart systems
+- cinematic data visualization
+- hospitality overlays
+- depth layering
+- premium graph motion
+- AI business insight cards
+
+Should feel:
+executive and intelligent, not generic SaaS.
+
+VENDORS & RESTOCK
+Theme:
+Luxury supply network
+
+Add:
+- cigar crate imagery
+- whiskey distribution visuals
+- supplier shipment previews
+- premium warehouse atmosphere
+- logistics intelligence overlays
+- distributor branding areas
+- inventory movement indicators
+
+Should feel:
+premium supplier ecosystem.
+
+DEVICE CONTROL
+Theme:
+Fleet management intelligence
+
+Add:
+- realistic kiosk renders
+- POS terminal visuals
+- tablet fleet previews
+- live device map
+- connectivity pulse indicators
+- remote sync visuals
+- floor deployment previews
+
+Should feel:
+Tesla fleet management for hospitality.
+
+STAFF MANAGEMENT
+Theme:
+Premium hospitality team operations
+
+Add:
+- staff profile visuals
+- bartender/tobacconist imagery
+- live shift cards
+- performance snapshots
+- hospitality role hierarchy
+- team engagement indicators
+
+Should feel:
+premium hospitality workforce intelligence.
+
+GOVERNANCE
+Theme:
+Executive security vault
+
+Add:
+- command vault visuals
+- layered authorization UI
+- security status animations
+- audit timeline visuals
+- executive protection atmosphere
+- glass security overlays
+- operational lock systems
+
+Should feel:
+Apple + CIA command vault.
+
+ENVIRONMENTAL REACTION ENGINE
+Theme:
+Atmospheric intelligence
+
+Enhance:
+- reactive environmental lighting
+- scene transition visuals
+- mood state previews
+- environmental energy animations
+- venue atmosphere simulation
+- adaptive lounge visuals
+
+Should feel:
+the venue itself is alive.
+
+ENTERPRISE INTELLIGENCE
+Theme:
+Global operational intelligence
+
+Add:
+- global venue map
+- predictive analytics overlays
+- multi-location operational feed
+- AI intelligence command wall
+- venue health monitoring
+- city pulse systems
+- executive operational forecasting
+
+Should feel:
+Jarvis for hospitality.
+
+CENTRAL COMMAND
+Theme:
+Mission control
+
+Add:
+- OTA deployment visuals
+- live hardware activity
+- operational sync feeds
+- command execution animations
+- deployment topology maps
+- system fleet intelligence
+- live infrastructure overview
+
+Should feel:
+NASA mission control meets Apple.
+
+VISUAL CONTINUITY REQUIREMENTS
+
+Every module MUST:
+- feel connected to the same OS
+- maintain same motion language
+- maintain same typography system
+- maintain same spacing system
+- maintain same lighting philosophy
+- maintain same premium hardware-inspired aesthetic
+
+No module should feel:
+unfinished
+placeholder
+empty
+generic
+developer-built
+or disconnected.
+
+FINAL EXPERIENCE GOAL
+
+The moment someone sees Axiom OS they should immediately think:
+
+“This is premium.”
+“This feels alive.”
+“This feels intelligent.”
+“This feels expensive.”
+“This feels futuristic.”
+“This does not look like normal POS software.”
+“This feels like the future of hospitality.”
+
+The platform must emotionally communicate:
+control
+luxury
+intelligence
+prediction
+warmth
+prestige
+simplicity
+and operational power.
