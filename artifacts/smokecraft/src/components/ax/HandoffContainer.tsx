@@ -47,7 +47,9 @@ import {
   playClick, playClink,
   setAudioEnabled, getAudioEnabled,
 } from "@/lib/audioEngine";
-import { Pulse }          from "./Pulse";
+import { vibrate, HAPTIC }  from "@/lib/haptics";
+import { useTranslation }   from "react-i18next";
+import { Pulse }            from "./Pulse";
 import {
   SMOKE_SCENES, POUR_SCENES, BREW_SCENES, VAPE_SCENES,
 } from "@/data/craftScenes";
@@ -305,6 +307,14 @@ function CraftCard({
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
 
+  // Haptic feedback on price tier change (surge ↑ / discount ↓ flip)
+  const prevPriceRef = useRef(priceInfo.price);
+  useEffect(() => {
+    if (priceInfo.price === prevPriceRef.current) return;
+    prevPriceRef.current = priceInfo.price;
+    vibrate(HAPTIC.tap);
+  }, [priceInfo.price]);
+
   // Stagger each card's rotation offset so they never all flip together
   const rotationOffset = idx * 2800;
   const currentImage   = useSceneRotation(craft.id, rotationOffset);
@@ -501,6 +511,37 @@ function CraftCard({
   );
 }
 
+// ── Language toggle (DR / EN) ─────────────────────────────────────────────────
+// One-tap switch between English and Dominican Spanish.
+// Reads and writes through i18next so all translatable strings update live.
+// Positioned in the Staff Panel header so it is immediately accessible when
+// staff enters the dashboard — critical for DR resort deployments.
+
+function LangToggle() {
+  const { i18n } = useTranslation();
+  const isES = i18n.language?.startsWith("es");
+
+  return (
+    <button
+      onClick={() => i18n.changeLanguage(isES ? "en" : "es")}
+      title={isES ? "Switch to English" : "Cambiar a Español (DR)"}
+      style={{
+        display: "flex", alignItems: "center", gap: 5,
+        fontSize: 8, fontWeight: 700, letterSpacing: "0.14em",
+        textTransform: "uppercase", cursor: "pointer", outline: "none",
+        background:  isES ? "rgba(74,222,128,0.08)"   : "rgba(255,255,255,0.04)",
+        border:      isES ? "1px solid rgba(74,222,128,0.28)" : "1px solid rgba(255,255,255,0.10)",
+        color:       isES ? "#4ade80" : "rgba(240,232,212,0.38)",
+        padding: "3px 10px", borderRadius: 99,
+        transition: "all 0.2s ease",
+        flexShrink: 0,
+      }}
+    >
+      {isES ? "🇩🇴\u00A0ES" : "🇺🇸\u00A0EN"}
+    </button>
+  );
+}
+
 // ── Audio toggle ──────────────────────────────────────────────────────────────
 // Self-contained component so it can mount independently in the staff footer.
 // Updates the module-level audioEngine flag; no prop drilling required.
@@ -608,7 +649,7 @@ function StaffPanel({
       <motion.div
         initial={{ x: "-120%" }}
         animate={{ x: "220%" }}
-        transition={{ duration: 0.58, ease: "easeOut", delay: 0.08 }}
+        transition={{ duration: 0.72, ease: "easeOut", delay: 0.28 }}
         className="absolute inset-y-0 w-1/2 pointer-events-none z-10"
         style={{
           background:
@@ -627,12 +668,15 @@ function StaffPanel({
         className="relative z-10 flex-shrink-0 px-7 pt-7 pb-5"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,0,0,0.22)" }}
       >
-        <div
-          className="flex items-center gap-2 mb-3 uppercase tracking-[0.35em]"
-          style={{ fontSize: 8, color: "rgba(240,232,212,0.38)" }}
-        >
-          <Shield size={9} color="rgba(201,168,76,0.5)" />
-          Staff Override Active
+        <div className="flex items-center justify-between mb-3">
+          <div
+            className="flex items-center gap-2 uppercase tracking-[0.35em]"
+            style={{ fontSize: 8, color: "rgba(240,232,212,0.38)" }}
+          >
+            <Shield size={9} color="rgba(201,168,76,0.5)" />
+            Staff Override Active
+          </div>
+          <LangToggle />
         </div>
         <div
           className="font-bold leading-tight"
@@ -647,6 +691,7 @@ function StaffPanel({
             color: "#C9A84C",
             letterSpacing: "0.05em",
             cursor: "default",
+            filter: "drop-shadow(0 0 6px rgba(201,168,76,0.28)) drop-shadow(0 0 2px rgba(201,168,76,0.14))",
           }}
         >
           Staff Dashboard
@@ -1086,6 +1131,7 @@ function PatronView({
     setRankUpLabel(rank);
     setRankUpVisible(true);
     playClink();
+    vibrate(HAPTIC.rankUp);
     const id = setTimeout(() => setRankUpVisible(false), 3800);
     return () => clearTimeout(id);
   }, [rank]);
@@ -1588,6 +1634,7 @@ export function HandoffContainer() {
     holdTimerRef.current = setTimeout(() => {
       holdTimerRef.current = null;
       if (activeMode === "staff") { setMode("patron"); return; }
+      vibrate(HAPTIC.handoff);
       setFlashing(true);
       setTimeout(() => { setFlashing(false); setMode("staff"); }, FLASH_MS);
     }, HOLD_MS);

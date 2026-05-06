@@ -674,23 +674,52 @@
   /* ── AXIOM 360 Hardware-First Utilities ─────────────────────────────────── */
 
   /**
-   * card-recessed — pressed-into-metal hardware look.
-   * Inner highlight at top (simulates bevel) + deep outer shadow.
+   * card-recessed — pressed-into-metal / carved-into-tablet look.
+   *
+   * Layer order (back → front):
+   *   1. Outer drop shadow — lifts card surface above screen plane
+   *   2. Hairline amber ring — sub-pixel warm halo at card edge
+   *   3. Deep inner darkness — simulates the carved cavity
+   *   4. Top bevel highlight — catches the virtual light source above
+   *   5. Bottom groove — crisps the lower carved edge
    */
   .card-recessed {
     box-shadow:
-      inset 0 2px 4px rgba(255,255,255,0.05),
-      inset 0 -1px 0   rgba(0,0,0,0.6),
-      0 6px 28px        rgba(0,0,0,0.55),
-      0 1px 0           rgba(255,255,255,0.02);
+      0 8px 32px         rgba(0,0,0,0.62),
+      0 0 0 0.5px        rgba(201,168,76,0.07),
+      inset 0 0 28px     rgba(0,0,0,0.52),
+      inset 0 2px 5px    rgba(255,255,255,0.055),
+      inset 0 -1px 0     rgba(0,0,0,0.65),
+      0 1px 0            rgba(255,255,255,0.02);
   }
 
   /** btn-recessed — deeper inset for interactive buttons */
   .btn-recessed {
     box-shadow:
       inset 0 3px 8px  rgba(0,0,0,0.85),
+      inset 0 0 16px   rgba(0,0,0,0.4),
       inset 0 1px 0    rgba(255,255,255,0.04),
       0 1px 0          rgba(255,255,255,0.03);
+  }
+
+  /**
+   * ax-amber-glow — neon-gauge radiance for Axiom Amber (#C9A84C) elements.
+   * Apply to labels, icons, and display text that use the warm gold colour
+   * to make them appear back-lit like high-end dashboard instruments.
+   */
+  .ax-amber-glow {
+    filter: drop-shadow(0 0 5px rgba(201,168,76,0.32))
+            drop-shadow(0 0 2px rgba(201,168,76,0.18));
+  }
+
+  /**
+   * ax-amber-text — combines the amber colour token with the radiance glow.
+   * Shortcut so you don't need both a color style and the class.
+   */
+  .ax-amber-text {
+    color: #C9A84C;
+    filter: drop-shadow(0 0 5px rgba(201,168,76,0.32))
+            drop-shadow(0 0 2px rgba(201,168,76,0.18));
   }
 
   /** brushed-graphite — horizontal micro-line texture (brushed metal) */
