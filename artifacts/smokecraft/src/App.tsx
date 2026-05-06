@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster }         from "@/components/ui/toaster";
@@ -53,8 +53,7 @@ import { CommandCenterProvider } from "@/contexts/CommandCenterContext";
 import { DeviceRouterProvider }  from "@/components/DeviceRouter";
 import OnboardWizard      from "@/pages/OnboardWizard";
 import DemoSimDashboard   from "@/pages/DemoSimDashboard";
-import BootIntro, { hasSeenBootIntro } from "@/components/BootIntro";
-import GlobalBackButton                from "@/components/Layout/GlobalBackButton";
+import GlobalBackButton from "@/components/Layout/GlobalBackButton";
 import InactivityGuard                 from "@/components/InactivityGuard";
 import PosAuditBridge                  from "@/components/PosAuditBridge";
 import { useSystemVersion }            from "@/hooks/useSystemVersion";
@@ -128,12 +127,6 @@ function Router() {
 }
 
 function App() {
-  /* Gate the routed app behind the boot intro per the user's onFinish
-   * pattern. Initialized synchronously from sessionStorage so a "seen"
-   * session goes straight to ready=true and never mounts BootIntro at
-   * all (no one-frame flash). Providers stay outside the gate so context
-   * state isn't torn down/remounted across the transition. */
-  const [ready, setReady] = useState<boolean>(() => hasSeenBootIntro());
   useSystemVersion();
 
   // Bootstrap kiosk auth on mount and refresh every 30 minutes
@@ -156,23 +149,20 @@ function App() {
                 <EngagementProvider>
                 <KioskModeProvider>
                 <DeviceRouterProvider>
-                  {!ready && <BootIntro onFinish={() => setReady(true)} />}
-                  {ready && (
-                    <>
-                      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                        <GlobalBackButton />
-                        <InactivityGuard />
-                        <Router />
-                      </WouterRouter>
-                      <PosAuditBridge />
-                      <PresentationOverlay />
-                      <DemoBanner />
-                      <OfflineQueueBanner />
-                      <KioskModeBanner />
-                      <LicenseGate />
-                      <Toaster />
-                    </>
-                  )}
+                  <>
+                    <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                      <GlobalBackButton />
+                      <InactivityGuard />
+                      <Router />
+                    </WouterRouter>
+                    <PosAuditBridge />
+                    <PresentationOverlay />
+                    <DemoBanner />
+                    <OfflineQueueBanner />
+                    <KioskModeBanner />
+                    <LicenseGate />
+                    <Toaster />
+                  </>
                 </DeviceRouterProvider>
                 </KioskModeProvider>
                 </EngagementProvider>
