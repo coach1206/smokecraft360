@@ -142,6 +142,17 @@
   }
 }
 
+/* TAP HINT */
+.tap-hint {
+  position: absolute;
+  bottom: 32px;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: #0b2a4a;
+  opacity: 0;
+  animation: fadeInSoft 0.8s ease 2.8s forwards;
+}
+
 /* Reduced motion — honor OS preference, snap everything to its end state
  * instantly. Premium UX rule, not in the brief but assumed for accessibility. */
 @media (prefers-reduced-motion: reduce) {

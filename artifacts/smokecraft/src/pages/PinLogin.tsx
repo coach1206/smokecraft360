@@ -118,6 +118,16 @@ export default function PinLogin() {
     }
   }, [pin, success, isLocked, failedAttempts, setCurrentUser, navigate, cc]);
 
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key >= "0" && e.key <= "9") { handleKey(e.key); return; }
+      if (e.key === "Backspace" || e.key === "Delete") { handleKey("CLR"); return; }
+      if (e.key === "Enter") { handleKey("GO"); return; }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [handleKey]);
+
   return (
     <BackgroundLayer image={getBackground("pinLogin")} blur={5} style={{
       minHeight: "100dvh",

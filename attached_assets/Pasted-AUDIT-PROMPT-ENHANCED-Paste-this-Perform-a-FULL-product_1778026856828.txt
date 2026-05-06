@@ -1,0 +1,258 @@
+AUDIT PROMPT (ENHANCED)
+
+Paste this:
+
+⸻
+
+Perform a FULL production-level audit of the current SmokeCraft 360 system.
+
+This is a STRICT audit.
+Do NOT generate new features.
+Do NOT assume anything works without proof.
+
+You must VERIFY functionality, not describe it.
+
+⸻
+
+1. CORE OBJECTIVE
+
+Return a COMPLETE breakdown of:
+
+* What is fully working (with proof)
+* What is partially built (and what is missing)
+* What is broken or disconnected
+* What is duplicated or conflicting
+* What requires a second implementation prompt
+
+⸻
+
+2. PROOF REQUIREMENT (MANDATORY)
+
+For ANY feature to be marked “working”, you must confirm:
+
+* UI exists
+* API route exists
+* API returns real data (not mock)
+* Data is stored/retrieved from database
+* UI updates from that data
+
+If ANY of these is missing → mark as PARTIAL
+
+⸻
+
+3. FRONTEND AUDIT
+
+Scan all major modules:
+
+* Craft Hub
+* Experience Engine
+* Inventory
+* Vendors
+* Rewards
+* Device Control
+* Analytics
+* Settings
+
+For EACH module:
+
+Return:
+
+* Status:
+    * ✅ FULLY WORKING
+    * ⚠️ PARTIAL
+    * ❌ BROKEN / MISSING
+* What exists (UI / components)
+* What is missing (API, logic, connection)
+* What is fake (visual only)
+
+⸻
+
+4. BACKEND AUDIT
+
+Verify ALL routes:
+
+* GET /api/experiences
+* GET /api/inventory
+* GET /api/vendors
+* GET /api/analytics
+* POST /api/session/start
+
+For EACH route:
+
+* Exists?
+* Connected to DB?
+* Returns real data?
+* Used by frontend?
+
+⸻
+
+5. DATABASE AUDIT
+
+Check these tables:
+
+* users
+* inventory
+* vendors
+* analytics
+* sessions
+
+For EACH:
+
+* Exists?
+* Has real data?
+* Used in API?
+* Used in frontend?
+
+⸻
+
+6. ROLE SYSTEM AUDIT
+
+Verify:
+
+* Role middleware exists
+* Routes are protected
+* Users have roles assigned
+
+Return:
+
+* Working / Partial / Missing
+* Where it fails
+
+⸻
+
+7. DATA FLOW TRACE (CRITICAL)
+
+Trace REAL execution:
+
+Craft Hub → Experience → Inventory → Analytics
+
+You must confirm:
+
+* Clicking a craft triggers API call
+* Inventory loads dynamically
+* Actions update analytics
+* Sessions are logged
+
+If any step fails → mark flow as BROKEN
+
+⸻
+
+8. UI SYSTEM AUDIT
+
+Check:
+
+* Are all cards consistent?
+* Any text on raw images?
+* Any unreadable screens?
+* Backgrounds overpowering UI?
+* Layout grid consistent?
+
+⸻
+
+9. DUPLICATE & CONFLICT DETECTION
+
+List ALL:
+
+* Duplicate Craft Hub implementations
+* Duplicate routes
+* Conflicting UI systems
+* Old components still active
+
+⸻
+
+10. HALF-BUILT FEATURES (CRITICAL)
+
+Identify anything that:
+
+* Has UI but no backend
+* Has backend but no UI
+* Has button but no function
+* Does not persist data
+
+⸻
+
+11. MISSING SYSTEMS
+
+Explicitly check and report:
+
+* Vendor ↔ Inventory linking
+* AI insight engine (real vs placeholder)
+* Reorder system
+* POS integration
+* Real analytics calculations
+
+⸻
+
+12. SECOND PROMPT REQUIREMENTS
+
+List everything that requires a follow-up implementation prompt.
+
+Example:
+
+* “Inventory reorder system needs backend logic”
+* “Analytics needs real aggregation queries”
+
+⸻
+
+13. FINAL OUTPUT FORMAT (STRICT)
+
+Return EXACTLY this structure:
+
+⸻
+
+✅ FULLY WORKING (PROVEN)
+
+(list)
+
+⚠️ PARTIAL (WHAT’S MISSING)
+
+(detailed list)
+
+❌ BROKEN / MISSING
+
+(list)
+
+🔁 DUPLICATES / CONFLICTS
+
+(list)
+
+🔄 DATA FLOW STATUS
+
+(Working or Broken + explanation)
+
+🎨 UI SYSTEM STATUS
+
+(consistent or inconsistent + issues)
+
+🧱 DATABASE STATUS
+
+(connected or not + issues)
+
+🔐 ROLE SYSTEM STATUS
+
+(working or not + issues)
+
+🚧 SECOND PROMPT REQUIRED
+
+(list of what needs completion)
+
+🚨 TOP 5 CRITICAL FIXES
+
+(prioritized)
+
+⸻
+
+Do NOT suggest improvements yet.
+Do NOT build anything.
+ONLY report the truth of the system.
+
+⸻
+
+🧠 WHY THIS VERSION MATTERS
+
+This one forces:
+
+* Proof-based answers
+* No assumptions
+* No fake “it’s done”
+* Clear next steps

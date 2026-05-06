@@ -27,6 +27,7 @@ export const eventTypeEnum = pgEnum("event_type", [
   "nda_viewed",
   "nda_signed",
   "nda_synced",
+  "craft_session",
 ]);
 
 export const analyticsEventsTable = pgTable("analytics_events", {

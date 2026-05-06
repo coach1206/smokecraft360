@@ -1,0 +1,19 @@
+Fix the SmokeCraft 360 system by correcting all broken data flows, persistence gaps, and missing backend connections identified in the audit. Do not redesign UI and do not add new features beyond what is required to make existing systems functional. Remove the dead routes/index.ts file entirely and ensure app.ts is the only route mount entry. Ensure database migrations can run before executing changes. First, fix the vendor to inventory relationship by adding a vendor_id column to the products table if it does not exist using ALTER TABLE products ADD COLUMN IF NOT EXISTS vendor_id TEXT, and ensure all products are linked to vendors through this field. Update the GET /api/distributors route so that it fetches all vendors and all products, then returns each vendor with a productIds array populated by matching products where product.vendor_id equals vendor.id. Ensure the frontend VendorsModule uses vendor.productIds to correctly display products under each vendor. Next, implement a real restock system by creating a purchase_orders table if it does not exist with fields id UUID primary key default gen_random_uuid(), vendor_id TEXT, product_id TEXT, quantity INT, status TEXT default ‘pending’, and created_at TIMESTAMP default now(). Add a backend endpoint POST /api/vendors/:id/restock that accepts productId and quantity, inserts a new record into purchase_orders, and returns the created order. Replace any existing frontend restock logic so that it performs a real fetch call to this endpoint instead of writing to local state. Then fix the analytics page by removing all local-only computed metrics and wiring the frontend AnalyticsModule to call GET /api/analytics using useEffect on mount, storing the response in state and rendering revenue, impressions, craft sessions, and top products from real API data. Next, ensure craft activity is written into analytics by creating a POST /api/analytics/event endpoint if it does not exist, which inserts type, value, category, and created_at into analyticsEventsTable, and update CraftFlow so that when a session completes it sends a POST request with type “craft_session”, value equal to the score, and category equal to the selected craft. After that, fix the missing session start endpoint by creating POST /api/session/start which accepts userId and type, inserts a record into sessionsTable with user_id, experience_type, and started_at, and returns the created session. Then resolve analytics routing conflicts by ensuring only one app.use(”/api/analytics”, analyticsRouter) exists and removing or refactoring any duplicate mounts such as insightsRouter or behaviorEventsRouter that share the same base path. Standardize scoring flow by keeping /api/scoring for real-time UI computation but ensuring that CraftFlow always calls /api/craft/score on completion so that builds are persisted to the database. Finally, verify that the full data flow works end-to-end: Craft Hub triggers an experience, experience loads inventory, scoring runs, results are saved, an analytics event is written, and the analytics page reflects that data. The system is only considered fixed if vendors display real linked products, restock creates a persistent purchase_orders record, analytics page displays real database data, craft sessions appear in analytics, POST /api/session/start returns a valid response without 404 errors, no duplicate analytics routers remain, and no UI relies on local-only fake data.
+
+⸻
+
+That’s the version you were asking for. One stream. No fragmentation.
+
+Now do this:
+
+Run it → test it exactly like this:
+
+* vendor shows products
+* restock creates DB record
+* craft session shows in analytics
+
+Then come back and say:
+
+👉 phase 1 complete
+
+and we move into the part where this system starts making money instead of just working.

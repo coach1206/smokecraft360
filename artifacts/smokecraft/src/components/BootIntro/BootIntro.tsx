@@ -205,6 +205,8 @@ export function BootIntro({ onFinish }: BootIntroProps = {}) {
         </div>
         <div className={styles.subline}>DIGITAL INFRASTRUCTURE STUDIO</div>
       </div>
+
+      <div className={styles["tap-hint"]}>TAP ANYWHERE TO CONTINUE</div>
     </div>
   );
 }
