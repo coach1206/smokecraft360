@@ -51,6 +51,7 @@ import VendorTouchscreen    from "@/pages/VendorTouchscreen";
 import DemoExperienceCenter from "@/pages/DemoExperienceCenter";
 import CompetitionModule   from "@/pages/CompetitionModule";
 import CraftHub            from "@/pages/CraftHub";
+import Axiom360            from "@/pages/Axiom360";
 import ExperienceControlPanel from "@/pages/ExperienceControlPanel";
 import { DemoBanner }            from "@/components/Demo/DemoBanner";
 import { OfflineQueueBanner }   from "@/components/Demo/OfflineQueueBanner";
@@ -99,7 +100,8 @@ const queryClient = new QueryClient();
 function Router() {
   return (
     <Switch>
-      <Route path="/"           component={CraftHub}         />
+      <Route path="/"           component={Axiom360}          />
+      <Route path="/craft-hub"  component={CraftHub}          />
       <Route path="/intro"      component={Intro}          />
       <Route path="/entry"      component={Entry}          />
       <Route path="/pin-login"  component={PinLogin}       />
