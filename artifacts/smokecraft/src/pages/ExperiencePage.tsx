@@ -21,6 +21,45 @@ import { CraftRealism } from "@/components/CraftRealism";
 import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
 import { useOrchestratorSafe } from "@/contexts/OrchestratorContext";
 import { SessionReturnBanner } from "@/components/CinematicTransition";
+import { CraftEntryChamber } from "@/components/CraftEntryChamber";
+
+// ── Ambient particles — same visual language as CraftHub ──────────────────────
+
+const EXP_PARTICLES = Array.from({ length: 16 }, (_, i) => ({
+  id:  i,
+  x:   Math.random() * 100,
+  y:   Math.random() * 100,
+  r:   0.8 + Math.random() * 1.8,
+  dur: 10 + Math.random() * 14,
+  del: Math.random() * 9,
+  op:  0.04 + Math.random() * 0.11,
+}));
+
+function ExpParticles({ accent }: { accent: string }) {
+  return (
+    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden", zIndex: 1 }}>
+      {EXP_PARTICLES.map(p => (
+        <motion.div
+          key={p.id}
+          style={{
+            position: "absolute",
+            left: `${p.x}%`, top: `${p.y}%`,
+            width: p.r * 2, height: p.r * 2,
+            borderRadius: "50%",
+            background: accent,
+            opacity: p.op,
+          }}
+          animate={{
+            y:       [0, -28, 8, -18, 0],
+            x:       [0, 9, -8, 13, 0],
+            opacity: [p.op, p.op * 2.2, p.op * 0.3, p.op * 1.7, p.op],
+          }}
+          transition={{ duration: p.dur, delay: p.del, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
+    </div>
+  );
+}
 
 const PREMIUM_TAGS_SET = new Set([
   "bold", "reserve", "aged", "single malt", "limited", "rare", "vintage",
@@ -337,6 +376,9 @@ export default function ExperiencePage() {
   const [feedback,     setFeedback]     = useState<{ text: string; type: "add" | "skip" } | null>(null);
   const [done,         setDone]         = useState(false);
   const [returnBanner, setReturnBanner] = useState(false);
+  // Entry chamber: shows cinematic intro before swipe discovery begins.
+  // Session bootstrap runs in background while chamber is displayed.
+  const [showChamber,  setShowChamber]  = useState(true);
 
   // Signal craft type to environment engine on mount; reset orchestrator session
   useEffect(() => {
@@ -442,32 +484,8 @@ export default function ExperiencePage() {
     navigate(`/reveal/${sessionId}`);
   }
 
-  // ── Render: Loading ───────────────────────────────────────────────────────
-
-  if (loading) {
-    return (
-      <div style={{
-        position: "fixed", inset: 0,
-        background: "#0a0806",
-        display: "flex", flexDirection: "column",
-        alignItems: "center", justifyContent: "center",
-        gap: 18,
-      }}>
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
-          style={{
-            width: 44, height: 44, borderRadius: "50%",
-            border: `3px solid ${theme.accent}25`,
-            borderTop: `3px solid ${theme.accent}`,
-          }}
-        />
-        <p style={{ color: "rgba(240,232,216,0.45)", fontSize: 14 }}>
-          Preparing your {theme.label} experience…
-        </p>
-      </div>
-    );
-  }
+  // ── Render: Entry chamber sits above everything, hides until dismissed ───────
+  // (Loading runs in background — chamber provides atmospheric buffer time)
 
   // ── Render: Main ─────────────────────────────────────────────────────────
 
@@ -493,16 +511,18 @@ export default function ExperiencePage() {
         backgroundImage: `url(${theme.bgImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        opacity: 0.10,
+        opacity: 0.12,
         filter: "blur(4px)",
         transform: "scale(1.06)",
         pointerEvents: "none",
       }} />
       <div style={{
         position: "absolute", inset: 0,
-        background: "linear-gradient(180deg, rgba(8,6,4,0.75) 0%, rgba(8,6,4,0.5) 50%, rgba(8,6,4,0.85) 100%)",
+        background: "linear-gradient(180deg, rgba(8,6,4,0.72) 0%, rgba(8,6,4,0.45) 50%, rgba(8,6,4,0.85) 100%)",
         pointerEvents: "none",
       }} />
+      {/* Ambient particles — same visual DNA as CraftHub */}
+      <ExpParticles accent={theme.accent} />
 
       {/* Header */}
       <div style={{
@@ -768,6 +788,18 @@ export default function ExperiencePage() {
         </div>
       )}
     </div>
+
+    {/* ── Entry chamber — full-screen cinematic intro, dismisses on begin ── */}
+    <AnimatePresence>
+      {showChamber && (
+        <CraftEntryChamber
+          type={type}
+          theme={theme}
+          onBegin={() => setShowChamber(false)}
+          onBack={() => navigate("/")}
+        />
+      )}
+    </AnimatePresence>
     </>
   );
 }

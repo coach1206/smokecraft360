@@ -11,9 +11,9 @@
  * Only the visual shell is rebuilt.
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
-import { motion, useAnimation } from "framer-motion";
+import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { Sparkles, Cpu, Activity } from "lucide-react";
 import { PreferenceProvider }   from "@/contexts/PreferenceContext";
 import { UserProfileProvider }  from "@/contexts/UserProfileContext";
@@ -160,8 +160,10 @@ function GlowRing({ color }: { color: string }) {
 // ── Main hub page ─────────────────────────────────────────────────────────────
 
 function CraftHubInner() {
-  const [, navigate] = useLocation();
-  const glowCtrl     = useAnimation();
+  const [, navigate]   = useLocation();
+  const glowCtrl       = useAnimation();
+  // Portal opening transition — set when a craft card is clicked
+  const [portal, setPortal] = useState<{ route: string; color: string } | null>(null);
 
   // Slow-pulse ambient center glow
   useEffect(() => {
@@ -369,7 +371,7 @@ function CraftHubInner() {
 
             <DynamicCard
               module={mod}
-              onClick={() => navigate(mod.route)}
+              onClick={() => setPortal({ route: mod.route, color: mod.color })}
             />
           </motion.div>
         ))}
@@ -404,6 +406,36 @@ function CraftHubInner() {
           OPERATIONAL · {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
         </div>
       </footer>
+
+      {/* ── Portal opening curtain — expands when a craft card is clicked ── */}
+      <AnimatePresence>
+        {portal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.52, ease: [0.4, 0, 1, 1] }}
+            onAnimationComplete={() => navigate(portal.route)}
+            style={{
+              position: "fixed", inset: 0, zIndex: 200,
+              background: "#060402",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            {/* Radial craft-color burst from center */}
+            <motion.div
+              initial={{ scale: 0.05, opacity: 0.8 }}
+              animate={{ scale: 4, opacity: 0 }}
+              transition={{ duration: 0.52, ease: "easeOut" }}
+              style={{
+                width:        280, height: 280,
+                borderRadius: "50%",
+                background:   `radial-gradient(circle, ${portal.color}45 0%, transparent 70%)`,
+                pointerEvents: "none",
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

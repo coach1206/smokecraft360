@@ -1,0 +1,496 @@
+MISSING / REQUIRED
+The frontend architecture is now MOSTLY correct, but the experience chain still breaks emotionally between:
+CraftHub Portal → SmokeCraft Experience Engine.
+Current missing systems:
+
+
+Cinematic transition layer
+
+
+SmokeCraft intro chamber
+
+
+Environmental continuity
+
+
+OS-to-experience scene expansion
+
+
+Floating black-glass discovery cards
+
+
+Guided curation motion model
+
+
+World continuity between screens
+
+
+Immersive scene handoff animations
+
+
+Premium examination interaction system
+
+
+The current issue:
+The homepage feels like:
+“Axiom OS.”
+But the second you click SmokeCraft:
+it still falls back into:
+“app behavior.”
+That disconnect must be eliminated.
+FAILURE PREVENTION CHECKLIST
+DO NOT:
+
+
+remove recommendation engine
+
+
+remove scoring
+
+
+remove session logic
+
+
+remove swipe tracking
+
+
+remove analytics
+
+
+remove weighted ranking
+
+
+remove particle engine
+
+
+remove DynamicCard system
+
+
+remove Ken Burns image engine
+
+
+remove current backend logic
+
+
+ONLY:
+rebuild the emotional transition architecture.
+Critical:
+
+
+No hard page switches
+
+
+No cream overlays
+
+
+No white card surfaces
+
+
+No Tinder-style isolation
+
+
+No abrupt fullscreen card dumps
+
+
+No disconnected visual DNA
+
+
+Everything must feel:
+continuous
+alive
+cinematic
+predictive
+premium
+calm
+immersive
+MASTER EXPERIENCE FLOW FIX PROMPT
+You are now rebuilding the emotional transition system between:
+CraftHub OS Portal
+and
+SmokeCraft Experience Engine.
+The homepage is now structurally correct.
+The remaining issue is:
+experience continuity.
+The current transition still feels like:
+clicking into another app.
+The system must instead feel like:
+descending deeper into the CraftHub intelligence ecosystem.
+==================================================
+PHASE 1 — ADD SMOKECRAFT CINEMATIC ENTRY CHAMBER
+After clicking SmokeCraft on CraftHub homepage:
+DO NOT immediately open discovery cards.
+Instead:
+transition into a dedicated cinematic intro scene.
+This becomes:
+SmokeCraft Entry Chamber.
+FULLSCREEN EXPERIENCE INTRO:
+
+
+dark luxury cigar lounge
+
+
+cinematic lighting
+
+
+drifting smoke
+
+
+floating ember particles
+
+
+warm amber reflections
+
+
+leather textures
+
+
+whiskey glass reflections
+
+
+ambient atmosphere
+
+
+subtle environmental motion
+
+
+soft depth blur
+
+
+low-motion AI overlays
+
+
+Typography:
+SMOKECRAFT 360
+Connoisseur Intelligence Engine
+Subtext:
+“Curated through atmosphere, flavor, strength, and mood.”
+Buttons:
+BEGIN EXPERIENCE
+QUICK MATCH
+EXPLORE LOUNGE
+Buttons must:
+
+
+glow softly
+
+
+use matte black glass styling
+
+
+amber edge lighting
+
+
+subtle hover pressure
+
+
+slow pulse animation
+
+
+==================================================
+PHASE 2 — FIX PAGE TRANSITION SYSTEM
+DO NOT use:
+hard route/page swaps.
+Instead:
+the SmokeCraft tile itself expands into the experience.
+Transition flow:
+
+
+tile enlarges
+
+
+surrounding cards dim softly
+
+
+camera zoom effect
+
+
+ambient particles intensify
+
+
+smoke layer increases
+
+
+environment transitions seamlessly
+
+
+then intro chamber appears
+
+
+Motion style:
+
+
+Apple-level interpolation
+
+
+Tesla smoothness
+
+
+cinematic inertia
+
+
+zero harsh cuts
+
+
+Everything must:
+GLIDE.
+==================================================
+PHASE 3 — REMOVE CREAM CARD SYSTEM
+Delete all cream/light discovery overlays.
+The experience engine must inherit:
+CraftHub visual DNA.
+Discovery cards become:
+FLOATING BLACK GLASS PANELS.
+Card styling:
+
+
+matte black glass
+
+
+amber edge glow
+
+
+smoked transparency
+
+
+deep shadowing
+
+
+OLED blacks
+
+
+subtle reflections
+
+
+warm cinematic highlights
+
+
+NO:
+
+
+cream backgrounds
+
+
+paper-card feel
+
+
+washed white overlays
+
+
+bright UI panels
+
+
+==================================================
+PHASE 4 — REBUILD DISCOVERY INTERACTION
+The interaction should NOT emotionally feel like:
+approve/reject.
+It should feel like:
+luxury guided curation.
+Replace:
+hard swipe emphasis
+With:
+
+
+slow rotational drift
+
+
+card examination feel
+
+
+layered movement
+
+
+elegant directional momentum
+
+
+subtle drag resistance
+
+
+cinematic easing
+
+
+The card should feel:
+weighted
+premium
+physical
+expensive
+NOT:
+fast social-media interaction.
+==================================================
+PHASE 5 — ENVIRONMENTAL CONTINUITY
+The homepage atmosphere must continue INTO the experience engine.
+Carry over:
+
+
+particles
+
+
+smoke
+
+
+lighting palette
+
+
+glow behavior
+
+
+ambient motion
+
+
+environmental blur
+
+
+AI pulse system
+
+
+Backgrounds should:
+remain alive behind cards.
+NO isolated flat black voids.
+==================================================
+PHASE 6 — REBUILD DISCOVERY CARD VISUALS
+Cards should prioritize:
+real premium imagery.
+Examples:
+
+
+cigars
+
+
+whiskey pairings
+
+
+lounges
+
+
+cedar boxes
+
+
+ember glow
+
+
+leather chairs
+
+
+luxury environments
+
+
+tasting scenes
+
+
+Reduce:
+text dominance.
+Increase:
+visual storytelling.
+Card overlays:
+
+
+subtle dark gradient
+
+
+amber accent glow
+
+
+premium typography
+
+
+floating metadata
+
+
+AI confidence indicators
+
+
+==================================================
+PHASE 7 — DISCOVERY FLOW RESTRUCTURE
+Correct sequence:
+CraftHub Homepage
+↓
+SmokeCraft Entry Chamber
+↓
+Mood / Flavor / Strength Discovery
+↓
+Curated Product Intelligence
+↓
+Pairings
+↓
+Venue Recommendations
+↓
+Reservation / Add to Order
+NOT:
+Homepage → giant swipe card instantly.
+==================================================
+PHASE 8 — ADD INTELLIGENCE FEEL
+The system should constantly feel:
+aware.
+Add:
+
+
+adaptive glow responses
+
+
+subtle recommendation pulses
+
+
+dynamic environmental changes
+
+
+soft audio-reactive visuals
+
+
+predictive AI indicators
+
+
+breathing interface rhythm
+
+
+The UI should feel:
+like it’s learning the user in real time.
+==================================================
+PHASE 9 — FINAL VISUAL TARGET
+The final emotional experience should feel like:
+“A luxury hospitality intelligence operating system that guides immersive premium experiences.”
+NOT:
+“a swipe app with cigar photos.”
+The user should feel:
+
+
+guided
+
+
+understood
+
+
+immersed
+
+
+relaxed
+
+
+elevated
+
+
+curious
+
+
+emotionally engaged
+
+
+Preserve all backend systems.
+Only rebuild:
+
+
+transitions
+
+
+staging
+
+
+environmental continuity
+
+
+emotional pacing
+
+
+cinematic presentation
+
+
+interaction psychology
+
