@@ -31,3 +31,7 @@ export { AxImageCard }     from "./AxImageCard";
 // ── Layout ────────────────────────────────────────────────────────────────────
 export { AxLayout }        from "./AxLayout";
 export type { AxLayoutTab } from "./AxLayout";
+
+// ── AXIOM 360 Core OS components ──────────────────────────────────────────────
+export { Pulse }            from "./Pulse";
+export { HandoffContainer } from "./HandoffContainer";
