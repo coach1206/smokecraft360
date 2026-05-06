@@ -1,0 +1,380 @@
+FINAL MASTER BUILD PROMPT
+AXIOM OS — PRE-LAUNCH CRITICAL HARDENING + REAL-WORLD READINESS PHASE
+(FINAL SECURITY + FINANCIAL + OPERATIONAL + DEPLOYMENT STABILIZATION)
+
+IMPORTANT:
+This phase is NOT:
+feature expansion.
+
+DO NOT add:
+new major systems,
+new visual ecosystems,
+or experimental modules.
+
+This phase is:
+REAL-WORLD HARDENING,
+STABILITY,
+SECURITY,
+RECOVERY,
+PERFORMANCE,
+and OPERATIONAL READINESS.
+
+The goal is:
+prepare Axiom OS for REAL VENUE DEPLOYMENT.
+
+==================================================
+PRIMARY OBJECTIVE
+==================================================
+
+Harden and stabilize the ENTIRE ecosystem before launch.
+
+Focus on:
+- reliability
+- recovery
+- security
+- financial integrity
+- operational simplicity
+- deployment safety
+- performance
+- support readiness
+
+==================================================
+PART 1 — PAYMENT + FINANCIAL HARDENING
+==================================================
+
+CRITICAL:
+All money movement must become enterprise-safe.
+
+==================================================
+VERIFY + HARDEN
+==================================================
+
+Test and validate:
+- Stripe webhooks
+- webhook signature verification
+- duplicate payment prevention
+- idempotency protection
+- payout reconciliation
+- refund logic
+- failed payment retries
+- tab closing logic
+- split-payment integrity
+- loyalty redemption integrity
+- payment rollback handling
+- dispute handling
+- Stripe Connect payouts
+- offline payment recovery
+
+==================================================
+REQUIRED SYSTEMS
+==================================================
+
+Implement:
+- financial audit logs
+- payout tracking
+- refund tracking
+- payment failure monitoring
+- failed webhook recovery queue
+- payment retry scheduler
+- transaction integrity verification
+
+==================================================
+PART 2 — SECURITY HARDENING
+==================================================
+
+Perform:
+enterprise security stabilization.
+
+==================================================
+SECURITY REQUIREMENTS
+==================================================
+
+Validate and harden:
+- RBAC enforcement
+- tenant isolation
+- hidden route protection
+- token validation
+- MFA systems
+- session expiration
+- permission escalation protection
+- API abuse protection
+- rate limiting
+- Stripe spoof prevention
+- webhook attack prevention
+- remote action validation
+- OTA deployment authorization
+- geofence abuse prevention
+
+==================================================
+SECURITY TESTING
+==================================================
+
+Run:
+- route penetration testing
+- permission spoof testing
+- tenant hopping tests
+- invalid token tests
+- brute force protection tests
+- session hijack testing
+- deployment authorization tests
+
+==================================================
+PART 3 — DEVICE + OTA FAILURE RECOVERY
+==================================================
+
+Test:
+real-world device instability.
+
+==================================================
+SIMULATE
+==================================================
+
+- kiosk disconnects
+- tablet crashes
+- internet outages
+- heartbeat failures
+- OTA deployment interruption
+- rollback failure
+- stale sync state
+- offline queue backlog
+- device recovery scenarios
+
+==================================================
+RECOVERY SYSTEMS
+==================================================
+
+Implement:
+- OTA rollback recovery
+- heartbeat recovery
+- stale session cleanup
+- failed sync recovery
+- automatic device re-registration
+- deployment retry logic
+- emergency rollback mode
+
+==================================================
+PART 4 — PERFORMANCE OPTIMIZATION
+==================================================
+
+Optimize ENTIRE ecosystem.
+
+==================================================
+PERFORMANCE TARGETS
+==================================================
+
+Maintain:
+- smooth 60fps UI
+- low GPU usage
+- low memory leaks
+- optimized websocket handling
+- efficient polling
+- low tablet CPU usage
+- fast dashboard rendering
+- overlay performance stability
+
+==================================================
+OPTIMIZE
+==================================================
+
+- particle rendering
+- overlay throttling
+- animation scaling
+- environmental effects
+- dashboard rendering
+- analytics queries
+- websocket updates
+- live feed batching
+- chart rendering
+- mobile responsiveness
+
+==================================================
+PART 5 — SIMPLIFICATION PASS
+==================================================
+
+CRITICAL:
+The system MUST feel:
+simple despite complexity.
+
+==================================================
+IMPLEMENT
+==================================================
+
+- progressive disclosure
+- smart defaults
+- AI guidance prompts
+- recommended actions
+- role simplification
+- hidden advanced controls
+- simplified employee UI
+- simplified onboarding
+- contextual explanations
+
+==================================================
+USER EXPERIENCE TEST
+==================================================
+
+Verify:
+Can a venue owner understand the system quickly WITHOUT training?
+
+==================================================
+PART 6 — LEGAL + COMPLIANCE
+==================================================
+
+Build and integrate:
+- Terms of Service
+- Privacy Policy
+- SMS consent flows
+- recurring billing authorization
+- venue agreement
+- automation authorization
+- acceptable-use policy
+- marketing consent
+- data handling disclosure
+
+==================================================
+DIGITAL SIGNATURE SYSTEM
+==================================================
+
+Support:
+tablet-based digital signing during onboarding.
+
+Store:
+- signed agreements
+- timestamps
+- IP logs
+- subscription authorization
+- operational consent
+
+==================================================
+PART 7 — BACKUP + RECOVERY INFRASTRUCTURE
+==================================================
+
+Implement:
+- automated database backups
+- deployment rollback snapshots
+- disaster recovery plans
+- environment rollback
+- OTA rollback
+- operational restore workflows
+- emergency shutdown recovery
+
+==================================================
+PART 8 — STAFF EXPERIENCE VALIDATION
+==================================================
+
+Ensure:
+employee experience remains:
+FAST,
+SIMPLE,
+and HOSPITALITY-FIRST.
+
+==================================================
+EMPLOYEE UI RULES
+==================================================
+
+Employees should ONLY see:
+- active guests
+- reservations
+- pairings
+- VIP alerts
+- fulfillment tasks
+- hospitality prompts
+
+NO enterprise complexity.
+
+==================================================
+PART 9 — REAL VENUE PILOT MODE
+==================================================
+
+Create:
+PILOT DEPLOYMENT MODE.
+
+Support:
+- single venue testing
+- limited rollout
+- sandbox OTA
+- safe automation testing
+- event simulation
+- analytics validation
+- atmosphere validation
+
+==================================================
+PILOT CHECKLIST
+==================================================
+
+Track:
+- guest engagement
+- employee confusion points
+- ordering friction
+- environment effectiveness
+- campaign effectiveness
+- payment flow quality
+- loyalty activation
+- operational bottlenecks
+
+==================================================
+PART 10 — BUSINESS OPERATIONS LAYER
+==================================================
+
+Build:
+internal operational business systems.
+
+==================================================
+INCLUDE
+==================================================
+
+- onboarding workflow tracking
+- support ticket system
+- billing management
+- venue health monitoring
+- renewal management
+- CRM workflows
+- escalation workflows
+- training workflows
+- operational notifications
+
+==================================================
+FINAL ADMIN CONTROL CENTER
+==================================================
+
+Add:
+PRE-LAUNCH READINESS PANEL.
+
+Display:
+- payment health
+- deployment health
+- device compliance
+- security alerts
+- backup status
+- webhook health
+- pilot venue readiness
+- operational risk score
+
+==================================================
+FINAL SUCCESS REQUIREMENT
+==================================================
+
+DO NOT mark the platform:
+“production ready”
+until ALL critical systems:
+- pass validation
+- pass recovery testing
+- pass financial integrity testing
+- pass security testing
+- pass operational testing
+
+==================================================
+FINAL TARGET
+==================================================
+
+VENUE OWNER FEELING:
+“This system feels stable, premium, and trustworthy.”
+
+EMPLOYEE FEELING:
+“This helps me operate smoothly.”
+
+SUPER ADMIN FEELING:
+“I can safely deploy and manage the ecosystem.”
+
+AXIOM OS FEELING:
+a hardened, enterprise-grade luxury hospitality operating ecosystem ready for real-world deployment.
