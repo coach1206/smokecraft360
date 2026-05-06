@@ -35,6 +35,7 @@ const TILES = [
   { id: "inventory", title: "Inventory", desc: "Stock control", color: "#5b8def", route: "/inventory", dataKey: "inventory" as const, image: "/images/cigar2.png" },
   { id: "rewards", title: "Rewards", desc: "Loyalty & rewards", color: "#34d399", route: "/rewards", dataKey: "rewards" as const, image: "/images/scenes/relaxed.jpg" },
   { id: "experiences", title: "Experiences", desc: "Craft engine", color: "#f59e0b", route: "/experiences", dataKey: "experiences" as const, image: "/images/cigar1.png" },
+  { id: "presence",     title: "Presence",     desc: "VIP arrival & recognition", color: "#34d399", route: "/presence",     dataKey: "campaigns" as const, image: "/images/scenes/relaxed.jpg" },
   { id: "intelligence", title: "Intelligence", desc: "Automated triggers", color: "#c9a84c", route: "/intelligence", dataKey: "campaigns" as const, image: "/images/scenes/reflective.jpg" },
   { id: "revenue", title: "Revenue Engine", desc: "Growth automation", color: "#ec4899", route: "/revenue", dataKey: "campaigns" as const, image: "/images/scenes/social.jpg" },
   { id: "campaigns", title: "Campaigns", desc: "Promotions", color: "#a855f7", route: "/campaigns", dataKey: "campaigns" as const, image: "/images/lounge-bg.jpg" },
