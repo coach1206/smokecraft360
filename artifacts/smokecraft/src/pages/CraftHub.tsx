@@ -358,8 +358,21 @@ function CraftHubInner() {
   const glowCtrl       = useAnimation();
   const { guestProfile } = useGuestProfile();
   const [showReturn, setShowReturn] = useState(false);
-  // Portal opening transition — set when a craft card is clicked
   const [portal, setPortal] = useState<{ route: string; color: string } | null>(null);
+
+  // ── Staff escape hatch — tap the time display 5× to go to /operations ───────
+  const staffTaps    = useRef(0);
+  const staffTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
+  function handleStaffTap() {
+    staffTaps.current += 1;
+    if (staffTimer.current) clearTimeout(staffTimer.current);
+    if (staffTaps.current >= 5) {
+      staffTaps.current = 0;
+      navigate("/operations");
+      return;
+    }
+    staffTimer.current = setTimeout(() => { staffTaps.current = 0; }, 2500);
+  }
 
   // Slow-pulse ambient center glow
   useEffect(() => {
@@ -652,8 +665,26 @@ function CraftHubInner() {
             </span>
           </div>
         ))}
-        <div style={{ marginLeft: "auto", fontSize: 9, color: C.dim, letterSpacing: "0.12em" }}>
-          OPERATIONAL · {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 14 }}>
+          {/* Staff link — navigates to /operations */}
+          <button
+            onClick={() => navigate("/operations")}
+            style={{
+              background: "transparent", border: "none", cursor: "pointer",
+              fontSize: 8, color: "rgba(240,232,212,0.18)", letterSpacing: "0.18em",
+              textTransform: "uppercase", padding: "4px 6px",
+              fontFamily: "inherit",
+            }}
+          >
+            STAFF
+          </button>
+          {/* Tap 5× for staff escape on kiosk screens */}
+          <div
+            onClick={handleStaffTap}
+            style={{ fontSize: 9, color: C.dim, letterSpacing: "0.12em", cursor: "default", userSelect: "none" }}
+          >
+            OPERATIONAL · {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          </div>
         </div>
       </footer>
 
