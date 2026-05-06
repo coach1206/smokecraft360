@@ -198,7 +198,7 @@ export default function CommandCenter() {
               }} />
               <div style={{
                 position: "absolute", inset: 0,
-                background: `linear-gradient(135deg, rgba(8,6,4,0.62) 0%, rgba(8,6,4,0.38) 50%, ${tile.color}22 100%)`,
+                background: `linear-gradient(135deg, rgba(8,6,4,0.38) 0%, rgba(8,6,4,0.18) 50%, ${tile.color}28 100%)`,
                 pointerEvents: "none",
               }} />
               {(tile.id === "smokecraft" || tile.id === "brewcraft" || tile.id === "pourcraft" || tile.id === "vapecraft") && (
