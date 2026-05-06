@@ -9,6 +9,13 @@
  *   on a Hardware-First canvas: brushed-graphite texture, card-recessed
  *   shadows, axiomAmber highlights, Lounge Pulse ambient cloud.
  *
+ *   Each card is a "Digital Portal": a rotating scene image fills the card
+ *   (object-cover) beneath a dark vignette overlay that keeps the labels
+ *   sharp. Scene order is determined by the weighted engine — time-of-day,
+ *   pairing signals, and venue type push the best images to the front.
+ *   Each card rotates independently with a staggered offset so they never
+ *   all change at the same moment.
+ *
  * THE SECRET HANDOFF
  *   A 3-second invisible long-press on the top-center of the screen
  *   triggers The Handoff. A SystemOverride flash plays, then the Staff
@@ -19,17 +26,11 @@
  * STAFF MODE
  *   Chrome-gradient Staff Dashboard with a 9-button recessed nav grid,
  *   last-craft memory badge, and a "Return to Patron" control.
- *
- * Usage:
- *   <HandoffContainer />
- *
- * State is managed via useAxiom360 (Zustand, localStorage-persisted)
- * so mode + craft selection survive page refreshes and device wakes.
  */
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { useLocation }                              from "wouter";
-import { motion, AnimatePresence }                  from "framer-motion";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useLocation }                                        from "wouter";
+import { motion, AnimatePresence }                            from "framer-motion";
 import {
   Settings, CreditCard, BookOpen, BarChart3,
   DollarSign, Package, Zap, Activity, Shield,
@@ -38,6 +39,79 @@ import {
 import { useAxiom360 }   from "@/store/axiom360Store";
 import type { CraftType } from "@/store/axiom360Store";
 import { Pulse }          from "./Pulse";
+import {
+  SMOKE_SCENES, POUR_SCENES, BREW_SCENES, VAPE_SCENES,
+} from "@/data/craftScenes";
+import type { CraftScene } from "@/data/craftScenes";
+import { getWeightedScenes } from "@/lib/weightedEngine";
+import type { UserProfile }  from "@/contexts/UserProfileContext";
+
+// ── Time-of-day profile ───────────────────────────────────────────────────────
+// Kiosk landing has no authenticated user; we derive a sensible scene-ranking
+// profile purely from the current hour so the imagery adapts throughout the day.
+
+function buildTimeProfile(): UserProfile {
+  const h = new Date().getHours();
+  const base = { lastOrderType: null as null, venueType: "lounge" as string, sceneBoosts: {} as Record<string,number>, history: [] as string[] };
+  // Morning 06-11 → light, social, day
+  if (h >= 6  && h < 12) return { ...base, mood: "social", intensity: "light",   setting: "day"   };
+  // Afternoon 12-17 → premium solo
+  if (h >= 12 && h < 18) return { ...base, mood: "solo",   intensity: "premium", setting: "day"   };
+  // Evening 18-22 → premium, night, strong
+  if (h >= 18 && h < 23) return { ...base, mood: "social", intensity: "premium", setting: "night" };
+  // Late night 23-05 → urban, night, solo
+  return                         { ...base, mood: "solo",   intensity: "strong",  setting: "night" };
+}
+
+// ── Scene sets per craft ──────────────────────────────────────────────────────
+
+const CRAFT_SCENES: Record<string, CraftScene[]> = {
+  smoke: SMOKE_SCENES,
+  pour:  POUR_SCENES,
+  brew:  BREW_SCENES,
+  vape:  VAPE_SCENES,
+};
+
+// ── Scene rotation hook ───────────────────────────────────────────────────────
+// Returns the currently-displayed image URL for a craft card.
+// Rotates through the weighted-ranked scenes every `intervalMs` ms.
+// `offsetMs` staggers each card so they never all flip simultaneously.
+
+const ROTATE_INTERVAL_MS = 9000;
+
+function useSceneRotation(
+  craftId:    string,
+  offsetMs:   number,
+): string | null {
+  const scenes = useMemo(() => {
+    const raw = CRAFT_SCENES[craftId] ?? [];
+    return getWeightedScenes(raw, buildTimeProfile());
+  }, [craftId]);
+
+  const [idx, setIdx] = useState(0);
+
+  // Re-pick top scene if hour boundary crosses (every 10 min is fine)
+  const profileRef = useRef(buildTimeProfile());
+  useEffect(() => {
+    const id = setInterval(() => {
+      profileRef.current = buildTimeProfile();
+    }, 600_000);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    if (scenes.length === 0) return;
+    const id = setTimeout(() => {
+      const timer = setInterval(() => {
+        setIdx(i => (i + 1) % scenes.length);
+      }, ROTATE_INTERVAL_MS);
+      return () => clearInterval(timer);
+    }, offsetMs);
+    return () => clearTimeout(id);
+  }, [scenes.length, offsetMs]);
+
+  return scenes[idx]?.image ?? null;
+}
 
 // ── Craft definitions ─────────────────────────────────────────────────────────
 
@@ -96,10 +170,8 @@ const STAFF_NAV = [
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const HOLD_MS      = 3000;
-const FLASH_MS     = 680;
-
-// Recessed button inline shadow (supplements .btn-recessed Tailwind utility)
+const HOLD_MS  = 3000;
+const FLASH_MS = 680;
 const BTN_SHADOW =
   "inset 0 3px 8px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 0 rgba(255,255,255,0.03)";
 
@@ -114,7 +186,6 @@ function OverrideFlash() {
       className="fixed inset-0 z-[500] flex flex-col items-center justify-center gap-4"
       style={{ background: "linear-gradient(135deg, #1c1814, #0a0806)" }}
     >
-      {/* Scan line top */}
       <motion.div
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
@@ -122,28 +193,18 @@ function OverrideFlash() {
         className="w-64 h-px"
         style={{ background: "linear-gradient(90deg, transparent, #C9A84C, transparent)" }}
       />
-
-      <div
-        className="text-[9px] tracking-[0.38em] uppercase"
-        style={{ color: "rgba(201,168,76,0.55)" }}
-      >
+      <div className="text-[9px] tracking-[0.38em] uppercase" style={{ color: "rgba(201,168,76,0.55)" }}>
         System Override
       </div>
-
       <motion.div
         initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.1 }}
         className="font-serif text-5xl font-bold tracking-wider"
-        style={{
-          fontFamily: "'Cormorant Garamond', Georgia, serif",
-          color: "#C9A84C",
-        }}
+        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "#C9A84C" }}
       >
         Staff Access
       </motion.div>
-
-      {/* Scan line bottom */}
       <motion.div
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
@@ -155,7 +216,7 @@ function OverrideFlash() {
   );
 }
 
-// ── Individual craft card ─────────────────────────────────────────────────────
+// ── Individual craft card (Digital Portal) ────────────────────────────────────
 
 function CraftCard({
   craft,
@@ -169,6 +230,10 @@ function CraftCard({
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
 
+  // Stagger each card's rotation offset so they never all flip together
+  const rotationOffset = idx * 2800;
+  const currentImage   = useSceneRotation(craft.id, rotationOffset);
+
   return (
     <motion.button
       initial={{ opacity: 0, y: 24, scale: 0.96 }}
@@ -179,84 +244,126 @@ function CraftCard({
       onTapStart={() => setPressed(true)}
       onTap={() => { setPressed(false); onTap(); }}
       onTapCancel={() => setPressed(false)}
-      /* Tailwind: bg-axiom-graphite card-recessed brushed-graphite */
       className="relative overflow-hidden rounded-2xl cursor-pointer text-left outline-none
-                 bg-axiom-graphite card-recessed brushed-graphite"
+                 bg-axiom-graphite card-recessed"
       style={{
-        border: `1px solid ${hovered ? `${craft.color}55` : "rgba(255,255,255,0.07)"}`,
-        boxShadow: pressed
-          ? `inset 0 5px 18px rgba(0,0,0,0.9), 0 0 0 1px ${craft.color}40`
-          : `inset 0 2px 4px rgba(255,255,255,0.05), 0 6px 32px rgba(0,0,0,0.55), 0 0 0 1px ${craft.color}14`,
-        transition: "box-shadow 0.18s, border-color 0.22s",
+        border: `1px solid ${hovered ? `${craft.color}55` : "rgba(255,255,255,0.09)"}`,
+        transition: "border-color 0.22s",
       }}
     >
-      {/* Per-craft bottom color bleed */}
-      <motion.div
-        animate={{ opacity: hovered ? 0.26 : 0.10 }}
-        transition={{ duration: 0.35 }}
-        className="absolute pointer-events-none"
-        style={{
-          bottom: -10, left: "12%", right: "12%", height: 36,
-          borderRadius: "50%",
-          background: craft.color,
-          filter: "blur(20px)",
-        }}
-      />
-
-      {/* Breathing glow ring */}
-      <motion.div
-        animate={{ opacity: [0.07, 0.24, 0.07] }}
-        transition={{ duration: 3.2 + idx * 0.5, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute inset-0 rounded-2xl pointer-events-none"
-        style={{ border: `1px solid ${craft.color}` }}
-      />
-
-      {/* Tap flash */}
-      <AnimatePresence>
-        {pressed && (
-          <motion.div
-            initial={{ opacity: 0.28 }}
-            animate={{ opacity: 0 }}
-            transition={{ duration: 0.38 }}
-            className="absolute inset-0 rounded-2xl pointer-events-none"
-            style={{ background: craft.color }}
+      {/* ── Layer 1: Rotating scene image (Digital Portal) ── */}
+      <AnimatePresence initial={false}>
+        {currentImage && (
+          <motion.img
+            key={currentImage}
+            src={currentImage}
+            alt=""
+            aria-hidden
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.4, ease: "easeInOut" }}
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ zIndex: 2 }}
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
           />
         )}
       </AnimatePresence>
 
-      {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-between p-5 sm:p-6">
-        {/* Glyph */}
+      {/* ── Layer 2: Dark vignette — heavy at bottom, fades up ── */}
+      {/* Ensures SmokeCraft / PREMIUM TOBACCO labels are always sharp */}
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          zIndex: 3,
+          background:
+            "linear-gradient(to top, #0d0b09 0%, rgba(13,11,9,0.82) 38%, rgba(13,11,9,0.38) 65%, rgba(13,11,9,0.10) 100%)",
+        }}
+      />
+
+      {/* ── Layer 3: Brushed graphite texture (subtle, over vignette) ── */}
+      <div
+        aria-hidden
+        className="absolute inset-0 brushed-graphite pointer-events-none"
+        style={{ zIndex: 4, opacity: 0.25 }}
+      />
+
+      {/* ── Layer 4: Per-craft ambient bottom glow ── */}
+      <motion.div
+        animate={{ opacity: hovered ? 0.30 : 0.12 }}
+        transition={{ duration: 0.35 }}
+        aria-hidden
+        className="absolute pointer-events-none"
+        style={{
+          zIndex: 5,
+          bottom: -12, left: "10%", right: "10%", height: 40,
+          borderRadius: "50%",
+          background: craft.color,
+          filter: "blur(22px)",
+        }}
+      />
+
+      {/* ── Layer 5: Breathing glow ring ── */}
+      <motion.div
+        animate={{ opacity: [0.07, 0.28, 0.07] }}
+        transition={{ duration: 3.2 + idx * 0.5, repeat: Infinity, ease: "easeInOut" }}
+        aria-hidden
+        className="absolute inset-0 rounded-2xl pointer-events-none"
+        style={{ zIndex: 6, border: `1px solid ${craft.color}` }}
+      />
+
+      {/* ── Layer 6: Tap flash ── */}
+      <AnimatePresence>
+        {pressed && (
+          <motion.div
+            initial={{ opacity: 0.32 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 0.38 }}
+            aria-hidden
+            className="absolute inset-0 rounded-2xl pointer-events-none"
+            style={{ zIndex: 7, background: craft.color }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Layer 7: Content (always on top) ── */}
+      <div className="relative h-full flex flex-col justify-between p-5 sm:p-6" style={{ zIndex: 10 }}>
+        {/* Animated glyph */}
         <motion.div
-          animate={{ opacity: [0.18, 0.42, 0.18] }}
+          animate={{ opacity: [0.22, 0.55, 0.22] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: idx * 0.4 }}
           className="text-4xl sm:text-5xl mb-2 leading-none"
-          style={{ color: craft.color }}
+          style={{ color: craft.color, textShadow: `0 0 18px ${craft.color}88` }}
         >
           {craft.glyph}
         </motion.div>
 
-        {/* Labels */}
+        {/* Labels — readable above vignette */}
         <div>
           <div
-            className="font-serif font-bold leading-tight mb-1"
+            className="font-bold leading-tight mb-1"
             style={{
               fontFamily: "'Cormorant Garamond', Georgia, serif",
               fontSize: "clamp(17px, 2.4vw, 24px)",
               color: "#F0E8D4",
+              textShadow: "0 1px 8px rgba(0,0,0,0.9)",
             }}
           >
             {craft.label}
           </div>
           <div
             className="uppercase font-bold tracking-widest mb-1"
-            style={{ fontSize: 9, color: craft.color, letterSpacing: "0.22em" }}
+            style={{
+              fontSize: 9, color: craft.color, letterSpacing: "0.22em",
+              textShadow: `0 0 10px ${craft.color}66`,
+            }}
           >
             {craft.tagline}
           </div>
           <div
             className="leading-snug"
-            style={{ fontSize: 9, color: "rgba(240,232,212,0.28)", letterSpacing: "0.04em" }}
+            style={{ fontSize: 9, color: "rgba(240,232,212,0.42)", letterSpacing: "0.04em" }}
           >
             {craft.sub}
           </div>
@@ -264,10 +371,10 @@ function CraftCard({
 
         {/* CTA */}
         <motion.div
-          animate={{ x: hovered ? 4 : 0, opacity: hovered ? 1 : 0.4 }}
+          animate={{ x: hovered ? 4 : 0, opacity: hovered ? 1 : 0.45 }}
           transition={{ duration: 0.18 }}
           className="mt-3 font-bold uppercase tracking-widest"
-          style={{ fontSize: 10, color: craft.color }}
+          style={{ fontSize: 10, color: craft.color, textShadow: `0 0 8px ${craft.color}66` }}
         >
           Enter ›
         </motion.div>
@@ -304,7 +411,7 @@ function StaffPanel({
         fontFamily: "'Inter', system-ui, sans-serif",
       }}
     >
-      {/* Chrome sheen — sweeps left→right on entry, simulates sliding metal */}
+      {/* Chrome sheen sweep on entry — simulates sliding metal */}
       <motion.div
         initial={{ x: "-120%" }}
         animate={{ x: "220%" }}
@@ -316,13 +423,13 @@ function StaffPanel({
         }}
       />
 
-      {/* Brushed graphite texture overlay */}
+      {/* Brushed graphite texture */}
       <div
         className="absolute inset-0 pointer-events-none brushed-graphite"
         style={{ opacity: 0.6, zIndex: 0 }}
       />
 
-      {/* ── Header ── */}
+      {/* Header */}
       <div
         className="relative z-10 flex-shrink-0 px-7 pt-7 pb-5"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,0,0,0.22)" }}
@@ -334,7 +441,6 @@ function StaffPanel({
           <Shield size={9} color="rgba(201,168,76,0.5)" />
           Staff Override Active
         </div>
-
         <div
           className="font-bold leading-tight"
           style={{
@@ -346,8 +452,6 @@ function StaffPanel({
         >
           Staff Dashboard
         </div>
-
-        {/* Context badges */}
         <div className="flex flex-wrap gap-2 mt-4">
           {craft && (
             <span
@@ -371,31 +475,33 @@ function StaffPanel({
               }}
             >
               <Clock size={9} />
-              {new Date(lastHandoffAt).toLocaleTimeString([], {
-                hour: "2-digit", minute: "2-digit",
-              })}
+              {new Date(lastHandoffAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
             </span>
           )}
         </div>
       </div>
 
-      {/* ── Nav grid ── */}
+      {/* Nav grid */}
       <div
         className="relative z-10 flex-1 overflow-y-auto p-6"
-        style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, alignContent: "start" }}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: 10,
+          alignContent: "start",
+        }}
       >
         {STAFF_NAV.map(({ label, icon: Icon, route }) => (
           <button
             key={label}
             onClick={() => navigate(route)}
-            className="rounded-2xl flex flex-col items-center gap-2 py-4 px-2 cursor-pointer
-                       transition-colors btn-recessed"
+            className="rounded-2xl flex flex-col items-center gap-2 py-4 px-2 cursor-pointer btn-recessed"
             style={{
               background: "linear-gradient(160deg, #1e1a15, #141210)",
               border: "1px solid rgba(255,255,255,0.07)",
               color: "rgba(240,232,212,0.45)",
-              boxShadow: BTN_SHADOW,
               outline: "none",
+              transition: "border-color 0.18s, color 0.18s",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = "rgba(201,168,76,0.35)";
@@ -412,7 +518,7 @@ function StaffPanel({
         ))}
       </div>
 
-      {/* ── Footer ── */}
+      {/* Footer */}
       <div
         className="relative z-10 flex-shrink-0 flex items-center justify-between px-6 py-4"
         style={{ borderTop: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,0,0,0.18)" }}
@@ -420,23 +526,18 @@ function StaffPanel({
         <button
           onClick={onExit}
           className="flex items-center gap-2 rounded-xl px-4 py-2 text-[11px] font-bold
-                     uppercase tracking-wider cursor-pointer transition-colors"
+                     uppercase tracking-wider cursor-pointer btn-recessed"
           style={{
             background: "linear-gradient(135deg, #1e1a14, #141210)",
             border: "1px solid rgba(201,168,76,0.35)",
             color: "#C9A84C",
-            boxShadow: BTN_SHADOW,
             outline: "none",
           }}
         >
           <ChevronLeft size={13} />
           Return to Patron
         </button>
-
-        <div
-          className="text-[8px] uppercase tracking-[0.2em]"
-          style={{ color: "rgba(240,232,212,0.22)" }}
-        >
+        <div className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(240,232,212,0.22)" }}>
           Axiom 360 OS
         </div>
       </div>
@@ -447,13 +548,11 @@ function StaffPanel({
 // ── Patron view ───────────────────────────────────────────────────────────────
 
 function PatronView({
-  onHandoff,
   onCraftSelect,
 }: {
-  onHandoff:     () => void;
   onCraftSelect: (craft: typeof CRAFTS[number]) => void;
 }) {
-  const [, navigate]   = useLocation();
+  const [, navigate]  = useLocation();
   const [activeCraft, setActiveCraft] = useState<string | null>(null);
   const [burstKey, setBurstKey]       = useState(0);
   const [portal, setPortal]           = useState<{ route: string; color: string } | null>(null);
@@ -480,37 +579,29 @@ function PatronView({
   return (
     <div
       className="absolute inset-0 flex flex-col overflow-hidden grainy-texture"
-      style={{
-        background: "#0d0b09",
-        color: "#F0E8D4",
-        fontFamily: "'Inter', system-ui, sans-serif",
-      }}
+      style={{ background: "#0d0b09", color: "#F0E8D4", fontFamily: "'Inter', system-ui, sans-serif" }}
     >
-      {/* Lounge Pulse ambient — centered in the craft grid area */}
+      {/* Lounge Pulse ambient cloud */}
       <Pulse
         id="patron"
         color={activeCraft ? (CRAFTS.find((c) => c.id === activeCraft)?.color ?? "#FFBF00") : "#FFBF00"}
         size={560}
         blur={36}
-        minOpacity={0.06}
-        maxOpacity={0.18}
+        minOpacity={0.05}
+        maxOpacity={0.16}
         burst={burstKey > 0}
-        style={{
-          top: "40%", left: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
+        style={{ top: "40%", left: "50%", transform: "translate(-50%, -50%)" }}
       />
 
-      {/* ── Header ── */}
+      {/* Header */}
       <header
         className="relative z-10 flex items-center gap-4 px-5 py-3 flex-shrink-0"
         style={{
-          borderBottom:   "1px solid rgba(255,255,255,0.07)",
-          background:     "rgba(13,11,9,0.88)",
+          borderBottom: "1px solid rgba(255,255,255,0.07)",
+          background: "rgba(13,11,9,0.88)",
           backdropFilter: "blur(18px)",
         }}
       >
-        {/* Brand */}
         <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
@@ -536,7 +627,7 @@ function PatronView({
           </span>
         </motion.div>
 
-        {/* Status row */}
+        {/* Status dots */}
         <div className="flex items-center gap-5 flex-1 overflow-x-auto scrollbar-none ml-2">
           {[
             { label: "AI Engine",    state: "ACTIVE",  color: "#4ade80" },
@@ -576,7 +667,7 @@ function PatronView({
         </div>
       </header>
 
-      {/* ── Hero label ── */}
+      {/* Hero label */}
       <div className="relative z-10 px-5 pt-4 pb-2 flex-shrink-0">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -597,7 +688,7 @@ function PatronView({
         </p>
       </div>
 
-      {/* ── 4 Craft Cards ── */}
+      {/* 4 Craft Cards — Digital Portals */}
       <div
         className="relative z-10 flex-1 min-h-0 px-4 pb-4"
         style={{
@@ -617,12 +708,12 @@ function PatronView({
         ))}
       </div>
 
-      {/* ── Footer ── */}
+      {/* Footer */}
       <footer
         className="relative z-10 flex items-center gap-4 px-5 py-2.5 flex-shrink-0"
         style={{
-          borderTop:      "1px solid rgba(255,255,255,0.06)",
-          background:     "rgba(13,11,9,0.92)",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(13,11,9,0.92)",
           backdropFilter: "blur(12px)",
         }}
       >
@@ -650,7 +741,7 @@ function PatronView({
         </div>
       </footer>
 
-      {/* ── Portal curtain ── */}
+      {/* Portal curtain */}
       <AnimatePresence>
         {portal && (
           <motion.div
@@ -683,22 +774,16 @@ export function HandoffContainer() {
   const { activeMode, currentCraft, lastHandoffAt, setMode, setCraft } = useAxiom360();
   const [flashing, setFlashing] = useState(false);
 
-  // ── Hidden 3-second long-press trigger ────────────────────────────────────
+  // Hidden 3-second long-press trigger
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const startHold = useCallback(() => {
     if (holdTimerRef.current) return;
     holdTimerRef.current = setTimeout(() => {
       holdTimerRef.current = null;
-      if (activeMode === "staff") {
-        setMode("patron");
-        return;
-      }
+      if (activeMode === "staff") { setMode("patron"); return; }
       setFlashing(true);
-      setTimeout(() => {
-        setFlashing(false);
-        setMode("staff");
-      }, FLASH_MS);
+      setTimeout(() => { setFlashing(false); setMode("staff"); }, FLASH_MS);
     }, HOLD_MS);
   }, [activeMode, setMode]);
 
@@ -716,8 +801,7 @@ export function HandoffContainer() {
 
       {/* ╔═══════════════════════════════════════════════════════════╗
           ║  HIDDEN TRIGGER — 3-second invisible long-press           ║
-          ║  Position: top-center of the screen                       ║
-          ║  Size: 128px wide × 44px tall, opacity 0                  ║
+          ║  Position: top-center · Size: 128×44px · opacity: 0      ║
           ╚═══════════════════════════════════════════════════════════╝ */}
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 z-50 touch-none select-none"
@@ -738,15 +822,11 @@ export function HandoffContainer() {
         transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
       >
         <PatronView
-          onHandoff={() => {
-            setFlashing(true);
-            setTimeout(() => { setFlashing(false); setMode("staff"); }, FLASH_MS);
-          }}
           onCraftSelect={(craft) => setCraft(craft.id as CraftType)}
         />
       </motion.div>
 
-      {/* Staff Dashboard — slides in from right with "sliding metal" animation */}
+      {/* Staff Dashboard — sliding metal animation */}
       <AnimatePresence>
         {activeMode === "staff" && !flashing && (
           <StaffPanel
@@ -757,7 +837,7 @@ export function HandoffContainer() {
         )}
       </AnimatePresence>
 
-      {/* System Override flash — cinematic transition between modes */}
+      {/* System Override flash */}
       <AnimatePresence>
         {flashing && <OverrideFlash />}
       </AnimatePresence>
