@@ -15,7 +15,7 @@ import {
   motion, AnimatePresence,
   useMotionValue, useTransform, animate,
 } from "framer-motion";
-import { ArrowLeft, ChevronRight, ChevronLeft, Sparkles, Check, X } from "lucide-react";
+import { ArrowLeft, Sparkles, Check, X } from "lucide-react";
 import { getCraftTheme, type CraftTheme } from "@/lib/craftThemes";
 import { CraftRealism } from "@/components/CraftRealism";
 import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
@@ -151,8 +151,9 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
     else animate(x, 0, { duration: 0.32, ease: [0.22, 1, 0.36, 1] });
   }
 
-  const scale  = 1 - stackIndex * 0.045;
-  const yShift = stackIndex * 16;
+  const scale   = 1 - stackIndex * 0.05;
+  const yShift  = stackIndex * 14;
+  const opacity = stackIndex === 0 ? 1 : stackIndex === 1 ? 0.52 : 0.26;
 
   return (
     <motion.div
@@ -165,6 +166,7 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
         rotate:   isTop ? rotate : 0,
         scale,
         y:        isTop ? 0 : yShift,
+        opacity,
         position: "absolute",
         inset:    0,
         cursor:   isTop ? "grab" : "default",
@@ -185,125 +187,173 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
         />
       )}
 
-      {/* Card body */}
+      {/* Card body — matte-black collectible glass */}
       <div style={{
         position:     "absolute",
         inset:        0,
-        borderRadius: 24,
+        borderRadius: 20,
         overflow:     "hidden",
-        background:   theme.cardBg,
-        border:       `1px solid rgba(255,255,255,${stackIndex === 0 ? 0.1 : 0.05})`,
-        boxShadow:    stackIndex === 0
-          ? "0 20px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04) inset"
-          : "0 8px 32px rgba(0,0,0,0.5)",
+        background:   "rgba(9,6,2,0.94)",
+        border:       `1px solid ${theme.accent}${stackIndex === 0 ? "38" : "18"}`,
+        boxShadow: stackIndex === 0
+          ? `0 44px 110px rgba(0,0,0,0.94), 0 0 0 1px ${theme.accent}10, 0 0 56px ${theme.accent}08, inset 0 1px 0 rgba(255,255,255,0.055)`
+          : "0 14px 40px rgba(0,0,0,0.72)",
       }}>
 
-        {/* Background image */}
+        {/* ── Sensory background image ── */}
         {item.image ? (
           <div style={{
-            position:           "absolute",
-            inset:              0,
+            position: "absolute", inset: 0,
             backgroundImage:    `url(${item.image})`,
             backgroundSize:     "cover",
-            backgroundPosition: "center",
+            backgroundPosition: "center top",
+            opacity:            0.60,
             willChange:         "transform",
           }} />
         ) : (
-          /* Gradient placeholder for no-image cards */
           <div style={{
             position:   "absolute",
             inset:      0,
-            background: `linear-gradient(135deg, ${theme.cardBg} 0%, ${theme.accent}18 100%)`,
+            background: `linear-gradient(160deg, rgba(14,9,3,1) 0%, ${theme.accent}22 100%)`,
           }} />
         )}
 
-        {/* Cinematic gradient overlay */}
+        {/* ── Cinematic vignette — strong top + bottom frame ── */}
         <div style={{
-          position:   "absolute",
-          inset:      0,
-          background: "linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.15) 35%, rgba(0,0,0,0.88) 100%)",
+          position: "absolute", inset: 0, pointerEvents: "none",
+          background: `linear-gradient(180deg,
+            rgba(6,4,1,0.78) 0%,
+            rgba(6,4,1,0.12) 25%,
+            rgba(6,4,1,0.10) 58%,
+            rgba(6,4,1,0.94) 100%)`,
         }} />
 
-        {/* CraftRealism ambient overlay — only on top card */}
+        {/* ── Holographic shimmer sweep (top card only) ── */}
+        {stackIndex === 0 && (
+          <motion.div
+            style={{
+              position: "absolute",
+              top: 0, bottom: 0, width: "55%",
+              background: "linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.042) 50%, transparent 100%)",
+              pointerEvents: "none",
+              zIndex: 15,
+            }}
+            animate={{ left: ["-55%", "115%"] }}
+            transition={{ duration: 4.8, repeat: Infinity, ease: "linear", repeatDelay: 2.2 }}
+          />
+        )}
+
+        {/* ── CraftRealism ambient (top card only) ── */}
         {stackIndex === 0 && (
           <CraftRealism type={item.type} accent={theme.accent} />
         )}
 
-        {/* Badge */}
-        <div style={{
-          position:     "absolute",
-          top:          20, left: 20,
-          background:   "rgba(0,0,0,0.55)",
-          border:       `1px solid ${theme.accent}40`,
-          borderRadius: 8,
-          padding:      "4px 12px",
-          fontSize:     11, fontWeight: 700,
-          letterSpacing: "0.14em",
-          color:        theme.accent,
-          backdropFilter: "blur(10px)",
-        }}>
-          {theme.badgeLabel}
-        </div>
-
-        {/* Intensity dots */}
-        <div style={{
-          position: "absolute", top: 20, right: 20,
-          display: "flex", gap: 4,
-        }}>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} style={{
-              width: 7, height: 7, borderRadius: "50%",
-              background: i < Math.round(item.intensity / 2)
-                ? theme.accent : "rgba(255,255,255,0.18)",
-              boxShadow: i < Math.round(item.intensity / 2)
-                ? `0 0 4px ${theme.accent}` : "none",
-              transition: "background 0.2s",
-            }} />
-          ))}
-        </div>
-
-        {/* Bottom content */}
+        {/* ── Top strip: category chips + intensity dots ── */}
         <div style={{
           position: "absolute",
-          bottom: 0, left: 0, right: 0,
-          padding: "0 24px 32px",
+          top: 0, left: 0, right: 0,
+          padding: "13px 14px 10px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: "linear-gradient(180deg, rgba(6,4,1,0.72) 0%, transparent 100%)",
+          zIndex: 10,
         }}>
-          <h2 style={{
-            fontSize:   26,
-            fontWeight: 700,
-            color:      "#f0e8d8",
-            margin:     "0 0 8px",
-            fontFamily: "'Playfair Display', serif",
-            lineHeight: 1.2,
-            textShadow: "0 2px 16px rgba(0,0,0,0.6)",
-          }}>{item.title}</h2>
-
-          {item.description && (
-            <p style={{
-              fontSize:   13,
-              color:      "rgba(240,232,216,0.72)",
-              margin:     "0 0 14px",
-              lineHeight: 1.5,
-              textShadow: "0 1px 4px rgba(0,0,0,0.5)",
-            }}>{item.description}</p>
-          )}
-
-          {/* Tags */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {item.tags.slice(0, 4).map(tag => (
+          <div style={{ display: "flex", gap: 5 }}>
+            {item.tags.slice(0, 2).map(tag => (
               <span key={tag} style={{
-                padding:      "4px 10px",
-                borderRadius: 20,
-                background:   `${theme.accent}1A`,
-                border:       `1px solid ${theme.accent}35`,
-                fontSize:     11,
-                color:        theme.accent,
-                fontWeight:   600,
-                letterSpacing: "0.05em",
-                backdropFilter: "blur(4px)",
+                padding: "3px 7px",
+                borderRadius: 4,
+                background: `${theme.accent}14`,
+                border: `1px solid ${theme.accent}48`,
+                fontSize: 9,
+                fontWeight: 800,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase" as const,
+                color: theme.accent,
               }}>{tag}</span>
             ))}
           </div>
+          <div style={{ display: "flex", gap: 3 }}>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} style={{
+                width: 5, height: 5, borderRadius: "50%",
+                background: i < Math.round(item.intensity / 2) ? theme.accent : "rgba(255,255,255,0.14)",
+                boxShadow: i < Math.round(item.intensity / 2) ? `0 0 4px ${theme.accent}` : "none",
+              }} />
+            ))}
+          </div>
+        </div>
+
+        {/* ── Bottom: title, atmospheric description, card-level actions ── */}
+        <div style={{
+          position: "absolute",
+          bottom: 0, left: 0, right: 0,
+          padding: "20px 16px 14px",
+          background: "linear-gradient(0deg, rgba(5,3,1,0.97) 0%, rgba(5,3,1,0.82) 65%, transparent 100%)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          zIndex: 10,
+        }}>
+          <div style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: 18,
+            fontWeight: 700,
+            color: "rgba(240,232,212,0.96)",
+            lineHeight: 1.18,
+            textShadow: "0 2px 12px rgba(0,0,0,0.8)",
+          }}>{item.title}</div>
+
+          {item.description && (
+            <p style={{
+              fontSize: 11,
+              color: "rgba(240,232,212,0.48)",
+              margin: 0,
+              lineHeight: 1.55,
+              fontStyle: "italic",
+              letterSpacing: "0.01em",
+            }}>{item.description}</p>
+          )}
+
+          {/* Card-level PASS / DISCOVER strip */}
+          {isTop && (
+            <div style={{ display: "flex", gap: 7, marginTop: 4 }}>
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.91 }}
+                onClick={(e) => { e.stopPropagation(); triggerLeft(); }}
+                style={{
+                  flex: 1, padding: "8px 0",
+                  borderRadius: 9,
+                  background: "rgba(148,163,184,0.07)",
+                  border: "1px solid rgba(148,163,184,0.22)",
+                  color: "rgba(203,213,225,0.58)",
+                  fontSize: 9, fontWeight: 800,
+                  letterSpacing: "0.2em", textTransform: "uppercase" as const,
+                  cursor: "pointer",
+                  backdropFilter: "blur(8px)",
+                }}
+              >← Pass</motion.button>
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.91 }}
+                onClick={(e) => { e.stopPropagation(); triggerRight(); }}
+                style={{
+                  flex: 1, padding: "8px 0",
+                  borderRadius: 9,
+                  background: `${theme.accent}12`,
+                  border: `1px solid ${theme.accent}40`,
+                  color: theme.accent,
+                  fontSize: 9, fontWeight: 800,
+                  letterSpacing: "0.2em", textTransform: "uppercase" as const,
+                  cursor: "pointer",
+                  backdropFilter: "blur(8px)",
+                  boxShadow: `0 0 14px ${theme.accent}10`,
+                }}
+              >Discover →</motion.button>
+            </div>
+          )}
         </div>
 
         {/* DISCOVER overlay — warm gold, premium feel */}
@@ -570,23 +620,23 @@ export default function ExperiencePage() {
         </div>
       </div>
 
-      {/* Swipe hint */}
-      <div style={{
-        position: "relative", zIndex: 20,
-        textAlign: "center", padding: "2px 0 6px",
-        fontSize: 11, color: "rgba(240,232,216,0.28)",
-        letterSpacing: "0.08em", flexShrink: 0,
-      }}>
-        ← Pass &nbsp;&nbsp;·&nbsp;&nbsp; Discover →
-      </div>
-
-      {/* Card stack */}
+      {/* Card stack — floating collectible cards centered in the environment */}
       <div style={{
         position: "relative",
         flex: 1,
-        margin: "0 20px 14px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "visible",
         zIndex: 10,
       }}>
+        {/* Fixed-size inner box — this is the collectible card footprint */}
+        <div style={{
+          position: "relative",
+          width: "min(288px, 74vw)",
+          height: "min(422px, 60vh)",
+          flexShrink: 0,
+        }}>
         <AnimatePresence mode="sync">
           {done ? (
             <motion.div
@@ -682,6 +732,7 @@ export default function ExperiencePage() {
             ))
           )}
         </AnimatePresence>
+        </div>{/* /fixed-size inner box */}
       </div>
 
       {/* Feedback toast */}
@@ -714,79 +765,56 @@ export default function ExperiencePage() {
         )}
       </AnimatePresence>
 
-      {/* Action row */}
-      {!done && cards.length > 0 && (
-        <div style={{
-          position: "relative", zIndex: 20,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 28,
-          padding: "0 20px 36px",
-          flexShrink: 0,
-        }}>
-          {/* Pass */}
-          <motion.button
-            whileHover={{ scale: 1.06 }}
-            whileTap={{ scale: 0.88 }}
-            onClick={() => handleSwipe("skip")}
-            disabled={swiping}
-            style={{
-              width: 60, height: 60, borderRadius: "50%",
-              background: "rgba(148,163,184,0.07)",
-              border: "1.5px solid rgba(148,163,184,0.28)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer",
-              boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
-            }}
-          >
-            <ChevronLeft size={26} color="rgba(203,213,225,0.7)" strokeWidth={2} />
-          </motion.button>
-
-          {/* Finish early — appears after 6 swipes */}
-          <AnimatePresence>
-            {swipeCount >= 6 && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={handleFinish}
-                style={{
-                  padding: "12px 24px",
-                  borderRadius: 12,
-                  background: `linear-gradient(135deg, ${theme.accent}, ${theme.accentSoft})`,
-                  border: "none", color: "#0a0806",
-                  fontSize: 13, fontWeight: 700,
-                  cursor: "pointer", letterSpacing: "0.06em",
-                  boxShadow: `0 4px 20px ${theme.accent}35`,
-                }}
-              >
-                See Match
-              </motion.button>
-            )}
-          </AnimatePresence>
-
-          {/* Discover */}
-          <motion.button
-            whileHover={{ scale: 1.06 }}
-            whileTap={{ scale: 0.88 }}
-            onClick={() => handleSwipe("add")}
-            disabled={swiping}
-            style={{
-              width: 60, height: 60, borderRadius: "50%",
-              background: "rgba(201,168,76,0.12)",
-              border: "1.5px solid rgba(201,168,76,0.45)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer",
-              boxShadow: "0 4px 20px rgba(201,168,76,0.22)",
-            }}
-          >
-            <ChevronRight size={26} color="#c9a84c" strokeWidth={2} />
-          </motion.button>
-        </div>
-      )}
+      {/* Bottom bar — See Match (appears after 6 swipes) */}
+      <div style={{
+        position: "relative", zIndex: 20,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "8px 20px 32px",
+        flexShrink: 0,
+        minHeight: 64,
+      }}>
+        <AnimatePresence>
+          {!done && swipeCount >= 6 && (
+            <motion.button
+              initial={{ opacity: 0, y: 8, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 4, scale: 0.93 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.96 }}
+              onClick={handleFinish}
+              style={{
+                padding: "13px 36px",
+                borderRadius: 13,
+                background: `linear-gradient(135deg, ${theme.accent}, ${theme.accentSoft})`,
+                border: "none", color: "#0a0806",
+                fontSize: 13, fontWeight: 700,
+                cursor: "pointer", letterSpacing: "0.08em",
+                boxShadow: `0 6px 28px ${theme.accent}40`,
+              }}
+            >
+              See Your Match →
+            </motion.button>
+          )}
+          {!done && swipeCount < 6 && (
+            <motion.span
+              key="hint"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              style={{
+                fontSize: 10,
+                color: "rgba(240,232,212,0.18)",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase" as const,
+              }}
+            >
+              Drag or tap card to explore
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
 
     {/* ── Entry chamber — full-screen cinematic intro, dismisses on begin ── */}

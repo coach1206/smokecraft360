@@ -1,0 +1,390 @@
+MISSING / REQUIRED
+The experience architecture is now close, but the discovery interaction layer is still visually oversized and psychologically incorrect.
+Current remaining issue:
+The discovery card is still behaving like:
+a fullscreen hero panel.
+It MUST become:
+a floating collectible-style sensory card.
+Critical missing fixes:
+
+
+Proper playing-card scale
+
+
+Floating card physics
+
+
+Sensory imagery instead of portrait imagery
+
+
+Environmental world continuity
+
+
+Card/object separation from background
+
+
+Premium tactile interaction layer
+
+
+Discovery-stage visual language
+
+
+Physical collectible-card psychology
+
+
+Current problem:
+Step 2 (Entry Chamber)
+and
+Step 3 (Discovery)
+…still visually feel like the same screen.
+That destroys progression.
+FAILURE PREVENTION CHECKLIST
+DO NOT:
+
+
+remove cinematic entry chamber
+
+
+remove ambient particles
+
+
+remove DynamicCard engine
+
+
+remove scoring/session logic
+
+
+remove orchestrator systems
+
+
+remove drag physics
+
+
+remove environmental continuity
+
+
+remove AI intelligence systems
+
+
+ONLY:
+rebuild the discovery card layer.
+Critical:
+
+
+No fullscreen discovery banners
+
+
+No giant hero-card interactions
+
+
+No human portraits dominating discovery
+
+
+No billboard-sized cards
+
+
+No replacing the environment with the card
+
+
+The card must:
+FLOAT inside the world.
+MASTER DISCOVERY CARD FIX PROMPT
+You are now rebuilding ONLY the discovery interaction layer inside SmokeCraft.
+The cinematic entry chamber is now correct.
+The remaining issue:
+the discovery interaction still behaves like a fullscreen hero experience instead of a premium collectible-card system.
+==================================================
+PHASE 1 — SHRINK DISCOVERY CARD SYSTEM
+Reduce discovery card size immediately.
+Current:
+fullscreen cinematic banner.
+Correct:
+luxury playing-card scale.
+Card sizing target:
+
+
+30–40% screen width desktop
+
+
+vertically centered
+
+
+floating in space
+
+
+surrounded by visible environment
+
+
+The cinematic environment must remain fully visible behind the card.
+The world is the experience.
+The card is only the interaction object.
+==================================================
+PHASE 2 — CONVERT TO FLOATING COLLECTIBLE CARD
+The card should feel:
+physical
+premium
+tactile
+expensive
+Add:
+
+
+floating shadow
+
+
+layered depth
+
+
+edge glow
+
+
+subtle tilt response
+
+
+holographic shimmer
+
+
+matte-black glass texture
+
+
+micro reflections
+
+
+cinematic vignette
+
+
+Motion:
+
+
+slight hover drift
+
+
+inertia-based drag
+
+
+slow breathing movement
+
+
+premium weighted feel
+
+
+DO NOT:
+make it feel like a webpage panel.
+==================================================
+PHASE 3 — REMOVE HUMAN PORTRAIT DISCOVERY IMAGERY
+Human portraits belong ONLY in:
+
+
+homepage
+
+
+entry chamber
+
+
+promotional scenes
+
+
+lifestyle backgrounds
+
+
+Discovery cards should become:
+SENSORY PROFILE CARDS.
+Replace images with:
+
+
+cigar wrappers
+
+
+cedar wood
+
+
+smoke curls
+
+
+whiskey pours
+
+
+ember glow
+
+
+leather textures
+
+
+oak barrels
+
+
+lounge atmosphere
+
+
+tasting closeups
+
+
+vapor trails
+
+
+flavor environments
+
+
+The card should represent:
+a mood/flavor identity.
+NOT:
+a person.
+==================================================
+PHASE 4 — FIX DISCOVERY CARD CONTENT
+Example card structure:
+TOP:
+small category chip
+SMOKY / EARTHY / BOLD / CREAMY
+CENTER:
+premium sensory imagery
+BOTTOM:
+short atmospheric description
+Examples:
+“Ember haze and whiskey warmth.”
+“Cedar richness with dark espresso.”
+“Smooth vanilla smoke with leather undertones.”
+BOTTOM ACTIONS:
+PASS
+DISCOVER
+Buttons:
+
+
+matte black glass
+
+
+amber edge glow
+
+
+soft hover pressure
+
+
+subtle pulse
+
+
+==================================================
+PHASE 5 — ENVIRONMENT CONTINUITY
+The cinematic environment must continue moving behind the card.
+Maintain:
+
+
+ambient particles
+
+
+drifting smoke
+
+
+lounge depth blur
+
+
+cinematic lighting
+
+
+environmental reflections
+
+
+subtle AI glow pulses
+
+
+The card should NEVER replace the environment.
+It should FLOAT inside it.
+==================================================
+PHASE 6 — CHANGE INTERACTION PSYCHOLOGY
+The interaction should feel:
+curated exploration.
+NOT:
+approve/reject.
+Movement should resemble:
+examining a premium collectible card.
+Replace:
+aggressive swipe mechanics
+With:
+
+
+soft directional drift
+
+
+weighted movement
+
+
+slow rotational easing
+
+
+cinematic transition interpolation
+
+
+The card should feel:
+like a rare object being explored.
+==================================================
+PHASE 7 — ADD CARD STACK DEPTH
+Behind the active card:
+show faint stacked card layers.
+Visible:
+
+
+blurred edge
+
+
+subtle glow
+
+
+tiny motion offset
+
+
+This creates:
+anticipation and depth.
+==================================================
+PHASE 8 — FINAL EXPERIENCE TARGET
+The final interaction should feel like:
+“A luxury sensory intelligence engine guiding the user through premium atmospheric preferences.”
+NOT:
+“a fullscreen swipe app.”
+The user should feel:
+
+
+immersed
+
+
+calm
+
+
+curious
+
+
+emotionally guided
+
+
+premium
+
+
+understood
+
+
+Preserve:
+all backend systems
+all scoring
+all analytics
+all orchestration
+all AI weighting
+all session logic
+Only rebuild:
+
+
+card scale
+
+
+card psychology
+
+
+imagery
+
+
+environmental continuity
+
+
+tactile interaction
+
+
+visual hierarchy
+
+
+sensory presentation
+
