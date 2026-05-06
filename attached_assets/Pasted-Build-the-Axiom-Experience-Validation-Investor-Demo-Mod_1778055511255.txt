@@ -1,0 +1,142 @@
+Build the Axiom Experience Validation + Investor Demo Mode layer.
+
+Do not rebuild any existing systems.
+
+Current completed systems:
+Universal Swipe Engine
+Memory Brain
+Revenue Brain
+Adaptive Pairing Engine
+Realism Layer
+Organic Motion Layer
+Experience Control Panel
+Predictive Experience Orchestrator
+Swipe Intelligence
+Add-To-Order
+Inventory Reservations
+
+This phase must add:
+
+1. System Validation Dashboard
+
+Create route:
+/admin/system-validation
+
+Show live status for:
+swipe engine
+memory brain
+revenue brain
+inventory recommendations
+add-to-order
+reservations
+environment engine
+sound engine
+orchestrator
+analytics
+
+Each system should show:
+status: healthy / warning / failed
+last checked
+test result
+action needed
+
+2. One-Click Smoke Test
+
+Create backend route:
+POST /api/admin/system-validation/run
+
+It should test:
+start session
+load swipe cards
+record add swipe
+record skip swipe
+update memory
+generate recommendation
+validate inventory
+create reservation
+add item to order
+cancel order
+release reservation
+write analytics event
+write orchestrator event
+
+Return clean pass/fail report.
+
+3. Investor Demo Mode
+
+Create route:
+/demo/axiom-experience
+
+This should run a guided story mode showing:
+Craft Hub
+Swipe experience
+environment adapting
+orchestrator reacting
+reveal recommendations
+add-to-order
+analytics feedback
+
+No fake claims.
+Use real system endpoints where possible.
+Use demo fallback only if no live data exists.
+
+4. Demo Story Overlay
+
+Add calm guided narration cards:
+“Guest selects a craft”
+“System learns preference”
+“Atmosphere adapts”
+“Revenue Brain ranks inventory”
+“Reveal converts recommendation into order”
+“Analytics records behavior”
+
+5. Demo Controls
+
+Include:
+Start Demo
+Pause
+Next Step
+Reset
+Exit Demo
+
+6. Demo Safety
+
+Demo mode must not corrupt production data.
+Use:
+demo user
+demo session
+demo inventory flag
+or rollback after demo
+
+7. Validation Logs
+
+Create table:
+system_validation_runs
+
+Fields:
+id
+status
+summary
+details jsonb
+created_at
+
+8. UI Rules
+
+Use premium clean cards.
+No heavy backgrounds behind validation data.
+Demo mode can use cinematic environment visuals.
+
+9. Acceptance Tests
+
+Verify:
+validation dashboard loads
+smoke test runs
+failures show clearly
+demo mode starts
+demo mode uses safe data
+demo walks through full experience
+no production orders are created
+typecheck passes
+
+Final result:
+The platform should be provable, demo-ready, and operationally trustworthy.

@@ -53,7 +53,9 @@ import { PosProvider } from "@/contexts/PosContext";
 import { CommandCenterProvider } from "@/contexts/CommandCenterContext";
 import { DeviceRouterProvider }  from "@/components/DeviceRouter";
 import OnboardWizard      from "@/pages/OnboardWizard";
-import DemoSimDashboard   from "@/pages/DemoSimDashboard";
+import DemoSimDashboard      from "@/pages/DemoSimDashboard";
+import SystemValidation      from "@/pages/SystemValidation";
+import AxiomDemo             from "@/pages/AxiomDemo";
 import GlobalBackButton from "@/components/Layout/GlobalBackButton";
 import InactivityGuard                 from "@/components/InactivityGuard";
 import PosAuditBridge                  from "@/components/PosAuditBridge";
@@ -116,7 +118,9 @@ function Router() {
       <Route path="/competition"        component={CompetitionModule}    />
       <Route path="/craft-hub"          component={CraftHub}             />
       <Route path="/onboard"            component={OnboardWizard}        />
-      <Route path="/demo-sim"           component={DemoSimDashboard}     />
+      <Route path="/demo-sim"               component={DemoSimDashboard}     />
+      <Route path="/admin/system-validation" component={SystemValidation}     />
+      <Route path="/demo/axiom-experience"   component={AxiomDemo}            />
       {/* Dynamic per-theme entry URL (/smokecraft, /pourcraft, /grillcraft …).
           Declared LAST in the Switch so explicit app routes above always win;
           loadTheme() resolves the active theme from the first path segment.
