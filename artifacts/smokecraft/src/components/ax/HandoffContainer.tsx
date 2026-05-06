@@ -154,6 +154,26 @@ const CRAFTS = [
   },
 ] as const;
 
+// ── Mood system ───────────────────────────────────────────────────────────────
+// Three named moods drive the Pulse color. Card taps auto-select a mood;
+// patrons can also tap a chip directly to shift the ambient cloud.
+
+const MOOD_CONFIG = {
+  bold:    { label: "BOLD",    color: "#C9A84C" },
+  relaxed: { label: "RELAXED", color: "#2E5A88" },
+  social:  { label: "SOCIAL",  color: "#8E44AD" },
+} as const;
+
+type MoodKey = keyof typeof MOOD_CONFIG;
+
+// Map each craft to its nearest mood so a card tap shifts the Pulse
+const CRAFT_MOOD: Record<string, MoodKey> = {
+  smoke: "bold",
+  pour:  "relaxed",
+  brew:  "social",
+  vape:  "bold",
+};
+
 // ── Staff nav grid ────────────────────────────────────────────────────────────
 
 const STAFF_NAV = [
@@ -252,6 +272,7 @@ function CraftCard({
       }}
     >
       {/* ── Layer 1: Rotating scene image (Digital Portal) ── */}
+      {/* opacity: 0.7 — shows the portal image at spec-defined intensity */}
       <AnimatePresence initial={false}>
         {currentImage && (
           <motion.img
@@ -260,7 +281,7 @@ function CraftCard({
             alt=""
             aria-hidden
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: 0.7 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.4, ease: "easeInOut" }}
             className="absolute inset-0 w-full h-full object-cover"
@@ -270,15 +291,16 @@ function CraftCard({
         )}
       </AnimatePresence>
 
-      {/* ── Layer 2: Dark vignette — heavy at bottom, fades up ── */}
-      {/* Ensures SmokeCraft / PREMIUM TOBACCO labels are always sharp */}
+      {/* ── Layer 2: Vignette mask — clear at top, dark at bottom ── */}
+      {/* Image is clearest at the top; the bottom fades to near-black so      */}
+      {/* "ENTER ›" and the craft labels remain perfectly legible at all times. */}
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
           zIndex: 3,
           background:
-            "linear-gradient(to top, #0d0b09 0%, rgba(13,11,9,0.82) 38%, rgba(13,11,9,0.38) 65%, rgba(13,11,9,0.10) 100%)",
+            "linear-gradient(to top, rgba(13,11,9,0.97) 0%, rgba(13,11,9,0.72) 30%, rgba(13,11,9,0.20) 58%, transparent 100%)",
         }}
       />
 
@@ -554,8 +576,16 @@ function PatronView({
 }) {
   const [, navigate]  = useLocation();
   const [activeCraft, setActiveCraft] = useState<string | null>(null);
-  const [burstKey, setBurstKey]       = useState(0);
+  const [activeMood,  setActiveMood]  = useState<MoodKey | null>(null);
+  const [burstKey,    setBurstKey]    = useState(0);
   const [portal, setPortal]           = useState<{ route: string; color: string } | null>(null);
+
+  // Pulse color: explicit mood chip > craft-derived mood > default amber
+  const pulseColor = activeMood
+    ? MOOD_CONFIG[activeMood].color
+    : activeCraft
+      ? MOOD_CONFIG[CRAFT_MOOD[activeCraft] ?? "bold"].color
+      : "#C9A84C";
 
   // Live clock
   const [time, setTime] = useState(() =>
@@ -571,6 +601,7 @@ function PatronView({
 
   function handleCraftTap(craft: typeof CRAFTS[number]) {
     setActiveCraft(craft.id);
+    setActiveMood(CRAFT_MOOD[craft.id] ?? "bold");
     setBurstKey((k) => k + 1);
     onCraftSelect(craft);
     setTimeout(() => setPortal({ route: craft.route, color: craft.color }), 320);
@@ -581,14 +612,14 @@ function PatronView({
       className="absolute inset-0 flex flex-col overflow-hidden grainy-texture"
       style={{ background: "#0d0b09", color: "#F0E8D4", fontFamily: "'Inter', system-ui, sans-serif" }}
     >
-      {/* Lounge Pulse ambient cloud */}
+      {/* Lounge Pulse ambient cloud — color syncs to active mood */}
       <Pulse
         id="patron"
-        color={activeCraft ? (CRAFTS.find((c) => c.id === activeCraft)?.color ?? "#FFBF00") : "#FFBF00"}
+        color={pulseColor}
         size={560}
         blur={36}
         minOpacity={0.05}
-        maxOpacity={0.16}
+        maxOpacity={0.18}
         burst={burstKey > 0}
         style={{ top: "40%", left: "50%", transform: "translate(-50%, -50%)" }}
       />
@@ -667,7 +698,7 @@ function PatronView({
         </div>
       </header>
 
-      {/* Hero label */}
+      {/* Hero label + mood chips */}
       <div className="relative z-10 px-5 pt-4 pb-2 flex-shrink-0">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -681,11 +712,68 @@ function PatronView({
           }}
         >
           Select your{" "}
-          <span style={{ color: "#FFBF00", fontWeight: 600 }}>experience.</span>
+          <span style={{ color: pulseColor, fontWeight: 600, transition: "color 0.6s ease" }}>
+            experience.
+          </span>
         </motion.div>
         <p style={{ fontSize: 10, color: "rgba(240,232,212,0.38)", marginTop: 5 }}>
           The AI engine curates in real time — tap to begin.
         </p>
+
+        {/* ── Mood chips ── */}
+        {/* Tapping shifts the Pulse ambient cloud color. Card taps auto-select. */}
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.32, duration: 0.45 }}
+          className="flex items-center gap-2 mt-3"
+        >
+          {(Object.entries(MOOD_CONFIG) as [MoodKey, typeof MOOD_CONFIG[MoodKey]][]).map(([key, cfg]) => {
+            const active = activeMood === key;
+            return (
+              <button
+                key={key}
+                onClick={() => {
+                  setActiveMood(active ? null : key);
+                  setBurstKey((k) => k + 1);
+                }}
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  letterSpacing: "0.22em",
+                  padding: "4px 10px",
+                  borderRadius: 99,
+                  border: `1px solid ${active ? cfg.color : "rgba(255,255,255,0.14)"}`,
+                  background: active ? `${cfg.color}22` : "rgba(13,11,9,0.6)",
+                  color: active ? cfg.color : "rgba(240,232,212,0.38)",
+                  cursor: "pointer",
+                  outline: "none",
+                  transition: "all 0.28s ease",
+                  boxShadow: active
+                    ? `0 0 10px ${cfg.color}44, inset 0 1px 0 rgba(255,255,255,0.06)`
+                    : "inset 0 1px 0 rgba(255,255,255,0.04)",
+                }}
+              >
+                {cfg.label}
+              </button>
+            );
+          })}
+          {activeMood && (
+            <motion.span
+              initial={{ opacity: 0, x: -4 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0 }}
+              style={{
+                fontSize: 8,
+                color: "rgba(240,232,212,0.28)",
+                letterSpacing: "0.1em",
+                marginLeft: 2,
+              }}
+            >
+              · mood active
+            </motion.span>
+          )}
+        </motion.div>
       </div>
 
       {/* 4 Craft Cards — Digital Portals */}
