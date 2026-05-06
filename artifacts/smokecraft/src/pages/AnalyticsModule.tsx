@@ -160,6 +160,20 @@ export default function AnalyticsModule() {
               {label}
             </motion.button>
           ))}
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate("/analytics/swipe-intelligence")}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "8px 16px", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer",
+              background: "#1A1410",
+              border: "1px solid rgba(212,175,55,0.3)",
+              color: "#d4af37",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+            }}
+          >
+            <Brain size={13} /> Swipe IQ
+          </motion.button>
         </div>
       </div>
 

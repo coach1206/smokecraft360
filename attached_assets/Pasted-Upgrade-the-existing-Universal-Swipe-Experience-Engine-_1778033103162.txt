@@ -1,0 +1,412 @@
+Upgrade the existing Universal Swipe Experience Engine into a fully wired cinematic behavioral commerce system.
+
+The current system already exists and MUST be preserved:
+
+- Universal swipe engine
+- Memory Brain
+- Revenue Brain
+- Adaptive Pairing Engine
+- ExperiencePage
+- RevealPage
+- Craft Hub routing
+- Session lifecycle
+- DB tables
+- Existing APIs
+
+DO NOT rebuild from scratch.
+DO NOT create duplicate engines.
+EXTEND and HARDEN the current architecture.
+
+==================================================
+PHASE OBJECTIVE
+==================================================
+
+Transform the system from:
+
+“working swipe prototype”
+
+into:
+
+“production-grade sensory commerce engine”
+
+==================================================
+1. INVENTORY → RECOMMENDATION HARD WIRING
+==================================================
+
+Create strict inventory-aware recommendation filtering.
+
+Update recommendation logic so ALL reveal recommendations are validated against:
+
+- active inventory
+- stock count
+- low stock threshold
+- margin
+- vendor reliability
+- craft compatibility
+
+==================================================
+RULES
+==================================================
+
+If stock = 0:
+remove recommendation completely
+
+If stock <= low_stock_threshold:
+apply strong recommendation penalty
+
+If vendor reliability < 60:
+apply soft penalty
+
+If margin high:
+apply boost
+
+If recommendation tags strongly match user memory:
+apply taste boost
+
+==================================================
+REVENUE SCORING FORMULA
+==================================================
+
+finalScore =
+tasteScore * 0.40
++ marginScore * 0.25
++ stockScore * 0.15
++ reliabilityScore * 0.10
++ premiumBoost * 0.10
+
+==================================================
+2. LIVE ADD-TO-ORDER PIPELINE
+==================================================
+
+Create real Add-To-Order flow from RevealPage.
+
+When user clicks:
+
+“Add To Order”
+
+System must:
+
+1. validate inventory
+2. create order item
+3. reserve stock temporarily
+4. update analytics
+5. show cinematic confirmation
+
+==================================================
+CREATE TABLES
+==================================================
+
+orders:
+id
+user_id
+session_id
+status
+subtotal
+created_at
+
+order_items:
+id
+order_id
+inventory_id
+quantity
+price
+created_at
+
+inventory_reservations:
+id
+inventory_id
+session_id
+quantity
+expires_at
+
+==================================================
+3. SWIPE ANALYTICS COMMAND CENTER
+==================================================
+
+Create:
+
+/analytics/swipe-intelligence
+
+This becomes the behavioral intelligence dashboard.
+
+==================================================
+DISPLAY:
+==================================================
+
+TOP TAGS
+- most selected
+- most skipped
+
+TASTE CLUSTERS
+- smoky users
+- sweet users
+- bold users
+
+SESSION METRICS
+- average swipes
+- completion %
+- reveal %
+- add-to-order %
+
+REVENUE METRICS
+- best converting products
+- highest margin recommendations
+- suppressed low-stock items
+
+CRAFT COMPARISON
+SmokeCraft vs PourCraft vs BrewCraft vs VapeCraft
+
+==================================================
+VISUAL RULES
+==================================================
+
+NO background images behind charts
+
+Use:
+- solid premium cards
+- off-white analytics shell
+- readable typography
+- animated counters
+- smooth graph transitions
+
+==================================================
+4. REALISM LAYER (CRITICAL)
+==================================================
+
+The system logic is strong.
+The visuals still feel partially fake.
+
+Build a “Realism Layer” across all crafts.
+
+==================================================
+POURCRAFT REALISM
+==================================================
+
+Implement:
+- liquid pouring animation
+- viscosity simulation
+- glass reflection
+- ice interaction
+- liquid swirl
+- condensation
+
+Whiskey:
+slow heavy movement
+
+Tequila:
+lighter/faster motion
+
+==================================================
+BREWCRAFT REALISM
+==================================================
+
+Implement:
+- rising foam
+- bubble movement
+- condensation
+- foam settling
+- glass transparency
+- carbonation animation
+
+==================================================
+VAPECRAFT REALISM
+==================================================
+
+Implement:
+- layered vapor movement
+- smoke drift
+- neon ambient glow
+- pointer interaction
+- depth fog
+
+==================================================
+SMOKECRAFT REALISM
+==================================================
+
+Implement:
+- ember glow
+- cigar burn progression
+- smoke curl physics
+- heat distortion
+- ash texture detail
+
+==================================================
+TECH IMPLEMENTATION
+==================================================
+
+Preferred:
+Canvas/WebGL
+
+Fallback:
+CSS layered animation
+
+Must maintain 60fps target.
+
+==================================================
+5. UNIVERSAL EXPERIENCE POLISH
+==================================================
+
+Unify ALL swipe card presentation rules.
+
+==================================================
+CARD SYSTEM RULES
+==================================================
+
+Every swipe card:
+- vertical playing-card layout
+- cinematic image
+- dark gradient overlay
+- readable text zone
+- smooth glow
+- layered depth
+
+Stack behavior:
+- active card
+- secondary card
+- tertiary card
+
+Animation:
+- drag follow
+- tilt rotation
+- release flyout
+- stack rise
+
+==================================================
+6. MICRO INTERACTIONS
+==================================================
+
+Add:
+- subtle haptic-style visual feedback
+- swipe glow trails
+- card snap sound hooks
+- hover depth
+- ambient movement
+
+==================================================
+7. SOUND HOOKS (PREP ONLY)
+==================================================
+
+Prepare audio engine hooks.
+
+DO NOT fully implement audio yet.
+
+Create placeholders for:
+
+PourCraft:
+- liquid pour
+- ice clink
+
+BrewCraft:
+- carbonation hiss
+- foam pour
+
+SmokeCraft:
+- ember crackle
+- lighter flick
+
+VapeCraft:
+- vapor inhale
+- ambient synth
+
+==================================================
+8. REVEAL EXPERIENCE UPGRADE
+==================================================
+
+Upgrade RevealPage.
+
+Current reveal cards work.
+Now make them cinematic.
+
+==================================================
+REVEAL CARD REQUIREMENTS
+==================================================
+
+Each recommendation card:
+- animated visual
+- taste match %
+- inventory status
+- flavor notes
+- pairing explanation
+- CTA:
+  Add To Order
+
+Add animated reveal sequence:
+- fade in
+- cinematic scale
+- ambient glow
+
+==================================================
+9. AI VISUAL PIPELINE PREP
+==================================================
+
+Prepare architecture for future AI-generated imagery.
+
+Create:
+
+/lib/visualPrompts.ts
+
+Store:
+- visual prompt templates
+- craft-specific cinematic descriptors
+- flavor descriptors
+- lighting descriptors
+
+==================================================
+10. PERFORMANCE HARDENING
+==================================================
+
+Optimize:
+- image lazy loading
+- card preload
+- animation throttling
+- memory cleanup
+- route transitions
+
+Target:
+smooth 60fps feel
+
+==================================================
+11. FINAL EXPERIENCE TARGET
+==================================================
+
+The system should feel like:
+
+Netflix-quality motion
+Apple-quality UI smoothness
+Tinder-level interaction simplicity
+Luxury lounge atmosphere
+AI-guided sensory commerce
+
+NOT:
+admin software
+form builder
+dashboard overload
+
+==================================================
+12. ACCEPTANCE TESTS
+==================================================
+
+Verify:
+
+- recommendations obey inventory
+- add-to-order works
+- inventory reservation created
+- analytics update live
+- reveal cards animate
+- all craft themes still work
+- no duplicate craft engines
+- swipe performance smooth
+- visuals believable
+- no old design playground flows remain
+
+==================================================
+13. FINAL RESULT
+==================================================
+
+The final result should feel like:
+
+A living AI-powered sensory operating system
+that learns the guest,
+guides the experience,
+and intelligently drives revenue
+without feeling manipulative.

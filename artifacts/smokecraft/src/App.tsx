@@ -28,8 +28,9 @@ import InventoryModule from "@/pages/InventoryModule";
 import RewardsModule   from "@/pages/RewardsModule";
 import CampaignsModule from "@/pages/CampaignsModule";
 import OwnerIntelPanel from "@/pages/OwnerIntelPanel";
-import ExperiencePage  from "@/pages/ExperiencePage";
-import RevealPage      from "@/pages/RevealPage";
+import ExperiencePage      from "@/pages/ExperiencePage";
+import RevealPage          from "@/pages/RevealPage";
+import SwipeIntelligence   from "@/pages/SwipeIntelligence";
 import BuildYourOwn   from "@/pages/BuildYourOwn";
 import DesignerPage   from "@/pages/DesignerPage";
 import PaymentSuccess  from "@/pages/PaymentSuccess";
@@ -88,8 +89,9 @@ function Router() {
       <Route path="/vapecraft"       component={() => { window.location.replace("/experience/vape"); return null; }} />
       <Route path="/smokecraft"      component={() => { window.location.replace("/experience/smoke"); return null; }} />
       {/* Universal Swipe Experience Engine */}
-      <Route path="/experience/:type"      component={ExperiencePage} />
-      <Route path="/reveal/:sessionId"     component={RevealPage}     />
+      <Route path="/experience/:type"              component={ExperiencePage}    />
+      <Route path="/reveal/:sessionId"             component={RevealPage}        />
+      <Route path="/analytics/swipe-intelligence"  component={SwipeIntelligence} />
       <Route path="/build-your-own"  component={BuildYourOwn}   />
       <Route path="/designer"        component={DesignerPage}   />
       <Route path="/success"    component={PaymentSuccess} />

@@ -69,3 +69,4 @@ export * from "./aiConfigurations";
 export * from "./demoSimEvents";
 export * from "./purchaseOrders";
 export * from "./swipeExperience";
+export * from "./swipeOrders";
