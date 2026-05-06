@@ -1,0 +1,440 @@
+ASTER SYSTEM PROMPT
+
+AXIOM OS — TRAINING MODE + DEMO ENVIRONMENT
+
+Powered by CraftHub
+
+Supporting:
+
+SmokeCraft • PourCraft • BrewCraft • VapeCraft
+
+Build a fully immersive enterprise-grade TRAINING MODE system inside Axiom OS.
+
+This is NOT a tutorial page.
+
+This is a living simulated venue environment used for:
+
+• Employee onboarding
+• Sales demonstrations
+• Investor presentations
+• Venue walkthroughs
+• Franchise demonstrations
+• Distributor showcases
+• Conference/expo demos
+• Certification training
+• Manager training
+• Touchscreen operational education
+
+The system must feel like a real active venue operating in real time.
+
+⸻
+
+CORE TRAINING ENVIRONMENTS
+
+1. EMPLOYEE ONBOARDING MODE
+
+Purpose:
+Train new employees how to operate the system.
+
+Simulated roles:
+
+• Bartender
+• Cigar Host
+• Vape Specialist
+• Server
+• Floor Manager
+• Cashier
+• Venue Owner
+• Inventory Manager
+
+Features:
+
+• Step-by-step guided onboarding
+• Interactive tutorials
+• AI voice assistant coaching
+• Simulated customer interactions
+• Product recommendation walkthroughs
+• Mock transactions
+• Fake loyalty signups
+• Inventory alerts
+• Campaign participation training
+• Reservation handling
+• POS order completion
+• Conflict resolution scenarios
+
+The system should explain:
+
+WHAT they are doing
+WHY it matters
+WHAT happens next
+
+⸻
+
+2. SALES DEMO MODE
+
+Purpose:
+Help sell Axiom OS to venues.
+
+The system should auto-run a cinematic experience showing:
+
+• Customer entering venue
+• Recommendation engine activating
+• AI pairing experience
+• Add-to-order flow
+• Loyalty capture
+• Upsell engine
+• Campaign engine
+• Analytics engine
+• Revenue optimization
+• Inventory prediction
+• Venue performance dashboard
+
+Demo should feel smooth, premium, futuristic, calm, and intelligent.
+
+Transitions glide softly.
+
+Charts animate in real time.
+
+Metrics pulse naturally.
+
+The system should appear alive.
+
+⸻
+
+3. INVESTOR DEMO MODE
+
+Purpose:
+Show scalability, intelligence, and monetization.
+
+Investor mode should showcase:
+
+• Multi-venue management
+• Real-time analytics
+• Revenue growth simulation
+• AI learning system
+• Data intelligence engine
+• User behavioral prediction
+• Subscription revenue
+• Marketplace revenue
+• POS revenue
+• Device ecosystem
+• Franchise potential
+• Distributor integrations
+• White-label opportunities
+
+Include:
+
+• Animated growth dashboards
+• Fake nationwide venue map
+• Live KPI ticker
+• Revenue projection simulations
+• Engagement heatmaps
+• AI prediction overlays
+
+The experience should feel like:
+Apple × Tesla × Palantir × Hospitality.
+
+Clean.
+Controlled.
+Elegant.
+Intelligent.
+
+⸻
+
+4. VENUE WALKTHROUGH MODE
+
+Purpose:
+Allow venue owners to experience the platform.
+
+Interactive guided flow:
+
+1. Welcome screen
+2. Venue setup walkthrough
+3. Inventory setup
+4. Employee setup
+5. Campaign setup
+6. Customer experience demo
+7. Analytics overview
+8. Revenue engine explanation
+9. Device management
+10. Launch simulation
+
+Include “tap anywhere to continue” touchscreen flow.
+
+⸻
+
+FAKE VENUE SIMULATION ENGINE
+
+Create a fake premium venue called:
+
+Vault Cigar Lounge
+
+Include:
+
+• Fake customers
+• Fake orders
+• Fake reservations
+• Fake inventory
+• Fake campaigns
+• Fake rewards activity
+• Fake distributors
+• Fake employee activity
+
+Data updates every few seconds.
+
+Fake analytics must look believable.
+
+⸻
+
+LIVE SIMULATION SYSTEMS
+
+Fake Inventory Activity
+
+Examples:
+
+• “Macanudo Inspirado low stock”
+• “Buffalo Trace trending tonight”
+• “Mango Ice Vape rising in popularity”
+
+⸻
+
+Fake Customer Events
+
+Examples:
+
+• “Marcus added pairing to order”
+• “VIP member redeemed reward”
+• “2 new reservations booked”
+
+⸻
+
+Fake AI Recommendation Events
+
+Examples:
+
+• “Recommendation confidence increased to 92%”
+• “Flavor profile matched”
+• “Pairing optimization completed”
+
+⸻
+
+TRAINING SCENARIOS
+
+Build interactive training missions.
+
+Examples:
+
+Scenario 1:
+
+First-time customer
+
+Goal:
+Guide customer through pairing experience.
+
+⸻
+
+Scenario 2:
+
+Inventory shortage
+
+Goal:
+Teach staff how to handle substitutions.
+
+⸻
+
+Scenario 3:
+
+Upsell opportunity
+
+Goal:
+Teach emotional recommendation flow.
+
+⸻
+
+Scenario 4:
+
+VIP guest experience
+
+Goal:
+Demonstrate personalization engine.
+
+⸻
+
+Scenario 5:
+
+Distributor campaign night
+
+Goal:
+Teach campaign management flow.
+
+⸻
+
+TRAINING CERTIFICATION SYSTEM
+
+Include:
+
+• Completion tracking
+• Skill progress
+• Role badges
+• Training percentages
+• Quiz engine
+• Scenario scoring
+• Manager review panel
+
+Generate printable certificates.
+
+⸻
+
+AI TRAINING ASSISTANT
+
+Add:
+
+Maxwell AI
+
+Behavior:
+
+• calm
+• intelligent
+• premium
+• instructional
+• emotionally controlled
+
+Maxwell should guide users naturally.
+
+Examples:
+
+“Great choice. Now let’s walk through how the pairing engine increases average order value.”
+
+“Notice how the recommendation system adjusted based on customer preference.”
+
+“Inventory updated automatically after checkout.”
+
+⸻
+
+TOUCHSCREEN EXPERIENCE RULES
+
+Everything must be:
+
+• finger friendly
+• picture driven
+• simple
+• minimal typing
+• cinematic
+• visually guided
+
+Touch targets:
+Minimum 72px.
+
+Large visual cards.
+
+Soft animations.
+
+No clutter.
+
+⸻
+
+VISUAL DESIGN LANGUAGE
+
+Use:
+
+• glassmorphism carefully
+• off-white / cream readability panels
+• dark luxury backgrounds
+• real product photography
+• smooth lighting gradients
+• cinematic motion
+• subtle particle movement
+• soft UI glow
+
+No emojis.
+No generic clipart.
+No flat dashboards.
+
+⸻
+
+REQUIRED BACKEND SYSTEMS
+
+Build:
+
+• training_sessions table
+• training_progress table
+• demo_analytics table
+• fake_orders table
+• fake_inventory_activity table
+• demo_reset_service
+• scenario_engine
+• training_certifications table
+
+⸻
+
+REQUIRED API ENDPOINTS
+
+/api/training/start
+/api/training/reset
+/api/training/scenarios
+/api/training/progress
+/api/training/certification
+/api/demo/live-events
+/api/demo/fake-orders
+/api/demo/fake-analytics
+/api/demo/reset
+
+⸻
+
+REQUIRED FRONTEND PAGES
+
+/training
+/training/employee
+/training/investor
+/training/sales
+/training/walkthrough
+/training/scenarios
+/training/certifications
+
+⸻
+
+REQUIRED ADMIN CONTROLS
+
+Admin can:
+
+• reset demo environment
+• inject demo activity
+• control simulation speed
+• trigger fake campaigns
+• enable cinematic mode
+• switch craft experiences
+• trigger investor showcase mode
+
+⸻
+
+SOUND DESIGN
+
+Include:
+
+• ambient lounge sound
+• subtle confirmation tones
+• smooth transition audio
+• soft AI notification sounds
+• realistic pour sounds
+• cigar cutter sound
+• vape inhale ambience
+
+Everything must feel emotionally premium.
+
+⸻
+
+FINAL EXPERIENCE GOAL
+
+When someone touches the system for the first time, it should feel like:
+
+“This is not a POS system.”
+
+“This feels like the future of hospitality intelligence.”
+
+“This venue feels alive.”
+
+“This company understands human behavior.”
+
+“This system thinks ahead.”
+
+That is the emotional target.

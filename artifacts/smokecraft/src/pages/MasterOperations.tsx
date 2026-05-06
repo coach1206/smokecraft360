@@ -68,6 +68,7 @@ const NAV_ITEMS = [
   { id: "enterprise",   label: "Enterprise Intel",     desc: "9-tab intelligence suite",    icon: BarChart3,       route: "/enterprise-intelligence", group: "operations" },
   { id: "axiom-pay",    label: "Axiom Pay",            desc: "Tabs · Fulfillment · Connect", icon: DollarSign,      route: "/axiom-pay",               group: "operations" },
   { id: "launch",       label: "Launch Readiness",     desc: "Pre-launch health & risk",     icon: ShieldCheck,     route: "/launch-readiness",        group: "operations" },
+  { id: "finance-recon",label: "Reconciliation",      desc: "Revenue · Payouts · Alerts",   icon: BarChart3,       route: "/finance-reconciliation",  group: "operations" },
   { id: "legal",        label: "Legal",                desc: "ToS · Privacy · AUP",          icon: FileText,        route: "/legal",                   group: "operations" },
   { id: "devices",      label: "Devices",              desc: "Kiosk & hardware health",     icon: Monitor,         route: "/devices",                 group: "venue" },
   { id: "venues",       label: "Venues",               desc: "Venue management",            icon: Building2,       route: "/admin-panel",             group: "venue" },

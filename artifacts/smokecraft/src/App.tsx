@@ -84,6 +84,8 @@ import MasterOperations               from "@/pages/MasterOperations";
 import AxiomPay                       from "@/pages/AxiomPay";
 import LaunchReadiness                from "@/pages/LaunchReadiness";
 import Legal                          from "@/pages/Legal";
+import AxiomReceipt                   from "@/pages/AxiomReceipt";
+import FinanceReconciliation          from "@/pages/FinanceReconciliation";
 
 const queryClient = new QueryClient();
 
@@ -118,6 +120,8 @@ function Router() {
       <Route path="/axiom-pay"               component={AxiomPay}                />
       <Route path="/launch-readiness"        component={LaunchReadiness}          />
       <Route path="/legal"                   component={Legal}                    />
+      <Route path="/receipt/:tabId"          component={AxiomReceipt}             />
+      <Route path="/finance-reconciliation"  component={FinanceReconciliation}    />
       <Route path="/admin/intel"               component={OwnerIntelPanel}         />
       <Route path="/admin/experience-control" component={ExperienceControlPanel}  />
       {/* Legacy craft routes — redirect into the Universal Swipe Engine */}

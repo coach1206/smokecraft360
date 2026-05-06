@@ -125,9 +125,13 @@ import { requirePaymentsEnabled, requireRewardsEnabled } from "./middleware/kill
 import guestTabsRouter      from "./routes/guestTabs";
 import fulfillmentRouter    from "./routes/fulfillmentQueue";
 import stripeConnectRouter  from "./routes/stripeConnect";
-import failedWebhooksRouter from "./routes/failedWebhooks";
-import launchReadinessRouter from "./routes/launchReadiness";
-import { startFailedWebhookWorker } from "./lib/failedWebhookWorker";
+import failedWebhooksRouter      from "./routes/failedWebhooks";
+import launchReadinessRouter     from "./routes/launchReadiness";
+import receiptsRouter            from "./routes/receipts";
+import financeReconciliationRouter from "./routes/financeReconciliation";
+import paymentTimelineRouter     from "./routes/paymentTimeline";
+import { startFailedWebhookWorker }   from "./lib/failedWebhookWorker.js";
+import { startReconciliationWorker }  from "./lib/reconciliationWorker.js";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -353,6 +357,9 @@ app.use("/api/admin/system-validation",      systemValidationRouter);
 app.use("/api/admin/operator-readiness",    operatorReadinessRouter);
 app.use("/api/admin/failed-webhooks",      failedWebhooksRouter);
 app.use("/api/admin/launch-readiness",     launchReadinessRouter);
+app.use("/api/receipts",                   receiptsRouter);
+app.use("/api/finance-reconciliation",     financeReconciliationRouter);
+app.use("/api/payment-timeline",           paymentTimelineRouter);
 app.use("/api/admin/workers",             adminWorkersRouter);
 app.use("/api/system",                   systemVersionRouter);
 app.use("/api/admin/system",             systemVersionRouter);
@@ -391,6 +398,7 @@ if (process.env["NODE_ENV"] !== "test") {
   startCampaignBudgetWorker();
   startTournamentWorker();
   startFailedWebhookWorker();
+  startReconciliationWorker();
 }
 
 // ── 404 catch-all ─────────────────────────────────────────────────────────────

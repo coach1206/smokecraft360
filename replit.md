@@ -45,6 +45,11 @@ The application features a luxury aesthetic with a dark gold theme, glassmorphis
 -   **Authentication and Authorization**: JWT-based authentication with role-based access control.
 -   **Progression and Loyalty System**: A 5-tier user progression and a separate loyalty points system.
 -   **Admin Intensity Controls**: Venue-level tuning for reward, XP, and discount engines via feature flags.
+-   **Axiom Receipt Experience**: Cinematic post-payment session summary at `/receipt/:tabId`. Auto-generates on first visit, stores in `receipts` table (with QR token), supports email/SMS/print delivery channels. `GET /api/receipts/qr/:token` is public for guest self-retrieval.
+-   **Financial Reconciliation Dashboard**: 5-tab enterprise dashboard at `/finance-reconciliation` (Overview, Alert Queue, Orphan Tabs, Payout Status, AI Insights). Reconciliation score 0–100, real-time metrics, alert ack/resolve, and "Run Reconciliation" trigger. Accessible via MasterOperations nav.
+-   **Payment Event Timeline**: Append-only `payment_events` table. `GET /api/payment-timeline/:tabId` returns full lifecycle per tab. `POST` appends manual staff events. Venue-scoped recent feed at `/venue/:venueId/recent`.
+-   **Reconciliation Worker**: 15-min background worker detects stuck authorized tabs (>2h), orphan open tabs (>72h), exhausted webhooks, failed payouts, stale pending payouts — deduplicates alerts via upsert pattern.
+-   **Financial Alert Engine**: `reconciliation_alerts` table with severity/status lifecycle. Auto-populated by worker, manually dismissible by admin/super_admin.
 -   **Production Hardening Layer**: Includes Stripe event idempotency, tenant isolation, server-side pricing, session lifecycle management, kill switches for system parts, AES-256-GCM field-level encryption, and an append-only audit log.
 -   **Engagement Loop**: Tracks user interactions, awards points, and integrates with server-side loyalty points for authenticated users.
 -   **Admin Card Manager**: Allows venue admins to upload and replace product card images.
