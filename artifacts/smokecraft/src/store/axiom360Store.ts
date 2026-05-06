@@ -1,10 +1,8 @@
 /**
  * axiom360Store — Global OS state for the AXIOM 360 Experience OS.
  *
- * Tracks the active operating mode and session context so that
- * switching from Patron → Staff → Patron preserves exactly where
- * the patron was, which table they were viewing, and which craft
- * was active.
+ * Tracks the active operating mode, session context, and the
+ * Revenue Intelligence layer (dynamic pricing, member lock, lift).
  *
  * Persisted to localStorage under the key "axiom360-os" so state
  * survives page refreshes and device wakes from sleep.
@@ -29,11 +27,33 @@ interface Axiom360State {
   /** Timestamp of last staff handoff — for session audit trail */
   lastHandoffAt: number | null;
 
+  // ── Revenue Intelligence ────────────────────────────────────────────────────
+
+  /** Venue occupancy 0–100 %. Drives the dynamic pricing engine. */
+  venueOccupancy: number;
+
+  /** Master kill-switch for the dynamic pricing engine */
+  isDynamicPricingActive: boolean;
+
+  /** Whether a loyalty member is currently authenticated on this terminal */
+  isMemberLoggedIn: boolean;
+
+  /**
+   * Cumulative extra dollars captured today through surge pricing
+   * vs what static pricing would have generated.
+   */
+  revenueLift: number;
+
   // ── Setters ────────────────────────────────────────────────────────────────
 
   setMode:    (mode: ActiveMode) => void;
   setCraft:   (craft: CraftType) => void;
   setTableId: (id: string | null) => void;
+
+  setOccupancy:        (pct: number)  => void;
+  toggleDynamicPricing: ()            => void;
+  toggleMember:         ()            => void;
+  addRevenueLift:       (delta: number) => void;
 
   /**
    * Trigger the Handoff — flips patron ↔ staff and records the timestamp.
@@ -51,9 +71,19 @@ export const useAxiom360 = create<Axiom360State>()(
       activeTableId: null,
       lastHandoffAt: null,
 
+      venueOccupancy:         45,
+      isDynamicPricingActive: true,
+      isMemberLoggedIn:       false,
+      revenueLift:            0,
+
       setMode:    (mode)  => set({ activeMode: mode }),
       setCraft:   (craft) => set({ currentCraft: craft }),
       setTableId: (id)    => set({ activeTableId: id }),
+
+      setOccupancy:         (pct)   => set({ venueOccupancy: Math.max(0, Math.min(100, pct)) }),
+      toggleDynamicPricing: ()      => set((s) => ({ isDynamicPricingActive: !s.isDynamicPricingActive })),
+      toggleMember:         ()      => set((s) => ({ isMemberLoggedIn: !s.isMemberLoggedIn })),
+      addRevenueLift:       (delta) => set((s) => ({ revenueLift: s.revenueLift + delta })),
 
       handoff: () =>
         set((s) => ({
@@ -63,12 +93,15 @@ export const useAxiom360 = create<Axiom360State>()(
     }),
     {
       name: "axiom360-os",
-      // Only persist state values — never persist action functions
       partialize: (s) => ({
-        activeMode:    s.activeMode,
-        currentCraft:  s.currentCraft,
-        activeTableId: s.activeTableId,
-        lastHandoffAt: s.lastHandoffAt,
+        activeMode:             s.activeMode,
+        currentCraft:           s.currentCraft,
+        activeTableId:          s.activeTableId,
+        lastHandoffAt:          s.lastHandoffAt,
+        venueOccupancy:         s.venueOccupancy,
+        isDynamicPricingActive: s.isDynamicPricingActive,
+        isMemberLoggedIn:       s.isMemberLoggedIn,
+        revenueLift:            s.revenueLift,
       }),
     },
   ),

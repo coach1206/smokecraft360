@@ -72,6 +72,50 @@ const CRAFT_SCENES: Record<string, CraftScene[]> = {
   vape:  VAPE_SCENES,
 };
 
+// ── Pricing engine ────────────────────────────────────────────────────────────
+// Curated starting prices per craft category. Dynamic pricing applies a
+// modifier on top; members always see their locked base rate regardless.
+
+const CRAFT_BASE_PRICE: Record<string, number> = {
+  smoke: 28,
+  pour:  22,
+  brew:  14,
+  vape:  18,
+};
+
+type PriceModifier = "base" | "surge" | "discount" | "locked";
+
+interface PriceInfo {
+  price:    number;
+  modifier: PriceModifier;
+  label:    string;
+}
+
+function computePrice(
+  craftId:   string,
+  occupancy: number,
+  isActive:  boolean,
+  isMember:  boolean,
+): PriceInfo {
+  const base = CRAFT_BASE_PRICE[craftId] ?? 20;
+  if (isMember)
+    return { price: base, modifier: "locked",   label: "Price Locked"     };
+  if (!isActive)
+    return { price: base, modifier: "base",     label: "Base Rate"        };
+  if (occupancy > 80)
+    return { price: +(base * 1.12).toFixed(2),  modifier: "surge",    label: "Premium Demand"   };
+  if (occupancy < 25)
+    return { price: +(base * 0.85).toFixed(2),  modifier: "discount", label: "Volume Incentive" };
+  return   { price: base, modifier: "base",     label: "Base Rate"        };
+}
+
+const PRICE_MODIFIER_COLOR: Record<PriceModifier, string> = {
+  locked:   "#4ade80",
+  surge:    "#f87171",
+  discount: "#C9A84C",
+  base:     "rgba(240,232,212,0.32)",
+};
+
 // ── Scene rotation hook ───────────────────────────────────────────────────────
 // Returns the currently-displayed image URL for a craft card.
 // Rotates through the weighted-ranked scenes every `intervalMs` ms.
@@ -242,10 +286,12 @@ function CraftCard({
   craft,
   idx,
   onTap,
+  priceInfo,
 }: {
-  craft: typeof CRAFTS[number];
-  idx:   number;
-  onTap: () => void;
+  craft:     typeof CRAFTS[number];
+  idx:       number;
+  onTap:     () => void;
+  priceInfo: PriceInfo;
 }) {
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
@@ -361,6 +407,47 @@ function CraftCard({
           {craft.glyph}
         </motion.div>
 
+        {/* ── Value Display (top-right) — ticker-tape price flip ── */}
+        <div
+          style={{
+            position: "absolute", top: 10, right: 10,
+            background: "rgba(8,6,4,0.72)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 8, padding: "4px 8px",
+            backdropFilter: "blur(10px)",
+            textAlign: "right",
+          }}
+        >
+          <div style={{
+            fontSize: 6.5, fontWeight: 700, letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            color: PRICE_MODIFIER_COLOR[priceInfo.modifier],
+            marginBottom: 1,
+          }}>
+            {priceInfo.label}
+          </div>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "flex-end", gap: 1 }}>
+            <span style={{ fontSize: 8, color: "rgba(240,232,212,0.4)", fontWeight: 400 }}>$</span>
+            <div style={{ overflow: "hidden", height: 16 }}>
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.span
+                  key={priceInfo.price}
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0,  opacity: 1 }}
+                  exit={{    y: -10, opacity: 0 }}
+                  transition={{ duration: 0.28, ease: "easeInOut" }}
+                  style={{
+                    display: "block", fontSize: 14, fontWeight: 700,
+                    color: "#F0E8D4", letterSpacing: "-0.02em", lineHeight: "16px",
+                  }}
+                >
+                  {priceInfo.price.toFixed(0)}
+                </motion.span>
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+
         {/* Labels — readable above vignette */}
         <div>
           <div
@@ -418,6 +505,22 @@ function StaffPanel({
 }) {
   const [, navigate] = useLocation();
   const craft = CRAFTS.find((c) => c.id === currentCraft);
+
+  const {
+    venueOccupancy,
+    isDynamicPricingActive,
+    isMemberLoggedIn,
+    revenueLift,
+    setOccupancy,
+    toggleDynamicPricing,
+  } = useAxiom360();
+
+  const occupancyColor =
+    venueOccupancy > 80 ? "#f87171" : venueOccupancy < 25 ? "#C9A84C" : "#4ade80";
+
+  // Occupancy arc dial parameters
+  const R = 30; const CIRC = 2 * Math.PI * R;
+  const arcFilled = CIRC * (venueOccupancy / 100) * (240 / 360);
 
   return (
     <motion.div
@@ -503,6 +606,124 @@ function StaffPanel({
         </div>
       </div>
 
+      {/* ── Revenue Intelligence Panel ── */}
+      <div
+        className="relative z-10 flex-shrink-0 px-6 py-4"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,0,0,0.14)" }}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <span style={{ fontSize: 7.5, color: "rgba(240,232,212,0.35)", letterSpacing: "0.32em", textTransform: "uppercase" }}>
+            Revenue Intelligence
+          </span>
+          {/* Master toggle */}
+          <button
+            onClick={toggleDynamicPricing}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              fontSize: 7.5, fontWeight: 700, letterSpacing: "0.16em",
+              textTransform: "uppercase", cursor: "pointer", outline: "none",
+              background: isDynamicPricingActive ? "rgba(201,168,76,0.14)" : "rgba(255,255,255,0.05)",
+              border: `1px solid ${isDynamicPricingActive ? "rgba(201,168,76,0.45)" : "rgba(255,255,255,0.10)"}`,
+              color: isDynamicPricingActive ? "#C9A84C" : "rgba(240,232,212,0.3)",
+              padding: "3px 10px", borderRadius: 99, transition: "all 0.22s",
+            }}
+          >
+            <div style={{
+              width: 5, height: 5, borderRadius: "50%",
+              background: isDynamicPricingActive ? "#4ade80" : "rgba(255,255,255,0.18)",
+              boxShadow: isDynamicPricingActive ? "0 0 6px #4ade8088" : "none",
+              transition: "all 0.22s",
+            }} />
+            {isDynamicPricingActive ? "Engine ON" : "Engine OFF"}
+          </button>
+        </div>
+
+        <div className="flex items-start gap-5">
+          {/* Occupancy Dial */}
+          <div className="flex flex-col items-center" style={{ minWidth: 72 }}>
+            <svg width="72" height="60" viewBox="0 0 72 60">
+              <circle cx="36" cy="46" r={R}
+                fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="5"
+                strokeDasharray={`${CIRC * (240 / 360)} ${CIRC}`}
+                strokeLinecap="round"
+                transform="rotate(150 36 46)"
+              />
+              <circle cx="36" cy="46" r={R}
+                fill="none" stroke={occupancyColor} strokeWidth="5"
+                strokeDasharray={`${arcFilled} ${CIRC}`}
+                strokeLinecap="round"
+                transform="rotate(150 36 46)"
+                style={{
+                  filter: `drop-shadow(0 0 5px ${occupancyColor}66)`,
+                  transition: "stroke-dasharray 0.6s ease, stroke 0.3s ease",
+                }}
+              />
+              <text x="36" y="50" textAnchor="middle"
+                fill="#F0E8D4" fontSize="13" fontWeight="700"
+                style={{ fontFamily: "'Inter', system-ui" }}
+              >
+                {venueOccupancy}%
+              </text>
+            </svg>
+            <span style={{ fontSize: 7, color: "rgba(240,232,212,0.28)", letterSpacing: "0.18em", textTransform: "uppercase", marginTop: -4 }}>
+              Occupancy
+            </span>
+            {/* Occupancy slider */}
+            <input
+              type="range" min={0} max={100} value={venueOccupancy}
+              onChange={(e) => setOccupancy(Number(e.target.value))}
+              style={{ width: 68, marginTop: 4, accentColor: occupancyColor, cursor: "pointer" }}
+            />
+          </div>
+
+          {/* Metrics column */}
+          <div className="flex flex-col gap-3 flex-1">
+            {/* Dynamic Lift */}
+            <div>
+              <div style={{ fontSize: 7, color: "rgba(240,232,212,0.32)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 2 }}>
+                Dynamic Lift Today
+              </div>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 3 }}>
+                <span style={{ fontSize: 7, color: "#4ade8088", fontWeight: 400 }}>$</span>
+                <span style={{ fontSize: 20, fontWeight: 700, color: "#4ade80", letterSpacing: "-0.02em", lineHeight: 1 }}>
+                  {revenueLift.toFixed(0)}
+                </span>
+                <span style={{ fontSize: 7.5, color: "rgba(74,222,128,0.5)", marginLeft: 2 }}>
+                  vs static
+                </span>
+              </div>
+            </div>
+
+            {/* Member Conversion Potential */}
+            <div>
+              <div style={{ fontSize: 7, color: "rgba(240,232,212,0.32)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 2 }}>
+                Member Conversion
+              </div>
+              {isMemberLoggedIn ? (
+                <div style={{ fontSize: 10, fontWeight: 700, color: "#4ade80", letterSpacing: "0.06em" }}>
+                  ✓ Member Active
+                </div>
+              ) : (
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#a78bfa", letterSpacing: "-0.01em" }}>
+                    ${(venueOccupancy > 80 ? 28 * 0.12 : 0).toFixed(0)} avg savings/session
+                  </div>
+                  <div style={{ fontSize: 7.5, color: "rgba(167,139,250,0.45)", marginTop: 1 }}>
+                    Non-member sessions paying surge
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* State label */}
+        <div style={{ marginTop: 8, fontSize: 7.5, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase",
+          color: venueOccupancy > 80 ? "#f87171" : venueOccupancy < 25 ? "#C9A84C" : "rgba(240,232,212,0.25)" }}>
+          {venueOccupancy > 80 ? "▲ JUMPING — 12% Surge Active" : venueOccupancy < 25 ? "▼ SLOW — 15% Volume Incentive Active" : "● Normal Demand"}
+        </div>
+      </div>
+
       {/* Nav grid */}
       <div
         className="relative z-10 flex-1 overflow-y-auto p-6"
@@ -575,10 +796,19 @@ function PatronView({
   onCraftSelect: (craft: typeof CRAFTS[number]) => void;
 }) {
   const [, navigate]  = useLocation();
-  const [activeCraft, setActiveCraft] = useState<string | null>(null);
-  const [activeMood,  setActiveMood]  = useState<MoodKey | null>(null);
-  const [burstKey,    setBurstKey]    = useState(0);
-  const [portal, setPortal]           = useState<{ route: string; color: string } | null>(null);
+  const [activeCraft, setActiveCraft]        = useState<string | null>(null);
+  const [activeMood,  setActiveMood]         = useState<MoodKey | null>(null);
+  const [burstKey,    setBurstKey]           = useState(0);
+  const [portal,      setPortal]             = useState<{ route: string; color: string } | null>(null);
+  const [stimulationVisible, setStimulation] = useState(false);
+
+  const {
+    venueOccupancy,
+    isDynamicPricingActive,
+    isMemberLoggedIn,
+    toggleMember,
+    addRevenueLift,
+  } = useAxiom360();
 
   // Pulse color: explicit mood chip > craft-derived mood > default amber
   const pulseColor = activeMood
@@ -586,6 +816,29 @@ function PatronView({
     : activeCraft
       ? MOOD_CONFIG[CRAFT_MOOD[activeCraft] ?? "bold"].color
       : "#C9A84C";
+
+  // Per-craft prices — recomputes whenever occupancy / pricing / member state changes
+  const craftPrices = useMemo(
+    () => Object.fromEntries(
+      CRAFTS.map((c) => [
+        c.id,
+        computePrice(c.id, venueOccupancy, isDynamicPricingActive, isMemberLoggedIn),
+      ]),
+    ),
+    [venueOccupancy, isDynamicPricingActive, isMemberLoggedIn],
+  ) as Record<string, PriceInfo>;
+
+  // Session stimulation — fires after 40 minutes of uninterrupted patron time
+  const sessionStartRef = useRef(Date.now());
+  useEffect(() => {
+    const FORTY_MIN = 40 * 60 * 1000;
+    const elapsed = Date.now() - sessionStartRef.current;
+    const id = setTimeout(
+      () => setStimulation(true),
+      Math.max(0, FORTY_MIN - elapsed),
+    );
+    return () => clearTimeout(id);
+  }, []);
 
   // Live clock
   const [time, setTime] = useState(() =>
@@ -604,6 +857,11 @@ function PatronView({
     setActiveMood(CRAFT_MOOD[craft.id] ?? "bold");
     setBurstKey((k) => k + 1);
     onCraftSelect(craft);
+    // Accumulate surge lift whenever a patron enters the experience during peak
+    if (isDynamicPricingActive && !isMemberLoggedIn && venueOccupancy > 80) {
+      const base = CRAFT_BASE_PRICE[craft.id] ?? 20;
+      addRevenueLift(+(base * 0.12).toFixed(2));
+    }
     setTimeout(() => setPortal({ route: craft.route, color: craft.color }), 320);
   }
 
@@ -792,6 +1050,7 @@ function PatronView({
             craft={craft}
             idx={i}
             onTap={() => handleCraftTap(craft)}
+            priceInfo={craftPrices[craft.id] ?? computePrice(craft.id, venueOccupancy, isDynamicPricingActive, isMemberLoggedIn)}
           />
         ))}
       </div>
@@ -821,13 +1080,97 @@ function PatronView({
             </span>
           </div>
         ))}
+
+        {/* Member Access toggle */}
+        <button
+          onClick={() => { toggleMember(); setBurstKey((k) => k + 1); }}
+          style={{
+            marginLeft: "auto",
+            display: "flex", alignItems: "center", gap: 5,
+            fontSize: 7.5, fontWeight: 700, letterSpacing: "0.16em",
+            textTransform: "uppercase", cursor: "pointer", outline: "none",
+            background: isMemberLoggedIn ? "rgba(74,222,128,0.12)" : "rgba(255,255,255,0.05)",
+            border: `1px solid ${isMemberLoggedIn ? "rgba(74,222,128,0.45)" : "rgba(255,255,255,0.12)"}`,
+            color: isMemberLoggedIn ? "#4ade80" : "rgba(240,232,212,0.32)",
+            padding: "3px 10px", borderRadius: 99,
+            transition: "all 0.28s ease",
+            boxShadow: isMemberLoggedIn ? "0 0 8px rgba(74,222,128,0.2)" : "none",
+          }}
+        >
+          {isMemberLoggedIn ? (
+            <>
+              <span style={{ fontSize: 8 }}>⬤</span>
+              Price Locked
+            </>
+          ) : (
+            <>
+              <span style={{ fontSize: 8, opacity: 0.5 }}>◯</span>
+              Member Access
+            </>
+          )}
+        </button>
+
         <div
-          className="ml-auto text-[8px] uppercase tracking-widest"
+          className="text-[8px] uppercase tracking-widest"
           style={{ color: "rgba(240,232,212,0.16)" }}
         >
           Hold top-center 3s · Staff
         </div>
       </footer>
+
+      {/* ── Session Stimulation notification (fires at 40 min) ── */}
+      <AnimatePresence>
+        {stimulationVisible && (
+          <motion.div
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 340, damping: 34 }}
+            style={{
+              position: "absolute", bottom: 52, left: 12, right: 12, zIndex: 50,
+              background: "linear-gradient(135deg, rgba(18,14,10,0.96), rgba(22,17,12,0.94))",
+              border: "1px solid rgba(201,168,76,0.28)",
+              borderRadius: 14,
+              padding: "12px 16px",
+              backdropFilter: "blur(18px)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.55), 0 0 20px rgba(201,168,76,0.08)",
+              display: "flex", alignItems: "center", gap: 12,
+            }}
+          >
+            <div style={{
+              width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
+              background: "rgba(201,168,76,0.15)",
+              border: "1px solid rgba(201,168,76,0.4)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 13,
+            }}>
+              ✦
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{
+                fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
+                textTransform: "uppercase", color: "#C9A84C", marginBottom: 2,
+              }}>
+                Enhance Your Session
+              </div>
+              <div style={{ fontSize: 10, color: "rgba(240,232,212,0.65)", lineHeight: 1.4 }}>
+                Our AI recommends a palate-cleansing pairing — a smoky Islay single-malt
+                or house charcuterie to reset and elevate your experience.
+              </div>
+            </div>
+            <button
+              onClick={() => setStimulation(false)}
+              style={{
+                fontSize: 14, color: "rgba(240,232,212,0.28)",
+                background: "none", border: "none", cursor: "pointer",
+                lineHeight: 1, padding: "2px 4px", flexShrink: 0,
+              }}
+            >
+              ×
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Portal curtain */}
       <AnimatePresence>

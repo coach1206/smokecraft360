@@ -1,0 +1,34 @@
+"Phase 3: Revenue Intelligence, Dynamic Pricing, and Member-Lock Logic.
+
+OBJECTIVE: Transform Axiom OS into a profit-maximizing engine that solves the 'Static Pricing' revenue leak.
+
+1. REVENUE STORE & OCCUPANCY LOGIC:
+- Update the Zustand store to include:
+    * 'venueOccupancy' (0-100%)
+    * 'isDynamicPricingActive' (boolean)
+    * 'isMemberLoggedIn' (boolean)
+    * 'revenueLift' (tracking the extra profit from surge pricing)
+
+2. DYNAMIC PRICING ENGINE (The 'Jumping' vs 'Slow' logic):
+- Implement a logic worker that monitors 'venueOccupancy':
+    * SLOW STATE (<25%): Automatically apply a 15% 'Volume Incentive' discount to high-margin items.
+    * JUMPING STATE (>80%): Apply a 12% 'Premium Demand' surcharge.
+- MEMBER OVERRIDE: If 'isMemberLoggedIn' is TRUE, the system MUST bypass dynamic pricing and lock the 'Base Rate' as a primary membership perk.
+
+3. UI: THE 'NUMBER FLIP' & PRICE TAGS:
+- Add a small, recessed 'Value Display' in the bottom-right corner of each Craft Card.
+- When a price changes (due to occupancy or member login), use a 0.8s 'Ticker-Tape' roll animation for the digits.
+- Add a 'Member Access' button in the footer. When 'logged in', display a 'Price Locked' badge next to all costs.
+
+4. THE STIMULATION & UPSELL ENGINE:
+- Add 'Inventory Intelligence': Flag 2 items as 'Overstock'. These must stay at the top of recommendations.
+- 'Session Stimulation': If a Patron session exceeds 40 minutes, trigger a subtle 'Enhance Your Session' notification suggesting a palate-cleansing pairing (Spirit or Food).
+
+5. STAFF REVENUE DASHBOARD:
+- Populate the 'Revenue' and 'Analytics' tabs in Staff Mode with:
+    * 'Live Occupancy' dial.
+    * 'Dynamic Lift' counter (showing extra dollars made today vs static pricing).
+    * 'Member Conversion Potential' (showing non-members how much they could have saved).
+- Add a 'Master Toggle' in Staff Operations to enable/disable the Dynamic Pricing Engine.
+
+Maintain all Phase 1/2 textures, the 3-second handoff, and the diverse AI imagery."
