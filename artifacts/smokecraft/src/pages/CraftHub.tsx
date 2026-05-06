@@ -273,7 +273,7 @@ function FastReturnModal({ onClose }: { onClose: () => void }) {
               marginBottom:  24,
               lineHeight:    1.5,
             }}>
-              Enter your first name and the last 4 digits you used to enroll.
+              Enter your first name and the last 4 digits of your phone number.
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
