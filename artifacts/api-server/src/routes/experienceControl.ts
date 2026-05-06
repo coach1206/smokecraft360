@@ -21,8 +21,9 @@ const router: IRouter = Router();
 
 // ── Zod schemas ───────────────────────────────────────────────────────────────
 
-const CRAFT_TYPES = ["smoke", "pour", "brew", "vape"] as const;
-const PERF_MODES  = ["cinematic", "balanced", "low-power"] as const;
+const CRAFT_TYPES  = ["smoke", "pour", "brew", "vape"] as const;
+const PERF_MODES   = ["cinematic", "balanced", "low-power"] as const;
+const VENUE_MODES  = ["lounge", "nightlife", "premium", "social", "calm", "event"] as const;
 
 const settingsBodySchema = z.object({
   craftType:           z.enum(CRAFT_TYPES).nullable().optional(),
@@ -32,6 +33,7 @@ const settingsBodySchema = z.object({
   revealPacing:        z.number().int().min(0).max(100).optional(),
   soundVolume:         z.number().int().min(0).max(100).optional(),
   performanceMode:     z.enum(PERF_MODES).optional(),
+  venueMode:           z.enum(VENUE_MODES).nullable().optional(),
   venueId:             z.string().uuid().optional(),   // super_admin only
 });
 
@@ -42,6 +44,7 @@ const patchBodySchema = z.object({
   revealPacing:        z.number().int().min(0).max(100).optional(),
   soundVolume:         z.number().int().min(0).max(100).optional(),
   performanceMode:     z.enum(PERF_MODES).optional(),
+  venueMode:           z.enum(VENUE_MODES).nullable().optional(),
 });
 
 // ── Helper: resolve venueId for the request ───────────────────────────────────
@@ -127,6 +130,7 @@ router.post(
           revealPacing:        fields.revealPacing        ?? 70,
           soundVolume:         fields.soundVolume         ?? 40,
           performanceMode:     fields.performanceMode     ?? "balanced",
+          venueMode:           fields.venueMode           ?? null,
         })
         .returning();
       row = created!;

@@ -6,6 +6,7 @@ import { getStoredToken } from "./auth";
 
 export type PerformanceMode = "cinematic" | "balanced" | "low-power";
 export type ExperienceCraftType = "smoke" | "pour" | "brew" | "vape";
+export type VenueMode = "lounge" | "nightlife" | "premium" | "social" | "calm" | "event";
 
 export interface ExperienceControlRow {
   id:                  string;
@@ -17,6 +18,7 @@ export interface ExperienceControlRow {
   revealPacing:        number;
   soundVolume:         number;
   performanceMode:     PerformanceMode;
+  venueMode:           VenueMode | null;
   createdAt:           string;
   updatedAt:           string;
 }
@@ -61,6 +63,7 @@ export async function upsertExperienceControl(payload: {
   revealPacing?:        number;
   soundVolume?:         number;
   performanceMode?:     PerformanceMode;
+  venueMode?:           VenueMode | null;
 }): Promise<ExperienceControlRow> {
   const res = await fetch("/api/admin/experience-control", {
     method:  "POST",

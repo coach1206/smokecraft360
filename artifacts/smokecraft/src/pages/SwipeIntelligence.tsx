@@ -11,7 +11,7 @@ import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, Brain, TrendingUp, TrendingDown, BarChart2,
-  Users, Zap, ShoppingBag, Package, Star,
+  Users, Zap, ShoppingBag, Package, Star, Cpu,
 } from "lucide-react";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -139,6 +139,21 @@ interface AnalyticsData {
   acceptanceRate:         number;
 }
 
+interface OrchestratorAnalytics {
+  totals: {
+    totalSessions:           number | string | null;
+    avgPremiumIntent:        number | string | null;
+    avgSocialEnergy:         number | string | null;
+    avgRecPressure:          number | string | null;
+    avgAtmosphere:           number | string | null;
+    avgConfidence:           number | string | null;
+    avgSessionDepth:         number | string | null;
+  } | null;
+  moodDistribution:  { mood: string; total: number | string }[];
+  pacingDistribution: { pacing: string; total: number | string }[];
+  recent:            { id: string; mood: string; pacing: string; premiumIntent: number; socialEnergy: number; createdAt: string }[];
+}
+
 interface SwipeMetrics {
   totalSessions:     number;
   completedSessions: number;
@@ -149,11 +164,13 @@ interface SwipeMetrics {
 
 export default function SwipeIntelligence() {
   const [, navigate] = useLocation();
-  const [data,    setData]    = useState<AnalyticsData | null>(null);
-  const [metrics, setMetrics] = useState<SwipeMetrics | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState<string | null>(null);
-  const [tab,     setTab]     = useState<"overview" | "tags" | "revenue" | "craft">("overview");
+  const [data,        setData]        = useState<AnalyticsData | null>(null);
+  const [metrics,     setMetrics]     = useState<SwipeMetrics | null>(null);
+  const [orchData,    setOrchData]    = useState<OrchestratorAnalytics | null>(null);
+  const [orchLoading, setOrchLoading] = useState(false);
+  const [loading,     setLoading]     = useState(true);
+  const [error,       setError]       = useState<string | null>(null);
+  const [tab,         setTab]         = useState<"overview" | "tags" | "revenue" | "craft" | "orchestration">("overview");
 
   useEffect(() => {
     let cancelled = false;
@@ -184,11 +201,22 @@ export default function SwipeIntelligence() {
     ? Math.round((data.recommendationShown / totalSessions) * 100)
     : 0;
 
+  // Lazy-load orchestration analytics when tab is activated
+  useEffect(() => {
+    if (tab !== "orchestration" || orchData || orchLoading) return;
+    setOrchLoading(true);
+    apiGet("/api/orchestrator/analytics")
+      .then(d => setOrchData(d as OrchestratorAnalytics))
+      .catch(() => setOrchData(null))
+      .finally(() => setOrchLoading(false));
+  }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const TABS = [
-    { id: "overview", label: "Overview" },
-    { id: "tags",     label: "Taste Clusters" },
-    { id: "revenue",  label: "Revenue" },
-    { id: "craft",    label: "Craft Compare" },
+    { id: "overview",       label: "Overview"        },
+    { id: "tags",           label: "Taste Clusters"  },
+    { id: "revenue",        label: "Revenue Funnel"  },
+    { id: "craft",          label: "Craft Compare"   },
+    { id: "orchestration",  label: "Orchestration IQ" },
   ] as const;
 
   return (
@@ -533,6 +561,121 @@ export default function SwipeIntelligence() {
                     </div>
                   </div>
                 </div>
+              </motion.div>
+            )}
+
+            {/* ── ORCHESTRATION IQ TAB ── */}
+            {tab === "orchestration" && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {orchLoading ? (
+                  <div style={{ textAlign: "center", padding: "80px 0", color: C.muted }}>
+                    <div style={{
+                      width: 32, height: 32, borderRadius: "50%",
+                      border: "2px solid rgba(0,0,0,0.1)",
+                      borderTop: "2px solid #1A1410",
+                      animation: "spin 0.8s linear infinite", margin: "0 auto 12px",
+                    }} />
+                    Loading orchestration data…
+                  </div>
+                ) : !orchData || Number(orchData.totals?.totalSessions ?? 0) === 0 ? (
+                  <div style={{
+                    background: C.card, border: `1px solid ${C.border}`,
+                    borderRadius: 16, padding: "40px 24px", textAlign: "center",
+                  }}>
+                    <Cpu size={32} color={C.dim} style={{ marginBottom: 12 }} />
+                    <p style={{ color: C.muted, fontSize: 14 }}>
+                      No orchestration data yet. Start swipe sessions to generate behavioral intelligence.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    {/* KPI row */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(175px, 1fr))", gap: 14, marginBottom: 24 }}>
+                      {[
+                        { label: "Sessions Scored",   value: Number(orchData.totals?.totalSessions  ?? 0), icon: Users,     color: C.accent, suffix: "" },
+                        { label: "Avg Premium Intent", value: Math.round(Number(orchData.totals?.avgPremiumIntent ?? 0)), icon: Star, color: C.gold,   suffix: "%" },
+                        { label: "Avg Social Energy",  value: Math.round(Number(orchData.totals?.avgSocialEnergy  ?? 0)), icon: Zap,  color: C.purple, suffix: "%" },
+                        { label: "Avg Rec Pressure",   value: Math.round(Number(orchData.totals?.avgRecPressure   ?? 0)), icon: TrendingUp, color: C.orange, suffix: "%" },
+                        { label: "Avg Session Depth",  value: Math.round(Number(orchData.totals?.avgSessionDepth  ?? 0)), icon: Brain, color: C.blue,  suffix: " swipes" },
+                      ].map(s => (
+                        <div key={s.label} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: "20px 20px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                            <span style={{ fontSize: 11, color: C.muted, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase" }}>{s.label}</span>
+                            <div style={{ width: 28, height: 28, borderRadius: 7, background: `${s.color}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <s.icon size={14} color={s.color} />
+                            </div>
+                          </div>
+                          <div style={{ fontSize: 26, fontWeight: 700, color: C.text }}>
+                            <AnimCounter value={s.value} suffix={s.suffix} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Mood + Pacing distributions */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+                      <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: "22px 24px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 18 }}>
+                          <Brain size={15} color={C.gold} />
+                          <span style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Session Mood Distribution</span>
+                        </div>
+                        {orchData.moodDistribution.length ? orchData.moodDistribution.map(m => {
+                          const moodColors: Record<string, string> = { immersed: C.purple, social: C.orange, focused: C.blue, exploratory: C.green, disengaged: C.muted };
+                          const total = orchData.moodDistribution.reduce((s, r) => s + Number(r.total), 0);
+                          return (
+                            <HBar key={m.mood} label={m.mood.charAt(0).toUpperCase() + m.mood.slice(1)} value={Number(m.total)} max={total} color={moodColors[m.mood] ?? C.accent} />
+                          );
+                        }) : <p style={{ color: C.muted, fontSize: 13 }}>No data</p>}
+                      </div>
+
+                      <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: "22px 24px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 18 }}>
+                          <BarChart2 size={15} color={C.blue} />
+                          <span style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Pacing Distribution</span>
+                        </div>
+                        {orchData.pacingDistribution.length ? orchData.pacingDistribution.map(p => {
+                          const pacingColors: Record<string, string> = { "slow-cinematic": C.purple, "balanced": C.blue, "energetic": C.orange, "fast-fluid": C.green };
+                          const total = orchData.pacingDistribution.reduce((s, r) => s + Number(r.total), 0);
+                          return (
+                            <HBar key={p.pacing} label={p.pacing} value={Number(p.total)} max={total} color={pacingColors[p.pacing] ?? C.accent} />
+                          );
+                        }) : <p style={{ color: C.muted, fontSize: 13 }}>No data</p>}
+                      </div>
+                    </div>
+
+                    {/* Recent orchestration events */}
+                    {orchData.recent.length > 0 && (
+                      <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: "22px 24px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                          <Zap size={15} color={C.accent} />
+                          <span style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Recent Scored Sessions</span>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                          {orchData.recent.slice(0, 10).map((ev, i) => {
+                            const moodColors: Record<string, string> = { immersed: C.purple, social: C.orange, focused: C.blue, exploratory: C.green, disengaged: C.dim };
+                            return (
+                              <div key={ev.id} style={{
+                                display: "flex", alignItems: "center", gap: 14,
+                                padding: "9px 0",
+                                borderBottom: i < 9 ? `1px solid ${C.border}` : "none",
+                              }}>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: moodColors[ev.mood] ?? C.muted, minWidth: 70, textTransform: "capitalize" }}>{ev.mood}</span>
+                                <span style={{ fontSize: 11, color: C.muted, flex: 1 }}>{ev.pacing}</span>
+                                <span style={{ fontSize: 11, color: C.gold, fontWeight: 600 }}>P:{ev.premiumIntent}%</span>
+                                <span style={{ fontSize: 11, color: C.muted }}>S:{ev.socialEnergy}%</span>
+                                <span style={{ fontSize: 11, color: C.dim }}>{new Date(ev.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
               </motion.div>
             )}
 

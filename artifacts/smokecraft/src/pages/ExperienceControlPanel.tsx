@@ -22,6 +22,7 @@ import {
   type ExperienceControlData,
   type PerformanceMode,
   type ExperienceCraftType,
+  type VenueMode,
 } from "@/services/experienceControl";
 import { environmentEngine } from "@/lib/environmentEngine";
 
@@ -36,6 +37,7 @@ interface PanelSettings {
   revealPacing:        number;
   soundVolume:         number;
   performanceMode:     PerformanceMode;
+  venueMode:           VenueMode | null;
 }
 
 const TABS: { key: TabKey; label: string; icon: React.ReactNode; craft?: ExperienceCraftType }[] = [
@@ -50,7 +52,7 @@ const GOLD  = "#d4af37";
 const DARK  = "#0a0806";
 
 function rowToSettings(row: ExperienceControlRow | null): PanelSettings {
-  if (!row) return { ...DEFAULT_SETTINGS };
+  if (!row) return { ...DEFAULT_SETTINGS, venueMode: null };
   return {
     atmosphereIntensity: row.atmosphereIntensity,
     particleDensity:     row.particleDensity,
@@ -58,6 +60,7 @@ function rowToSettings(row: ExperienceControlRow | null): PanelSettings {
     revealPacing:        row.revealPacing,
     soundVolume:         row.soundVolume,
     performanceMode:     row.performanceMode,
+    venueMode:           row.venueMode,
   };
 }
 
@@ -160,6 +163,68 @@ function PerfModeSelector({
           </button>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ── Venue Mode selector ───────────────────────────────────────────────────────
+
+const VENUE_MODE_OPTIONS: { key: VenueMode; label: string; desc: string }[] = [
+  { key: "lounge",    label: "Lounge",    desc: "Relaxed, ambient"    },
+  { key: "nightlife", label: "Nightlife", desc: "High energy"         },
+  { key: "premium",   label: "Premium",   desc: "Luxury, slow-burn"   },
+  { key: "social",    label: "Social",    desc: "Casual, fun"         },
+  { key: "calm",      label: "Calm",      desc: "Minimal, quiet"      },
+  { key: "event",     label: "Event",     desc: "Special occasion"    },
+];
+
+function VenueModeSelector({
+  value, onChange,
+}: { value: VenueMode | null; onChange: (v: VenueMode | null) => void }) {
+  return (
+    <div style={{ marginTop: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 10 }}>
+        <Zap size={14} style={{ color: GOLD, opacity: 0.7 }} />
+        <span style={{ fontSize: 13, fontWeight: 600, color: "#e8e0c8", letterSpacing: "0.04em" }}>Venue Mode</span>
+        <span style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", marginLeft: 4 }}>shapes orchestrator defaults</span>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 }}>
+        {VENUE_MODE_OPTIONS.map(m => (
+          <button
+            key={m.key}
+            onClick={() => onChange(value === m.key ? null : m.key)}
+            style={{
+              padding: "9px 6px",
+              borderRadius: 9,
+              border: value === m.key
+                ? `1px solid ${GOLD}60`
+                : "1px solid rgba(255,255,255,0.07)",
+              background: value === m.key
+                ? `${GOLD}12`
+                : "rgba(255,255,255,0.03)",
+              color: value === m.key ? GOLD : "rgba(232,224,200,0.5)",
+              cursor: "pointer",
+              textAlign: "center",
+              transition: "all 0.18s ease",
+            }}
+          >
+            <div style={{ fontSize: 11, fontWeight: 700 }}>{m.label}</div>
+            <div style={{ fontSize: 9, opacity: 0.55, marginTop: 1 }}>{m.desc}</div>
+          </button>
+        ))}
+      </div>
+      {value && (
+        <button
+          onClick={() => onChange(null)}
+          style={{
+            marginTop: 6, width: "100%", padding: "5px",
+            background: "none", border: "none",
+            color: "rgba(232,224,200,0.3)", fontSize: 11, cursor: "pointer",
+          }}
+        >
+          Clear (inherit global)
+        </button>
+      )}
     </div>
   );
 }
@@ -333,12 +398,13 @@ export default function ExperienceControlPanel() {
 
   const [activeTab,   setActiveTab]   = useState<TabKey>("global");
   const [data,        setData]        = useState<ExperienceControlData>({ global: null, perCraft: {} });
+  const blankSettings = { ...DEFAULT_SETTINGS, venueMode: null as VenueMode | null };
   const [settings,    setSettings]    = useState<Record<TabKey, PanelSettings>>({
-    global: { ...DEFAULT_SETTINGS },
-    smoke:  { ...DEFAULT_SETTINGS },
-    pour:   { ...DEFAULT_SETTINGS },
-    brew:   { ...DEFAULT_SETTINGS },
-    vape:   { ...DEFAULT_SETTINGS },
+    global: { ...blankSettings },
+    smoke:  { ...blankSettings },
+    pour:   { ...blankSettings },
+    brew:   { ...blankSettings },
+    vape:   { ...blankSettings },
   });
   const [saving,  setSaving]  = useState(false);
   const [saved,   setSaved]   = useState(false);
@@ -583,6 +649,10 @@ export default function ExperienceControlPanel() {
               <PerfModeSelector
                 value={curSettings.performanceMode}
                 onChange={v => update("performanceMode", v)}
+              />
+              <VenueModeSelector
+                value={curSettings.venueMode}
+                onChange={v => update("venueMode", v)}
               />
             </div>
 

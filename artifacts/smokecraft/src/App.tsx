@@ -61,6 +61,7 @@ import { useSystemVersion }            from "@/hooks/useSystemVersion";
 import { EngagementProvider }          from "@/contexts/EngagementContext";
 import { bootstrapKioskAuth }          from "@/services/auth";
 import { EnvironmentProvider }         from "@/contexts/EnvironmentContext";
+import { OrchestratorProvider }       from "@/contexts/OrchestratorContext";
 import { PersistentAmbientLayer }      from "@/components/PersistentAmbientLayer";
 import { ParticleSystem }              from "@/components/ParticleSystem";
 
@@ -152,6 +153,7 @@ function App() {
                 <KioskModeProvider>
                 <DeviceRouterProvider>
                   <EnvironmentProvider>
+                  <OrchestratorProvider>
                     <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
                       <PersistentAmbientLayer />
                       <ParticleSystem />
@@ -166,6 +168,7 @@ function App() {
                     <KioskModeBanner />
                     <LicenseGate />
                     <Toaster />
+                  </OrchestratorProvider>
                   </EnvironmentProvider>
                 </DeviceRouterProvider>
                 </KioskModeProvider>

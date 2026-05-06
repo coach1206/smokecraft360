@@ -16,6 +16,9 @@ export type PerformanceMode = typeof PERFORMANCE_MODES[number];
 export const EXPERIENCE_CRAFT_TYPES = ["smoke", "pour", "brew", "vape"] as const;
 export type ExperienceCraftType = typeof EXPERIENCE_CRAFT_TYPES[number];
 
+export const VENUE_MODES = ["lounge", "nightlife", "premium", "social", "calm", "event"] as const;
+export type VenueMode = typeof VENUE_MODES[number];
+
 export const experienceControlSettingsTable = pgTable("experience_control_settings", {
   id:                  uuid("id").primaryKey().defaultRandom(),
   venueId:             uuid("venue_id"),          // null = platform default
@@ -26,6 +29,7 @@ export const experienceControlSettingsTable = pgTable("experience_control_settin
   revealPacing:        integer("reveal_pacing").notNull().default(70),
   soundVolume:         integer("sound_volume").notNull().default(40),
   performanceMode:     text("performance_mode").notNull().default("balanced").$type<PerformanceMode>(),
+  venueMode:           text("venue_mode").$type<VenueMode>(),
   createdAt:           timestamp("created_at").notNull().defaultNow(),
   updatedAt:           timestamp("updated_at").notNull().defaultNow(),
 }, (t) => [

@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, ShoppingBag, Star, Check, Package, AlertTriangle } from "lucide-react";
 import { getCraftTheme } from "@/lib/craftThemes";
 import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
+import { useOrchestratorSafe } from "@/contexts/OrchestratorContext";
 
 // ── Organic reveal stagger ────────────────────────────────────────────────────
 
@@ -89,7 +90,8 @@ export default function RevealPage() {
   const params     = useParams<{ sessionId: string }>();
   const sessionId  = params.sessionId;
   const [, navigate] = useLocation();
-  const envCtx     = useEnvironmentSafe();
+  const envCtx       = useEnvironmentSafe();
+  const orchestrator = useOrchestratorSafe();
 
   const [recs,      setRecs]      = useState<Recommendation[]>([]);
   const [loading,   setLoading]   = useState(true);
@@ -217,11 +219,24 @@ export default function RevealPage() {
         zIndex: 0,
       }} />
 
+      {/* Orchestrator spotlight — richer glow for immersed/premium users */}
+      {orchestrator?.isImmersive && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2.4, ease: "easeIn" }}
+          style={{
+            position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none",
+            background: "radial-gradient(ellipse at 50% 65%, rgba(212,175,55,0.18) 0%, transparent 68%)",
+          }}
+        />
+      )}
+
       {/* Cinematic hush — brief dark veil that clears as the reveal breathes in */}
       <motion.div
         initial={{ opacity: 0.60 }}
         animate={{ opacity: 0 }}
-        transition={{ duration: 1.8, delay: 0.25, ease: "easeOut" }}
+        transition={{ duration: orchestrator?.isPremium ? 2.4 : 1.8, delay: 0.25, ease: "easeOut" }}
         style={{
           position:      "fixed", inset: 0,
           zIndex:        8,

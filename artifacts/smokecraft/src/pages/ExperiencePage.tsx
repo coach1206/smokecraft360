@@ -19,7 +19,13 @@ import { ArrowLeft, ChevronRight, ChevronLeft, Sparkles, Check, X } from "lucide
 import { getCraftTheme, type CraftTheme } from "@/lib/craftThemes";
 import { CraftRealism } from "@/components/CraftRealism";
 import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
+import { useOrchestratorSafe } from "@/contexts/OrchestratorContext";
 import { SessionReturnBanner } from "@/components/CinematicTransition";
+
+const PREMIUM_TAGS_SET = new Set([
+  "bold", "reserve", "aged", "single malt", "limited", "rare", "vintage",
+  "premium", "luxury", "full body", "rich", "complex", "oaky", "robust",
+]);
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -316,7 +322,9 @@ export default function ExperiencePage() {
   const type      = params.type ?? "smoke";
   const [, navigate] = useLocation();
   const theme     = getCraftTheme(type);
-  const envCtx    = useEnvironmentSafe();
+  const envCtx           = useEnvironmentSafe();
+  const orchestratorCtx  = useOrchestratorSafe();
+  const lastSwipeRef     = useRef<number>(0);
 
   const [sessionId,    setSessionId]    = useState<string | null>(null);
   const [cards,        setCards]        = useState<ExperienceItem[]>([]);
@@ -327,11 +335,13 @@ export default function ExperiencePage() {
   const [done,         setDone]         = useState(false);
   const [returnBanner, setReturnBanner] = useState(false);
 
-  // Signal craft type to environment engine on mount
+  // Signal craft type to environment engine on mount; reset orchestrator session
   useEffect(() => {
     if (!envCtx) return;
     const craftType = (["smoke","pour","brew","vape"].includes(type) ? type : "smoke") as import("@/lib/environmentEngine").CraftType;
     envCtx.setCraft(craftType);
+    orchestratorCtx?.resetSession(craftType);
+    lastSwipeRef.current = 0;
     let timer: ReturnType<typeof setTimeout> | undefined;
     if (envCtx.env.returnVisit && envCtx.env.lastCraftSeen === craftType) {
       setReturnBanner(true);
@@ -385,6 +395,20 @@ export default function ExperiencePage() {
       if (action === "add") envCtx.onSwipeAdd(card.tags);
       else                  envCtx.onSwipeSkip(card.tags);
     }
+
+    // Signal orchestrator (behavioral analysis — non-blocking)
+    const now = Date.now();
+    const swipeMs = lastSwipeRef.current > 0 ? now - lastSwipeRef.current : 2000;
+    lastSwipeRef.current = now;
+    const isPremium = (card.baseScore ?? 0) > 75 || card.tags.some(t => PREMIUM_TAGS_SET.has(t.toLowerCase()));
+    orchestratorCtx?.addSignal({
+      direction:    action,
+      swipeMs:      Math.min(swipeMs, 30000),
+      hesitationMs: Math.min(swipeMs, 30000),
+      tags:         card.tags ?? [],
+      marginPct:    Math.min(100, card.baseScore ?? 50),
+      isPremium,
+    });
 
     if (sessionId) {
       apiPost("/api/swipe-experience/swipe", {

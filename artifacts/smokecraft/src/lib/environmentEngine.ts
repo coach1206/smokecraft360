@@ -352,6 +352,64 @@ export class EnvironmentEngine {
     }, INTERVAL_MS);
   }
 
+  // ── Orchestrator profile reactivity ──────────────────────────────────────────
+
+  /**
+   * applyOrchestratorProfile — nudges engine state from behavioral orchestration.
+   *
+   * Operates on top of (not instead of) venue control settings.
+   * Only updates atmosphere + motion/pacing — preserves particleDensity, soundVolume,
+   * and performanceMode which are venue-configured, not behavior-driven.
+   */
+  applyOrchestratorProfile(profile: {
+    mood:                string;
+    pacing:              string;
+    premiumIntent:       number;
+    socialEnergy:        number;
+    atmosphereIntensity: number;
+    confidence:          number;
+  }): void {
+    const { mood, pacing, premiumIntent, socialEnergy, atmosphereIntensity, confidence } = profile;
+
+    // Only blend if confidence is meaningful (≥ 50 = at least 2 swipes)
+    const blend = Math.min(1, confidence / 100) * 0.65; // max 65% orchestrator influence
+
+    // Atmosphere: orchestrator nudges glowStrength + bgBrightness
+    const orchGlow       = 0.05 + (atmosphereIntensity / 100) * 0.85;
+    const orchBrightness = 0.20 + (atmosphereIntensity / 100) * 0.45;
+    const curGlow        = this.state.glowStrength;
+    const curBright      = this.state.bgBrightness;
+
+    // Pacing → motionCalmness + revealPacing
+    const pacingToMotion: Record<string, number> = {
+      "slow-cinematic": 82,
+      "balanced":       55,
+      "energetic":      30,
+      "fast-fluid":     18,
+    };
+    const pacingToReveal: Record<string, number> = {
+      "slow-cinematic": 88,
+      "balanced":       70,
+      "energetic":      42,
+      "fast-fluid":     28,
+    };
+
+    const orchMotion = pacingToMotion[pacing] ?? 55;
+    const orchReveal = pacingToReveal[pacing] ?? 70;
+
+    // Premium intent boost: richer glow for premium users
+    const premiumGlowBoost = premiumIntent > 65 ? (premiumIntent - 65) / 100 * 0.12 : 0;
+
+    this.state = {
+      ...this.state,
+      glowStrength:  curGlow  + (orchGlow  + premiumGlowBoost - curGlow)  * blend,
+      bgBrightness:  curBright + (orchBrightness - curBright) * blend,
+      motionCalmness: this.state.motionCalmness + (orchMotion - this.state.motionCalmness) * blend,
+      revealPacing:   this.state.revealPacing   + (orchReveal - this.state.revealPacing)   * blend,
+    };
+    this.notify();
+  }
+
   // ── Experience Control Panel settings ────────────────────────────────────────
 
   /**
