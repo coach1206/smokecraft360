@@ -28,10 +28,14 @@ export function EnvironmentProvider({ children }: { children: React.ReactNode })
   const [soundEnabled, setSoundEnabledState] = useState(false);
   const soundInitRef = useRef(false);
 
-  // Subscribe to engine state changes
+  // Subscribe to engine state changes + wake up atmosphere on return
   useEffect(() => {
     const unsub = environmentEngine.subscribe(setEnv);
     environmentEngine.applyTimeOfDay();
+    // Wake up atmosphere gradually on return visit (3–4s ramp)
+    if (environmentEngine.getState().returnVisit) {
+      setTimeout(() => environmentEngine.wakeUpAtmosphere(), 200);
+    }
     return unsub;
   }, []);
 

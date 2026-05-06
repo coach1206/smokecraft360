@@ -1,0 +1,303 @@
+Upgrade the current immersive cinematic experience system with an “Organic Motion + Humanized Realism Layer.”
+
+The current architecture already exists and MUST remain intact:
+
+- Universal Swipe Engine
+- Memory Brain
+- Revenue Brain
+- EnvironmentEngine
+- PersistentAmbientLayer
+- ParticleSystem
+- CinematicTransition
+- SoundEngine
+- RevealPage
+- ExperiencePage
+
+DO NOT rebuild architecture.
+DO NOT create duplicate systems.
+
+This phase is about:
+organic realism
+human imperfection
+motion entropy
+cinematic believability
+
+==================================================
+1. ORGANIC MOTION ENGINE
+==================================================
+
+Create:
+
+client/src/lib/organicMotion.ts
+
+Purpose:
+Introduce controlled imperfection into all motion systems.
+
+The system should:
+- randomize timing subtly
+- vary drift speeds
+- vary glow intensity
+- introduce atmospheric fluctuation
+- prevent obvious looping
+
+==================================================
+2. NON-LINEAR ANIMATION TIMING
+==================================================
+
+Replace perfectly even timing with:
+- weighted randomness
+- slight timing offsets
+- easing variation
+- micro pauses
+
+==================================================
+EXAMPLES
+==================================================
+
+BAD:
+every ember floats every 2 seconds exactly
+
+GOOD:
+embers drift with randomized:
+- velocity
+- timing
+- brightness
+- fade duration
+
+==================================================
+3. PARTICLE ENTROPY SYSTEM
+==================================================
+
+Upgrade ParticleSystem.tsx.
+
+==================================================
+SMOKECRAFT
+==================================================
+
+Add:
+- irregular smoke curl paths
+- ember brightness fluctuation
+- ash flicker
+- random smoke density bursts
+- drifting dust motes
+
+==================================================
+POURCRAFT
+==================================================
+
+Add:
+- inconsistent liquid ripple timing
+- subtle glass distortion
+- condensation movement
+- reflection shimmer variance
+- ice movement microphysics
+
+==================================================
+BREWCRAFT
+==================================================
+
+Add:
+- randomized carbonation speed
+- foam instability
+- varying bubble sizes
+- foam collapse timing variance
+
+==================================================
+VAPECRAFT
+==================================================
+
+Add:
+- turbulent vapor pockets
+- density fluctuation
+- randomized neon pulse timing
+- atmospheric wave distortion
+
+==================================================
+4. ENVIRONMENTAL BREATHING
+==================================================
+
+The environment should subtly “breathe.”
+
+Implement:
+- slow atmospheric luminance drift
+- glow pulsation variance
+- soft shadow fluctuation
+- cinematic haze breathing
+
+Nothing should remain perfectly static.
+
+==================================================
+5. MICRO LIGHTING FLUCTUATION
+==================================================
+
+Add:
+- ember flicker randomness
+- bar light shimmer
+- ambient reflection shifts
+- subtle depth variation
+
+Lighting must feel environmental, not rendered.
+
+==================================================
+6. CAMERA HUMANIZATION
+==================================================
+
+Upgrade cinematic camera feel.
+
+Add:
+- micro camera drift
+- handheld-style imperfection
+- subtle focus breathing
+- layered parallax variance
+
+DO NOT overdo motion.
+
+Target:
+“premium cinematic calm”
+
+==================================================
+7. TRANSITION IMPERFECTION
+==================================================
+
+Transitions should not feel machine-perfect.
+
+Add:
+- stagger variance
+- slight delay randomness
+- asymmetrical particle timing
+- irregular glow pulses
+
+==================================================
+8. SOUND HUMANIZATION
+==================================================
+
+Upgrade SoundEngine behavior.
+
+Add:
+- randomized volume variation
+- pitch micro variance
+- ambient fade drift
+- layered environmental spacing
+
+EXAMPLE:
+No two ember crackles sound identical.
+
+==================================================
+9. SESSION MOOD EVOLUTION
+==================================================
+
+EnvironmentEngine should evolve emotionally during a session.
+
+==================================================
+RULES
+==================================================
+
+If user repeatedly selects:
+BOLD / SMOKY:
+- environment darkens gradually
+- embers intensify
+- shadows deepen
+- particles increase
+
+If user selects:
+LIGHT / CRISP:
+- environment softens
+- brightness increases
+- motion becomes calmer
+
+If session becomes highly engaged:
+- cinematic intensity increases slowly
+- glow strength subtly rises
+
+==================================================
+10. ATMOSPHERIC MEMORY
+==================================================
+
+When returning:
+do NOT instantly snap to prior environment.
+
+Instead:
+- slowly restore atmosphere over 3–5 seconds
+- fade particles in naturally
+- reintroduce glow gradually
+
+The atmosphere should “wake up.”
+
+==================================================
+11. ADVANCED REVEAL CINEMATICS
+==================================================
+
+Upgrade RevealPage timing.
+
+Add:
+- delayed environmental hush
+- subtle dramatic pause
+- cinematic reveal cadence
+- recommendation spotlight sequencing
+
+Reveal should feel:
+earned.
+
+==================================================
+12. VISUAL ENTROPY SAFETY
+==================================================
+
+Implement entropy boundaries.
+
+Prevent:
+- chaotic movement
+- visual noise
+- overstimulation
+- excessive randomness
+
+All realism should remain:
+luxury
+controlled
+premium
+
+==================================================
+13. PERFORMANCE HARDENING
+==================================================
+
+Maintain:
+60fps target
+transform-only animation preference
+GPU-friendly motion
+particle pooling
+animation throttling
+memory cleanup
+
+==================================================
+14. FINAL TARGET FEEL
+==================================================
+
+The experience should now feel:
+
+alive
+organic
+cinematic
+luxurious
+emotionally reactive
+
+The user should stop feeling:
+“I am using software”
+
+and start feeling:
+“I am inside an atmosphere.”
+
+==================================================
+15. ACCEPTANCE TESTS
+==================================================
+
+Verify:
+
+- particles no longer move uniformly
+- lighting fluctuates subtly
+- smoke feels organic
+- vapor turbulence feels alive
+- transitions vary naturally
+- camera drift feels cinematic
+- no repetitive loops obvious
+- reveal pacing feels emotional
+- FPS remains stable
+- atmosphere restores gradually on return

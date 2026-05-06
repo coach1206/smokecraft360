@@ -15,6 +15,20 @@ import { ArrowLeft, Sparkles, ShoppingBag, Star, Check, Package, AlertTriangle }
 import { getCraftTheme } from "@/lib/craftThemes";
 import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
 
+// ── Organic reveal stagger ────────────────────────────────────────────────────
+
+/**
+ * revealCardDelay — non-uniform stagger delays for recommendation cards.
+ * First card enters at 0.38s, subsequent cards ~0.17s apart with micro-variance.
+ * Deterministic per index so it's stable across re-renders.
+ */
+function revealCardDelay(idx: number): number {
+  const base = 0.38 + idx * 0.17;
+  const r    = Math.sin(idx * 127.1 + 42 * 311.7) * 43758.5453;
+  const jitter = (r - Math.floor(r) - 0.5) * 0.09;
+  return Math.max(0.22, base + jitter);
+}
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface Recommendation {
@@ -200,6 +214,19 @@ export default function RevealPage() {
         zIndex: 0,
       }} />
 
+      {/* Cinematic hush — brief dark veil that clears as the reveal breathes in */}
+      <motion.div
+        initial={{ opacity: 0.60 }}
+        animate={{ opacity: 0 }}
+        transition={{ duration: 1.8, delay: 0.25, ease: "easeOut" }}
+        style={{
+          position:      "fixed", inset: 0,
+          zIndex:        8,
+          background:    "#070504",
+          pointerEvents: "none",
+        }}
+      />
+
       {/* Header */}
       <div style={{
         position: "relative", zIndex: 10,
@@ -223,9 +250,9 @@ export default function RevealPage() {
 
       {/* Hero */}
       <motion.div
-        initial={{ opacity: 0, y: -16 }}
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.90, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
         style={{
           position: "relative", zIndex: 10,
           textAlign: "center",
@@ -286,7 +313,7 @@ export default function RevealPage() {
               ordered={ordered.has(rec.item.id)}
               error={orderError[rec.item.id]}
               onOrder={() => handleOrder(rec)}
-              delay={idx * 0.14}
+              delay={revealCardDelay(idx)}
             />
           ))
         )}

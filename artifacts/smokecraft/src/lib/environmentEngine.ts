@@ -273,6 +273,54 @@ export class EnvironmentEngine {
     }, 2000);
   }
 
+  // ── Atmospheric memory restore ────────────────────────────────────────────────
+
+  /**
+   * wakeUpAtmosphere — gradually restores atmosphere on return visit.
+   * Instead of instantly snapping to saved state, ramps from dormant values
+   * (glow 12%, particles 8%) to target over ~4 seconds.
+   * The atmosphere "wakes up" — feels alive, not reset.
+   */
+  wakeUpAtmosphere(): void {
+    if (!this.state.returnVisit) return;
+
+    const target = {
+      glowStrength:    this.state.glowStrength,
+      particleDensity: this.state.particleDensity,
+      bgBrightness:    this.state.bgBrightness,
+    };
+
+    // Start from dormant values — very faint
+    this.state = {
+      ...this.state,
+      glowStrength:    target.glowStrength * 0.10,
+      particleDensity: target.particleDensity * 0.06,
+      bgBrightness:    Math.min(0.85, target.bgBrightness + 0.18), // slightly washed out at start
+    };
+    this.notify();
+
+    const STEPS       = 12;
+    const INTERVAL_MS = 340; // ~4s total
+    let step = 0;
+
+    const timer = setInterval(() => {
+      step++;
+      const t    = step / STEPS;
+      // easeInOut curve
+      const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+      this.state = {
+        ...this.state,
+        glowStrength:    target.glowStrength    * (0.10 + ease * 0.90),
+        particleDensity: target.particleDensity * (0.06 + ease * 0.94),
+        bgBrightness:    target.bgBrightness    + (1 - ease) * 0.18,
+      };
+      this.notify();
+
+      if (step >= STEPS) clearInterval(timer);
+    }, INTERVAL_MS);
+  }
+
   // ── Session continuity ────────────────────────────────────────────────────────
 
   clearSession(): void {

@@ -149,7 +149,31 @@ class SoundEngine {
     const targetVol = config.volume * this.userVolume * (this.muted ? 0 : 1);
     howl.play();
     howl.fade(0, targetVol, FADE_DURATION_MS);
+    // Start ambient drift after the initial fade completes
+    setTimeout(() => this.startAmbientDrift(howl, craft), FADE_DURATION_MS + 500);
     return howl;
+  }
+
+  // ── Ambient volume drift ─────────────────────────────────────────────────────
+
+  /**
+   * startAmbientDrift — subtly nudges ambient volume ±2% every 6–10s.
+   * No two ambient loops sound identical over time.
+   * Stops automatically when the howl instance changes (craft switch).
+   */
+  private startAmbientDrift(howl: Howl, craft: CraftType): void {
+    const nudge = () => {
+      if (this.ambientHowl !== howl || this.muted) return;
+      const baseVol = AMBIENT_CONFIG[craft].volume * this.userVolume;
+      const delta   = (Math.random() - 0.5) * 0.04; // ±2%
+      const target  = Math.max(0.01, Math.min(baseVol * 1.12, baseVol + delta));
+      const fadeDur = 3000 + Math.random() * 2500;
+      howl.fade(howl.volume() as number, target, fadeDur);
+      // Schedule next nudge after fade completes + pause
+      setTimeout(nudge, fadeDur + 4000 + Math.random() * 4000);
+    };
+    // First nudge after initial settle
+    setTimeout(nudge, 8000 + Math.random() * 5000);
   }
 
   // ── Interaction sounds ───────────────────────────────────────────────────────
@@ -159,15 +183,25 @@ class SoundEngine {
     const config = INTERACTION_CONFIG[soundKey];
     if (!config) return;
 
+    // Volume jitter ±8% — no two plays sound identical
+    const volJitter  = 0.92 + Math.random() * 0.16;
+    // Pitch micro-variance ±3% via playback rate
+    const rateJitter = 0.97 + Math.random() * 0.06;
+
     let howl = this.interactionHowls.get(soundKey);
     if (!howl) {
       howl = new Howl({
         src:         config.src,
-        volume:      config.volume * this.userVolume,
+        volume:      config.volume * this.userVolume * volJitter,
+        rate:        rateJitter,
         preload:     true,
         onloaderror: () => { /* graceful degradation */ },
       });
       this.interactionHowls.set(soundKey, howl);
+    } else {
+      // Apply fresh jitter on each play
+      howl.volume(config.volume * this.userVolume * volJitter);
+      howl.rate(rateJitter);
     }
     howl.play();
   }
