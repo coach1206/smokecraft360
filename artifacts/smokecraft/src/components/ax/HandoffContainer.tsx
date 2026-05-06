@@ -1029,6 +1029,8 @@ function PatronView({
   const [stimulationVisible, setStimulation] = useState(false);
   const [rankUpVisible, setRankUpVisible]    = useState(false);
   const [rankUpLabel,   setRankUpLabel]      = useState("");
+  const [founderPatronOpen, setFounderPatronOpen] = useState(false);
+  const logoHoldTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const {
     occupancy,
@@ -1140,6 +1142,13 @@ function PatronView({
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.55 }}
           className="flex flex-col"
+          style={{ cursor: "default", userSelect: "none" }}
+          onPointerDown={() => {
+            logoHoldTimer.current = setTimeout(() => setFounderPatronOpen(true), 5000);
+          }}
+          onPointerUp={() => clearTimeout(logoHoldTimer.current)}
+          onPointerLeave={() => clearTimeout(logoHoldTimer.current)}
+          onPointerCancel={() => clearTimeout(logoHoldTimer.current)}
         >
           <span
             className="font-bold uppercase leading-none"
@@ -1504,6 +1513,38 @@ function PatronView({
             >
               ×
             </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Founder Dashboard — secret 5-second logo long-press ── */}
+      <AnimatePresence>
+        {founderPatronOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              position: "absolute", inset: 0,
+              zIndex: 200,
+              background: "rgba(8,6,4,0.96)",
+              backdropFilter: "blur(16px)",
+              overflowY: "auto",
+            }}
+          >
+            <button
+              onClick={() => setFounderPatronOpen(false)}
+              style={{
+                position: "absolute", top: 16, right: 20,
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: 8, padding: "6px 14px",
+                color: "rgba(240,232,212,0.6)", fontSize: 11,
+                cursor: "pointer", zIndex: 10,
+              }}
+            >✕ Close</button>
+            <FoundersDashboard />
           </motion.div>
         )}
       </AnimatePresence>

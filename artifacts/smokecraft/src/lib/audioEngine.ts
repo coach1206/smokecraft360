@@ -91,6 +91,50 @@ export function playClink(): void {
   osc.stop(t + 0.5);
 }
 
+/**
+ * Deep ambient hum — 58 Hz sine with a slow 0.08 Hz LFO for a
+ * "breathing lounge" feel.  Call on ExperiencePage mount; the returned
+ * function fades out and stops the oscillators on unmount.
+ */
+export function playAmbientHum(): () => void {
+  const ac = getAudioContext();
+  if (!ac) return () => {};
+
+  const osc = ac.createOscillator();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(58, ac.currentTime);
+
+  const lfo = ac.createOscillator();
+  lfo.type = "sine";
+  lfo.frequency.setValueAtTime(0.08, ac.currentTime);
+
+  const lfoGain = ac.createGain();
+  lfoGain.gain.setValueAtTime(0.006, ac.currentTime);
+
+  const masterGain = ac.createGain();
+  masterGain.gain.setValueAtTime(0.022, ac.currentTime);
+
+  lfo.connect(lfoGain);
+  lfoGain.connect(masterGain.gain);
+  osc.connect(masterGain);
+  masterGain.connect(ac.destination);
+
+  osc.start();
+  lfo.start();
+
+  return () => {
+    try {
+      const t = ac.currentTime;
+      masterGain.gain.setValueAtTime(masterGain.gain.value, t);
+      masterGain.gain.linearRampToValueAtTime(0, t + 0.4);
+      osc.stop(t + 0.5);
+      lfo.stop(t + 0.5);
+    } catch {
+      // already stopped — ignore
+    }
+  };
+}
+
 export function setAudioEnabled(on: boolean): void {
   enabled = on;
 }

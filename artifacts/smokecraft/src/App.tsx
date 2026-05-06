@@ -188,6 +188,13 @@ function Router() {
 function App() {
   useSystemVersion();
 
+  // Kiosk armor — disable right-click context menu globally
+  useEffect(() => {
+    const block = (e: MouseEvent) => e.preventDefault();
+    document.addEventListener("contextmenu", block);
+    return () => document.removeEventListener("contextmenu", block);
+  }, []);
+
   // Bootstrap kiosk auth on mount and refresh every 30 minutes
   useEffect(() => {
     void bootstrapKioskAuth();

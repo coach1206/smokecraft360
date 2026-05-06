@@ -16,6 +16,7 @@ import {
   useMotionValue, useTransform, animate,
 } from "framer-motion";
 import { ArrowLeft, Sparkles, Check, X } from "lucide-react";
+import { playClick, playAmbientHum } from "@/lib/audioEngine";
 import { getCraftTheme, type CraftTheme } from "@/lib/craftThemes";
 import { CraftRealism } from "@/components/CraftRealism";
 import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
@@ -154,11 +155,13 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
   function triggerRight() {
     if (exiting.current || !isTop) return;
     exiting.current = true;
+    playClick();
     animate(x, 750, { duration: 0.3, ease: [0.4, 0, 1, 1] }).then(onSwipeRight);
   }
   function triggerLeft() {
     if (exiting.current || !isTop) return;
     exiting.current = true;
+    playClick();
     animate(x, -750, { duration: 0.3, ease: [0.4, 0, 1, 1] }).then(onSwipeLeft);
   }
 
@@ -188,7 +191,7 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
         position: "absolute",
         inset:    0,
         cursor:   isTop ? "grab" : "default",
-        zIndex:   10 - stackIndex,
+        zIndex:   50 - stackIndex,
         touchAction: "pan-y",
       }}
     >
@@ -507,6 +510,8 @@ export default function ExperiencePage() {
         if (sid) {
           const cardData = await apiGet(`/api/swipe-experience/${type}/cards?sessionId=${sid}`);
           if (!cancelled) setCards(cardData.cards?.length ? cardData.cards : FALLBACK_CARDS[type] ?? []);
+        } else {
+          if (!cancelled) setCards(FALLBACK_CARDS[type] ?? []);
         }
       } catch {
         if (!cancelled) setCards(FALLBACK_CARDS[type] ?? []);
@@ -516,6 +521,9 @@ export default function ExperiencePage() {
     })();
     return () => { cancelled = true; };
   }, [type]);
+
+  // ── Ambient hum — starts when experience mounts, fades on leave ──────────
+  useEffect(() => playAmbientHum(), []);
 
   // ── Swipe handler ─────────────────────────────────────────────────────────
 
@@ -707,8 +715,8 @@ export default function ExperiencePage() {
         {/* Fixed-size inner box — this is the collectible card footprint */}
         <div style={{
           position: "relative",
-          width: "min(288px, 74vw)",
-          height: "min(422px, 60vh)",
+          width: "min(400px, 86vw)",
+          height: "70vh",
           flexShrink: 0,
         }}>
         <AnimatePresence mode="sync">
