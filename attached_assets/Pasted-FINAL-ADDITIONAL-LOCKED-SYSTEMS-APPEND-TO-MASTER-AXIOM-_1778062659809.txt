@@ -1,0 +1,292 @@
+FINAL ADDITIONAL LOCKED SYSTEMS — APPEND TO MASTER AXIOM OS PROMPT
+
+These systems are REQUIRED additions to the unified Axiom OS / CraftHub experience architecture.
+
+DO NOT omit these systems in future builds.
+
+These are core emotional, atmospheric, and continuity layers that complete the hospitality intelligence ecosystem.
+
+==================================================
+SESSION MEMORY ENGINE
+==================================================
+
+The system must remember users across sessions.
+
+Mentors should reference:
+- previous flavor tendencies
+- previous blend styles
+- preferred atmosphere types
+- evolving preferences
+- recurring pairing patterns
+- session evolution over time
+
+Examples:
+“Last time you leaned toward darker Maduro profiles.”
+“You usually avoid sharper mint finishes.”
+“You’ve been building smoother late-night blends recently.”
+
+This creates:
+continuity,
+relationship,
+and emotional familiarity.
+
+Store:
+- mentor history
+- flavor history
+- blend evolution
+- preferred atmospheres
+- session frequency
+- reveal outcomes
+
+==================================================
+MENTOR RELATIONSHIP SYSTEM
+==================================================
+
+Users should build long-term relationships with mentors.
+
+Track:
+- favorite mentor
+- mentor-guided session count
+- preferred mentor philosophy
+- mentor chemistry alignment
+- recurring mentor pairings
+
+Examples:
+“Juan Valez has guided 7 of your sessions.”
+“You and Elena Rosario tend to create slower-burning profiles.”
+
+The mentor should begin feeling:
+familiar and trusted.
+
+==================================================
+ENVIRONMENTAL AUDIO DESIGN
+==================================================
+
+Each craft environment should include subtle cinematic audio layers.
+
+Examples:
+
+SmokeCraft:
+- ember crackles
+- lounge murmurs
+- soft jazz ambience
+- lighter flicks
+- cedar room atmosphere
+
+PourCraft:
+- whiskey pours
+- ice cracking
+- barrel room ambience
+- low lounge music
+- glass resonance
+
+BrewCraft:
+- tap pours
+- carbonation fizz
+- brewery room ambience
+- crowd warmth
+
+VapeCraft:
+- vapor hiss
+- atmospheric synth ambience
+- cooling airflow textures
+
+Audio should remain:
+subtle,
+immersive,
+and premium.
+
+NEVER overwhelming.
+
+Even when muted:
+the environment should visually behave as though sound exists.
+
+==================================================
+MENTOR SILENCE RULES
+==================================================
+
+Mentors must NEVER over-talk.
+
+The luxury feel depends on:
+silence,
+space,
+and pacing.
+
+Rules:
+- mentors speak sparingly
+- mentors observe more than they talk
+- guidance only appears when meaningful
+- pauses are intentional
+- silence is part of the atmosphere
+
+The mentor should feel:
+confident and experienced.
+
+NOT:
+a constant narrator.
+
+==================================================
+CRAFT EDUCATION MICRO-ENGINE
+==================================================
+
+The system should naturally educate users through tiny intelligent insights.
+
+Topics:
+- wrapper influence
+- barrel aging
+- fermentation
+- retrohale
+- aroma layering
+- room chemistry
+- smoke pacing
+- vapor cooling
+- beer body structure
+- whiskey finish science
+
+Examples:
+“Cedar-heavy wrappers usually reward slower draws.”
+“Longer barrel aging deepens warmer finishes.”
+“Cool mint profiles often reset the palate.”
+
+Education should feel:
+organic,
+elegant,
+and conversational.
+
+NEVER:
+like a classroom.
+
+==================================================
+GROUP SESSION / SOCIAL EXPERIENCE MODE
+==================================================
+
+Future-proof the architecture for group experiences.
+
+Support:
+- compare blends
+- shared pairings
+- mentor-guided group sessions
+- lounge competitions
+- collaborative crafting
+- shared atmosphere reveals
+- group recommendations
+
+The system should eventually support:
+social hospitality intelligence experiences.
+
+==================================================
+PRESTIGE / RECOGNITION SYSTEM
+==================================================
+
+DO NOT use cartoon badges or gamification.
+
+Recognition should feel:
+luxury and prestigious.
+
+Examples:
+- Reserve-Level Blend
+- Master Reserve Session
+- Barrel Mind Alignment
+- Lounge Curator
+- Deep Atmosphere Specialist
+- Signature Pairing Architect
+
+Recognition should feel:
+earned and sophisticated.
+
+==================================================
+UNIVERSAL VISUAL CONSISTENCY LAWS
+==================================================
+
+These visual rules are PERMANENT.
+
+NEVER introduce:
+- flat UI
+- sterile dashboards
+- bright white panels
+- generic chatbot bubbles
+- loud gaming UI
+- emojis/glyphs
+- harsh transitions
+- generic forms
+
+ALL experiences must remain:
+- cinematic
+- atmospheric
+- emotionally calm
+- OLED-rich
+- warm
+- immersive
+- premium
+- luxurious
+- alive
+
+==================================================
+TRANSITION LAWS
+==================================================
+
+The system must NEVER hard-cut between screens.
+
+ALL transitions must:
+- fade
+- glide
+- drift
+- zoom cinematically
+- expand smoothly
+- preserve environmental continuity
+
+Motion pacing should feel:
+calm,
+premium,
+and intelligent.
+
+==================================================
+“WHY THIS WORKS” EXPLANATION ENGINE
+==================================================
+
+The AI must explain WHY pairings and blends work.
+
+This is CRITICAL.
+
+The platform should teach:
+craft logic,
+not just recommendations.
+
+Examples:
+“That cedar profile slows the sharper cocoa edge.”
+
+“The vanilla softens the room aroma and lengthens the finish.”
+
+“That darker wrapper supports stronger bourbon warmth.”
+
+“Mint cools the inhale but may weaken the oak structure.”
+
+This transforms users from:
+passive consumers
+
+into:
+active craft participants.
+
+==================================================
+FINAL EXPERIENCE TARGET
+==================================================
+
+The completed system should feel like:
+
+A living luxury hospitality operating system guided by a digital council of master craftsmen who educate, guide, and evolve alongside the user over time.
+
+Users should feel:
+- immersed
+- understood
+- emotionally connected
+- creatively involved
+- educated
+- refined
+- guided
+- part of an evolving sensory journey
+
+This is NOT:
+a recommendation app.
+
+This is:
+Axiom OS.
