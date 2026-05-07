@@ -13,7 +13,7 @@
 
 import { Router, type Request, type Response } from "express";
 import { eq, desc, sum }                        from "drizzle-orm";
-import { db, axiomCreditLedgerTable, guestProfilesTable } from "@workspace/db";
+import { db, axiomCreditLedgerTable, guestProfilesTable, secretPassagesTable } from "@workspace/db";
 import { z }                                    from "zod";
 
 const router = Router();
@@ -102,6 +102,14 @@ router.post("/earn/:guestId", async (req: Request, res: Response) => {
 
 // ── POST /spend/:guestId ──────────────────────────────────────────────────────
 
+// ── Pillar URL map ────────────────────────────────────────────────────────────
+
+const PILLAR_BASE_URLS: Record<string, string> = {
+  spent_wifex:          "https://wifex.com/exclusive",
+  spent_dayone360:      "https://dayone360.com/exclusive",
+  spent_dayone360_corp: "https://corp.dayone360.com/exclusive",
+};
+
 const SpendSchema = z.object({
   creditType: z.enum(["spent_wifex","spent_dayone360"]),
   amount:     z.number().int().positive(),
@@ -122,6 +130,8 @@ router.post("/spend/:guestId", async (req: Request, res: Response) => {
   }
 
   const newBalance = balance - parsed.data.amount;
+
+  // Debit the ledger
   await db.insert(axiomCreditLedgerTable).values({
     guestId,
     creditType:   parsed.data.creditType,
@@ -132,7 +142,46 @@ router.post("/spend/:guestId", async (req: Request, res: Response) => {
     venueId:      parsed.data.venueId ?? null,
   });
 
-  res.json({ ok: true, balance: newBalance, spent: parsed.data.amount });
+  // Generate a Secret Passage — one-time token, 24-hour TTL
+  const baseUrl  = PILLAR_BASE_URLS[parsed.data.creditType] ?? "https://wifex.com/exclusive";
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const [passage] = await db
+    .insert(secretPassagesTable)
+    .values({
+      guestId,
+      targetPillar:  parsed.data.creditType,
+      creditAmount:  parsed.data.amount,
+      redirectUrl:   baseUrl,
+      expiresAt,
+      venueId:       parsed.data.venueId ?? null,
+    })
+    .returning({ token: secretPassagesTable.token });
+
+  const secretUrl = `${baseUrl}?token=${passage!.token}&aff_id=${parsed.data.venueId ?? ""}`;
+
+  res.json({ ok: true, balance: newBalance, spent: parsed.data.amount, secretPassage: { token: passage!.token, url: secretUrl, expiresAt } });
+});
+
+// ── GET /passage/:token — verify & redeem a Secret Passage ───────────────────
+
+router.get("/passage/:token", async (req: Request, res: Response) => {
+  const { token } = req.params as { token: string };
+  const [row] = await db
+    .select()
+    .from(secretPassagesTable)
+    .where(eq(secretPassagesTable.token, token));
+
+  if (!row)           { res.status(404).json({ valid: false, reason: "Token not found" }); return; }
+  if (row.used)       { res.status(410).json({ valid: false, reason: "Token already used" }); return; }
+  if (row.expiresAt < new Date()) { res.status(410).json({ valid: false, reason: "Token expired" }); return; }
+
+  // Mark used
+  await db
+    .update(secretPassagesTable)
+    .set({ used: true, usedAt: new Date() })
+    .where(eq(secretPassagesTable.token, token));
+
+  res.json({ valid: true, guestId: row.guestId, targetPillar: row.targetPillar, redirectUrl: row.redirectUrl });
 });
 
 // ── GET /ledger/:guestId ──────────────────────────────────────────────────────

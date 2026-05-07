@@ -106,3 +106,4 @@ export * from "./referralCommissions";
 export * from "./iotHumidorReadings";
 export * from "./axiomCredits";
 export * from "./palateIndex";
+export * from "./secretPassages";

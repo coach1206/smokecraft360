@@ -1,9 +1,11 @@
 /**
  * /api/iot — IoT Sensor Integration Layer
  *
- * POST /humidor            — receive sensor telemetry from Smart Humidors
- * GET  /humidor/:venueId   — latest reading + atmosphere pulse for the venue
- * GET  /atmosphere/:venueId — Atmosphere Pulse summary (UI "breathing" feed)
+ * POST /humidor               — receive sensor telemetry from Smart Humidors
+ * GET  /humidor/:venueId      — latest reading + atmosphere pulse for the venue
+ * GET  /atmosphere/:venueId   — Atmosphere Pulse summary (UI "breathing" feed)
+ * POST /nfc-tap               — hardware NFC coin/tag tap → guest identity lookup
+ * POST /nfc-link              — bind an NFC token to an existing guest profile
  *
  * Compensatory Pairing Nudge:
  *   When temperature or humidity deviates from Gold Standard, the route
@@ -13,7 +15,7 @@
 
 import { Router, type Request, type Response } from "express";
 import { eq, desc }                             from "drizzle-orm";
-import { db, iotHumidorReadingsTable, HUMIDOR_GOLD_STANDARD } from "@workspace/db";
+import { db, iotHumidorReadingsTable, HUMIDOR_GOLD_STANDARD, guestProfilesTable } from "@workspace/db";
 import { z }                                    from "zod";
 import { getIO }                                from "../lib/socketServer";
 
@@ -175,6 +177,112 @@ router.get("/atmosphere/:venueId", async (req: Request, res: Response) => {
     lastUpdated:        r?.recordedAt         ?? null,
     goldStandard:       gs,
   });
+});
+
+// ── POST /nfc-tap ─────────────────────────────────────────────────────────────
+// Hardware NFC coin/tag tap → guest identity lookup by nfc_token field.
+// Returns guest profile + Sage wake-up payload, or onboarding redirect.
+
+const NfcTapSchema = z.object({
+  nfcTagId: z.string().min(1),
+  venueId:  z.string().uuid().optional(),
+});
+
+router.post("/nfc-tap", async (req: Request, res: Response) => {
+  const parsed = NfcTapSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid payload" }); return; }
+
+  const { nfcTagId, venueId } = parsed.data;
+
+  const [guest] = await db
+    .select({
+      id:          guestProfilesTable.id,
+      firstName:   guestProfilesTable.firstName,
+      lastName:    guestProfilesTable.lastName,
+      publicId:    guestProfilesTable.publicId,
+      masteryTier: guestProfilesTable.masteryTier,
+      totalMastery:guestProfilesTable.totalMastery,
+      assignedMentorId: guestProfilesTable.assignedMentorId,
+      flavorHistory:    guestProfilesTable.flavorHistory,
+      venueId:     guestProfilesTable.venueId,
+    })
+    .from(guestProfilesTable)
+    .where(eq(guestProfilesTable.nfcToken, nfcTagId));
+
+  if (!guest) {
+    // Unknown token — direct to onboarding
+    res.json({
+      success:  false,
+      message:  "New Token Detected: Proceed to Onboarding",
+      nfcTagId,
+      redirect: "/crafthub",
+    });
+    return;
+  }
+
+  // Update lastSeenAt
+  await db
+    .update(guestProfilesTable)
+    .set({ lastSeenAt: new Date() })
+    .where(eq(guestProfilesTable.id, guest.id));
+
+  // Emit Sage wake-up event to venue kiosk
+  try {
+    const io = getIO();
+    io.to(`venue:${venueId ?? guest.venueId ?? "global"}`).emit("nfc:guest_identified", {
+      guestId:   guest.id,
+      firstName: guest.firstName,
+      masteryTier: guest.masteryTier,
+      assignedMentorId: guest.assignedMentorId,
+      timestamp: new Date().toISOString(),
+    });
+  } catch { /* Socket.IO optional */ }
+
+  res.json({
+    success:   true,
+    guestName: guest.firstName + (guest.lastName ? ` ${guest.lastName}` : ""),
+    profile:   guest,
+    sage:      {
+      wakeUp:       true,
+      mentorId:     guest.assignedMentorId,
+      masteryTier:  guest.masteryTier,
+      flavorHistory: guest.flavorHistory,
+      greeting:     `Welcome back, ${guest.firstName}. Your Sage is ready.`,
+    },
+  });
+});
+
+// ── POST /nfc-link ────────────────────────────────────────────────────────────
+// Bind an NFC hardware token to an existing guest profile (staff-initiated).
+
+const NfcLinkSchema = z.object({
+  guestId:  z.string().uuid(),
+  nfcTagId: z.string().min(1),
+});
+
+router.post("/nfc-link", async (req: Request, res: Response) => {
+  const parsed = NfcLinkSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid payload" }); return; }
+
+  const { guestId, nfcTagId } = parsed.data;
+
+  // Check for collision
+  const [existing] = await db
+    .select({ id: guestProfilesTable.id, firstName: guestProfilesTable.firstName })
+    .from(guestProfilesTable)
+    .where(eq(guestProfilesTable.nfcToken, nfcTagId));
+
+  if (existing && existing.id !== guestId) {
+    res.status(409).json({ error: "Token already bound to another guest", boundTo: existing.firstName });
+    return;
+  }
+
+  await db
+    .update(guestProfilesTable)
+    .set({ nfcToken: nfcTagId })
+    .where(eq(guestProfilesTable.id, guestId));
+
+  res.json({ ok: true, guestId, nfcTagId, message: "NFC token linked. Guest can now tap in with their Axiom Coin." });
 });
 
 export default router;

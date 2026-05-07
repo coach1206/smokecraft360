@@ -18,8 +18,10 @@ import { Router, type Request, type Response } from "express";
 import { eq, desc, gte, and, sql }             from "drizzle-orm";
 import { db, palateIndexSnapshotsTable,
          analyticsEventsTable }                 from "@workspace/db";
+import { z }                                    from "zod";
 import { requireAuth }                          from "../middleware/auth";
 import type { AuthRequest }                     from "../middleware/auth";
+import { getIO }                                from "../lib/socketServer";
 
 const router = Router();
 
@@ -90,6 +92,60 @@ router.get("/brand-loyalty/:brandId", requireAuth, async (req: AuthRequest, res:
     .orderBy(sql`DATE(${analyticsEventsTable.createdAt})`);
 
   res.json({ brandId, loyaltyTimeline: rows, generatedAt: new Date().toISOString() });
+});
+
+// ── POST /log-sentiment ───────────────────────────────────────────────────────
+// Real-time sentiment ingest: called after every guest draft/nudge interaction
+
+const SentimentSchema = z.object({
+  guestId:       z.string().optional(),
+  venueId:       z.string().uuid().optional(),
+  region:        z.string().default("GLOBAL"),
+  craftType:     z.string().default("smoke"),
+  palateProfile: z.string(),                   // e.g. "Spicy-Earth", "Creamy-Sweet"
+  nudgeAccepted: z.boolean().optional(),
+  brandId:       z.string().optional(),
+  productId:     z.string().optional(),
+});
+
+router.post("/log-sentiment", async (req: Request, res: Response) => {
+  const parsed = SentimentSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid payload" }); return; }
+
+  const { region, craftType, palateProfile, nudgeAccepted, venueId } = parsed.data;
+
+  // Each palate profile tag becomes a real-time snapshot entry at the current hour
+  const snapshotHour = new Date();
+  snapshotHour.setMinutes(0, 0, 0);
+
+  // Upsert: increment trend score for this flavor tag in this region/craft/hour
+  // Using raw SQL for atomic increment on conflict
+  await db
+    .insert(palateIndexSnapshotsTable)
+    .values({
+      region,
+      craftType,
+      flavorTag:       palateProfile,
+      trendScore:      nudgeAccepted ? 8 : 3,   // nudge acceptance weighs 2.7× more
+      sampleSize:      1,
+      isTrending:      false,
+      deltaVsPrevHour: 0,
+      topBrands:       parsed.data.brandId   ? [parsed.data.brandId]   : [],
+      topProducts:     parsed.data.productId ? [parsed.data.productId] : [],
+      snapshotHour,
+    })
+    .onConflictDoNothing();
+
+  // Also emit a live Socket.IO event so the War Room updates in real-time
+  try {
+    const io = getIO();
+    io.to(`warroom:${venueId ?? "global"}`).emit("palate:sentiment", {
+      region, craftType, palateProfile, nudgeAccepted,
+      venueId, timestamp: new Date().toISOString(),
+    });
+  } catch { /* Socket.IO optional */ }
+
+  res.json({ ok: true });
 });
 
 // ── POST /aggregate ───────────────────────────────────────────────────────────

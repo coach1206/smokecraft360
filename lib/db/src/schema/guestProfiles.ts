@@ -42,6 +42,7 @@ export const guestProfilesTable = pgTable(
     assignedMentorId:     text("assigned_mentor_id"),
     gender:               text("gender"),
     venueId:              uuid("venue_id"),
+    nfcToken:             text("nfc_token").unique(),   // hardware NFC coin / tag UID
     flavorHistory:        jsonb("flavor_history")
       .$type<FlavorHistoryEntry[]>()
       .default([]),
