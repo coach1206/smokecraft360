@@ -127,23 +127,20 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
       style={{
         position: "relative",
         overflow: "hidden",
-        borderRadius: 28,
-        backdropFilter: "blur(40px)",
-        WebkitBackdropFilter: "blur(40px)",
+        borderRadius: 40,
         borderTop: "2px solid rgba(255,255,255,.3)",
-        borderLeft: "1px solid rgba(255,255,255,.15)",
-        borderRight: "1px solid rgba(212,175,55,.15)",
-        borderBottom: "1px solid rgba(212,175,55,.15)",
-        background: "linear-gradient(180deg, rgba(25,25,25,.55) 0%, rgba(5,5,5,.82) 100%)",
+        borderLeft: "1px solid rgba(255,255,255,.1)",
+        background: "#121214",
         display: "flex",
-        alignItems: "flex-end",
+        flexDirection: "column",
+        justifyContent: "flex-end",
       }}
       animate={{
         scale:   active ? 1.02 : 1,
         opacity: active ? 1 : 0.72,
         boxShadow: active
-          ? `0 0 60px rgba(0,0,0,.8), 0 0 0 1px ${color}80, 0 0 36px ${color}40, inset 0 1px 0 rgba(255,255,255,.06)`
-          : "0 0 60px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.06)",
+          ? `0 50px 100px rgba(0,0,0,0.9), 0 0 0 1px ${color}80, 0 0 36px ${color}40`
+          : "0 50px 100px rgba(0,0,0,0.9)",
       }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -157,7 +154,8 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
       />
 
       {/* Bottom-up gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent z-10" />
+      <div className="absolute inset-0 z-10"
+        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 60%)" }} />
 
       {/* Animated top accent line */}
       <motion.div
@@ -168,49 +166,80 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
       />
 
       {/* Bottom content */}
-      <div className="absolute bottom-0 left-0 w-full z-20" style={{ padding: 42 }}>
+      <div className="absolute bottom-0 left-0 w-full" style={{ padding: 40, zIndex: 2 }}>
         <h2 style={{
           fontSize: "clamp(1.5rem, 3.5vw, 3.5rem)",
           fontStyle: "italic",
           letterSpacing: ".08em",
-          marginBottom: 14,
+          marginBottom: 10,
           lineHeight: 1,
           textTransform: "uppercase",
-          fontWeight: 500,
+          fontWeight: 900,
           whiteSpace: "nowrap",
-          ...(isSmoke ? goldLuster : { color }),
+          ...(isSmoke
+            ? {
+                background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                filter: "drop-shadow(0 0 15px rgba(212,175,55,.6))",
+              }
+            : {
+                background: "linear-gradient(to bottom, #fff 0%, #999 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }),
         }}>
           {title}
         </h2>
         <p style={{
-          color: "rgba(255,255,255,.82)",
-          fontSize: "1rem",
-          marginBottom: 28,
-          letterSpacing: ".15em",
+          color: "#fff",
+          opacity: 0.6,
+          fontSize: "12px",
+          marginBottom: 40,
+          letterSpacing: ".4em",
           textTransform: "uppercase",
         }}>
           {sub}
         </p>
-        <motion.button
-          whileHover={{ scale: 1.03, filter: "brightness(1.15)" }}
-          whileTap={{ scale: 0.97 }}
-          style={{
-            background: "linear-gradient(180deg, #1b1b1b 0%, #050505 100%)",
-            border: "1px solid rgba(212,175,55,.7)",
-            color: "#f7e8c5",
-            padding: "16px 34px",
-            borderRadius: 14,
-            cursor: "pointer",
-            letterSpacing: ".2em",
-            textTransform: "uppercase",
-            fontWeight: 600,
-            fontSize: ".75rem",
-            boxShadow: "0 6px 18px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08)",
-          }}
-          onClick={e => { e.stopPropagation(); navigate(route); }}
-        >
-          {cta}
-        </motion.button>
+        {isSmoke ? (
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            style={{
+              background: "rgba(0,0,0,0.8)",
+              border: "1px solid #d4af37",
+              padding: "20px 50px",
+              color: "#d4af37",
+              fontWeight: 900,
+              letterSpacing: ".5em",
+              cursor: "pointer",
+              fontSize: "11px",
+              textTransform: "uppercase",
+            }}
+            onClick={e => { e.stopPropagation(); navigate(route); }}
+          >
+            {cta}
+          </motion.button>
+        ) : (
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            style={{
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.3)",
+              padding: "20px 50px",
+              color: "#fff",
+              fontWeight: 900,
+              letterSpacing: ".5em",
+              cursor: "pointer",
+              fontSize: "11px",
+              textTransform: "uppercase",
+            }}
+            onClick={e => { e.stopPropagation(); navigate(route); }}
+          >
+            {cta}
+          </motion.button>
+        )}
       </div>
     </motion.div>
   );
@@ -354,23 +383,23 @@ export default function TitanCraftDeck() {
                 background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-                filter: "drop-shadow(0 0 12px rgba(212,175,55,.5))",
-                fontSize: "2.4rem",
+                filter: "drop-shadow(0 0 15px rgba(212,175,55,.6))",
+                fontSize: "32px",
                 letterSpacing: ".4em",
-                fontStyle: "italic",
+                fontWeight: 900,
                 textTransform: "uppercase",
-                lineHeight: 1,
+                margin: 0,
               }}>
                 Axiom 360
               </div>
               <div style={{
-                color: "rgba(255,255,255,.45)",
+                fontSize: "10px",
+                letterSpacing: "0.6em",
+                opacity: 0.4,
                 marginTop: 8,
-                letterSpacing: ".25em",
                 textTransform: "uppercase",
-                fontSize: ".75rem",
               }}>
-                Industrial Hospitality Intelligence
+                Sovereign OS // Premier Terminal
               </div>
             </div>
 
@@ -392,8 +421,18 @@ export default function TitanCraftDeck() {
               ))}
             </div>
 
-            {/* Right — vitality widget */}
-            <VitalityWidget />
+            {/* Right — status badge */}
+            <div style={{ background: "rgba(255,255,255,0.05)", padding: "12px 30px", borderRadius: 15, border: "1px solid #d4af37" }}>
+              <span style={{
+                background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontSize: "12px",
+                fontWeight: 900,
+                letterSpacing: "0.4em",
+                textTransform: "uppercase",
+              }}>STATUS: NOMINAL</span>
+            </div>
           </header>
 
           {/* Main — grid or atelier */}
@@ -567,34 +606,36 @@ export default function TitanCraftDeck() {
               background: "linear-gradient(180deg, rgba(10,10,10,.7) 0%, rgba(0,0,0,.95) 100%)",
             }}>
             {/* Left — diamond + telemetry */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
               <div style={{
                 width: 18, height: 18,
+                background: "#d4af37",
                 transform: "rotate(45deg)",
-                background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
-                boxShadow: "0 0 12px rgba(212,175,55,.9), 0 0 28px rgba(212,175,55,.55)",
+                boxShadow: "0 0 30px #d4af37",
                 flexShrink: 0,
               }} />
               <span style={{
-                background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                fontSize: "1rem",
-                letterSpacing: ".22em",
+                fontSize: 11,
+                letterSpacing: "0.6em",
+                opacity: 0.4,
                 textTransform: "uppercase",
+                color: "#fff",
               }}>
-                Titan Engine // Live
+                Titan Engine // Live Telemetry
               </span>
             </div>
 
-            {/* Right — status */}
+            {/* Right — version */}
             <span style={{
-              color: "rgba(255,255,255,.4)",
-              letterSpacing: ".18em",
+              background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              fontSize: "10px",
+              opacity: 0.6,
+              letterSpacing: "0.4em",
               textTransform: "uppercase",
-              fontSize: ".8rem",
             }}>
-              Sovereign Console Active
+              Axiom Sovereign OS v3.0
             </span>
           </footer>
         </motion.div>
