@@ -804,7 +804,7 @@
     --axiom-body-bg:     #0a0a0b;
     --gold-luster:       linear-gradient(180deg, #fff9e6 0%, #d4af37 50%, #8a6d3b 100%);
     --gold-luster-color: #f9e29a; /* flat color fallback for gradient color-stop usage */
-    background-color: var(--axiom-body-bg);
+    background: radial-gradient(circle at 50% 50%, #1c1c1e 0%, #0a0a0b 100%);
     min-height: 100vh;
     color: white;
   }
@@ -838,14 +838,28 @@
     font-weight: 800;
   }
 
-  /* ── TITAN glass-card — near-black frosted obsidian card ── */
+  /* ── TITAN glass-card — lifted transparent card ── */
   .glass-card {
-    background: rgba(18,18,20,0.80);
-    backdrop-filter: blur(25px) saturate(180%);
-    -webkit-backdrop-filter: blur(25px) saturate(180%);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px;
-    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.80);
+    background: rgba(45,45,50,0.40);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.20);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    height: 420px;
+  }
+
+  /* ── TITAN glass-card img — full-bleed with brightness lift ── */
+  .glass-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(1.1) contrast(1.1);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
   }
 
   /* ── axiom-terminal — ambient corner glow pseudo-element ── */

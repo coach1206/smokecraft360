@@ -249,8 +249,6 @@ export default function TitanCraftDeck() {
           id="axiom-terminal"
           className="axiom-theme h-screen w-full flex flex-col"
           style={{
-            background: "var(--axiom-body-bg, var(--steel-bg))",
-            color: "white",
             fontFamily: "var(--app-font-sans, system-ui, sans-serif)",
             overflow: "hidden",
           }}

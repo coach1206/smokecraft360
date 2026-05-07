@@ -1,0 +1,54 @@
+export default function App() {
+  return (
+    <div className="axiom-theme min-h-screen w-full p-8 flex flex-col">
+      
+      {/* HEADER: High-Visibility Branding */}
+      <header className="flex justify-between items-center mb-10">
+        <div className="flex flex-col">
+          <h1 className="gold-luster-text text-2xl tracking-[0.5em] font-black uppercase">Axiom 360</h1>
+          <div className="h-[2px] w-full bg-gradient-to-r from-yellow-500 to-transparent mt-1"></div>
+        </div>
+        <div className="text-right">
+          <span className="text-emerald-400 text-[10px] font-bold tracking-[0.3em] uppercase animate-pulse">Inventory Sync: Live</span>
+        </div>
+      </header>
+
+      {/* MAIN: TALL GALLERY (Fixed Smashed Images) */}
+      <main className="grid grid-cols-2 gap-10 flex-grow">
+        
+        {/* SMOKECRAFT 360: TALL MODE */}
+        <div className="glass-card relative group">
+          <img src="https://images.unsplash.com/photo-1527030280862-64139fba04ca?w=800&fit=crop" alt="Smoke" />
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 p-8 z-20 w-full">
+            <h2 className="gold-luster-text text-3xl italic mb-2">Smokecraft 360</h2>
+            <p className="text-white/60 text-xs tracking-widest uppercase">Premium Tobacco // Ritual Prep</p>
+            <button className="mt-6 px-6 py-2 border border-yellow-500/50 text-[10px] gold-luster-text uppercase tracking-widest bg-black/40 backdrop-blur-md">Enter Atelier</button>
+          </div>
+        </div>
+
+        {/* POURCRAFT 360: TALL MODE */}
+        <div className="glass-card relative group">
+          <img src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=800&fit=crop" alt="Pour" />
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 p-8 z-20 w-full">
+            <h2 className="text-white text-3xl italic mb-2 opacity-90">Pourcraft 360</h2>
+            <p className="text-white/60 text-xs tracking-widest uppercase">Spirits // Vessel Geometry</p>
+            <button className="mt-6 px-6 py-2 border border-white/20 text-[10px] text-white uppercase tracking-widest bg-black/40 backdrop-blur-md">Explore Spirits</button>
+          </div>
+        </div>
+
+      </main>
+
+      {/* FOOTER: Market Pulse */}
+      <footer className="mt-10 pt-6 border-t border-white/10 flex justify-between items-center">
+        <div className="text-[10px] text-white/30 uppercase tracking-[0.4em]">Axiom OS Premier Terminal</div>
+        <div className="flex gap-10 items-center">
+          <span className="text-yellow-600 font-bold text-[10px] tracking-tighter italic">Lounge Vitality: 88%</span>
+          <button className="bg-yellow-600/10 border border-yellow-500/40 px-10 py-3 gold-luster-text text-[11px] uppercase tracking-[0.3em]">Quick Pairing</button>
+        </div>
+      </footer>
+
+    </div>
+  );
+}
