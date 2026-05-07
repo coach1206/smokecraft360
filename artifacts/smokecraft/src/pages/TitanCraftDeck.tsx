@@ -128,8 +128,8 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
         position: "relative",
         overflow: "hidden",
         borderRadius: 40,
-        borderTop: "1px solid rgba(255,255,255,.20)",
-        borderLeft: "1px solid rgba(255,255,255,.10)",
+        borderTop: "1px solid rgba(255,255,255,0.3)",
+        borderLeft: "1px solid rgba(255,255,255,0.1)",
         background: "#121214",
         display: "flex",
         flexDirection: "column",
@@ -146,26 +146,30 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => navigate(route)}
     >
-      {/* Full-bleed hero image */}
-      <img
-        src={img}
-        alt={title}
-        className="transition-transform duration-1000 group-hover:scale-110"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          objectPosition: "center",
-          opacity: 1,
-          filter: "brightness(1.1) contrast(1.05)",
-        }}
-      />
+      {/* Full-bleed hero image — overflow-hidden wrapper forces cover clipping */}
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
+        <img
+          src={img}
+          alt={title}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center",
+            opacity: 1,
+            filter: "brightness(1.2) contrast(1.1)",
+            display: "block",
+          }}
+        />
+      </div>
 
-      {/* Bottom-only gradient — text zone only, image stays crystal clear */}
-      <div className="absolute inset-0 z-10"
-        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.25) 35%, transparent 60%)" }} />
+      {/* Precision shadow — bottom text zone only, product stays crystal clear */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        zIndex: 10,
+        background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 40%)",
+      }} />
 
       {/* Animated top accent line */}
       <motion.div
