@@ -17,25 +17,33 @@ interface AxiomState {
   // PHASE 5: COMMAND
   isKioskLocked: boolean;
 
+  // PHASE 6: TICKER COMMAND
+  tickerMode:      "auto" | "manual";
+  tickerBroadcast: string;
+
   // ACTIONS
-  updateOccupancy: (val: number) => void;
-  toggleDynamic:   () => void;
-  toggleMember:    () => void;
-  addXP:           (val: number) => void;
-  processSale:     (basePrice: number, finalPrice: number) => void;
-  resetSession:    () => void;
+  updateOccupancy:    (val: number) => void;
+  toggleDynamic:      () => void;
+  toggleMember:       () => void;
+  addXP:              (val: number) => void;
+  processSale:        (basePrice: number, finalPrice: number) => void;
+  resetSession:       () => void;
+  setTickerMode:      (mode: "auto" | "manual") => void;
+  setTickerBroadcast: (msg: string) => void;
 }
 
 export const useAxiomStore = create<AxiomState>()(
   persist(
     (set) => ({
-      occupancy:      50,
-      isDynamicActive: false,
-      isMember:       false,
-      totalLift:      0,
-      xp:             0,
-      rank:           'Novice',
-      isKioskLocked:  true,
+      occupancy:        50,
+      isDynamicActive:  false,
+      isMember:         false,
+      totalLift:        0,
+      xp:               0,
+      rank:             'Novice',
+      isKioskLocked:    true,
+      tickerMode:       'auto',
+      tickerBroadcast:  '',
 
       updateOccupancy: (val) => set({ occupancy: val }),
 
@@ -60,6 +68,9 @@ export const useAxiomStore = create<AxiomState>()(
 
       resetSession: () =>
         set({ xp: 0, rank: 'Novice', totalLift: 0 }),
+
+      setTickerMode:      (mode) => set({ tickerMode: mode }),
+      setTickerBroadcast: (msg)  => set({ tickerBroadcast: msg }),
     }),
     { name: 'axiom-360-storage' },
   ),

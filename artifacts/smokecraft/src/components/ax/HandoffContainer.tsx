@@ -488,6 +488,8 @@ const TICKER_META = [
 ];
 
 function PriceTicker({ craftPrices }: { craftPrices: Record<string, PriceInfo> }) {
+  const { tickerMode, tickerBroadcast } = useAxiomStore();
+
   const prevTiers = useRef<Record<string, string>>({});
   useEffect(() => {
     let fired = false;
@@ -501,7 +503,7 @@ function PriceTicker({ craftPrices }: { craftPrices: Record<string, PriceInfo> }
     }
   }, [craftPrices]);
 
-  // One loop = 4 craft segments + 1 revenue lift segment
+  // ── Auto mode: craft prices + inventory items ──────────────────────────────
   const craftSegs = TICKER_META.map(m => {
     const info     = craftPrices[m.id];
     const price    = info?.price ?? CRAFT_BASE_PRICE[m.id] ?? 0;
@@ -513,109 +515,218 @@ function PriceTicker({ craftPrices }: { craftPrices: Record<string, PriceInfo> }
     return { kind: "craft" as const, m, price, base, isSurge, isMember, delta };
   });
   const liftSeg = { kind: "lift" as const };
-  const loop  = [...craftSegs, liftSeg];
-  const items = [...loop, ...loop, ...loop]; // triple for seamless -33.33% scroll
+  const invSegs = TICKER_INVENTORY_ITEMS.map(it => ({ kind: "inv" as const, it }));
+  const loop    = [...craftSegs, liftSeg, ...invSegs];
+  const items   = [...loop, ...loop, ...loop]; // triple for seamless -33.33%
+
+  // ── Manual mode: repeat broadcast message ─────────────────────────────────
+  const broadcastText = tickerBroadcast.trim() || "STAFF BROADCAST MODE — Awaiting message…";
+  const broadcastItems = Array.from({ length: 9 }, (_, i) => i); // repeat 9×
+
+  const BG  = "rgba(6,4,3,0.98)";
+  const MON = "'Courier New',monospace";
 
   return (
     <div
       className="relative z-10 flex-shrink-0 overflow-hidden"
       style={{
-        height: 42,
-        background: "rgba(4,3,2,0.97)",
-        borderTop:    "1px solid rgba(255,179,71,0.32)",
-        borderBottom: "1px solid rgba(255,179,71,0.10)",
+        height: 64,
+        background: BG,
+        borderTop: "1.5px solid rgba(255,179,71,0.38)",
       }}
     >
       {/* Edge fade masks */}
-      <div style={{ position:"absolute", left:0, top:0, bottom:0, width:88, zIndex:2, background:"linear-gradient(90deg,rgba(4,3,2,1) 0%,transparent 100%)" }} />
-      <div style={{ position:"absolute", right:0, top:0, bottom:0, width:88, zIndex:2, background:"linear-gradient(270deg,rgba(4,3,2,1) 0%,transparent 100%)" }} />
+      <div style={{ position:"absolute", left:0, top:0, bottom:0, width:120, zIndex:4,
+        background:`linear-gradient(90deg,${BG} 0%,transparent 100%)` }} />
+      <div style={{ position:"absolute", right:0, top:0, bottom:0, width:120, zIndex:4,
+        background:`linear-gradient(270deg,${BG} 0%,transparent 100%)` }} />
 
-      {/* MARKET RATES stamp */}
+      {/* ── Left stamp ── */}
       <div style={{
-        position:"absolute", left:0, top:0, bottom:0, zIndex:3,
-        display:"flex", alignItems:"center", gap:8, paddingLeft:12,
-        background:"rgba(4,3,2,0.97)",
+        position:"absolute", left:0, top:0, bottom:0, zIndex:5,
+        display:"flex", alignItems:"center", gap:8, paddingLeft:14,
+        background:BG,
       }}>
-        <span style={{
-          fontFamily:"'Courier New',monospace", fontSize:9, fontWeight:700,
-          letterSpacing:"0.20em", color:"rgba(255,179,71,0.55)", textTransform:"uppercase",
-          whiteSpace:"nowrap",
-        }}>MARKET RATES</span>
-        <div style={{ width:1, height:20, background:"rgba(255,179,71,0.22)" }} />
+        {tickerMode === "manual" ? (
+          <motion.span
+            animate={{ opacity:[1, 0.5, 1] }}
+            transition={{ duration:1.2, repeat:Infinity }}
+            style={{ fontFamily:MON, fontSize:9, fontWeight:800,
+              letterSpacing:"0.20em", color:"#f87171", textTransform:"uppercase", whiteSpace:"nowrap" }}
+          >● BROADCAST</motion.span>
+        ) : (
+          <span style={{ fontFamily:MON, fontSize:9, fontWeight:700,
+            letterSpacing:"0.20em", color:"rgba(255,179,71,0.50)", textTransform:"uppercase", whiteSpace:"nowrap" }}>
+            MARKET RATES
+          </span>
+        )}
+        <div style={{ width:1, height:26, background:"rgba(255,179,71,0.20)" }} />
       </div>
 
-      <motion.div
-        className="flex items-center h-full"
-        style={{ paddingLeft:148, width:"max-content" }}
-        animate={{ x:["0%", "-33.33%"] }}
-        transition={{ duration:60, repeat:Infinity, ease:"linear" }}
+      {/* ── DayOne360 — static centre anchor ── */}
+      <a
+        href="https://www.dayone360.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          position:"absolute", left:"50%", top:"50%",
+          transform:"translate(-50%,-50%)",
+          zIndex:6,
+          display:"flex", alignItems:"center", gap:7,
+          padding:"6px 14px",
+          borderRadius:10,
+          background:"rgba(6,4,3,0.92)",
+          backdropFilter:"blur(10px)",
+          border:"1px solid rgba(91,63,160,0.35)",
+          textDecoration:"none",
+          boxShadow:"0 0 18px rgba(91,63,160,0.18)",
+          cursor:"pointer",
+        }}
       >
-        {items.map((seg, i) => {
-          if (seg.kind === "lift") {
-            return (
-              <div key={i} className="flex items-center flex-shrink-0" style={{ paddingRight:44 }}>
-                <span style={{
-                  fontFamily:"'Courier New',monospace", fontSize:11, fontWeight:700,
-                  letterSpacing:"0.18em", color:"rgba(255,179,71,0.48)", textTransform:"uppercase", whiteSpace:"nowrap",
-                }}>REVENUE LIFT TODAY</span>
-                <span style={{
-                  fontFamily:"'Courier New',monospace", fontSize:15, fontWeight:700,
-                  color:"#4ade80", textShadow:"0 0 13px rgba(74,222,128,0.75)",
-                  letterSpacing:"0.04em", marginLeft:8,
-                }}>$1,450</span>
-                <span style={{ color:"rgba(255,179,71,0.16)", fontSize:15, marginLeft:32 }}>·</span>
-              </div>
-            );
-          }
-          const { m, price, base, isSurge, isMember, delta } = seg;
-          const priceColor = isSurge ? "#f87171" : isMember ? "#4ade80" : "#FFB347";
-          const glowColor  = isSurge ? "rgba(248,113,113,0.75)" : isMember ? "rgba(74,222,128,0.65)" : "rgba(255,179,71,0.75)";
-          return (
-            <div key={i} className="flex items-center flex-shrink-0" style={{ paddingRight:44 }}>
-              <span style={{
-                fontFamily:"'Courier New',monospace", fontSize:11, fontWeight:700,
-                letterSpacing:"0.14em", color:m.color, textShadow:`0 0 9px ${m.color}70`,
-                whiteSpace:"nowrap",
-              }}>
-                {m.glyph}&nbsp;{m.label}
-              </span>
-              {!isMember && (
-                <span style={{
-                  fontFamily:"'Courier New',monospace", fontSize:10, fontWeight:400,
-                  color:"rgba(255,179,71,0.32)", letterSpacing:"0.04em", margin:"0 5px",
-                }}>${base.toFixed(0)}&nbsp;→</span>
-              )}
-              <span style={{
-                fontFamily:"'Courier New',monospace", fontSize:15, fontWeight:700,
-                color:priceColor, textShadow:`0 0 13px ${glowColor}`,
-                letterSpacing:"0.04em",
-                marginLeft: isMember ? 8 : 0,
-              }}>
-                ${price.toFixed(0)}
-              </span>
-              {isMember && (
-                <span style={{
-                  fontFamily:"'Courier New',monospace", fontSize:10, fontWeight:700,
-                  color:"#4ade80", letterSpacing:"0.14em", marginLeft:6, whiteSpace:"nowrap",
-                }}>(MEMBERS LOCKED)</span>
-              )}
-              {isSurge && (
-                <span style={{
-                  fontFamily:"'Courier New',monospace", fontSize:10, fontWeight:700,
-                  color:"#f87171", letterSpacing:"0.14em", marginLeft:6,
-                }}>↑SURGE</span>
-              )}
-              {!isMember && !isSurge && delta !== 0 && (
-                <span style={{
-                  fontFamily:"'Courier New',monospace", fontSize:10, fontWeight:700,
-                  color:delta > 0 ? "#f87171" : "#4ade80", marginLeft:5, letterSpacing:"0.08em",
-                }}>({delta > 0 ? "+" : ""}{delta}%)</span>
-              )}
-              <span style={{ color:"rgba(255,179,71,0.16)", fontSize:15, marginLeft:32 }}>·</span>
-            </div>
-          );
-        })}
-      </motion.div>
+        {/* Globe + plane SVG */}
+        <svg viewBox="0 0 28 28" width="18" height="18" fill="none" style={{ flexShrink:0 }}>
+          <circle cx="14" cy="14" r="9.5" stroke="rgba(167,139,250,0.75)" strokeWidth="1.2"/>
+          <ellipse cx="14" cy="14" rx="4.8" ry="9.5" stroke="rgba(167,139,250,0.38)" strokeWidth="0.9"/>
+          <line x1="4.5" y1="14" x2="23.5" y2="14" stroke="rgba(167,139,250,0.30)" strokeWidth="0.9"/>
+          <path d="M18 7.5 L15.5 12.5 L11.5 11 L10 12.5 L13.5 14 L11.5 18 L14 17 L15.5 20.5 L17.5 18.5 L15.5 14 L20.5 10.5 Z"
+            fill="rgba(167,139,250,0.85)"/>
+        </svg>
+        <span style={{ fontFamily:MON, fontSize:9, fontWeight:700,
+          color:"rgba(167,139,250,0.80)", letterSpacing:"0.14em", whiteSpace:"nowrap" }}>
+          DAYONE360
+        </span>
+      </a>
+
+      {/* ── Scrolling content ── */}
+      <AnimatePresence mode="wait">
+        {tickerMode === "manual" ? (
+          <motion.div
+            key="manual"
+            initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
+            className="flex items-center h-full"
+            style={{ paddingLeft:148, width:"max-content" }}
+          >
+            <motion.div
+              className="flex items-center h-full"
+              style={{ width:"max-content" }}
+              animate={{ x:["0%", "-50%"] }}
+              transition={{ duration:38, repeat:Infinity, ease:"linear" }}
+            >
+              {broadcastItems.map((_, i) => (
+                <div key={i} className="flex items-center flex-shrink-0" style={{ paddingRight:80 }}>
+                  <motion.span
+                    animate={{ opacity:[1,0.78,1] }}
+                    transition={{ duration:2.8, repeat:Infinity, ease:"easeInOut", delay: i * 0.3 }}
+                    style={{ fontFamily:MON, fontSize:22, fontWeight:800,
+                      color:"#FFB347", textShadow:"0 0 18px rgba(255,179,71,0.65)",
+                      letterSpacing:"0.06em", whiteSpace:"nowrap" }}
+                  >
+                    {broadcastText}
+                  </motion.span>
+                  <span style={{ color:"rgba(255,179,71,0.20)", fontSize:20, marginLeft:60 }}>◆</span>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="auto"
+            initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
+            className="flex items-center h-full"
+            style={{ paddingLeft:160, width:"max-content" }}
+          >
+            <motion.div
+              className="flex items-center h-full"
+              style={{ width:"max-content" }}
+              animate={{ x:["0%", "-33.33%"] }}
+              transition={{ duration:90, repeat:Infinity, ease:"linear" }}
+            >
+              {items.map((seg, i) => {
+                if (seg.kind === "lift") {
+                  return (
+                    <div key={i} className="flex items-center flex-shrink-0" style={{ paddingRight:56 }}>
+                      <span style={{ fontFamily:MON, fontSize:11, fontWeight:700,
+                        letterSpacing:"0.18em", color:"rgba(255,179,71,0.48)", textTransform:"uppercase", whiteSpace:"nowrap" }}>
+                        REVENUE LIFT TODAY
+                      </span>
+                      <span style={{ fontFamily:MON, fontSize:24, fontWeight:800,
+                        color:"#4ade80", textShadow:"0 0 16px rgba(74,222,128,0.75)",
+                        letterSpacing:"0.04em", marginLeft:10 }}>$1,450</span>
+                      <span style={{ color:"rgba(255,179,71,0.14)", fontSize:18, marginLeft:40 }}>·</span>
+                    </div>
+                  );
+                }
+                if (seg.kind === "inv") {
+                  const { it } = seg;
+                  const isOut     = it.qty === 0;
+                  const isLastCall = !isOut && it.qty <= 3; // "on sale" — last-call specials
+                  const pct       = it.max === 0 ? 0 : it.qty / it.max;
+                  const isLow     = pct < 0.35 && !isOut && !isLastCall;
+                  const nameColor = isOut ? "rgba(248,113,113,0.55)" : isLastCall ? "#4ade80" : isLow ? "#FFB347" : "rgba(255,255,255,0.42)";
+                  const statusLabel = isOut ? "OUT OF STOCK" : isLastCall ? `LAST ${it.qty} — SPECIAL` : isLow ? `LOW: ${it.qty}` : `IN STOCK: ${it.qty}`;
+                  const statusColor = isOut ? "#f87171" : isLastCall ? "#4ade80" : isLow ? "#FFB347" : "rgba(255,255,255,0.25)";
+                  return (
+                    <div key={i} className="flex items-center flex-shrink-0" style={{ paddingRight:40 }}>
+                      <motion.span
+                        animate={isLastCall ? { opacity:[1,0.6,1] } : {}}
+                        transition={{ duration:1.8, repeat:Infinity, ease:"easeInOut" }}
+                        style={{ fontFamily:MON, fontSize:14, fontWeight:700,
+                          color:nameColor, letterSpacing:"0.05em", whiteSpace:"nowrap",
+                          textShadow: isLastCall ? "0 0 12px rgba(74,222,128,0.55)" : "none" }}
+                      >{it.name}</motion.span>
+                      <span style={{ fontFamily:MON, fontSize:11, fontWeight:700,
+                        color:statusColor, letterSpacing:"0.12em", marginLeft:12,
+                        padding:"2px 8px", borderRadius:5,
+                        border:`1px solid ${statusColor}40`,
+                        background:`${statusColor}10`, whiteSpace:"nowrap" }}>{statusLabel}</span>
+                      <span style={{ color:"rgba(255,179,71,0.14)", fontSize:18, marginLeft:32 }}>·</span>
+                    </div>
+                  );
+                }
+                const { m, price, base, isSurge, isMember: isMem, delta } = seg;
+                const priceColor = isSurge ? "#f87171" : isMem ? "#4ade80" : "#FFB347";
+                const glowColor  = isSurge ? "rgba(248,113,113,0.75)" : isMem ? "rgba(74,222,128,0.65)" : "rgba(255,179,71,0.75)";
+                return (
+                  <div key={i} className="flex items-center flex-shrink-0" style={{ paddingRight:48 }}>
+                    <span style={{ fontFamily:MON, fontSize:12, fontWeight:700,
+                      letterSpacing:"0.14em", color:m.color, textShadow:`0 0 9px ${m.color}70`, whiteSpace:"nowrap" }}>
+                      {m.glyph}&nbsp;{m.label}
+                    </span>
+                    {!isMem && (
+                      <span style={{ fontFamily:MON, fontSize:12, fontWeight:400,
+                        color:"rgba(255,179,71,0.30)", letterSpacing:"0.04em", margin:"0 6px" }}>
+                        ${base.toFixed(0)}&nbsp;→
+                      </span>
+                    )}
+                    <span style={{ fontFamily:MON, fontSize:24, fontWeight:800,
+                      color:priceColor, textShadow:`0 0 16px ${glowColor}`,
+                      letterSpacing:"0.03em", marginLeft: isMem ? 10 : 0 }}>
+                      ${price.toFixed(0)}
+                    </span>
+                    {isMem && (
+                      <span style={{ fontFamily:MON, fontSize:10, fontWeight:700,
+                        color:"#4ade80", letterSpacing:"0.14em", marginLeft:8, whiteSpace:"nowrap" }}>
+                        (MEMBERS LOCKED)
+                      </span>
+                    )}
+                    {isSurge && (
+                      <span style={{ fontFamily:MON, fontSize:11, fontWeight:700,
+                        color:"#f87171", letterSpacing:"0.14em", marginLeft:8 }}>↑SURGE</span>
+                    )}
+                    {!isMem && !isSurge && delta !== 0 && (
+                      <span style={{ fontFamily:MON, fontSize:11, fontWeight:700,
+                        color:delta > 0 ? "#f87171" : "#4ade80", marginLeft:6, letterSpacing:"0.08em" }}>
+                        ({delta > 0 ? "+" : ""}{delta}%)
+                      </span>
+                    )}
+                    <span style={{ color:"rgba(255,179,71,0.14)", fontSize:18, marginLeft:36 }}>·</span>
+                  </div>
+                );
+              })}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -880,6 +991,12 @@ const STAFF_INVENTORY = [
   ]},
 ];
 
+// "on sale" = qty > 0 AND qty <= 3 (last-call specials — pulse green in ticker)
+const TICKER_INVENTORY_ITEMS = [
+  ...STAFF_INVENTORY[0].items.map(it => ({ ...it, cat: "smoke" as const })),
+  ...STAFF_INVENTORY[1].items.map(it => ({ ...it, cat: "pour"  as const })),
+];
+
 const LIFT_HOURS = [28, 34, 41, 29, 55, 63, 48, 72];
 
 function StaffPanel({
@@ -905,7 +1022,11 @@ function StaffPanel({
     occupancy, isDynamicActive, isMember,
     totalLift, xp, rank,
     updateOccupancy, toggleDynamic, resetSession,
+    tickerMode, tickerBroadcast, setTickerMode, setTickerBroadcast,
   } = useAxiomStore();
+
+  // Local draft for broadcast input — committed on "BROADCAST" press
+  const [broadcastDraft, setBroadcastDraft] = useState(tickerBroadcast);
 
   // Fire a service alert when rank changes mid-session
   useEffect(() => {
@@ -1297,6 +1418,115 @@ function StaffPanel({
                   </div>
                 );
               })}
+            </div>
+          </div>
+
+          {/* ── TICKER COMMAND ─────────────────────────────────────────────── */}
+          <div style={{ marginBottom: 14, padding: "16px 14px", borderRadius: 14,
+            background: "#1A1A1B", border: "1.5px solid rgba(255,179,71,0.18)" }}>
+
+            <div style={{ fontFamily: "'Courier New', monospace", fontSize: 8, fontWeight: 700,
+              letterSpacing: "0.26em", color: "#FFB347", marginBottom: 14,
+              display: "flex", alignItems: "center", gap: 8 }}>
+              <motion.span
+                animate={{ opacity: tickerMode === "manual" ? [1, 0.4, 1] : 1 }}
+                transition={{ duration: 1.2, repeat: tickerMode === "manual" ? Infinity : 0 }}
+                style={{ width: 7, height: 7, borderRadius: "50%",
+                  background: tickerMode === "manual" ? "#f87171" : "#4ade80",
+                  display: "inline-block", boxShadow: tickerMode === "manual" ? "0 0 8px #f87171" : "0 0 8px #4ade80",
+                  flexShrink: 0 }}
+              />
+              ◈ TICKER COMMAND
+            </div>
+
+            {/* Mode toggle */}
+            <button
+              onClick={() => setTickerMode(tickerMode === "auto" ? "manual" : "auto")}
+              style={{
+                width: "100%", minHeight: 52, borderRadius: 11, cursor: "pointer",
+                background: tickerMode === "manual" ? "rgba(248,113,113,0.10)" : "rgba(74,222,128,0.10)",
+                border: `1.5px solid ${tickerMode === "manual" ? "rgba(248,113,113,0.38)" : "rgba(74,222,128,0.28)"}`,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
+                marginBottom: 12, transition: "all 0.22s ease",
+              }}
+            >
+              {/* Toggle pill */}
+              <div style={{ width: 40, height: 22, borderRadius: 11, padding: 3,
+                background: tickerMode === "manual" ? "rgba(248,113,113,0.22)" : "rgba(74,222,128,0.22)",
+                border: `1px solid ${tickerMode === "manual" ? "rgba(248,113,113,0.45)" : "rgba(74,222,128,0.45)"}`,
+                display: "flex", alignItems: "center",
+                justifyContent: tickerMode === "manual" ? "flex-end" : "flex-start",
+                transition: "all 0.22s", flexShrink: 0 }}>
+                <div style={{ width: 16, height: 16, borderRadius: "50%",
+                  background: tickerMode === "manual" ? "#f87171" : "#4ade80",
+                  boxShadow: tickerMode === "manual" ? "0 0 8px #f87171" : "0 0 8px #4ade80",
+                  transition: "all 0.22s" }} />
+              </div>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 10, fontWeight: 700,
+                letterSpacing: "0.12em", textTransform: "uppercase",
+                color: tickerMode === "manual" ? "#f87171" : "#4ade80" }}>
+                {tickerMode === "manual" ? "MANUAL BROADCAST" : "AUTO — Revenue Brain"}
+              </span>
+            </button>
+
+            {/* Broadcast input — visible in both modes, active only in manual */}
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ fontFamily: "'Courier New', monospace", fontSize: 7, fontWeight: 700,
+                letterSpacing: "0.18em", color: "rgba(240,232,212,0.32)", marginBottom: 7,
+                textTransform: "uppercase" }}>Live Broadcast Message</div>
+              <input
+                type="text"
+                value={broadcastDraft}
+                onChange={(e) => setBroadcastDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && broadcastDraft.trim()) {
+                    setTickerBroadcast(broadcastDraft.trim());
+                    setTickerMode("manual");
+                  }
+                }}
+                placeholder="e.g. HAPPY HOUR: 20% OFF COGNAC PAIRINGS"
+                style={{
+                  width: "100%", minHeight: 52, borderRadius: 10,
+                  background: "rgba(240,232,212,0.05)",
+                  border: `1.5px solid ${tickerMode === "manual" ? "rgba(248,113,113,0.35)" : "rgba(240,232,212,0.12)"}`,
+                  color: "#F0E8D4", fontSize: 12, padding: "0 12px",
+                  fontFamily: "'Courier New', monospace", letterSpacing: "0.04em",
+                  outline: "none", boxSizing: "border-box",
+                  transition: "border-color 0.22s",
+                }}
+              />
+            </div>
+
+            {/* Broadcast + Clear buttons */}
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                onClick={() => {
+                  if (!broadcastDraft.trim()) return;
+                  setTickerBroadcast(broadcastDraft.trim());
+                  setTickerMode("manual");
+                  playClick();
+                }}
+                style={{
+                  flex: 1, minHeight: 44, borderRadius: 9, cursor: "pointer",
+                  background: broadcastDraft.trim() ? "rgba(248,113,113,0.14)" : "rgba(240,232,212,0.04)",
+                  border: `1px solid ${broadcastDraft.trim() ? "rgba(248,113,113,0.40)" : "rgba(240,232,212,0.10)"}`,
+                  fontSize: 10, fontWeight: 800, letterSpacing: "0.16em",
+                  color: broadcastDraft.trim() ? "#f87171" : "rgba(240,232,212,0.22)",
+                  fontFamily: "'Courier New', monospace", transition: "all 0.18s",
+                }}>● BROADCAST</button>
+              <button
+                onClick={() => {
+                  setBroadcastDraft("");
+                  setTickerBroadcast("");
+                  setTickerMode("auto");
+                }}
+                style={{
+                  minHeight: 44, padding: "0 14px", borderRadius: 9, cursor: "pointer",
+                  background: "rgba(240,232,212,0.05)",
+                  border: "1px solid rgba(240,232,212,0.12)",
+                  fontSize: 10, fontWeight: 700, letterSpacing: "0.12em",
+                  color: "rgba(240,232,212,0.38)", fontFamily: "'Courier New', monospace",
+                }}>AUTO</button>
             </div>
           </div>
 
