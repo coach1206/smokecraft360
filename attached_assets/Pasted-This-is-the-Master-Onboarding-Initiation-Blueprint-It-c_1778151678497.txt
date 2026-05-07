@@ -1,0 +1,35 @@
+This is the Master Onboarding & Initiation Blueprint. It combines the data funnel, the mentor selection, the mastery logic, and the server-side notification bridge into one continuous instruction.
+Paste this into your Replit Agent to build the entrance into the Craft Hub:
+PASTE THIS INTO THE REPLIT AGENT:
+Role: Lead Funnel Architect & UX Engineer for Axiom OS.
+Objective: Build the "Sovereign Initiation" Funnel for the Craft Hub. This must transition the user from a guest to a High-Stakes Connoisseur through a multi-stage, data-driven onboarding experience.
+1. THE INTAKE PORTAL (DATA CAPTURE):
+• Create a cinematic obsidian entrance screen.
+• Data Fields: Name, Email, Last 4 digits of Phone (Unique ID), Gender, and Region/State.
+• The Pitch: Use 3 sharp, bulleted highlights:
+• Master the Craft: Rise from Explorer to Sommelier over a 6-month journey.
+• The Golden Box: Unlock your proprietary custom brand at 100% Mastery.
+• The Leaderboard: Claim your rank on the Regional & National Leaderboards.
+2. THE MENTOR SELECTION MODULE:
+• Implement a Sage Selection Screen. Users must swipe through and choose an AI Mentor (e.g., The Dominican Master, The Boutique Maverick, or The Old World Cuban Sage).
+• Neural Wiring: The chosen Mentor must become the "Voice of the System," providing all flavor insights, "Why this works" nudges, and scoring feedback.
+3. THE MASTERY INITIALIZATION:
+• Level Selection: User chooses their starting point (Explorer, Apprentice, Craftsman, Sommelier).
+• The Stakes Engine: Implement the Penalty/Reward Logic.
+• Explorer Mode: High guidance, "Venue Favorite" starter templates, and confidence-building nudges.
+• Sommelier Mode: Advanced complexity, high-prestige reveals, but 3x point penalties for conflicting flavor pairings.
+• The Nudge System: Beside every selection, include a Mentor Insight Box explaining the sensory outcome and why it is a strategic choice.
+4. THE PROGRESSION & REVENUE BRIDGE:
+• Regional Leaderboard: Initialize a live ranking system based on Mix Accuracy, Consistency, and Venue Engagement.
+• The BOH Pulse: When a user finalizes a "Draft," send a notification to the Waitress/Server Dashboard: "Table [X] just drafted a [Profile]. Recommend the [Specific Venue Special] to boost their Mastery Score."
+• Distributor Injection: Create an "Incentive Layer" where selecting a Distributor-Sponsored leaf or spirit gives the user a Prestige Multiplier.
+5. VISUAL & INTERACTIVE STANDARDS:
+• Industrial-Luxe: Deep glass-morphism, dark themes with glowing accents, and macro-photography textures for leaves and spirits.
+• Haptic Feedback: Visual ripples and cinematic "Level Up" animations for every badge earned.
+• NO PLACEHOLDERS: All data captured must feed into the PostgreSQL guest_identity_profiles and leaderboard_metrics tables.
+GO. Initiate the Craft Hub.
+What happens next:
+1.	Database Build: The Agent will create the tables to store the Name, Email, and Phone data.
+2.	Logic Wiring: It will set up the "Penalty System" so the game actually feels challenging.
+3.	UI Generation: You will see the Mentor Selection screen appear, allowing you to pick your "Sage."
+4.	Sales Integration: The "Server Notification" piece ensures the game is actually making the venue money by telling the waitress what to sell.

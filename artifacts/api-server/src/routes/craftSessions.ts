@@ -17,6 +17,7 @@ import { eq, and, desc }                        from "drizzle-orm";
 import { db, craftSessionStatesTable, CRAFT_TYPES, CRAFT_PHASES } from "@workspace/db";
 import { requireAuth, type AuthRequest }        from "../middleware/auth";
 import { z }                                    from "zod";
+import { dispatchNeuralBridge }                 from "../lib/neuralBridge";
 
 const router: IRouter = Router();
 
@@ -100,6 +101,15 @@ router.post("/", requireAuth, async (req: AuthRequest, res: Response) => {
       expiresAt:         expires,
     })
     .returning();
+
+  // Neural Bridge — fire-and-forget
+  dispatchNeuralBridge({
+    type:      "craft_session",
+    userId,
+    venueId:   req.user!.venueId ?? undefined,
+    sessionId: session!.id,
+    craftType: craft,
+  }).catch(() => {});
 
   res.status(201).json({ session });
 });

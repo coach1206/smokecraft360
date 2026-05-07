@@ -16,6 +16,7 @@ import { eq, and }                                  from "drizzle-orm";
 import { db, guestProfilesTable, guestSessionsTable } from "@workspace/db";
 import { z }                                        from "zod";
 import { assignMentor, getMentorById, MENTORS }     from "../data/mentors";
+import { dispatchNeuralBridge }                      from "../lib/neuralBridge";
 
 const router = Router();
 
@@ -67,6 +68,15 @@ router.post("/enroll", async (req, res) => {
     .returning();
 
   const mentor = getMentorById(mentorId);
+
+  // Neural Bridge — fire-and-forget
+  dispatchNeuralBridge({
+    type:     "enrollment",
+    guestId:  profile!.id,
+    venueId:  body.venueId,
+    craftType: body.craftType,
+    meta:     { mentorId, atmospherePreference: body.atmospherePreference, experienceLevel: body.experienceLevel },
+  }).catch(() => {});
 
   res.status(201).json({ profile, mentor });
 });

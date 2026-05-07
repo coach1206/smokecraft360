@@ -59,6 +59,7 @@ import { KioskModeProvider, KioskModeBanner } from "@/contexts/KioskModeContext"
 import { PosProvider } from "@/contexts/PosContext";
 import { CommandCenterProvider } from "@/contexts/CommandCenterContext";
 import { DeviceRouterProvider }  from "@/components/DeviceRouter";
+import { NeuralBridgeOverlay }   from "@/components/NeuralBridgeOverlay";
 import OnboardWizard      from "@/pages/OnboardWizard";
 import DemoSimDashboard      from "@/pages/DemoSimDashboard";
 import SystemValidation      from "@/pages/SystemValidation";
@@ -248,6 +249,7 @@ function App() {
                     <OfflineQueueBanner />
                     <KioskModeBanner />
                     <LicenseGate />
+                    <NeuralBridgeOverlay />
                     <Toaster />
                   </OrchestratorProvider>
                   </EnvironmentProvider>

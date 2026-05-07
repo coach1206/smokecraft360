@@ -19,7 +19,8 @@ import {
   productsTable,
   venueInventoryTable,
 } from "@workspace/db";
-import { type AuthRequest } from "../middleware/auth";
+import { type AuthRequest }     from "../middleware/auth";
+import { dispatchNeuralBridge } from "../lib/neuralBridge";
 
 const router: IRouter = Router();
 
@@ -205,6 +206,16 @@ router.post("/", async (req: AuthRequest, res: Response) => {
   }
 
   req.log?.info({ orderId: order.id, inventoryId, quantity }, "swipe order item added");
+
+  // Neural Bridge — fire-and-forget, never blocks response
+  dispatchNeuralBridge({
+    type:      "swipe_order",
+    userId:    userId ?? undefined,
+    venueId:   venueId ?? undefined,
+    sessionId,
+    craftType,
+    meta:      { inventoryId, inventoryName, priceCents, quantity },
+  }).catch(() => {});
 
   res.status(201).json({
     order:       updatedOrder,
