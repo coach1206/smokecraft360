@@ -13,7 +13,7 @@
  * auto-recommendation on future visits.
  */
 
-import { pgTable, uuid, text, integer, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, integer, real, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -37,11 +37,15 @@ export const guestProfilesTable = pgTable("guest_profiles", {
   experienceLevel:      text("experience_level"),
   boldnessPreference:   text("boldness_preference"),
   assignedMentorId:     text("assigned_mentor_id"),
+  gender:               text("gender"),
   venueId:              uuid("venue_id"),
   flavorHistory:        jsonb("flavor_history")
     .$type<FlavorHistoryEntry[]>()
     .default([]),
   sessionCount:         integer("session_count").notNull().default(0),
+  totalMastery:         real("total_mastery").notNull().default(0),
+  masteryTier:          text("mastery_tier").notNull().default("explorer"),
+  lastSessionScore:     integer("last_session_score").notNull().default(0),
   createdAt:            timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   lastSeenAt:           timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
 });

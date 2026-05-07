@@ -25,10 +25,12 @@ import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, Zap, Compass } from "lucide-react";
 import type { CraftTheme } from "@/lib/craftThemes";
-import { useGuestProfile }      from "@/contexts/GuestProfileContext";
-import EnrollmentFlow            from "@/components/EnrollmentFlow";
-import MentorReveal              from "@/components/MentorReveal";
-import { generateReturnGreeting } from "@/lib/mentorIntelligence";
+import { useGuestProfile }        from "@/contexts/GuestProfileContext";
+import EnrollmentFlow             from "@/components/EnrollmentFlow";
+import MentorReveal               from "@/components/MentorReveal";
+import MasteryPitchScreen         from "@/components/MasteryPitchScreen";
+import MentorSelectionScreen      from "@/components/MentorSelectionScreen";
+import { generateReturnGreeting }  from "@/lib/mentorIntelligence";
 
 // ── Per-craft chamber configuration ──────────────────────────────────────────
 
@@ -347,7 +349,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
   const cfg    = CHAMBER[type] ?? CHAMBER.smoke;
   const accent = theme.accent;
 
-  const { guestProfile, mentor, isReturning } = useGuestProfile();
+  const { guestProfile, mentor, isReturning, enroll } = useGuestProfile();
 
   // Memory-aware return greeting — computed once when profile + mentor are known
   const memoryLine = useMemo(() => {
@@ -355,26 +357,51 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
     return generateReturnGreeting(guestProfile, mentor);
   }, [isReturning, guestProfile, mentor]);
 
-  // "enrollment" → "mentor" → (dismissed via onBegin)
-  const [scene, setScene] = useState<"chamber" | "enrollment" | "mentor">("chamber");
+  // Sovereign flow: pitch → enrollment → mentor-select → mentor
+  const [scene, setScene] = useState<"chamber" | "pitch" | "enrollment" | "mentor-select" | "mentor">("chamber");
+  // Answers from EnrollmentFlow, held until mentor is selected
+  const [pendingAnswers, setPendingAnswers] = useState<Record<string, string> | null>(null);
 
   function handleBeginClick() {
     if (guestProfile && mentor) {
-      // Returning guest or same-session — go straight to mentor reveal
       setScene("mentor");
     } else {
-      // New guest — run enrollment flow
+      setScene("pitch");
+    }
+  }
+
+  function handlePitchContinue() {
+    setScene("enrollment");
+  }
+
+  function handleEnrolled(answers: Record<string, string>) {
+    // Data collected — proceed to mentor selection before submitting
+    setPendingAnswers(answers);
+    setScene("mentor-select");
+  }
+
+  async function handleMentorSelected(mentorId: string) {
+    try {
+      await enroll({
+        firstName:            pendingAnswers?.firstName ?? "",
+        lastInitial:          pendingAnswers?.lastInitial ?? "A",
+        phoneLast4:           pendingAnswers?.phoneLast4 || undefined,
+        email:                pendingAnswers?.email || undefined,
+        gender:               pendingAnswers?.gender || undefined,
+        region:               pendingAnswers?.region || undefined,
+        atmospherePreference: pendingAnswers?.atmospherePreference || undefined,
+        boldnessPreference:   pendingAnswers?.boldnessPreference || undefined,
+        experienceLevel:      pendingAnswers?.experienceLevel || undefined,
+        craftType:            type as "smoke" | "pour" | "brew" | "vape",
+        mentorId,
+      });
+      setScene("mentor");
+    } catch {
       setScene("enrollment");
     }
   }
 
-  function handleEnrolled() {
-    // EnrollmentFlow has called enroll(); context now has profile + mentor
-    setScene("mentor");
-  }
-
   function handleSkipEnrollment() {
-    // Anonymous mode — bypass directly into the experience
     onBegin();
   }
 
@@ -382,6 +409,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
     setScene("chamber");
     onBegin();
   }
+
 
   return (
     <>
@@ -677,6 +705,17 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
         </motion.div>
       </motion.div>
 
+      {/* ── Mastery pitch overlay ── */}
+      <AnimatePresence>
+        {scene === "pitch" && (
+          <MasteryPitchScreen
+            craftType={type}
+            onContinue={handlePitchContinue}
+            onSkip={handleSkipEnrollment}
+          />
+        )}
+      </AnimatePresence>
+
       {/* ── Enrollment overlay ── */}
       <AnimatePresence>
         {scene === "enrollment" && (
@@ -684,6 +723,16 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             craftType={type}
             onComplete={handleEnrolled}
             onSkip={handleSkipEnrollment}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Mentor selection overlay ── */}
+      <AnimatePresence>
+        {scene === "mentor-select" && (
+          <MentorSelectionScreen
+            craftType={type}
+            onSelect={handleMentorSelected}
           />
         )}
       </AnimatePresence>

@@ -1,20 +1,20 @@
 /**
- * EnrollmentFlow — cinematic one-question-at-a-time guest enrollment.
+ * EnrollmentFlow — Sovereign Initiation data-collection form.
  *
- * Presents 5 questions sequentially with Framer Motion transitions.
- * After the final answer, calls enroll() from GuestProfileContext, then
- * invokes onComplete() so the parent can show MentorReveal.
+ * Collects 8 questions sequentially with Framer Motion transitions.
+ * Does NOT call enroll() internally — passes collected answers to onComplete()
+ * so the parent (CraftEntryChamber) can show MentorSelectionScreen first,
+ * then call enroll() with the chosen mentorId.
  *
  * Props:
- *   craftType  — determines which mentor pool is used
- *   onComplete — called after successful enrollment (receives mentor data via context)
+ *   craftType  — determines mentor pool and copy
+ *   onComplete — called with all collected answers (Record<string, string>)
  *   onSkip     — called when guest dismisses enrollment (anonymous mode)
  */
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence }      from "framer-motion";
 import { ArrowRight, SkipForward }      from "lucide-react";
-import { useGuestProfile }              from "@/contexts/GuestProfileContext";
 
 // ── Question definitions ──────────────────────────────────────────────────────
 
@@ -25,8 +25,10 @@ interface TextQuestion {
   sub:         string;
   placeholder: string;
   maxLength?:  number;
+  inputMode?:  React.InputHTMLAttributes<HTMLInputElement>["inputMode"];
   transform?:  (v: string) => string;
   validate?:   (v: string) => boolean;
+  optional?:   boolean;
 }
 
 interface ChoiceQuestion {
@@ -44,7 +46,7 @@ const QUESTIONS: Question[] = [
     type:        "text",
     id:          "firstName",
     prompt:      "What should your mentor call you?",
-    sub:         "This is how you'll be addressed throughout your session.",
+    sub:         "This is how you'll be addressed throughout your journey.",
     placeholder: "Your first name",
     maxLength:   50,
     validate:    (v) => v.trim().length > 0,
@@ -58,6 +60,38 @@ const QUESTIONS: Question[] = [
     maxLength:   1,
     transform:   (v) => v.toUpperCase().replace(/[^A-Z]/g, ""),
     validate:    (v) => /^[A-Z]$/.test(v.trim()),
+  },
+  {
+    type:        "text",
+    id:          "phoneLast4",
+    prompt:      "Last 4 digits of your phone?",
+    sub:         "Used to recognize you on your next visit. Never stored in full.",
+    placeholder: "e.g. 4827",
+    maxLength:   4,
+    inputMode:   "numeric",
+    transform:   (v) => v.replace(/\D/g, "").slice(0, 4),
+    validate:    (v) => /^\d{4}$/.test(v.trim()),
+  },
+  {
+    type:    "choice",
+    id:      "gender",
+    prompt:  "How do you identify?",
+    sub:     "Helps personalize your mentor's communication style.",
+    options: [
+      { value: "male",          label: "Male",                sub: "" },
+      { value: "female",        label: "Female",              sub: "" },
+      { value: "non-binary",    label: "Non-Binary",          sub: "" },
+      { value: "not-specified", label: "Prefer Not to Say",   sub: "" },
+    ],
+  },
+  {
+    type:        "text",
+    id:          "region",
+    prompt:      "What region are you from?",
+    sub:         "Powers the regional leaderboard and discovery ranking.",
+    placeholder: "City, State or Country",
+    maxLength:   80,
+    optional:    true,
   },
   {
     type:    "choice",
@@ -87,12 +121,12 @@ const QUESTIONS: Question[] = [
     type:    "choice",
     id:      "experienceLevel",
     prompt:  "How experienced is your palate?",
-    sub:     "No wrong answer — it helps us calibrate your first session.",
+    sub:     "Sets your starting mastery tier and conflict penalty level.",
     options: [
-      { value: "new",          label: "New Explorer",  sub: "First time or early stages." },
-      { value: "casual",       label: "Casually Curious", sub: "Some experience. Still learning." },
-      { value: "experienced",  label: "Experienced",   sub: "Confident. Informed preferences." },
-      { value: "connoisseur",  label: "Connoisseur",   sub: "Refined. Highly discerning." },
+      { value: "new",          label: "New Explorer",     sub: "First time or early stages." },
+      { value: "casual",       label: "Apprentice",       sub: "Some experience. Still learning." },
+      { value: "experienced",  label: "Craftsman",        sub: "Confident. Informed preferences." },
+      { value: "connoisseur",  label: "Sommelier",        sub: "Refined. Highly discerning." },
     ],
   },
 ];
@@ -116,14 +150,14 @@ function AmbientParticles() {
         <motion.div
           key={p.id}
           style={{
-            position:        "absolute",
-            left:            p.x,
-            bottom:          "-4px",
-            width:           p.size,
-            height:          p.size,
-            borderRadius:    "50%",
-            background:      "rgba(212,139,0,0.45)",
-            boxShadow:       "0 0 4px rgba(212,139,0,0.3)",
+            position:     "absolute",
+            left:         p.x,
+            bottom:       "-4px",
+            width:        p.size,
+            height:       p.size,
+            borderRadius: "50%",
+            background:   "rgba(212,139,0,0.45)",
+            boxShadow:    "0 0 4px rgba(212,139,0,0.3)",
           }}
           animate={{ y: [0, -(280 + Math.random() * 200)], opacity: [0, 0.7, 0] }}
           transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, ease: "easeOut" }}
@@ -137,16 +171,16 @@ function AmbientParticles() {
 
 function ProgressDots({ total, current }: { total: number; current: number }) {
   return (
-    <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
+    <div style={{ display: "flex", gap: 5, justifyContent: "center" }}>
       {Array.from({ length: total }, (_, i) => (
         <motion.div
           key={i}
           animate={{
-            width:      i === current ? 20 : 6,
+            width:      i === current ? 18 : 5,
             background: i <= current ? "rgba(212,139,0,0.9)" : "rgba(212,139,0,0.2)",
           }}
           transition={{ duration: 0.3 }}
-          style={{ height: 6, borderRadius: 3 }}
+          style={{ height: 5, borderRadius: 3 }}
         />
       ))}
     </div>
@@ -165,22 +199,19 @@ const slideVariants = {
 
 interface EnrollmentFlowProps {
   craftType:  string;
-  onComplete: () => void;
+  onComplete: (answers: Record<string, string>) => void;
   onSkip:     () => void;
 }
 
-export default function EnrollmentFlow({ craftType, onComplete, onSkip }: EnrollmentFlowProps) {
-  const { enroll }            = useGuestProfile();
+export default function EnrollmentFlow({ craftType: _craftType, onComplete, onSkip }: EnrollmentFlowProps) {
   const [step, setStep]       = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [textVal, setTextVal] = useState("");
-  const [busy, setBusy]       = useState(false);
   const [error, setError]     = useState("");
   const inputRef              = useRef<HTMLInputElement>(null);
 
-  const question = QUESTIONS[step];
+  const question = QUESTIONS[step]!;
 
-  // Focus text input when step changes
   useEffect(() => {
     if (question.type === "text") {
       setTimeout(() => inputRef.current?.focus(), 350);
@@ -191,7 +222,7 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
 
   // ── Advance ────────────────────────────────────────────────────────────────
 
-  async function advance(value: string) {
+  function advance(value: string) {
     const newAnswers = { ...answers, [question.id]: value };
     setAnswers(newAnswers);
 
@@ -200,28 +231,18 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
       return;
     }
 
-    // All questions answered — enroll
-    setBusy(true);
-    try {
-      await enroll({
-        firstName:            newAnswers.firstName,
-        lastInitial:          newAnswers.lastInitial,
-        atmospherePreference: newAnswers.atmospherePreference,
-        boldnessPreference:   newAnswers.boldnessPreference,
-        experienceLevel:      newAnswers.experienceLevel,
-        craftType,
-      });
-      onComplete();
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setBusy(false);
-    }
+    // All questions answered — pass answers up to parent (no enroll() call here)
+    onComplete(newAnswers);
   }
 
   function handleTextSubmit() {
-    const q = question as TextQuestion;
-    const raw  = q.transform ? q.transform(textVal) : textVal.trim();
+    const q   = question as TextQuestion;
+    const raw = q.transform ? q.transform(textVal) : textVal.trim();
+
+    if (q.optional && raw.length === 0) {
+      advance("");
+      return;
+    }
     if (q.validate && !q.validate(raw)) {
       setError("Please enter a valid answer.");
       return;
@@ -240,7 +261,7 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
         position:        "fixed",
         inset:           0,
         zIndex:          500,
-        background:      "radial-gradient(ellipse at 40% 30%, rgba(212,139,0,0.06) 0%, transparent 60%), #04030200",
+        background:      "radial-gradient(ellipse at 40% 30%, rgba(212,139,0,0.06) 0%, transparent 60%), rgba(245,242,237,0.96)",
         backdropFilter:  "blur(2px)",
         display:         "flex",
         flexDirection:   "column",
@@ -250,21 +271,24 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
         overflow:        "hidden",
       }}
     >
-      {/* Dark overlay */}
-      <div style={{
-        position:   "absolute",
-        inset:      0,
-        background: "rgba(245,242,237,0.92)",
-      }} />
-
       <AmbientParticles />
 
-      {/* Content card */}
       <div style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: 520 }}>
 
         {/* Progress */}
-        <div style={{ marginBottom: 32 }}>
+        <div style={{ marginBottom: 28 }}>
           <ProgressDots total={QUESTIONS.length} current={step} />
+          <p style={{
+            fontFamily:    "'Inter', sans-serif",
+            fontSize:      "0.6rem",
+            color:         "rgba(212,139,0,0.4)",
+            textAlign:     "center",
+            marginTop:     8,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+          }}>
+            {step + 1} of {QUESTIONS.length}
+          </p>
         </div>
 
         {/* Question */}
@@ -279,9 +303,9 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
           >
             <p style={{
               fontFamily:    "'Cormorant Garamond', Georgia, serif",
-              fontSize:      "clamp(1.6rem, 4vw, 2.2rem)",
+              fontSize:      "clamp(1.5rem, 4vw, 2rem)",
               fontWeight:    300,
-              color:         "rgba(240,232,212,0.96)",
+              color:         "rgba(26,26,27,0.90)",
               lineHeight:    1.25,
               marginBottom:  10,
               textAlign:     "center",
@@ -290,22 +314,24 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
               {question.prompt}
             </p>
             <p style={{
-              fontFamily:   "'Inter', sans-serif",
-              fontSize:     "0.8rem",
-              color:        "rgba(212,139,0,0.55)",
-              textAlign:    "center",
-              marginBottom: 36,
+              fontFamily:    "'Inter', sans-serif",
+              fontSize:      "0.75rem",
+              color:         "rgba(212,139,0,0.55)",
+              textAlign:     "center",
+              marginBottom:  28,
               letterSpacing: "0.04em",
               textTransform: "uppercase",
             }}>
               {question.sub}
+              {question.type === "text" && (question as TextQuestion).optional && (
+                <span style={{ color: "rgba(212,139,0,0.35)", marginLeft: 8 }}>(optional)</span>
+              )}
             </p>
 
             {/* Text input */}
             {question.type === "text" && (
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {/* Hint for last-initial step */}
-                {step === 1 && (
+                {question.id === "lastInitial" && (
                   <p style={{
                     textAlign:     "center",
                     fontSize:      "0.7rem",
@@ -321,14 +347,19 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
                   ref={inputRef}
                   value={textVal}
                   maxLength={(question as TextQuestion).maxLength ?? 100}
-                  inputMode="text"
+                  inputMode={(question as TextQuestion).inputMode ?? "text"}
                   onChange={e => {
-                    const q = question as TextQuestion;
+                    const q   = question as TextQuestion;
                     const raw = e.target.value;
                     const transformed = q.transform ? q.transform(raw) : raw;
-                    // If transform stripped everything and user typed something, show hint
                     if (q.transform && raw.length > 0 && transformed.length === 0) {
-                      setError(step === 1 ? "Please enter a letter (A–Z), not a number." : "Please enter a valid answer.");
+                      setError(
+                        question.id === "lastInitial"
+                          ? "Please enter a letter (A–Z)."
+                          : question.id === "phoneLast4"
+                          ? "Numbers only — 4 digits."
+                          : "Please enter a valid answer."
+                      );
                     } else {
                       setError("");
                     }
@@ -341,15 +372,15 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
                     border:        "1px solid rgba(212,139,0,0.25)",
                     borderRadius:  10,
                     padding:       "14px 18px",
-                    color:         "rgba(240,232,212,0.96)",
+                    color:         "rgba(26,26,27,0.90)",
                     fontFamily:    "'Cormorant Garamond', Georgia, serif",
-                    fontSize:      "1.5rem",
+                    fontSize:      "1.4rem",
                     fontWeight:    300,
                     textAlign:     "center",
                     outline:       "none",
                     width:         "100%",
                     caretColor:    "rgba(212,139,0,0.8)",
-                    letterSpacing: step === 1 ? "0.3em" : undefined,
+                    letterSpacing: (question.id === "lastInitial" || question.id === "phoneLast4") ? "0.3em" : undefined,
                   }}
                 />
                 {error && (
@@ -360,7 +391,6 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
                 <motion.button
                   whileTap={{ scale: 0.97 }}
                   onClick={handleTextSubmit}
-                  disabled={busy}
                   style={{
                     alignSelf:     "center",
                     display:       "flex",
@@ -376,11 +406,12 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
                     fontWeight:    500,
                     letterSpacing: "0.12em",
                     textTransform: "uppercase",
-                    cursor:        busy ? "not-allowed" : "pointer",
-                    opacity:       busy ? 0.6 : 1,
+                    cursor:        "pointer",
                   }}
                 >
-                  {busy ? "Enrolling…" : <>Continue <ArrowRight size={13} /></>}
+                  {(question as TextQuestion).optional && textVal.length === 0
+                    ? "Skip"
+                    : <>Continue <ArrowRight size={13} /></>}
                 </motion.button>
               </div>
             )}
@@ -398,13 +429,12 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
                     whileHover={{ scale: 1.02, borderColor: "rgba(212,139,0,0.55)" }}
                     whileTap={{ scale: 0.97 }}
                     onClick={() => advance(opt.value)}
-                    disabled={busy}
                     style={{
                       background:   "rgba(212,139,0,0.05)",
                       border:       "1px solid rgba(212,139,0,0.18)",
                       borderRadius: 10,
                       padding:      "16px 14px",
-                      cursor:       busy ? "not-allowed" : "pointer",
+                      cursor:       "pointer",
                       textAlign:    "left",
                     }}
                   >
@@ -413,19 +443,21 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
                       fontSize:      "1.05rem",
                       fontWeight:    500,
                       color:         "rgba(26,26,27,0.90)",
-                      marginBottom:  4,
+                      marginBottom:  opt.sub ? 4 : 0,
                       letterSpacing: "-0.01em",
                     }}>
                       {opt.label}
                     </p>
-                    <p style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize:   "0.7rem",
-                      color:      "rgba(212,139,0,0.5)",
-                      lineHeight: 1.4,
-                    }}>
-                      {opt.sub}
-                    </p>
+                    {opt.sub && (
+                      <p style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize:   "0.7rem",
+                        color:      "rgba(212,139,0,0.5)",
+                        lineHeight: 1.4,
+                      }}>
+                        {opt.sub}
+                      </p>
+                    )}
                   </motion.button>
                 ))}
               </div>

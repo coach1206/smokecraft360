@@ -96,3 +96,5 @@ export * from "./hardwareFleet";
 export * from "./hardwareSessionClaims";
 export * from "./environmentSyncHistory";
 export * from "./securityAuditTrail";
+export * from "./guestBadges";
+export * from "./serverPulseEvents";

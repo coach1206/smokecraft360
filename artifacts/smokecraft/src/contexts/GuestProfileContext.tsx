@@ -1,12 +1,12 @@
 /**
- * GuestProfileContext — persistent kiosk guest identity for the Human Foundation.
+ * GuestProfileContext — Sovereign guest identity for the Human Foundation.
  *
- * Wraps the app so any component can:
- *   const { guestProfile, mentor, enroll, fastReturn, clearGuest } = useGuestProfile();
+ * Wraps the app so any component can access:
+ *   const { guestProfile, mentor, enroll, fastReturn, clearGuest,
+ *           updateMemory, evolveMastery } = useGuestProfile();
  *
- * State is mirrored to sessionStorage so it survives hot-reloads during dev
- * and soft page refreshes on kiosk screens, but resets when the tab closes
- * (appropriate for a shared kiosk device).
+ * Includes mastery evolution (total_mastery → Golden Box unlock)
+ * and new identity fields (gender, region, email, phoneLast4).
  */
 
 import {
@@ -26,11 +26,17 @@ export interface GuestProfile {
   firstName:            string;
   lastInitial:          string;
   phoneLast4:           string | null;
+  email:                string | null;
+  gender:               string | null;
+  region:               string | null;
   atmospherePreference: string | null;
   experienceLevel:      string | null;
   boldnessPreference:   string | null;
   assignedMentorId:     string | null;
   sessionCount:         number;
+  totalMastery:         number;
+  masteryTier:          string;
+  lastSessionScore:     number;
   flavorHistory:        { tag: string; count: number; lastSeen: string }[];
 }
 
@@ -49,11 +55,23 @@ export interface EnrollPayload {
   firstName:            string;
   lastInitial:          string;
   phoneLast4?:          string;
+  email?:               string;
+  gender?:              string;
+  region?:              string;
   atmospherePreference?: string;
   experienceLevel?:     string;
   boldnessPreference?:  string;
-  craftType?:           string;
+  craftType?:           "smoke" | "pour" | "brew" | "vape";
+  mentorId?:            string;
 }
+
+export const MASTERY_TIER_LABELS: Record<string, string> = {
+  explorer:    "Explorer",
+  apprentice:  "Apprentice",
+  craftsman:   "Craftsman",
+  sommelier:   "Sommelier",
+  grand_master: "Grand Master",
+};
 
 interface GuestProfileContextValue {
   guestProfile:  GuestProfile | null;
@@ -63,6 +81,12 @@ interface GuestProfileContextValue {
   fastReturn:    (firstName: string, phoneLast4: string) => Promise<boolean>;
   clearGuest:    () => void;
   updateMemory:  (flavorHistory: GuestProfile["flavorHistory"]) => Promise<void>;
+  evolveMastery: (sessionScore: number, opts?: {
+    harmony?: number;
+    complexity?: number;
+    craftType?: string;
+    venueId?: string;
+  }) => Promise<{ masteryGain: number; newTier: string; newBadges: string[] } | null>;
 }
 
 // ── Context ───────────────────────────────────────────────────────────────────
@@ -96,7 +120,6 @@ export function GuestProfileProvider({ children }: { children: ReactNode }) {
   const [mentor,       setMentor]       = useState<Mentor | null>(null);
   const [isReturning,  setIsReturning]  = useState(false);
 
-  // Hydrate from sessionStorage on mount
   useEffect(() => {
     const stored = loadFromStorage();
     if (stored) {
@@ -157,9 +180,42 @@ export function GuestProfileProvider({ children }: { children: ReactNode }) {
     if (mentor) saveToStorage(data.profile, mentor, isReturning);
   }, [guestProfile, mentor, isReturning]);
 
+  const evolveMastery = useCallback(async (
+    sessionScore: number,
+    opts?: { harmony?: number; complexity?: number; craftType?: string; venueId?: string },
+  ) => {
+    if (!guestProfile) return null;
+    try {
+      const res = await fetch(`/api/mastery/${guestProfile.id}/evolve`, {
+        method:  "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ sessionScore, ...opts }),
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      // Update local state with new mastery values
+      const updated: GuestProfile = {
+        ...guestProfile,
+        totalMastery:     data.profile.totalMastery ?? guestProfile.totalMastery,
+        masteryTier:      data.profile.masteryTier  ?? guestProfile.masteryTier,
+        lastSessionScore: sessionScore,
+        sessionCount:     guestProfile.sessionCount + 1,
+      };
+      setGuestProfile(updated);
+      if (mentor) saveToStorage(updated, mentor, isReturning);
+      return {
+        masteryGain: data.masteryGain ?? 0,
+        newTier:     data.newTier ?? guestProfile.masteryTier,
+        newBadges:   data.newBadges ?? [],
+      };
+    } catch {
+      return null;
+    }
+  }, [guestProfile, mentor, isReturning]);
+
   return (
     <GuestProfileContext.Provider
-      value={{ guestProfile, mentor, isReturning, enroll, fastReturn, clearGuest, updateMemory }}
+      value={{ guestProfile, mentor, isReturning, enroll, fastReturn, clearGuest, updateMemory, evolveMastery }}
     >
       {children}
     </GuestProfileContext.Provider>

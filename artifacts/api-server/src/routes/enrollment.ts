@@ -27,6 +27,7 @@ const enrollSchema = z.object({
   lastInitial:          z.string().length(1).toUpperCase(),
   phoneLast4:           z.string().length(4).regex(/^\d{4}$/).optional(),
   email:                z.string().email().optional(),
+  gender:               z.string().optional(),
   ageRange:             z.string().optional(),
   region:               z.string().optional(),
   atmospherePreference: z.string().optional(),
@@ -34,6 +35,7 @@ const enrollSchema = z.object({
   boldnessPreference:   z.string().optional(),
   craftType:            z.enum(["smoke", "pour", "brew", "vape"]).optional(),
   venueId:              z.string().uuid().optional(),
+  mentorId:             z.string().optional(),
 });
 
 router.post("/enroll", async (req, res) => {
@@ -42,12 +44,15 @@ router.post("/enroll", async (req, res) => {
   const phoneSuffix = body.phoneLast4 ?? String(Math.floor(1000 + Math.random() * 9000));
   const publicId    = `${body.firstName} ${body.lastInitial} · ${phoneSuffix}`;
 
-  const mentorId = assignMentor({
-    craftType:           body.craftType ?? "smoke",
-    boldnessPreference:  body.boldnessPreference,
-    atmospherePreference: body.atmospherePreference,
-    experienceLevel:     body.experienceLevel,
-  });
+  // Use guest-chosen mentor if provided, otherwise auto-assign
+  const resolvedMentorId = body.mentorId && getMentorById(body.mentorId)
+    ? body.mentorId
+    : assignMentor({
+        craftType:            body.craftType ?? "smoke",
+        boldnessPreference:   body.boldnessPreference,
+        atmospherePreference: body.atmospherePreference,
+        experienceLevel:      body.experienceLevel,
+      });
 
   const [profile] = await db
     .insert(guestProfilesTable)
@@ -57,17 +62,18 @@ router.post("/enroll", async (req, res) => {
       lastInitial:          body.lastInitial,
       phoneLast4:           body.phoneLast4,
       email:                body.email,
+      gender:               body.gender,
       ageRange:             body.ageRange,
       region:               body.region,
       atmospherePreference: body.atmospherePreference,
       experienceLevel:      body.experienceLevel,
       boldnessPreference:   body.boldnessPreference,
-      assignedMentorId:     mentorId,
+      assignedMentorId:     resolvedMentorId,
       venueId:              body.venueId,
     })
     .returning();
 
-  const mentor = getMentorById(mentorId);
+  const mentor = getMentorById(resolvedMentorId);
 
   // Neural Bridge — fire-and-forget
   dispatchNeuralBridge({
@@ -75,7 +81,7 @@ router.post("/enroll", async (req, res) => {
     guestId:  profile!.id,
     venueId:  body.venueId,
     craftType: body.craftType,
-    meta:     { mentorId, atmospherePreference: body.atmospherePreference, experienceLevel: body.experienceLevel },
+    meta:     { mentorId: resolvedMentorId, atmospherePreference: body.atmospherePreference, experienceLevel: body.experienceLevel },
   }).catch(() => {});
 
   res.status(201).json({ profile, mentor });
