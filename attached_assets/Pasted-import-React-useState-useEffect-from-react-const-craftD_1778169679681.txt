@@ -1,0 +1,87 @@
+import React, { useState, useEffect } from 'react';
+
+const craftData = [
+  { id: 1, title: "Beer Craft", group: "Young Professionals", img: "https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=400&fit=crop" },
+  { id: 2, title: "Pork Craft", group: "Executive Travelers", img: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&fit=crop" },
+  { id: 3, title: "Smoke Craft", group: "Luxury Connoisseurs", img: "https://images.unsplash.com/photo-1527030280862-64139fba04ca?w=400&fit=crop" },
+  { id: 4, title: "Vape Craft", group: "Social Elite", img: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400&fit=crop" }
+];
+
+const CraftTile = ({ data, active }) => (
+  <div className={`relative p-[1px] rounded-2xl overflow-hidden transition-all duration-1000 glass-card ${active ? 'scale-105 border-yellow-500' : 'opacity-60'}`}>
+    <div className="absolute inset-0 bg-gradient-to-br from-yellow-600/20 via-transparent to-black" />
+    <div className="relative p-6 flex flex-col h-full justify-between">
+      <div className="flex justify-between items-start">
+        <img src={data.img} className="w-24 h-24 rounded-lg object-cover border border-yellow-500/20" alt="Craft" />
+        <div className="text-right">
+          <p className="text-[10px] tracking-[0.3em] font-bold text-yellow-500 uppercase">{data.title}</p>
+          <h2 className="text-2xl font-light text-white italic tracking-wide">Craft Hub</h2>
+        </div>
+      </div>
+      <div className="mt-8 pt-4 border-t border-white/5 flex justify-between items-center text-[10px] uppercase tracking-tighter opacity-50">
+        <span>Target: {data.group}</span>
+        <div className={`h-2 w-2 rounded-full ${active ? 'bg-emerald-400 animate-pulse' : 'bg-gray-600'}`} />
+      </div>
+    </div>
+  </div>
+);
+
+export default function App() {
+  const [index, setIndex] = useState(0);
+
+  // NFC Sage Wake Listener
+  useEffect(() => {
+    if ('NDEFReader' in window) {
+      const ndef = new NDEFReader();
+      ndef.scan().then(() => {
+        ndef.onreading = () => {
+          setIndex(1); // Force "Pork Craft" on Coin Tap
+          document.body.style.filter = "brightness(1.5)";
+          setTimeout(() => document.body.style.filter = "brightness(1)", 400);
+        };
+      }).catch(e => console.log("NFC Init Pending..."));
+    }
+    // Auto-rotation every 6 seconds
+    const timer = setInterval(() => setIndex(prev => (prev + 1) % 4), 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="h-screen w-full p-10 flex flex-col justify-between overflow-hidden">
+      <header className="flex justify-between items-center pb-6 border-b border-white/5">
+        <div className="flex items-center gap-3">
+          <div className="h-1 w-8 bg-emerald-500 shadow-[0_0_10px_#10b981]" />
+          <span className="text-xs gold-text font-bold tracking-[0.4em] uppercase">Titan Engine Active</span>
+        </div>
+        <div className="text-right">
+          <p className="text-[10px] text-white/40 uppercase tracking-[0.3em]">Axiom OS Premier Terminal</p>
+          <p className="text-[8px] text-yellow-600 uppercase">Kiosk Lock: Absolute</p>
+        </div>
+      </header>
+
+      <main className="grid grid-cols-2 gap-8 flex-grow my-10">
+        {craftData.map((d, i) => <CraftTile key={d.id} data={d} active={index === i} />)}
+      </main>
+
+      <footer className="grid grid-cols-3 gap-10 items-center border-t border-white/5 pt-8">
+        <div className="flex items-center gap-4 group cursor-pointer">
+          <div className="w-5 h-5 bg-yellow-500 rotate-45 shadow-[0_0_15px_gold]" />
+          <div>
+            <p className="text-sm font-bold tracking-[0.3em] text-white uppercase gold-text">Smokecraft 360</p>
+            <p className="text-[9px] text-white/30 uppercase tracking-widest italic font-serif">Axiom Legacy</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 border-l border-white/10 pl-10">
+          <div className="w-5 h-5 bg-violet-600 rotate-45" />
+          <p className="text-sm font-bold tracking-[0.3em] text-white/60 uppercase">WifeX</p>
+        </div>
+        <div className="steel-panel rounded-xl p-4 flex justify-between items-center border-l-2 border-yellow-600">
+          <div className="text-[9px] text-yellow-600 font-bold uppercase tracking-widest">Environment Pulse<br /><span className="text-xs text-white">Vitality: Nominal</span></div>
+          <div className="flex gap-1 h-8 items-end opacity-40">
+            {[4,7,3,9,5,8].map((h, i) => <div key={i} className="w-2 bg-yellow-500" style={{height:`${h*10}%`}} />)}
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
