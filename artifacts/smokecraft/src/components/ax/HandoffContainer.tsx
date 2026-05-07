@@ -501,78 +501,117 @@ function PriceTicker({ craftPrices }: { craftPrices: Record<string, PriceInfo> }
     }
   }, [craftPrices]);
 
-  const items = [...TICKER_META, ...TICKER_META, ...TICKER_META];
+  // One loop = 4 craft segments + 1 revenue lift segment
+  const craftSegs = TICKER_META.map(m => {
+    const info     = craftPrices[m.id];
+    const price    = info?.price ?? CRAFT_BASE_PRICE[m.id] ?? 0;
+    const base     = CRAFT_BASE_PRICE[m.id] ?? price;
+    const tier     = info?.label ?? "STANDARD";
+    const isSurge  = tier === "SURGE";
+    const isMember = tier === "MEMBER";
+    const delta    = base > 0 ? Math.round(((price - base) / base) * 100) : 0;
+    return { kind: "craft" as const, m, price, base, isSurge, isMember, delta };
+  });
+  const liftSeg = { kind: "lift" as const };
+  const loop  = [...craftSegs, liftSeg];
+  const items = [...loop, ...loop, ...loop]; // triple for seamless -33.33% scroll
 
   return (
     <div
       className="relative z-10 flex-shrink-0 overflow-hidden"
       style={{
-        height: 30,
+        height: 42,
         background: "rgba(4,3,2,0.97)",
-        borderTop:    "1px solid rgba(212,139,0,0.22)",
-        borderBottom: "1px solid rgba(212,139,0,0.08)",
+        borderTop:    "1px solid rgba(255,179,71,0.32)",
+        borderBottom: "1px solid rgba(255,179,71,0.10)",
       }}
     >
       {/* Edge fade masks */}
-      <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 48, zIndex: 2, background: "linear-gradient(90deg, rgba(4,3,2,1) 0%, transparent 100%)" }} />
-      <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 48, zIndex: 2, background: "linear-gradient(270deg, rgba(4,3,2,1) 0%, transparent 100%)" }} />
+      <div style={{ position:"absolute", left:0, top:0, bottom:0, width:88, zIndex:2, background:"linear-gradient(90deg,rgba(4,3,2,1) 0%,transparent 100%)" }} />
+      <div style={{ position:"absolute", right:0, top:0, bottom:0, width:88, zIndex:2, background:"linear-gradient(270deg,rgba(4,3,2,1) 0%,transparent 100%)" }} />
 
-      {/* "MARKET RATE" label */}
+      {/* MARKET RATES stamp */}
       <div style={{
-        position: "absolute", left: 0, top: 0, bottom: 0, zIndex: 3,
-        display: "flex", alignItems: "center", paddingLeft: 10,
-        background: "rgba(4,3,2,0.97)",
+        position:"absolute", left:0, top:0, bottom:0, zIndex:3,
+        display:"flex", alignItems:"center", gap:8, paddingLeft:12,
+        background:"rgba(4,3,2,0.97)",
       }}>
         <span style={{
-          fontFamily: "'Courier New', monospace", fontSize: 7, fontWeight: 700,
-          letterSpacing: "0.22em", color: "rgba(212,139,0,0.45)", textTransform: "uppercase",
-        }}>
-          RATE
-        </span>
-        <div style={{ width: 1, height: 14, background: "rgba(212,139,0,0.20)", marginLeft: 8 }} />
+          fontFamily:"'Courier New',monospace", fontSize:9, fontWeight:700,
+          letterSpacing:"0.20em", color:"rgba(255,179,71,0.55)", textTransform:"uppercase",
+          whiteSpace:"nowrap",
+        }}>MARKET RATES</span>
+        <div style={{ width:1, height:20, background:"rgba(255,179,71,0.22)" }} />
       </div>
 
       <motion.div
         className="flex items-center h-full"
-        style={{ paddingLeft: 56, width: "max-content" }}
-        animate={{ x: ["0%", "-33.33%"] }}
-        transition={{ duration: 54, repeat: Infinity, ease: "linear" }}
+        style={{ paddingLeft:148, width:"max-content" }}
+        animate={{ x:["0%", "-33.33%"] }}
+        transition={{ duration:60, repeat:Infinity, ease:"linear" }}
       >
-        {items.map((m, i) => {
-          const info  = craftPrices[m.id];
-          const price = info?.price ?? CRAFT_BASE_PRICE[m.id] ?? 0;
-          const tier  = info?.label ?? "STANDARD";
-          const isSurge    = tier === "SURGE";
-          const isMemberLk = tier === "MEMBER";
-          const priceColor = isSurge ? "#f87171" : isMemberLk ? "#4ade80" : "#D48B00";
-          const glowColor  = isSurge ? "rgba(248,113,113,0.65)" : isMemberLk ? "rgba(74,222,128,0.55)" : "rgba(212,139,0,0.55)";
-
+        {items.map((seg, i) => {
+          if (seg.kind === "lift") {
+            return (
+              <div key={i} className="flex items-center flex-shrink-0" style={{ paddingRight:44 }}>
+                <span style={{
+                  fontFamily:"'Courier New',monospace", fontSize:11, fontWeight:700,
+                  letterSpacing:"0.18em", color:"rgba(255,179,71,0.48)", textTransform:"uppercase", whiteSpace:"nowrap",
+                }}>REVENUE LIFT TODAY</span>
+                <span style={{
+                  fontFamily:"'Courier New',monospace", fontSize:15, fontWeight:700,
+                  color:"#4ade80", textShadow:"0 0 13px rgba(74,222,128,0.75)",
+                  letterSpacing:"0.04em", marginLeft:8,
+                }}>$1,450</span>
+                <span style={{ color:"rgba(255,179,71,0.16)", fontSize:15, marginLeft:32 }}>·</span>
+              </div>
+            );
+          }
+          const { m, price, base, isSurge, isMember, delta } = seg;
+          const priceColor = isSurge ? "#f87171" : isMember ? "#4ade80" : "#FFB347";
+          const glowColor  = isSurge ? "rgba(248,113,113,0.75)" : isMember ? "rgba(74,222,128,0.65)" : "rgba(255,179,71,0.75)";
           return (
-            <div key={i} className="flex items-center flex-shrink-0" style={{ paddingRight: 28 }}>
+            <div key={i} className="flex items-center flex-shrink-0" style={{ paddingRight:44 }}>
               <span style={{
-                fontFamily: "'Courier New', monospace", fontSize: 8, fontWeight: 700,
-                letterSpacing: "0.14em", color: m.color,
-                textShadow: `0 0 7px ${m.color}70`,
+                fontFamily:"'Courier New',monospace", fontSize:11, fontWeight:700,
+                letterSpacing:"0.14em", color:m.color, textShadow:`0 0 9px ${m.color}70`,
+                whiteSpace:"nowrap",
               }}>
                 {m.glyph}&nbsp;{m.label}
               </span>
+              {!isMember && (
+                <span style={{
+                  fontFamily:"'Courier New',monospace", fontSize:10, fontWeight:400,
+                  color:"rgba(255,179,71,0.32)", letterSpacing:"0.04em", margin:"0 5px",
+                }}>${base.toFixed(0)}&nbsp;→</span>
+              )}
               <span style={{
-                fontFamily: "'Courier New', monospace", fontSize: 10, fontWeight: 700,
-                color: priceColor, textShadow: `0 0 9px ${glowColor}`,
-                letterSpacing: "0.04em", marginLeft: 7,
+                fontFamily:"'Courier New',monospace", fontSize:15, fontWeight:700,
+                color:priceColor, textShadow:`0 0 13px ${glowColor}`,
+                letterSpacing:"0.04em",
+                marginLeft: isMember ? 8 : 0,
               }}>
                 ${price.toFixed(0)}
               </span>
-              {(isSurge || isMemberLk) && (
+              {isMember && (
                 <span style={{
-                  fontFamily: "'Courier New', monospace", fontSize: 7, fontWeight: 700,
-                  color: priceColor, letterSpacing: "0.16em",
-                  marginLeft: 4, opacity: 0.9,
-                }}>
-                  {isSurge ? "↑SURGE" : "↓LOCK"}
-                </span>
+                  fontFamily:"'Courier New',monospace", fontSize:10, fontWeight:700,
+                  color:"#4ade80", letterSpacing:"0.14em", marginLeft:6, whiteSpace:"nowrap",
+                }}>(MEMBERS LOCKED)</span>
               )}
-              <span style={{ color: "rgba(212,139,0,0.18)", fontSize: 12, marginLeft: 24 }}>·</span>
+              {isSurge && (
+                <span style={{
+                  fontFamily:"'Courier New',monospace", fontSize:10, fontWeight:700,
+                  color:"#f87171", letterSpacing:"0.14em", marginLeft:6,
+                }}>↑SURGE</span>
+              )}
+              {!isMember && !isSurge && delta !== 0 && (
+                <span style={{
+                  fontFamily:"'Courier New',monospace", fontSize:10, fontWeight:700,
+                  color:delta > 0 ? "#f87171" : "#4ade80", marginLeft:5, letterSpacing:"0.08em",
+                }}>({delta > 0 ? "+" : ""}{delta}%)</span>
+              )}
+              <span style={{ color:"rgba(255,179,71,0.16)", fontSize:15, marginLeft:32 }}>·</span>
             </div>
           );
         })}
@@ -662,20 +701,37 @@ function TravelConciergeModal({ onClose }: { onClose: () => void }) {
           ))}
         </div>
 
-        {/* CTA */}
-        <div style={{ padding: "0 24px" }}>
+        {/* Open DayOne360.com CTA */}
+        <div style={{ padding: "0 24px 8px" }}>
+          <div style={{
+            textAlign: "center", marginBottom: 14,
+            fontSize: 15, fontWeight: 700,
+            fontFamily: "'Cormorant Garamond', serif",
+            color: "rgba(240,232,212,0.82)", letterSpacing: "0.06em",
+          }}>
+            Open <span style={{ color: "#a78bfa" }}>DayOne360.com</span>?
+          </div>
           <a
-            href="/mobile-hub"
+            href="https://www.dayone360.com"
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
               display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              padding: "15px", borderRadius: 14, textDecoration: "none",
-              background: "linear-gradient(135deg, rgba(167,139,250,0.16), rgba(167,139,250,0.07))",
-              border: "1px solid rgba(167,139,250,0.32)",
-              fontSize: 13, fontWeight: 700, color: "#a78bfa", letterSpacing: "0.06em",
+              padding: "16px", borderRadius: 14, textDecoration: "none",
+              background: "linear-gradient(135deg, rgba(167,139,250,0.22), rgba(139,92,246,0.14))",
+              border: "1px solid rgba(167,139,250,0.40)",
+              fontSize: 14, fontWeight: 800, color: "#c4b5fd", letterSpacing: "0.08em",
+              boxShadow: "0 0 22px rgba(167,139,250,0.12)",
             }}
           >
-            Open Full Concierge Portal →
+            Continue →
           </a>
+          <div style={{
+            textAlign: "center", marginTop: 10,
+            fontSize: 9, color: "rgba(167,139,250,0.35)", letterSpacing: "0.12em",
+          }}>
+            Opens DayOne360.com in a new tab · Affiliate partner of Axiom OS
+          </div>
         </div>
       </motion.div>
     </motion.div>
@@ -724,13 +780,23 @@ function DayOneCard({ onTap }: { onTap: () => void }) {
             transition={{ duration: 1.8 + i * 0.5, repeat: Infinity, delay: i * 0.35 }}
           />
         ))}
-        {/* Logo mark */}
+        {/* Logo mark — globe + plane SVG */}
         <div style={{
-          flexShrink: 0, width: 40, height: 40, borderRadius: 11,
-          background: "rgba(167,139,250,0.11)", border: "1px solid rgba(167,139,250,0.26)",
+          flexShrink: 0, width: 44, height: 44, borderRadius: 12,
+          background: "rgba(167,139,250,0.10)", border: "1px solid rgba(167,139,250,0.30)",
           display: "flex", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1,
         }}>
-          <span style={{ fontSize: 15, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#a78bfa" }}>D1</span>
+          <svg viewBox="0 0 36 36" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Globe */}
+            <circle cx="18" cy="18" r="13" stroke="#a78bfa" strokeWidth="1.4" opacity="0.85"/>
+            <ellipse cx="18" cy="18" rx="6.5" ry="13" stroke="#a78bfa" strokeWidth="1" opacity="0.50"/>
+            <line x1="5" y1="18" x2="31" y2="18" stroke="#a78bfa" strokeWidth="1" opacity="0.45"/>
+            <path d="M7 12 Q18 10 29 12" stroke="#a78bfa" strokeWidth="0.9" fill="none" opacity="0.40"/>
+            <path d="M7 24 Q18 26 29 24" stroke="#a78bfa" strokeWidth="0.9" fill="none" opacity="0.40"/>
+            {/* Plane */}
+            <path d="M24 9 L20 16 L14 14 L12 16 L17 18 L15 23 L18 22 L21 26 L23 24 L21 18 L27 13 Z"
+              fill="#a78bfa" opacity="0.92"/>
+          </svg>
         </div>
         {/* Copy */}
         <div style={{ flex: 1, position: "relative", zIndex: 1, minWidth: 0 }}>

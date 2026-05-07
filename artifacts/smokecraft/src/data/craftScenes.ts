@@ -36,37 +36,44 @@ export interface CraftModule {
 }
 
 // ── SmokeCraft 360 ─────────────────────────────────────────────────────────────
+// Sensory macro visuals — product-forward, no generic people photography.
+// cedar+tobacco close-ups and humidor scenes for visceral sensory anchoring.
 
 export const SMOKE_SCENES: CraftScene[] = [
   {
-    id: "lounge", label: "Executive Lounge", sub: "Private reserve access",
-    image: "/images/smoke/smoke_lounge.png",
+    id: "macro_1", label: "Hand-Rolled Leaf", sub: "Aged tobacco, single origin",
+    image: "/images/cigar1.png",
+    tags: ["premium", "solo"], weight: 5,
+  },
+  {
+    id: "macro_2", label: "Ligero Cut", sub: "Full-body reserve selection",
+    image: "/images/cigar2.png",
+    tags: ["premium", "strong", "solo"], weight: 5,
+  },
+  {
+    id: "macro_3", label: "Maduro Wrapper", sub: "Dark, earthy, bold character",
+    image: "/images/cigar3.png",
+    tags: ["premium", "strong"], weight: 5,
+  },
+  {
+    id: "macro_4", label: "Torpedo Profile", sub: "Classic tapered construction",
+    image: "/images/cigar4.png",
+    tags: ["premium", "solo", "night"], weight: 5,
+  },
+  {
+    id: "macro_raw", label: "Leaf & Cedar", sub: "Raw craft — before the flame",
+    image: "/images/cigar.png",
+    tags: ["premium", "solo"], weight: 4,
+  },
+  {
+    id: "macro_main", label: "Reserve Collection", sub: "Cedar-wrapped humidor selection",
+    image: "/images/scenes/smokecraft-card.jpg",
     tags: ["premium", "solo", "night"], weight: 1,
-  },
-  {
-    id: "urban", label: "Evening Session", sub: "Late night signature sessions",
-    image: "/images/smoke/smoke_urban.png",
-    tags: ["social", "night", "urban"], weight: 1,
-  },
-  {
-    id: "solo", label: "Late Night", sub: "Your moment, your craft",
-    image: "/images/smoke/smoke_solo.png",
-    tags: ["urban", "solo", "night"], weight: 1,
-  },
-  {
-    id: "woman", label: "Refined Taste", sub: "Elegance, curated",
-    image: "/images/smoke/smoke_woman.png",
-    tags: ["premium", "solo"], weight: 1,
   },
   {
     id: "group", label: "Social Circle", sub: "Curated group experiences",
     image: "/images/smoke/smoke_group.png",
-    tags: ["social", "group"], weight: 1,
-  },
-  {
-    id: "selection", label: "Craft Selection", sub: "Guided humidor experience",
-    image: "/images/smoke/smoke_selection.png",
-    tags: ["premium", "solo"], weight: 1,
+    tags: ["social", "group"], weight: 0,
   },
 ];
 

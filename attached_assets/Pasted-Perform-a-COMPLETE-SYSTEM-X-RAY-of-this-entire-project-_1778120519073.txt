@@ -1,0 +1,330 @@
+Perform a COMPLETE SYSTEM X-RAY of this entire project.
+
+DO NOT give a shallow summary.
+DO NOT summarize only routes or files.
+DO NOT skip hidden engines, utilities, services, or subsystems.
+
+I want a FULL ARCHITECTURE INTELLIGENCE REPORT of EVERYTHING inside this Replit project.
+
+==================================================
+SCAN OBJECTIVE
+==================================================
+
+Recursively inspect:
+- frontend
+- backend
+- database schema
+- services
+- engines
+- contexts
+- animations
+- utilities
+- integrations
+- orchestrators
+- AI systems
+- route structure
+- middleware
+- environment systems
+- admin tools
+- analytics
+- inventory
+- sound
+- realism systems
+- swipe systems
+- memory systems
+- revenue systems
+- predictive systems
+- validation systems
+- demo systems
+- operator systems
+- control panels
+- feature flags
+- workers
+- schedulers
+- hooks
+- contexts
+- visual engines
+- ambient systems
+- hidden helper modules
+- API structure
+- DB relationships
+- event systems
+- transaction systems
+- reservation systems
+
+==================================================
+OUTPUT FORMAT
+==================================================
+
+Generate a FULL STRUCTURED REPORT with sections.
+
+DO NOT compress information.
+DO NOT skip details.
+
+==================================================
+1. EXECUTIVE OVERVIEW
+==================================================
+
+Explain:
+- what the platform actually is
+- what category it fits into
+- what makes it unique
+- what systems make it advanced
+
+==================================================
+2. FULL FEATURE INVENTORY
+==================================================
+
+List EVERY major feature.
+
+For each feature include:
+- feature name
+- purpose
+- frontend files
+- backend files
+- routes
+- DB tables
+- dependencies
+- operational status
+- related systems
+
+==================================================
+3. ENGINE + SYSTEM MAP
+==================================================
+
+Identify EVERY engine/system including:
+
+- Swipe Engine
+- Memory Brain
+- Revenue Brain
+- Predictive Orchestrator
+- EnvironmentEngine
+- Organic Motion Layer
+- Realism Layer
+- ParticleSystem
+- SoundEngine
+- Analytics
+- Inventory systems
+- Reservation systems
+- Add-To-Order
+- Demo systems
+- Validation systems
+- Experience Control
+- Ambient systems
+- Visual prompt systems
+- AI systems
+- Theme systems
+- Context systems
+- Animation systems
+- Session systems
+
+For each:
+- explain purpose
+- explain relationships
+- explain inputs/outputs
+- explain where used
+
+==================================================
+4. ROUTE ARCHITECTURE MAP
+==================================================
+
+List ALL frontend routes.
+
+For each:
+- purpose
+- auth requirement
+- related backend APIs
+- systems connected
+
+==================================================
+5. API MAP
+==================================================
+
+List ALL API routes.
+
+For each:
+- route
+- method
+- purpose
+- auth protection
+- DB tables touched
+- engines involved
+
+==================================================
+6. DATABASE XRAY
+==================================================
+
+List ALL database tables.
+
+For each:
+- purpose
+- relationships
+- key fields
+- connected routes/services
+
+Generate relationship explanations.
+
+==================================================
+7. FRONTEND COMPONENT TREE
+==================================================
+
+Identify:
+- key components
+- providers
+- contexts
+- animation layers
+- persistent systems
+- cinematic systems
+- realism systems
+
+Explain how they interact.
+
+==================================================
+8. AI + INTELLIGENCE SYSTEMS
+==================================================
+
+Explain ALL intelligence logic including:
+- adaptive pairing
+- taste memory
+- orchestrator logic
+- recommendation scoring
+- revenue scoring
+- atmosphere adaptation
+- environment reactivity
+- predictive behavior
+
+==================================================
+9. IMMERSION + REALISM SYSTEMS
+==================================================
+
+Explain:
+- ambient layers
+- cinematic transitions
+- particle systems
+- glow systems
+- sound systems
+- motion systems
+- entropy systems
+- environmental breathing
+- realism simulation
+
+==================================================
+10. SECURITY + OPERATIONAL SYSTEMS
+==================================================
+
+Identify:
+- auth
+- RBAC
+- validation
+- reservations
+- rollback protections
+- smoke testing
+- validation dashboard
+- demo isolation
+- performance protections
+
+==================================================
+11. PRODUCTION READINESS ASSESSMENT
+==================================================
+
+Score:
+- architecture
+- scalability
+- realism
+- UX polish
+- operational readiness
+- venue readiness
+- investor readiness
+- production readiness
+
+Identify:
+- strengths
+- weaknesses
+- risks
+- missing pieces
+
+==================================================
+12. DEAD CODE + DUPLICATE SYSTEM DETECTION
+==================================================
+
+Identify:
+- unused systems
+- duplicate routes
+- obsolete flows
+- dead components
+- legacy systems
+- conflicting architectures
+
+==================================================
+13. PERFORMANCE XRAY
+==================================================
+
+Identify:
+- expensive renders
+- heavy animation areas
+- optimization opportunities
+- memory risks
+- FPS risks
+- unnecessary rerenders
+
+==================================================
+14. EXPERIENCE FLOW MAP
+==================================================
+
+Map the COMPLETE user flow:
+
+Craft Hub
+→ Experience
+→ Swipe
+→ Memory update
+→ Recommendation
+→ Reveal
+→ Add-To-Order
+→ Analytics
+→ Orchestration feedback
+
+==================================================
+15. INVESTOR-GRADE DIFFERENTIATORS
+==================================================
+
+Explain:
+- what makes this platform unique
+- what is technically impressive
+- what creates defensibility
+- what creates experiential differentiation
+- what creates venue intelligence potential
+
+==================================================
+16. FINAL XRAY SUMMARY
+==================================================
+
+Provide:
+- estimated completion %
+- major remaining gaps
+- highest-value next steps
+- hidden strengths discovered
+- hidden weaknesses discovered
+- architectural observations
+
+==================================================
+IMPORTANT
+==================================================
+
+This must be:
+deep
+technical
+operational
+architectural
+complete
+
+Treat this like:
+a CTO architecture audit +
+investor technical due diligence +
+production readiness scan
+combined into one report.
+
+DO NOT give a shallow answer.
+DO NOT skip systems.
+DO NOT summarize vaguely.
+
+Trace EVERYTHING.
