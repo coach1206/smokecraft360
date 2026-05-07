@@ -22,6 +22,7 @@ import DynamicCard              from "@/components/DynamicCard/DynamicCard";
 import LiveEngineController     from "@/components/DynamicCard/LiveEngineController";
 import { CRAFT_MODULES }        from "@/data/craftScenes";
 import { useGuestProfile }      from "@/contexts/GuestProfileContext";
+import TickerTape              from "@/components/TickerTape";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
@@ -761,6 +762,7 @@ export default function CraftHub() {
       <PreferenceProvider>
         <LiveEngineController />
         <CraftHubInner />
+        <TickerTape position="bottom" />
       </PreferenceProvider>
     </UserProfileProvider>
   );

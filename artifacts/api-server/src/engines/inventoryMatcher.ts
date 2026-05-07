@@ -40,6 +40,10 @@ export interface MatchResult {
   quantity:            number;
   flavorOverlap:       string[];
   sagesRecommendation: string;
+  /** True when a paid vendor_placement (sponsored tier) is boosting this item */
+  isPromoted:          boolean;
+  /** Bonus loyalty points awarded to guest for choosing a prestige-sponsored item */
+  pointBonus:          number;
 }
 
 // ── Body adjacency map ────────────────────────────────────────────────────────
@@ -155,6 +159,8 @@ export async function matchInventory(
       quantity:            row.quantity,
       flavorOverlap:       overlap,
       sagesRecommendation,
+      isPromoted:          false,
+      pointBonus:          0,
     });
   }
 

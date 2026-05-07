@@ -1,0 +1,23 @@
+PASTE THIS INTO THE REPLIT AGENT:
+Role: Lead Media-Tech & Revenue Systems Architect for Axiom OS.
+Objective: Implement the Axiom Ad-Injection Engine and the Interactive Ticket Ticker. This system transforms the OS into a high-value media network capable of monetizing guest attention through native brand placement and scrolling digital real estate.
+1. THE INTERACTIVE TICKET TAPER (GUEST UI):
+• Build a smooth, 60fps scrolling Ticket Taper (Ticker) at the bottom of the interface.
+• Capabilities: Support for high-resolution brand logos (PNG/SVG), scrolling promotional text, and interactive hyperlinks.
+• Neural Integration: If a guest taps an item in the ticker (e.g., "Limited Edition Macallan Pairing"), the UI must immediately open a "Special Reveal" overlay or inject that item directly into their current "Draft" with a specific recommendation from their AI Mentor.
+2. NATIVE AD-INJECTION & "SHADOW" PROMOTIONS:
+• Implement logic within the Craft Hub to prioritize Sponsored Products.
+• The "Prestige Glow": Sponsored items must feature a premium visual aura and a Prestige Point Multiplier icon (+15 XP).
+• Incentive Logic: Reward the guest with bonus points toward their Golden Box for selecting a distributor-sponsored leaf, spirit, or craft item.
+• Mentor Support: The chosen AI Sage must provide an exclusive, high-tier insight for any sponsored product to validate the guest's selection.
+3. THE REVENUE CONTROL CENTER (ADMIN PORTAL):
+• Create a dedicated Promotion Management Dashboard for platform admins and distributors.
+• Asset Manager: A drag-and-drop interface to upload brand logos, set scrolling ticker text, and define the destination link or "Reveal" content.
+• Campaign Controls: Tools to set the "Promotion Start/End Dates" and the "Prestige Multiplier" value.
+• Analytics Tracker: Real-time metrics showing Ticker Impressions (how many times it scrolled), Click-Through Rate (CTR), and "Nudge-to-Purchase" conversion data.
+4. REGIONAL TREND SYNC:
+• Wire the Ticker to the Regional Trend Engine. The ticker must automatically prioritize promotions based on the venue's geography (e.g., pushing a specific Peach-infused spirit primarily to Georgia-based venues).
+5. VISUAL & PERFORMANCE STANDARDS:
+• Industrial-Luxe Aesthetic: The ticker must be non-intrusive but "Magnetic"—using deep obsidian backgrounds with crisp, high-contrast typography and glowing accents.
+• Zero Lag: The animation must remain fluid even during complex 3D cigar/spirit rendering in the main game window.
+GO. Activate the Revenue Stream.

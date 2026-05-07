@@ -100,3 +100,4 @@ export * from "./guestBadges";
 export * from "./serverPulseEvents";
 export * from "./venueStaff";
 export * from "./venueRevenuePressure";
+export * from "./sponsorTickers";
