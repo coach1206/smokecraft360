@@ -34,7 +34,7 @@ import { motion, AnimatePresence }                            from "framer-motio
 import {
   Settings, CreditCard, BookOpen, BarChart3,
   DollarSign, Package, Zap, Activity, Shield,
-  ChevronLeft, Clock,
+  ChevronLeft, Clock, Star,
 } from "lucide-react";
 import { useAxiom360 }   from "@/store/axiom360Store";
 import type { CraftType } from "@/store/axiom360Store";
@@ -42,6 +42,7 @@ import { useAxiomStore }          from "@/store/axiomStore";
 import { calculateDynamicPrice }  from "@/lib/pricing";
 import type { PriceInfo }         from "@/lib/pricing";
 import { FoundersDashboard }      from "./FoundersDashboard";
+import { SubPageRenderer }        from "./SubPageRenderer";
 import {
   xpProgress, xpToNextRank,
   RANK_CONFIG,
@@ -211,8 +212,11 @@ const STAFF_NAV = [
   { label: "Inventory",  icon: Package,    route: "/inventory"              },
   { label: "Revenue",    icon: Zap,        route: "/revenue"                },
   { label: "Devices",    icon: Activity,   route: "/devices"                },
-  { label: "Audit",      icon: Shield,     route: "/operations"             },
+  { label: "Campaigns",  icon: Star,       route: "/campaigns"              },
 ] as const;
+
+// Tiles whose label opens an inline QuickView instead of navigating away
+const QUICK_VIEW_LABELS = new Set(["Revenue", "Analytics", "Campaigns"]);
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -561,6 +565,7 @@ function StaffPanel({
   const craft = CRAFTS.find((c) => c.id === currentCraft);
 
   const [resetPending, setResetPending] = useState(false);
+  const [activeSlug,   setActiveSlug]   = useState<string | null>(null);
 
   const {
     occupancy,
@@ -832,7 +837,7 @@ function StaffPanel({
         {STAFF_NAV.map(({ label, icon: Icon, route }) => (
           <button
             key={label}
-            onClick={() => navigate(route)}
+            onClick={() => QUICK_VIEW_LABELS.has(label) ? setActiveSlug(label.toLowerCase()) : navigate(route)}
             className="rounded-2xl flex flex-col items-center gap-2 py-4 px-2 cursor-pointer btn-recessed"
             style={{
               background: "linear-gradient(160deg, #1e1a15, #141210)",
@@ -916,6 +921,70 @@ function StaffPanel({
           </div>
         </div>
       </div>
+
+      {/* ── Inline QuickView panel (Revenue / Analytics / Campaigns) ── */}
+      <AnimatePresence>
+        {activeSlug && (
+          <motion.div
+            key="quickview"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", stiffness: 320, damping: 30 }}
+            style={{
+              position: "absolute", inset: 0, zIndex: 20,
+              background: "linear-gradient(160deg, #1a1612 0%, #0d0b09 100%)",
+              display: "flex", flexDirection: "column", overflow: "hidden",
+              borderLeft: "1px solid rgba(255,255,255,0.06)",
+            }}
+          >
+            {/* Brushed graphite texture */}
+            <div className="absolute inset-0 brushed-graphite pointer-events-none" style={{ opacity: 0.45, zIndex: 0 }} />
+
+            {/* Quick-view header */}
+            <div
+              style={{
+                position: "relative", zIndex: 10, flexShrink: 0,
+                display: "flex", alignItems: "center", gap: 12,
+                padding: "14px 20px",
+                borderBottom: "1px solid rgba(255,255,255,0.07)",
+                background: "rgba(0,0,0,0.22)",
+              }}
+            >
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setActiveSlug(null)}
+                style={{
+                  width: 38, height: 38, borderRadius: 11, cursor: "pointer",
+                  background: "#211d17", border: "1px solid rgba(255,255,255,0.10)",
+                  color: "#B39B77", display: "flex", alignItems: "center", justifyContent: "center",
+                  outline: "none",
+                }}
+              >
+                <ChevronLeft size={17} />
+              </motion.button>
+              <div style={{ flex: 1 }}>
+                <div style={{
+                  fontSize: 13, fontWeight: 700, color: "#C9A84C",
+                  textTransform: "uppercase", letterSpacing: "0.16em",
+                }}>
+                  {activeSlug.charAt(0).toUpperCase() + activeSlug.slice(1)}
+                </div>
+                <div style={{ fontSize: 9, color: "rgba(240,232,212,0.30)", marginTop: 1, letterSpacing: "0.12em" }}>
+                  Quick View · Staff Mode
+                </div>
+              </div>
+              {/* Gold accent rule */}
+              <div style={{ width: 3, height: 26, borderRadius: 99, background: "linear-gradient(180deg, #C9A84C, rgba(201,168,76,0.3))", boxShadow: "0 0 8px rgba(201,168,76,0.4)" }} />
+            </div>
+
+            {/* Content */}
+            <div style={{ position: "relative", zIndex: 1, flex: 1, overflowY: "auto" }}>
+              <SubPageRenderer slug={activeSlug} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Founder's Command View ── */}
       <AnimatePresence>
