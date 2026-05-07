@@ -1,0 +1,349 @@
+Perform a FULL OPERATIONAL REALITY AUDIT of the entire Axiom OS + CraftHub platform.
+
+This is NOT a file scan.
+This is NOT a route inventory.
+This is NOT a shallow architecture summary.
+
+This audit must determine:
+
+1. what systems actually exist
+2. what systems are wired correctly
+3. what systems are partially implemented
+4. what systems are simulated/mock only
+5. what systems are production-ready
+6. what systems are architected but unfinished
+7. what systems are duplicated or legacy
+8. what systems are disconnected
+9. what systems fail operationally
+10. what systems still need hardening
+
+==================================================
+AUDIT OBJECTIVE
+==================================================
+
+Treat this like:
+
+- CTO infrastructure review
+- enterprise readiness audit
+- investor technical diligence
+- production hospitality systems validation
+- operational continuity inspection
+
+combined into one report.
+
+==================================================
+SECTION 1 — CORE EXPERIENCE ENGINE AUDIT
+==================================================
+
+Verify:
+
+- Universal Swipe Engine
+- drag physics
+- stacked cards
+- ADD/SKIP overlays
+- glow trails
+- card recycling
+- reveal triggering
+- session lifecycle
+- adaptive re-ranking
+- craft switching
+
+Check:
+- live behavior
+- actual state changes
+- performance
+- route continuity
+- mobile responsiveness
+
+==================================================
+SECTION 2 — MEMORY + INTELLIGENCE AUDIT
+==================================================
+
+Verify:
+
+- Memory Brain
+- Taste Memory Ledger
+- adaptive pairing
+- orchestrator
+- premium intent scoring
+- recommendation pressure
+- session continuity
+- atmosphere restoration
+- predictive behavior
+
+For each:
+- confirm DB writes
+- confirm state updates
+- confirm orchestration influence
+- confirm recommendation changes
+
+==================================================
+SECTION 3 — REVENUE + INVENTORY AUDIT
+==================================================
+
+Verify:
+
+- Revenue Brain v2
+- inventory-aware recommendations
+- scarcity logic
+- low-stock suppression
+- dynamic pricing
+- surge behavior
+- member lock pricing
+- reservations
+- add-to-order
+- rollback protection
+
+Check:
+- inventory validation
+- reservation expiration
+- subtotal recalculation
+- margin influence
+- recommendation scoring accuracy
+
+==================================================
+SECTION 4 — MENTOR + PAIRING AUDIT
+==================================================
+
+Verify:
+
+- Mentor Intelligence Engine
+- Harmony & Conflict Matrix
+- palate evolution logic
+- pairing explanations
+- atmospheric pairing
+- prestige curation
+- craft guidance behavior
+
+Check:
+- whether pairings are actually intelligent
+- whether atmosphere changes with flavor profiles
+- whether recommendations evolve over time
+- whether educational guidance exists
+
+==================================================
+SECTION 5 — IMMERSION + REALISM AUDIT
+==================================================
+
+Verify:
+
+- Realism Layer
+- Organic Motion Layer
+- ParticleSystem
+- PersistentAmbientLayer
+- glow systems
+- cinematic transitions
+- environmental breathing
+- sound engine
+- motion entropy
+- reveal cinematics
+
+Check:
+- whether movement feels organic
+- whether loops are detectable
+- whether particles vary
+- whether atmosphere adapts
+- whether transitions feel cinematic
+- whether FPS remains stable
+
+==================================================
+SECTION 6 — AUDIO IMMERSION AUDIT
+==================================================
+
+Verify:
+
+- soundEngine
+- audioEngine
+- SOUND_HOOKS
+- triggerSound
+- ambient drift
+- interaction sounds
+- craft-specific loops
+
+Categorize:
+- fully operational
+- architected but missing assets
+- stub only
+- disconnected
+
+Check:
+- whether audio actually triggers
+- whether volume adapts
+- whether drift functions work
+
+==================================================
+SECTION 7 — POS + VENUE OPERATIONS AUDIT
+==================================================
+
+Verify:
+
+- atmosphere flip
+- staff handoff
+- reservations
+- order flow
+- table logic
+- operational visibility
+- Experience Control Panel
+- venue modes
+
+Check:
+- whether staff workflows are complete
+- whether operational mode switching works
+- whether cinematic mode survives operational transitions
+
+==================================================
+SECTION 8 — SECURITY + INFRASTRUCTURE AUDIT
+==================================================
+
+Verify:
+
+- kiosk armor
+- burn-in protection
+- inactivity reset
+- NDA gate
+- append-only audit systems
+- role protections
+- validation dashboard
+- smoke test system
+
+Check:
+- whether protections are active
+- whether systems can be bypassed
+- whether routes are properly secured
+
+==================================================
+SECTION 9 — ANALYTICS + DATA AUDIT
+==================================================
+
+Verify:
+
+- Swipe Intelligence
+- orchestration analytics
+- taste clusters
+- conversion metrics
+- premium affinity tracking
+- room energy tracking
+- behavioral metrics
+
+Check:
+- whether data updates live
+- whether analytics reflect real behavior
+- whether dashboards are readable
+- whether metrics are actionable
+
+==================================================
+SECTION 10 — DEMO + INVESTOR AUDIT
+==================================================
+
+Verify:
+
+- investor demo mode
+- cinematic walkthrough
+- safe demo isolation
+- proof chips
+- pitch page
+- validation systems
+
+Check:
+- whether claims match implementation
+- whether demo flow works cleanly
+- whether no production data is touched
+
+==================================================
+SECTION 11 — PERFORMANCE AUDIT
+==================================================
+
+Check:
+- FPS stability
+- rerender hotspots
+- animation bottlenecks
+- memory leaks
+- mobile responsiveness
+- tablet performance
+- kiosk performance
+
+Identify:
+- expensive components
+- optimization opportunities
+- render storms
+- oversized assets
+
+==================================================
+SECTION 12 — DEAD SYSTEM + LEGACY AUDIT
+==================================================
+
+Identify:
+- dead components
+- duplicate systems
+- abandoned flows
+- old craft routes
+- unused hooks
+- disconnected engines
+- obsolete architecture
+
+==================================================
+SECTION 13 — PRODUCTION READINESS SCORE
+==================================================
+
+Score:
+
+- architecture
+- realism
+- operational readiness
+- venue readiness
+- investor readiness
+- scalability
+- UX polish
+- security
+- performance
+- immersion quality
+
+Use:
+0–100 scoring
+
+==================================================
+SECTION 14 — CRITICAL GAPS
+==================================================
+
+List:
+- unfinished systems
+- fake/simulated systems
+- weak spots
+- fragile systems
+- high-risk issues
+- missing hardening
+
+Be brutally honest.
+
+==================================================
+SECTION 15 — FINAL COMMAND SUMMARY
+==================================================
+
+Generate:
+
+1. What is fully real
+2. What is partially real
+3. What is conceptual only
+4. What is production ready
+5. What still needs work
+6. What is most impressive
+7. What creates defensibility
+8. What competitors would struggle to replicate
+
+==================================================
+IMPORTANT
+==================================================
+
+Do NOT protect my feelings.
+Do NOT give vague praise.
+Do NOT assume systems work because files exist.
+
+Trace:
+- actual wiring
+- actual state flow
+- actual operational behavior
+- actual UX continuity
+- actual engine interaction
+
+I want:
+THE TRUTH.

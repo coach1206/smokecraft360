@@ -87,3 +87,5 @@ export * from "./trainingCertifications";
 export * from "./trainingSignOffs";
 export * from "./trainingAnalyticsEvents";
 export * from "./mediaAssets";
+export * from "./networkIntelligenceMetrics";
+export * from "./guestIdentityEvolution";
