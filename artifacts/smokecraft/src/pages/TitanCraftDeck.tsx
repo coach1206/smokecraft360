@@ -64,61 +64,66 @@ interface CardProps {
 
 function CraftCard({ id, title, color, route, active }: CardProps) {
   const [, navigate] = useLocation();
-  const img = CRAFT_IMAGES[id] ?? CRAFT_IMAGES.smoke;
-  const sub = CRAFT_SUBS[id]  ?? "Select Clientele";
-  const cta = CRAFT_CTAS[id]  ?? "Enter";
+  const img    = CRAFT_IMAGES[id] ?? CRAFT_IMAGES.smoke;
+  const cta    = CRAFT_CTAS[id]   ?? "Enter";
   const isSmoke = id === "smoke";
 
   return (
     <motion.div
-      className="glass-card relative group cursor-pointer"
+      className="slab-3d relative overflow-hidden cursor-pointer h-full"
+      style={{ border: `1px solid ${isSmoke ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.05)"}` }}
       animate={{
-        scale:   active ? 1.025 : 1,
-        opacity: active ? 1 : 0.70,
+        scale:   active ? 1.02 : 1,
+        opacity: active ? 1 : 0.68,
         boxShadow: active
-          ? `0 0 0 1px ${color}90, 0 0 32px ${color}50, 0 16px 48px rgba(0,0,0,0.85)`
-          : "0 0 0 1px rgba(255,255,255,0.10), 0 10px 30px rgba(0,0,0,0.60)",
+          ? `0 0 0 1px ${color}80, 0 0 36px ${color}40, inset 0 0 80px rgba(0,0,0,0.40), 0 50px 100px rgba(0,0,0,0.90)`
+          : "inset 0 0 80px rgba(0,0,0,0.40), 0 50px 100px rgba(0,0,0,0.90)",
       }}
-      whileTap={{ scale: active ? 1.01 : 0.97 }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => navigate(route)}
     >
-      {/* Full-bleed hero image — positioned by .glass-card img */}
-      <img src={img} alt={title} />
+      {/* Full-bleed hero image */}
+      <img
+        src={img}
+        alt={title}
+        className={`absolute inset-0 w-full h-full object-cover ${isSmoke ? "brightness-125 contrast-110 opacity-70" : "brightness-110 opacity-60"}`}
+      />
 
-      {/* Gradient overlay — darkens bottom for legibility */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
+      {/* Bottom-up gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
 
       {/* Animated top accent */}
       <motion.div
         style={{ background: color }}
-        className="absolute top-0 left-0 right-0 h-[2px] z-20"
-        animate={{ opacity: active ? [0.7, 1, 0.7] : [0.2, 0.4, 0.2] }}
+        className="absolute top-0 left-0 right-0 h-[2px] z-10"
+        animate={{ opacity: active ? [0.7, 1, 0.7] : [0.15, 0.35, 0.15] }}
         transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
       />
 
       {/* Bottom content */}
-      <div className="absolute bottom-0 left-0 p-8 z-20 w-full">
-        <p className="text-[10px] tracking-[0.35em] uppercase font-bold mb-2 opacity-70" style={{ color }}>
-          {title}
-        </p>
-        <h2 className={`text-3xl italic mb-2 leading-tight ${isSmoke ? "gold-luster-text" : "text-white/90"}`}
+      <div className="absolute bottom-0 left-0 p-10 w-full z-10">
+        <h2 className={`${isSmoke ? "gold-etch" : "text-white/90"} italic text-4xl mb-4`}
           style={isSmoke ? {} : { color }}>
-          Craft Hub
+          {title === "Smokecraft 360" ? "Smokecraft 360" : title.replace("360", "").trim() + " 360"}
         </h2>
-        <p className="text-white/50 text-[10px] tracking-widest uppercase mb-6">{sub}</p>
+        <div
+          className="h-[2px] w-24 mb-6"
+          style={{ background: isSmoke ? "#ca8a04" : `${color}60` }}
+        />
         <motion.button
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
-          className={`px-6 py-2 text-[10px] uppercase tracking-widest bg-black/40 backdrop-blur-md ${isSmoke ? "gold-luster-text" : ""}`}
-          style={{
-            border: `1px solid ${isSmoke ? "rgba(212,175,55,0.50)" : color + "60"}`,
-            color:  isSmoke ? undefined : color,
-            cursor: "pointer",
+          className="machined-btn px-12 py-5 text-[11px] uppercase tracking-[0.5em]"
+          style={isSmoke ? {} : {
+            border: `1px solid ${color}60`,
+            color,
+            background: "rgba(255,255,255,0.05)",
+            backdropFilter: "blur(12px)",
           }}
           onClick={e => { e.stopPropagation(); navigate(route); }}
         >
-          {cta}
+          {isSmoke ? <span className="gold-etch">{cta}</span> : cta}
         </motion.button>
       </div>
     </motion.div>
@@ -253,20 +258,12 @@ export default function TitanCraftDeck() {
           {/* Header */}
           <header className="flex justify-between items-end px-10 pt-8 pb-6 border-b border-white/5 flex-shrink-0">
             {/* Left — engine status + title */}
-            <div>
-              <div className="flex items-center gap-3 mb-1">
-                <motion.div
-                  className="h-1 w-8 bg-emerald-500 rounded-full"
-                  style={{ boxShadow: "0 0 10px #10b981" }}
-                  animate={{ opacity: [0.7, 1, 0.7] }}
-                  transition={{ duration: 1.8, repeat: Infinity }}
-                />
-                <span className="gold-luster-text text-xl tracking-[0.4em] uppercase">
-                  Titan Engine // Active
-                </span>
+            <div className="flex flex-col">
+              <h1 className="gold-etch text-2xl uppercase">Axiom 360</h1>
+              <div className="flex items-center gap-3 mt-2">
+                <div className="h-[1px] w-12 bg-yellow-500/50" />
+                <span className="text-[10px] text-white/30 tracking-[0.4em] font-bold uppercase">Sovereign OS Terminal</span>
               </div>
-              <div className="h-[2px] w-full bg-gradient-to-r from-yellow-500 to-transparent mt-1" />
-              <p className="text-[10px] text-white/40 tracking-[0.2em] mt-1 italic">Connoisseur Intelligence Engine</p>
             </div>
 
             {/* Centre — view toggle */}
@@ -288,20 +285,12 @@ export default function TitanCraftDeck() {
             </div>
 
             {/* Right — rank badge + XP bar */}
-            <div className="text-right flex flex-col items-end gap-2">
-              <div className="premier-glass px-6 py-2 border border-yellow-500/50 rounded-lg">
-                <span className="text-[10px] font-black tracking-widest uppercase"
+            <div className="flex flex-col items-end gap-2">
+              <div className="slab-3d px-6 py-2 border border-yellow-500/30 rounded-lg">
+                <span className="text-[10px] font-black tracking-widest uppercase italic"
                   style={{ color: level.color }}>
-                  {level.badge} {level.name} Rank
+                  {level.badge} {level.name} · {pct}% XP
                 </span>
-              </div>
-              <div className="h-1 w-32 bg-white/10 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full rounded-full"
-                  style={{ background: level.color }}
-                  animate={{ width: `${pct}%` }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                />
               </div>
               <p className="text-[8px] text-white/25">{xp} XP</p>
             </div>
@@ -316,7 +305,7 @@ export default function TitanCraftDeck() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.28 }}
-                className="grid grid-cols-2 gap-6 flex-grow px-10 py-6 min-h-0"
+                className="grid grid-cols-2 grid-rows-2 gap-6 flex-grow px-10 py-6 min-h-0"
               >
                 {CRAFT_MODULES.map((mod, i) => (
                   <motion.div
@@ -324,7 +313,7 @@ export default function TitanCraftDeck() {
                     initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.06 + i * 0.08, duration: 0.44, ease: [0.22, 1, 0.36, 1] }}
-                    className="min-h-0"
+                    className="min-h-0 h-full"
                   >
                     <CraftCard
                       id={mod.id}
@@ -471,30 +460,17 @@ export default function TitanCraftDeck() {
           </AnimatePresence>
 
           {/* Footer */}
-          <footer className="px-10 pb-8 pt-6 grid grid-cols-3 items-center border-t border-white/10 flex-shrink-0">
-            {/* Left — inventory sync status */}
-            <div className="flex items-center gap-4">
-              <motion.div
-                className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0"
-                animate={{ opacity: [0.6, 1, 0.6], scale: [1, 1.4, 1] }}
-                transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-              />
-              <span className="text-[9px] tracking-[0.5em] text-white/30 uppercase font-bold">
-                Titan // Inventory Sync
-              </span>
+          <footer className="px-10 pb-8 pt-6 flex justify-between items-center border-t border-white/5 flex-shrink-0">
+            {/* Left — industrial telemetry */}
+            <div className="flex flex-col gap-1">
+              <span className="text-[9px] text-white/30 tracking-widest uppercase font-bold">Titan // Inventory Sync</span>
+              <span className="text-[10px] text-emerald-500 font-bold">● ALL SYSTEMS NOMINAL</span>
             </div>
 
-            {/* Centre — lounge vitality */}
-            <div className="text-center text-[9px] uppercase tracking-[0.5em] text-white/30">
-              Lounge Vitality: Nominal
-            </div>
-
-            {/* Right — version */}
-            <div className="flex justify-end">
-              <span className="text-[10px] text-yellow-500/40 uppercase tracking-widest">
-                Axiom OS Premier // v3.0
-              </span>
-            </div>
+            {/* Right — version etch */}
+            <span className="gold-etch italic text-[11px] opacity-60 tracking-widest">
+              Axiom OS Premier // v3.0
+            </span>
           </footer>
         </motion.div>
       )}

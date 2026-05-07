@@ -1,0 +1,72 @@
+import React from 'react';
+import './index.css'; // FORCING THE WIRING
+
+export default function App() {
+  return (
+    <div className="h-screen w-screen bg-[#050505] text-white p-12 flex flex-col justify-between relative select-none">
+      
+      {/* VIGNETTE LIGHTING: Adds depth to the room */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none"></div>
+
+      {/* HEADER: STATIONARY HARDWARE LABEL */}
+      <header className="z-10 flex justify-between items-start border-b border-white/10 pb-10">
+        <div>
+          <h1 className="gold-engraved text-2xl uppercase">Axiom 360</h1>
+          <p className="text-[10px] text-white/30 tracking-[0.5em] mt-2 font-bold uppercase">Sovereign Terminal // Vault v3.0</p>
+        </div>
+        <div className="console-slab px-6 py-2 border-yellow-500/30">
+          <span className="text-yellow-600 text-[10px] font-black uppercase tracking-widest">Vitality: 98%</span>
+        </div>
+      </header>
+
+      {/* MAIN CONSOLE: TALL & DEEP SLABS */}
+      <main className="z-10 grid grid-cols-2 gap-16 h-[60vh] my-auto">
+        
+        {/* SMOKECRAFT ATELIER */}
+        <div className="console-slab relative overflow-hidden group">
+          <img 
+            src="https://images.unsplash.com/photo-1527030280862-64139fba04ca?w=1200&fit=crop" 
+            className="absolute inset-0 w-full h-full object-cover brightness-125 contrast-125 opacity-60 transition-transform duration-1000 group-hover:scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+          
+          <div className="absolute bottom-0 left-0 p-12 w-full">
+            <h2 className="gold-engraved italic text-4xl mb-4">Smokecraft 360</h2>
+            <div className="h-[2px] w-20 bg-yellow-600 mb-8"></div>
+            <button className="bg-black/40 border border-yellow-500/50 px-12 py-5 gold-engraved text-[11px] uppercase tracking-[0.5em] hover:bg-yellow-600/20 transition-all">
+              Initiate Craft
+            </button>
+          </div>
+        </div>
+
+        {/* POURCRAFT CONSOLE */}
+        <div className="console-slab relative overflow-hidden">
+          <img 
+            src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=1200&fit=crop" 
+            className="absolute inset-0 w-full h-full object-cover brightness-110 opacity-50"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+          
+          <div className="absolute bottom-0 left-0 p-12 w-full">
+            <h2 className="text-white text-4xl italic mb-4 opacity-90">Liquid 360</h2>
+            <div className="h-[2px] w-20 bg-white/20 mb-8"></div>
+            <button className="bg-white/5 border border-white/20 backdrop-blur-md px-12 py-5 text-[11px] text-white font-black uppercase tracking-[0.5em] hover:bg-white/10 transition-all">
+              Analyze Pour
+            </button>
+          </div>
+        </div>
+
+      </main>
+
+      {/* FOOTER: INDUSTRIAL TELEMETRY */}
+      <footer className="z-10 flex justify-between items-center border-t border-white/10 pt-10">
+        <div className="flex items-center gap-6">
+          <div className="w-4 h-4 bg-yellow-500 rotate-45 shadow-[0_0_15px_rgba(212,175,55,0.6)]"></div>
+          <span className="text-[10px] text-white/40 tracking-[0.4em] font-bold uppercase italic">Titan Engine // Synchronized</span>
+        </div>
+        <div className="gold-engraved italic text-[10px] opacity-40">Axiom OS Premier</div>
+      </footer>
+
+    </div>
+  );
+}
