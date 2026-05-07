@@ -246,6 +246,7 @@ export default function TitanCraftDeck() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.35 }}
+          id="axiom-terminal"
           className="h-screen w-full flex flex-col"
           style={{
             background: "var(--axiom-body-bg, var(--steel-bg))",
