@@ -1,0 +1,64 @@
+import React from 'react';
+import './index.css';
+
+export default function App() {
+  return (
+    <div className="h-screen w-screen p-12 flex flex-col justify-between relative bg-[#080809]">
+      
+      {/* AMBIENT SPOTLIGHT */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(212,175,55,0.15)_0%,transparent_70%)] pointer-events-none"></div>
+
+      {/* HEADER: STATIONARY TERMINAL */}
+      <header className="z-20 flex justify-between items-start border-b border-white/10 pb-8">
+        <div>
+          <h1 className="gold-engraved text-3xl uppercase tracking-[0.5em]">Axiom 360</h1>
+          <p className="text-[10px] text-white/40 tracking-[0.3em] mt-2 font-bold uppercase">Sovereign Terminal // v3.0</p>
+        </div>
+        <div className="console-slab px-8 py-3 border-yellow-500/40">
+          <span className="text-yellow-500 text-xs font-black uppercase tracking-tighter animate-pulse">Vitality: 98%</span>
+        </div>
+      </header>
+
+      {/* MAIN GALLERY: FORCED TALL GEOMETRY */}
+      <main className="z-10 grid grid-cols-2 gap-12 h-[70vh] my-4">
+        
+        {/* SMOKECRAFT 360 */}
+        <div className="console-slab">
+          <img src="https://images.unsplash.com/photo-1527030280862-64139fba04ca?w=1200" className="hero-img" alt="Smoke" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent z-10"></div>
+          <div className="absolute bottom-0 left-0 p-12 z-20 w-full">
+            <h2 className="gold-engraved italic text-5xl mb-4">Smokecraft 360</h2>
+            <p className="text-white/60 text-xs tracking-widest uppercase mb-8">Molecular Leaf Lab // Ritual Prep</p>
+            <button className="bg-black/80 border border-yellow-500/50 px-12 py-5 gold-engraved text-xs uppercase tracking-[0.4em] hover:bg-yellow-600/20">
+              Initiate Craft
+            </button>
+          </div>
+        </div>
+
+        {/* LIQUID 360 */}
+        <div className="console-slab">
+          <img src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=1200" className="hero-img" alt="Pour" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent z-10"></div>
+          <div className="absolute bottom-0 left-0 p-12 z-20 w-full">
+            <h2 className="text-white text-5xl italic mb-4 opacity-90">Liquid 360</h2>
+            <p className="text-white/60 text-xs tracking-widest uppercase mb-8">Vessel Geometry // Spirit Sync</p>
+            <button className="bg-white/5 border border-white/20 backdrop-blur-md px-12 py-5 text-xs text-white font-black uppercase tracking-[0.4em]">
+              Analyze Pour
+            </button>
+          </div>
+        </div>
+
+      </main>
+
+      {/* FOOTER: INDUSTRIAL TELEMETRY */}
+      <footer className="z-20 flex justify-between items-center border-t border-white/10 pt-8">
+        <div className="flex items-center gap-6">
+          <div className="w-5 h-5 bg-yellow-500 rotate-45 shadow-[0_0_25px_rgba(212,175,55,0.8)]"></div>
+          <span className="text-xs text-white/40 tracking-[0.5em] font-bold uppercase">Titan Engine // Live</span>
+        </div>
+        <div className="gold-engraved italic text-xs opacity-50 uppercase">Axiom OS Premier</div>
+      </footer>
+
+    </div>
+  );
+}
