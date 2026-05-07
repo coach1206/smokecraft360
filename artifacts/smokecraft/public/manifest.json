@@ -1,16 +1,47 @@
 {
-  "short_name": "Axiom360",
-  "name": "Axiom 360 Lounge OS",
+  "short_name": "Axiom OS",
+  "name": "Axiom OS — Experience Engine",
+  "description": "Sovereign data and lifestyle infrastructure for premium cigar lounges.",
   "icons": [
     {
       "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#121212",
-  "background_color": "#121212",
-  "orientation": "landscape"
+  "start_url": "/",
+  "scope": "/",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone", "minimal-ui"],
+  "theme_color": "#D48B00",
+  "background_color": "#F5F2ED",
+  "orientation": "landscape",
+  "categories": ["lifestyle", "business"],
+  "prefer_related_applications": false,
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "shortcuts": [
+    {
+      "name": "CraftHub",
+      "short_name": "Craft",
+      "description": "Enter the craft experience",
+      "url": "/crafthub",
+      "icons": [{ "src": "favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "War Room",
+      "short_name": "War Room",
+      "description": "Manufacturer intelligence dashboard",
+      "url": "/manufacturer-war-room",
+      "icons": [{ "src": "favicon.svg", "sizes": "any" }]
+    }
+  ]
 }

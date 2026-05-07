@@ -103,3 +103,6 @@ export * from "./venueRevenuePressure";
 export * from "./sponsorTickers";
 export * from "./adImpressions";
 export * from "./referralCommissions";
+export * from "./iotHumidorReadings";
+export * from "./axiomCredits";
+export * from "./palateIndex";

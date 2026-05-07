@@ -345,11 +345,12 @@ function ShadowTestsTab() {
 
 // ── Main ───────────────────────────────────────────────────────────────────────
 
-type Tab = "sentiment" | "shadow" | "network";
+type Tab = "sentiment" | "shadow" | "network" | "palate";
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "sentiment", label: "Sentiment Intel",  icon: "◈" },
   { id: "shadow",    label: "Shadow Tests",     icon: "◑" },
   { id: "network",   label: "Network Feed",     icon: "◎" },
+  { id: "palate",    label: "Palate Index",     icon: "◆" },
 ];
 
 function NetworkTab() {
@@ -361,6 +362,167 @@ function NetworkTab() {
         Feed populates as venues emit behavioral events. Currently showing: raw table scan.
       </div>
     </GlassCard>
+  );
+}
+
+// ── Palate Index Tab ──────────────────────────────────────────────────────────
+
+type PalateRow = {
+  region: string; flavorTag: string;
+  trendScore: number; isTrending: boolean;
+  sampleSize?: number; craftType?: string;
+};
+type HeatmapRow = { region: string; flavorTag: string; trendScore: number; isTrending: boolean };
+
+function PalateIndexTab() {
+  const [craftType, setCraftType]     = useState("smoke");
+  const [region,    setRegion]        = useState("");
+  const [trends,    setTrends]        = useState<PalateRow[]>([]);
+  const [heatmap,   setHeatmap]       = useState<HeatmapRow[]>([]);
+  const [loading,   setLoading]       = useState(false);
+  const [aggLoading,setAggLoading]    = useState(false);
+  const [aggMsg,    setAggMsg]        = useState("");
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const qs1 = new URLSearchParams({ craftType }); if (region) qs1.set("region", region);
+      const qs2 = new URLSearchParams({ craftType });
+      const [t, h] = await Promise.all([
+        apiGet(`/api/palate/trends?${qs1}`),
+        apiGet(`/api/palate/heatmap?${qs2}`),
+      ]);
+      setTrends((t as { trends: PalateRow[] }).trends ?? []);
+      setHeatmap((h as { heatmap: HeatmapRow[] }).heatmap ?? []);
+    } catch { /* silent */ }
+    setLoading(false);
+  };
+
+  const aggregate = async () => {
+    setAggLoading(true); setAggMsg("");
+    try {
+      const r = await apiPost("/api/palate/aggregate", {});
+      setAggMsg(`Snapshot created — ${(r as { inserted: number }).inserted} flavor tags indexed.`);
+      void load();
+    } catch (e: unknown) {
+      setAggMsg(e instanceof Error ? e.message : "Aggregation failed");
+    }
+    setAggLoading(false);
+  };
+
+  useEffect(() => { void load(); }, [craftType, region]);
+
+  // Build heatmap matrix: regions × flavor tags
+  const regions    = [...new Set(heatmap.map(r => r.region))].slice(0, 8);
+  const flavorTags = [...new Set(heatmap.map(r => r.flavorTag))].slice(0, 10);
+  const cell = (reg: string, tag: string) =>
+    heatmap.find(r => r.region === reg && r.flavorTag === tag)?.trendScore ?? 0;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+      {/* Controls */}
+      <GlassCard>
+        <Label>Palate Index — B2B Flavor Intelligence</Label>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+          <select value={craftType} onChange={e => setCraftType(e.target.value)}
+            style={{ padding: "8px 12px", background: "rgba(26,26,27,0.04)", border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13, color: C.text, fontFamily: "inherit", outline: "none" }}>
+            {["smoke","pour","brew","vape"].map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
+          </select>
+          <input value={region} onChange={e => setRegion(e.target.value)} placeholder="Region (e.g. US-GA)"
+            style={{ flex: 1, minWidth: 120, padding: "8px 12px", background: "rgba(26,26,27,0.04)", border: `1px solid ${C.border}`, borderRadius: 8, fontSize: 13, color: C.text, fontFamily: "inherit", outline: "none" }} />
+          <button onClick={() => void load()} disabled={loading}
+            style={{ padding: "8px 18px", background: C.purple, border: "none", borderRadius: 8, color: "#fff", fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit", opacity: loading ? 0.7 : 1 }}>
+            {loading ? "LOADING…" : "REFRESH"}
+          </button>
+          <button onClick={() => void aggregate()} disabled={aggLoading}
+            style={{ padding: "8px 18px", background: "rgba(26,26,27,0.06)", border: `1px solid ${C.border}`, borderRadius: 8, color: C.muted, fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", cursor: aggLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
+            {aggLoading ? "INDEXING…" : "RUN SNAPSHOT"}
+          </button>
+        </div>
+        {aggMsg && <div style={{ marginTop: 8, fontSize: 12, color: aggMsg.includes("failed") ? C.red : C.green }}>{aggMsg}</div>}
+      </GlassCard>
+
+      {/* Top Trends */}
+      <GlassCard accent={C.purple}>
+        <Label>Top Trending Flavor Tags · Last 24h</Label>
+        {trends.length === 0 ? (
+          <Empty msg="No trend data yet — run a snapshot or wait for guest swipe events to accumulate." />
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 4 }}>
+            {trends.slice(0, 12).map((t, i) => (
+              <div key={`${t.region}-${t.flavorTag}-${i}`} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ fontSize: 10, color: C.dim, width: 18, textAlign: "right", flexShrink: 0 }}>#{i + 1}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{t.flavorTag}</span>
+                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                      {t.isTrending && (
+                        <span style={{ fontSize: 8, fontWeight: 800, color: C.orange, letterSpacing: "0.12em", padding: "1px 6px", border: `1px solid ${C.orange}55`, borderRadius: 4 }}>TRENDING</span>
+                      )}
+                      <span style={{ fontSize: 11, color: C.muted, fontFamily: "monospace" }}>{t.trendScore.toFixed(1)}</span>
+                    </div>
+                  </div>
+                  <Bar pct={t.trendScore} color={t.isTrending ? C.orange : C.purple} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </GlassCard>
+
+      {/* Regional Heatmap */}
+      {heatmap.length > 0 && (
+        <GlassCard>
+          <Label>Regional Taste Heatmap · {craftType.toUpperCase()}</Label>
+          <div style={{ overflowX: "auto", marginTop: 8 }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10 }}>
+              <thead>
+                <tr>
+                  <th style={{ padding: "4px 8px", textAlign: "left", color: C.dim, fontWeight: 600 }}>REGION</th>
+                  {flavorTags.map(tag => (
+                    <th key={tag} style={{ padding: "4px 6px", color: C.dim, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>
+                      {tag.length > 10 ? tag.slice(0, 10) + "…" : tag}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {regions.map(reg => (
+                  <tr key={reg}>
+                    <td style={{ padding: "5px 8px", color: C.muted, whiteSpace: "nowrap", fontFamily: "monospace" }}>{reg}</td>
+                    {flavorTags.map(tag => {
+                      const score = cell(reg, tag);
+                      const alpha = score > 0 ? Math.max(0.08, score / 100) : 0;
+                      return (
+                        <td key={tag} style={{ padding: "3px 6px", textAlign: "center" }}>
+                          <div style={{
+                            width: 28, height: 20, borderRadius: 4, margin: "0 auto",
+                            background: score > 60 ? `rgba(251,146,60,${alpha})` : `rgba(167,139,250,${alpha})`,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                          }}>
+                            {score > 0 && <span style={{ fontSize: 8, fontWeight: 700, color: score > 60 ? C.orange : C.purple }}>{score.toFixed(0)}</span>}
+                          </div>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </GlassCard>
+      )}
+
+      {/* Nudge Bidding hint */}
+      <GlassCard accent={C.gold}>
+        <Label>◆ Direct Nudge Bidding</Label>
+        <div style={{ fontSize: 12, color: C.muted, lineHeight: 1.6 }}>
+          When <span style={{ color: C.orange }}>TRENDING</span> tags appear above, brands with active placements in the matching craft/region are auto-eligible for the Prestige Nudge slot in TickerTape.
+          Configure bid budgets in <span style={{ color: C.gold }}>Brand Partners → Placement Priority</span>.
+          Highest <code style={{ fontSize: 11 }}>placementPriority</code> wins when multiple brands match a trending region.
+        </div>
+      </GlassCard>
+    </div>
   );
 }
 
@@ -401,6 +563,7 @@ export default function ManufacturerWarRoom() {
             {tab === "sentiment" && <SentimentTab />}
             {tab === "shadow"    && <ShadowTestsTab />}
             {tab === "network"   && <NetworkTab />}
+            {tab === "palate"    && <PalateIndexTab />}
           </motion.div>
         </AnimatePresence>
       </div>
