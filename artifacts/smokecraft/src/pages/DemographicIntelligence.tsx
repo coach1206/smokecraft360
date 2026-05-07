@@ -16,6 +16,7 @@ import { useLocation }                 from "wouter";
 import { motion, AnimatePresence }     from "framer-motion";
 import { CRAFT_MODULES }               from "@/data/craftScenes";
 import TitanEngine, { TitanGuestProfile, SagePayload } from "@/engines/titan_engine";
+import { addXP }                       from "@/lib/xpStore";
 
 // ── Demographic metadata per craft ────────────────────────────────────────────
 
@@ -169,6 +170,9 @@ export default function DemographicIntelligence() {
         await ndef.scan({ signal: ctrl.signal });
         ndef.onreading = (event: { serialNumber: string }) => {
           const serial = event.serialNumber;
+
+          // XP Reward for physical coin interaction
+          addXP(50);
 
           // SAGE WAKE: Force rotation to "Pour Craft" (Index 1) on tap
           setActiveIndex(1);

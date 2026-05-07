@@ -1,0 +1,100 @@
+import React, { useState, useEffect } from 'react';
+
+// WIRING: The Sensory Data Matrix
+const LEAF_KNOWLEDGE = {
+  maduro: { note: 'Earthy/Sweet', intensity: 8, synergy: 'Stout/Bourbon' },
+  habano: { note: 'Spicy/Nutty', intensity: 7, synergy: 'Rye/IPA' },
+  connecticut: { note: 'Creamy/Cedar', intensity: 4, synergy: 'Pilsner/Cognac' }
+};
+
+const CUT_PHYSICS = {
+  straight: { velocity: 'Low', temp: 'Cool', longevity: '+15m' },
+  vcut: { velocity: 'High', temp: 'Warm', longevity: '-5m' },
+  punch: { velocity: 'Intense', temp: 'Hot', longevity: '+20m' }
+};
+
+export default function App() {
+  // WIRING: State Management for the "Game"
+  const [xp, setXp] = useState(0);
+  const [build, setBuild] = useState({ leaf: 'maduro', cut: 'straight', vessel: 'snifter' });
+  const [mentorMsg, setMentorMsg] = useState("Awaiting first selection...");
+
+  // WIRING: Hardware Integration (NFC)
+  useEffect(() => {
+    if ('NDEFReader' in window) {
+      const ndef = new NDEFReader();
+      ndef.scan().then(() => {
+        ndef.onreading = (event) => {
+          // WIRING: When coin taps, verify and boost XP
+          setXp(prev => prev + 25);
+          setMentorMsg("Axiom Coin Verified. Prestige Level Rising.");
+        };
+      });
+    }
+  }, []);
+
+  // WIRING: The "Calculation" Logic for Pairings
+  const runAnalysis = () => {
+    const leafData = LEAF_KNOWLEDGE[build.leaf];
+    const cutData = CUT_PHYSICS[build.cut];
+    setMentorMsg(`Sage Analysis: The ${cutData.temp} draw of the ${build.cut} will amplify the ${leafData.note} notes. Pair with a ${leafData.synergy}.`);
+    setXp(prev => prev + 10);
+  };
+
+  return (
+    <div className="h-screen w-full flex flex-col p-10 select-none overflow-hidden" id="axiom-terminal">
+      <header className="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
+        <div className="gold-text font-bold tracking-[0.4em] uppercase text-xs animate-pulse">Titan Engine Sync: Active</div>
+        <div className="text-right"><p className="text-[10px] text-white/40 uppercase tracking-widest">Prestige Rank: {xp > 100 ? 'Explorer' : 'Initiate'}</p></div>
+      </header>
+
+      <main className="grid grid-cols-2 gap-10 flex-grow">
+        {/* LEAF ATELIER */}
+        <div className="glass-card p-8 flex flex-col justify-between">
+          <div>
+            <h2 className="text-3xl font-light italic gold-text mb-4">Molecular Atelier</h2>
+            <div className="grid grid-cols-3 gap-4 mb-8">
+              {Object.keys(LEAF_KNOWLEDGE).map(l => (
+                <button 
+                  key={l} 
+                  onClick={() => {setBuild({...build, leaf: l}); runAnalysis();}}
+                  className={`p-4 steel-panel text-[10px] uppercase tracking-widest border ${build.leaf === l ? 'border-yellow-500' : 'border-transparent'}`}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-white/60 leading-relaxed italic">"{mentorMsg}"</p>
+          </div>
+        </div>
+
+        {/* CUT & GEOMETRY */}
+        <div className="glass-card p-8 flex flex-col justify-between">
+          <h2 className="text-3xl font-light italic gold-text mb-4">Physics & Prep</h2>
+          <div className="space-y-6">
+            <div className="flex gap-4">
+              {Object.keys(CUT_PHYSICS).map(c => (
+                <button 
+                  key={c} 
+                  onClick={() => {setBuild({...build, cut: c}); runAnalysis();}}
+                  className={`flex-1 py-4 steel-panel text-[10px] uppercase tracking-widest border ${build.cut === c ? 'border-yellow-500' : 'border-transparent'}`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+            <div className="mt-10 p-4 border-l-2 border-emerald-500 bg-emerald-500/5">
+              <p className="text-[10px] uppercase text-emerald-500 font-bold mb-1">Ritual Longevity</p>
+              <p className="text-2xl font-light">{CUT_PHYSICS[build.cut].longevity} Smoke Time</p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer className="mt-10 flex justify-between items-center border-t border-white/5 pt-10">
+        <div className="flex items-center gap-4"><div className="w-5 h-5 bg-yellow-500 rotate-45" /><span className="gold-text font-bold tracking-[0.3em] uppercase">Smokecraft 360</span></div>
+        <button className="bg-yellow-600/10 border border-yellow-500/50 px-10 py-4 gold-text font-bold uppercase tracking-[0.3em] hover:bg-yellow-600/30 transition-all">Order Ritual</button>
+      </footer>
+    </div>
+  );
+}
