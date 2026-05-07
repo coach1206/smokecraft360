@@ -653,7 +653,7 @@ export default function ExperiencePage() {
     <div style={{
       position:   "fixed",
       inset:      0,
-      background: "#F5F2ED",
+      background: "#080604",
       display:    "flex",
       flexDirection: "column",
       overflow:   "hidden",
@@ -664,14 +664,14 @@ export default function ExperiencePage() {
         backgroundImage: `url(${theme.bgImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        opacity: 0.12,
+        opacity: 0.18,
         filter: "blur(4px)",
         transform: "scale(1.06)",
         pointerEvents: "none",
       }} />
       <div style={{
         position: "absolute", inset: 0,
-        background: "linear-gradient(180deg, rgba(245,242,237,0.72) 0%, rgba(245,242,237,0.45) 50%, rgba(245,242,237,0.85) 100%)",
+        background: "linear-gradient(180deg, rgba(8,6,4,0.72) 0%, rgba(8,6,4,0.42) 50%, rgba(8,6,4,0.82) 100%)",
         pointerEvents: "none",
       }} />
       {/* Ambient particles — same visual DNA as CraftHub */}

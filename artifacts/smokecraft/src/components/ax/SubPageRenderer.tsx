@@ -18,7 +18,7 @@ import { motion }           from "framer-motion";
 import {
   Zap, Activity, TrendingUp, Users,
   BarChart3, Smile, Meh, Frown,
-  CheckCircle, ChevronRight, ExternalLink, Settings,
+  CheckCircle, ChevronRight, ExternalLink, Settings, Megaphone, MousePointerClick,
 } from "lucide-react";
 
 // ── Tokens matching HandoffContainer's dark-chrome palette ────────────────────
@@ -306,6 +306,130 @@ function OperationsView() {
   );
 }
 
+// ── Ad Manager quick-view ─────────────────────────────────────────────────────
+
+const DAYONE360_AD = {
+  sponsor:     "DayOne360",
+  campaign:    "Luxury Lounge Takeover",
+  status:      "live",
+  impressions: 4820,
+  clicks:      341,
+  ctr:         "7.1%",
+  budget:      "$2,400",
+  spent:       "$1,847",
+  budgetPct:   77,
+};
+
+function AdManagerView() {
+  const ad = DAYONE360_AD;
+  return (
+    <div style={{ padding: "20px 18px", display: "flex", flexDirection: "column", gap: 16 }}>
+
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <Megaphone size={14} color={T.gold} />
+        <span style={{ fontSize: 13, fontWeight: 700, color: T.gold, letterSpacing: "0.06em" }}>Ad Manager</span>
+        <div style={{
+          marginLeft: "auto", padding: "3px 10px", borderRadius: 99,
+          fontSize: 8, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase",
+          background: "rgba(74,222,128,0.12)", border: "1px solid rgba(74,222,128,0.30)",
+          color: T.green,
+        }}>
+          ● 1 Live
+        </div>
+      </div>
+
+      {/* DayOne360 sponsor card */}
+      <div style={{
+        padding: "16px",
+        background: "rgba(212,139,0,0.05)",
+        border: "1px solid rgba(212,139,0,0.22)",
+        borderRadius: 14,
+      }}>
+        {/* Sponsor header row */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: T.text, letterSpacing: "0.02em" }}>{ad.sponsor}</div>
+            <div style={{ fontSize: 10, color: T.dim, marginTop: 2, letterSpacing: "0.05em" }}>{ad.campaign}</div>
+          </div>
+          <div style={{
+            padding: "3px 10px", borderRadius: 99,
+            fontSize: 8, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase",
+            background: "rgba(74,222,128,0.12)", border: "1px solid rgba(74,222,128,0.30)",
+            color: T.green,
+          }}>
+            ● LIVE
+          </div>
+        </div>
+
+        {/* Primary metrics — Impressions + Link Clicks */}
+        <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
+          <div style={{ flex: 1, padding: "10px 12px", background: "rgba(26,26,27,0.06)", borderRadius: 10 }}>
+            <div style={{ fontSize: 7, textTransform: "uppercase", letterSpacing: "0.18em", color: T.muted, marginBottom: 4 }}>
+              Impressions
+            </div>
+            <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "monospace", color: T.gold }}>
+              {ad.impressions.toLocaleString()}
+            </div>
+          </div>
+          <div style={{ flex: 1, padding: "10px 12px", background: "rgba(26,26,27,0.06)", borderRadius: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 4 }}>
+              <MousePointerClick size={8} color={T.muted} />
+              <span style={{ fontSize: 7, textTransform: "uppercase", letterSpacing: "0.18em", color: T.muted }}>Link Clicks</span>
+            </div>
+            <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "monospace", color: T.blue }}>
+              {ad.clicks}
+            </div>
+          </div>
+        </div>
+
+        {/* CTR + Spend row */}
+        <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
+          <div style={{ flex: 1, padding: "8px 12px", background: "rgba(26,26,27,0.04)", borderRadius: 8, border: `1px solid ${T.border}` }}>
+            <div style={{ fontSize: 7, textTransform: "uppercase", letterSpacing: "0.16em", color: T.muted }}>CTR</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: T.green }}>{ad.ctr}</div>
+          </div>
+          <div style={{ flex: 1, padding: "8px 12px", background: "rgba(26,26,27,0.04)", borderRadius: 8, border: `1px solid ${T.border}` }}>
+            <div style={{ fontSize: 7, textTransform: "uppercase", letterSpacing: "0.16em", color: T.muted }}>Spent</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: T.text }}>
+              {ad.spent}{" "}
+              <span style={{ fontSize: 9, color: T.dim }}>/ {ad.budget}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Budget progress bar */}
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+            <span style={{ fontSize: 8, color: T.dim }}>Budget utilization</span>
+            <span style={{ fontSize: 8, fontWeight: 700, color: T.muted }}>{ad.budgetPct}%</span>
+          </div>
+          <div style={{ height: 4, borderRadius: 99, background: "rgba(26,26,27,0.08)" }}>
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${ad.budgetPct}%` }}
+              transition={{ duration: 0.9, ease: "easeOut" }}
+              style={{
+                height: "100%", borderRadius: 99,
+                background: `linear-gradient(90deg, ${T.gold}55, ${T.gold})`,
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Footer hint */}
+      <div style={{
+        padding: "10px 14px", borderRadius: 10,
+        background: "rgba(26,26,27,0.04)", border: `1px solid ${T.border}`,
+        fontSize: 10, color: T.dim, textAlign: "center",
+      }}>
+        Manage full ad suite in Partnership Module
+      </div>
+    </div>
+  );
+}
+
 // ── Default fallback ──────────────────────────────────────────────────────────
 
 function DefaultView() {
@@ -338,6 +462,8 @@ export function SubPageRenderer({ slug }: { slug: string }) {
       return <CampaignsView />;
     case "operations":
       return <OperationsView />;
+    case "ad manager":
+      return <AdManagerView />;
     default:
       return <DefaultView />;
   }

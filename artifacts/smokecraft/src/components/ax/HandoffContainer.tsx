@@ -34,7 +34,7 @@ import { motion, AnimatePresence }                            from "framer-motio
 import {
   Settings, CreditCard, BookOpen, BarChart3,
   DollarSign, Package, Zap, Activity, Shield,
-  ChevronLeft, Clock, Star,
+  ChevronLeft, Clock, Star, Megaphone,
 } from "lucide-react";
 import { useAxiom360 }   from "@/store/axiom360Store";
 import type { CraftType } from "@/store/axiom360Store";
@@ -212,11 +212,11 @@ const STAFF_NAV = [
   { label: "Inventory",  icon: Package,    route: "/inventory"              },
   { label: "Revenue",    icon: Zap,        route: "/revenue"                },
   { label: "Devices",    icon: Activity,   route: "/devices"                },
-  { label: "Campaigns",  icon: Star,       route: "/campaigns"              },
+  { label: "Ad Manager", icon: Megaphone,  route: ""                        },
 ] as const;
 
 // Tiles whose label opens an inline QuickView instead of navigating away
-const QUICK_VIEW_LABELS = new Set(["Revenue", "Analytics", "Campaigns", "Operations"]);
+const QUICK_VIEW_LABELS = new Set(["Revenue", "Analytics", "Campaigns", "Operations", "Ad Manager"]);
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 

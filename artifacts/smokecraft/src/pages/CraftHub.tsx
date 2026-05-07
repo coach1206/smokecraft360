@@ -26,15 +26,15 @@ import { useGuestProfile }      from "@/contexts/GuestProfileContext";
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
 const C = {
-  bg:       "#06040200",
-  surface:  "rgba(26,26,27,0.04)",
-  border:   "rgba(26,26,27,0.09)",
+  bg:       "#080604",
+  surface:  "rgba(255,255,255,0.04)",
+  border:   "rgba(255,255,255,0.07)",
   gold:     "#D48B00",
   goldDim:  "rgba(212,139,0,0.55)",
-  goldGlow: "rgba(212,139,0,0.12)",
-  text:     "#1A1A1B",
-  muted:    "rgba(26,26,27,0.44)",
-  dim:      "rgba(26,26,27,0.25)",
+  goldGlow: "rgba(212,139,0,0.14)",
+  text:     "#F0E8D4",
+  muted:    "rgba(245,235,215,0.38)",
+  dim:      "rgba(245,235,215,0.22)",
 };
 
 // ── Ambient particle layer ────────────────────────────────────────────────────
@@ -386,7 +386,7 @@ function CraftHubInner() {
   return (
     <div style={{
       height:        "100dvh",
-      background:    "#F5F2ED",
+      background:    C.bg,
       color:         C.text,
       fontFamily:    "var(--app-font-sans, system-ui, sans-serif)",
       display:       "flex",
@@ -423,7 +423,7 @@ function CraftHubInner() {
         alignItems:     "center",
         padding:        "14px 24px",
         borderBottom:   `1px solid ${C.border}`,
-        background:     "rgba(245,242,237,0.85)",
+        background:     "rgba(8,6,4,0.85)",
         backdropFilter: "blur(16px)",
         flexShrink:     0,
         gap:            16,
