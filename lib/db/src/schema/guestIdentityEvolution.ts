@@ -14,7 +14,7 @@
  * socialBehaviorCluster "Solo-Focused" | "Group-Influence" | "Peer-Parallel" | "Observer"
  */
 
-import { pgTable, uuid, text, real, integer, timestamp, index } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, real, integer, timestamp, jsonb, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -24,15 +24,30 @@ export const SOCIAL_CLUSTERS      = ["Solo-Focused", "Group-Influence", "Peer-Pa
 export type PacingPreference  = typeof PACING_PREFERENCES[number];
 export type SocialCluster     = typeof SOCIAL_CLUSTERS[number];
 
+/** Point-in-time snapshot appended to evolutionHistory on each evolve call. */
+export type EvolutionSnapshot = {
+  evolvedAt:             string;   // ISO timestamp
+  explorationIndex:      number;   // 0.0–1.0
+  luxuryThresholdScore:  number;   // 0–100
+  emotionalState:        number;   // 0.0–100.0
+  confidenceContrib:     number;   // raw confidence from this session (0.2 or 0.8)
+  visitCount:            number;
+};
+
 export const guestIdentityEvolutionTable = pgTable(
   "guest_identity_evolution",
   {
-    identityId:            uuid("identity_id").primaryKey().defaultRandom(),
-    pacingPreference:      text("pacing_preference").$type<PacingPreference>(),
-    explorationIndex:      real("exploration_index"),
-    luxuryThresholdScore:  integer("luxury_threshold_score"),
-    socialBehaviorCluster: text("social_behavior_cluster").$type<SocialCluster>(),
-    lastEvolvedAt:         timestamp("last_evolved_at", { withTimezone: true }).notNull().defaultNow(),
+    identityId:                 uuid("identity_id").primaryKey(),
+    pacingPreference:           text("pacing_preference").$type<PacingPreference>(),
+    explorationIndex:           real("exploration_index").default(0.0),
+    luxuryThresholdScore:       integer("luxury_threshold_score").default(50),
+    socialBehaviorCluster:      text("social_behavior_cluster").$type<SocialCluster>(),
+    lastSessionEmotionalState:  real("last_session_emotional_state"),   // 0.0–100.0
+    visitCount:                 integer("visit_count").notNull().default(0),
+    evolutionHistory:           jsonb("evolution_history")
+      .$type<EvolutionSnapshot[]>()
+      .default([]),
+    lastEvolvedAt:              timestamp("last_evolved_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => ({
     lastEvolvedIdx: index("gie_last_evolved_idx").on(t.lastEvolvedAt),
