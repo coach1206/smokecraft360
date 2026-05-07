@@ -67,7 +67,6 @@ const TILES = [
   { id: "staff", title: "Staff", desc: "Team management", color: "#a78bfa", route: "/staff", dataKey: "staff" as const, image: "/images/scenes/social.jpg" },
   { id: "settings", title: "Settings", desc: "System & security", color: "#64748b", route: "/settings", dataKey: "settings" as const, image: "/images/scenes/relaxed.jpg" },
   { id: "designer", title: "Designer", desc: "Signature customizer", color: "#9A7820", route: "/designer", dataKey: "designer" as const, image: "/images/cigar.png" },
-  { id: "competition", title: "Compete", desc: "Craft tournaments", color: "#9A7820", route: "/competition", dataKey: "competition" as const, image: "/images/scenes/reflective.jpg" },
   { id: "craft-hub",   title: "Craft Hub",    desc: "All 360 experiences",  color: "#06b6d4", route: "/craft-hub",   dataKey: "craft-hub" as const,   image: "/images/smoke/smoke_lounge.png" },
   { id: "governance",      title: "Governance",      desc: "RBAC · Kill Switches",  color: "#ef4444", route: "/governance",      dataKey: "governance" as const,      image: "/images/scenes/reflective.jpg" },
   { id: "central-command", title: "Central Command", desc: "Remote ops · OTA · Fleet",       color: "#60a5fa", route: "/central-command", dataKey: "central-command" as const, image: "/images/scenes/bold.jpg" },
@@ -103,7 +102,6 @@ export default function CommandCenter() {
       case "staff": return `${cc.staff.filter(s => s.status === "active").length} active`;
       case "settings": return cc.systemStatus;
       case "designer": return "Band · Box · Preview";
-      case "competition": return "Live now";
       case "craft-hub":  return "4 modules · 18 scenes";
       case "governance":      return "RBAC · Audit · Switches";
       case "central-command": return "OTA · Fleet · Remote";
@@ -211,8 +209,8 @@ export default function CommandCenter() {
               style={{
                 display: "flex", alignItems: "center", gap: 14,
                 padding: "20px 18px",
-                background: "linear-gradient(155deg, rgba(26,26,27,0.09) 0%, rgba(255,255,255,0.028) 100%)",
-                border: `1px solid rgba(26,26,27,0.13)`,
+                background: "rgba(22,16,10,0.11)",
+                border: `1px solid rgba(26,26,27,0.18)`,
                 borderRadius: 18, cursor: "pointer",
                 position: "relative", overflow: "hidden",
                 minHeight: 90, textAlign: "left",

@@ -49,7 +49,6 @@ import AdminTouchscreen     from "@/pages/AdminTouchscreen";
 import VenueTouchscreen     from "@/pages/VenueTouchscreen";
 import VendorTouchscreen    from "@/pages/VendorTouchscreen";
 import DemoExperienceCenter from "@/pages/DemoExperienceCenter";
-import CompetitionModule   from "@/pages/CompetitionModule";
 import CraftHub            from "@/pages/CraftHub";
 import Axiom360            from "@/pages/Axiom360";
 import ExperienceControlPanel from "@/pages/ExperienceControlPanel";
@@ -168,7 +167,6 @@ function Router() {
       <Route path="/touch/venue"       component={VenueTouchscreen}     />
       <Route path="/touch/vendor"      component={VendorTouchscreen}    />
       <Route path="/experience-center" component={DemoExperienceCenter} />
-      <Route path="/competition"        component={CompetitionModule}    />
       <Route path="/craft-hub"          component={CraftHub}             />
       <Route path="/onboard"            component={OnboardWizard}        />
       <Route path="/demo-sim"               component={DemoSimDashboard}     />

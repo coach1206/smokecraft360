@@ -24,7 +24,7 @@ export default function CampaignsModule() {
       <div style={{
         display: "flex", alignItems: "center", gap: 12, padding: "14px 24px",
         borderBottom: "1px solid rgba(212,139,0,0.10)",
-        background: "linear-gradient(180deg, #12100E 0%, #EFEBE0ee 100%)",
+        background: "rgba(16,14,12,0.97)",
         backdropFilter: "blur(16px)", flexShrink: 0,
         boxShadow: "0 1px 0 rgba(212,139,0,0.06), 0 4px 20px rgba(26,26,27,0.06)",
       }}>

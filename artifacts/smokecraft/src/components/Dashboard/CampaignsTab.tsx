@@ -56,6 +56,20 @@ const DEMO_CAMPAIGNS: Campaign[] = [
     notes: "Featured reserve selection — limited run, connoisseur tier only.",
     productCount: 1,
   },
+  {
+    id: "demo-reserve-pairing", name: "Reserve Pairing Night", status: "active", active: true,
+    startDate: "2026-05-01", endDate: "2026-05-31",
+    budgetCents: 80000, impressionGoal: 150,
+    notes: "Curated 5-course smoke & pour tasting. Revenue Brain pairs each course in real-time. Fridays 8 PM — Legend & Master tier only.",
+    productCount: 5,
+  },
+  {
+    id: "demo-legend-flash", name: "Legend Flash Sale", status: "active", active: true,
+    startDate: "2026-05-01", endDate: "2026-05-31",
+    budgetCents: 45000, impressionGoal: 80,
+    notes: "AI-triggered: fires when venue occupancy exceeds 80%. 30% off reserve-shelf selections for 45 min. Legend tier only.",
+    productCount: 4,
+  },
 ];
 
 // ── Main component ─────────────────────────────────────────────────────────────
