@@ -437,6 +437,7 @@ export default function TitanCraftDeck() {
                     style={{
                       flexShrink: 0,
                       width: "clamp(560px, 72vw, 860px)",
+                      height: "100%",
                       scrollSnapAlign: "center",
                     }}
                   >
