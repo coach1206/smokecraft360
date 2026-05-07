@@ -1,0 +1,59 @@
+export default function App() {
+  return (
+    <div className="axiom-theme"> {/* This "Wires" the Dark Mode without breaking the PIN screen */}
+      <div className="h-screen w-full p-10 flex flex-col justify-between relative overflow-hidden">
+        
+        {/* HEADER: High-Contrast Gold */}
+        <header className="flex justify-between items-center border-b border-white/10 pb-8">
+          <div className="flex flex-col">
+            <h1 className="gold-luster-text text-xl tracking-[0.4em] uppercase">Smokecraft 360</h1>
+            <span className="text-[10px] text-white/40 tracking-[0.2em] mt-1 italic">Connoisseur Intelligence Engine</span>
+          </div>
+          <div className="premier-glass px-6 py-2 border-yellow-500/50">
+             <span className="text-yellow-500 text-[10px] font-black tracking-widest uppercase">Master Rank</span>
+          </div>
+        </header>
+
+        {/* MAIN: The Atelier Spotlight */}
+        <main className="flex-grow flex items-center justify-center py-10">
+          <div className="premier-glass w-full max-w-5xl p-12 grid grid-cols-2 gap-12 relative overflow-hidden">
+            
+            {/* AMBIENT LIGHT CATCHER */}
+            <div className="absolute -top-24 -left-24 w-64 h-64 bg-yellow-500/10 rounded-full blur-[100px]"></div>
+
+            <section className="flex flex-col justify-center border-r border-white/5 pr-12 z-10">
+              <h2 className="gold-luster-text italic text-4xl mb-6">Leaf Atelier</h2>
+              <p className="text-sm text-white/70 leading-relaxed mb-10 font-light">
+                Chemistry of the leaf. Selecting a Maduro wrapper will intensify the nutty synergy of your blend.
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <button className="bg-[#1a1a1c] border border-white/10 py-4 text-[10px] uppercase font-bold tracking-widest hover:border-yellow-500 transition-all">Maduro</button>
+                <button className="bg-[#1a1a1c] border border-white/10 py-4 text-[10px] uppercase font-bold tracking-widest hover:border-yellow-500 transition-all">Connecticut</button>
+              </div>
+            </section>
+
+            <section className="flex flex-col justify-center z-10">
+              <h2 className="text-white/90 italic text-4xl mb-6">Vessel & Pour</h2>
+              <p className="text-sm text-white/60 leading-relaxed mb-10 font-light italic">
+                "Sage: A Glencairn vessel will amplify the peated notes of this pairing."
+              </p>
+               <button className="bg-yellow-600/20 border border-yellow-500/60 py-5 gold-luster-text text-[11px] uppercase tracking-[0.4em] shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+                 Commence Ritual
+               </button>
+            </section>
+
+          </div>
+        </main>
+
+        <footer className="flex justify-between items-center border-t border-white/10 pt-8">
+          <div className="flex items-center gap-4">
+             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+             <span className="text-[9px] tracking-[0.5em] text-white/30 uppercase font-bold">Titan // Inventory Sync</span>
+          </div>
+          <span className="text-[10px] text-yellow-500/40 uppercase tracking-widest">Axiom OS Premier // v3.0</span>
+        </footer>
+
+      </div>
+    </div>
+  );
+}

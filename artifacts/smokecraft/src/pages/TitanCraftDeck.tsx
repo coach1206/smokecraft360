@@ -266,11 +266,11 @@ export default function TitanCraftDeck() {
                   animate={{ opacity: [0.7, 1, 0.7] }}
                   transition={{ duration: 1.8, repeat: Infinity }}
                 />
-                <span className="gold-text text-xs uppercase font-bold tracking-[0.5em]">
+                <span className="gold-luster-text text-xl tracking-[0.4em] uppercase">
                   Titan Engine // Active
                 </span>
               </div>
-              <p className="text-[10px] text-white/30 uppercase tracking-widest">Axiom OS Premier Terminal</p>
+              <p className="text-[10px] text-white/40 tracking-[0.2em] mt-1 italic">Connoisseur Intelligence Engine</p>
             </div>
 
             {/* Centre — view toggle */}
@@ -291,13 +291,15 @@ export default function TitanCraftDeck() {
               ))}
             </div>
 
-            {/* Right — rank + XP bar */}
-            <div className="text-right">
-              <p className="text-[9px] font-bold uppercase tracking-widest mb-2"
-                style={{ color: level.color }}>
-                {level.badge} {level.name} Rank
-              </p>
-              <div className="h-1 w-32 bg-white/10 rounded-full overflow-hidden ml-auto">
+            {/* Right — rank badge + XP bar */}
+            <div className="text-right flex flex-col items-end gap-2">
+              <div className="premier-glass px-6 py-2 border border-yellow-500/50 rounded-lg">
+                <span className="text-[10px] font-black tracking-widest uppercase"
+                  style={{ color: level.color }}>
+                  {level.badge} {level.name} Rank
+                </span>
+              </div>
+              <div className="h-1 w-32 bg-white/10 rounded-full overflow-hidden">
                 <motion.div
                   className="h-full rounded-full"
                   style={{ background: level.color }}
@@ -305,7 +307,7 @@ export default function TitanCraftDeck() {
                   transition={{ duration: 0.8, ease: "easeOut" }}
                 />
               </div>
-              <p className="text-[8px] text-white/25 mt-1">{xp} XP</p>
+              <p className="text-[8px] text-white/25">{xp} XP</p>
             </div>
           </header>
 
@@ -345,120 +347,147 @@ export default function TitanCraftDeck() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.28 }}
-                className="grid grid-cols-2 gap-10 flex-grow px-10 py-6 min-h-0"
+                className="flex-grow px-10 py-6 min-h-0 flex items-center"
               >
-                {/* Molecular Atelier — leaf selector + Sage commentary */}
-                <div className="glass-card p-8 flex flex-col justify-between relative overflow-hidden min-h-0">
-                  <div className="absolute top-0 left-0 w-full h-[2px] bg-yellow-500/50" />
-                  <div>
-                    <h2 className="text-3xl font-light italic gold-text mb-4">Molecular Atelier</h2>
-                    <div className="grid grid-cols-3 gap-3 mb-6">
-                      {(Object.keys(LEAF_KNOWLEDGE) as LeafKey[]).map(leaf => (
-                        <motion.button
-                          key={leaf}
-                          whileTap={{ scale: 0.96 }}
-                          onClick={() => {
-                            const next = { ...build, leaf };
-                            setBuild(next);
-                            runAnalysis(leaf, build.cut);
-                          }}
-                          className="p-4 steel-panel text-[10px] uppercase tracking-widest"
-                          style={{
-                            border: build.leaf === leaf
-                              ? "1px solid rgba(212,175,55,0.70)"
-                              : "1px solid transparent",
-                            color: build.leaf === leaf ? "var(--gold)" : "rgba(255,255,255,0.55)",
-                            cursor: "pointer",
-                            borderRadius: 8,
-                          }}
-                        >
-                          {leaf}
-                        </motion.button>
-                      ))}
-                    </div>
-                    {/* Intensity bar */}
-                    <div className="mb-4">
-                      <div className="flex justify-between text-[9px] text-white/30 uppercase mb-1">
-                        <span>Intensity</span>
-                        <span>{LEAF_KNOWLEDGE[build.leaf].intensity}/10</span>
-                      </div>
-                      <div className="h-0.5 bg-white/10 rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full rounded-full"
-                          style={{ background: "var(--gold)" }}
-                          animate={{ width: `${LEAF_KNOWLEDGE[build.leaf].intensity * 10}%` }}
-                          transition={{ duration: 0.5, ease: "easeOut" }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  {/* Sage mentor message */}
-                  <p className="text-xs text-white/55 leading-relaxed italic border-l-2 border-yellow-500/40 pl-3">
-                    "{mentorMsg}"
-                  </p>
-                </div>
+                {/* Single premier-glass wrapper — both sections inside */}
+                <div className="premier-glass w-full p-12 grid grid-cols-2 gap-12 relative overflow-hidden rounded-2xl">
 
-                {/* Physics & Prep — cut selector + longevity */}
-                <div className="glass-card p-8 flex flex-col justify-between min-h-0">
-                  <div>
-                    <h2 className="text-3xl font-light italic gold-text mb-4">Physics &amp; Prep</h2>
-                    <div className="flex gap-3">
-                      {(Object.keys(CUT_PHYSICS) as CutKey[]).map(cut => (
-                        <motion.button
-                          key={cut}
-                          whileTap={{ scale: 0.96 }}
-                          onClick={() => {
-                            setBuild(b => ({ ...b, cut }));
-                            runAnalysis(build.leaf, cut);
-                          }}
-                          className="flex-1 py-4 steel-panel text-[10px] uppercase tracking-widest"
-                          style={{
-                            border: build.cut === cut
-                              ? "1px solid rgba(212,175,55,0.70)"
-                              : "1px solid transparent",
-                            color: build.cut === cut ? "var(--gold)" : "rgba(255,255,255,0.55)",
-                            cursor: "pointer",
-                            borderRadius: 8,
-                          }}
-                        >
-                          {CUT_PHYSICS[cut].label}
-                        </motion.button>
-                      ))}
+                  {/* Ambient light catcher */}
+                  <div className="absolute -top-24 -left-24 w-64 h-64 bg-yellow-500/10 rounded-full blur-[100px] pointer-events-none" />
+
+                  {/* LEFT — Molecular Atelier */}
+                  <section className="flex flex-col justify-between border-r border-white/5 pr-12 z-10">
+                    <div>
+                      <h2 className="gold-luster-text italic text-4xl mb-6">Leaf Atelier</h2>
+                      <p className="text-sm text-white/70 leading-relaxed mb-6 font-light">
+                        {LEAF_KNOWLEDGE[build.leaf].note} — {LEAF_KNOWLEDGE[build.leaf].synergy} synergy.
+                        Selecting a Maduro wrapper will intensify the nutty character of your blend.
+                      </p>
+                      <div className="grid grid-cols-3 gap-4 mb-6">
+                        {(Object.keys(LEAF_KNOWLEDGE) as LeafKey[]).map(leaf => (
+                          <motion.button
+                            key={leaf}
+                            whileTap={{ scale: 0.96 }}
+                            onClick={() => {
+                              const next = { ...build, leaf };
+                              setBuild(next);
+                              runAnalysis(leaf, build.cut);
+                            }}
+                            className="bg-[#1a1a1c] py-4 text-[10px] uppercase font-bold tracking-widest transition-all"
+                            style={{
+                              border: build.leaf === leaf
+                                ? "1px solid rgba(212,175,55,0.70)"
+                                : "1px solid rgba(255,255,255,0.10)",
+                              color: build.leaf === leaf ? "var(--gold)" : "rgba(255,255,255,0.55)",
+                              cursor: "pointer",
+                              borderRadius: 6,
+                            }}
+                          >
+                            {leaf}
+                          </motion.button>
+                        ))}
+                      </div>
+                      {/* Intensity bar */}
+                      <div>
+                        <div className="flex justify-between text-[9px] text-white/30 uppercase mb-1">
+                          <span>Intensity</span>
+                          <span>{LEAF_KNOWLEDGE[build.leaf].intensity}/10</span>
+                        </div>
+                        <div className="h-0.5 bg-white/10 rounded-full overflow-hidden">
+                          <motion.div
+                            className="h-full rounded-full"
+                            style={{ background: "var(--gold)" }}
+                            animate={{ width: `${LEAF_KNOWLEDGE[build.leaf].intensity * 10}%` }}
+                            transition={{ duration: 0.5, ease: "easeOut" }}
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  {/* Ritual longevity */}
-                  <div className="mt-6 p-4 border-l-2 border-emerald-500 bg-emerald-500/5 rounded-r-lg">
-                    <p className="text-[10px] uppercase text-emerald-500 font-bold mb-1 tracking-widest">
-                      Ritual Longevity
-                    </p>
-                    <motion.p
-                      key={build.cut}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-2xl font-light text-white"
+                  </section>
+
+                  {/* RIGHT — Physics & Prep */}
+                  <section className="flex flex-col justify-between z-10">
+                    <div>
+                      <h2 className="text-white/90 italic text-4xl mb-6">Vessel &amp; Prep</h2>
+                      {/* Sage mentor message */}
+                      <p className="text-sm text-white/60 leading-relaxed mb-8 font-light italic border-l-2 border-yellow-500/40 pl-4">
+                        "{mentorMsg}"
+                      </p>
+                      {/* Cut selector */}
+                      <div className="flex gap-3 mb-8">
+                        {(Object.keys(CUT_PHYSICS) as CutKey[]).map(cut => (
+                          <motion.button
+                            key={cut}
+                            whileTap={{ scale: 0.96 }}
+                            onClick={() => {
+                              setBuild(b => ({ ...b, cut }));
+                              runAnalysis(build.leaf, cut);
+                            }}
+                            className="flex-1 py-4 bg-[#1a1a1c] text-[10px] uppercase font-bold tracking-widest transition-all"
+                            style={{
+                              border: build.cut === cut
+                                ? "1px solid rgba(212,175,55,0.70)"
+                                : "1px solid rgba(255,255,255,0.10)",
+                              color: build.cut === cut ? "var(--gold)" : "rgba(255,255,255,0.55)",
+                              cursor: "pointer",
+                              borderRadius: 6,
+                            }}
+                          >
+                            {CUT_PHYSICS[cut].label}
+                          </motion.button>
+                        ))}
+                      </div>
+                      {/* Ritual longevity */}
+                      <div className="p-4 border-l-2 border-emerald-500 bg-emerald-500/5 rounded-r-lg">
+                        <p className="text-[10px] uppercase text-emerald-500 font-bold mb-1 tracking-widest">
+                          Ritual Longevity
+                        </p>
+                        <motion.p
+                          key={build.cut}
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="text-2xl font-light text-white"
+                        >
+                          {CUT_PHYSICS[build.cut].longevity} Smoke Time
+                        </motion.p>
+                        <p className="text-[9px] text-white/30 mt-1 uppercase tracking-widest">
+                          {CUT_PHYSICS[build.cut].velocity} draw · {CUT_PHYSICS[build.cut].temp} temp
+                        </p>
+                      </div>
+                    </div>
+                    {/* Commence Ritual CTA */}
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => navigate("/craft-hub")}
+                      className="mt-6 bg-yellow-600/20 border border-yellow-500/60 py-5 gold-luster-text text-[11px] uppercase tracking-[0.4em]"
+                      style={{
+                        boxShadow: "0 0 20px rgba(212,175,55,0.20)",
+                        borderRadius: 8,
+                        cursor: "pointer",
+                      }}
                     >
-                      {CUT_PHYSICS[build.cut].longevity} Smoke Time
-                    </motion.p>
-                    <p className="text-[9px] text-white/30 mt-1 uppercase tracking-widest">
-                      {CUT_PHYSICS[build.cut].velocity} draw · {CUT_PHYSICS[build.cut].temp} temp
-                    </p>
-                  </div>
+                      Commence Ritual
+                    </motion.button>
+                  </section>
+
                 </div>
               </motion.main>
             )}
           </AnimatePresence>
 
           {/* Footer */}
-          <footer className="px-10 pb-8 pt-6 grid grid-cols-3 items-center border-t border-white/5 flex-shrink-0">
-            {/* Smokecraft 360 brand */}
+          <footer className="px-10 pb-8 pt-6 grid grid-cols-3 items-center border-t border-white/10 flex-shrink-0">
+            {/* Left — inventory sync status */}
             <div className="flex items-center gap-4">
               <motion.div
-                className="w-5 h-5 bg-yellow-500 flex-shrink-0"
-                style={{ rotate: "45deg" }}
-                animate={{ boxShadow: ["0 0 6px rgba(212,175,55,0.4)", "0 0 15px rgba(212,175,55,0.8)", "0 0 6px rgba(212,175,55,0.4)"] }}
-                transition={{ duration: 2.5, repeat: Infinity }}
+                className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0"
+                animate={{ opacity: [0.6, 1, 0.6], scale: [1, 1.4, 1] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
               />
-              <span className="gold-text font-bold tracking-[0.3em] uppercase text-sm">Smokecraft 360</span>
+              <span className="text-[9px] tracking-[0.5em] text-white/30 uppercase font-bold">
+                Titan // Inventory Sync
+              </span>
             </div>
 
             {/* Centre — lounge vitality */}
@@ -466,17 +495,11 @@ export default function TitanCraftDeck() {
               Lounge Vitality: Nominal
             </div>
 
-            {/* Order CTA */}
+            {/* Right — version */}
             <div className="flex justify-end">
-              <motion.button
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => navigate("/craft-hub")}
-                className="steel-panel px-8 py-3 rounded-full text-[10px] gold-text font-bold uppercase tracking-widest"
-                style={{ border: "1px solid rgba(212,175,55,0.25)", cursor: "pointer" }}
-              >
-                Order Ritual Pairing
-              </motion.button>
+              <span className="text-[10px] text-yellow-500/40 uppercase tracking-widest">
+                Axiom OS Premier // v3.0
+              </span>
             </div>
           </footer>
         </motion.div>
