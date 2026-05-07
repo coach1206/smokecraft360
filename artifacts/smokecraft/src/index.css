@@ -824,8 +824,8 @@ html, body, #root {
     height: 100vh;
     width: 100vw;
     background:
-      radial-gradient(circle at 50% 0%, rgba(212,175,55,0.10) 0%, transparent 70%),
-      #080809;
+      radial-gradient(circle at 50% 0%, rgba(212,175,55,0.15) 0%, rgba(5,5,5,1) 45%),
+      #050505;
     display: flex;
     flex-direction: column;
     cursor: crosshair;

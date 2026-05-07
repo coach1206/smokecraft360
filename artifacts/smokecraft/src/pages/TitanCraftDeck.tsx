@@ -52,6 +52,51 @@ function getVenueId(): string | null {
   return null;
 }
 
+// ── Vitality widget ───────────────────────────────────────────────────────────
+
+function VitalityWidget() {
+  const [time, setTime] = useState("");
+  useEffect(() => {
+    const update = () =>
+      setTime(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 12,
+      background: "rgba(0,0,0,.65)",
+      border: "1px solid rgba(212,175,55,.25)",
+      padding: "10px 18px", borderRadius: 12,
+      backdropFilter: "blur(20px)",
+      boxShadow: "0 0 20px rgba(212,175,55,.12)",
+    }}>
+      <motion.div
+        style={{
+          width: 12, height: 12, borderRadius: "50%",
+          background: "#00ff84",
+          boxShadow: "0 0 12px rgba(0,255,132,.9), 0 0 24px rgba(0,255,132,.5)",
+          flexShrink: 0,
+        }}
+        animate={{ opacity: [1, 0.55, 1] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <div>
+        <div style={{ color: "#d4af37", fontSize: ".7rem", letterSpacing: ".2em", textTransform: "uppercase" }}>
+          Vitality
+        </div>
+        <div style={{ color: "#fff", fontSize: ".95rem", marginTop: 2 }}>
+          Synchronizing
+        </div>
+      </div>
+      <div style={{ marginLeft: 16, color: "rgba(255,255,255,.55)", letterSpacing: ".12em", fontSize: ".85rem" }}>
+        {time}
+      </div>
+    </div>
+  );
+}
+
 // ── Craft card ────────────────────────────────────────────────────────────────
 
 interface CardProps {
@@ -69,32 +114,52 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
   const cta     = CRAFT_CTAS[id]   ?? "Enter";
   const isSmoke = id === "smoke";
 
+  const goldLuster: React.CSSProperties = {
+    background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    filter: "drop-shadow(0 0 12px rgba(212,175,55,.5))",
+  };
+
   return (
     <motion.div
-      className="console-slab cursor-pointer h-full group"
-      style={{ border: `1px solid ${isSmoke ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.05)"}` }}
+      className="cursor-pointer h-full group"
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        borderRadius: 28,
+        backdropFilter: "blur(40px)",
+        WebkitBackdropFilter: "blur(40px)",
+        borderTop: "2px solid rgba(255,255,255,.3)",
+        borderLeft: "1px solid rgba(255,255,255,.15)",
+        borderRight: "1px solid rgba(212,175,55,.15)",
+        borderBottom: "1px solid rgba(212,175,55,.15)",
+        background: "linear-gradient(180deg, rgba(25,25,25,.55) 0%, rgba(5,5,5,.82) 100%)",
+        display: "flex",
+        alignItems: "flex-end",
+      }}
       animate={{
         scale:   active ? 1.02 : 1,
-        opacity: active ? 1 : 0.68,
+        opacity: active ? 1 : 0.72,
         boxShadow: active
-          ? `0 0 0 1px ${color}80, 0 0 36px ${color}40, 0 40px 80px rgba(0,0,0,0.90)`
-          : "0 40px 80px rgba(0,0,0,0.90)",
+          ? `0 0 60px rgba(0,0,0,.8), 0 0 0 1px ${color}80, 0 0 36px ${color}40, inset 0 1px 0 rgba(255,255,255,.06)`
+          : "0 0 60px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.06)",
       }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => navigate(route)}
     >
-      {/* Full-bleed hero image with hover zoom */}
+      {/* Full-bleed hero image */}
       <img
         src={img}
         alt={title}
         className={`hero-img transition-transform duration-1000 group-hover:scale-110 ${isSmoke ? "opacity-60" : "opacity-50"}`}
       />
 
-      {/* Bottom-up gradient */}
+      {/* Bottom-up gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent z-10" />
 
-      {/* Animated top accent */}
+      {/* Animated top accent line */}
       <motion.div
         style={{ background: color }}
         className="absolute top-0 left-0 right-0 h-[2px] z-20"
@@ -103,31 +168,49 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
       />
 
       {/* Bottom content */}
-      <div className="absolute bottom-0 left-0 p-12 w-full z-20">
-        <h2 className={`${isSmoke ? "gold-engraved" : "text-white/90"} italic text-4xl mb-4`}
-          style={isSmoke ? {} : { color }}>
+      <div className="absolute bottom-0 left-0 w-full z-20" style={{ padding: 42 }}>
+        <h2 style={{
+          fontSize: "clamp(1.5rem, 3.5vw, 3.5rem)",
+          fontStyle: "italic",
+          letterSpacing: ".08em",
+          marginBottom: 14,
+          lineHeight: 1,
+          textTransform: "uppercase",
+          fontWeight: 500,
+          whiteSpace: "nowrap",
+          ...(isSmoke ? goldLuster : { color }),
+        }}>
           {title}
         </h2>
-        <p className="text-white/60 text-xs tracking-widest uppercase mb-8">{sub}</p>
-        {isSmoke ? (
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="bg-black/80 border border-yellow-500/50 px-12 py-5 text-xs uppercase tracking-[0.4em] hover:bg-yellow-600/20 transition-all cursor-pointer"
-            onClick={e => { e.stopPropagation(); navigate(route); }}
-          >
-            <span className="gold-engraved">{cta}</span>
-          </motion.button>
-        ) : (
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="bg-white/5 border border-white/20 backdrop-blur-md px-10 py-4 text-[11px] text-white font-black uppercase tracking-[0.4em] hover:bg-white/10 transition-all cursor-pointer"
-            onClick={e => { e.stopPropagation(); navigate(route); }}
-          >
-            {cta}
-          </motion.button>
-        )}
+        <p style={{
+          color: "rgba(255,255,255,.82)",
+          fontSize: "1rem",
+          marginBottom: 28,
+          letterSpacing: ".15em",
+          textTransform: "uppercase",
+        }}>
+          {sub}
+        </p>
+        <motion.button
+          whileHover={{ scale: 1.03, filter: "brightness(1.15)" }}
+          whileTap={{ scale: 0.97 }}
+          style={{
+            background: "linear-gradient(180deg, #1b1b1b 0%, #050505 100%)",
+            border: "1px solid rgba(212,175,55,.7)",
+            color: "#f7e8c5",
+            padding: "16px 34px",
+            borderRadius: 14,
+            cursor: "pointer",
+            letterSpacing: ".2em",
+            textTransform: "uppercase",
+            fontWeight: 600,
+            fontSize: ".75rem",
+            boxShadow: "0 6px 18px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08)",
+          }}
+          onClick={e => { e.stopPropagation(); navigate(route); }}
+        >
+          {cta}
+        </motion.button>
       </div>
     </motion.div>
   );
@@ -263,11 +346,32 @@ export default function TitanCraftDeck() {
             style={{ background: "radial-gradient(circle at 50% 0%, rgba(212,175,55,0.15) 0%, transparent 70%)", zIndex: 0 }} />
 
           {/* Header */}
-          <header className="relative z-10 flex justify-between items-end px-10 pt-8 pb-6 border-b border-white/10 flex-shrink-0">
-            {/* Left — engine status + title */}
+          <header className="relative z-10 flex justify-between items-center px-10 border-b border-white/10 flex-shrink-0"
+            style={{ height: 90 }}>
+            {/* Left — logo + tagline */}
             <div>
-              <h1 className="gold-engraved text-3xl uppercase tracking-[0.5em]">Axiom 360</h1>
-              <p className="text-[10px] text-white/40 tracking-[0.3em] mt-2 font-bold uppercase">Sovereign Terminal // v3.0</p>
+              <div style={{
+                background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                filter: "drop-shadow(0 0 12px rgba(212,175,55,.5))",
+                fontSize: "2.4rem",
+                letterSpacing: ".4em",
+                fontStyle: "italic",
+                textTransform: "uppercase",
+                lineHeight: 1,
+              }}>
+                Axiom 360
+              </div>
+              <div style={{
+                color: "rgba(255,255,255,.45)",
+                marginTop: 8,
+                letterSpacing: ".25em",
+                textTransform: "uppercase",
+                fontSize: ".75rem",
+              }}>
+                Industrial Hospitality Intelligence
+              </div>
             </div>
 
             {/* Centre — view toggle */}
@@ -288,13 +392,8 @@ export default function TitanCraftDeck() {
               ))}
             </div>
 
-            {/* Right — rank badge */}
-            <div className="console-slab px-8 py-3 border border-yellow-500/40 rounded-lg flex items-center justify-center" style={{ height: "auto" }}>
-              <span className="text-xs font-black uppercase tracking-tighter animate-pulse"
-                style={{ color: level.color }}>
-                {level.badge} {level.name} · {pct}%
-              </span>
-            </div>
+            {/* Right — vitality widget */}
+            <VitalityWidget />
           </header>
 
           {/* Main — grid or atelier */}
@@ -461,18 +560,41 @@ export default function TitanCraftDeck() {
           </AnimatePresence>
 
           {/* Footer */}
-          <footer className="px-10 pb-8 pt-6 flex justify-between items-center border-t border-white/10 flex-shrink-0">
-            {/* Left — diamond indicator + telemetry */}
-            <div className="flex items-center gap-6">
-              <div className="w-5 h-5 bg-yellow-500 rotate-45 shadow-[0_0_25px_rgba(212,175,55,0.8)]" />
-              <span className="text-xs text-white/40 tracking-[0.5em] font-bold uppercase">
+          <footer className="relative z-10 flex justify-between items-center border-t border-white/10 flex-shrink-0"
+            style={{
+              height: 80,
+              padding: "0 36px",
+              background: "linear-gradient(180deg, rgba(10,10,10,.7) 0%, rgba(0,0,0,.95) 100%)",
+            }}>
+            {/* Left — diamond + telemetry */}
+            <div className="flex items-center gap-4">
+              <div style={{
+                width: 18, height: 18,
+                transform: "rotate(45deg)",
+                background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
+                boxShadow: "0 0 12px rgba(212,175,55,.9), 0 0 28px rgba(212,175,55,.55)",
+                flexShrink: 0,
+              }} />
+              <span style={{
+                background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontSize: "1rem",
+                letterSpacing: ".22em",
+                textTransform: "uppercase",
+              }}>
                 Titan Engine // Live
               </span>
             </div>
 
-            {/* Right — version etch */}
-            <span className="gold-engraved italic text-xs uppercase opacity-50">
-              Axiom OS Premier
+            {/* Right — status */}
+            <span style={{
+              color: "rgba(255,255,255,.4)",
+              letterSpacing: ".18em",
+              textTransform: "uppercase",
+              fontSize: ".8rem",
+            }}>
+              Sovereign Console Active
             </span>
           </footer>
         </motion.div>
