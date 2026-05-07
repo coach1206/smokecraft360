@@ -16,11 +16,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence }          from "framer-motion";
 import { useLocation, useParams }           from "wouter";
+import QRCode                              from "qrcode";
 import {
   ArrowLeft, Star, Gift, Mail, Smartphone, Printer,
   QrCode, CheckCircle, Flame, Coffee, Beer, Wind,
-  ChevronRight, Sparkles, Heart,
+  ChevronRight, Sparkles, Heart, Smartphone as Phone,
 } from "lucide-react";
+import { useAxiomStore } from "@/store/axiomStore";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
@@ -366,6 +368,8 @@ export default function AxiomReceipt() {
   const [error,   setError]   = useState<string | null>(null);
   const [showDelivery, setShowDelivery] = useState(false);
   const [generating,   setGenerating]   = useState(false);
+  const [mobileQrUrl,  setMobileQrUrl]  = useState<string>("");
+  const { rank, xp } = useAxiomStore();
 
   const load = useCallback(async () => {
     if (!tabId) return;
@@ -398,6 +402,16 @@ export default function AxiomReceipt() {
   }, [tabId]);
 
   useEffect(() => { void load(); }, [load]);
+
+  useEffect(() => {
+    if (!payload) return;
+    const guestName = encodeURIComponent(payload.guest.name ?? "Guest");
+    const hubUrl = `${window.location.origin}/mobile-hub?rank=${encodeURIComponent(rank)}&xp=${xp}&name=${guestName}`;
+    QRCode.toDataURL(hubUrl, {
+      width: 180, margin: 1,
+      color: { dark: "C9A84C", light: "06040a" },
+    }).then(setMobileQrUrl).catch(() => {});
+  }, [payload, rank, xp]);
 
   if (loading || generating) {
     return (
@@ -683,6 +697,73 @@ export default function AxiomReceipt() {
                 {label}
               </button>
             ))}
+          </div>
+        </RevealBlock>
+
+        {/* ── Continue Experience — QR portal to MobileHub ── */}
+        <RevealBlock delay={0.95}>
+          <div style={{
+            margin: "0 0 20px",
+            borderRadius: 18,
+            overflow: "hidden",
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(201,168,76,0.18)",
+            boxShadow: "0 0 32px rgba(201,168,76,0.08), inset 0 1px 0 rgba(255,255,255,0.04)",
+          }}>
+            {/* Header band */}
+            <div style={{
+              padding: "14px 20px",
+              background: "linear-gradient(135deg, rgba(201,168,76,0.10), rgba(201,168,76,0.04))",
+              borderBottom: "1px solid rgba(201,168,76,0.12)",
+              display: "flex", alignItems: "center", gap: 10,
+            }}>
+              <div style={{ width: 30, height: 30, borderRadius: 9, background: "rgba(201,168,76,0.12)", border: "1px solid rgba(201,168,76,0.22)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Phone size={14} color={T.gold} />
+              </div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: T.gold, letterSpacing: "0.06em" }}>Continue Your Experience</div>
+                <div style={{ fontSize: 10, color: T.textMuted, marginTop: 1 }}>Shop · Book · Explore — anytime, anywhere</div>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div style={{ padding: "18px 20px", display: "flex", gap: 18, alignItems: "center" }}>
+              {/* QR code */}
+              <div style={{ flexShrink: 0 }}>
+                {mobileQrUrl ? (
+                  <div style={{ padding: 8, borderRadius: 10, background: "#06040a", border: "1px solid rgba(201,168,76,0.20)" }}>
+                    <img src={mobileQrUrl} alt="Mobile Hub QR" style={{ width: 100, height: 100, display: "block", borderRadius: 4 }} />
+                  </div>
+                ) : (
+                  <div style={{ width: 116, height: 116, borderRadius: 10, background: "rgba(201,168,76,0.04)", border: "1px solid rgba(201,168,76,0.14)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <motion.div style={{ width: 20, height: 20, borderRadius: "50%", border: "2px solid rgba(201,168,76,0.2)", borderTopColor: T.gold }}
+                      animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
+                  </div>
+                )}
+              </div>
+
+              {/* Copy */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, color: T.text, lineHeight: 1.65, marginBottom: 12 }}>
+                  Scan to open your <span style={{ color: T.gold, fontWeight: 600 }}>Axiom Mobile Hub</span> — your prestige rank and XP are encoded in the link.
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {[
+                    "Shop cigars & spirits for home delivery",
+                    "Book tomorrow's session — early-bird rates",
+                    "Explore DayOne360 travel & lifestyle offers",
+                  ].map((item, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                      <div style={{ width: 4, height: 4, borderRadius: "50%", background: T.gold, marginTop: 5, flexShrink: 0 }} />
+                      <span style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.5 }}>{item}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: 14, fontSize: 9, color: T.textMuted, opacity: 0.6, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  Rank · {rank} &nbsp;·&nbsp; {xp.toLocaleString()} XP synced
+                </div>
+              </div>
+            </div>
           </div>
         </RevealBlock>
 

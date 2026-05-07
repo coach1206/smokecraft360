@@ -86,6 +86,7 @@ import AxiomPay                       from "@/pages/AxiomPay";
 import LaunchReadiness                from "@/pages/LaunchReadiness";
 import Legal                          from "@/pages/Legal";
 import AxiomReceipt                   from "@/pages/AxiomReceipt";
+import MobileHub                      from "@/pages/MobileHub";
 import FinanceReconciliation          from "@/pages/FinanceReconciliation";
 import TrainingHub                    from "@/pages/training/TrainingHub";
 import TrainingEmployee               from "@/pages/training/TrainingEmployee";
@@ -130,6 +131,7 @@ function Router() {
       <Route path="/launch-readiness"        component={LaunchReadiness}          />
       <Route path="/legal"                   component={Legal}                    />
       <Route path="/receipt/:tabId"              component={AxiomReceipt}              />
+      <Route path="/mobile-hub"                  component={MobileHub}                 />
       <Route path="/finance-reconciliation"    component={FinanceReconciliation}     />
       <Route path="/training"                  component={TrainingHub}               />
       <Route path="/training/employee"         component={TrainingEmployee}          />
