@@ -70,28 +70,28 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
 
   return (
     <motion.div
-      className="slab-3d relative overflow-hidden cursor-pointer h-full"
+      className="console-slab relative overflow-hidden cursor-pointer h-full group"
       style={{ border: `1px solid ${isSmoke ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.05)"}` }}
       animate={{
         scale:   active ? 1.02 : 1,
         opacity: active ? 1 : 0.68,
         boxShadow: active
-          ? `0 0 0 1px ${color}80, 0 0 36px ${color}40, inset 0 0 80px rgba(0,0,0,0.40), 0 50px 100px rgba(0,0,0,0.90)`
-          : "inset 0 0 80px rgba(0,0,0,0.40), 0 50px 100px rgba(0,0,0,0.90)",
+          ? `0 0 0 1px ${color}80, 0 0 36px ${color}40, 0 40px 80px rgba(0,0,0,0.90)`
+          : "0 40px 80px rgba(0,0,0,0.90)",
       }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => navigate(route)}
     >
-      {/* Full-bleed hero image */}
+      {/* Full-bleed hero image with hover zoom */}
       <img
         src={img}
         alt={title}
-        className={`absolute inset-0 w-full h-full object-cover ${isSmoke ? "brightness-125 contrast-110 opacity-70" : "brightness-110 opacity-60"}`}
+        className={`absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 ${isSmoke ? "brightness-125 contrast-125 opacity-60" : "brightness-110 opacity-50"}`}
       />
 
       {/* Bottom-up gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
       {/* Animated top accent */}
       <motion.div
@@ -102,29 +102,34 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
       />
 
       {/* Bottom content */}
-      <div className="absolute bottom-0 left-0 p-10 w-full z-10">
-        <h2 className={`${isSmoke ? "gold-etch" : "text-white/90"} italic text-4xl mb-4`}
+      <div className="absolute bottom-0 left-0 p-12 w-full z-10">
+        <h2 className={`${isSmoke ? "gold-engraved" : "text-white/90"} italic text-4xl mb-4`}
           style={isSmoke ? {} : { color }}>
-          {title === "Smokecraft 360" ? "Smokecraft 360" : title.replace("360", "").trim() + " 360"}
+          {title}
         </h2>
         <div
-          className="h-[2px] w-24 mb-6"
-          style={{ background: isSmoke ? "#ca8a04" : `${color}60` }}
+          className="h-[2px] w-20 mb-8"
+          style={{ background: isSmoke ? "#ca8a04" : `rgba(255,255,255,0.20)` }}
         />
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className="machined-btn px-12 py-5 text-[11px] uppercase tracking-[0.5em]"
-          style={isSmoke ? {} : {
-            border: `1px solid ${color}60`,
-            color,
-            background: "rgba(255,255,255,0.05)",
-            backdropFilter: "blur(12px)",
-          }}
-          onClick={e => { e.stopPropagation(); navigate(route); }}
-        >
-          {isSmoke ? <span className="gold-etch">{cta}</span> : cta}
-        </motion.button>
+        {isSmoke ? (
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="bg-black/40 border border-yellow-500/50 px-12 py-5 text-[11px] uppercase tracking-[0.5em] hover:bg-yellow-600/20 transition-all cursor-pointer"
+            onClick={e => { e.stopPropagation(); navigate(route); }}
+          >
+            <span className="gold-engraved">{cta}</span>
+          </motion.button>
+        ) : (
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="bg-white/5 border border-white/20 backdrop-blur-md px-12 py-5 text-[11px] text-white font-black uppercase tracking-[0.5em] hover:bg-white/10 transition-all cursor-pointer"
+            onClick={e => { e.stopPropagation(); navigate(route); }}
+          >
+            {cta}
+          </motion.button>
+        )}
       </div>
     </motion.div>
   );
@@ -255,15 +260,16 @@ export default function TitanCraftDeck() {
             overflow: "hidden",
           }}
         >
+          {/* Ambient amber vignette — top-center radial glow */}
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ background: "radial-gradient(circle at 50% 0%, rgba(212,175,55,0.08) 0%, transparent 70%)", zIndex: 0 }} />
+
           {/* Header */}
-          <header className="flex justify-between items-end px-10 pt-8 pb-6 border-b border-white/5 flex-shrink-0">
+          <header className="relative z-10 flex justify-between items-end px-10 pt-8 pb-6 border-b border-white/10 flex-shrink-0">
             {/* Left — engine status + title */}
-            <div className="flex flex-col">
-              <h1 className="gold-etch text-2xl uppercase">Axiom 360</h1>
-              <div className="flex items-center gap-3 mt-2">
-                <div className="h-[1px] w-12 bg-yellow-500/50" />
-                <span className="text-[10px] text-white/30 tracking-[0.4em] font-bold uppercase">Sovereign OS Terminal</span>
-              </div>
+            <div>
+              <h1 className="gold-engraved text-2xl uppercase">Axiom 360</h1>
+              <p className="text-[10px] text-white/30 tracking-[0.5em] mt-2 font-bold uppercase">Sovereign Terminal // Vault v3.0</p>
             </div>
 
             {/* Centre — view toggle */}
@@ -284,15 +290,12 @@ export default function TitanCraftDeck() {
               ))}
             </div>
 
-            {/* Right — rank badge + XP bar */}
-            <div className="flex flex-col items-end gap-2">
-              <div className="slab-3d px-6 py-2 border border-yellow-500/30 rounded-lg">
-                <span className="text-[10px] font-black tracking-widest uppercase italic"
-                  style={{ color: level.color }}>
-                  {level.badge} {level.name} · {pct}% XP
-                </span>
-              </div>
-              <p className="text-[8px] text-white/25">{xp} XP</p>
+            {/* Right — rank badge */}
+            <div className="console-slab px-6 py-2 border border-yellow-500/30 rounded-lg">
+              <span className="text-yellow-600 text-[10px] font-black uppercase tracking-widest italic"
+                style={{ color: level.color }}>
+                {level.badge} {level.name} · {pct}%
+              </span>
             </div>
           </header>
 
@@ -460,16 +463,19 @@ export default function TitanCraftDeck() {
           </AnimatePresence>
 
           {/* Footer */}
-          <footer className="px-10 pb-8 pt-6 flex justify-between items-center border-t border-white/5 flex-shrink-0">
-            {/* Left — industrial telemetry */}
-            <div className="flex flex-col gap-1">
-              <span className="text-[9px] text-white/30 tracking-widest uppercase font-bold">Titan // Inventory Sync</span>
-              <span className="text-[10px] text-emerald-500 font-bold">● ALL SYSTEMS NOMINAL</span>
+          <footer className="px-10 pb-8 pt-6 flex justify-between items-center border-t border-white/10 flex-shrink-0">
+            {/* Left — diamond indicator + telemetry */}
+            <div className="flex items-center gap-6">
+              <div className="w-4 h-4 bg-yellow-500 rotate-45"
+                style={{ boxShadow: "0 0 15px rgba(212,175,55,0.60)" }} />
+              <span className="text-[10px] text-white/40 tracking-[0.4em] font-bold uppercase italic">
+                Titan Engine // Synchronized
+              </span>
             </div>
 
             {/* Right — version etch */}
-            <span className="gold-etch italic text-[11px] opacity-60 tracking-widest">
-              Axiom OS Premier // v3.0
+            <span className="gold-engraved italic text-[10px] opacity-40">
+              Axiom OS Premier
             </span>
           </footer>
         </motion.div>
