@@ -1,89 +1,98 @@
 import React from 'react';
 
-const AxiomSovereign = () => {
-  const terminalStyle = {
-    height: '100vh',
-    width: '100vw',
-    backgroundColor: '#050505',
-    background: 'radial-gradient(circle at 50% 0%, #1c1c1e 0%, #050505 100%)',
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '60px',
-    boxSizing: 'border-box',
-    overflow: 'hidden',
-    position: 'relative',
-    color: '#fff'
-  };
+/**
+ * AXIOM 360 - SOVEREIGN CONSOLE REBUILD
+ * FORCES TALL VERTICAL GEOMETRY | FORCES GOLD LUSTER
+ */
 
-  const goldText = {
-    background: 'linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    fontWeight: '900',
-    letterSpacing: '0.5em',
-    filter: 'drop-shadow(0 0 20px rgba(212, 175, 55, 0.7))',
-    textTransform: 'uppercase'
-  };
-
-  const verticalSlab = {
-    flex: '1',
-    height: '75vh', // FORCING TALL GEOMETRY
-    borderRadius: '50px',
-    position: 'relative',
-    overflow: 'hidden',
-    borderTop: '3px solid rgba(255, 255, 255, 0.4)', // Rim Lighting
-    borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
-    boxShadow: '0 60px 120px rgba(0,0,0,1)',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    padding: '50px',
-    background: '#121214'
+const AxiomTerminal = () => {
+  const styles = {
+    container: {
+      height: '100vh',
+      width: '100vw',
+      backgroundColor: '#050505',
+      background: 'radial-gradient(circle at 50% 0%, #1c1c1e 0%, #050505 100%)',
+      color: '#fff',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '40px',
+      overflow: 'hidden',
+      position: 'relative',
+    },
+    gold: {
+      background: 'linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      fontWeight: '900',
+      letterSpacing: '0.4em',
+      filter: 'drop-shadow(0 0 15px rgba(212, 175, 55, 0.6))',
+      textTransform: 'uppercase',
+    },
+    // FORCING THE TALL SLAB LOOK
+    slab: {
+      flex: '1',
+      height: '75vh', 
+      borderRadius: '40px',
+      position: 'relative',
+      overflow: 'hidden',
+      borderTop: '2px solid rgba(255, 255, 255, 0.3)', 
+      borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
+      boxShadow: '0 50px 100px rgba(0,0,0,1)',
+      background: '#121214',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+      padding: '50px',
+    },
+    heroImage: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+      zIndex: 0,
+      filter: 'brightness(1.4) contrast(1.1)', // Lifts the dark veil
+    }
   };
 
   return (
-    <div style={terminalStyle}>
-      {/* HEADER */}
-      <header style={{ zIndex: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid rgba(255,255,255,0.05)', paddingBottom: '40px' }}>
+    <div style={styles.container}>
+      {/* STATIONARY HEADER */}
+      <header style={{ zIndex: 10, display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '30px' }}>
         <div>
-          <h1 style={{ ...goldText, fontSize: '40px', margin: 0 }}>Axiom 360</h1>
-          <p style={{ fontSize: '12px', letterSpacing: '0.7em', opacity: 0.5, marginTop: '12px' }}>SOVEREIGN TERMINAL // v4.0</p>
+          <h1 style={{ ...styles.gold, fontSize: '36px', margin: 0 }}>Axiom 360</h1>
+          <p style={{ fontSize: '12px', letterSpacing: '0.6em', opacity: 0.4, marginTop: '8px' }}>Sovereign Terminal // v4.0</p>
         </div>
-        <div style={{ padding: '15px 40px', borderRadius: '20px', border: '2px solid #d4af37', background: 'rgba(212, 175, 55, 0.05)' }}>
-          <span style={{ ...goldText, fontSize: '14px' }}>STATUS: MASTER RANK</span>
+        <div style={{ background: 'rgba(212, 175, 55, 0.05)', padding: '12px 40px', borderRadius: '20px', border: '2px solid #d4af37' }}>
+          <span style={{ ...styles.gold, fontSize: '14px' }}>MASTER RANK</span>
         </div>
       </header>
 
-      {/* MAIN GALLERY - TWO TALL SLABS */}
-      <main style={{ display: 'flex', gap: '60px', flex: '1', marginTop: '60px', zIndex: 5 }}>
+      {/* MAIN: TALL ATELIER SLABS */}
+      <main style={{ display: 'flex', gap: '50px', flex: '1', marginTop: '50px', zIndex: 5 }}>
 
         {/* SMOKECRAFT SLAB */}
-        <div style={verticalSlab}>
-          <img 
-            src="https://images.unsplash.com/photo-1527030280862-64139fba04ca?w=1600" 
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, filter: 'brightness(1.5) contrast(1.1)' }} 
-          />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,1) 0%, transparent 50%)', zIndex: 1 }}></div>
+        <div style={styles.slab}>
+          <img src="https://images.unsplash.com/photo-1527030280862-64139fba04ca?w=1600" style={styles.heroImage} alt="Cigar" />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #000 0%, transparent 60%)', zIndex: 1 }}></div>
           <div style={{ zIndex: 2 }}>
-            <h2 style={{ ...goldText, fontSize: '65px', fontStyle: 'italic', marginBottom: '15px' }}>Smokecraft</h2>
-            <p style={{ fontSize: '14px', opacity: 0.7, letterSpacing: '0.4em', marginBottom: '50px' }}>MOLECULAR LEAF LABORATORY</p>
-            <button style={{ background: 'rgba(0,0,0,0.9)', border: '2px solid #d4af37', padding: '25px 60px', color: '#d4af37', fontWeight: '900', letterSpacing: '0.6em', fontSize: '12px', cursor: 'pointer' }}>
+            <h2 style={{ ...styles.gold, fontSize: '60px', fontStyle: 'italic', marginBottom: '15px' }}>Smokecraft</h2>
+            <p style={{ fontSize: '14px', opacity: 0.7, letterSpacing: '0.4em', marginBottom: '40px' }}>MOLECULAR LEAF ATELIER</p>
+            <button style={{ background: 'rgba(0,0,0,0.9)', border: '2px solid #d4af37', padding: '20px 60px', color: '#d4af37', fontWeight: '900', letterSpacing: '0.6em', cursor: 'pointer' }}>
               INITIATE RITUAL
             </button>
           </div>
         </div>
 
         {/* POURCRAFT SLAB */}
-        <div style={verticalSlab}>
-          <img 
-            src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=1600" 
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, filter: 'brightness(1.2) opacity(0.8)' }} 
-          />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,1) 0%, transparent 50%)', zIndex: 1 }}></div>
+        <div style={styles.slab}>
+          <img src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=1600" style={styles.heroImage} alt="Pour" />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #000 0%, transparent 60%)', zIndex: 1 }}></div>
           <div style={{ zIndex: 2 }}>
-            <h2 style={{ color: '#fff', fontSize: '65px', fontStyle: 'italic', marginBottom: '15px', fontWeight: '100' }}>Pourcraft</h2>
-            <p style={{ fontSize: '14px', opacity: 0.7, letterSpacing: '0.4em', marginBottom: '50px' }}>SPIRIT SYNCHRONIZATION</p>
-            <button style={{ background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(255,255,255,0.3)', padding: '25px 60px', color: '#fff', fontWeight: '900', letterSpacing: '0.6em', fontSize: '12px', cursor: 'pointer' }}>
+            <h2 style={{ color: '#fff', fontSize: '60px', fontStyle: 'italic', marginBottom: '15px', fontWeight: '100' }}>Pourcraft</h2>
+            <p style={{ fontSize: '14px', opacity: 0.7, letterSpacing: '0.4em', marginBottom: '40px' }}>SPIRIT SYNCHRONIZATION</p>
+            <button style={{ background: 'rgba(255,255,255,0.05)', border: '2px solid rgba(255,255,255,0.3)', padding: '20px 60px', color: '#fff', fontWeight: '900', letterSpacing: '0.6em', cursor: 'pointer' }}>
               ANALYZE POUR
             </button>
           </div>
@@ -92,15 +101,15 @@ const AxiomSovereign = () => {
       </main>
 
       {/* FOOTER */}
-      <footer style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '2px solid rgba(255,255,255,0.05)', paddingTop: '40px' }}>
+      <footer style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '40px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
-          <div style={{ width: '22px', height: '22px', background: '#d4af37', transform: 'rotate(45deg)', boxShadow: '0 0 35px #d4af37' }}></div>
-          <span style={{ fontSize: '13px', letterSpacing: '0.6em', opacity: 0.5 }}>TITAN ENGINE // LIVE</span>
+          <div style={{ width: '20px', height: '20px', background: '#d4af37', transform: 'rotate(45deg)', boxShadow: '0 0 30px #d4af37' }}></div>
+          <span style={{ fontSize: '12px', letterSpacing: '0.5em', opacity: 0.5 }}>TITAN ENGINE // LIVE</span>
         </div>
-        <span style={{ ...goldText, fontSize: '12px', opacity: 0.6 }}>AXIOM SOVEREIGN OS</span>
+        <span style={{ ...styles.gold, fontSize: '12px', opacity: 0.6 }}>AXIOM SOVEREIGN OS</span>
       </footer>
     </div>
   );
 };
 
-export default AxiomSovereign;
+export default AxiomTerminal;
