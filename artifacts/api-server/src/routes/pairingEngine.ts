@@ -148,17 +148,24 @@ router.get("/suggest", async (req, res) => {
   const topMatch   = scored[0];
   const draftLabel = tagList.slice(0, 3).join(" · ") || "craft session";
 
-  // Build BOH_PULSE notification
+  // Dominant wrapper tag — primary flavor descriptor from the draft
+  const wrapperTag = tagList[0] ?? "craft";
+  const wrapperDesc = wrapperTag.charAt(0).toUpperCase() + wrapperTag.slice(1);
+  const recommendedItem = topMatch?.name ?? "House Special Spirit";
+
+  // Build REVENUE_OPPORTUNITY BOH_PULSE notification (AxiomBridge spec format)
   const pulse = {
-    table:         query.tableId ?? "–",
+    type:           "REVENUE_OPPORTUNITY",
+    table:          query.tableId ?? "–",
     guestName,
     guestLevel,
-    draftProfile:  draftLabel,
-    topMatch:      topMatch?.name ?? "House Selection",
-    masteryBoost:  15,
-    timestamp:     new Date().toISOString(),
-    message:       `${guestName} (${guestLevel}) finalised a ${draftLabel} draft.`,
-    action:        `Recommend ${topMatch?.name ?? "House Selection"} for a +15 Mastery Boost.`,
+    draftProfile:   draftLabel,
+    topMatch:       recommendedItem,
+    masteryBoost:   15,
+    timestamp:      new Date().toISOString(),
+    message:        `${guestName} (${guestLevel}) finalised a ${draftLabel} draft.`,
+    action:         `Recommend ${recommendedItem} for a +15 Mastery Boost.`,
+    recommendation: `Based on their ${wrapperDesc} draft, offer the ${recommendedItem} for a +15 Mastery Boost.`,
   };
 
   // Emit BOH_PULSE to staff dashboard via Socket.io

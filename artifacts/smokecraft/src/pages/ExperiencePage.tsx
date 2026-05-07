@@ -82,6 +82,38 @@ interface ExperienceItem {
   tags:        string[];
   intensity:   number;
   baseScore:   number;
+  boostLevel?: number;   // > 0 = distributor shadow product → +10 Mastery bonus
+}
+
+// ── Conflict detection — AxiomBridge spec ─────────────────────────────────────
+// Pairs of tags that create a flavor conflict (e.g. Spicy Maduro + delicate gin)
+
+const CONFLICT_PAIRS: [string, string][] = [
+  ["spicy",   "delicate"], ["spicy",   "mild"],    ["spicy",  "floral"],
+  ["bold",    "delicate"], ["bold",    "light"],    ["bold",   "mild"],
+  ["heavy",   "floral"],   ["heavy",   "light"],    ["heavy",  "crisp"],
+  ["earthy",  "floral"],   ["earthy",  "fruity"],   ["earthy", "crisp"],
+  ["peat",    "floral"],   ["peat",    "fruity"],   ["peat",   "sweet"],
+  ["smoky",   "floral"],   ["smoky",   "fruity"],   ["smoky",  "light"],
+  ["dense cloud", "light"],["bitter",  "sweet"],    ["rich",   "light"],
+];
+
+const TIER_PENALTIES: Record<string, number> = {
+  explorer:     2,
+  apprentice:   5,
+  craftsman:    12,
+  sommelier:    25,
+  grand_master: 25,
+};
+
+function detectTagConflict(newTags: string[], existingTags: string[]): boolean {
+  const existing = existingTags.map(t => t.toLowerCase());
+  for (const tag of newTags.map(t => t.toLowerCase())) {
+    for (const [a, b] of CONFLICT_PAIRS) {
+      if ((tag === a && existing.includes(b)) || (tag === b && existing.includes(a))) return true;
+    }
+  }
+  return false;
 }
 
 // ── API helpers ───────────────────────────────────────────────────────────────
@@ -500,6 +532,8 @@ export default function ExperiencePage() {
   const [addedTags,   setAddedTags]   = useState<string[]>([]);
   const [addedCount,  setAddedCount]  = useState(0);
   const [sessionScore, setSessionScore] = useState(0);
+  const [conflictFlash, setConflictFlash] = useState<{ penalty: number } | null>(null);
+  const conflictTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [commentary,  setCommentary]  = useState<{ line: string; whyNote: string | null } | null>(null);
   const commentaryTimer               = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -583,7 +617,22 @@ export default function ExperiencePage() {
         commentaryTimer.current = setTimeout(() => setCommentary(null), 3600);
         setAddedTags(prev => [...prev, ...newTags]);
         setAddedCount(nextAddCount);
-        setSessionScore(prev => Math.min(100, Math.round(prev + (card.baseScore ?? 50) / 10)));
+
+        // ── Neural Bridge: conflict detection + tier penalty + sponsored bonus ──
+        const hasConflict  = addedTags.length > 0 && detectTagConflict(newTags, addedTags);
+        const isSponsored  = (card.boostLevel ?? 0) > 0;
+        const tier         = guestProfile?.masteryTier ?? "explorer";
+        const penalty      = hasConflict ? (TIER_PENALTIES[tier] ?? 2) : 0;
+        const bonus        = isSponsored ? 10 : 0;
+        const baseGain     = Math.round((card.baseScore ?? 50) / 10);
+
+        setSessionScore(prev => Math.min(100, Math.max(0, prev + baseGain - penalty + bonus)));
+
+        if (hasConflict && penalty > 0) {
+          setConflictFlash({ penalty });
+          if (conflictTimer.current !== undefined) clearTimeout(conflictTimer.current);
+          conflictTimer.current = setTimeout(() => setConflictFlash(null), 2200);
+        }
       } else {
         // Fallback if no mentor (anonymous)
         setFeedback({ text: "Added to your taste profile", type: "add" });
@@ -856,6 +905,51 @@ export default function ExperiencePage() {
             whyNote={commentary.whyNote}
             accentColor={theme.accent}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Conflict penalty flash — fires when flavor logic clashes */}
+      <AnimatePresence>
+        {conflictFlash && (
+          <motion.div
+            key="conflict"
+            initial={{ opacity: 0, y: -14, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0,   scale: 1 }}
+            exit={{    opacity: 0, y: -8,  scale: 0.94, transition: { duration: 0.2 } }}
+            transition={{ type: "spring", stiffness: 360, damping: 26 }}
+            style={{
+              position:   "fixed",
+              top:        72,
+              left:       "50%",
+              transform:  "translateX(-50%)",
+              zIndex:     70,
+              background: "rgba(239,68,68,0.12)",
+              border:     "1px solid rgba(239,68,68,0.40)",
+              borderRadius: 12,
+              padding:    "9px 20px",
+              display:    "flex",
+              alignItems: "center",
+              gap:        8,
+              backdropFilter: "blur(14px)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <motion.span
+              animate={{ opacity: [1, 0.4, 1] }}
+              transition={{ duration: 0.6, repeat: 2 }}
+              style={{ fontSize: 13, color: "#ef4444" }}
+            >
+              ⚠
+            </motion.span>
+            <span style={{
+              fontSize:  12,
+              fontWeight: 700,
+              color:     "#ef4444",
+              letterSpacing: "0.06em",
+            }}>
+              Flavor Conflict — −{conflictFlash.penalty} Mastery
+            </span>
+          </motion.div>
         )}
       </AnimatePresence>
 
