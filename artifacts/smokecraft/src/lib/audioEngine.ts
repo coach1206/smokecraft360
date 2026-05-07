@@ -39,6 +39,47 @@ function getAudioContext(): AudioContext | null {
 }
 
 /**
+ * Mechanical switch — double-pop noise burst + pitched square tone (800→400 Hz).
+ * More pronounced than playClick. Use on mode transitions and POS activation.
+ */
+export function playSwitch(): void {
+  const ac = getAudioContext();
+  if (!ac) return;
+  const t = ac.currentTime;
+
+  // Two sharp noise pops, 25 ms apart — tactile double-click feel
+  for (let burst = 0; burst < 2; burst++) {
+    const delay = burst * 0.025;
+    const samples = Math.floor(ac.sampleRate * 0.018);
+    const buf = ac.createBuffer(1, samples, ac.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < samples; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (samples * 0.10));
+    }
+    const src = ac.createBufferSource();
+    src.buffer = buf;
+    const gain = ac.createGain();
+    gain.gain.setValueAtTime(0.30, t + delay);
+    src.connect(gain);
+    gain.connect(ac.destination);
+    src.start(t + delay);
+  }
+
+  // Short pitched component — square 800 Hz → 400 Hz over 65 ms
+  const osc = ac.createOscillator();
+  osc.type = "square";
+  osc.frequency.setValueAtTime(800, t);
+  osc.frequency.exponentialRampToValueAtTime(400, t + 0.065);
+  const g = ac.createGain();
+  g.gain.setValueAtTime(0.055, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.065);
+  osc.connect(g);
+  g.connect(ac.destination);
+  osc.start(t);
+  osc.stop(t + 0.07);
+}
+
+/**
  * Mechanical click — 40 ms white-noise burst with exponential decay.
  * Use on craft card taps and button presses.
  */

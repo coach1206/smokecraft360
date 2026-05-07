@@ -48,7 +48,7 @@ import {
   RANK_CONFIG,
 } from "@/store/prestigeStore";
 import {
-  playClick, playClink,
+  playClick, playClink, playSwitch,
   setAudioEnabled, getAudioEnabled,
 } from "@/lib/audioEngine";
 import { vibrate, HAPTIC }  from "@/lib/haptics";
@@ -789,6 +789,33 @@ function AudioToggle() {
 
 // ── Staff dashboard panel ─────────────────────────────────────────────────────
 
+// ── Pulse Ticker messages ────────────────────────────────────────────────────
+const PULSE_MSGS = [
+  { text: "AI ENGINE: ACTIVE" },
+  { text: "REVENUE BRAIN: OPTIMIZING" },
+  { text: "LIVE MARKET RATES" },
+];
+
+// ── Staff Inventory snapshot (real: GET /api/inventory) ────────────────────
+const STAFF_INVENTORY = [
+  { cat: "Cigars", items: [
+    { name: "Rocky Patel Vintage 1992", qty: 14, max: 20 },
+    { name: "Oliva Serie V Melanio",     qty:  6, max: 20 },
+    { name: "Montecristo No. 2",         qty:  3, max: 15 },
+    { name: "Arturo Fuente OpusX",       qty:  0, max: 10 },
+    { name: "Cohiba Behike BHK 52",      qty:  9, max: 12 },
+  ]},
+  { cat: "Spirits", items: [
+    { name: "Macallan 18 Sherry Oak",    qty:  3, max: 8  },
+    { name: "Pappy Van Winkle 15yr",     qty:  1, max: 4  },
+    { name: "Goose Island Bourbon Co.",  qty:  8, max: 12 },
+    { name: "Blantons Gold",             qty:  5, max: 8  },
+    { name: "Clase Azul Reposado",       qty:  2, max: 6  },
+  ]},
+];
+
+const LIFT_HOURS = [28, 34, 41, 29, 55, 63, 48, 72];
+
 function StaffPanel({
   currentCraft,
   lastHandoffAt,
@@ -801,560 +828,391 @@ function StaffPanel({
   const [, navigate] = useLocation();
   const craft = CRAFTS.find((c) => c.id === currentCraft);
 
-  const [resetPending, setResetPending] = useState(false);
-  const [activeSlug,   setActiveSlug]   = useState<string | null>(null);
-
-  const {
-    occupancy,
-    isDynamicActive,
-    isMember,
-    totalLift,
-    updateOccupancy,
-    toggleDynamic,
-    resetSession,
-  } = useAxiomStore();
-
-  const occupancyColor =
-    occupancy > 80 ? "#f87171" : occupancy < 25 ? "#D48B00" : "#4ade80";
-
-  // Occupancy arc dial parameters
-  const R = 30; const CIRC = 2 * Math.PI * R;
-  const arcFilled = CIRC * (occupancy / 100) * (240 / 360);
-
-  // ── Founder's Command View ──────────────────────────────────────────────────
   const [founderVisible, setFounderVisible] = useState(false);
+  const [activeSlug, setActiveSlug]         = useState<string | null>(null);
   const founderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function startFounderPress() {
-    founderTimerRef.current = setTimeout(() => {
-      setFounderVisible(true);
-    }, 2000);
+    founderTimerRef.current = setTimeout(() => setFounderVisible(true), 2000);
   }
-
   function clearFounderPress() {
-    if (founderTimerRef.current) {
-      clearTimeout(founderTimerRef.current);
-      founderTimerRef.current = null;
-    }
+    if (founderTimerRef.current) { clearTimeout(founderTimerRef.current); founderTimerRef.current = null; }
   }
 
-  // Member conversion potential scales with occupancy
-  const memberConversionPotential = Math.round(
-    (occupancy / 100) * (isDynamicActive ? 64 : 38)
-  );
+  const {
+    occupancy, isDynamicActive, isMember,
+    totalLift, updateOccupancy, toggleDynamic, resetSession,
+  } = useAxiomStore();
 
-  const SENTIMENT = [
-    { emoji: "😊", label: "Satisfied",    pct: 68, color: "#4ade80" },
-    { emoji: "😐", label: "Neutral",      pct: 22, color: "#D48B00" },
-    { emoji: "😞", label: "Disappointed", pct: 10, color: "#f87171" },
-  ];
+  const occupancyColor = occupancy > 80 ? "#b91c1c" : occupancy < 25 ? "#D48B00" : "#166534";
+  const surgeActive    = occupancy > 80 && isDynamicActive;
+  const maxLift        = Math.max(...LIFT_HOURS);
 
   return (
     <motion.div
-      initial={{ x: "100%" }}
-      animate={{ x: 0 }}
-      exit={{ x: "100%" }}
+      initial={{ x: "100%", filter: "blur(12px)" }}
+      animate={{ x: 0,      filter: "blur(0px)"  }}
+      exit={{    x: "100%", filter: "blur(12px)"  }}
       transition={{ type: "spring", stiffness: 290, damping: 30 }}
       className="fixed inset-0 z-[100] flex flex-col overflow-hidden"
-      style={{
-        background: "linear-gradient(160deg, #2A2A2A 0%, #F5F2ED 100%)",
-        borderLeft: "1px solid rgba(26,26,27,0.09)",
-        color: "#1A1A1B",
-        fontFamily: "'Inter', system-ui, sans-serif",
-      }}
+      style={{ background: "#F5F2ED", color: "#1A1A1B", fontFamily: "'Inter', system-ui, sans-serif" }}
     >
-      {/* Chrome sheen sweep on entry — simulates sliding metal */}
+      {/* Lens-flash sheen sweep on entry */}
       <motion.div
-        initial={{ x: "-120%" }}
-        animate={{ x: "220%" }}
-        transition={{ duration: 0.72, ease: "easeOut", delay: 0.28 }}
+        initial={{ x: "-120%", opacity: 1 }}
+        animate={{ x: "220%",  opacity: 0 }}
+        transition={{ duration: 0.60, ease: "easeOut", delay: 0.15 }}
         className="absolute inset-y-0 w-1/2 pointer-events-none z-10"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent 0%, rgba(26,26,27,0.09) 50%, transparent 100%)",
-        }}
+        style={{ background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.65) 50%, transparent 100%)" }}
       />
 
-      {/* Brushed graphite texture */}
-      <div
-        className="absolute inset-0 pointer-events-none brushed-graphite"
-        style={{ opacity: 0.6, zIndex: 0 }}
-      />
-
-      {/* Header */}
-      <div
-        className="relative z-10 flex-shrink-0 px-7 pt-7 pb-5"
-        style={{ borderBottom: "1px solid rgba(26,26,27,0.09)", background: "rgba(26,26,27,0.05)" }}
-      >
-        <div className="flex items-center justify-between mb-3">
-          <div
-            className="flex items-center gap-2 uppercase tracking-[0.35em]"
-            style={{ fontSize: 8, color: "rgba(26,26,27,0.38)" }}
-          >
-            <Shield size={9} color="rgba(212,139,0,0.5)" />
-            Staff Override Active
-          </div>
-          <LangToggle />
+      {/* ── POS Header bar ──────────────────────────────────────────────────── */}
+      <div style={{
+        flexShrink: 0, height: 56, display: "flex", alignItems: "center",
+        padding: "0 24px", gap: 14, background: "#1A1A1B",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <motion.div
+            style={{ width: 7, height: 7, borderRadius: "50%", background: "#FFB347" }}
+            animate={{ boxShadow: ["0 0 4px #FFB347", "0 0 14px #FFB347", "0 0 4px #FFB347"] }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <span style={{
+            fontFamily: "'Courier New', monospace", fontSize: 9, fontWeight: 700,
+            letterSpacing: "0.30em", color: "#FFB347",
+            textShadow: "0 0 8px #FFB347, 0 0 20px rgba(255,179,71,0.35)",
+          }}>AXIOM OS · STAFF POS</span>
         </div>
-        <div
-          className="font-bold leading-tight"
-          onPointerDown={startFounderPress}
-          onPointerUp={clearFounderPress}
-          onPointerLeave={clearFounderPress}
-          onPointerCancel={clearFounderPress}
-          title="Hold 2 s for Founder access"
-          style={{
-            fontFamily: "'Cormorant Garamond', Georgia, serif",
-            fontSize: "clamp(24px, 3.5vw, 34px)",
-            color: "#D48B00",
-            letterSpacing: "0.05em",
-            cursor: "default",
-            filter: "drop-shadow(0 0 6px rgba(212,139,0,0.28)) drop-shadow(0 0 2px rgba(212,139,0,0.14))",
-          }}
-        >
-          Staff Dashboard
-        </div>
-        <div className="flex flex-wrap gap-2 mt-4">
-          {craft && (
-            <span
-              className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase"
-              style={{
-                background: `${craft.color}18`,
-                border: `1px solid ${craft.color}40`,
-                color: craft.color,
-              }}
-            >
-              {craft.label} — Patron Was Here
-            </span>
-          )}
-          {lastHandoffAt && (
-            <span
-              className="px-3 py-1 rounded-full text-[10px] flex items-center gap-1"
-              style={{
-                background: "rgba(212,139,0,0.10)",
-                border: "1px solid rgba(212,139,0,0.3)",
-                color: "rgba(212,139,0,0.55)",
-              }}
-            >
-              <Clock size={9} />
-              {new Date(lastHandoffAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* ── Revenue Intelligence Panel ── */}
-      <div
-        className="relative z-10 flex-shrink-0 px-6 py-4"
-        style={{ borderBottom: "1px solid rgba(26,26,27,0.09)", background: "rgba(26,26,27,0.03)" }}
-      >
-        <div className="flex items-center justify-between mb-3">
-          <span style={{ fontSize: 7.5, color: "rgba(26,26,27,0.35)", letterSpacing: "0.32em", textTransform: "uppercase" }}>
-            Revenue Intelligence
+        {craft && (
+          <span style={{ fontFamily: "'Courier New', monospace", fontSize: 8, letterSpacing: "0.14em", color: "rgba(240,232,212,0.35)" }}>
+            LAST: {craft.label.toUpperCase()}
           </span>
-          {/* Master toggle */}
-          <button
-            onClick={toggleDynamic}
-            style={{
-              display: "flex", alignItems: "center", gap: 6,
-              fontSize: 7.5, fontWeight: 700, letterSpacing: "0.16em",
-              textTransform: "uppercase", cursor: "pointer", outline: "none",
-              background: isDynamicActive ? "rgba(212,139,0,0.14)" : "rgba(26,26,27,0.07)",
-              border: `1px solid ${isDynamicActive ? "rgba(212,139,0,0.45)" : "rgba(26,26,27,0.12)"}`,
-              color: isDynamicActive ? "#D48B00" : "rgba(26,26,27,0.30)",
-              padding: "3px 10px", borderRadius: 99, transition: "all 0.22s",
-            }}
-          >
-            <div style={{
-              width: 5, height: 5, borderRadius: "50%",
-              background: isDynamicActive ? "#4ade80" : "rgba(26,26,27,0.20)",
-              boxShadow: isDynamicActive ? "0 0 6px #4ade8088" : "none",
-              transition: "all 0.22s",
-            }} />
-            {isDynamicActive ? "Engine ON" : "Engine OFF"}
-          </button>
-        </div>
-
-        <div className="flex items-start gap-5">
-          {/* Occupancy Dial */}
-          <div className="flex flex-col items-center" style={{ minWidth: 72 }}>
-            <svg width="72" height="60" viewBox="0 0 72 60">
-              <circle cx="36" cy="46" r={R}
-                fill="none" stroke="rgba(26,26,27,0.08)" strokeWidth="5"
-                strokeDasharray={`${CIRC * (240 / 360)} ${CIRC}`}
-                strokeLinecap="round"
-                transform="rotate(150 36 46)"
-              />
-              <circle cx="36" cy="46" r={R}
-                fill="none" stroke={occupancyColor} strokeWidth="5"
-                strokeDasharray={`${arcFilled} ${CIRC}`}
-                strokeLinecap="round"
-                transform="rotate(150 36 46)"
-                style={{
-                  filter: `drop-shadow(0 0 5px ${occupancyColor}66)`,
-                  transition: "stroke-dasharray 0.6s ease, stroke 0.3s ease",
-                }}
-              />
-              <text x="36" y="50" textAnchor="middle"
-                fill="#1A1A1B" fontSize="13" fontWeight="700"
-                style={{ fontFamily: "'Inter', system-ui" }}
-              >
-                {occupancy}%
-              </text>
-            </svg>
-            <span style={{ fontSize: 7, color: "rgba(26,26,27,0.28)", letterSpacing: "0.18em", textTransform: "uppercase", marginTop: -4 }}>
-              Occupancy
-            </span>
-            {/* Occupancy slider */}
-            <input
-              type="range" min={0} max={100} value={occupancy}
-              onChange={(e) => updateOccupancy(Number(e.target.value))}
-              style={{ width: 68, marginTop: 4, accentColor: occupancyColor, cursor: "pointer" }}
-            />
-          </div>
-
-          {/* Metrics column */}
-          <div className="flex flex-col gap-3 flex-1">
-            {/* Dynamic Lift */}
-            <div>
-              <div style={{ fontSize: 7, color: "rgba(240,232,212,0.32)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 2 }}>
-                Dynamic Lift Today
-              </div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 3 }}>
-                <span style={{ fontSize: 7, color: "#4ade8088", fontWeight: 400 }}>$</span>
-                <span style={{ fontSize: 20, fontWeight: 700, color: "#4ade80", letterSpacing: "-0.02em", lineHeight: 1 }}>
-                  {totalLift.toFixed(0)}
-                </span>
-                <span style={{ fontSize: 7.5, color: "rgba(74,222,128,0.5)", marginLeft: 2 }}>
-                  vs static
-                </span>
-              </div>
-            </div>
-
-            {/* Member Conversion Potential */}
-            <div>
-              <div style={{ fontSize: 7, color: "rgba(240,232,212,0.32)", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 2 }}>
-                Member Conversion
-              </div>
-              {isMember ? (
-                <div style={{ fontSize: 10, fontWeight: 700, color: "#4ade80", letterSpacing: "0.06em" }}>
-                  ✓ Member Active
-                </div>
-              ) : (
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#a78bfa", letterSpacing: "-0.01em" }}>
-                    ${(occupancy > 80 ? 28 * 0.12 : 0).toFixed(0)} avg savings/session
-                  </div>
-                  <div style={{ fontSize: 7.5, color: "rgba(167,139,250,0.45)", marginTop: 1 }}>
-                    Non-member sessions paying surge
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* State label */}
-        <div style={{ marginTop: 8, fontSize: 7.5, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase",
-          color: occupancy > 80 ? "#f87171" : occupancy < 25 ? "#D48B00" : "rgba(26,26,27,0.25)" }}>
-          {occupancy > 80 ? "▲ JUMPING — 12% Surge Active" : occupancy < 25 ? "▼ SLOW — 15% Volume Incentive Active" : "● Normal Demand"}
-        </div>
-      </div>
-
-      {/* Nav grid */}
-      <div
-        className="relative z-10 flex-1 overflow-y-auto p-6"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 10,
-          alignContent: "start",
-        }}
-      >
-        {STAFF_NAV.map(({ label, icon: Icon, route }) => (
-          <button
-            key={label}
-            onClick={() => QUICK_VIEW_LABELS.has(label) ? setActiveSlug(label.toLowerCase()) : navigate(route)}
-            className="rounded-2xl flex flex-col items-center gap-2 py-4 px-2 cursor-pointer btn-recessed"
-            style={{
-              background: "linear-gradient(160deg, #E8E4D9, #EFEBE0)",
-              border: "1px solid rgba(26,26,27,0.09)",
-              color: "rgba(26,26,27,0.44)",
-              outline: "none",
-              transition: "border-color 0.18s, color 0.18s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "rgba(212,139,0,0.35)";
-              e.currentTarget.style.color = "#1A1A1B";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(26,26,27,0.09)";
-              e.currentTarget.style.color = "rgba(26,26,27,0.44)";
-            }}
-          >
-            <Icon size={16} color="rgba(212,139,0,0.55)" />
-            <span className="text-[9px] font-bold uppercase tracking-wider">{label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Footer */}
-      <div
-        className="relative z-10 flex-shrink-0 flex items-center justify-between px-6 py-4"
-        style={{ borderTop: "1px solid rgba(26,26,27,0.09)", background: "rgba(26,26,27,0.04)" }}
-      >
+        )}
+        {lastHandoffAt && (
+          <span style={{ fontFamily: "'Courier New', monospace", fontSize: 8, color: "rgba(240,232,212,0.22)", letterSpacing: "0.1em" }}>
+            {new Date(lastHandoffAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          </span>
+        )}
+        <div style={{ flex: 1 }} />
+        <button
+          onPointerDown={startFounderPress} onPointerUp={clearFounderPress} onPointerLeave={clearFounderPress}
+          style={{
+            minHeight: 38, padding: "0 16px", borderRadius: 9,
+            background: "rgba(212,139,0,0.14)", border: "1px solid rgba(212,139,0,0.30)",
+            fontSize: 8, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase",
+            color: "#D48B00", cursor: "default",
+          }}
+        >FOUNDER ···</button>
         <button
           onClick={onExit}
-          className="flex items-center gap-2 rounded-xl px-4 py-2 text-[11px] font-bold
-                     uppercase tracking-wider cursor-pointer btn-recessed"
           style={{
-            background: "linear-gradient(135deg, #E8E4D9, #EFEBE0)",
-            border: "1px solid rgba(212,139,0,0.35)",
-            color: "#D48B00",
-            outline: "none",
+            minHeight: 38, padding: "0 20px", borderRadius: 9,
+            background: "rgba(240,232,212,0.08)", border: "1px solid rgba(240,232,212,0.14)",
+            fontSize: 8, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase",
+            color: "rgba(240,232,212,0.55)", cursor: "pointer",
           }}
-        >
-          <ChevronLeft size={13} />
-          Return to Patron
-        </button>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          {/* Reset Session — two-tap confirmation guard */}
-          {resetPending ? (
-            <motion.button
-              initial={{ scale: 0.92 }}
-              animate={{ scale: 1 }}
-              onClick={() => { resetSession(); setResetPending(false); }}
-              onPointerLeave={() => setResetPending(false)}
-              style={{
-                padding: "4px 12px", borderRadius: 8, cursor: "pointer",
-                background: "rgba(248,113,113,0.14)",
-                border: "1px solid rgba(248,113,113,0.55)",
-                color: "#f87171", fontSize: 9, fontWeight: 700,
-                letterSpacing: "0.16em", textTransform: "uppercase",
-                outline: "none",
-              }}
-            >
-              ✓ Confirm Wipe
-            </motion.button>
-          ) : (
-            <button
-              onClick={() => setResetPending(true)}
-              style={{
-                padding: "4px 12px", borderRadius: 8, cursor: "pointer",
-                background: "rgba(26,26,27,0.06)",
-                border: "1px solid rgba(26,26,27,0.12)",
-                color: "rgba(26,26,27,0.30)", fontSize: 9, fontWeight: 700,
-                letterSpacing: "0.16em", textTransform: "uppercase",
-                outline: "none",
-              }}
-            >
-              Reset Session
-            </button>
-          )}
-          {/* Audio toggle */}
-          <AudioToggle />
-          <div className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(26,26,27,0.22)" }}>
-            Axiom 360 OS
+        >← EXIT POS</button>
+      </div>
+
+      {/* ── 3-Column POS Grid ───────────────────────────────────────────────── */}
+      <div style={{
+        flex: 1, overflow: "hidden",
+        display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
+        gap: 3, padding: 3, background: "#E8E4D9",
+      }}>
+
+        {/* ══ COL A · INVENTORY ══════════════════════════════════════════════ */}
+        <div style={{ background: "#F5F2ED", borderRadius: 14, padding: "20px 18px", overflowY: "auto" }}>
+          <div style={{ fontFamily: "'Courier New', monospace", fontSize: 8, fontWeight: 700, letterSpacing: "0.28em", color: "#D48B00", marginBottom: 18 }}>◈ INVENTORY</div>
+
+          {STAFF_INVENTORY.map(cat => (
+            <div key={cat.cat} style={{ marginBottom: 22 }}>
+              <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.2em", color: "rgba(26,26,27,0.36)", textTransform: "uppercase", marginBottom: 10 }}>{cat.cat}</div>
+              {cat.items.map(item => {
+                const pct = item.max === 0 ? 0 : item.qty / item.max;
+                const depleted = item.qty === 0;
+                const low = pct < 0.35 && !depleted;
+                const barColor = depleted ? "#b91c1c" : low ? "#D48B00" : "#166534";
+                return (
+                  <div key={item.name} style={{ marginBottom: 14 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 5 }}>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: depleted ? "#b91c1c" : "#1A1A1B" }}>{item.name}</span>
+                      <span style={{ fontFamily: "'Courier New', monospace", fontSize: 11, fontWeight: 700, color: barColor }}>
+                        {depleted ? "OUT" : item.qty}
+                      </span>
+                    </div>
+                    <div style={{ height: 5, background: "rgba(26,26,27,0.08)", borderRadius: 99, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${pct * 100}%`, background: barColor, borderRadius: 99, transition: "width 0.6s ease" }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
+            {[
+              { label: "Full Inventory →", route: "/inventory" },
+              { label: "Reorder Alerts →", route: "/inventory" },
+            ].map(btn => (
+              <button key={btn.label}
+                onClick={() => { navigate(btn.route); onExit(); }}
+                style={{
+                  minHeight: 52, borderRadius: 10, cursor: "pointer",
+                  background: "#EFEBE0", border: "1px solid rgba(26,26,27,0.09)",
+                  fontSize: 12, fontWeight: 600, color: "#1A1A1B", letterSpacing: "0.02em",
+                }}
+              >{btn.label}</button>
+            ))}
           </div>
+        </div>
+
+        {/* ══ COL B · REVENUE CONTROL ════════════════════════════════════════ */}
+        <div style={{ background: "#F5F2ED", borderRadius: 14, padding: "20px 18px", overflowY: "auto" }}>
+          <div style={{ fontFamily: "'Courier New', monospace", fontSize: 8, fontWeight: 700, letterSpacing: "0.28em", color: "#D48B00", marginBottom: 18 }}>◇ REVENUE CONTROL</div>
+
+          {/* Occupancy readout */}
+          <div style={{ textAlign: "center", marginBottom: 20 }}>
+            <div style={{
+              fontFamily: "'Cormorant Garamond', serif", fontSize: 72, fontWeight: 700,
+              lineHeight: 1, color: occupancyColor,
+              textShadow: `0 0 28px ${occupancyColor}55`,
+              transition: "color 0.4s ease, text-shadow 0.4s ease",
+            }}>
+              {occupancy}<span style={{ fontSize: 30 }}>%</span>
+            </div>
+            <div style={{ fontFamily: "'Courier New', monospace", fontSize: 7, letterSpacing: "0.24em", color: "rgba(26,26,27,0.36)", marginTop: 4 }}>OCCUPANCY</div>
+            <div style={{
+              marginTop: 10, fontSize: 11, fontWeight: 700, letterSpacing: "0.05em",
+              color: surgeActive ? "#b91c1c" : occupancy < 25 ? "#D48B00" : "#166534",
+            }}>
+              {surgeActive ? "▲ SURGE — +12% on all rates" : occupancy < 25 ? "▼ SLOW — Volume incentives on" : "● Steady — Standard rates"}
+            </div>
+          </div>
+
+          {/* Fat-finger slider */}
+          <div style={{ marginBottom: 24, padding: "16px", background: "#EFEBE0", borderRadius: 12 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.10em", color: "rgba(26,26,27,0.45)", textTransform: "uppercase" }}>Occupancy</span>
+              <span style={{ fontFamily: "'Courier New', monospace", fontSize: 11, color: occupancyColor, fontWeight: 700 }}>{occupancy}%</span>
+            </div>
+            <input type="range" min={0} max={100} value={occupancy}
+              onChange={(e) => updateOccupancy(Number(e.target.value))}
+              style={{ width: "100%", height: 12, accentColor: occupancyColor, cursor: "pointer" }}
+            />
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 5 }}>
+              <span style={{ fontSize: 8, color: "rgba(26,26,27,0.28)" }}>0 — Empty</span>
+              <span style={{ fontSize: 8, color: "rgba(26,26,27,0.28)" }}>100 — Full</span>
+            </div>
+          </div>
+
+          {/* Revenue Brain master toggle — fat-finger */}
+          <button onClick={toggleDynamic} style={{
+            width: "100%", minHeight: 64, borderRadius: 14, cursor: "pointer",
+            background: isDynamicActive ? "#1A1A1B" : "#EFEBE0",
+            border: `2px solid ${isDynamicActive ? "#D48B00" : "rgba(26,26,27,0.14)"}`,
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
+            marginBottom: 16, transition: "all 0.22s ease",
+            boxShadow: isDynamicActive ? "0 0 24px rgba(212,139,0,0.18)" : "none",
+          }}>
+            <div style={{
+              width: 10, height: 10, borderRadius: "50%",
+              background: isDynamicActive ? "#4ade80" : "rgba(26,26,27,0.25)",
+              boxShadow: isDynamicActive ? "0 0 10px #4ade80" : "none",
+              transition: "all 0.22s",
+            }} />
+            <span style={{
+              fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase",
+              color: isDynamicActive ? "#D48B00" : "rgba(26,26,27,0.40)",
+            }}>Revenue Brain — {isDynamicActive ? "ON" : "OFF"}</span>
+          </button>
+
+          {/* Live patron rate preview */}
+          <div style={{ background: "#EFEBE0", borderRadius: 12, padding: "14px 12px", marginBottom: 14 }}>
+            <div style={{ fontFamily: "'Courier New', monospace", fontSize: 7, letterSpacing: "0.20em", color: "rgba(26,26,27,0.33)", marginBottom: 10, textTransform: "uppercase" }}>Live Patron Rates</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {CRAFTS.map(c => {
+                const base = CRAFT_BASE_PRICE[c.id] ?? 18;
+                const liveInfo = calculateDynamicPrice(base, occupancy, !!isMember, isDynamicActive);
+                const livePrice = liveInfo.price;
+                const diff = livePrice - base;
+                return (
+                  <div key={c.id} style={{ padding: "10px", borderRadius: 9, background: "#F5F2ED", border: "1px solid rgba(26,26,27,0.07)" }}>
+                    <div style={{ fontFamily: "'Courier New', monospace", fontSize: 7, color: c.color, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 3 }}>{c.id}</div>
+                    <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 26, fontWeight: 700, color: "#1A1A1B", lineHeight: 1 }}>${livePrice.toFixed(0)}</div>
+                    {diff !== 0 && (
+                      <div style={{ fontSize: 8, color: diff > 0 ? "#b91c1c" : "#166534", marginTop: 3, fontWeight: 700 }}>
+                        {diff > 0 ? `+$${diff.toFixed(0)} surge` : `-$${Math.abs(diff).toFixed(0)} disc`}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Quick nav — fat-finger */}
+          {[
+            { label: "📊 Analytics Dashboard", route: "/analytics" },
+            { label: "💳 Open Tab Manager",    route: "/tabs" },
+          ].map(btn => (
+            <button key={btn.label}
+              onClick={() => { navigate(btn.route); onExit(); }}
+              style={{
+                width: "100%", minHeight: 56, borderRadius: 12, marginBottom: 8,
+                cursor: "pointer", background: "#EFEBE0", border: "1px solid rgba(26,26,27,0.09)",
+                fontSize: 12, fontWeight: 600, color: "#1A1A1B", letterSpacing: "0.02em",
+              }}
+            >{btn.label}</button>
+          ))}
+        </div>
+
+        {/* ══ COL C · ANALYTICS ══════════════════════════════════════════════ */}
+        <div style={{ background: "#F5F2ED", borderRadius: 14, padding: "20px 18px", overflowY: "auto" }}>
+          <div style={{ fontFamily: "'Courier New', monospace", fontSize: 8, fontWeight: 700, letterSpacing: "0.28em", color: "#D48B00", marginBottom: 18 }}>◎ REVENUE LIFT</div>
+
+          {/* Total lift hero */}
+          <div style={{ marginBottom: 22, padding: "20px", borderRadius: 14, background: "#1A1A1B", textAlign: "center" }}>
+            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 58, fontWeight: 700, lineHeight: 1, color: "#D48B00" }}>
+              ${typeof totalLift === "number" ? totalLift.toFixed(0) : "0"}
+            </div>
+            <div style={{ fontFamily: "'Courier New', monospace", fontSize: 7, letterSpacing: "0.24em", color: "rgba(212,139,0,0.45)", marginTop: 6 }}>TOTAL LIFT TODAY</div>
+            <div style={{ fontSize: 10, color: "rgba(240,232,212,0.38)", marginTop: 8, lineHeight: 1.5 }}>Extra revenue above base from AI optimization</div>
+          </div>
+
+          {/* Hourly bar chart */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontFamily: "'Courier New', monospace", fontSize: 7, letterSpacing: "0.16em", color: "rgba(26,26,27,0.33)", marginBottom: 10, textTransform: "uppercase" }}>Revenue Lift — Last 8 hrs ($)</div>
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 5, height: 72 }}>
+              {LIFT_HOURS.map((v, i) => (
+                <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", height: "100%" }}>
+                  <div style={{ flex: 1, display: "flex", alignItems: "flex-end", width: "100%" }}>
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{ height: `${(v / maxLift) * 100}%` }}
+                      transition={{ duration: 1.0, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                      style={{
+                        width: "100%", borderRadius: "4px 4px 0 0",
+                        background: i === LIFT_HOURS.length - 1 ? "#D48B00" : "rgba(212,139,0,0.28)",
+                        boxShadow: i === LIFT_HOURS.length - 1 ? "0 0 10px rgba(212,139,0,0.5)" : "none",
+                      }}
+                    />
+                  </div>
+                  <div style={{ fontSize: 6, color: "rgba(26,26,27,0.28)", marginTop: 3, fontFamily: "'Courier New', monospace" }}>
+                    {String(new Date().getHours() - (7 - i)).padStart(2, "0")}h
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* KPI chips */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 16 }}>
+            {[
+              { label: "Recs Shown",   value: "47",    color: "#9B7FD4" },
+              { label: "Add-to-Order", value: "18",    color: "#3BBFA3" },
+              { label: "Conversion",   value: "38%",   color: "#D48B00" },
+              { label: "Avg Margin+",  value: "+$6.40",color: "#4ade80" },
+            ].map(s => (
+              <div key={s.label} style={{ padding: "12px 8px", borderRadius: 10, background: "#EFEBE0", textAlign: "center" }}>
+                <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 700, color: s.color, lineHeight: 1 }}>{s.value}</div>
+                <div style={{ fontFamily: "'Courier New', monospace", fontSize: 7, color: "rgba(26,26,27,0.36)", marginTop: 4, letterSpacing: "0.10em" }}>{s.label.toUpperCase()}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Guest sentiment */}
+          {[
+            { emoji: "😊", label: "Satisfied",    pct: 68, color: "#4ade80" },
+            { emoji: "😐", label: "Neutral",      pct: 22, color: "#D48B00" },
+            { emoji: "😞", label: "Disappointed", pct: 10, color: "#f87171" },
+          ].map(s => (
+            <div key={s.label} style={{ marginBottom: 11 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                <span style={{ fontSize: 11, color: "#1A1A1B" }}>{s.emoji} {s.label}</span>
+                <span style={{ fontFamily: "'Courier New', monospace", fontSize: 10, color: s.color, fontWeight: 700 }}>{s.pct}%</span>
+              </div>
+              <div style={{ height: 3, background: "rgba(26,26,27,0.08)", borderRadius: 99, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${s.pct}%`, background: s.color, borderRadius: 99 }} />
+              </div>
+            </div>
+          ))}
+
+          {/* Reset session — fat-finger danger button */}
+          <button
+            onClick={() => {
+              if (confirm("Reset session? Clears cart, loyalty buffer, and temp reservations.")) {
+                resetSession();
+                onExit();
+              }
+            }}
+            style={{
+              width: "100%", minHeight: 56, borderRadius: 12, marginTop: 14, cursor: "pointer",
+              background: "rgba(185,28,28,0.05)", border: "1px solid rgba(185,28,28,0.18)",
+              fontSize: 12, fontWeight: 600, color: "#b91c1c", letterSpacing: "0.04em",
+            }}
+          >⚠ Reset Session</button>
         </div>
       </div>
 
-      {/* ── Inline QuickView panel (Revenue / Analytics / Campaigns) ── */}
-      <AnimatePresence>
-        {activeSlug && (
-          <motion.div
-            key="quickview"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 320, damping: 30 }}
-            style={{
-              position: "absolute", inset: 0, zIndex: 20,
-              background: "linear-gradient(160deg, #2A2A2A 0%, #F5F2ED 100%)",
-              display: "flex", flexDirection: "column", overflow: "hidden",
-              borderLeft: "1px solid rgba(26,26,27,0.08)",
-            }}
-          >
-            {/* Brushed graphite texture */}
-            <div className="absolute inset-0 brushed-graphite pointer-events-none" style={{ opacity: 0.45, zIndex: 0 }} />
-
-            {/* Quick-view header */}
-            <div
-              style={{
-                position: "relative", zIndex: 10, flexShrink: 0,
-                display: "flex", alignItems: "center", gap: 12,
-                padding: "14px 20px",
-                borderBottom: "1px solid rgba(26,26,27,0.09)",
-                background: "rgba(26,26,27,0.05)",
-              }}
-            >
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setActiveSlug(null)}
-                style={{
-                  width: 38, height: 38, borderRadius: 11, cursor: "pointer",
-                  background: "#211d17", border: "1px solid rgba(26,26,27,0.12)",
-                  color: "#6B5E4E", display: "flex", alignItems: "center", justifyContent: "center",
-                  outline: "none",
-                }}
-              >
-                <ChevronLeft size={17} />
-              </motion.button>
-              <div style={{ flex: 1 }}>
-                <div style={{
-                  fontSize: 13, fontWeight: 700, color: "#D48B00",
-                  textTransform: "uppercase", letterSpacing: "0.16em",
-                }}>
-                  {activeSlug.charAt(0).toUpperCase() + activeSlug.slice(1)}
-                </div>
-                <div style={{ fontSize: 9, color: "rgba(26,26,27,0.30)", marginTop: 1, letterSpacing: "0.12em" }}>
-                  Quick View · Staff Mode
-                </div>
-              </div>
-              {/* Gold accent rule */}
-              <div style={{ width: 3, height: 26, borderRadius: 99, background: "linear-gradient(180deg, #D48B00, rgba(212,139,0,0.3))", boxShadow: "0 0 8px rgba(212,139,0,0.4)" }} />
-            </div>
-
-            {/* Content */}
-            <div style={{ position: "relative", zIndex: 1, flex: 1, overflowY: "auto" }}>
-              <SubPageRenderer slug={activeSlug} />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Founder's Command View ── */}
+      {/* Founder overlay */}
       <AnimatePresence>
         {founderVisible && (
           <motion.div
-            key="founder-view"
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.97 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
-            style={{
-              position: "absolute", inset: 0, zIndex: 30,
-              background: "linear-gradient(160deg, #EFEBE0 0%, #F5F2ED 100%)",
-              display: "flex", flexDirection: "column",
-              overflow: "hidden",
-              fontFamily: "'Inter', system-ui, sans-serif",
-            }}
+            key="founder-staff"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+            className="fixed inset-0 z-[200]"
           >
-            {/* Brushed graphite texture */}
-            <div className="absolute inset-0 brushed-graphite pointer-events-none" style={{ opacity: 0.5, zIndex: 0 }} />
-            {/* Gold border inset */}
-            <div style={{
-              position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
-              border: "1px solid rgba(212,139,0,0.18)",
-            }} />
-
-            {/* Content */}
-            <div className="relative z-10 flex-1 overflow-y-auto px-7 py-6">
-
-              {/* Header */}
-              <div style={{ marginBottom: 22 }}>
-                <div style={{
-                  fontSize: 7.5, color: "rgba(212,139,0,0.5)",
-                  letterSpacing: "0.4em", textTransform: "uppercase", marginBottom: 5,
-                }}>
-                  ✦ &nbsp;Founder's Command View
-                </div>
-                <div style={{
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
-                  fontSize: "clamp(20px, 2.8vw, 28px)",
-                  fontWeight: 700, color: "#1A1A1B", letterSpacing: "0.04em",
-                }}>
-                  Owner ROI Dashboard
-                </div>
-              </div>
-
-              {/* ── Metric cards ── */}
-              <div style={{ marginBottom: 20 }}>
-                <FoundersDashboard />
-              </div>
-
-              {/* ── Patron Sentiment Map ── */}
-              <div style={{
-                background: "rgba(26,26,27,0.04)",
-                border: "1px solid rgba(26,26,27,0.09)",
-                borderRadius: 12, padding: "16px 18px",
-              }}>
-                <div style={{
-                  fontSize: 7, color: "rgba(240,232,212,0.32)",
-                  letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 14,
-                }}>
-                  Patron Sentiment Map
-                </div>
-                {SENTIMENT.map(({ emoji, label, pct, color }, i) => (
-                  <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: i < 2 ? 10 : 0 }}>
-                    <span style={{ fontSize: 15, width: 22, flexShrink: 0 }}>{emoji}</span>
-                    <div style={{
-                      width: 82, fontSize: 8, color: "rgba(26,26,27,0.40)",
-                      letterSpacing: "0.08em", flexShrink: 0,
-                    }}>
-                      {label}
-                    </div>
-                    <div style={{
-                      flex: 1, height: 7, background: "rgba(26,26,27,0.08)",
-                      borderRadius: 99, overflow: "hidden",
-                    }}>
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.75, delay: i * 0.1, ease: "easeOut" }}
-                        style={{
-                          height: "100%", borderRadius: 99,
-                          background: color,
-                          boxShadow: `0 0 6px ${color}55`,
-                        }}
-                      />
-                    </div>
-                    <div style={{
-                      fontSize: 9, fontWeight: 700, color,
-                      width: 30, textAlign: "right", flexShrink: 0,
-                    }}>
-                      {pct}%
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div style={{
-              borderTop: "1px solid rgba(26,26,27,0.09)",
-              padding: "12px 24px",
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              background: "rgba(26,26,27,0.04)", flexShrink: 0, position: "relative", zIndex: 10,
-            }}>
+            <FoundersDashboard />
+            <div style={{ position: "absolute", bottom: 32, right: 32 }}>
               <button
                 onClick={() => setFounderVisible(false)}
                 style={{
                   display: "flex", alignItems: "center", gap: 5,
-                  fontSize: 9, fontWeight: 700, letterSpacing: "0.16em",
-                  textTransform: "uppercase", cursor: "pointer", outline: "none",
-                  background: "rgba(26,26,27,0.07)",
-                  border: "1px solid rgba(26,26,27,0.12)",
-                  color: "rgba(26,26,27,0.44)",
-                  padding: "5px 14px", borderRadius: 99,
+                  fontSize: 9, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase",
+                  cursor: "pointer", outline: "none",
+                  background: "rgba(26,26,27,0.07)", border: "1px solid rgba(26,26,27,0.12)",
+                  color: "rgba(26,26,27,0.44)", padding: "5px 14px", borderRadius: 99,
                 }}
-              >
-                <ChevronLeft size={10} />
-                Back
-              </button>
-              <div style={{
-                fontSize: 7.5, color: "rgba(212,139,0,0.3)",
-                letterSpacing: "0.2em", textTransform: "uppercase",
-              }}>
-                Founder Access Only
-              </div>
+              ><ChevronLeft size={10} /> Back</button>
             </div>
+            <div style={{
+              position: "absolute", bottom: 40, left: 32,
+              fontSize: 7.5, color: "rgba(212,139,0,0.3)", letterSpacing: "0.2em", textTransform: "uppercase",
+            }}>Founder Access Only</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Sub-page overlay */}
+      <AnimatePresence>
+        {activeSlug && (
+          <motion.div
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 24 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0 z-[150] overflow-auto"
+            style={{ background: "#F5F2ED" }}
+          >
+            <button
+              onClick={() => setActiveSlug(null)}
+              style={{
+                position: "absolute", top: 18, left: 18, zIndex: 10,
+                display: "flex", alignItems: "center", gap: 5,
+                minHeight: 40, padding: "0 16px", borderRadius: 10,
+                background: "rgba(26,26,27,0.07)", border: "1px solid rgba(26,26,27,0.12)",
+                fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase",
+                color: "rgba(26,26,27,0.50)", cursor: "pointer",
+              }}
+            ><ChevronLeft size={11} /> Back</button>
+            <SubPageRenderer slug={activeSlug} />
           </motion.div>
         )}
       </AnimatePresence>
     </motion.div>
   );
 }
+
 
 // ── Patron view ───────────────────────────────────────────────────────────────
 
@@ -1373,6 +1231,11 @@ function PatronView({
   const [rankUpLabel,   setRankUpLabel]      = useState("");
   const [founderPatronOpen, setFounderPatronOpen] = useState(false);
   const [travelOpen, setTravelOpen] = useState(false);
+  const [tickerIdx,  setTickerIdx]  = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTickerIdx(i => (i + 1) % PULSE_MSGS.length), 3800);
+    return () => clearInterval(id);
+  }, []);
   const logoHoldTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const { activeMode } = useAxiom360();
@@ -1477,6 +1340,32 @@ function PatronView({
         burst={burstKey > 0}
         style={{ top: "40%", left: "50%", transform: "translate(-50%, -50%)" }}
       />
+
+      {/* ══ THE PULSE — Top Ticker ══ */}
+      <div style={{
+        position: "relative", zIndex: 20, flexShrink: 0,
+        height: 45, display: "flex", alignItems: "center", justifyContent: "center",
+        background: "rgba(8,6,4,0.86)", backdropFilter: "blur(24px)",
+        borderBottom: "1px solid rgba(255,179,71,0.15)",
+      }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tickerIdx}
+            initial={{ opacity: 0, y: 9 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{    opacity: 0, y: -9 }}
+            transition={{ duration: 0.42, ease: "easeInOut" }}
+            style={{
+              fontFamily: "'Courier New', monospace",
+              fontSize: 10, fontWeight: 700, letterSpacing: "0.38em",
+              textTransform: "uppercase", color: "#FFB347",
+              textShadow: "0 0 8px #FFB347, 0 0 24px rgba(255,179,71,0.45), 0 0 48px rgba(255,179,71,0.18)",
+            }}
+          >
+            ● {PULSE_MSGS[tickerIdx].text}
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       {/* Header */}
       <header
@@ -1951,6 +1840,7 @@ export function HandoffContainer() {
       holdTimerRef.current = null;
       if (activeMode === "staff") { setMode("patron"); return; }
       vibrate(HAPTIC.handoff);
+      playSwitch();
       setFlashing(true);
       setTimeout(() => { setFlashing(false); setMode("staff"); }, FLASH_MS);
     }, HOLD_MS);
