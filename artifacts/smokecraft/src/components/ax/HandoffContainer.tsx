@@ -401,48 +401,7 @@ function CraftCard({
           {craft.glyph}
         </motion.div>
 
-        {/* ── Value Display (top-right) — ticker-tape price flip ── */}
-        <div
-          style={{
-            position: "absolute", top: 10, right: 10,
-            background: "rgba(245,242,237,0.72)",
-            border: "1px solid rgba(26,26,27,0.10)",
-            borderRadius: 8, padding: "4px 8px",
-            backdropFilter: "blur(10px)",
-            textAlign: "right",
-          }}
-        >
-          <div
-            className={priceInfo.color}
-            style={{
-              fontSize: 6.5, fontWeight: 700, letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              marginBottom: 1,
-            }}
-          >
-            {priceInfo.label}
-          </div>
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "flex-end", gap: 1 }}>
-            <span style={{ fontSize: 8, color: "rgba(26,26,27,0.40)", fontWeight: 400 }}>$</span>
-            <div style={{ overflow: "hidden", height: 16 }}>
-              <AnimatePresence mode="popLayout" initial={false}>
-                <motion.span
-                  key={priceInfo.price}
-                  initial={{ y: 10, opacity: 0 }}
-                  animate={{ y: 0,  opacity: 1 }}
-                  exit={{    y: -10, opacity: 0 }}
-                  transition={{ duration: 0.28, ease: "easeInOut" }}
-                  style={{
-                    display: "block", fontSize: 14, fontWeight: 700,
-                    color: "#1A1A1B", letterSpacing: "-0.02em", lineHeight: "16px",
-                  }}
-                >
-                  {priceInfo.price.toFixed(0)}
-                </motion.span>
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
+        {/* Price badge removed from patron view — Revenue Brain active in background only */}
 
         {/* Labels — readable above vignette */}
         <div>
@@ -577,7 +536,7 @@ function PriceTicker({ craftPrices }: { craftPrices: Record<string, PriceInfo> }
         className="flex items-center h-full"
         style={{ paddingLeft: 56, width: "max-content" }}
         animate={{ x: ["0%", "-33.33%"] }}
-        transition={{ duration: 32, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 54, repeat: Infinity, ease: "linear" }}
       >
         {items.map((m, i) => {
           const info  = craftPrices[m.id];
