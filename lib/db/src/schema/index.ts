@@ -92,3 +92,7 @@ export * from "./guestIdentityEvolution";
 export * from "./shadowTests";
 export * from "./hardwareRegistry";
 export * from "./enterpriseSecurityLogs";
+export * from "./hardwareFleet";
+export * from "./hardwareSessionClaims";
+export * from "./environmentSyncHistory";
+export * from "./securityAuditTrail";
