@@ -244,7 +244,7 @@ export default function TitanCraftDeck() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.35 }}
           id="axiom-terminal"
-          className="axiom-theme h-screen w-full flex flex-col"
+          className="axiom-theme axiom-terminal h-screen w-full flex flex-col"
           style={{
             fontFamily: "var(--app-font-sans, system-ui, sans-serif)",
             overflow: "hidden",
@@ -345,8 +345,8 @@ export default function TitanCraftDeck() {
                 transition={{ duration: 0.28 }}
                 className="flex-grow px-10 py-6 min-h-0 flex items-center"
               >
-                {/* Single premier-glass wrapper — both sections inside */}
-                <div className="premier-glass w-full p-12 grid grid-cols-2 gap-12 relative overflow-hidden rounded-2xl">
+                {/* Single slab-3d wrapper — both sections inside */}
+                <div className="slab-3d w-full p-12 grid grid-cols-2 gap-12 relative overflow-hidden">
 
                   {/* Ambient light catcher */}
                   <div className="absolute -top-24 -left-24 w-64 h-64 bg-yellow-500/10 rounded-full blur-[100px] pointer-events-none" />
@@ -369,13 +369,12 @@ export default function TitanCraftDeck() {
                               setBuild(next);
                               runAnalysis(leaf, build.cut);
                             }}
-                            className="bg-[#1a1a1c] py-4 text-[10px] uppercase font-bold tracking-widest transition-all"
+                            className="machined-btn py-4 text-[10px] uppercase font-bold tracking-widest"
                             style={{
                               border: build.leaf === leaf
-                                ? "1px solid rgba(212,175,55,0.70)"
-                                : "1px solid rgba(255,255,255,0.10)",
+                                ? "1px solid rgba(212,175,55,0.80)"
+                                : undefined,
                               color: build.leaf === leaf ? "var(--gold)" : "rgba(255,255,255,0.55)",
-                              cursor: "pointer",
                               borderRadius: 6,
                             }}
                           >
@@ -419,13 +418,12 @@ export default function TitanCraftDeck() {
                               setBuild(b => ({ ...b, cut }));
                               runAnalysis(build.leaf, cut);
                             }}
-                            className="flex-1 py-4 bg-[#1a1a1c] text-[10px] uppercase font-bold tracking-widest transition-all"
+                            className="machined-btn flex-1 py-4 text-[10px] uppercase font-bold tracking-widest"
                             style={{
                               border: build.cut === cut
-                                ? "1px solid rgba(212,175,55,0.70)"
-                                : "1px solid rgba(255,255,255,0.10)",
+                                ? "1px solid rgba(212,175,55,0.80)"
+                                : undefined,
                               color: build.cut === cut ? "var(--gold)" : "rgba(255,255,255,0.55)",
-                              cursor: "pointer",
                               borderRadius: 6,
                             }}
                           >
