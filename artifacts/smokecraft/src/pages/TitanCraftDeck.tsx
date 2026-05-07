@@ -128,8 +128,8 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
         position: "relative",
         overflow: "hidden",
         borderRadius: 40,
-        borderTop: "2px solid rgba(255,255,255,.3)",
-        borderLeft: "1px solid rgba(255,255,255,.1)",
+        borderTop: "1px solid rgba(255,255,255,.20)",
+        borderLeft: "1px solid rgba(255,255,255,.10)",
         background: "#121214",
         display: "flex",
         flexDirection: "column",
@@ -158,13 +158,14 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
           height: "100%",
           objectFit: "cover",
           objectPosition: "center",
-          opacity: isSmoke ? 0.85 : 0.75,
+          opacity: 1,
+          filter: "brightness(1.1) contrast(1.05)",
         }}
       />
 
-      {/* Bottom-up gradient overlay */}
+      {/* Bottom-only gradient — text zone only, image stays crystal clear */}
       <div className="absolute inset-0 z-10"
-        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 60%)" }} />
+        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.25) 35%, transparent 60%)" }} />
 
       {/* Animated top accent line */}
       <motion.div
