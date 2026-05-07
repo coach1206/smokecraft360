@@ -142,7 +142,9 @@ export default function DemographicIntelligence() {
   const [activeIndex, setActiveIndex]   = useState(0);
   const [nfcGuest, setNfcGuest]         = useState<TitanGuestProfile | null>(null);
   const [envLabel, setEnvLabel]         = useState("Nominal");
-  const pinTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [sageFlash, setSageFlash]       = useState(false);
+  const pinTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── Auto-rotation every 5s ────────────────────────────────────────────────
   useEffect(() => {
@@ -152,22 +154,53 @@ export default function DemographicIntelligence() {
     return () => clearInterval(iv);
   }, [nfcGuest]);
 
-  // ── NFC Sage-wake override — pin to guest's craft for 15s ─────────────────
+  // ── NFC Event Listener & Sage Wake Trigger ────────────────────────────────
   useEffect(() => {
-    const unsub = TitanEngine.onSageWake((_profile: TitanGuestProfile, sage: SagePayload) => {
-      setNfcGuest(_profile);
-      // Map mentor → craft index (mentorId prefix matches craft id)
-      const mentorCraft = (sage.mentorId ?? "").toLowerCase();
-      const idx = CRAFT_MODULES.findIndex(m => mentorCraft.startsWith(m.id));
-      if (idx > -1) setActiveIndex(idx);
-      if (pinTimer.current) clearTimeout(pinTimer.current);
-      pinTimer.current = setTimeout(() => {
-        setNfcGuest(null);
-      }, PIN_DURATION_MS);
-    });
+    if (!("NDEFReader" in window)) return;
+    type NdefLike = {
+      scan:      (opts?: { signal?: AbortSignal }) => Promise<void>;
+      onreading: ((e: { serialNumber: string }) => void) | null;
+    };
+    const ndef = new (window as unknown as { NDEFReader: new () => NdefLike }).NDEFReader();
+    const ctrl = new AbortController();
+
+    const startNFC = async (): Promise<void> => {
+      try {
+        await ndef.scan({ signal: ctrl.signal });
+        ndef.onreading = (event: { serialNumber: string }) => {
+          const serial = event.serialNumber;
+
+          // SAGE WAKE: Force rotation to "Pour Craft" (Index 1) on tap
+          setActiveIndex(1);
+
+          // Trigger a temporary UI pulse effect
+          setSageFlash(true);
+          if (flashTimer.current) clearTimeout(flashTimer.current);
+          flashTimer.current = setTimeout(() => setSageFlash(false), 300);
+
+          // Fire backend NFC lookup (resolves guest profile + mentor)
+          void TitanEngine.handleNFCTap(serial).then(result => {
+            if (!result.success || !result.profile) return;
+            setNfcGuest(result.profile);
+            if (result.sage) {
+              const mentorCraft = (result.sage.mentorId ?? "").toLowerCase();
+              const idx = CRAFT_MODULES.findIndex(m => mentorCraft.startsWith(m.id));
+              if (idx > -1) setActiveIndex(idx);
+            }
+            if (pinTimer.current) clearTimeout(pinTimer.current);
+            pinTimer.current = setTimeout(() => setNfcGuest(null), PIN_DURATION_MS);
+          });
+        };
+      } catch {
+        // NFC Init Failed: Hardware not detected or Permission Denied.
+      }
+    };
+
+    void startNFC();
     return () => {
-      unsub();
-      if (pinTimer.current) clearTimeout(pinTimer.current);
+      ctrl.abort();
+      if (flashTimer.current) clearTimeout(flashTimer.current);
+      if (pinTimer.current)   clearTimeout(pinTimer.current);
     };
   }, []);
 
@@ -186,6 +219,23 @@ export default function DemographicIntelligence() {
       className="p-8 h-screen flex flex-col justify-between select-none"
       style={{ background: "var(--axiom-body-bg, var(--steel-bg))", color: "white", overflow: "hidden" }}
     >
+      {/* ── Sage Wake brightness flash overlay ── */}
+      <AnimatePresence>
+        {sageFlash && (
+          <motion.div
+            key="sage-flash"
+            initial={{ opacity: 0.55 }}
+            animate={{ opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.30, ease: "easeOut" }}
+            style={{
+              position: "fixed", inset: 0, zIndex: 999,
+              background: "rgba(255,255,255,0.85)",
+              pointerEvents: "none",
+            }}
+          />
+        )}
+      </AnimatePresence>
       {/* Header */}
       <header className="flex justify-between items-center gold-trim pb-4">
         <h1 className="text-xs tracking-[0.4em] font-bold uppercase" style={{ color: "var(--gold)" }}>
