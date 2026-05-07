@@ -94,18 +94,6 @@ const QUESTIONS: Question[] = [
   },
   {
     type:    "choice",
-    id:      "atmospherePreference",
-    prompt:  "What atmosphere fits tonight?",
-    sub:     "Your mentor will tailor commentary to match your mood.",
-    options: [
-      { value: "solo",        label: "Reflective Solo",  sub: "Quiet. Intentional. Personal." },
-      { value: "social",      label: "Social Lounge",    sub: "Shared. Warm. Conversational." },
-      { value: "late-night",  label: "Late Night",       sub: "Dark. Deep. Unhurried." },
-      { value: "celebration", label: "Celebration",      sub: "Elevated. Commemorating something." },
-    ],
-  },
-  {
-    type:    "choice",
     id:      "boldnessPreference",
     prompt:  "Where does your palate naturally land?",
     sub:     "Honest answers lead to better pairings.",

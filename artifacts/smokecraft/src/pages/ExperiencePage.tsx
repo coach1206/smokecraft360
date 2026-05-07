@@ -524,8 +524,11 @@ export default function ExperiencePage() {
   const [done,         setDone]         = useState(false);
   const [returnBanner, setReturnBanner] = useState(false);
   // Entry chamber: shows cinematic intro before swipe discovery begins.
-  // Session bootstrap runs in background while chamber is displayed.
-  const [showChamber,  setShowChamber]  = useState(true);
+  // Returning guests (session storage present) skip straight to atmosphere pick.
+  const hasStoredGuest = (() => { try { return !!sessionStorage.getItem("smokecraft_guest"); } catch { return false; } })();
+  const [showChamber,          setShowChamber]          = useState(!hasStoredGuest);
+  const [showAtmosphereOverlay, setShowAtmosphereOverlay] = useState(hasStoredGuest);
+  const [localAtmosphere,      setLocalAtmosphere]      = useState<string | null>(null);
 
   // ── Intelligence layer — mentor commentary on ADD swipes ─────────────────
   const { guestProfile, mentor }     = useGuestProfile();
@@ -609,7 +612,7 @@ export default function ExperiencePage() {
           addedCount:      nextAddCount,
           craftType:       type,
           guestBoldness:   guestProfile?.boldnessPreference ?? null,
-          guestAtmosphere: guestProfile?.atmospherePreference ?? null,
+          guestAtmosphere: localAtmosphere ?? guestProfile?.atmospherePreference ?? null,
           flavorHistory:   guestProfile?.flavorHistory ?? [],
         });
         setCommentary({ line, whyNote });
@@ -1046,13 +1049,128 @@ export default function ExperiencePage() {
       />
     )}
 
+    {/* ── Atmosphere overlay — shown after chamber / on return, before first swipe ── */}
+    <AnimatePresence>
+      {showAtmosphereOverlay && (
+        <motion.div
+          key="atmosphere-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.45 }}
+          style={{
+            position: "fixed", inset: 0, zIndex: 50,
+            background: "rgba(8,6,4,0.96)",
+            backdropFilter: "blur(18px)",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            padding: "32px 24px",
+          }}
+        >
+          {/* Ambient glow */}
+          <div style={{
+            position: "absolute", inset: 0, pointerEvents: "none",
+            background: `radial-gradient(ellipse at 50% 60%, ${theme.accent}18 0%, transparent 65%)`,
+          }} />
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: 420, textAlign: "center" }}
+          >
+            <p style={{
+              fontSize: 11, letterSpacing: "0.22em", color: theme.accent,
+              fontFamily: "'Cormorant Garamond', serif", textTransform: "uppercase",
+              margin: "0 0 12px",
+            }}>
+              Before we begin
+            </p>
+            <h2 style={{
+              fontSize: "clamp(1.5rem,4vw,2rem)", fontWeight: 700,
+              color: "#F0E8D8", fontFamily: "'Playfair Display', serif",
+              margin: "0 0 6px", lineHeight: 1.2,
+            }}>
+              What atmosphere fits tonight?
+            </h2>
+            <p style={{
+              fontSize: 13, color: "rgba(240,232,216,0.45)",
+              margin: "0 0 32px",
+            }}>
+              Your mentor will tailor commentary to match your mood.
+            </p>
+
+            {/* Options grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 28 }}>
+              {[
+                { value: "solo",        label: "Reflective Solo",  sub: "Quiet. Intentional. Personal." },
+                { value: "social",      label: "Social Lounge",    sub: "Shared. Warm. Conversational." },
+                { value: "late-night",  label: "Late Night",       sub: "Dark. Deep. Unhurried." },
+                { value: "celebration", label: "Celebration",      sub: "Elevated. Commemorating something." },
+              ].map(opt => {
+                const isSelected = localAtmosphere === opt.value;
+                return (
+                  <motion.button
+                    key={opt.value}
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => setLocalAtmosphere(opt.value)}
+                    style={{
+                      padding: "18px 14px",
+                      borderRadius: 14,
+                      background: isSelected ? `${theme.accent}1A` : "rgba(255,255,255,0.04)",
+                      border: `1px solid ${isSelected ? theme.accent : "rgba(255,255,255,0.08)"}`,
+                      cursor: "pointer", textAlign: "left",
+                      transition: "border-color 0.18s, background 0.18s",
+                    }}
+                  >
+                    <div style={{
+                      fontSize: 14, fontWeight: 600,
+                      color: isSelected ? theme.accent : "#F0E8D8",
+                      fontFamily: "'Playfair Display', serif",
+                      marginBottom: 4,
+                    }}>
+                      {opt.label}
+                    </div>
+                    <div style={{ fontSize: 11, color: "rgba(240,232,216,0.38)", lineHeight: 1.35 }}>
+                      {opt.sub}
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+
+            {/* Begin button */}
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setShowAtmosphereOverlay(false)}
+              style={{
+                width: "100%", padding: "16px",
+                borderRadius: 14,
+                background: localAtmosphere
+                  ? `linear-gradient(135deg, ${theme.accent}, ${theme.accentSoft})`
+                  : "rgba(255,255,255,0.06)",
+                border: localAtmosphere ? "none" : "1px solid rgba(255,255,255,0.1)",
+                color: localAtmosphere ? "#F5F2ED" : "rgba(240,232,216,0.35)",
+                fontSize: 15, fontWeight: 700, cursor: "pointer",
+                letterSpacing: "0.06em",
+                boxShadow: localAtmosphere ? `0 8px 28px ${theme.accent}38` : "none",
+                transition: "all 0.22s ease",
+              }}
+            >
+              {localAtmosphere ? "Begin Experience" : "Skip — Enter Anonymously"}
+            </motion.button>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+
     {/* ── Entry chamber — full-screen cinematic intro, dismisses on begin ── */}
     <AnimatePresence>
       {showChamber && (
         <CraftEntryChamber
           type={type}
           theme={theme}
-          onBegin={() => setShowChamber(false)}
+          onBegin={() => { setShowChamber(false); setShowAtmosphereOverlay(true); }}
           onBack={() => navigate("/")}
         />
       )}
