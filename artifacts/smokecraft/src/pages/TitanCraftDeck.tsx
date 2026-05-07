@@ -70,7 +70,7 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
 
   return (
     <motion.div
-      className="console-slab relative overflow-hidden cursor-pointer h-full group"
+      className="console-slab cursor-pointer h-full group"
       style={{ border: `1px solid ${isSmoke ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.05)"}` }}
       animate={{
         scale:   active ? 1.02 : 1,
@@ -87,7 +87,7 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
       <img
         src={img}
         alt={title}
-        className={`absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 ${isSmoke ? "brightness-125 contrast-125 opacity-60" : "brightness-110 opacity-50"}`}
+        className={`hero-img transition-transform duration-1000 group-hover:scale-110 ${isSmoke ? "opacity-60" : "opacity-50"}`}
       />
 
       {/* Bottom-up gradient */}
