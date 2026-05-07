@@ -60,6 +60,12 @@ import {
 import type { CraftScene } from "@/data/craftScenes";
 import { getWeightedScenes } from "@/lib/weightedEngine";
 import type { UserProfile }  from "@/contexts/UserProfileContext";
+import {
+  buildAffiliateLink,
+  handleOutboundRedirect,
+  logOutboundClick,
+  getVenueDisplayName,
+} from "@/lib/affiliateLink";
 
 // ── Time-of-day profile ───────────────────────────────────────────────────────
 // Kiosk landing has no authenticated user; we derive a sensible scene-ranking
@@ -581,9 +587,10 @@ function PriceTicker({ craftPrices }: { craftPrices: Record<string, PriceInfo> }
 
       {/* ── DayOne360 — static centre anchor ── */}
       <a
-        href="https://www.dayone360.com"
+        href={buildAffiliateLink("https://www.dayone360.com")}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => void logOutboundClick("DAYONE360_LEISURE")}
         style={{
           position:"absolute", left:"50%", top:"50%",
           transform:"translate(-50%,-50%)",
@@ -863,13 +870,13 @@ function TravelConciergeModal({ onClose }: { onClose: () => void }) {
           }}>
             Open <span style={{ color: "#a78bfa" }}>DayOne360.com</span>?
           </div>
-          <a
-            href="https://www.dayone360.com"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => handleOutboundRedirect("DAYONE360_LEISURE", "https://www.dayone360.com")}
             style={{
               display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              padding: "16px", borderRadius: 14, textDecoration: "none",
+              padding: "16px", borderRadius: 14,
+              width: "100%", cursor: "pointer",
               background: "linear-gradient(135deg, rgba(167,139,250,0.22), rgba(139,92,246,0.14))",
               border: "1px solid rgba(167,139,250,0.40)",
               fontSize: 14, fontWeight: 800, color: "#c4b5fd", letterSpacing: "0.08em",
@@ -877,12 +884,18 @@ function TravelConciergeModal({ onClose }: { onClose: () => void }) {
             }}
           >
             Continue →
-          </a>
+          </button>
+          {/* Preferred Partner tag */}
           <div style={{
-            textAlign: "center", marginTop: 10,
-            fontSize: 9, color: "rgba(167,139,250,0.35)", letterSpacing: "0.12em",
+            marginTop: 10, padding: "7px 12px", borderRadius: 8, textAlign: "center",
+            background: "rgba(167,139,250,0.06)", border: "1px solid rgba(167,139,250,0.15)",
           }}>
-            Opens DayOne360.com in a new tab · Affiliate partner of Axiom OS
+            <div style={{ fontSize: 9, color: "rgba(167,139,250,0.70)", letterSpacing: "0.10em", fontWeight: 700 }}>
+              ✦ Preferred Partner of {getVenueDisplayName()}
+            </div>
+            <div style={{ fontSize: 8, color: "rgba(167,139,250,0.38)", letterSpacing: "0.08em", marginTop: 2 }}>
+              Your exclusive rates are applied · Venue earns referral credit
+            </div>
           </div>
         </div>
       </motion.div>
@@ -2074,9 +2087,10 @@ function PatronView({
         style={{ padding: "0 16px 8px" }}
       >
         <motion.a
-          href="https://www.dayone360.com"
+          href={buildAffiliateLink("https://www.dayone360.com")}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => void logOutboundClick("DAYONE360_LEISURE")}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -2114,7 +2128,7 @@ function PatronView({
             </div>
             <div style={{ fontFamily:"'Courier New',monospace", fontSize:8, fontWeight:700,
               color:"rgba(167,139,250,0.65)", letterSpacing:"0.18em", textTransform:"uppercase", marginTop:2 }}>
-              Elite Dominican Concierge · Tap to explore
+              Preferred Partner of {getVenueDisplayName()} · Exclusive rates applied
             </div>
           </div>
           {/* Arrow */}

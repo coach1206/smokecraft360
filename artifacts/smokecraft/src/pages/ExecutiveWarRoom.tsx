@@ -133,11 +133,12 @@ type FleetDevice = {
   thermalThresholdCelsius: number; pixelShiftActive: boolean;
 };
 
-type Tab = "energy" | "pressure" | "fleet";
+type Tab = "energy" | "pressure" | "fleet" | "referral";
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "energy",   label: "Room Energy",      icon: "⚡" },
   { id: "pressure", label: "Revenue Pressure", icon: "◈" },
   { id: "fleet",    label: "Fleet Status",     icon: "◉" },
+  { id: "referral", label: "Referral Revenue", icon: "◆" },
 ];
 
 // ── Room Energy tab ────────────────────────────────────────────────────────────
@@ -368,6 +369,214 @@ function FleetTab({ venueId }: { venueId: string | null }) {
   );
 }
 
+// ── Referral Revenue tab ────────────────────────────────────────────────────────
+
+type ReferralRow = {
+  id: string; guestKey: string; pillarType: string; status: string;
+  commissionAmount: string; staffId: string | null; createdAt: string;
+};
+type ReferrerRow = { staffId: string | null; totalAmount: string | null; referrals: number };
+type PillarSummary = { pillarType: string; status: string; totalAmount: string | null; rowCount: number };
+
+const PILLAR_LABEL: Record<string, string> = {
+  DAYONE360_LEISURE: "DayOne360 Leisure",
+  DAYONE360_CORP:    "DayOne360 Corp",
+  WIFEX:             "WifeX",
+};
+const PILLAR_COLOR: Record<string, string> = {
+  DAYONE360_LEISURE: "#a78bfa",
+  DAYONE360_CORP:    "#3BBFA3",
+  WIFEX:             "#f59e0b",
+};
+const STATUS_COLOR: Record<string, string> = {
+  PENDING:   C.orange, CONFIRMED: C.green, DISBURSED: C.gold,
+};
+
+function ReferralRevenueTab({ venueId }: { venueId: string | null }) {
+  const [revenue,  setRevenue]  = useState<{ totalConfirmed: number; totalPending: number; totalClicks: number; byPillar: PillarSummary[] } | null>(null);
+  const [txns,     setTxns]     = useState<ReferralRow[]>([]);
+  const [referrers,setReferrers]= useState<ReferrerRow[]>([]);
+  const [loading,  setLoading]  = useState(true);
+
+  const load = () => {
+    if (!venueId) return;
+    setLoading(true);
+    Promise.all([
+      apiGet(`/api/referrals/revenue?venueId=${venueId}`),
+      apiGet(`/api/referrals/transactions?venueId=${venueId}&limit=20`),
+      apiGet(`/api/referrals/referrers?venueId=${venueId}`),
+    ])
+      .then(([rev, tx, ref]) => {
+        setRevenue(rev as typeof revenue);
+        setTxns((tx as { transactions: ReferralRow[] }).transactions);
+        setReferrers((ref as { referrers: ReferrerRow[] }).referrers);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { load(); const iv = setInterval(load, 30_000); return () => clearInterval(iv); }, [venueId]);
+
+  if (!venueId) return <Empty msg="No venue ID found in token." />;
+
+  const topReferrer = referrers[0];
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+
+      {/* KPI strip */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+        <GlassCard accent={C.green}>
+          <Label>Confirmed Revenue</Label>
+          <div style={{ fontSize: 28, fontWeight: 700, color: C.green, fontFamily: "'Cormorant Garamond', serif" }}>
+            {loading ? "—" : <>$<AnimCount value={revenue?.totalConfirmed ?? 0} decimals={2} /></>}
+          </div>
+          <Bar pct={Math.min(100, (revenue?.totalConfirmed ?? 0) / 10)} color={C.green} />
+        </GlassCard>
+        <GlassCard accent={C.orange}>
+          <Label>Pending Pipeline</Label>
+          <div style={{ fontSize: 28, fontWeight: 700, color: C.orange, fontFamily: "'Cormorant Garamond', serif" }}>
+            {loading ? "—" : <>$<AnimCount value={revenue?.totalPending ?? 0} decimals={2} /></>}
+          </div>
+          <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>Awaiting confirmation</div>
+        </GlassCard>
+        <GlassCard accent={C.gold}>
+          <Label>Total Click Events</Label>
+          <div style={{ fontSize: 28, fontWeight: 700, color: C.gold, fontFamily: "'Cormorant Garamond', serif" }}>
+            {loading ? "—" : <AnimCount value={revenue?.totalClicks ?? 0} />}
+          </div>
+          <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>Across all pillars</div>
+        </GlassCard>
+      </div>
+
+      {/* Pillar breakdown */}
+      {(revenue?.byPillar ?? []).length > 0 && (
+        <GlassCard>
+          <Label>Revenue by Pillar</Label>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 6 }}>
+            {revenue!.byPillar.map((p, i) => {
+              const color = PILLAR_COLOR[p.pillarType] ?? C.gold;
+              return (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{
+                    padding: "3px 9px", borderRadius: 20, fontSize: 9, fontWeight: 700,
+                    background: `${color}18`, border: `1px solid ${color}44`, color,
+                    letterSpacing: "0.06em", flexShrink: 0,
+                  }}>
+                    {PILLAR_LABEL[p.pillarType] ?? p.pillarType}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <Bar pct={Math.min(100, parseFloat(p.totalAmount ?? "0") / 5)} color={color} />
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color, minWidth: 52, textAlign: "right" }}>
+                    ${parseFloat(p.totalAmount ?? "0").toFixed(2)}
+                  </div>
+                  <span style={{
+                    fontSize: 8, padding: "2px 7px", borderRadius: 10,
+                    background: `${STATUS_COLOR[p.status] ?? C.muted}18`,
+                    border: `1px solid ${STATUS_COLOR[p.status] ?? C.muted}44`,
+                    color: STATUS_COLOR[p.status] ?? C.muted,
+                  }}>{p.status}</span>
+                </div>
+              );
+            })}
+          </div>
+        </GlassCard>
+      )}
+
+      {/* Top Referrer alert */}
+      {topReferrer && (
+        <motion.div
+          initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+          style={{
+            padding: "14px 18px", borderRadius: 14,
+            background: "rgba(212,139,0,0.06)", border: "1px solid rgba(212,139,0,0.28)",
+            boxShadow: "0 0 24px rgba(212,139,0,0.10)",
+            display: "flex", alignItems: "center", gap: 14,
+          }}
+        >
+          <div style={{
+            width: 38, height: 38, borderRadius: 10, flexShrink: 0,
+            background: "rgba(212,139,0,0.14)", border: "1px solid rgba(212,139,0,0.35)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 18,
+          }}>★</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", color: C.gold, textTransform: "uppercase", marginBottom: 3 }}>
+              Top Referrer — Bonus Eligible
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>
+              Staff {topReferrer.staffId ?? "—"}
+            </div>
+            <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>
+              {topReferrer.referrals} referral{topReferrer.referrals !== 1 ? "s" : ""} · ${parseFloat(topReferrer.totalAmount ?? "0").toFixed(2)} generated
+            </div>
+          </div>
+          <div style={{
+            padding: "6px 14px", borderRadius: 8,
+            background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.35)",
+            fontSize: 10, fontWeight: 800, color: C.gold, letterSpacing: "0.08em",
+          }}>
+            FLAG FOR BONUS
+          </div>
+        </motion.div>
+      )}
+
+      {/* Recent transactions */}
+      <GlassCard>
+        <Label>Recent Referral Activity</Label>
+        {loading && <Empty msg="Loading transactions…" />}
+        {!loading && txns.length === 0 && <Empty msg="No referral activity yet. Links are live and tracking." />}
+        {!loading && txns.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
+            {txns.map((t) => {
+              const color = PILLAR_COLOR[t.pillarType] ?? C.gold;
+              return (
+                <motion.div
+                  key={t.id}
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    padding: "10px 12px", borderRadius: 10,
+                    background: C.glass, border: `1px solid ${C.border}`,
+                  }}
+                >
+                  <div style={{
+                    width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
+                    background: STATUS_COLOR[t.status] ?? C.muted,
+                    boxShadow: `0 0 6px ${STATUS_COLOR[t.status] ?? C.muted}`,
+                  }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: C.text }}>
+                      {PILLAR_LABEL[t.pillarType] ?? t.pillarType}
+                    </div>
+                    <div style={{ fontSize: 10, color: C.muted, fontFamily: "'Courier New', monospace", marginTop: 1 }}>
+                      {t.guestKey}
+                      {t.staffId && <> · via Staff {t.staffId}</>}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color }}>
+                    ${parseFloat(t.commissionAmount).toFixed(2)}
+                  </div>
+                  <span style={{
+                    fontSize: 8, padding: "2px 7px", borderRadius: 10, flexShrink: 0,
+                    background: `${STATUS_COLOR[t.status] ?? C.muted}18`,
+                    border: `1px solid ${STATUS_COLOR[t.status] ?? C.muted}44`,
+                    color: STATUS_COLOR[t.status] ?? C.muted,
+                  }}>{t.status}</span>
+                  <div style={{ fontSize: 9, color: C.dim, flexShrink: 0 }}>
+                    {new Date(t.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+      </GlassCard>
+    </div>
+  );
+}
+
 function Empty({ msg }: { msg: string }) {
   return <div style={{ color: C.muted, fontSize: 13, padding: "48px 0", textAlign: "center", letterSpacing: "0.04em" }}>{msg}</div>;
 }
@@ -413,9 +622,10 @@ export default function ExecutiveWarRoom() {
       <div style={{ flex: 1, overflowY: "auto", padding: "24px 20px 80px" }}>
         <AnimatePresence mode="wait">
           <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-            {tab === "energy"   && <RoomEnergyTab   venueId={venueId} />}
-            {tab === "pressure" && <PressureTab      venueId={venueId} />}
-            {tab === "fleet"    && <FleetTab         venueId={venueId} />}
+            {tab === "energy"   && <RoomEnergyTab      venueId={venueId} />}
+            {tab === "pressure" && <PressureTab        venueId={venueId} />}
+            {tab === "fleet"    && <FleetTab           venueId={venueId} />}
+            {tab === "referral" && <ReferralRevenueTab venueId={venueId} />}
           </motion.div>
         </AnimatePresence>
       </div>

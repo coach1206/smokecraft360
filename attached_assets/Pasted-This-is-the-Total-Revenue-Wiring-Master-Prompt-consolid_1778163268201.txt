@@ -1,0 +1,25 @@
+This is the "Total Revenue Wiring" Master Prompt, consolidated into one continuous block for the Replit Agent. This instruction forces the architecture to bridge the gap between user behavior, venue identity, and the financial payout systems of DayOne360, DayOne360 Corporate, and WifeX.
+PASTE THIS INTO THE REPLIT AGENT:
+Role: Lead FinTech & Affiliate Systems Architect for Axiom OS.
+Objective: Implement the Total Revenue & Commission Bridge. This system must hard-wire the Venue ID and Guest Identity Key into every outbound interaction with DayOne360 (Leisure and Corporate) and WifeX, ensuring 100% commission attribution and real-time revenue tracking for the venue owner.
+1. THE VENUE-LOCKED ROUTING ENGINE:
+• Global Configuration: Establish a persistent current_venue_id variable (sourced from environment variables or the Venue Registry).
+• Deep Link Injection: Every outgoing hyperlink for DayOne360 and WifeX must be dynamically generated. Automatically append the venue_id as the primary affiliate tracker (aff_id) and the guest's Last Name + Last 4 as the sub-affiliate tracker (sub_id).
+• URL Structure Example: https://dayone360.com/onboarding?aff_id=[VENUE_ID]&sub_id=[GUEST_KEY]&source=axiom_terminal.
+2. THE CINEMATIC EXIT BRIDGE (FRONTEND):
+• Implement a 5-second Cinematic Overlay that triggers upon clicking any DayOne360 or WifeX logo.
+• Visuals: Use a high-end Framer Motion transition showing the Venue's Logo merging with the Partner's Logo.
+• Copy: "Axiom Concierge: Applying your exclusive [Venue Name] rates. Transferring your profile to our lifestyle partners..." This reinforces the value of the venue to the guest.
+3. THE REVENUE & COMMISSION LEDGER (BACKEND):
+• Database Wiring: Create a referral_commissions table to track every click and confirmed conversion.
+• API Endpoint: Build POST /api/referrals/log-click. Every time a guest clicks an exit link, log the Venue ID, Guest Key, and Target Pillar (e.g., WifeX_Relocation) as a "Pending" event.
+• Real-time Sync: Ensure the Venue Executive Dashboard reflects these "Leads" in real-time under a new "Lifestyle Referral Revenue" module.
+4. PERSISTENT ATTRIBUTION & STICKINESS:
+• Identity Handshake: Pass the guest's Last Name + Last 4 to the partner platforms. Ensure that if the guest completes a booking later on a personal device, the DayOne360/WifeX systems use the passed sub_id to attribute the commission back to the original hosting venue.
+• Cookie Integrity: Implement server-side logic to protect these referral IDs from being overwritten during the session.
+5. STAFF & OWNER FEEDBACK LOOP:
+• Add a Real-Time Commission Counter to the /ui/exec dashboard showing "Total Earnings" and "Pending Payouts."
+• If a referral results in a high-tier booking (e.g., Corporate Relocation), fire a notification to the Waitstaff Dashboard to alert the server to provide "VIP Tier" service to that table immediately.
+VISUAL STANDARDS:
+• Luxury FinTech aesthetic. Use clean, "Apple-level" animations for the exit bridge. Ensure the transition between the obsidian Axiom theme and the partner sites feels like a seamless hand-off.
+GO. Secure the Revenue and Finalize the Ecosystem.
