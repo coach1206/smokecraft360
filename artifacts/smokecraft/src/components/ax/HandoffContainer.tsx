@@ -321,15 +321,30 @@ function CraftCard({
             alt=""
             aria-hidden
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
+            animate={{ opacity: 0.75 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.4, ease: "easeInOut" }}
             className="absolute inset-0 w-full h-full object-cover"
-            style={{ zIndex: 2 }}
+            style={{ zIndex: 1 }}
             onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
           />
         )}
       </AnimatePresence>
+
+      {/* ── Layer 1b: Golden Aura — warm humidor spotlight ── */}
+      {/* Radial D4AF37 at 15% opacity — simulates warm amber backlighting.   */}
+      {/* Sits above the image but below the vignette so the warmth glows     */}
+      {/* through the image, not over the text layer.                          */}
+      <motion.div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        animate={{ opacity: [0.80, 1.0, 0.80] }}
+        transition={{ duration: 5.5 + idx * 0.7, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          zIndex: 2,
+          background: "radial-gradient(ellipse 68% 52% at 50% 40%, rgba(212,175,55,0.18) 0%, rgba(212,175,55,0.07) 45%, transparent 72%)",
+        }}
+      />
 
       {/* ── Layer 2: Vignette mask — clear at top, dark at bottom ── */}
       {/* Image is clearest at the top; the bottom fades to near-black so      */}
@@ -515,8 +530,9 @@ function PriceTicker({ craftPrices }: { craftPrices: Record<string, PriceInfo> }
     return { kind: "craft" as const, m, price, base, isSurge, isMember, delta };
   });
   const liftSeg = { kind: "lift" as const };
+  const d1Seg   = { kind: "d1"   as const };
   const invSegs = TICKER_INVENTORY_ITEMS.map(it => ({ kind: "inv" as const, it }));
-  const loop    = [...craftSegs, liftSeg, ...invSegs];
+  const loop    = [...craftSegs, liftSeg, d1Seg, ...invSegs];
   const items   = [...loop, ...loop, ...loop]; // triple for seamless -33.33%
 
   // ── Manual mode: repeat broadcast message ─────────────────────────────────
@@ -652,6 +668,31 @@ function PriceTicker({ craftPrices }: { craftPrices: Record<string, PriceInfo> }
                       <span style={{ fontFamily:MON, fontSize:24, fontWeight:800,
                         color:"#4ade80", textShadow:"0 0 16px rgba(74,222,128,0.75)",
                         letterSpacing:"0.04em", marginLeft:10 }}>$1,450</span>
+                      <span style={{ color:"rgba(255,179,71,0.14)", fontSize:18, marginLeft:40 }}>·</span>
+                    </div>
+                  );
+                }
+                if (seg.kind === "d1") {
+                  return (
+                    <div key={i} className="flex items-center flex-shrink-0" style={{ paddingRight:56 }}>
+                      <svg viewBox="0 0 22 22" width="16" height="16" fill="none" style={{ marginRight:8, flexShrink:0 }}>
+                        <circle cx="11" cy="11" r="7.5" stroke="#a78bfa" strokeWidth="1.1" opacity="0.75"/>
+                        <ellipse cx="11" cy="11" rx="3.8" ry="7.5" stroke="#a78bfa" strokeWidth="0.9" opacity="0.38"/>
+                        <line x1="3.5" y1="11" x2="18.5" y2="11" stroke="#a78bfa" strokeWidth="0.8" opacity="0.32"/>
+                        <path d="M14.5 5.5 L12.5 9.5 L9 8.5 L8 9.5 L10.5 11 L9 14 L11 13.5 L12.5 16 L14 14.5 L12.5 11 L16 8.5 Z"
+                          fill="#a78bfa" opacity="0.85"/>
+                      </svg>
+                      <span style={{ fontFamily:MON, fontSize:13, fontWeight:700,
+                        letterSpacing:"0.12em", color:"rgba(167,139,250,0.70)", textTransform:"uppercase", whiteSpace:"nowrap" }}>
+                        DayOne360 Bookings
+                      </span>
+                      <motion.span
+                        animate={{ opacity:[1, 0.5, 1] }}
+                        transition={{ duration:1.6, repeat:Infinity, ease:"easeInOut" }}
+                        style={{ fontFamily:MON, fontSize:13, fontWeight:800,
+                          color:"#4ade80", textShadow:"0 0 12px rgba(74,222,128,0.65)",
+                          letterSpacing:"0.06em", marginLeft:10, whiteSpace:"nowrap" }}
+                      >OPEN ✦</motion.span>
                       <span style={{ color:"rgba(255,179,71,0.14)", fontSize:18, marginLeft:40 }}>·</span>
                     </div>
                   );
@@ -2005,15 +2046,15 @@ function PatronView({
         </motion.div>
       </div>
 
-      {/* 4 Craft Cards + DayOne360 Sponsor Card */}
+      {/* 4 Craft Cards — Cine-Vertical 2×2 grid, full flex height */}
       <div
         className="relative z-10 flex-1 min-h-0 px-4"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(2, 1fr)",
-          gridTemplateRows:    "1fr 1fr auto",
-          gap: 12,
-          paddingBottom: 12,
+          gridTemplateRows:    "minmax(0, 1fr) minmax(0, 1fr)",
+          gap: 10,
+          paddingBottom: 8,
         }}
       >
         {CRAFTS.map((craft, i) => (
@@ -2025,7 +2066,61 @@ function PatronView({
             priceInfo={craftPrices[craft.id] ?? calculateDynamicPrice(CRAFT_BASE_PRICE[craft.id] ?? 20, occupancy, isDynamicActive, isMember)}
           />
         ))}
-        <DayOneCard onTap={() => setTravelOpen(true)} />
+      </div>
+
+      {/* DayOne360 — bottom-centre anchor bar, above ticker, live hyperlink */}
+      <div
+        className="relative z-10 flex-shrink-0"
+        style={{ padding: "0 16px 8px" }}
+      >
+        <motion.a
+          href="https://www.dayone360.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 13,
+            height: 52, borderRadius: 14, textDecoration: "none",
+            background: "linear-gradient(135deg, rgba(14,10,28,0.95) 0%, rgba(20,14,38,0.97) 50%, rgba(8,6,16,0.95) 100%)",
+            border: "1px solid rgba(167,139,250,0.28)",
+            boxShadow: "0 0 22px rgba(212,175,55,0.14), 0 4px 18px rgba(0,0,0,0.55), inset 0 1px 0 rgba(167,139,250,0.10)",
+            position: "relative", overflow: "hidden",
+          }}
+          whileHover={{ boxShadow: "0 0 32px rgba(212,175,55,0.22), 0 6px 24px rgba(0,0,0,0.60), inset 0 1px 0 rgba(167,139,250,0.14)" }}
+        >
+          {/* Radial purple ambient */}
+          <div style={{ position:"absolute", inset:0, pointerEvents:"none",
+            background:"radial-gradient(ellipse 60% 90% at 15% 50%, rgba(167,139,250,0.10), transparent)" }} />
+          {/* Globe + plane mark */}
+          <div style={{ flexShrink:0, width:34, height:34, borderRadius:10,
+            background:"rgba(167,139,250,0.10)", border:"1px solid rgba(167,139,250,0.28)",
+            display:"flex", alignItems:"center", justifyContent:"center", position:"relative", zIndex:1 }}>
+            <svg viewBox="0 0 32 32" width="20" height="20" fill="none">
+              <circle cx="16" cy="16" r="11" stroke="#a78bfa" strokeWidth="1.3" opacity="0.85"/>
+              <ellipse cx="16" cy="16" rx="5.5" ry="11" stroke="#a78bfa" strokeWidth="1" opacity="0.45"/>
+              <line x1="5" y1="16" x2="27" y2="16" stroke="#a78bfa" strokeWidth="0.9" opacity="0.38"/>
+              <path d="M21 8 L18 14 L13 12 L11 14 L15 16 L13 20 L16 19 L18 23 L20 21 L18 16 L23 12 Z"
+                fill="#a78bfa" opacity="0.90"/>
+            </svg>
+          </div>
+          {/* Label */}
+          <div style={{ position:"relative", zIndex:1 }}>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:16, fontWeight:700,
+              color:"#F0E8D4", letterSpacing:"0.04em", lineHeight:1.1,
+              textShadow:"0 0 12px rgba(212,175,55,0.45), 0 2px 8px rgba(0,0,0,0.70)" }}>
+              DayOne360 Travel
+            </div>
+            <div style={{ fontFamily:"'Courier New',monospace", fontSize:8, fontWeight:700,
+              color:"rgba(167,139,250,0.65)", letterSpacing:"0.18em", textTransform:"uppercase", marginTop:2 }}>
+              Elite Dominican Concierge · Tap to explore
+            </div>
+          </div>
+          {/* Arrow */}
+          <div style={{ position:"relative", zIndex:1, marginLeft:4,
+            fontFamily:"'Courier New',monospace", fontSize:11, color:"rgba(167,139,250,0.50)" }}>›</div>
+        </motion.a>
       </div>
 
       {/* Price Ticker — live LED strip */}
