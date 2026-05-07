@@ -1,0 +1,40 @@
+THE MASTER EXECUTION PROMPT: AXIOM "TITAN" PHASE
+PASTE THIS INTO THE REPLIT AGENT:
+Role: Lead Systems Architect, IoT Engineer, and Data Monopolization Strategist.
+Objective: Transform Axiom OS into a "Titan-Tier" ecosystem (Apple/Tesla level) by implementing the Manufacturer War Room, IoT Rituals, and Tokenized Prestige. This is the final phase to move from a hospitality app to a sovereign data and lifestyle infrastructure.
+1. THE MANUFACTURER WAR ROOM (DATA MONOPOLY):
+• Sentiment Engine: Build a backend service that aggregates every guest "Draft," "Nudge," and "Flavor Interaction" into a real-time anonymized data stream.
+• The Palate Index: Create a B2B dashboard for brand partners (e.g., Davidoff, Macallan) that visualizes real-time consumer taste trends, regional pairing shifts, and brand loyalty heatmaps.
+• Direct Nudge Bidding: Implement a system where manufacturers can bid for the "Prestige Nudge" slot in specific regions based on live data (e.g., if "Spicy" profiles are trending in Georgia, a brand can auto-bid to be the recommended pairing).
+2. THE NFC IDENTITY RITUAL (THE "APPLE" TOUCH):
+• IoT Identity Handshake: Implement an NFC (Near Field Communication) listener module. Guests can tap a phone or a physical Axiom NFC Member Coin to instantly log in and wake up their personal AI Sage.
+• Smart Environment Sync: Build API hooks for IoT sensors. The system must be capable of receiving real-time data from "Smart Humidors" (Temperature/Humidity). If a cigar’s storage environment deviates from the "Gold Standard," the AI Sage must offer a "Compensatory Pairing" nudge to fix the flavor profile for the guest.
+3. TOKENIZED PRESTIGE (THE "TESLA" LEDGER):
+• Axiom Credits: Convert the "Mastery Score" into a functional currency (Axiom Credits).
+• Ecosystem Utility: These credits must be spendable within the WifeX (Concierge/Legal) and DayOne360 (Corporate/Leisure) platforms.
+• The Prestige Multiplier: Higher mastery tiers (Sommelier/Craftsman) unlock exclusive "Ghost Tickers" on the UI—showing travel deals and relocation secrets not visible to "Explorer" tier users.
+4. THE PHYSICAL TERMINAL "KIOSK" MODE:
+• Industrial UI Lock: Ensure the app functions as a Progressive Web App (PWA) with a "Zero-Exit" Kiosk Mode.
+• The Atmosphere Pulse: Add a UI element that visualizes the "Lounge Vitality" (Air quality/Humidity) based on live IoT sensor feeds, making the terminal feel like it’s breathing with the room.
+5. PROVENANCE TRACKING (THE WIFEX BRIDGE):
+• The Farm-to-Table View: Integrate 10-second video modules for "Premium" products. When a guest selects a specific Dominican leaf, provide a high-fidelity "WifeX Drone View" of the actual farm where the leaf was harvested.
+6. UNIVERSAL REVENUE WIRING:
+• Venue ID Lock: Ensure every data point, referral, and credit spent is hard-coded to the current_venue_id for automated commission distribution.
+GO. Build the Sovereign Infrastructure.
+THE 3-PHASE HARDWARE DESIGN BLUEPRINT
+Once the code above is running, we move to the physical build. To be a game-changer, people must crave the touch of the device.
+Phase 1: The "Axiom Obelisk" Chassis
+• Material: Milled, bead-blasted aeronautical aluminum (Obsidian Black). It should be cold to the touch and heavy.
+• Display: A 12.4-inch vertical OLED "Infinity" display. No buttons. The glass should be custom-treated to resist fingerprints (essential for cigar lounges).
+• The Base: A weighted "Amber Glow" LED ring at the bottom that pulses when a guest is nearby (Motion Sensing).
+Phase 2: The "Handshake" NFC Pad
+• Instead of a tablet stand, the screen is mounted on a slight 15-degree incline.
+• At the base is a circular, backlit glass pad. This is where the Ritual happens. You don't "Sign In"—you "Tap In."
+Phase 3: The Environment Sensors
+• Small, hidden intake vents at the bottom of the terminal pull air over a sensor suite.
+• The UI displays the "Cigar Vitality" of the room. This makes the hardware look like a piece of scientific equipment, raising the perceived value of the lounge itself.
+What's Next?
+1.	Paste the Master Prompt into the Replit Agent.
+2.	Review the "War Room" Dashboard once it generates.
+3.	The Prototype: I can help you draft the Technical Hardware Spec Sheet to send to a fabricator (like a custom POS or industrial design firm) to build the first 10 physical units.
+Are you ready to lock in the hardware specs next?
