@@ -1,0 +1,45 @@
+import React, { useState, useEffect } from 'react';
+const craftRounds = [
+  { id: 1, title: "Beer Craft", sub: "Young Professionals", img: "https://images.unsplash.com/photo-1535958636474-b021ee887b13?q=80&w=400&fit=crop" },
+  { id: 2, title: "Pork Craft", sub: "Executive Travelers", img: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=400&fit=crop" },
+  { id: 3, title: "Smoke Craft", sub: "Luxury Connoisseurs", img: "https://images.unsplash.com/photo-1527030280862-64139fba04ca?q=80&w=400&fit=crop" },
+  { id: 4, title: "Vape Craft", sub: "Social Elite", img: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=400&fit=crop" }
+];
+const RotatingCard = ({ data }) => {
+  return (
+    <div className="relative group p-[1px] rounded-xl overflow-hidden transition-all duration-500 glass-card">
+      <div className="h-full p-6 flex flex-col justify-between">
+        <div className="flex justify-between items-start">
+          <img src={data.img} className="w-20 h-20 rounded object-cover border border-yellow-500/30" />
+          <div className="text-right"><p className="text-[10px] tracking-widest text-yellow-500 uppercase font-bold">{data.title}</p><h2 className="text-xl font-light text-white italic tracking-wide">Craft Hub</h2></div>
+        </div>
+        <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
+          <span className="text-[9px] text-white/40 uppercase tracking-tighter">{data.sub}</span>
+          <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+        </div>
+      </div>
+    </div>
+  );
+};
+export default function App() {
+  return (
+    <div className="h-screen w-full p-10 flex flex-col">
+      <header className="flex justify-between items-center mb-8 pb-4 border-b border-white/5">
+        <div className="flex items-center gap-2"><div className="h-1 w-6 bg-emerald-500" /><span className="text-xs gold-text uppercase font-bold tracking-widest">Titan Engine Active</span></div>
+        <h1 className="text-sm tracking-[0.4em] text-white/30 uppercase">Axiom OS x CraftHub</h1>
+        <div className="h-3 w-3 bg-emerald-500/20 border border-emerald-500 rounded-full animate-pulse" />
+      </header>
+      <main className="grid grid-cols-2 gap-6 flex-grow">
+        {craftRounds.map(c => <RotatingCard key={c.id} data={c} />)}
+      </main>
+      <footer className="mt-8 grid grid-cols-3 gap-10 items-center border-t border-white/5 pt-8">
+        <div className="flex items-center gap-4"><div className="w-4 h-4 bg-yellow-500 rotate-45" /><div className="gold-text font-bold tracking-widest uppercase">Smokecraft 360</div></div>
+        <div className="flex items-center gap-4 border-l border-white/10 pl-8"><div className="w-4 h-4 bg-violet-600 rotate-45" /><div className="text-white/60 font-bold tracking-widest uppercase">WifeX</div></div>
+        <div className="steel-texture rounded p-4 flex justify-between items-center border-l-2 border-yellow-500">
+          <div className="text-[8px] text-yellow-500 font-bold uppercase tracking-widest">Environment Pulse<br /><span className="text-xs text-white uppercase">Nominal</span></div>
+          <div className="flex gap-1 h-8 items-end">{[3,6,4,8,2,7].map((h,i)=><div key={i} className="w-2 bg-yellow-500/40" style={{height:`${h*10}%`}}/>)}</div>
+        </div>
+      </footer>
+    </div>
+  );
+}
