@@ -19,13 +19,13 @@ import TitanEngine, { AtmosphereReading } from "@/engines/titan_engine";
 import { handleOutboundRedirect }  from "@/lib/affiliateLink";
 import { getXP, addXP, getCurrentLevel, xpProgressPct } from "@/lib/xpStore";
 
-// ── Unsplash hero images mapped by craft id ────────────────────────────────
+// ── Hero images mapped by craft id ────────────────────────────────────────
 
 const CRAFT_IMAGES: Record<string, string> = {
-  smoke: "https://images.unsplash.com/photo-1527030280862-64139fba04ca?q=80&w=800&fit=crop",
-  pour:  "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=800&fit=crop",
-  brew:  "https://images.unsplash.com/photo-1535958636474-b021ee887b13?q=80&w=800&fit=crop",
-  vape:  "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&fit=crop",
+  smoke: "/images/scenes/smokecraft-card.jpg",
+  pour:  "/images/scenes/pourcraft-card.jpg",
+  brew:  "/images/scenes/brewcraft-card.jpg",
+  vape:  "/images/scenes/vapecraft-card.jpg",
 };
 
 const CRAFT_SUBS: Record<string, string> = {
@@ -150,7 +150,16 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
       <img
         src={img}
         alt={title}
-        className={`hero-img transition-transform duration-1000 group-hover:scale-110 ${isSmoke ? "opacity-60" : "opacity-50"}`}
+        className="transition-transform duration-1000 group-hover:scale-110"
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          objectPosition: "center",
+          opacity: isSmoke ? 0.85 : 0.75,
+        }}
       />
 
       {/* Bottom-up gradient overlay */}
