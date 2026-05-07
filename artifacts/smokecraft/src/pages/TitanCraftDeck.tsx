@@ -131,6 +131,7 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
         borderTop: "1px solid rgba(255,255,255,0.3)",
         borderLeft: "1px solid rgba(255,255,255,0.1)",
         background: "#121214",
+        backdropFilter: "blur(20px)",
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-end",
@@ -180,22 +181,22 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
       />
 
       {/* Bottom content */}
-      <div className="absolute bottom-0 left-0 w-full" style={{ padding: 40, zIndex: 2 }}>
+      <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", padding: "28px 32px", zIndex: 20 }}>
         <h2 style={{
-          fontSize: "clamp(1.5rem, 3.5vw, 3.5rem)",
+          fontSize: "clamp(1rem, 1.8vw, 1.875rem)",
           fontStyle: "italic",
-          letterSpacing: ".08em",
-          marginBottom: 10,
+          letterSpacing: "0.6em",
+          marginBottom: 8,
           lineHeight: 1,
           textTransform: "uppercase",
           fontWeight: 900,
           whiteSpace: "nowrap",
           ...(isSmoke
             ? {
-                background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
+                background: "linear-gradient(to bottom, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-                filter: "drop-shadow(0 0 15px rgba(212,175,55,.6))",
+                filter: "drop-shadow(0 0 12px rgba(212,175,55,.55))",
               }
             : {
                 background: "linear-gradient(to bottom, #fff 0%, #999 100%)",
@@ -207,53 +208,32 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
         </h2>
         <p style={{
           color: "#fff",
-          opacity: 0.6,
-          fontSize: "12px",
-          marginBottom: 40,
+          opacity: 0.5,
+          fontSize: "10px",
+          marginBottom: 18,
           letterSpacing: ".4em",
           textTransform: "uppercase",
         }}>
           {sub}
         </p>
-        {isSmoke ? (
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            style={{
-              background: "rgba(0,0,0,0.8)",
-              border: "1px solid #d4af37",
-              padding: "20px 50px",
-              color: "#d4af37",
-              fontWeight: 900,
-              letterSpacing: ".5em",
-              cursor: "pointer",
-              fontSize: "11px",
-              textTransform: "uppercase",
-            }}
-            onClick={e => { e.stopPropagation(); navigate(route); }}
-          >
-            {cta}
-          </motion.button>
-        ) : (
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.3)",
-              padding: "20px 50px",
-              color: "#fff",
-              fontWeight: 900,
-              letterSpacing: ".5em",
-              cursor: "pointer",
-              fontSize: "11px",
-              textTransform: "uppercase",
-            }}
-            onClick={e => { e.stopPropagation(); navigate(route); }}
-          >
-            {cta}
-          </motion.button>
-        )}
+        {/* Machined enter — thin line + [ENTER] */}
+        <div
+          style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}
+          onClick={e => { e.stopPropagation(); navigate(route); }}
+        >
+          <div style={{
+            flex: 1,
+            height: "0.5px",
+            background: isSmoke ? "#d4af37" : "rgba(255,255,255,0.25)",
+          }} />
+          <span style={{
+            color: isSmoke ? "#d4af37" : "rgba(255,255,255,0.55)",
+            fontSize: "9px",
+            letterSpacing: "0.4em",
+            textTransform: "uppercase",
+            fontWeight: 700,
+          }}>[ ENTER ]</span>
+        </div>
       </div>
     </motion.div>
   );
@@ -436,7 +416,7 @@ export default function TitanCraftDeck() {
             </div>
 
             {/* Right — status badge */}
-            <div style={{ background: "rgba(255,255,255,0.05)", padding: "12px 30px", borderRadius: 15, border: "1px solid #d4af37" }}>
+            <div style={{ background: "transparent", padding: "7px 22px", borderRadius: 999, border: "0.5px solid #d4af37" }}>
               <span style={{
                 background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
                 WebkitBackgroundClip: "text",
@@ -458,7 +438,7 @@ export default function TitanCraftDeck() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.28 }}
-                className="grid grid-cols-2 grid-rows-2 gap-12 h-[70vh] px-10 my-4"
+                className="grid grid-cols-2 grid-rows-2 gap-8 h-[70vh] px-14 my-6"
               >
                 {CRAFT_MODULES.map((mod, i) => (
                   <motion.div
