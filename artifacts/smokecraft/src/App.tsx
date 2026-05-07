@@ -51,7 +51,8 @@ import VendorTouchscreen    from "@/pages/VendorTouchscreen";
 import DemoExperienceCenter from "@/pages/DemoExperienceCenter";
 import CraftHub            from "@/pages/CraftHub";
 import Axiom360            from "@/pages/Axiom360";
-import TitanCraftDeck      from "@/pages/TitanCraftDeck";
+import TitanCraftDeck           from "@/pages/TitanCraftDeck";
+import DemographicIntelligence  from "@/pages/DemographicIntelligence";
 import ExperienceControlPanel from "@/pages/ExperienceControlPanel";
 import { DemoBanner }            from "@/components/Demo/DemoBanner";
 import { OfflineQueueBanner }   from "@/components/Demo/OfflineQueueBanner";
@@ -116,7 +117,8 @@ function Router() {
     <Switch>
       <Route path="/"           component={Axiom360}          />
       <Route path="/craft-hub"  component={CraftHub}          />
-      <Route path="/titan-hub"  component={TitanCraftDeck}    />
+      <Route path="/titan-hub"   component={TitanCraftDeck}           />
+      <Route path="/titan-demo"  component={DemographicIntelligence}  />
       <Route path="/intro"      component={Intro}          />
       <Route path="/entry"      component={Entry}          />
       <Route path="/pin-login"  component={PinLogin}       />
