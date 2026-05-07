@@ -831,6 +831,39 @@ function StaffPanel({
   const [founderVisible, setFounderVisible] = useState(false);
   const [activeSlug, setActiveSlug]         = useState<string | null>(null);
   const founderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevRankRef    = useRef<string | null>(null);
+  const [rankAlert, setRankAlert] = useState(false);
+
+  // Store — declared before any hooks that reference rank/xp
+  const {
+    occupancy, isDynamicActive, isMember,
+    totalLift, xp, rank,
+    updateOccupancy, toggleDynamic, resetSession,
+  } = useAxiomStore();
+
+  // Fire a service alert when rank changes mid-session
+  useEffect(() => {
+    if (prevRankRef.current !== null && prevRankRef.current !== rank) {
+      setRankAlert(true);
+    }
+    prevRankRef.current = rank;
+  }, [rank]);
+
+  // Derive taste memory from current craft + inventory snapshot
+  const tasteMemory = useMemo(() => {
+    const cigars  = STAFF_INVENTORY.find(c => c.cat === "Cigars")?.items  ?? [];
+    const spirits = STAFF_INVENTORY.find(c => c.cat === "Spirits")?.items ?? [];
+    if (currentCraft === "smoke") {
+      return cigars.slice(0, 3).map((i, n) => ({ name: i.name, action: n === 0 ? "✓ Added" : "↔ Viewed", color: "#D48B00" }));
+    }
+    if (currentCraft === "pour") {
+      return spirits.slice(0, 3).map((i, n) => ({ name: i.name, action: n < 2 ? "✓ Added" : "↔ Viewed", color: "#9B7FD4" }));
+    }
+    if (currentCraft === "brew") {
+      return [...spirits.slice(1, 3), ...cigars.slice(0, 1)].map((i, n) => ({ name: i.name, action: n === 0 ? "✓ Added" : "↔ Viewed", color: "#3BBFA3" }));
+    }
+    return [...cigars.slice(0, 2), ...spirits.slice(0, 1)].map((i, n) => ({ name: i.name, action: n === 0 ? "✓ Added" : "↔ Viewed", color: "#5BC4F5" }));
+  }, [currentCraft]);
 
   function startFounderPress() {
     founderTimerRef.current = setTimeout(() => setFounderVisible(true), 2000);
@@ -838,11 +871,6 @@ function StaffPanel({
   function clearFounderPress() {
     if (founderTimerRef.current) { clearTimeout(founderTimerRef.current); founderTimerRef.current = null; }
   }
-
-  const {
-    occupancy, isDynamicActive, isMember,
-    totalLift, updateOccupancy, toggleDynamic, resetSession,
-  } = useAxiomStore();
 
   const occupancyColor = occupancy > 80 ? "#b91c1c" : occupancy < 25 ? "#D48B00" : "#166534";
   const surgeActive    = occupancy > 80 && isDynamicActive;
@@ -913,6 +941,161 @@ function StaffPanel({
           }}
         >← EXIT POS</button>
       </div>
+
+      {/* ── Rank-Up Service Alert ──────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {rankAlert && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            style={{ overflow: "hidden", flexShrink: 0 }}
+          >
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "12px 24px",
+              background: "linear-gradient(90deg, rgba(212,139,0,0.18) 0%, rgba(212,139,0,0.08) 100%)",
+              borderBottom: "1px solid rgba(212,139,0,0.35)",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <motion.div
+                  animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
+                  transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ fontSize: 18 }}
+                >🔔</motion.div>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#D48B00", letterSpacing: "0.06em" }}>
+                    SERVICE ALERT — Patron Reached {rank}
+                  </div>
+                  <div style={{ fontSize: 10, color: "rgba(240,232,212,0.55)", marginTop: 2 }}>
+                    Congratulate the guest — they just unlocked {rank} tier privileges.
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setRankAlert(false)}
+                style={{
+                  minHeight: 36, padding: "0 14px", borderRadius: 8,
+                  background: "rgba(212,139,0,0.14)", border: "1px solid rgba(212,139,0,0.30)",
+                  fontSize: 8, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase",
+                  color: "#D48B00", cursor: "pointer",
+                }}
+              >Acknowledged ✓</button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Patron Intelligence Bar ─────────────────────────────────────────────── */}
+      {(() => {
+        const cfg      = RANK_CONFIG[rank as keyof typeof RANK_CONFIG] ?? RANK_CONFIG.Novice;
+        const prog     = xpProgress(xp);
+        const nextXP   = xpToNextRank(xp);
+        const craftCfg = CRAFTS.find(c => c.id === currentCraft);
+        return (
+          <div style={{
+            flexShrink: 0,
+            background: "#111110",
+            borderBottom: "1px solid rgba(26,26,27,0.55)",
+            padding: "16px 18px",
+            display: "grid",
+            gridTemplateColumns: "auto 1fr auto auto",
+            gap: "0 24px",
+            alignItems: "center",
+          }}>
+
+            {/* ─ Segment 1: Patron Rank ─ */}
+            <div style={{ display: "flex", alignItems: "center", gap: 14, paddingRight: 24, borderRight: "1px solid rgba(255,255,255,0.07)" }}>
+              <div style={{
+                width: 52, height: 52, borderRadius: 14, flexShrink: 0,
+                background: `${cfg.color}18`,
+                border: `1.5px solid ${cfg.color}44`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 22, color: cfg.color,
+                boxShadow: `0 0 16px ${cfg.color}22`,
+              }}>
+                {cfg.glyph}
+              </div>
+              <div>
+                <div style={{
+                  fontFamily: "'Courier New', monospace", fontSize: 7, fontWeight: 700,
+                  letterSpacing: "0.22em", color: "rgba(255,255,255,0.28)", marginBottom: 3,
+                }}>PATRON RANK</div>
+                <div style={{
+                  fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 700,
+                  lineHeight: 1, color: cfg.color, letterSpacing: "0.02em",
+                }}>{rank}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 7, marginTop: 6 }}>
+                  <div style={{ flex: 1, width: 96, height: 3, background: "rgba(255,255,255,0.08)", borderRadius: 99, overflow: "hidden" }}>
+                    <div style={{ height: "100%", width: `${prog * 100}%`, background: cfg.color, borderRadius: 99, transition: "width 0.8s ease" }} />
+                  </div>
+                  <span style={{ fontFamily: "'Courier New', monospace", fontSize: 8, color: "rgba(255,255,255,0.28)" }}>
+                    {nextXP != null ? `${nextXP} XP to next` : "MAX RANK"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* ─ Segment 2: Preferred Craft + Taste Memory ─ */}
+            <div style={{ paddingRight: 24, borderRight: "1px solid rgba(255,255,255,0.07)" }}>
+              <div style={{ fontFamily: "'Courier New', monospace", fontSize: 7, fontWeight: 700, letterSpacing: "0.22em", color: "rgba(255,255,255,0.28)", marginBottom: 8 }}>
+                PREFERRED CRAFT  ·  TASTE MEMORY
+              </div>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+                {craftCfg && (
+                  <div style={{
+                    flexShrink: 0,
+                    padding: "6px 12px", borderRadius: 8,
+                    background: `${craftCfg.color}14`,
+                    border: `1px solid ${craftCfg.color}30`,
+                    fontFamily: "'Courier New', monospace", fontSize: 9, fontWeight: 700,
+                    letterSpacing: "0.16em", color: craftCfg.color, whiteSpace: "nowrap",
+                  }}>
+                    {craftCfg.id.toUpperCase()}
+                  </div>
+                )}
+                <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                  {tasteMemory.map((item, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{
+                        fontFamily: "'Courier New', monospace", fontSize: 7, fontWeight: 700,
+                        letterSpacing: "0.10em", color: item.color,
+                        padding: "1px 6px", borderRadius: 4,
+                        background: `${item.color}14`,
+                        border: `1px solid ${item.color}28`,
+                        whiteSpace: "nowrap",
+                      }}>{item.action}</span>
+                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.60)", lineHeight: 1 }}>{item.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* ─ Segment 3: XP Today ─ */}
+            <div style={{ textAlign: "center", paddingRight: 24, borderRight: "1px solid rgba(255,255,255,0.07)", minWidth: 88 }}>
+              <div style={{ fontFamily: "'Courier New', monospace", fontSize: 7, fontWeight: 700, letterSpacing: "0.22em", color: "rgba(255,255,255,0.28)", marginBottom: 4 }}>XP TODAY</div>
+              <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 38, fontWeight: 700, lineHeight: 1, color: "#FFD166" }}>{xp}</div>
+              <div style={{ fontFamily: "'Courier New', monospace", fontSize: 7, color: "rgba(255,209,102,0.45)", marginTop: 3 }}>POINTS EARNED</div>
+            </div>
+
+            {/* ─ Segment 4: Table Dynamic Upsell ─ */}
+            <div style={{ textAlign: "center", minWidth: 100 }}>
+              <div style={{ fontFamily: "'Courier New', monospace", fontSize: 7, fontWeight: 700, letterSpacing: "0.22em", color: "rgba(255,255,255,0.28)", marginBottom: 4 }}>TABLE UPSELL</div>
+              <div style={{
+                fontFamily: "'Cormorant Garamond', serif", fontSize: 38, fontWeight: 700,
+                lineHeight: 1,
+                color: totalLift > 0 ? "#4ade80" : "rgba(255,255,255,0.28)",
+              }}>${typeof totalLift === "number" ? totalLift.toFixed(0) : "0"}</div>
+              <div style={{ fontFamily: "'Courier New', monospace", fontSize: 7, color: totalLift > 0 ? "rgba(74,222,128,0.45)" : "rgba(255,255,255,0.18)", marginTop: 3 }}>
+                {totalLift > 0 ? "DYNAMIC UPSELL ACTIVE" : "NO SURGE THIS SESSION"}
+              </div>
+            </div>
+
+          </div>
+        );
+      })()}
 
       {/* ── 3-Column POS Grid ───────────────────────────────────────────────── */}
       <div style={{
