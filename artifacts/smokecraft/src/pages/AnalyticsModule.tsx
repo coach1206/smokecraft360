@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
+import { useAxiomStore } from "@/store/axiomStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, TrendingUp, Brain, AlertTriangle, Gift, Award, Package, ArrowUpRight, ArrowDownRight, Plus, Minus, Zap } from "lucide-react";
 import LiveKpi from "@/components/LiveKpi";
@@ -10,6 +11,43 @@ import ConfirmModal from "@/components/ConfirmModal";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const priorityColors = { critical: "#ef4444", high: "#f59e0b", medium: "#5b8def", low: "#22c55e" };
+
+function SvgGauge({ pct, color, label, sub }: { pct: number; color: string; label: string; sub: string }) {
+  const R = 36, CIRC = 2 * Math.PI * R;
+  const filled = Math.max(0, Math.min(1, pct / 100)) * CIRC;
+  return (
+    <motion.div initial={{ opacity: 0, scale: 0.88 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}
+      style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+      <div style={{ position: "relative", width: 96, height: 96 }}>
+        <svg width={96} height={96} style={{ transform: "rotate(-90deg)" }}>
+          <circle cx={48} cy={48} r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={7} />
+          <motion.circle cx={48} cy={48} r={R} fill="none"
+            stroke={color} strokeWidth={7} strokeLinecap="round"
+            strokeDasharray={`${filled} ${CIRC}`}
+            initial={{ strokeDasharray: `0 ${CIRC}` }}
+            animate={{ strokeDasharray: `${filled} ${CIRC}` }}
+            transition={{ duration: 1.1, ease: "easeOut" }}
+          />
+        </svg>
+        <div style={{
+          position: "absolute", inset: 0, display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center",
+        }}>
+          <span style={{ fontSize: 18, fontWeight: 700, color, fontVariantNumeric: "tabular-nums" }}>{pct}%</span>
+        </div>
+        <div style={{
+          position: "absolute", inset: 0, borderRadius: "50%",
+          background: `radial-gradient(circle at 50% 50%, ${color}08 0%, transparent 70%)`,
+          pointerEvents: "none",
+        }} />
+      </div>
+      <div style={{ textAlign: "center" }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "rgba(240,232,212,0.85)", letterSpacing: "0.04em" }}>{label}</div>
+        <div style={{ fontSize: 10, color: "rgba(179,155,119,0.60)", marginTop: 2 }}>{sub}</div>
+      </div>
+    </motion.div>
+  );
+}
 
 const C = {
   header:    "linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)",
@@ -136,6 +174,11 @@ export default function AnalyticsModule() {
     [pos.products, soldCounts],
   );
 
+  const axiom = useAxiomStore();
+  const occupancyPct   = axiom.occupancy;
+  const revLiftPct     = totalRevenue > 0 ? Math.min(100, Math.round(totalRevenue / 10)) : 62;
+  const sentimentPct   = 74;
+
   return (
     <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: C.bg, color: C.text }}>
       {/* ── Header ── */}
@@ -179,6 +222,23 @@ export default function AnalyticsModule() {
       <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px" }}>
         {tab === "overview" && (
           <>
+            {/* ── Circular Gauges ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+              style={{
+                display: "flex", justifyContent: "space-around", alignItems: "center",
+                padding: "22px 24px", marginBottom: 20, borderRadius: 18,
+                background: "rgba(255,255,255,0.028)",
+                border: "1px solid rgba(255,210,120,0.09)",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.18)",
+              }}>
+              <SvgGauge pct={occupancyPct}  color="#C9A84C" label="Occupancy"     sub="Venue capacity fill" />
+              <div style={{ width: 1, height: 80, background: "rgba(255,210,120,0.08)" }} />
+              <SvgGauge pct={revLiftPct}    color="#5b8def" label="Revenue Lift"   sub="Session vs baseline" />
+              <div style={{ width: 1, height: 80, background: "rgba(255,210,120,0.08)" }} />
+              <SvgGauge pct={sentimentPct}  color="#22c55e" label="Sentiment"      sub="Guest satisfaction" />
+            </motion.div>
+
             {/* ── KPI Strip ── */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
               {([

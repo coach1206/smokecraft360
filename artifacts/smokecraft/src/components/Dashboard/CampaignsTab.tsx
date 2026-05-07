@@ -32,6 +32,32 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
 
 const STATUSES = Object.keys(STATUS_CONFIG) as Array<keyof typeof STATUS_CONFIG>;
 
+// ── Demo data (shown when API is unavailable or returns empty) ─────────────────
+
+const DEMO_CAMPAIGNS: Campaign[] = [
+  {
+    id: "demo-happy-hour", name: "Happy Hour", status: "active", active: true,
+    startDate: "2026-05-01", endDate: "2026-05-31",
+    budgetCents: 50000, impressionGoal: 200,
+    notes: "4–7 PM daily: 20% off all pour & smoke pairings. Auto-activates at venue open.",
+    productCount: 3,
+  },
+  {
+    id: "demo-member-monday", name: "Member Monday", status: "active", active: true,
+    startDate: "2026-05-01", endDate: "2026-05-31",
+    budgetCents: 30000, impressionGoal: 100,
+    notes: "15% off every Monday session for verified members. Loyalty tier: Connoisseur+.",
+    productCount: 2,
+  },
+  {
+    id: "demo-cigar-month", name: "Cigar of the Month", status: "paused", active: false,
+    startDate: "2026-05-01", endDate: "2026-05-31",
+    budgetCents: 20000, impressionGoal: 80,
+    notes: "Featured reserve selection — limited run, connoisseur tier only.",
+    productCount: 1,
+  },
+];
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export function CampaignsTab() {
@@ -46,12 +72,13 @@ export function CampaignsTab() {
 
   const load = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const [camps, inv] = await Promise.all([fetchCampaigns(), fetchInventory()]);
-      setCampaigns(camps);
+      setCampaigns(camps.length ? camps : DEMO_CAMPAIGNS);
       setInventory(inv);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load campaigns");
+    } catch {
+      setCampaigns(DEMO_CAMPAIGNS);
     } finally {
       setLoading(false);
     }

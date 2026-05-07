@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowLeft, User, Crown, Shield, UserCog, Power, ShieldAlert } from "lucide-react";
+import { ArrowLeft, User, Crown, Shield, UserCog, Power, ShieldAlert, Star } from "lucide-react";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
 import { usePosContext } from "@/contexts/PosContext";
 import { useVenueContext } from "@/contexts/VenueContext";
@@ -22,6 +22,18 @@ const C = {
 
 const roleIcons: Record<string, typeof Crown> = { owner: Crown, manager: Shield, staff: User };
 const roleColors: Record<string, string> = { owner: "#9A7820", manager: "#5b8def", staff: "#22c55e" };
+
+const PRESTIGE_COLORS: Record<string, string> = {
+  Novice: "#B39B77", Connoisseur: "#C9A84C", Master: "#A78BFA", Legend: "#ef4444",
+};
+
+const DEMO_STAFF = [
+  { id: "ds1", name: "Marcus Rivera",  role: "manager", status: "active",   pin: "1111", table: "Table 4",    prestige: "Connoisseur" },
+  { id: "ds2", name: "Jess Laurent",   role: "staff",   status: "active",   pin: "2222", table: "Bar Station", prestige: "Novice"      },
+  { id: "ds3", name: "Omar Chen",      role: "staff",   status: "active",   pin: "3333", table: "Table 1",    prestige: "Master"      },
+  { id: "ds4", name: "Sofia Reyes",    role: "owner",   status: "active",   pin: "4444", table: "—",          prestige: "Legend"      },
+  { id: "ds5", name: "Theo Marchetti", role: "staff",   status: "inactive", pin: "5555", table: "—",          prestige: "Novice"      },
+] as const;
 
 export default function StaffModule() {
   const [, navigate] = useLocation();
@@ -74,13 +86,75 @@ export default function StaffModule() {
 
       {/* ── Staff grid ── */}
       <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 14, alignContent: "start" }}>
-        {cc.staff.length === 0 ? (
-          <div style={{ gridColumn: "1/-1", padding: 48, textAlign: "center", borderRadius: 16, background: C.card, border: `1px solid ${C.border}` }}>
-            <User size={32} color={C.dim} style={{ marginBottom: 12 }} />
-            <div style={{ fontSize: 16, fontWeight: 600, color: C.muted }}>No staff members yet</div>
-            <div style={{ fontSize: 14, color: C.dim, marginTop: 6 }}>Staff accounts will appear here once created</div>
-          </div>
-        ) : cc.staff.map((member, i) => {
+
+        {/* Demo table strip — visible whenever real staff is empty */}
+        {cc.staff.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+            style={{ gridColumn: "1/-1", borderRadius: 16, background: C.card, border: `1px solid ${C.border}`, overflow: "hidden", marginBottom: 4 }}>
+            {/* Table header */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 120px", gap: 0, padding: "10px 20px", background: "rgba(255,210,120,0.04)", borderBottom: `1px solid ${C.border}` }}>
+              {["STAFF MEMBER", "ROLE", "TABLE STATUS", "PRESTIGE RANK", ""].map(h => (
+                <div key={h} style={{ fontSize: 9, fontWeight: 700, color: C.dim, letterSpacing: "0.14em", textTransform: "uppercase" }}>{h}</div>
+              ))}
+            </div>
+            {DEMO_STAFF.map((member, i) => {
+              const RoleIcon = roleIcons[member.role] ?? User;
+              const rColor = roleColors[member.role] ?? "#a78bfa";
+              const pColor = PRESTIGE_COLORS[member.prestige] ?? "#B39B77";
+              const isActive = member.status === "active";
+              return (
+                <motion.div key={member.id}
+                  initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
+                  style={{
+                    display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 120px",
+                    alignItems: "center", gap: 0, padding: "14px 20px",
+                    borderBottom: i < DEMO_STAFF.length - 1 ? `1px solid ${C.border}` : "none",
+                    opacity: isActive ? 1 : 0.5,
+                    background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.012)",
+                  }}>
+                  {/* Name */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 9, background: `${rColor}12`, border: `1px solid ${rColor}22`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <RoleIcon size={15} color={rColor} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{member.name}</div>
+                      <div style={{ fontSize: 9, color: C.dim }}>PIN ••••</div>
+                    </div>
+                  </div>
+                  {/* Role badge */}
+                  <div style={{ display: "inline-flex" }}>
+                    <span style={{ padding: "3px 9px", borderRadius: 6, background: `${rColor}10`, border: `1px solid ${rColor}22`, fontSize: 10, fontWeight: 700, color: rColor, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                      {member.role}
+                    </span>
+                  </div>
+                  {/* Table status */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: isActive && member.table !== "—" ? "#22c55e" : "#64748b", flexShrink: 0 }} />
+                    <span style={{ fontSize: 12, color: member.table !== "—" ? C.text : C.dim }}>{member.table}</span>
+                  </div>
+                  {/* Prestige rank */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <Star size={11} color={pColor} />
+                    <span style={{ fontSize: 12, fontWeight: 600, color: pColor }}>{member.prestige}</span>
+                  </div>
+                  {/* Status pill */}
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <span style={{
+                      padding: "4px 10px", borderRadius: 20, fontSize: 10, fontWeight: 700,
+                      background: isActive ? "rgba(34,197,94,0.08)" : "rgba(100,116,139,0.08)",
+                      border: `1px solid ${isActive ? "rgba(34,197,94,0.22)" : "rgba(100,116,139,0.2)"}`,
+                      color: isActive ? "#22c55e" : "#64748b",
+                    }}>{isActive ? "Active" : "Off shift"}</span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
+
+        {(cc.staff.length > 0 ? cc.staff : []).map((member, i) => {
           const RoleIcon = roleIcons[member.role] ?? User;
           const color = roleColors[member.role] ?? "#a78bfa";
           const isCurrent = pos.currentUser?.pin === member.pin;

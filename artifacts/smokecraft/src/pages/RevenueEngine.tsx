@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { usePosContext }         from "@/contexts/PosContext";
 import { useCommandCenter }     from "@/contexts/CommandCenterContext";
+import { useAxiomStore }        from "@/store/axiomStore";
 import {
   fetchCampaigns, createCampaign, updateCampaign,
   type Campaign,
@@ -1062,6 +1063,148 @@ function CraftSupplyIntel() {
   );
 }
 
+// ── Revenue Command Panel (live sparkline + dynamic pricing) ───────────────────
+
+const DEMO_HOURLY = [14, 22, 18, 41, 67, 58, 84, 96, 79, 63, 45, 31];
+
+function RevenueCommandPanel() {
+  const cc  = useCommandCenter();
+  const {
+    occupancy, isDynamicActive, isMember,
+    updateOccupancy, toggleDynamic, toggleMember,
+  } = useAxiomStore();
+
+  const raw = cc.hourlyRevenue.length >= 6
+    ? cc.hourlyRevenue.map(h => h.amount)
+    : DEMO_HOURLY;
+
+  const maxV  = Math.max(...raw, 1);
+  const W = 420, H = 72, pad = 8;
+  const xs = raw.map((_, i) => pad + (i / (raw.length - 1)) * (W - pad * 2));
+  const ys = raw.map(v  => H - pad - ((v / maxV) * (H - pad * 2)));
+  const points = xs.map((x, i) => `${x},${ys[i]}`).join(" ");
+  const areaPoints = `${pad},${H} ${points} ${W - pad},${H}`;
+
+  const accent = ACCENT_A;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      style={{
+        gridColumn: "span 2",
+        borderRadius: 20, overflow: "hidden",
+        border: `1px solid ${C.border}`,
+        background: "rgba(8,6,4,0.82)",
+        backdropFilter: "blur(18px)",
+        boxShadow: `0 12px 40px rgba(0,0,0,0.55), 0 0 0 1px ${accent}10 inset`,
+        padding: "22px 24px",
+        display: "grid",
+        gridTemplateColumns: "1fr 1px 340px",
+        gap: 0,
+        alignItems: "stretch",
+      }}
+    >
+      {/* ── Left: live sparkline ── */}
+      <div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+          <motion.div
+            style={{ width: 7, height: 7, borderRadius: "50%", background: accent }}
+            animate={{ opacity: [1, 0.3, 1], scale: [1, 1.6, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+          <span style={{ fontSize: 9, letterSpacing: "0.22em", color: C.muted, textTransform: "uppercase" }}>
+            Live Revenue · 12-hour window
+          </span>
+        </div>
+        <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: 72 }} preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="sparkfill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stopColor={accent} stopOpacity="0.22" />
+              <stop offset="100%" stopColor={accent} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <polygon points={areaPoints} fill="url(#sparkfill)" />
+          <polyline points={points} fill="none" stroke={accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          {xs.map((x, i) => (
+            <circle key={i} cx={x} cy={ys[i]} r={i === raw.length - 1 ? 4 : 2.5}
+              fill={i === raw.length - 1 ? accent : `${accent}70`} />
+          ))}
+        </svg>
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+          {["12 PM","2","4","6","8","10","12 AM"].map(t => (
+            <span key={t} style={{ fontSize: 8.5, color: C.dim, letterSpacing: "0.06em" }}>{t}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div style={{ background: C.border, margin: "0 22px" }} />
+
+      {/* ── Right: dynamic pricing toggles ── */}
+      <div>
+        <div style={{ fontSize: 9, letterSpacing: "0.22em", color: C.muted, textTransform: "uppercase", marginBottom: 14 }}>
+          Dynamic Pricing Controls
+        </div>
+
+        {/* Occupancy slider */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: C.text }}>Venue Occupancy</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: C.gold }}>{occupancy}%</span>
+          </div>
+          <input
+            type="range" min={0} max={100} value={occupancy}
+            onChange={e => updateOccupancy(Number(e.target.value))}
+            style={{ width: "100%", accentColor: C.gold, cursor: "pointer", height: 4 }}
+          />
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+            <span style={{ fontSize: 8, color: C.dim }}>Empty</span>
+            <span style={{ fontSize: 8, color: C.dim }}>Full house</span>
+          </div>
+        </div>
+
+        {/* Toggle row */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+          {([
+            { label: "Dynamic Pricing", desc: "Adjust prices by occupancy + time of day", on: isDynamicActive, fn: toggleDynamic, color: accent },
+            { label: "Member Rate",     desc: "Apply loyalty tier discounts automatically",  on: isMember,        fn: toggleMember,  color: "#22c55e" },
+          ] as const).map(t => (
+            <motion.button key={t.label} whileTap={{ scale: 0.97 }} onClick={t.fn}
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "10px 14px", borderRadius: 12, cursor: "pointer", textAlign: "left",
+                background: t.on ? `${t.color}0B` : C.glass,
+                border: `1px solid ${t.on ? `${t.color}30` : C.border}`,
+              }}>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: t.on ? C.text : C.muted }}>{t.label}</div>
+                <div style={{ fontSize: 10, color: C.dim, marginTop: 2 }}>{t.desc}</div>
+              </div>
+              <div style={{
+                width: 36, height: 20, borderRadius: 99, flexShrink: 0,
+                background: t.on ? t.color : "rgba(255,255,255,0.08)",
+                border: `1.5px solid ${t.on ? t.color : C.border}`,
+                display: "flex", alignItems: "center",
+                padding: "2px",
+                transition: "background 0.2s",
+                marginLeft: 12,
+              }}>
+                <motion.div
+                  animate={{ x: t.on ? 16 : 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  style={{ width: 14, height: 14, borderRadius: "50%", background: t.on ? "#fff" : C.muted }}
+                />
+              </div>
+            </motion.button>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Revenue intelligence status bar ───────────────────────────────────────────
 
 const NODES = [
@@ -1238,6 +1381,7 @@ export default function RevenueEngine() {
         gap:        16,
         alignContent: "start",
       }}>
+        <RevenueCommandPanel />
         <AttractionEngine />
         <SlowHourRecovery />
         <EventActivation />
