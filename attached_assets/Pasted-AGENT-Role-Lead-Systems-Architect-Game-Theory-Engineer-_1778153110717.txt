@@ -1,0 +1,32 @@
+AGENT:
+Role: Lead Systems Architect & Game Theory Engineer for Axiom OS.
+Objective: Build the "Sovereign Craft Hub Organism." This is an enterprise-grade Behavioral Intelligence Infrastructure that merges cinematic gamification with live venue ROI.
+1. THE SOVEREIGN INITIATION (DATA FUNNEL):
+• Intake Portal: Build a cinematic entrance capturing: Name, Email, Last 4 digits of Phone (ID), Gender, and Region.
+• Mastery Pitch: Display 3 glowing bullets:
+• The 6-Month Mastery: Rise from Explorer to Sommelier.
+• The Golden Box: Unlock your proprietary custom brand at 100% Mastery.
+• The Leaderboard: Claim your rank on the Regional & National grid.
+• Mentor Selection: Users swipe and choose an AI Sage (Dominican Master, Boutique Maverick, or Cuban Sage). This Mentor becomes the persistent "Voice of the System" providing all insights.
+2. THE CONNOISSEUR MASTERCLASS (GAMIFICATION):
+• The Drafting Engine: Users build their experience in "Drafts." The Mentor provides real-time Insight Bubbles beside every selection explaining: "Why this works" and "Sensory Outcome."
+• The Stakes Engine: Implement a Mastery Score (0-100).
+• Penalty Logic: Advanced levels lose 3x more points for flavor conflicts than Explorers.
+• Visual Aura: Guest profiles must "glow" more intensely as they level up (Obsidian → Radiant Gold).
+• Physical Anatomy Lab: High-res macro imagery for Leaf Wrappers. Interactive sliders for Ring Gauge & Length that physically scale the 3D/Visual cigar. Visual "Cut" selection (V-Cut, Punch, Straight).
+3. THE REVENUE & BOH BRIDGE (THE NUDGE):
+• The Pairing Engine: Post-draft, the AI Sage suggests 3 Spirits/Items from the Live Venue Inventory to maximize the guest's Mastery Score.
+• Server Pulse: Push instant notifications to the Waitress Dashboard: "Table [X] just drafted a [Profile]. Recommend [Specific House Special] for a +15 Mastery Boost."
+• Distributor Injection: Create a Prestige Multiplier for choosing distributor-sponsored products.
+4. THE 6-MONTH RETENTION LOOP:
+• The Golden Box Tracker: A persistent progress meter showing mastery toward a proprietary label.
+• Regional Leaderboard: A live, animated feed showing local rankings based on Mix Accuracy and Purchase History.
+• Identity Ledger: A "Connoisseur Resume" showing all unlocked badges and rare insights.
+5. ENTERPRISE HARDENING & INFRASTRUCTURE:
+• Hardware Philosophy: Implement OLED Burn-in Protection, Biometric Handoff logic, and Sovereign Failover for offline operation.
+• Manufacturer War Room: Build the B2B dashboard for brands to monitor "Product Interaction Analytics" and "Shadow Testing."
+• PostgreSQL Wiring: All data must flow into guest_identity_profiles, leaderboard_metrics, and venue_revenue_pressure tables.
+VISUAL STANDARDS:
+• Industrial-Luxe: Deep glass-morphism, dark obsidian themes, glowing data overlays.
+• Cinematic Motion: Use Framer Motion for liquid/smoke transitions. No static UI.
+GO. Build the Sovereign Organism.
