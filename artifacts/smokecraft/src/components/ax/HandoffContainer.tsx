@@ -519,6 +519,284 @@ function LangToggle() {
   );
 }
 
+// ── Price Ticker ──────────────────────────────────────────────────────────────
+
+const TICKER_META = [
+  { id: "smoke", label: "SMOKE", glyph: "◈", color: "#D48B00" },
+  { id: "pour",  label: "POUR",  glyph: "◇", color: "#9B7FD4" },
+  { id: "brew",  label: "BREW",  glyph: "◎", color: "#3BBFA3" },
+  { id: "vape",  label: "VAPE",  glyph: "◉", color: "#5BC4F5" },
+];
+
+function PriceTicker({ craftPrices }: { craftPrices: Record<string, PriceInfo> }) {
+  const prevTiers = useRef<Record<string, string>>({});
+  useEffect(() => {
+    let fired = false;
+    for (const m of TICKER_META) {
+      const tier = craftPrices[m.id]?.label ?? "";
+      if (!fired && prevTiers.current[m.id] !== undefined && prevTiers.current[m.id] !== tier) {
+        playClick();
+        fired = true;
+      }
+      prevTiers.current[m.id] = tier;
+    }
+  }, [craftPrices]);
+
+  const items = [...TICKER_META, ...TICKER_META, ...TICKER_META];
+
+  return (
+    <div
+      className="relative z-10 flex-shrink-0 overflow-hidden"
+      style={{
+        height: 30,
+        background: "rgba(4,3,2,0.97)",
+        borderTop:    "1px solid rgba(212,139,0,0.22)",
+        borderBottom: "1px solid rgba(212,139,0,0.08)",
+      }}
+    >
+      {/* Edge fade masks */}
+      <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 48, zIndex: 2, background: "linear-gradient(90deg, rgba(4,3,2,1) 0%, transparent 100%)" }} />
+      <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 48, zIndex: 2, background: "linear-gradient(270deg, rgba(4,3,2,1) 0%, transparent 100%)" }} />
+
+      {/* "MARKET RATE" label */}
+      <div style={{
+        position: "absolute", left: 0, top: 0, bottom: 0, zIndex: 3,
+        display: "flex", alignItems: "center", paddingLeft: 10,
+        background: "rgba(4,3,2,0.97)",
+      }}>
+        <span style={{
+          fontFamily: "'Courier New', monospace", fontSize: 7, fontWeight: 700,
+          letterSpacing: "0.22em", color: "rgba(212,139,0,0.45)", textTransform: "uppercase",
+        }}>
+          RATE
+        </span>
+        <div style={{ width: 1, height: 14, background: "rgba(212,139,0,0.20)", marginLeft: 8 }} />
+      </div>
+
+      <motion.div
+        className="flex items-center h-full"
+        style={{ paddingLeft: 56, width: "max-content" }}
+        animate={{ x: ["0%", "-33.33%"] }}
+        transition={{ duration: 32, repeat: Infinity, ease: "linear" }}
+      >
+        {items.map((m, i) => {
+          const info  = craftPrices[m.id];
+          const price = info?.price ?? CRAFT_BASE_PRICE[m.id] ?? 0;
+          const tier  = info?.label ?? "STANDARD";
+          const isSurge    = tier === "SURGE";
+          const isMemberLk = tier === "MEMBER";
+          const priceColor = isSurge ? "#f87171" : isMemberLk ? "#4ade80" : "#D48B00";
+          const glowColor  = isSurge ? "rgba(248,113,113,0.65)" : isMemberLk ? "rgba(74,222,128,0.55)" : "rgba(212,139,0,0.55)";
+
+          return (
+            <div key={i} className="flex items-center flex-shrink-0" style={{ paddingRight: 28 }}>
+              <span style={{
+                fontFamily: "'Courier New', monospace", fontSize: 8, fontWeight: 700,
+                letterSpacing: "0.14em", color: m.color,
+                textShadow: `0 0 7px ${m.color}70`,
+              }}>
+                {m.glyph}&nbsp;{m.label}
+              </span>
+              <span style={{
+                fontFamily: "'Courier New', monospace", fontSize: 10, fontWeight: 700,
+                color: priceColor, textShadow: `0 0 9px ${glowColor}`,
+                letterSpacing: "0.04em", marginLeft: 7,
+              }}>
+                ${price.toFixed(0)}
+              </span>
+              {(isSurge || isMemberLk) && (
+                <span style={{
+                  fontFamily: "'Courier New', monospace", fontSize: 7, fontWeight: 700,
+                  color: priceColor, letterSpacing: "0.16em",
+                  marginLeft: 4, opacity: 0.9,
+                }}>
+                  {isSurge ? "↑SURGE" : "↓LOCK"}
+                </span>
+              )}
+              <span style={{ color: "rgba(212,139,0,0.18)", fontSize: 12, marginLeft: 24 }}>·</span>
+            </div>
+          );
+        })}
+      </motion.div>
+    </div>
+  );
+}
+
+// ── Travel Concierge Modal (DayOne360) ────────────────────────────────────────
+
+function TravelConciergeModal({ onClose }: { onClose: () => void }) {
+  const TRIPS = [
+    { icon: "✈", label: "Havana Cigar Trail",       detail: "5 nights from $1,299",       color: "#D48B00" },
+    { icon: "🥃", label: "Scotch Highlands Weekend", detail: "Edinburgh from $899",         color: "#9B7FD4" },
+    { icon: "🌴", label: "Miami Members Retreat",    detail: "Seasonal early-bird rates",   color: "#3BBFA3" },
+  ];
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      style={{
+        position: "absolute", inset: 0, zIndex: 300,
+        background: "rgba(8,6,4,0.82)", backdropFilter: "blur(18px)",
+        display: "flex", alignItems: "flex-end",
+      }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "100%",
+          background: "linear-gradient(180deg, rgba(14,10,28,0.99) 0%, rgba(8,6,4,0.99) 100%)",
+          border: "1px solid rgba(167,139,250,0.22)",
+          borderBottom: "none", borderRadius: "24px 24px 0 0",
+          padding: "0 0 32px", overflow: "hidden",
+        }}
+      >
+        {/* Handle */}
+        <div style={{ display: "flex", justifyContent: "center", paddingTop: 12, paddingBottom: 8 }}>
+          <div style={{ width: 36, height: 3, borderRadius: 99, background: "rgba(167,139,250,0.28)" }} />
+        </div>
+
+        {/* Header */}
+        <div style={{
+          padding: "16px 24px 18px",
+          borderBottom: "1px solid rgba(167,139,250,0.10)",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+        }}>
+          <div>
+            <div style={{ fontSize: 22, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#a78bfa", letterSpacing: "0.12em" }}>
+              DayOne360
+            </div>
+            <div style={{ fontSize: 9, color: "rgba(167,139,250,0.48)", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: 3 }}>
+              Elite Travel · Curated for Axiom Members
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              background: "rgba(167,139,250,0.10)", border: "1px solid rgba(167,139,250,0.20)",
+              borderRadius: 10, padding: "6px 14px", color: "rgba(167,139,250,0.65)",
+              fontSize: 11, cursor: "pointer", outline: "none",
+            }}
+          >✕ Close</button>
+        </div>
+
+        {/* Trip cards */}
+        <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 10 }}>
+          {TRIPS.map((t, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.08 + i * 0.07 }}
+              style={{
+                display: "flex", alignItems: "center", gap: 14,
+                padding: "14px 16px", borderRadius: 14,
+                background: `${t.color}0A`, border: `1px solid ${t.color}20`,
+              }}
+            >
+              <span style={{ fontSize: 22 }}>{t.icon}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#F0E8D4" }}>{t.label}</div>
+                <div style={{ fontSize: 10, color: t.color, marginTop: 2, letterSpacing: "0.04em" }}>{t.detail}</div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div style={{ padding: "0 24px" }}>
+          <a
+            href="/mobile-hub"
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              padding: "15px", borderRadius: 14, textDecoration: "none",
+              background: "linear-gradient(135deg, rgba(167,139,250,0.16), rgba(167,139,250,0.07))",
+              border: "1px solid rgba(167,139,250,0.32)",
+              fontSize: 13, fontWeight: 700, color: "#a78bfa", letterSpacing: "0.06em",
+            }}
+          >
+            Open Full Concierge Portal →
+          </a>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ── DayOne360 Sponsor Card ────────────────────────────────────────────────────
+
+function DayOneCard({ onTap }: { onTap: () => void }) {
+  const [pressed, setPressed] = useState(false);
+  return (
+    <motion.button
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.40, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      onTapStart={() => setPressed(true)}
+      onTap={() => { setPressed(false); playClick(); onTap(); }}
+      onTapCancel={() => setPressed(false)}
+      style={{ gridColumn: "1 / -1", outline: "none" }}
+      className="cursor-pointer text-left"
+    >
+      <motion.div
+        animate={{ scale: pressed ? 0.985 : 1 }}
+        transition={{ duration: 0.15 }}
+        style={{
+          position: "relative", height: 72, overflow: "hidden",
+          background: "linear-gradient(135deg, rgba(14,10,28,0.96) 0%, rgba(20,14,38,0.98) 50%, rgba(8,6,16,0.96) 100%)",
+          border: "1px solid rgba(167,139,250,0.26)",
+          borderRadius: 16,
+          display: "flex", alignItems: "center", padding: "0 20px", gap: 16,
+          boxShadow: "0 0 24px rgba(167,139,250,0.07), inset 0 1px 0 rgba(167,139,250,0.10)",
+        }}
+      >
+        {/* Radial ambient */}
+        <div style={{
+          position: "absolute", inset: 0, pointerEvents: "none",
+          background: "radial-gradient(ellipse 55% 85% at 12% 50%, rgba(167,139,250,0.11), transparent)",
+        }} />
+        {/* Particles */}
+        {[...Array(5)].map((_, i) => (
+          <motion.div key={i} style={{
+            position: "absolute", width: 2, height: 2, borderRadius: "50%", background: "#a78bfa",
+            left: `${8 + i * 17}%`, top: `${18 + (i % 3) * 28}%`, opacity: 0.22 + i * 0.07,
+          }}
+            animate={{ opacity: [0.22, 0.55, 0.22], scale: [1, 1.6, 1] }}
+            transition={{ duration: 1.8 + i * 0.5, repeat: Infinity, delay: i * 0.35 }}
+          />
+        ))}
+        {/* Logo mark */}
+        <div style={{
+          flexShrink: 0, width: 40, height: 40, borderRadius: 11,
+          background: "rgba(167,139,250,0.11)", border: "1px solid rgba(167,139,250,0.26)",
+          display: "flex", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1,
+        }}>
+          <span style={{ fontSize: 15, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#a78bfa" }}>D1</span>
+        </div>
+        {/* Copy */}
+        <div style={{ flex: 1, position: "relative", zIndex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#F0E8D4", fontFamily: "'Cormorant Garamond', serif", letterSpacing: "0.07em", lineHeight: 1.2 }}>
+            DayOne360 Travel
+          </div>
+          <div style={{ fontSize: 9, color: "rgba(167,139,250,0.58)", letterSpacing: "0.16em", textTransform: "uppercase", marginTop: 3 }}>
+            Elite Dominican Concierge · Tap to explore
+          </div>
+        </div>
+        {/* Sponsor badge */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 5, position: "relative", zIndex: 1, flexShrink: 0 }}>
+          <span style={{
+            fontSize: 7, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase",
+            color: "rgba(167,139,250,0.50)",
+            padding: "2px 7px", borderRadius: 99,
+            border: "1px solid rgba(167,139,250,0.18)", background: "rgba(167,139,250,0.06)",
+          }}>SPONSOR</span>
+          <span style={{ fontSize: 11, color: "#a78bfa", fontWeight: 600 }}>View Offers ›</span>
+        </div>
+      </motion.div>
+    </motion.button>
+  );
+}
+
 // ── Audio toggle ──────────────────────────────────────────────────────────────
 // Self-contained component so it can mount independently in the staff footer.
 // Updates the module-level audioEngine flag; no prop drilling required.
@@ -1135,6 +1413,7 @@ function PatronView({
   const [rankUpVisible, setRankUpVisible]    = useState(false);
   const [rankUpLabel,   setRankUpLabel]      = useState("");
   const [founderPatronOpen, setFounderPatronOpen] = useState(false);
+  const [travelOpen, setTravelOpen] = useState(false);
   const logoHoldTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const { activeMode } = useAxiom360();
@@ -1399,14 +1678,15 @@ function PatronView({
         </motion.div>
       </div>
 
-      {/* 4 Craft Cards — Digital Portals */}
+      {/* 4 Craft Cards + DayOne360 Sponsor Card */}
       <div
-        className="relative z-10 flex-1 min-h-0 px-4 pb-4"
+        className="relative z-10 flex-1 min-h-0 px-4"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(2, 1fr)",
-          gridTemplateRows:    "repeat(2, 1fr)",
+          gridTemplateRows:    "1fr 1fr auto",
           gap: 12,
+          paddingBottom: 12,
         }}
       >
         {CRAFTS.map((craft, i) => (
@@ -1418,7 +1698,11 @@ function PatronView({
             priceInfo={craftPrices[craft.id] ?? calculateDynamicPrice(CRAFT_BASE_PRICE[craft.id] ?? 20, occupancy, isDynamicActive, isMember)}
           />
         ))}
+        <DayOneCard onTap={() => setTravelOpen(true)} />
       </div>
+
+      {/* Price Ticker — live LED strip */}
+      <PriceTicker craftPrices={craftPrices} />
 
       {/* Footer */}
       <footer
@@ -1627,6 +1911,11 @@ function PatronView({
             </button>
           </motion.div>
         )}
+      </AnimatePresence>
+
+      {/* ── Travel Concierge Modal (DayOne360) ── */}
+      <AnimatePresence>
+        {travelOpen && <TravelConciergeModal onClose={() => setTravelOpen(false)} />}
       </AnimatePresence>
 
       {/* ── Founder Dashboard — secret 5-second logo long-press ── */}
