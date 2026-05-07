@@ -1,0 +1,555 @@
+FINAL — FULL AXIOM OS UI REBUILD PROMPT
+MISSING / REQUIRED
+The current interface is visually attractive but still missing the following critical production-grade layers:
+
+
+Behavioral atmosphere system
+
+
+Dynamic hierarchy engine
+
+
+Environmental motion engine
+
+
+Interactive emotional response layer
+
+
+Luxury readability balancing
+
+
+Live intelligence visualization
+
+
+Immersive transition architecture
+
+
+Cinematic depth layering
+
+
+Adaptive spotlight system
+
+
+Brand authority presence layer
+
+
+AI emotional ambiance system
+
+
+Dynamic environmental audio hooks
+
+
+Real glass/material rendering
+
+
+Adaptive contrast balancing
+
+
+Venue-aware UI reactions
+
+
+Premium animation orchestration
+
+
+True command-center data integration
+
+
+Surface depth separation
+
+
+Ambient intelligence visuals
+
+
+Predictive recommendation atmosphere
+
+
+Without these, the platform still feels like:
+“a nice dashboard”
+instead of:
+“the operating system of intelligent hospitality.”
+
+FAILURE PREVENTION CHECKLIST
+DO NOT:
+
+
+use flat black backgrounds
+
+
+use washed-out typography
+
+
+use static hover cards
+
+
+use dead UI states
+
+
+use equal visual weight on all cards
+
+
+use neon cyberpunk aesthetics
+
+
+use gimmicky animations
+
+
+use generic SaaS layouts
+
+
+use emoji/glyph style UI
+
+
+use motion that feels fast or chaotic
+
+
+use floating random gradients
+
+
+use low contrast text
+
+
+use cheap glassmorphism
+
+
+use generic dashboard widgets
+
+
+use stock admin panel styling
+
+
+MUST:
+
+
+maintain cinematic luxury tone
+
+
+preserve readability first
+
+
+create emotional immersion
+
+
+make AI feel alive
+
+
+make cards react organically
+
+
+create environmental atmosphere
+
+
+add layered depth
+
+
+use premium motion timing
+
+
+create breathing UI behavior
+
+
+make Axiom feel intelligent
+
+
+make transitions feel expensive
+
+
+keep interactions smooth and calm
+
+
+create hierarchy-based visual focus
+
+
+make environment react to venue conditions
+
+
+
+MASTER PROMPT — AXIOM OS CINEMATIC EXPERIENCE ENGINE
+Rebuild the current Axiom OS homepage and experience selection system into a fully immersive behavioral intelligence interface.
+This is NOT a standard dashboard.
+This should feel like:
+Apple + Tesla + Bloomberg Terminal + luxury cigar lounge + adaptive AI environment.
+The system should feel:
+alive
+aware
+predictive
+calm
+luxurious
+emotionally intelligent.
+
+GLOBAL VISUAL SYSTEM
+Replace pure black backgrounds with layered charcoal luxury tones:
+Background:
+#0E0D0C
+Primary surface:
+rgba(26,20,16,.92)
+Secondary surface:
+rgba(40,30,22,.88)
+Accent metallic:
+#E0B36A
+Warm cream readability panels:
+#F5E9D8
+Add:
+vignette lighting
+ambient shadowing
+soft depth haze
+subtle environmental glow.
+
+ENVIRONMENTAL MOTION ENGINE
+Create passive cinematic movement across the entire UI:
+
+
+drifting smoke
+
+
+subtle floating dust particles
+
+
+ember glow movement
+
+
+liquid reflection shimmer
+
+
+animated lighting gradients
+
+
+slow ambient haze
+
+
+soft card breathing pulse
+
+
+depth parallax movement
+
+
+reflective glass sweeps
+
+
+warm atmospheric flickers
+
+
+Motion timing:
+extremely smooth
+slow
+luxury-paced
+non-distracting.
+Everything should feel:
+effortless and expensive.
+
+DYNAMIC EXPERIENCE HIERARCHY SYSTEM
+Do NOT keep all 4 experience cards equal size.
+Create an AI spotlight engine.
+One experience becomes dominant dynamically based on:
+
+
+venue sales
+
+
+active campaigns
+
+
+inventory
+
+
+time of day
+
+
+user interaction
+
+
+trending products
+
+
+AI recommendation confidence.
+
+
+Featured card:
+65% width
+larger animation
+deeper lighting
+enhanced environmental motion.
+Secondary cards:
+smaller but still immersive.
+Rotate spotlight automatically every 20–40 seconds with smooth cinematic transitions.
+
+EXPERIENCE CARD REBUILD
+Each card must feel alive.
+On hover:
+
+
+slow cinematic image zoom
+
+
+ambient light sweep
+
+
+card elevation
+
+
+animated edge glow
+
+
+subtle AI pulse ring
+
+
+environmental audio trigger hooks
+
+
+dynamic smoke/liquid/vapor movement
+
+
+increased contrast focus
+
+
+warm lighting enhancement.
+
+
+On click:
+transition entire UI into that craft world.
+SmokeCraft:
+
+
+warm ember lighting
+
+
+cigar smoke atmosphere
+
+
+dark walnut tones
+
+
+velvet haze.
+
+
+PourCraft:
+
+
+liquid reflections
+
+
+crystal highlights
+
+
+whiskey glow
+
+
+refracted lighting.
+
+
+BrewCraft:
+
+
+cold condensation
+
+
+carbonation particles
+
+
+amber brewery atmosphere.
+
+
+VapeCraft:
+
+
+atmospheric vapor
+
+
+futuristic lounge lighting
+
+
+deep layered neon haze.
+
+
+
+TYPOGRAPHY REBUILD
+Current typography is too thin.
+Rebuild with:
+luxury readability hierarchy.
+Rules:
+
+
+Titles: 500–600 weight
+
+
+Labels: uppercase with tracking
+
+
+Descriptions: opacity minimum .72
+
+
+Never use ultra-thin fonts on dark backgrounds
+
+
+Increase spacing consistency
+
+
+Improve scan readability.
+
+
+Typography should feel:
+editorial
+luxury
+clear
+powerful.
+
+LIVE INTELLIGENCE BAR
+Replace current ticker with:
+AI Curated Venue Intelligence System.
+Display:
+
+
+trending pairings
+
+
+inventory scarcity
+
+
+campaign performance
+
+
+reservation activity
+
+
+AI recommendations
+
+
+live venue insights
+
+
+customer engagement signals.
+
+
+Animate with:
+soft fade transitions
+slow movement
+premium readability.
+Examples:
+“Macallan 18 trending in executive lounge sessions.”
+“Last Behike BHK 52 reserved 4 minutes ago.”
+“PourCraft conversion rate increased 18% tonight.”
+
+AXIOM BRAND PRESENCE
+Axiom 360 logo must feel iconic.
+Add:
+
+
+startup glow pulse
+
+
+metallic reflection animation
+
+
+ambient shimmer
+
+
+subtle activation sequence
+
+
+breathing light effect.
+
+
+The logo should feel:
+like activating a high-end operating system.
+
+DEPTH ARCHITECTURE
+Create layered cinematic depth:
+Foreground:
+glass reflections
+animated UI lighting.
+Midground:
+interactive experience system.
+Background:
+environmental cinematic motion.
+Add:
+
+
+blur depth
+
+
+layered shadows
+
+
+warm reflections
+
+
+environmental gradients
+
+
+intelligent contrast balancing.
+
+
+No flat UI.
+
+AI PRESENCE LAYER
+The AI should feel present throughout the interface.
+Add:
+
+
+subtle recommendation pulses
+
+
+predictive lighting reactions
+
+
+adaptive content movement
+
+
+live recommendation confidence visuals
+
+
+intelligent hover anticipation
+
+
+venue mood adaptation.
+
+
+The environment should feel:
+aware of the user.
+
+SOUND DESIGN HOOKS
+Prepare architecture for:
+
+
+ember crackle
+
+
+whiskey pour
+
+
+beer fizz
+
+
+vapor release
+
+
+lounge ambience
+
+
+subtle AI tones.
+
+
+Do NOT autoplay.
+Use hover + interaction hooks only.
+
+PERFORMANCE REQUIREMENTS
+Must maintain:
+60fps minimum.
+Use:
+GPU acceleration
+transform-based animations
+requestAnimationFrame
+lazy environmental rendering
+motion throttling.
+Avoid:
+heavy CPU blur spam.
+
+FINAL GOAL
+The result should no longer feel like:
+“a hospitality website.”
+It should feel like:
+“the intelligent operating system powering the future of luxury venues.”
+The user should immediately think:
+“What the hell is this?”
+“This feels different.”
+“This feels alive.”
+That is the target.
