@@ -8,7 +8,7 @@
  * - Cinematic confirmation modal on successful order
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, ShoppingBag, Star, Check, Package, AlertTriangle } from "lucide-react";
@@ -21,6 +21,9 @@ import {
   detectEvolution, detectDeviation,
   type BlendChemistry,
 } from "@/lib/mentorIntelligence";
+import { socket } from "@/lib/socket";
+import LevelUpCeremony from "@/components/LevelUpCeremony";
+import RegionalLeaderboard from "@/components/RegionalLeaderboard";
 
 // ── Organic reveal stagger ────────────────────────────────────────────────────
 
@@ -109,7 +112,18 @@ export default function RevealPage() {
   const [chemistry, setChemistry] = useState<BlendChemistry | null>(null);
   const [intelInsight, setIntelInsight] = useState<string | null>(null);
 
-  const { guestProfile, mentor } = useGuestProfile();
+  // Neural Bridge — level-up ceremony state
+  interface LevelUpPayload {
+    oldTier:      string;
+    newTier:      string;
+    masteryGain:  number;
+    goldenBoxPct: number;
+    newBadges:    { badgeId: string; label?: string }[];
+  }
+  const [levelUp,     setLevelUp]     = useState<LevelUpPayload | null>(null);
+  const evolvedRef    = useRef(false);
+
+  const { guestProfile, mentor, evolveMastery } = useGuestProfile();
 
   const theme = getCraftTheme(craftType);
 
@@ -118,7 +132,33 @@ export default function RevealPage() {
     envCtx?.onRevealStart();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Fetch recommendations ─────────────────────────────────────────────────
+  // ── Neural Bridge: socket listener for neural:identity_evolved ───────────
+
+  useEffect(() => {
+    function onEvolved(payload: {
+      guestId:    string;
+      newTier:    string;
+      oldTier:    string;
+      masteryGain: number;
+      newTotal:   number;
+    }) {
+      if (!guestProfile || payload.guestId !== guestProfile.id) return;
+      if (payload.newTier !== payload.oldTier) {
+        setLevelUp(prev => prev ?? {
+          oldTier:      payload.oldTier,
+          newTier:      payload.newTier,
+          masteryGain:  payload.masteryGain,
+          goldenBoxPct: Math.min(100, payload.newTotal),
+          newBadges:    [],
+        });
+      }
+    }
+    socket.on("neural:identity_evolved", onEvolved);
+    return () => { socket.off("neural:identity_evolved", onEvolved); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guestProfile?.id]);
+
+  // ── Fetch recommendations + Neural Bridge closure ─────────────────────────
 
   useEffect(() => {
     if (!sessionId) return;
@@ -139,11 +179,55 @@ export default function RevealPage() {
         if (allTags.length > 0) {
           const chem = computeBlendChemistry(allTags, ct);
           setChemistry(chem);
-          // Deviation / evolution insight if guest has history
           if (guestProfile) {
             const dev = detectDeviation(allTags, guestProfile);
             const evo = !dev ? detectEvolution(guestProfile.flavorHistory, allTags) : null;
             setIntelInsight(dev ?? evo);
+          }
+        }
+
+        // ── Neural Bridge: evolve mastery + trigger BOH_PULSE ──────────────
+        if (guestProfile && !evolvedRef.current) {
+          evolvedRef.current = true;
+
+          // Read session score stored by ExperiencePage
+          let nbScore = 50;
+          let topTags: string[] = [];
+          try {
+            const raw = sessionStorage.getItem("nb_session");
+            if (raw) {
+              const parsed = JSON.parse(raw) as { sessionScore?: number; topTags?: string[] };
+              nbScore  = parsed.sessionScore ?? nbScore;
+              topTags  = parsed.topTags      ?? [];
+              sessionStorage.removeItem("nb_session");
+            }
+          } catch { /* ignore */ }
+
+          // Fallback: use top rec's taste match
+          if (nbScore === 50 && loaded.length > 0) {
+            nbScore = Math.round(loaded[0]!.tasteMatch);
+          }
+
+          const oldTier = guestProfile.masteryTier;
+          const result  = await evolveMastery(nbScore);
+          if (result && result.newTier !== oldTier) {
+            setLevelUp({
+              oldTier,
+              newTier:      result.newTier,
+              masteryGain:  result.masteryGain,
+              goldenBoxPct: Math.min(100, (guestProfile.totalMastery ?? 0) + result.masteryGain),
+              newBadges:    (result.newBadges ?? []).map((b: string) => ({ badgeId: b })),
+            });
+          }
+
+          // Trigger BOH_PULSE via pairing engine (non-blocking)
+          const tags = topTags.length > 0 ? topTags : allTags.slice(0, 4);
+          if (tags.length > 0) {
+            const params = new URLSearchParams();
+            tags.forEach(t => params.append("tags", t));
+            if (guestProfile.id)     params.set("guestId",   guestProfile.id);
+            if (guestProfile.region) params.set("region",    guestProfile.region);
+            apiGet(`/api/pairing-engine/suggest?${params.toString()}`).catch(() => {});
           }
         }
       } catch { /* use empty */ }
@@ -374,6 +458,15 @@ export default function RevealPage() {
         )}
       </div>
 
+      {/* Regional Leaderboard — live position for enrolled guests */}
+      {guestProfile && (
+        <RegionalLeaderboard
+          guestId={guestProfile.id}
+          region={guestProfile.region ?? null}
+          accentColor={theme.accent}
+        />
+      )}
+
       {/* Start over */}
       <div style={{
         position: "relative", zIndex: 10,
@@ -403,6 +496,21 @@ export default function RevealPage() {
             confirm={confirm}
             theme={theme}
             onClose={() => setConfirm(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Level-Up Ceremony — full-screen tier elevation celebration */}
+      <AnimatePresence>
+        {levelUp && guestProfile && (
+          <LevelUpCeremony
+            oldTier={levelUp.oldTier}
+            newTier={levelUp.newTier}
+            masteryGain={levelUp.masteryGain}
+            goldenBoxPct={levelUp.goldenBoxPct}
+            guestName={guestProfile.firstName}
+            newBadges={levelUp.newBadges}
+            onDismiss={() => setLevelUp(null)}
           />
         )}
       </AnimatePresence>

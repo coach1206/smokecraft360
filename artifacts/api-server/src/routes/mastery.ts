@@ -16,7 +16,7 @@
  */
 
 import { Router }                                    from "express";
-import { eq, desc }                                  from "drizzle-orm";
+import { eq, desc, sql }                             from "drizzle-orm";
 import { db, guestProfilesTable, guestBadgesTable, guestSessionsTable } from "@workspace/db";
 import { z }                                         from "zod";
 import { getIO }                                     from "../lib/socketServer";
@@ -212,6 +212,66 @@ router.get("/:guestId/ledger", async (req, res) => {
     sessions,
     allBadgeDefs: BADGE_DEFS,
   });
+});
+
+// ── GET /leaderboard ──────────────────────────────────────────────────────────
+
+router.get("/leaderboard", async (req, res) => {
+  const region  = typeof req.query["region"]  === "string" ? req.query["region"]  : null;
+  const guestId = typeof req.query["guestId"] === "string" ? req.query["guestId"] : null;
+  const limit   = Math.min(20, Number(req.query["limit"] ?? 10));
+
+  const rows = region
+    ? await db
+        .select({
+          guestId:      guestProfilesTable.id,
+          firstName:    guestProfilesTable.firstName,
+          lastInitial:  guestProfilesTable.lastInitial,
+          totalMastery: guestProfilesTable.totalMastery,
+          masteryTier:  guestProfilesTable.masteryTier,
+          region:       guestProfilesTable.region,
+        })
+        .from(guestProfilesTable)
+        .where(eq(guestProfilesTable.region, region))
+        .orderBy(desc(guestProfilesTable.totalMastery))
+        .limit(limit)
+    : await db
+        .select({
+          guestId:      guestProfilesTable.id,
+          firstName:    guestProfilesTable.firstName,
+          lastInitial:  guestProfilesTable.lastInitial,
+          totalMastery: guestProfilesTable.totalMastery,
+          masteryTier:  guestProfilesTable.masteryTier,
+          region:       guestProfilesTable.region,
+        })
+        .from(guestProfilesTable)
+        .orderBy(desc(guestProfilesTable.totalMastery))
+        .limit(limit);
+
+  const entries = rows.map((r, i) => ({ ...r, rank: i + 1 }));
+
+  let guestRank: number | null = null;
+  if (guestId) {
+    const inTop = entries.findIndex(e => e.guestId === guestId);
+    if (inTop >= 0) {
+      guestRank = entries[inTop]!.rank;
+    } else {
+      const [guest] = await db
+        .select({ totalMastery: guestProfilesTable.totalMastery })
+        .from(guestProfilesTable)
+        .where(eq(guestProfilesTable.id, guestId))
+        .limit(1);
+      if (guest) {
+        const [above] = await db
+          .select({ cnt: sql<number>`count(*)::int` })
+          .from(guestProfilesTable)
+          .where(sql`total_mastery > ${guest.totalMastery}${region ? sql` AND region = ${region}` : sql``}`);
+        guestRank = (above?.cnt ?? 0) + 1;
+      }
+    }
+  }
+
+  res.json({ entries, guestRank });
 });
 
 // ── POST /:guestId/badge/prestige ─────────────────────────────────────────────

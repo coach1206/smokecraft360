@@ -23,7 +23,8 @@ import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
 import { useOrchestratorSafe } from "@/contexts/OrchestratorContext";
 import { SessionReturnBanner } from "@/components/CinematicTransition";
 import { CraftEntryChamber } from "@/components/CraftEntryChamber";
-import MentorCommentary from "@/components/MentorCommentary";
+import InsightBubble from "@/components/InsightBubble";
+import MasteryScoreHUD from "@/components/MasteryScoreHUD";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { generateMentorLine, generateWhyThisWorks } from "@/lib/mentorIntelligence";
 
@@ -498,6 +499,7 @@ export default function ExperiencePage() {
   const { guestProfile, mentor }     = useGuestProfile();
   const [addedTags,   setAddedTags]   = useState<string[]>([]);
   const [addedCount,  setAddedCount]  = useState(0);
+  const [sessionScore, setSessionScore] = useState(0);
   const [commentary,  setCommentary]  = useState<{ line: string; whyNote: string | null } | null>(null);
   const commentaryTimer               = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -581,6 +583,7 @@ export default function ExperiencePage() {
         commentaryTimer.current = setTimeout(() => setCommentary(null), 3600);
         setAddedTags(prev => [...prev, ...newTags]);
         setAddedCount(nextAddCount);
+        setSessionScore(prev => Math.min(100, Math.round(prev + (card.baseScore ?? 50) / 10)));
       } else {
         // Fallback if no mentor (anonymous)
         setFeedback({ text: "Added to your taste profile", type: "add" });
@@ -633,6 +636,12 @@ export default function ExperiencePage() {
   async function handleFinish() {
     if (!sessionId) { navigate("/"); return; }
     apiPost(`/api/swipe-experience/session/${sessionId}/complete`, {}).catch(() => {});
+    try {
+      sessionStorage.setItem("nb_session", JSON.stringify({
+        sessionScore,
+        topTags: addedTags.slice(0, 8),
+      }));
+    } catch { /* sessionStorage unavailable */ }
     envCtx?.onRevealStart();
     navigate(`/reveal/${sessionId}`);
   }
@@ -838,10 +847,10 @@ export default function ExperiencePage() {
         </div>{/* /fixed-size inner box */}
       </div>
 
-      {/* Mentor commentary — appears on each ADD swipe */}
+      {/* Mentor Insight Bubble — cinematic floating card on each ADD swipe */}
       <AnimatePresence>
         {commentary && mentor && (
-          <MentorCommentary
+          <InsightBubble
             mentor={mentor}
             line={commentary.line}
             whyNote={commentary.whyNote}
@@ -931,6 +940,17 @@ export default function ExperiencePage() {
         </AnimatePresence>
       </div>
     </div>
+
+    {/* Mastery Score HUD — live session score + Golden Box, right-edge panel */}
+    {guestProfile && !showChamber && (
+      <MasteryScoreHUD
+        sessionScore={sessionScore}
+        totalMastery={guestProfile.totalMastery}
+        masteryTier={guestProfile.masteryTier}
+        accentColor={theme.accent}
+        guestName={guestProfile.firstName}
+      />
+    )}
 
     {/* ── Entry chamber — full-screen cinematic intro, dismisses on begin ── */}
     <AnimatePresence>
