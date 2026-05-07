@@ -1137,6 +1137,9 @@ function PatronView({
   const [founderPatronOpen, setFounderPatronOpen] = useState(false);
   const logoHoldTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
+  const { activeMode } = useAxiom360();
+  const isDark = activeMode !== "staff";
+
   const {
     occupancy,
     isDynamicActive,
@@ -1219,7 +1222,11 @@ function PatronView({
   return (
     <div
       className="absolute inset-0 flex flex-col overflow-hidden grainy-texture"
-      style={{ background: "#F5F2ED", color: "#1A1A1B", fontFamily: "'Inter', system-ui, sans-serif" }}
+      style={{
+        background: isDark ? "#080604" : "#F5F2ED",
+        color:      isDark ? "#F0E8D4" : "#1A1A1B",
+        fontFamily: "'Inter', system-ui, sans-serif",
+      }}
     >
       {/* Lounge Pulse ambient cloud — color syncs to active mood */}
       <Pulse
@@ -1237,7 +1244,7 @@ function PatronView({
       <header
         className="relative z-10 flex items-center gap-4 px-5 py-3 flex-shrink-0"
         style={{
-          borderBottom: "1px solid rgba(26,26,27,0.09)",
+          borderBottom: `1px solid ${isDark ? "rgba(240,232,212,0.09)" : "rgba(26,26,27,0.09)"}`,
           background: "rgba(13,11,9,0.88)",
           backdropFilter: "blur(18px)",
         }}
@@ -1260,7 +1267,7 @@ function PatronView({
             style={{
               fontFamily: "'Cormorant Garamond', Georgia, serif",
               fontSize: "clamp(18px, 2.4vw, 22px)",
-              color: "#1A1A1B",
+              color: isDark ? "#F0E8D4" : "#1A1A1B",
               letterSpacing: "0.18em",
             }}
           >
@@ -1289,7 +1296,7 @@ function PatronView({
                 animate={{ opacity: [1, 0.3, 1], scale: [1, 1.5, 1] }}
                 transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
               />
-              <span style={{ fontSize: 8, color: "rgba(26,26,27,0.30)", letterSpacing: "0.14em" }}>
+              <span style={{ fontSize: 8, color: isDark ? "rgba(240,232,212,0.40)" : "rgba(26,26,27,0.30)", letterSpacing: "0.14em" }}>
                 {n.label}
               </span>
               <span style={{ fontSize: 8, color: n.color, fontWeight: 700, letterSpacing: "0.1em" }}>
@@ -1302,7 +1309,7 @@ function PatronView({
         {/* Clock */}
         <div
           className="flex-shrink-0 flex items-center gap-2"
-          style={{ fontSize: 10, color: "rgba(26,26,27,0.25)", letterSpacing: "0.12em" }}
+          style={{ fontSize: 10, color: isDark ? "rgba(240,232,212,0.35)" : "rgba(26,26,27,0.25)", letterSpacing: "0.12em" }}
         >
           <motion.div
             className="rounded-full"
@@ -1324,7 +1331,7 @@ function PatronView({
             fontFamily: "'Cormorant Garamond', Georgia, serif",
             fontSize: "clamp(15px, 2.2vw, 21px)",
             fontWeight: 300,
-            color: "#1A1A1B",
+            color: isDark ? "#F0E8D4" : "#1A1A1B",
           }}
         >
           Select your{" "}
@@ -1332,7 +1339,7 @@ function PatronView({
             experience.
           </span>
         </motion.div>
-        <p style={{ fontSize: 10, color: "rgba(26,26,27,0.38)", marginTop: 5 }}>
+        <p style={{ fontSize: 10, color: isDark ? "rgba(240,232,212,0.45)" : "rgba(26,26,27,0.38)", marginTop: 5 }}>
           The AI engine curates in real time — tap to begin.
         </p>
 
@@ -1359,15 +1366,15 @@ function PatronView({
                   letterSpacing: "0.22em",
                   padding: "4px 10px",
                   borderRadius: 99,
-                  border: `1px solid ${active ? cfg.color : "rgba(26,26,27,0.16)"}`,
+                  border: `1px solid ${active ? cfg.color : isDark ? "rgba(240,232,212,0.16)" : "rgba(26,26,27,0.16)"}`,
                   background: active ? `${cfg.color}22` : "rgba(13,11,9,0.6)",
-                  color: active ? cfg.color : "rgba(26,26,27,0.38)",
+                  color: active ? cfg.color : isDark ? "rgba(240,232,212,0.50)" : "rgba(26,26,27,0.38)",
                   cursor: "pointer",
                   outline: "none",
                   transition: "all 0.28s ease",
                   boxShadow: active
-                    ? `0 0 10px ${cfg.color}44, inset 0 1px 0 rgba(26,26,27,0.08)`
-                    : "inset 0 1px 0 rgba(26,26,27,0.06)",
+                    ? `0 0 10px ${cfg.color}44, inset 0 1px 0 ${isDark ? "rgba(240,232,212,0.08)" : "rgba(26,26,27,0.08)"}`
+                    : `inset 0 1px 0 ${isDark ? "rgba(240,232,212,0.06)" : "rgba(26,26,27,0.06)"}`,
                 }}
               >
                 {cfg.label}
@@ -1381,7 +1388,7 @@ function PatronView({
               exit={{ opacity: 0 }}
               style={{
                 fontSize: 8,
-                color: "rgba(26,26,27,0.28)",
+                color: isDark ? "rgba(240,232,212,0.35)" : "rgba(26,26,27,0.28)",
                 letterSpacing: "0.1em",
                 marginLeft: 2,
               }}
@@ -1611,7 +1618,7 @@ function PatronView({
             <button
               onClick={() => setStimulation(false)}
               style={{
-                fontSize: 14, color: "rgba(26,26,27,0.28)",
+                fontSize: 14, color: isDark ? "rgba(240,232,212,0.38)" : "rgba(26,26,27,0.28)",
                 background: "none", border: "none", cursor: "pointer",
                 lineHeight: 1, padding: "2px 4px", flexShrink: 0,
               }}
@@ -1663,7 +1670,7 @@ function PatronView({
             transition={{ duration: 0.48 }}
             onAnimationComplete={() => navigate(portal.route)}
             className="fixed inset-0 z-[200] flex items-center justify-center"
-            style={{ background: "#F5F2ED" }}
+            style={{ background: isDark ? "#080604" : "#F5F2ED" }}
           >
             <motion.div
               initial={{ scale: 0.05, opacity: 0.9 }}
