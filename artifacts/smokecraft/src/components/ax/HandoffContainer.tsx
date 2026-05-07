@@ -216,7 +216,7 @@ const STAFF_NAV = [
 ] as const;
 
 // Tiles whose label opens an inline QuickView instead of navigating away
-const QUICK_VIEW_LABELS = new Set(["Revenue", "Analytics", "Campaigns"]);
+const QUICK_VIEW_LABELS = new Set(["Revenue", "Analytics", "Campaigns", "Operations"]);
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 

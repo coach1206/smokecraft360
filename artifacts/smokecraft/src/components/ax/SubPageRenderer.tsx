@@ -12,12 +12,13 @@
  *   default     → Fallback "processing" state
  */
 
-import { useAxiomStore } from "@/store/axiomStore";
-import { motion }        from "framer-motion";
+import { useAxiomStore }    from "@/store/axiomStore";
+import { ProductionAudit }  from "./ProductionAudit";
+import { motion }           from "framer-motion";
 import {
   Zap, Activity, TrendingUp, Users,
   BarChart3, Smile, Meh, Frown,
-  CheckCircle, ChevronRight,
+  CheckCircle, ChevronRight, ExternalLink, Settings,
 } from "lucide-react";
 
 // ── Tokens matching HandoffContainer's dark-chrome palette ────────────────────
@@ -271,6 +272,40 @@ function CampaignsView() {
   );
 }
 
+// ── Operations quick-view ─────────────────────────────────────────────────────
+
+function OperationsView() {
+  return (
+    <div style={{ paddingBottom: 4 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "20px 18px 4px" }}>
+        <Settings size={14} color={T.gold} />
+        <span style={{ fontSize: 13, fontWeight: 700, color: T.gold, letterSpacing: "0.06em" }}>Operations</span>
+      </div>
+
+      <ProductionAudit />
+
+      {/* Escape hatch to full module */}
+      <div style={{ margin: "0 18px 4px" }}>
+        <a
+          href="/operations"
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            padding: "11px 14px", borderRadius: 11, textDecoration: "none",
+            background: "rgba(255,255,255,0.02)", border: `1px solid ${T.border}`,
+            fontSize: 11, fontWeight: 600, color: T.muted,
+            transition: "border-color 0.15s, color 0.15s",
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,76,0.35)"; (e.currentTarget as HTMLElement).style.color = "#F0E8D4"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = T.border; (e.currentTarget as HTMLElement).style.color = T.muted; }}
+        >
+          <ExternalLink size={12} />
+          Open Full Operations Module
+        </a>
+      </div>
+    </div>
+  );
+}
+
 // ── Default fallback ──────────────────────────────────────────────────────────
 
 function DefaultView() {
@@ -301,6 +336,8 @@ export function SubPageRenderer({ slug }: { slug: string }) {
       return <AnalyticsView occupancy={occupancy} />;
     case "campaigns":
       return <CampaignsView />;
+    case "operations":
+      return <OperationsView />;
     default:
       return <DefaultView />;
   }
