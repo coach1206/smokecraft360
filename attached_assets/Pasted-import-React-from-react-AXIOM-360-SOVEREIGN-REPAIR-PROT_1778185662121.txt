@@ -1,0 +1,93 @@
+import React from 'react';
+
+/**
+ * AXIOM 360 SOVEREIGN - REPAIR PROTOCOL v4.0
+ * FORCES TALL GEOMETRY | FORCES GOLD LUSTER | KILLS WEBSITE SCROLLING
+ */
+
+const AxiomConsole = () => {
+  const ui = {
+    // KILLS THE WEBSITE FEEL: Locks the frame to the glass
+    container: {
+      height: '100vh',
+      width: '100vw',
+      backgroundColor: '#050505',
+      background: 'radial-gradient(circle at 50% 0%, #1c1c1e 0%, #050505 100%)',
+      color: '#fff',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '40px',
+      overflow: 'hidden',
+      position: 'relative',
+    },
+    // 24K GOLD LUSTER: Engraved Metallic Shine
+    gold: {
+      background: 'linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      fontWeight: '900',
+      letterSpacing: '0.4em',
+      filter: 'drop-shadow(0 0 15px rgba(212, 175, 55, 0.6))',
+      textTransform: 'uppercase',
+    },
+    // THE ATELIER SLABS: High-Contrast Glass Panels
+    slab: {
+      flex: '1',
+      height: '70vh', // FORCES THE TALL GEOMETRY - NO MORE SMASHING
+      borderRadius: '40px',
+      position: 'relative',
+      overflow: 'hidden',
+      borderTop: '2px solid rgba(255, 255, 255, 0.3)', 
+      borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
+      boxShadow: '0 50px 100px rgba(0,0,0,0.9)',
+      background: '#121214',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+      padding: '40px',
+    },
+    hero: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+      zIndex: 0,
+      filter: 'brightness(1.3) contrast(1.1)', // Lifts the dark veil
+    }
+  };
+
+  return (
+    <div style={ui.container}>
+      {/* HEADER: STATIONARY TERMINAL */}
+      <header style={{ zIndex: 10, display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '30px' }}>
+        <div>
+          <h1 style={{ ...ui.gold, fontSize: '32px', margin: 0 }}>Axiom 360</h1>
+          <p style={{ fontSize: '10px', letterSpacing: '0.6em', opacity: 0.4, marginTop: '8px', textTransform: 'uppercase' }}>
+            Sovereign OS // Premier Terminal
+          </p>
+        </div>
+        <div style={{ background: 'rgba(255,255,255,0.05)', padding: '12px 30px', borderRadius: '15px', border: '1px solid #d4af37' }}>
+          <span style={{ ...ui.gold, fontSize: '12px' }}>STATUS: NOMINAL</span>
+        </div>
+      </header>
+
+      {/* MAIN: TALL ATELIER PANELS */}
+      <div style={{ display: 'flex', gap: '50px', flex: '1', marginTop: '40px', zIndex: 5 }}>
+        
+        {/* SMOKECRAFT SLAB */}
+        <div style={ui.slab}>
+          <img src="https://images.unsplash.com/photo-1527030280862-64139fba04ca?w=1200" style={ui.hero} alt="Cigar" />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 60%)', zIndex: 1 }}></div>
+          <div style={{ zIndex: 2 }}>
+            <h2 style={{ ...ui.gold, fontSize: '56px', marginBottom: '10px', fontStyle: 'italic' }}>Smokecraft</h2>
+            <p style={{ fontSize: '12px', color: '#fff', opacity: 0.6, letterSpacing: '0.4em', marginBottom: '40px', textTransform: 'uppercase' }}>
+              Molecular Leaf Lab // Ritual Prep
+            </p>
+            <button style={{ 
+              background: 'rgba(0,0,0,0.8)', 
+              border: '1px solid #d4af37', 
+              padding: '20px 50px', 
+              color: '#d4af37', 
+              fontWeight:
