@@ -137,6 +137,7 @@ import { startFailedWebhookWorker }   from "./lib/failedWebhookWorker.js";
 import { startReconciliationWorker }  from "./lib/reconciliationWorker.js";
 import { notFoundHandler, globalErrorHandler } from "./middleware/responseFormat";
 import executiveIntelligenceRouter   from "./routes/executiveIntelligence";
+import manufacturerWarRoomRouter     from "./routes/manufacturerWarRoom";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -393,6 +394,7 @@ app.use("/api/events/behavior",         behaviorEventsRouter);
 app.use("/api/analytics",               behaviorEventsRouter);
 app.use("/api/data-intelligence",       dataIntelligenceRouter);
 app.use("/api/executive-intelligence",  executiveIntelligenceRouter);
+app.use("/api/manufacturer-war-room",   manufacturerWarRoomRouter);
 app.use("/api",                         onboardingRouter);
 app.use("/api",                         aiConfigureRouter);
 app.use("/api",                         demoSimulateRouter);
