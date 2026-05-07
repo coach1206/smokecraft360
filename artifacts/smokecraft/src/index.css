@@ -247,9 +247,9 @@
 
   /* ── Sovereign Terminal tokens — Material & Humidor palette ── */
   --gold:              #d4af37;
-  --steel:             #0a0a0b;
-  --glow:              rgba(212,175,55,0.10);
-  --axiom-body-bg:     radial-gradient(circle at center, #121214 0%, #050505 100%);
+  --steel:             #0d0d0e;
+  --glow:              rgba(212,175,55,0.15);
+  --axiom-body-bg:     radial-gradient(circle at center, #1a1a1c 0%, #050505 100%);
 }
 
 @layer base {
@@ -767,7 +767,7 @@
 
   /* ── steel-panel — deep obsidian gradient panel ── */
   .steel-panel {
-    background: linear-gradient(145deg, #18181a 0%, #060607 100%);
+    background: linear-gradient(145deg, #1e1e21 0%, #0a0a0b 100%);
     border: 1px solid rgba(255,255,255,0.05);
   }
 
@@ -788,11 +788,12 @@
 
   /* ── TITAN glass-card — near-black frosted obsidian card ── */
   .glass-card {
-    background: rgba(15,15,17,0.90);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(15,15,17,0.95);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
     border: 1px solid rgba(212,175,55,0.20);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.70);
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.90);
   }
 
   /* ═══════════════════════════════════════════════════════════════════════

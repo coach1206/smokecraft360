@@ -1,0 +1,97 @@
+import React, { useState, useEffect } from 'react';
+
+// MASTER CONFIG: Venue Gates & Levels
+const levels = [
+  { name: "Initiate", color: "#606060", minXp: 0, badge: "◈" },
+  { name: "Explorer", color: "#d4af37", minXp: 100, badge: "◈" },
+  { name: "Grand Master", color: "#8b5cf6", minXp: 1000, badge: "◆" }
+];
+
+export default function App() {
+  const [index, setIndex] = useState(0);
+  const [xp, setXp] = useState(0);
+  const [view, setView] = useState('grid'); // 'grid' or 'atelier'
+
+  // NFC SAGE WAKE: Physical Coin Handshake
+  useEffect(() => {
+    if ('NDEFReader' in window) {
+      const ndef = new NDEFReader();
+      ndef.scan().then(() => {
+        ndef.onreading = () => {
+          setXp(prev => prev + 50); // XP Reward for Physical Interaction
+          document.body.style.filter = "brightness(1.4)";
+          setTimeout(() => document.body.style.filter = "none", 400);
+        };
+      });
+    }
+  }, []);
+
+  return (
+    <div className="h-screen w-full p-10 flex flex-col justify-between overflow-hidden" id="axiom-terminal">
+      {/* HEADER: AXIOM SOVEREIGN SHELL */}
+      <header className="flex justify-between items-end border-b border-white/5 pb-6">
+        <div>
+          <h1 className="text-xs gold-text font-bold tracking-[0.5em] uppercase">Titan Engine // Active</h1>
+          <p className="text-[10px] text-white/30 uppercase mt-1">Axiom OS Premier Terminal</p>
+        </div>
+        <div className="text-right">
+          <p className="text-[9px] text-yellow-500 font-bold uppercase tracking-widest">{levels.find(l => xp >= l.minXp).name} Rank</p>
+          <div className="h-1 w-32 bg-white/10 mt-2 overflow-hidden rounded-full">
+            <div className="h-full bg-yellow-500" style={{ width: `${(xp % 100)}%` }} />
+          </div>
+        </div>
+      </header>
+
+      {/* MAIN: THE 360 ATELIER & PAIRING GAME */}
+      <main className="flex-grow grid grid-cols-2 gap-10 my-10">
+        <div className="glass-card p-8 flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-yellow-500/50" />
+          <div>
+            <span className="text-[10px] text-yellow-500 font-bold uppercase tracking-widest">Smokecraft 360</span>
+            <h2 className="text-4xl font-light italic mt-2">Molecular Leaf Lab</h2>
+            <p className="text-xs text-white/40 mt-4 leading-relaxed">
+              Select your vitola and cut. The Sage Mentor will analyze your Earth-Nut synergy based on selected leaves.
+            </p>
+          </div>
+          {/* CUT SELECTOR PHYSICS */}
+          <div className="flex gap-4 mt-6">
+            {['Straight', 'V-Cut', 'Punch'].map(cut => (
+              <button key={cut} className="flex-1 steel-panel py-3 text-[10px] uppercase tracking-widest border border-white/5 hover:border-yellow-500 transition-all">
+                {cut}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="glass-card p-8 flex flex-col justify-between">
+          <div>
+            <span className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">Beercraft 360</span>
+            <h2 className="text-4xl font-light italic mt-2">Vessel Geometry</h2>
+            <p className="text-xs text-white/40 mt-4 leading-relaxed">
+              Match the glass geometry to your cigar's ritual duration.
+            </p>
+          </div>
+          <div className="grid grid-cols-3 gap-2 h-32 items-end">
+            {[40, 70, 100].map(h => <div key={h} className="bg-yellow-500/20 border-t-2 border-yellow-500" style={{ height: `${h}%` }} />)}
+          </div>
+        </div>
+      </main>
+
+      {/* FOOTER: REVENUE & BRAND ANCHORS */}
+      <footer className="grid grid-cols-3 items-center border-t border-white/5 pt-8">
+        <div className="flex items-center gap-4">
+          <div className="w-5 h-5 bg-yellow-500 rotate-45 shadow-[0_0_15px_rgba(212,175,55,0.5)]" />
+          <span className="text-sm gold-text font-bold uppercase tracking-[0.3em]">Smokecraft 360</span>
+        </div>
+        <div className="text-center opacity-30 text-[9px] uppercase tracking-[0.5em]">
+          Lounge Vitality: Nominal
+        </div>
+        <div className="text-right">
+          <button className="steel-panel px-8 py-3 rounded-full text-[10px] gold-text font-bold uppercase tracking-widest hover:scale-105 transition-transform">
+            Order Ritual Pairing
+          </button>
+        </div>
+      </footer>
+    </div>
+  );
+}
