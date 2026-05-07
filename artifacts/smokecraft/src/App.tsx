@@ -98,6 +98,9 @@ import TrainingCertifications         from "@/pages/training/TrainingCertificati
 import TrainingManual                  from "@/pages/training/TrainingManual";
 import IntelligenceManifest            from "@/pages/IntelligenceManifest";
 import AdminMaster                     from "@/pages/AdminMaster";
+import ExecutiveWarRoom               from "@/pages/ExecutiveWarRoom";
+import ManufacturerWarRoom            from "@/pages/ManufacturerWarRoom";
+import InvestorSimulator              from "@/pages/InvestorSimulator";
 
 const queryClient = new QueryClient();
 
@@ -149,6 +152,9 @@ function Router() {
       <Route path="/admin-master"                 component={AdminMaster}               />
       <Route path="/admin/intel"               component={OwnerIntelPanel}         />
       <Route path="/admin/experience-control" component={ExperienceControlPanel}  />
+      <Route path="/executive-war-room"        component={ExecutiveWarRoom}        />
+      <Route path="/manufacturer-war-room"     component={ManufacturerWarRoom}     />
+      <Route path="/investor-simulator"        component={InvestorSimulator}       />
       {/* Legacy craft routes — redirect into the Universal Swipe Engine */}
       <Route path="/brewcraft"       component={() => { window.location.replace("/experience/brew"); return null; }} />
       <Route path="/pourcraft"       component={() => { window.location.replace("/experience/pour"); return null; }} />
