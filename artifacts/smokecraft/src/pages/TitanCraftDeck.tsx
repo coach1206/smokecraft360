@@ -29,10 +29,10 @@ const CRAFT_IMAGES: Record<string, string> = {
 };
 
 const CRAFT_SUBS: Record<string, string> = {
-  smoke: "Premium Tobacco // Ritual Prep",
-  pour:  "Spirits // Vessel Geometry",
-  brew:  "Craft Beer // Fermentation Lab",
-  vape:  "Vapor // Cloud Architecture",
+  smoke: "Molecular Leaf Lab // Ritual Prep",
+  pour:  "Vessel Geometry // Spirit Sync",
+  brew:  "Fermentation Lab // Craft Intelligence",
+  vape:  "Cloud Architecture // Vapor Sync",
 };
 
 const CRAFT_CTAS: Record<string, string> = {
@@ -64,8 +64,9 @@ interface CardProps {
 
 function CraftCard({ id, title, color, route, active }: CardProps) {
   const [, navigate] = useLocation();
-  const img    = CRAFT_IMAGES[id] ?? CRAFT_IMAGES.smoke;
-  const cta    = CRAFT_CTAS[id]   ?? "Enter";
+  const img     = CRAFT_IMAGES[id] ?? CRAFT_IMAGES.smoke;
+  const sub     = CRAFT_SUBS[id]   ?? "";
+  const cta     = CRAFT_CTAS[id]   ?? "Enter";
   const isSmoke = id === "smoke";
 
   return (
@@ -91,31 +92,28 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
       />
 
       {/* Bottom-up gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-10" />
 
       {/* Animated top accent */}
       <motion.div
         style={{ background: color }}
-        className="absolute top-0 left-0 right-0 h-[2px] z-10"
+        className="absolute top-0 left-0 right-0 h-[2px] z-20"
         animate={{ opacity: active ? [0.7, 1, 0.7] : [0.15, 0.35, 0.15] }}
         transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
       />
 
       {/* Bottom content */}
-      <div className="absolute bottom-0 left-0 p-12 w-full z-10">
+      <div className="absolute bottom-0 left-0 p-10 w-full z-20">
         <h2 className={`${isSmoke ? "gold-engraved" : "text-white/90"} italic text-4xl mb-4`}
           style={isSmoke ? {} : { color }}>
           {title}
         </h2>
-        <div
-          className="h-[2px] w-20 mb-8"
-          style={{ background: isSmoke ? "#ca8a04" : `rgba(255,255,255,0.20)` }}
-        />
+        <p className="text-white/60 text-[10px] tracking-widest uppercase mb-6">{sub}</p>
         {isSmoke ? (
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="bg-black/40 border border-yellow-500/50 px-12 py-5 text-[11px] uppercase tracking-[0.5em] hover:bg-yellow-600/20 transition-all cursor-pointer"
+            className="bg-black/60 border border-yellow-500/50 px-10 py-4 text-[11px] uppercase tracking-[0.4em] hover:bg-yellow-600/20 transition-all cursor-pointer"
             onClick={e => { e.stopPropagation(); navigate(route); }}
           >
             <span className="gold-engraved">{cta}</span>
@@ -124,7 +122,7 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="bg-white/5 border border-white/20 backdrop-blur-md px-12 py-5 text-[11px] text-white font-black uppercase tracking-[0.5em] hover:bg-white/10 transition-all cursor-pointer"
+            className="bg-white/5 border border-white/20 backdrop-blur-md px-10 py-4 text-[11px] text-white font-black uppercase tracking-[0.4em] hover:bg-white/10 transition-all cursor-pointer"
             onClick={e => { e.stopPropagation(); navigate(route); }}
           >
             {cta}
@@ -268,8 +266,8 @@ export default function TitanCraftDeck() {
           <header className="relative z-10 flex justify-between items-end px-10 pt-8 pb-6 border-b border-white/10 flex-shrink-0">
             {/* Left — engine status + title */}
             <div>
-              <h1 className="gold-engraved text-2xl uppercase">Axiom 360</h1>
-              <p className="text-[10px] text-white/30 tracking-[0.5em] mt-2 font-bold uppercase">Sovereign Terminal // Vault v3.0</p>
+              <h1 className="gold-engraved text-2xl uppercase tracking-[0.5em]">Axiom 360</h1>
+              <p className="text-[10px] text-white/40 tracking-[0.3em] mt-2 font-bold italic uppercase">Sovereign OS // Vault v3.0</p>
             </div>
 
             {/* Centre — view toggle */}
@@ -291,8 +289,8 @@ export default function TitanCraftDeck() {
             </div>
 
             {/* Right — rank badge */}
-            <div className="console-slab px-6 py-2 border border-yellow-500/30 rounded-lg">
-              <span className="text-yellow-600 text-[10px] font-black uppercase tracking-widest italic"
+            <div className="console-slab px-6 py-2 border border-yellow-500/30 rounded-lg flex items-center justify-center" style={{ height: "auto" }}>
+              <span className="text-[10px] font-black uppercase tracking-widest italic animate-pulse"
                 style={{ color: level.color }}>
                 {level.badge} {level.name} · {pct}%
               </span>
@@ -308,7 +306,7 @@ export default function TitanCraftDeck() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.28 }}
-                className="grid grid-cols-2 grid-rows-2 gap-6 flex-grow px-10 py-6 min-h-0"
+                className="grid grid-cols-2 gap-12 h-[65vh] px-10 my-6"
               >
                 {CRAFT_MODULES.map((mod, i) => (
                   <motion.div
@@ -466,15 +464,14 @@ export default function TitanCraftDeck() {
           <footer className="px-10 pb-8 pt-6 flex justify-between items-center border-t border-white/10 flex-shrink-0">
             {/* Left — diamond indicator + telemetry */}
             <div className="flex items-center gap-6">
-              <div className="w-4 h-4 bg-yellow-500 rotate-45"
-                style={{ boxShadow: "0 0 15px rgba(212,175,55,0.60)" }} />
-              <span className="text-[10px] text-white/40 tracking-[0.4em] font-bold uppercase italic">
+              <div className="w-4 h-4 bg-yellow-500 rotate-45 shadow-[0_0_20px_rgba(212,175,55,0.6)]" />
+              <span className="text-[10px] text-white/30 tracking-[0.5em] font-bold uppercase italic">
                 Titan Engine // Synchronized
               </span>
             </div>
 
             {/* Right — version etch */}
-            <span className="gold-engraved italic text-[10px] opacity-40">
+            <span className="gold-engraved italic text-[11px] uppercase tracking-widest opacity-40">
               Axiom OS Premier
             </span>
           </footer>
