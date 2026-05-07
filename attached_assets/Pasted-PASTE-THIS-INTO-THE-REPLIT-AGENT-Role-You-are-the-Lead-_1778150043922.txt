@@ -1,0 +1,19 @@
+PASTE THIS INTO THE REPLIT AGENT:
+Role: You are the Lead Systems Architect for Axiom OS.
+Objective: Build the complete Behavioral Experience Intelligence Infrastructure for Axiom OS, integrating all 6 Enterprise Phases into a single, modular, and fully operational production environment.
+DO NOT USE PLACEHOLDERS. DO NOT CREATE STATIC MOCKS. Everything must be wired: UI → API → Engine → Database.
+1. ARCHITECTURAL SETUP:
+• Create a modular structure. Organize logic into /engines (Identity, Revenue, Network), infrastructure into /hardware, and cinematic views into /ui (Guest, Executive, Brand, Investor).
+• Use a PostgreSQL database. Implement the full schema for all phases, including: venue_behavior_clusters, guest_identity_profiles, manufacturer_contracts, and hardware_fleet.
+2. PHASE-SPECIFIC INSTRUCTIONS:
+• Phase 1 & 3 (The Network & Brand): Build a NetworkIntelligenceService that aggregates behavior across venues. Create a Manufacturer War Room dashboard with "Shadow Testing" capabilities to inject products into the guest experience invisibly.
+• Phase 2 (Executive Command): Build a Revenue Pressure Engine. Generate a live Room Energy Score and a 2.5D Revenue Heatmap for owners to see live spending windows and staff ROI.
+• Phase 4 (AI Memory): Implement Persistent Identity Intelligence. The system must evolve guest profiles over time, tracking "Exploration Confidence" and "Luxury Thresholds."
+• Phase 5 (The Fortress): Implement Hardware Philosophy logic. Include OLED burn-in protection, biometric handoff protocols, and a Sovereign Failover system for offline operation.
+• Phase 6 (Investor Mode): Create an Expansion Simulator. Visualize Metcalfe’s Law showing how the platform’s valuation and intelligence accuracy compound as it scales from 1 to 1,000 venues.
+3. VISUAL & MOTION STANDARDS:
+• All UIs must be Industrial-Luxe: Deep glass-morphism, dark obsidian themes, glowing data overlays, and cinematic Framer Motion transitions.
+• Ensure the Executive Heatmap and Global Pulse Map are data-driven and animated.
+4. THE NEURAL BRIDGE:
+• Ensure all engines communicate. When a guest interacts in the Guest UI, the Revenue Engine updates the Owner Dashboard, the Identity Engine evolves the profile, and the Network Engine updates regional trends instantly.
+GO. Build the Sovereign Organism.

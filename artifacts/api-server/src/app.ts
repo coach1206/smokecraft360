@@ -139,6 +139,8 @@ import { notFoundHandler, globalErrorHandler } from "./middleware/responseFormat
 import executiveIntelligenceRouter   from "./routes/executiveIntelligence";
 import manufacturerWarRoomRouter     from "./routes/manufacturerWarRoom";
 import identityEvolutionRouter      from "./routes/identityEvolution";
+import hardwareRegistryRouter       from "./routes/hardwareRegistry";
+import enterpriseSecurityLogsRouter from "./routes/enterpriseSecurityLogs";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -396,7 +398,9 @@ app.use("/api/analytics",               behaviorEventsRouter);
 app.use("/api/data-intelligence",       dataIntelligenceRouter);
 app.use("/api/executive-intelligence",  executiveIntelligenceRouter);
 app.use("/api/manufacturer-war-room",   manufacturerWarRoomRouter);
-app.use("/api/identity-evolution",     identityEvolutionRouter);
+app.use("/api/identity-evolution",        identityEvolutionRouter);
+app.use("/api/hardware-registry",         hardwareRegistryRouter);
+app.use("/api/enterprise-security-logs",  enterpriseSecurityLogsRouter);
 app.use("/api",                         onboardingRouter);
 app.use("/api",                         aiConfigureRouter);
 app.use("/api",                         demoSimulateRouter);
