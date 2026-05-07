@@ -27,6 +27,7 @@
 
 import { Router, type Request, type Response } from "express";
 import { eq, and, or, isNull, gte, lte, sql, count, desc } from "drizzle-orm";
+import multer                                     from "multer";
 import { db, sponsorTickersTable, vendorPlacementsTable,
          productsTable, adImpressionsTable,
          venueRevenuePressureTable }              from "@workspace/db";
@@ -34,6 +35,18 @@ import { z }                                      from "zod";
 import { requireAuth }                            from "../middleware/auth";
 import { requireRole }                            from "../middleware/roles";
 import type { AuthRequest }                       from "../middleware/auth";
+import cloudinary, { assertCloudinaryConfigured } from "../integrations/cloudinary";
+
+// Logo upload — square crop, transparent-safe PNG output, sponsor-logos folder
+const logoUpload = multer({
+  storage: multer.memoryStorage(),
+  limits:  { fileSize: 4 * 1024 * 1024 },   // 4 MB — logos should be small
+  fileFilter(_req, file, cb) {
+    const allowed = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
+    if (allowed.includes(file.mimetype)) cb(null, true);
+    else cb(new Error("Only JPEG, PNG, WebP, or SVG logos are accepted"));
+  },
+});
 
 const router = Router();
 const now    = () => new Date();
@@ -372,5 +385,51 @@ router.get("/analytics", requireAuth, requireRole("venue_owner", "manager", "sup
     generatedAt:      new Date().toISOString(),
   });
 });
+
+// ── POST /upload-logo — Cloudinary logo upload ────────────────────────────────
+// Returns { url } — the Cloudinary URL ready to paste into logoUrl.
+// Transformation: 200×200 pad (preserves aspect ratio), PNG output, auto quality.
+// Uploaded to cloudinary folder "sponsor-logos".
+
+router.post(
+  "/upload-logo",
+  requireAuth,
+  requireRole("venue_owner", "manager", "super_admin"),
+  logoUpload.single("logo"),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      assertCloudinaryConfigured();
+    } catch (err) {
+      res.status(503).json({ error: (err as Error).message });
+      return;
+    }
+
+    if (!req.file) {
+      res.status(400).json({ error: '"logo" file field is required' });
+      return;
+    }
+
+    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder:        "sponsor-logos",
+          transformation: [
+            { width: 200, height: 200, crop: "pad", background: "transparent",
+              quality: "auto", fetch_format: "png" },
+          ],
+          resource_type: "image",
+        },
+        (error, uploadResult) => {
+          if (error || !uploadResult) reject(error ?? new Error("Upload failed"));
+          else resolve(uploadResult);
+        },
+      );
+      stream.end(req.file!.buffer);
+    });
+
+    req.log.info({ url: result.secure_url }, "sponsor logo uploaded");
+    res.json({ url: result.secure_url });
+  },
+);
 
 export default router;

@@ -13,8 +13,8 @@
  * Access: venue_owner | manager | super_admin (enforced server-side; UI warns guests).
  */
 
-import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence }          from "framer-motion";
+import { useState, useEffect, useCallback, useRef, DragEvent } from "react";
+import { motion, AnimatePresence }                              from "framer-motion";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
@@ -101,6 +101,115 @@ const labelStyle: React.CSSProperties = {
   letterSpacing: "0.08em", color: C.muted, textTransform: "uppercase",
   marginBottom: 5,
 };
+
+// ── Logo Upload Zone ──────────────────────────────────────────────────────────
+
+interface LogoUploadZoneProps {
+  currentUrl:   string;
+  token:        string;
+  onUploaded:   (url: string) => void;
+  onUrlChange:  (url: string) => void;
+}
+
+function LogoUploadZone({ currentUrl, token, onUploaded, onUrlChange }: LogoUploadZoneProps) {
+  const [dragging,    setDragging]    = useState(false);
+  const [uploading,   setUploading]   = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const uploadFile = async (file: File) => {
+    setUploading(true); setUploadError("");
+    try {
+      const fd = new FormData();
+      fd.append("logo", file);
+      const res = await fetch(`${BASE}/api/ads/upload-logo`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json() as { url: string };
+      onUploaded(data.url);
+    } catch (e) {
+      setUploadError(e instanceof Error ? e.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault(); setDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) void uploadFile(file);
+  };
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) void uploadFile(file);
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {/* Drop zone */}
+      <div
+        onDragOver={e => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={handleDrop}
+        onClick={() => inputRef.current?.click()}
+        style={{
+          display: "flex", alignItems: "center", gap: 14,
+          padding: "14px 16px", borderRadius: 10, cursor: "pointer",
+          border: `2px dashed ${dragging ? C.amber : C.amberBorder}`,
+          background: dragging ? "rgba(212,139,0,0.06)" : "rgba(212,139,0,0.02)",
+          transition: "all 0.15s",
+        }}
+      >
+        {/* Logo preview or placeholder */}
+        <div style={{
+          width: 52, height: 52, borderRadius: 8, flexShrink: 0,
+          background: "rgba(212,139,0,0.08)", border: `1px solid ${C.amberBorder}`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          overflow: "hidden",
+        }}>
+          {uploading ? (
+            <div style={{ width: 20, height: 20, border: `2px solid ${C.amber}`, borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+          ) : currentUrl ? (
+            <img src={currentUrl} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} onError={e => { (e.target as HTMLImageElement).style.opacity = "0.2"; }} />
+          ) : (
+            <span style={{ fontSize: "1.4rem", opacity: 0.4 }}>⬆</span>
+          )}
+        </div>
+
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: "0.76rem", fontWeight: 700, color: C.obs, marginBottom: 2 }}>
+            {uploading ? "Uploading to Cloudinary…" : "Drop PNG / SVG here, or click to browse"}
+          </div>
+          <div style={{ fontSize: "0.64rem", color: C.muted }}>
+            Max 4 MB · Automatically cropped to 200×200 · Stored on Cloudinary
+          </div>
+          {uploadError && <div style={{ fontSize: "0.64rem", color: "#dc2626", marginTop: 4 }}>{uploadError}</div>}
+        </div>
+
+        <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" style={{ display: "none" }} onChange={handleFile} />
+      </div>
+
+      {/* URL fallback */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ height: 1, flex: 1, background: C.border }} />
+        <span style={{ fontSize: "0.60rem", color: C.muted, letterSpacing: "0.06em" }}>or paste URL</span>
+        <div style={{ height: 1, flex: 1, background: C.border }} />
+      </div>
+      <input
+        value={currentUrl}
+        onChange={e => onUrlChange(e.target.value)}
+        style={inputStyle}
+        placeholder="https://res.cloudinary.com/…/logo.png"
+      />
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
 
 // ── Empty ticker form ─────────────────────────────────────────────────────────
 
@@ -260,13 +369,13 @@ function AssetManager({ tickers, onRefresh }: { tickers: TickerRow[]; onRefresh:
                   <div style={{ fontSize: "0.62rem", color: C.muted, marginTop: 3 }}>{(form.promoText ?? "").length}/80</div>
                 </div>
                 <div style={{ gridColumn: "1/-1" }}>
-                  <label style={labelStyle}>Logo URL (PNG/SVG, recommended 72×72)</label>
-                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    <input value={form.logoUrl ?? ""} onChange={e => set("logoUrl", e.target.value)} style={{ ...inputStyle, flex: 1 }} placeholder="https://cdn.example.com/logo.png" />
-                    {form.logoUrl && (
-                      <img src={form.logoUrl} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: "contain", border: `1px solid ${C.border}` }} onError={e => { (e.target as HTMLImageElement).style.opacity = "0.2"; }} />
-                    )}
-                  </div>
+                  <label style={labelStyle}>Brand Logo (PNG / SVG)</label>
+                  <LogoUploadZone
+                    currentUrl={form.logoUrl ?? ""}
+                    token={TOKEN()}
+                    onUploaded={url => set("logoUrl", url)}
+                    onUrlChange={url => set("logoUrl", url)}
+                  />
                 </div>
                 <div style={{ gridColumn: "1/-1" }}>
                   <label style={labelStyle}>Destination Link</label>

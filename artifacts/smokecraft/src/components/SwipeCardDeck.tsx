@@ -20,6 +20,12 @@ export interface SwipeCardItem {
   /** Optional accent hex color used for the gold rule + dot tint. Defaults
    *  to the deck's house gold. */
   accent?:  string;
+  /** When true, renders the Prestige golden glow ring + badge.
+   *  Set by the ad engine when a vendor_placement sponsored product
+   *  is injected into the recommendation deck. */
+  isPromoted?: boolean;
+  /** Bonus XP awarded when guest selects a promoted card. */
+  pointBonus?: number;
 }
 
 interface Props {
@@ -145,21 +151,31 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
             1. base cream surface
             2. optional hero photo (top 45%) with cream-fade scrim
             3. inner vignette + paper-grain warmth for depth
-            4. multi-layer drop shadow (ambient + key + contact)         */}
+            4. multi-layer drop shadow (ambient + key + contact)
+            5. [isPromoted] prestige golden glow ring + outer bloom  */}
       <div
         style={{
           width: "100%",
           height: "100%",
-          background: "linear-gradient(180deg, #FAF1DD 0%, #F2E5C8 100%)",
-          border: "1px solid rgba(184,137,26,0.55)",
+          background: item.isPromoted
+            ? "linear-gradient(180deg, #FDF5DF 0%, #F5E8C0 100%)"   // slightly warmer for prestige
+            : "linear-gradient(180deg, #FAF1DD 0%, #F2E5C8 100%)",
+          border: item.isPromoted
+            ? "1px solid rgba(212,139,0,0.75)"
+            : "1px solid rgba(184,137,26,0.55)",
           borderRadius: 22,
           boxShadow: [
-            "0 1px 0 rgba(255,255,255,0.55) inset",            // top highlight
-            "0 -1px 0 rgba(120,82,16,0.18) inset",             // bottom shade
-            "0 2px 4px rgba(26,26,27,0.03)",                      // contact
-            "0 14px 32px rgba(20,12,4,0.32)",                  // key
-            "0 36px 80px rgba(20,12,4,0.42)",                  // ambient
-            `0 0 0 1px ${item.accent ?? "rgba(184,137,26,0.18)"}`, // gold ring
+            "0 1px 0 rgba(255,255,255,0.55) inset",
+            "0 -1px 0 rgba(120,82,16,0.18) inset",
+            "0 2px 4px rgba(26,26,27,0.03)",
+            "0 14px 32px rgba(20,12,4,0.32)",
+            "0 36px 80px rgba(20,12,4,0.42)",
+            `0 0 0 1px ${item.accent ?? "rgba(184,137,26,0.18)"}`,
+            ...(item.isPromoted ? [
+              "0 0 0 2px rgba(212,139,0,0.65)",     // amber ring
+              "0 0 28px rgba(212,139,0,0.38)",      // inner bloom
+              "0 0 72px rgba(212,139,0,0.22)",      // outer ambient glow
+            ] : []),
           ].join(", "),
           display: "flex",
           flexDirection: "column",
@@ -173,6 +189,35 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
           isolation: "isolate",
         }}
       >
+        {/* Prestige badge — top-right corner, only for promoted cards */}
+        {item.isPromoted && (
+          <div style={{
+            position: "absolute", top: 14, right: 14, zIndex: 20,
+            display: "flex", alignItems: "center", gap: 5,
+            padding: "4px 10px", borderRadius: 6,
+            background: "rgba(212,139,0,0.14)",
+            border: "1px solid rgba(212,139,0,0.55)",
+            backdropFilter: "blur(4px)",
+          }}>
+            <span style={{ fontSize: "0.50rem", fontWeight: 900, letterSpacing: "0.14em", color: "#D48B00", textTransform: "uppercase" }}>
+              ✦ Prestige
+            </span>
+            {item.pointBonus != null && item.pointBonus > 0 && (
+              <span style={{ fontSize: "0.50rem", fontWeight: 800, color: "rgba(212,139,0,0.80)" }}>
+                +{item.pointBonus} XP
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Prestige top accent bar — replaces the standard gold rule with an animated shimmer */}
+        {item.isPromoted && (
+          <div style={{
+            position: "absolute", top: 0, left: 0, right: 0, height: 3, zIndex: 3,
+            background: "linear-gradient(90deg, transparent 0%, rgba(212,139,0,0.90) 30%, rgba(255,210,80,1) 50%, rgba(212,139,0,0.90) 70%, transparent 100%)",
+            borderRadius: "22px 22px 0 0",
+          }} />
+        )}
         {/* Hero image (top ~60%) — uses an <img> element so we can detect
             load failures and walk through `item.images` fallbacks. The
             previous bg-image approach silently showed an empty top half
