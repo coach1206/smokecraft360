@@ -77,7 +77,7 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
       {/* Animated top accent */}
       <motion.div
         style={{ background: color }}
-        className="absolute top-0 left-0 right-0 h-[1px]"
+        className="absolute top-0 left-0 right-0 h-[2px]"
         animate={{ opacity: active ? [0.6, 1, 0.6] : [0.2, 0.35, 0.2] }}
         transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
       />
