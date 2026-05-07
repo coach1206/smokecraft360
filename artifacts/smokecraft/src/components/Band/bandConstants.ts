@@ -20,7 +20,7 @@ export interface StyleOption {
 }
 
 export const COLOR_OPTIONS: ColorOption[] = [
-  { id: "gold",     label: "Gold",     primary: "#2A1F08", accent: "#D4AF37", text: "#F5E4A0" },
+  { id: "gold",     label: "Gold",     primary: "#2A1F08", accent: "#D48B00", text: "#F5E4A0" },
   { id: "black",    label: "Onyx",     primary: "#141010", accent: "#8B7355", text: "#D4C4A0" },
   { id: "burgundy", label: "Burgundy", primary: "#3A0F18", accent: "#C4708A", text: "#F0C8D4" },
   { id: "navy",     label: "Navy",     primary: "#0F1B35", accent: "#4A8AC4", text: "#C4D8F0" },

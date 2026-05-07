@@ -10,7 +10,7 @@ export const BRAND = {
   shortName:    "SmokeCraft",
   tagline:      "Craft Your Experience",
   description:  "Premium cigar and spirits recommendations — curated for the connoisseur.",
-  primaryColor: "#D4AF37",
+  primaryColor: "#D48B00",
   background:   "#0b0b0b",
   accent:       "#c28f2c",
   copyright:    `© SmokeCraft 360 — All Rights Reserved`,

@@ -28,7 +28,7 @@ export function AxSectionHeader({
         marginBottom: subtitle ? 2 : divider ? 10 : 0,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-          {Icon && <Icon size={13} color="rgba(201,168,76,0.7)" />}
+          {Icon && <Icon size={13} color="rgba(212,139,0,0.7)" />}
           <span style={{
             fontSize: 10, fontWeight: 700,
             color: "rgba(240,232,212,0.5)",
@@ -41,7 +41,7 @@ export function AxSectionHeader({
       </div>
       {subtitle && (
         <div style={{
-          fontSize: 11, color: "rgba(240,232,212,0.35)",
+          fontSize: 11, color: "rgba(26,26,27,0.35)",
           marginBottom: divider ? 10 : 0,
           paddingLeft: Icon ? 20 : 0,
         }}>
@@ -51,7 +51,7 @@ export function AxSectionHeader({
       {divider && (
         <div style={{
           height: 1,
-          background: "linear-gradient(90deg, rgba(201,168,76,0.3) 0%, rgba(201,168,76,0.05) 60%, transparent 100%)",
+          background: "linear-gradient(90deg, rgba(212,139,0,0.3) 0%, rgba(212,139,0,0.05) 60%, transparent 100%)",
           marginTop: 8,
         }} />
       )}

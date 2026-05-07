@@ -65,33 +65,33 @@ export function DemoBanner() {
             className="flex flex-col gap-2 p-4 rounded-xl"
             style={{
               background: "linear-gradient(155deg, rgba(20,13,4,0.97), rgba(12,8,2,0.98))",
-              border:     "1px solid rgba(212,175,55,0.25)",
-              boxShadow:  "0 8px 32px rgba(0,0,0,0.6)",
+              border:     "1px solid rgba(212,139,0,0.25)",
+              boxShadow:  "0 8px 32px rgba(26,26,27,0.26)",
               minWidth:   180,
             }}
           >
-            <p className="text-[9px] uppercase tracking-[0.25em] mb-1" style={{ color: "rgba(212,175,55,0.5)" }}>
+            <p className="text-[9px] uppercase tracking-[0.25em] mb-1" style={{ color: "rgba(212,139,0,0.5)" }}>
               Demo Safe Mode
             </p>
             <p className="text-[10px] leading-relaxed" style={{ color: "rgba(180,155,100,0.65)" }}>
               Payments simulated. No real charges. Dashboard populated with sample data.
             </p>
-            <div className="h-px w-full my-1" style={{ background: "rgba(212,175,55,0.1)" }} />
+            <div className="h-px w-full my-1" style={{ background: "rgba(212,139,0,0.1)" }} />
             <motion.button
               onClick={handleReset}
               disabled={resetting}
               className="flex items-center justify-center gap-2 w-full py-2 rounded-lg text-[10px] uppercase tracking-[0.18em] transition-all duration-200"
               style={resetting ? {
-                background: "rgba(255,255,255,0.04)",
-                border:     "1px solid rgba(255,255,255,0.06)",
+                background: "rgba(26,26,27,0.06)",
+                border:     "1px solid rgba(26,26,27,0.08)",
                 color:      "rgba(180,155,100,0.35)",
                 cursor:     "not-allowed",
               } : {
-                background: "rgba(212,175,55,0.08)",
-                border:     "1px solid rgba(212,175,55,0.25)",
-                color:      "rgba(212,175,55,0.75)",
+                background: "rgba(212,139,0,0.08)",
+                border:     "1px solid rgba(212,139,0,0.25)",
+                color:      "rgba(212,139,0,0.75)",
               }}
-              whileHover={!resetting ? { background: "rgba(212,175,55,0.14)", borderColor: "rgba(212,175,55,0.45)" } : {}}
+              whileHover={!resetting ? { background: "rgba(212,139,0,0.14)", borderColor: "rgba(212,139,0,0.45)" } : {}}
               whileTap={!resetting ? { scale: 0.97 } : {}}
             >
               {resetting ? (
@@ -110,16 +110,16 @@ export function DemoBanner() {
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] uppercase tracking-[0.2em] select-none"
         style={{
           background: "rgba(12,8,2,0.90)",
-          border:     "1px solid rgba(212,175,55,0.22)",
-          color:      "rgba(212,175,55,0.55)",
+          border:     "1px solid rgba(212,139,0,0.22)",
+          color:      "rgba(212,139,0,0.55)",
           backdropFilter: "blur(8px)",
         }}
-        whileHover={{ borderColor: "rgba(212,175,55,0.4)", color: "rgba(212,175,55,0.8)" }}
+        whileHover={{ borderColor: "rgba(212,139,0,0.4)", color: "rgba(212,139,0,0.8)" }}
         whileTap={{ scale: 0.96 }}
       >
         <motion.span
           className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-          style={{ background: "rgba(212,175,55,0.7)" }}
+          style={{ background: "rgba(212,139,0,0.7)" }}
           animate={{ opacity: [1, 0.4, 1] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         />

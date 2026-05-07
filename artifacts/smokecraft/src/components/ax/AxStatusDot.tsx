@@ -11,7 +11,7 @@ const COLOR: Record<DotStatus, string> = {
   offline: "#ef4444",
   warning: "#f59e0b",
   idle:    "#60a5fa",
-  unknown: "rgba(240,232,212,0.25)",
+  unknown: "rgba(26,26,27,0.25)",
 };
 
 interface AxStatusDotProps {

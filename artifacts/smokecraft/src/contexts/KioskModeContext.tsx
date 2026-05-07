@@ -349,8 +349,8 @@ export function KioskModeProvider({ children }: { children: ReactNode }) {
 
 // ── Inactivity Overlay ─────────────────────────────────────────────────────────
 
-const GOLD     = "rgba(212,175,55,1)";
-const GOLD_DIM = "rgba(212,175,55,0.6)";
+const GOLD     = "rgba(212,139,0,1)";
+const GOLD_DIM = "rgba(212,139,0,0.6)";
 
 function KioskInactivityOverlay({
   visible, countdown, onDismiss, onReset,
@@ -360,12 +360,12 @@ function KioskInactivityOverlay({
       {visible && (
         <motion.div
           className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-6"
-          style={{ background: "rgba(0,0,0,0.92)", backdropFilter: "blur(12px)" }}
+          style={{ background: "rgba(26,26,27,0.52)", backdropFilter: "blur(12px)" }}
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
 
           <motion.div
             className="w-24 h-24 rounded-full flex items-center justify-center"
-            style={{ background: "rgba(212,175,55,0.08)", border: "2px solid rgba(212,175,55,0.3)" }}
+            style={{ background: "rgba(212,139,0,0.08)", border: "2px solid rgba(212,139,0,0.3)" }}
             animate={{ scale: [1, 1.04, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
             <p className="font-serif text-5xl" style={{ color: GOLD, fontWeight: 300 }}>
               {countdown}
@@ -391,7 +391,7 @@ function KioskInactivityOverlay({
 
             <motion.button onClick={onReset}
               className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm"
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: GOLD_DIM }}
+              style={{ background: "rgba(26,26,27,0.07)", border: "1px solid rgba(255,255,255,0.1)", color: GOLD_DIM }}
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
               <RotateCcw size={14} />Reset Now
             </motion.button>
@@ -415,9 +415,9 @@ export function KioskModeBanner() {
   return (
     <div
       className="fixed bottom-0 left-0 right-0 z-[100] flex items-center justify-between px-6 py-2.5"
-      style={{ background: "rgba(10,8,5,0.95)", borderTop: "1px solid rgba(212,175,55,0.15)", backdropFilter: "blur(8px)" }}>
+      style={{ background: "rgba(10,8,5,0.95)", borderTop: "1px solid rgba(212,139,0,0.15)", backdropFilter: "blur(8px)" }}>
       <div className="flex items-center gap-3">
-        <Monitor size={11} style={{ color: "rgba(212,175,55,0.5)" }} />
+        <Monitor size={11} style={{ color: "rgba(212,139,0,0.5)" }} />
         <span className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.4)" }}>
           {mode === "kiosk" ? "Kiosk" : "Tablet"} Mode{tableNumber ? ` · Table ${tableNumber}` : ""}
         </span>

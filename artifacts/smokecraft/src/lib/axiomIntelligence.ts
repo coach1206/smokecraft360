@@ -108,8 +108,8 @@ export const CHANNEL_COLOR: Record<CampaignChannel, string> = {
   instagram_post:  "#f97316",
   instagram_story: "#ec4899",
   facebook:        "#3b82f6",
-  member_alert:    "#d4af37",
-  mentor_invite:   "#c9a84c",
+  member_alert:    "#D48B00",
+  mentor_invite:   "#D48B00",
   reserve_alert:   "#34d399",
 };
 
@@ -133,10 +133,10 @@ export const CATEGORY_COLOR: Record<TriggerCategory, string> = {
   inventory:  "#f97316",
   campaign:   "#ec4899",
   social:     "#a78bfa",
-  vip:        "#d4af37",
+  vip:        "#D48B00",
   recovery:   "#fb923c",
   atmosphere: "#06b6d4",
-  event:      "#c9a84c",
+  event:      "#D48B00",
 };
 
 // ── The Rules ─────────────────────────────────────────────────────────────────

@@ -21,7 +21,7 @@ export const CRAFT_THEMES: Record<CraftType, CraftTheme> = {
     type:        "smoke",
     label:       "SmokeCraft 360",
     tagline:     "Discover your perfect cigar",
-    accent:      "#d4af37",
+    accent:      "#D48B00",
     accentSoft:  "#a98828",
     bgImage:     "/images/smoke/smoke_lounge.png",
     cardBg:      "rgba(18,10,4,0.88)",

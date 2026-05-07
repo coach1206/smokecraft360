@@ -18,13 +18,13 @@ import { VOICEOVER_SCRIPTS } from "@/data/voiceoverScripts";
 import { logTrainingEvent, ensureTrainingSession } from "@/hooks/useTrainingApi";
 
 const T = {
-  bg: "#06040a", card: "rgba(255,255,255,0.04)", border: "rgba(201,168,76,0.15)",
-  gold: "#c9a84c", text: "rgba(240,232,212,0.92)", muted: "rgba(240,232,212,0.48)",
-  light: "rgba(240,232,212,0.75)", green: "#34d399",
+  bg: "#F5F2ED", card: "rgba(26,26,27,0.06)", border: "rgba(212,139,0,0.15)",
+  gold: "#D48B00", text: "rgba(26,26,27,0.90)", muted: "rgba(240,232,212,0.48)",
+  light: "rgba(26,26,27,0.72)", green: "#34d399",
 };
 
 const STEPS = [
-  { num: 1,  title: "Welcome to Axiom OS",     icon: Star,      color: "#c9a84c", action: "Let's begin your venue setup",        maxwell: "Welcome. Axiom OS is designed to be operational within one session. Every step here directly activates a system that will start working for your venue tonight.", desc: "You're about to set up a fully intelligent venue experience. This walkthrough covers every system — from inventory to AI recommendations — in 10 guided steps.", detail: "No technical knowledge required. Each step is designed for venue owners, not developers." },
+  { num: 1,  title: "Welcome to Axiom OS",     icon: Star,      color: "#D48B00", action: "Let's begin your venue setup",        maxwell: "Welcome. Axiom OS is designed to be operational within one session. Every step here directly activates a system that will start working for your venue tonight.", desc: "You're about to set up a fully intelligent venue experience. This walkthrough covers every system — from inventory to AI recommendations — in 10 guided steps.", detail: "No technical knowledge required. Each step is designed for venue owners, not developers." },
   { num: 2,  title: "Venue Configuration",     icon: Building2, color: "#60a5fa", action: "Configure your venue profile",          maxwell: "Your venue configuration is the foundation. The recommendation engine uses your seating capacity to calculate optimal table management. Operating hours influence time-of-day recommendation context.", desc: "Enter your venue name, location, seating capacity, and operating hours. This data personalizes every Axiom system to your specific context.", detail: "You can update these settings at any time from the Settings panel." },
   { num: 3,  title: "Inventory Setup",         icon: Package,   color: "#f59e0b", action: "Import or enter your inventory",        maxwell: "The inventory you add here becomes the foundation of your recommendation engine. The AI learns which items pair well together, which move fastest, and which deserve premium placement.", desc: "Add your cigar, spirits, vape, and brew inventory. Set starting quantities and reorder thresholds. The AI begins learning your menu immediately.", detail: "Import via CSV or enter manually. Distributor catalogs can be synced automatically." },
   { num: 4,  title: "Staff Onboarding",        icon: Users,     color: "#34d399", action: "Add your first staff member",           maxwell: "Role-based access is security and simplicity combined. A bartender doesn't need to see financial reconciliation data. A venue owner needs everything. Right-size access from day one.", desc: "Add your team members and assign roles. Each role gets a customized view of the Axiom platform — staff see what they need, nothing more.", detail: "Staff can complete role-based Training Mode before their first shift." },
@@ -33,7 +33,7 @@ const STEPS = [
   { num: 7,  title: "Analytics Overview",     icon: BarChart3, color: "#06b6d4", action: "Explore your analytics",                 maxwell: "The analytics suite eliminates guesswork. You'll know exactly what's working, what needs attention, and what your revenue will look like at end of night — before the night is over.", desc: "Explore your analytics dashboard — revenue trends, guest behavior, AI performance, inventory health, and campaign ROI. All in real time.", detail: "The Swipe IQ dashboard shows exactly how guests interact with the AI recommendation engine." },
   { num: 8,  title: "Revenue Engine",         icon: DollarSign,color: "#34d399", action: "Configure your revenue settings",        maxwell: "The revenue engine runs silently in the background. The reconciliation worker catches issues before they become problems. Your payout pipeline ensures venue proceeds are always moving correctly.", desc: "Review your revenue configuration — tab management, loyalty settings, payout pipeline, and the financial reconciliation system.", detail: "Set your platform fee acknowledgment and payout schedule in this step." },
   { num: 9,  title: "Device Control",         icon: Monitor,   color: "#f59e0b", action: "Register your first device",             maxwell: "Central Command gives you remote control over every device in your venue — from here, or from anywhere in the world. OTA updates roll out silently without guest disruption.", desc: "Register your kiosk, POS devices, and staff tablets. Configure display modes, burn-in protection, and OTA update settings.", detail: "Kiosk burn-in protection is active by default — pixel-shift technology protects your screens." },
-  { num: 10, title: "Full Launch",            icon: Zap,       color: "#d4af37", action: "Launch Vault Cigar Lounge",              maxwell: "This is the moment the system becomes alive. From tonight forward, every guest interaction teaches the AI. Every session improves the recommendation. The longer it runs, the better it gets.", desc: "Your venue is configured. Staff are onboarded. Inventory is live. Campaigns are active. The AI has begun learning. You're ready to open.", detail: "Launch readiness checklist verifies all systems before you go live." },
+  { num: 10, title: "Full Launch",            icon: Zap,       color: "#D48B00", action: "Launch Vault Cigar Lounge",              maxwell: "This is the moment the system becomes alive. From tonight forward, every guest interaction teaches the AI. Every session improves the recommendation. The longer it runs, the better it gets.", desc: "Your venue is configured. Staff are onboarded. Inventory is live. Campaigns are active. The AI has begun learning. You're ready to open.", detail: "Launch readiness checklist verifies all systems before you go live." },
 ];
 
 export default function TrainingWalkthrough() {
@@ -97,8 +97,8 @@ export default function TrainingWalkthrough() {
             }} />
           ))}
           <button onClick={() => setShowScript((s) => !s)} style={{
-            background: showScript ? `${T.gold}18` : "rgba(255,255,255,0.04)",
-            border: `1px solid ${showScript ? T.gold + "50" : "rgba(255,255,255,0.12)"}`,
+            background: showScript ? `${T.gold}18` : "rgba(26,26,27,0.06)",
+            border: `1px solid ${showScript ? T.gold + "50" : "rgba(26,26,27,0.14)"}`,
             borderRadius: 7, color: showScript ? T.gold : T.muted, padding: "5px 9px", cursor: "pointer",
             display: "flex", alignItems: "center", gap: 3, fontSize: 9, marginLeft: 6,
           }}>
@@ -113,7 +113,7 @@ export default function TrainingWalkthrough() {
           <motion.div
             initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 24 }}
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            style={{ position: "fixed", right: 0, top: 0, bottom: 0, width: 360, background: "#09060f", borderLeft: "1px solid rgba(201,168,76,0.2)", zIndex: 60, overflowY: "auto", padding: "20px 22px", boxShadow: "-8px 0 32px rgba(0,0,0,0.6)" }}
+            style={{ position: "fixed", right: 0, top: 0, bottom: 0, width: 360, background: "#09060f", borderLeft: "1px solid rgba(212,139,0,0.2)", zIndex: 60, overflowY: "auto", padding: "20px 22px", boxShadow: "-8px 0 32px rgba(26,26,27,0.26)" }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
               <div>
@@ -124,14 +124,14 @@ export default function TrainingWalkthrough() {
                 <X size={14} />
               </button>
             </div>
-            <div style={{ height: 1, background: "rgba(201,168,76,0.15)", marginBottom: 16 }} />
-            <div style={{ fontSize: 11.5, color: "rgba(240,232,212,0.85)", lineHeight: 2, whiteSpace: "pre-wrap" }}>{cue.script}</div>
+            <div style={{ height: 1, background: "rgba(212,139,0,0.15)", marginBottom: 16 }} />
+            <div style={{ fontSize: 11.5, color: "rgba(26,26,27,0.82)", lineHeight: 2, whiteSpace: "pre-wrap" }}>{cue.script}</div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Progress bar */}
-      <div style={{ height: 2, background: "rgba(255,255,255,0.06)" }}>
+      <div style={{ height: 2, background: "rgba(26,26,27,0.08)" }}>
         <motion.div style={{ height: "100%", background: `linear-gradient(90deg, ${T.gold}, ${current.color})`, borderRadius: 1 }} animate={{ width: `${((step + 1) / STEPS.length) * 100}%` }} transition={{ duration: 0.4 }} />
       </div>
 

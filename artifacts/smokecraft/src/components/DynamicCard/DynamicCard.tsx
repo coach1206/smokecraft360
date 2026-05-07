@@ -80,9 +80,9 @@ export default function DynamicCard({ module: mod, onClick }: Props) {
         overflow:     "hidden",
         cursor:       "pointer",
         aspectRatio:  "16 / 10",
-        background:   "#0a0806",
+        background:   "#F5F2ED",
         border:       `1px solid ${mod.color}30`,
-        boxShadow:    `0 8px 40px rgba(0,0,0,0.55), 0 0 0 1px ${mod.color}15`,
+        boxShadow:    `0 8px 40px rgba(26,26,27,0.22), 0 0 0 1px ${mod.color}15`,
         userSelect:   "none",
       }}
     >
@@ -126,9 +126,9 @@ export default function DynamicCard({ module: mod, onClick }: Props) {
           linear-gradient(
             180deg,
             rgba(0,0,0,0.06) 0%,
-            rgba(0,0,0,0.10) 38%,
-            rgba(0,0,0,0.52) 70%,
-            rgba(0,0,0,0.82) 100%
+            rgba(26,26,27,0.03) 38%,
+            rgba(26,26,27,0.20) 70%,
+            rgba(26,26,27,0.42) 100%
           ),
           linear-gradient(90deg, ${mod.color}18 0%, transparent 55%)
         `,
@@ -146,7 +146,7 @@ export default function DynamicCard({ module: mod, onClick }: Props) {
         position: "absolute", top: 14, left: 16,
         fontSize: 10, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase",
         color: mod.color,
-        background: "rgba(0,0,0,0.55)",
+        background: "rgba(26,26,27,0.22)",
         backdropFilter: "blur(6px)",
         border: `1px solid ${mod.color}40`,
         borderRadius: 999,
@@ -193,7 +193,7 @@ export default function DynamicCard({ module: mod, onClick }: Props) {
           fontFamily: "var(--app-font-serif, Georgia, serif)",
           fontSize: 21, fontWeight: 800, color: "#fff",
           letterSpacing: "0.02em", lineHeight: 1.1,
-          textShadow: "0 2px 12px rgba(0,0,0,0.7)",
+          textShadow: "0 2px 12px rgba(26,26,27,0.32)",
         }}>
           {mod.title}
         </div>

@@ -12,9 +12,9 @@ import { X, CheckCircle, UserCheck, Shield, Database, WifiOff } from "lucide-rea
 
 const T = {
   bg:     "#0c0914",
-  border: "rgba(201,168,76,0.2)",
-  gold:   "#c9a84c",
-  text:   "rgba(240,232,212,0.92)",
+  border: "rgba(212,139,0,0.2)",
+  gold:   "#D48B00",
+  text:   "rgba(26,26,27,0.90)",
   muted:  "rgba(240,232,212,0.48)",
   green:  "#34d399",
   amber:  "#f59e0b",
@@ -99,7 +99,7 @@ export default function SignOffModal({ role, roleTitle, modulesCount, onClose, o
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         style={{
-          position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)",
+          position: "fixed", inset: 0, background: "rgba(26,26,27,0.40)",
           backdropFilter: "blur(8px)", zIndex: 100,
           display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
         }}
@@ -112,7 +112,7 @@ export default function SignOffModal({ role, roleTitle, modulesCount, onClose, o
           style={{
             background: T.bg, border: `1px solid ${T.border}`,
             borderRadius: 16, padding: "28px 30px", width: "100%", maxWidth: 440,
-            boxShadow: "0 24px 64px rgba(0,0,0,0.7)", position: "relative",
+            boxShadow: "0 24px 64px rgba(26,26,27,0.32)", position: "relative",
           }}
         >
           <button onClick={onClose} style={{ position: "absolute", top: 16, right: 16, background: "transparent", border: "none", cursor: "pointer", color: T.muted, padding: 4 }}>
@@ -147,7 +147,7 @@ export default function SignOffModal({ role, roleTitle, modulesCount, onClose, o
                 </div>
               </div>
 
-              <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 9, padding: "12px 14px", marginBottom: 18 }}>
+              <div style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.10)", borderRadius: 9, padding: "12px 14px", marginBottom: 18 }}>
                 {[
                   { label: "Role",              value: roleTitle,                           color: T.text  },
                   { label: "Modules Completed", value: `${modulesCount} / ${modulesCount}`, color: T.green },
@@ -163,7 +163,7 @@ export default function SignOffModal({ role, roleTitle, modulesCount, onClose, o
               <div style={{ marginBottom: 12 }}>
                 <label style={{ display: "block", fontSize: 9, color: T.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 5 }}>Manager Name</label>
                 <input value={managerName} onChange={(e) => setManagerName(e.target.value)} placeholder="Enter your name"
-                  style={{ width: "100%", padding: "10px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: T.text, fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                  style={{ width: "100%", padding: "10px 12px", background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: T.text, fontSize: 12, outline: "none", boxSizing: "border-box" }} />
               </div>
 
               <div style={{ marginBottom: 18 }}>
@@ -171,22 +171,22 @@ export default function SignOffModal({ role, roleTitle, modulesCount, onClose, o
                   Manager PIN <span style={{ color: T.gold, fontStyle: "italic" }}>(Demo: 1234)</span>
                 </label>
                 <input value={pin} onChange={(e) => setPin(e.target.value)} type="password" placeholder="Enter PIN"
-                  style={{ width: "100%", padding: "10px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: T.text, fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                  style={{ width: "100%", padding: "10px 12px", background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: T.text, fontSize: 12, outline: "none", boxSizing: "border-box" }} />
               </div>
 
               {error && <div style={{ fontSize: 10, color: "#ef4444", marginBottom: 12 }}>{error}</div>}
 
-              <div style={{ display: "flex", gap: 6, alignItems: "flex-start", background: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.18)", borderRadius: 7, padding: "8px 10px", marginBottom: 16 }}>
+              <div style={{ display: "flex", gap: 6, alignItems: "flex-start", background: "rgba(212,139,0,0.06)", border: "1px solid rgba(212,139,0,0.18)", borderRadius: 7, padding: "8px 10px", marginBottom: 16 }}>
                 <Shield size={9} color={T.gold} style={{ flexShrink: 0, marginTop: 2 }} />
-                <span style={{ fontSize: 9, color: "rgba(201,168,76,0.7)" }}>
+                <span style={{ fontSize: 9, color: "rgba(212,139,0,0.7)" }}>
                   Sign-off is recorded in the training database. Demo manager PIN is 1234.
                 </span>
               </div>
 
               <button onClick={handleApprove} disabled={loading} style={{
                 width: "100%", padding: "12px",
-                background: loading ? "rgba(201,168,76,0.4)" : T.gold, border: "none", borderRadius: 9,
-                color: "#06040a", fontSize: 13, fontWeight: 700, cursor: loading ? "default" : "pointer",
+                background: loading ? "rgba(212,139,0,0.4)" : T.gold, border: "none", borderRadius: 9,
+                color: "#F5F2ED", fontSize: 13, fontWeight: 700, cursor: loading ? "default" : "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
               }}>
                 <UserCheck size={15} /> {loading ? "Saving…" : "Approve Training Completion"}

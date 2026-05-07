@@ -133,14 +133,14 @@ export const VIP_TIER_CONFIG: Record<VipTier, {
   },
   reserve: {
     label:    "Reserve Society",
-    color:    "#c9a84c",
-    bgColor:  "rgba(201,168,76,0.12)",
+    color:    "#D48B00",
+    bgColor:  "rgba(212,139,0,0.12)",
     benefits: ["Reserve access", "Private events", "Dedicated mentor", "Cellar allocation"],
   },
   founder: {
     label:    "Founder Circle",
-    color:    "#d4af37",
-    bgColor:  "rgba(212,175,55,0.14)",
+    color:    "#D48B00",
+    bgColor:  "rgba(212,139,0,0.14)",
     benefits: ["Lifetime reserve access", "Founding pricing locked", "Private sessions", "Venue co-creation"],
   },
 };
@@ -156,7 +156,7 @@ export const TRIGGER_LABEL: Record<ArrivalTrigger, string> = {
 export const TRIGGER_COLOR: Record<ArrivalTrigger, string> = {
   geofence_enter:  "#22c55e",
   wifi_reconnect:  "#60a5fa",
-  wallet_scan:     "#c9a84c",
+  wallet_scan:     "#D48B00",
   manual_check_in: "#a78bfa",
   staff_confirm:   "#34d399",
 };
@@ -259,8 +259,8 @@ export function buildPairingSuggestion(guest: PresenceGuest): string {
 const TIER_COLORS: Record<VipTier, { primary: string; accent: string }> = {
   standard: { primary: "#1e3a5f", accent: "#60a5fa" },
   member:   { primary: "#1a3a2e", accent: "#34d399" },
-  reserve:  { primary: "#2a1f0a", accent: "#c9a84c" },
-  founder:  { primary: "#1a1400", accent: "#d4af37" },
+  reserve:  { primary: "#2a1f0a", accent: "#D48B00" },
+  founder:  { primary: "#1a1400", accent: "#D48B00" },
 };
 
 export function buildWalletPass(guest: PresenceGuest, mentor: Mentor | null): WalletPass {

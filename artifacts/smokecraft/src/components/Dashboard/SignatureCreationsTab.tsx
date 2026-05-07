@@ -20,8 +20,8 @@ import { CigarBandPreview }       from "@/components/Band/CigarBandPreview";
 import { SignatureCigarModal }    from "@/components/SignatureCigar/SignatureCigarModal";
 import type { BlendDesign }       from "@/services/storage";
 
-const GOLD     = "rgba(212,175,55,1)";
-const GOLD_DIM = "rgba(212,175,55,0.55)";
+const GOLD     = "rgba(212,139,0,1)";
+const GOLD_DIM = "rgba(212,139,0,0.55)";
 const MUTED    = "rgba(180,155,100,0.4)";
 
 // ── Status helpers ─────────────────────────────────────────────────────────────
@@ -33,7 +33,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
   submitted:  { label: "Submitted",   color: "rgba(180,155,100,0.75)",       icon: <Clock size={11} />        },
   review:     { label: "In Review",   color: GOLD_DIM,                      icon: <Clock size={11} />        },
   approved:   { label: "Approved",    color: "rgba(100,200,120,0.75)",       icon: <CheckCircle2 size={11} /> },
-  production: { label: "Production",  color: "rgba(212,175,55,0.9)",         icon: <Package size={11} />      },
+  production: { label: "Production",  color: "rgba(212,139,0,0.9)",         icon: <Package size={11} />      },
   rejected:   { label: "Rejected",    color: "rgba(200,80,80,0.6)",          icon: <AlertCircle size={11} />  },
 };
 
@@ -100,15 +100,15 @@ function StatusProgress({ status }: { status: string }) {
             <div key={s} className="flex items-center gap-1 flex-1">
               <div className="flex flex-col items-center gap-1 flex-shrink-0">
                 <div className="w-2 h-2 rounded-full transition-colors"
-                  style={{ background: done ? (current ? GOLD : "rgba(212,175,55,0.6)") : "rgba(255,255,255,0.1)" }} />
+                  style={{ background: done ? (current ? GOLD : "rgba(212,139,0,0.6)") : "rgba(255,255,255,0.1)" }} />
                 <p className="text-[6px] uppercase tracking-wide text-center leading-tight hidden sm:block"
-                  style={{ color: done ? (current ? GOLD_DIM : MUTED) : "rgba(255,255,255,0.15)" }}>
+                  style={{ color: done ? (current ? GOLD_DIM : MUTED) : "rgba(26,26,27,0.17)" }}>
                   {s}
                 </p>
               </div>
               {i < STATUS_ORDER.length - 1 && (
                 <div className="flex-1 h-px"
-                  style={{ background: i < currentIdx ? "rgba(212,175,55,0.5)" : "rgba(255,255,255,0.08)" }} />
+                  style={{ background: i < currentIdx ? "rgba(212,139,0,0.5)" : "rgba(26,26,27,0.10)" }} />
               )}
             </div>
           );
@@ -138,7 +138,7 @@ function RequestCard({ req }: { req: SignatureRequestItem }) {
 
   return (
     <motion.div className="rounded-2xl overflow-hidden"
-      style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}
+      style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.09)" }}
       initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
 
       {/* Card header */}
@@ -174,11 +174,11 @@ function RequestCard({ req }: { req: SignatureRequestItem }) {
                   <span>Production stage: <span style={{ color: GOLD_DIM }}>{productionStage.label}</span></span>
                   <span>{productionStage.pct}%</span>
                 </div>
-                <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
+                <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(26,26,27,0.09)" }}>
                   <motion.div className="h-full rounded-full"
                     initial={{ width: 0 }} animate={{ width: `${productionStage.pct}%` }}
                     transition={{ duration: 1, ease: "easeOut" }}
-                    style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.8), rgba(212,175,55,0.9))" }} />
+                    style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.8), rgba(212,139,0,0.9))" }} />
                 </div>
               </div>
             )}
@@ -186,7 +186,7 @@ function RequestCard({ req }: { req: SignatureRequestItem }) {
             {/* Admin notes */}
             {req.adminNotes && (
               <div className="mt-3 p-2.5 rounded-lg"
-                style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.12)" }}>
+                style={{ background: "rgba(212,139,0,0.04)", border: "1px solid rgba(212,139,0,0.12)" }}>
                 <p className="text-[7px] uppercase tracking-wider mb-1" style={{ color: GOLD_DIM }}>Admin Notes</p>
                 <p className="text-[9px]" style={{ color: "rgba(200,180,145,0.7)" }}>{req.adminNotes}</p>
               </div>
@@ -220,7 +220,7 @@ function RequestCard({ req }: { req: SignatureRequestItem }) {
             initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }}>
             <div className="px-5 pb-5 space-y-4"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+              style={{ borderTop: "1px solid rgba(26,26,27,0.07)" }}>
 
               {/* Cigar spec */}
               <div className="pt-4">
@@ -228,7 +228,7 @@ function RequestCard({ req }: { req: SignatureRequestItem }) {
                 <div className="grid grid-cols-2 gap-3">
                   {spec.strength !== undefined && (
                     <div className="rounded-lg p-3"
-                      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                      style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
                       <p className="text-[7px] uppercase tracking-wider mb-1" style={{ color: MUTED }}>Strength</p>
                       <p className="text-xs font-serif" style={{ color: "rgba(210,190,155,0.8)" }}>
                         {["Mild","Medium-Mild","Medium","Medium-Full","Full"][spec.strength - 1] ?? `Level ${spec.strength}`}
@@ -237,7 +237,7 @@ function RequestCard({ req }: { req: SignatureRequestItem }) {
                   )}
                   {spec.wrapperType && (
                     <div className="rounded-lg p-3"
-                      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                      style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
                       <p className="text-[7px] uppercase tracking-wider mb-1" style={{ color: MUTED }}>Wrapper</p>
                       <p className="text-xs font-serif" style={{ color: "rgba(210,190,155,0.8)" }}>
                         {WRAPPER_LABELS[spec.wrapperType] ?? spec.wrapperType}
@@ -246,12 +246,12 @@ function RequestCard({ req }: { req: SignatureRequestItem }) {
                   )}
                   {spec.flavorDirection && spec.flavorDirection.length > 0 && (
                     <div className="col-span-2 rounded-lg p-3"
-                      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                      style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
                       <p className="text-[7px] uppercase tracking-wider mb-2" style={{ color: MUTED }}>Flavor Profile</p>
                       <div className="flex flex-wrap gap-1.5">
                         {spec.flavorDirection.map((f) => (
                           <span key={f} className="text-[8px] px-2 py-0.5 rounded-full"
-                            style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.18)", color: GOLD_DIM }}>
+                            style={{ background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.18)", color: GOLD_DIM }}>
                             {f}
                           </span>
                         ))}
@@ -277,7 +277,7 @@ function RequestCard({ req }: { req: SignatureRequestItem }) {
                       { label: "Finish",            value: boxDesign.finishStyle },
                     ].filter((x) => x.value).map(({ label, value }) => (
                       <div key={label} className="rounded-lg p-3"
-                        style={{ background: "rgba(212,175,55,0.03)", border: "1px solid rgba(212,175,55,0.1)" }}>
+                        style={{ background: "rgba(212,139,0,0.03)", border: "1px solid rgba(212,139,0,0.1)" }}>
                         <p className="text-[7px] uppercase tracking-wider mb-1" style={{ color: MUTED }}>{label}</p>
                         <p className="text-xs font-serif capitalize" style={{ color: "rgba(210,190,155,0.8)" }}>{value}</p>
                       </div>
@@ -333,13 +333,13 @@ export function SignatureCreationsTab() {
         <div className="flex gap-2">
           <motion.button onClick={load}
             className="p-2 rounded-lg" whileTap={{ scale: 0.95 }}
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: MUTED }}>
+            style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: MUTED }}>
             <RefreshCw size={12} />
           </motion.button>
           {isMaestro && (
             <motion.button onClick={() => setShowModal(true)}
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs uppercase tracking-[0.12em]"
-              style={{ background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.28)", color: GOLD_DIM }}
+              style={{ background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.28)", color: GOLD_DIM }}
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
               <Crown size={12} /> New Design
             </motion.button>
@@ -350,9 +350,9 @@ export function SignatureCreationsTab() {
       {/* Maestro gate notice */}
       {!isMaestro && (
         <motion.div className="rounded-2xl p-6 text-center"
-          style={{ background: "rgba(212,175,55,0.03)", border: "1px solid rgba(212,175,55,0.12)" }}
+          style={{ background: "rgba(212,139,0,0.03)", border: "1px solid rgba(212,139,0,0.12)" }}
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-          <Crown size={28} className="mx-auto mb-3" style={{ color: "rgba(212,175,55,0.3)" }} />
+          <Crown size={28} className="mx-auto mb-3" style={{ color: "rgba(212,139,0,0.3)" }} />
           <p className="font-serif text-lg mb-2" style={{ color: "rgba(220,200,165,0.8)", fontWeight: 300 }}>
             Maestro del Fuego Required
           </p>
@@ -376,9 +376,9 @@ export function SignatureCreationsTab() {
       {/* Creator status (Maestro) */}
       {isMaestro && (
         <motion.div className="rounded-xl p-4 flex items-center gap-4"
-          style={{ background: "linear-gradient(135deg, rgba(120,80,5,0.15), rgba(212,175,55,0.05))", border: "1px solid rgba(212,175,55,0.22)" }}
+          style={{ background: "linear-gradient(135deg, rgba(120,80,5,0.15), rgba(212,139,0,0.05))", border: "1px solid rgba(212,139,0,0.22)" }}
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <Crown size={22} style={{ color: GOLD, filter: "drop-shadow(0 0 6px rgba(212,175,55,0.4))" }} />
+          <Crown size={22} style={{ color: GOLD, filter: "drop-shadow(0 0 6px rgba(212,139,0,0.4))" }} />
           <div>
             <p className="font-serif text-sm" style={{ color: GOLD_DIM, fontWeight: 300 }}>Signature Creator — Elite Status</p>
             <p className="text-[8px] mt-0.5" style={{ color: MUTED }}>
@@ -392,7 +392,7 @@ export function SignatureCreationsTab() {
       {loading ? (
         <div className="flex justify-center py-12">
           <motion.div className="w-6 h-6 rounded-full border-2"
-            style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.7)" }}
+            style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.7)" }}
             animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
         </div>
       ) : requests.length === 0 ? (
@@ -404,7 +404,7 @@ export function SignatureCreationsTab() {
           {isMaestro && (
             <motion.button onClick={() => setShowModal(true)}
               className="px-5 py-2.5 rounded-xl text-xs uppercase tracking-[0.15em]"
-              style={{ background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.25)", color: GOLD_DIM }}
+              style={{ background: "rgba(212,139,0,0.1)", border: "1px solid rgba(212,139,0,0.25)", color: GOLD_DIM }}
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
               Start Creating
             </motion.button>

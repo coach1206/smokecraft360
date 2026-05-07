@@ -152,7 +152,7 @@ const EXPERIENCES: Experience[] = [
     title:      "SmokeCraft 360",
     descriptor: "Cigars · Spirits · Lounge",
     image:      smokecraftImg,
-    accent:     "#D4AF37",
+    accent:     "#D48B00",
     gradient:   "linear-gradient(180deg, rgba(20,12,4,0.15) 0%, rgba(20,12,4,0.85) 100%)",
   },
   {
@@ -633,7 +633,7 @@ export default function Intro() {
             fontWeight: 300,
             letterSpacing: "0.04em",
             margin: 0,
-            background: "linear-gradient(180deg, #F5EBDD 0%, #D4AF37 100%)",
+            background: "linear-gradient(180deg, #F5EBDD 0%, #D48B00 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor:  "transparent",
             backgroundClip: "text",
@@ -712,7 +712,7 @@ export default function Intro() {
                 background: "#0a0604",
                 boxShadow: isSel
                   ? `0 0 0 2px ${exp.accent}, 0 30px 80px ${exp.accent}55`
-                  : `0 18px 50px rgba(0,0,0,0.55)`,
+                  : `0 18px 50px rgba(26,26,27,0.22)`,
                 transition: "box-shadow 0.4s ease",
               }}
             >
@@ -827,7 +827,7 @@ export default function Intro() {
                   zIndex: 38, pointerEvents: "none",
                   display: "flex", alignItems: "flex-end",
                   gap: 24,
-                  filter: "drop-shadow(0 24px 50px rgba(0,0,0,0.65))",
+                  filter: "drop-shadow(0 24px 50px rgba(26,26,27,0.30))",
                 }}
               >
                 {/* Hidden preloaders so all 4 cigar stages and the glass are
@@ -907,7 +907,7 @@ export default function Intro() {
               fontSize: "clamp(18px, 2vw, 26px)",
               letterSpacing: "0.06em",
               color: "#F5EBDD",
-              textShadow: "0 0 32px rgba(0,0,0,0.55)",
+              textShadow: "0 0 32px rgba(26,26,27,0.22)",
             }}
           >
             {t(DEMO_CAPTION_KEYS[attractIdx])}
@@ -944,11 +944,11 @@ export default function Intro() {
                 transform: "translateX(-50%)",
                 zIndex: 41, pointerEvents: "none",
                 padding: "16px 28px", borderRadius: 14,
-                border: "1px solid rgba(212,175,55,0.35)",
+                border: "1px solid rgba(212,139,0,0.35)",
                 background: "rgba(10,6,4,0.78)",
                 backdropFilter: "blur(8px)",
                 color: "#F5EBDD", textAlign: "center",
-                boxShadow: "0 14px 50px rgba(0,0,0,0.6)",
+                boxShadow: "0 14px 50px rgba(26,26,27,0.26)",
                 minWidth: 280,
               }}
             >
@@ -956,7 +956,7 @@ export default function Intro() {
                 style={{
                   fontSize: 11, letterSpacing: "0.4em",
                   textTransform: "uppercase",
-                  color: "rgba(212,175,55,0.8)",
+                  color: "rgba(212,139,0,0.8)",
                   marginBottom: 8,
                 }}
               >
@@ -966,7 +966,7 @@ export default function Intro() {
                 style={{
                   fontFamily: "var(--app-font-serif, Georgia, serif)",
                   fontSize: 30, fontWeight: 600,
-                  color: "#D4AF37", lineHeight: 1.1,
+                  color: "#D48B00", lineHeight: 1.1,
                 }}
               >
                 {score.toFixed(2)}
@@ -1012,7 +1012,7 @@ export default function Intro() {
               }}
               style={{
                 height: "100%",
-                background: "linear-gradient(90deg, transparent, #D4AF37 50%, transparent)",
+                background: "linear-gradient(90deg, transparent, #D48B00 50%, transparent)",
               }}
             />
           </div>
@@ -1038,8 +1038,8 @@ export default function Intro() {
               textAlign: "center", pointerEvents: "none",
               fontSize: "clamp(14px, 1.4vw, 18px)",
               letterSpacing: "0.4em", textTransform: "uppercase",
-              color: "#D4AF37", zIndex: 40,
-              textShadow: "0 0 24px rgba(212,175,55,0.45)",
+              color: "#D48B00", zIndex: 40,
+              textShadow: "0 0 24px rgba(212,139,0,0.45)",
             }}
           >
             Tap to Begin

@@ -18,8 +18,8 @@ import { motion }                       from "framer-motion";
 import { ShoppingBag, Bookmark, Flame, Droplets, Wind, Sparkles } from "lucide-react";
 import type { ProductResult }           from "@/services/api";
 
-const GOLD     = "rgba(212,175,55,1)";
-const GOLD_DIM = "rgba(212,175,55,0.78)";
+const GOLD     = "rgba(212,139,0,1)";
+const GOLD_DIM = "rgba(212,139,0,0.78)";
 const MUTED    = "rgba(200,175,130,0.65)";
 
 interface Props {
@@ -91,7 +91,7 @@ export function ExperienceRightPanel({ product, pairing, onOrder, onSave, experi
       </motion.div>
 
       {/* Divider */}
-      <div style={{ height: 1, background: "rgba(212,175,55,0.16)" }} />
+      <div style={{ height: 1, background: "rgba(212,139,0,0.16)" }} />
 
       {/* Details grid */}
       <motion.div
@@ -125,8 +125,8 @@ export function ExperienceRightPanel({ product, pairing, onOrder, onSave, experi
                   borderRadius: 999,
                   fontSize: 13,
                   textTransform: "capitalize",
-                  background: "rgba(212,175,55,0.10)",
-                  border: "1px solid rgba(212,175,55,0.28)",
+                  background: "rgba(212,139,0,0.10)",
+                  border: "1px solid rgba(212,139,0,0.28)",
                   color: "rgba(232,210,170,0.92)",
                   fontWeight: 500,
                 }}>
@@ -144,8 +144,8 @@ export function ExperienceRightPanel({ product, pairing, onOrder, onSave, experi
         style={{
           padding: "14px 14px 12px",
           borderRadius: 12,
-          background: "linear-gradient(135deg, rgba(212,175,55,0.10), rgba(212,175,55,0.03))",
-          border: "1px solid rgba(212,175,55,0.22)",
+          background: "linear-gradient(135deg, rgba(212,139,0,0.10), rgba(212,139,0,0.03))",
+          border: "1px solid rgba(212,139,0,0.22)",
           boxShadow: "inset 0 1px 0 rgba(255,225,160,0.06)",
         }}
         data-testid="why-it-works"
@@ -180,7 +180,7 @@ export function ExperienceRightPanel({ product, pairing, onOrder, onSave, experi
           style={{
             padding: 14,
             background: "rgba(255,245,220,0.04)",
-            border: "1px solid rgba(212,175,55,0.18)",
+            border: "1px solid rgba(212,139,0,0.18)",
           }}
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
           <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.24em", color: MUTED, fontWeight: 700, marginBottom: 10 }}>
@@ -188,7 +188,7 @@ export function ExperienceRightPanel({ product, pairing, onOrder, onSave, experi
           </p>
           <div className="flex items-start gap-3">
             <div className="rounded-lg flex-shrink-0 flex items-center justify-center"
-              style={{ width: 36, height: 36, background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.25)" }}>
+              style={{ width: 36, height: 36, background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.25)" }}>
               <Droplets size={16} style={{ color: GOLD_DIM }} />
             </div>
             <div className="flex-1 min-w-0">
@@ -208,7 +208,7 @@ export function ExperienceRightPanel({ product, pairing, onOrder, onSave, experi
       )}
 
       {/* Divider */}
-      <div style={{ height: 1, background: "rgba(255,255,255,0.06)" }} />
+      <div style={{ height: 1, background: "rgba(26,26,27,0.08)" }} />
 
       {/* Actions */}
       <motion.div className="space-y-2.5"
@@ -217,7 +217,7 @@ export function ExperienceRightPanel({ product, pairing, onOrder, onSave, experi
           onClick={onOrder}
           className="sc-btn-primary w-full flex items-center justify-center gap-2"
           style={{ fontSize: 14, padding: "12px 18px", fontWeight: 700, letterSpacing: "0.12em" }}
-          whileHover={{ scale: 1.02, boxShadow: "0 0 22px rgba(212,175,55,0.35)" }}
+          whileHover={{ scale: 1.02, boxShadow: "0 0 22px rgba(212,139,0,0.35)" }}
           whileTap={{ scale: 0.96 }}>
           <ShoppingBag size={16} />Order Now
         </motion.button>
@@ -227,7 +227,7 @@ export function ExperienceRightPanel({ product, pairing, onOrder, onSave, experi
           disabled={experienceSaved}
           className="sc-btn-ghost w-full flex items-center justify-center gap-2"
           style={{ fontSize: 13, padding: "11px 18px", fontWeight: 600, letterSpacing: "0.12em" }}
-          whileHover={!experienceSaved ? { borderColor: "rgba(212,175,55,0.5)", color: GOLD } : {}}
+          whileHover={!experienceSaved ? { borderColor: "rgba(212,139,0,0.5)", color: GOLD } : {}}
           whileTap={!experienceSaved ? { scale: 0.96 } : {}}>
           <Bookmark size={15} />
           {experienceSaved ? "Saved" : "Save Experience"}
@@ -246,7 +246,7 @@ function DetailChip({
       style={{
         padding: "10px 12px",
         background: "rgba(255,245,220,0.04)",
-        border: "1px solid rgba(212,175,55,0.14)",
+        border: "1px solid rgba(212,139,0,0.14)",
       }}>
       <div className="flex items-center gap-1.5" style={{ marginBottom: 5, color: "rgba(200,175,130,0.65)" }}>
         {icon}

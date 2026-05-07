@@ -24,7 +24,7 @@ const LABEL_STYLE: React.CSSProperties = {
   display: "block",
   fontSize: 11,
   fontWeight: 600,
-  color: "rgba(240,232,212,0.55)",
+  color: "rgba(26,26,27,0.52)",
   textTransform: "uppercase",
   letterSpacing: "0.1em",
   marginBottom: 6,
@@ -32,7 +32,7 @@ const LABEL_STYLE: React.CSSProperties = {
 
 const HINT_STYLE: React.CSSProperties = {
   fontSize: 11,
-  color: "rgba(240,232,212,0.35)",
+  color: "rgba(26,26,27,0.35)",
   marginTop: 5,
   lineHeight: 1.5,
 };
@@ -46,8 +46,8 @@ const ERROR_STYLE: React.CSSProperties = {
 
 const INPUT_BASE: React.CSSProperties = {
   width: "100%",
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(201,168,76,0.18)",
+  background: "rgba(26,26,27,0.07)",
+  border: "1px solid rgba(212,139,0,0.18)",
   borderRadius: 8,
   color: "rgba(240,232,212,0.9)",
   fontSize: 13,
@@ -60,8 +60,8 @@ const INPUT_BASE: React.CSSProperties = {
 };
 
 const INPUT_FOCUSED: React.CSSProperties = {
-  borderColor: "rgba(201,168,76,0.55)",
-  boxShadow: "0 0 0 2px rgba(201,168,76,0.12)",
+  borderColor: "rgba(212,139,0,0.55)",
+  boxShadow: "0 0 0 2px rgba(212,139,0,0.12)",
 };
 
 const INPUT_ERROR: React.CSSProperties = {
@@ -80,7 +80,7 @@ export const AxInput = forwardRef<HTMLInputElement, AxInputProps>(function AxInp
         {LeftIcon && (
           <div style={{
             position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)",
-            color: "rgba(240,232,212,0.35)", pointerEvents: "none",
+            color: "rgba(26,26,27,0.35)", pointerEvents: "none",
           }}>
             <LeftIcon size={13} />
           </div>
@@ -94,7 +94,7 @@ export const AxInput = forwardRef<HTMLInputElement, AxInputProps>(function AxInp
             onFocus?.(e);
           }}
           onBlur={(e) => {
-            e.currentTarget.style.borderColor = error ? "rgba(239,68,68,0.5)" : "rgba(201,168,76,0.18)";
+            e.currentTarget.style.borderColor = error ? "rgba(239,68,68,0.5)" : "rgba(212,139,0,0.18)";
             e.currentTarget.style.boxShadow   = "none";
             onBlur?.(e);
           }}
@@ -109,7 +109,7 @@ export const AxInput = forwardRef<HTMLInputElement, AxInputProps>(function AxInp
         {rightSlot && (
           <div style={{
             position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
-            color: "rgba(240,232,212,0.35)",
+            color: "rgba(26,26,27,0.35)",
           }}>
             {rightSlot}
           </div>
@@ -131,12 +131,12 @@ export const AxTextarea = forwardRef<HTMLTextAreaElement, Omit<AxTextareaProps, 
           ref={ref}
           {...rest}
           onFocus={(e) => {
-            e.currentTarget.style.borderColor = error ? "rgba(239,68,68,0.5)" : "rgba(201,168,76,0.55)";
-            e.currentTarget.style.boxShadow   = error ? "0 0 0 2px rgba(239,68,68,0.1)" : "0 0 0 2px rgba(201,168,76,0.12)";
+            e.currentTarget.style.borderColor = error ? "rgba(239,68,68,0.5)" : "rgba(212,139,0,0.55)";
+            e.currentTarget.style.boxShadow   = error ? "0 0 0 2px rgba(239,68,68,0.1)" : "0 0 0 2px rgba(212,139,0,0.12)";
             onFocus?.(e);
           }}
           onBlur={(e) => {
-            e.currentTarget.style.borderColor = error ? "rgba(239,68,68,0.5)" : "rgba(201,168,76,0.18)";
+            e.currentTarget.style.borderColor = error ? "rgba(239,68,68,0.5)" : "rgba(212,139,0,0.18)";
             e.currentTarget.style.boxShadow   = "none";
             onBlur?.(e);
           }}

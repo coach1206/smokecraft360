@@ -57,7 +57,7 @@ const CONFIGS: Record<TransitionType, TransitionConfig> = {
 export function useCinematicTransition() {
   const [visible,  setVisible]  = useState(false);
   const [type,     setType]     = useState<TransitionType>("reveal");
-  const [accent,   setAccent]   = useState("#d4af37");
+  const [accent,   setAccent]   = useState("#D48B00");
   const callbackRef = useRef<(() => void) | null>(null);
 
   const triggerTransition = useCallback((
@@ -231,7 +231,7 @@ export function SessionReturnBanner({
             alignItems: "center",
             gap:        10,
             backdropFilter: "blur(16px)",
-            boxShadow:  `0 4px 24px rgba(0,0,0,0.5), 0 0 24px ${accentColor}15`,
+            boxShadow:  `0 4px 24px rgba(26,26,27,0.18), 0 0 24px ${accentColor}15`,
           }}
         >
           <motion.div

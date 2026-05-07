@@ -34,7 +34,7 @@ const CARDS = [
     id:    "start-experience",
     title: "Starting an Experience",
     icon:  Flame,
-    color: "#d4af37",
+    color: "#D48B00",
     tag:   "Core Flow",
     steps: [
       { step: 1, text: "Navigate to the Craft Hub (the home screen). Four craft tiles appear: SmokeCraft, PourCraft, BrewCraft, VapeCraft." },
@@ -114,7 +114,7 @@ const CARDS = [
     id:    "experience-control",
     title: "Using Experience Control",
     icon:  Sliders,
-    color: "#d4af37",
+    color: "#D48B00",
     tag:   "Venue Management",
     steps: [
       { step: 1, text: "Navigate to Settings → Experience Control (or /admin/experience-control). This requires manager or venue_owner access." },
@@ -317,7 +317,7 @@ export default function StaffTraining() {
               background: "#1A1410",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <BookOpen size={16} color="#d4af37" />
+              <BookOpen size={16} color="#D48B00" />
             </div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Staff Training</div>
@@ -335,7 +335,7 @@ export default function StaffTraining() {
                   style={{
                     padding: "6px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none",
                     background: viewMode === mode ? "#1A1410" : "transparent",
-                    color: viewMode === mode ? "#d4af37" : C.muted,
+                    color: viewMode === mode ? "#D48B00" : C.muted,
                   }}
                 >
                   {mode === "list" ? "All Cards" : "Step-by-Step"}
@@ -501,7 +501,7 @@ export default function StaffTraining() {
                   display: "flex", alignItems: "center", gap: 6,
                   background: cardIdx === CARDS.length - 1 ? "rgba(26,20,16,0.08)" : "#1A1410",
                   border: "none", borderRadius: 10, padding: "9px 18px",
-                  color: cardIdx === CARDS.length - 1 ? C.dim : "#d4af37",
+                  color: cardIdx === CARDS.length - 1 ? C.dim : "#D48B00",
                   fontSize: 13, fontWeight: 700, cursor: cardIdx === CARDS.length - 1 ? "not-allowed" : "pointer",
                 }}
               >

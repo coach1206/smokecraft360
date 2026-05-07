@@ -11,9 +11,9 @@ import { MAXWELL_TIPS }                        from "@/data/trainingData";
 
 const T = {
   bg:     "#0c0914",
-  border: "rgba(201,168,76,0.22)",
-  gold:   "#c9a84c",
-  text:   "rgba(240,232,212,0.92)",
+  border: "rgba(212,139,0,0.22)",
+  gold:   "#D48B00",
+  text:   "rgba(26,26,27,0.90)",
   muted:  "rgba(240,232,212,0.52)",
 };
 
@@ -80,7 +80,7 @@ export default function Maxwell({ message, context, autoTip = true }: MaxwellPro
         width: collapsed ? 52 : 320,
         background: T.bg, border: `1px solid ${T.border}`,
         borderRadius: 14, overflow: "hidden",
-        boxShadow: `0 0 32px rgba(201,168,76,0.12), 0 8px 32px rgba(0,0,0,0.6)`,
+        boxShadow: `0 0 32px rgba(212,139,0,0.12), 0 8px 32px rgba(26,26,27,0.26)`,
         transition: "width 0.3s cubic-bezier(0.16,1,0.3,1)",
       }}
     >
@@ -99,8 +99,8 @@ export default function Maxwell({ message, context, autoTip = true }: MaxwellPro
             transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
             style={{
               width: 24, height: 24, borderRadius: "50%",
-              background: `radial-gradient(circle, rgba(201,168,76,0.6) 0%, rgba(201,168,76,0.1) 70%)`,
-              border: `1px solid rgba(201,168,76,0.4)`,
+              background: `radial-gradient(circle, rgba(212,139,0,0.6) 0%, rgba(212,139,0,0.1) 70%)`,
+              border: `1px solid rgba(212,139,0,0.4)`,
               display: "flex", alignItems: "center", justifyContent: "center",
               flexShrink: 0,
             }}

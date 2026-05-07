@@ -31,7 +31,7 @@ const STATUS_LABEL: Record<ReservationStatus, string> = {
 };
 
 const STATUS_COLORS: Record<ReservationStatus, { bg: string; fg: string; border: string }> = {
-  pending:   { bg: "rgba(212,175,55,0.12)", fg: "rgba(230,200,120,0.95)", border: "rgba(212,175,55,0.4)" },
+  pending:   { bg: "rgba(212,139,0,0.12)", fg: "rgba(230,200,120,0.95)", border: "rgba(212,139,0,0.4)" },
   accepted:  { bg: "rgba(80,160,90,0.15)",  fg: "rgba(180,255,190,0.95)", border: "rgba(80,160,90,0.5)" },
   rejected:  { bg: "rgba(180,40,40,0.12)",  fg: "rgba(255,180,170,0.9)",  border: "rgba(180,40,40,0.45)" },
   cancelled: { bg: "rgba(180,180,180,0.08)", fg: "rgba(180,180,180,0.7)", border: "rgba(180,180,180,0.25)" },
@@ -114,9 +114,9 @@ export function ReservationsTab() {
           data-testid="reservations-new"
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] uppercase tracking-[0.15em] transition-all"
           style={{
-            background: "rgba(212,175,55,0.18)",
+            background: "rgba(212,139,0,0.18)",
             color:      "rgba(230,200,120,0.95)",
-            border:     "1px solid rgba(212,175,55,0.45)",
+            border:     "1px solid rgba(212,139,0,0.45)",
           }}>
           <UserPlus size={11} /> New Reservation
         </button>
@@ -135,7 +135,7 @@ export function ReservationsTab() {
         </div>
       ) : items.length === 0 ? (
         <div className="text-[11px] px-4 py-8 rounded text-center"
-          style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(212,175,55,0.2)", color: "rgba(180,155,100,0.5)" }}>
+          style={{ background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(212,139,0,0.2)", color: "rgba(180,155,100,0.5)" }}>
           No reservations yet. Tap "+ New Reservation" to capture a walk-in.
         </div>
       ) : (
@@ -153,8 +153,8 @@ export function ReservationsTab() {
                   data-testid={`reservation-row-${r.id}`}
                   className="rounded-lg p-3 flex items-center justify-between gap-3"
                   style={{
-                    background: "rgba(0,0,0,0.28)",
-                    border:     "1px solid rgba(212,175,55,0.12)",
+                    background: "rgba(26,26,27,0.06)",
+                    border:     "1px solid rgba(212,139,0,0.12)",
                   }}>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -168,7 +168,7 @@ export function ReservationsTab() {
                       </span>
                       {r.paymentMode !== "none" && (
                         <span className="text-[9px] uppercase tracking-[0.15em] px-2 py-0.5 rounded-full"
-                          style={{ background: "rgba(255,255,255,0.04)", color: "rgba(180,155,100,0.7)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                          style={{ background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.7)", border: "1px solid rgba(26,26,27,0.10)" }}>
                           {r.paymentMode === "deposit" ? `Deposit · $${((r.depositCents ?? 0)/100).toFixed(2)}` : "Pay at venue"}
                         </span>
                       )}
@@ -179,7 +179,7 @@ export function ReservationsTab() {
                       {r.guestPhone && <span className="flex items-center gap-1"><Phone size={10} /> {r.guestPhone}</span>}
                     </div>
                     {r.productName && (
-                      <div className="text-[10px] mt-1" style={{ color: "rgba(212,175,55,0.7)" }}>
+                      <div className="text-[10px] mt-1" style={{ color: "rgba(212,139,0,0.7)" }}>
                         Reserving: {r.productName}
                       </div>
                     )}
@@ -211,7 +211,7 @@ export function ReservationsTab() {
                           tone="bad" testId={`noshow-${r.id}`} />
                       </>
                     )}
-                    {acting[r.id] && <Loader2 size={12} className="animate-spin" style={{ color: "rgba(212,175,55,0.7)" }} />}
+                    {acting[r.id] && <Loader2 size={12} className="animate-spin" style={{ color: "rgba(212,139,0,0.7)" }} />}
                   </div>
                 </motion.div>
               );
@@ -282,8 +282,8 @@ function NewReservationForm({
   const [error,      setError]      = useState<string | null>(null);
 
   const inputStyle: React.CSSProperties = {
-    background:   "rgba(0,0,0,0.35)",
-    border:       "1px solid rgba(212,175,55,0.18)",
+    background:   "rgba(26,26,27,0.08)",
+    border:       "1px solid rgba(212,139,0,0.18)",
     color:        "rgba(230,210,175,0.92)",
     padding:      "8px 12px",
     borderRadius: 6,
@@ -327,7 +327,7 @@ function NewReservationForm({
   return (
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.72)", backdropFilter: "blur(4px)" }}
+      style={{ background: "rgba(26,26,27,0.34)", backdropFilter: "blur(4px)" }}
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       onClick={onClose}
     >
@@ -335,14 +335,14 @@ function NewReservationForm({
         className="w-full max-w-lg rounded-xl overflow-hidden"
         style={{
           background: "linear-gradient(180deg, hsl(22 18% 7%), hsl(22 18% 4%))",
-          border:     "1px solid rgba(212,175,55,0.25)",
+          border:     "1px solid rgba(212,139,0,0.25)",
           maxHeight:  "92vh",
         }}
         initial={{ scale: 0.96, y: 12 }} animate={{ scale: 1, y: 0 }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-5 py-3"
-          style={{ borderBottom: "1px solid rgba(212,175,55,0.15)" }}>
+          style={{ borderBottom: "1px solid rgba(212,139,0,0.15)" }}>
           <div>
             <h3 className="font-serif" style={{ color: "rgba(230,210,175,0.9)", fontSize: 16, fontWeight: 300 }}>
               New Walk-in Reservation
@@ -395,8 +395,8 @@ function NewReservationForm({
                   disabled={submitting}
                   className="flex-1 px-2 py-1.5 rounded-md text-[9px] uppercase tracking-[0.15em] transition-all"
                   style={paymentMode === m
-                    ? { background: "rgba(212,175,55,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,175,55,0.45)" }
-                    : { background: "rgba(255,255,255,0.04)", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(255,255,255,0.06)" }
+                    ? { background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.45)" }
+                    : { background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(26,26,27,0.08)" }
                   }>
                   {m === "none" ? "None" : m === "deposit" ? "Deposit" : "Pay at venue"}
                 </button>
@@ -433,15 +433,15 @@ function NewReservationForm({
           <div className="flex items-center gap-2 pt-2">
             <button type="button" onClick={onClose} disabled={submitting}
               className="flex-1 px-4 py-2 rounded-md text-[10px] uppercase tracking-[0.18em] transition-colors"
-              style={{ background: "rgba(255,255,255,0.04)", color: "rgba(180,155,100,0.6)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              style={{ background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.6)", border: "1px solid rgba(26,26,27,0.10)" }}>
               Cancel
             </button>
             <button type="submit" disabled={submitting} data-testid="reservation-submit"
               className="flex-[2] px-4 py-2 rounded-md text-[10px] uppercase tracking-[0.18em] flex items-center justify-center gap-2 transition-all"
               style={{
-                background: "rgba(212,175,55,0.18)",
+                background: "rgba(212,139,0,0.18)",
                 color:      "rgba(230,200,120,0.95)",
-                border:     "1px solid rgba(212,175,55,0.45)",
+                border:     "1px solid rgba(212,139,0,0.45)",
                 opacity:    submitting ? 0.7 : 1,
               }}>
               {submitting ? <Loader2 size={12} className="animate-spin" /> : <Clock size={12} />}

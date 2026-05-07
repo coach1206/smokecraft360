@@ -25,13 +25,13 @@ import { useAuth }         from "@/contexts/AuthContext";
 import { getAuthHeaders }  from "@/services/auth";
 
 const C = {
-  gold:   "#d4af37",
-  goldDim:"rgba(212,175,55,0.6)",
+  gold:   "#D48B00",
+  goldDim:"rgba(212,139,0,0.6)",
   text:   "#e8e0c8",
   muted:  "rgba(232,224,200,0.5)",
   dim:    "rgba(232,224,200,0.28)",
-  card:   "rgba(255,255,255,0.03)",
-  border: "rgba(255,255,255,0.08)",
+  card:   "rgba(26,26,27,0.05)",
+  border: "rgba(26,26,27,0.10)",
 };
 
 interface SimEvent {
@@ -42,13 +42,13 @@ interface SimEvent {
 }
 
 const PROFILE_OPTIONS = [
-  { id: "investor",  label: "Investor Pitch",   color: "#d4af37", desc: "Revenue & growth metrics" },
+  { id: "investor",  label: "Investor Pitch",   color: "#D48B00", desc: "Revenue & growth metrics" },
   { id: "partner",   label: "Partner Overview",  color: "#5b8def", desc: "Integration depth" },
   { id: "tradeshow", label: "Trade Show",        color: "#34d399", desc: "Full feature reel" },
 ];
 
 const EVENT_COLORS: Record<string, string> = {
-  order_placed:    "#d4af37",
+  order_placed:    "#D48B00",
   reward_unlocked: "#34d399",
   product_viewed:  "#5b8def",
   revenue_update:  "#a78bfa",
@@ -125,7 +125,7 @@ function AccessDenied({ onBack }: { onBack: () => void }) {
     <div style={{
       height: "100dvh", display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
-      background: "#0a0806", color: C.text, gap: 16,
+      background: "#F5F2ED", color: C.text, gap: 16,
     }}>
       <Lock size={40} color="rgba(239,68,68,0.6)" />
       <div style={{ fontSize: 20, fontWeight: 700, color: "#ef4444" }}>Super Admin Access Required</div>
@@ -137,7 +137,7 @@ function AccessDenied({ onBack }: { onBack: () => void }) {
         onClick={onBack}
         style={{
           padding: "10px 24px", borderRadius: 12, cursor: "pointer",
-          background: "rgba(255,255,255,0.05)", border: `1px solid ${C.border}`,
+          background: "rgba(26,26,27,0.07)", border: `1px solid ${C.border}`,
           color: C.text, fontSize: 14, fontWeight: 600,
           display: "flex", alignItems: "center", gap: 8,
         }}
@@ -274,7 +274,7 @@ export default function DemoSimDashboard() {
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-            style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, color: C.muted, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(26,26,27,0.06)", border: `1px solid ${C.border}`, color: C.muted, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <ArrowLeft size={20} />
           </motion.button>
           <div>
@@ -360,7 +360,7 @@ export default function DemoSimDashboard() {
               transition={{ duration: 0.4 }}
               style={{
                 padding: "12px 16px", borderRadius: 12,
-                background: "rgba(212,175,55,0.05)", border: "1px solid rgba(212,175,55,0.18)",
+                background: "rgba(212,139,0,0.05)", border: "1px solid rgba(212,139,0,0.18)",
                 display: "flex", alignItems: "center", gap: 10,
               }}
             >
@@ -407,7 +407,7 @@ export default function DemoSimDashboard() {
                   onClick={() => setSpeed(s.v)}
                   style={{
                     padding: "5px 12px", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: 600,
-                    background: speed === s.v ? "rgba(212,175,55,0.1)" : C.card,
+                    background: speed === s.v ? "rgba(212,139,0,0.1)" : C.card,
                     border: `1px solid ${speed === s.v ? C.gold : C.border}`,
                     color: speed === s.v ? C.gold : C.muted,
                   }}
@@ -427,7 +427,7 @@ export default function DemoSimDashboard() {
               style={{
                 width: "100%", padding: "14px", borderRadius: 12, cursor: "pointer",
                 background: `linear-gradient(135deg, ${selectedProfile.color}, ${selectedProfile.color}bb)`,
-                border: "none", color: "#0a0806", fontSize: 15, fontWeight: 700,
+                border: "none", color: "#F5F2ED", fontSize: 15, fontWeight: 700,
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
               }}
             >

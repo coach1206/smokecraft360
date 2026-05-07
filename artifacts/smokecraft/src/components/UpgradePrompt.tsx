@@ -15,7 +15,7 @@ interface Props {
   compact?:     boolean;
 }
 
-const GOLD  = "rgba(212,175,55,";
+const GOLD  = "rgba(212,139,0,";
 const WHITE = "rgba(255,255,255,";
 
 export function UpgradePrompt({ featureName, description, compact = false }: Props) {

@@ -114,7 +114,7 @@ export default function PinLogin() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [handleKey]);
 
-  const dotColor = error ? "#ef4444" : success ? "#34d399" : "#d4af37";
+  const dotColor = error ? "#ef4444" : success ? "#34d399" : "#D48B00";
 
   return (
     <div style={{
@@ -160,8 +160,8 @@ export default function PinLogin() {
         style={{
           position: "absolute", top: 24, left: 24,
           display: "flex", alignItems: "center", gap: 8,
-          background: "rgba(255,255,255,0.06)",
-          border: "1px solid rgba(255,255,255,0.12)",
+          background: "rgba(26,26,27,0.08)",
+          border: "1px solid rgba(26,26,27,0.14)",
           borderRadius: 12, padding: "10px 18px",
           color: "rgba(232,224,200,0.7)", fontSize: 14,
           cursor: "pointer", zIndex: 10,
@@ -183,11 +183,11 @@ export default function PinLogin() {
           maxWidth: 380,
           margin: "0 16px",
           background: "rgba(18,14,10,0.72)",
-          border: "1px solid rgba(212,175,55,0.18)",
+          border: "1px solid rgba(212,139,0,0.18)",
           borderRadius: 24,
           backdropFilter: "blur(24px)",
           WebkitBackdropFilter: "blur(24px)",
-          boxShadow: "0 8px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,175,55,0.08) inset",
+          boxShadow: "0 8px 64px rgba(26,26,27,0.26), 0 0 0 1px rgba(212,139,0,0.08) inset",
           padding: "40px 32px 36px",
           textAlign: "center",
         }}
@@ -195,12 +195,12 @@ export default function PinLogin() {
         {/* Header */}
         <div style={{
           fontSize: 10, textTransform: "uppercase", letterSpacing: "0.24em",
-          color: "rgba(212,175,55,0.6)", marginBottom: 6,
+          color: "rgba(212,139,0,0.6)", marginBottom: 6,
         }}>Venue Access</div>
         <h1 style={{
-          fontSize: 26, fontWeight: 600, color: "#d4af37", margin: "0 0 28px",
+          fontSize: 26, fontWeight: 600, color: "#D48B00", margin: "0 0 28px",
           fontFamily: "'Playfair Display', serif",
-          textShadow: "0 2px 12px rgba(212,175,55,0.25)",
+          textShadow: "0 2px 12px rgba(212,139,0,0.25)",
         }}>Enter PIN</h1>
 
         {/* Dots */}
@@ -216,8 +216,8 @@ export default function PinLogin() {
               transition={{ duration: 0.14 }}
               style={{
                 width: 18, height: 18, borderRadius: "50%",
-                background:  pin.length > i ? dotColor : "rgba(255,255,255,0.06)",
-                border:      `2px solid ${pin.length > i ? dotColor : "rgba(255,255,255,0.15)"}`,
+                background:  pin.length > i ? dotColor : "rgba(26,26,27,0.08)",
+                border:      `2px solid ${pin.length > i ? dotColor : "rgba(26,26,27,0.17)"}`,
                 boxShadow:   pin.length > i ? `0 0 10px ${dotColor}60` : "none",
                 transition:  "all 0.15s ease",
               }}
@@ -292,32 +292,32 @@ export default function PinLogin() {
                   letterSpacing: isAction ? "0.12em" : "0",
                   fontFamily: isAction ? "inherit" : "'Playfair Display', serif",
                   background: goReady
-                    ? "linear-gradient(135deg, #d4af37 0%, #a98828 100%)"
+                    ? "linear-gradient(135deg, #D48B00 0%, #a98828 100%)"
                     : isGo
-                    ? "rgba(212,175,55,0.08)"
+                    ? "rgba(212,139,0,0.08)"
                     : isClear
                     ? "rgba(239,68,68,0.08)"
-                    : "rgba(255,255,255,0.05)",
+                    : "rgba(26,26,27,0.07)",
                   color: goReady
-                    ? "#0a0806"
+                    ? "#F5F2ED"
                     : isGo
-                    ? "rgba(212,175,55,0.45)"
+                    ? "rgba(212,139,0,0.45)"
                     : isClear
                     ? "rgba(239,68,68,0.75)"
                     : "#e8e0c8",
                   border: `1px solid ${
                     goReady
-                      ? "rgba(212,175,55,0.5)"
+                      ? "rgba(212,139,0,0.5)"
                       : isGo
-                      ? "rgba(212,175,55,0.14)"
+                      ? "rgba(212,139,0,0.14)"
                       : isClear
                       ? "rgba(239,68,68,0.18)"
-                      : "rgba(255,255,255,0.08)"
+                      : "rgba(26,26,27,0.10)"
                   }`,
                   borderRadius: 14,
                   cursor: "pointer",
                   transition: "background 0.18s ease, color 0.18s ease, border-color 0.18s ease",
-                  boxShadow: goReady ? "0 4px 20px rgba(212,175,55,0.3)" : "none",
+                  boxShadow: goReady ? "0 4px 20px rgba(212,139,0,0.3)" : "none",
                 }}
               >
                 {key}

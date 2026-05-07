@@ -44,7 +44,7 @@ const PRIORITY_LABEL: Record<SupportTicketPriority, string> = {
 };
 const PRIORITY_COLORS: Record<SupportTicketPriority, { fg: string; border: string }> = {
   low:    { fg: "rgba(180,180,180,0.7)",  border: "rgba(180,180,180,0.25)" },
-  normal: { fg: "rgba(212,175,55,0.7)",   border: "rgba(212,175,55,0.3)"  },
+  normal: { fg: "rgba(212,139,0,0.7)",   border: "rgba(212,139,0,0.3)"  },
   high:   { fg: "rgba(255,140,120,0.95)", border: "rgba(220,80,60,0.55)"  },
 };
 
@@ -128,8 +128,8 @@ export function HelpCenterTab() {
               data-testid={`help-filter-${f}`}
               className="px-2.5 py-1 rounded-full text-[9px] uppercase tracking-[0.15em] transition-all"
               style={filter === f
-                ? { background: "rgba(212,175,55,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,175,55,0.45)" }
-                : { background: "rgba(255,255,255,0.04)", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                ? { background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.45)" }
+                : { background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(26,26,27,0.08)" }}>
               {f === "all" ? "All" : STATUS_LABEL[f]}
             </button>
           ))}
@@ -143,7 +143,7 @@ export function HelpCenterTab() {
             <button onClick={() => setShowCompose(true)}
               data-testid="help-new-ticket"
               className="flex items-center gap-1.5 px-3 py-1 rounded-md text-[10px] uppercase tracking-[0.15em]"
-              style={{ background: "rgba(212,175,55,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,175,55,0.45)" }}>
+              style={{ background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.45)" }}>
               <Plus size={11} /> New
             </button>
           )}
@@ -169,7 +169,7 @@ export function HelpCenterTab() {
       ) : tickets.length === 0 ? (
         <div className="text-[11px] px-4 py-8 rounded text-center"
           data-testid="help-empty"
-          style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(212,175,55,0.2)", color: "rgba(180,155,100,0.5)" }}>
+          style={{ background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(212,139,0,0.2)", color: "rgba(180,155,100,0.5)" }}>
           {filter === "open" ? "No open tickets. Quiet on the wire." : "No tickets in this view."}
         </div>
       ) : (
@@ -192,7 +192,7 @@ export function HelpCenterTab() {
                   }}
                   data-testid={`help-ticket-${t.id}`}
                   className="w-full text-left rounded-lg p-3 transition-colors"
-                  style={{ background: "rgba(0,0,0,0.28)", border: "1px solid rgba(212,175,55,0.12)" }}>
+                  style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(212,139,0,0.12)" }}>
                   <div className="flex items-start gap-3">
                     <LifeBuoy size={14} style={{ color: c.fg, marginTop: 2, flexShrink: 0 }} />
                     <div className="flex-1 min-w-0">
@@ -260,9 +260,9 @@ function ComposeForm({ onCancel, onCreated }: {
       initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
       className="rounded-lg p-4 space-y-3"
       data-testid="help-compose"
-      style={{ background: "rgba(0,0,0,0.32)", border: "1px solid rgba(212,175,55,0.25)" }}>
+      style={{ background: "rgba(26,26,27,0.07)", border: "1px solid rgba(212,139,0,0.25)" }}>
       <div className="flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-[0.18em]" style={{ color: "rgba(212,175,55,0.7)" }}>
+        <span className="text-[10px] uppercase tracking-[0.18em]" style={{ color: "rgba(212,139,0,0.7)" }}>
           New Support Ticket
         </span>
         <button onClick={onCancel} className="p-1 rounded" style={{ color: "rgba(180,155,100,0.5)" }}>
@@ -273,13 +273,13 @@ function ComposeForm({ onCancel, onCreated }: {
         placeholder="Subject (max 200)" maxLength={200}
         data-testid="help-compose-subject"
         className="w-full text-[12px]"
-        style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(212,175,55,0.2)",
+        style={{ background: "rgba(26,26,27,0.10)", border: "1px solid rgba(212,139,0,0.2)",
           color: "rgba(230,210,175,0.92)", padding: "8px 10px", borderRadius: 5 }} />
       <textarea value={body} onChange={(e) => setBody(e.target.value)}
         placeholder="Describe the issue (max 5000)" maxLength={5000} rows={5}
         data-testid="help-compose-body"
         className="w-full text-[12px] resize-y"
-        style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(212,175,55,0.2)",
+        style={{ background: "rgba(26,26,27,0.10)", border: "1px solid rgba(212,139,0,0.2)",
           color: "rgba(230,210,175,0.92)", padding: "8px 10px", borderRadius: 5 }} />
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-1.5">
@@ -291,8 +291,8 @@ function ComposeForm({ onCancel, onCreated }: {
               data-testid={`help-compose-priority-${p}`}
               className="px-2 py-0.5 rounded-full text-[9px] uppercase tracking-[0.15em]"
               style={priority === p
-                ? { background: "rgba(212,175,55,0.2)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,175,55,0.5)" }
-                : { background: "transparent", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                ? { background: "rgba(212,139,0,0.2)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.5)" }
+                : { background: "transparent", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(26,26,27,0.10)" }}>
               {PRIORITY_LABEL[p]}
             </button>
           ))}
@@ -410,7 +410,7 @@ function TicketDetail({ ticket, isSuper, currentUserId, onBack, onTicketUpdated 
       </button>
 
       <div className="rounded-lg p-4"
-        style={{ background: "rgba(0,0,0,0.32)", border: "1px solid rgba(212,175,55,0.18)" }}>
+        style={{ background: "rgba(26,26,27,0.07)", border: "1px solid rgba(212,139,0,0.18)" }}>
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -470,9 +470,9 @@ function TicketDetail({ ticket, isSuper, currentUserId, onBack, onTicketUpdated 
       )}
 
       <div className="rounded-lg"
-        style={{ background: "rgba(0,0,0,0.22)", border: "1px solid rgba(212,175,55,0.1)" }}>
+        style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(212,139,0,0.1)" }}>
         <div className="px-3 py-2 text-[9px] uppercase tracking-[0.22em]"
-          style={{ color: "rgba(180,155,100,0.55)", borderBottom: "1px solid rgba(212,175,55,0.08)" }}>
+          style={{ color: "rgba(180,155,100,0.55)", borderBottom: "1px solid rgba(212,139,0,0.08)" }}>
           Thread
         </div>
         <div ref={threadRef}
@@ -496,8 +496,8 @@ function TicketDetail({ ticket, isSuper, currentUserId, onBack, onTicketUpdated 
                   className="flex" style={{ justifyContent: mine ? "flex-end" : "flex-start" }}>
                   <div className="max-w-[80%] rounded-lg p-2.5"
                     style={mine
-                      ? { background: "rgba(212,175,55,0.14)", border: "1px solid rgba(212,175,55,0.3)" }
-                      : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                      ? { background: "rgba(212,139,0,0.14)", border: "1px solid rgba(212,139,0,0.3)" }
+                      : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.09)" }}>
                     <div className="text-[12px] whitespace-pre-wrap"
                       style={{ color: "rgba(230,210,175,0.92)" }}>
                       {m.body}
@@ -514,7 +514,7 @@ function TicketDetail({ ticket, isSuper, currentUserId, onBack, onTicketUpdated 
         </div>
 
         {ticket.status !== "closed" || isSuper ? (
-          <div className="p-3 flex items-end gap-2" style={{ borderTop: "1px solid rgba(212,175,55,0.08)" }}>
+          <div className="p-3 flex items-end gap-2" style={{ borderTop: "1px solid rgba(212,139,0,0.08)" }}>
             <textarea value={reply} onChange={(e) => setReply(e.target.value)}
               placeholder="Reply…" maxLength={5000} rows={2}
               data-testid="help-reply-input"
@@ -522,13 +522,13 @@ function TicketDetail({ ticket, isSuper, currentUserId, onBack, onTicketUpdated 
                 if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); send(); }
               }}
               className="flex-1 text-[12px] resize-none"
-              style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(212,175,55,0.2)",
+              style={{ background: "rgba(26,26,27,0.10)", border: "1px solid rgba(212,139,0,0.2)",
                 color: "rgba(230,210,175,0.92)", padding: "8px 10px", borderRadius: 5 }} />
             <button onClick={send} disabled={!reply.trim() || posting}
               data-testid="help-reply-send"
               className="flex items-center gap-1.5 px-3 py-2 rounded-md text-[10px] uppercase tracking-[0.15em]"
-              style={{ background: "rgba(212,175,55,0.18)", color: "rgba(230,200,120,0.95)",
-                border: "1px solid rgba(212,175,55,0.45)",
+              style={{ background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)",
+                border: "1px solid rgba(212,139,0,0.45)",
                 opacity: !reply.trim() || posting ? 0.5 : 1 }}>
               {posting ? <Loader2 size={11} className="animate-spin" /> : <Send size={11} />}
               Send
@@ -536,7 +536,7 @@ function TicketDetail({ ticket, isSuper, currentUserId, onBack, onTicketUpdated 
           </div>
         ) : (
           <div className="p-3 text-[10px] text-center uppercase tracking-[0.18em]"
-            style={{ color: "rgba(180,155,100,0.45)", borderTop: "1px solid rgba(212,175,55,0.08)" }}>
+            style={{ color: "rgba(180,155,100,0.45)", borderTop: "1px solid rgba(212,139,0,0.08)" }}>
             Ticket is closed — reopen to reply.
           </div>
         )}

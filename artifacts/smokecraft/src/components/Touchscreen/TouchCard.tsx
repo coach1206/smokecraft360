@@ -25,15 +25,15 @@ export function TouchCard({
 
   const bg =
     variant === "gold"
-      ? "linear-gradient(160deg, rgba(212,175,55,0.18) 0%, rgba(212,175,55,0.06) 100%)"
+      ? "linear-gradient(160deg, rgba(212,139,0,0.18) 0%, rgba(212,139,0,0.06) 100%)"
       : variant === "glass"
-        ? "rgba(255,255,255,0.04)"
-        : "linear-gradient(160deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)";
+        ? "rgba(26,26,27,0.06)"
+        : "linear-gradient(160deg, rgba(26,26,27,0.08) 0%, rgba(26,26,27,0.04) 100%)";
 
   const borderColor =
     variant === "gold"
-      ? "rgba(212,175,55,0.4)"
-      : "rgba(255,255,255,0.08)";
+      ? "rgba(212,139,0,0.4)"
+      : "rgba(26,26,27,0.10)";
 
   return (
     <button
@@ -94,7 +94,7 @@ export function TouchCard({
           style={{
             fontSize: isLarge ? 18 : 15,
             fontWeight: 600,
-            color: variant === "gold" ? "#d4af37" : "#e8e0c8",
+            color: variant === "gold" ? "#D48B00" : "#e8e0c8",
             letterSpacing: "0.02em",
             fontFamily: "'Playfair Display', serif",
           }}

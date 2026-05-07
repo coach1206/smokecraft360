@@ -26,13 +26,13 @@ import { useAuth } from "@/contexts/AuthContext";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
-const GOLD     = "rgba(212,175,55,1)";
-const GOLD_DIM = "rgba(212,175,55,0.45)";
-const GOLD_MID = "rgba(212,175,55,0.65)";
+const GOLD     = "rgba(212,139,0,1)";
+const GOLD_DIM = "rgba(212,139,0,0.45)";
+const GOLD_MID = "rgba(212,139,0,0.65)";
 
 const URGENCY: Record<string, { bg: string; border: string; color: string; label: string }> = {
   high:   { bg: "rgba(239,90,80,0.07)",   border: "rgba(239,90,80,0.25)",   color: "rgba(239,100,90,0.88)", label: "Urgent"  },
-  medium: { bg: "rgba(212,175,55,0.07)",  border: "rgba(212,175,55,0.25)",  color: "rgba(212,175,55,0.85)", label: "Notable" },
+  medium: { bg: "rgba(212,139,0,0.07)",  border: "rgba(212,139,0,0.25)",  color: "rgba(212,139,0,0.85)", label: "Notable" },
   low:    { bg: "rgba(130,150,212,0.06)", border: "rgba(130,150,212,0.2)",  color: "rgba(130,150,212,0.7)", label: "Watch"   },
 };
 
@@ -49,12 +49,12 @@ function KpiCard({
   return (
     <div className="p-4 rounded-xl"
       style={{
-        background: gold    ? "rgba(212,175,55,0.05)"
+        background: gold    ? "rgba(212,139,0,0.05)"
                   : warning ? "rgba(239,90,80,0.05)"
-                  : "rgba(255,255,255,0.025)",
-        border:     gold    ? "1px solid rgba(212,175,55,0.18)"
+                  : "rgba(26,26,27,0.04)",
+        border:     gold    ? "1px solid rgba(212,139,0,0.18)"
                   : warning ? "1px solid rgba(239,90,80,0.2)"
-                  : "1px solid rgba(255,255,255,0.06)",
+                  : "1px solid rgba(26,26,27,0.08)",
       }}>
       <div className="flex items-center gap-2 mb-2">
         <span style={{ color: gold ? GOLD_DIM : warning ? "rgba(239,90,80,0.6)" : "rgba(180,155,100,0.5)" }}>
@@ -74,8 +74,8 @@ function Panel({ children, gold }: { children: React.ReactNode; gold?: boolean }
   return (
     <div className="rounded-xl p-5"
       style={{
-        background: gold ? "rgba(212,175,55,0.03)" : "rgba(255,255,255,0.025)",
-        border:     gold ? "1px solid rgba(212,175,55,0.15)" : "1px solid rgba(255,255,255,0.07)",
+        background: gold ? "rgba(212,139,0,0.03)" : "rgba(26,26,27,0.04)",
+        border:     gold ? "1px solid rgba(212,139,0,0.15)" : "1px solid rgba(26,26,27,0.09)",
       }}>
       {children}
     </div>
@@ -102,7 +102,7 @@ function ScoreBar({ name, category, score, maxScore, selections, oosRequests, or
   return (
     <motion.div
       initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
-      className="py-2.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+      className="py-2.5" style={{ borderBottom: "1px solid rgba(26,26,27,0.06)" }}>
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-[9px] tabular-nums w-4 text-right flex-shrink-0"
@@ -126,12 +126,12 @@ function ScoreBar({ name, category, score, maxScore, selections, oosRequests, or
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+        <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: "rgba(26,26,27,0.07)" }}>
           <motion.div className="h-full rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${pct}%` }}
             transition={{ duration: 0.7, ease: "easeOut", delay: i * 0.05 }}
-            style={{ background: "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(212,175,55,0.9))" }}
+            style={{ background: "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(212,139,0,0.9))" }}
           />
         </div>
         <div className="flex gap-2 flex-shrink-0 text-[7px]" style={{ color: "rgba(180,155,100,0.4)" }}>
@@ -151,12 +151,12 @@ function FlavorBar({ flavor, count, max, i }: { flavor: string; count: number; m
         <span className="text-[10px] capitalize" style={{ color: "rgba(210,190,155,0.75)" }}>{flavor}</span>
         <span className="text-[9px]" style={{ color: GOLD_DIM }}>{count}</span>
       </div>
-      <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+      <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(26,26,27,0.07)" }}>
         <motion.div className="h-full rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${(count / max) * 100}%` }}
           transition={{ duration: 0.7, ease: "easeOut", delay: i * 0.05 }}
-          style={{ background: "linear-gradient(90deg, rgba(180,130,30,0.6), rgba(212,175,55,0.85))" }}
+          style={{ background: "linear-gradient(90deg, rgba(180,130,30,0.6), rgba(212,139,0,0.85))" }}
         />
       </div>
     </div>
@@ -169,7 +169,7 @@ function InsightCard({ text, i }: { text: string; i: number }) {
       initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
       transition={{ delay: i * 0.08 }}
       className="flex items-start gap-3 px-4 py-3 rounded-xl"
-      style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.1)" }}>
+      style={{ background: "rgba(212,139,0,0.04)", border: "1px solid rgba(212,139,0,0.1)" }}>
       <Zap size={11} className="flex-shrink-0 mt-0.5" style={{ color: GOLD_DIM }} />
       <p className="text-xs" style={{ color: "rgba(210,190,155,0.8)" }}>{text}</p>
     </motion.div>
@@ -244,11 +244,11 @@ function CopyButton({ getValue, label }: { getValue: () => string; label: string
       onClick={handle}
       className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[9px] uppercase tracking-[0.15em]"
       style={{
-        background: copied ? "rgba(212,175,55,0.1)" : "rgba(255,255,255,0.04)",
-        border: copied ? "1px solid rgba(212,175,55,0.3)" : "1px solid rgba(255,255,255,0.08)",
-        color: copied ? "rgba(212,175,55,0.8)" : "rgba(180,155,100,0.5)",
+        background: copied ? "rgba(212,139,0,0.1)" : "rgba(26,26,27,0.06)",
+        border: copied ? "1px solid rgba(212,139,0,0.3)" : "1px solid rgba(26,26,27,0.10)",
+        color: copied ? "rgba(212,139,0,0.8)" : "rgba(180,155,100,0.5)",
       }}
-      whileHover={{ borderColor: "rgba(212,175,55,0.3)", color: "rgba(212,175,55,0.7)", background: "rgba(212,175,55,0.06)" }}
+      whileHover={{ borderColor: "rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.7)", background: "rgba(212,139,0,0.06)" }}
       whileTap={{ scale: 0.97 }}>
       {copied ? <><Check size={10} />Copied!</> : <><Copy size={10} />{label}</>}
     </motion.button>
@@ -304,7 +304,7 @@ function RequestedRow({ name, category, score, views, selections, orders, i }: {
   return (
     <motion.div
       initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-      className="flex items-center gap-3 py-2.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+      className="flex items-center gap-3 py-2.5" style={{ borderBottom: "1px solid rgba(26,26,27,0.06)" }}>
       <span className="text-[9px] tabular-nums w-4 text-right flex-shrink-0" style={{ color: "rgba(180,155,100,0.3)" }}>
         {i + 1}
       </span>
@@ -363,7 +363,7 @@ export function DemandProofTab() {
       <div className="flex items-center justify-center py-20">
         <div>
           <motion.div className="w-10 h-10 rounded-full mx-auto mb-4 border-2"
-            style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.7)" }}
+            style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.7)" }}
             animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
           <p className="text-[9px] uppercase tracking-[0.28em] text-center"
             style={{ color: "rgba(180,155,100,0.4)" }}>Compiling proof data…</p>
@@ -378,7 +378,7 @@ export function DemandProofTab() {
         <BarChart3 size={28} className="mx-auto mb-3" style={{ color: "rgba(180,155,100,0.2)" }} />
         <p className="text-xs mb-4" style={{ color: "rgba(239,68,68,0.6)" }}>{error}</p>
         <button onClick={load} className="text-[9px] uppercase tracking-[0.18em] px-4 py-2 rounded-lg"
-          style={{ background: "rgba(212,175,55,0.07)", border: "1px solid rgba(212,175,55,0.2)", color: "rgba(212,175,55,0.65)" }}>
+          style={{ background: "rgba(212,139,0,0.07)", border: "1px solid rgba(212,139,0,0.2)", color: "rgba(212,139,0,0.65)" }}>
           Retry
         </button>
       </div>
@@ -447,8 +447,8 @@ export function DemandProofTab() {
             )}
             <motion.button onClick={load}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[9px] uppercase tracking-[0.15em]"
-              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.5)" }}
-              whileHover={{ borderColor: "rgba(212,175,55,0.3)", color: "rgba(212,175,55,0.7)" }}
+              style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}
+              whileHover={{ borderColor: "rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.7)" }}
               whileTap={{ scale: 0.96 }}>
               <RefreshCw size={10} />Refresh
             </motion.button>
@@ -591,7 +591,7 @@ export function DemandProofTab() {
               ))}
             </div>
             {proof.categoryDistribution && (
-              <div className="flex gap-4 mt-5 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+              <div className="flex gap-4 mt-5 pt-4" style={{ borderTop: "1px solid rgba(26,26,27,0.07)" }}>
                 {[
                   { label: "Cigars", value: proof.categoryDistribution.cigar, color: GOLD_MID },
                   { label: "Spirits", value: proof.categoryDistribution.alcohol, color: "rgba(130,150,212,0.7)" },
@@ -643,8 +643,8 @@ export function DemandProofTab() {
 
         {/* ── Future-ready ─────────────────────────────────────────────────── */}
         <div className="rounded-xl p-5 text-center"
-          style={{ background: "rgba(212,175,55,0.02)", border: "1px dashed rgba(212,175,55,0.1)" }}>
-          <DollarSign size={18} className="mx-auto mb-2" style={{ color: "rgba(212,175,55,0.2)" }} />
+          style={{ background: "rgba(212,139,0,0.02)", border: "1px dashed rgba(212,139,0,0.1)" }}>
+          <DollarSign size={18} className="mx-auto mb-2" style={{ color: "rgba(212,139,0,0.2)" }} />
           <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.3)" }}>
             Future: scheduled PDF reports · email delivery · brand portal sharing · ROI calculator
           </p>

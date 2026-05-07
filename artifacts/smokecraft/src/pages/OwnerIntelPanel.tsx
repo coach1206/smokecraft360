@@ -54,7 +54,7 @@ export default function OwnerIntelPanel() {
       <div style={{
         display: "flex", alignItems: "center", gap: 14,
         padding: "16px 24px",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        borderBottom: "1px solid rgba(26,26,27,0.08)",
         background: "rgba(10,8,6,0.82)", backdropFilter: "blur(8px)",
         flexShrink: 0,
       }}>
@@ -64,15 +64,15 @@ export default function OwnerIntelPanel() {
           style={{
             display: "flex", alignItems: "center", justifyContent: "center",
             width: 40, height: 40, borderRadius: 10,
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "rgba(26,26,27,0.06)",
+            border: "1px solid rgba(26,26,27,0.10)",
             color: "rgba(232,224,200,0.5)", cursor: "pointer",
           }}
         >
           <ArrowLeft size={18} />
         </motion.button>
         <div>
-          <div style={{ fontSize: 17, fontWeight: 700, color: "#d4af37" }}>Owner Intelligence</div>
+          <div style={{ fontSize: 17, fontWeight: 700, color: "#D48B00" }}>Owner Intelligence</div>
           <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>Action-based insights · Updated live</div>
         </div>
       </div>
@@ -109,13 +109,13 @@ export default function OwnerIntelPanel() {
                   transition={{ duration: 0.4 }}
                   style={{
                     padding: "24px 22px", borderRadius: 18,
-                    background: "linear-gradient(155deg, rgba(212,175,55,0.12), rgba(10,8,6,0.7))",
-                    border: "1px solid rgba(212,175,55,0.3)",
+                    background: "linear-gradient(155deg, rgba(212,139,0,0.12), rgba(10,8,6,0.7))",
+                    border: "1px solid rgba(212,139,0,0.3)",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                    <TrendingUp size={16} color="#d4af37" />
-                    <span style={{ fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", color: "#d4af37", fontWeight: 700 }}>Trending Now</span>
+                    <TrendingUp size={16} color="#D48B00" />
+                    <span style={{ fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", color: "#D48B00", fontWeight: 700 }}>Trending Now</span>
                   </div>
                   <div style={{ fontSize: 22, fontWeight: 700, color: "#fff" }}>{quick.trend}</div>
                   <div style={{ fontSize: 12, color: "rgba(232,224,200,0.5)", marginTop: 6 }}>Most-picked style combination this session</div>
@@ -151,13 +151,13 @@ export default function OwnerIntelPanel() {
                   style={{
                     padding: "22px 24px", borderRadius: 18, marginBottom: 20,
                     background: "rgba(10,8,6,0.55)",
-                    border: "1px solid rgba(255,255,255,0.07)",
+                    border: "1px solid rgba(26,26,27,0.09)",
                   }}
                 >
                   <div style={{ fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(232,224,200,0.4)", fontWeight: 700, marginBottom: 10 }}>
                     Customers Prefer
                   </div>
-                  <div style={{ fontSize: 20, fontWeight: 700, color: "#d4af37" }}>{summary.topPreference}</div>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: "#D48B00" }}>{summary.topPreference}</div>
                 </motion.div>
 
                 {/* Action list */}
@@ -176,17 +176,17 @@ export default function OwnerIntelPanel() {
                           display: "flex", alignItems: "center", gap: 14,
                           padding: "16px 20px", borderRadius: 14,
                           background: "rgba(10,8,6,0.55)",
-                          border: "1px solid rgba(255,255,255,0.06)",
+                          border: "1px solid rgba(26,26,27,0.08)",
                         }}
                       >
                         <div style={{
                           width: 28, height: 28, borderRadius: "50%",
-                          background: "rgba(212,175,55,0.12)",
-                          border: "1px solid rgba(212,175,55,0.3)",
+                          background: "rgba(212,139,0,0.12)",
+                          border: "1px solid rgba(212,139,0,0.3)",
                           display: "flex", alignItems: "center", justifyContent: "center",
                           flexShrink: 0,
                         }}>
-                          <ShoppingBag size={13} color="#d4af37" />
+                          <ShoppingBag size={13} color="#D48B00" />
                         </div>
                         <span style={{ fontSize: 15, color: "#e8e0c8", fontWeight: 500 }}>{action}</span>
                       </motion.div>

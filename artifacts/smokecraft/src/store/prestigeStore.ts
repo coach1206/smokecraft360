@@ -32,8 +32,8 @@ export function xpToNextRank(xp: number): number | null {
 
 /** Per-rank colour token and glyph for display */
 export const RANK_CONFIG: Record<PrestigeRank, { color: string; glyph: string }> = {
-  Novice:      { color: "rgba(240,232,212,0.38)", glyph: "◦" },
-  Connoisseur: { color: "#C9A84C",                glyph: "◆" },
+  Novice:      { color: "rgba(26,26,27,0.38)", glyph: "◦" },
+  Connoisseur: { color: "#D48B00",                glyph: "◆" },
   Master:      { color: "#9B7FD4",                glyph: "❖" },
   Legend:      { color: "#FFD166",                glyph: "✦" },
 };

@@ -48,8 +48,8 @@ export const DEFAULT_SMOKE_STATE: SmokeDesignState = {
   },
 };
 
-const GOLD     = "rgba(212,175,55,0.9)";
-const GOLD_DIM = "rgba(212,175,55,0.55)";
+const GOLD     = "rgba(212,139,0,0.9)";
+const GOLD_DIM = "rgba(212,139,0,0.55)";
 const MUTED    = "rgba(180,155,100,0.45)";
 
 const WOOD_LABELS: Record<WoodTone, string> = {
@@ -105,7 +105,7 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
       <div className="flex flex-col items-center gap-6 py-4">
         {/* Band preview with draggable label overlay */}
         <div className="flex flex-col items-center gap-2 p-6 rounded-2xl w-full"
-          style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.05)" }}>
+          style={{ background: "rgba(26,26,27,0.08)", border: "1px solid rgba(26,26,27,0.07)" }}>
           <div
             ref={overlayRef}
             className="relative select-none"
@@ -141,8 +141,8 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
                 cursor: "grab",
                 padding: "3px 10px",
                 borderRadius: 6,
-                background: "rgba(212,175,55,0.08)",
-                border: "1px dashed rgba(212,175,55,0.35)",
+                background: "rgba(212,139,0,0.08)",
+                border: "1px dashed rgba(212,139,0,0.35)",
                 backdropFilter: "blur(2px)",
               }}
               onPointerDown={(e) => {
@@ -156,13 +156,13 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
             </div>
           </div>
           <p className="text-[8px] uppercase tracking-[0.28em] mt-1" style={{ color: MUTED }}>
-            Band Preview · <span style={{ color: "rgba(212,175,55,0.4)" }}>Drag ⠿ to reposition</span>
+            Band Preview · <span style={{ color: "rgba(212,139,0,0.4)" }}>Drag ⠿ to reposition</span>
           </p>
         </div>
 
         {state.boxEnabled && (
           <div className="flex flex-col items-center gap-2 p-6 rounded-2xl w-full"
-            style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.05)" }}>
+            style={{ background: "rgba(26,26,27,0.08)", border: "1px solid rgba(26,26,27,0.07)" }}>
             <CigarBoxPreview
               design={{ ...state.box, logoUrl: null }}
               size="md"
@@ -177,7 +177,7 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
         {!state.boxEnabled && (
           <button onClick={() => set("boxEnabled", true)}
             className="px-5 py-2.5 rounded-xl text-xs uppercase tracking-[0.15em]"
-            style={{ background: "rgba(212,175,55,0.07)", border: "1px solid rgba(212,175,55,0.2)", color: GOLD_DIM }}>
+            style={{ background: "rgba(212,139,0,0.07)", border: "1px solid rgba(212,139,0,0.2)", color: GOLD_DIM }}>
             Add Box Design
           </button>
         )}
@@ -197,7 +197,7 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
           maxLength={28}
           placeholder="Name your blend…"
           className="w-full bg-transparent outline-none font-serif text-xl py-2 border-b"
-          style={{ borderColor: "rgba(212,175,55,0.25)", color: "rgba(230,210,175,0.9)", caretColor: GOLD }}
+          style={{ borderColor: "rgba(212,139,0,0.25)", color: "rgba(230,210,175,0.9)", caretColor: GOLD }}
         />
       </div>
 
@@ -209,8 +209,8 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
             <button key={s.id} onClick={() => set("style", s.id)}
               className="px-3.5 py-2 rounded-full text-xs font-serif tracking-wide transition-all"
               style={state.style === s.id
-                ? { background: "rgba(212,175,55,0.15)", border: "1px solid rgba(212,175,55,0.5)", color: GOLD }
-                : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: MUTED }
+                ? { background: "rgba(212,139,0,0.15)", border: "1px solid rgba(212,139,0,0.5)", color: GOLD }
+                : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: MUTED }
               }>
               {s.label}
             </button>
@@ -228,8 +228,8 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
               <button key={c.id} onClick={() => setDesign("primaryColor", c.id)}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs transition-all"
                 style={{
-                  background: active ? c.primary : "rgba(255,255,255,0.04)",
-                  border: active ? `1px solid ${c.accent}` : "1px solid rgba(255,255,255,0.08)",
+                  background: active ? c.primary : "rgba(26,26,27,0.06)",
+                  border: active ? `1px solid ${c.accent}` : "1px solid rgba(26,26,27,0.10)",
                   color: active ? c.text : MUTED,
                 }}>
                 <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: c.accent }} />
@@ -250,8 +250,8 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
               <button key={em.id} onClick={() => setDesign("emblem", em.id)}
                 className="px-3 py-2 rounded-lg text-xs font-medium transition-all"
                 style={{
-                  background: active ? "rgba(212,175,55,0.15)" : "rgba(255,255,255,0.04)",
-                  border: active ? "1px solid rgba(212,175,55,0.5)" : "1px solid rgba(255,255,255,0.08)",
+                  background: active ? "rgba(212,139,0,0.15)" : "rgba(26,26,27,0.06)",
+                  border: active ? "1px solid rgba(212,139,0,0.5)" : "1px solid rgba(26,26,27,0.10)",
                   color: active ? GOLD : MUTED,
                 }}>
                 {em.label}
@@ -271,8 +271,8 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
               <button key={t.id} onClick={() => setDesign("textStyle", t.id as BlendDesign["textStyle"])}
                 className="px-4 py-2 rounded text-sm transition-all"
                 style={{
-                  background: active ? "rgba(212,175,55,0.14)" : "rgba(255,255,255,0.04)",
-                  border: active ? "1px solid rgba(212,175,55,0.45)" : "1px solid rgba(255,255,255,0.08)",
+                  background: active ? "rgba(212,139,0,0.14)" : "rgba(26,26,27,0.06)",
+                  border: active ? "1px solid rgba(212,139,0,0.45)" : "1px solid rgba(26,26,27,0.10)",
                   color: active ? GOLD : MUTED,
                   fontFamily: t.id === "sans" ? "Inter" : "'Cormorant Garamond', serif",
                   fontStyle: t.id === "italic" ? "italic" : "normal",
@@ -291,7 +291,7 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
           <button
             onClick={() => set("labelOffset", { x: 0, y: 0 })}
             className="px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.15em]"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: MUTED }}>
+            style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: MUTED }}>
             Reset to Center
           </button>
           <span className="text-[9px]" style={{ color: "rgba(180,155,100,0.3)" }}>
@@ -319,8 +319,8 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
           <button onClick={() => set("boxEnabled", !state.boxEnabled)}
             className="text-[9px] uppercase tracking-[0.18em] px-2.5 py-1 rounded-full transition-all"
             style={state.boxEnabled
-              ? { background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.35)", color: GOLD_DIM }
-              : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: MUTED }
+              ? { background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.35)", color: GOLD_DIM }
+              : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: MUTED }
             }>
             {state.boxEnabled ? "Enabled" : "Add Box"}
           </button>
@@ -335,8 +335,8 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
                   <button key={tone} onClick={() => setBox("woodTone", tone)}
                     className="px-3 py-1.5 rounded-full text-xs transition-all"
                     style={state.box.woodTone === tone
-                      ? { background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.4)", color: GOLD_DIM }
-                      : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: MUTED }
+                      ? { background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.4)", color: GOLD_DIM }
+                      : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: MUTED }
                     }>
                     {WOOD_LABELS[tone]}
                   </button>
@@ -351,8 +351,8 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
                   <button key={c.id} onClick={() => setBox("boxColor", c.id)}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs transition-all"
                     style={state.box.boxColor === c.id
-                      ? { background: `${c.id}cc`, border: "1px solid rgba(212,175,55,0.5)", color: "rgba(255,255,255,0.9)" }
-                      : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: MUTED }
+                      ? { background: `${c.id}cc`, border: "1px solid rgba(212,139,0,0.5)", color: "rgba(255,255,255,0.9)" }
+                      : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: MUTED }
                     }>
                     <span className="w-2.5 h-2.5 rounded-full" style={{ background: c.id }} />
                     {c.label}
@@ -368,8 +368,8 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
                   <button key={ic.id} onClick={() => setBox("interiorColor", ic.id)}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs transition-all"
                     style={state.box.interiorColor === ic.id
-                      ? { background: `${ic.bg}cc`, border: "1px solid rgba(212,175,55,0.45)", color: ic.text }
-                      : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: MUTED }
+                      ? { background: `${ic.bg}cc`, border: "1px solid rgba(212,139,0,0.45)", color: ic.text }
+                      : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: MUTED }
                     }>
                     <span className="w-2.5 h-2.5 rounded-full border border-white/20" style={{ background: ic.bg }} />
                     {ic.label}
@@ -386,7 +386,7 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
                 maxLength={18}
                 placeholder="Brand name…"
                 className="w-full bg-transparent outline-none text-sm py-1.5 border-b"
-                style={{ borderColor: "rgba(212,175,55,0.2)", color: "rgba(230,210,175,0.9)" }}
+                style={{ borderColor: "rgba(212,139,0,0.2)", color: "rgba(230,210,175,0.9)" }}
               />
             </div>
 
@@ -398,7 +398,7 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
                 maxLength={40}
                 placeholder="Reserve No. 1…"
                 className="w-full bg-transparent outline-none text-sm py-1.5 border-b"
-                style={{ borderColor: "rgba(212,175,55,0.2)", color: "rgba(230,210,175,0.9)" }}
+                style={{ borderColor: "rgba(212,139,0,0.2)", color: "rgba(230,210,175,0.9)" }}
               />
             </div>
 
@@ -409,8 +409,8 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
                   <button key={f} onClick={() => setBox("finishStyle", f)}
                     className="px-3 py-1.5 rounded-full text-xs capitalize transition-all"
                     style={state.box.finishStyle === f
-                      ? { background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.4)", color: GOLD_DIM }
-                      : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: MUTED }
+                      ? { background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.4)", color: GOLD_DIM }
+                      : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: MUTED }
                     }>
                     {f}
                   </button>

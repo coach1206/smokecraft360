@@ -54,8 +54,8 @@ export function StrengthSlider({ value, onChange }: StrengthSliderProps) {
           <div key={step} className="flex flex-col items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full transition-all duration-400"
               style={step <= value ? {
-                background: "linear-gradient(135deg, #b07c14, #D4AF37)",
-                boxShadow:  "0 0 10px rgba(212,175,55,0.55)",
+                background: "linear-gradient(135deg, #b07c14, #D48B00)",
+                boxShadow:  "0 0 10px rgba(212,139,0,0.55)",
               } : { background: "rgba(90,60,30,0.18)" }} />
             <span style={{
               fontSize: 10,

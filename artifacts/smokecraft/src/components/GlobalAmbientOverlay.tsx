@@ -118,7 +118,7 @@ export const GlobalAmbientOverlay = memo(function GlobalAmbientOverlay() {
             style={{
               position: "absolute",
               inset: 0,
-              background: "radial-gradient(ellipse 60% 55% at 50% 45%, rgba(212,175,55,0.35) 0%, rgba(180,130,20,0.12) 50%, transparent 80%)",
+              background: "radial-gradient(ellipse 60% 55% at 50% 45%, rgba(212,139,0,0.35) 0%, rgba(180,130,20,0.12) 50%, transparent 80%)",
               willChange: "opacity",
             }}
           />
@@ -142,7 +142,7 @@ export const GlobalAmbientOverlay = memo(function GlobalAmbientOverlay() {
             style={{
               position: "absolute",
               inset: 0,
-              background: "linear-gradient(135deg, transparent 0%, rgba(201,168,76,0.08) 30%, transparent 55%, rgba(201,168,76,0.05) 75%, transparent 100%)",
+              background: "linear-gradient(135deg, transparent 0%, rgba(212,139,0,0.08) 30%, transparent 55%, rgba(212,139,0,0.05) 75%, transparent 100%)",
               willChange: "opacity",
             }}
           />
@@ -164,7 +164,7 @@ export const GlobalAmbientOverlay = memo(function GlobalAmbientOverlay() {
           left: 0,
           right: 0,
           height: "1px",
-          background: "linear-gradient(90deg, transparent 0%, rgba(201,168,76,0.6) 20%, rgba(212,175,55,0.9) 50%, rgba(201,168,76,0.6) 80%, transparent 100%)",
+          background: "linear-gradient(90deg, transparent 0%, rgba(212,139,0,0.6) 20%, rgba(212,139,0,0.9) 50%, rgba(212,139,0,0.6) 80%, transparent 100%)",
           willChange: "opacity",
         }}
       />

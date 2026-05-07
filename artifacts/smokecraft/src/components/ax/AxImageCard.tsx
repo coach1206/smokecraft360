@@ -36,7 +36,7 @@ interface AxImageCardProps {
 
 export function AxImageCard({
   src, alt, aspect = "4/3", zoom = true, fallbackLabel,
-  fallbackColor = "#C9A84C", overlay, radius = 10, style, onClick,
+  fallbackColor = "#D48B00", overlay, radius = 10, style, onClick,
 }: AxImageCardProps) {
   const [loaded, setLoaded]   = useState(false);
   const [error,  setError]    = useState(false);
@@ -65,7 +65,7 @@ export function AxImageCard({
         aspectRatio: aspect,
         borderRadius: radius,
         overflow: "hidden",
-        background: "rgba(255,255,255,0.04)",
+        background: "rgba(26,26,27,0.06)",
         cursor: onClick ? "pointer" : "default",
         flexShrink: 0,
         ...style,
@@ -76,7 +76,7 @@ export function AxImageCard({
         <motion.div
           animate={{ opacity: [0.4, 0.7, 0.4] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-          style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.06)" }}
+          style={{ position: "absolute", inset: 0, background: "rgba(26,26,27,0.08)" }}
         />
       )}
 

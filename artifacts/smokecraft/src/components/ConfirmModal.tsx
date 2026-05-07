@@ -19,7 +19,7 @@ export default function ConfirmModal({
   danger = false,
   onConfirm, onCancel,
 }: ConfirmModalProps) {
-  const accentColor = danger ? "#ef4444" : "#d4af37";
+  const accentColor = danger ? "#ef4444" : "#D48B00";
 
   return (
     <AnimatePresence>
@@ -28,7 +28,7 @@ export default function ConfirmModal({
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           style={{
             position: "fixed", inset: 0, zIndex: 9999,
-            background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)",
+            background: "rgba(26,26,27,0.32)", backdropFilter: "blur(6px)",
             display: "flex", alignItems: "center", justifyContent: "center",
             padding: 24,
           }}
@@ -40,7 +40,7 @@ export default function ConfirmModal({
             onClick={(e) => e.stopPropagation()}
             style={{
               width: "100%", maxWidth: 400, borderRadius: 20,
-              background: "linear-gradient(145deg, #1e1b17, #141210)",
+              background: "linear-gradient(145deg, #1e1b17, #EFEBE0)",
               border: `1px solid ${accentColor}30`,
               padding: "28px 24px", textAlign: "center",
             }}
@@ -62,7 +62,7 @@ export default function ConfirmModal({
                 onClick={onCancel}
                 style={{
                   flex: 1, padding: "14px", borderRadius: 12, fontSize: 14, fontWeight: 600,
-                  background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+                  background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
                   color: "rgba(232,224,200,0.6)", cursor: "pointer", minHeight: 48,
                 }}
               >{cancelLabel}</motion.button>
@@ -73,9 +73,9 @@ export default function ConfirmModal({
                   flex: 1, padding: "14px", borderRadius: 12, fontSize: 14, fontWeight: 700,
                   background: danger
                     ? "linear-gradient(135deg, #ef4444, #dc2626)"
-                    : "linear-gradient(135deg, #d4af37, #a98828)",
+                    : "linear-gradient(135deg, #D48B00, #a98828)",
                   border: "none",
-                  color: danger ? "#fff" : "#0a0806",
+                  color: danger ? "#fff" : "#F5F2ED",
                   cursor: "pointer", minHeight: 48,
                 }}
               >{confirmLabel}</motion.button>

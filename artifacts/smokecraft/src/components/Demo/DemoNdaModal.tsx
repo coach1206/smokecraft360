@@ -124,10 +124,10 @@ export function DemoNdaModal({ onComplete, deviceId, venueId }: Props) {
       }}
     >
       <div style={{
-        background: "linear-gradient(180deg, #14110c 0%, #0a0806 100%)",
-        border: "1px solid rgba(212,175,55,0.35)", borderRadius: 16,
+        background: "linear-gradient(180deg, #14110c 0%, #F5F2ED 100%)",
+        border: "1px solid rgba(212,139,0,0.35)", borderRadius: 16,
         padding: 32, maxWidth: 640, width: "100%", color: "#e8e0c8",
-        boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
+        boxShadow: "0 30px 80px rgba(26,26,27,0.26)",
         position: "relative",
       }}>
         <button
@@ -137,19 +137,19 @@ export function DemoNdaModal({ onComplete, deviceId, venueId }: Props) {
             position: "absolute", top: 16, left: 16,
             display: "flex", alignItems: "center", gap: 6,
             padding: "8px 16px", borderRadius: 10,
-            background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
-            color: "#d4af37", fontSize: 13, fontWeight: 600,
+            background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+            color: "#D48B00", fontSize: 13, fontWeight: 600,
             cursor: "pointer",
           }}
         >&larr; Back</button>
 
         <div style={{
           marginTop: 36, marginBottom: 20, padding: "20px 24px",
-          background: "rgba(212,175,55,0.06)",
-          border: "1px solid rgba(212,175,55,0.2)",
+          background: "rgba(212,139,0,0.06)",
+          border: "1px solid rgba(212,139,0,0.2)",
           borderRadius: 12,
         }}>
-          <h2 style={{ margin: "0 0 12px", fontSize: 24, color: "#d4af37", letterSpacing: "0.04em", fontFamily: "'Playfair Display', serif" }}>
+          <h2 style={{ margin: "0 0 12px", fontSize: 24, color: "#D48B00", letterSpacing: "0.04em", fontFamily: "'Playfair Display', serif" }}>
             Non-Disclosure Agreement
           </h2>
           <p style={{ margin: "0 0 10px", fontSize: 14, lineHeight: 1.65, opacity: 0.85 }}>
@@ -165,7 +165,7 @@ export function DemoNdaModal({ onComplete, deviceId, venueId }: Props) {
           </ol>
         </div>
 
-        <h3 style={{ margin: "0 0 4px", fontSize: 16, color: "#d4af37", letterSpacing: "0.04em" }}>
+        <h3 style={{ margin: "0 0 4px", fontSize: 16, color: "#D48B00", letterSpacing: "0.04em" }}>
           Sign Below
         </h3>
         <p style={{ margin: "0 0 8px", fontSize: 12, opacity: 0.5 }}>
@@ -208,7 +208,7 @@ export function DemoNdaModal({ onComplete, deviceId, venueId }: Props) {
             onClick={() => padRef.current?.clear()}
             style={{
               marginTop: 6, fontSize: 12, background: "transparent",
-              color: "#d4af37", border: "none", cursor: "pointer", padding: 0,
+              color: "#D48B00", border: "none", cursor: "pointer", padding: 0,
             }}
           >Clear signature</button>
         </div>
@@ -219,7 +219,7 @@ export function DemoNdaModal({ onComplete, deviceId, venueId }: Props) {
             type="checkbox"
             checked={agreed}
             onChange={(e) => setAgreed(e.target.checked)}
-            style={{ width: 18, height: 18, accentColor: "#d4af37" }}
+            style={{ width: 18, height: 18, accentColor: "#D48B00" }}
           />
           <span style={{ fontSize: 14 }}>I agree to the terms above.</span>
         </label>
@@ -239,8 +239,8 @@ export function DemoNdaModal({ onComplete, deviceId, venueId }: Props) {
           disabled={!canSubmit}
           style={{
             marginTop: 22, width: "100%", padding: "14px 16px",
-            background: canSubmit ? "linear-gradient(180deg, #d4af37 0%, #a98828 100%)" : "rgba(212,175,55,0.18)",
-            color: canSubmit ? "#0a0806" : "rgba(232,224,200,0.5)",
+            background: canSubmit ? "linear-gradient(180deg, #D48B00 0%, #a98828 100%)" : "rgba(212,139,0,0.18)",
+            color: canSubmit ? "#F5F2ED" : "rgba(232,224,200,0.5)",
             border: "none", borderRadius: 10, fontSize: 15, fontWeight: 600,
             letterSpacing: "0.05em", cursor: canSubmit ? "pointer" : "not-allowed",
             transition: "background 200ms",
@@ -256,7 +256,7 @@ const lblText: React.CSSProperties = { fontSize: 12, textTransform: "uppercase",
 const lbl: React.CSSProperties = { display: "block", marginTop: 16, ...lblText };
 const inp: React.CSSProperties = {
   marginTop: 6, width: "100%", padding: "10px 12px",
-  background: "#0a0806", color: "#fff",
-  border: "1px solid rgba(212,175,55,0.3)", borderRadius: 8, fontSize: 14,
+  background: "#F5F2ED", color: "#fff",
+  border: "1px solid rgba(212,139,0,0.3)", borderRadius: 8, fontSize: 14,
   outline: "none", boxSizing: "border-box",
 };

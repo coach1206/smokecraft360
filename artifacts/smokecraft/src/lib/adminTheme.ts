@@ -14,10 +14,10 @@
 
 // ─── Background layers ──────────────────────────────────────────────────────
 export const BG = {
-  page:      "#080604",      // deepest page — rich espresso, not black
+  page:      "#F5F2ED",      // deepest page — rich espresso, not black
   secondary: "#12100E",      // secondary surfaces
   panel:     "#181512",      // standard panel surface
-  elevated:  "#211D19",      // elevated / floating panels
+  elevated:  "#2A2A2A",      // elevated / floating panels
   interactive:"#2A241E",     // hover / interactive surfaces
   overlay:   "rgba(8,6,4,0.72)", // modal backdrops
 } as const;
@@ -25,38 +25,38 @@ export const BG = {
 // ─── Glass surfaces (for cards / panels) ────────────────────────────────────
 export const GLASS = {
   sm:   "rgba(255,255,255,0.028)",
-  md:   "rgba(255,255,255,0.045)",
-  lg:   "rgba(255,255,255,0.065)",
-  gold: "rgba(201,168,76,0.06)",
-  goldMid: "rgba(201,168,76,0.10)",
+  md:   "rgba(26,26,27,0.06)",
+  lg:   "rgba(26,26,27,0.07)",
+  gold: "rgba(212,139,0,0.06)",
+  goldMid: "rgba(212,139,0,0.10)",
 } as const;
 
 // ─── Border palette ─────────────────────────────────────────────────────────
 export const BORDER = {
-  subtle: "rgba(255,210,120,0.08)",
-  default:"rgba(255,210,120,0.14)",
-  strong: "rgba(255,210,120,0.24)",
-  gold:   "rgba(201,168,76,0.32)",
-  dim:    "rgba(255,255,255,0.06)",
+  subtle: "rgba(212,139,0,0.08)",
+  default:"rgba(212,139,0,0.14)",
+  strong: "rgba(212,139,0,0.24)",
+  gold:   "rgba(212,139,0,0.32)",
+  dim:    "rgba(26,26,27,0.08)",
 } as const;
 
 // ─── Gold palette ────────────────────────────────────────────────────────────
 export const GOLD = {
-  bright: "#D4AF37",
-  mid:    "#C9A84C",
-  dim:    "rgba(201,168,76,0.55)",
-  muted:  "rgba(201,168,76,0.30)",
-  glow:   "rgba(201,168,76,0.12)",
-  glowMd: "rgba(201,168,76,0.20)",
+  bright: "#D48B00",
+  mid:    "#D48B00",
+  dim:    "rgba(212,139,0,0.55)",
+  muted:  "rgba(212,139,0,0.30)",
+  glow:   "rgba(212,139,0,0.12)",
+  glowMd: "rgba(212,139,0,0.20)",
 } as const;
 
 // ─── Typography palette ──────────────────────────────────────────────────────
 export const TEXT = {
-  primary:  "#F5E7C8",       // cream-warm — primary body
+  primary:  "#1A1A1B",       // cream-warm — primary body
   secondary:"#D6C3A1",       // secondary labels
-  muted:    "#B39B77",       // muted / supporting
+  muted:    "#6B5E4E",       // muted / supporting
   inactive: "rgba(245,231,200,0.40)", // inactive nav, placeholders
-  gold:     "#C9A84C",
+  gold:     "#D48B00",
 } as const;
 
 // ─── Status colors ───────────────────────────────────────────────────────────
@@ -85,10 +85,10 @@ export const TYPE = {
 
 // ─── Shared shadows ──────────────────────────────────────────────────────────
 export const SHADOW = {
-  card:    "0 4px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)",
-  panel:   "0 8px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.05)",
-  elevated:"0 16px 56px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.06)",
-  glow: (color: string) => `0 0 28px ${color}33, 0 4px 16px rgba(0,0,0,0.5)`,
+  card:    "0 4px 24px rgba(26,26,27,0.14), inset 0 1px 0 rgba(26,26,27,0.06)",
+  panel:   "0 8px 40px rgba(26,26,27,0.22), inset 0 1px 0 rgba(26,26,27,0.07)",
+  elevated:"0 16px 56px rgba(26,26,27,0.30), inset 0 1px 0 rgba(26,26,27,0.08)",
+  glow: (color: string) => `0 0 28px ${color}33, 0 4px 16px rgba(26,26,27,0.18)`,
 } as const;
 
 // ─── Reusable inline-style helpers ──────────────────────────────────────────
@@ -115,7 +115,7 @@ export const headerStyle = (): React.CSSProperties => ({
   background: `linear-gradient(180deg, ${BG.secondary} 0%, ${BG.panel} 100%)`,
   backdropFilter: "blur(16px)",
   flexShrink: 0,
-  boxShadow: "0 1px 0 rgba(255,210,120,0.06), 0 4px 20px rgba(0,0,0,0.3)",
+  boxShadow: "0 1px 0 rgba(212,139,0,0.06), 0 4px 20px rgba(26,26,27,0.06)",
   zIndex: 10,
 });
 
@@ -131,7 +131,7 @@ export const backBtnStyle = (): React.CSSProperties => ({
   border: `1px solid ${BORDER.default}`,
   color: TEXT.muted,
   cursor: "pointer",
-  boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+  boxShadow: "0 2px 8px rgba(26,26,27,0.06)",
   flexShrink: 0,
 });
 

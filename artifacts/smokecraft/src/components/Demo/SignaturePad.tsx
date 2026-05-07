@@ -120,7 +120,7 @@ export const SignaturePad = forwardRef<SignaturePadHandle, Props>(function Signa
       style={{
         background:   "#ffffff",
         borderRadius: 8,
-        border:       "1px solid rgba(212,175,55,0.4)",
+        border:       "1px solid rgba(212,139,0,0.4)",
         cursor:       "crosshair",
         touchAction:  "none", // CRITICAL: prevent the browser eating touch as scroll/zoom
         display:      "block",

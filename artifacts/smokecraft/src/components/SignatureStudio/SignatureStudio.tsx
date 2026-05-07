@@ -65,8 +65,8 @@ const CRAFT_HEADLINE: Record<CraftType, string> = {
   vape:  "Your Signature Line",
 };
 
-const GOLD     = "rgba(212,175,55,0.95)";
-const GOLD_DIM = "rgba(212,175,55,0.55)";
+const GOLD     = "rgba(212,139,0,0.95)";
+const GOLD_DIM = "rgba(212,139,0,0.55)";
 const MUTED    = "rgba(180,155,100,0.42)";
 
 export interface SignatureStudioProps {
@@ -123,7 +123,7 @@ function SmokeThumbnail({ state }: { state: SmokeDesignState }) {
     <svg width={200} height={80} viewBox="0 0 200 80">
       <rect x="6" y="16" width="188" height="48" rx="7"
         fill={color?.primary ?? "#2A1F08"}
-        stroke={color?.accent ?? "#D4AF37"} strokeWidth="1.5"
+        stroke={color?.accent ?? "#D48B00"} strokeWidth="1.5"
       />
       <text x="100" y="44"
         textAnchor="middle"
@@ -257,7 +257,7 @@ export default function SignatureStudio({
     setExporting(true);
     try {
       const canvas = await html2canvas(previewRef.current, {
-        backgroundColor: "#0a0806",
+        backgroundColor: "#F5F2ED",
         scale: 2,
         useCORS: true,
         logging: false,
@@ -345,7 +345,7 @@ export default function SignatureStudio({
         body["bandDesign"] = {
           template:     "classic-gold",
           primaryColor: colorOpt?.primary ?? "#2A1F08",
-          accentColor:  colorOpt?.accent  ?? "#D4AF37",
+          accentColor:  colorOpt?.accent  ?? "#D48B00",
           fontStyle:    s.design.textStyle ?? "serif",
           emblem:       s.design.emblem    ?? "crown",
           brandName,
@@ -389,7 +389,7 @@ export default function SignatureStudio({
           {/* Backdrop */}
           <motion.div
             className="fixed inset-0 z-[280]"
-            style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}
+            style={{ background: "rgba(26,26,27,0.45)", backdropFilter: "blur(8px)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -401,8 +401,8 @@ export default function SignatureStudio({
             className="fixed inset-x-4 top-5 bottom-5 z-[290] max-w-2xl mx-auto flex flex-col rounded-2xl overflow-hidden"
             style={{
               background: "linear-gradient(165deg, hsl(22 16% 8%), hsl(20 16% 5%))",
-              border: "1px solid rgba(212,175,55,0.2)",
-              boxShadow: "0 40px 100px rgba(0,0,0,0.95), 0 0 80px rgba(212,175,55,0.06)",
+              border: "1px solid rgba(212,139,0,0.2)",
+              boxShadow: "0 40px 100px rgba(26,26,27,0.55), 0 0 80px rgba(212,139,0,0.06)",
             }}
             initial={{ opacity: 0, scale: 0.94, y: 24 }}
             animate={{ opacity: 1, scale: 1,    y: 0  }}
@@ -412,7 +412,7 @@ export default function SignatureStudio({
           >
             {/* Gold rule */}
             <div className="h-px w-full flex-shrink-0"
-              style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.6), transparent)" }} />
+              style={{ background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.6), transparent)" }} />
 
             {/* Header */}
             <div className="flex-shrink-0 flex items-center justify-between px-6 py-4">
@@ -430,12 +430,12 @@ export default function SignatureStudio({
               <div className="flex items-center gap-3">
                 {/* Score badge */}
                 <div className="px-2.5 py-1 rounded-full text-[9px] uppercase tracking-[0.18em]"
-                  style={{ background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.28)", color: GOLD_DIM }}>
+                  style={{ background: "rgba(212,139,0,0.1)", border: "1px solid rgba(212,139,0,0.28)", color: GOLD_DIM }}>
                   Score {(score / 10).toFixed(1)}
                 </div>
                 <button onClick={onClose}
                   className="w-8 h-8 rounded-full flex items-center justify-center"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: MUTED }}>
+                  style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: MUTED }}>
                   <X size={14} />
                 </button>
               </div>
@@ -453,8 +453,8 @@ export default function SignatureStudio({
                 }}
                   className="px-4 py-2 rounded-lg text-xs uppercase tracking-[0.2em] transition-all"
                   style={activeTab === t.id
-                    ? { background: "rgba(212,175,55,0.13)", border: "1px solid rgba(212,175,55,0.4)", color: GOLD }
-                    : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: MUTED }
+                    ? { background: "rgba(212,139,0,0.13)", border: "1px solid rgba(212,139,0,0.4)", color: GOLD }
+                    : { background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)", color: MUTED }
                   }>
                   {t.label}
                 </button>
@@ -467,7 +467,7 @@ export default function SignatureStudio({
                 maxLength={40}
                 placeholder="Draft name…"
                 className="ml-auto bg-transparent outline-none text-xs py-1.5 px-2.5 rounded-lg border"
-                style={{ borderColor: "rgba(255,255,255,0.08)", color: "rgba(210,190,155,0.7)", width: 130 }}
+                style={{ borderColor: "rgba(26,26,27,0.10)", color: "rgba(210,190,155,0.7)", width: 130 }}
               />
             </div>
 
@@ -493,42 +493,42 @@ export default function SignatureStudio({
                       {craft === "brew" && (
                         <div className="flex flex-col items-center gap-3 py-4">
                           <div className="p-8 rounded-2xl flex items-center justify-center"
-                            style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.05)", minHeight: 300 }}>
+                            style={{ background: "rgba(26,26,27,0.08)", border: "1px solid rgba(26,26,27,0.07)", minHeight: 300 }}>
                             <BrewPreview
                               state={currentDesign as BrewDesignState}
                               onDrag={(off) => setCurrentDesign({ ...(currentDesign as BrewDesignState), labelOffset: off })}
                             />
                           </div>
                           <p className="text-[8px] uppercase tracking-[0.28em]" style={{ color: MUTED }}>
-                            Bottle Label Preview · <span style={{ color: "rgba(212,175,55,0.4)" }}>Drag label to reposition</span>
+                            Bottle Label Preview · <span style={{ color: "rgba(212,139,0,0.4)" }}>Drag label to reposition</span>
                           </p>
                         </div>
                       )}
                       {craft === "pour" && (
                         <div className="flex flex-col items-center gap-3 py-4">
                           <div className="p-8 rounded-2xl flex items-center justify-center"
-                            style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.05)", minHeight: 300 }}>
+                            style={{ background: "rgba(26,26,27,0.08)", border: "1px solid rgba(26,26,27,0.07)", minHeight: 300 }}>
                             <PourPreview
                               state={currentDesign as PourDesignState}
                               onDrag={(off) => setCurrentDesign({ ...(currentDesign as PourDesignState), labelOffset: off })}
                             />
                           </div>
                           <p className="text-[8px] uppercase tracking-[0.28em]" style={{ color: MUTED }}>
-                            Signature Drink Preview · <span style={{ color: "rgba(212,175,55,0.4)" }}>Drag label to reposition</span>
+                            Signature Drink Preview · <span style={{ color: "rgba(212,139,0,0.4)" }}>Drag label to reposition</span>
                           </p>
                         </div>
                       )}
                       {craft === "vape" && (
                         <div className="flex flex-col items-center gap-3 py-4">
                           <div className="p-8 rounded-2xl flex items-center justify-center"
-                            style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.05)", minHeight: 300 }}>
+                            style={{ background: "rgba(26,26,27,0.08)", border: "1px solid rgba(26,26,27,0.07)", minHeight: 300 }}>
                             <VapePreview
                               state={currentDesign as VapeDesignState}
                               onDrag={(off) => setCurrentDesign({ ...(currentDesign as VapeDesignState), labelOffset: off })}
                             />
                           </div>
                           <p className="text-[8px] uppercase tracking-[0.28em]" style={{ color: MUTED }}>
-                            Device Preview · <span style={{ color: "rgba(212,175,55,0.4)" }}>Drag label to reposition</span>
+                            Device Preview · <span style={{ color: "rgba(212,139,0,0.4)" }}>Drag label to reposition</span>
                           </p>
                         </div>
                       )}
@@ -591,7 +591,7 @@ export default function SignatureStudio({
                     {loadingDrafts ? (
                       <div className="flex justify-center py-8">
                         <motion.div className="w-5 h-5 rounded-full border-2"
-                          style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.6)" }}
+                          style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.6)" }}
                           animate={{ rotate: 360 }}
                           transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }} />
                       </div>
@@ -625,10 +625,10 @@ export default function SignatureStudio({
                                 <div className="relative rounded-xl overflow-hidden"
                                   style={{
                                     width: 88, height: 108,
-                                    background: "rgba(0,0,0,0.4)",
+                                    background: "rgba(26,26,27,0.10)",
                                     border: isSelected
-                                      ? "1.5px solid rgba(212,175,55,0.65)"
-                                      : "1px solid rgba(255,255,255,0.09)",
+                                      ? "1.5px solid rgba(212,139,0,0.65)"
+                                      : "1px solid rgba(26,26,27,0.11)",
                                   }}>
                                   {/* Mini preview */}
                                   <div className="flex items-center justify-center"
@@ -646,7 +646,7 @@ export default function SignatureStudio({
                                     </div>
                                   )}
                                   {isSelected && (
-                                    <div className="absolute inset-0 rounded-xl" style={{ background: "rgba(212,175,55,0.07)" }} />
+                                    <div className="absolute inset-0 rounded-xl" style={{ background: "rgba(212,139,0,0.07)" }} />
                                   )}
                                 </div>
                                 <p className="text-[9px] text-center w-full truncate" style={{ color: MUTED }}>
@@ -669,7 +669,7 @@ export default function SignatureStudio({
                               initial={{ opacity: 0, y: 6 }}
                               animate={{ opacity: 1, y: 0 }}
                               className="mt-3 p-4 rounded-xl flex items-center justify-between gap-3"
-                              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,175,55,0.15)" }}
+                              style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(212,139,0,0.15)" }}
                             >
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-serif truncate" style={{ color: "rgba(220,200,165,0.9)" }}>
@@ -682,7 +682,7 @@ export default function SignatureStudio({
                               <motion.button
                                 onClick={() => handleRestoreDraft(draft)}
                                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.16em]"
-                                style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)", color: GOLD_DIM }}
+                                style={{ background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.2)", color: GOLD_DIM }}
                                 whileHover={{ scale: 1.04 }}
                                 whileTap={{ scale: 0.96 }}
                               >
@@ -700,7 +700,7 @@ export default function SignatureStudio({
 
             {/* Footer actions */}
             <div className="flex-shrink-0 border-t px-6 py-4 flex items-center gap-2.5"
-              style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              style={{ borderColor: "rgba(26,26,27,0.08)" }}>
 
               {/* Export PNG */}
               <motion.button
@@ -714,7 +714,7 @@ export default function SignatureStudio({
                 }}
                 disabled={exporting}
                 className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs uppercase tracking-[0.15em]"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: exportDone ? "rgba(100,200,120,0.8)" : MUTED }}
+                style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: exportDone ? "rgba(100,200,120,0.8)" : MUTED }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}>
                 {exportDone ? <Check size={12} /> : <Download size={12} />}
@@ -726,7 +726,7 @@ export default function SignatureStudio({
                 onClick={() => void handleSave()}
                 disabled={saving}
                 className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs uppercase tracking-[0.15em]"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: saved ? "rgba(100,200,120,0.8)" : MUTED }}
+                style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: saved ? "rgba(100,200,120,0.8)" : MUTED }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}>
                 {saved ? <Check size={12} /> : <Save size={12} />}
@@ -741,11 +741,11 @@ export default function SignatureStudio({
                   className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs uppercase tracking-[0.18em] font-medium"
                   style={{
                     background: submitting
-                      ? "rgba(212,175,55,0.08)"
-                      : "linear-gradient(135deg, rgba(120,80,5,0.9), rgba(212,175,55,0.85))",
-                    color: submitting ? GOLD_DIM : "#0a0806",
-                    border: submitting ? "1px solid rgba(212,175,55,0.2)" : "none",
-                    boxShadow: submitting ? "none" : "0 8px 24px rgba(212,175,55,0.3)",
+                      ? "rgba(212,139,0,0.08)"
+                      : "linear-gradient(135deg, rgba(120,80,5,0.9), rgba(212,139,0,0.85))",
+                    color: submitting ? GOLD_DIM : "#F5F2ED",
+                    border: submitting ? "1px solid rgba(212,139,0,0.2)" : "none",
+                    boxShadow: submitting ? "none" : "0 8px 24px rgba(212,139,0,0.3)",
                   }}
                   whileHover={!submitting ? { scale: 1.02 } : {}}
                   whileTap={!submitting ? { scale: 0.97 } : {}}>

@@ -71,7 +71,7 @@ export function useProgression(): UseProgressionReturn {
           duration: 6000,
           style: {
             background: "hsl(22 18% 8%)",
-            border:     "1px solid rgba(212,175,55,0.35)",
+            border:     "1px solid rgba(212,139,0,0.35)",
             color:      "rgba(220,200,165,0.95)",
           },
         },

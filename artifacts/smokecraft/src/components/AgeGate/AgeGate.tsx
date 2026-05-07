@@ -58,7 +58,7 @@ export default function AgeGate({ children }: AgeGateProps) {
         style={{
           position: "fixed", inset: 0, zIndex: 400,
           display: "flex", alignItems: "center", justifyContent: "center",
-          background: "radial-gradient(ellipse at center, #1a1008 0%, #0a0806 100%)",
+          background: "radial-gradient(ellipse at center, #1a1008 0%, #F5F2ED 100%)",
           fontFamily: "var(--app-font-sans, system-ui, sans-serif)",
         }}
       >
@@ -77,8 +77,8 @@ export default function AgeGate({ children }: AgeGateProps) {
             padding: "60px 64px",
             borderRadius: 32,
             background: "rgba(14,10,7,0.96)",
-            border: "1px solid rgba(212,175,55,0.28)",
-            boxShadow: "0 60px 140px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03)",
+            border: "1px solid rgba(212,139,0,0.28)",
+            boxShadow: "0 60px 140px rgba(26,26,27,0.26), 0 0 0 1px rgba(26,26,27,0.05)",
             maxWidth: 460,
             width: "90%",
             position: "relative",
@@ -89,8 +89,8 @@ export default function AgeGate({ children }: AgeGateProps) {
               {/* Seal / logo */}
               <div style={{
                 width: 72, height: 72, borderRadius: "50%",
-                background: "rgba(212,175,55,0.1)",
-                border: "1.5px solid rgba(212,175,55,0.45)",
+                background: "rgba(212,139,0,0.1)",
+                border: "1.5px solid rgba(212,139,0,0.45)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 margin: "0 auto 28px",
                 fontSize: 32,
@@ -120,13 +120,13 @@ export default function AgeGate({ children }: AgeGateProps) {
                   whileTap={{ scale: 0.97 }}
                   onClick={handleConfirm}
                   style={{
-                    background: "linear-gradient(135deg, #d4af37, #b8962e)",
-                    color: "#0a0806", border: "none",
+                    background: "linear-gradient(135deg, #D48B00, #b8962e)",
+                    color: "#F5F2ED", border: "none",
                     padding: "15px 28px", borderRadius: 999,
                     fontSize: 13, fontWeight: 800,
                     letterSpacing: "0.18em", textTransform: "uppercase",
                     cursor: "pointer",
-                    boxShadow: "0 4px 20px rgba(212,175,55,0.35)",
+                    boxShadow: "0 4px 20px rgba(212,139,0,0.35)",
                   }}
                 >
                   I am 21 or Older — Enter

@@ -39,7 +39,7 @@ const DEMO_PROFILES: DemoProfile[] = [
     name: "Investor Pitch",
     description: "Revenue metrics, growth potential, and platform capabilities",
     icon: Briefcase,
-    color: "#d4af37",
+    color: "#D48B00",
     stepIds: ["dashboard", "order", "reward", "system"],
     speed: 6000,
   },
@@ -176,8 +176,8 @@ function StepCard({ children, style }: { children: React.ReactNode; style?: Reac
       style={{
         width: "100%", maxWidth: 700,
         padding: 24, borderRadius: 20,
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        background: "rgba(26,26,27,0.05)",
+        border: "1px solid rgba(26,26,27,0.10)",
         ...style,
       }}
     >
@@ -208,15 +208,15 @@ function OrderCreationStep() {
             animate={{ opacity: i <= phase ? 1 : 0.2, scale: i <= phase ? 1 : 0.9 }}
             style={{
               display: "flex", gap: 10, padding: 12, borderRadius: 14,
-              background: i <= phase ? "rgba(212,175,55,0.08)" : "rgba(255,255,255,0.02)",
-              border: `1px solid ${i <= phase ? "rgba(212,175,55,0.2)" : "rgba(255,255,255,0.04)"}`,
+              background: i <= phase ? "rgba(212,139,0,0.08)" : "rgba(26,26,27,0.04)",
+              border: `1px solid ${i <= phase ? "rgba(212,139,0,0.2)" : "rgba(26,26,27,0.06)"}`,
               alignItems: "center", flex: 1, minWidth: 180,
             }}
           >
             <KioskProductImage src={p.image} alt={p.name} category={p.category} width={50} height={50} borderRadius={10} />
             <div>
               <div style={{ fontSize: 13, fontWeight: 600, color: "#e8e0c8" }}>{p.name}</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#d4af37" }}>${p.price}</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#D48B00" }}>${p.price}</div>
             </div>
             {i <= phase && (
               <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
@@ -229,14 +229,14 @@ function OrderCreationStep() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
           <div style={{ fontSize: 12, color: "rgba(232,224,200,0.4)" }}>Cart Total</div>
-          <div style={{ fontSize: 24, fontWeight: 700, color: "#d4af37" }}>$79.00</div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: "#D48B00" }}>$79.00</div>
         </div>
         <motion.div
           animate={{ opacity: phase >= 3 ? 1 : 0.3 }}
           style={{
             padding: "12px 24px", borderRadius: 12,
-            background: phase >= 3 ? "linear-gradient(135deg, #34d399, #22c55e)" : "rgba(255,255,255,0.06)",
-            color: phase >= 3 ? "#0a0806" : "rgba(232,224,200,0.3)",
+            background: phase >= 3 ? "linear-gradient(135deg, #34d399, #22c55e)" : "rgba(26,26,27,0.08)",
+            color: phase >= 3 ? "#F5F2ED" : "rgba(232,224,200,0.3)",
             fontSize: 14, fontWeight: 700,
           }}
         >
@@ -258,17 +258,17 @@ function RewardUnlockStep() {
         transition={{ duration: 0.6 }}
         style={{
           width: 80, height: 80, borderRadius: 20, margin: "0 auto 16px",
-          background: unlocked ? "linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.05))" : "rgba(255,255,255,0.04)",
-          border: `2px solid ${unlocked ? "#d4af37" : "rgba(255,255,255,0.1)"}`,
+          background: unlocked ? "linear-gradient(135deg, rgba(212,139,0,0.2), rgba(212,139,0,0.05))" : "rgba(26,26,27,0.06)",
+          border: `2px solid ${unlocked ? "#D48B00" : "rgba(255,255,255,0.1)"}`,
           display: "flex", alignItems: "center", justifyContent: "center",
         }}
       >
-        <Gift size={36} color={unlocked ? "#d4af37" : "rgba(232,224,200,0.3)"} />
+        <Gift size={36} color={unlocked ? "#D48B00" : "rgba(232,224,200,0.3)"} />
       </motion.div>
       <AnimatePresence>
         {unlocked && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: "#d4af37", marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: "#D48B00", marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>
               Reward Unlocked!
             </div>
             <div style={{ fontSize: 14, color: "rgba(232,224,200,0.6)", marginBottom: 12 }}>
@@ -316,8 +316,8 @@ function InventoryStep() {
           style={{
             display: "flex", alignItems: "center", gap: 14,
             padding: "12px 14px", marginBottom: 8, borderRadius: 12,
-            background: i < updates ? "rgba(255,255,255,0.03)" : "transparent",
-            border: `1px solid ${i === 2 && i < updates ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.04)"}`,
+            background: i < updates ? "rgba(26,26,27,0.05)" : "transparent",
+            border: `1px solid ${i === 2 && i < updates ? "rgba(245,158,11,0.2)" : "rgba(26,26,27,0.06)"}`,
           }}
         >
           <div style={{ flex: 1 }}>
@@ -361,7 +361,7 @@ function DeviceControlStep() {
             transition={{ delay: i * 0.15 }}
             style={{
               padding: "14px 16px", borderRadius: 14,
-              background: "rgba(255,255,255,0.03)",
+              background: "rgba(26,26,27,0.05)",
               border: `1px solid ${d.status === "online" ? "rgba(52,211,153,0.2)" : "rgba(239,68,68,0.2)"}`,
             }}
           >
@@ -518,7 +518,7 @@ function DashboardMetricsStep() {
     : "47%";
 
   const metrics = [
-    { label: "Revenue",    value: displayRevenue,  color: "#d4af37" },
+    { label: "Revenue",    value: displayRevenue,  color: "#D48B00" },
     { label: "Orders",     value: displayOrders,   color: "#5b8def" },
     { label: "Avg Order",  value: displayAvg,      color: "#34d399" },
     { label: "Conversion", value: displayConvRate, color: "#f59e0b" },
@@ -574,7 +574,7 @@ function DashboardMetricsStep() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            style={{ padding: 12, borderRadius: 12, background: "rgba(255,255,255,0.03)", border: `1px solid ${m.color}20`, textAlign: "center" }}
+            style={{ padding: 12, borderRadius: 12, background: "rgba(26,26,27,0.05)", border: `1px solid ${m.color}20`, textAlign: "center" }}
           >
             <motion.div
               key={m.value}
@@ -600,7 +600,7 @@ function DashboardMetricsStep() {
             return (
               <div key={stage.key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <div style={{ width: 90, fontSize: 10, fontWeight: 700, color: stage.color, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>{stage.label}</div>
-                <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.04)", overflow: "hidden" }}>
+                <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(26,26,27,0.06)", overflow: "hidden" }}>
                   <motion.div
                     animate={{ width: `${pct}%` }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
@@ -624,7 +624,7 @@ function DashboardMetricsStep() {
           transition={{ duration: 0.35 }}
           style={{
             marginBottom: 14, padding: "8px 12px", borderRadius: 10,
-            background: "rgba(212,175,55,0.05)", border: "1px solid rgba(212,175,55,0.12)",
+            background: "rgba(212,139,0,0.05)", border: "1px solid rgba(212,139,0,0.12)",
             fontSize: 11, color: "rgba(232,224,200,0.55)", fontStyle: "italic", lineHeight: 1.5,
           }}
         >
@@ -646,11 +646,11 @@ function DashboardMetricsStep() {
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "space-between",
                   padding: "7px 10px", borderRadius: 8,
-                  background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)",
+                  background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.07)",
                   fontSize: 11,
                 }}
               >
-                <span style={{ color: "#d4af37", fontWeight: 700, minWidth: 52 }}>{eventLabel[ev.type] ?? ev.type}</span>
+                <span style={{ color: "#D48B00", fontWeight: 700, minWidth: 52 }}>{eventLabel[ev.type] ?? ev.type}</span>
                 <span style={{ color: "rgba(232,224,200,0.6)", flex: 1, paddingLeft: 8 }}>
                   {String(p.guest ?? p.guestName ?? "")}
                   {(p.product ?? p.productName) ? ` · ${String(p.product ?? p.productName ?? "")}` : ""}
@@ -699,14 +699,14 @@ function ExperienceStep() {
             style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
               padding: "12px 16px", borderRadius: 12,
-              background: i < answered ? "rgba(212,175,55,0.08)" : "rgba(255,255,255,0.02)",
-              border: `1px solid ${i < answered ? "rgba(212,175,55,0.2)" : "rgba(255,255,255,0.04)"}`,
+              background: i < answered ? "rgba(212,139,0,0.08)" : "rgba(26,26,27,0.04)",
+              border: `1px solid ${i < answered ? "rgba(212,139,0,0.2)" : "rgba(26,26,27,0.06)"}`,
             }}
           >
             <span style={{ fontSize: 13, color: "rgba(232,224,200,0.6)" }}>{item.q}</span>
             {i < answered && (
               <motion.span initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
-                style={{ fontSize: 13, fontWeight: 600, color: "#d4af37" }}>{item.a}</motion.span>
+                style={{ fontSize: 13, fontWeight: 600, color: "#D48B00" }}>{item.a}</motion.span>
             )}
           </motion.div>
         ))}
@@ -748,7 +748,7 @@ function SystemOverviewStep() {
               style={{
                 display: "flex", alignItems: "center", gap: 12,
                 padding: "12px 14px", borderRadius: 12,
-                background: "rgba(255,255,255,0.02)",
+                background: "rgba(26,26,27,0.04)",
                 border: `1px solid ${row.color}15`,
               }}
             >
@@ -776,7 +776,7 @@ function SystemOverviewStep() {
 }
 
 const ALL_STEPS: DemoStep[] = [
-  { id: "order", title: "Order Creation", subtitle: "Smart Commerce with instant checkout", icon: ShoppingCart, color: "#d4af37", duration: DEFAULT_STEP_DURATION, render: () => <OrderCreationStep /> },
+  { id: "order", title: "Order Creation", subtitle: "Smart Commerce with instant checkout", icon: ShoppingCart, color: "#D48B00", duration: DEFAULT_STEP_DURATION, render: () => <OrderCreationStep /> },
   { id: "reward", title: "Reward Unlock", subtitle: "Automated loyalty with fraud protection", icon: Gift, color: "#34d399", duration: DEFAULT_STEP_DURATION, render: () => <RewardUnlockStep /> },
   { id: "inventory", title: "Inventory Tracking", subtitle: "Real-time stock with audit trail", icon: Package, color: "#5b8def", duration: DEFAULT_STEP_DURATION, render: () => <InventoryStep /> },
   { id: "devices", title: "Device Control", subtitle: "Fleet management across venues", icon: Monitor, color: "#f97316", duration: DEFAULT_STEP_DURATION, render: () => <DeviceControlStep /> },
@@ -810,8 +810,8 @@ function ProfileCard({
       style={{
         display: "flex", flexDirection: "column", alignItems: "center",
         gap: 12, padding: "28px 24px", borderRadius: 20,
-        background: "rgba(255,255,255,0.03)",
-        border: `1px solid rgba(255,255,255,0.08)`,
+        background: "rgba(26,26,27,0.05)",
+        border: `1px solid rgba(26,26,27,0.10)`,
         color: "#e8e0c8", cursor: "pointer",
         width: 210, textAlign: "center",
         transition: "border-color 0.2s",
@@ -854,7 +854,7 @@ function ProfileCard({
       <div style={{
         fontSize: 11, color: "rgba(232,224,200,0.3)",
         padding: "4px 10px", borderRadius: 8,
-        background: "rgba(255,255,255,0.03)",
+        background: "rgba(26,26,27,0.05)",
       }}>
         {profile.stepIds.length} steps · {(profile.speed / 1000).toFixed(1)}s each
       </div>
@@ -936,7 +936,7 @@ function ProfileSelector({
         onClick={onSkip}
         style={{
           padding: "12px 28px", borderRadius: 12,
-          background: "rgba(255,255,255,0.04)",
+          background: "rgba(26,26,27,0.06)",
           border: "1px solid rgba(255,255,255,0.1)",
           color: "rgba(232,224,200,0.6)", cursor: "pointer",
           fontSize: 14, fontWeight: 600,
@@ -976,7 +976,7 @@ function SaveProfileDialog({
       onClick={onClose}
       style={{
         position: "fixed", inset: 0, zIndex: 1000,
-        background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)",
+        background: "rgba(26,26,27,0.32)", backdropFilter: "blur(4px)",
         display: "flex", alignItems: "center", justifyContent: "center",
         padding: 20,
       }}
@@ -1015,7 +1015,7 @@ function SaveProfileDialog({
             autoFocus
             style={{
               width: "100%", padding: "10px 14px", borderRadius: 12,
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
               color: "#e8e0c8", fontSize: 14, outline: "none",
               boxSizing: "border-box",
             }}
@@ -1035,7 +1035,7 @@ function SaveProfileDialog({
             maxLength={100}
             style={{
               width: "100%", padding: "10px 14px", borderRadius: 12,
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
               color: "#e8e0c8", fontSize: 14, outline: "none",
               boxSizing: "border-box",
             }}
@@ -1048,7 +1048,7 @@ function SaveProfileDialog({
             onClick={onClose}
             style={{
               flex: 1, padding: "10px 16px", borderRadius: 12,
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
               color: "rgba(232,224,200,0.6)", cursor: "pointer",
               fontSize: 13, fontWeight: 600,
             }}
@@ -1061,7 +1061,7 @@ function SaveProfileDialog({
             disabled={!name.trim()}
             style={{
               flex: 1, padding: "10px 16px", borderRadius: 12,
-              background: name.trim() ? "linear-gradient(135deg, #a78bfa, #8b5cf6)" : "rgba(255,255,255,0.04)",
+              background: name.trim() ? "linear-gradient(135deg, #a78bfa, #8b5cf6)" : "rgba(26,26,27,0.06)",
               border: "none",
               color: name.trim() ? "#fff" : "rgba(232,224,200,0.3)",
               cursor: name.trim() ? "pointer" : "not-allowed",
@@ -1237,7 +1237,7 @@ export default function DemoWalkthrough() {
 
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)",
+        padding: "12px 20px", borderBottom: "1px solid rgba(26,26,27,0.08)",
         background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -1245,7 +1245,7 @@ export default function DemoWalkthrough() {
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
               width: 44, height: 44, borderRadius: 12,
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
               color: "rgba(232,224,200,0.5)", cursor: "pointer",
             }}>
             <X size={18} />
@@ -1285,8 +1285,8 @@ export default function DemoWalkthrough() {
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
               gap: 6, height: 36, padding: "0 12px", borderRadius: 10,
-              background: copiedUrl ? "rgba(52,211,153,0.1)" : "rgba(255,255,255,0.04)",
-              border: `1px solid ${copiedUrl ? "rgba(52,211,153,0.25)" : "rgba(255,255,255,0.08)"}`,
+              background: copiedUrl ? "rgba(52,211,153,0.1)" : "rgba(26,26,27,0.06)",
+              border: `1px solid ${copiedUrl ? "rgba(52,211,153,0.25)" : "rgba(26,26,27,0.10)"}`,
               color: copiedUrl ? "#34d399" : "rgba(232,224,200,0.5)",
               cursor: "pointer", fontSize: 12, fontWeight: 600,
             }}
@@ -1297,8 +1297,8 @@ export default function DemoWalkthrough() {
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
               width: 36, height: 36, borderRadius: 10,
-              background: paused ? "rgba(245,158,11,0.1)" : "rgba(255,255,255,0.04)",
-              border: `1px solid ${paused ? "rgba(245,158,11,0.3)" : "rgba(255,255,255,0.08)"}`,
+              background: paused ? "rgba(245,158,11,0.1)" : "rgba(26,26,27,0.06)",
+              border: `1px solid ${paused ? "rgba(245,158,11,0.3)" : "rgba(26,26,27,0.10)"}`,
               color: paused ? "#f59e0b" : "rgba(232,224,200,0.5)",
               cursor: "pointer",
             }}>
@@ -1307,7 +1307,7 @@ export default function DemoWalkthrough() {
         </div>
       </div>
 
-      <div style={{ height: 3, background: "rgba(255,255,255,0.04)", flexShrink: 0 }}>
+      <div style={{ height: 3, background: "rgba(26,26,27,0.06)", flexShrink: 0 }}>
         <motion.div
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.4 }}
@@ -1335,8 +1335,8 @@ export default function DemoWalkthrough() {
                 style={{
                   display: "flex", alignItems: "center", gap: 6,
                   padding: "6px 12px", borderRadius: 10,
-                  background: i === currentStep ? `${s.color}15` : "rgba(255,255,255,0.02)",
-                  border: `1px solid ${i === currentStep ? `${s.color}40` : "rgba(255,255,255,0.06)"}`,
+                  background: i === currentStep ? `${s.color}15` : "rgba(26,26,27,0.04)",
+                  border: `1px solid ${i === currentStep ? `${s.color}40` : "rgba(26,26,27,0.08)"}`,
                   color: i === currentStep ? s.color : "rgba(232,224,200,0.3)",
                   cursor: "pointer", fontSize: 11, fontWeight: i === currentStep ? 600 : 400,
                   minHeight: 36,
@@ -1358,7 +1358,7 @@ export default function DemoWalkthrough() {
 
       <div style={{
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        padding: "12px 20px", borderTop: "1px solid rgba(255,255,255,0.06)",
+        padding: "12px 20px", borderTop: "1px solid rgba(26,26,27,0.08)",
         flexShrink: 0,
       }}>
         <motion.button
@@ -1368,8 +1368,8 @@ export default function DemoWalkthrough() {
           style={{
             display: "flex", alignItems: "center", gap: 6,
             padding: "10px 20px", borderRadius: 12,
-            background: currentStep === 0 ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: currentStep === 0 ? "rgba(26,26,27,0.04)" : "rgba(26,26,27,0.06)",
+            border: "1px solid rgba(26,26,27,0.10)",
             color: currentStep === 0 ? "rgba(232,224,200,0.15)" : "rgba(232,224,200,0.5)",
             cursor: currentStep === 0 ? "not-allowed" : "pointer",
             fontSize: 13, fontWeight: 600, minHeight: 44,
@@ -1399,7 +1399,7 @@ export default function DemoWalkthrough() {
             padding: "10px 20px", borderRadius: 12,
             background: `linear-gradient(135deg, ${step.color}, ${step.color}cc)`,
             border: "none",
-            color: "#0a0806",
+            color: "#F5F2ED",
             cursor: "pointer",
             fontSize: 13, fontWeight: 700, minHeight: 44,
           }}

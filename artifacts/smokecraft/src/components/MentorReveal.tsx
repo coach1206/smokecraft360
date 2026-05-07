@@ -29,7 +29,7 @@ interface MentorRevealProps {
 // ── Craft accent colours ──────────────────────────────────────────────────────
 
 const CRAFT_ACCENT: Record<string, string> = {
-  smoke: "#d4af37",
+  smoke: "#D48B00",
   pour:  "#c87820",
   brew:  "#e6c76a",
   vape:  "#8b5cf6",
@@ -80,7 +80,7 @@ function MentorAvatar({ name, accent }: { name: string; accent: string }) {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function MentorReveal({ mentor, guestName, isReturning, onBegin, memoryLine }: MentorRevealProps) {
-  const accent     = CRAFT_ACCENT[mentor.craftType] ?? "#d4af37";
+  const accent     = CRAFT_ACCENT[mentor.craftType] ?? "#D48B00";
   const [ready, setReady] = useState(false);
 
   // Slight delay before showing the Begin button — feels more intentional

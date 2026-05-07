@@ -380,7 +380,7 @@ function CarbonationBubbles({ accent, count }: { accent: string; count: number }
               width:        p.size * 4,
               height:       p.size * 1.5,
               borderRadius: "50%",
-              background:   `rgba(255,255,255,0.06)`,
+              background:   `rgba(26,26,27,0.08)`,
               filter:       "blur(4px)",
               willChange:   "transform, opacity",
             }}
@@ -448,7 +448,7 @@ function VaporWisps({ accent, count }: { accent: string; count: number }) {
               width:        p.size,
               height:       p.size * 0.7,
               borderRadius: "50%",
-              background:   "rgba(255,255,255,0.06)",
+              background:   "rgba(26,26,27,0.08)",
               filter:       "blur(10px)",
               willChange:   "transform, opacity",
             }}
@@ -494,7 +494,7 @@ export const ParticleSystem = memo(function ParticleSystem() {
   const { env } = envCtx;
   const density = env.particleDensity;
   const craft   = env.craftType;
-  const accent  = CRAFT_THEMES[craft]?.accent ?? "#d4af37";
+  const accent  = CRAFT_THEMES[craft]?.accent ?? "#D48B00";
 
   // Performance mode scales particle count: cinematic ×1.4 / balanced ×1 / low-power ×0.3
   const perfScale = env.performanceMode === "cinematic" ? 1.4

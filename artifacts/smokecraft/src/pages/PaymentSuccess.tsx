@@ -30,7 +30,7 @@ export default function PaymentSuccess() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 70% 55% at 50% 45%, rgba(212,175,55,0.08) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 55% at 50% 45%, rgba(212,139,0,0.08) 0%, transparent 70%)",
         }}
       />
 
@@ -38,13 +38,13 @@ export default function PaymentSuccess() {
       <div className="relative mb-10">
         <motion.div
           className="absolute inset-0 rounded-full"
-          style={{ border: "1px solid rgba(212,175,55,0.3)" }}
+          style={{ border: "1px solid rgba(212,139,0,0.3)" }}
           animate={{ scale: [1, 1.7, 1.7], opacity: [0.7, 0, 0] }}
           transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", repeatDelay: 0.8 }}
         />
         <motion.div
           className="absolute inset-0 rounded-full"
-          style={{ border: "1px solid rgba(212,175,55,0.18)" }}
+          style={{ border: "1px solid rgba(212,139,0,0.18)" }}
           animate={{ scale: [1, 2.1, 2.1], opacity: [0.5, 0, 0] }}
           transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: 0.5, repeatDelay: 0.8 }}
         />
@@ -52,15 +52,15 @@ export default function PaymentSuccess() {
         <motion.div
           className="relative w-28 h-28 rounded-full flex items-center justify-center"
           style={{
-            background: "linear-gradient(135deg, rgba(212,175,55,0.15), rgba(180,130,30,0.08))",
-            border:     "1px solid rgba(212,175,55,0.45)",
-            boxShadow:  "0 0 50px rgba(212,175,55,0.22), 0 0 100px rgba(212,175,55,0.06) inset",
+            background: "linear-gradient(135deg, rgba(212,139,0,0.15), rgba(180,130,30,0.08))",
+            border:     "1px solid rgba(212,139,0,0.45)",
+            boxShadow:  "0 0 50px rgba(212,139,0,0.22), 0 0 100px rgba(212,139,0,0.06) inset",
           }}
           initial={{ scale: 0, rotate: -20 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
         >
-          <CheckCircle size={42} style={{ color: "rgba(212,175,55,0.92)" }} />
+          <CheckCircle size={42} style={{ color: "rgba(212,139,0,0.92)" }} />
         </motion.div>
       </div>
 
@@ -74,7 +74,7 @@ export default function PaymentSuccess() {
         {/* Brand name */}
         <p
           className="text-[9px] uppercase tracking-[0.45em] mb-4"
-          style={{ color: "rgba(212,175,55,0.5)" }}
+          style={{ color: "rgba(212,139,0,0.5)" }}
         >
           {BRAND.name}
         </p>
@@ -110,7 +110,7 @@ export default function PaymentSuccess() {
         <div
           className="mx-auto w-24 h-px mb-8"
           style={{
-            background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent)",
+            background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.3), transparent)",
           }}
         />
 
@@ -121,9 +121,9 @@ export default function PaymentSuccess() {
           style={{
             background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
             color:      "hsl(22 18% 6%)",
-            boxShadow:  "0 4px 24px rgba(212,175,55,0.28)",
+            boxShadow:  "0 4px 24px rgba(212,139,0,0.28)",
           }}
-          whileHover={{ scale: 1.03, boxShadow: "0 6px 32px rgba(212,175,55,0.4)" }}
+          whileHover={{ scale: 1.03, boxShadow: "0 6px 32px rgba(212,139,0,0.4)" }}
           whileTap={{ scale: 0.97 }}
         >
           Return to {BRAND.shortName}

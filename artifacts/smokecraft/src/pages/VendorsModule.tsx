@@ -8,16 +8,16 @@ import { useVenueContext } from "@/contexts/VenueContext";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const C = {
-  header:    "linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)",
-  border:    "rgba(255,210,120,0.12)",
-  text:      "#F5E7C8",
-  muted:     "#B39B77",
-  dim:       "rgba(179,155,119,0.40)",
-  card:      "rgba(255,255,255,0.045)",
-  back:      "#211D19",
-  backBorder:"rgba(255,210,120,0.18)",
+  header:    "linear-gradient(180deg, #12100E 0%, #EFEBE0ee 100%)",
+  border:    "rgba(212,139,0,0.12)",
+  text:      "#1A1A1B",
+  muted:     "#6B5E4E",
+  dim:       "rgba(107,94,78,0.48)",
+  card:      "rgba(26,26,27,0.06)",
+  back:      "#2A2A2A",
+  backBorder:"rgba(212,139,0,0.18)",
   accent:    "#2DD4BF",
-  bg:        "#080604",
+  bg:        "#F5F2ED",
 };
 
 export default function VendorsModule() {
@@ -37,9 +37,9 @@ export default function VendorsModule() {
   return (
     <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: C.bg, color: C.text }}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 24px", borderBottom: `1px solid rgba(255,210,120,0.10)`, background: C.header, backdropFilter: "blur(16px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(255,210,120,0.06), 0 4px 20px rgba(0,0,0,0.3)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 24px", borderBottom: `1px solid rgba(212,139,0,0.10)`, background: C.header, backdropFilter: "blur(16px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(212,139,0,0.06), 0 4px 20px rgba(26,26,27,0.06)" }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 2px 8px rgba(26,26,27,0.06)" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div>

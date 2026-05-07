@@ -140,7 +140,7 @@ export const TRAINING_ROLES_CONFIG = [
     focus: ["Flavor profiling", "Strength education", "Customer pairing", "Inventory knowledge"],
     duration: "60 min",
     modules: 8,
-    color: "#c9a84c",
+    color: "#D48B00",
   },
   {
     id: "vape_specialist",
@@ -176,7 +176,7 @@ export const TRAINING_ROLES_CONFIG = [
     focus: ["Analytics dashboard", "Campaign management", "Staff management", "Financial overview"],
     duration: "75 min",
     modules: 10,
-    color: "#d4af37",
+    color: "#D48B00",
   },
   {
     id: "inventory_manager",

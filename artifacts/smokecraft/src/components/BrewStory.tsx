@@ -68,7 +68,7 @@ function generateStory(p: ProductResult): StoryPanel[] {
 
 const SWIPE_THRESHOLD = 50;
 
-export default function BrewStory({ product, accent = "#D4AF37", testId = "brewstory" }: BrewStoryProps) {
+export default function BrewStory({ product, accent = "#D48B00", testId = "brewstory" }: BrewStoryProps) {
   const panels = generateStory(product);
   const [idx, setIdx] = useState(0);
   const [direction, setDirection] = useState(0);
@@ -105,7 +105,7 @@ export default function BrewStory({ product, accent = "#D4AF37", testId = "brews
             data-testid={`${testId}-tab-${p.id}`}
             onClick={() => go(i)}
             style={{
-              background: i === idx ? accent : "rgba(255,255,255,0.08)",
+              background: i === idx ? accent : "rgba(26,26,27,0.10)",
               color: i === idx ? "#0a0604" : "#E5E5E5",
               border: "none",
               padding: "6px 14px",

@@ -38,11 +38,11 @@ interface AxTableProps<T> {
 const COL_HEADER: React.CSSProperties = {
   fontSize: 10,
   fontWeight: 700,
-  color: "rgba(240,232,212,0.38)",
+  color: "rgba(26,26,27,0.38)",
   textTransform: "uppercase",
   letterSpacing: "0.12em",
   padding: "8px 12px",
-  borderBottom: "1px solid rgba(201,168,76,0.12)",
+  borderBottom: "1px solid rgba(212,139,0,0.12)",
   whiteSpace: "nowrap",
   userSelect: "none",
 };
@@ -51,7 +51,7 @@ const COL_CELL: React.CSSProperties = {
   fontSize: 12,
   color: "rgba(240,232,212,0.82)",
   padding: "11px 12px",
-  borderBottom: "1px solid rgba(255,255,255,0.04)",
+  borderBottom: "1px solid rgba(26,26,27,0.06)",
   verticalAlign: "middle",
 };
 
@@ -104,7 +104,7 @@ export function AxTable<T>({
                     cursor: onRowClick ? "pointer" : "default",
                     transition: "background 0.15s",
                   }}
-                  whileHover={onRowClick ? { backgroundColor: "rgba(255,255,255,0.03)" } : undefined}
+                  whileHover={onRowClick ? { backgroundColor: "rgba(26,26,27,0.05)" } : undefined}
                 >
                   {columns.map((col) => (
                     <td
@@ -129,9 +129,9 @@ export function AxTable<T>({
       {totalPages > 1 && (
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "10px 12px", borderTop: "1px solid rgba(201,168,76,0.1)",
+          padding: "10px 12px", borderTop: "1px solid rgba(212,139,0,0.1)",
         }}>
-          <span style={{ fontSize: 11, color: "rgba(240,232,212,0.38)" }}>
+          <span style={{ fontSize: 11, color: "rgba(26,26,27,0.38)" }}>
             {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, rows.length)} of {rows.length}
           </span>
           <div style={{ display: "flex", gap: 4 }}>
@@ -139,8 +139,8 @@ export function AxTable<T>({
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
               style={{
-                background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.14)",
-                borderRadius: 6, color: "rgba(240,232,212,0.55)", padding: "4px 8px",
+                background: "rgba(26,26,27,0.06)", border: "1px solid rgba(212,139,0,0.14)",
+                borderRadius: 6, color: "rgba(26,26,27,0.52)", padding: "4px 8px",
                 cursor: page === 1 ? "not-allowed" : "pointer", opacity: page === 1 ? 0.4 : 1,
                 display: "flex", alignItems: "center",
               }}
@@ -151,8 +151,8 @@ export function AxTable<T>({
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
               style={{
-                background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.14)",
-                borderRadius: 6, color: "rgba(240,232,212,0.55)", padding: "4px 8px",
+                background: "rgba(26,26,27,0.06)", border: "1px solid rgba(212,139,0,0.14)",
+                borderRadius: 6, color: "rgba(26,26,27,0.52)", padding: "4px 8px",
                 cursor: page === totalPages ? "not-allowed" : "pointer", opacity: page === totalPages ? 0.4 : 1,
                 display: "flex", alignItems: "center",
               }}

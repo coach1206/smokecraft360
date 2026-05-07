@@ -14,9 +14,9 @@ import type { BlendDesign }            from "@/services/storage";
 const STATUS_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
   draft:      { label: "Draft",       color: "rgba(180,155,100,0.7)", dot: "rgba(180,155,100,0.5)" },
   submitted:  { label: "Submitted",   color: "rgba(100,160,230,0.8)", dot: "rgba(100,160,230,0.6)" },
-  review:     { label: "In Review",   color: "rgba(230,180,60,0.9)",  dot: "rgba(212,175,55,0.7)"  },
+  review:     { label: "In Review",   color: "rgba(230,180,60,0.9)",  dot: "rgba(212,139,0,0.7)"  },
   approved:   { label: "Approved",    color: "rgba(52,200,120,0.9)",  dot: "rgba(52,200,120,0.7)"  },
-  production: { label: "Production",  color: "rgba(212,175,55,1)",    dot: "rgba(212,175,55,0.9)"  },
+  production: { label: "Production",  color: "rgba(212,139,0,1)",    dot: "rgba(212,139,0,0.9)"  },
   rejected:   { label: "Rejected",    color: "rgba(239,68,68,0.75)",  dot: "rgba(239,68,68,0.55)"  },
 };
 
@@ -59,7 +59,7 @@ export function SignatureStatusCard({ onCreateNew }: SignatureStatusCardProps) {
   if (loading) return (
     <div className="flex justify-center py-6">
       <motion.div className="w-6 h-6 rounded-full border-2"
-        style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.6)" }}
+        style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.6)" }}
         animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
     </div>
   );
@@ -70,15 +70,15 @@ export function SignatureStatusCard({ onCreateNew }: SignatureStatusCardProps) {
     <div className="rounded-2xl p-5 space-y-4"
       style={{
         background: "linear-gradient(160deg, rgba(30,20,5,0.9), rgba(15,10,2,0.95))",
-        border: "1px solid rgba(212,175,55,0.2)",
-        boxShadow: "0 0 40px rgba(212,175,55,0.06)",
+        border: "1px solid rgba(212,139,0,0.2)",
+        boxShadow: "0 0 40px rgba(212,139,0,0.06)",
       }}>
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Crown size={13} style={{ color: "rgba(212,175,55,0.8)" }} fill="rgba(212,175,55,0.2)" />
-          <span className="text-[9px] uppercase tracking-[0.25em]" style={{ color: "rgba(212,175,55,0.6)" }}>
+          <Crown size={13} style={{ color: "rgba(212,139,0,0.8)" }} fill="rgba(212,139,0,0.2)" />
+          <span className="text-[9px] uppercase tracking-[0.25em]" style={{ color: "rgba(212,139,0,0.6)" }}>
             Signature Creator
           </span>
         </div>
@@ -121,7 +121,7 @@ export function SignatureStatusCard({ onCreateNew }: SignatureStatusCardProps) {
         {expanded && records.slice(1).map((r) => (
           <motion.div key={r.id}
             initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
-            <div className="pt-3 mt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+            <div className="pt-3 mt-3" style={{ borderTop: "1px solid rgba(26,26,27,0.07)" }}>
               <DesignRow record={r} onCreateNew={onCreateNew} />
             </div>
           </motion.div>
@@ -174,7 +174,7 @@ function DesignRow({ record, onCreateNew, isLatest = false }: {
 
       {/* Admin notes */}
       {record.adminNotes && (
-        <div className="px-3 py-2 rounded-lg" style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.12)" }}>
+        <div className="px-3 py-2 rounded-lg" style={{ background: "rgba(212,139,0,0.04)", border: "1px solid rgba(212,139,0,0.12)" }}>
           <p className="text-[8px] uppercase tracking-[0.15em] mb-1" style={{ color: "rgba(180,155,100,0.38)" }}>Note from team</p>
           <p className="text-xs" style={{ color: "rgba(200,180,145,0.65)" }}>{record.adminNotes}</p>
         </div>
@@ -191,8 +191,8 @@ function DesignRow({ record, onCreateNew, isLatest = false }: {
       {isLatest && (record.status === "draft" || record.status === "rejected") && (
         <motion.button onClick={onCreateNew}
           className="w-full py-2 text-xs uppercase tracking-[0.18em] rounded-lg"
-          style={{ background: "rgba(212,175,55,0.06)", border: "1px solid rgba(212,175,55,0.2)", color: "rgba(212,175,55,0.6)" }}
-          whileHover={{ color: "rgba(212,175,55,0.9)", borderColor: "rgba(212,175,55,0.4)" }}
+          style={{ background: "rgba(212,139,0,0.06)", border: "1px solid rgba(212,139,0,0.2)", color: "rgba(212,139,0,0.6)" }}
+          whileHover={{ color: "rgba(212,139,0,0.9)", borderColor: "rgba(212,139,0,0.4)" }}
           whileTap={{ scale: 0.97 }}>
           Create New Concept
         </motion.button>

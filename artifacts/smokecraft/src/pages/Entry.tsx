@@ -9,8 +9,8 @@ const TILES = [
     id: "venue",
     title: "Venue Access",
     desc: "For owners and staff",
-    color: "#d4af37",
-    glow: "rgba(212,175,55,0.25)",
+    color: "#D48B00",
+    glow: "rgba(212,139,0,0.25)",
     route: "/pin-login",
     image: "/images/lounge-bg.jpg",
   },
@@ -90,10 +90,10 @@ export default function Entry() {
       >
         <div style={{
           fontSize: 10, textTransform: "uppercase", letterSpacing: "0.25em",
-          color: "rgba(212,175,55,0.5)", marginBottom: 4,
+          color: "rgba(212,139,0,0.5)", marginBottom: 4,
         }}>Profound Innovations</div>
         <h1 style={{
-          fontSize: 28, fontWeight: 700, color: "#d4af37", margin: "0 0 2px",
+          fontSize: 28, fontWeight: 700, color: "#D48B00", margin: "0 0 2px",
           fontFamily: "'Playfair Display', serif", letterSpacing: "0.03em",
         }}>Axiom OS</h1>
         <h2 style={{
@@ -150,7 +150,7 @@ export default function Entry() {
                   backgroundSize: "fit" in tile && tile.fit === "contain" ? "contain" : "cover",
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
-                  backgroundColor: "fit" in tile && tile.fit === "contain" ? "#0a0806" : "transparent",
+                  backgroundColor: "fit" in tile && tile.fit === "contain" ? "#F5F2ED" : "transparent",
                   pointerEvents: "none",
                 }} />
                 <div style={{
@@ -162,11 +162,11 @@ export default function Entry() {
                   <div style={{
                     fontSize: 18, fontWeight: 700, color: "#fff",
                     letterSpacing: "0.02em", marginBottom: 4,
-                    textShadow: "0 1px 4px rgba(0,0,0,0.7)",
+                    textShadow: "0 1px 4px rgba(26,26,27,0.32)",
                   }}>{tile.title}</div>
                   <div style={{
                     fontSize: 13, color: "rgba(255,255,255,0.7)",
-                    textShadow: "0 1px 3px rgba(0,0,0,0.6)",
+                    textShadow: "0 1px 3px rgba(26,26,27,0.26)",
                   }}>{tile.desc}</div>
                 </div>
               </motion.button>

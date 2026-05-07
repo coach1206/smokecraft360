@@ -20,7 +20,7 @@ function SvgGauge({ pct, color, label, sub }: { pct: number; color: string; labe
       style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
       <div style={{ position: "relative", width: 96, height: 96 }}>
         <svg width={96} height={96} style={{ transform: "rotate(-90deg)" }}>
-          <circle cx={48} cy={48} r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={7} />
+          <circle cx={48} cy={48} r={R} fill="none" stroke="rgba(26,26,27,0.08)" strokeWidth={7} />
           <motion.circle cx={48} cy={48} r={R} fill="none"
             stroke={color} strokeWidth={7} strokeLinecap="round"
             strokeDasharray={`${filled} ${CIRC}`}
@@ -42,30 +42,30 @@ function SvgGauge({ pct, color, label, sub }: { pct: number; color: string; labe
         }} />
       </div>
       <div style={{ textAlign: "center" }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "rgba(240,232,212,0.85)", letterSpacing: "0.04em" }}>{label}</div>
-        <div style={{ fontSize: 10, color: "rgba(179,155,119,0.60)", marginTop: 2 }}>{sub}</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "rgba(26,26,27,0.82)", letterSpacing: "0.04em" }}>{label}</div>
+        <div style={{ fontSize: 10, color: "rgba(107,94,78,0.65)", marginTop: 2 }}>{sub}</div>
       </div>
     </motion.div>
   );
 }
 
 const C = {
-  header:    "linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)",
-  border:    "rgba(255,210,120,0.12)",
-  text:      "#F5E7C8",
-  muted:     "#B39B77",
-  dim:       "rgba(179,155,119,0.45)",
-  gold:      "#C9A84C",
-  card:      "rgba(255,255,255,0.045)",
+  header:    "linear-gradient(180deg, #12100E 0%, #EFEBE0ee 100%)",
+  border:    "rgba(212,139,0,0.12)",
+  text:      "#1A1A1B",
+  muted:     "#6B5E4E",
+  dim:       "rgba(107,94,78,0.52)",
+  gold:      "#D48B00",
+  card:      "rgba(26,26,27,0.06)",
   cardSoft:  "rgba(255,255,255,0.028)",
-  rowAlt:    "rgba(255,255,255,0.02)",
-  rowBorder: "rgba(255,210,120,0.08)",
-  back:      "#211D19",
-  backBorder:"rgba(255,210,120,0.18)",
+  rowAlt:    "rgba(26,26,27,0.04)",
+  rowBorder: "rgba(212,139,0,0.08)",
+  back:      "#2A2A2A",
+  backBorder:"rgba(212,139,0,0.18)",
   inputBg:   "#181512",
-  inputBorder:"rgba(255,210,120,0.18)",
+  inputBorder:"rgba(212,139,0,0.18)",
   accent:    "#A78BFA",
-  bg:        "#080604",
+  bg:        "#F5F2ED",
 };
 
 type AnalyticsTab = "overview" | "stock";
@@ -182,9 +182,9 @@ export default function AnalyticsModule() {
   return (
     <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: C.bg, color: C.text }}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 24px", borderBottom: `1px solid rgba(255,210,120,0.10)`, background: C.header, backdropFilter: "blur(16px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(255,210,120,0.06), 0 4px 20px rgba(0,0,0,0.3)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 24px", borderBottom: `1px solid rgba(212,139,0,0.10)`, background: C.header, backdropFilter: "blur(16px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(212,139,0,0.06), 0 4px 20px rgba(26,26,27,0.06)" }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 2px 8px rgba(26,26,27,0.06)" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div style={{ flex: 1 }}>
@@ -209,9 +209,9 @@ export default function AnalyticsModule() {
             style={{
               display: "flex", alignItems: "center", gap: 6,
               padding: "9px 18px", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer",
-              background: "rgba(201,168,76,0.10)",
-              border: "1px solid rgba(201,168,76,0.30)",
-              color: "#D4AF37",
+              background: "rgba(212,139,0,0.10)",
+              border: "1px solid rgba(212,139,0,0.30)",
+              color: "#D48B00",
             }}
           >
             <Brain size={13} /> Swipe IQ
@@ -229,13 +229,13 @@ export default function AnalyticsModule() {
                 display: "flex", justifyContent: "space-around", alignItems: "center",
                 padding: "22px 24px", marginBottom: 20, borderRadius: 18,
                 background: "rgba(255,255,255,0.028)",
-                border: "1px solid rgba(255,210,120,0.09)",
-                boxShadow: "0 4px 24px rgba(0,0,0,0.18)",
+                border: "1px solid rgba(212,139,0,0.09)",
+                boxShadow: "0 4px 24px rgba(26,26,27,0.04)",
               }}>
-              <SvgGauge pct={occupancyPct}  color="#C9A84C" label="Occupancy"     sub="Venue capacity fill" />
-              <div style={{ width: 1, height: 80, background: "rgba(255,210,120,0.08)" }} />
+              <SvgGauge pct={occupancyPct}  color="#D48B00" label="Occupancy"     sub="Venue capacity fill" />
+              <div style={{ width: 1, height: 80, background: "rgba(212,139,0,0.08)" }} />
               <SvgGauge pct={revLiftPct}    color="#5b8def" label="Revenue Lift"   sub="Session vs baseline" />
-              <div style={{ width: 1, height: 80, background: "rgba(255,210,120,0.08)" }} />
+              <div style={{ width: 1, height: 80, background: "rgba(212,139,0,0.08)" }} />
               <SvgGauge pct={sentimentPct}  color="#22c55e" label="Sentiment"      sub="Guest satisfaction" />
             </motion.div>
 
@@ -271,7 +271,7 @@ export default function AnalyticsModule() {
                   background: `linear-gradient(90deg, ${C.gold}08, rgba(91,141,239,0.06))`,
                   border: `1px solid ${C.gold}22`,
                   display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center",
-                  boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+                  boxShadow: "0 1px 4px rgba(26,26,27,0.02)",
                 }}
               >
                 <Zap size={13} color={C.gold} style={{ flexShrink: 0 }} />

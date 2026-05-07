@@ -33,13 +33,13 @@ import {
 // ── Design tokens ──────────────────────────────────────────────────────────────
 
 const C = {
-  bg:       "#06040a",
+  bg:       "#F5F2ED",
   glass:    "rgba(255,255,255,0.028)",
-  glassMid: "rgba(255,255,255,0.045)",
-  border:   "rgba(255,255,255,0.07)",
-  gold:     "#c9a84c",
-  goldDim:  "rgba(201,168,76,0.50)",
-  text:     "#f0e8d4",
+  glassMid: "rgba(26,26,27,0.06)",
+  border:   "rgba(26,26,27,0.09)",
+  gold:     "#D48B00",
+  goldDim:  "rgba(212,139,0,0.50)",
+  text:     "#1A1A1B",
   muted:    "rgba(240,232,212,0.48)",
   dim:      "rgba(240,232,212,0.26)",
 };
@@ -151,7 +151,7 @@ function EventCard({ event, onApprove, onDismiss, delay = 0 }: EventCardProps) {
   const bgColor = isPending ? `${sevColor}08`
                 : isApproved ? "rgba(34,197,94,0.06)"
                 : isFired   ? `${catColor}06`
-                : "rgba(255,255,255,0.01)";
+                : "rgba(26,26,27,0.02)";
 
   return (
     <motion.div
@@ -238,7 +238,7 @@ function EventCard({ event, onApprove, onDismiss, delay = 0 }: EventCardProps) {
               {/* Rationale */}
               <div style={{
                 padding: "10px 13px", borderRadius: 10, marginBottom: 12,
-                background: "rgba(255,255,255,0.025)",
+                background: "rgba(26,26,27,0.04)",
                 border: `1px solid ${C.border}`,
               }}>
                 <div style={{ fontSize: 9, color: C.dim, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4 }}>
@@ -267,7 +267,7 @@ function EventCard({ event, onApprove, onDismiss, delay = 0 }: EventCardProps) {
                     <div style={{
                       fontSize: 11, color: C.muted, lineHeight: 1.5, fontStyle: "italic",
                       padding: "7px 10px", borderRadius: 7,
-                      background: "rgba(255,255,255,0.02)",
+                      background: "rgba(26,26,27,0.04)",
                       border: `1px solid ${C.border}`,
                       marginBottom: 5,
                     }}>
@@ -428,7 +428,7 @@ function LiveFeedTab() {
         <div style={{
           padding: "32px", borderRadius: 16, textAlign: "center",
           border: `1px dashed ${C.border}`,
-          background: "rgba(255,255,255,0.015)",
+          background: "rgba(26,26,27,0.03)",
         }}>
           <Brain size={28} color={C.dim} style={{ margin: "0 auto 10px" }} />
           <div style={{ fontSize: 13, color: C.muted, marginBottom: 4 }}>
@@ -609,7 +609,7 @@ function MeterBar({ label, value, max, accent, unit = "", warn }: MeterBarProps)
           {value}{unit}
         </span>
       </div>
-      <div style={{ height: 4, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+      <div style={{ height: 4, borderRadius: 3, background: "rgba(26,26,27,0.08)", overflow: "hidden" }}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
@@ -777,12 +777,12 @@ export default function IntelligencePanel() {
         <div style={{
           position: "absolute", inset: 0,
           background:
-            "radial-gradient(ellipse 70% 40% at 50% 0%, rgba(201,168,76,0.05) 0%, transparent 65%)," +
+            "radial-gradient(ellipse 70% 40% at 50% 0%, rgba(212,139,0,0.05) 0%, transparent 65%)," +
             "linear-gradient(180deg, transparent 0%, rgba(6,4,10,0.9) 100%)",
         }} />
         <div style={{
           position: "absolute", top: 0, left: 0, right: 0, height: 1,
-          background: "linear-gradient(90deg, transparent, #60a5fa35, #c9a84c35, #34d39935, transparent)",
+          background: "linear-gradient(90deg, transparent, #60a5fa35, #D48B0035, #34d39935, transparent)",
         }} />
       </div>
 
@@ -803,7 +803,7 @@ export default function IntelligencePanel() {
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
               width: 44, height: 44, borderRadius: 12,
-              background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`,
+              background: "rgba(26,26,27,0.06)", border: `1px solid ${C.border}`,
               color: C.muted, cursor: "pointer",
             }}
           >
@@ -874,7 +874,7 @@ export default function IntelligencePanel() {
         display: "flex", alignItems: "center", gap: 20,
         padding: "8px 20px",
         borderBottom: `1px solid ${C.border}`,
-        background: "rgba(0,0,0,0.32)", backdropFilter: "blur(12px)",
+        background: "rgba(26,26,27,0.07)", backdropFilter: "blur(12px)",
         overflowX: "auto", flexShrink: 0,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
@@ -889,7 +889,7 @@ export default function IntelligencePanel() {
           { label: "LOYALTY WATCH",   state: "ONLINE",   color: "#34d399" },
           { label: "INVENTORY SCAN",  state: "SYNCED",   color: "#f97316" },
           { label: "SOCIAL PULSE",    state: "TRACKING", color: "#a78bfa" },
-          { label: "VIP DETECTION",   state: "READY",    color: "#d4af37" },
+          { label: "VIP DETECTION",   state: "READY",    color: "#D48B00" },
         ].map(n => (
           <div key={n.label} style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
             <motion.div

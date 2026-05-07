@@ -22,7 +22,7 @@ function StatusRow({ icon: Icon, label, value, color }: {
     <div style={{
       display: "flex", alignItems: "center", gap: 14,
       padding: "14px 16px", borderRadius: 12,
-      background: "rgba(255,255,255,0.02)",
+      background: "rgba(26,26,27,0.04)",
       border: `1px solid ${color}15`,
     }}>
       <div style={{
@@ -75,7 +75,7 @@ export default function SystemStatusPanel({ open, onClose }: SystemStatusPanelPr
             onClick={onClose}
             style={{
               position: "fixed", inset: 0, zIndex: 900,
-              background: "rgba(0,0,0,0.6)",
+              background: "rgba(26,26,27,0.26)",
               backdropFilter: "blur(4px)",
             }}
           />
@@ -88,7 +88,7 @@ export default function SystemStatusPanel({ open, onClose }: SystemStatusPanelPr
               position: "fixed", top: 0, right: 0, bottom: 0,
               width: 380, maxWidth: "90vw", zIndex: 901,
               background: "linear-gradient(180deg, #1a1714 0%, #0f0d0a 100%)",
-              borderLeft: "1px solid rgba(255,255,255,0.06)",
+              borderLeft: "1px solid rgba(26,26,27,0.08)",
               display: "flex", flexDirection: "column",
               overflow: "hidden",
             }}
@@ -96,7 +96,7 @@ export default function SystemStatusPanel({ open, onClose }: SystemStatusPanelPr
             <div style={{
               display: "flex", alignItems: "center", justifyContent: "space-between",
               padding: "16px 20px",
-              borderBottom: "1px solid rgba(255,255,255,0.06)",
+              borderBottom: "1px solid rgba(26,26,27,0.08)",
               flexShrink: 0,
             }}>
               <div>
@@ -108,8 +108,8 @@ export default function SystemStatusPanel({ open, onClose }: SystemStatusPanelPr
                 onClick={onClose}
                 style={{
                   width: 44, height: 44, borderRadius: 12,
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "rgba(26,26,27,0.06)",
+                  border: "1px solid rgba(26,26,27,0.10)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "rgba(232,224,200,0.5)", cursor: "pointer",
                 }}
@@ -139,8 +139,8 @@ export default function SystemStatusPanel({ open, onClose }: SystemStatusPanelPr
               {lastAudit && (
                 <div style={{
                   marginTop: 6, padding: "14px 16px", borderRadius: 12,
-                  background: "rgba(255,255,255,0.02)",
-                  border: "1px solid rgba(255,255,255,0.06)",
+                  background: "rgba(26,26,27,0.04)",
+                  border: "1px solid rgba(26,26,27,0.08)",
                 }}>
                   <div style={{
                     display: "flex", alignItems: "center", gap: 6, marginBottom: 10,
@@ -162,7 +162,7 @@ export default function SystemStatusPanel({ open, onClose }: SystemStatusPanelPr
 
             <div style={{
               padding: "12px 20px",
-              borderTop: "1px solid rgba(255,255,255,0.06)",
+              borderTop: "1px solid rgba(26,26,27,0.08)",
               fontSize: 10, color: "rgba(232,224,200,0.2)",
               textTransform: "uppercase", letterSpacing: "0.12em",
               textAlign: "center", flexShrink: 0,

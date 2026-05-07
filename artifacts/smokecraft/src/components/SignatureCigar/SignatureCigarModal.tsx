@@ -75,8 +75,8 @@ const WRAPPER_TYPES = [
 
 // ── Small helpers ──────────────────────────────────────────────────────────────
 
-const GOLD     = "rgba(212,175,55,1)";
-const GOLD_DIM = "rgba(212,175,55,0.5)";
+const GOLD     = "rgba(212,139,0,1)";
+const GOLD_DIM = "rgba(212,139,0,0.5)";
 
 function StepIndicator({ step, total }: { step: number; total: number }) {
   return (
@@ -246,7 +246,7 @@ export function SignatureCigarModal({
           {/* Backdrop */}
           <motion.div
             className="fixed inset-0 z-[80]"
-            style={{ background: "rgba(0,0,0,0.82)", backdropFilter: "blur(8px)" }}
+            style={{ background: "rgba(26,26,27,0.42)", backdropFilter: "blur(8px)" }}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={handleClose}
           />
@@ -256,8 +256,8 @@ export function SignatureCigarModal({
             className="fixed inset-x-4 top-4 bottom-4 z-[90] max-w-2xl mx-auto flex flex-col rounded-2xl overflow-hidden"
             style={{
               background: "linear-gradient(160deg, hsl(24 18% 9%), hsl(22 18% 5%))",
-              border: "1px solid rgba(212,175,55,0.22)",
-              boxShadow: "0 30px 80px rgba(0,0,0,0.95), 0 0 80px rgba(212,175,55,0.07)",
+              border: "1px solid rgba(212,139,0,0.22)",
+              boxShadow: "0 30px 80px rgba(26,26,27,0.55), 0 0 80px rgba(212,139,0,0.07)",
             }}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -266,13 +266,13 @@ export function SignatureCigarModal({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top gold line */}
-            <div className="h-px flex-shrink-0" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.6), transparent)" }} />
+            <div className="h-px flex-shrink-0" style={{ background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.6), transparent)" }} />
 
             {/* Header */}
             <div className="flex items-center justify-between px-6 pt-5 pb-4 flex-shrink-0">
               <div>
                 <div className="flex items-center gap-2 mb-0.5">
-                  <Crown size={12} style={{ color: GOLD }} fill="rgba(212,175,55,0.25)" />
+                  <Crown size={12} style={{ color: GOLD }} fill="rgba(212,139,0,0.25)" />
                   <span className="text-[8px] uppercase tracking-[0.3em]" style={{ color: GOLD_DIM }}>Maestro del Fuego</span>
                 </div>
                 <h2 className="font-serif text-xl" style={{ fontWeight: 300, color: "rgba(230,210,175,0.95)" }}>
@@ -281,7 +281,7 @@ export function SignatureCigarModal({
               </div>
               <button onClick={handleClose}
                 className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.5)" }}>
+                style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}>
                 <X size={14} />
               </button>
             </div>
@@ -289,7 +289,7 @@ export function SignatureCigarModal({
             {/* Not Maestro gate */}
             {!isMaestro && (
               <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8 gap-4">
-                <Lock size={32} style={{ color: "rgba(212,175,55,0.25)" }} />
+                <Lock size={32} style={{ color: "rgba(212,139,0,0.25)" }} />
                 <div className="text-center max-w-xs">
                   <p className="font-serif text-lg mb-2" style={{ color: "rgba(220,200,165,0.85)", fontWeight: 300 }}>
                     Maestro del Fuego Required
@@ -299,7 +299,7 @@ export function SignatureCigarModal({
                   </p>
                   <div className="mt-4 flex items-center justify-center gap-4">
                     <Stat label="Required XP"     value="700+"  />
-                    <div className="w-px h-8" style={{ background: "rgba(212,175,55,0.1)" }} />
+                    <div className="w-px h-8" style={{ background: "rgba(212,139,0,0.1)" }} />
                     <Stat label="Verified Orders"  value="60+"   />
                   </div>
                 </div>
@@ -325,7 +325,7 @@ export function SignatureCigarModal({
                 </div>
                 <button onClick={handleClose}
                   className="px-6 py-2.5 rounded-lg text-xs uppercase tracking-[0.2em]"
-                  style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.25)", color: GOLD_DIM }}>
+                  style={{ background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.25)", color: GOLD_DIM }}>
                   Close
                 </button>
               </div>
@@ -353,7 +353,7 @@ export function SignatureCigarModal({
 
                         {/* Live preview */}
                         <div className="flex flex-col items-center py-5 rounded-xl"
-                          style={{ background: "rgba(0,0,0,0.35)" }}>
+                          style={{ background: "rgba(26,26,27,0.08)" }}>
                           <CigarBandPreview design={currentDesignWithBrand} blendName={brandName || "YOUR BRAND"} style="bold" size="md" />
                           <p className="mt-3 text-[8px] uppercase tracking-[0.25em]" style={{ color: "rgba(180,155,100,0.35)" }}>Live Preview</p>
                         </div>
@@ -363,7 +363,7 @@ export function SignatureCigarModal({
                           <SectionLabel>Brand Name</SectionLabel>
                           <input
                             className="w-full bg-transparent outline-none font-serif text-xl py-2 border-b transition-colors"
-                            style={{ borderColor: nameError ? "rgba(239,68,68,0.4)" : "rgba(212,175,55,0.25)", color: "rgba(230,210,175,0.9)", caretColor: GOLD }}
+                            style={{ borderColor: nameError ? "rgba(239,68,68,0.4)" : "rgba(212,139,0,0.25)", color: "rgba(230,210,175,0.9)", caretColor: GOLD }}
                             placeholder="Name your cigar brand…"
                             maxLength={28}
                             value={brandName}
@@ -381,8 +381,8 @@ export function SignatureCigarModal({
                               <button key={t.id} onClick={() => selectTemplate(t)}
                                 className="p-3 rounded-xl text-left transition-all duration-200"
                                 style={template === t.id
-                                  ? { background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.38)" }
-                                  : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }
+                                  ? { background: "rgba(212,139,0,0.1)", border: "1px solid rgba(212,139,0,0.38)" }
+                                  : { background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)" }
                                 }>
                                 <p className="text-xs font-serif" style={{ color: template === t.id ? "rgba(230,210,175,0.9)" : "rgba(200,180,140,0.65)" }}>
                                   {t.label}
@@ -402,7 +402,7 @@ export function SignatureCigarModal({
                                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-all"
                                 style={design.primaryColor === c.id
                                   ? { background: c.primary, border: `1px solid ${c.accent}`, color: c.text }
-                                  : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.65)" }
+                                  : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.65)" }
                                 }>
                                 <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: c.accent }} />
                                 {c.label}
@@ -419,8 +419,8 @@ export function SignatureCigarModal({
                               <button key={em.id} onClick={() => setDesign((d) => ({ ...d, emblem: em.id }))}
                                 className="px-3 py-2 rounded-lg text-xs transition-all"
                                 style={design.emblem === em.id
-                                  ? { background: "rgba(212,175,55,0.14)", border: "1px solid rgba(212,175,55,0.45)", color: "rgba(212,175,55,0.9)" }
-                                  : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.6)" }
+                                  ? { background: "rgba(212,139,0,0.14)", border: "1px solid rgba(212,139,0,0.45)", color: "rgba(212,139,0,0.9)" }
+                                  : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.6)" }
                                 }>
                                 {em.label}
                               </button>
@@ -436,9 +436,9 @@ export function SignatureCigarModal({
                               <button key={fs} onClick={() => setDesign((d) => ({ ...d, textStyle: fs }))}
                                 className="px-4 py-2 rounded text-sm transition-all flex-1"
                                 style={{
-                                  background: design.textStyle === fs ? "rgba(212,175,55,0.14)" : "rgba(255,255,255,0.04)",
-                                  border: design.textStyle === fs ? "1px solid rgba(212,175,55,0.45)" : "1px solid rgba(255,255,255,0.08)",
-                                  color: design.textStyle === fs ? "rgba(212,175,55,0.9)" : "rgba(180,155,100,0.6)",
+                                  background: design.textStyle === fs ? "rgba(212,139,0,0.14)" : "rgba(26,26,27,0.06)",
+                                  border: design.textStyle === fs ? "1px solid rgba(212,139,0,0.45)" : "1px solid rgba(26,26,27,0.10)",
+                                  color: design.textStyle === fs ? "rgba(212,139,0,0.9)" : "rgba(180,155,100,0.6)",
                                   fontFamily: fs === "sans" ? "Inter" : "Cormorant Garamond, serif",
                                   fontStyle: fs === "italic" ? "italic" : "normal",
                                 }}>
@@ -480,8 +480,8 @@ export function SignatureCigarModal({
                                 <button key={f.id} onClick={() => toggleFlavor(f.id)}
                                   className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs transition-all"
                                   style={active
-                                    ? { background: "rgba(212,175,55,0.14)", border: "1px solid rgba(212,175,55,0.4)", color: "rgba(212,175,55,0.9)" }
-                                    : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.65)" }
+                                    ? { background: "rgba(212,139,0,0.14)", border: "1px solid rgba(212,139,0,0.4)", color: "rgba(212,139,0,0.9)" }
+                                    : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.65)" }
                                   }>
                                   <span>{f.emoji}</span>{f.label}
                                 </button>
@@ -501,8 +501,8 @@ export function SignatureCigarModal({
                               <button key={w.id} onClick={() => setWrapperType(w.id)}
                                 className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all"
                                 style={wrapperType === w.id
-                                  ? { background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.3)" }
-                                  : { background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }
+                                  ? { background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.3)" }
+                                  : { background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.09)" }
                                 }>
                                 <div className="w-5 h-5 rounded-full flex-shrink-0 border border-white/10"
                                   style={{ background: w.color }} />
@@ -522,7 +522,7 @@ export function SignatureCigarModal({
                           <SectionLabel>Preferred Pairing <span style={{ opacity: 0.5 }}>(optional)</span></SectionLabel>
                           <input
                             className="w-full bg-transparent outline-none text-sm py-2 border-b transition-colors"
-                            style={{ borderColor: "rgba(212,175,55,0.2)", color: "rgba(210,190,155,0.8)", caretColor: GOLD }}
+                            style={{ borderColor: "rgba(212,139,0,0.2)", color: "rgba(210,190,155,0.8)", caretColor: GOLD }}
                             placeholder="e.g. Macallan 12, Espresso…"
                             maxLength={80}
                             value={preferredPairing}
@@ -560,18 +560,18 @@ export function SignatureCigarModal({
                               value={boxColor}
                               onChange={(e) => setBoxColor(e.target.value)}
                               className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent"
-                              style={{ outlineOffset: 2, outline: "1px solid rgba(212,175,55,0.3)" }}
+                              style={{ outlineOffset: 2, outline: "1px solid rgba(212,139,0,0.3)" }}
                             />
                             <div className="flex-1 flex flex-wrap gap-1.5">
-                              {["#1a1008","#0a0a14","#14100a","#1c1408","#0c0c0c","#1a0808"].map((c) => (
+                              {["#1a1008","#0a0a14","#EFEBE0","#1c1408","#0c0c0c","#1a0808"].map((c) => (
                                 <button key={c} onClick={() => setBoxColor(c)}
                                   className="w-7 h-7 rounded-lg border-2 transition-all"
-                                  style={{ background: c, borderColor: boxColor === c ? "rgba(212,175,55,0.7)" : "rgba(255,255,255,0.1)" }} />
+                                  style={{ background: c, borderColor: boxColor === c ? "rgba(212,139,0,0.7)" : "rgba(255,255,255,0.1)" }} />
                               ))}
                             </div>
                           </div>
                           <div className="mt-2 flex items-center gap-2">
-                            <div className="w-5 h-5 rounded" style={{ background: boxColor, border: "1px solid rgba(255,255,255,0.15)" }} />
+                            <div className="w-5 h-5 rounded" style={{ background: boxColor, border: "1px solid rgba(26,26,27,0.17)" }} />
                             <p className="text-[9px] font-mono" style={{ color: "rgba(180,155,100,0.5)" }}>{boxColor}</p>
                           </div>
                         </div>
@@ -584,8 +584,8 @@ export function SignatureCigarModal({
                               <button key={lp} onClick={() => setLogoPlacement(lp)}
                                 className="px-3 py-2.5 rounded-lg text-[9px] uppercase tracking-wider transition-all"
                                 style={logoPlacement === lp
-                                  ? { background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.38)", color: "rgba(212,175,55,0.9)" }
-                                  : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.5)" }
+                                  ? { background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.38)", color: "rgba(212,139,0,0.9)" }
+                                  : { background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.5)" }
                                 }>
                                 {lp.replace(/-/g, " ")}
                               </button>
@@ -601,8 +601,8 @@ export function SignatureCigarModal({
                               <button key={fs} onClick={() => setFinishStyle(fs)}
                                 className="px-3 py-2.5 rounded-lg text-xs capitalize transition-all"
                                 style={finishStyle === fs
-                                  ? { background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.38)", color: "rgba(212,175,55,0.9)" }
-                                  : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.5)" }
+                                  ? { background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.38)", color: "rgba(212,139,0,0.9)" }
+                                  : { background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.5)" }
                                 }>
                                 {fs}
                               </button>
@@ -615,7 +615,7 @@ export function SignatureCigarModal({
                           <SectionLabel>Label Text <span style={{ opacity: 0.5 }}>(optional)</span></SectionLabel>
                           <input
                             className="w-full bg-transparent outline-none text-sm py-2 border-b transition-colors"
-                            style={{ borderColor: "rgba(212,175,55,0.2)", color: "rgba(210,190,155,0.8)", caretColor: GOLD }}
+                            style={{ borderColor: "rgba(212,139,0,0.2)", color: "rgba(210,190,155,0.8)", caretColor: GOLD }}
                             placeholder="e.g. Reserve · Aged 5 Years…"
                             maxLength={60}
                             value={labelText}
@@ -628,7 +628,7 @@ export function SignatureCigarModal({
                           <SectionLabel>Limited Edition Name <span style={{ opacity: 0.5 }}>(optional)</span></SectionLabel>
                           <input
                             className="w-full bg-transparent outline-none text-sm py-2 border-b transition-colors"
-                            style={{ borderColor: "rgba(212,175,55,0.2)", color: "rgba(210,190,155,0.8)", caretColor: GOLD }}
+                            style={{ borderColor: "rgba(212,139,0,0.2)", color: "rgba(210,190,155,0.8)", caretColor: GOLD }}
                             placeholder="e.g. Reserve No. 1 · Grand Cru…"
                             maxLength={50}
                             value={limitedEditionName}
@@ -648,7 +648,7 @@ export function SignatureCigarModal({
                         initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
 
                         {/* Band preview */}
-                        <div className="flex flex-col items-center py-6 rounded-xl" style={{ background: "rgba(0,0,0,0.35)" }}>
+                        <div className="flex flex-col items-center py-6 rounded-xl" style={{ background: "rgba(26,26,27,0.08)" }}>
                           <CigarBandPreview design={currentDesignWithBrand} blendName={brandName || "MY BRAND"} style="bold" size="lg" />
                           <p className="mt-3 font-serif text-sm" style={{ color: "rgba(220,200,165,0.7)", fontWeight: 300 }}>
                             {brandName.trim() || "Your Brand"}
@@ -664,7 +664,7 @@ export function SignatureCigarModal({
                             { label: "Flavors",    value: flavorDirs.map((f) => FLAVOR_DIRS.find((d) => d.id === f)?.label).join(", ") },
                           ].map(({ label, value }) => (
                             <div key={label} className="p-3 rounded-xl"
-                              style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                              style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
                               <p className="text-[8px] uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.4)" }}>{label}</p>
                               <p className="text-xs mt-1 font-serif" style={{ color: "rgba(210,190,155,0.8)" }}>{value || "—"}</p>
                             </div>
@@ -672,14 +672,14 @@ export function SignatureCigarModal({
                         </div>
 
                         {preferredPairing && (
-                          <div className="px-4 py-3 rounded-xl" style={{ background: "rgba(212,175,55,0.03)", border: "1px solid rgba(212,175,55,0.1)" }}>
+                          <div className="px-4 py-3 rounded-xl" style={{ background: "rgba(212,139,0,0.03)", border: "1px solid rgba(212,139,0,0.1)" }}>
                             <p className="text-[8px] uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.4)" }}>Preferred Pairing</p>
                             <p className="text-xs mt-1 font-serif italic" style={{ color: "rgba(210,190,155,0.7)" }}>{preferredPairing}</p>
                           </div>
                         )}
 
                         {description && (
-                          <div className="px-4 py-3 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                          <div className="px-4 py-3 rounded-xl" style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
                             <p className="text-[8px] uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.4)" }}>Vision</p>
                             <p className="text-xs mt-1 italic" style={{ color: "rgba(200,180,145,0.6)" }}>{description}</p>
                           </div>
@@ -694,7 +694,7 @@ export function SignatureCigarModal({
                         )}
 
                         {/* Note */}
-                        <div className="rounded-xl px-4 py-3" style={{ background: "rgba(212,175,55,0.03)", border: "1px dashed rgba(212,175,55,0.12)" }}>
+                        <div className="rounded-xl px-4 py-3" style={{ background: "rgba(212,139,0,0.03)", border: "1px dashed rgba(212,139,0,0.12)" }}>
                           <p className="text-[8px]" style={{ color: "rgba(180,155,100,0.38)" }}>
                             Submitting sends your concept for admin review. Our team will contact you about manufacturer assignment and production options.
                           </p>
@@ -706,12 +706,12 @@ export function SignatureCigarModal({
 
                 {/* Footer navigation */}
                 <div className="flex-shrink-0 px-6 py-4 flex items-center gap-3"
-                  style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                  style={{ borderTop: "1px solid rgba(26,26,27,0.08)" }}>
 
                   {step > 1 && (
                     <motion.button onClick={() => setStep((s) => s - 1)}
                       className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs uppercase tracking-[0.15em]"
-                      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(180,155,100,0.55)" }}
+                      style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: "rgba(180,155,100,0.55)" }}
                       whileHover={{ color: GOLD_DIM }} whileTap={{ scale: 0.97 }}>
                       <ChevronLeft size={12} />Back
                     </motion.button>
@@ -732,7 +732,7 @@ export function SignatureCigarModal({
                     <>
                       <motion.button onClick={handleSaveDraft} disabled={submitting}
                         className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs uppercase tracking-[0.15em]"
-                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(180,155,100,0.55)", opacity: submitting ? 0.6 : 1 }}
+                        style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: "rgba(180,155,100,0.55)", opacity: submitting ? 0.6 : 1 }}
                         whileHover={{ color: GOLD_DIM }} whileTap={{ scale: 0.97 }}>
                         <FileEdit size={11} />Save Draft
                       </motion.button>
@@ -740,7 +740,7 @@ export function SignatureCigarModal({
                       <motion.button onClick={handleSubmit} disabled={submitting}
                         className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-xs uppercase tracking-[0.15em] font-medium"
                         style={{
-                          background: submitting ? "rgba(212,175,55,0.1)" : "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
+                          background: submitting ? "rgba(212,139,0,0.1)" : "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
                           color: submitting ? GOLD_DIM : "hsl(22 18% 6%)",
                           opacity: submitting ? 0.7 : 1,
                         }}
@@ -764,7 +764,7 @@ export function SignatureCigarModal({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="text-center">
-      <p className="font-serif text-lg" style={{ color: "rgba(212,175,55,0.7)", fontWeight: 300 }}>{value}</p>
+      <p className="font-serif text-lg" style={{ color: "rgba(212,139,0,0.7)", fontWeight: 300 }}>{value}</p>
       <p className="text-[8px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.38)" }}>{label}</p>
     </div>
   );

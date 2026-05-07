@@ -29,13 +29,13 @@ import {
 // ── design tokens ─────────────────────────────────────────────────────────────
 
 const T = {
-  bg:        "#080604",
-  surface:   "rgba(255,255,255,0.045)",
-  border:    "rgba(255,210,120,0.14)",
-  gold:      "#C9A84C",
-  goldBright:"#D4AF37",
-  text:      "#F5E7C8",
-  textMuted: "#B39B77",
+  bg:        "#F5F2ED",
+  surface:   "rgba(26,26,27,0.06)",
+  border:    "rgba(212,139,0,0.14)",
+  gold:      "#D48B00",
+  goldBright:"#D48B00",
+  text:      "#1A1A1B",
+  textMuted: "#6B5E4E",
   green:     "#34D399",
   amber:     "#F59E0B",
   red:       "#F87171",
@@ -139,13 +139,13 @@ function GlassCard({
   return (
     <div
       style={{
-        background: "linear-gradient(145deg, rgba(255,255,255,0.076) 0%, rgba(255,255,255,0.026) 100%)",
-        border:     `1px solid rgba(255,210,120,0.16)`,
+        background: "linear-gradient(145deg, rgba(26,26,27,0.09) 0%, rgba(26,26,27,0.04) 100%)",
+        border:     `1px solid rgba(212,139,0,0.16)`,
         borderRadius: 14,
         backdropFilter: "blur(20px)",
         boxShadow: glow
-          ? `0 0 28px ${glow}22, 0 8px 32px rgba(0,0,0,0.52), 0 2px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.22)`
-          : `0 8px 32px rgba(0,0,0,0.52), 0 2px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.22)`,
+          ? `0 0 28px ${glow}22, 0 8px 32px rgba(26,26,27,0.20), 0 2px 6px rgba(26,26,27,0.08), inset 0 1px 0 rgba(26,26,27,0.12), inset 0 -1px 0 rgba(26,26,27,0.05)`
+          : `0 8px 32px rgba(26,26,27,0.20), 0 2px 6px rgba(26,26,27,0.08), inset 0 1px 0 rgba(26,26,27,0.12), inset 0 -1px 0 rgba(26,26,27,0.05)`,
         ...style,
       }}
     >
@@ -202,8 +202,8 @@ function KpiTile({ kpi }: { kpi: any }) {
       style={{
         minWidth: 136,
         padding: "12px 16px",
-        background: "linear-gradient(145deg, rgba(201,168,76,0.11) 0%, rgba(201,168,76,0.04) 100%)",
-        border:     `1px solid rgba(255,210,120,0.22)`,
+        background: "linear-gradient(145deg, rgba(212,139,0,0.11) 0%, rgba(212,139,0,0.04) 100%)",
+        border:     `1px solid rgba(212,139,0,0.22)`,
         borderRadius: 12,
         display: "flex",
         flexDirection: "column",
@@ -211,7 +211,7 @@ function KpiTile({ kpi }: { kpi: any }) {
         position: "relative",
         overflow: "hidden",
         flexShrink: 0,
-        boxShadow: "0 4px 16px rgba(0,0,0,0.45), 0 1px 3px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.09)",
+        boxShadow: "0 4px 16px rgba(26,26,27,0.14), 0 1px 3px rgba(26,26,27,0.06), inset 0 1px 0 rgba(26,26,27,0.11)",
       }}
     >
       <motion.div
@@ -296,7 +296,7 @@ function FeedEvent({ event, index }: { event: any; index: number }) {
       transition={{ delay: index * 0.04 }}
       style={{
         padding: "10px 12px",
-        borderBottom: `1px solid rgba(255,255,255,0.04)`,
+        borderBottom: `1px solid rgba(26,26,27,0.06)`,
         display: "flex",
         gap: 10,
         alignItems: "flex-start",
@@ -472,7 +472,7 @@ export default function MasterOperations() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: `radial-gradient(ellipse 140% 70% at 25% 0%, #1C1710 0%, #0E0B08 55%, #060402 100%)`,
+      background: `radial-gradient(ellipse 140% 70% at 25% 0%, #1C1710 0%, #EFEBE0 55%, #060402 100%)`,
       display: "flex",
       flexDirection: "column",
       fontFamily: "'Inter', 'SF Pro Display', sans-serif",
@@ -480,21 +480,21 @@ export default function MasterOperations() {
       position: "relative",
     }}>
       {/* Ambient page glow */}
-      <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
+      <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212,139,0,0.07) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
       <OpsParticles />
       {/* ── TOP KPI STRIP ── */}
       <div style={{
         position: "sticky",
         top: 0,
         zIndex: 50,
-        background: `linear-gradient(180deg, #1E1A14 0%, #12100Ef4 100%)`,
+        background: `linear-gradient(180deg, #E8E4D9 0%, #12100Ef4 100%)`,
         backdropFilter: "blur(24px)",
-        borderBottom: `1px solid rgba(255,210,120,0.12)`,
+        borderBottom: `1px solid rgba(212,139,0,0.12)`,
         padding: "12px 20px",
         display: "flex",
         alignItems: "center",
         gap: 14,
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 0 rgba(255,210,120,0.10), 0 8px 32px rgba(0,0,0,0.55)",
+        boxShadow: "inset 0 1px 0 rgba(26,26,27,0.08), 0 1px 0 rgba(212,139,0,0.10), 0 8px 32px rgba(26,26,27,0.22)",
       }}>
         {/* Brand mark */}
         <div style={{ flexShrink: 0, marginRight: 8 }}>
@@ -510,7 +510,7 @@ export default function MasterOperations() {
         <div style={{ display: "flex", gap: 8, overflowX: "auto", flex: 1, paddingBottom: 2 }}>
           {loading
             ? Array.from({ length: 6 }, (_, i) => (
-                <div key={i} style={{ minWidth: 130, height: 64, background: "rgba(255,255,255,0.04)", borderRadius: 10, flexShrink: 0 }} />
+                <div key={i} style={{ minWidth: 130, height: 64, background: "rgba(26,26,27,0.06)", borderRadius: 10, flexShrink: 0 }} />
               ))
             : kpiList.map((kpi: any, i: number) => <KpiTile key={i} kpi={kpi} />)
           }
@@ -535,8 +535,8 @@ export default function MasterOperations() {
         <div style={{
           width: 240,
           flexShrink: 0,
-          borderRight: `1px solid rgba(255,210,120,0.10)`,
-          background: "linear-gradient(180deg, #1A1612 0%, #0C0A07 100%)",
+          borderRight: `1px solid rgba(212,139,0,0.10)`,
+          background: "linear-gradient(180deg, #2A2A2A 0%, #0C0A07 100%)",
           overflowY: "auto",
           padding: "16px 0",
         }}>
@@ -568,7 +568,7 @@ export default function MasterOperations() {
                         alignItems: "center",
                         gap: 12,
                         padding: "11px 20px",
-                        background: isActive ? `rgba(201,168,76,0.10)` : "transparent",
+                        background: isActive ? `rgba(212,139,0,0.10)` : "transparent",
                         borderLeft: isActive ? `3px solid ${T.gold}` : "3px solid transparent",
                         border: "none",
                         cursor: "pointer",
@@ -663,7 +663,7 @@ export default function MasterOperations() {
                       </div>
                     ))}
                   </div>
-                  <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                  <div style={{ height: 4, background: "rgba(26,26,27,0.08)", borderRadius: 2, overflow: "hidden" }}>
                     <motion.div
                       animate={{ width: `${kpis.deviceHealth?.value ?? 95}%` }}
                       transition={{ duration: 1, ease: "easeOut" }}
@@ -748,7 +748,7 @@ export default function MasterOperations() {
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "space-between",
                   padding: "8px 0",
-                  borderBottom: i < 3 ? `1px solid rgba(255,255,255,0.04)` : "none",
+                  borderBottom: i < 3 ? `1px solid rgba(26,26,27,0.06)` : "none",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -813,8 +813,8 @@ export default function MasterOperations() {
         <div style={{
           width: 280,
           flexShrink: 0,
-          borderLeft: `1px solid rgba(255,210,120,0.14)`,
-          background: "linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.42) 100%)",
+          borderLeft: `1px solid rgba(212,139,0,0.14)`,
+          background: "linear-gradient(180deg, rgba(26,26,27,0.22) 0%, rgba(26,26,27,0.12) 100%)",
           display: "flex",
           flexDirection: "column",
         }}>

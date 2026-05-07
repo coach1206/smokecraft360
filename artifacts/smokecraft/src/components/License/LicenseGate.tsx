@@ -59,7 +59,7 @@ export function LicenseGate() {
             background: "linear-gradient(90deg, rgba(180,80,30,0.95), rgba(140,50,10,0.95))",
             color: "rgba(255,240,220,0.95)",
             borderBottom: "1px solid rgba(255,180,100,0.4)",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+            boxShadow: "0 4px 20px rgba(26,26,27,0.10)",
           }}
           initial={{ y: -60, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -104,12 +104,12 @@ export function LicenseGate() {
               onClick={() => openBillingPortal()}
               className="px-4 py-1.5 rounded text-xs uppercase tracking-[0.15em] font-medium transition-colors"
               style={{
-                background: "rgba(255,255,255,0.15)",
+                background: "rgba(26,26,27,0.17)",
                 border:     "1px solid rgba(255,255,255,0.35)",
                 color:      "rgba(255,250,240,0.98)",
               }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.28)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.15)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(26,26,27,0.17)"; }}
             >
               Fix Billing
             </button>
@@ -146,7 +146,7 @@ export function LicenseGate() {
             {/* Brand */}
             <p
               className="font-serif text-3xl mb-1"
-              style={{ color: "rgba(212,175,55,0.95)", fontWeight: 300, letterSpacing: "0.04em" }}
+              style={{ color: "rgba(212,139,0,0.95)", fontWeight: 300, letterSpacing: "0.04em" }}
             >
               {venue.logoText}
             </p>
@@ -158,12 +158,12 @@ export function LicenseGate() {
             <div
               className="w-20 h-20 mx-auto mb-7 rounded-full flex items-center justify-center"
               style={{
-                background: "rgba(212,175,55,0.08)",
-                border:     "1px solid rgba(212,175,55,0.3)",
-                boxShadow:  "0 0 40px rgba(212,175,55,0.12)",
+                background: "rgba(212,139,0,0.08)",
+                border:     "1px solid rgba(212,139,0,0.3)",
+                boxShadow:  "0 0 40px rgba(212,139,0,0.12)",
               }}
             >
-              <Lock size={32} style={{ color: "rgba(212,175,55,0.85)" }} />
+              <Lock size={32} style={{ color: "rgba(212,139,0,0.85)" }} />
             </div>
 
             {/* Message */}
@@ -185,7 +185,7 @@ export function LicenseGate() {
                 style={{
                   background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
                   color:      "hsl(22 18% 6%)",
-                  boxShadow:  "0 0 30px rgba(212,175,55,0.18)",
+                  boxShadow:  "0 0 30px rgba(212,139,0,0.18)",
                 }}
               >
                 <CreditCard size={15} />
@@ -197,8 +197,8 @@ export function LicenseGate() {
                   onClick={() => upgradePlan(license.plan === "starter" ? "pro" : "premium")}
                   className="flex items-center justify-center gap-2 py-3 px-6 rounded text-xs uppercase tracking-[0.18em] transition-colors"
                   style={{
-                    background: "rgba(212,175,55,0.1)",
-                    border:     "1px solid rgba(212,175,55,0.4)",
+                    background: "rgba(212,139,0,0.1)",
+                    border:     "1px solid rgba(212,139,0,0.4)",
                     color:      "rgba(230,210,175,0.9)",
                   }}
                 >
@@ -211,7 +211,7 @@ export function LicenseGate() {
                 href={`mailto:${SUPPORT_EMAIL}?subject=SmokeCraft%20360%20%E2%80%94%20${encodeURIComponent(venue.logoText)}%20Subscription`}
                 className="flex items-center justify-center gap-2 py-3 px-6 rounded text-xs uppercase tracking-[0.18em] transition-colors"
                 style={{
-                  background: "rgba(255,255,255,0.04)",
+                  background: "rgba(26,26,27,0.06)",
                   border:     "1px solid rgba(255,255,255,0.1)",
                   color:      "rgba(180,155,100,0.7)",
                 }}

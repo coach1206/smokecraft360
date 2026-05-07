@@ -34,7 +34,7 @@ const DEMO_STEPS = [
     subtitle: "The journey begins at the Craft Hub",
     body: "A guest arrives and browses four distinct craft experiences. They choose SmokeCraft — the premium cigar journey.",
     icon: Flame,
-    accent: "#d4af37",
+    accent: "#D48B00",
   },
   {
     id: "swipe",
@@ -70,7 +70,7 @@ const DEMO_STEPS = [
     subtitle: "Add-to-Order Pipeline · Inventory Reservations",
     body: "The top-ranked cigars are revealed cinematically. The guest taps Add — a 15-minute inventory reservation is created instantly. No double-sells possible.",
     icon: ShoppingBag,
-    accent: "#d4af37",
+    accent: "#D48B00",
   },
   {
     id: "analytics",
@@ -89,7 +89,7 @@ const STEP_DURATION_MS = 6000;
 // ── Craft tiles (Step 1) ──────────────────────────────────────────────────────
 
 const CRAFTS = [
-  { id: "smoke", label: "SmokeCraft", emoji: "🔥", accent: "#d4af37" },
+  { id: "smoke", label: "SmokeCraft", emoji: "🔥", accent: "#D48B00" },
   { id: "pour",  label: "PourCraft",  emoji: "🥃", accent: "#8b5cf6" },
   { id: "brew",  label: "BrewCraft",  emoji: "🍺", accent: "#16a34a" },
   { id: "vape",  label: "VapeCraft",  emoji: "💨", accent: "#0891b2" },
@@ -115,7 +115,7 @@ function CraftHubVisual({ active }: { active: boolean }) {
           style={{
             background: selected === craft.id
               ? `linear-gradient(135deg, ${craft.accent}25, ${craft.accent}10)`
-              : "rgba(255,255,255,0.06)",
+              : "rgba(26,26,27,0.08)",
             border: `1px solid ${selected === craft.id ? craft.accent + "60" : "rgba(255,255,255,0.1)"}`,
             borderRadius: 14,
             padding: "20px 16px",
@@ -183,8 +183,8 @@ function SwipeVisual({ active }: { active: boolean }) {
         }}
         transition={{ duration: 0.35 }}
         style={{
-          background: "linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04))",
-          border: "1px solid rgba(255,255,255,0.12)",
+          background: "linear-gradient(145deg, rgba(26,26,27,0.11), rgba(26,26,27,0.06))",
+          border: "1px solid rgba(26,26,27,0.14)",
           borderRadius: 18, padding: "22px 20px",
           width: "100%", maxWidth: 280,
         }}
@@ -194,8 +194,8 @@ function SwipeVisual({ active }: { active: boolean }) {
           {card.tags.map(tag => (
             <span key={tag} style={{
               padding: "3px 10px", borderRadius: 20,
-              background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.25)",
-              fontSize: 11, color: "#d4af37", fontWeight: 600,
+              background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.25)",
+              fontSize: 11, color: "#D48B00", fontWeight: 600,
             }}>{tag}</span>
           ))}
         </div>
@@ -234,7 +234,7 @@ function SwipeVisual({ active }: { active: boolean }) {
 function AtmosphereVisual({ active }: { active: boolean }) {
   const [intensity, setIntensity] = useState(40);
   const metrics = [
-    { label: "Glow Strength",    value: intensity,           color: "#d4af37" },
+    { label: "Glow Strength",    value: intensity,           color: "#D48B00" },
     { label: "Motion Calmness",  value: Math.round(intensity * 0.85), color: "#8b5cf6" },
     { label: "Premium Intent",   value: Math.round(intensity * 0.9),  color: "#0891b2" },
     { label: "Atm. Intensity",   value: intensity,           color: "#ea580c" },
@@ -259,10 +259,10 @@ function AtmosphereVisual({ active }: { active: boolean }) {
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         style={{
           height: 60, borderRadius: 14,
-          background: `radial-gradient(ellipse at 50% 50%, rgba(212,175,55,${intensity / 200}) 0%, transparent 70%)`,
-          border: "1px solid rgba(212,175,55,0.2)",
+          background: `radial-gradient(ellipse at 50% 50%, rgba(212,139,0,${intensity / 200}) 0%, transparent 70%)`,
+          border: "1px solid rgba(212,139,0,0.2)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 12, color: "#d4af37", fontWeight: 600,
+          fontSize: 12, color: "#D48B00", fontWeight: 600,
         }}
       >
         Atmosphere Intensity: {intensity}%
@@ -274,7 +274,7 @@ function AtmosphereVisual({ active }: { active: boolean }) {
             <span style={{ fontSize: 11, color: "rgba(240,232,216,0.55)" }}>{m.label}</span>
             <span style={{ fontSize: 11, color: m.color, fontWeight: 600 }}>{m.value}%</span>
           </div>
-          <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
+          <div style={{ height: 5, background: "rgba(26,26,27,0.08)", borderRadius: 4, overflow: "hidden" }}>
             <motion.div
               animate={{ width: `${m.value}%` }}
               transition={{ duration: 0.3 }}
@@ -310,14 +310,14 @@ function RevenueBrainVisual({ active }: { active: boolean }) {
           transition={{ delay: i * 0.15, duration: 0.4 }}
           style={{
             display: "flex", alignItems: "center", gap: 12,
-            background: i === 0 ? "rgba(212,175,55,0.1)" : "rgba(255,255,255,0.04)",
-            border: `1px solid ${i === 0 ? "rgba(212,175,55,0.3)" : "rgba(255,255,255,0.08)"}`,
+            background: i === 0 ? "rgba(212,139,0,0.1)" : "rgba(26,26,27,0.06)",
+            border: `1px solid ${i === 0 ? "rgba(212,139,0,0.3)" : "rgba(26,26,27,0.10)"}`,
             borderRadius: 10, padding: "12px 14px",
           }}
         >
           <div style={{
             width: 24, height: 24, borderRadius: 6,
-            background: i === 0 ? "#d4af37" : "rgba(255,255,255,0.08)",
+            background: i === 0 ? "#D48B00" : "rgba(26,26,27,0.10)",
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 11, fontWeight: 800,
             color: i === 0 ? "#1A1410" : "rgba(240,232,216,0.4)",
@@ -327,15 +327,15 @@ function RevenueBrainVisual({ active }: { active: boolean }) {
             <div style={{ fontSize: 12, fontWeight: 600, color: "rgba(240,232,216,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {item.title}
             </div>
-            <div style={{ height: 3, background: "rgba(255,255,255,0.08)", borderRadius: 2, marginTop: 5 }}>
+            <div style={{ height: 3, background: "rgba(26,26,27,0.10)", borderRadius: 2, marginTop: 5 }}>
               <motion.div
                 animate={{ width: `${item.score}%` }}
                 transition={{ delay: i * 0.15 + 0.3, duration: 0.6 }}
-                style={{ height: "100%", background: i === 0 ? "#d4af37" : "#8b5cf6", borderRadius: 2 }}
+                style={{ height: "100%", background: i === 0 ? "#D48B00" : "#8b5cf6", borderRadius: 2 }}
               />
             </div>
           </div>
-          <div style={{ fontSize: 12, fontWeight: 700, color: "#d4af37", flexShrink: 0 }}>{item.score}</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#D48B00", flexShrink: 0 }}>{item.score}</div>
           <div style={{ fontSize: 11, color: "rgba(240,232,216,0.4)", flexShrink: 0 }}>{item.price}</div>
         </motion.div>
       ))}
@@ -365,7 +365,7 @@ function RevealVisual({ active }: { active: boolean }) {
           transition={{ delay: i * 0.2 + 0.1 }}
           style={{
             display: "flex", alignItems: "center", gap: 12,
-            background: added.has(item.id) ? "rgba(52,211,153,0.08)" : "rgba(255,255,255,0.05)",
+            background: added.has(item.id) ? "rgba(52,211,153,0.08)" : "rgba(26,26,27,0.07)",
             border: `1px solid ${added.has(item.id) ? "#34d39940" : "rgba(255,255,255,0.1)"}`,
             borderRadius: 12, padding: "14px 16px",
           }}
@@ -373,7 +373,7 @@ function RevealVisual({ active }: { active: boolean }) {
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(240,232,216,0.9)", marginBottom: 3 }}>{item.title}</div>
             <div style={{ fontSize: 11, color: "rgba(240,232,216,0.4)" }}>
-              Match score: <span style={{ color: "#d4af37", fontWeight: 600 }}>{item.score}%</span>
+              Match score: <span style={{ color: "#D48B00", fontWeight: 600 }}>{item.score}%</span>
               <span style={{ margin: "0 8px", opacity: 0.3 }}>·</span>
               {item.price}
             </div>
@@ -382,7 +382,7 @@ function RevealVisual({ active }: { active: boolean }) {
             whileTap={{ scale: 0.95 }}
             onClick={() => setAdded(p => new Set([...p, item.id]))}
             style={{
-              background: added.has(item.id) ? "#34d399" : "#d4af37",
+              background: added.has(item.id) ? "#34d399" : "#D48B00",
               border: "none", borderRadius: 8, padding: "7px 14px",
               color: "#1A1410", fontSize: 11, fontWeight: 800, cursor: "pointer",
               display: "flex", alignItems: "center", gap: 5,
@@ -435,7 +435,7 @@ function AnalyticsVisual({ active }: { active: boolean }) {
   }, [active]);
 
   const stats = [
-    { label: "Swipe Sessions",     value: 347,  color: "#d4af37", icon: Brain  },
+    { label: "Swipe Sessions",     value: 347,  color: "#D48B00", icon: Brain  },
     { label: "Recommendations",    value: 289,  color: "#8b5cf6", icon: TrendingUp },
     { label: "Orders Created",     value: 184,  color: "#16a34a", icon: ShoppingBag },
     { label: "Conversion Rate",    value: 63,   color: "#0891b2", icon: BarChart2, suffix: "%" },
@@ -548,7 +548,7 @@ export default function AxiomDemo() {
   return (
     <div style={{
       position: "fixed", inset: 0,
-      background: "linear-gradient(160deg, #0d0a08 0%, #080604 60%, #0a0806 100%)",
+      background: "linear-gradient(160deg, #0d0a08 0%, #F5F2ED 60%, #F5F2ED 100%)",
       display: "flex", flexDirection: "column", overflow: "hidden",
       fontFamily: "'Inter', system-ui, sans-serif",
     }}>
@@ -568,21 +568,21 @@ export default function AxiomDemo() {
         position: "relative", zIndex: 10,
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "14px 20px", flexShrink: 0,
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        borderBottom: "1px solid rgba(26,26,27,0.08)",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{
             width: 28, height: 28, borderRadius: 7,
-            background: "rgba(212,175,55,0.15)", border: "1px solid rgba(212,175,55,0.3)",
+            background: "rgba(212,139,0,0.15)", border: "1px solid rgba(212,139,0,0.3)",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <Brain size={14} color="#d4af37" />
+            <Brain size={14} color="#D48B00" />
           </div>
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(240,232,216,0.9)", letterSpacing: "0.04em" }}>
               AXIOM OS
             </div>
-            <div style={{ fontSize: 9, color: "rgba(212,175,55,0.6)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+            <div style={{ fontSize: 9, color: "rgba(212,139,0,0.6)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
               Experience Validation · Investor Mode
             </div>
           </div>
@@ -610,7 +610,7 @@ export default function AxiomDemo() {
           onClick={() => navigate("/")}
           style={{
             display: "flex", alignItems: "center", gap: 6,
-            background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+            background: "rgba(26,26,27,0.07)", border: "1px solid rgba(255,255,255,0.1)",
             borderRadius: 8, padding: "6px 12px",
             color: "rgba(240,232,216,0.5)", fontSize: 12, cursor: "pointer",
           }}
@@ -621,7 +621,7 @@ export default function AxiomDemo() {
 
       {/* ── Step progress bar ── */}
       {started && (
-        <div style={{ height: 2, background: "rgba(255,255,255,0.06)", position: "relative", flexShrink: 0 }}>
+        <div style={{ height: 2, background: "rgba(26,26,27,0.08)", position: "relative", flexShrink: 0 }}>
           <motion.div style={{ height: "100%", background: step.accent, width: progressWidth }} />
         </div>
       )}
@@ -641,11 +641,11 @@ export default function AxiomDemo() {
               transition={{ duration: 3, repeat: Infinity }}
               style={{
                 width: 72, height: 72, borderRadius: 20, marginBottom: 24,
-                background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.3)",
+                background: "rgba(212,139,0,0.1)", border: "1px solid rgba(212,139,0,0.3)",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}
             >
-              <Brain size={32} color="#d4af37" />
+              <Brain size={32} color="#D48B00" />
             </motion.div>
 
             <h1 style={{ fontSize: 26, fontWeight: 800, color: "rgba(240,232,216,0.95)", margin: "0 0 10px", letterSpacing: "-0.02em" }}>
@@ -658,7 +658,7 @@ export default function AxiomDemo() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 36, maxWidth: 420 }}>
               {DEMO_STEPS.map((s, i) => (
                 <div key={s.id} style={{
-                  background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)",
+                  background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.09)",
                   borderRadius: 10, padding: "10px 8px", textAlign: "center",
                 }}>
                   <div style={{ fontSize: 11, color: s.accent, fontWeight: 700, letterSpacing: "0.06em", marginBottom: 3 }}>{i + 1}</div>
@@ -673,11 +673,11 @@ export default function AxiomDemo() {
               onClick={handleStart}
               style={{
                 display: "flex", alignItems: "center", gap: 10,
-                background: "linear-gradient(135deg, #d4af37, #b8952a)",
+                background: "linear-gradient(135deg, #D48B00, #b8952a)",
                 border: "none", borderRadius: 14, padding: "14px 32px",
                 color: "#1A1410", fontSize: 15, fontWeight: 800,
                 cursor: "pointer", letterSpacing: "0.04em",
-                boxShadow: "0 8px 32px rgba(212,175,55,0.3)",
+                boxShadow: "0 8px 32px rgba(212,139,0,0.3)",
               }}
             >
               <Play size={16} fill="currentColor" /> Start Demo
@@ -701,7 +701,7 @@ export default function AxiomDemo() {
                 style={{
                   width: "42%", padding: "28px 28px 20px",
                   display: "flex", flexDirection: "column", justifyContent: "center",
-                  borderRight: "1px solid rgba(255,255,255,0.06)",
+                  borderRight: "1px solid rgba(26,26,27,0.08)",
                   flexShrink: 0,
                 }}
               >
@@ -761,7 +761,7 @@ export default function AxiomDemo() {
       {started && (
         <div style={{
           flexShrink: 0, position: "relative", zIndex: 10,
-          borderTop: "1px solid rgba(255,255,255,0.06)",
+          borderTop: "1px solid rgba(26,26,27,0.08)",
           padding: "12px 20px",
           display: "flex", alignItems: "center", gap: 10, justifyContent: "center",
         }}>
@@ -769,7 +769,7 @@ export default function AxiomDemo() {
             onClick={handleReset}
             style={{
               display: "flex", alignItems: "center", gap: 6,
-              background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(26,26,27,0.07)", border: "1px solid rgba(255,255,255,0.1)",
               borderRadius: 8, padding: "7px 14px",
               color: "rgba(240,232,216,0.5)", fontSize: 12, cursor: "pointer",
             }}
@@ -781,7 +781,7 @@ export default function AxiomDemo() {
             onClick={handlePause}
             style={{
               display: "flex", alignItems: "center", gap: 6,
-              background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)",
+              background: "rgba(26,26,27,0.09)", border: "1px solid rgba(26,26,27,0.14)",
               borderRadius: 8, padding: "7px 16px",
               color: "rgba(240,232,216,0.7)", fontSize: 12, fontWeight: 600, cursor: "pointer",
             }}
@@ -794,9 +794,9 @@ export default function AxiomDemo() {
             disabled={isLast}
             style={{
               display: "flex", alignItems: "center", gap: 6,
-              background: isLast ? "rgba(212,175,55,0.1)" : "#d4af37",
+              background: isLast ? "rgba(212,139,0,0.1)" : "#D48B00",
               border: "none", borderRadius: 8, padding: "7px 16px",
-              color: isLast ? "rgba(212,175,55,0.4)" : "#1A1410",
+              color: isLast ? "rgba(212,139,0,0.4)" : "#1A1410",
               fontSize: 12, fontWeight: 700, cursor: isLast ? "not-allowed" : "pointer",
             }}
           >

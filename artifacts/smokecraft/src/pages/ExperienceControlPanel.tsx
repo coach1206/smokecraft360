@@ -48,8 +48,8 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode; craft?: Experie
   { key: "vape",   label: "VapeCraft",  icon: <Wind size={14} />,     craft: "vape"  },
 ];
 
-const GOLD  = "#d4af37";
-const DARK  = "#0a0806";
+const GOLD  = "#D48B00";
+const DARK  = "#F5F2ED";
 
 function rowToSettings(row: ExperienceControlRow | null): PanelSettings {
   if (!row) return { ...DEFAULT_SETTINGS, venueMode: null };
@@ -88,7 +88,7 @@ function Slider({
       <div style={{ position: "relative", height: 36, display: "flex", alignItems: "center" }}>
         <div style={{
           position: "absolute", left: 0, right: 0, height: 4,
-          background: "rgba(255,255,255,0.06)",
+          background: "rgba(26,26,27,0.08)",
           borderRadius: 2,
         }} />
         <div style={{
@@ -148,10 +148,10 @@ function PerfModeSelector({
               borderRadius: 10,
               border: value === m.key
                 ? `1px solid ${GOLD}60`
-                : "1px solid rgba(255,255,255,0.07)",
+                : "1px solid rgba(26,26,27,0.09)",
               background: value === m.key
                 ? `${GOLD}12`
-                : "rgba(255,255,255,0.03)",
+                : "rgba(26,26,27,0.05)",
               color: value === m.key ? GOLD : "rgba(232,224,200,0.5)",
               cursor: "pointer",
               textAlign: "center",
@@ -198,10 +198,10 @@ function VenueModeSelector({
               borderRadius: 9,
               border: value === m.key
                 ? `1px solid ${GOLD}60`
-                : "1px solid rgba(255,255,255,0.07)",
+                : "1px solid rgba(26,26,27,0.09)",
               background: value === m.key
                 ? `${GOLD}12`
-                : "rgba(255,255,255,0.03)",
+                : "rgba(26,26,27,0.05)",
               color: value === m.key ? GOLD : "rgba(232,224,200,0.5)",
               cursor: "pointer",
               textAlign: "center",
@@ -240,22 +240,22 @@ function LivePreview({ settings }: { settings: PanelSettings }) {
   const volPct       = settings.soundVolume;
 
   const perfColor: Record<PerformanceMode, string> = {
-    cinematic:  "#d4af37",
+    cinematic:  "#D48B00",
     balanced:   "#5b9cf6",
     "low-power": "#6ee7b7",
   };
 
   return (
     <div style={{
-      background:    "rgba(255,255,255,0.025)",
-      border:        "1px solid rgba(255,255,255,0.07)",
+      background:    "rgba(26,26,27,0.04)",
+      border:        "1px solid rgba(26,26,27,0.09)",
       borderRadius:  16,
       padding:       "22px 20px",
       display:       "flex",
       flexDirection: "column",
       gap:           20,
     }}>
-      <div style={{ fontSize: 11, fontWeight: 800, color: "rgba(212,175,55,0.55)", letterSpacing: "0.14em" }}>
+      <div style={{ fontSize: 11, fontWeight: 800, color: "rgba(212,139,0,0.55)", letterSpacing: "0.14em" }}>
         LIVE PREVIEW
       </div>
 
@@ -363,7 +363,7 @@ function LivePreview({ settings }: { settings: PanelSettings }) {
         </div>
         <div style={{
           height: 6, borderRadius: 3,
-          background: "rgba(255,255,255,0.06)",
+          background: "rgba(26,26,27,0.08)",
           overflow: "hidden",
         }}>
           <div style={{
@@ -487,7 +487,7 @@ export default function ExperienceControlPanel() {
       <div style={{
         display: "flex", alignItems: "center", gap: 14,
         padding: "16px 24px",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        borderBottom: "1px solid rgba(26,26,27,0.08)",
         background: "rgba(10,8,6,0.92)", backdropFilter: "blur(10px)",
         position: "sticky", top: 0, zIndex: 20,
         flexShrink: 0,
@@ -496,7 +496,7 @@ export default function ExperienceControlPanel() {
           onClick={() => navigate("/dashboard")}
           style={{
             display: "flex", alignItems: "center", gap: 6,
-            background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+            background: "rgba(26,26,27,0.07)", border: "1px solid rgba(255,255,255,0.1)",
             borderRadius: 10, padding: "7px 13px",
             color: "rgba(232,224,200,0.55)", fontSize: 13, cursor: "pointer",
           }}
@@ -539,7 +539,7 @@ export default function ExperienceControlPanel() {
       {/* ── Tabs ── */}
       <div style={{
         display: "flex", gap: 4, padding: "16px 24px 0",
-        borderBottom: "1px solid rgba(255,255,255,0.05)",
+        borderBottom: "1px solid rgba(26,26,27,0.07)",
         overflowX: "auto",
       }}>
         {TABS.map(tab => (
@@ -572,7 +572,7 @@ export default function ExperienceControlPanel() {
             transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
             style={{
               width: 36, height: 36, borderRadius: "50%",
-              border: "2px solid rgba(212,175,55,0.15)",
+              border: "2px solid rgba(212,139,0,0.15)",
               borderTop: `2px solid ${GOLD}`,
             }}
           />
@@ -597,15 +597,15 @@ export default function ExperienceControlPanel() {
           >
             {/* ── Sliders column ── */}
             <div style={{
-              background: "rgba(255,255,255,0.025)",
-              border: "1px solid rgba(255,255,255,0.07)",
+              background: "rgba(26,26,27,0.04)",
+              border: "1px solid rgba(26,26,27,0.09)",
               borderRadius: 16,
               padding: "24px 22px",
             }}>
               {activeTab !== "global" && (
                 <div style={{
                   fontSize: 11, fontWeight: 800, letterSpacing: "0.14em",
-                  color: "rgba(212,175,55,0.5)", marginBottom: 20,
+                  color: "rgba(212,139,0,0.5)", marginBottom: 20,
                 }}>
                   {activeTab.toUpperCase()}CRAFT OVERRIDE — inherits global when unset
                 </div>

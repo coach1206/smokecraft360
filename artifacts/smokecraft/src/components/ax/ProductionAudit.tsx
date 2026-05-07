@@ -12,12 +12,12 @@ import { useAxiomStore } from "@/store/axiomStore";
 // ── Tokens matching HandoffContainer dark-chrome palette ──────────────────────
 
 const T = {
-  graphite:  "#1a1612",
-  border:    "rgba(255,255,255,0.10)",
-  gold:      "#C9A84C",
-  goldDim:   "rgba(201,168,76,0.18)",
-  text:      "#F0E8D4",
-  muted:     "rgba(240,232,212,0.45)",
+  graphite:  "#2A2A2A",
+  border:    "rgba(26,26,27,0.12)",
+  gold:      "#D48B00",
+  goldDim:   "rgba(212,139,0,0.18)",
+  text:      "#1A1A1B",
+  muted:     "rgba(26,26,27,0.44)",
   green:     "#4ade80",
   amber:     "#f59e0b",
 };
@@ -105,14 +105,14 @@ export const ProductionAudit = () => {
             style={{
               display: "flex", justifyContent: "space-between", alignItems: "flex-start",
               padding: "9px 0",
-              borderBottom: i < checks.length - 1 ? `1px solid rgba(255,255,255,0.05)` : "none",
+              borderBottom: i < checks.length - 1 ? `1px solid rgba(26,26,27,0.07)` : "none",
               gap: 12,
             }}
           >
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 10, color: T.muted, letterSpacing: "0.04em" }}>{c.name}</div>
               {c.detail && (
-                <div style={{ fontSize: 8, color: "rgba(240,232,212,0.22)", marginTop: 2, letterSpacing: "0.03em" }}>
+                <div style={{ fontSize: 8, color: "rgba(26,26,27,0.22)", marginTop: 2, letterSpacing: "0.03em" }}>
                   {c.detail}
                 </div>
               )}
@@ -130,7 +130,7 @@ export const ProductionAudit = () => {
 
       {/* Score bar */}
       <div style={{ marginTop: 14 }}>
-        <div style={{ height: 3, borderRadius: 99, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+        <div style={{ height: 3, borderRadius: 99, background: "rgba(26,26,27,0.08)", overflow: "hidden" }}>
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${score}%` }}
@@ -143,7 +143,7 @@ export const ProductionAudit = () => {
             }}
           />
         </div>
-        <div style={{ fontSize: 8, color: "rgba(240,232,212,0.18)", marginTop: 5, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+        <div style={{ fontSize: 8, color: "rgba(26,26,27,0.18)", marginTop: 5, letterSpacing: "0.12em", textTransform: "uppercase" }}>
           {passCount}/{checks.length} checks nominal
         </div>
       </div>

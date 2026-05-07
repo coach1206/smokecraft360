@@ -25,8 +25,8 @@ import {
 } from "@/services/api";
 import { LEVEL_TIERS, levelProgress, nextTier } from "@/lib/levels";
 
-const GOLD     = "rgba(212,175,55,1)";
-const GOLD_DIM = "rgba(212,175,55,0.55)";
+const GOLD     = "rgba(212,139,0,1)";
+const GOLD_DIM = "rgba(212,139,0,0.55)";
 const MUTED    = "rgba(180,155,100,0.4)";
 
 // ── Achievement definitions ────────────────────────────────────────────────────
@@ -157,7 +157,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 function StatCard({ label, value, icon, color }: { label: string; value: number; icon: React.ReactNode; color: string }) {
   return (
     <motion.div className="rounded-xl p-4"
-      style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}
+      style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.09)" }}
       initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}
     >
       <div className="flex items-center gap-2 mb-1.5" style={{ color }}>
@@ -176,15 +176,15 @@ function BadgeCard({ badge, unlocked }: { badge: Achievement; unlocked: boolean 
     <motion.div
       className="flex items-center gap-3 p-3 rounded-xl transition-all duration-300"
       style={{
-        background: unlocked ? "rgba(212,175,55,0.05)" : "rgba(255,255,255,0.02)",
-        border:     unlocked ? "1px solid rgba(212,175,55,0.2)" : "1px solid rgba(255,255,255,0.05)",
+        background: unlocked ? "rgba(212,139,0,0.05)" : "rgba(26,26,27,0.04)",
+        border:     unlocked ? "1px solid rgba(212,139,0,0.2)" : "1px solid rgba(26,26,27,0.07)",
         opacity:    unlocked ? 1 : 0.45,
       }}
       initial={{ opacity: 0, y: 4 }} animate={{ opacity: unlocked ? 1 : 0.45, y: 0 }}>
       <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
         style={{
-          background: unlocked ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.04)",
-          border:     unlocked ? "1px solid rgba(212,175,55,0.3)"  : "1px solid rgba(255,255,255,0.08)",
+          background: unlocked ? "rgba(212,139,0,0.12)" : "rgba(26,26,27,0.06)",
+          border:     unlocked ? "1px solid rgba(212,139,0,0.3)"  : "1px solid rgba(26,26,27,0.10)",
           color:      unlocked ? GOLD_DIM : "rgba(180,155,100,0.25)",
         }}>
         {unlocked ? badge.icon : <Lock size={12} />}
@@ -198,7 +198,7 @@ function BadgeCard({ badge, unlocked }: { badge: Achievement; unlocked: boolean 
         </p>
       </div>
       {unlocked && (
-        <CheckCircle2 size={13} className="flex-shrink-0" style={{ color: "rgba(212,175,55,0.6)" }} />
+        <CheckCircle2 size={13} className="flex-shrink-0" style={{ color: "rgba(212,139,0,0.6)" }} />
       )}
     </motion.div>
   );
@@ -217,13 +217,13 @@ function XpBar({ current, next, pct }: { current: number; next: number | null; p
           </span>
         )}
       </div>
-      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
+      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(26,26,27,0.09)" }}>
         <motion.div
           className="h-full rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
           transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-          style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.9), rgba(212,175,55,1))" }}
+          style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.9), rgba(212,139,0,1))" }}
         />
       </div>
       <div className="flex justify-between">
@@ -264,14 +264,14 @@ function RewardCard({
     <motion.div
       className="rounded-xl p-4 flex items-center gap-4"
       style={{
-        background: canRedeem ? "rgba(212,175,55,0.04)" : "rgba(255,255,255,0.02)",
-        border: canRedeem ? "1px solid rgba(212,175,55,0.2)" : "1px solid rgba(255,255,255,0.06)",
+        background: canRedeem ? "rgba(212,139,0,0.04)" : "rgba(26,26,27,0.04)",
+        border: canRedeem ? "1px solid rgba(212,139,0,0.2)" : "1px solid rgba(26,26,27,0.08)",
         opacity: levelMet ? 1 : 0.5,
       }}
       initial={{ opacity: 0, y: 6 }} animate={{ opacity: levelMet ? 1 : 0.5, y: 0 }}>
 
       <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-        style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)" }}>
+        style={{ background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.2)" }}>
         <Gift size={14} style={{ color: GOLD_DIM }} />
       </div>
 
@@ -284,7 +284,7 @@ function RewardCard({
         )}
         <div className="flex items-center gap-2 mt-1 flex-wrap">
           <span className="text-[7px] uppercase tracking-wider px-1.5 py-0.5 rounded-full"
-            style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.18)", color: GOLD_DIM }}>
+            style={{ background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.18)", color: GOLD_DIM }}>
             {TYPE_LABELS[reward.type] ?? reward.type}
           </span>
           {reward.levelRequired > 0 && (
@@ -305,7 +305,7 @@ function RewardCard({
 
         {!levelMet ? (
           <span className="flex items-center gap-1 text-[7px] px-2 py-1 rounded-lg"
-            style={{ background: "rgba(255,255,255,0.03)", color: MUTED, border: "1px solid rgba(255,255,255,0.07)" }}>
+            style={{ background: "rgba(26,26,27,0.05)", color: MUTED, border: "1px solid rgba(26,26,27,0.09)" }}>
             <Lock size={9} /> Locked
           </span>
         ) : (
@@ -314,8 +314,8 @@ function RewardCard({
             disabled={!canAfford || isRedeeming}
             className="px-3 py-1.5 rounded-lg text-[8px] uppercase tracking-[0.12em] transition-colors"
             style={canAfford
-              ? { background: "rgba(212,175,55,0.14)", border: "1px solid rgba(212,175,55,0.3)", color: GOLD_DIM }
-              : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: MUTED, cursor: "not-allowed" }
+              ? { background: "rgba(212,139,0,0.14)", border: "1px solid rgba(212,139,0,0.3)", color: GOLD_DIM }
+              : { background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)", color: MUTED, cursor: "not-allowed" }
             }
             whileHover={canAfford ? { scale: 1.03 } : {}}
             whileTap={canAfford ? { scale: 0.97 } : {}}>
@@ -367,7 +367,7 @@ export function ProgressTab() {
         duration: 5000,
         style: {
           background: "hsl(22 18% 8%)",
-          border:     "1px solid rgba(212,175,55,0.35)",
+          border:     "1px solid rgba(212,139,0,0.35)",
           color:      "rgba(220,200,165,0.95)",
         },
       });
@@ -385,7 +385,7 @@ export function ProgressTab() {
     return (
       <div className="flex justify-center py-20">
         <motion.div className="w-8 h-8 rounded-full border-2"
-          style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.7)" }}
+          style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.7)" }}
           animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
       </div>
     );
@@ -435,7 +435,7 @@ export function ProgressTab() {
         </div>
         <motion.button onClick={load}
           className="p-2 rounded-lg"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: MUTED }}
+          style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: MUTED }}
           whileHover={{ color: GOLD_DIM }} whileTap={{ scale: 0.95 }}>
           <RefreshCw size={12} />
         </motion.button>
@@ -445,9 +445,9 @@ export function ProgressTab() {
       {loyalty && (
         <motion.div className="rounded-2xl p-6"
           style={{
-            background: "linear-gradient(135deg, rgba(120,80,5,0.14), rgba(212,175,55,0.04))",
-            border: "1px solid rgba(212,175,55,0.22)",
-            boxShadow: "0 0 32px rgba(212,175,55,0.04)",
+            background: "linear-gradient(135deg, rgba(120,80,5,0.14), rgba(212,139,0,0.04))",
+            border: "1px solid rgba(212,139,0,0.22)",
+            boxShadow: "0 0 32px rgba(212,139,0,0.04)",
           }}
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
 
@@ -479,7 +479,7 @@ export function ProgressTab() {
               { label: "Balance",       value: loyalty.pointsBalance },
             ].map(({ label, value }) => (
               <div key={label} className="rounded-lg p-3 text-center"
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.08)" }}>
                 <p className="font-serif text-base" style={{ color: GOLD_DIM, fontWeight: 300 }}>{value.toLocaleString()}</p>
                 <p className="text-[7px] uppercase tracking-wider mt-0.5" style={{ color: MUTED }}>{label}</p>
               </div>
@@ -493,12 +493,12 @@ export function ProgressTab() {
                 <span>Progress to <span style={{ color: "rgba(210,190,155,0.65)" }}>{nextReward.name}</span></span>
                 <span>{balance} / {nextReward.pointsCost} pts</span>
               </div>
-              <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
+              <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(26,26,27,0.09)" }}>
                 <motion.div className="h-full rounded-full"
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min(100, (balance / nextReward.pointsCost) * 100)}%` }}
                   transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-                  style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.8), rgba(212,175,55,0.9))" }} />
+                  style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.8), rgba(212,139,0,0.9))" }} />
               </div>
               <p className="text-[7px]" style={{ color: "rgba(180,155,100,0.3)" }}>
                 {ptsToNext} more pts to unlock this reward
@@ -519,17 +519,17 @@ export function ProgressTab() {
         className="rounded-2xl p-6"
         style={{
           background: isElite
-            ? "linear-gradient(135deg, rgba(120,80,5,0.18), rgba(212,175,55,0.06))"
-            : "rgba(255,255,255,0.025)",
+            ? "linear-gradient(135deg, rgba(120,80,5,0.18), rgba(212,139,0,0.06))"
+            : "rgba(26,26,27,0.04)",
           border: `1px solid ${currentTier.borderColor}`,
-          boxShadow: isElite ? "0 0 40px rgba(212,175,55,0.06)" : "none",
+          boxShadow: isElite ? "0 0 40px rgba(212,139,0,0.06)" : "none",
         }}
         initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.08 }}>
 
         <div className="flex items-start justify-between mb-5">
           <div className="flex items-center gap-3">
             {isElite ? (
-              <Crown size={20} style={{ color: currentTier.color, filter: isMaestro ? "drop-shadow(0 0 6px rgba(212,175,55,0.5))" : "none" }} />
+              <Crown size={20} style={{ color: currentTier.color, filter: isMaestro ? "drop-shadow(0 0 6px rgba(212,139,0,0.5))" : "none" }} />
             ) : (
               <Flame size={20} style={{ color: currentTier.color }} />
             )}
@@ -561,7 +561,7 @@ export function ProgressTab() {
           </p>
         )}
         {!next && (
-          <p className="text-[8px] mt-3" style={{ color: "rgba(212,175,55,0.5)" }}>
+          <p className="text-[8px] mt-3" style={{ color: "rgba(212,139,0,0.5)" }}>
             You have reached the highest tier. Signature Cigar Creator unlocked.
           </p>
         )}
@@ -585,7 +585,7 @@ export function ProgressTab() {
 
       {loyalty && available.length === 0 && (
         <div className="rounded-xl p-6 text-center"
-          style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+          style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
           <Gift size={24} className="mx-auto mb-2" style={{ color: "rgba(180,155,100,0.2)" }} />
           <p className="text-xs" style={{ color: MUTED }}>No rewards available yet — keep earning points</p>
         </div>
@@ -595,11 +595,11 @@ export function ProgressTab() {
       {loyalty && loyalty.recentRedemptions.length > 0 && (
         <div>
           <p className="text-[8px] uppercase tracking-[0.22em] mb-3" style={{ color: MUTED }}>Recent Redemptions</p>
-          <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
+          <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(26,26,27,0.09)" }}>
             {loyalty.recentRedemptions.map((r, i) => (
               <div key={r.id} className="flex items-center gap-3 px-4 py-3"
-                style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.04)" : "none",
-                  background: i % 2 === 0 ? "rgba(255,255,255,0.015)" : "transparent" }}>
+                style={{ borderTop: i > 0 ? "1px solid rgba(26,26,27,0.06)" : "none",
+                  background: i % 2 === 0 ? "rgba(26,26,27,0.03)" : "transparent" }}>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-serif" style={{ color: "rgba(210,190,155,0.8)" }}>{r.rewardName}</p>
                   <p className="text-[7px] mt-0.5" style={{ color: MUTED }}>
@@ -629,11 +629,11 @@ export function ProgressTab() {
       <div>
         <p className="text-[8px] uppercase tracking-[0.22em] mb-3" style={{ color: MUTED }}>Lifetime Stats</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <StatCard label="Verified Orders"    value={data.totalVerifiedOrders} icon={<Trophy size={13} />}          color="rgba(212,175,55,0.85)" />
+          <StatCard label="Verified Orders"    value={data.totalVerifiedOrders} icon={<Trophy size={13} />}          color="rgba(212,139,0,0.85)" />
           <StatCard label="Cigars Smoked"      value={data.totalCigarsSmoked}   icon={<Cigarette size={13} />}       color="rgba(200,165,80,0.8)"  />
           <StatCard label="Drinks Tried"       value={data.totalDrinksTried}    icon={<GlassWater size={13} />}      color="rgba(180,155,100,0.8)" />
           <StatCard label="Food Orders"        value={data.totalFoodOrders}     icon={<UtensilsCrossed size={13} />} color="rgba(160,140,110,0.7)" />
-          <StatCard label="Blends Created"     value={data.blendsCreated}       icon={<Palette size={13} />}         color="rgba(212,175,55,0.7)"  />
+          <StatCard label="Blends Created"     value={data.blendsCreated}       icon={<Palette size={13} />}         color="rgba(212,139,0,0.7)"  />
           <StatCard label="Unique Products"    value={data.uniqueProductsTried} icon={<Star size={13} />}            color="rgba(200,165,80,0.75)" />
         </div>
       </div>
@@ -653,8 +653,8 @@ export function ProgressTab() {
                 onClick={() => setCatFilter(cat)}
                 className="px-2.5 py-1 rounded-full text-[7px] uppercase tracking-[0.12em] transition-all duration-150"
                 style={catFilter === cat
-                  ? { background: "rgba(212,175,55,0.14)", border: "1px solid rgba(212,175,55,0.3)", color: GOLD_DIM }
-                  : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: MUTED }
+                  ? { background: "rgba(212,139,0,0.14)", border: "1px solid rgba(212,139,0,0.3)", color: GOLD_DIM }
+                  : { background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)", color: MUTED }
                 }>
                 {cat === "all" ? "All" : CATEGORY_LABELS[cat]}
               </button>
@@ -662,12 +662,12 @@ export function ProgressTab() {
           </div>
         </div>
 
-        <div className="h-0.5 rounded-full mb-4 overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+        <div className="h-0.5 rounded-full mb-4 overflow-hidden" style={{ background: "rgba(26,26,27,0.08)" }}>
           <motion.div className="h-full rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${(earnedCount / ACHIEVEMENTS.length) * 100}%` }}
             transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
-            style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.8), rgba(212,175,55,0.9))" }} />
+            style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.8), rgba(212,139,0,0.9))" }} />
         </div>
 
         <AnimatePresence mode="wait">
@@ -690,7 +690,7 @@ export function ProgressTab() {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {data.humidor.slice(0, 6).map((item, i) => (
               <motion.div key={item.productId} className="rounded-xl p-3"
-                style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}
+                style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.09)" }}
                 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                 <p className="text-xs font-serif leading-tight" style={{ color: "rgba(210,190,155,0.82)" }}>
                   {item.productName ?? "Unknown"}
@@ -706,7 +706,7 @@ export function ProgressTab() {
       )}
 
       {/* ── Earn Guide ───────────────────────────────────────────────────────── */}
-      <div className="rounded-xl p-5" style={{ background: "rgba(212,175,55,0.02)", border: "1px solid rgba(212,175,55,0.1)" }}>
+      <div className="rounded-xl p-5" style={{ background: "rgba(212,139,0,0.02)", border: "1px solid rgba(212,139,0,0.1)" }}>
         <p className="text-[8px] uppercase tracking-[0.2em] mb-4" style={{ color: MUTED }}>How XP & Points are Earned</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-6">
           {[
@@ -727,7 +727,7 @@ export function ProgressTab() {
             </div>
           ))}
         </div>
-        <p className="text-[7px] mt-4 pt-3" style={{ color: "rgba(180,155,100,0.28)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+        <p className="text-[7px] mt-4 pt-3" style={{ color: "rgba(180,155,100,0.28)", borderTop: "1px solid rgba(26,26,27,0.07)" }}>
           XP and points are only awarded on staff-verified orders. Unverified orders do not count.
         </p>
       </div>

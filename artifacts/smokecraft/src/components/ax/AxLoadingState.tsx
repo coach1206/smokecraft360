@@ -20,9 +20,9 @@ function Shimmer({ w = "100%", h = 72 }: { w?: string | number; h?: number }) {
       transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
       style={{
         width: w, height: h,
-        background: "linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 100%)",
+        background: "linear-gradient(90deg, rgba(26,26,27,0.06) 0%, rgba(26,26,27,0.10) 50%, rgba(26,26,27,0.06) 100%)",
         borderRadius: 10,
-        border: "1px solid rgba(201,168,76,0.1)",
+        border: "1px solid rgba(212,139,0,0.1)",
       }}
     />
   );

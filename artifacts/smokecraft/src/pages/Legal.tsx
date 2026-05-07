@@ -11,13 +11,13 @@ import { useLocation }      from "wouter";
 import { ArrowLeft }        from "lucide-react";
 
 const T = {
-  bg:        "#06040a",
-  surface:   "rgba(255,255,255,0.04)",
-  border:    "rgba(201,168,76,0.18)",
-  gold:      "#c9a84c",
-  text:      "rgba(240,232,212,0.92)",
-  textMuted: "rgba(240,232,212,0.55)",
-  textLight: "rgba(240,232,212,0.75)",
+  bg:        "#F5F2ED",
+  surface:   "rgba(26,26,27,0.06)",
+  border:    "rgba(212,139,0,0.18)",
+  gold:      "#D48B00",
+  text:      "rgba(26,26,27,0.90)",
+  textMuted: "rgba(26,26,27,0.52)",
+  textLight: "rgba(26,26,27,0.72)",
 };
 
 const SECTIONS = [

@@ -13,9 +13,9 @@ import PrintExport                from "@/components/training/PrintExport";
 import { TRAINING_ROLES_CONFIG, TRAINING_SCENARIOS, MAXWELL_INTROS } from "@/data/trainingData";
 
 const T = {
-  bg: "#06040a", card: "rgba(255,255,255,0.04)", border: "rgba(201,168,76,0.15)",
-  gold: "#c9a84c", text: "rgba(240,232,212,0.92)", muted: "rgba(240,232,212,0.48)",
-  light: "rgba(240,232,212,0.75)", green: "#34d399", blue: "#60a5fa",
+  bg: "#F5F2ED", card: "rgba(26,26,27,0.06)", border: "rgba(212,139,0,0.15)",
+  gold: "#D48B00", text: "rgba(26,26,27,0.90)", muted: "rgba(240,232,212,0.48)",
+  light: "rgba(26,26,27,0.72)", green: "#34d399", blue: "#60a5fa",
   amber: "#f59e0b", purple: "#a78bfa", red: "#ef4444",
 };
 
@@ -272,7 +272,7 @@ export default function TrainingCertifications() {
                 <button onClick={() => navigate("/training/scenarios")} style={{
                   display: "block", margin: "12px auto 0",
                   background: T.gold, border: "none", borderRadius: 8,
-                  color: "#06040a", padding: "8px 18px", cursor: "pointer",
+                  color: "#F5F2ED", padding: "8px 18px", cursor: "pointer",
                   fontSize: 11, fontWeight: 700,
                 }}>
                   Start a Scenario

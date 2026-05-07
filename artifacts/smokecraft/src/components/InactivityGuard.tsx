@@ -122,7 +122,7 @@ export default function InactivityGuard() {
           exit={{ opacity: 0 }}
           style={{
             position: "fixed", inset: 0, zIndex: 10000,
-            background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)",
+            background: "rgba(26,26,27,0.40)", backdropFilter: "blur(8px)",
             display: "flex", alignItems: "center", justifyContent: "center",
             padding: 24,
             pointerEvents: showWarning ? "auto" : "none",
@@ -132,7 +132,7 @@ export default function InactivityGuard() {
             initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
             style={{
               width: "100%", maxWidth: 380, borderRadius: 20,
-              background: "linear-gradient(145deg, #1e1b17, #141210)",
+              background: "linear-gradient(145deg, #1e1b17, #EFEBE0)",
               border: "1px solid rgba(239,68,68,0.3)",
               padding: "32px 24px", textAlign: "center",
             }}
@@ -166,8 +166,8 @@ export default function InactivityGuard() {
               style={{
                 width: "100%", padding: "16px", borderRadius: 12,
                 fontSize: 15, fontWeight: 700,
-                background: "linear-gradient(135deg, #d4af37, #a98828)",
-                border: "none", color: "#0a0806", cursor: "pointer", minHeight: 52,
+                background: "linear-gradient(135deg, #D48B00, #a98828)",
+                border: "none", color: "#F5F2ED", cursor: "pointer", minHeight: 52,
                 marginBottom: 10,
               }}
             >

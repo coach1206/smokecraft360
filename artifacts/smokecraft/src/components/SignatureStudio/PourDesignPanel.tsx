@@ -26,7 +26,7 @@ export const DEFAULT_POUR_STATE: PourDesignState = {
 };
 
 const MUTED    = "rgba(180,155,100,0.45)";
-const GOLD_DIM = "rgba(212,175,55,0.55)";
+const GOLD_DIM = "rgba(212,139,0,0.55)";
 
 const GLASS_OPTIONS = [
   { id: "highball" as const, label: "Highball" },
@@ -47,7 +47,7 @@ const GARNISH_OPTIONS = [
 
 const COLOR_PALETTE = [
   { primary: "#0F1B35", accent: "#4A8AC4", label: "Navy"      },
-  { primary: "#2A1F08", accent: "#D4AF37", label: "Aged Oak"  },
+  { primary: "#2A1F08", accent: "#D48B00", label: "Aged Oak"  },
   { primary: "#141010", accent: "#8B7355", label: "Charcoal"  },
   { primary: "#0F2018", accent: "#6AB87A", label: "Botanical" },
   { primary: "#3A0F18", accent: "#C4708A", label: "Rose"      },
@@ -144,9 +144,9 @@ export function PourPreview({
     >
       <defs>
         <linearGradient id="glass-fill" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stopColor="rgba(255,255,255,0.06)" />
-          <stop offset="50%"  stopColor="rgba(255,255,255,0.18)" />
-          <stop offset="100%" stopColor="rgba(255,255,255,0.04)" />
+          <stop offset="0%"   stopColor="rgba(26,26,27,0.08)" />
+          <stop offset="50%"  stopColor="rgba(26,26,27,0.20)" />
+          <stop offset="100%" stopColor="rgba(26,26,27,0.06)" />
         </linearGradient>
         <linearGradient id="liquid-fill" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%"   stopColor={state.accentColor}  stopOpacity="0.5" />
@@ -157,7 +157,7 @@ export function PourPreview({
       <path d={paths.liquid} fill="url(#liquid-fill)" opacity={0.72} />
       <path d={paths.body} fill="url(#glass-fill)" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" />
       {paths.stem && (
-        <path d={paths.stem} fill="url(#glass-fill)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <path d={paths.stem} fill="url(#glass-fill)" stroke="rgba(26,26,27,0.17)" strokeWidth="1" />
       )}
 
       {/* Draggable label group */}
@@ -217,14 +217,14 @@ export function PourDesignPanel({ state, onChange, tab }: Props) {
     return (
       <div className="flex flex-col items-center gap-3 py-4">
         <div className="p-8 rounded-2xl flex items-center justify-center"
-          style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.05)", minHeight: 300 }}>
+          style={{ background: "rgba(26,26,27,0.08)", border: "1px solid rgba(26,26,27,0.07)", minHeight: 300 }}>
           <PourPreview
             state={state}
             onDrag={(off) => set("labelOffset", off)}
           />
         </div>
         <p className="text-[8px] uppercase tracking-[0.28em]" style={{ color: MUTED }}>
-          Signature Drink Preview · <span style={{ color: "rgba(212,175,55,0.4)" }}>Drag label to reposition</span>
+          Signature Drink Preview · <span style={{ color: "rgba(212,139,0,0.4)" }}>Drag label to reposition</span>
         </p>
       </div>
     );
@@ -241,7 +241,7 @@ export function PourDesignPanel({ state, onChange, tab }: Props) {
           maxLength={16}
           placeholder="Name your pour…"
           className="w-full bg-transparent outline-none font-serif text-xl py-2 border-b"
-          style={{ borderColor: "rgba(212,175,55,0.25)", color: "rgba(230,210,175,0.9)" }}
+          style={{ borderColor: "rgba(212,139,0,0.25)", color: "rgba(230,210,175,0.9)" }}
         />
       </div>
 
@@ -252,8 +252,8 @@ export function PourDesignPanel({ state, onChange, tab }: Props) {
             <button key={g.id} onClick={() => set("glassType", g.id)}
               className="px-3.5 py-2 rounded-xl text-xs transition-all"
               style={state.glassType === g.id
-                ? { background: "rgba(212,175,55,0.14)", border: "1px solid rgba(212,175,55,0.45)", color: GOLD_DIM }
-                : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: MUTED }
+                ? { background: "rgba(212,139,0,0.14)", border: "1px solid rgba(212,139,0,0.45)", color: GOLD_DIM }
+                : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: MUTED }
               }>
               {g.label}
             </button>
@@ -268,8 +268,8 @@ export function PourDesignPanel({ state, onChange, tab }: Props) {
             <button key={g.id} onClick={() => set("garnish", g.id)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs transition-all"
               style={state.garnish === g.id
-                ? { background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.4)", color: GOLD_DIM }
-                : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: MUTED }
+                ? { background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.4)", color: GOLD_DIM }
+                : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: MUTED }
               }>
               {g.id !== "none" && <span className="w-2.5 h-2.5 rounded-full" style={{ background: g.color }} />}
               {g.label}
@@ -288,8 +288,8 @@ export function PourDesignPanel({ state, onChange, tab }: Props) {
                 onClick={() => onChange({ ...state, primaryColor: p.primary, accentColor: p.accent })}
                 className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs transition-all"
                 style={{
-                  background: active ? `${p.primary}cc` : "rgba(255,255,255,0.03)",
-                  border: active ? `1px solid ${p.accent}` : "1px solid rgba(255,255,255,0.07)",
+                  background: active ? `${p.primary}cc` : "rgba(26,26,27,0.05)",
+                  border: active ? `1px solid ${p.accent}` : "1px solid rgba(26,26,27,0.09)",
                   color: active ? "rgba(230,210,175,0.9)" : MUTED,
                 }}>
                 <span className="w-3.5 h-3.5 rounded-full flex-shrink-0" style={{ background: p.accent }} />
@@ -307,8 +307,8 @@ export function PourDesignPanel({ state, onChange, tab }: Props) {
             <button key={f} onClick={() => set("font", f)}
               className="px-4 py-2 rounded text-sm transition-all"
               style={{
-                background: state.font === f ? "rgba(212,175,55,0.14)" : "rgba(255,255,255,0.04)",
-                border: state.font === f ? "1px solid rgba(212,175,55,0.45)" : "1px solid rgba(255,255,255,0.08)",
+                background: state.font === f ? "rgba(212,139,0,0.14)" : "rgba(26,26,27,0.06)",
+                border: state.font === f ? "1px solid rgba(212,139,0,0.45)" : "1px solid rgba(26,26,27,0.10)",
                 color: state.font === f ? GOLD_DIM : MUTED,
                 fontFamily: f === "sans" ? "Inter, sans-serif" : "'Cormorant Garamond', Georgia, serif",
               }}>
@@ -324,7 +324,7 @@ export function PourDesignPanel({ state, onChange, tab }: Props) {
           <button
             onClick={() => set("labelOffset", { x: 0, y: 0 })}
             className="px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.15em]"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: MUTED }}>
+            style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: MUTED }}>
             Reset Position
           </button>
           <span className="text-[9px]" style={{ color: "rgba(180,155,100,0.3)" }}>

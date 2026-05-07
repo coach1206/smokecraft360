@@ -19,14 +19,14 @@ export function PairingsSection({ pairings }: PairingsSectionProps) {
     >
       {/* Section divider */}
       <div className="flex items-center gap-4 mb-8">
-        <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.2))" }} />
+        <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.2))" }} />
         <h3
           className="font-serif text-2xl tracking-wider"
-          style={{ color: "rgba(212,175,55,0.75)", fontWeight: 300, fontStyle: "italic" }}
+          style={{ color: "rgba(212,139,0,0.75)", fontWeight: 300, fontStyle: "italic" }}
         >
           Recommended Pairings
         </h3>
-        <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, rgba(212,175,55,0.2), transparent)" }} />
+        <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, rgba(212,139,0,0.2), transparent)" }} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

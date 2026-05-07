@@ -29,14 +29,14 @@ async function apiGet(path: string) {
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
 const C = {
-  bg:       "#080604",
-  card:     "rgba(255,255,255,0.045)",
-  border:   "rgba(255,210,120,0.12)",
-  text:     "#F5E7C8",
-  muted:    "#B39B77",
-  dim:      "rgba(179,155,119,0.45)",
-  gold:     "#C9A84C",
-  accent:   "#D4AF37",
+  bg:       "#F5F2ED",
+  card:     "rgba(26,26,27,0.06)",
+  border:   "rgba(212,139,0,0.12)",
+  text:     "#1A1A1B",
+  muted:    "#6B5E4E",
+  dim:      "rgba(107,94,78,0.52)",
+  gold:     "#D48B00",
+  accent:   "#D48B00",
   green:    "#34D399",
   red:      "#F87171",
   orange:   "#FB923C",
@@ -239,7 +239,7 @@ export default function SwipeIntelligence() {
             onClick={() => navigate("/analytics")}
             style={{
               display: "flex", alignItems: "center", gap: 6,
-              background: "none", border: "1px solid rgba(0,0,0,0.1)",
+              background: "none", border: "1px solid rgba(26,26,27,0.03)",
               borderRadius: 8, padding: "6px 12px",
               color: C.muted, fontSize: 13, cursor: "pointer",
             }}
@@ -253,7 +253,7 @@ export default function SwipeIntelligence() {
               background: "#1A1410", display: "flex",
               alignItems: "center", justifyContent: "center",
             }}>
-              <Brain size={16} color="#d4af37" />
+              <Brain size={16} color="#D48B00" />
             </div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Swipe Intelligence</div>
@@ -428,7 +428,7 @@ export default function SwipeIntelligence() {
                                 padding: "3px 10px",
                                 borderRadius: 20,
                                 background: count > 0 ? `${cluster.color}18` : "rgba(0,0,0,0.04)",
-                                border: `1px solid ${count > 0 ? cluster.color + "30" : "rgba(0,0,0,0.08)"}`,
+                                border: `1px solid ${count > 0 ? cluster.color + "30" : "rgba(26,26,27,0.02)"}`,
                                 fontSize: 12,
                                 color: count > 0 ? cluster.color : C.muted,
                                 fontWeight: count > 0 ? 600 : 400,
@@ -726,7 +726,7 @@ export default function SwipeIntelligence() {
                         </div>
                         <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>sessions ({pct}%)</div>
                         <div style={{
-                          height: 3, background: "rgba(0,0,0,0.05)", borderRadius: 2,
+                          height: 3, background: "rgba(26,26,27,0.02)", borderRadius: 2,
                           marginTop: 12, overflow: "hidden",
                         }}>
                           <motion.div

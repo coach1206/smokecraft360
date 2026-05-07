@@ -19,9 +19,9 @@ import {
 } from "@/hooks/useTrainingApi";
 
 const T = {
-  bg: "#06040a", card: "rgba(255,255,255,0.04)", border: "rgba(201,168,76,0.15)",
-  gold: "#c9a84c", text: "rgba(240,232,212,0.92)", muted: "rgba(240,232,212,0.48)",
-  light: "rgba(240,232,212,0.75)", green: "#34d399", amber: "#f59e0b",
+  bg: "#F5F2ED", card: "rgba(26,26,27,0.06)", border: "rgba(212,139,0,0.15)",
+  gold: "#D48B00", text: "rgba(26,26,27,0.90)", muted: "rgba(240,232,212,0.48)",
+  light: "rgba(26,26,27,0.72)", green: "#34d399", amber: "#f59e0b",
   blue: "#60a5fa", red: "#ef4444", purple: "#a78bfa",
 };
 
@@ -184,7 +184,7 @@ export default function TrainingScenarios() {
             <button onClick={exitScenario} style={{ background: "transparent", border: `1px solid ${T.border}`, borderRadius: 9, color: T.muted, padding: "10px 20px", cursor: "pointer", fontSize: 12 }}>
               Back to Scenarios
             </button>
-            <button onClick={() => navigate("/training/certifications")} style={{ background: T.gold, border: "none", borderRadius: 9, color: "#06040a", padding: "10px 22px", cursor: "pointer", fontSize: 12, fontWeight: 700 }}>
+            <button onClick={() => navigate("/training/certifications")} style={{ background: T.gold, border: "none", borderRadius: 9, color: "#F5F2ED", padding: "10px 22px", cursor: "pointer", fontSize: 12, fontWeight: 700 }}>
               View Certifications
             </button>
           </div>
@@ -243,7 +243,7 @@ export default function TrainingScenarios() {
               </div>
 
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <button onClick={nextStep} style={{ background: diffColor, border: "none", borderRadius: 9, color: "#06040a", padding: "11px 26px", cursor: "pointer", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 7 }}>
+                <button onClick={nextStep} style={{ background: diffColor, border: "none", borderRadius: 9, color: "#F5F2ED", padding: "11px 26px", cursor: "pointer", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 7 }}>
                   {stepIdx < scenario.steps.length - 1
                     ? <><CheckCircle size={13} /> Step Complete <ArrowRight size={12} /></>
                     : <><Trophy size={13} /> Finish Scenario</>}

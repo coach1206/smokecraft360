@@ -15,15 +15,15 @@ import { useLocation }                 from "wouter";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 const C = {
-  bg:      "#06040a",
-  glass:   "rgba(255,255,255,0.030)",
+  bg:      "#F5F2ED",
+  glass:   "rgba(26,26,27,0.04)",
   glassMd: "rgba(255,255,255,0.048)",
-  border:  "rgba(255,255,255,0.07)",
-  gold:    "#c9a84c",
-  goldBt:  "#d4af37",
-  text:    "rgba(240,232,212,0.92)",
-  muted:   "rgba(240,232,212,0.50)",
-  dim:     "rgba(240,232,212,0.28)",
+  border:  "rgba(26,26,27,0.09)",
+  gold:    "#D48B00",
+  goldBt:  "#D48B00",
+  text:    "rgba(26,26,27,0.90)",
+  muted:   "rgba(26,26,27,0.48)",
+  dim:     "rgba(26,26,27,0.28)",
   green:   "#4ade80",
   red:     "#f87171",
   blue:    "#60a5fa",
@@ -83,7 +83,7 @@ function AnimCount({ value, suffix = "" }: { value: number | string; suffix?: st
 
 function Bar({ pct, color = C.gold }: { pct: number; color?: string }) {
   return (
-    <div style={{ height: 4, background: "rgba(255,255,255,0.07)", borderRadius: 2, overflow: "hidden", marginTop: 6 }}>
+    <div style={{ height: 4, background: "rgba(26,26,27,0.09)", borderRadius: 2, overflow: "hidden", marginTop: 6 }}>
       <motion.div
         initial={{ width: 0 }}
         animate={{ width: `${Math.min(100, pct)}%` }}
@@ -123,8 +123,8 @@ function CardTitle({ children, color }: { children: React.ReactNode; color?: str
 
 const SEV: Record<string, string> = { high: "#f87171", medium: "#fb923c", low: "#4ade80" };
 const CAT: Record<string, string> = {
-  atmosphere: "#d4af37", flavor: "#c9a84c", loyalty: "#a78bfa", predictive: "#60a5fa",
-  campaign: "#4ade80", vip: "#d4af37", social: "#fb923c", mentor: "#c084fc",
+  atmosphere: "#D48B00", flavor: "#D48B00", loyalty: "#a78bfa", predictive: "#60a5fa",
+  campaign: "#4ade80", vip: "#D48B00", social: "#fb923c", mentor: "#c084fc",
   product: "#94a3b8",
 };
 
@@ -186,7 +186,7 @@ export default function EnterpriseIntelligence() {
   return (
     <div style={{ minHeight: "100dvh", background: C.bg, color: C.text, fontFamily: "'Cormorant Garamond', serif", display: "flex", flexDirection: "column" }}>
       {/* Top gold rule */}
-      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg,transparent,rgba(201,168,76,0.7) 30%,rgba(212,175,55,0.95) 50%,rgba(201,168,76,0.7) 70%,transparent)", zIndex: 20 }} />
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg,transparent,rgba(212,139,0,0.7) 30%,rgba(212,139,0,0.95) 50%,rgba(212,139,0,0.7) 70%,transparent)", zIndex: 20 }} />
 
       {/* ── Header ── */}
       <div style={{ padding: "18px 24px 0", position: "sticky", top: 0, zIndex: 15, background: C.bg, borderBottom: `1px solid ${C.border}` }}>
@@ -520,7 +520,7 @@ function EmotionalTab({ d }: { d: EmotionalData }) {
           <StatRow label="Return within 7 Days" value={d.emotionalContinuity.returnsWithin7Days} />
           <StatRow label="Return within 30 Days" value={d.emotionalContinuity.returnsWithin30Days} />
           <StatRow label="Loyalty Attachment" value={d.emotionalContinuity.loyaltyAttachment} />
-          <div style={{ marginTop: 10, padding: "10px 12px", background: "rgba(201,168,76,0.07)", border: `1px solid ${C.gold}33`, borderRadius: 8, fontSize: 12, color: C.muted }}>
+          <div style={{ marginTop: 10, padding: "10px 12px", background: "rgba(212,139,0,0.07)", border: `1px solid ${C.gold}33`, borderRadius: 8, fontSize: 12, color: C.muted }}>
             {d.emotionalContinuity.atmosphereLoyalty}
           </div>
         </Card>

@@ -97,8 +97,8 @@ export function ConflictsTab() {
               data-testid={`filter-${f}`}
               className="px-2.5 py-1 rounded-full text-[9px] uppercase tracking-[0.15em] transition-all"
               style={filter === f
-                ? { background: "rgba(212,175,55,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,175,55,0.45)" }
-                : { background: "rgba(255,255,255,0.04)", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                ? { background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.45)" }
+                : { background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(26,26,27,0.08)" }}>
               {f === "all" ? "All" : STATUS_LABEL[f]}
             </button>
           ))}
@@ -123,7 +123,7 @@ export function ConflictsTab() {
         </div>
       ) : items.length === 0 ? (
         <div className="text-[11px] px-4 py-8 rounded text-center"
-          style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(212,175,55,0.2)", color: "rgba(180,155,100,0.5)" }}>
+          style={{ background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(212,139,0,0.2)", color: "rgba(180,155,100,0.5)" }}>
           {filter === "open" ? "No open conflicts. All data sources agree." : "No conflicts in this view."}
         </div>
       ) : (
@@ -140,7 +140,7 @@ export function ConflictsTab() {
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.97 }}
                   data-testid={`conflict-row-${r.id}`}
                   className="rounded-lg p-3"
-                  style={{ background: "rgba(0,0,0,0.28)", border: "1px solid rgba(212,175,55,0.12)" }}>
+                  style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(212,139,0,0.12)" }}>
                   <div className="flex items-start gap-3">
                     <AlertTriangle size={14} style={{ color: colors.fg, marginTop: 2, flexShrink: 0 }} />
                     <div className="flex-1 min-w-0">
@@ -185,7 +185,7 @@ export function ConflictsTab() {
                             tone="info" testId={`custom-${r.id}`} />
                           <ResolveBtn label="Dismiss" icon={<X size={11} />} disabled={acting[r.id]}
                             onClick={() => resolve(r, "dismissed")} tone="bad" testId={`dismiss-${r.id}`} />
-                          {acting[r.id] && <Loader2 size={12} className="animate-spin" style={{ color: "rgba(212,175,55,0.7)" }} />}
+                          {acting[r.id] && <Loader2 size={12} className="animate-spin" style={{ color: "rgba(212,139,0,0.7)" }} />}
                         </div>
                       )}
 
@@ -196,15 +196,15 @@ export function ConflictsTab() {
                             data-testid={`custom-input-${r.id}`}
                             className="flex-1 text-[11px]"
                             style={{
-                              background: "rgba(0,0,0,0.4)",
-                              border: "1px solid rgba(212,175,55,0.25)",
+                              background: "rgba(26,26,27,0.10)",
+                              border: "1px solid rgba(212,139,0,0.25)",
                               color: "rgba(230,210,175,0.92)",
                               padding: "6px 10px", borderRadius: 5,
                             }} />
                           <button onClick={() => resolve(r, "use_custom", customValue)} disabled={!customValue.trim() || acting[r.id]}
                             data-testid={`custom-submit-${r.id}`}
                             className="px-3 py-1 rounded-md text-[9px] uppercase tracking-[0.15em]"
-                            style={{ background: "rgba(212,175,55,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,175,55,0.45)", opacity: !customValue.trim() ? 0.5 : 1 }}>
+                            style={{ background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.45)", opacity: !customValue.trim() ? 0.5 : 1 }}>
                             Save
                           </button>
                           <button onClick={() => { setCustomFor(null); setCustomValue(""); }}
@@ -228,11 +228,11 @@ export function ConflictsTab() {
 function SourceCard({ source, value, label }: { source: string; value: string; label: "A" | "B" }) {
   return (
     <div className="rounded-md p-2"
-      style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)" }}>
+      style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
       <div className="flex items-center justify-between text-[9px] uppercase tracking-[0.18em] mb-1"
         style={{ color: "rgba(180,155,100,0.55)" }}>
         <span>Source {label}</span>
-        <span style={{ color: "rgba(212,175,55,0.7)" }}>{source}</span>
+        <span style={{ color: "rgba(212,139,0,0.7)" }}>{source}</span>
       </div>
       <div className="font-mono text-[12px] truncate" style={{ color: "rgba(230,210,175,0.92)" }} title={value}>
         {value}

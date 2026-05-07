@@ -74,7 +74,7 @@ const BASE_CONFIG: CraftFlowConfig = {
     accent: "#E8C870",
     accentSoft: "#C8704A",
     tint: "rgba(80,30,10,0.4)",
-    bodyTextOverlay: "rgba(0,0,0,0.55)",
+    bodyTextOverlay: "rgba(26,26,27,0.22)",
   },
   language: {
     introHeadline: "A guided pour from glass to lounge chair.",

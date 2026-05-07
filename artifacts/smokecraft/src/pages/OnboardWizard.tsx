@@ -21,14 +21,14 @@ import BackgroundLayer                 from "@/components/Layout/BackgroundLayer
 import { getAuthHeaders }             from "@/services/auth";
 
 const C = {
-  bg:     "#0a0806",
-  gold:   "#d4af37",
-  goldDim:"rgba(212,175,55,0.55)",
+  bg:     "#F5F2ED",
+  gold:   "#D48B00",
+  goldDim:"rgba(212,139,0,0.55)",
   text:   "#e8e0c8",
   muted:  "rgba(232,224,200,0.5)",
   dim:    "rgba(232,224,200,0.3)",
-  card:   "rgba(255,255,255,0.03)",
-  border: "rgba(255,255,255,0.08)",
+  card:   "rgba(26,26,27,0.05)",
+  border: "rgba(26,26,27,0.10)",
 };
 
 interface WizardData {
@@ -58,7 +58,7 @@ const INITIAL: WizardData = {
 };
 
 const STEPS = [
-  { id: "venue_info",        label: "Venue Details",      icon: Building2, color: "#d4af37" },
+  { id: "venue_info",        label: "Venue Details",      icon: Building2, color: "#D48B00" },
   { id: "craft_selection",   label: "Craft Selection",    icon: Layers,    color: "#5b8def" },
   { id: "inventory_preview", label: "Inventory Preview",  icon: Package,   color: "#34d399" },
   { id: "ai_preview",        label: "AI Config Preview",  icon: Sparkles,  color: "#a78bfa" },
@@ -96,7 +96,7 @@ const PREVIEW_CATALOG: Record<string, Array<{ name: string; tier: string; price:
 };
 
 const CRAFT_META: Array<{ id: string; label: string; icon: typeof Beer; color: string; desc: string }> = [
-  { id: "cigar",  label: "SmokeCraft",  icon: Package, color: "#d4af37", desc: "Luxury cigar recommendations & pairings" },
+  { id: "cigar",  label: "SmokeCraft",  icon: Package, color: "#D48B00", desc: "Luxury cigar recommendations & pairings" },
   { id: "spirit", label: "PourCraft",   icon: Wine,    color: "#5b8def", desc: "Spirits & whiskey concierge experience" },
   { id: "beer",   label: "BrewCraft",   icon: Beer,    color: "#34d399", desc: "Craft beer discovery & flight builder" },
   { id: "vape",   label: "VapeCraft",   icon: Zap,     color: "#a78bfa", desc: "Premium vape & e-liquid matching" },
@@ -115,7 +115,7 @@ function StepProgress({ current }: { current: number }) {
             <div style={{
               width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
               display: "flex", alignItems: "center", justifyContent: "center",
-              background: done ? `${step.color}20` : active ? `${step.color}15` : "rgba(255,255,255,0.04)",
+              background: done ? `${step.color}20` : active ? `${step.color}15` : "rgba(26,26,27,0.06)",
               border: `2px solid ${done || active ? step.color : "rgba(255,255,255,0.1)"}`,
               transition: "all 0.3s",
             }}>
@@ -127,7 +127,7 @@ function StepProgress({ current }: { current: number }) {
             {i < STEPS.length - 1 && (
               <div style={{
                 flex: 1, height: 2, margin: "0 4px",
-                background: done ? C.gold : "rgba(255,255,255,0.06)",
+                background: done ? C.gold : "rgba(26,26,27,0.08)",
                 transition: "background 0.3s",
               }} />
             )}
@@ -172,7 +172,7 @@ function StepVenueDetails({ data, set }: { data: WizardData; set: (k: keyof Wiza
           placeholder="e.g. The Grand Lounge"
           style={{
             width: "100%", padding: "12px 16px", borderRadius: 12, fontSize: 15,
-            background: "rgba(255,255,255,0.05)", border: `1px solid ${C.border}`,
+            background: "rgba(26,26,27,0.07)", border: `1px solid ${C.border}`,
             color: C.text, outline: "none", boxSizing: "border-box",
           }}
           onFocus={e  => { e.target.style.borderColor = C.gold; }}
@@ -260,7 +260,7 @@ function StepCraftSelection({ data, set }: { data: WizardData; set: (k: keyof Wi
           >
             <div style={{
               width: 40, height: 40, borderRadius: 10, flexShrink: 0,
-              background: selected ? `${craft.color}15` : "rgba(255,255,255,0.04)",
+              background: selected ? `${craft.color}15` : "rgba(26,26,27,0.06)",
               border: `1px solid ${selected ? craft.color : "rgba(255,255,255,0.1)"}`,
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
@@ -274,7 +274,7 @@ function StepCraftSelection({ data, set }: { data: WizardData; set: (k: keyof Wi
             </div>
             <div style={{
               width: 22, height: 22, borderRadius: "50%", flexShrink: 0, alignSelf: "center",
-              border: `2px solid ${selected ? craft.color : "rgba(255,255,255,0.15)"}`,
+              border: `2px solid ${selected ? craft.color : "rgba(26,26,27,0.17)"}`,
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
               {selected && <div style={{ width: 12, height: 12, borderRadius: "50%", background: craft.color }} />}
@@ -298,7 +298,7 @@ function StepInventoryPreview({ data, onQtyChange }: {
 }) {
   const crafts = data.selectedCrafts.length > 0 ? data.selectedCrafts : ["cigar", "spirit"];
   const tierColor = (tier: string) =>
-    tier === "premium" ? "#d4af37" : tier === "mid" ? "#a78bfa" : "#5b8def";
+    tier === "premium" ? "#D48B00" : tier === "mid" ? "#a78bfa" : "#5b8def";
 
   function getQty(name: string) { return data.inventoryQtys[name] ?? 20; }
   function adjustQty(name: string, delta: number) {
@@ -308,7 +308,7 @@ function StepInventoryPreview({ data, onQtyChange }: {
   const qBtn = (label: string, onClick: () => void): React.ReactNode => (
     <button key={label} onClick={onClick} style={{
       width: 24, height: 24, borderRadius: 6, cursor: "pointer", flexShrink: 0,
-      background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+      background: "rgba(26,26,27,0.08)", border: "1px solid rgba(255,255,255,0.1)",
       color: "rgba(232,224,200,0.7)", fontSize: 12, fontWeight: 700,
       display: "flex", alignItems: "center", justifyContent: "center",
     }}>{label}</button>
@@ -487,7 +487,7 @@ function StepAiPreview({ data, set }: { data: WizardData; set: (k: keyof WizardD
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <StratCard label="Tone"         value={preview.tonePreset}                          color="#a78bfa" />
-              <StratCard label="Goal"         value={preview.experienceGoal}                      color="#d4af37" />
+              <StratCard label="Goal"         value={preview.experienceGoal}                      color="#D48B00" />
               <StratCard label="Upsell"       value={`${Math.round(preview.upsellIntensity * 100)}%`} color="#f59e0b" />
               <StratCard label="Loyalty"      value={`${Math.round(preview.loyaltyWeight * 100)}%`}   color="#34d399" />
               <StratCard label="Recs"         value={`${preview.maxRecommendations} items`}       color="#5b8def" />
@@ -755,7 +755,7 @@ export default function OnboardWizard() {
             onClick={() => navigate("/dashboard")}
             style={{
               width: 40, height: 40, borderRadius: 10, flexShrink: 0,
-              background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`,
+              background: "rgba(26,26,27,0.06)", border: `1px solid ${C.border}`,
               color: C.muted, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
             }}
           >
@@ -824,7 +824,7 @@ export default function OnboardWizard() {
               onClick={() => { setStep(s => s - 1); setError(null); }}
               style={{
                 flex: 1, padding: "14px", borderRadius: 14, cursor: "pointer",
-                background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`,
+                background: "rgba(26,26,27,0.06)", border: `1px solid ${C.border}`,
                 color: C.muted, fontSize: 14, fontWeight: 600,
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
               }}

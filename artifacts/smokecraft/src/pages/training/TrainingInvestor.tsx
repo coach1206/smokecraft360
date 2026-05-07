@@ -23,14 +23,14 @@ import { VOICEOVER_SCRIPTS }                        from "@/data/voiceoverScript
 import { logTrainingEvent, useTrainingData, trainingFetch } from "@/hooks/useTrainingApi";
 
 const T = {
-  bg:     "#06040a",
-  card:   "rgba(255,255,255,0.04)",
-  border: "rgba(201,168,76,0.15)",
-  gold:   "#c9a84c",
-  goldB:  "#d4af37",
-  text:   "rgba(240,232,212,0.92)",
+  bg:     "#F5F2ED",
+  card:   "rgba(26,26,27,0.06)",
+  border: "rgba(212,139,0,0.15)",
+  gold:   "#D48B00",
+  goldB:  "#D48B00",
+  text:   "rgba(26,26,27,0.90)",
   muted:  "rgba(240,232,212,0.48)",
-  light:  "rgba(240,232,212,0.75)",
+  light:  "rgba(26,26,27,0.72)",
   green:  "#34d399",
   blue:   "#60a5fa",
   amber:  "#f59e0b",
@@ -369,8 +369,8 @@ export default function TrainingInvestor() {
         </div>
 
         <button onClick={() => setShowScript((s) => !s)} style={{
-          background: showScript ? `${T.gold}18` : "rgba(255,255,255,0.04)",
-          border: `1px solid ${showScript ? T.gold + "50" : "rgba(255,255,255,0.12)"}`,
+          background: showScript ? `${T.gold}18` : "rgba(26,26,27,0.06)",
+          border: `1px solid ${showScript ? T.gold + "50" : "rgba(26,26,27,0.14)"}`,
           borderRadius: 7, color: showScript ? T.gold : T.muted, padding: "6px 10px", cursor: "pointer",
           display: "flex", alignItems: "center", gap: 4, fontSize: 10,
         }}>
@@ -397,9 +397,9 @@ export default function TrainingInvestor() {
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             style={{
               position: "fixed", right: 0, top: 0, bottom: 0, width: 380,
-              background: "#09060f", borderLeft: "1px solid rgba(201,168,76,0.2)",
+              background: "#09060f", borderLeft: "1px solid rgba(212,139,0,0.2)",
               zIndex: 60, overflowY: "auto", padding: "20px 22px",
-              boxShadow: "-8px 0 32px rgba(0,0,0,0.6)",
+              boxShadow: "-8px 0 32px rgba(26,26,27,0.26)",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
@@ -415,14 +415,14 @@ export default function TrainingInvestor() {
                 <X size={14} />
               </button>
             </div>
-            <div style={{ height: 1, background: "rgba(201,168,76,0.15)", marginBottom: 16 }} />
-            <div style={{ fontSize: 11.5, color: "rgba(240,232,212,0.85)", lineHeight: 2, whiteSpace: "pre-wrap" }}>
+            <div style={{ height: 1, background: "rgba(212,139,0,0.15)", marginBottom: 16 }} />
+            <div style={{ fontSize: 11.5, color: "rgba(26,26,27,0.82)", lineHeight: 2, whiteSpace: "pre-wrap" }}>
               {cue.script}
             </div>
-            <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "20px 0 12px" }} />
+            <div style={{ height: 1, background: "rgba(26,26,27,0.08)", margin: "20px 0 12px" }} />
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <WifiOff size={9} color="rgba(201,168,76,0.5)" />
-              <span style={{ fontSize: 9, color: "rgba(201,168,76,0.5)" }}>Works offline — script stored locally</span>
+              <WifiOff size={9} color="rgba(212,139,0,0.5)" />
+              <span style={{ fontSize: 9, color: "rgba(212,139,0,0.5)" }}>Works offline — script stored locally</span>
             </div>
           </motion.div>
         )}
@@ -435,7 +435,7 @@ export default function TrainingInvestor() {
           {/* Progress bar */}
           <div style={{ display: "flex", gap: 4, marginBottom: 28 }}>
             {SLIDES.map((s, i) => (
-              <div key={s.id} style={{ flex: 1, height: 2, background: i <= slide ? s.color : "rgba(255,255,255,0.08)", borderRadius: 1, transition: "background 0.4s" }} />
+              <div key={s.id} style={{ flex: 1, height: 2, background: i <= slide ? s.color : "rgba(26,26,27,0.10)", borderRadius: 1, transition: "background 0.4s" }} />
             ))}
           </div>
 
@@ -508,8 +508,8 @@ export default function TrainingInvestor() {
                 transition={{ duration: 0.3 }}
                 style={{
                   padding: "8px 10px", borderRadius: 7,
-                  background: "rgba(255,255,255,0.03)",
-                  border: `1px solid rgba(255,255,255,0.07)`,
+                  background: "rgba(26,26,27,0.05)",
+                  border: `1px solid rgba(26,26,27,0.09)`,
                 }}
               >
                 <div style={{ fontSize: 9, color: ev.priority === "high" ? T.gold : ev.priority === "warn" ? T.amber : T.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 2 }}>

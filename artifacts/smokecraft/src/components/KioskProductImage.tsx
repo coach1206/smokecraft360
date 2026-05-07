@@ -4,7 +4,7 @@ import type { Product } from "@/contexts/PosContext";
 const CATEGORY_ICONS: Record<Product["category"], { path: string; color: string }> = {
   cigar: {
     path: "M6 12h12M8 8l8 8M16 8l-8 8",
-    color: "#d4af37",
+    color: "#D48B00",
   },
   spirit: {
     path: "M9 3h6l1 7H8L9 3zM7 10v8a2 2 0 002 2h6a2 2 0 002-2v-8",
@@ -80,7 +80,7 @@ export default function KioskProductImage({
         height,
         borderRadius,
         overflow: "hidden",
-        background: "#0a0806",
+        background: "#F5F2ED",
         flexShrink: 0,
         ...style,
       }}

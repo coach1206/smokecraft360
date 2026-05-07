@@ -68,7 +68,7 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
           <>
             <motion.div
               className="fixed inset-0 z-[60]"
-              style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
+              style={{ background: "rgba(26,26,27,0.32)", backdropFilter: "blur(4px)" }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={onClose}
             />
@@ -77,13 +77,13 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
               className="fixed top-0 right-0 bottom-0 z-[70] flex flex-col w-full max-w-md"
               style={{
                 background: "linear-gradient(160deg, hsl(24 16% 8%), hsl(22 18% 5%))",
-                borderLeft: "1px solid rgba(212,175,55,0.15)",
-                boxShadow: "-20px 0 60px rgba(0,0,0,0.7)",
+                borderLeft: "1px solid rgba(212,139,0,0.15)",
+                boxShadow: "-20px 0 60px rgba(26,26,27,0.32)",
               }}
               initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 280, damping: 30 }}
             >
-              <div className="h-px w-full flex-shrink-0" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.35), transparent)" }} />
+              <div className="h-px w-full flex-shrink-0" style={{ background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.35), transparent)" }} />
 
               {/* Header */}
               <div className="flex items-center justify-between px-7 py-5 flex-shrink-0">
@@ -94,7 +94,7 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
                   </p>
                 </div>
                 <button onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.5)" }}>
+                  style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}>
                   <X size={15} />
                 </button>
               </div>
@@ -102,12 +102,12 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
               {/* Profile strip */}
               <div className="mx-6 mb-4 p-4 rounded-xl flex-shrink-0"
                 style={{
-                  background: isElite ? "linear-gradient(135deg, rgba(180,130,30,0.18), rgba(212,175,55,0.08))" : "rgba(255,255,255,0.03)",
-                  border: isElite ? "1px solid rgba(212,175,55,0.3)" : "1px solid rgba(255,255,255,0.07)",
+                  background: isElite ? "linear-gradient(135deg, rgba(180,130,30,0.18), rgba(212,139,0,0.08))" : "rgba(26,26,27,0.05)",
+                  border: isElite ? "1px solid rgba(212,139,0,0.3)" : "1px solid rgba(26,26,27,0.09)",
                 }}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    {isElite && <Crown size={14} style={{ color: "rgba(212,175,55,0.85)" }} fill="rgba(212,175,55,0.2)" />}
+                    {isElite && <Crown size={14} style={{ color: "rgba(212,139,0,0.85)" }} fill="rgba(212,139,0,0.2)" />}
                     <input ref={nameRef}
                       className="font-serif text-base bg-transparent outline-none border-b border-transparent focus:border-current transition-colors"
                       style={{ color: "rgba(230,210,175,0.85)", width: "140px" }}
@@ -119,15 +119,15 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
                   </div>
                   <span className="text-xs font-serif italic px-3 py-1 rounded-full"
                     style={isElite
-                      ? { background: "rgba(212,175,55,0.12)", color: "rgba(212,175,55,0.85)", border: "1px solid rgba(212,175,55,0.25)" }
-                      : { background: "rgba(255,255,255,0.05)", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(255,255,255,0.08)" }
+                      ? { background: "rgba(212,139,0,0.12)", color: "rgba(212,139,0,0.85)", border: "1px solid rgba(212,139,0,0.25)" }
+                      : { background: "rgba(26,26,27,0.07)", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(26,26,27,0.10)" }
                     }>
                     {isElite ? "Elite Member" : "Connoisseur"}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Flame size={11} style={{ color: "rgba(212,175,55,0.6)", flexShrink: 0 }} />
-                  <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
+                  <Flame size={11} style={{ color: "rgba(212,139,0,0.6)", flexShrink: 0 }} />
+                  <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: "rgba(26,26,27,0.09)" }}>
                     <motion.div className="h-full rounded-full"
                       style={{ background: "linear-gradient(90deg, hsl(36 70% 40%), hsl(43 85% 52%), hsl(48 90% 62%))" }}
                       initial={{ width: 0 }} animate={{ width: `${progressPct}%` }}
@@ -141,12 +141,12 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
               </div>
 
               {/* Tabs */}
-              <div className="flex mx-6 mb-4 flex-shrink-0 rounded-full p-0.5" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+              <div className="flex mx-6 mb-4 flex-shrink-0 rounded-full p-0.5" style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.09)" }}>
                 {(["experiences", "blends", "builds"] as VaultTab[]).map((t) => (
                   <button key={t} onClick={() => handleTabChange(t)}
                     className="flex-1 py-2.5 text-[10px] uppercase tracking-[0.15em] rounded-full transition-all duration-300 flex items-center justify-center gap-1.5"
                     style={tab === t
-                      ? { background: "linear-gradient(135deg, rgba(180,130,30,0.28), rgba(212,175,55,0.15))", color: "rgba(212,175,55,0.9)", border: "1px solid rgba(212,175,55,0.3)" }
+                      ? { background: "linear-gradient(135deg, rgba(180,130,30,0.28), rgba(212,139,0,0.15))", color: "rgba(212,139,0,0.9)", border: "1px solid rgba(212,139,0,0.3)" }
                       : { color: "rgba(180,155,100,0.45)" }
                     }>
                     {t === "experiences" ? <Flame size={10} /> : t === "blends" ? <BookMarked size={10} /> : <Layers size={10} />}
@@ -180,7 +180,7 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
                         animate={{ rotate: 360 }}
                         transition={{ repeat: Infinity, duration: 1.8, ease: "linear" }}
                         className="w-8 h-8 rounded-full"
-                        style={{ border: "2px solid rgba(212,175,55,0.15)", borderTopColor: "rgba(212,175,55,0.7)" }}
+                        style={{ border: "2px solid rgba(212,139,0,0.15)", borderTopColor: "rgba(212,139,0,0.7)" }}
                       />
                       <p className="text-[10px] uppercase tracking-[0.22em]" style={{ color: "rgba(180,155,100,0.4)" }}>Loading builds…</p>
                     </div>
@@ -224,7 +224,7 @@ function EmptyState({ label, sub }: { label: string; sub: string }) {
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center justify-center py-16 gap-4">
       <div className="w-14 h-14 rounded-full flex items-center justify-center"
-        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+        style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)" }}>
         <Flame size={22} style={{ color: "rgba(180,155,100,0.3)" }} />
       </div>
       <p className="font-serif text-lg italic" style={{ color: "rgba(180,155,100,0.35)" }}>{label}</p>
@@ -251,31 +251,31 @@ function ExperienceCard({ experience, index, onRemove }: { experience: SavedExpe
       {top && (
         <div className="mb-3">
           <div className="flex items-center gap-2 mb-1">
-            <Flame size={10} style={{ color: "rgba(212,175,55,0.5)" }} />
+            <Flame size={10} style={{ color: "rgba(212,139,0,0.5)" }} />
             <span className="text-[9px] uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.45)" }}>{top.category}</span>
           </div>
           <h4 className="font-serif text-base leading-tight" style={{ color: "rgba(230,210,175,0.85)" }}>{top.name}</h4>
           <div className="flex flex-wrap gap-1 mt-1.5">
             {top.flavorNotes.slice(0, 3).map((n) => (
               <span key={n} className="text-[9px] px-2 py-0.5 rounded-full"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(200,180,140,0.7)" }}>{n}</span>
+                style={{ background: "rgba(26,26,27,0.07)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(200,180,140,0.7)" }}>{n}</span>
             ))}
           </div>
         </div>
       )}
       {topPairing && (
-        <div className="pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div className="pt-3" style={{ borderTop: "1px solid rgba(26,26,27,0.08)" }}>
           <p className="text-[9px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(180,155,100,0.35)" }}>Paired with</p>
-          <p className="font-serif text-sm italic" style={{ color: "rgba(212,175,55,0.6)" }}>{topPairing.name}</p>
+          <p className="font-serif text-sm italic" style={{ color: "rgba(212,139,0,0.6)" }}>{topPairing.name}</p>
         </div>
       )}
       <div className="mt-3 flex flex-wrap gap-1.5">
         <span className="text-[8px] uppercase tracking-[0.15em] px-2 py-0.5 rounded-full"
-          style={{ background: "rgba(212,175,55,0.07)", border: "1px solid rgba(212,175,55,0.15)", color: "rgba(212,175,55,0.5)" }}>
+          style={{ background: "rgba(212,139,0,0.07)", border: "1px solid rgba(212,139,0,0.15)", color: "rgba(212,139,0,0.5)" }}>
           {experience.preferences.mood}
         </span>
         <span className="text-[8px] uppercase tracking-[0.15em] px-2 py-0.5 rounded-full"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.4)" }}>
+          style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.4)" }}>
           str {experience.preferences.strength}/5
         </span>
       </div>
@@ -301,7 +301,7 @@ function BlendCard({ blend, index, onRemove }: { blend: SavedBlend; index: numbe
         <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.4)" }}>{date}</p>
         {hasFullExperience && (
           <span className="text-[8px] uppercase tracking-[0.15em] px-2 py-0.5 rounded-full"
-            style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)", color: "rgba(212,175,55,0.6)" }}>
+            style={{ background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.2)", color: "rgba(212,139,0,0.6)" }}>
             Full Experience
           </span>
         )}
@@ -315,7 +315,7 @@ function BlendCard({ blend, index, onRemove }: { blend: SavedBlend; index: numbe
         <p className="text-xs italic text-center mb-4 font-serif" style={{ color: "rgba(210,190,155,0.6)" }}>"{blend.description}"</p>
       )}
 
-      <div className="pt-3 space-y-2.5" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="pt-3 space-y-2.5" style={{ borderTop: "1px solid rgba(26,26,27,0.08)" }}>
         <ExperienceRow label="Cigar"  value={blend.cigarBaseName} />
         <ExperienceRow label="Drink"  value={blend.pairingName}   accent />
         {blend.foodPairingName && (
@@ -362,9 +362,9 @@ function BuildCard({ build, index, onReexport }: { build: SavedBuildCard; index:
       transition={{ delay: index * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="rounded-xl overflow-hidden relative"
       style={{
-        background: `linear-gradient(145deg, #141008, #0a0806)`,
+        background: `linear-gradient(145deg, #EFEBE0, #F5F2ED)`,
         border: `1px solid ${accent}40`,
-        boxShadow: `0 8px 28px rgba(0,0,0,0.5)`,
+        boxShadow: `0 8px 28px rgba(26,26,27,0.18)`,
       }}
     >
       {/* Ambient glow */}
@@ -391,11 +391,11 @@ function BuildCard({ build, index, onReexport }: { build: SavedBuildCard; index:
             <div style={{
               width: 44, height: 44, borderRadius: "50%", position: "relative",
               display: "flex", alignItems: "center", justifyContent: "center",
-              background: `conic-gradient(${accent} ${pct}%, rgba(255,255,255,0.06) 0%)`,
+              background: `conic-gradient(${accent} ${pct}%, rgba(26,26,27,0.08) 0%)`,
             }}>
               <div style={{
                 width: 34, height: 34, borderRadius: "50%",
-                background: "#0a0806",
+                background: "#F5F2ED",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 flexDirection: "column",
               }}>
@@ -460,7 +460,7 @@ function ExperienceRow({ label, value, accent }: { label: string; value: string;
   return (
     <div className="flex items-baseline justify-between gap-2">
       <p className="text-[9px] uppercase tracking-[0.18em] flex-shrink-0" style={{ color: "rgba(180,155,100,0.35)" }}>{label}</p>
-      <p className="font-serif text-xs italic text-right" style={{ color: accent ? "rgba(212,175,55,0.65)" : "rgba(210,190,155,0.65)" }}>
+      <p className="font-serif text-xs italic text-right" style={{ color: accent ? "rgba(212,139,0,0.65)" : "rgba(210,190,155,0.65)" }}>
         {value || "—"}
       </p>
     </div>

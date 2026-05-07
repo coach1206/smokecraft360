@@ -109,7 +109,7 @@ function awardPoints(points: number) {
   }).catch(() => {});
 }
 
-export default function TasteChallenge({ product, cigar, accent = "#D4AF37", testId = "taste-challenge" }: TasteChallengeProps) {
+export default function TasteChallenge({ product, cigar, accent = "#D48B00", testId = "taste-challenge" }: TasteChallengeProps) {
   const questions = useMemo(() => generateQuestions(product, cigar), [product, cigar]);
   const [qIdx, setQIdx] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
@@ -224,7 +224,7 @@ export default function TasteChallenge({ product, cigar, accent = "#D4AF37", tes
             {q.options.map((opt, i) => {
               const isCorrect = i === q.correctIndex;
               const isSelected = i === selected;
-              let bg = "rgba(255,255,255,0.06)";
+              let bg = "rgba(26,26,27,0.08)";
               let border = "1px solid rgba(255,255,255,0.1)";
               let color = "#E5E5E5";
 

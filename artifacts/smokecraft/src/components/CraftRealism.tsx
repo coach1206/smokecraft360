@@ -85,7 +85,7 @@ export function EmberGlow({ accent, intensity = 1 }: RealisticsProps) {
             left:         `${44 + i * 6}%`,
             width:        20,
             height:       60,
-            background:   "linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%)",
+            background:   "linear-gradient(180deg, rgba(26,26,27,0.10) 0%, transparent 100%)",
             borderRadius: "50% 50% 0 0",
             willChange:   "transform, opacity",
           }}
@@ -136,7 +136,7 @@ export function LiquidShimmer({ accent }: RealisticsProps) {
           top: "15%", left: 0,
           width:      "40%",
           height:     "70%",
-          background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.12) 50%, transparent 70%)",
+          background: "linear-gradient(105deg, transparent 30%, rgba(26,26,27,0.14) 50%, transparent 70%)",
           transform:  "skewX(-15deg)",
           willChange: "transform, opacity",
         }}
@@ -199,7 +199,7 @@ export function FoamRise({ accent }: RealisticsProps) {
           left:         "5%",
           width:        "90%",
           height:       18,
-          background:   "rgba(255,255,255,0.15)",
+          background:   "rgba(26,26,27,0.17)",
           borderRadius: "50%",
           filter:       "blur(2px)",
           willChange:   "transform",

@@ -10,7 +10,7 @@ import ConfirmModal from "@/components/ConfirmModal";
 const POS_MODES: PosOperatingMode[] = ["overlay", "hybrid", "full_pos"];
 
 const PRESET_COLORS = [
-  "#D4AF37", "#e85d26", "#ef4444", "#ec4899",
+  "#D48B00", "#e85d26", "#ef4444", "#ec4899",
   "#8b5cf6", "#6366f1", "#3b82f6", "#06b6d4",
   "#14b8a6", "#22c55e", "#84cc16", "#f59e0b",
 ];
@@ -100,21 +100,21 @@ export default function SettingsModule() {
   }
 
   return (
-    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#F5E7C8", overflow: "hidden", background: "#080604" }}>
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#1A1A1B", overflow: "hidden", background: "#F5F2ED" }}>
       <div style={{
         display: "flex", alignItems: "center", gap: 12, padding: "14px 24px",
-        borderBottom: "1px solid rgba(255,210,120,0.10)",
-        background: "linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)",
+        borderBottom: "1px solid rgba(212,139,0,0.10)",
+        background: "linear-gradient(180deg, #12100E 0%, #EFEBE0ee 100%)",
         backdropFilter: "blur(16px)", flexShrink: 0,
-        boxShadow: "0 1px 0 rgba(255,210,120,0.06), 0 4px 20px rgba(0,0,0,0.3)",
+        boxShadow: "0 1px 0 rgba(212,139,0,0.06), 0 4px 20px rgba(26,26,27,0.06)",
       }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "#211D19", border: "1px solid rgba(255,210,120,0.18)", color: "#B39B77", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "#2A2A2A", border: "1px solid rgba(212,139,0,0.18)", color: "#6B5E4E", cursor: "pointer", boxShadow: "0 2px 8px rgba(26,26,27,0.06)" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: "#C9A84C" }}>System & Security</div>
-          <div style={{ fontSize: 13, color: "#B39B77" }}>Status, devices, and audit trail</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: "#D48B00" }}>System & Security</div>
+          <div style={{ fontSize: 13, color: "#6B5E4E" }}>Status, devices, and audit trail</div>
         </div>
         <div style={{
           display: "flex", alignItems: "center", gap: 6,
@@ -140,7 +140,7 @@ export default function SettingsModule() {
               <motion.div key={item.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                 style={{
                   padding: "18px 16px", borderRadius: 14,
-                  background: "rgba(255,255,255,0.03)", border: `1px solid ${item.color}20`,
+                  background: "rgba(26,26,27,0.05)", border: `1px solid ${item.color}20`,
                   display: "flex", alignItems: "center", gap: 12,
                 }}>
                 <div style={{
@@ -161,7 +161,7 @@ export default function SettingsModule() {
 
         <div style={{
           padding: "16px", borderRadius: 14,
-          background: "rgba(255,255,255,0.03)", border: `1px solid ${brandColor}20`,
+          background: "rgba(26,26,27,0.05)", border: `1px solid ${brandColor}20`,
           marginBottom: 16,
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
@@ -179,11 +179,11 @@ export default function SettingsModule() {
                 onChange={(e) => setBrandName(e.target.value)}
                 style={{
                   width: "100%", padding: "12px 14px", borderRadius: 10, fontSize: 14, fontWeight: 600,
-                  background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                  background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
                   color: "#e8e0c8", outline: "none", boxSizing: "border-box",
                 }}
                 onFocus={(e) => { e.target.style.borderColor = `${brandColor}60`; }}
-                onBlur={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; }}
+                onBlur={(e) => { e.target.style.borderColor = "rgba(26,26,27,0.10)"; }}
               />
             </div>
             <div>
@@ -195,11 +195,11 @@ export default function SettingsModule() {
                 onChange={(e) => setBrandTagline(e.target.value)}
                 style={{
                   width: "100%", padding: "12px 14px", borderRadius: 10, fontSize: 14,
-                  background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                  background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
                   color: "#e8e0c8", outline: "none", boxSizing: "border-box",
                 }}
                 onFocus={(e) => { e.target.style.borderColor = `${brandColor}60`; }}
-                onBlur={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; }}
+                onBlur={(e) => { e.target.style.borderColor = "rgba(26,26,27,0.10)"; }}
               />
             </div>
           </div>
@@ -215,16 +215,16 @@ export default function SettingsModule() {
                 placeholder="https://example.com/logo.png"
                 style={{
                   flex: 1, padding: "12px 14px", borderRadius: 10, fontSize: 13,
-                  background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                  background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
                   color: "#e8e0c8", outline: "none",
                 }}
                 onFocus={(e) => { e.target.style.borderColor = `${brandColor}60`; }}
-                onBlur={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; }}
+                onBlur={(e) => { e.target.style.borderColor = "rgba(26,26,27,0.10)"; }}
               />
               {brandLogoUrl && (
                 <div style={{
                   width: 48, height: 48, borderRadius: 10, flexShrink: 0,
-                  background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                  background: "rgba(26,26,27,0.08)", border: "1px solid rgba(255,255,255,0.1)",
                   display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
                 }}>
                   <img
@@ -264,7 +264,7 @@ export default function SettingsModule() {
                 onChange={(e) => setBrandColor(e.target.value)}
                 style={{
                   width: 32, height: 32, borderRadius: 8, cursor: "pointer",
-                  border: "1px solid rgba(255,255,255,0.15)", background: "transparent",
+                  border: "1px solid rgba(26,26,27,0.17)", background: "transparent",
                   padding: 0,
                 }}
                 title="Custom color"
@@ -326,7 +326,7 @@ export default function SettingsModule() {
 
         <div style={{
           padding: "16px", borderRadius: 14,
-          background: "rgba(255,255,255,0.03)", border: `1px solid ${brandColor}20`,
+          background: "rgba(26,26,27,0.05)", border: `1px solid ${brandColor}20`,
           marginBottom: 16,
         }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
@@ -348,8 +348,8 @@ export default function SettingsModule() {
               return (
                 <div key={key} style={{
                   padding: "10px 12px", borderRadius: 10,
-                  background: isCustom ? `${brandColor}08` : "rgba(255,255,255,0.02)",
-                  border: `1px solid ${isCustom ? `${brandColor}30` : "rgba(255,255,255,0.06)"}`,
+                  background: isCustom ? `${brandColor}08` : "rgba(26,26,27,0.04)",
+                  border: `1px solid ${isCustom ? `${brandColor}30` : "rgba(26,26,27,0.08)"}`,
                 }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
                     <span style={{ fontSize: 11, fontWeight: 600, color: isCustom ? brandColor : "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
@@ -368,7 +368,7 @@ export default function SettingsModule() {
                         style={{
                           display: "flex", alignItems: "center", justifyContent: "center",
                           width: 22, height: 22, borderRadius: 6, cursor: "pointer",
-                          background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                          background: "rgba(26,26,27,0.08)", border: "1px solid rgba(255,255,255,0.1)",
                           color: "rgba(232,224,200,0.4)", padding: 0,
                         }}
                       >
@@ -393,11 +393,11 @@ export default function SettingsModule() {
                       placeholder={DEFAULT_BACKGROUNDS[key]}
                       style={{
                         flex: 1, padding: "8px 10px", borderRadius: 8, fontSize: 11,
-                        background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                        background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
                         color: "#e8e0c8", outline: "none", minWidth: 0,
                       }}
                       onFocus={(e) => { e.target.style.borderColor = `${brandColor}60`; }}
-                      onBlur={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; }}
+                      onBlur={(e) => { e.target.style.borderColor = "rgba(26,26,27,0.10)"; }}
                     />
                   </div>
                 </div>
@@ -408,7 +408,7 @@ export default function SettingsModule() {
 
         <div style={{
           padding: "16px", borderRadius: 14,
-          background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.08)",
           marginBottom: 16,
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
@@ -427,15 +427,15 @@ export default function SettingsModule() {
                   style={{
                     display: "flex", alignItems: "flex-start", gap: 14,
                     padding: "16px", borderRadius: 12, cursor: "pointer",
-                    background: selected ? `${info.color}10` : "rgba(255,255,255,0.02)",
-                    border: `2px solid ${selected ? info.color : "rgba(255,255,255,0.06)"}`,
+                    background: selected ? `${info.color}10` : "rgba(26,26,27,0.04)",
+                    border: `2px solid ${selected ? info.color : "rgba(26,26,27,0.08)"}`,
                     textAlign: "left", position: "relative", overflow: "hidden",
                     transition: "border-color 0.2s, background 0.2s",
                   }}
                 >
                   <div style={{
                     width: 22, height: 22, borderRadius: "50%", flexShrink: 0, marginTop: 1,
-                    border: `2px solid ${selected ? info.color : "rgba(255,255,255,0.15)"}`,
+                    border: `2px solid ${selected ? info.color : "rgba(26,26,27,0.17)"}`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     transition: "border-color 0.2s",
                   }}>
@@ -473,26 +473,26 @@ export default function SettingsModule() {
 
         <div style={{
           padding: "16px", borderRadius: 14,
-          background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.08)",
           marginBottom: 16,
         }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14 }}>
             Active Session
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
+            <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.06)" }}>
               <div style={{ fontSize: 11, color: "rgba(232,224,200,0.3)", marginBottom: 4 }}>Current User</div>
               <div style={{ fontSize: 14, fontWeight: 600, color: "#e8e0c8" }}>{pos.currentUser?.name ?? "None"}</div>
             </div>
-            <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
+            <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.06)" }}>
               <div style={{ fontSize: 11, color: "rgba(232,224,200,0.3)", marginBottom: 4 }}>Role</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#d4af37", textTransform: "capitalize" }}>{pos.currentUser?.role ?? "—"}</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#D48B00", textTransform: "capitalize" }}>{pos.currentUser?.role ?? "—"}</div>
             </div>
-            <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
+            <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.06)" }}>
               <div style={{ fontSize: 11, color: "rgba(232,224,200,0.3)", marginBottom: 4 }}>Orders This Session</div>
               <div style={{ fontSize: 14, fontWeight: 600, color: "#e8e0c8" }}>{pos.orders.length}</div>
             </div>
-            <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
+            <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.06)" }}>
               <div style={{ fontSize: 11, color: "rgba(232,224,200,0.3)", marginBottom: 4 }}>Cart Items</div>
               <div style={{ fontSize: 14, fontWeight: 600, color: "#e8e0c8" }}>{pos.cart.reduce((s, c) => s + c.quantity, 0)}</div>
             </div>
@@ -501,7 +501,7 @@ export default function SettingsModule() {
 
         <div style={{
           padding: "16px", borderRadius: 14,
-          background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.08)",
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
             <FileText size={14} color="rgba(232,224,200,0.5)" />
@@ -514,7 +514,7 @@ export default function SettingsModule() {
               <motion.div key={entry.id} initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
                 style={{
                   display: "flex", gap: 12, padding: "10px 0",
-                  borderBottom: i < 9 ? "1px solid rgba(255,255,255,0.03)" : "none",
+                  borderBottom: i < 9 ? "1px solid rgba(26,26,27,0.05)" : "none",
                 }}>
                 <div style={{ fontSize: 11, color: "rgba(232,224,200,0.25)", minWidth: 50, flexShrink: 0 }}>{timeStr}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>

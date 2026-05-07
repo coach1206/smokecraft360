@@ -42,9 +42,9 @@ function ProductCard({ product, onAdd, disabled }: { product: Product; onAdd: ()
   const isDisabled = isOut || disabled;
 
   const catColors: Record<string, string> = {
-    cigar: "#d4af37", spirit: "#5b8def", beer: "#f59e0b", food: "#34d399",
+    cigar: "#D48B00", spirit: "#5b8def", beer: "#f59e0b", food: "#34d399",
   };
-  const accent = catColors[product.category] ?? "#d4af37";
+  const accent = catColors[product.category] ?? "#D48B00";
 
   return (
     <motion.button
@@ -54,8 +54,8 @@ function ProductCard({ product, onAdd, disabled }: { product: Product; onAdd: ()
       disabled={isDisabled}
       style={{
         display: "flex", flexDirection: "column",
-        background: "rgba(255,255,255,0.03)",
-        border: `1px solid ${isDisabled ? "rgba(255,255,255,0.04)" : `${accent}25`}`,
+        background: "rgba(26,26,27,0.05)",
+        border: `1px solid ${isDisabled ? "rgba(26,26,27,0.06)" : `${accent}25`}`,
         borderRadius: 16, overflow: "hidden",
         cursor: isDisabled ? "not-allowed" : "pointer",
         opacity: isDisabled ? 0.4 : 1,
@@ -112,7 +112,7 @@ function ProcessingOverlay() {
       exit={{ opacity: 0 }}
       style={{
         position: "fixed", inset: 0, zIndex: 200,
-        background: "rgba(0,0,0,0.85)",
+        background: "rgba(26,26,27,0.45)",
         backdropFilter: "blur(12px)",
         display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center", gap: 24,
@@ -167,7 +167,7 @@ function SuccessOverlay({ order, reward, onDismiss }: {
       onClick={(e) => { e.stopPropagation(); onDismiss(); }}
       style={{
         position: "fixed", inset: 0, zIndex: 200,
-        background: "rgba(0,0,0,0.85)",
+        background: "rgba(26,26,27,0.45)",
         backdropFilter: "blur(12px)",
         display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center", gap: 20,
@@ -212,12 +212,12 @@ function SuccessOverlay({ order, reward, onDismiss }: {
             style={{
               display: "flex", alignItems: "center", gap: 12,
               padding: "16px 24px", borderRadius: 16,
-              background: "linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05))",
-              border: "1px solid rgba(212,175,55,0.35)",
+              background: "linear-gradient(135deg, rgba(212,139,0,0.15), rgba(212,139,0,0.05))",
+              border: "1px solid rgba(212,139,0,0.35)",
             }}
           >
-            <Gift size={24} color="#d4af37" />
-            <span style={{ fontSize: 15, color: "#d4af37", fontWeight: 600 }}>
+            <Gift size={24} color="#D48B00" />
+            <span style={{ fontSize: 15, color: "#D48B00", fontWeight: 600 }}>
               {reward}
             </span>
           </motion.div>
@@ -246,7 +246,7 @@ function FailedOverlay({ error, onRetry, onDismiss }: {
       exit={{ opacity: 0 }}
       style={{
         position: "fixed", inset: 0, zIndex: 200,
-        background: "rgba(0,0,0,0.85)",
+        background: "rgba(26,26,27,0.45)",
         backdropFilter: "blur(12px)",
         display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center", gap: 20,
@@ -296,7 +296,7 @@ function FailedOverlay({ error, onRetry, onDismiss }: {
           onClick={onDismiss}
           style={{
             padding: "14px 28px", borderRadius: 14,
-            background: "rgba(255,255,255,0.06)",
+            background: "rgba(26,26,27,0.08)",
             border: "1px solid rgba(255,255,255,0.1)",
             color: "rgba(232,224,200,0.6)", fontSize: 15, fontWeight: 600,
             cursor: "pointer",
@@ -308,9 +308,9 @@ function FailedOverlay({ error, onRetry, onDismiss }: {
           onClick={onRetry}
           style={{
             padding: "14px 28px", borderRadius: 14,
-            background: "linear-gradient(135deg, #d4af37, #a98828)",
+            background: "linear-gradient(135deg, #D48B00, #a98828)",
             border: "none",
-            color: "#0a0806", fontSize: 15, fontWeight: 700,
+            color: "#F5F2ED", fontSize: 15, fontWeight: 700,
             cursor: "pointer", display: "flex", alignItems: "center", gap: 8,
           }}
         >
@@ -412,7 +412,7 @@ export default function PosMode() {
     }}>
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)",
+        padding: "12px 20px", borderBottom: "1px solid rgba(26,26,27,0.08)",
         background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)",
         flexShrink: 0,
       }}>
@@ -423,13 +423,13 @@ export default function PosMode() {
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
               width: 44, height: 44, borderRadius: 12,
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(26,26,27,0.06)",
+              border: "1px solid rgba(26,26,27,0.10)",
               color: "rgba(232,224,200,0.5)", cursor: "pointer",
             }}
           ><ArrowLeft size={20} /></motion.button>
           <div>
-            <span style={{ fontSize: 18, fontWeight: 700, color: "#d4af37" }}>POS</span>
+            <span style={{ fontSize: 18, fontWeight: 700, color: "#D48B00" }}>POS</span>
             {pos.currentUser && (
               <span style={{ fontSize: 12, color: "rgba(232,224,200,0.4)", marginLeft: 10 }}>
                 · {pos.currentUser.name} ({pos.currentUser.role})
@@ -450,13 +450,13 @@ export default function PosMode() {
         flex: 1, display: "flex", overflow: "hidden", minHeight: 0,
       }}>
         <div style={{
-          width: 240, flexShrink: 0, borderRight: "1px solid rgba(255,255,255,0.06)",
+          width: 240, flexShrink: 0, borderRight: "1px solid rgba(26,26,27,0.08)",
           display: "flex", flexDirection: "column", overflow: "hidden",
         }}>
           <div style={{
             padding: "14px 16px 10px",
             fontSize: 12, textTransform: "uppercase", letterSpacing: "0.15em",
-            color: "rgba(212,175,55,0.5)", fontWeight: 600,
+            color: "rgba(212,139,0,0.5)", fontWeight: 600,
           }}>Order History</div>
           <div style={{ flex: 1, overflowY: "auto", padding: "0 12px 12px" }}>
             {pos.orders.length === 0 ? (
@@ -474,7 +474,7 @@ export default function PosMode() {
                     animate={{ opacity: 1, x: 0 }}
                     style={{
                       padding: "12px 14px", marginBottom: 8,
-                      background: "rgba(255,255,255,0.03)",
+                      background: "rgba(26,26,27,0.05)",
                       border: `1px solid ${statusColor}25`,
                       borderRadius: 12,
                     }}
@@ -489,7 +489,7 @@ export default function PosMode() {
                     }}>
                       <span>
                         {order.items.length} item{order.items.length !== 1 ? "s" : ""}
-                        {order.rewardApplied && <span style={{ color: "#d4af37", marginLeft: 6 }}>★ Reward</span>}
+                        {order.rewardApplied && <span style={{ color: "#D48B00", marginLeft: 6 }}>★ Reward</span>}
                       </span>
                       <span style={{
                         fontSize: 10, fontWeight: 600, color: statusColor,
@@ -510,9 +510,9 @@ export default function PosMode() {
                         style={{
                           marginTop: 8, width: "100%", padding: "8px 0",
                           borderRadius: 8,
-                          background: "rgba(212,175,55,0.12)",
-                          border: "1px solid rgba(212,175,55,0.25)",
-                          color: "#d4af37", fontSize: 11, fontWeight: 600,
+                          background: "rgba(212,139,0,0.12)",
+                          border: "1px solid rgba(212,139,0,0.25)",
+                          color: "#D48B00", fontSize: 11, fontWeight: 600,
                           cursor: isLocked ? "not-allowed" : "pointer",
                           display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                           opacity: isLocked ? 0.4 : 1,
@@ -566,10 +566,10 @@ export default function PosMode() {
                   padding: "10px 20px", borderRadius: 12,
                   fontSize: 14, fontWeight: 600,
                   background: activeCategory === cat.id
-                    ? "linear-gradient(135deg, #d4af37, #a98828)"
-                    : "rgba(255,255,255,0.04)",
-                  color: activeCategory === cat.id ? "#0a0806" : "rgba(232,224,200,0.5)",
-                  border: `1px solid ${activeCategory === cat.id ? "#d4af37" : "rgba(255,255,255,0.06)"}`,
+                    ? "linear-gradient(135deg, #D48B00, #a98828)"
+                    : "rgba(26,26,27,0.06)",
+                  color: activeCategory === cat.id ? "#F5F2ED" : "rgba(232,224,200,0.5)",
+                  border: `1px solid ${activeCategory === cat.id ? "#D48B00" : "rgba(26,26,27,0.08)"}`,
                   cursor: "pointer", whiteSpace: "nowrap",
                   minHeight: 44,
                 }}
@@ -597,13 +597,13 @@ export default function PosMode() {
 
         <div style={{
           width: 300, flexShrink: 0,
-          borderLeft: "1px solid rgba(255,255,255,0.06)",
+          borderLeft: "1px solid rgba(26,26,27,0.08)",
           display: "flex", flexDirection: "column", overflow: "hidden",
         }}>
           <div style={{
             padding: "14px 16px 10px",
             fontSize: 12, textTransform: "uppercase", letterSpacing: "0.15em",
-            color: "rgba(212,175,55,0.5)", fontWeight: 600,
+            color: "rgba(212,139,0,0.5)", fontWeight: 600,
           }}>Current Order</div>
 
           <div style={{ flex: 1, overflowY: "auto", padding: "0 12px" }}>
@@ -629,8 +629,8 @@ export default function PosMode() {
                     style={{
                       display: "flex", alignItems: "center", gap: 10,
                       padding: "10px 12px", marginBottom: 8,
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.06)",
+                      background: "rgba(26,26,27,0.05)",
+                      border: "1px solid rgba(26,26,27,0.08)",
                       borderRadius: 12,
                       opacity: isLocked ? 0.5 : 1,
                       pointerEvents: isLocked ? "none" : "auto",
@@ -651,23 +651,23 @@ export default function PosMode() {
                         onClick={() => pos.updateQuantity(item.product.id, -1)}
                         style={{
                           width: 36, height: 36, borderRadius: 10,
-                          background: "rgba(255,255,255,0.04)",
-                          border: "1px solid rgba(255,255,255,0.08)",
+                          background: "rgba(26,26,27,0.06)",
+                          border: "1px solid rgba(26,26,27,0.10)",
                           color: "#e8e0c8", cursor: "pointer",
                           display: "flex", alignItems: "center", justifyContent: "center",
                         }}
                       ><Minus size={14} /></motion.button>
                       <span style={{
                         minWidth: 24, textAlign: "center",
-                        fontSize: 15, fontWeight: 700, color: "#d4af37",
+                        fontSize: 15, fontWeight: 700, color: "#D48B00",
                       }}>{item.quantity}</span>
                       <motion.button
                         whileTap={{ scale: 0.85 }}
                         onClick={() => pos.updateQuantity(item.product.id, 1)}
                         style={{
                           width: 36, height: 36, borderRadius: 10,
-                          background: "rgba(255,255,255,0.04)",
-                          border: "1px solid rgba(255,255,255,0.08)",
+                          background: "rgba(26,26,27,0.06)",
+                          border: "1px solid rgba(26,26,27,0.10)",
                           color: "#e8e0c8", cursor: "pointer",
                           display: "flex", alignItems: "center", justifyContent: "center",
                         }}
@@ -703,14 +703,14 @@ export default function PosMode() {
                 style={{
                   margin: "0 12px", padding: "10px 14px",
                   background: rewardEligible
-                    ? "linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.04))"
+                    ? "linear-gradient(135deg, rgba(212,139,0,0.1), rgba(212,139,0,0.04))"
                     : "linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.03))",
-                  border: `1px solid ${rewardEligible ? "rgba(212,175,55,0.25)" : "rgba(239,68,68,0.2)"}`,
+                  border: `1px solid ${rewardEligible ? "rgba(212,139,0,0.25)" : "rgba(239,68,68,0.2)"}`,
                   borderRadius: 12, display: "flex", alignItems: "center", gap: 8,
                 }}
               >
-                <Gift size={16} color={rewardEligible ? "#d4af37" : "#ef4444"} />
-                <span style={{ fontSize: 12, color: rewardEligible ? "#d4af37" : "#ef4444", fontWeight: 600 }}>
+                <Gift size={16} color={rewardEligible ? "#D48B00" : "#ef4444"} />
+                <span style={{ fontSize: 12, color: rewardEligible ? "#D48B00" : "#ef4444", fontWeight: 600 }}>
                   {rewardEligible ? "Reward unlocked! 10% off at checkout" : "Reward on cooldown — no discount this order"}
                 </span>
               </motion.div>
@@ -718,7 +718,7 @@ export default function PosMode() {
           </AnimatePresence>
 
           <div style={{
-            padding: 16, borderTop: "1px solid rgba(255,255,255,0.06)",
+            padding: 16, borderTop: "1px solid rgba(26,26,27,0.08)",
             flexShrink: 0,
           }}>
             <div style={{
@@ -731,7 +731,7 @@ export default function PosMode() {
             {rewardEligible && (
               <div style={{
                 display: "flex", justifyContent: "space-between",
-                marginBottom: 4, fontSize: 13, color: "#d4af37",
+                marginBottom: 4, fontSize: 13, color: "#D48B00",
               }}>
                 <span>Reward Discount (10%)</span>
                 <span>-${(cartTotal * 0.1).toFixed(2)}</span>
@@ -761,8 +761,8 @@ export default function PosMode() {
                 disabled={pos.cart.length === 0 || isLocked}
                 style={{
                   flex: 1, minHeight: 56, borderRadius: 14,
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "rgba(26,26,27,0.06)",
+                  border: "1px solid rgba(26,26,27,0.10)",
                   color: (pos.cart.length === 0 || isLocked) ? "rgba(232,224,200,0.2)" : "rgba(232,224,200,0.5)",
                   fontSize: 14, fontWeight: 600,
                   cursor: (pos.cart.length === 0 || isLocked) ? "not-allowed" : "pointer",
@@ -776,9 +776,9 @@ export default function PosMode() {
                 style={{
                   flex: 2, minHeight: 56, borderRadius: 14,
                   background: (pos.cart.length > 0 && !isLocked)
-                    ? "linear-gradient(135deg, #d4af37, #a98828)"
-                    : "rgba(212,175,55,0.12)",
-                  color: (pos.cart.length > 0 && !isLocked) ? "#0a0806" : "rgba(212,175,55,0.3)",
+                    ? "linear-gradient(135deg, #D48B00, #a98828)"
+                    : "rgba(212,139,0,0.12)",
+                  color: (pos.cart.length > 0 && !isLocked) ? "#F5F2ED" : "rgba(212,139,0,0.3)",
                   fontSize: 16, fontWeight: 700,
                   border: "none",
                   cursor: (pos.cart.length > 0 && !isLocked) ? "pointer" : "not-allowed",

@@ -33,7 +33,7 @@ export function EliteUnlockAnimation({ onComplete }: EliteUnlockAnimationProps) 
           <motion.div
             key={i}
             className="absolute w-1 h-1 rounded-full"
-            style={{ background: `rgba(212,175,55,${0.3 + (i % 4) * 0.15})` }}
+            style={{ background: `rgba(212,139,0,${0.3 + (i % 4) * 0.15})` }}
             initial={{ x: 0, y: 0, opacity: 0, scale: 0 }}
             animate={{ x: tx, y: ty, opacity: [0, 0.9, 0], scale: [0, 1, 0.4] }}
             transition={{
@@ -55,12 +55,12 @@ export function EliteUnlockAnimation({ onComplete }: EliteUnlockAnimationProps) 
         <div
           className="w-20 h-20 rounded-full flex items-center justify-center"
           style={{
-            background: "radial-gradient(circle, rgba(180,130,30,0.3), rgba(212,175,55,0.08))",
-            boxShadow: "0 0 40px rgba(212,175,55,0.35), 0 0 80px rgba(212,175,55,0.12)",
-            border: "1px solid rgba(212,175,55,0.4)",
+            background: "radial-gradient(circle, rgba(180,130,30,0.3), rgba(212,139,0,0.08))",
+            boxShadow: "0 0 40px rgba(212,139,0,0.35), 0 0 80px rgba(212,139,0,0.12)",
+            border: "1px solid rgba(212,139,0,0.4)",
           }}
         >
-          <Crown size={36} style={{ color: "rgba(212,175,55,0.95)" }} fill="rgba(212,175,55,0.25)" />
+          <Crown size={36} style={{ color: "rgba(212,139,0,0.95)" }} fill="rgba(212,139,0,0.25)" />
         </div>
       </motion.div>
 
@@ -84,7 +84,7 @@ export function EliteUnlockAnimation({ onComplete }: EliteUnlockAnimationProps) 
 
       <motion.p
         className="text-sm uppercase tracking-[0.35em]"
-        style={{ color: "rgba(212,175,55,0.5)" }}
+        style={{ color: "rgba(212,139,0,0.5)" }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.3, duration: 0.8 }}
@@ -95,7 +95,7 @@ export function EliteUnlockAnimation({ onComplete }: EliteUnlockAnimationProps) 
       {/* Gold divider */}
       <motion.div
         className="mt-6 h-px w-32 rounded-full"
-        style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)" }}
+        style={{ background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.5), transparent)" }}
         initial={{ scaleX: 0, opacity: 0 }}
         animate={{ scaleX: 1, opacity: 1 }}
         transition={{ delay: 1.5, duration: 0.8, ease: "easeOut" }}
@@ -109,7 +109,7 @@ export function EliteUnlockAnimation({ onComplete }: EliteUnlockAnimationProps) 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.2, duration: 0.6 }}
-        whileHover={{ color: "rgba(212,175,55,0.6)" }}
+        whileHover={{ color: "rgba(212,139,0,0.6)" }}
       >
         Continue
       </motion.button>

@@ -37,14 +37,14 @@ import {
 
 const C = {
   bg:        "#06040200",
-  glass:     "rgba(255,255,255,0.025)",
-  glassMid:  "rgba(255,255,255,0.04)",
-  border:    "rgba(255,255,255,0.07)",
-  borderMid: "rgba(255,255,255,0.11)",
-  gold:      "#c9a84c",
-  goldDim:   "rgba(201,168,76,0.50)",
-  goldGlow:  "rgba(201,168,76,0.10)",
-  text:      "#f0e8d4",
+  glass:     "rgba(26,26,27,0.04)",
+  glassMid:  "rgba(26,26,27,0.06)",
+  border:    "rgba(26,26,27,0.09)",
+  borderMid: "rgba(26,26,27,0.13)",
+  gold:      "#D48B00",
+  goldDim:   "rgba(212,139,0,0.50)",
+  goldGlow:  "rgba(212,139,0,0.10)",
+  text:      "#1A1A1B",
   muted:     "rgba(240,232,212,0.48)",
   dim:       "rgba(240,232,212,0.26)",
 };
@@ -122,7 +122,7 @@ function TactileButton({ label, accent, icon, onClick, variant = "primary", disa
         fontWeight:     600,
         letterSpacing:  "0.04em",
         boxShadow:      isPrimary && !disabled
-          ? `0 4px 20px ${accent}18, 0 1px 4px rgba(0,0,0,0.35), inset 0 1px 0 ${accent}20`
+          ? `0 4px 20px ${accent}18, 0 1px 4px rgba(26,26,27,0.08), inset 0 1px 0 ${accent}20`
           : "none",
         opacity:        disabled ? 0.4 : 1,
         transition:     "box-shadow 0.2s",
@@ -189,7 +189,7 @@ function ModuleCard({ accent, image, label, sublabel, statusNode, children, dela
         background:     "rgba(8,6,4,0.82)",
         backdropFilter: "blur(18px)",
         WebkitBackdropFilter: "blur(18px)",
-        boxShadow:      `0 16px 56px rgba(0,0,0,0.6), 0 0 0 1px ${accent}10 inset`,
+        boxShadow:      `0 16px 56px rgba(26,26,27,0.26), 0 0 0 1px ${accent}10 inset`,
         gridColumn:     span2 ? "span 2" : undefined,
       }}
     >
@@ -469,7 +469,7 @@ function AttractionEngine() {
                 style={{
                   width: "100%", boxSizing: "border-box",
                   padding: "10px 12px", borderRadius: 8, marginBottom: 8,
-                  background: "rgba(255,255,255,0.04)", border: `1px solid ${ACCENT_A}28`,
+                  background: "rgba(26,26,27,0.06)", border: `1px solid ${ACCENT_A}28`,
                   color: C.text, fontSize: 13, outline: "none",
                 }}
               />
@@ -481,7 +481,7 @@ function AttractionEngine() {
                 style={{
                   width: "100%", boxSizing: "border-box",
                   padding: "10px 12px", borderRadius: 8, marginBottom: 12,
-                  background: "rgba(255,255,255,0.04)", border: `1px solid ${ACCENT_A}28`,
+                  background: "rgba(26,26,27,0.06)", border: `1px solid ${ACCENT_A}28`,
                   color: C.text, fontSize: 13, outline: "none",
                 }}
               />
@@ -607,7 +607,7 @@ function SlowHourRecovery() {
             >
               <div style={{
                 width: 34, height: 34, borderRadius: 10, flexShrink: 0,
-                background: on ? `${ACCENT_S}18` : "rgba(255,255,255,0.04)",
+                background: on ? `${ACCENT_S}18` : "rgba(26,26,27,0.06)",
                 border:     `1px solid ${on ? `${ACCENT_S}30` : C.border}`,
                 display:    "flex", alignItems: "center", justifyContent: "center",
               }}>
@@ -625,7 +625,7 @@ function SlowHourRecovery() {
                   textTransform: "uppercase",
                   color: on ? ACCENT_S : C.dim,
                   padding: "2px 7px", borderRadius: 6,
-                  background: on ? `${ACCENT_S}12` : "rgba(255,255,255,0.04)",
+                  background: on ? `${ACCENT_S}12` : "rgba(26,26,27,0.06)",
                   border: `1px solid ${on ? `${ACCENT_S}25` : C.border}`,
                 }}>
                   {t.effort}
@@ -651,10 +651,10 @@ function SlowHourRecovery() {
 
 // ── 3. Event Activation ────────────────────────────────────────────────────────
 
-const ACCENT_E = "#d4af37";
+const ACCENT_E = "#D48B00";
 
 const EVENT_TYPES = [
-  { id: "pairing",  label: "Pairing Night",       icon: "◈", color: "#c9a84c" },
+  { id: "pairing",  label: "Pairing Night",       icon: "◈", color: "#D48B00" },
   { id: "reserve",  label: "Reserve Release",      icon: "✦", color: "#a78bfa" },
   { id: "flight",   label: "Tasting Flight",       icon: "⟡", color: "#34d399" },
   { id: "social",   label: "Social Hour",          icon: "◉", color: "#60a5fa" },
@@ -783,12 +783,12 @@ function EventActivation() {
                 </motion.button>
               </div>
               <input value={draft.name} onChange={e => setDraft(d => ({ ...d, name: e.target.value }))}
-                placeholder="Event name" style={{ width: "100%", boxSizing: "border-box", padding: "9px 12px", borderRadius: 8, marginBottom: 7, background: "rgba(255,255,255,0.04)", border: `1px solid ${ACCENT_E}28`, color: C.text, fontSize: 12, outline: "none" }} />
+                placeholder="Event name" style={{ width: "100%", boxSizing: "border-box", padding: "9px 12px", borderRadius: 8, marginBottom: 7, background: "rgba(26,26,27,0.06)", border: `1px solid ${ACCENT_E}28`, color: C.text, fontSize: 12, outline: "none" }} />
               <div style={{ display: "flex", gap: 7, marginBottom: 10 }}>
                 <input value={draft.date} onChange={e => setDraft(d => ({ ...d, date: e.target.value }))}
-                  placeholder="Date / time" style={{ flex: 1, padding: "9px 12px", borderRadius: 8, background: "rgba(255,255,255,0.04)", border: `1px solid ${ACCENT_E}28`, color: C.text, fontSize: 12, outline: "none" }} />
+                  placeholder="Date / time" style={{ flex: 1, padding: "9px 12px", borderRadius: 8, background: "rgba(26,26,27,0.06)", border: `1px solid ${ACCENT_E}28`, color: C.text, fontSize: 12, outline: "none" }} />
                 <input value={draft.seats} onChange={e => setDraft(d => ({ ...d, seats: e.target.value }))}
-                  placeholder="Seats" type="number" min="1" style={{ width: 80, padding: "9px 12px", borderRadius: 8, background: "rgba(255,255,255,0.04)", border: `1px solid ${ACCENT_E}28`, color: C.text, fontSize: 12, outline: "none" }} />
+                  placeholder="Seats" type="number" min="1" style={{ width: 80, padding: "9px 12px", borderRadius: 8, background: "rgba(26,26,27,0.06)", border: `1px solid ${ACCENT_E}28`, color: C.text, fontSize: 12, outline: "none" }} />
               </div>
               <TactileButton
                 label="Activate Event"
@@ -870,7 +870,7 @@ function GuestLoyaltyFlow() {
           <span style={{ fontSize: 10, color: C.dim, letterSpacing: "0.12em", textTransform: "uppercase" }}>Loyalty Conversion</span>
           <span style={{ fontSize: 10, fontWeight: 700, color: ACCENT_L }}>{pct}%</span>
         </div>
-        <div style={{ height: 4, borderRadius: 4, background: "rgba(255,255,255,0.06)" }}>
+        <div style={{ height: 4, borderRadius: 4, background: "rgba(26,26,27,0.08)" }}>
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${pct}%` }}
@@ -908,7 +908,7 @@ function GuestLoyaltyFlow() {
             >
               <div style={{
                 width: 32, height: 32, borderRadius: 9, flexShrink: 0,
-                background: on ? `${ACCENT_L}18` : "rgba(255,255,255,0.04)",
+                background: on ? `${ACCENT_L}18` : "rgba(26,26,27,0.06)",
                 border:     `1px solid ${on ? `${ACCENT_L}28` : C.border}`,
                 display:    "flex", alignItems: "center", justifyContent: "center",
               }}>
@@ -922,11 +922,11 @@ function GuestLoyaltyFlow() {
               </div>
               <div style={{
                 width: 20, height: 20, borderRadius: "50%", flexShrink: 0,
-                background: on ? ACCENT_L : "rgba(255,255,255,0.06)",
+                background: on ? ACCENT_L : "rgba(26,26,27,0.08)",
                 border: `2px solid ${on ? ACCENT_L : C.border}`,
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
-                {on && <CheckCircle2 size={12} color="#0a0806" strokeWidth={3} />}
+                {on && <CheckCircle2 size={12} color="#F5F2ED" strokeWidth={3} />}
               </div>
             </motion.button>
           );
@@ -1098,7 +1098,7 @@ function RevenueCommandPanel() {
         border: `1px solid ${C.border}`,
         background: "rgba(8,6,4,0.82)",
         backdropFilter: "blur(18px)",
-        boxShadow: `0 12px 40px rgba(0,0,0,0.55), 0 0 0 1px ${accent}10 inset`,
+        boxShadow: `0 12px 40px rgba(26,26,27,0.22), 0 0 0 1px ${accent}10 inset`,
         padding: "22px 24px",
         display: "grid",
         gridTemplateColumns: "1fr 1px 340px",
@@ -1184,7 +1184,7 @@ function RevenueCommandPanel() {
               </div>
               <div style={{
                 width: 36, height: 20, borderRadius: 99, flexShrink: 0,
-                background: t.on ? t.color : "rgba(255,255,255,0.08)",
+                background: t.on ? t.color : "rgba(26,26,27,0.10)",
                 border: `1.5px solid ${t.on ? t.color : C.border}`,
                 display: "flex", alignItems: "center",
                 padding: "2px",
@@ -1221,7 +1221,7 @@ function RevenueStatusBar() {
       display: "flex", alignItems: "center", gap: 22,
       padding: "9px 20px",
       borderBottom: `1px solid ${C.border}`,
-      background: "rgba(0,0,0,0.35)", backdropFilter: "blur(12px)",
+      background: "rgba(26,26,27,0.08)", backdropFilter: "blur(12px)",
       overflowX: "auto", flexShrink: 0,
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
@@ -1259,7 +1259,7 @@ export default function RevenueEngine() {
     <div style={{
       position:   "relative",
       minHeight:  "100dvh",
-      background: "#06040a",
+      background: "#F5F2ED",
       display:    "flex",
       flexDirection: "column",
       overflow:   "hidden",
@@ -1279,7 +1279,7 @@ export default function RevenueEngine() {
         <div style={{
           position: "absolute", inset: 0,
           background:
-            "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,168,76,0.06) 0%, transparent 70%)," +
+            "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212,139,0,0.06) 0%, transparent 70%)," +
             "linear-gradient(180deg, rgba(6,4,10,0.0) 0%, rgba(6,4,10,0.85) 100%)",
         }} />
         {/* OLED edge glows */}
@@ -1310,10 +1310,10 @@ export default function RevenueEngine() {
             style={{
               display:        "flex", alignItems: "center", justifyContent: "center",
               width:          44, height: 44, borderRadius: 12,
-              background:     "rgba(255,255,255,0.04)",
+              background:     "rgba(26,26,27,0.06)",
               border:         `1px solid ${C.border}`,
               color:          C.muted, cursor: "pointer",
-              boxShadow:      "0 2px 10px rgba(0,0,0,0.35)",
+              boxShadow:      "0 2px 10px rgba(26,26,27,0.08)",
             }}
           >
             <ArrowLeft size={19} />
@@ -1338,7 +1338,7 @@ export default function RevenueEngine() {
         <div style={{
           display:    "flex", alignItems: "center", gap: 16,
           padding:    "10px 18px", borderRadius: 14,
-          background: "rgba(201,168,76,0.07)",
+          background: "rgba(212,139,0,0.07)",
           border:     `1px solid ${C.gold}22`,
           boxShadow:  `0 4px 20px ${C.gold}0c, inset 0 1px 0 ${C.gold}14`,
         }}>

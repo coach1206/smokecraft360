@@ -122,8 +122,8 @@ function AmbientParticles() {
             width:           p.size,
             height:          p.size,
             borderRadius:    "50%",
-            background:      "rgba(201,168,76,0.45)",
-            boxShadow:       "0 0 4px rgba(201,168,76,0.3)",
+            background:      "rgba(212,139,0,0.45)",
+            boxShadow:       "0 0 4px rgba(212,139,0,0.3)",
           }}
           animate={{ y: [0, -(280 + Math.random() * 200)], opacity: [0, 0.7, 0] }}
           transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, ease: "easeOut" }}
@@ -143,7 +143,7 @@ function ProgressDots({ total, current }: { total: number; current: number }) {
           key={i}
           animate={{
             width:      i === current ? 20 : 6,
-            background: i <= current ? "rgba(201,168,76,0.9)" : "rgba(201,168,76,0.2)",
+            background: i <= current ? "rgba(212,139,0,0.9)" : "rgba(212,139,0,0.2)",
           }}
           transition={{ duration: 0.3 }}
           style={{ height: 6, borderRadius: 3 }}
@@ -240,7 +240,7 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
         position:        "fixed",
         inset:           0,
         zIndex:          500,
-        background:      "radial-gradient(ellipse at 40% 30%, rgba(201,168,76,0.06) 0%, transparent 60%), #04030200",
+        background:      "radial-gradient(ellipse at 40% 30%, rgba(212,139,0,0.06) 0%, transparent 60%), #04030200",
         backdropFilter:  "blur(2px)",
         display:         "flex",
         flexDirection:   "column",
@@ -292,7 +292,7 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
             <p style={{
               fontFamily:   "'Inter', sans-serif",
               fontSize:     "0.8rem",
-              color:        "rgba(201,168,76,0.55)",
+              color:        "rgba(212,139,0,0.55)",
               textAlign:    "center",
               marginBottom: 36,
               letterSpacing: "0.04em",
@@ -309,7 +309,7 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
                   <p style={{
                     textAlign:     "center",
                     fontSize:      "0.7rem",
-                    color:         "rgba(201,168,76,0.45)",
+                    color:         "rgba(212,139,0,0.45)",
                     letterSpacing: "0.1em",
                     textTransform: "uppercase",
                     margin:        0,
@@ -337,8 +337,8 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
                   onKeyDown={e => { if (e.key === "Enter") handleTextSubmit(); }}
                   placeholder={(question as TextQuestion).placeholder}
                   style={{
-                    background:    "rgba(201,168,76,0.06)",
-                    border:        "1px solid rgba(201,168,76,0.25)",
+                    background:    "rgba(212,139,0,0.06)",
+                    border:        "1px solid rgba(212,139,0,0.25)",
                     borderRadius:  10,
                     padding:       "14px 18px",
                     color:         "rgba(240,232,212,0.96)",
@@ -348,7 +348,7 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
                     textAlign:     "center",
                     outline:       "none",
                     width:         "100%",
-                    caretColor:    "rgba(201,168,76,0.8)",
+                    caretColor:    "rgba(212,139,0,0.8)",
                     letterSpacing: step === 1 ? "0.3em" : undefined,
                   }}
                 />
@@ -366,11 +366,11 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
                     display:       "flex",
                     alignItems:    "center",
                     gap:           8,
-                    background:    "rgba(201,168,76,0.12)",
-                    border:        "1px solid rgba(201,168,76,0.4)",
+                    background:    "rgba(212,139,0,0.12)",
+                    border:        "1px solid rgba(212,139,0,0.4)",
                     borderRadius:  8,
                     padding:       "10px 28px",
-                    color:         "rgba(201,168,76,0.9)",
+                    color:         "rgba(212,139,0,0.9)",
                     fontFamily:    "'Inter', sans-serif",
                     fontSize:      "0.75rem",
                     fontWeight:    500,
@@ -395,13 +395,13 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
                 {(question as ChoiceQuestion).options.map(opt => (
                   <motion.button
                     key={opt.value}
-                    whileHover={{ scale: 1.02, borderColor: "rgba(201,168,76,0.55)" }}
+                    whileHover={{ scale: 1.02, borderColor: "rgba(212,139,0,0.55)" }}
                     whileTap={{ scale: 0.97 }}
                     onClick={() => advance(opt.value)}
                     disabled={busy}
                     style={{
-                      background:   "rgba(201,168,76,0.05)",
-                      border:       "1px solid rgba(201,168,76,0.18)",
+                      background:   "rgba(212,139,0,0.05)",
+                      border:       "1px solid rgba(212,139,0,0.18)",
                       borderRadius: 10,
                       padding:      "16px 14px",
                       cursor:       busy ? "not-allowed" : "pointer",
@@ -412,7 +412,7 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
                       fontFamily:    "'Cormorant Garamond', Georgia, serif",
                       fontSize:      "1.05rem",
                       fontWeight:    500,
-                      color:         "rgba(240,232,212,0.92)",
+                      color:         "rgba(26,26,27,0.90)",
                       marginBottom:  4,
                       letterSpacing: "-0.01em",
                     }}>
@@ -421,7 +421,7 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
                     <p style={{
                       fontFamily: "'Inter', sans-serif",
                       fontSize:   "0.7rem",
-                      color:      "rgba(201,168,76,0.5)",
+                      color:      "rgba(212,139,0,0.5)",
                       lineHeight: 1.4,
                     }}>
                       {opt.sub}
@@ -445,7 +445,7 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
             gap:           6,
             background:    "none",
             border:        "none",
-            color:         "rgba(201,168,76,0.3)",
+            color:         "rgba(212,139,0,0.3)",
             fontFamily:    "'Inter', sans-serif",
             fontSize:      "0.7rem",
             letterSpacing: "0.08em",

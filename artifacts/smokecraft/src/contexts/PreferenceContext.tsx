@@ -38,7 +38,7 @@ export const PRESET_MODES: {
   {
     id: "premium", label: "Premium", icon: "✦",
     preferences: { mood: "solo", intensity: "premium", setting: "night" },
-    color: "#d4af37",
+    color: "#D48B00",
   },
   {
     id: "social", label: "Social", icon: "🎉",

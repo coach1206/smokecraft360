@@ -57,10 +57,10 @@ export function MoodSelector({ selected, onChange }: MoodSelectorProps) {
                 justifyContent: "center",
                 transition:    "all 0.22s ease",
                 ...(isSelected ? {
-                  background: "linear-gradient(135deg, #b07c14, #D4AF37)",
-                  border:     "2px solid #D4AF37",
+                  background: "linear-gradient(135deg, #b07c14, #D48B00)",
+                  border:     "2px solid #D48B00",
                   color:      "#1A1410",
-                  boxShadow:  "0 0 18px rgba(212,175,55,0.28), 0 3px 10px rgba(0,0,0,0.10)",
+                  boxShadow:  "0 0 18px rgba(212,139,0,0.28), 0 3px 10px rgba(26,26,27,0.03)",
                 } : {
                   background: "rgba(26,20,16,0.06)",
                   border:     "1.5px solid rgba(90,60,30,0.22)",

@@ -150,7 +150,7 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
   const glowBg  = useTransform(
     x,
     [-120, 0, 120],
-    ["rgba(148,163,184,0.10)", "rgba(0,0,0,0)", "rgba(201,168,76,0.14)"],
+    ["rgba(148,163,184,0.10)", "rgba(0,0,0,0)", "rgba(212,139,0,0.14)"],
   );
   // DISCOVER responsiveness: image brightens + card lifts as user drags right
   const imgOp       = useTransform(x, [-80, 0, 110], [0.64, 0.76, 0.90]);
@@ -228,8 +228,8 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
         background:   theme.cardBg,
         border:       `1px solid ${theme.accent}${stackIndex === 0 ? "38" : "18"}`,
         boxShadow: stackIndex === 0
-          ? `0 44px 110px rgba(0,0,0,0.94), 0 0 0 1px ${theme.accent}10, 0 0 56px ${theme.accent}08, inset 0 1px 0 rgba(255,255,255,0.055)`
-          : "0 14px 40px rgba(0,0,0,0.72)",
+          ? `0 44px 110px rgba(0,0,0,0.94), 0 0 0 1px ${theme.accent}10, 0 0 56px ${theme.accent}08, inset 0 1px 0 rgba(26,26,27,0.07)`
+          : "0 14px 40px rgba(26,26,27,0.34)",
       }}>
 
         {/* ── Sensory background image — with 2-second load failsafe ── */}
@@ -342,7 +342,7 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} style={{
                 width: 5, height: 5, borderRadius: "50%",
-                background: i < Math.round(item.intensity / 2) ? theme.accent : "rgba(255,255,255,0.14)",
+                background: i < Math.round(item.intensity / 2) ? theme.accent : "rgba(26,26,27,0.16)",
                 boxShadow: i < Math.round(item.intensity / 2) ? `0 0 4px ${theme.accent}` : "none",
               }} />
             ))}
@@ -366,7 +366,7 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
             fontWeight: 700,
             color: "rgba(240,232,212,0.96)",
             lineHeight: 1.18,
-            textShadow: "0 2px 12px rgba(0,0,0,0.8)",
+            textShadow: "0 2px 12px rgba(26,26,27,0.40)",
           }}>{item.title}</div>
 
           {item.description && (
@@ -426,19 +426,19 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
             position:      "absolute",
             top:           24, left: 24,
             opacity:       addOp,
-            background:    "rgba(201,168,76,0.14)",
-            border:        "1.5px solid rgba(201,168,76,0.7)",
+            background:    "rgba(212,139,0,0.14)",
+            border:        "1.5px solid rgba(212,139,0,0.7)",
             borderRadius:  12,
             padding:       "8px 18px",
             display:       "flex",
             alignItems:    "center",
             gap:           7,
             fontSize:      12, fontWeight: 800,
-            color:         "#c9a84c",
+            color:         "#D48B00",
             letterSpacing: "0.18em",
             textTransform: "uppercase",
             backdropFilter: "blur(10px)",
-            boxShadow:     "0 0 16px rgba(201,168,76,0.18)",
+            boxShadow:     "0 0 16px rgba(212,139,0,0.18)",
           }}>
             <Check size={14} strokeWidth={2.5} /> Discover
           </motion.div>
@@ -653,7 +653,7 @@ export default function ExperiencePage() {
     <div style={{
       position:   "fixed",
       inset:      0,
-      background: "#080604",
+      background: "#F5F2ED",
       display:    "flex",
       flexDirection: "column",
       overflow:   "hidden",
@@ -692,7 +692,7 @@ export default function ExperiencePage() {
           whileTap={{ scale: 0.93 }}
           style={{
             display: "flex", alignItems: "center", gap: 6,
-            background: "rgba(255,255,255,0.06)",
+            background: "rgba(26,26,27,0.08)",
             border: "1px solid rgba(255,255,255,0.1)",
             borderRadius: 10, padding: "8px 14px",
             color: "rgba(240,232,216,0.65)",
@@ -713,8 +713,8 @@ export default function ExperiencePage() {
         </div>
 
         <div style={{
-          background: "rgba(255,255,255,0.05)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          background: "rgba(26,26,27,0.07)",
+          border: "1px solid rgba(26,26,27,0.10)",
           borderRadius: 10, padding: "8px 14px",
           fontSize: 11, color: "rgba(240,232,216,0.4)",
           fontVariantNumeric: "tabular-nums",
@@ -782,7 +782,7 @@ export default function ExperiencePage() {
                 style={{
                   padding: "16px 44px", borderRadius: 14,
                   background: `linear-gradient(135deg, ${theme.accent}, ${theme.accentSoft})`,
-                  border: "none", color: "#0a0806",
+                  border: "none", color: "#F5F2ED",
                   fontSize: 15, fontWeight: 700, cursor: "pointer",
                   letterSpacing: "0.08em",
                   boxShadow: `0 8px 32px ${theme.accent}40`,
@@ -813,7 +813,7 @@ export default function ExperiencePage() {
                 style={{
                   padding: "14px 32px", borderRadius: 12,
                   background: `linear-gradient(135deg, ${theme.accent}, ${theme.accentSoft})`,
-                  border: "none", color: "#0a0806",
+                  border: "none", color: "#F5F2ED",
                   fontSize: 14, fontWeight: 700, cursor: "pointer",
                 }}
               >
@@ -865,12 +865,12 @@ export default function ExperiencePage() {
               transform: "translateX(-50%)",
               zIndex: 50,
               background: feedback.type === "add"
-                ? "rgba(201,168,76,0.12)"
+                ? "rgba(212,139,0,0.12)"
                 : "rgba(148,163,184,0.08)",
-              border: `1px solid ${feedback.type === "add" ? "rgba(201,168,76,0.4)" : "rgba(148,163,184,0.25)"}`,
+              border: `1px solid ${feedback.type === "add" ? "rgba(212,139,0,0.4)" : "rgba(148,163,184,0.25)"}`,
               borderRadius: 12, padding: "10px 22px",
               fontSize: 13, fontWeight: 600,
-              color: feedback.type === "add" ? "#c9a84c" : "rgba(203,213,225,0.65)",
+              color: feedback.type === "add" ? "#D48B00" : "rgba(203,213,225,0.65)",
               whiteSpace: "nowrap",
               backdropFilter: "blur(10px)",
             }}
@@ -903,7 +903,7 @@ export default function ExperiencePage() {
                 padding: "13px 36px",
                 borderRadius: 13,
                 background: `linear-gradient(135deg, ${theme.accent}, ${theme.accentSoft})`,
-                border: "none", color: "#0a0806",
+                border: "none", color: "#F5F2ED",
                 fontSize: 13, fontWeight: 700,
                 cursor: "pointer", letterSpacing: "0.08em",
                 boxShadow: `0 6px 28px ${theme.accent}40`,
@@ -920,7 +920,7 @@ export default function ExperiencePage() {
               exit={{ opacity: 0 }}
               style={{
                 fontSize: 10,
-                color: "rgba(240,232,212,0.18)",
+                color: "rgba(26,26,27,0.18)",
                 letterSpacing: "0.12em",
                 textTransform: "uppercase" as const,
               }}

@@ -34,7 +34,7 @@ export default function ScoreOverlay({ score, feedback, rankMessage, accentColor
       style={{
         position: "fixed", inset: 0, zIndex: 180,
         display: "flex", alignItems: "center", justifyContent: "center",
-        background: "rgba(0,0,0,0.78)",
+        background: "rgba(26,26,27,0.38)",
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
         pointerEvents: "none",
@@ -51,14 +51,14 @@ export default function ScoreOverlay({ score, feedback, rankMessage, accentColor
           borderRadius: 32,
           background: "rgba(12,9,7,0.97)",
           border: `1px solid ${color}40`,
-          boxShadow: `0 60px 140px ${color}20, 0 0 0 1px rgba(255,255,255,0.04)`,
+          boxShadow: `0 60px 140px ${color}20, 0 0 0 1px rgba(26,26,27,0.06)`,
           maxWidth: 400,
         }}
       >
         {/* Score ring */}
         <div style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
           <svg width={120} height={120} style={{ transform: "rotate(-90deg)" }}>
-            <circle cx={60} cy={60} r={52} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={6} />
+            <circle cx={60} cy={60} r={52} fill="none" stroke="rgba(26,26,27,0.08)" strokeWidth={6} />
             <motion.circle
               cx={60} cy={60} r={52} fill="none"
               stroke={color} strokeWidth={6}

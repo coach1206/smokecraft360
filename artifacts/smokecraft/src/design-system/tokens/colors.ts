@@ -6,28 +6,28 @@
 
 export const colors = {
   // ── Brand / Gold hierarchy ────────────────────────────────────────────────
-  gold:        "#C9A84C",
-  goldBright:  "#D4AF37",
-  goldDim:     "rgba(201,168,76,0.5)",
-  goldFaint:   "rgba(201,168,76,0.14)",
+  gold:        "#D48B00",
+  goldBright:  "#D48B00",
+  goldDim:     "rgba(212,139,0,0.5)",
+  goldFaint:   "rgba(212,139,0,0.14)",
 
   // ── Cream / Text hierarchy ────────────────────────────────────────────────
-  cream:       "#F5E7C8",
-  textPrimary: "rgba(240,232,212,0.92)",
+  cream:       "#1A1A1B",
+  textPrimary: "rgba(26,26,27,0.90)",
   textMuted:   "rgba(240,232,212,0.48)",
-  textDim:     "rgba(240,232,212,0.28)",
+  textDim:     "rgba(26,26,27,0.28)",
 
   // ── Backgrounds ───────────────────────────────────────────────────────────
-  bgDeep:      "#080604",
+  bgDeep:      "#F5F2ED",
   bgBase:      "#0A0804",
   bgSurface1:  "rgba(255,255,255,0.046)",
-  bgSurface2:  "rgba(255,255,255,0.07)",
-  bgSurface3:  "rgba(255,255,255,0.10)",
+  bgSurface2:  "rgba(26,26,27,0.09)",
+  bgSurface3:  "rgba(26,26,27,0.12)",
 
   // ── Borders ───────────────────────────────────────────────────────────────
-  borderGold:  "rgba(201,168,76,0.18)",
-  borderDim:   "rgba(255,255,255,0.08)",
-  borderFocus: "rgba(201,168,76,0.55)",
+  borderGold:  "rgba(212,139,0,0.18)",
+  borderDim:   "rgba(26,26,27,0.10)",
+  borderFocus: "rgba(212,139,0,0.55)",
 
   // ── Semantic / Status ─────────────────────────────────────────────────────
   green:       "#34d399",

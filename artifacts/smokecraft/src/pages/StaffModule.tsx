@@ -9,22 +9,22 @@ import ConfirmModal from "@/components/ConfirmModal";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const C = {
-  header:    "linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)",
-  border:    "rgba(255,210,120,0.12)",
-  text:      "#F5E7C8",
-  muted:     "#B39B77",
-  dim:       "rgba(179,155,119,0.40)",
-  card:      "rgba(255,255,255,0.045)",
-  back:      "#211D19",
-  backBorder:"rgba(255,210,120,0.18)",
-  bg:        "#080604",
+  header:    "linear-gradient(180deg, #12100E 0%, #EFEBE0ee 100%)",
+  border:    "rgba(212,139,0,0.12)",
+  text:      "#1A1A1B",
+  muted:     "#6B5E4E",
+  dim:       "rgba(107,94,78,0.48)",
+  card:      "rgba(26,26,27,0.06)",
+  back:      "#2A2A2A",
+  backBorder:"rgba(212,139,0,0.18)",
+  bg:        "#F5F2ED",
 };
 
 const roleIcons: Record<string, typeof Crown> = { owner: Crown, manager: Shield, staff: User };
 const roleColors: Record<string, string> = { owner: "#9A7820", manager: "#5b8def", staff: "#22c55e" };
 
 const PRESTIGE_COLORS: Record<string, string> = {
-  Novice: "#B39B77", Connoisseur: "#C9A84C", Master: "#A78BFA", Legend: "#ef4444",
+  Novice: "#6B5E4E", Connoisseur: "#D48B00", Master: "#A78BFA", Legend: "#ef4444",
 };
 
 const DEMO_STAFF = [
@@ -73,9 +73,9 @@ export default function StaffModule() {
   return (
     <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: C.bg, color: C.text }}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 24px", borderBottom: `1px solid rgba(255,210,120,0.10)`, background: C.header, backdropFilter: "blur(16px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(255,210,120,0.06), 0 4px 20px rgba(0,0,0,0.3)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 24px", borderBottom: `1px solid rgba(212,139,0,0.10)`, background: C.header, backdropFilter: "blur(16px)", flexShrink: 0, boxShadow: "0 1px 0 rgba(212,139,0,0.06), 0 4px 20px rgba(26,26,27,0.06)" }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 2px 8px rgba(26,26,27,0.06)" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div>
@@ -93,7 +93,7 @@ export default function StaffModule() {
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             style={{ gridColumn: "1/-1", borderRadius: 16, background: C.card, border: `1px solid ${C.border}`, overflow: "hidden", marginBottom: 4 }}>
             {/* Table header */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 120px", gap: 0, padding: "10px 20px", background: "rgba(255,210,120,0.04)", borderBottom: `1px solid ${C.border}` }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 120px", gap: 0, padding: "10px 20px", background: "rgba(212,139,0,0.04)", borderBottom: `1px solid ${C.border}` }}>
               {["STAFF MEMBER", "ROLE", "TABLE STATUS", "PRESTIGE RANK", ""].map(h => (
                 <div key={h} style={{ fontSize: 9, fontWeight: 700, color: C.dim, letterSpacing: "0.14em", textTransform: "uppercase" }}>{h}</div>
               ))}
@@ -101,7 +101,7 @@ export default function StaffModule() {
             {DEMO_STAFF.map((member, i) => {
               const RoleIcon = roleIcons[member.role] ?? User;
               const rColor = roleColors[member.role] ?? "#a78bfa";
-              const pColor = PRESTIGE_COLORS[member.prestige] ?? "#B39B77";
+              const pColor = PRESTIGE_COLORS[member.prestige] ?? "#6B5E4E";
               const isActive = member.status === "active";
               return (
                 <motion.div key={member.id}
@@ -111,7 +111,7 @@ export default function StaffModule() {
                     alignItems: "center", gap: 0, padding: "14px 20px",
                     borderBottom: i < DEMO_STAFF.length - 1 ? `1px solid ${C.border}` : "none",
                     opacity: isActive ? 1 : 0.5,
-                    background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.012)",
+                    background: i % 2 === 0 ? "transparent" : "rgba(26,26,27,0.02)",
                   }}>
                   {/* Name */}
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -236,7 +236,7 @@ export default function StaffModule() {
             zIndex: 9999, padding: "14px 24px", borderRadius: 14,
             background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)",
             backdropFilter: "blur(8px)", display: "flex", alignItems: "center", gap: 10,
-            boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+            boxShadow: "0 4px 20px rgba(26,26,27,0.03)",
           }}
         >
           <ShieldAlert size={18} color="#ef4444" />

@@ -27,14 +27,14 @@ import { useGuestProfile }      from "@/contexts/GuestProfileContext";
 
 const C = {
   bg:       "#06040200",
-  surface:  "rgba(255,255,255,0.025)",
-  border:   "rgba(255,255,255,0.07)",
-  gold:     "#c9a84c",
-  goldDim:  "rgba(201,168,76,0.55)",
-  goldGlow: "rgba(201,168,76,0.12)",
-  text:     "#f0e8d4",
-  muted:    "rgba(240,232,212,0.45)",
-  dim:      "rgba(240,232,212,0.25)",
+  surface:  "rgba(26,26,27,0.04)",
+  border:   "rgba(26,26,27,0.09)",
+  gold:     "#D48B00",
+  goldDim:  "rgba(212,139,0,0.55)",
+  goldGlow: "rgba(212,139,0,0.12)",
+  text:     "#1A1A1B",
+  muted:    "rgba(26,26,27,0.44)",
+  dim:      "rgba(26,26,27,0.25)",
 };
 
 // ── Ambient particle layer ────────────────────────────────────────────────────
@@ -103,7 +103,7 @@ function IntelStatusBar() {
       padding:       "10px 28px",
       borderTop:     `1px solid ${C.border}`,
       borderBottom:  `1px solid ${C.border}`,
-      background:    "rgba(0,0,0,0.25)",
+      background:    "rgba(26,26,27,0.05)",
       backdropFilter: "blur(10px)",
       overflowX:     "auto",
       flexShrink:    0,
@@ -283,8 +283,8 @@ function FastReturnModal({ onClose }: { onClose: () => void }) {
                 onKeyDown={e => { if (e.key === "Enter") handleReturn(); }}
                 placeholder="First name"
                 style={{
-                  background:   "rgba(201,168,76,0.05)",
-                  border:       `1px solid rgba(201,168,76,0.2)`,
+                  background:   "rgba(212,139,0,0.05)",
+                  border:       `1px solid rgba(212,139,0,0.2)`,
                   borderRadius: 8,
                   padding:      "11px 14px",
                   color:        C.text,
@@ -305,8 +305,8 @@ function FastReturnModal({ onClose }: { onClose: () => void }) {
                 placeholder="Last 4 digits"
                 inputMode="numeric"
                 style={{
-                  background:    "rgba(201,168,76,0.05)",
-                  border:        `1px solid rgba(201,168,76,0.2)`,
+                  background:    "rgba(212,139,0,0.05)",
+                  border:        `1px solid rgba(212,139,0,0.2)`,
                   borderRadius:  8,
                   padding:       "11px 14px",
                   color:         C.text,
@@ -327,7 +327,7 @@ function FastReturnModal({ onClose }: { onClose: () => void }) {
                 onClick={handleReturn}
                 disabled={busy}
                 style={{
-                  background:    `rgba(201,168,76,0.10)`,
+                  background:    `rgba(212,139,0,0.10)`,
                   border:        `1px solid ${C.goldDim}`,
                   borderRadius:  8,
                   padding:       "12px",
@@ -386,7 +386,7 @@ function CraftHubInner() {
   return (
     <div style={{
       height:        "100dvh",
-      background:    "#080604",
+      background:    "#F5F2ED",
       color:         C.text,
       fontFamily:    "var(--app-font-sans, system-ui, sans-serif)",
       display:       "flex",
@@ -440,14 +440,14 @@ function CraftHubInner() {
               alignItems: "center",
               gap:        7,
               padding:    "5px 10px",
-              background: "rgba(201,168,76,0.07)",
-              border:     `1px solid rgba(201,168,76,0.22)`,
+              background: "rgba(212,139,0,0.07)",
+              border:     `1px solid rgba(212,139,0,0.22)`,
               borderRadius: 8,
             }}>
               <div style={{
                 width: 18, height: 18, borderRadius: "50%",
-                background: "rgba(201,168,76,0.15)",
-                border: `1px solid rgba(201,168,76,0.4)`,
+                background: "rgba(212,139,0,0.15)",
+                border: `1px solid rgba(212,139,0,0.4)`,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 8, color: C.gold, fontWeight: 700,
               }}>
@@ -466,7 +466,7 @@ function CraftHubInner() {
                 alignItems:    "center",
                 gap:           6,
                 background:    "none",
-                border:        `1px solid rgba(201,168,76,0.18)`,
+                border:        `1px solid rgba(212,139,0,0.18)`,
                 borderRadius:  8,
                 padding:       "5px 10px",
                 color:         C.dim,
@@ -526,8 +526,8 @@ function CraftHubInner() {
           <button
             onClick={() => navigate("/operations")}
             style={{
-              background: "rgba(201,168,76,0.12)",
-              border: "1px solid rgba(201,168,76,0.4)",
+              background: "rgba(212,139,0,0.12)",
+              border: "1px solid rgba(212,139,0,0.4)",
               borderRadius: 8,
               cursor: "pointer",
               fontSize: 11,
@@ -629,7 +629,7 @@ function CraftHubInner() {
               borderRadius: 22,
               overflow:     "hidden",
               minHeight:    0,
-              boxShadow:    `0 4px 32px rgba(0,0,0,0.6), 0 0 0 1px ${mod.color}18`,
+              boxShadow:    `0 4px 32px rgba(26,26,27,0.26), 0 0 0 1px ${mod.color}18`,
             }}
           >
             {/* Breathing glow ring */}
@@ -697,8 +697,8 @@ function CraftHubInner() {
           <button
             onClick={() => navigate("/operations")}
             style={{
-              background: "rgba(201,168,76,0.12)",
-              border: "1px solid rgba(201,168,76,0.35)",
+              background: "rgba(212,139,0,0.12)",
+              border: "1px solid rgba(212,139,0,0.35)",
               borderRadius: 8,
               cursor: "pointer",
               fontSize: 11,

@@ -32,7 +32,7 @@ export function CardStack({
 
   if (cards.length === 0) return (
     <div className="flex flex-col items-center w-full max-w-3xl mx-auto py-20">
-      <p className="font-serif text-xl italic" style={{ color: "rgba(212,175,55,0.5)" }}>
+      <p className="font-serif text-xl italic" style={{ color: "rgba(212,139,0,0.5)" }}>
         All selections reviewed
       </p>
     </div>
@@ -81,7 +81,7 @@ export function CardStack({
           data-testid="btn-skip"
           onClick={() => handleSwipe("left")}
           className="w-14 h-14 rounded-full flex items-center justify-center"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(180,155,120,0.55)" }}
+          style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(180,155,120,0.55)" }}
           whileHover={{ scale: 1.08, borderColor: "rgba(239,68,68,0.5)", color: "rgba(239,68,68,0.85)", boxShadow: "0 0 18px rgba(239,68,68,0.15)" }}
           whileTap={{ scale: 0.95 }}
         >
@@ -92,8 +92,8 @@ export function CardStack({
           data-testid="btn-like"
           onClick={() => handleSwipe("right")}
           className="w-14 h-14 rounded-full flex items-center justify-center"
-          style={{ background: "linear-gradient(135deg, rgba(180,130,30,0.22), rgba(212,175,55,0.14))", border: "1px solid rgba(212,175,55,0.4)", color: "rgba(212,175,55,0.9)", boxShadow: "0 0 16px rgba(212,175,55,0.1)" }}
-          whileHover={{ scale: 1.08, boxShadow: "0 0 26px rgba(212,175,55,0.28)", borderColor: "rgba(212,175,55,0.7)" }}
+          style={{ background: "linear-gradient(135deg, rgba(180,130,30,0.22), rgba(212,139,0,0.14))", border: "1px solid rgba(212,139,0,0.4)", color: "rgba(212,139,0,0.9)", boxShadow: "0 0 16px rgba(212,139,0,0.1)" }}
+          whileHover={{ scale: 1.08, boxShadow: "0 0 26px rgba(212,139,0,0.28)", borderColor: "rgba(212,139,0,0.7)" }}
           whileTap={{ scale: 0.95 }}
         >
           <Heart size={22} fill="currentColor" />

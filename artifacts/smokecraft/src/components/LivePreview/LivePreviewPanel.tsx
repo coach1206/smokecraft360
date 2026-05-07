@@ -28,7 +28,7 @@ interface Props {
   visible:       boolean;
 }
 
-const IDLE_SHADOW = "0 8px 40px rgba(0,0,0,0.65), 0 0 0 1px rgba(200,180,120,0.18)";
+const IDLE_SHADOW = "0 8px 40px rgba(26,26,27,0.30), 0 0 0 1px rgba(200,180,120,0.18)";
 
 function buildVariants(accent: string): Variants {
   return {
@@ -38,25 +38,25 @@ function buildVariants(accent: string): Variants {
     },
     shake: {
       x: [0, -9, 9, -6, 6, -3, 3, 0],
-      boxShadow: `0 8px 40px rgba(0,0,0,0.65), 0 0 0 2px rgba(220,60,60,0.72)`,
+      boxShadow: `0 8px 40px rgba(26,26,27,0.30), 0 0 0 2px rgba(220,60,60,0.72)`,
       transition: { x: { duration: 0.42, times: [0, 0.14, 0.29, 0.43, 0.57, 0.72, 0.86, 1] } },
     },
     glowPulse: {
       x: 0,
       boxShadow: [
         IDLE_SHADOW,
-        `0 8px 60px rgba(0,0,0,0.7), 0 0 0 2px ${accent}CC, 0 0 55px ${accent}50`,
-        `0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px ${accent}44`,
+        `0 8px 60px rgba(26,26,27,0.32), 0 0 0 2px ${accent}CC, 0 0 55px ${accent}50`,
+        `0 8px 40px rgba(26,26,27,0.26), 0 0 0 1px ${accent}44`,
       ],
       transition: { duration: 0.88 },
     },
     flickerRed: {
       x: 0,
       boxShadow: [
-        `0 8px 40px rgba(0,0,0,0.65), 0 0 0 1px rgba(220,60,60,0.1)`,
-        `0 8px 40px rgba(0,0,0,0.65), 0 0 0 2px rgba(220,60,60,0.82)`,
-        `0 8px 40px rgba(0,0,0,0.65), 0 0 0 1px rgba(220,60,60,0.1)`,
-        `0 8px 40px rgba(0,0,0,0.65), 0 0 0 2px rgba(220,60,60,0.72)`,
+        `0 8px 40px rgba(26,26,27,0.30), 0 0 0 1px rgba(220,60,60,0.1)`,
+        `0 8px 40px rgba(26,26,27,0.30), 0 0 0 2px rgba(220,60,60,0.82)`,
+        `0 8px 40px rgba(26,26,27,0.30), 0 0 0 1px rgba(220,60,60,0.1)`,
+        `0 8px 40px rgba(26,26,27,0.30), 0 0 0 2px rgba(220,60,60,0.72)`,
         IDLE_SHADOW,
       ],
       transition: { duration: 0.72 },
@@ -161,7 +161,7 @@ function Meter({ label, value, accent }: { label: string; value: number; accent:
           {value}
         </span>
       </div>
-      <div style={{ height: 3, borderRadius: 2, background: "rgba(255,255,255,0.07)" }}>
+      <div style={{ height: 3, borderRadius: 2, background: "rgba(26,26,27,0.09)" }}>
         <motion.div
           animate={{ width: `${value}%` }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
@@ -324,7 +324,7 @@ export default function LivePreviewPanel({
           justifyContent: "center",
           minHeight:      120,
           padding:        "12px 0",
-          background:     "rgba(255,255,255,0.015)",
+          background:     "rgba(26,26,27,0.03)",
           border:         `1px solid ${accentColor}18`,
           borderRadius:   14,
         }}>
@@ -363,7 +363,7 @@ export default function LivePreviewPanel({
               {score}
             </motion.span>
           </div>
-          <div style={{ height: 5, borderRadius: 3, background: "rgba(255,255,255,0.07)" }}>
+          <div style={{ height: 5, borderRadius: 3, background: "rgba(26,26,27,0.09)" }}>
             <motion.div
               animate={{ width: `${score}%` }}
               transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
@@ -373,7 +373,7 @@ export default function LivePreviewPanel({
         </div>
 
         {/* Meter bars */}
-        <div style={{ padding: "10px 12px", background: "rgba(255,255,255,0.02)", borderRadius: 10 }}>
+        <div style={{ padding: "10px 12px", background: "rgba(26,26,27,0.04)", borderRadius: 10 }}>
           <Meter label="Flavor"   value={meters.flavor}   accent={accentColor} />
           <Meter label="Strength" value={meters.strength} accent={accentColor} />
           <Meter label="Balance"  value={meters.balance}  accent={accentColor} />

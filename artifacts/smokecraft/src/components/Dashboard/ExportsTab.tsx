@@ -83,7 +83,7 @@ export function ExportsTab() {
   };
 
   const inputStyle: React.CSSProperties = {
-    background: "rgba(0,0,0,0.4)", border: "1px solid rgba(212,175,55,0.25)",
+    background: "rgba(26,26,27,0.10)", border: "1px solid rgba(212,139,0,0.25)",
     color: "rgba(230,210,175,0.92)", padding: "6px 10px", borderRadius: 5,
     fontSize: 12,
   };
@@ -94,7 +94,7 @@ export function ExportsTab() {
       <div>
         <h2 className="font-serif text-xl flex items-center gap-2"
           style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
-          <Download size={16} style={{ color: "rgba(212,175,55,0.7)" }} />
+          <Download size={16} style={{ color: "rgba(212,139,0,0.7)" }} />
           Exports
         </h2>
         <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
@@ -103,7 +103,7 @@ export function ExportsTab() {
       </div>
 
       {/* ── Builder ────────────────────────────────────────────────────────── */}
-      <div className="rounded-xl p-4" style={{ background: "rgba(0,0,0,0.32)", border: "1px solid rgba(212,175,55,0.18)" }}>
+      <div className="rounded-xl p-4" style={{ background: "rgba(26,26,27,0.07)", border: "1px solid rgba(212,139,0,0.18)" }}>
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
             <Label>Scope</Label>
@@ -147,8 +147,8 @@ export function ExportsTab() {
         <div className="flex items-center justify-between flex-wrap gap-2">
           <button onClick={onExport} disabled={running} data-testid="export-run"
             className="flex items-center gap-2 px-4 py-2 rounded-md text-[11px] uppercase tracking-[0.2em]"
-            style={{ background: "rgba(212,175,55,0.22)", color: "rgba(255,225,165,0.95)",
-              border: "1px solid rgba(212,175,55,0.55)", opacity: running ? 0.6 : 1 }}>
+            style={{ background: "rgba(212,139,0,0.22)", color: "rgba(255,225,165,0.95)",
+              border: "1px solid rgba(212,139,0,0.55)", opacity: running ? 0.6 : 1 }}>
             {running ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
             {running ? "Exporting…" : "Run Export"}
           </button>
@@ -183,7 +183,7 @@ export function ExportsTab() {
           </div>
         ) : history.length === 0 ? (
           <div className="text-[11px] px-4 py-6 text-center rounded"
-            style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(212,175,55,0.18)", color: "rgba(180,155,100,0.5)" }}>
+            style={{ background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(212,139,0,0.18)", color: "rgba(180,155,100,0.5)" }}>
             No exports yet.
           </div>
         ) : (
@@ -191,11 +191,11 @@ export function ExportsTab() {
             {history.map((h) => (
               <div key={h.id}
                 className="flex items-center justify-between gap-3 px-3 py-2 rounded-md"
-                style={{ background: "rgba(0,0,0,0.25)", border: "1px solid rgba(212,175,55,0.10)" }}>
+                style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(212,139,0,0.10)" }}>
                 <div className="flex items-center gap-2 min-w-0">
                   {h.format === "csv"
-                    ? <FileSpreadsheet size={12} style={{ color: "rgba(212,175,55,0.7)" }} />
-                    : <FileJson        size={12} style={{ color: "rgba(212,175,55,0.7)" }} />}
+                    ? <FileSpreadsheet size={12} style={{ color: "rgba(212,139,0,0.7)" }} />
+                    : <FileJson        size={12} style={{ color: "rgba(212,139,0,0.7)" }} />}
                   <span className="font-serif text-[12px]" style={{ color: "rgba(230,210,175,0.92)" }}>{h.scope}</span>
                   <span className="text-[9px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.55)" }}>
                     {h.format}

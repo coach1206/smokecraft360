@@ -20,12 +20,12 @@ interface SwipeableCardProps {
 
 /* ── Palette ───────────────────────────────────────── */
 const CREAM      = "rgba(245, 235, 220, 0.97)";
-const DARK       = "#1A1208";
+const DARK       = "#EFEBE0";
 const BROWN      = "#3D2712";
 const MUTED      = "rgba(58, 36, 14, 0.5)";
 const GOLD       = "#B8891A";
-const GOLD_FILL  = "linear-gradient(135deg, #b07c14, #D4AF37)";
-const GOLD_GLOW  = "0 0 22px rgba(212,175,55,0.5), 0 4px 14px rgba(0,0,0,0.25)";
+const GOLD_FILL  = "linear-gradient(135deg, #b07c14, #D48B00)";
+const GOLD_GLOW  = "0 0 22px rgba(212,139,0,0.5), 0 4px 14px rgba(26,26,27,0.05)";
 
 const STRENGTH_LABELS = ["Very Mild", "Mild", "Medium", "Full", "Very Full"] as const;
 const strengthLabel = (s: number) => STRENGTH_LABELS[Math.min(s - 1, 4)] ?? "Medium";
@@ -57,7 +57,7 @@ function ProductPhoto({ product }: { product: ProductResult }) {
       src={src}
       alt={product.name}
       className="w-full h-full object-contain drop-shadow-2xl"
-      style={{ filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.72))" }}
+      style={{ filter: "drop-shadow(0 12px 32px rgba(26,26,27,0.34))" }}
       onError={() => setErr(true)}
       loading="lazy"
       decoding="async"
@@ -119,7 +119,7 @@ export function SwipeableCard({
       {isHero && (
         <motion.div className="absolute inset-0 rounded-3xl pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse 90% 60% at 50% 110%, rgba(212,175,55,0.25) 0%, transparent 68%)",
+            background: "radial-gradient(ellipse 90% 60% at 50% 110%, rgba(212,139,0,0.25) 0%, transparent 68%)",
             filter: "blur(20px)", transform: "translateY(12px) scale(0.93)",
           }}
           animate={{ opacity: isHovered ? 1 : 0.5 }}
@@ -149,17 +149,17 @@ export function SwipeableCard({
           style={{
             background: CREAM,
             boxShadow: isTop && isHovered
-              ? "0 24px 64px rgba(0,0,0,0.65), 0 0 32px rgba(212,175,55,0.18), inset 0 1px 0 rgba(255,255,255,0.7)"
+              ? "0 24px 64px rgba(26,26,27,0.30), 0 0 32px rgba(212,139,0,0.18), inset 0 1px 0 rgba(255,255,255,0.7)"
               : isHero
-                ? "0 20px 52px rgba(0,0,0,0.6), 0 0 24px rgba(212,175,55,0.12), inset 0 1px 0 rgba(255,255,255,0.6)"
-                : "0 12px 36px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.55)",
+                ? "0 20px 52px rgba(26,26,27,0.26), 0 0 24px rgba(212,139,0,0.12), inset 0 1px 0 rgba(255,255,255,0.6)"
+                : "0 12px 36px rgba(26,26,27,0.18), inset 0 1px 0 rgba(255,255,255,0.55)",
           }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
           {/* Hero gold top rule */}
           {isHero && (
             <div className="absolute top-0 left-0 right-0 h-[2px] z-10"
-              style={{ background: "linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.75) 50%, transparent 100%)" }} />
+              style={{ background: "linear-gradient(90deg, transparent 0%, rgba(212,139,0,0.75) 50%, transparent 100%)" }} />
           )}
 
           {/* Like / Skip stamps */}

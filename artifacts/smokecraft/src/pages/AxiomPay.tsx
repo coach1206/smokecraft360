@@ -24,12 +24,12 @@ import { AxEmptyState, AxLoadingState } from "../components/ax";
 // ── design tokens ─────────────────────────────────────────────────────────────
 
 const T = {
-  bg:        "#06040a",
-  surface:   "rgba(255,255,255,0.04)",
-  border:    "rgba(201,168,76,0.18)",
-  gold:      "#c9a84c",
-  goldBright:"#d4af37",
-  text:      "rgba(240,232,212,0.92)",
+  bg:        "#F5F2ED",
+  surface:   "rgba(26,26,27,0.06)",
+  border:    "rgba(212,139,0,0.18)",
+  gold:      "#D48B00",
+  goldBright:"#D48B00",
+  text:      "rgba(26,26,27,0.90)",
   textMuted: "rgba(240,232,212,0.48)",
   green:     "#34d399",
   amber:     "#f59e0b",
@@ -92,8 +92,8 @@ function GlassCard({
       borderRadius: 12,
       backdropFilter: "blur(12px)",
       boxShadow: glow
-        ? `0 0 20px ${glow}22, inset 0 1px 0 rgba(255,255,255,0.06)`
-        : "inset 0 1px 0 rgba(255,255,255,0.06)",
+        ? `0 0 20px ${glow}22, inset 0 1px 0 rgba(26,26,27,0.08)`
+        : "inset 0 1px 0 rgba(26,26,27,0.08)",
       ...style,
     }}>
       {children}
@@ -582,7 +582,7 @@ function StripeConnectTab({ venueId }: { venueId: string | null }) {
               disabled={onboarding || !venueId}
               style={{
                 background: `linear-gradient(135deg, ${T.gold}, ${T.goldBright})`,
-                border: "none", borderRadius: 8, color: "#06040a",
+                border: "none", borderRadius: 8, color: "#F5F2ED",
                 fontSize: 12, fontWeight: 700, padding: "10px 20px",
                 cursor: onboarding ? "wait" : "pointer",
                 opacity: onboarding ? 0.7 : 1,
@@ -653,7 +653,7 @@ function StripeConnectTab({ venueId }: { venueId: string | null }) {
             {payouts.map((p: any) => (
               <div key={p.id} style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
-                padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)",
+                padding: "8px 0", borderBottom: "1px solid rgba(26,26,27,0.06)",
               }}>
                 <div>
                   <div style={{ fontSize: 11, color: T.text }}>{fmtCents(p.amount, p.currency)}</div>

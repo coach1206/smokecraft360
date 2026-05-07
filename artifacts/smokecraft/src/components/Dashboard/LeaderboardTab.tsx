@@ -16,11 +16,11 @@ import {
 } from "lucide-react";
 import { fetchLeaderboard, type LeaderboardData } from "@/services/api";
 
-const GOLD     = "rgba(212,175,55,1)";
-const GOLD_DIM = "rgba(212,175,55,0.5)";
+const GOLD     = "rgba(212,139,0,1)";
+const GOLD_DIM = "rgba(212,139,0,0.5)";
 
 const MEDAL_COLORS = [
-  "rgba(212,175,55,0.9)",   // 1st — gold
+  "rgba(212,139,0,0.9)",   // 1st — gold
   "rgba(192,192,192,0.8)",  // 2nd — silver
   "rgba(176,120,60,0.8)",   // 3rd — bronze
 ];
@@ -48,8 +48,8 @@ function LevelPip({ title }: { title: string }) {
     "Explorer":          "rgba(160,140,110,0.65)",
     "Enthusiast":        "rgba(180,155,100,0.75)",
     "Aficionado":        "rgba(200,165,80,0.8)",
-    "Connoisseur":       "rgba(212,175,55,0.9)",
-    "Maestro del Fuego": "rgba(212,175,55,1)",
+    "Connoisseur":       "rgba(212,139,0,0.9)",
+    "Maestro del Fuego": "rgba(212,139,0,1)",
   };
   const color = colors[title] ?? "rgba(180,155,100,0.6)";
   return (
@@ -68,7 +68,7 @@ function LeaderRow({ rank, name, sub, score, label, level, i }: {
     <motion.div
       initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
       className="flex items-center gap-3 py-3"
-      style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+      style={{ borderBottom: "1px solid rgba(26,26,27,0.06)" }}>
       <RankBadge rank={rank} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
@@ -91,7 +91,7 @@ function Board({ title, subtitle, icon, children, empty }: {
 }) {
   return (
     <div className="rounded-xl p-5"
-      style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
+      style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.09)" }}>
       <div className="flex items-center gap-2 mb-4">
         <span style={{ color: GOLD_DIM }}>{icon}</span>
         <div>
@@ -139,7 +139,7 @@ export function LeaderboardTab() {
         </div>
         <motion.button onClick={load}
           className="p-2 rounded-lg"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.5)" }}
+          style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}
           whileHover={{ color: GOLD_DIM }} whileTap={{ scale: 0.95 }}>
           <RefreshCw size={12} />
         </motion.button>
@@ -147,7 +147,7 @@ export function LeaderboardTab() {
 
       {/* Sub-tab selector */}
       <div className="flex gap-1 p-0.5 rounded-lg w-fit"
-        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+        style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)" }}>
         {([
           { id: "creators",  label: "Top Creators",  icon: <Crown size={10} />   },
           { id: "smokers",   label: "Top Smokers",   icon: <Flame size={10} />   },
@@ -156,7 +156,7 @@ export function LeaderboardTab() {
           <button key={t.id} onClick={() => setTab(t.id)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[9px] uppercase tracking-[0.12em] transition-all duration-200"
             style={tab === t.id
-              ? { background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.25)", color: "rgba(212,175,55,0.85)" }
+              ? { background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.25)", color: "rgba(212,139,0,0.85)" }
               : { color: "rgba(180,155,100,0.45)" }
             }>{t.icon}{t.label}</button>
         ))}
@@ -165,7 +165,7 @@ export function LeaderboardTab() {
       {loading ? (
         <div className="flex justify-center py-12">
           <motion.div className="w-8 h-8 rounded-full border-2"
-            style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.7)" }}
+            style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.7)" }}
             animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
         </div>
       ) : !data ? (
@@ -215,7 +215,7 @@ export function LeaderboardTab() {
                   <motion.div key={u.userId}
                     initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
                     className="flex items-center gap-3 py-3"
-                    style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                    style={{ borderBottom: "1px solid rgba(26,26,27,0.06)" }}>
                     <RankBadge rank={i + 1} />
                     <div className="flex-1">
                       <p className="font-serif text-xs" style={{ color: "rgba(210,190,155,0.85)" }}>{u.name}</p>
@@ -234,15 +234,15 @@ export function LeaderboardTab() {
       )}
 
       {/* Level guide */}
-      <div className="rounded-xl p-5" style={{ background: "rgba(212,175,55,0.02)", border: "1px solid rgba(212,175,55,0.1)" }}>
+      <div className="rounded-xl p-5" style={{ background: "rgba(212,139,0,0.02)", border: "1px solid rgba(212,139,0,0.1)" }}>
         <p className="text-[8px] uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(180,155,100,0.4)" }}>Level Progression</p>
         <div className="space-y-2">
           {[
             { title: "Explorer",          orders: "0+",  xp: "0+",   color: "rgba(160,140,110,0.65)" },
             { title: "Enthusiast",        orders: "5+",  xp: "50+",  color: "rgba(180,155,100,0.75)" },
             { title: "Aficionado",        orders: "15+", xp: "150+", color: "rgba(200,165,80,0.8)"   },
-            { title: "Connoisseur",       orders: "30+", xp: "350+", color: "rgba(212,175,55,0.9)"   },
-            { title: "Maestro del Fuego", orders: "60+", xp: "700+", color: "rgba(212,175,55,1)"     },
+            { title: "Connoisseur",       orders: "30+", xp: "350+", color: "rgba(212,139,0,0.9)"   },
+            { title: "Maestro del Fuego", orders: "60+", xp: "700+", color: "rgba(212,139,0,1)"     },
           ].map((tier) => (
             <div key={tier.title} className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -255,7 +255,7 @@ export function LeaderboardTab() {
             </div>
           ))}
         </div>
-        <p className="text-[8px] mt-3 pt-3" style={{ color: "rgba(180,155,100,0.28)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+        <p className="text-[8px] mt-3 pt-3" style={{ color: "rgba(180,155,100,0.28)", borderTop: "1px solid rgba(26,26,27,0.07)" }}>
           Maestro del Fuego unlocks: Signature Cigar Creator · Custom Band Designer
         </p>
       </div>

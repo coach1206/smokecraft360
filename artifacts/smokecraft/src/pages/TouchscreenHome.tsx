@@ -30,7 +30,7 @@ const TYPE_COLORS: Record<string, string> = {
   daily:   "#f59e0b",
   weekly:  "#8b5cf6",
   venue:   "#06b6d4",
-  grand:   "#d4af37",
+  grand:   "#D48B00",
 };
 
 interface TournamentAnnouncement {
@@ -107,7 +107,7 @@ export default function TouchscreenHome() {
     return null;
   }
 
-  const accentColor = announcement ? (TYPE_COLORS[announcement.type] ?? "#d4af37") : "#d4af37";
+  const accentColor = announcement ? (TYPE_COLORS[announcement.type] ?? "#D48B00") : "#D48B00";
   const typeLabel   = announcement ? (TYPE_LABELS[announcement.type]  ?? announcement.type) : "";
 
   return (
@@ -125,7 +125,7 @@ export default function TouchscreenHome() {
           style={{
             fontSize: 28,
             fontWeight: 700,
-            color: "#d4af37",
+            color: "#D48B00",
             margin: "0 0 8px",
             fontFamily: "'Playfair Display', serif",
             letterSpacing: "0.03em",
@@ -234,7 +234,7 @@ export default function TouchscreenHome() {
                 width: 24,
                 height: 24,
                 borderRadius: "50%",
-                background: "rgba(255,255,255,0.07)",
+                background: "rgba(26,26,27,0.09)",
                 border: "1px solid rgba(255,255,255,0.1)",
                 display: "flex",
                 alignItems: "center",
@@ -277,8 +277,8 @@ export default function TouchscreenHome() {
           marginTop: 32,
           minHeight: 72,
           padding: "0 32px",
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          background: "rgba(26,26,27,0.06)",
+          border: "1px solid rgba(26,26,27,0.10)",
           borderRadius: 14,
           color: "rgba(232,224,200,0.5)",
           fontSize: 14,

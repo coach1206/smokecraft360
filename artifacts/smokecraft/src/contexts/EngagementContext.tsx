@@ -35,17 +35,17 @@ const ACTION_META: Record<EngagementAction, { label: string; icon: "zap" | "flam
 
 function ToastIcon({ type }: { type: "zap" | "flame" | "save" }) {
   const gradients = {
-    zap:   "linear-gradient(135deg, #d4af37, #f59e0b)",
+    zap:   "linear-gradient(135deg, #D48B00, #f59e0b)",
     flame: "linear-gradient(135deg, #ef4444, #f97316)",
     save:  "linear-gradient(135deg, #6366f1, #8b5cf6)",
   };
   const icons = {
-    zap:   <Zap   size={18} color="#0a0806" fill="#0a0806" />,
+    zap:   <Zap   size={18} color="#F5F2ED" fill="#F5F2ED" />,
     flame: <Flame size={18} color="#fff"    fill="#fff"    />,
     save:  <BookMarked size={16} color="#fff" />,
   };
   const borders = {
-    zap:   "rgba(212,175,55,0.4)",
+    zap:   "rgba(212,139,0,0.4)",
     flame: "rgba(239,68,68,0.4)",
     save:  "rgba(99,102,241,0.4)",
   };
@@ -71,17 +71,17 @@ function PointsToast({ reward }: { reward: { action: EngagementAction; points: n
   const isBig = reward.points >= 25;
 
   const bgMap = {
-    zap:   "linear-gradient(135deg, rgba(212,175,55,0.2), rgba(245,158,11,0.15))",
+    zap:   "linear-gradient(135deg, rgba(212,139,0,0.2), rgba(245,158,11,0.15))",
     flame: "linear-gradient(135deg, rgba(239,68,68,0.2), rgba(249,115,22,0.15))",
     save:  "linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.15))",
   };
   const borderMap = {
-    zap:   "rgba(212,175,55,0.4)",
+    zap:   "rgba(212,139,0,0.4)",
     flame: "rgba(239,68,68,0.4)",
     save:  "rgba(99,102,241,0.4)",
   };
   const colorMap = {
-    zap:   "#d4af37",
+    zap:   "#D48B00",
     flame: "#f97316",
     save:  "#a78bfa",
   };
@@ -105,7 +105,7 @@ function PointsToast({ reward }: { reward: { action: EngagementAction; points: n
         background: bgMap[meta.icon],
         border: `1px solid ${borderMap[meta.icon]}`,
         backdropFilter: "blur(12px)",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(0,0,0,0.15)",
+        boxShadow: "0 8px 32px rgba(26,26,27,0.10), 0 0 20px rgba(26,26,27,0.04)",
       }}
     >
       <ToastIcon type={meta.icon} />

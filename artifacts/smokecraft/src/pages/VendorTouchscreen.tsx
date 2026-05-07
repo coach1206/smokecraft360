@@ -62,7 +62,7 @@ export default function VendorTouchscreen() {
             style={{
               fontSize: 24,
               fontWeight: 600,
-              color: "#d4af37",
+              color: "#D48B00",
               margin: 0,
               fontFamily: "'Playfair Display', serif",
             }}
@@ -79,10 +79,10 @@ export default function VendorTouchscreen() {
           style={{
             minHeight: 44,
             padding: "0 20px",
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "rgba(26,26,27,0.06)",
+            border: "1px solid rgba(26,26,27,0.10)",
             borderRadius: 12,
-            color: "#d4af37",
+            color: "#D48B00",
             fontSize: 13,
             cursor: "pointer",
             fontWeight: 600,

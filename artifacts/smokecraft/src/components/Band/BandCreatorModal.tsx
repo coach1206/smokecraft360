@@ -124,7 +124,7 @@ export function BandCreatorModal({
         <>
           <motion.div
             className="fixed inset-0 z-[80]"
-            style={{ background: "rgba(0,0,0,0.78)", backdropFilter: "blur(6px)" }}
+            style={{ background: "rgba(26,26,27,0.38)", backdropFilter: "blur(6px)" }}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={handleClose}
           />
@@ -133,15 +133,15 @@ export function BandCreatorModal({
             className="fixed inset-x-4 top-6 bottom-6 z-[90] max-w-3xl mx-auto flex flex-col rounded-2xl overflow-hidden"
             style={{
               background: "linear-gradient(160deg, hsl(24 18% 9%), hsl(22 18% 5%))",
-              border: "1px solid rgba(212,175,55,0.2)",
-              boxShadow: "0 30px 80px rgba(0,0,0,0.9), 0 0 60px rgba(212,175,55,0.06)",
+              border: "1px solid rgba(212,139,0,0.2)",
+              boxShadow: "0 30px 80px rgba(26,26,27,0.50), 0 0 60px rgba(212,139,0,0.06)",
             }}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 10 }}
             transition={{ type: "spring", stiffness: 260, damping: 26 }}
           >
-            <div className="h-px w-full flex-shrink-0" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)" }} />
+            <div className="h-px w-full flex-shrink-0" style={{ background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.5), transparent)" }} />
 
             {/* Header */}
             <div className="flex items-center justify-between px-7 py-5 flex-shrink-0">
@@ -149,12 +149,12 @@ export function BandCreatorModal({
                 <h2 className="font-serif text-2xl" style={{ fontWeight: 300, color: "rgba(230,210,175,0.95)" }}>
                   Create My Blend
                 </h2>
-                <p className="text-[10px] uppercase tracking-[0.3em] mt-0.5" style={{ color: "rgba(212,175,55,0.45)" }}>
+                <p className="text-[10px] uppercase tracking-[0.3em] mt-0.5" style={{ color: "rgba(212,139,0,0.45)" }}>
                   Design your full cigar experience
                 </p>
               </div>
               <button onClick={handleClose} className="w-9 h-9 rounded-full flex items-center justify-center"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.5)" }}>
+                style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}>
                 <X size={15} />
               </button>
             </div>
@@ -163,7 +163,7 @@ export function BandCreatorModal({
             <div className="flex-1 overflow-y-auto px-7 pb-6 space-y-7">
 
               {/* Live band preview */}
-              <div className="flex flex-col items-center py-6 rounded-xl" style={{ background: "rgba(0,0,0,0.3)" }}>
+              <div className="flex flex-col items-center py-6 rounded-xl" style={{ background: "rgba(26,26,27,0.06)" }}>
                 <CigarBandPreview design={design} blendName={blendName} style={style} size="md" />
                 <p className="mt-4 text-[9px] uppercase tracking-[0.25em]" style={{ color: "rgba(180,155,100,0.35)" }}>Live Preview</p>
               </div>
@@ -173,13 +173,13 @@ export function BandCreatorModal({
                 <Label>Blend Name</Label>
                 <input
                   className="w-full bg-transparent outline-none font-serif text-2xl py-2 border-b transition-colors"
-                  style={{ borderColor: "rgba(212,175,55,0.25)", color: "rgba(230,210,175,0.9)", caretColor: "rgba(212,175,55,0.8)" }}
+                  style={{ borderColor: "rgba(212,139,0,0.25)", color: "rgba(230,210,175,0.9)", caretColor: "rgba(212,139,0,0.8)" }}
                   placeholder="Name your blend…"
                   maxLength={28}
                   value={blendName}
                   onChange={(e) => setBlendName(e.target.value)}
-                  onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = "rgba(212,175,55,0.55)"; }}
-                  onBlur={(e) =>  { (e.target as HTMLInputElement).style.borderColor = "rgba(212,175,55,0.25)"; }}
+                  onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = "rgba(212,139,0,0.55)"; }}
+                  onBlur={(e) =>  { (e.target as HTMLInputElement).style.borderColor = "rgba(212,139,0,0.25)"; }}
                 />
               </div>
 
@@ -191,8 +191,8 @@ export function BandCreatorModal({
                     <button key={s.id} onClick={() => setStyle(s.id)}
                       className="px-4 py-2 rounded-full text-sm font-serif tracking-wide transition-all duration-300"
                       style={style === s.id
-                        ? { background: "rgba(212,175,55,0.16)", border: "1px solid rgba(212,175,55,0.5)", color: "rgba(212,175,55,0.95)" }
-                        : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.6)" }
+                        ? { background: "rgba(212,139,0,0.16)", border: "1px solid rgba(212,139,0,0.5)", color: "rgba(212,139,0,0.95)" }
+                        : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.6)" }
                       }
                     >{s.label}</button>
                   ))}
@@ -212,8 +212,8 @@ export function BandCreatorModal({
                         title={locked ? `${c.label} — Elite only` : c.label}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-all duration-200"
                         style={{
-                          background: active ? c.primary : "rgba(255,255,255,0.04)",
-                          border: active ? `1px solid ${c.accent}` : "1px solid rgba(255,255,255,0.08)",
+                          background: active ? c.primary : "rgba(26,26,27,0.06)",
+                          border: active ? `1px solid ${c.accent}` : "1px solid rgba(26,26,27,0.10)",
                           color: active ? c.text : locked ? "rgba(180,155,100,0.3)" : "rgba(180,155,100,0.65)",
                           opacity: locked ? 0.55 : 1,
                           cursor: locked ? "not-allowed" : "pointer",
@@ -221,13 +221,13 @@ export function BandCreatorModal({
                       >
                         <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: c.accent }} />
                         {c.label}
-                        {locked && <Lock size={9} style={{ color: "rgba(212,175,55,0.4)" }} />}
+                        {locked && <Lock size={9} style={{ color: "rgba(212,139,0,0.4)" }} />}
                       </button>
                     );
                   })}
                 </div>
                 {!isElite && (
-                  <p className="mt-2 text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(212,175,55,0.35)" }}>
+                  <p className="mt-2 text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(212,139,0,0.35)" }}>
                     <Crown size={9} className="inline mr-1" />4 exclusive colors unlock at Elite
                   </p>
                 )}
@@ -246,15 +246,15 @@ export function BandCreatorModal({
                         title={locked ? `${em.label} — Elite only` : em.label}
                         className="px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 flex items-center gap-1.5"
                         style={{
-                          background: active ? "rgba(212,175,55,0.16)" : "rgba(255,255,255,0.04)",
-                          border: active ? "1px solid rgba(212,175,55,0.5)" : "1px solid rgba(255,255,255,0.08)",
-                          color: active ? "rgba(212,175,55,0.95)" : locked ? "rgba(180,155,100,0.3)" : "rgba(180,155,100,0.6)",
+                          background: active ? "rgba(212,139,0,0.16)" : "rgba(26,26,27,0.06)",
+                          border: active ? "1px solid rgba(212,139,0,0.5)" : "1px solid rgba(26,26,27,0.10)",
+                          color: active ? "rgba(212,139,0,0.95)" : locked ? "rgba(180,155,100,0.3)" : "rgba(180,155,100,0.6)",
                           opacity: locked ? 0.55 : 1,
                           cursor: locked ? "not-allowed" : "pointer",
                         }}
                       >
                         {em.label}
-                        {locked && <Lock size={9} style={{ color: "rgba(212,175,55,0.35)" }} />}
+                        {locked && <Lock size={9} style={{ color: "rgba(212,139,0,0.35)" }} />}
                       </button>
                     );
                   })}
@@ -273,9 +273,9 @@ export function BandCreatorModal({
                         onClick={() => !locked && setDesignField("textStyle", t.id as BlendDesign["textStyle"])}
                         className="px-4 py-2 rounded text-sm transition-all duration-200 flex items-center gap-1.5"
                         style={{
-                          background: active ? "rgba(212,175,55,0.14)" : "rgba(255,255,255,0.04)",
-                          border: active ? "1px solid rgba(212,175,55,0.45)" : "1px solid rgba(255,255,255,0.08)",
-                          color: active ? "rgba(212,175,55,0.9)" : locked ? "rgba(180,155,100,0.3)" : "rgba(180,155,100,0.6)",
+                          background: active ? "rgba(212,139,0,0.14)" : "rgba(26,26,27,0.06)",
+                          border: active ? "1px solid rgba(212,139,0,0.45)" : "1px solid rgba(26,26,27,0.10)",
+                          color: active ? "rgba(212,139,0,0.9)" : locked ? "rgba(180,155,100,0.3)" : "rgba(180,155,100,0.6)",
                           fontFamily: t.id === "sans" ? "'Inter'" : "'Cormorant Garamond', serif",
                           fontStyle: t.id === "italic" ? "italic" : "normal",
                           opacity: locked ? 0.55 : 1,
@@ -314,8 +314,8 @@ export function BandCreatorModal({
                             onClick={() => setSelectedFood(food.name)}
                             className="flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-250"
                             style={{
-                              background: isSelected ? "rgba(212,175,55,0.1)" : "rgba(255,255,255,0.03)",
-                              border: isSelected ? "1px solid rgba(212,175,55,0.38)" : "1px solid rgba(255,255,255,0.07)",
+                              background: isSelected ? "rgba(212,139,0,0.1)" : "rgba(26,26,27,0.05)",
+                              border: isSelected ? "1px solid rgba(212,139,0,0.38)" : "1px solid rgba(26,26,27,0.09)",
                               color: isSelected ? "rgba(230,210,175,0.9)" : "rgba(180,155,100,0.6)",
                             }}
                           >
@@ -328,7 +328,7 @@ export function BandCreatorModal({
                             </div>
                             {isSelected && (
                               <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
-                                <Check size={14} style={{ color: "rgba(212,175,55,0.8)", flexShrink: 0 }} />
+                                <Check size={14} style={{ color: "rgba(212,139,0,0.8)", flexShrink: 0 }} />
                               </motion.div>
                             )}
                           </button>
@@ -339,7 +339,7 @@ export function BandCreatorModal({
                     /* Standard: display-only top pick */
                     <div
                       className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                      style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
+                      style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)" }}
                     >
                       <span className="text-xl leading-none">{CATEGORY_EMOJI[foodPairings[0].category] ?? "🍽"}</span>
                       <div className="flex-1">
@@ -347,9 +347,9 @@ export function BandCreatorModal({
                         <p className="text-[9px] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>Auto-selected pairing</p>
                       </div>
                       <div className="flex items-center gap-1.5 px-2 py-1 rounded"
-                        style={{ background: "rgba(212,175,55,0.07)", border: "1px solid rgba(212,175,55,0.15)" }}>
-                        <Crown size={9} style={{ color: "rgba(212,175,55,0.5)" }} />
-                        <span className="text-[8px] uppercase tracking-[0.15em]" style={{ color: "rgba(212,175,55,0.5)" }}>Elite</span>
+                        style={{ background: "rgba(212,139,0,0.07)", border: "1px solid rgba(212,139,0,0.15)" }}>
+                        <Crown size={9} style={{ color: "rgba(212,139,0,0.5)" }} />
+                        <span className="text-[8px] uppercase tracking-[0.15em]" style={{ color: "rgba(212,139,0,0.5)" }}>Elite</span>
                       </div>
                     </div>
                   )}
@@ -366,7 +366,7 @@ export function BandCreatorModal({
                   value={description}
                   onChange={(e) => setDesc(e.target.value)}
                   className="w-full bg-transparent outline-none resize-none text-sm py-2 px-0 border-b transition-colors"
-                  style={{ borderColor: "rgba(255,255,255,0.1)", color: "rgba(210,190,155,0.8)", caretColor: "rgba(212,175,55,0.8)" }}
+                  style={{ borderColor: "rgba(255,255,255,0.1)", color: "rgba(210,190,155,0.8)", caretColor: "rgba(212,139,0,0.8)" }}
                 />
               </div>
 
@@ -383,10 +383,10 @@ export function BandCreatorModal({
                   <motion.div
                     initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
                     className="rounded-xl overflow-hidden"
-                    style={{ border: "1px solid rgba(212,175,55,0.2)", background: "rgba(0,0,0,0.3)" }}
+                    style={{ border: "1px solid rgba(212,139,0,0.2)", background: "rgba(26,26,27,0.06)" }}
                   >
                     <div className="p-5">
-                      <p className="text-[9px] uppercase tracking-[0.25em] mb-3" style={{ color: "rgba(212,175,55,0.45)" }}>Share Card</p>
+                      <p className="text-[9px] uppercase tracking-[0.25em] mb-3" style={{ color: "rgba(212,139,0,0.45)" }}>Share Card</p>
                       <div className="flex justify-center mb-3">
                         <CigarBandPreview design={design} blendName={blendName} style={style} size="sm" />
                       </div>
@@ -409,7 +409,7 @@ export function BandCreatorModal({
                         >
                           <div
                             className="rounded-lg p-2"
-                            style={{ background: "#F5EBDD", boxShadow: "0 4px 18px rgba(0,0,0,0.35), 0 0 0 1px rgba(212,175,55,0.25)" }}
+                            style={{ background: "#F5EBDD", boxShadow: "0 4px 18px rgba(26,26,27,0.08), 0 0 0 1px rgba(212,139,0,0.25)" }}
                           >
                             <img
                               src={qrDataUrl}
@@ -421,7 +421,7 @@ export function BandCreatorModal({
                           </div>
                           <p
                             className="mt-2 text-center text-[9px] uppercase tracking-[0.22em]"
-                            style={{ color: "rgba(212,175,55,0.65)" }}
+                            style={{ color: "rgba(212,139,0,0.65)" }}
                           >
                             Scan to take it home
                           </p>
@@ -439,11 +439,11 @@ export function BandCreatorModal({
             </div>
 
             {/* Footer */}
-            <div className="flex-shrink-0 px-7 py-5 flex items-center gap-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+            <div className="flex-shrink-0 px-7 py-5 flex items-center gap-3" style={{ borderTop: "1px solid rgba(26,26,27,0.08)" }}>
               <motion.button onClick={handleShare}
                 className="flex items-center gap-2 px-4 py-3 rounded text-xs uppercase tracking-[0.18em]"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(180,155,100,0.55)" }}
-                whileHover={{ borderColor: "rgba(212,175,55,0.35)", color: "rgba(212,175,55,0.75)" }}
+                style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: "rgba(180,155,100,0.55)" }}
+                whileHover={{ borderColor: "rgba(212,139,0,0.35)", color: "rgba(212,139,0,0.75)" }}
                 whileTap={{ scale: 0.97 }}>
                 <Share2 size={13} />Share
               </motion.button>
@@ -452,9 +452,9 @@ export function BandCreatorModal({
                 className="flex-1 flex items-center justify-center gap-2 py-3 font-serif text-base tracking-[0.18em] uppercase rounded"
                 style={savedState
                   ? { background: "rgba(100,200,120,0.12)", border: "1px solid rgba(100,200,120,0.3)", color: "rgba(100,200,120,0.8)" }
-                  : { background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))", color: "hsl(22 18% 6%)", boxShadow: "0 0 30px rgba(212,175,55,0.1)" }
+                  : { background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))", color: "hsl(22 18% 6%)", boxShadow: "0 0 30px rgba(212,139,0,0.1)" }
                 }
-                whileHover={!savedState ? { boxShadow: "0 0 40px rgba(212,175,55,0.2)" } : {}}
+                whileHover={!savedState ? { boxShadow: "0 0 40px rgba(212,139,0,0.2)" } : {}}
                 whileTap={!savedState ? { scale: 0.99 } : {}}>
                 <AnimatePresence mode="wait">
                   {savedState ? (

@@ -34,7 +34,7 @@ const PLAYGROUND_CONFIG: PlaygroundConfig = {
     { id: "pale",    label: "Pale",    primary: "#4A3818", accent: "#F0D88A" },
     { id: "wheat",   label: "Wheat",   primary: "#3A3018", accent: "#D4C080" },
     { id: "red",     label: "Red Ale", primary: "#3A1008", accent: "#C87040" },
-    { id: "craft",   label: "Craft",   primary: "#0A0806", accent: "#70B880", locked: true },
+    { id: "craft",   label: "Craft",   primary: "#F5F2ED", accent: "#70B880", locked: true },
     { id: "reserve", label: "Reserve", primary: "#280818", accent: "#C870A0", locked: true },
   ],
   selectFields: [
@@ -76,7 +76,7 @@ const BASE_CONFIG: CraftFlowConfig = {
     accent: "#E6C76A",
     accentSoft: "#D49555",
     tint: "rgba(60,30,10,0.4)",
-    bodyTextOverlay: "rgba(0,0,0,0.55)",
+    bodyTextOverlay: "rgba(26,26,27,0.22)",
   },
   language: {
     introHeadline: "A guided pour, brewed for your palate.",

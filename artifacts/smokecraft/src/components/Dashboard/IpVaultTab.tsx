@@ -113,7 +113,7 @@ export function IpVaultTab() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="font-serif text-xl flex items-center gap-2" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
-            <FileLock size={16} style={{ color: "rgba(212,175,55,0.7)" }} />
+            <FileLock size={16} style={{ color: "rgba(212,139,0,0.7)" }} />
             IP Vault
           </h2>
           <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
@@ -133,7 +133,7 @@ export function IpVaultTab() {
           </button>
           <button onClick={() => setShowCreate(true)} data-testid="btn-new-asset"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] uppercase tracking-[0.18em]"
-            style={{ background: "rgba(212,175,55,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,175,55,0.45)" }}>
+            style={{ background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.45)" }}>
             <Plus size={11} /> New Asset
           </button>
         </div>
@@ -156,7 +156,7 @@ export function IpVaultTab() {
         </div>
       ) : items.length === 0 ? (
         <div className="text-[11px] px-4 py-8 rounded text-center"
-          style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(212,175,55,0.2)", color: "rgba(180,155,100,0.5)" }}>
+          style={{ background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(212,139,0,0.2)", color: "rgba(180,155,100,0.5)" }}>
           No assets registered yet. Click "New Asset" to add the first one.
         </div>
       ) : (
@@ -170,7 +170,7 @@ export function IpVaultTab() {
                 layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                 data-testid={`ip-asset-${a.id}`}
                 className="rounded-lg p-3"
-                style={{ background: "rgba(0,0,0,0.28)", border: "1px solid rgba(212,175,55,0.12)" }}>
+                style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(212,139,0,0.12)" }}>
                 <div className="flex items-start gap-3">
                   <Shield size={14} style={{ color: tone.fg, marginTop: 2, flexShrink: 0 }} />
                   <div className="flex-1 min-w-0">
@@ -191,14 +191,14 @@ export function IpVaultTab() {
                     {(a.fileUrl || a.fileHash) && (
                       <div className="grid grid-cols-2 gap-2 mt-2">
                         {a.fileUrl && (
-                          <div className="rounded-md p-2" style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                          <div className="rounded-md p-2" style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
                             <div className="text-[9px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(180,155,100,0.55)" }}>File URL</div>
                             <a href={a.fileUrl} target="_blank" rel="noreferrer" className="font-mono text-[11px] truncate block underline"
-                              style={{ color: "rgba(212,175,55,0.85)" }} title={a.fileUrl}>{a.fileUrl}</a>
+                              style={{ color: "rgba(212,139,0,0.85)" }} title={a.fileUrl}>{a.fileUrl}</a>
                           </div>
                         )}
                         {a.fileHash && (
-                          <div className="rounded-md p-2" style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                          <div className="rounded-md p-2" style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
                             <div className="text-[9px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(180,155,100,0.55)" }}>Hash</div>
                             <div className="font-mono text-[10px] truncate" style={{ color: "rgba(230,210,175,0.85)" }} title={a.fileHash}>{a.fileHash}</div>
                           </div>
@@ -228,7 +228,7 @@ export function IpVaultTab() {
                         <ActBtn label="Retire" icon={<Archive size={11} />} disabled={acting[a.id]}
                           onClick={() => wrap(a.id, () => retireIpAsset(a.id))} tone="bad"
                           testId={`retire-${a.id}`} />
-                        {acting[a.id] && <Loader2 size={12} className="animate-spin" style={{ color: "rgba(212,175,55,0.7)" }} />}
+                        {acting[a.id] && <Loader2 size={12} className="animate-spin" style={{ color: "rgba(212,139,0,0.7)" }} />}
                       </div>
                     )}
                   </div>
@@ -259,10 +259,10 @@ function NdaGate({ onSign, error }: { onSign: (name: string) => Promise<void>; e
     <motion.div
       key="nda-gate" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
       className="max-w-2xl mx-auto p-6 rounded-xl"
-      style={{ background: "rgba(0,0,0,0.45)", border: "1px solid rgba(212,175,55,0.25)" }}
+      style={{ background: "rgba(26,26,27,0.14)", border: "1px solid rgba(212,139,0,0.25)" }}
     >
       <div className="flex items-center gap-2 mb-4">
-        <FileLock size={18} style={{ color: "rgba(212,175,55,0.85)" }} />
+        <FileLock size={18} style={{ color: "rgba(212,139,0,0.85)" }} />
         <h3 className="font-serif text-lg" style={{ color: "rgba(230,210,175,0.92)" }}>Non-Disclosure Agreement</h3>
       </div>
       <div className="text-[12px] leading-relaxed space-y-2 mb-4" style={{ color: "rgba(220,200,170,0.78)" }}>
@@ -296,7 +296,7 @@ function NdaGate({ onSign, error }: { onSign: (name: string) => Promise<void>; e
         placeholder="Jane Q. Smith" data-testid="nda-name"
         className="w-full text-[13px] mb-3"
         style={{
-          background: "rgba(0,0,0,0.4)", border: "1px solid rgba(212,175,55,0.3)",
+          background: "rgba(26,26,27,0.10)", border: "1px solid rgba(212,139,0,0.3)",
           color: "rgba(230,210,175,0.92)", padding: "8px 12px", borderRadius: 6,
           fontFamily: '"Cormorant Garamond", serif',
         }} />
@@ -311,8 +311,8 @@ function NdaGate({ onSign, error }: { onSign: (name: string) => Promise<void>; e
         data-testid="nda-submit"
         className="w-full px-4 py-2 rounded-md text-[12px] uppercase tracking-[0.2em] flex items-center justify-center gap-2"
         style={{
-          background: "rgba(212,175,55,0.22)", color: "rgba(255,225,165,0.95)",
-          border: "1px solid rgba(212,175,55,0.55)",
+          background: "rgba(212,139,0,0.22)", color: "rgba(255,225,165,0.95)",
+          border: "1px solid rgba(212,139,0,0.55)",
           opacity: !name.trim() || !agreed || busy ? 0.5 : 1,
         }}>
         {busy ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
@@ -356,7 +356,7 @@ function CreateAssetForm({
 
   const inputCls = "w-full text-[12px]";
   const inputStyle: React.CSSProperties = {
-    background: "rgba(0,0,0,0.4)", border: "1px solid rgba(212,175,55,0.25)",
+    background: "rgba(26,26,27,0.10)", border: "1px solid rgba(212,139,0,0.25)",
     color: "rgba(230,210,175,0.92)", padding: "6px 10px", borderRadius: 5,
   };
 
@@ -364,7 +364,7 @@ function CreateAssetForm({
     <motion.div
       initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
       className="rounded-lg p-4 overflow-hidden"
-      style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(212,175,55,0.25)" }}
+      style={{ background: "rgba(26,26,27,0.08)", border: "1px solid rgba(212,139,0,0.25)" }}
     >
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-serif text-[14px]" style={{ color: "rgba(230,210,175,0.9)" }}>New IP Asset</h3>
@@ -413,12 +413,12 @@ function CreateAssetForm({
       </div>
       <div className="flex items-center justify-end gap-2 mt-4">
         <button onClick={onCancel} className="px-3 py-1.5 rounded-md text-[10px] uppercase tracking-[0.18em]"
-          style={{ background: "rgba(255,255,255,0.04)", color: "rgba(180,155,100,0.6)", border: "1px solid rgba(255,255,255,0.06)" }}>
+          style={{ background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.6)", border: "1px solid rgba(26,26,27,0.08)" }}>
           Cancel
         </button>
         <button onClick={submit} disabled={!title.trim() || busy} data-testid="new-submit"
           className="px-3 py-1.5 rounded-md text-[10px] uppercase tracking-[0.18em] flex items-center gap-1.5"
-          style={{ background: "rgba(212,175,55,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,175,55,0.45)", opacity: !title.trim() || busy ? 0.5 : 1 }}>
+          style={{ background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.45)", opacity: !title.trim() || busy ? 0.5 : 1 }}>
           {busy ? <Loader2 size={11} className="animate-spin" /> : <Plus size={11} />}
           Create Draft
         </button>

@@ -42,7 +42,7 @@ export function AmbientBackground() {
 
       {/* ── Layer 4: Top edge shadow ──────────────────────────────── */}
       <div className="absolute inset-0" style={{
-        background: "linear-gradient(180deg, rgba(0,0,0,0.28) 0%, transparent 16%)",
+        background: "linear-gradient(180deg, rgba(26,26,27,0.06) 0%, transparent 16%)",
       }} />
 
       {/* ── Layer 5: Film-grain texture (very subtle) ─────────────── */}
@@ -61,7 +61,7 @@ export function AmbientBackground() {
 
       {/* ── Layer 7: Thin gold top line ───────────────────────────── */}
       <div className="absolute top-0 left-0 right-0 h-px" style={{
-        background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.20), rgba(212,175,55,0.32), rgba(212,175,55,0.20), transparent)",
+        background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.20), rgba(212,139,0,0.32), rgba(212,139,0,0.20), transparent)",
       }} />
 
     </div>

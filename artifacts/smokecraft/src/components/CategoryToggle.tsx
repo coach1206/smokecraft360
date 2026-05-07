@@ -38,7 +38,7 @@ export function CategoryToggle({ value, onChange }: CategoryToggleProps) {
       style={{
         background: "rgba(245,235,221,0.95)",
         border:     "2px solid rgba(184,137,26,0.32)",
-        boxShadow:  "0 4px 20px rgba(0,0,0,0.25), inset 0 1px 3px rgba(0,0,0,0.08)",
+        boxShadow:  "0 4px 20px rgba(26,26,27,0.05), inset 0 1px 3px rgba(26,26,27,0.02)",
       }}
       data-testid="category-toggle"
     >
@@ -64,8 +64,8 @@ export function CategoryToggle({ value, onChange }: CategoryToggleProps) {
                 layoutId="category-bg"
                 className="absolute inset-0 rounded-xl -z-10"
                 style={{
-                  background: "linear-gradient(135deg, #b07c14, #D4AF37)",
-                  boxShadow:  "0 0 24px rgba(212,175,55,0.40), 0 4px 14px rgba(0,0,0,0.18)",
+                  background: "linear-gradient(135deg, #b07c14, #D48B00)",
+                  boxShadow:  "0 0 24px rgba(212,139,0,0.40), 0 4px 14px rgba(26,26,27,0.04)",
                 }}
                 transition={{ type: "spring", stiffness: 280, damping: 28 }}
               />

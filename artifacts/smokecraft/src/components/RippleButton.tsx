@@ -26,7 +26,7 @@ export default function RippleButton({
   disabled = false,
   className = "",
   style,
-  rippleColor = "rgba(212,175,55,0.25)",
+  rippleColor = "rgba(212,139,0,0.25)",
   as = "button",
   ...rest
 }: RippleButtonProps) {

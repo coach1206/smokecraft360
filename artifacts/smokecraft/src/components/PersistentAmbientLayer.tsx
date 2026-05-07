@@ -72,7 +72,7 @@ export const PersistentAmbientLayer = memo(function PersistentAmbientLayer() {
   const urlCraft  = location.split("/")[2] ?? env?.craftType ?? "smoke";
   const craft     = env?.craftType ?? urlCraft;
   const bgImage   = CRAFT_BG[craft] ?? CRAFT_BG.smoke;
-  const accent    = CRAFT_ACCENT[craft] ?? "#d4af37";
+  const accent    = CRAFT_ACCENT[craft] ?? "#D48B00";
 
   const lightingMood = env?.lightingMood ?? "neutral";
   const moodVisuals  = MOOD_VISUALS[lightingMood];
@@ -190,7 +190,7 @@ export const PersistentAmbientLayer = memo(function PersistentAmbientLayer() {
         }}
         style={{
           position:   "absolute", inset: 0,
-          background: "linear-gradient(180deg, rgba(0,0,0,0.10) 0%, transparent 22%, rgba(0,0,0,0.72) 100%)",
+          background: "linear-gradient(180deg, rgba(26,26,27,0.03) 0%, transparent 22%, rgba(26,26,27,0.34) 100%)",
           willChange: "opacity",
         }}
       />
@@ -250,7 +250,7 @@ export const PersistentAmbientLayer = memo(function PersistentAmbientLayer() {
       {/* ── Layer 9: Vignette ── */}
       <div style={{
         position:   "absolute", inset: 0,
-        background: "radial-gradient(ellipse at 50% 45%, transparent 52%, rgba(0,0,0,0.58) 100%)",
+        background: "radial-gradient(ellipse at 50% 45%, transparent 52%, rgba(26,26,27,0.24) 100%)",
       }} />
     </div>
   );

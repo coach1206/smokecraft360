@@ -23,12 +23,12 @@ import {
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
 const T = {
-  bg:        "#06040a",
-  surface:   "rgba(255,255,255,0.04)",
-  border:    "rgba(201,168,76,0.18)",
-  gold:      "#c9a84c",
-  goldBright:"#d4af37",
-  text:      "rgba(240,232,212,0.92)",
+  bg:        "#F5F2ED",
+  surface:   "rgba(26,26,27,0.06)",
+  border:    "rgba(212,139,0,0.18)",
+  gold:      "#D48B00",
+  goldBright:"#D48B00",
+  text:      "rgba(26,26,27,0.90)",
   textMuted: "rgba(240,232,212,0.48)",
   green:     "#34d399",
   amber:     "#f59e0b",
@@ -125,8 +125,8 @@ function GlassCard({ children, style, glow }: {
       background: T.surface, border: `1px solid ${T.border}`,
       borderRadius: 12, backdropFilter: "blur(12px)",
       boxShadow: glow
-        ? `0 0 24px ${glow}22, inset 0 1px 0 rgba(255,255,255,0.05)`
-        : "inset 0 1px 0 rgba(255,255,255,0.05)",
+        ? `0 0 24px ${glow}22, inset 0 1px 0 rgba(26,26,27,0.07)`
+        : "inset 0 1px 0 rgba(26,26,27,0.07)",
       ...style,
     }}>
       {children}
@@ -146,7 +146,7 @@ function RiskGauge({ score, label }: { score: number; label: string }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
       <svg width={130} height={130} viewBox="0 0 130 130">
-        <circle cx={65} cy={65} r={52} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={10} />
+        <circle cx={65} cy={65} r={52} fill="none" stroke="rgba(26,26,27,0.08)" strokeWidth={10} />
         <motion.circle
           cx={65} cy={65} r={52} fill="none"
           stroke={color} strokeWidth={10}
@@ -277,7 +277,7 @@ function FailedWebhooksPanel() {
   if (loading) return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6, padding: "8px 0" }}>
       {Array.from({ length: 3 }, (_, i) => (
-        <div key={i} style={{ height: 52, background: "rgba(255,255,255,0.04)", borderRadius: 8, border: "1px solid rgba(201,168,76,0.1)", animation: "pulse 1.6s ease-in-out infinite", animationDelay: `${i * 0.2}s` }} />
+        <div key={i} style={{ height: 52, background: "rgba(26,26,27,0.06)", borderRadius: 8, border: "1px solid rgba(212,139,0,0.1)", animation: "pulse 1.6s ease-in-out infinite", animationDelay: `${i * 0.2}s` }} />
       ))}
     </div>
   );

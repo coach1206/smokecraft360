@@ -49,7 +49,7 @@ export default function MentorCommentary({ mentor, line, whyNote, accentColor }:
         display:         "flex",
         gap:             12,
         alignItems:      "flex-start",
-        boxShadow:       `0 16px 48px rgba(0,0,0,0.72), 0 0 0 1px ${accentColor}10`,
+        boxShadow:       `0 16px 48px rgba(26,26,27,0.34), 0 0 0 1px ${accentColor}10`,
       }}
     >
       {/* Mentor monogram chip */}
@@ -109,7 +109,7 @@ export default function MentorCommentary({ mentor, line, whyNote, accentColor }:
             style={{
               margin:      "7px 0 0",
               fontSize:    11,
-              color:       "rgba(240,232,212,0.38)",
+              color:       "rgba(26,26,27,0.38)",
               lineHeight:  1.55,
               fontStyle:   "normal",
               letterSpacing: "0.01em",

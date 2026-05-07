@@ -106,7 +106,7 @@ const DEFAULT_CONFIG: VenueConfig = {
   id:           "default",
   logoText:     "SmokeCraft 360",
   tagline:      "Connoisseur's Companion",
-  primaryColor: "#D4AF37",
+  primaryColor: "#D48B00",
   logoUrl:      null,
   features: {
     demoMode:    true,

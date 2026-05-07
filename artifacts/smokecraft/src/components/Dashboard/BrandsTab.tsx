@@ -100,15 +100,15 @@ export function BrandsTab() {
               <button key={d.id} onClick={() => setSelectedDistId(selectedDistId === d.id ? null : d.id)}
                 className="w-full text-left px-3 py-3 rounded-xl transition-all duration-200"
                 style={selectedDistId === d.id
-                  ? { background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.3)" }
-                  : { background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)" }
+                  ? { background: "rgba(212,139,0,0.1)", border: "1px solid rgba(212,139,0,0.3)" }
+                  : { background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }
                 }>
                 <div className="flex items-center justify-between">
                   <span className="font-serif text-sm" style={{ color: selectedDistId === d.id ? "rgba(230,210,175,0.9)" : "rgba(200,180,145,0.7)" }}>
                     {d.name}
                   </span>
                   <span className="text-[9px] px-1.5 py-0.5 rounded-full ml-2"
-                    style={{ background: "rgba(212,175,55,0.08)", color: "rgba(212,175,55,0.6)" }}>
+                    style={{ background: "rgba(212,139,0,0.08)", color: "rgba(212,139,0,0.6)" }}>
                     {d.brandCount}
                   </span>
                 </div>
@@ -126,8 +126,8 @@ export function BrandsTab() {
             <button onClick={() => setSelectedDistId(null)}
               className="w-full text-left px-3 py-3 rounded-xl transition-all duration-200 mt-2"
               style={selectedDistId === null
-                ? { background: "rgba(212,175,55,0.07)", border: "1px solid rgba(212,175,55,0.2)" }
-                : { background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }
+                ? { background: "rgba(212,139,0,0.07)", border: "1px solid rgba(212,139,0,0.2)" }
+                : { background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.07)" }
               }>
               <span className="text-[11px] italic" style={{ color: "rgba(180,155,100,0.5)" }}>
                 All brands ({brands.length})
@@ -140,14 +140,14 @@ export function BrandsTab() {
         <div className="space-y-3">
           {selectedDist && (
             <div className="p-4 rounded-xl mb-4 flex gap-4 flex-wrap"
-              style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.12)" }}>
+              style={{ background: "rgba(212,139,0,0.04)", border: "1px solid rgba(212,139,0,0.12)" }}>
               <DistributorDetail distributor={selectedDist} />
             </div>
           )}
 
           <p className="text-[9px] uppercase tracking-[0.25em] mb-2" style={{ color: "rgba(180,155,100,0.4)" }}>
             {selectedDist ? `Brands under ${selectedDist.name}` : "All Brands"}
-            <span className="ml-2 text-[8px]" style={{ color: "rgba(212,175,55,0.35)" }}>
+            <span className="ml-2 text-[8px]" style={{ color: "rgba(212,139,0,0.35)" }}>
               — {filteredBrands.length} brand{filteredBrands.length !== 1 ? "s" : ""}
               {" · "}
               {filteredBrands.reduce((s, b) => s + b.impressions, 0).toLocaleString()} total impressions
@@ -183,18 +183,18 @@ export function BrandsTab() {
       {/* Campaigns — future-ready panel */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
         <div className="rounded-xl p-6 relative overflow-hidden"
-          style={{ background: "rgba(180,130,30,0.04)", border: "1px solid rgba(212,175,55,0.15)" }}>
+          style={{ background: "rgba(180,130,30,0.04)", border: "1px solid rgba(212,139,0,0.15)" }}>
           <div className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse at 80% 50%, rgba(212,175,55,0.04), transparent 60%)" }} />
+            style={{ background: "radial-gradient(ellipse at 80% 50%, rgba(212,139,0,0.04), transparent 60%)" }} />
           <div className="relative flex items-start justify-between gap-6 flex-wrap">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Megaphone size={16} style={{ color: "rgba(212,175,55,0.55)" }} />
+                <Megaphone size={16} style={{ color: "rgba(212,139,0,0.55)" }} />
                 <h3 className="font-serif text-lg" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
                   Sponsored Campaigns
                 </h3>
                 <span className="text-[8px] uppercase tracking-[0.18em] px-2 py-0.5 rounded-full flex items-center gap-1"
-                  style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)", color: "rgba(212,175,55,0.5)" }}>
+                  style={{ background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.2)", color: "rgba(212,139,0,0.5)" }}>
                   <Clock size={7} />Coming Soon
                 </span>
               </div>
@@ -210,10 +210,10 @@ export function BrandsTab() {
               <FeatureChip icon={<Sparkles size={10} />} label="Budget Controls" />
             </div>
           </div>
-          <div className="mt-5 pt-5 border-t grid grid-cols-3 gap-4" style={{ borderColor: "rgba(212,175,55,0.08)" }}>
+          <div className="mt-5 pt-5 border-t grid grid-cols-3 gap-4" style={{ borderColor: "rgba(212,139,0,0.08)" }}>
             {["Draft", "Active", "Completed"].map((status) => (
               <div key={status} className="p-3 rounded-lg text-center"
-                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+                style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.07)" }}>
                 <p className="text-[9px] uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.35)" }}>{status}</p>
                 <p className="font-serif text-xl mt-1" style={{ color: "rgba(180,155,100,0.2)", fontWeight: 300 }}>—</p>
               </div>
@@ -253,17 +253,17 @@ function BrandCard({ brand, expanded, perf, perfLoading, onToggle }: {
   return (
     <div className="rounded-xl overflow-hidden transition-all duration-200"
       style={{
-        background: expanded ? "rgba(212,175,55,0.05)" : "rgba(255,255,255,0.025)",
-        border:     expanded ? "1px solid rgba(212,175,55,0.2)" : "1px solid rgba(255,255,255,0.06)",
+        background: expanded ? "rgba(212,139,0,0.05)" : "rgba(26,26,27,0.04)",
+        border:     expanded ? "1px solid rgba(212,139,0,0.2)" : "1px solid rgba(26,26,27,0.08)",
       }}>
 
       {/* Header row */}
       <button className="w-full flex items-center gap-4 p-4 text-left" onClick={onToggle}>
         {/* Category badge */}
         <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-          style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.15)" }}>
+          style={{ background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.15)" }}>
           <span className="text-[10px] uppercase tracking-wider"
-            style={{ color: "rgba(212,175,55,0.65)" }}>
+            style={{ color: "rgba(212,139,0,0.65)" }}>
             {brand.category.slice(0, 3)}
           </span>
         </div>
@@ -272,12 +272,12 @@ function BrandCard({ brand, expanded, perf, perfLoading, onToggle }: {
           <div className="flex items-center gap-2 flex-wrap">
             <p className="font-serif text-sm" style={{ color: "rgba(220,200,165,0.88)" }}>{brand.name}</p>
             <span className="text-[8px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full"
-              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.5)" }}>
+              style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}>
               {brand.category}
             </span>
             {brand.sponsoredImpressions > 0 && (
               <span className="text-[8px] uppercase tracking-[0.1em] px-1.5 py-0.5 rounded-full flex items-center gap-1"
-                style={{ background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.25)", color: "rgba(212,175,55,0.7)" }}>
+                style={{ background: "rgba(212,139,0,0.1)", border: "1px solid rgba(212,139,0,0.25)", color: "rgba(212,139,0,0.7)" }}>
                 <Sparkles size={7} />Sponsored
               </span>
             )}
@@ -298,11 +298,11 @@ function BrandCard({ brand, expanded, perf, perfLoading, onToggle }: {
 
         {/* Impression bar */}
         <div className="hidden sm:flex flex-col items-end gap-1 flex-shrink-0 w-28">
-          <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+          <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: "rgba(26,26,27,0.07)" }}>
             <div className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${Math.min(100, (brand.impressions / Math.max(...[brand.impressions, 1])) * 100)}%`,
-                background: "linear-gradient(90deg, rgba(180,130,30,0.6), rgba(212,175,55,0.8))",
+                background: "linear-gradient(90deg, rgba(180,130,30,0.6), rgba(212,139,0,0.8))",
               }} />
           </div>
           <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.35)" }}>
@@ -322,11 +322,11 @@ function BrandCard({ brand, expanded, perf, perfLoading, onToggle }: {
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25, ease: "easeInOut" }}
             style={{ overflow: "hidden" }}>
-            <div className="px-4 pb-4 pt-1" style={{ borderTop: "1px solid rgba(212,175,55,0.08)" }}>
+            <div className="px-4 pb-4 pt-1" style={{ borderTop: "1px solid rgba(212,139,0,0.08)" }}>
               {perfLoading ? (
                 <div className="flex items-center justify-center py-4">
                   <motion.div className="w-5 h-5 rounded-full border"
-                    style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.6)" }}
+                    style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.6)" }}
                     animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
                 </div>
               ) : !perf ? (
@@ -341,7 +341,7 @@ function BrandCard({ brand, expanded, perf, perfLoading, onToggle }: {
                 <>
                   {/* Summary row */}
                   <div className="flex gap-4 flex-wrap py-3 mb-3"
-                    style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                    style={{ borderBottom: "1px solid rgba(26,26,27,0.06)" }}>
                     <PerfStat label="Total Impressions"      value={perf.summary.totalImpressions.toLocaleString()} />
                     <PerfStat label="Sponsored Impressions"  value={perf.summary.sponsoredImpressions.toLocaleString()} gold />
                     <PerfStat label="Boosted Products"       value={perf.summary.boostedCount.toString()} />
@@ -355,12 +355,12 @@ function BrandCard({ brand, expanded, perf, perfLoading, onToggle }: {
                     </p>
                     {perf.products.map((p) => (
                       <div key={p.id} className="flex items-center gap-3 py-2 px-3 rounded-lg"
-                        style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
+                        style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.06)" }}>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="font-serif text-xs truncate" style={{ color: "rgba(210,190,155,0.8)" }}>{p.name}</span>
-                            {p.sponsored && <Sparkles size={9} style={{ color: "rgba(212,175,55,0.6)", flexShrink: 0 }} />}
-                            {p.boostLevel > 0 && <Zap size={9} style={{ color: "rgba(212,175,55,0.5)", flexShrink: 0 }} />}
+                            {p.sponsored && <Sparkles size={9} style={{ color: "rgba(212,139,0,0.6)", flexShrink: 0 }} />}
+                            {p.boostLevel > 0 && <Zap size={9} style={{ color: "rgba(212,139,0,0.5)", flexShrink: 0 }} />}
                           </div>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.4)" }}>{p.tier}</span>
@@ -369,19 +369,19 @@ function BrandCard({ brand, expanded, perf, perfLoading, onToggle }: {
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0">
-                          <p className="text-xs font-serif" style={{ color: "rgba(212,175,55,0.75)", fontWeight: 300 }}>
+                          <p className="text-xs font-serif" style={{ color: "rgba(212,139,0,0.75)", fontWeight: 300 }}>
                             {p.impressions.toLocaleString()}
                           </p>
                           <p className="text-[8px]" style={{ color: "rgba(180,155,100,0.35)" }}>impressions</p>
                         </div>
                         {/* Mini impression bar */}
                         <div className="w-16 h-1 rounded-full overflow-hidden flex-shrink-0"
-                          style={{ background: "rgba(255,255,255,0.04)" }}>
+                          style={{ background: "rgba(26,26,27,0.06)" }}>
                           <div className="h-full rounded-full"
                             style={{
                               width: `${Math.min(100, (p.impressions / Math.max(perf.summary.totalImpressions, 1)) * 100)}%`,
                               background: p.sponsored
-                                ? "rgba(212,175,55,0.7)"
+                                ? "rgba(212,139,0,0.7)"
                                 : "rgba(180,155,100,0.4)",
                             }} />
                         </div>
@@ -441,10 +441,10 @@ function MiniStat({ icon, label, value, gold }: { icon: React.ReactNode; label: 
   return (
     <div className="p-3 rounded-xl flex items-center gap-2.5"
       style={{
-        background: gold ? "rgba(212,175,55,0.06)" : "rgba(255,255,255,0.025)",
-        border:     gold ? "1px solid rgba(212,175,55,0.18)" : "1px solid rgba(255,255,255,0.06)",
+        background: gold ? "rgba(212,139,0,0.06)" : "rgba(26,26,27,0.04)",
+        border:     gold ? "1px solid rgba(212,139,0,0.18)" : "1px solid rgba(26,26,27,0.08)",
       }}>
-      <div style={{ color: gold ? "rgba(212,175,55,0.65)" : "rgba(180,155,100,0.45)" }}>{icon}</div>
+      <div style={{ color: gold ? "rgba(212,139,0,0.65)" : "rgba(180,155,100,0.45)" }}>{icon}</div>
       <div>
         <p className="text-lg font-serif" style={{ color: "rgba(220,200,165,0.85)", fontWeight: 300 }}>{value}</p>
         <p className="text-[8px] uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.4)" }}>{label}</p>
@@ -457,10 +457,10 @@ function SummaryCard({ label, value, gold }: { label: string; value: string; gol
   return (
     <div className="p-3 rounded-xl text-center"
       style={{
-        background: "rgba(255,255,255,0.02)",
-        border: gold ? "1px solid rgba(212,175,55,0.15)" : "1px solid rgba(255,255,255,0.05)",
+        background: "rgba(26,26,27,0.04)",
+        border: gold ? "1px solid rgba(212,139,0,0.15)" : "1px solid rgba(26,26,27,0.07)",
       }}>
-      <p className="font-serif text-xl" style={{ color: gold ? "rgba(212,175,55,0.8)" : "rgba(200,180,145,0.75)", fontWeight: 300 }}>{value}</p>
+      <p className="font-serif text-xl" style={{ color: gold ? "rgba(212,139,0,0.8)" : "rgba(200,180,145,0.75)", fontWeight: 300 }}>{value}</p>
       <p className="text-[8px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(180,155,100,0.35)" }}>{label}</p>
     </div>
   );
@@ -469,7 +469,7 @@ function SummaryCard({ label, value, gold }: { label: string; value: string; gol
 function PerfStat({ label, value, gold }: { label: string; value: string; gold?: boolean }) {
   return (
     <div>
-      <p className="text-xs font-serif" style={{ color: gold ? "rgba(212,175,55,0.75)" : "rgba(200,180,145,0.8)", fontWeight: 300 }}>{value}</p>
+      <p className="text-xs font-serif" style={{ color: gold ? "rgba(212,139,0,0.75)" : "rgba(200,180,145,0.8)", fontWeight: 300 }}>{value}</p>
       <p className="text-[8px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.38)" }}>{label}</p>
     </div>
   );
@@ -486,8 +486,8 @@ function Metric({ label, value }: { label: string; value: string | number }) {
 function FeatureChip({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-      style={{ background: "rgba(212,175,55,0.06)", border: "1px solid rgba(212,175,55,0.15)" }}>
-      <span style={{ color: "rgba(212,175,55,0.5)" }}>{icon}</span>
+      style={{ background: "rgba(212,139,0,0.06)", border: "1px solid rgba(212,139,0,0.15)" }}>
+      <span style={{ color: "rgba(212,139,0,0.5)" }}>{icon}</span>
       <span className="text-[9px] uppercase tracking-[0.12em]" style={{ color: "rgba(180,155,100,0.55)" }}>{label}</span>
     </div>
   );
@@ -507,7 +507,7 @@ function LoadingSpinner() {
   return (
     <div className="flex items-center justify-center py-16">
       <motion.div className="w-8 h-8 rounded-full border-2"
-        style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.7)" }}
+        style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.7)" }}
         animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
     </div>
   );

@@ -140,7 +140,7 @@ export default function BuildYourOwn() {
       }} />
       <div aria-hidden style={{
         position: "fixed", inset: 0,
-        background: "radial-gradient(ellipse at 50% 30%, rgba(80,30,10,0.35), transparent 55%), linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.9) 100%)",
+        background: "radial-gradient(ellipse at 50% 30%, rgba(80,30,10,0.35), transparent 55%), linear-gradient(180deg, rgba(26,26,27,0.32) 0%, rgba(26,26,27,0.50) 100%)",
         zIndex: -1,
       }} />
 
@@ -149,7 +149,7 @@ export default function BuildYourOwn() {
         display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
       }}>
         <div />
-        <div style={{ textAlign: "right", textShadow: "0 2px 8px rgba(0,0,0,0.85)" }}>
+        <div style={{ textAlign: "right", textShadow: "0 2px 8px rgba(26,26,27,0.45)" }}>
           <h1 style={{
             fontFamily: "var(--app-font-serif, Georgia, serif)",
             fontSize: "clamp(28px, 3.2vw, 44px)", margin: 0, fontWeight: 600,
@@ -159,7 +159,7 @@ export default function BuildYourOwn() {
           </h1>
           <p style={{
             margin: "4px 0 0", fontSize: 12, letterSpacing: "0.32em",
-            textTransform: "uppercase", color: "#D4AF37", fontWeight: 600,
+            textTransform: "uppercase", color: "#D48B00", fontWeight: 600,
           }}>
             Craft it · Name it · Own it
           </p>
@@ -174,7 +174,7 @@ export default function BuildYourOwn() {
           <ExperienceFrame padding="22px 20px" testId="byo-stepnav">
             <p style={{
               margin: "0 0 16px", fontSize: 10, letterSpacing: "0.3em",
-              textTransform: "uppercase", color: "#D4AF37", fontWeight: 600,
+              textTransform: "uppercase", color: "#D48B00", fontWeight: 600,
             }}>
               Your Build
             </p>
@@ -191,7 +191,7 @@ export default function BuildYourOwn() {
               <motion.div key="base" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
                 <p style={{
                   margin: "0 0 18px", fontSize: 11, letterSpacing: "0.28em",
-                  textTransform: "uppercase", color: "#D4AF37", fontWeight: 600,
+                  textTransform: "uppercase", color: "#D48B00", fontWeight: 600,
                 }}>
                   Choose your foundation
                 </p>
@@ -216,12 +216,12 @@ export default function BuildYourOwn() {
                         cursor: "pointer", padding: 0, color: "inherit",
                         backgroundImage: `url(${spirit.image}), ${spirit.gradient}`,
                         backgroundSize: "cover", backgroundPosition: "center",
-                        boxShadow: "0 16px 48px rgba(0,0,0,0.5)", textAlign: "left",
+                        boxShadow: "0 16px 48px rgba(26,26,27,0.18)", textAlign: "left",
                       }}
                     >
                       <div style={{
                         position: "absolute", inset: 0,
-                        background: "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.75) 100%)",
+                        background: "linear-gradient(180deg, rgba(26,26,27,0.02) 0%, rgba(26,26,27,0.36) 100%)",
                         pointerEvents: "none",
                       }} />
                       <div style={{
@@ -233,7 +233,7 @@ export default function BuildYourOwn() {
                         <h3 style={{
                           fontFamily: "var(--app-font-serif, Georgia, serif)",
                           fontSize: 20, fontWeight: 600, margin: 0, color: "#FFFFFF",
-                          textShadow: "0 2px 8px rgba(0,0,0,0.7)",
+                          textShadow: "0 2px 8px rgba(26,26,27,0.32)",
                         }}>
                           {spirit.name}
                         </h3>
@@ -255,7 +255,7 @@ export default function BuildYourOwn() {
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
                   <p style={{
                     margin: 0, fontSize: 11, letterSpacing: "0.28em",
-                    textTransform: "uppercase", color: "#D4AF37", fontWeight: 600,
+                    textTransform: "uppercase", color: "#D48B00", fontWeight: 600,
                   }}>
                     Add up to 3 flavors to your {base.name}
                   </p>
@@ -280,7 +280,7 @@ export default function BuildYourOwn() {
                         whileTap={{ scale: 0.97 }}
                         transition={{ duration: 0.3, delay: i * 0.03 }}
                         style={{
-                          background: active ? `${base.accent}25` : "rgba(255,255,255,0.05)",
+                          background: active ? `${base.accent}25` : "rgba(26,26,27,0.07)",
                           border: `1px solid ${active ? base.accent : "rgba(255,255,255,0.1)"}`,
                           color: active ? "#FFFFFF" : "#E5E5E5",
                           padding: "14px 16px",
@@ -312,7 +312,7 @@ export default function BuildYourOwn() {
                     onClick={() => { setStep("base"); setBase(null); setSelectedMods([]); }}
                     style={{
                       background: "transparent", color: "#E5E5E5",
-                      border: "1px solid rgba(255,255,255,0.15)",
+                      border: "1px solid rgba(26,26,27,0.17)",
                       padding: "10px 20px", borderRadius: 999, fontSize: 11,
                       letterSpacing: "0.24em", textTransform: "uppercase", cursor: "pointer",
                     }}
@@ -344,7 +344,7 @@ export default function BuildYourOwn() {
                 <ExperienceFrame accent={`${base.accent}44`} padding="32px 30px">
                   <p style={{
                     margin: "0 0 8px", fontSize: 10, letterSpacing: "0.32em",
-                    textTransform: "uppercase", color: "#D4AF37", fontWeight: 600,
+                    textTransform: "uppercase", color: "#D48B00", fontWeight: 600,
                   }}>
                     Name your creation
                   </p>
@@ -362,15 +362,15 @@ export default function BuildYourOwn() {
                     maxLength={40}
                     style={{
                       width: "100%", padding: "14px 18px",
-                      background: "rgba(255,255,255,0.06)",
-                      border: "1px solid rgba(255,255,255,0.15)",
+                      background: "rgba(26,26,27,0.08)",
+                      border: "1px solid rgba(26,26,27,0.17)",
                       borderRadius: 12, color: "#FFFFFF",
                       fontFamily: "var(--app-font-serif, Georgia, serif)",
                       fontSize: 22, fontWeight: 600,
                       outline: "none",
                     }}
                     onFocus={e => { e.target.style.borderColor = base.accent; }}
-                    onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.15)"; }}
+                    onBlur={e => { e.target.style.borderColor = "rgba(26,26,27,0.17)"; }}
                   />
                   <div style={{ marginTop: 24, display: "flex", gap: 12 }}>
                     <button
@@ -379,7 +379,7 @@ export default function BuildYourOwn() {
                       onClick={() => setStep("modifiers")}
                       style={{
                         background: "transparent", color: "#E5E5E5",
-                        border: "1px solid rgba(255,255,255,0.15)",
+                        border: "1px solid rgba(26,26,27,0.17)",
                         padding: "10px 20px", borderRadius: 999, fontSize: 11,
                         letterSpacing: "0.24em", textTransform: "uppercase", cursor: "pointer",
                       }}
@@ -456,11 +456,11 @@ export default function BuildYourOwn() {
                     {matchResult && (
                       <div style={{
                         marginTop: 20, paddingTop: 18,
-                        borderTop: "1px solid rgba(255,255,255,0.08)",
+                        borderTop: "1px solid rgba(26,26,27,0.10)",
                       }}>
                         <p style={{
                           margin: "0 0 6px", fontSize: 10, letterSpacing: "0.32em",
-                          textTransform: "uppercase", color: "#D4AF37", fontWeight: 600,
+                          textTransform: "uppercase", color: "#D48B00", fontWeight: 600,
                         }}>
                           Closest real pour
                         </p>
@@ -499,7 +499,7 @@ export default function BuildYourOwn() {
                         }}
                         style={{
                           background: "transparent", color: "#E5E5E5",
-                          border: "1px solid rgba(255,255,255,0.15)",
+                          border: "1px solid rgba(26,26,27,0.17)",
                           padding: "10px 20px", borderRadius: 999, fontSize: 11,
                           letterSpacing: "0.24em", textTransform: "uppercase", cursor: "pointer",
                         }}
@@ -511,7 +511,7 @@ export default function BuildYourOwn() {
                         data-testid="byo-to-pourcraft"
                         onClick={() => navigate("/pourcraft")}
                         style={{
-                          background: "#D4AF37", color: "#0a0604",
+                          background: "#D48B00", color: "#0a0604",
                           border: "none", padding: "10px 22px", borderRadius: 999,
                           fontSize: 11, fontWeight: 700, letterSpacing: "0.24em",
                           textTransform: "uppercase", cursor: "pointer",
@@ -546,7 +546,7 @@ export default function BuildYourOwn() {
 }
 
 function StepRow({ num, label, active, done }: { num: number; label: string; active: boolean; done: boolean }) {
-  const color = done ? "#7A9A6A" : active ? "#D4AF37" : "#6A6258";
+  const color = done ? "#7A9A6A" : active ? "#D48B00" : "#6A6258";
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
       <span style={{

@@ -40,14 +40,14 @@ export function ProfileBadge({ profile, onOpenVault }: ProfileBadgeProps) {
         onClick={onOpenVault}
         className="flex items-center gap-2 px-3 py-2 rounded-full text-xs uppercase tracking-[0.18em] transition-all duration-300"
         style={{
-          background: "rgba(255,255,255,0.04)",
-          border:     "1px solid rgba(255,255,255,0.09)",
+          background: "rgba(26,26,27,0.06)",
+          border:     "1px solid rgba(26,26,27,0.11)",
           color:      "rgba(180,155,100,0.65)",
         }}
         whileHover={{
-          borderColor: "rgba(212,175,55,0.4)",
-          color:       "rgba(212,175,55,0.85)",
-          background:  "rgba(212,175,55,0.06)",
+          borderColor: "rgba(212,139,0,0.4)",
+          color:       "rgba(212,139,0,0.85)",
+          background:  "rgba(212,139,0,0.06)",
         }}
         whileTap={{ scale: 0.96 }}
         title="My Vault"
@@ -57,7 +57,7 @@ export function ProfileBadge({ profile, onOpenVault }: ProfileBadgeProps) {
         {profile.savedExperiences.length > 0 && (
           <span
             className="text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-medium"
-            style={{ background: "rgba(212,175,55,0.25)", color: "rgba(212,175,55,0.9)" }}
+            style={{ background: "rgba(212,139,0,0.25)", color: "rgba(212,139,0,0.9)" }}
           >
             {profile.savedExperiences.length}
           </span>
@@ -71,16 +71,16 @@ export function ProfileBadge({ profile, onOpenVault }: ProfileBadgeProps) {
           isConnoisseur
             ? {
                 background: isMaestro
-                  ? "linear-gradient(135deg, rgba(120,80,5,0.25), rgba(212,175,55,0.12))"
-                  : "linear-gradient(135deg, rgba(180,130,30,0.2), rgba(212,175,55,0.1))",
+                  ? "linear-gradient(135deg, rgba(120,80,5,0.25), rgba(212,139,0,0.12))"
+                  : "linear-gradient(135deg, rgba(180,130,30,0.2), rgba(212,139,0,0.1))",
                 border:    `1px solid ${tier.borderColor}`,
                 boxShadow: isMaestro
-                  ? "0 0 20px rgba(212,175,55,0.18)"
-                  : "0 0 16px rgba(212,175,55,0.12)",
+                  ? "0 0 20px rgba(212,139,0,0.18)"
+                  : "0 0 16px rgba(212,139,0,0.12)",
               }
             : {
-                background: "rgba(255,255,255,0.04)",
-                border:     "1px solid rgba(255,255,255,0.09)",
+                background: "rgba(26,26,27,0.06)",
+                border:     "1px solid rgba(26,26,27,0.11)",
               }
         }
       >
@@ -98,16 +98,16 @@ export function ProfileBadge({ profile, onOpenVault }: ProfileBadgeProps) {
                 size={13}
                 style={{
                   color: tier.color,
-                  filter: isMaestro ? "drop-shadow(0 0 4px rgba(212,175,55,0.5))" : "none",
+                  filter: isMaestro ? "drop-shadow(0 0 4px rgba(212,139,0,0.5))" : "none",
                 }}
-                fill={isMaestro ? "rgba(212,175,55,0.3)" : "rgba(212,175,55,0.15)"}
+                fill={isMaestro ? "rgba(212,139,0,0.3)" : "rgba(212,139,0,0.15)"}
               />
             </motion.div>
           ) : (
             <motion.div
               key="arc"
               className="w-3 h-3 rounded-full relative flex-shrink-0"
-              style={{ background: "rgba(255,255,255,0.08)" }}
+              style={{ background: "rgba(26,26,27,0.10)" }}
             >
               <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 12 12">
                 <circle

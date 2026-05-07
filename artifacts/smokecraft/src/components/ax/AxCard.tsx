@@ -24,13 +24,13 @@ export function AxCard({ children, glow, style, onClick, className }: AxCardProp
       onClick={onClick}
       style={{
         background: "rgba(255,255,255,0.046)",
-        border: "1px solid rgba(201,168,76,0.18)",
+        border: "1px solid rgba(212,139,0,0.18)",
         borderRadius: 12,
         backdropFilter: "blur(14px)",
         WebkitBackdropFilter: "blur(14px)",
         boxShadow: glow
-          ? `0 0 28px ${glow}22, 0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)`
-          : "0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)",
+          ? `0 0 28px ${glow}22, 0 4px 24px rgba(26,26,27,0.08), inset 0 1px 0 rgba(26,26,27,0.08)`
+          : "0 4px 24px rgba(26,26,27,0.08), inset 0 1px 0 rgba(26,26,27,0.08)",
         position: "relative",
         overflow: "hidden",
         cursor: onClick ? "pointer" : undefined,

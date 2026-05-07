@@ -44,7 +44,7 @@ export default function DemoExperienceCenter() {
             fontSize: 11,
             textTransform: "uppercase",
             letterSpacing: "0.2em",
-            color: "rgba(212,175,55,0.6)",
+            color: "rgba(212,139,0,0.6)",
             marginBottom: 8,
           }}
         >
@@ -54,7 +54,7 @@ export default function DemoExperienceCenter() {
           style={{
             fontSize: 30,
             fontWeight: 700,
-            color: "#d4af37",
+            color: "#D48B00",
             margin: "0 0 8px",
             fontFamily: "'Playfair Display', serif",
             letterSpacing: "0.03em",
@@ -84,8 +84,8 @@ export default function DemoExperienceCenter() {
           style={{
             minHeight: 72,
             padding: "0 28px",
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "rgba(26,26,27,0.06)",
+            border: "1px solid rgba(26,26,27,0.10)",
             borderRadius: 14,
             color: "rgba(232,224,200,0.5)",
             fontSize: 14,

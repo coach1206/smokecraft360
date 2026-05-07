@@ -46,8 +46,8 @@ const CATEGORIES: { id: Category; label: string }[] = [
   { id: "alcohol", label: "Spirits" },
 ];
 
-const GOLD     = "rgba(212,175,55,1)";
-const GOLD_DIM = "rgba(212,175,55,0.45)";
+const GOLD     = "rgba(212,139,0,1)";
+const GOLD_DIM = "rgba(212,139,0,0.45)";
 const WARM     = "rgba(180,155,100,0.55)";
 
 // ── Main component ─────────────────────────────────────────────────────────────
@@ -118,7 +118,7 @@ export function InsightsTab() {
       {/* Filter Bar */}
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex flex-wrap gap-3 items-center p-4 rounded-xl"
-          style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
+          style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.09)" }}>
           <Filter size={12} style={{ color: WARM }} />
 
           {/* Time range */}
@@ -127,13 +127,13 @@ export function InsightsTab() {
               <button key={tr.id} onClick={() => setTimeRange(tr.id)}
                 className="px-3 py-1 rounded-full text-[9px] uppercase tracking-[0.14em] transition-all"
                 style={timeRange === tr.id
-                  ? { background: "rgba(212,175,55,0.15)", border: "1px solid rgba(212,175,55,0.35)", color: "rgba(212,175,55,0.9)" }
-                  : { border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.45)" }
+                  ? { background: "rgba(212,139,0,0.15)", border: "1px solid rgba(212,139,0,0.35)", color: "rgba(212,139,0,0.9)" }
+                  : { border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.45)" }
                 }>{tr.label}</button>
             ))}
           </div>
 
-          <div className="w-px h-4" style={{ background: "rgba(255,255,255,0.08)" }} />
+          <div className="w-px h-4" style={{ background: "rgba(26,26,27,0.10)" }} />
 
           {/* Category */}
           <div className="flex gap-1">
@@ -141,15 +141,15 @@ export function InsightsTab() {
               <button key={c.id} onClick={() => setCategory(c.id)}
                 className="px-3 py-1 rounded-full text-[9px] uppercase tracking-[0.14em] transition-all"
                 style={category === c.id
-                  ? { background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.3)", color: "rgba(212,175,55,0.85)" }
-                  : { border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.45)" }
+                  ? { background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.85)" }
+                  : { border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.45)" }
                 }>{c.label}</button>
             ))}
           </div>
 
           {loading && (
             <motion.div className="ml-auto w-4 h-4 rounded-full border"
-              style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.7)" }}
+              style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.7)" }}
               animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
           )}
         </div>
@@ -189,7 +189,7 @@ export function InsightsTab() {
                   icon={<ArrowUpRight size={16} style={{ color: GOLD_DIM }} />}
                 />
                 <div className="p-4 rounded-xl flex flex-col justify-center items-center"
-                  style={{ background: "rgba(212,175,55,0.07)", border: "1px solid rgba(212,175,55,0.2)" }}>
+                  style={{ background: "rgba(212,139,0,0.07)", border: "1px solid rgba(212,139,0,0.2)" }}>
                   <p className="text-3xl font-serif" style={{ color: GOLD, fontWeight: 300 }}>
                     {data.conversionFunnel.selectRate}%
                   </p>
@@ -198,8 +198,8 @@ export function InsightsTab() {
                   </p>
                   <FunnelBar
                     segments={[
-                      { pct: 100, color: "rgba(212,175,55,0.25)" },
-                      { pct: data.conversionFunnel.selectRate, color: "rgba(212,175,55,0.7)" },
+                      { pct: 100, color: "rgba(212,139,0,0.25)" },
+                      { pct: data.conversionFunnel.selectRate, color: "rgba(212,139,0,0.7)" },
                     ]}
                   />
                 </div>
@@ -272,7 +272,7 @@ export function InsightsTab() {
               action={
                 <button onClick={() => setPerfOpen((p) => !p)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.14em] transition-all"
-                  style={{ border: "1px solid rgba(255,255,255,0.09)", color: "rgba(180,155,100,0.5)" }}>
+                  style={{ border: "1px solid rgba(26,26,27,0.11)", color: "rgba(180,155,100,0.5)" }}>
                   {perfOpen ? "Collapse" : "Expand"} <ChevronDown size={10}
                     style={{ transform: perfOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
                 </button>
@@ -319,23 +319,23 @@ export function InsightsTab() {
 
 function FlavorChart({ data }: { data: { flavor: string; count: number }[] }) {
   const max = data[0]?.count ?? 1;
-  const chartData = data.map((d) => ({ ...d, fill: `rgba(212,175,55,${0.35 + (d.count / max) * 0.6})` }));
+  const chartData = data.map((d) => ({ ...d, fill: `rgba(212,139,0,${0.35 + (d.count / max) * 0.6})` }));
 
   return (
     <div style={{ height: 260 }}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData} layout="vertical" margin={{ left: 8, right: 24, top: 4, bottom: 4 }}>
-          <CartesianGrid horizontal={false} stroke="rgba(255,255,255,0.04)" />
+          <CartesianGrid horizontal={false} stroke="rgba(26,26,27,0.06)" />
           <XAxis type="number" tick={{ fontSize: 9, fill: "rgba(180,155,100,0.4)" }} axisLine={false} tickLine={false} />
           <YAxis type="category" dataKey="flavor" width={72}
             tick={{ fontSize: 10, fill: "rgba(200,180,145,0.7)", fontFamily: "serif" }}
             axisLine={false} tickLine={false} />
           <Tooltip
             contentStyle={{
-              background: "hsl(22 18% 7%)", border: "1px solid rgba(212,175,55,0.2)",
+              background: "hsl(22 18% 7%)", border: "1px solid rgba(212,139,0,0.2)",
               borderRadius: 8, fontSize: 11, color: "rgba(220,200,165,0.9)",
             }}
-            cursor={{ fill: "rgba(212,175,55,0.05)" }}
+            cursor={{ fill: "rgba(212,139,0,0.05)" }}
             formatter={(v: number) => [`${v} sessions`, "Count"]}
           />
           <Bar dataKey="count" radius={[0, 3, 3, 0]}>
@@ -359,22 +359,22 @@ function TimeSeriesChart({ data }: { data: { day: string; count: number }[] }) {
         <AreaChart data={formatted} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
           <defs>
             <linearGradient id="areaGold" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%"  stopColor="rgba(212,175,55,0.35)" />
-              <stop offset="95%" stopColor="rgba(212,175,55,0.02)" />
+              <stop offset="5%"  stopColor="rgba(212,139,0,0.35)" />
+              <stop offset="95%" stopColor="rgba(212,139,0,0.02)" />
             </linearGradient>
           </defs>
-          <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.04)" />
+          <CartesianGrid vertical={false} stroke="rgba(26,26,27,0.06)" />
           <XAxis dataKey="label" tick={{ fontSize: 9, fill: "rgba(180,155,100,0.4)" }} axisLine={false} tickLine={false} />
           <YAxis hide />
           <Tooltip
             contentStyle={{
-              background: "hsl(22 18% 7%)", border: "1px solid rgba(212,175,55,0.2)",
+              background: "hsl(22 18% 7%)", border: "1px solid rgba(212,139,0,0.2)",
               borderRadius: 8, fontSize: 11, color: "rgba(220,200,165,0.9)",
             }}
-            cursor={{ stroke: "rgba(212,175,55,0.3)", strokeWidth: 1 }}
+            cursor={{ stroke: "rgba(212,139,0,0.3)", strokeWidth: 1 }}
             formatter={(v: number) => [`${v} events`, "Activity"]}
           />
-          <Area type="monotone" dataKey="count" stroke="rgba(212,175,55,0.7)" strokeWidth={1.5}
+          <Area type="monotone" dataKey="count" stroke="rgba(212,139,0,0.7)" strokeWidth={1.5}
             fill="url(#areaGold)" dot={false} />
         </AreaChart>
       </ResponsiveContainer>
@@ -404,7 +404,7 @@ function RankList({ items, valueLabel, accentColor }: {
               <span className="font-serif text-xs truncate" style={{ color: "rgba(210,190,155,0.82)" }}>{item.name}</span>
               {item.tier && (
                 <span className="text-[7px] uppercase tracking-wider px-1 py-0.5 rounded flex-shrink-0"
-                  style={{ background: "rgba(255,255,255,0.04)", color: "rgba(180,155,100,0.4)" }}>
+                  style={{ background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.4)" }}>
                   {item.tier}
                 </span>
               )}
@@ -413,7 +413,7 @@ function RankList({ items, valueLabel, accentColor }: {
               {item.count} <span style={{ fontSize: 8, color: "rgba(180,155,100,0.4)" }}>{valueLabel}</span>
             </span>
           </div>
-          <div className="h-0.5 rounded-full overflow-hidden ml-6" style={{ background: "rgba(255,255,255,0.05)" }}>
+          <div className="h-0.5 rounded-full overflow-hidden ml-6" style={{ background: "rgba(26,26,27,0.07)" }}>
             <motion.div className="h-full rounded-full"
               initial={{ width: 0 }} animate={{ width: `${(item.count / max) * 100}%` }}
               transition={{ duration: 0.7, ease: "easeOut", delay: i * 0.04 }}
@@ -432,7 +432,7 @@ function BrandPerfTable({ brands }: { brands: NonNullable<InsightsData["brandPer
     <div className="overflow-x-auto">
       <table className="w-full text-xs">
         <thead>
-          <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <tr style={{ borderBottom: "1px solid rgba(26,26,27,0.08)" }}>
             {["Brand", "Category", "Shown", "Selected", "Ordered", "Select Rate", "Order Rate"].map((h) => (
               <th key={h} className="text-left pb-2 pr-4 text-[8px] uppercase tracking-[0.18em]"
                 style={{ color: "rgba(180,155,100,0.4)", fontWeight: 400 }}>{h}</th>
@@ -442,15 +442,15 @@ function BrandPerfTable({ brands }: { brands: NonNullable<InsightsData["brandPer
         <tbody>
           {brands.map((b, i) => (
             <motion.tr key={b.brandId} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
-              style={{ borderBottom: "1px solid rgba(255,255,255,0.035)" }}>
+              style={{ borderBottom: "1px solid rgba(26,26,27,0.05)" }}>
               <td className="py-2.5 pr-4 font-serif" style={{ color: "rgba(220,200,165,0.85)" }}>{b.name}</td>
               <td className="py-2.5 pr-4">
                 <span className="text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded"
-                  style={{ background: "rgba(212,175,55,0.07)", color: "rgba(212,175,55,0.6)" }}>{b.category}</span>
+                  style={{ background: "rgba(212,139,0,0.07)", color: "rgba(212,139,0,0.6)" }}>{b.category}</span>
               </td>
               <td className="py-2.5 pr-4" style={{ color: "rgba(180,155,100,0.65)" }}>{b.shown.toLocaleString()}</td>
               <td className="py-2.5 pr-4" style={{ color: "rgba(200,180,145,0.75)" }}>{b.selected.toLocaleString()}</td>
-              <td className="py-2.5 pr-4" style={{ color: "rgba(212,175,55,0.75)" }}>{b.ordered.toLocaleString()}</td>
+              <td className="py-2.5 pr-4" style={{ color: "rgba(212,139,0,0.75)" }}>{b.ordered.toLocaleString()}</td>
               <RateCell rate={b.selectRate} />
               <RateCell rate={b.orderRate} />
             </motion.tr>
@@ -462,11 +462,11 @@ function BrandPerfTable({ brands }: { brands: NonNullable<InsightsData["brandPer
 }
 
 function RateCell({ rate }: { rate: number }) {
-  const color = rate >= 20 ? "rgba(100,200,120,0.75)" : rate >= 8 ? "rgba(212,175,55,0.75)" : "rgba(180,155,100,0.45)";
+  const color = rate >= 20 ? "rgba(100,200,120,0.75)" : rate >= 8 ? "rgba(212,139,0,0.75)" : "rgba(180,155,100,0.45)";
   return (
     <td className="py-2.5 pr-4">
       <div className="flex items-center gap-2">
-        <div className="w-12 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+        <div className="w-12 h-1 rounded-full overflow-hidden" style={{ background: "rgba(26,26,27,0.07)" }}>
           <div className="h-full rounded-full" style={{ width: `${Math.min(rate, 100)}%`, background: color }} />
         </div>
         <span style={{ color, fontSize: 10 }}>{rate}%</span>
@@ -482,7 +482,7 @@ function ProductPerfTable({ products }: { products: NonNullable<InsightsData["pr
     <div className="overflow-x-auto mt-3">
       <table className="w-full text-xs">
         <thead>
-          <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <tr style={{ borderBottom: "1px solid rgba(26,26,27,0.08)" }}>
             {["Product", "Cat", "Views", "← Skip", "Select →", "Selected", "Ordered", "Conv%"].map((h) => (
               <th key={h} className="text-left pb-2 pr-3 text-[8px] uppercase tracking-[0.16em]"
                 style={{ color: "rgba(180,155,100,0.4)", fontWeight: 400 }}>{h}</th>
@@ -491,22 +491,22 @@ function ProductPerfTable({ products }: { products: NonNullable<InsightsData["pr
         </thead>
         <tbody>
           {products.map((p, i) => (
-            <tr key={p.productId} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
+            <tr key={p.productId} style={{ borderBottom: "1px solid rgba(26,26,27,0.05)" }}>
               <td className="py-2 pr-3 font-serif max-w-[140px] truncate" style={{ color: "rgba(210,190,155,0.82)" }}>{p.name}</td>
               <td className="py-2 pr-3">
                 <span className="text-[7px] uppercase tracking-wider px-1 py-0.5 rounded"
-                  style={{ background: "rgba(255,255,255,0.04)", color: "rgba(180,155,100,0.45)" }}>
+                  style={{ background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.45)" }}>
                   {p.category.slice(0, 3)}
                 </span>
               </td>
               <td className="py-2 pr-3" style={{ color: "rgba(180,155,100,0.55)" }}>{p.views}</td>
               <td className="py-2 pr-3" style={{ color: "rgba(239,120,80,0.65)" }}>{p.swipeLeft}</td>
               <td className="py-2 pr-3" style={{ color: "rgba(100,200,120,0.65)" }}>{p.swipeRight}</td>
-              <td className="py-2 pr-3" style={{ color: "rgba(212,175,55,0.75)" }}>{p.selected}</td>
-              <td className="py-2 pr-3" style={{ color: "rgba(212,175,55,0.9)" }}>{p.ordered}</td>
+              <td className="py-2 pr-3" style={{ color: "rgba(212,139,0,0.75)" }}>{p.selected}</td>
+              <td className="py-2 pr-3" style={{ color: "rgba(212,139,0,0.9)" }}>{p.ordered}</td>
               <td className="py-2 pr-3">
                 <span style={{
-                  color: p.conversionRate >= 20 ? "rgba(100,200,120,0.8)" : p.conversionRate >= 5 ? "rgba(212,175,55,0.75)" : "rgba(180,155,100,0.4)",
+                  color: p.conversionRate >= 20 ? "rgba(100,200,120,0.8)" : p.conversionRate >= 5 ? "rgba(212,139,0,0.75)" : "rgba(180,155,100,0.4)",
                   fontSize: 10,
                 }}>{p.conversionRate}%</span>
               </td>
@@ -532,12 +532,12 @@ function TrendCard({ item }: { item: NonNullable<InsightsData["trending"]>[numbe
   return (
     <div className="p-3.5 rounded-xl"
       style={{
-        background: isNew || isUp ? "rgba(100,200,120,0.04)" : "rgba(255,255,255,0.025)",
-        border: `1px solid ${isNew || isUp ? "rgba(100,200,120,0.15)" : "rgba(255,255,255,0.07)"}`,
+        background: isNew || isUp ? "rgba(100,200,120,0.04)" : "rgba(26,26,27,0.04)",
+        border: `1px solid ${isNew || isUp ? "rgba(100,200,120,0.15)" : "rgba(26,26,27,0.09)"}`,
       }}>
       <div className="flex items-start justify-between mb-2">
         <span className="text-[8px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded"
-          style={{ background: "rgba(255,255,255,0.04)", color: "rgba(180,155,100,0.45)" }}>
+          style={{ background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.45)" }}>
           {item.category}
         </span>
         <div className="flex items-center gap-1">
@@ -570,8 +570,8 @@ function FunnelCard({ label, value, sub, icon, highlight }: {
   return (
     <div className="p-4 rounded-xl"
       style={{
-        background: highlight ? "rgba(212,175,55,0.07)" : "rgba(255,255,255,0.025)",
-        border: highlight ? "1px solid rgba(212,175,55,0.22)" : "1px solid rgba(255,255,255,0.06)",
+        background: highlight ? "rgba(212,139,0,0.07)" : "rgba(26,26,27,0.04)",
+        border: highlight ? "1px solid rgba(212,139,0,0.22)" : "1px solid rgba(26,26,27,0.08)",
       }}>
       <div className="flex items-center justify-between mb-2">{icon}
         <span className="text-[8px] uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.4)" }}>{label}</span>
@@ -588,7 +588,7 @@ function FunnelBar({ segments }: { segments: { pct: number; color: string }[] })
   return (
     <div className="relative w-full mt-3 space-y-1.5">
       {segments.map((s, i) => (
-        <div key={i} className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+        <div key={i} className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(26,26,27,0.07)" }}>
           <motion.div className="h-full rounded-full"
             initial={{ width: 0 }} animate={{ width: `${s.pct}%` }}
             transition={{ duration: 0.8, ease: "easeOut", delay: i * 0.15 }}
@@ -606,7 +606,7 @@ function Section({ title, subtitle, children, compact, action, icon }: {
   return (
     <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
       <div className={`rounded-xl ${compact ? "p-4" : "p-5"}`}
-        style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.065)" }}>
+        style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.07)" }}>
         <div className="flex items-start justify-between mb-4">
           <div>
             <div className="flex items-center gap-2">
@@ -679,7 +679,7 @@ function CampaignInsightsSection({
   const STATUS_COLORS: Record<string, string> = {
     active:    "rgba(100,200,120,0.75)",
     draft:     "rgba(180,155,100,0.5)",
-    paused:    "rgba(212,175,55,0.7)",
+    paused:    "rgba(212,139,0,0.7)",
     completed: "rgba(130,150,212,0.65)",
     cancelled: "rgba(239,90,80,0.55)",
   };
@@ -693,12 +693,12 @@ function CampaignInsightsSection({
       {loading ? (
         <div className="flex items-center justify-center py-10">
           <motion.div className="w-6 h-6 rounded-full border-2"
-            style={{ borderColor: "rgba(212,175,55,0.15)", borderTopColor: "rgba(212,175,55,0.6)" }}
+            style={{ borderColor: "rgba(212,139,0,0.15)", borderTopColor: "rgba(212,139,0,0.6)" }}
             animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
         </div>
       ) : campaigns.length === 0 ? (
         <div className="py-10 text-center">
-          <Megaphone size={28} className="mx-auto mb-3" style={{ color: "rgba(212,175,55,0.18)" }} />
+          <Megaphone size={28} className="mx-auto mb-3" style={{ color: "rgba(212,139,0,0.18)" }} />
           <p className="text-xs italic" style={{ color: "rgba(180,155,100,0.35)" }}>
             No campaigns yet — create one in the Campaigns tab to start tracking placement performance
           </p>
@@ -716,8 +716,8 @@ function CampaignInsightsSection({
             ].map(({ label, value, gold }) => (
               <div key={label} className="p-3 rounded-xl"
                 style={{
-                  background: gold ? "rgba(212,175,55,0.05)" : "rgba(255,255,255,0.025)",
-                  border:     gold ? "1px solid rgba(212,175,55,0.18)" : "1px solid rgba(255,255,255,0.06)",
+                  background: gold ? "rgba(212,139,0,0.05)" : "rgba(26,26,27,0.04)",
+                  border:     gold ? "1px solid rgba(212,139,0,0.18)" : "1px solid rgba(26,26,27,0.08)",
                 }}>
                 <p className="text-2xl font-serif" style={{ color: gold ? GOLD : "rgba(210,190,155,0.82)", fontWeight: 300 }}>
                   {value}
@@ -753,7 +753,7 @@ function CampaignInsightsSection({
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0 ml-3">
                       {r.roiLabel && (
-                        <span className="text-[8px]" style={{ color: "rgba(212,175,55,0.6)" }}>{r.roiLabel}</span>
+                        <span className="text-[8px]" style={{ color: "rgba(212,139,0,0.6)" }}>{r.roiLabel}</span>
                       )}
                       <span className="text-[10px] font-serif" style={{ color: GOLD_DIM }}>
                         {r.impressions.toLocaleString()}
@@ -761,13 +761,13 @@ function CampaignInsightsSection({
                       </span>
                     </div>
                   </div>
-                  <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+                  <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(26,26,27,0.07)" }}>
                     <motion.div className="h-full rounded-full"
                       initial={{ width: 0 }}
                       animate={{ width: `${maxImpressions > 0 ? (r.impressions / maxImpressions) * 100 : 0}%` }}
                       transition={{ duration: 0.8, ease: "easeOut", delay: i * 0.06 }}
                       style={{ background: r.active
-                        ? "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(212,175,55,0.85))"
+                        ? "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(212,139,0,0.85))"
                         : "rgba(180,155,100,0.25)"
                       }} />
                   </div>
@@ -780,7 +780,7 @@ function CampaignInsightsSection({
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                <tr style={{ borderBottom: "1px solid rgba(26,26,27,0.08)" }}>
                   {["Campaign", "Status", "Products", "Impressions", "Clicks", "CTR", "Orders", "CVR", "CPM"].map((h) => (
                     <th key={h} className="text-left pb-2 pr-3 text-[8px] uppercase tracking-[0.16em]"
                       style={{ color: "rgba(180,155,100,0.4)", fontWeight: 400 }}>{h}</th>
@@ -791,7 +791,7 @@ function CampaignInsightsSection({
                 {rows.map((r, i) => (
                   <motion.tr key={r.id}
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
-                    style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
+                    style={{ borderBottom: "1px solid rgba(26,26,27,0.05)" }}>
                     <td className="py-2.5 pr-3 font-serif max-w-[150px] truncate"
                       style={{ color: "rgba(220,200,165,0.85)" }}>{r.name}</td>
                     <td className="py-2.5 pr-3">
@@ -809,18 +809,18 @@ function CampaignInsightsSection({
                     <td className="py-2.5 pr-3" style={{ color: "rgba(200,180,145,0.75)" }}>{r.clicks.toLocaleString()}</td>
                     <td className="py-2.5 pr-3">
                       <span style={{
-                        color: r.ctr >= 10 ? "rgba(100,200,120,0.8)" : r.ctr >= 3 ? "rgba(212,175,55,0.75)" : "rgba(180,155,100,0.45)",
+                        color: r.ctr >= 10 ? "rgba(100,200,120,0.8)" : r.ctr >= 3 ? "rgba(212,139,0,0.75)" : "rgba(180,155,100,0.45)",
                         fontSize: 10,
                       }}>{r.ctr}%</span>
                     </td>
-                    <td className="py-2.5 pr-3" style={{ color: "rgba(212,175,55,0.8)" }}>{r.conversions}</td>
+                    <td className="py-2.5 pr-3" style={{ color: "rgba(212,139,0,0.8)" }}>{r.conversions}</td>
                     <td className="py-2.5 pr-3">
                       <span style={{
-                        color: r.cvr >= 10 ? "rgba(100,200,120,0.8)" : r.cvr >= 2 ? "rgba(212,175,55,0.75)" : "rgba(180,155,100,0.4)",
+                        color: r.cvr >= 10 ? "rgba(100,200,120,0.8)" : r.cvr >= 2 ? "rgba(212,139,0,0.75)" : "rgba(180,155,100,0.4)",
                         fontSize: 10,
                       }}>{r.cvr}%</span>
                     </td>
-                    <td className="py-2.5 pr-3" style={{ color: "rgba(212,175,55,0.55)", fontSize: 10 }}>
+                    <td className="py-2.5 pr-3" style={{ color: "rgba(212,139,0,0.55)", fontSize: 10 }}>
                       {r.roiLabel ?? <span style={{ color: "rgba(180,155,100,0.25)" }}>—</span>}
                     </td>
                   </motion.tr>
@@ -845,14 +845,14 @@ function FuturePanel() {
   return (
     <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
       <div className="rounded-xl p-5 relative overflow-hidden"
-        style={{ background: "rgba(180,130,30,0.03)", border: "1px solid rgba(212,175,55,0.12)" }}>
+        style={{ background: "rgba(180,130,30,0.03)", border: "1px solid rgba(212,139,0,0.12)" }}>
         <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse at 90% 20%, rgba(212,175,55,0.05), transparent 55%)" }} />
+          style={{ background: "radial-gradient(ellipse at 90% 20%, rgba(212,139,0,0.05), transparent 55%)" }} />
         <div className="relative">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="font-serif text-base" style={{ color: "rgba(230,210,175,0.8)", fontWeight: 300 }}>Roadmap</h3>
             <span className="text-[8px] uppercase tracking-[0.18em] px-2 py-0.5 rounded-full"
-              style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.18)", color: "rgba(212,175,55,0.5)" }}>
+              style={{ background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.18)", color: "rgba(212,139,0,0.5)" }}>
               Coming Soon
             </span>
           </div>
@@ -862,7 +862,7 @@ function FuturePanel() {
           <div className="grid sm:grid-cols-2 gap-3">
             {features.map((f) => (
               <div key={f.label} className="flex gap-3 p-3 rounded-lg"
-                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+                style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.07)" }}>
                 <div className="flex-shrink-0 mt-0.5" style={{ color: GOLD_DIM }}>{f.icon}</div>
                 <div>
                   <p className="text-xs font-medium mb-0.5" style={{ color: "rgba(210,190,155,0.75)" }}>{f.label}</p>

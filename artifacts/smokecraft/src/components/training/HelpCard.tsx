@@ -7,10 +7,10 @@ import { motion }    from "framer-motion";
 import { LucideIcon, Eye, Lightbulb } from "lucide-react";
 
 const T = {
-  card:   "rgba(255,255,255,0.03)",
-  border: "rgba(201,168,76,0.12)",
-  gold:   "#c9a84c",
-  muted:  "rgba(240,232,212,0.45)",
+  card:   "rgba(26,26,27,0.05)",
+  border: "rgba(212,139,0,0.12)",
+  gold:   "#D48B00",
+  muted:  "rgba(26,26,27,0.44)",
   light:  "rgba(240,232,212,0.78)",
 };
 

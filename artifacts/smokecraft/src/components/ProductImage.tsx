@@ -82,7 +82,7 @@ export function ProductImage({ url, alt, category, height = 220, className = "",
             src={fallbackSrc!}
             alt={alt}
             className="h-full w-auto max-w-full object-contain drop-shadow-2xl"
-            style={{ filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.7))" }}
+            style={{ filter: "drop-shadow(0 8px 24px rgba(26,26,27,0.32))" }}
             onError={() => setFallbackError(true)}
             loading="lazy"
             decoding="async"
@@ -116,14 +116,14 @@ function Placeholder({ category }: { category: string }) {
         className="absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage:
-            "repeating-linear-gradient(45deg,  rgba(212,175,55,0.8) 0px, transparent 1px, transparent 18px)," +
-            "repeating-linear-gradient(-45deg, rgba(212,175,55,0.8) 0px, transparent 1px, transparent 18px)",
+            "repeating-linear-gradient(45deg,  rgba(212,139,0,0.8) 0px, transparent 1px, transparent 18px)," +
+            "repeating-linear-gradient(-45deg, rgba(212,139,0,0.8) 0px, transparent 1px, transparent 18px)",
         }}
       />
       <svg
         viewBox="0 0 24 24"
         fill="none"
-        stroke="rgba(212,175,55,0.18)"
+        stroke="rgba(212,139,0,0.18)"
         strokeWidth={0.8}
         strokeLinecap="round"
         strokeLinejoin="round"

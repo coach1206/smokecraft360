@@ -148,7 +148,7 @@ const CRAFTS = [
     label:   "SmokeCraft",
     tagline: "Premium Tobacco",
     sub:     "Curated reserve experience",
-    color:   "#C9A84C",
+    color:   "#D48B00",
     route:   "/experience/smoke",
     glyph:   "◈",
   },
@@ -186,7 +186,7 @@ const CRAFTS = [
 // patrons can also tap a chip directly to shift the ambient cloud.
 
 const MOOD_CONFIG = {
-  bold:    { label: "BOLD",    color: "#C9A84C" },
+  bold:    { label: "BOLD",    color: "#D48B00" },
   relaxed: { label: "RELAXED", color: "#2E5A88" },
   social:  { label: "SOCIAL",  color: "#8E44AD" },
 } as const;
@@ -223,7 +223,7 @@ const QUICK_VIEW_LABELS = new Set(["Revenue", "Analytics", "Campaigns", "Operati
 const HOLD_MS  = 3000;
 const FLASH_MS = 680;
 const BTN_SHADOW =
-  "inset 0 3px 8px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 0 rgba(255,255,255,0.03)";
+  "inset 0 3px 8px rgba(26,26,27,0.45), inset 0 1px 0 rgba(26,26,27,0.06), 0 1px 0 rgba(26,26,27,0.05)";
 
 // ── System Override flash ─────────────────────────────────────────────────────
 
@@ -234,16 +234,16 @@ function OverrideFlash() {
       animate={{ opacity: [0, 1, 1, 0] }}
       transition={{ duration: FLASH_MS / 1000, times: [0, 0.14, 0.74, 1] }}
       className="fixed inset-0 z-[500] flex flex-col items-center justify-center gap-4"
-      style={{ background: "linear-gradient(135deg, #1c1814, #0a0806)" }}
+      style={{ background: "linear-gradient(135deg, #E8E4D9, #F5F2ED)" }}
     >
       <motion.div
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="w-64 h-px"
-        style={{ background: "linear-gradient(90deg, transparent, #C9A84C, transparent)" }}
+        style={{ background: "linear-gradient(90deg, transparent, #D48B00, transparent)" }}
       />
-      <div className="text-[9px] tracking-[0.38em] uppercase" style={{ color: "rgba(201,168,76,0.55)" }}>
+      <div className="text-[9px] tracking-[0.38em] uppercase" style={{ color: "rgba(212,139,0,0.55)" }}>
         System Override
       </div>
       <motion.div
@@ -251,7 +251,7 @@ function OverrideFlash() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.1 }}
         className="font-serif text-5xl font-bold tracking-wider"
-        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "#C9A84C" }}
+        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "#D48B00" }}
       >
         Staff Access
       </motion.div>
@@ -260,7 +260,7 @@ function OverrideFlash() {
         animate={{ scaleX: 1 }}
         transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
         className="w-64 h-px mt-2"
-        style={{ background: "linear-gradient(90deg, transparent, #C9A84C, transparent)" }}
+        style={{ background: "linear-gradient(90deg, transparent, #D48B00, transparent)" }}
       />
     </motion.div>
   );
@@ -307,7 +307,7 @@ function CraftCard({
       className="relative overflow-hidden rounded-2xl cursor-pointer text-left outline-none
                  bg-axiom-graphite card-recessed"
       style={{
-        border: `1px solid ${hovered ? `${craft.color}55` : "rgba(255,255,255,0.09)"}`,
+        border: `1px solid ${hovered ? `${craft.color}55` : "rgba(26,26,27,0.11)"}`,
         transition: "border-color 0.22s",
       }}
     >
@@ -406,7 +406,7 @@ function CraftCard({
           style={{
             position: "absolute", top: 10, right: 10,
             background: "rgba(8,6,4,0.72)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            border: "1px solid rgba(26,26,27,0.10)",
             borderRadius: 8, padding: "4px 8px",
             backdropFilter: "blur(10px)",
             textAlign: "right",
@@ -434,7 +434,7 @@ function CraftCard({
                   transition={{ duration: 0.28, ease: "easeInOut" }}
                   style={{
                     display: "block", fontSize: 14, fontWeight: 700,
-                    color: "#F0E8D4", letterSpacing: "-0.02em", lineHeight: "16px",
+                    color: "#1A1A1B", letterSpacing: "-0.02em", lineHeight: "16px",
                   }}
                 >
                   {priceInfo.price.toFixed(0)}
@@ -451,8 +451,8 @@ function CraftCard({
             style={{
               fontFamily: "'Cormorant Garamond', Georgia, serif",
               fontSize: "clamp(17px, 2.4vw, 24px)",
-              color: "#F0E8D4",
-              textShadow: "0 1px 8px rgba(0,0,0,0.9)",
+              color: "#1A1A1B",
+              textShadow: "0 1px 8px rgba(26,26,27,0.50)",
             }}
           >
             {craft.label}
@@ -506,9 +506,9 @@ function LangToggle() {
         display: "flex", alignItems: "center", gap: 5,
         fontSize: 8, fontWeight: 700, letterSpacing: "0.14em",
         textTransform: "uppercase", cursor: "pointer", outline: "none",
-        background:  isES ? "rgba(74,222,128,0.08)"   : "rgba(255,255,255,0.04)",
-        border:      isES ? "1px solid rgba(74,222,128,0.28)" : "1px solid rgba(255,255,255,0.10)",
-        color:       isES ? "#4ade80" : "rgba(240,232,212,0.38)",
+        background:  isES ? "rgba(74,222,128,0.08)"   : "rgba(26,26,27,0.06)",
+        border:      isES ? "1px solid rgba(74,222,128,0.28)" : "1px solid rgba(26,26,27,0.12)",
+        color:       isES ? "#4ade80" : "rgba(26,26,27,0.38)",
         padding: "3px 10px", borderRadius: 99,
         transition: "all 0.2s ease",
         flexShrink: 0,
@@ -538,7 +538,7 @@ function AudioToggle() {
         background: "none",
         border: "none",
         cursor: "pointer",
-        color: on ? "rgba(201,168,76,0.65)" : "rgba(255,255,255,0.18)",
+        color: on ? "rgba(212,139,0,0.65)" : "rgba(26,26,27,0.20)",
         padding: "2px 4px",
         lineHeight: 1,
         transition: "color 0.18s",
@@ -578,7 +578,7 @@ function StaffPanel({
   } = useAxiomStore();
 
   const occupancyColor =
-    occupancy > 80 ? "#f87171" : occupancy < 25 ? "#C9A84C" : "#4ade80";
+    occupancy > 80 ? "#f87171" : occupancy < 25 ? "#D48B00" : "#4ade80";
 
   // Occupancy arc dial parameters
   const R = 30; const CIRC = 2 * Math.PI * R;
@@ -608,7 +608,7 @@ function StaffPanel({
 
   const SENTIMENT = [
     { emoji: "😊", label: "Satisfied",    pct: 68, color: "#4ade80" },
-    { emoji: "😐", label: "Neutral",      pct: 22, color: "#C9A84C" },
+    { emoji: "😐", label: "Neutral",      pct: 22, color: "#D48B00" },
     { emoji: "😞", label: "Disappointed", pct: 10, color: "#f87171" },
   ];
 
@@ -620,9 +620,9 @@ function StaffPanel({
       transition={{ type: "spring", stiffness: 290, damping: 30 }}
       className="fixed inset-0 z-[100] flex flex-col overflow-hidden"
       style={{
-        background: "linear-gradient(160deg, #211d18 0%, #0e0c0a 100%)",
-        borderLeft: "1px solid rgba(255,255,255,0.07)",
-        color: "#F0E8D4",
+        background: "linear-gradient(160deg, #2A2A2A 0%, #F5F2ED 100%)",
+        borderLeft: "1px solid rgba(26,26,27,0.09)",
+        color: "#1A1A1B",
         fontFamily: "'Inter', system-ui, sans-serif",
       }}
     >
@@ -634,7 +634,7 @@ function StaffPanel({
         className="absolute inset-y-0 w-1/2 pointer-events-none z-10"
         style={{
           background:
-            "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.07) 50%, transparent 100%)",
+            "linear-gradient(90deg, transparent 0%, rgba(26,26,27,0.09) 50%, transparent 100%)",
         }}
       />
 
@@ -647,14 +647,14 @@ function StaffPanel({
       {/* Header */}
       <div
         className="relative z-10 flex-shrink-0 px-7 pt-7 pb-5"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,0,0,0.22)" }}
+        style={{ borderBottom: "1px solid rgba(26,26,27,0.09)", background: "rgba(26,26,27,0.05)" }}
       >
         <div className="flex items-center justify-between mb-3">
           <div
             className="flex items-center gap-2 uppercase tracking-[0.35em]"
-            style={{ fontSize: 8, color: "rgba(240,232,212,0.38)" }}
+            style={{ fontSize: 8, color: "rgba(26,26,27,0.38)" }}
           >
-            <Shield size={9} color="rgba(201,168,76,0.5)" />
+            <Shield size={9} color="rgba(212,139,0,0.5)" />
             Staff Override Active
           </div>
           <LangToggle />
@@ -669,10 +669,10 @@ function StaffPanel({
           style={{
             fontFamily: "'Cormorant Garamond', Georgia, serif",
             fontSize: "clamp(24px, 3.5vw, 34px)",
-            color: "#C9A84C",
+            color: "#D48B00",
             letterSpacing: "0.05em",
             cursor: "default",
-            filter: "drop-shadow(0 0 6px rgba(201,168,76,0.28)) drop-shadow(0 0 2px rgba(201,168,76,0.14))",
+            filter: "drop-shadow(0 0 6px rgba(212,139,0,0.28)) drop-shadow(0 0 2px rgba(212,139,0,0.14))",
           }}
         >
           Staff Dashboard
@@ -694,9 +694,9 @@ function StaffPanel({
             <span
               className="px-3 py-1 rounded-full text-[10px] flex items-center gap-1"
               style={{
-                background: "rgba(201,168,76,0.10)",
-                border: "1px solid rgba(201,168,76,0.3)",
-                color: "rgba(201,168,76,0.55)",
+                background: "rgba(212,139,0,0.10)",
+                border: "1px solid rgba(212,139,0,0.3)",
+                color: "rgba(212,139,0,0.55)",
               }}
             >
               <Clock size={9} />
@@ -709,10 +709,10 @@ function StaffPanel({
       {/* ── Revenue Intelligence Panel ── */}
       <div
         className="relative z-10 flex-shrink-0 px-6 py-4"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,0,0,0.14)" }}
+        style={{ borderBottom: "1px solid rgba(26,26,27,0.09)", background: "rgba(26,26,27,0.03)" }}
       >
         <div className="flex items-center justify-between mb-3">
-          <span style={{ fontSize: 7.5, color: "rgba(240,232,212,0.35)", letterSpacing: "0.32em", textTransform: "uppercase" }}>
+          <span style={{ fontSize: 7.5, color: "rgba(26,26,27,0.35)", letterSpacing: "0.32em", textTransform: "uppercase" }}>
             Revenue Intelligence
           </span>
           {/* Master toggle */}
@@ -722,15 +722,15 @@ function StaffPanel({
               display: "flex", alignItems: "center", gap: 6,
               fontSize: 7.5, fontWeight: 700, letterSpacing: "0.16em",
               textTransform: "uppercase", cursor: "pointer", outline: "none",
-              background: isDynamicActive ? "rgba(201,168,76,0.14)" : "rgba(255,255,255,0.05)",
-              border: `1px solid ${isDynamicActive ? "rgba(201,168,76,0.45)" : "rgba(255,255,255,0.10)"}`,
-              color: isDynamicActive ? "#C9A84C" : "rgba(240,232,212,0.3)",
+              background: isDynamicActive ? "rgba(212,139,0,0.14)" : "rgba(26,26,27,0.07)",
+              border: `1px solid ${isDynamicActive ? "rgba(212,139,0,0.45)" : "rgba(26,26,27,0.12)"}`,
+              color: isDynamicActive ? "#D48B00" : "rgba(240,232,212,0.3)",
               padding: "3px 10px", borderRadius: 99, transition: "all 0.22s",
             }}
           >
             <div style={{
               width: 5, height: 5, borderRadius: "50%",
-              background: isDynamicActive ? "#4ade80" : "rgba(255,255,255,0.18)",
+              background: isDynamicActive ? "#4ade80" : "rgba(26,26,27,0.20)",
               boxShadow: isDynamicActive ? "0 0 6px #4ade8088" : "none",
               transition: "all 0.22s",
             }} />
@@ -743,7 +743,7 @@ function StaffPanel({
           <div className="flex flex-col items-center" style={{ minWidth: 72 }}>
             <svg width="72" height="60" viewBox="0 0 72 60">
               <circle cx="36" cy="46" r={R}
-                fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="5"
+                fill="none" stroke="rgba(26,26,27,0.08)" strokeWidth="5"
                 strokeDasharray={`${CIRC * (240 / 360)} ${CIRC}`}
                 strokeLinecap="round"
                 transform="rotate(150 36 46)"
@@ -759,13 +759,13 @@ function StaffPanel({
                 }}
               />
               <text x="36" y="50" textAnchor="middle"
-                fill="#F0E8D4" fontSize="13" fontWeight="700"
+                fill="#1A1A1B" fontSize="13" fontWeight="700"
                 style={{ fontFamily: "'Inter', system-ui" }}
               >
                 {occupancy}%
               </text>
             </svg>
-            <span style={{ fontSize: 7, color: "rgba(240,232,212,0.28)", letterSpacing: "0.18em", textTransform: "uppercase", marginTop: -4 }}>
+            <span style={{ fontSize: 7, color: "rgba(26,26,27,0.28)", letterSpacing: "0.18em", textTransform: "uppercase", marginTop: -4 }}>
               Occupancy
             </span>
             {/* Occupancy slider */}
@@ -819,7 +819,7 @@ function StaffPanel({
 
         {/* State label */}
         <div style={{ marginTop: 8, fontSize: 7.5, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase",
-          color: occupancy > 80 ? "#f87171" : occupancy < 25 ? "#C9A84C" : "rgba(240,232,212,0.25)" }}>
+          color: occupancy > 80 ? "#f87171" : occupancy < 25 ? "#D48B00" : "rgba(26,26,27,0.25)" }}>
           {occupancy > 80 ? "▲ JUMPING — 12% Surge Active" : occupancy < 25 ? "▼ SLOW — 15% Volume Incentive Active" : "● Normal Demand"}
         </div>
       </div>
@@ -840,22 +840,22 @@ function StaffPanel({
             onClick={() => QUICK_VIEW_LABELS.has(label) ? setActiveSlug(label.toLowerCase()) : navigate(route)}
             className="rounded-2xl flex flex-col items-center gap-2 py-4 px-2 cursor-pointer btn-recessed"
             style={{
-              background: "linear-gradient(160deg, #1e1a15, #141210)",
-              border: "1px solid rgba(255,255,255,0.07)",
-              color: "rgba(240,232,212,0.45)",
+              background: "linear-gradient(160deg, #E8E4D9, #EFEBE0)",
+              border: "1px solid rgba(26,26,27,0.09)",
+              color: "rgba(26,26,27,0.44)",
               outline: "none",
               transition: "border-color 0.18s, color 0.18s",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "rgba(201,168,76,0.35)";
-              e.currentTarget.style.color = "#F0E8D4";
+              e.currentTarget.style.borderColor = "rgba(212,139,0,0.35)";
+              e.currentTarget.style.color = "#1A1A1B";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
-              e.currentTarget.style.color = "rgba(240,232,212,0.45)";
+              e.currentTarget.style.borderColor = "rgba(26,26,27,0.09)";
+              e.currentTarget.style.color = "rgba(26,26,27,0.44)";
             }}
           >
-            <Icon size={16} color="rgba(201,168,76,0.55)" />
+            <Icon size={16} color="rgba(212,139,0,0.55)" />
             <span className="text-[9px] font-bold uppercase tracking-wider">{label}</span>
           </button>
         ))}
@@ -864,16 +864,16 @@ function StaffPanel({
       {/* Footer */}
       <div
         className="relative z-10 flex-shrink-0 flex items-center justify-between px-6 py-4"
-        style={{ borderTop: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,0,0,0.18)" }}
+        style={{ borderTop: "1px solid rgba(26,26,27,0.09)", background: "rgba(26,26,27,0.04)" }}
       >
         <button
           onClick={onExit}
           className="flex items-center gap-2 rounded-xl px-4 py-2 text-[11px] font-bold
                      uppercase tracking-wider cursor-pointer btn-recessed"
           style={{
-            background: "linear-gradient(135deg, #1e1a14, #141210)",
-            border: "1px solid rgba(201,168,76,0.35)",
-            color: "#C9A84C",
+            background: "linear-gradient(135deg, #E8E4D9, #EFEBE0)",
+            border: "1px solid rgba(212,139,0,0.35)",
+            color: "#D48B00",
             outline: "none",
           }}
         >
@@ -904,9 +904,9 @@ function StaffPanel({
               onClick={() => setResetPending(true)}
               style={{
                 padding: "4px 12px", borderRadius: 8, cursor: "pointer",
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.10)",
-                color: "rgba(240,232,212,0.30)", fontSize: 9, fontWeight: 700,
+                background: "rgba(26,26,27,0.06)",
+                border: "1px solid rgba(26,26,27,0.12)",
+                color: "rgba(26,26,27,0.30)", fontSize: 9, fontWeight: 700,
                 letterSpacing: "0.16em", textTransform: "uppercase",
                 outline: "none",
               }}
@@ -916,7 +916,7 @@ function StaffPanel({
           )}
           {/* Audio toggle */}
           <AudioToggle />
-          <div className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(240,232,212,0.22)" }}>
+          <div className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(26,26,27,0.22)" }}>
             Axiom 360 OS
           </div>
         </div>
@@ -933,9 +933,9 @@ function StaffPanel({
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
             style={{
               position: "absolute", inset: 0, zIndex: 20,
-              background: "linear-gradient(160deg, #1a1612 0%, #0d0b09 100%)",
+              background: "linear-gradient(160deg, #2A2A2A 0%, #F5F2ED 100%)",
               display: "flex", flexDirection: "column", overflow: "hidden",
-              borderLeft: "1px solid rgba(255,255,255,0.06)",
+              borderLeft: "1px solid rgba(26,26,27,0.08)",
             }}
           >
             {/* Brushed graphite texture */}
@@ -947,8 +947,8 @@ function StaffPanel({
                 position: "relative", zIndex: 10, flexShrink: 0,
                 display: "flex", alignItems: "center", gap: 12,
                 padding: "14px 20px",
-                borderBottom: "1px solid rgba(255,255,255,0.07)",
-                background: "rgba(0,0,0,0.22)",
+                borderBottom: "1px solid rgba(26,26,27,0.09)",
+                background: "rgba(26,26,27,0.05)",
               }}
             >
               <motion.button
@@ -956,8 +956,8 @@ function StaffPanel({
                 onClick={() => setActiveSlug(null)}
                 style={{
                   width: 38, height: 38, borderRadius: 11, cursor: "pointer",
-                  background: "#211d17", border: "1px solid rgba(255,255,255,0.10)",
-                  color: "#B39B77", display: "flex", alignItems: "center", justifyContent: "center",
+                  background: "#211d17", border: "1px solid rgba(26,26,27,0.12)",
+                  color: "#6B5E4E", display: "flex", alignItems: "center", justifyContent: "center",
                   outline: "none",
                 }}
               >
@@ -965,17 +965,17 @@ function StaffPanel({
               </motion.button>
               <div style={{ flex: 1 }}>
                 <div style={{
-                  fontSize: 13, fontWeight: 700, color: "#C9A84C",
+                  fontSize: 13, fontWeight: 700, color: "#D48B00",
                   textTransform: "uppercase", letterSpacing: "0.16em",
                 }}>
                   {activeSlug.charAt(0).toUpperCase() + activeSlug.slice(1)}
                 </div>
-                <div style={{ fontSize: 9, color: "rgba(240,232,212,0.30)", marginTop: 1, letterSpacing: "0.12em" }}>
+                <div style={{ fontSize: 9, color: "rgba(26,26,27,0.30)", marginTop: 1, letterSpacing: "0.12em" }}>
                   Quick View · Staff Mode
                 </div>
               </div>
               {/* Gold accent rule */}
-              <div style={{ width: 3, height: 26, borderRadius: 99, background: "linear-gradient(180deg, #C9A84C, rgba(201,168,76,0.3))", boxShadow: "0 0 8px rgba(201,168,76,0.4)" }} />
+              <div style={{ width: 3, height: 26, borderRadius: 99, background: "linear-gradient(180deg, #D48B00, rgba(212,139,0,0.3))", boxShadow: "0 0 8px rgba(212,139,0,0.4)" }} />
             </div>
 
             {/* Content */}
@@ -997,7 +997,7 @@ function StaffPanel({
             transition={{ duration: 0.22, ease: "easeOut" }}
             style={{
               position: "absolute", inset: 0, zIndex: 30,
-              background: "linear-gradient(160deg, #1a1208 0%, #0a0806 100%)",
+              background: "linear-gradient(160deg, #EFEBE0 0%, #F5F2ED 100%)",
               display: "flex", flexDirection: "column",
               overflow: "hidden",
               fontFamily: "'Inter', system-ui, sans-serif",
@@ -1008,7 +1008,7 @@ function StaffPanel({
             {/* Gold border inset */}
             <div style={{
               position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
-              border: "1px solid rgba(201,168,76,0.18)",
+              border: "1px solid rgba(212,139,0,0.18)",
             }} />
 
             {/* Content */}
@@ -1017,7 +1017,7 @@ function StaffPanel({
               {/* Header */}
               <div style={{ marginBottom: 22 }}>
                 <div style={{
-                  fontSize: 7.5, color: "rgba(201,168,76,0.5)",
+                  fontSize: 7.5, color: "rgba(212,139,0,0.5)",
                   letterSpacing: "0.4em", textTransform: "uppercase", marginBottom: 5,
                 }}>
                   ✦ &nbsp;Founder's Command View
@@ -1025,7 +1025,7 @@ function StaffPanel({
                 <div style={{
                   fontFamily: "'Cormorant Garamond', Georgia, serif",
                   fontSize: "clamp(20px, 2.8vw, 28px)",
-                  fontWeight: 700, color: "#F0E8D4", letterSpacing: "0.04em",
+                  fontWeight: 700, color: "#1A1A1B", letterSpacing: "0.04em",
                 }}>
                   Owner ROI Dashboard
                 </div>
@@ -1038,8 +1038,8 @@ function StaffPanel({
 
               {/* ── Patron Sentiment Map ── */}
               <div style={{
-                background: "rgba(255,255,255,0.025)",
-                border: "1px solid rgba(255,255,255,0.07)",
+                background: "rgba(26,26,27,0.04)",
+                border: "1px solid rgba(26,26,27,0.09)",
                 borderRadius: 12, padding: "16px 18px",
               }}>
                 <div style={{
@@ -1058,7 +1058,7 @@ function StaffPanel({
                       {label}
                     </div>
                     <div style={{
-                      flex: 1, height: 7, background: "rgba(255,255,255,0.06)",
+                      flex: 1, height: 7, background: "rgba(26,26,27,0.08)",
                       borderRadius: 99, overflow: "hidden",
                     }}>
                       <motion.div
@@ -1085,10 +1085,10 @@ function StaffPanel({
 
             {/* Footer */}
             <div style={{
-              borderTop: "1px solid rgba(255,255,255,0.07)",
+              borderTop: "1px solid rgba(26,26,27,0.09)",
               padding: "12px 24px",
               display: "flex", alignItems: "center", justifyContent: "space-between",
-              background: "rgba(0,0,0,0.2)", flexShrink: 0, position: "relative", zIndex: 10,
+              background: "rgba(26,26,27,0.04)", flexShrink: 0, position: "relative", zIndex: 10,
             }}>
               <button
                 onClick={() => setFounderVisible(false)}
@@ -1096,9 +1096,9 @@ function StaffPanel({
                   display: "flex", alignItems: "center", gap: 5,
                   fontSize: 9, fontWeight: 700, letterSpacing: "0.16em",
                   textTransform: "uppercase", cursor: "pointer", outline: "none",
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  color: "rgba(240,232,212,0.45)",
+                  background: "rgba(26,26,27,0.07)",
+                  border: "1px solid rgba(26,26,27,0.12)",
+                  color: "rgba(26,26,27,0.44)",
                   padding: "5px 14px", borderRadius: 99,
                 }}
               >
@@ -1106,7 +1106,7 @@ function StaffPanel({
                 Back
               </button>
               <div style={{
-                fontSize: 7.5, color: "rgba(201,168,76,0.3)",
+                fontSize: 7.5, color: "rgba(212,139,0,0.3)",
                 letterSpacing: "0.2em", textTransform: "uppercase",
               }}>
                 Founder Access Only
@@ -1164,7 +1164,7 @@ function PatronView({
     ? MOOD_CONFIG[activeMood].color
     : activeCraft
       ? MOOD_CONFIG[CRAFT_MOOD[activeCraft] ?? "bold"].color
-      : "#C9A84C";
+      : "#D48B00";
 
   // Per-craft prices — recomputes whenever occupancy / pricing / member state changes
   const craftPrices = useMemo(
@@ -1219,7 +1219,7 @@ function PatronView({
   return (
     <div
       className="absolute inset-0 flex flex-col overflow-hidden grainy-texture"
-      style={{ background: "#0d0b09", color: "#F0E8D4", fontFamily: "'Inter', system-ui, sans-serif" }}
+      style={{ background: "#F5F2ED", color: "#1A1A1B", fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       {/* Lounge Pulse ambient cloud — color syncs to active mood */}
       <Pulse
@@ -1237,7 +1237,7 @@ function PatronView({
       <header
         className="relative z-10 flex items-center gap-4 px-5 py-3 flex-shrink-0"
         style={{
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
+          borderBottom: "1px solid rgba(26,26,27,0.09)",
           background: "rgba(13,11,9,0.88)",
           backdropFilter: "blur(18px)",
         }}
@@ -1260,7 +1260,7 @@ function PatronView({
             style={{
               fontFamily: "'Cormorant Garamond', Georgia, serif",
               fontSize: "clamp(18px, 2.4vw, 22px)",
-              color: "#F0E8D4",
+              color: "#1A1A1B",
               letterSpacing: "0.18em",
             }}
           >
@@ -1268,7 +1268,7 @@ function PatronView({
           </span>
           <span
             className="uppercase"
-            style={{ fontSize: 8, color: "rgba(201,168,76,0.5)", letterSpacing: "0.3em", marginTop: 2 }}
+            style={{ fontSize: 8, color: "rgba(212,139,0,0.5)", letterSpacing: "0.3em", marginTop: 2 }}
           >
             Experience OS
           </span>
@@ -1278,7 +1278,7 @@ function PatronView({
         <div className="flex items-center gap-5 flex-1 overflow-x-auto scrollbar-none ml-2">
           {[
             { label: "AI Engine",    state: "ACTIVE",  color: "#4ade80" },
-            { label: "Taste Engine", state: "READY",   color: "#C9A84C" },
+            { label: "Taste Engine", state: "READY",   color: "#D48B00" },
             { label: "Revenue",      state: "ONLINE",  color: "#a78bfa" },
             { label: "Inventory",    state: "SYNC",    color: "#60a5fa" },
           ].map((n) => (
@@ -1302,7 +1302,7 @@ function PatronView({
         {/* Clock */}
         <div
           className="flex-shrink-0 flex items-center gap-2"
-          style={{ fontSize: 10, color: "rgba(240,232,212,0.25)", letterSpacing: "0.12em" }}
+          style={{ fontSize: 10, color: "rgba(26,26,27,0.25)", letterSpacing: "0.12em" }}
         >
           <motion.div
             className="rounded-full"
@@ -1324,7 +1324,7 @@ function PatronView({
             fontFamily: "'Cormorant Garamond', Georgia, serif",
             fontSize: "clamp(15px, 2.2vw, 21px)",
             fontWeight: 300,
-            color: "#F0E8D4",
+            color: "#1A1A1B",
           }}
         >
           Select your{" "}
@@ -1332,7 +1332,7 @@ function PatronView({
             experience.
           </span>
         </motion.div>
-        <p style={{ fontSize: 10, color: "rgba(240,232,212,0.38)", marginTop: 5 }}>
+        <p style={{ fontSize: 10, color: "rgba(26,26,27,0.38)", marginTop: 5 }}>
           The AI engine curates in real time — tap to begin.
         </p>
 
@@ -1359,15 +1359,15 @@ function PatronView({
                   letterSpacing: "0.22em",
                   padding: "4px 10px",
                   borderRadius: 99,
-                  border: `1px solid ${active ? cfg.color : "rgba(255,255,255,0.14)"}`,
+                  border: `1px solid ${active ? cfg.color : "rgba(26,26,27,0.16)"}`,
                   background: active ? `${cfg.color}22` : "rgba(13,11,9,0.6)",
-                  color: active ? cfg.color : "rgba(240,232,212,0.38)",
+                  color: active ? cfg.color : "rgba(26,26,27,0.38)",
                   cursor: "pointer",
                   outline: "none",
                   transition: "all 0.28s ease",
                   boxShadow: active
-                    ? `0 0 10px ${cfg.color}44, inset 0 1px 0 rgba(255,255,255,0.06)`
-                    : "inset 0 1px 0 rgba(255,255,255,0.04)",
+                    ? `0 0 10px ${cfg.color}44, inset 0 1px 0 rgba(26,26,27,0.08)`
+                    : "inset 0 1px 0 rgba(26,26,27,0.06)",
                 }}
               >
                 {cfg.label}
@@ -1381,7 +1381,7 @@ function PatronView({
               exit={{ opacity: 0 }}
               style={{
                 fontSize: 8,
-                color: "rgba(240,232,212,0.28)",
+                color: "rgba(26,26,27,0.28)",
                 letterSpacing: "0.1em",
                 marginLeft: 2,
               }}
@@ -1417,7 +1417,7 @@ function PatronView({
       <footer
         className="relative z-10 flex items-center gap-4 px-5 py-2.5 flex-shrink-0"
         style={{
-          borderTop: "1px solid rgba(255,255,255,0.06)",
+          borderTop: "1px solid rgba(26,26,27,0.08)",
           background: "rgba(13,11,9,0.92)",
           backdropFilter: "blur(12px)",
         }}
@@ -1432,7 +1432,7 @@ function PatronView({
             />
             <span
               className="uppercase"
-              style={{ fontSize: 8, color: "rgba(240,232,212,0.22)", letterSpacing: "0.2em" }}
+              style={{ fontSize: 8, color: "rgba(26,26,27,0.22)", letterSpacing: "0.2em" }}
             >
               {c.id}
             </span>
@@ -1464,7 +1464,7 @@ function PatronView({
               {/* XP progress bar */}
               <div style={{
                 width: 52, height: 2, borderRadius: 99,
-                background: "rgba(255,255,255,0.08)",
+                background: "rgba(26,26,27,0.10)",
                 overflow: "hidden",
               }}>
                 <motion.div
@@ -1489,8 +1489,8 @@ function PatronView({
             display: "flex", alignItems: "center", gap: 5,
             fontSize: 7.5, fontWeight: 700, letterSpacing: "0.16em",
             textTransform: "uppercase", cursor: "pointer", outline: "none",
-            background: isMember ? "rgba(74,222,128,0.12)" : "rgba(255,255,255,0.05)",
-            border: `1px solid ${isMember ? "rgba(74,222,128,0.45)" : "rgba(255,255,255,0.12)"}`,
+            background: isMember ? "rgba(74,222,128,0.12)" : "rgba(26,26,27,0.07)",
+            border: `1px solid ${isMember ? "rgba(74,222,128,0.45)" : "rgba(26,26,27,0.14)"}`,
             color: isMember ? "#4ade80" : "rgba(240,232,212,0.32)",
             padding: "3px 10px", borderRadius: 99,
             transition: "all 0.28s ease",
@@ -1530,10 +1530,10 @@ function PatronView({
               position: "absolute", top: 56, left: "50%", transform: "translateX(-50%)",
               zIndex: 60,
               background: "linear-gradient(135deg, rgba(18,14,10,0.97), rgba(24,18,12,0.95))",
-              border: `1px solid ${RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#C9A84C"}55`,
+              border: `1px solid ${RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#D48B00"}55`,
               borderRadius: 12, padding: "10px 20px",
               backdropFilter: "blur(20px)",
-              boxShadow: `0 6px 28px rgba(0,0,0,0.6), 0 0 16px ${RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#C9A84C"}22`,
+              boxShadow: `0 6px 28px rgba(26,26,27,0.26), 0 0 16px ${RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#D48B00"}22`,
               display: "flex", alignItems: "center", gap: 10,
               whiteSpace: "nowrap",
             }}
@@ -1543,7 +1543,7 @@ function PatronView({
               transition={{ duration: 0.7 }}
               style={{
                 fontSize: 18,
-                color: RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#C9A84C",
+                color: RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#D48B00",
               }}
             >
               {RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.glyph ?? "✦"}
@@ -1552,13 +1552,13 @@ function PatronView({
               <div style={{
                 fontSize: 7.5, fontWeight: 700, letterSpacing: "0.28em",
                 textTransform: "uppercase",
-                color: RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#C9A84C",
+                color: RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#D48B00",
                 marginBottom: 1,
               }}>
                 Rank Achieved
               </div>
               <div style={{
-                fontSize: 13, fontWeight: 700, color: "#F0E8D4",
+                fontSize: 13, fontWeight: 700, color: "#1A1A1B",
                 letterSpacing: "0.06em",
               }}>
                 {rankUpLabel}
@@ -1579,18 +1579,18 @@ function PatronView({
             style={{
               position: "absolute", bottom: 52, left: 12, right: 12, zIndex: 50,
               background: "linear-gradient(135deg, rgba(18,14,10,0.96), rgba(22,17,12,0.94))",
-              border: "1px solid rgba(201,168,76,0.28)",
+              border: "1px solid rgba(212,139,0,0.28)",
               borderRadius: 14,
               padding: "12px 16px",
               backdropFilter: "blur(18px)",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.55), 0 0 20px rgba(201,168,76,0.08)",
+              boxShadow: "0 8px 32px rgba(26,26,27,0.22), 0 0 20px rgba(212,139,0,0.08)",
               display: "flex", alignItems: "center", gap: 12,
             }}
           >
             <div style={{
               width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
-              background: "rgba(201,168,76,0.15)",
-              border: "1px solid rgba(201,168,76,0.4)",
+              background: "rgba(212,139,0,0.15)",
+              border: "1px solid rgba(212,139,0,0.4)",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 13,
             }}>
@@ -1599,11 +1599,11 @@ function PatronView({
             <div style={{ flex: 1 }}>
               <div style={{
                 fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
-                textTransform: "uppercase", color: "#C9A84C", marginBottom: 2,
+                textTransform: "uppercase", color: "#D48B00", marginBottom: 2,
               }}>
                 Enhance Your Session
               </div>
-              <div style={{ fontSize: 10, color: "rgba(240,232,212,0.65)", lineHeight: 1.4 }}>
+              <div style={{ fontSize: 10, color: "rgba(26,26,27,0.62)", lineHeight: 1.4 }}>
                 Our AI recommends a palate-cleansing pairing — a smoky Islay single-malt
                 or house charcuterie to reset and elevate your experience.
               </div>
@@ -1611,7 +1611,7 @@ function PatronView({
             <button
               onClick={() => setStimulation(false)}
               style={{
-                fontSize: 14, color: "rgba(240,232,212,0.28)",
+                fontSize: 14, color: "rgba(26,26,27,0.28)",
                 background: "none", border: "none", cursor: "pointer",
                 lineHeight: 1, padding: "2px 4px", flexShrink: 0,
               }}
@@ -1642,8 +1642,8 @@ function PatronView({
               onClick={() => setFounderPatronOpen(false)}
               style={{
                 position: "absolute", top: 16, right: 20,
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(255,255,255,0.12)",
+                background: "rgba(26,26,27,0.08)",
+                border: "1px solid rgba(26,26,27,0.14)",
                 borderRadius: 8, padding: "6px 14px",
                 color: "rgba(240,232,212,0.6)", fontSize: 11,
                 cursor: "pointer", zIndex: 10,
@@ -1663,7 +1663,7 @@ function PatronView({
             transition={{ duration: 0.48 }}
             onAnimationComplete={() => navigate(portal.route)}
             className="fixed inset-0 z-[200] flex items-center justify-center"
-            style={{ background: "#0a0806" }}
+            style={{ background: "#F5F2ED" }}
           >
             <motion.div
               initial={{ scale: 0.05, opacity: 0.9 }}

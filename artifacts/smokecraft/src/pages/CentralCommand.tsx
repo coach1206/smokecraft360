@@ -12,15 +12,15 @@ import { getAuthHeaders } from "@/services/auth";
 const BASE = "/api";
 
 const C = {
-  bg:     "#06040a",
-  panel:  "rgba(255,255,255,0.04)",
-  panelH: "rgba(255,255,255,0.07)",
-  border: "rgba(201,168,76,0.15)",
-  gold:   "#c9a84c",
-  goldD:  "#d4af37",
-  text:   "rgba(240,232,212,0.92)",
-  muted:  "rgba(240,232,212,0.45)",
-  dim:    "rgba(240,232,212,0.22)",
+  bg:     "#F5F2ED",
+  panel:  "rgba(26,26,27,0.06)",
+  panelH: "rgba(26,26,27,0.09)",
+  border: "rgba(212,139,0,0.15)",
+  gold:   "#D48B00",
+  goldD:  "#D48B00",
+  text:   "rgba(26,26,27,0.90)",
+  muted:  "rgba(26,26,27,0.44)",
+  dim:    "rgba(26,26,27,0.22)",
   red:    "#ef4444",
   green:  "#22c55e",
   amber:  "#f59e0b",
@@ -442,7 +442,7 @@ export default function CentralCommand() {
                         {channelDetail[ch.channel].slice(0, 3).map(h => (
                           <div key={h.version} style={{
                             padding: "8px 10px", borderRadius: 8,
-                            background: h.status === "active" ? `${CHAN_COLOR[ch.channel] ?? C.gold}08` : "rgba(255,255,255,0.02)",
+                            background: h.status === "active" ? `${CHAN_COLOR[ch.channel] ?? C.gold}08` : "rgba(26,26,27,0.04)",
                             border: `1px solid ${h.status === "active" ? `${CHAN_COLOR[ch.channel] ?? C.gold}25` : C.border}`,
                           }}>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -603,7 +603,7 @@ export default function CentralCommand() {
                               {h.packs.map(p => (
                                 <span key={p} style={{
                                   fontSize: 9, padding: "1px 6px", borderRadius: 999,
-                                  background: "rgba(255,255,255,0.06)", color: C.dim,
+                                  background: "rgba(26,26,27,0.08)", color: C.dim,
                                   border: `1px solid ${C.border}`,
                                 }}>{p}</span>
                               ))}

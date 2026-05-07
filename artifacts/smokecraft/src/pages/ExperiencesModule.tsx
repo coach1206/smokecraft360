@@ -32,7 +32,7 @@ const EXPERIENCES: ExperienceTypeRouted[] = [
     id: "smokecraft", title: "SmokeCraft", brand: "SmokeCraft 360",
     desc: "Premium cigar experience", tags: "CIGARS · SPIRITS · LOUNGE",
     image: "/images/scenes/smokecraft-card.jpg", route: "/smokecraft",
-    icon: Sparkles, color: "#d4af37", category: "cigar",
+    icon: Sparkles, color: "#D48B00", category: "cigar",
     questions: [
       { prompt: "What strength do you prefer?", options: ["Mild", "Medium", "Full Body"] },
       { prompt: "Flavor profile?", options: ["Sweet & Creamy", "Spicy & Earthy", "Rich & Bold"] },
@@ -161,9 +161,9 @@ export default function ExperiencesModule() {
 
   return (
     <BackgroundLayer image={getBackground("experiences")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(26,26,27,0.08)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={phase === "select" ? () => navigate("/dashboard") : phase === "campaigns" ? () => setPhase("select") : reset}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div style={{ flex: 1 }}>
@@ -179,8 +179,8 @@ export default function ExperiencesModule() {
             style={{
               display: "flex", alignItems: "center", gap: 6,
               padding: "10px 16px", borderRadius: 12, fontSize: 12, fontWeight: 600,
-              background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)",
-              color: "#d4af37", cursor: "pointer", minHeight: 42,
+              background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.2)",
+              color: "#D48B00", cursor: "pointer", minHeight: 42,
             }}>
             <Megaphone size={14} /> Campaigns
           </motion.button>
@@ -204,11 +204,11 @@ export default function ExperiencesModule() {
                   style={{
                     display: "flex", flexDirection: "column", justifyContent: "flex-end",
                     aspectRatio: "1 / 2", padding: 0, minHeight: 420,
-                    background: "#0a0806",
+                    background: "#F5F2ED",
                     border: `1px solid ${exp.color}40`, borderRadius: 16,
                     cursor: "pointer", textAlign: "left",
                     position: "relative", overflow: "hidden",
-                    boxShadow: `0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px ${exp.color}10`,
+                    boxShadow: `0 12px 40px rgba(26,26,27,0.18), 0 0 0 1px ${exp.color}10`,
                   }}>
                   <div style={{
                     position: "absolute", inset: 0,
@@ -225,12 +225,12 @@ export default function ExperiencesModule() {
                     <div style={{
                       fontSize: 22, fontWeight: 700, color: "#fff",
                       fontFamily: "'Playfair Display', serif",
-                      textShadow: "0 2px 8px rgba(0,0,0,0.8)",
+                      textShadow: "0 2px 8px rgba(26,26,27,0.40)",
                       marginBottom: 6,
                     }}>{exp.brand}</div>
                     <div style={{
                       fontSize: 9, color: exp.color, letterSpacing: "0.25em",
-                      textShadow: "0 1px 4px rgba(0,0,0,0.8)", fontWeight: 600,
+                      textShadow: "0 1px 4px rgba(26,26,27,0.40)", fontWeight: 600,
                     }}>{exp.tags}</div>
                   </div>
                 </motion.button>
@@ -254,7 +254,7 @@ export default function ExperiencesModule() {
                 {activeExp.questions.map((_, qi) => (
                   <div key={qi} style={{
                     width: 32, height: 4, borderRadius: 2,
-                    background: qi <= questionIdx ? activeExp.color : "rgba(255,255,255,0.08)",
+                    background: qi <= questionIdx ? activeExp.color : "rgba(26,26,27,0.10)",
                     transition: "background 0.2s",
                   }} />
                 ))}
@@ -265,7 +265,7 @@ export default function ExperiencesModule() {
                     onClick={() => answerQuestion(opt)}
                     style={{
                       padding: "18px 24px", borderRadius: 14, fontSize: 16, fontWeight: 500,
-                      background: "rgba(255,255,255,0.04)", border: `1px solid ${activeExp.color}25`,
+                      background: "rgba(26,26,27,0.06)", border: `1px solid ${activeExp.color}25`,
                       color: "#e8e0c8", cursor: "pointer", minHeight: 56,
                       transition: "all 0.15s",
                     }}>
@@ -297,7 +297,7 @@ export default function ExperiencesModule() {
                   position: "sticky", top: 0,
                   padding: "20px 18px",
                   background: "linear-gradient(180deg, rgba(14,10,8,0.85), rgba(10,8,6,0.65))",
-                  border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16,
+                  border: "1px solid rgba(26,26,27,0.08)", borderRadius: 16,
                   display: "flex", flexDirection: "column", gap: 18,
                 }}>
                   <div>
@@ -316,9 +316,9 @@ export default function ExperiencesModule() {
                             width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
                             display: "flex", alignItems: "center", justifyContent: "center",
                             fontSize: 10, fontWeight: 700,
-                            background: isCurrent ? `${activeExp.color}` : isDone ? `${activeExp.color}25` : "rgba(255,255,255,0.05)",
+                            background: isCurrent ? `${activeExp.color}` : isDone ? `${activeExp.color}25` : "rgba(26,26,27,0.07)",
                             border: `1px solid ${isCurrent || isDone ? activeExp.color + "80" : "rgba(255,255,255,0.1)"}`,
-                            color: isCurrent ? "#0a0806" : isDone ? activeExp.color : "rgba(232,224,200,0.4)",
+                            color: isCurrent ? "#F5F2ED" : isDone ? activeExp.color : "rgba(232,224,200,0.4)",
                           }}>{isDone ? <Check size={11} /> : i + 1}</div>
                           <div style={{ minWidth: 0 }}>
                             <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: isCurrent ? "#f4ecd4" : isDone ? "rgba(232,224,200,0.7)" : "rgba(232,224,200,0.35)" }}>{label}</div>
@@ -328,12 +328,12 @@ export default function ExperiencesModule() {
                       );
                     })}
                   </ol>
-                  <div style={{ marginTop: "auto", paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                  <div style={{ marginTop: "auto", paddingTop: 16, borderTop: "1px solid rgba(26,26,27,0.07)" }}>
                     <motion.button whileTap={{ scale: 0.95 }} onClick={reset}
                       style={{
                         width: "100%", padding: "10px 14px", borderRadius: 10,
                         fontSize: 10, fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase",
-                        background: "transparent", border: "1px solid rgba(255,255,255,0.12)",
+                        background: "transparent", border: "1px solid rgba(26,26,27,0.14)",
                         color: "rgba(232,224,200,0.55)", cursor: "pointer",
                       }}>↺ Start Over</motion.button>
                   </div>
@@ -360,7 +360,7 @@ export default function ExperiencesModule() {
                           position: "relative", overflow: "hidden", borderRadius: 22,
                           background: "linear-gradient(150deg, rgba(26,20,14,0.94), rgba(14,10,8,0.88))",
                           border: `1px solid ${activeExp.color}55`,
-                          boxShadow: `0 24px 60px rgba(0,0,0,0.6), 0 0 36px ${activeExp.color}22`,
+                          boxShadow: `0 24px 60px rgba(26,26,27,0.26), 0 0 36px ${activeExp.color}22`,
                           padding: 26, display: "flex", gap: 24, alignItems: "center",
                         }}>
                         <div style={{ position: "absolute", inset: 0, background: `radial-gradient(circle at 0% 50%, ${activeExp.color}18, transparent 55%)`, pointerEvents: "none" }} />
@@ -371,8 +371,8 @@ export default function ExperiencesModule() {
                         <div style={{ flex: 1, minWidth: 0, position: "relative", display: "flex", flexDirection: "column", gap: 8 }}>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                             <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", padding: "4px 10px", borderRadius: 4, background: `${activeExp.color}20`, color: activeExp.color, border: `1px solid ${activeExp.color}50` }}>Top Match</span>
-                            {fp.isSponsored && <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", padding: "4px 9px", borderRadius: 4, background: "rgba(212,175,55,0.18)", color: "#d4af37", border: "1px solid rgba(212,175,55,0.35)" }}>Sponsored</span>}
-                            {fp.brandTag && <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.16em", textTransform: "uppercase", padding: "4px 9px", borderRadius: 4, background: "rgba(255,255,255,0.06)", color: "rgba(232,224,200,0.75)", border: "1px solid rgba(255,255,255,0.12)" }}>{fp.brandTag}</span>}
+                            {fp.isSponsored && <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", padding: "4px 9px", borderRadius: 4, background: "rgba(212,139,0,0.18)", color: "#D48B00", border: "1px solid rgba(212,139,0,0.35)" }}>Sponsored</span>}
+                            {fp.brandTag && <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.16em", textTransform: "uppercase", padding: "4px 9px", borderRadius: 4, background: "rgba(26,26,27,0.08)", color: "rgba(232,224,200,0.75)", border: "1px solid rgba(26,26,27,0.14)" }}>{fp.brandTag}</span>}
                             {fp.campaignTag && <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.16em", textTransform: "uppercase", padding: "4px 9px", borderRadius: 4, background: `${activeExp.color}18`, color: activeExp.color, border: `1px solid ${activeExp.color}40` }}>{fp.campaignTag}</span>}
                           </div>
                           <div style={{ fontSize: 28, fontWeight: 600, color: "#f4ecd4", fontFamily: "'Playfair Display', serif", lineHeight: 1.1 }}>{featured.name}</div>
@@ -380,7 +380,7 @@ export default function ExperiencesModule() {
                           <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginTop: 6 }}>
                             <div style={{ fontSize: 32, fontWeight: 700, color: activeExp.color, fontFamily: "'Playfair Display', serif", textShadow: `0 0 28px ${activeExp.color}66` }}>${featured.price}</div>
                             {(fp.xpReward || fp.rewardLabel) && (
-                              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(212,175,55,0.9)" }}>
+                              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(212,139,0,0.9)" }}>
                                 ★ {fp.rewardLabel ?? `+${fp.xpReward} XP`}
                               </div>
                             )}
@@ -393,7 +393,7 @@ export default function ExperiencesModule() {
                               padding: "16px 28px", borderRadius: 12, fontSize: 13, fontWeight: 700,
                               letterSpacing: "0.16em", textTransform: "uppercase",
                               background: added ? "rgba(52,211,153,0.14)" : `linear-gradient(135deg, ${activeExp.color}, ${activeExp.color}cc)`,
-                              color: added ? "#34d399" : "#0a0806",
+                              color: added ? "#34d399" : "#F5F2ED",
                               border: added ? "1px solid rgba(52,211,153,0.35)" : "none",
                               cursor: added ? "default" : "pointer", minHeight: 52,
                               boxShadow: added ? "none" : `0 10px 26px ${activeExp.color}55`,
@@ -419,7 +419,7 @@ export default function ExperiencesModule() {
                               style={{
                                 display: "flex", gap: 12, padding: 12, borderRadius: 14,
                                 background: "linear-gradient(145deg, rgba(20,16,12,0.7), rgba(14,10,8,0.55))",
-                                border: "1px solid rgba(255,255,255,0.07)",
+                                border: "1px solid rgba(26,26,27,0.09)",
                                 alignItems: "center",
                               }}>
                               <KioskProductImage src={prod.image} alt={prod.name} category={prod.category} width={64} height={64} borderRadius={10} />
@@ -427,7 +427,7 @@ export default function ExperiencesModule() {
                                 <div style={{ fontSize: 13, fontWeight: 600, color: "#e8e0c8", lineHeight: 1.2, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</div>
                                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                   <div style={{ fontSize: 14, fontWeight: 700, color: activeExp.color }}>${prod.price}</div>
-                                  {sp.isSponsored && <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.16em", color: "rgba(212,175,55,0.7)" }}>SPON</span>}
+                                  {sp.isSponsored && <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.16em", color: "rgba(212,139,0,0.7)" }}>SPON</span>}
                                   {sp.brandTag && !sp.isSponsored && <span style={{ fontSize: 8, fontWeight: 600, letterSpacing: "0.16em", color: "rgba(232,224,200,0.5)" }}>{sp.brandTag}</span>}
                                 </div>
                               </div>
@@ -456,9 +456,9 @@ export default function ExperiencesModule() {
                         style={{
                           padding: "16px 40px", borderRadius: 12, fontSize: 13, fontWeight: 700,
                           letterSpacing: "0.18em", textTransform: "uppercase",
-                          background: "linear-gradient(135deg, #d4af37, #a98828)",
-                          color: "#0a0806", border: "none", cursor: "pointer", minHeight: 54,
-                          boxShadow: "0 12px 32px rgba(212,175,55,0.45)",
+                          background: "linear-gradient(135deg, #D48B00, #a98828)",
+                          color: "#F5F2ED", border: "none", cursor: "pointer", minHeight: 54,
+                          boxShadow: "0 12px 32px rgba(212,139,0,0.45)",
                         }}>Order Now →</motion.button>
                     </motion.div>
                   )}
@@ -470,7 +470,7 @@ export default function ExperiencesModule() {
                   padding: "22px 20px",
                   background: "linear-gradient(180deg, rgba(20,16,12,0.92), rgba(14,10,8,0.78))",
                   border: `1px solid ${activeExp.color}40`, borderRadius: 18,
-                  boxShadow: `0 18px 48px rgba(0,0,0,0.5), 0 0 28px ${activeExp.color}15`,
+                  boxShadow: `0 18px 48px rgba(26,26,27,0.18), 0 0 28px ${activeExp.color}15`,
                   display: "flex", flexDirection: "column", gap: 16,
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, color: activeExp.color, fontSize: 10, fontWeight: 700, letterSpacing: "0.24em", textTransform: "uppercase" }}>
@@ -489,7 +489,7 @@ export default function ExperiencesModule() {
                           { label: "Mood", value: answers[answers.length - 1] ?? "Social" },
                           { label: "Tier", value: f?.tier ?? "Premium" },
                         ].map((stat) => (
-                          <div key={stat.label} style={{ padding: "10px 12px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10 }}>
+                          <div key={stat.label} style={{ padding: "10px 12px", background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.08)", borderRadius: 10 }}>
                             <div style={{ fontSize: 8, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(232,224,200,0.4)", marginBottom: 3 }}>{stat.label}</div>
                             <div style={{ fontSize: 12, fontWeight: 600, color: "#e8e0c8" }}>{stat.value}</div>
                           </div>
@@ -532,7 +532,7 @@ export default function ExperiencesModule() {
                     transition={{ delay: i * 0.06 }}
                     style={{
                       padding: "20px", borderRadius: 18,
-                      background: "linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))",
+                      background: "linear-gradient(145deg, rgba(26,26,27,0.07), rgba(26,26,27,0.04))",
                       border: `1px solid ${tpl.color}30`,
                       position: "relative", overflow: "hidden",
                     }}>
@@ -554,7 +554,7 @@ export default function ExperiencesModule() {
                           display: "flex", alignItems: "center", gap: 6,
                           padding: "10px 18px", borderRadius: 10, fontSize: 13, fontWeight: 600,
                           background: created ? "rgba(52,211,153,0.1)" : `linear-gradient(135deg, ${tpl.color}, ${tpl.color}cc)`,
-                          color: created ? "#34d399" : "#0a0806",
+                          color: created ? "#34d399" : "#F5F2ED",
                           border: created ? "1px solid rgba(52,211,153,0.3)" : "none",
                           cursor: created ? "default" : "pointer", minHeight: 42,
                         }}>

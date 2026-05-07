@@ -22,7 +22,7 @@ interface AxKpiProps {
   icon?: React.ElementType;
 }
 
-const GOLD = "#c9a84c";
+const GOLD = "#D48B00";
 
 export function AxKpi({ label, value, prefix, suffix, color, sub, icon: Icon }: AxKpiProps) {
   const c = color ?? GOLD;
@@ -68,7 +68,7 @@ export function AxKpi({ label, value, prefix, suffix, color, sub, icon: Icon }: 
       </motion.div>
       {sub && (
         <div style={{
-          fontSize: 11, color: "rgba(240,232,212,0.45)",
+          fontSize: 11, color: "rgba(26,26,27,0.44)",
           marginTop: 5, letterSpacing: "0.04em",
         }}>
           {sub}

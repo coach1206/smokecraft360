@@ -10,7 +10,7 @@ const CATEGORY_META: Record<string, { color: string; label: string }> = {
   wings:      { color: "rgba(220,150,60,0.75)",  label: "Wings"      },
   steak:      { color: "rgba(180,55,55,0.75)",   label: "Steak"      },
   salad:      { color: "rgba(70,155,70,0.75)",   label: "Salad"      },
-  appetizers: { color: "rgba(212,175,55,0.75)",  label: "Appetizers" },
+  appetizers: { color: "rgba(212,139,0,0.75)",  label: "Appetizers" },
   seafood:    { color: "rgba(65,135,195,0.75)",  label: "Seafood"    },
   desserts:   { color: "rgba(155,75,155,0.75)",  label: "Desserts"   },
 };
@@ -27,11 +27,11 @@ export function FoodSection({ foodPairings }: FoodSectionProps) {
     >
       {/* Section header */}
       <div className="flex items-center gap-4 mb-8">
-        <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.15))" }} />
+        <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.15))" }} />
         <div className="text-center">
           <h3
             className="font-serif text-2xl tracking-wider"
-            style={{ color: "rgba(212,175,55,0.7)", fontWeight: 300, fontStyle: "italic" }}
+            style={{ color: "rgba(212,139,0,0.7)", fontWeight: 300, fontStyle: "italic" }}
           >
             Complete Your Experience
           </h3>
@@ -39,7 +39,7 @@ export function FoodSection({ foodPairings }: FoodSectionProps) {
             Recommended Food Pairings
           </p>
         </div>
-        <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, rgba(212,175,55,0.15), transparent)" }} />
+        <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, rgba(212,139,0,0.15), transparent)" }} />
       </div>
 
       {/* Food cards */}
@@ -75,25 +75,25 @@ function FoodCard({
     <div
       className="relative flex flex-col rounded-xl overflow-hidden group transition-all duration-500"
       style={{
-        background: "linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015))",
-        border:     "1px solid rgba(255,255,255,0.07)",
-        boxShadow:  "0 4px 20px rgba(0,0,0,0.3)",
+        background: "linear-gradient(145deg, rgba(26,26,27,0.05), rgba(26,26,27,0.03))",
+        border:     "1px solid rgba(26,26,27,0.09)",
+        boxShadow:  "0 4px 20px rgba(26,26,27,0.06)",
         backdropFilter: "blur(8px)",
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLElement).style.borderColor = meta.color.replace("0.75", "0.3");
-        (e.currentTarget as HTMLElement).style.boxShadow  = `0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px ${meta.color.replace("0.75", "0.15")}`;
+        (e.currentTarget as HTMLElement).style.boxShadow  = `0 8px 32px rgba(26,26,27,0.10), 0 0 0 1px ${meta.color.replace("0.75", "0.15")}`;
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)";
-        (e.currentTarget as HTMLElement).style.boxShadow  = "0 4px 20px rgba(0,0,0,0.3)";
+        (e.currentTarget as HTMLElement).style.borderColor = "rgba(26,26,27,0.09)";
+        (e.currentTarget as HTMLElement).style.boxShadow  = "0 4px 20px rgba(26,26,27,0.06)";
       }}
     >
       {/* Rank glow for top pick */}
       {rank === 0 && (
         <div
           className="absolute inset-0 rounded-xl pointer-events-none z-0"
-          style={{ background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,175,55,0.06), transparent)" }}
+          style={{ background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,139,0,0.06), transparent)" }}
         />
       )}
 
@@ -135,7 +135,7 @@ function FoodCard({
         <div className="flex flex-wrap gap-1.5 mt-4">
           {food.flavorTags.slice(0, 3).map((tag) => (
             <span key={tag} className="text-[9px] px-2 py-0.5 rounded-full"
-              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(200,180,140,0.6)" }}>
+              style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(200,180,140,0.6)" }}>
               {tag}
             </span>
           ))}
@@ -143,8 +143,8 @@ function FoodCard({
 
         {/* "Best Pairing" label for top pick */}
         {rank === 0 && (
-          <div className="mt-3 pt-3" style={{ borderTop: "1px solid rgba(212,175,55,0.1)" }}>
-            <p className="text-[8px] uppercase tracking-[0.25em]" style={{ color: "rgba(212,175,55,0.45)" }}>
+          <div className="mt-3 pt-3" style={{ borderTop: "1px solid rgba(212,139,0,0.1)" }}>
+            <p className="text-[8px] uppercase tracking-[0.25em]" style={{ color: "rgba(212,139,0,0.45)" }}>
               ✦ Best Match
             </p>
           </div>

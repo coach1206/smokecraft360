@@ -47,7 +47,7 @@ export default function PaymentCancel() {
       >
         <p
           className="text-[9px] uppercase tracking-[0.45em] mb-4"
-          style={{ color: "rgba(212,175,55,0.45)" }}
+          style={{ color: "rgba(212,139,0,0.45)" }}
         >
           {BRAND.name}
         </p>
@@ -68,7 +68,7 @@ export default function PaymentCancel() {
         <div
           className="mx-auto w-16 h-px mb-8"
           style={{
-            background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.25), transparent)",
+            background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.25), transparent)",
           }}
         />
 
@@ -80,7 +80,7 @@ export default function PaymentCancel() {
             style={{
               background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
               color:      "hsl(22 18% 6%)",
-              boxShadow:  "0 4px 20px rgba(212,175,55,0.22)",
+              boxShadow:  "0 4px 20px rgba(212,139,0,0.22)",
             }}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
@@ -92,11 +92,11 @@ export default function PaymentCancel() {
             href="/"
             className="inline-flex items-center px-5 py-3 rounded-full text-xs uppercase tracking-[0.22em]"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              border:     "1px solid rgba(255,255,255,0.09)",
+              background: "rgba(26,26,27,0.06)",
+              border:     "1px solid rgba(26,26,27,0.11)",
               color:      "rgba(180,155,100,0.55)",
             }}
-            whileHover={{ borderColor: "rgba(212,175,55,0.3)", color: "rgba(212,175,55,0.7)" }}
+            whileHover={{ borderColor: "rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.7)" }}
             whileTap={{ scale: 0.97 }}
           >
             Return Home

@@ -74,7 +74,7 @@ const CONFIG: CraftFlowConfig = {
     accent: "#a855f7",
     accentSoft: "#06b6d4",
     tint: "rgba(100,40,200,0.4)",
-    bodyTextOverlay: "rgba(0,0,0,0.60)",
+    bodyTextOverlay: "rgba(26,26,27,0.26)",
   },
   language: {
     introHeadline: "A sensory environment, calibrated to your frequency.",

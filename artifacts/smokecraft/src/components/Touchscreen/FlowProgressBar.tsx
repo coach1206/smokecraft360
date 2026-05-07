@@ -19,10 +19,10 @@ export function FlowProgressBar({ steps, currentStep }: FlowProgressBarProps) {
         const isActive = i === currentStep;
         const isComplete = i < currentStep;
         const dotColor = isComplete
-          ? "#d4af37"
+          ? "#D48B00"
           : isActive
-            ? "#d4af37"
-            : "rgba(255,255,255,0.15)";
+            ? "#D48B00"
+            : "rgba(26,26,27,0.17)";
 
         return (
           <div
@@ -41,15 +41,15 @@ export function FlowProgressBar({ steps, currentStep }: FlowProgressBarProps) {
                   height: isActive ? 14 : 10,
                   borderRadius: "50%",
                   background: dotColor,
-                  border: isActive ? "2px solid rgba(212,175,55,0.6)" : "none",
-                  boxShadow: isActive ? "0 0 12px rgba(212,175,55,0.4)" : "none",
+                  border: isActive ? "2px solid rgba(212,139,0,0.6)" : "none",
+                  boxShadow: isActive ? "0 0 12px rgba(212,139,0,0.4)" : "none",
                   transition: "all 200ms ease",
                 }}
               />
               <div
                 style={{
                   fontSize: 10,
-                  color: isActive ? "#d4af37" : isComplete ? "rgba(232,224,200,0.7)" : "rgba(232,224,200,0.35)",
+                  color: isActive ? "#D48B00" : isComplete ? "rgba(232,224,200,0.7)" : "rgba(232,224,200,0.35)",
                   fontWeight: isActive ? 600 : 400,
                   whiteSpace: "nowrap",
                   letterSpacing: "0.03em",
@@ -65,8 +65,8 @@ export function FlowProgressBar({ steps, currentStep }: FlowProgressBarProps) {
                   flex: 1,
                   height: 1,
                   background: isComplete
-                    ? "rgba(212,175,55,0.4)"
-                    : "rgba(255,255,255,0.08)",
+                    ? "rgba(212,139,0,0.4)"
+                    : "rgba(26,26,27,0.10)",
                   margin: "0 8px",
                   marginBottom: 18,
                   transition: "background 200ms ease",

@@ -34,17 +34,17 @@ function CCParticles() {
 }
 
 const C = {
-  bg:        "#080604",
+  bg:        "#F5F2ED",
   header:    "rgba(18,16,14,0.97)",
-  border:    "rgba(255,210,120,0.12)",
-  text:      "#F5E7C8",
-  muted:     "rgba(240,232,212,0.50)",
-  dim:       "rgba(240,232,212,0.30)",
-  gold:      "#C9A84C",
-  card:      "rgba(255,255,255,0.045)",
-  cardBorder:"rgba(255,210,120,0.14)",
-  back:      "#211D19",
-  backBorder:"rgba(255,210,120,0.18)",
+  border:    "rgba(212,139,0,0.12)",
+  text:      "#1A1A1B",
+  muted:     "rgba(26,26,27,0.48)",
+  dim:       "rgba(26,26,27,0.30)",
+  gold:      "#D48B00",
+  card:      "rgba(26,26,27,0.06)",
+  cardBorder:"rgba(212,139,0,0.14)",
+  back:      "#2A2A2A",
+  backBorder:"rgba(212,139,0,0.18)",
 };
 
 const TILES = [
@@ -57,7 +57,7 @@ const TILES = [
   { id: "rewards", title: "Rewards", desc: "Loyalty & rewards", color: "#34d399", route: "/rewards", dataKey: "rewards" as const, image: "/images/scenes/relaxed.jpg" },
   { id: "experiences", title: "Experiences", desc: "Craft engine", color: "#f59e0b", route: "/experiences", dataKey: "experiences" as const, image: "/images/cigar1.png" },
   { id: "presence",     title: "Presence",     desc: "VIP arrival & recognition", color: "#34d399", route: "/presence",     dataKey: "campaigns" as const, image: "/images/scenes/relaxed.jpg" },
-  { id: "intelligence", title: "Intelligence", desc: "Automated triggers", color: "#c9a84c", route: "/intelligence", dataKey: "campaigns" as const, image: "/images/scenes/reflective.jpg" },
+  { id: "intelligence", title: "Intelligence", desc: "Automated triggers", color: "#D48B00", route: "/intelligence", dataKey: "campaigns" as const, image: "/images/scenes/reflective.jpg" },
   { id: "revenue", title: "Revenue Engine", desc: "Growth automation", color: "#ec4899", route: "/revenue", dataKey: "campaigns" as const, image: "/images/scenes/social.jpg" },
   { id: "campaigns", title: "Campaigns", desc: "Promotions", color: "#a855f7", route: "/campaigns", dataKey: "campaigns" as const, image: "/images/lounge-bg.jpg" },
   { id: "analytics", title: "Analytics", desc: "Revenue & insights", color: "#8b5cf6", route: "/analytics", dataKey: "analytics" as const, image: "/images/cigar3.png" },
@@ -72,7 +72,7 @@ const TILES = [
   { id: "central-command", title: "Central Command", desc: "Remote ops · OTA · Fleet",       color: "#60a5fa", route: "/central-command", dataKey: "central-command" as const, image: "/images/scenes/bold.jpg" },
   { id: "environment",          title: "Environment",   desc: "Atmosphere · Energy · Reaction",    color: "#a78bfa", route: "/environment",            dataKey: "environment" as const,          image: "/images/scenes/reflective.jpg" },
   { id: "enterprise-intel",    title: "Intel",         desc: "Enterprise Intelligence · Analytics", color: "#34d399", route: "/enterprise-intelligence", dataKey: "enterprise-intel" as const,     image: "/images/scenes/bold.jpg" },
-  { id: "master-ops",          title: "Master Ops",    desc: "Unified operational command center",  color: "#c9a84c", route: "/operations",              dataKey: "master-ops" as const,           image: "/images/scenes/reflective.jpg" },
+  { id: "master-ops",          title: "Master Ops",    desc: "Unified operational command center",  color: "#D48B00", route: "/operations",              dataKey: "master-ops" as const,           image: "/images/scenes/reflective.jpg" },
 ] as const;
 
 export default function CommandCenter() {
@@ -117,15 +117,15 @@ export default function CommandCenter() {
   const statusColor = cc.systemStatus === "operational" ? "#22c55e" : cc.systemStatus === "degraded" ? "#f59e0b" : "#ef4444";
 
   return (
-    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: "radial-gradient(ellipse 120% 60% at 40% 0%, #1C1710 0%, #0E0B08 55%, #050402 100%)", position: "relative" }}>
-      <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: "radial-gradient(ellipse 120% 60% at 40% 0%, #1C1710 0%, #EFEBE0 55%, #050402 100%)", position: "relative" }}>
+      <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212,139,0,0.07) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
       <CCParticles />
       {/* ── Header ── */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "12px 20px", borderBottom: `1px solid rgba(255,210,120,0.14)`,
+        padding: "12px 20px", borderBottom: `1px solid rgba(212,139,0,0.14)`,
         background: C.header, backdropFilter: "blur(20px)", flexShrink: 0,
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07), inset 0 -1px 0 rgba(0,0,0,0.30), 0 1px 0 rgba(255,210,120,0.12), 0 8px 32px rgba(0,0,0,0.55)",
+        boxShadow: "inset 0 1px 0 rgba(26,26,27,0.09), inset 0 -1px 0 rgba(26,26,27,0.06), 0 1px 0 rgba(212,139,0,0.12), 0 8px 32px rgba(26,26,27,0.22)",
         position: "relative", zIndex: 10,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -203,19 +203,19 @@ export default function CommandCenter() {
               transition={{ duration: 0.18, ease: "easeOut", delay: Math.min(i * 0.03, 0.3) }}
               whileHover={{
                 scale: 1.025, y: -4,
-                boxShadow: `0 16px 48px rgba(0,0,0,0.70), 0 4px 12px rgba(0,0,0,0.50), 0 0 0 1px ${tile.color}44, inset 0 1px 0 rgba(255,255,255,0.14)`,
+                boxShadow: `0 16px 48px rgba(26,26,27,0.32), 0 4px 12px rgba(26,26,27,0.18), 0 0 0 1px ${tile.color}44, inset 0 1px 0 rgba(26,26,27,0.16)`,
               }}
               whileTap={{ scale: 0.97 }}
               onClick={() => { engagement.trackAction("navigate", { tile: tile.id }); navigate(tile.route); }}
               style={{
                 display: "flex", alignItems: "center", gap: 14,
                 padding: "20px 18px",
-                background: "linear-gradient(155deg, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0.028) 100%)",
-                border: `1px solid rgba(255,255,255,0.11)`,
+                background: "linear-gradient(155deg, rgba(26,26,27,0.09) 0%, rgba(255,255,255,0.028) 100%)",
+                border: `1px solid rgba(26,26,27,0.13)`,
                 borderRadius: 18, cursor: "pointer",
                 position: "relative", overflow: "hidden",
                 minHeight: 90, textAlign: "left",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.55), 0 1px 4px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -1px 0 rgba(0,0,0,0.20)",
+                boxShadow: "0 4px 20px rgba(26,26,27,0.22), 0 1px 4px rgba(26,26,27,0.08), inset 0 1px 0 rgba(26,26,27,0.11), inset 0 -1px 0 rgba(26,26,27,0.04)",
               }}
             >
               <div style={{
@@ -241,9 +241,9 @@ export default function CommandCenter() {
                 }}>🔥 Trending</div>
               )}
               <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 16, fontWeight: 700, color: "#F5E7C8", marginBottom: 3, textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}>{tile.title}</div>
-                <div style={{ fontSize: 13, color: "rgba(210,190,155,0.72)", marginBottom: 5, textShadow: "0 1px 4px rgba(0,0,0,0.85)" }}>{tile.desc}</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: tile.color, textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>{data}</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: "#1A1A1B", marginBottom: 3, textShadow: "0 1px 6px rgba(26,26,27,0.50)" }}>{tile.title}</div>
+                <div style={{ fontSize: 13, color: "rgba(210,190,155,0.72)", marginBottom: 5, textShadow: "0 1px 4px rgba(26,26,27,0.45)" }}>{tile.desc}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: tile.color, textShadow: "0 1px 4px rgba(26,26,27,0.40)" }}>{data}</div>
               </div>
             </motion.button>
           );

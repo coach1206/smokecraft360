@@ -38,12 +38,12 @@ function ScoreBadge({ score, accent, accentSoft }: { score: number; accent: stri
       <div style={{
         width: 72, height: 72, borderRadius: "50%", position: "relative",
         display: "flex", alignItems: "center", justifyContent: "center",
-        background: `conic-gradient(${accent} ${pct}%, rgba(255,255,255,0.08) 0%)`,
+        background: `conic-gradient(${accent} ${pct}%, rgba(26,26,27,0.10) 0%)`,
         boxShadow: `0 0 28px ${accent}55`,
       }}>
         <div style={{
           width: 56, height: 56, borderRadius: "50%",
-          background: "#0a0806",
+          background: "#F5F2ED",
           display: "flex", alignItems: "center", justifyContent: "center",
           flexDirection: "column",
         }}>
@@ -79,7 +79,7 @@ function ShareCardVisual({
       style={{
         width: 400,
         minHeight: 240,
-        background: `linear-gradient(145deg, #141008 0%, #0a0806 60%, #1a1206 100%)`,
+        background: `linear-gradient(145deg, #EFEBE0 0%, #F5F2ED 60%, #1a1206 100%)`,
         border: `1.5px solid ${accent}55`,
         borderRadius: 20,
         padding: "28px 28px 24px",
@@ -356,7 +356,7 @@ export default function ShareCard(props: ShareCardProps) {
                   borderRadius: 999,
                   border: "none",
                   background: `linear-gradient(135deg, ${accent}, ${accentSoft})`,
-                  color: "#0a0806",
+                  color: "#F5F2ED",
                   fontSize: 11, fontWeight: 700,
                   letterSpacing: "0.22em", textTransform: "uppercase",
                   cursor: status === "generating" ? "not-allowed" : "pointer",

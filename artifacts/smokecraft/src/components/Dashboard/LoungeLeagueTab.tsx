@@ -17,8 +17,8 @@ import {
 import { fetchLoungeLeague, fetchMyLoungeStats, type LoungeLeagueEntry } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
 
-const GOLD     = "rgba(212,175,55,1)";
-const GOLD_DIM = "rgba(212,175,55,0.55)";
+const GOLD     = "rgba(212,139,0,1)";
+const GOLD_DIM = "rgba(212,139,0,0.55)";
 const MUTED    = "rgba(180,155,100,0.4)";
 
 // ── Badge config ───────────────────────────────────────────────────────────────
@@ -44,11 +44,11 @@ function rankColor(rank: number): string {
 function ScoreBar({ score, max }: { score: number; max: number }) {
   const pct = max > 0 ? (score / max) * 100 : 0;
   return (
-    <div className="h-1 rounded-full overflow-hidden flex-1" style={{ background: "rgba(255,255,255,0.06)" }}>
+    <div className="h-1 rounded-full overflow-hidden flex-1" style={{ background: "rgba(26,26,27,0.08)" }}>
       <motion.div className="h-full rounded-full"
         initial={{ width: 0 }} animate={{ width: `${pct}%` }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.7), rgba(212,175,55,0.85))" }} />
+        style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.7), rgba(212,139,0,0.85))" }} />
     </div>
   );
 }
@@ -85,8 +85,8 @@ function LeaderRow({
     <motion.div
       className="flex items-center gap-4 p-4 rounded-xl transition-all"
       style={{
-        background:  isMyLounge ? "rgba(212,175,55,0.05)" : isTop3 ? "rgba(255,255,255,0.03)" : "transparent",
-        border:      isMyLounge ? "1px solid rgba(212,175,55,0.2)" : isTop3 ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
+        background:  isMyLounge ? "rgba(212,139,0,0.05)" : isTop3 ? "rgba(26,26,27,0.05)" : "transparent",
+        border:      isMyLounge ? "1px solid rgba(212,139,0,0.2)" : isTop3 ? "1px solid rgba(26,26,27,0.08)" : "1px solid transparent",
       }}
       initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.04 }}>
@@ -108,7 +108,7 @@ function LeaderRow({
           </p>
           {isMyLounge && (
             <span className="text-[6px] uppercase tracking-wider px-1.5 py-0.5 rounded-full"
-              style={{ background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.25)", color: GOLD_DIM }}>
+              style={{ background: "rgba(212,139,0,0.1)", border: "1px solid rgba(212,139,0,0.25)", color: GOLD_DIM }}>
               Your Lounge
             </span>
           )}
@@ -183,7 +183,7 @@ export function LoungeLeagueTab() {
         </div>
         <motion.button onClick={load}
           className="p-2 rounded-lg" whileTap={{ scale: 0.95 }}
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: MUTED }}>
+          style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: MUTED }}>
           <RefreshCw size={12} />
         </motion.button>
       </div>
@@ -191,7 +191,7 @@ export function LoungeLeagueTab() {
       {loading ? (
         <div className="flex justify-center py-14">
           <motion.div className="w-6 h-6 rounded-full border-2"
-            style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.7)" }}
+            style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.7)" }}
             animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
         </div>
       ) : (
@@ -202,7 +202,7 @@ export function LoungeLeagueTab() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {topLounge && (
                 <motion.div className="rounded-2xl p-5"
-                  style={{ background: "linear-gradient(135deg, rgba(120,80,5,0.2), rgba(212,175,55,0.06))", border: "1px solid rgba(212,175,55,0.22)" }}
+                  style={{ background: "linear-gradient(135deg, rgba(120,80,5,0.2), rgba(212,139,0,0.06))", border: "1px solid rgba(212,139,0,0.22)" }}
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
                   <div className="flex items-center gap-2 mb-2">
                     <Trophy size={13} style={{ color: GOLD_DIM }} />
@@ -250,10 +250,10 @@ export function LoungeLeagueTab() {
           {/* ── My Lounge contribution card ───────────────────────────────── */}
           {myLounge && (
             <motion.div className="rounded-xl p-5 flex items-center gap-5 flex-wrap"
-              style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.18)" }}
+              style={{ background: "rgba(212,139,0,0.04)", border: "1px solid rgba(212,139,0,0.18)" }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.22)" }}>
+                style={{ background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.22)" }}>
                 <Users size={18} style={{ color: GOLD_DIM }} />
               </div>
               <div className="flex-1 min-w-0">
@@ -276,7 +276,7 @@ export function LoungeLeagueTab() {
           )}
 
           {/* ── Scoring guide ─────────────────────────────────────────────── */}
-          <div className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="rounded-xl p-4" style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.07)" }}>
             <p className="text-[7px] uppercase tracking-[0.2em] mb-3" style={{ color: MUTED }}>How Lounge Score is Calculated</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
               {[
@@ -286,7 +286,7 @@ export function LoungeLeagueTab() {
                 { label: "Repeat Visitors", formula: "×8 pts",  icon: <Crown size={11} /> },
               ].map(({ label, formula, icon }) => (
                 <div key={label} className="rounded-lg p-3"
-                  style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                  style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.08)" }}>
                   <div style={{ color: GOLD_DIM, marginBottom: 4 }}>{icon}</div>
                   <p className="text-[7px] uppercase tracking-wide" style={{ color: MUTED }}>{label}</p>
                   <p className="text-[8px] font-medium mt-1" style={{ color: GOLD_DIM }}>{formula}</p>
@@ -304,7 +304,7 @@ export function LoungeLeagueTab() {
 
             {league.length === 0 ? (
               <div className="py-10 text-center rounded-xl"
-                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+                style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.07)" }}>
                 <Trophy size={24} className="mx-auto mb-3" style={{ color: "rgba(180,155,100,0.15)" }} />
                 <p className="text-xs" style={{ color: MUTED }}>No lounge data yet — venues will appear here as orders are verified</p>
               </div>
@@ -324,7 +324,7 @@ export function LoungeLeagueTab() {
           </div>
 
           {/* ── Badge legend ──────────────────────────────────────────────── */}
-          <div className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="rounded-xl p-4" style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.07)" }}>
             <p className="text-[7px] uppercase tracking-[0.2em] mb-3" style={{ color: MUTED }}>Lounge Badges</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {Object.entries(BADGE_CONFIG).map(([key, cfg]) => (

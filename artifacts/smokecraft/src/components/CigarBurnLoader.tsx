@@ -31,7 +31,7 @@ export function CigarBurnLoader({ onComplete }: CigarBurnLoaderProps) {
       <motion.div
         className="absolute w-64 h-24 rounded-full"
         style={{
-          background: "radial-gradient(ellipse, rgba(212,175,55,0.12) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse, rgba(212,139,0,0.12) 0%, transparent 70%)",
           filter: "blur(20px)",
         }}
         animate={{ opacity: [0.5, 1, 0.5], scaleX: [0.9, 1.1, 0.9] }}
@@ -88,7 +88,7 @@ export function CigarBurnLoader({ onComplete }: CigarBurnLoaderProps) {
           style={{
             width: "18px",
             background: "linear-gradient(90deg, #b0a090, #d8d0c0)",
-            boxShadow: "inset 0 1px 2px rgba(0,0,0,0.3)",
+            boxShadow: "inset 0 1px 2px rgba(26,26,27,0.06)",
           }}
         />
 
@@ -97,7 +97,7 @@ export function CigarBurnLoader({ onComplete }: CigarBurnLoaderProps) {
           className="cigar-burn h-[14px] rounded-none overflow-hidden flex-shrink-0"
           style={{
             background: "linear-gradient(90deg, #5c3a1e, #7a4e28, #6b4020)",
-            boxShadow: "inset 0 -1px 2px rgba(0,0,0,0.5)",
+            boxShadow: "inset 0 -1px 2px rgba(26,26,27,0.18)",
             width: "100px",
           }}
         />
@@ -107,7 +107,7 @@ export function CigarBurnLoader({ onComplete }: CigarBurnLoaderProps) {
           className="flex-1 h-[16px]"
           style={{
             background: "linear-gradient(90deg, #8B5E3C, #A0714A, #7A5030)",
-            boxShadow: "inset 0 2px 3px rgba(0,0,0,0.4), inset 0 -1px 2px rgba(255,255,255,0.05)",
+            boxShadow: "inset 0 2px 3px rgba(26,26,27,0.10), inset 0 -1px 2px rgba(26,26,27,0.07)",
           }}
         />
 
@@ -116,7 +116,7 @@ export function CigarBurnLoader({ onComplete }: CigarBurnLoaderProps) {
           className="flex-shrink-0 h-[16px] w-3 rounded-r-full"
           style={{
             background: "linear-gradient(90deg, #7A5030, #5C3820)",
-            boxShadow: "inset 0 2px 2px rgba(0,0,0,0.5)",
+            boxShadow: "inset 0 2px 2px rgba(26,26,27,0.18)",
           }}
         />
       </div>
@@ -124,7 +124,7 @@ export function CigarBurnLoader({ onComplete }: CigarBurnLoaderProps) {
       {/* Text */}
       <motion.p
         className="mt-12 font-serif text-xl tracking-[0.3em] uppercase"
-        style={{ color: "rgba(212,175,55,0.75)" }}
+        style={{ color: "rgba(212,139,0,0.75)" }}
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
       >
@@ -140,7 +140,7 @@ export function CigarBurnLoader({ onComplete }: CigarBurnLoaderProps) {
           <motion.span
             key={i}
             className="w-1 h-1 rounded-full"
-            style={{ background: "rgba(212,175,55,0.6)" }}
+            style={{ background: "rgba(212,139,0,0.6)" }}
             animate={{ opacity: [0.2, 1, 0.2] }}
             transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.25 }}
           />

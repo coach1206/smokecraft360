@@ -40,13 +40,13 @@ export const LEVEL_TIERS: LevelTier[] = [
   {
     index: 3, title: "Connoisseur", subtitle: "Master of the craft",
     minOrders: 30, minXp: 350,
-    color: "rgba(212,175,55,0.9)", borderColor: "rgba(212,175,55,0.4)",
+    color: "rgba(212,139,0,0.9)", borderColor: "rgba(212,139,0,0.4)",
     isElite: true, unlocksBlend: false,
   },
   {
     index: 4, title: "Maestro del Fuego", subtitle: "Top tier — elite creator",
     minOrders: 60, minXp: 700,
-    color: "rgba(212,175,55,1)",   borderColor: "rgba(212,175,55,0.6)",
+    color: "rgba(212,139,0,1)",   borderColor: "rgba(212,139,0,0.6)",
     isElite: true, unlocksBlend: true,
   },
 ];

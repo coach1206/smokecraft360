@@ -119,8 +119,8 @@ export const EVENT_ATMOSPHERE_CONFIG: Record<EventAtmosphere, {
 }> = {
   none:            { label: "None",                 color: "#444444", lightingMoodBias: null,            description: "No active event" },
   reserve_pairing: { label: "Reserve Pairing Night",color: "#8B6914", lightingMoodBias: "warm_amber",   description: "Premium cigar & spirits pairing" },
-  whiskey_smoke:   { label: "Whiskey & Smoke",      color: "#c9a84c", lightingMoodBias: "deep_shadow",  description: "Whiskey tasting in a smoky reserve" },
-  vip_lounge:      { label: "VIP Lounge Session",   color: "#d4af37", lightingMoodBias: "golden_soft",  description: "Exclusive VIP experience" },
+  whiskey_smoke:   { label: "Whiskey & Smoke",      color: "#D48B00", lightingMoodBias: "deep_shadow",  description: "Whiskey tasting in a smoky reserve" },
+  vip_lounge:      { label: "VIP Lounge Session",   color: "#D48B00", lightingMoodBias: "golden_soft",  description: "Exclusive VIP experience" },
   brew_social:     { label: "Brew Social Night",    color: "#4a7c59", lightingMoodBias: "crystal_clean",description: "Social craft beer event" },
   founder_circle:  { label: "Founder Circle",       color: "#7c4dff", lightingMoodBias: "deep_shadow",  description: "Exclusive founder gathering" },
 };

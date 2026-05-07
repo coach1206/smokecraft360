@@ -54,7 +54,7 @@ export function CigarBandPreview({ design, blendName, style, size = "md" }: Ciga
         width: s.width,
         height: s.height,
         flexShrink: 0,
-        filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.7))",
+        filter: "drop-shadow(0 8px 24px rgba(26,26,27,0.32))",
       }}
     >
       <svg

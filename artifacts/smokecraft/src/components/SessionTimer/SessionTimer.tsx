@@ -90,7 +90,7 @@ export default function SessionTimer({
           <circle
             cx={23} cy={23} r={RING_RADIUS}
             fill="none"
-            stroke="rgba(255,255,255,0.07)"
+            stroke="rgba(26,26,27,0.09)"
             strokeWidth={2.5}
           />
           <motion.circle

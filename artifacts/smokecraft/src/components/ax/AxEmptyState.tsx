@@ -28,7 +28,7 @@ export function AxEmptyState({
   title,
   body,
   action,
-  color = "rgba(201,168,76,0.5)",
+  color = "rgba(212,139,0,0.5)",
   children,
 }: AxEmptyStateProps) {
   return (
@@ -67,9 +67,9 @@ export function AxEmptyState({
             onClick={action.onClick}
             style={{
               marginTop: children ? 16 : 0,
-              background: "rgba(201,168,76,0.14)",
-              border: "1px solid rgba(201,168,76,0.35)",
-              borderRadius: 8, color: "#c9a84c",
+              background: "rgba(212,139,0,0.14)",
+              border: "1px solid rgba(212,139,0,0.35)",
+              borderRadius: 8, color: "#D48B00",
               fontSize: 11, fontWeight: 600,
               padding: "8px 20px", cursor: "pointer",
               letterSpacing: "0.06em",

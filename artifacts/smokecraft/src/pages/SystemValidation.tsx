@@ -324,7 +324,7 @@ export default function SystemValidation() {
 
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ width: 32, height: 32, borderRadius: 8, background: "#1A1410", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Cpu size={16} color="#d4af37" />
+              <Cpu size={16} color="#D48B00" />
             </div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>System Validation</div>
@@ -340,7 +340,7 @@ export default function SystemValidation() {
               style={{
                 display: "flex", alignItems: "center", gap: 7,
                 background: running ? "rgba(26,20,16,0.5)" : "#1A1410",
-                color: "#d4af37",
+                color: "#D48B00",
                 border: "none", borderRadius: 10, padding: "8px 18px",
                 fontSize: 13, fontWeight: 700, cursor: running ? "not-allowed" : "pointer",
                 letterSpacing: "0.04em",
@@ -396,7 +396,7 @@ export default function SystemValidation() {
           <div style={{ textAlign: "center", padding: "60px 0", color: C.muted }}>
             <div style={{
               width: 32, height: 32, borderRadius: "50%",
-              border: "2px solid rgba(0,0,0,0.08)", borderTop: "2px solid #1A1410",
+              border: "2px solid rgba(26,26,27,0.02)", borderTop: "2px solid #1A1410",
               animation: "spin 0.8s linear infinite", margin: "0 auto 12px",
             }} />
             Loading system health…

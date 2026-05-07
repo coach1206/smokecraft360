@@ -42,7 +42,7 @@ interface AuditEntry {
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
-const GOLD  = "rgba(212,175,55,";
+const GOLD  = "rgba(212,139,0,";
 const WHITE = "rgba(255,255,255,";
 const DARK  = "rgba(0,0,0,";
 

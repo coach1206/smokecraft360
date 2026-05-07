@@ -27,15 +27,15 @@ import { useAxiomStore } from "@/store/axiomStore";
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
 const T = {
-  bg:        "#06040a",
-  surface:   "rgba(255,255,255,0.04)",
-  border:    "rgba(201,168,76,0.18)",
-  gold:      "#c9a84c",
-  goldBright:"#d4af37",
-  goldDim:   "rgba(201,168,76,0.35)",
-  text:      "rgba(240,232,212,0.92)",
+  bg:        "#F5F2ED",
+  surface:   "rgba(26,26,27,0.06)",
+  border:    "rgba(212,139,0,0.18)",
+  gold:      "#D48B00",
+  goldBright:"#D48B00",
+  goldDim:   "rgba(212,139,0,0.35)",
+  text:      "rgba(26,26,27,0.90)",
   textMuted: "rgba(240,232,212,0.52)",
-  textLight: "rgba(240,232,212,0.75)",
+  textLight: "rgba(26,26,27,0.72)",
   green:     "#34d399",
   blue:      "#60a5fa",
   amber:     "#f59e0b",
@@ -77,7 +77,7 @@ const CRAFT_ICONS: Record<string, React.ElementType> = {
 };
 
 const CRAFT_COLORS: Record<string, string> = {
-  smoke: "#c9a84c",
+  smoke: "#D48B00",
   pour:  "#60a5fa",
   brew:  "#f59e0b",
   vape:  "#a78bfa",
@@ -129,8 +129,8 @@ function GlassCard({ children, style, glow }: {
       borderRadius: 14,
       backdropFilter: "blur(12px)",
       boxShadow: glow
-        ? `0 0 28px ${glow}22, inset 0 1px 0 rgba(255,255,255,0.05)`
-        : "inset 0 1px 0 rgba(255,255,255,0.05)",
+        ? `0 0 28px ${glow}22, inset 0 1px 0 rgba(26,26,27,0.07)`
+        : "inset 0 1px 0 rgba(26,26,27,0.07)",
       ...style,
     }}>
       {children}
@@ -199,7 +199,7 @@ function DeliveryModal({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       style={{
-        position: "fixed", inset: 0, background: "rgba(0,0,0,0.82)",
+        position: "fixed", inset: 0, background: "rgba(26,26,27,0.42)",
         display: "flex", alignItems: "center", justifyContent: "center",
         zIndex: 100, padding: 20,
       }}
@@ -270,7 +270,7 @@ function DeliveryModal({
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder={channel === "email" ? "your@email.com" : "+1 (555) 000-0000"}
                 style={{
-                  width: "100%", background: "rgba(255,255,255,0.05)",
+                  width: "100%", background: "rgba(26,26,27,0.07)",
                   border: `1px solid ${T.border}`, borderRadius: 8,
                   color: T.text, fontSize: 12, padding: "9px 12px",
                   outline: "none", boxSizing: "border-box", marginBottom: 12,
@@ -285,7 +285,7 @@ function DeliveryModal({
                 style={{
                   width: "100%", padding: "10px 0",
                   background: `linear-gradient(135deg, ${T.gold}, ${T.goldBright})`,
-                  border: "none", borderRadius: 9, color: "#06040a",
+                  border: "none", borderRadius: 9, color: "#F5F2ED",
                   fontSize: 12, fontWeight: 700, cursor: "pointer",
                   opacity: busy ? 0.6 : 1,
                 }}
@@ -339,7 +339,7 @@ function LoyaltyBar({ balance, earned }: { balance: number; earned: number }) {
           {balance.toLocaleString()} pts
         </span>
       </div>
-      <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+      <div style={{ height: 4, background: "rgba(26,26,27,0.08)", borderRadius: 2, overflow: "hidden" }}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
@@ -706,18 +706,18 @@ export default function AxiomReceipt() {
             margin: "0 0 20px",
             borderRadius: 18,
             overflow: "hidden",
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(201,168,76,0.18)",
-            boxShadow: "0 0 32px rgba(201,168,76,0.08), inset 0 1px 0 rgba(255,255,255,0.04)",
+            background: "rgba(26,26,27,0.05)",
+            border: "1px solid rgba(212,139,0,0.18)",
+            boxShadow: "0 0 32px rgba(212,139,0,0.08), inset 0 1px 0 rgba(26,26,27,0.06)",
           }}>
             {/* Header band */}
             <div style={{
               padding: "14px 20px",
-              background: "linear-gradient(135deg, rgba(201,168,76,0.10), rgba(201,168,76,0.04))",
-              borderBottom: "1px solid rgba(201,168,76,0.12)",
+              background: "linear-gradient(135deg, rgba(212,139,0,0.10), rgba(212,139,0,0.04))",
+              borderBottom: "1px solid rgba(212,139,0,0.12)",
               display: "flex", alignItems: "center", gap: 10,
             }}>
-              <div style={{ width: 30, height: 30, borderRadius: 9, background: "rgba(201,168,76,0.12)", border: "1px solid rgba(201,168,76,0.22)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: 30, height: 30, borderRadius: 9, background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.22)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Phone size={14} color={T.gold} />
               </div>
               <div>
@@ -731,12 +731,12 @@ export default function AxiomReceipt() {
               {/* QR code */}
               <div style={{ flexShrink: 0 }}>
                 {mobileQrUrl ? (
-                  <div style={{ padding: 8, borderRadius: 10, background: "#06040a", border: "1px solid rgba(201,168,76,0.20)" }}>
+                  <div style={{ padding: 8, borderRadius: 10, background: "#F5F2ED", border: "1px solid rgba(212,139,0,0.20)" }}>
                     <img src={mobileQrUrl} alt="Mobile Hub QR" style={{ width: 100, height: 100, display: "block", borderRadius: 4 }} />
                   </div>
                 ) : (
-                  <div style={{ width: 116, height: 116, borderRadius: 10, background: "rgba(201,168,76,0.04)", border: "1px solid rgba(201,168,76,0.14)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <motion.div style={{ width: 20, height: 20, borderRadius: "50%", border: "2px solid rgba(201,168,76,0.2)", borderTopColor: T.gold }}
+                  <div style={{ width: 116, height: 116, borderRadius: 10, background: "rgba(212,139,0,0.04)", border: "1px solid rgba(212,139,0,0.14)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <motion.div style={{ width: 20, height: 20, borderRadius: "50%", border: "2px solid rgba(212,139,0,0.2)", borderTopColor: T.gold }}
                       animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
                   </div>
                 )}

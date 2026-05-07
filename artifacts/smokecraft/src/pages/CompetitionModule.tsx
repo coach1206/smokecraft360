@@ -78,7 +78,7 @@ const TYPE_META: Record<TournamentType, { label: string; color: string; icon: Re
   daily:   { label: "Daily",        color: "#f59e0b", icon: Calendar },
   weekly:  { label: "Weekly",       color: "#8b5cf6", icon: Trophy },
   venue:   { label: "Venue Champ",  color: "#06b6d4", icon: Star },
-  grand:   { label: "Grand Master", color: "#d4af37", icon: Crown },
+  grand:   { label: "Grand Master", color: "#D48B00", icon: Crown },
 };
 
 const BASE_URL = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
@@ -145,7 +145,7 @@ function CountdownDisplay({ endAt, color }: { endAt: string; color: string }) {
 // ── Rank Badge ────────────────────────────────────────────────────────────────
 
 function RankBadge({ rank }: { rank: number }) {
-  const colors: Record<number, string> = { 1: "#d4af37", 2: "#9ca3af", 3: "#b87333" };
+  const colors: Record<number, string> = { 1: "#D48B00", 2: "#9ca3af", 3: "#b87333" };
   const c = colors[rank] ?? "rgba(232,224,200,0.3)";
   return (
     <div style={{
@@ -292,11 +292,11 @@ function TournamentCard({
         <div style={{
           display: "flex", alignItems: "center", gap: 8,
           padding: "8px 12px", borderRadius: 10,
-          background: "rgba(212,175,55,0.06)", border: "1px solid rgba(212,175,55,0.15)",
+          background: "rgba(212,139,0,0.06)", border: "1px solid rgba(212,139,0,0.15)",
         }}>
-          <Trophy size={12} color="#d4af37" />
+          <Trophy size={12} color="#D48B00" />
           <span style={{ fontSize: 11, color: "rgba(232,224,200,0.65)" }}>
-            1st: <span style={{ color: "#d4af37", fontWeight: 600 }}>{tournament.prizeFirst}</span>
+            1st: <span style={{ color: "#D48B00", fontWeight: 600 }}>{tournament.prizeFirst}</span>
           </span>
         </div>
       )}
@@ -353,7 +353,7 @@ function LeaderboardPanel({
             style={{
               display: "flex", alignItems: "center", gap: 6,
               padding: "6px 12px", borderRadius: 10,
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
               color: "rgba(232,224,200,0.5)", cursor: "pointer", fontSize: 12,
             }}
           >
@@ -378,7 +378,7 @@ function LeaderboardPanel({
               style={{
                 display: "flex", alignItems: "center", gap: 6,
                 padding: "8px 18px", borderRadius: 12,
-                background: tournament.status === "active" ? meta.color : "rgba(255,255,255,0.06)",
+                background: tournament.status === "active" ? meta.color : "rgba(26,26,27,0.08)",
                 border: "none", cursor: tournament.status === "active" && !entering ? "pointer" : "not-allowed",
                 color: tournament.status === "active" ? "#000" : "rgba(232,224,200,0.3)",
                 fontWeight: 700, fontSize: 13,
@@ -420,9 +420,9 @@ function LeaderboardPanel({
         {(tournament.prizeFirst || tournament.prizeSecond || tournament.prizeThird) && (
           <div style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap" }}>
             {tournament.prizeFirst && (
-              <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.2)" }}>
                 <span style={{ fontSize: 10 }}>🥇</span>
-                <span style={{ fontSize: 11, color: "#d4af37", fontWeight: 600 }}>{tournament.prizeFirst}</span>
+                <span style={{ fontSize: 11, color: "#D48B00", fontWeight: 600 }}>{tournament.prizeFirst}</span>
               </div>
             )}
             {tournament.prizeSecond && (
@@ -466,7 +466,7 @@ function LeaderboardPanel({
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {entries.map((entry, i) => {
               const rank = entry.rank ?? i + 1;
-              const rankColors: Record<number, string> = { 1: "#d4af37", 2: "#9ca3af", 3: "#b87333" };
+              const rankColors: Record<number, string> = { 1: "#D48B00", 2: "#9ca3af", 3: "#b87333" };
               const c = rankColors[rank] ?? "rgba(232,224,200,0.6)";
               const isMe = userId !== null && entry.userId === userId;
               return (
@@ -480,10 +480,10 @@ function LeaderboardPanel({
                     padding: "12px 14px", borderRadius: 12,
                     background: isMe
                       ? "rgba(34,197,94,0.07)"
-                      : rank <= 3 ? `${c}08` : "rgba(255,255,255,0.02)",
+                      : rank <= 3 ? `${c}08` : "rgba(26,26,27,0.04)",
                     border: isMe
                       ? "1.5px solid rgba(34,197,94,0.35)"
-                      : rank <= 3 ? `1px solid ${c}30` : "1px solid rgba(255,255,255,0.05)",
+                      : rank <= 3 ? `1px solid ${c}30` : "1px solid rgba(26,26,27,0.07)",
                   }}
                 >
                   <RankBadge rank={rank} />
@@ -634,7 +634,7 @@ function CreateTournamentModal({
       exit={{ opacity: 0 }}
       style={{
         position: "fixed", inset: 0, zIndex: 900,
-        background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)",
+        background: "rgba(26,26,27,0.32)", backdropFilter: "blur(6px)",
         display: "flex", alignItems: "center", justifyContent: "center",
         padding: 20,
       }}
@@ -649,7 +649,7 @@ function CreateTournamentModal({
           border: `1px solid ${meta.color}35`,
           borderRadius: 20, width: "100%", maxWidth: 520,
           maxHeight: "90dvh", overflowY: "auto",
-          boxShadow: `0 24px 80px rgba(0,0,0,0.8), 0 0 0 1px ${meta.color}15`,
+          boxShadow: `0 24px 80px rgba(26,26,27,0.40), 0 0 0 1px ${meta.color}15`,
         }}
       >
         {/* Modal Header */}
@@ -677,7 +677,7 @@ function CreateTournamentModal({
             style={{
               width: 32, height: 32, borderRadius: 8, display: "flex",
               alignItems: "center", justifyContent: "center",
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
               color: "rgba(232,224,200,0.5)", cursor: "pointer",
             }}
           >
@@ -709,7 +709,7 @@ function CreateTournamentModal({
               maxLength={120}
               style={{
                 width: "100%", padding: "10px 14px", borderRadius: 10, boxSizing: "border-box",
-                background: "rgba(255,255,255,0.04)", border: `1px solid ${errors.title ? "#ef4444" : "rgba(255,255,255,0.1)"}`,
+                background: "rgba(26,26,27,0.06)", border: `1px solid ${errors.title ? "#ef4444" : "rgba(255,255,255,0.1)"}`,
                 color: "#e8e0c8", fontSize: 13, outline: "none",
               }}
             />
@@ -733,8 +733,8 @@ function CreateTournamentModal({
                     style={{
                       padding: "6px 14px", borderRadius: 20, cursor: "pointer",
                       fontSize: 11, fontWeight: 700, letterSpacing: "0.05em",
-                      background: active ? `${tmeta.color}22` : "rgba(255,255,255,0.03)",
-                      border: active ? `1px solid ${tmeta.color}60` : "1px solid rgba(255,255,255,0.08)",
+                      background: active ? `${tmeta.color}22` : "rgba(26,26,27,0.05)",
+                      border: active ? `1px solid ${tmeta.color}60` : "1px solid rgba(26,26,27,0.10)",
                       color: active ? tmeta.color : "rgba(232,224,200,0.4)",
                     }}
                   >
@@ -765,9 +765,9 @@ function CreateTournamentModal({
                     style={{
                       padding: "5px 12px", borderRadius: 16, cursor: "pointer",
                       fontSize: 11, fontWeight: 600, textTransform: "capitalize",
-                      background: active ? "rgba(212,175,55,0.15)" : "rgba(255,255,255,0.03)",
-                      border: active ? "1px solid rgba(212,175,55,0.5)" : "1px solid rgba(255,255,255,0.08)",
-                      color: active ? "#d4af37" : "rgba(232,224,200,0.4)",
+                      background: active ? "rgba(212,139,0,0.15)" : "rgba(26,26,27,0.05)",
+                      border: active ? "1px solid rgba(212,139,0,0.5)" : "1px solid rgba(26,26,27,0.10)",
+                      color: active ? "#D48B00" : "rgba(232,224,200,0.4)",
                     }}
                   >
                     {ct}
@@ -788,7 +788,7 @@ function CreateTournamentModal({
               onChange={e => set("startAt", e.target.value)}
               style={{
                 width: "100%", padding: "10px 14px", borderRadius: 10, boxSizing: "border-box",
-                background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+                background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
                 color: "#e8e0c8", fontSize: 13, outline: "none",
                 colorScheme: "dark",
               }}
@@ -809,7 +809,7 @@ function CreateTournamentModal({
               rows={2}
               style={{
                 width: "100%", padding: "10px 14px", borderRadius: 10, boxSizing: "border-box",
-                background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+                background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
                 color: "#e8e0c8", fontSize: 13, outline: "none", resize: "vertical",
                 fontFamily: "inherit",
               }}
@@ -831,7 +831,7 @@ function CreateTournamentModal({
                     placeholder={`${["1st", "2nd", "3rd"][i]} place prize`}
                     style={{
                       flex: 1, padding: "8px 12px", borderRadius: 9,
-                      background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                      background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
                       color: "#e8e0c8", fontSize: 12, outline: "none",
                     }}
                   />
@@ -853,7 +853,7 @@ function CreateTournamentModal({
               placeholder="Unlimited"
               style={{
                 width: "100%", padding: "10px 14px", borderRadius: 10, boxSizing: "border-box",
-                background: "rgba(255,255,255,0.04)", border: `1px solid ${errors.maxEntrants ? "#ef4444" : "rgba(255,255,255,0.1)"}`,
+                background: "rgba(26,26,27,0.06)", border: `1px solid ${errors.maxEntrants ? "#ef4444" : "rgba(255,255,255,0.1)"}`,
                 color: "#e8e0c8", fontSize: 13, outline: "none",
               }}
             />
@@ -864,7 +864,7 @@ function CreateTournamentModal({
         {/* Modal Footer */}
         <div style={{
           display: "flex", gap: 10, padding: "16px 22px",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
+          borderTop: "1px solid rgba(26,26,27,0.08)",
           background: "rgba(10,8,6,0.5)",
         }}>
           <motion.button
@@ -872,7 +872,7 @@ function CreateTournamentModal({
             onClick={onClose}
             style={{
               flex: 1, padding: "11px 20px", borderRadius: 12,
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
               color: "rgba(232,224,200,0.5)", cursor: "pointer", fontSize: 13, fontWeight: 600,
             }}
           >
@@ -885,7 +885,7 @@ function CreateTournamentModal({
             disabled={submitting}
             style={{
               flex: 2, padding: "11px 20px", borderRadius: 12,
-              background: submitting ? "rgba(212,175,55,0.3)" : meta.color,
+              background: submitting ? "rgba(212,139,0,0.3)" : meta.color,
               border: "none", color: submitting ? "rgba(232,224,200,0.5)" : "#000",
               cursor: submitting ? "not-allowed" : "pointer",
               fontSize: 13, fontWeight: 700,
@@ -971,14 +971,14 @@ function MyTournamentRow({
       style={{
         display: "flex", flexDirection: "column", gap: 0,
         borderRadius: 14,
-        background: "rgba(255,255,255,0.025)",
-        border: "1px solid rgba(255,255,255,0.07)",
+        background: "rgba(26,26,27,0.04)",
+        border: "1px solid rgba(26,26,27,0.09)",
         overflow: "hidden",
       }}
     >
       {/* Clickable main row */}
       <motion.button
-        whileHover={{ backgroundColor: "rgba(255,255,255,0.035)" }}
+        whileHover={{ backgroundColor: "rgba(26,26,27,0.05)" }}
         whileTap={{ scale: 0.99 }}
         onClick={() => onSelect(tournament)}
         style={{
@@ -1036,7 +1036,7 @@ function MyTournamentRow({
       {(canCancel || canClose) && (
         <div style={{
           display: "flex", gap: 8, padding: "8px 16px 10px",
-          borderTop: "1px solid rgba(255,255,255,0.05)",
+          borderTop: "1px solid rgba(26,26,27,0.07)",
         }}>
           {canClose && (
             pending === "close" ? (
@@ -1059,7 +1059,7 @@ function MyTournamentRow({
                   onClick={() => setPending(null)}
                   style={{
                     padding: "6px 10px", borderRadius: 8, cursor: "pointer",
-                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+                    background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
                     color: "rgba(232,224,200,0.4)", fontSize: 11, fontWeight: 600,
                   }}
                 >
@@ -1103,7 +1103,7 @@ function MyTournamentRow({
                   onClick={() => setPending(null)}
                   style={{
                     padding: "6px 10px", borderRadius: 8, cursor: "pointer",
-                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+                    background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
                     color: "rgba(232,224,200,0.4)", fontSize: 11, fontWeight: 600,
                   }}
                 >
@@ -1348,7 +1348,7 @@ export default function CompetitionModule() {
       {/* Header */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)",
+        padding: "12px 20px", borderBottom: "1px solid rgba(26,26,27,0.08)",
         background: "rgba(10,8,6,0.85)", backdropFilter: "blur(8px)", flexShrink: 0,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -1358,14 +1358,14 @@ export default function CompetitionModule() {
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
               width: 44, height: 44, borderRadius: 12,
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
               color: "rgba(232,224,200,0.5)", cursor: "pointer",
             }}
           >
             <ArrowLeft size={20} />
           </motion.button>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#d4af37" }}>Competitions</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#D48B00" }}>Competitions</div>
             <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>Craft Tournaments · Live Leaderboards</div>
           </div>
         </div>
@@ -1379,8 +1379,8 @@ export default function CompetitionModule() {
               style={{
                 display: "flex", alignItems: "center", gap: 6,
                 padding: "8px 14px", borderRadius: 12,
-                background: "rgba(212,175,55,0.15)", border: "1px solid rgba(212,175,55,0.35)",
-                color: "#d4af37", cursor: "pointer", fontSize: 12, fontWeight: 700,
+                background: "rgba(212,139,0,0.15)", border: "1px solid rgba(212,139,0,0.35)",
+                color: "#D48B00", cursor: "pointer", fontSize: 12, fontWeight: 700,
               }}
             >
               <Plus size={14} />
@@ -1393,7 +1393,7 @@ export default function CompetitionModule() {
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
               width: 40, height: 40, borderRadius: 12,
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
               color: "rgba(232,224,200,0.5)", cursor: "pointer",
             }}
           >
@@ -1406,7 +1406,7 @@ export default function CompetitionModule() {
       {canCreateTournament && (
         <div style={{
           display: "flex", gap: 4, padding: "10px 20px",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: "1px solid rgba(26,26,27,0.08)",
           background: "rgba(10,8,6,0.75)", flexShrink: 0,
         }}>
           {(["browse", "mine"] as const).map(tab => {
@@ -1419,9 +1419,9 @@ export default function CompetitionModule() {
                 style={{
                   padding: "7px 18px", borderRadius: 10, cursor: "pointer",
                   fontSize: 12, fontWeight: 700, letterSpacing: "0.03em",
-                  background: isActive ? "rgba(212,175,55,0.15)" : "rgba(255,255,255,0.03)",
-                  border: isActive ? "1px solid rgba(212,175,55,0.4)" : "1px solid rgba(255,255,255,0.07)",
-                  color: isActive ? "#d4af37" : "rgba(232,224,200,0.4)",
+                  background: isActive ? "rgba(212,139,0,0.15)" : "rgba(26,26,27,0.05)",
+                  border: isActive ? "1px solid rgba(212,139,0,0.4)" : "1px solid rgba(26,26,27,0.09)",
+                  color: isActive ? "#D48B00" : "rgba(232,224,200,0.4)",
                 }}
               >
                 {tab === "browse" ? "Browse" : "My Tournaments"}
@@ -1435,12 +1435,12 @@ export default function CompetitionModule() {
       {activeTab === "browse" && (
         <div style={{
           display: "flex", gap: 8, padding: "12px 20px",
-          borderBottom: "1px solid rgba(255,255,255,0.04)",
+          borderBottom: "1px solid rgba(26,26,27,0.06)",
           background: "rgba(10,8,6,0.6)", flexShrink: 0, overflowX: "auto",
         }}>
           {(["all", "live", "daily", "weekly", "venue", "grand"] as const).map(t => {
             const active = filterType === t;
-            const color  = t === "all" ? "#d4af37" : TYPE_META[t].color;
+            const color  = t === "all" ? "#D48B00" : TYPE_META[t].color;
             return (
               <motion.button
                 key={t}
@@ -1450,8 +1450,8 @@ export default function CompetitionModule() {
                   padding: "6px 14px", borderRadius: 20, cursor: "pointer",
                   fontSize: 11, fontWeight: 700, letterSpacing: "0.05em",
                   textTransform: "capitalize", whiteSpace: "nowrap",
-                  background: active ? `${color}20` : "rgba(255,255,255,0.03)",
-                  border: active ? `1px solid ${color}50` : "1px solid rgba(255,255,255,0.08)",
+                  background: active ? `${color}20` : "rgba(26,26,27,0.05)",
+                  border: active ? `1px solid ${color}50` : "1px solid rgba(26,26,27,0.10)",
                   color: active ? color : "rgba(232,224,200,0.4)",
                 }}
               >
@@ -1506,7 +1506,7 @@ export default function CompetitionModule() {
                     style={{
                       display: "flex", alignItems: "center", justifyContent: "center",
                       width: 32, height: 32, borderRadius: 9,
-                      background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                      background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
                       color: "rgba(232,224,200,0.4)", cursor: "pointer",
                     }}
                   >
@@ -1540,7 +1540,7 @@ export default function CompetitionModule() {
                           display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 4,
                         }}>
                           {[
-                            { label: "Total", value: total, color: "#d4af37" },
+                            { label: "Total", value: total, color: "#D48B00" },
                             { label: "Active", value: active, color: "#22c55e" },
                             { label: "Completed", value: completed, color: "#6b7280" },
                             { label: "Entrants", value: totalEntrants, color: "#06b6d4" },
@@ -1607,7 +1607,7 @@ export default function CompetitionModule() {
               {featured.length > 0 && (
                 <>
                   <div style={{
-                    fontSize: 10, fontWeight: 700, color: "rgba(212,175,55,0.6)",
+                    fontSize: 10, fontWeight: 700, color: "rgba(212,139,0,0.6)",
                     textTransform: "uppercase", letterSpacing: "0.2em",
                   }}>
                     ⭐ Featured
@@ -1651,7 +1651,7 @@ export default function CompetitionModule() {
               exit={{ opacity: 0, x: 40 }}
               style={{
                 flex: 1, padding: "16px 20px",
-                borderLeft: "1px solid rgba(255,255,255,0.06)",
+                borderLeft: "1px solid rgba(26,26,27,0.08)",
                 overflow: "hidden",
               }}
             >
@@ -1673,7 +1673,7 @@ export default function CompetitionModule() {
               exit={{ opacity: 0, x: 20 }}
               style={{
                 width: 300, flexShrink: 0,
-                borderLeft: "1px solid rgba(255,255,255,0.06)",
+                borderLeft: "1px solid rgba(26,26,27,0.08)",
                 overflowY: "auto", padding: "16px 16px",
                 display: "flex", flexDirection: "column", gap: 20,
               }}
@@ -1691,14 +1691,14 @@ export default function CompetitionModule() {
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {liveCtx.craftLeaderboard.slice(0, 5).map((entry, i) => {
-                      const rankColors: Record<number, string> = { 1: "#d4af37", 2: "#9ca3af", 3: "#b87333" };
+                      const rankColors: Record<number, string> = { 1: "#D48B00", 2: "#9ca3af", 3: "#b87333" };
                       const c = rankColors[i + 1] ?? "rgba(232,224,200,0.4)";
                       return (
                         <div key={i} style={{
                           display: "flex", alignItems: "center", gap: 8,
                           padding: "8px 10px", borderRadius: 10,
-                          background: i < 3 ? `${c}08` : "rgba(255,255,255,0.02)",
-                          border: i < 3 ? `1px solid ${c}25` : "1px solid rgba(255,255,255,0.04)",
+                          background: i < 3 ? `${c}08` : "rgba(26,26,27,0.04)",
+                          border: i < 3 ? `1px solid ${c}25` : "1px solid rgba(26,26,27,0.06)",
                         }}>
                           <div style={{
                             width: 22, height: 22, borderRadius: "50%",
@@ -1738,13 +1738,13 @@ export default function CompetitionModule() {
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {liveCtx.loungeLeague.map((lounge, i) => {
-                      const c = i === 0 ? "#d4af37" : "rgba(232,224,200,0.4)";
+                      const c = i === 0 ? "#D48B00" : "rgba(232,224,200,0.4)";
                       return (
                         <div key={i} style={{
                           display: "flex", alignItems: "center", gap: 8,
                           padding: "8px 10px", borderRadius: 10,
-                          background: i === 0 ? "rgba(212,175,55,0.06)" : "rgba(255,255,255,0.02)",
-                          border: i === 0 ? "1px solid rgba(212,175,55,0.2)" : "1px solid rgba(255,255,255,0.04)",
+                          background: i === 0 ? "rgba(212,139,0,0.06)" : "rgba(26,26,27,0.04)",
+                          border: i === 0 ? "1px solid rgba(212,139,0,0.2)" : "1px solid rgba(26,26,27,0.06)",
                         }}>
                           <span style={{ fontSize: 10, fontWeight: 800, color: c, width: 20, textAlign: "center" }}>
                             #{lounge.rank}
@@ -1776,11 +1776,11 @@ export default function CompetitionModule() {
             exit={{ opacity: 0, y: 24 }}
             style={{
               position: "fixed", bottom: 28, left: "50%", transform: "translateX(-50%)",
-              background: "rgba(30,25,18,0.95)", border: "1px solid rgba(212,175,55,0.4)",
+              background: "rgba(30,25,18,0.95)", border: "1px solid rgba(212,139,0,0.4)",
               borderRadius: 14, padding: "12px 24px",
               fontSize: 13, fontWeight: 600, color: "#e8e0c8",
               zIndex: 1000, backdropFilter: "blur(12px)",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+              boxShadow: "0 8px 32px rgba(26,26,27,0.26)",
             }}
           >
             {toast}

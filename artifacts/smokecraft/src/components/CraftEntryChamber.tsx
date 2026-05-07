@@ -260,17 +260,17 @@ function GlassButton({ label, sub, icon, accent, onClick, primary }: GlassButton
         cursor:       "pointer",
         width:        "100%",
         background:   hov
-          ? `rgba(201,168,76,0.10)`
+          ? `rgba(212,139,0,0.10)`
           : primary
             ? "rgba(12,8,4,0.75)"
             : "rgba(8,5,2,0.60)",
-        border:       `1px solid ${hov ? accent : primary ? `${accent}55` : "rgba(255,255,255,0.08)"}`,
+        border:       `1px solid ${hov ? accent : primary ? `${accent}55` : "rgba(26,26,27,0.10)"}`,
         backdropFilter: "blur(20px)",
         boxShadow:    hov
           ? `0 0 28px ${accent}28, inset 0 0 16px ${accent}08`
           : primary
-            ? `0 4px 32px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)`
-            : "0 2px 16px rgba(0,0,0,0.4)",
+            ? `0 4px 32px rgba(26,26,27,0.22), inset 0 1px 0 rgba(26,26,27,0.06)`
+            : "0 2px 16px rgba(26,26,27,0.10)",
         transition:   "all 0.28s ease",
         textAlign:    "left",
       }}
@@ -299,7 +299,7 @@ function GlassButton({ label, sub, icon, accent, onClick, primary }: GlassButton
           fontWeight:    800,
           letterSpacing: "0.16em",
           textTransform: "uppercase",
-          color:         hov ? accent : primary ? "rgba(240,232,212,0.92)" : "rgba(240,232,212,0.60)",
+          color:         hov ? accent : primary ? "rgba(26,26,27,0.90)" : "rgba(26,26,27,0.58)",
           transition:    "color 0.2s ease",
         }}>
           {label}
@@ -418,11 +418,11 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             display:        "flex",
             alignItems:     "center",
             gap:            7,
-            background:     "rgba(0,0,0,0.45)",
+            background:     "rgba(26,26,27,0.14)",
             border:         "1px solid rgba(255,255,255,0.1)",
             borderRadius:   10,
             padding:        "8px 14px",
-            color:          "rgba(240,232,212,0.55)",
+            color:          "rgba(26,26,27,0.52)",
             fontSize:       12,
             cursor:         "pointer",
             backdropFilter: "blur(12px)",
@@ -445,7 +445,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
               display:        "flex",
               alignItems:     "center",
               gap:            7,
-              background:     "rgba(0,0,0,0.45)",
+              background:     "rgba(26,26,27,0.14)",
               border:         `1px solid ${accent}30`,
               borderRadius:   10,
               padding:        "8px 14px",
@@ -575,7 +575,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             transition={{ delay: 0.5 }}
             style={{
               fontSize:      14,
-              color:         "rgba(240,232,212,0.50)",
+              color:         "rgba(26,26,27,0.48)",
               textAlign:     "center",
               maxWidth:      380,
               lineHeight:    1.65,
@@ -654,7 +654,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             alignItems:     "center",
             justifyContent: "center",
             gap:            24,
-            borderTop:      "1px solid rgba(255,255,255,0.05)",
+            borderTop:      "1px solid rgba(26,26,27,0.07)",
             background:     "rgba(6,4,2,0.65)",
             backdropFilter: "blur(12px)",
           }}
@@ -667,7 +667,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
                 transition={{ duration: 2.2, delay: i * 0.5, repeat: Infinity, ease: "easeInOut" }}
               />
               <span style={{
-                fontSize: 9, color: "rgba(240,232,212,0.28)",
+                fontSize: 9, color: "rgba(26,26,27,0.28)",
                 letterSpacing: "0.18em", textTransform: "uppercase",
               }}>
                 {label}

@@ -26,12 +26,12 @@ export const DEFAULT_BREW_STATE: BrewDesignState = {
 };
 
 const MUTED    = "rgba(180,155,100,0.45)";
-const GOLD_DIM = "rgba(212,175,55,0.55)";
+const GOLD_DIM = "rgba(212,139,0,0.55)";
 
 const PALETTE_OPTIONS = [
   { bg: "#1A2A1A", text: "#F5E4A0", accent: "#6AB87A", label: "Forest Gold" },
   { bg: "#1A1830", text: "#C4D8F0", accent: "#4A8AC4", label: "Midnight Blue" },
-  { bg: "#2A1F08", text: "#F5E4A0", accent: "#D4AF37", label: "Amber Wheat" },
+  { bg: "#2A1F08", text: "#F5E4A0", accent: "#D48B00", label: "Amber Wheat" },
   { bg: "#141010", text: "#D4C4A0", accent: "#8B7355", label: "Dark Roast" },
   { bg: "#2A0808", text: "#F0C4C4", accent: "#C46060", label: "Crimson Ale" },
   { bg: "#1A181A", text: "#E8E0D4", accent: "#C0A0D0", label: "Violet Stout" },
@@ -113,8 +113,8 @@ export function BrewPreview({
         </linearGradient>
         <linearGradient id="brew-sheen" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%"   stopColor="rgba(255,255,255,0)" />
-          <stop offset="35%"  stopColor="rgba(255,255,255,0.14)" />
-          <stop offset="50%"  stopColor="rgba(255,255,255,0.08)" />
+          <stop offset="35%"  stopColor="rgba(26,26,27,0.16)" />
+          <stop offset="50%"  stopColor="rgba(26,26,27,0.10)" />
           <stop offset="100%" stopColor="rgba(255,255,255,0)" />
         </linearGradient>
       </defs>
@@ -201,14 +201,14 @@ export function BrewDesignPanel({ state, onChange, tab }: Props) {
     return (
       <div className="flex flex-col items-center gap-3 py-4">
         <div className="p-8 rounded-2xl flex items-center justify-center"
-          style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.05)", minHeight: 320 }}>
+          style={{ background: "rgba(26,26,27,0.08)", border: "1px solid rgba(26,26,27,0.07)", minHeight: 320 }}>
           <BrewPreview
             state={state}
             onDrag={(off) => set("labelOffset", off)}
           />
         </div>
         <p className="text-[8px] uppercase tracking-[0.28em]" style={{ color: MUTED }}>
-          Bottle Label Preview · <span style={{ color: "rgba(212,175,55,0.4)" }}>Drag label to reposition</span>
+          Bottle Label Preview · <span style={{ color: "rgba(212,139,0,0.4)" }}>Drag label to reposition</span>
         </p>
       </div>
     );
@@ -225,7 +225,7 @@ export function BrewDesignPanel({ state, onChange, tab }: Props) {
           maxLength={14}
           placeholder="Your brew name…"
           className="w-full bg-transparent outline-none font-serif text-xl py-2 border-b"
-          style={{ borderColor: "rgba(212,175,55,0.25)", color: "rgba(230,210,175,0.9)" }}
+          style={{ borderColor: "rgba(212,139,0,0.25)", color: "rgba(230,210,175,0.9)" }}
         />
       </div>
 
@@ -238,7 +238,7 @@ export function BrewDesignPanel({ state, onChange, tab }: Props) {
           maxLength={20}
           placeholder="Craft Reserve…"
           className="w-full bg-transparent outline-none text-sm py-2 border-b"
-          style={{ borderColor: "rgba(255,255,255,0.12)", color: "rgba(210,190,155,0.85)" }}
+          style={{ borderColor: "rgba(26,26,27,0.14)", color: "rgba(210,190,155,0.85)" }}
         />
       </div>
 
@@ -249,8 +249,8 @@ export function BrewDesignPanel({ state, onChange, tab }: Props) {
             <button key={s} onClick={() => set("labelShape", s)}
               className="px-4 py-2 rounded-lg text-xs capitalize transition-all"
               style={state.labelShape === s
-                ? { background: "rgba(212,175,55,0.14)", border: "1px solid rgba(212,175,55,0.45)", color: GOLD_DIM }
-                : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: MUTED }
+                ? { background: "rgba(212,139,0,0.14)", border: "1px solid rgba(212,139,0,0.45)", color: GOLD_DIM }
+                : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: MUTED }
               }>
               {s}
             </button>
@@ -268,8 +268,8 @@ export function BrewDesignPanel({ state, onChange, tab }: Props) {
                 onClick={() => onChange({ ...state, bgColor: p.bg, textColor: p.text, accentColor: p.accent })}
                 className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs transition-all"
                 style={{
-                  background: active ? `${p.bg}dd` : "rgba(255,255,255,0.03)",
-                  border: active ? `1px solid ${p.accent}` : "1px solid rgba(255,255,255,0.07)",
+                  background: active ? `${p.bg}dd` : "rgba(26,26,27,0.05)",
+                  border: active ? `1px solid ${p.accent}` : "1px solid rgba(26,26,27,0.09)",
                   color: active ? p.text : MUTED,
                 }}>
                 <span className="w-3.5 h-3.5 rounded-full flex-shrink-0 border border-white/20" style={{ background: p.accent }} />
@@ -286,7 +286,7 @@ export function BrewDesignPanel({ state, onChange, tab }: Props) {
           <button
             onClick={() => set("labelOffset", { x: 0, y: 0 })}
             className="px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.15em]"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: MUTED }}>
+            style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: MUTED }}>
             Reset Position
           </button>
           <span className="text-[9px]" style={{ color: "rgba(180,155,100,0.3)" }}>

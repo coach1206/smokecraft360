@@ -55,9 +55,9 @@ interface AxLayoutProps {
   live?: boolean;
 }
 
-const BG = "#080604";
-const GOLD = "#C9A84C";
-const BORDER = "rgba(201,168,76,0.16)";
+const BG = "#F5F2ED";
+const GOLD = "#D48B00";
+const BORDER = "rgba(212,139,0,0.16)";
 const MUTED = "rgba(240,232,212,0.42)";
 const TEXT = "rgba(240,232,212,0.9)";
 
@@ -81,7 +81,7 @@ export function AxLayout({
           aria-hidden
           style={{
             position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
-            background: "radial-gradient(ellipse 80% 40% at 50% 0%, rgba(201,168,76,0.06) 0%, transparent 70%)",
+            background: "radial-gradient(ellipse 80% 40% at 50% 0%, rgba(212,139,0,0.06) 0%, transparent 70%)",
           }}
         />
       )}
@@ -95,7 +95,7 @@ export function AxLayout({
         borderBottom: `1px solid ${BORDER}`,
         padding: "12px 24px",
         display: "flex", alignItems: "center", gap: 14,
-        boxShadow: "0 1px 0 rgba(255,210,120,0.08), 0 4px 20px rgba(0,0,0,0.4)",
+        boxShadow: "0 1px 0 rgba(212,139,0,0.08), 0 4px 20px rgba(26,26,27,0.10)",
       }}>
         {onBack && (
           <button

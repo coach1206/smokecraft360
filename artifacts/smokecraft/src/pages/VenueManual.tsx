@@ -282,7 +282,7 @@ function ManualSection({ section }: { section: ManualSection }) {
           width: 36, height: 36, borderRadius: 10, flexShrink: 0,
           background: "#1A1410",
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 14, fontWeight: 800, color: "#d4af37",
+          fontSize: 14, fontWeight: 800, color: "#D48B00",
         }}>{section.number}</div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>{section.title}</div>
@@ -332,7 +332,7 @@ function ManualSection({ section }: { section: ManualSection }) {
                     width: 28, height: 28, borderRadius: 8, flexShrink: 0,
                     background: "#1A1410",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 12, fontWeight: 800, color: "#d4af37",
+                    fontSize: 12, fontWeight: 800, color: "#D48B00",
                   }}>{i + 1}</div>
                   <div style={{ paddingTop: 3 }}>
                     {step.heading && (
@@ -422,7 +422,7 @@ export default function VenueManual() {
               width: 32, height: 32, borderRadius: 8, background: "#1A1410",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <BookOpen size={16} color="#d4af37" />
+              <BookOpen size={16} color="#D48B00" />
             </div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Venue Operator Manual</div>
@@ -437,7 +437,7 @@ export default function VenueManual() {
                 display: "flex", alignItems: "center", gap: 6,
                 background: "#1A1410", border: "none",
                 borderRadius: 8, padding: "7px 16px",
-                color: "#d4af37", fontSize: 12, fontWeight: 700, cursor: "pointer",
+                color: "#D48B00", fontSize: 12, fontWeight: 700, cursor: "pointer",
               }}
             >
               <Printer size={13} /> Print Manual
@@ -457,16 +457,16 @@ export default function VenueManual() {
         {/* Cover */}
         <div style={{
           background: "#1A1410", borderRadius: 16,
-          padding: "32px 36px", marginBottom: 28, color: "#d4af37",
+          padding: "32px 36px", marginBottom: 28, color: "#D48B00",
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-            <BookOpen size={32} color="#d4af37" />
+            <BookOpen size={32} color="#D48B00" />
             <div>
               <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em" }}>Axiom OS</div>
-              <div style={{ fontSize: 13, color: "rgba(212,175,55,0.6)", letterSpacing: "0.06em" }}>VENUE OPERATOR MANUAL</div>
+              <div style={{ fontSize: 13, color: "rgba(212,139,0,0.6)", letterSpacing: "0.06em" }}>VENUE OPERATOR MANUAL</div>
             </div>
           </div>
-          <p style={{ color: "rgba(212,175,55,0.7)", fontSize: 13, margin: "0 0 20px", lineHeight: 1.7 }}>
+          <p style={{ color: "rgba(212,139,0,0.7)", fontSize: 13, margin: "0 0 20px", lineHeight: 1.7 }}>
             This manual covers every operation your team needs to run the platform confidently.
             Each section includes purpose, step-by-step instructions, success criteria, common mistakes, and troubleshooting.
             Print and keep a copy at the manager station.
@@ -474,11 +474,11 @@ export default function VenueManual() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
             {SECTIONS.map(s => (
               <div key={s.id} style={{
-                background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.15)",
+                background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.15)",
                 borderRadius: 8, padding: "8px 10px",
-                fontSize: 11, color: "rgba(212,175,55,0.7)", textAlign: "center",
+                fontSize: 11, color: "rgba(212,139,0,0.7)", textAlign: "center",
               }}>
-                <div style={{ fontWeight: 700, color: "#d4af37", marginBottom: 2 }}>{s.number}</div>
+                <div style={{ fontWeight: 700, color: "#D48B00", marginBottom: 2 }}>{s.number}</div>
                 {s.title}
               </div>
             ))}

@@ -58,12 +58,12 @@ const C = {
 const SECTION_META: Record<string, { color: string; emoji: string }> = {
   system_health:     { color: "#2563eb", emoji: "🔵" },
   inventory:         { color: "#16a34a", emoji: "📦" },
-  venue_settings:    { color: "#d4af37", emoji: "🏛️" },
+  venue_settings:    { color: "#D48B00", emoji: "🏛️" },
   experience_controls: { color: "#8b5cf6", emoji: "🎛️" },
   demo_mode:         { color: "#0891b2", emoji: "🎬" },
   staff_access:      { color: "#ea580c", emoji: "👥" },
   order_flow:        { color: "#16a34a", emoji: "🛒" },
-  analytics:         { color: "#d4af37", emoji: "📊" },
+  analytics:         { color: "#D48B00", emoji: "📊" },
   sound_assets:      { color: "#8b5cf6", emoji: "🔊" },
   performance_mode:  { color: "#2563eb", emoji: "⚡" },
 };
@@ -283,7 +283,7 @@ export default function OperatorReadiness() {
               width: 32, height: 32, borderRadius: 8, background: "#1A1410",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <Rocket size={16} color="#d4af37" />
+              <Rocket size={16} color="#D48B00" />
             </div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Operator Readiness</div>
@@ -351,7 +351,7 @@ export default function OperatorReadiness() {
           <div style={{ textAlign: "center", padding: "60px 0", color: C.muted }}>
             <div style={{
               width: 32, height: 32, borderRadius: "50%",
-              border: "2px solid rgba(0,0,0,0.08)", borderTop: "2px solid #1A1410",
+              border: "2px solid rgba(26,26,27,0.02)", borderTop: "2px solid #1A1410",
               animation: "spin 0.8s linear infinite", margin: "0 auto 12px",
             }} />
             Checking system readiness…

@@ -25,7 +25,7 @@ import {
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; Icon: React.ElementType }> = {
   draft:     { label: "Draft",     color: "rgba(180,155,100,0.6)",  bg: "rgba(180,155,100,0.07)", Icon: Circle       },
   active:    { label: "Active",    color: "rgba(100,200,120,0.8)",  bg: "rgba(100,200,120,0.07)", Icon: CheckCircle2 },
-  paused:    { label: "Paused",    color: "rgba(212,175,55,0.75)",  bg: "rgba(212,175,55,0.07)",  Icon: PauseCircle  },
+  paused:    { label: "Paused",    color: "rgba(212,139,0,0.75)",  bg: "rgba(212,139,0,0.07)",  Icon: PauseCircle  },
   completed: { label: "Completed", color: "rgba(130,150,212,0.7)",  bg: "rgba(130,150,212,0.06)", Icon: Award        },
   cancelled: { label: "Cancelled", color: "rgba(239,90,80,0.6)",    bg: "rgba(239,90,80,0.06)",   Icon: XCircle      },
 };
@@ -133,7 +133,7 @@ export function CampaignsTab() {
   if (loading) return (
     <div className="flex items-center justify-center py-20">
       <motion.div className="w-8 h-8 rounded-full border-2"
-        style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.7)" }}
+        style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.7)" }}
         animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
     </div>
   );
@@ -147,9 +147,9 @@ export function CampaignsTab() {
         <motion.button onClick={() => setShowCreate(true)} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
           className="flex items-center gap-2 w-full px-4 py-3 rounded-xl text-xs uppercase tracking-[0.15em]"
           style={{
-            background: "linear-gradient(135deg, rgba(180,130,30,0.18), rgba(212,175,55,0.08))",
-            border: "1px solid rgba(212,175,55,0.3)",
-            color: "rgba(212,175,55,0.85)",
+            background: "linear-gradient(135deg, rgba(180,130,30,0.18), rgba(212,139,0,0.08))",
+            border: "1px solid rgba(212,139,0,0.3)",
+            color: "rgba(212,139,0,0.85)",
           }}>
           <Plus size={13} />New Campaign
         </motion.button>
@@ -163,8 +163,8 @@ export function CampaignsTab() {
 
         {campaigns.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center py-12 gap-3"
-            style={{ border: "1px dashed rgba(212,175,55,0.12)", borderRadius: 12 }}>
-            <Megaphone size={24} style={{ color: "rgba(212,175,55,0.25)" }} />
+            style={{ border: "1px dashed rgba(212,139,0,0.12)", borderRadius: 12 }}>
+            <Megaphone size={24} style={{ color: "rgba(212,139,0,0.25)" }} />
             <p className="text-[9px] uppercase tracking-[0.2em] text-center" style={{ color: "rgba(180,155,100,0.35)" }}>
               No campaigns yet
             </p>
@@ -180,8 +180,8 @@ export function CampaignsTab() {
                   onClick={() => selectCampaign(c)}
                   className="w-full text-left p-3.5 rounded-xl transition-all duration-200"
                   style={{
-                    background: isSelected ? "rgba(212,175,55,0.07)" : "rgba(255,255,255,0.025)",
-                    border: isSelected ? "1px solid rgba(212,175,55,0.28)" : "1px solid rgba(255,255,255,0.065)",
+                    background: isSelected ? "rgba(212,139,0,0.07)" : "rgba(26,26,27,0.04)",
+                    border: isSelected ? "1px solid rgba(212,139,0,0.28)" : "1px solid rgba(26,26,27,0.07)",
                   }}
                   whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                   <div className="flex items-start justify-between gap-2 mb-2">
@@ -191,7 +191,7 @@ export function CampaignsTab() {
                         {c.name}
                       </span>
                     </div>
-                    {isSelected && <ChevronRight size={11} style={{ color: "rgba(212,175,55,0.5)" }} />}
+                    {isSelected && <ChevronRight size={11} style={{ color: "rgba(212,139,0,0.5)" }} />}
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded-full"
@@ -202,7 +202,7 @@ export function CampaignsTab() {
                       className="text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full transition-all"
                       style={c.active
                         ? { background: "rgba(100,200,120,0.1)", border: "1px solid rgba(100,200,120,0.25)", color: "rgba(100,200,120,0.75)" }
-                        : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.4)" }
+                        : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.4)" }
                       }>
                       {c.active ? "Live" : "Off"}
                     </button>
@@ -269,7 +269,7 @@ export function CampaignsTab() {
             <motion.div key="empty"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               className="flex flex-col items-center justify-center h-full py-20 gap-4">
-              <Megaphone size={36} style={{ color: "rgba(212,175,55,0.2)" }} />
+              <Megaphone size={36} style={{ color: "rgba(212,139,0,0.2)" }} />
               <p className="font-serif text-base" style={{ color: "rgba(220,200,165,0.45)", fontWeight: 300 }}>
                 Select a campaign to view details
               </p>
@@ -291,9 +291,9 @@ function PerformancePanel({ perf }: { perf: CampaignPerformance }) {
   const { performance: p, pacing } = perf;
 
   return (
-    <div className="rounded-xl p-4" style={{ background: "rgba(212,175,55,0.04)", border: "1px solid rgba(212,175,55,0.14)" }}>
+    <div className="rounded-xl p-4" style={{ background: "rgba(212,139,0,0.04)", border: "1px solid rgba(212,139,0,0.14)" }}>
       <p className="text-[9px] uppercase tracking-[0.22em] mb-3 flex items-center gap-2"
-        style={{ color: "rgba(212,175,55,0.5)" }}>
+        style={{ color: "rgba(212,139,0,0.5)" }}>
         <TrendingUp size={10} />Performance
       </p>
       <div className="grid grid-cols-3 gap-3 mb-3">
@@ -309,11 +309,11 @@ function PerformancePanel({ perf }: { perf: CampaignPerformance }) {
             <span>Campaign progress — day {pacing.daysElapsed}/{pacing.daysTotal}</span>
             <span>{pacing.pct}%</span>
           </div>
-          <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+          <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(26,26,27,0.08)" }}>
             <motion.div className="h-full rounded-full"
               initial={{ width: 0 }} animate={{ width: `${pacing.pct}%` }}
               transition={{ duration: 0.7 }}
-              style={{ background: "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(212,175,55,0.85))" }} />
+              style={{ background: "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(212,139,0,0.85))" }} />
           </div>
           {pacing.impressionGoalPct !== null && (
             <>
@@ -321,7 +321,7 @@ function PerformancePanel({ perf }: { perf: CampaignPerformance }) {
                 <span>Impression goal progress</span>
                 <span>{pacing.impressionGoalPct}%</span>
               </div>
-              <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+              <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(26,26,27,0.08)" }}>
                 <motion.div className="h-full rounded-full"
                   initial={{ width: 0 }} animate={{ width: `${pacing.impressionGoalPct}%` }}
                   transition={{ duration: 0.7, delay: 0.15 }}
@@ -341,15 +341,15 @@ function PerfCard({ label, value, icon, sub, gold }: {
   return (
     <div className="p-3 rounded-lg"
       style={{
-        background: gold ? "rgba(212,175,55,0.06)" : "rgba(255,255,255,0.025)",
-        border: gold ? "1px solid rgba(212,175,55,0.18)" : "1px solid rgba(255,255,255,0.06)",
+        background: gold ? "rgba(212,139,0,0.06)" : "rgba(26,26,27,0.04)",
+        border: gold ? "1px solid rgba(212,139,0,0.18)" : "1px solid rgba(26,26,27,0.08)",
       }}>
-      <div className="mb-1" style={{ color: gold ? "rgba(212,175,55,0.55)" : "rgba(180,155,100,0.4)" }}>{icon}</div>
+      <div className="mb-1" style={{ color: gold ? "rgba(212,139,0,0.55)" : "rgba(180,155,100,0.4)" }}>{icon}</div>
       <p className="text-2xl font-serif" style={{ color: gold ? "rgba(230,210,175,0.9)" : "rgba(210,190,155,0.82)", fontWeight: 300 }}>
         {value.toLocaleString()}
       </p>
       <p className="text-[8px] uppercase tracking-wider mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>{label}</p>
-      {sub && <p className="text-[8px] mt-1" style={{ color: gold ? "rgba(212,175,55,0.65)" : "rgba(180,155,100,0.5)" }}>{sub}</p>}
+      {sub && <p className="text-[8px] mt-1" style={{ color: gold ? "rgba(212,139,0,0.65)" : "rgba(180,155,100,0.5)" }}>{sub}</p>}
     </div>
   );
 }
@@ -391,10 +391,10 @@ function CampaignForm({
   const title = mode === "create" ? "New Campaign" : "Edit Campaign";
 
   return (
-    <div className="rounded-xl p-5" style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
+    <div className="rounded-xl p-5" style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.09)" }}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-serif text-base" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
-          <Edit3 size={13} className="inline mr-2" style={{ color: "rgba(212,175,55,0.5)" }} />
+          <Edit3 size={13} className="inline mr-2" style={{ color: "rgba(212,139,0,0.5)" }} />
           {title}
         </h3>
         {onCancel && (
@@ -415,7 +415,7 @@ function CampaignForm({
           <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)}
             className="w-full px-3 py-2 rounded-lg text-xs"
             style={{
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
               color: "rgba(200,180,145,0.8)", outline: "none",
             }}>
             {STATUSES.map((s) => (
@@ -430,7 +430,7 @@ function CampaignForm({
             className="flex items-center gap-2 px-3 py-2 rounded-lg w-full text-xs transition-all"
             style={active
               ? { background: "rgba(100,200,120,0.08)", border: "1px solid rgba(100,200,120,0.25)", color: "rgba(100,200,120,0.8)" }
-              : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(180,155,100,0.5)" }
+              : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(180,155,100,0.5)" }
             }>
             {active ? <CheckCircle2 size={12} /> : <Circle size={12} />}
             {active ? "Active — boosting products" : "Inactive"}
@@ -452,7 +452,7 @@ function CampaignForm({
           <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
             className="w-full px-3 py-2 rounded-lg text-xs"
             style={{
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
               color: "rgba(200,180,145,0.8)", outline: "none", colorScheme: "dark",
             }} />
         </div>
@@ -462,7 +462,7 @@ function CampaignForm({
           <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
             className="w-full px-3 py-2 rounded-lg text-xs"
             style={{
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
               color: "rgba(200,180,145,0.8)", outline: "none", colorScheme: "dark",
             }} />
         </div>
@@ -473,7 +473,7 @@ function CampaignForm({
             placeholder="Internal campaign notes…"
             className="w-full px-3 py-2 rounded-lg text-xs resize-none"
             style={{
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
               color: "rgba(200,180,145,0.8)", outline: "none",
             }} />
         </div>
@@ -483,7 +483,7 @@ function CampaignForm({
         {onCancel && (
           <button onClick={onCancel}
             className="px-3 py-2 rounded-lg text-xs"
-            style={{ color: "rgba(180,155,100,0.5)", border: "1px solid rgba(255,255,255,0.08)" }}>
+            style={{ color: "rgba(180,155,100,0.5)", border: "1px solid rgba(26,26,27,0.10)" }}>
             Cancel
           </button>
         )}
@@ -541,11 +541,11 @@ function ProductAssignPanel({
   };
 
   return (
-    <div className="rounded-xl p-5" style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
+    <div className="rounded-xl p-5" style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.09)" }}>
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-serif text-base" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
-            <Package size={13} className="inline mr-2" style={{ color: "rgba(212,175,55,0.5)" }} />
+            <Package size={13} className="inline mr-2" style={{ color: "rgba(212,139,0,0.5)" }} />
             Assign Products
           </h3>
           <p className="text-[8px] uppercase tracking-wider mt-0.5" style={{ color: "rgba(180,155,100,0.38)" }}>
@@ -556,9 +556,9 @@ function ProductAssignPanel({
           whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
           className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs uppercase tracking-[0.13em]"
           style={{
-            background: saved ? "rgba(100,200,120,0.12)" : "rgba(212,175,55,0.1)",
-            border: saved ? "1px solid rgba(100,200,120,0.3)" : "1px solid rgba(212,175,55,0.28)",
-            color: saved ? "rgba(100,200,120,0.8)" : "rgba(212,175,55,0.8)",
+            background: saved ? "rgba(100,200,120,0.12)" : "rgba(212,139,0,0.1)",
+            border: saved ? "1px solid rgba(100,200,120,0.3)" : "1px solid rgba(212,139,0,0.28)",
+            color: saved ? "rgba(100,200,120,0.8)" : "rgba(212,139,0,0.8)",
           }}>
           <Save size={10} />
           {saving ? "Saving…" : saved ? "Saved!" : `Save (${selected2.size})`}
@@ -572,15 +572,15 @@ function ProductAssignPanel({
             <button key={item.id} onClick={() => toggle(item.id)}
               className="flex items-center gap-2 p-2.5 rounded-lg text-left transition-all"
               style={isChecked
-                ? { background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.25)" }
-                : { background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }
+                ? { background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.25)" }
+                : { background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.09)" }
               }>
               <div className="w-3 h-3 rounded-sm flex-shrink-0 flex items-center justify-center"
                 style={isChecked
-                  ? { background: "rgba(212,175,55,0.3)", border: "1px solid rgba(212,175,55,0.6)" }
+                  ? { background: "rgba(212,139,0,0.3)", border: "1px solid rgba(212,139,0,0.6)" }
                   : { border: "1px solid rgba(180,155,100,0.3)" }
                 }>
-                {isChecked && <div className="w-1.5 h-1.5 rounded-sm" style={{ background: "rgba(212,175,55,0.9)" }} />}
+                {isChecked && <div className="w-1.5 h-1.5 rounded-sm" style={{ background: "rgba(212,139,0,0.9)" }} />}
               </div>
               <div className="min-w-0">
                 <p className="text-xs truncate font-serif" style={{ color: isChecked ? "rgba(220,200,165,0.9)" : "rgba(200,180,140,0.7)" }}>
@@ -624,7 +624,7 @@ function Input({
       placeholder={placeholder}
       className="w-full px-3 py-2 rounded-lg text-xs"
       style={{
-        background: "rgba(255,255,255,0.04)",
+        background: "rgba(26,26,27,0.06)",
         border: "1px solid rgba(255,255,255,0.1)",
         color: "rgba(200,180,145,0.8)",
         outline: "none",

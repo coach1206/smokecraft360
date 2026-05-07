@@ -14,9 +14,9 @@ import { VOICEOVER_SCRIPTS }     from "@/data/voiceoverScripts";
 import { logTrainingEvent, ensureTrainingSession } from "@/hooks/useTrainingApi";
 
 const T = {
-  bg: "#06040a", card: "rgba(255,255,255,0.04)", border: "rgba(201,168,76,0.15)",
-  gold: "#c9a84c", text: "rgba(240,232,212,0.92)", muted: "rgba(240,232,212,0.48)",
-  light: "rgba(240,232,212,0.75)", green: "#34d399", blue: "#60a5fa",
+  bg: "#F5F2ED", card: "rgba(26,26,27,0.06)", border: "rgba(212,139,0,0.15)",
+  gold: "#D48B00", text: "rgba(26,26,27,0.90)", muted: "rgba(240,232,212,0.48)",
+  light: "rgba(26,26,27,0.72)", green: "#34d399", blue: "#60a5fa",
   amber: "#f59e0b", purple: "#a78bfa",
 };
 
@@ -174,8 +174,8 @@ export default function TrainingSales() {
           ))}
         </div>
         <button onClick={() => setShowScript((s) => !s)} style={{
-          background: showScript ? `${T.gold}18` : "rgba(255,255,255,0.04)",
-          border: `1px solid ${showScript ? T.gold + "50" : "rgba(255,255,255,0.12)"}`,
+          background: showScript ? `${T.gold}18` : "rgba(26,26,27,0.06)",
+          border: `1px solid ${showScript ? T.gold + "50" : "rgba(26,26,27,0.14)"}`,
           borderRadius: 7, color: showScript ? T.gold : T.muted, padding: "6px 10px", cursor: "pointer",
           display: "flex", alignItems: "center", gap: 4, fontSize: 10,
         }}>
@@ -194,9 +194,9 @@ export default function TrainingSales() {
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             style={{
               position: "fixed", right: 0, top: 0, bottom: 0, width: 380,
-              background: "#09060f", borderLeft: "1px solid rgba(201,168,76,0.2)",
+              background: "#09060f", borderLeft: "1px solid rgba(212,139,0,0.2)",
               zIndex: 60, overflowY: "auto", padding: "20px 22px",
-              boxShadow: "-8px 0 32px rgba(0,0,0,0.6)",
+              boxShadow: "-8px 0 32px rgba(26,26,27,0.26)",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
@@ -212,8 +212,8 @@ export default function TrainingSales() {
                 <X size={14} />
               </button>
             </div>
-            <div style={{ height: 1, background: "rgba(201,168,76,0.15)", marginBottom: 16 }} />
-            <div style={{ fontSize: 11.5, color: "rgba(240,232,212,0.85)", lineHeight: 2, whiteSpace: "pre-wrap" }}>
+            <div style={{ height: 1, background: "rgba(212,139,0,0.15)", marginBottom: 16 }} />
+            <div style={{ fontSize: 11.5, color: "rgba(26,26,27,0.82)", lineHeight: 2, whiteSpace: "pre-wrap" }}>
               {cue.script}
             </div>
           </motion.div>
@@ -315,7 +315,7 @@ export default function TrainingSales() {
             }
           }} style={{
             background: slide === PITCH_SLIDES.length - 1 ? T.green : current.color,
-            border: "none", borderRadius: 9, color: "#06040a",
+            border: "none", borderRadius: 9, color: "#F5F2ED",
             padding: "10px 22px", cursor: "pointer", fontSize: 12, fontWeight: 700,
             display: "flex", alignItems: "center", gap: 6,
           }}>

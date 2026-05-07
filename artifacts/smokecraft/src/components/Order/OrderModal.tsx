@@ -203,8 +203,8 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
             <div className="rounded-t-2xl sm:rounded-2xl overflow-hidden"
               style={{
                 background: "linear-gradient(155deg, rgba(30,20,8,0.98), rgba(16,10,4,0.99))",
-                border:     "1px solid rgba(212,175,55,0.22)",
-                boxShadow:  "0 -8px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(212,175,55,0.08) inset",
+                border:     "1px solid rgba(212,139,0,0.22)",
+                boxShadow:  "0 -8px 60px rgba(26,26,27,0.40), 0 0 0 1px rgba(212,139,0,0.08) inset",
               }}>
 
               {/* Header */}
@@ -216,20 +216,20 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
                       Order Your Experience
                     </h2>
                   </div>
-                  <p className="text-[9px] uppercase tracking-[0.28em] pl-3" style={{ color: "rgba(212,175,55,0.4)" }}>
+                  <p className="text-[9px] uppercase tracking-[0.28em] pl-3" style={{ color: "rgba(212,139,0,0.4)" }}>
                     No payment required
                   </p>
                 </div>
                 <button onClick={onClose} className="p-2 rounded-full transition-colors duration-200"
-                  style={{ background: "rgba(255,255,255,0.04)" }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)")}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)")}>
+                  style={{ background: "rgba(26,26,27,0.06)" }}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(26,26,27,0.10)")}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(26,26,27,0.06)")}>
                   <X size={16} style={{ color: "rgba(180,155,100,0.55)" }} />
                 </button>
               </div>
 
               {/* Divider */}
-              <div className="mx-6 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.2), transparent)" }} />
+              <div className="mx-6 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.2), transparent)" }} />
 
               <div className="px-6 py-5 space-y-6">
 
@@ -237,7 +237,7 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
                 <div>
                   <p className="text-[9px] uppercase tracking-[0.25em] mb-3" style={{ color: "rgba(180,155,100,0.45)" }}>Your Selection</p>
                   <div className="space-y-2">
-                    {cigar && <SelectionRow icon={<Cigarette size={13} />} label={cigar.name} sublabel="CIGAR" color="rgba(212,175,55,0.7)" />}
+                    {cigar && <SelectionRow icon={<Cigarette size={13} />} label={cigar.name} sublabel="CIGAR" color="rgba(212,139,0,0.7)" />}
                     {drink && <SelectionRow icon={<Wine size={13} />}       label={drink.name} sublabel="PAIRING" color="rgba(130,170,220,0.7)" />}
                     {food  && <SelectionRow icon={<UtensilsCrossed size={13} />} label={food.name} sublabel="FOOD" color="rgba(180,120,60,0.7)" />}
                     {!cigar && !drink && !food && (
@@ -260,31 +260,31 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
                           disabled={isDisabled}
                           className="relative flex flex-col items-center gap-2 p-3 rounded-xl text-center transition-all duration-300"
                           style={isSelected ? {
-                            background: "linear-gradient(135deg, rgba(212,175,55,0.15), rgba(180,130,30,0.1))",
-                            border:     "1px solid rgba(212,175,55,0.5)",
+                            background: "linear-gradient(135deg, rgba(212,139,0,0.15), rgba(180,130,30,0.1))",
+                            border:     "1px solid rgba(212,139,0,0.5)",
                             color:      "rgba(235,215,175,0.95)",
                           } : isDisabled ? {
-                            background: "rgba(255,255,255,0.02)",
-                            border:     "1px solid rgba(255,255,255,0.05)",
+                            background: "rgba(26,26,27,0.04)",
+                            border:     "1px solid rgba(26,26,27,0.07)",
                             color:      "rgba(180,155,100,0.25)",
                             cursor:     "not-allowed",
                           } : {
-                            background: "rgba(255,255,255,0.04)",
-                            border:     "1px solid rgba(255,255,255,0.08)",
+                            background: "rgba(26,26,27,0.06)",
+                            border:     "1px solid rgba(26,26,27,0.10)",
                             color:      "rgba(180,155,100,0.6)",
                           }}
-                          whileHover={!isDisabled && !isSelected ? { borderColor: "rgba(212,175,55,0.3)", color: "rgba(212,175,55,0.8)" } : {}}
+                          whileHover={!isDisabled && !isSelected ? { borderColor: "rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.8)" } : {}}
                           whileTap={!isDisabled ? { scale: 0.97 } : {}}
                         >
                           {isSelected && (
                             <motion.div className="absolute inset-0 rounded-xl pointer-events-none"
                               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                              style={{ background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,175,55,0.08), transparent)" }} />
+                              style={{ background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,139,0,0.08), transparent)" }} />
                           )}
-                          <span style={{ color: isSelected ? "rgba(212,175,55,0.9)" : "inherit" }}>{icon}</span>
+                          <span style={{ color: isSelected ? "rgba(212,139,0,0.9)" : "inherit" }}>{icon}</span>
                           <div>
                             <p className="text-[10px] font-medium leading-tight">{label}</p>
-                            <p className="text-[8px] mt-0.5 leading-tight" style={{ color: isSelected ? "rgba(212,175,55,0.5)" : "rgba(180,155,100,0.35)" }}>{sublabel}</p>
+                            <p className="text-[8px] mt-0.5 leading-tight" style={{ color: isSelected ? "rgba(212,139,0,0.5)" : "rgba(180,155,100,0.35)" }}>{sublabel}</p>
                           </div>
                         </motion.button>
                       );
@@ -306,11 +306,11 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
                         placeholder="e.g. 12"
                         className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
                         style={{
-                          background:  "rgba(255,255,255,0.05)",
+                          background:  "rgba(26,26,27,0.07)",
                           border:      "1px solid rgba(255,255,255,0.1)",
                           color:       "rgba(230,210,175,0.9)",
                         }}
-                        onFocus={(e) => (e.target.style.borderColor = "rgba(212,175,55,0.4)")}
+                        onFocus={(e) => (e.target.style.borderColor = "rgba(212,139,0,0.4)")}
                         onBlur={(e)  => (e.target.style.borderColor = "rgba(255,255,255,0.1)")}
                       />
                     </motion.div>
@@ -350,13 +350,13 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
                   style={canSubmit ? {
                     background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
                     color:      "hsl(22 18% 6%)",
-                    boxShadow:  "0 4px 24px rgba(212,175,55,0.3)",
+                    boxShadow:  "0 4px 24px rgba(212,139,0,0.3)",
                   } : {
-                    background: "rgba(255,255,255,0.05)",
+                    background: "rgba(26,26,27,0.07)",
                     color:      "rgba(180,155,100,0.3)",
                     cursor:     "not-allowed",
                   }}
-                  whileHover={canSubmit ? { scale: 1.01, boxShadow: "0 6px 32px rgba(212,175,55,0.4)" } : {}}
+                  whileHover={canSubmit ? { scale: 1.01, boxShadow: "0 6px 32px rgba(212,139,0,0.4)" } : {}}
                   whileTap={canSubmit ? { scale: 0.98 } : {}}
                 >
                   {isRedirecting ? (
@@ -394,7 +394,7 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
 function SelectionRow({ icon, label, sublabel, color }: { icon: React.ReactNode; label: string; sublabel: string; color: string }) {
   return (
     <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
-      style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+      style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.08)" }}>
       <span style={{ color }} className="flex-shrink-0">{icon}</span>
       <div className="flex-1 min-w-0">
         <p className="text-sm truncate" style={{ color: "rgba(220,200,165,0.85)" }}>{label}</p>
@@ -418,9 +418,9 @@ function DeliveryStatusBadge({
   if (status === "checking") {
     return (
       <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
-        style={{ background: "rgba(212,175,55,0.05)", border: "1px solid rgba(212,175,55,0.15)" }}>
-        <Loader2 size={14} className="animate-spin flex-shrink-0" style={{ color: "rgba(212,175,55,0.6)" }} />
-        <p className="text-xs" style={{ color: "rgba(212,175,55,0.65)" }}>Checking delivery availability…</p>
+        style={{ background: "rgba(212,139,0,0.05)", border: "1px solid rgba(212,139,0,0.15)" }}>
+        <Loader2 size={14} className="animate-spin flex-shrink-0" style={{ color: "rgba(212,139,0,0.6)" }} />
+        <p className="text-xs" style={{ color: "rgba(212,139,0,0.65)" }}>Checking delivery availability…</p>
       </div>
     );
   }
@@ -459,7 +459,7 @@ function DeliveryStatusBadge({
   if (status === "denied") {
     return (
       <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
-        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}>
+        style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)" }}>
         <MapPin size={14} className="flex-shrink-0" style={{ color: "rgba(180,155,100,0.5)" }} />
         <div>
           <p className="text-xs" style={{ color: "rgba(180,155,100,0.65)" }}>Location access denied</p>
@@ -473,13 +473,13 @@ function DeliveryStatusBadge({
   if (status === "error") {
     return (
       <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
-        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+        style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.10)" }}>
         <MapPin size={14} className="flex-shrink-0" style={{ color: "rgba(180,155,100,0.45)" }} />
         <div className="flex-1">
           <p className="text-xs" style={{ color: "rgba(180,155,100,0.6)" }}>Could not check location</p>
         </div>
         <button onClick={onRetry} className="text-[9px] uppercase tracking-[0.12em] px-2 py-1 rounded"
-          style={{ background: "rgba(212,175,55,0.1)", color: "rgba(212,175,55,0.65)" }}>
+          style={{ background: "rgba(212,139,0,0.1)", color: "rgba(212,139,0,0.65)" }}>
           Retry
         </button>
       </div>

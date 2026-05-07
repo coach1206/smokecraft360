@@ -35,7 +35,7 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, { bg: string; border: string; text: string }> = {
-  pending:     { bg: "rgba(212,175,55,0.07)",  border: "rgba(212,175,55,0.25)",  text: "rgba(212,175,55,0.8)"   },
+  pending:     { bg: "rgba(212,139,0,0.07)",  border: "rgba(212,139,0,0.25)",  text: "rgba(212,139,0,0.8)"   },
   in_progress: { bg: "rgba(59,130,246,0.07)",  border: "rgba(59,130,246,0.25)",  text: "rgba(100,160,240,0.85)" },
   completed:   { bg: "rgba(74,222,128,0.06)",  border: "rgba(74,222,128,0.22)",  text: "rgba(74,222,128,0.75)"  },
   cancelled:   { bg: "rgba(239,68,68,0.06)",   border: "rgba(239,68,68,0.2)",    text: "rgba(239,68,68,0.7)"    },
@@ -123,7 +123,7 @@ export function LiveOrders() {
               <motion.span
                 initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
                 className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] uppercase tracking-[0.12em]"
-                style={{ background: "rgba(212,175,55,0.15)", border: "1px solid rgba(212,175,55,0.4)", color: "rgba(212,175,55,0.9)" }}>
+                style={{ background: "rgba(212,139,0,0.15)", border: "1px solid rgba(212,139,0,0.4)", color: "rgba(212,139,0,0.9)" }}>
                 <Zap size={8} />{newCount} new
               </motion.span>
             )}
@@ -139,8 +139,8 @@ export function LiveOrders() {
             <StatusPill count={inProgress.length} label="In Progress" color={STATUS_COLORS.in_progress} />
           </div>
           <motion.button onClick={() => load()} className="p-2 rounded-lg"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
-            whileHover={{ borderColor: "rgba(212,175,55,0.3)" }} whileTap={{ scale: 0.95 }}>
+            style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.09)" }}
+            whileHover={{ borderColor: "rgba(212,139,0,0.3)" }} whileTap={{ scale: 0.95 }}>
             <RefreshCw size={12} style={{ color: "rgba(180,155,100,0.5)" }} className={loading ? "animate-spin" : ""} />
           </motion.button>
         </div>
@@ -157,12 +157,12 @@ export function LiveOrders() {
       {loading && orders.length === 0 ? (
         <div className="flex items-center justify-center py-12">
           <motion.div className="w-8 h-8 rounded-full border-2"
-            style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.6)" }}
+            style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.6)" }}
             animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
         </div>
       ) : orders.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-14 gap-3">
-          <ClipboardList size={28} style={{ color: "rgba(212,175,55,0.2)" }} />
+          <ClipboardList size={28} style={{ color: "rgba(212,139,0,0.2)" }} />
           <p className="text-sm italic" style={{ color: "rgba(180,155,100,0.35)" }}>No orders yet</p>
           <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.22)" }}>
             Orders appear here when customers request experiences
@@ -297,7 +297,7 @@ function OrderCard({
 
       {/* Type icon */}
       <div className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center"
-        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+        style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.09)" }}>
         <span style={{ color: accentColor.text }}>{TYPE_ICONS[order.orderType] ?? <ShoppingBag size={11} />}</span>
       </div>
 
@@ -309,7 +309,7 @@ function OrderCard({
           </span>
           {order.tableNumber && (
             <span className="text-[8px] px-1.5 py-0.5 rounded"
-              style={{ background: "rgba(255,255,255,0.05)", color: "rgba(180,155,100,0.55)" }}>
+              style={{ background: "rgba(26,26,27,0.07)", color: "rgba(180,155,100,0.55)" }}>
               Table {order.tableNumber}
             </span>
           )}
@@ -322,7 +322,7 @@ function OrderCard({
           <div className="flex flex-wrap gap-1.5 mb-2">
             {items.map((name) => (
               <span key={name} className="text-[9px] px-2 py-0.5 rounded-full"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(200,180,140,0.7)" }}>
+                style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(200,180,140,0.7)" }}>
                 {name}
               </span>
             ))}
@@ -359,7 +359,7 @@ function OrderCard({
           onClick={() => !isUpdating && onAction(order, secondaryAction.status)}
           disabled={isUpdating}
           className="flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.12em] transition-all duration-200"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.4)" }}
+          style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.4)" }}
           whileHover={{ borderColor: "rgba(239,68,68,0.3)", color: "rgba(239,68,68,0.6)" }}
           whileTap={{ scale: 0.96 }}
         >

@@ -138,7 +138,7 @@ function VitolaSilhouette({ shape }: { shape: CigarShape }) {
         y={cy - halfH}
         width={bodyW * 0.10}
         height={bodyH}
-        fill="rgba(212,175,55,0.85)"
+        fill="rgba(212,139,0,0.85)"
         stroke="rgba(160,120,30,0.8)"
         strokeWidth="0.5"
       />
@@ -188,15 +188,15 @@ export function CigarStructureStep({
               whileHover={{ scale: 1.025 }}
               whileTap={{ scale: 0.97 }}
               animate={{
-                borderColor: isSel ? "rgba(212,175,55,0.85)" : "rgba(212,175,55,0.18)",
+                borderColor: isSel ? "rgba(212,139,0,0.85)" : "rgba(212,139,0,0.18)",
                 boxShadow:   isSel
-                  ? "0 0 0 3px rgba(212,175,55,0.18), 0 8px 24px rgba(0,0,0,0.45)"
-                  : "0 4px 14px rgba(0,0,0,0.30)",
+                  ? "0 0 0 3px rgba(212,139,0,0.18), 0 8px 24px rgba(26,26,27,0.14)"
+                  : "0 4px 14px rgba(26,26,27,0.06)",
               }}
               style={{
                 padding: "16px 14px 14px",
                 borderRadius: 14,
-                border: "1.5px solid rgba(212,175,55,0.18)",
+                border: "1.5px solid rgba(212,139,0,0.18)",
                 background: isSel
                   ? "linear-gradient(135deg, rgba(60,40,20,0.55), rgba(30,20,10,0.55))"
                   : "rgba(20,15,10,0.45)",
@@ -233,7 +233,7 @@ export function CigarStructureStep({
                     height: 70,
                     objectFit: "cover",
                     borderRadius: 8,
-                    border: "1px solid rgba(212,175,55,0.18)",
+                    border: "1px solid rgba(212,139,0,0.18)",
                     background: "rgba(20,15,10,0.6)",
                     display: "block",
                   }}
@@ -261,7 +261,7 @@ export function CigarStructureStep({
       <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 4 }}>
         <p
           style={{
-            color: "rgba(212,175,55,0.55)",
+            color: "rgba(212,139,0,0.55)",
             fontSize: 11,
             letterSpacing: "0.22em",
             textTransform: "uppercase",
@@ -290,13 +290,13 @@ export function CigarStructureStep({
                 }}
                 whileTap={{ scale: 0.96 }}
                 animate={{
-                  borderColor: isSel ? "rgba(212,175,55,0.78)" : "rgba(212,175,55,0.16)",
-                  background:  isSel ? "rgba(212,175,55,0.14)" : "rgba(20,15,10,0.4)",
+                  borderColor: isSel ? "rgba(212,139,0,0.78)" : "rgba(212,139,0,0.16)",
+                  background:  isSel ? "rgba(212,139,0,0.14)" : "rgba(20,15,10,0.4)",
                 }}
                 style={{
                   padding: "11px 8px",
                   borderRadius: 10,
-                  border: "1.5px solid rgba(212,175,55,0.16)",
+                  border: "1.5px solid rgba(212,139,0,0.16)",
                   cursor: "pointer",
                   display: "flex",
                   flexDirection: "column",
@@ -346,13 +346,13 @@ export function CigarStructureStep({
             haptic.select();
             onComplete(shape, session);
           }}
-          whileHover={{ boxShadow: "0 0 32px rgba(212,175,55,0.32)" }}
+          whileHover={{ boxShadow: "0 0 32px rgba(212,139,0,0.32)" }}
           whileTap={{ scale: 0.98 }}
           style={{
             flex: 1,
             padding: "14px 22px",
             borderRadius: 12,
-            border: "1px solid rgba(212,175,55,0.6)",
+            border: "1px solid rgba(212,139,0,0.6)",
             background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
             color: "hsl(22 18% 6%)",
             fontWeight: 700,

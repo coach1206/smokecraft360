@@ -38,7 +38,7 @@ const DEFAULT_THEME: ThemeProfile = {
   slug:         "smokecraft",
   displayName:  "SmokeCraft 360",
   productType:  "cigar",
-  primaryColor: "#D4AF37",
+  primaryColor: "#D48B00",
   visualStyle:  "smoke",
   soundProfile: "crackle",
   steps:        ["mood", "flavor", "strength", "pairing"],

@@ -111,7 +111,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
           fontSize: 16,
           letterSpacing: "0.16em",
           textTransform: "uppercase",
-          background: "rgba(212,175,55,0.08)",
+          background: "rgba(212,139,0,0.08)",
           pointerEvents: "none",
         }}
       >
@@ -156,7 +156,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
           boxShadow: [
             "0 1px 0 rgba(255,255,255,0.55) inset",            // top highlight
             "0 -1px 0 rgba(120,82,16,0.18) inset",             // bottom shade
-            "0 2px 4px rgba(0,0,0,0.10)",                      // contact
+            "0 2px 4px rgba(26,26,27,0.03)",                      // contact
             "0 14px 32px rgba(20,12,4,0.32)",                  // key
             "0 36px 80px rgba(20,12,4,0.42)",                  // ambient
             `0 0 0 1px ${item.accent ?? "rgba(184,137,26,0.18)"}`, // gold ring
@@ -189,7 +189,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
                 position: "absolute",
                 top: 0, left: 0, right: 0,
                 height: "58%",
-                background: "linear-gradient(180deg,#3a2812,#1a1208)", // warm placeholder
+                background: "linear-gradient(180deg,#3a2812,#EFEBE0)", // warm placeholder
                 zIndex: 0, overflow: "hidden",
               }}
             >
@@ -362,7 +362,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
               padding: "14px 12px",
               borderRadius: 12,
               border: `1.5px solid ${item.accent ?? "rgba(184,137,26,0.7)"}`,
-              background: "linear-gradient(135deg, rgba(212,175,55,0.20), rgba(184,137,26,0.10))",
+              background: "linear-gradient(135deg, rgba(212,139,0,0.20), rgba(184,137,26,0.10))",
               color: "#3A2A08",
               fontSize: 13,
               letterSpacing: "0.20em",
@@ -520,7 +520,7 @@ export function SwipeCardDeck({
                 i < currentIndex
                   ? "rgba(184,137,26,0.7)"
                   : i === currentIndex
-                  ? "rgba(212,175,55,1)"
+                  ? "rgba(212,139,0,1)"
                   : "rgba(90,60,30,0.22)",
               transition: "all 0.3s ease",
             }}

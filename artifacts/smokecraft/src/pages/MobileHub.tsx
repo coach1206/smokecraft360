@@ -24,16 +24,16 @@ import QRCode from "qrcode";
 // ── Design tokens ──────────────────────────────────────────────────────────────
 
 const C = {
-  bg:       "#06040a",
-  surface:  "rgba(255,255,255,0.038)",
-  surfaceMid:"rgba(255,255,255,0.055)",
-  border:   "rgba(201,168,76,0.16)",
-  borderSoft:"rgba(201,168,76,0.09)",
-  gold:     "#C9A84C",
-  goldDim:  "rgba(201,168,76,0.45)",
-  text:     "rgba(240,232,212,0.92)",
+  bg:       "#F5F2ED",
+  surface:  "rgba(26,26,27,0.05)",
+  surfaceMid:"rgba(26,26,27,0.07)",
+  border:   "rgba(212,139,0,0.16)",
+  borderSoft:"rgba(212,139,0,0.09)",
+  gold:     "#D48B00",
+  goldDim:  "rgba(212,139,0,0.45)",
+  text:     "rgba(26,26,27,0.90)",
   muted:    "rgba(240,232,212,0.52)",
-  dim:      "rgba(240,232,212,0.28)",
+  dim:      "rgba(26,26,27,0.28)",
   green:    "#34d399",
   blue:     "#60a5fa",
   purple:   "#a78bfa",
@@ -43,8 +43,8 @@ const C = {
 // ── Prestige config ────────────────────────────────────────────────────────────
 
 const RANK_CONFIG: Record<string, { color: string; ring: string; icon: typeof Star }> = {
-  Novice:      { color: "#B39B77", ring: "rgba(179,155,119,0.3)",  icon: Star   },
-  Connoisseur: { color: "#C9A84C", ring: "rgba(201,168,76,0.35)",  icon: Star   },
+  Novice:      { color: "#6B5E4E", ring: "rgba(179,155,119,0.3)",  icon: Star   },
+  Connoisseur: { color: "#D48B00", ring: "rgba(212,139,0,0.35)",  icon: Star   },
   Master:      { color: "#A78BFA", ring: "rgba(167,139,250,0.35)", icon: Crown  },
   Legend:      { color: "#ef4444", ring: "rgba(239,68,68,0.30)",   icon: Flame  },
 };
@@ -75,7 +75,7 @@ const RETAIL_PRODUCTS = [
   {
     id: "r1", name: "Cohiba Reserva",
     type: "Cigar · Box of 25", price: 89,
-    icon: Flame, color: "#C9A84C",
+    icon: Flame, color: "#D48B00",
     desc: "Full-body Dominican reserve. Hand-selected, triple-fermented.",
     href: "https://shopify.com",
   },
@@ -113,8 +113,8 @@ function GlassCard({ children, style, accent }: { children: React.ReactNode; sty
       borderRadius: 18,
       backdropFilter: "blur(14px)",
       boxShadow: accent
-        ? `0 0 24px ${accent}14, inset 0 1px 0 rgba(255,255,255,0.04)`
-        : "inset 0 1px 0 rgba(255,255,255,0.04)",
+        ? `0 0 24px ${accent}14, inset 0 1px 0 rgba(26,26,27,0.06)`
+        : "inset 0 1px 0 rgba(26,26,27,0.06)",
       ...style,
     }}>
       {children}
@@ -205,7 +205,7 @@ export default function MobileHub() {
               {/* Rank ring */}
               <div style={{ position: "relative", width: 88, height: 88, margin: "0 auto 16px" }}>
                 <svg width={88} height={88} style={{ position: "absolute", inset: 0, transform: "rotate(-90deg)" }}>
-                  <circle cx={44} cy={44} r={38} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={6} />
+                  <circle cx={44} cy={44} r={38} fill="none" stroke="rgba(26,26,27,0.08)" strokeWidth={6} />
                   <motion.circle cx={44} cy={44} r={38} fill="none"
                     stroke={rc.color} strokeWidth={6} strokeLinecap="round"
                     strokeDasharray={`${Math.min(1, xp / 2000) * 238.76} 238.76`}
@@ -355,7 +355,7 @@ export default function MobileHub() {
                       display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
                     }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <div style={{ width: 36, height: 36, borderRadius: 10, background: isBooked ? `${C.green}12` : "rgba(255,255,255,0.04)", border: `1px solid ${isBooked ? `${C.green}28` : C.borderSoft}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: 10, background: isBooked ? `${C.green}12` : "rgba(26,26,27,0.06)", border: `1px solid ${isBooked ? `${C.green}28` : C.borderSoft}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                         {isBooked ? <Check size={16} color={C.green} /> : <Clock size={14} color={C.muted} />}
                       </div>
                       <div>

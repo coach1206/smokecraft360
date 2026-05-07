@@ -9,7 +9,7 @@
  * directions from the ellipse centroid.
  *
  * Props:
- *   color     — glow color (default: axiomAmber #FFBF00)
+ *   color     — glow color (default: axiomAmber #D48B00)
  *   size      — diameter of the bounding square in px (default: 420)
  *   blur      — feGaussianBlur stdDeviation (default: 28)
  *   minOpacity / maxOpacity — breathing range
@@ -35,7 +35,7 @@ interface PulseProps {
 }
 
 export function Pulse({
-  color      = "#FFBF00",
+  color      = "#D48B00",
   size       = 420,
   blur       = 28,
   minOpacity = 0.07,

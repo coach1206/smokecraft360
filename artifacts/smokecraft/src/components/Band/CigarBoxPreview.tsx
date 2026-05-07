@@ -38,8 +38,8 @@ const WOOD_GRADIENTS: Record<WoodTone, [string, string, string]> = {
 
 const FINISH_OVERLAY: Record<FinishStyle, string> = {
   matte:     "rgba(0,0,0,0)",
-  gloss:     "linear-gradient(120deg, rgba(255,255,255,0.18) 0%, transparent 40%, rgba(255,255,255,0.1) 80%)",
-  embossed:  "linear-gradient(120deg, rgba(0,0,0,0.18) 0%, transparent 50%, rgba(255,255,255,0.08) 100%)",
+  gloss:     "linear-gradient(120deg, rgba(26,26,27,0.20) 0%, transparent 40%, rgba(255,255,255,0.1) 80%)",
+  embossed:  "linear-gradient(120deg, rgba(26,26,27,0.04) 0%, transparent 50%, rgba(26,26,27,0.10) 100%)",
 };
 
 interface Props {
@@ -71,7 +71,7 @@ export function CigarBoxPreview({ design, size = "md" }: Props) {
             </linearGradient>
             <linearGradient id="grain-top" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%"   stopColor="rgba(0,0,0,0.0)" />
-              <stop offset="50%"  stopColor="rgba(0,0,0,0.18)" />
+              <stop offset="50%"  stopColor="rgba(26,26,27,0.04)" />
               <stop offset="100%" stopColor="rgba(0,0,0,0.0)" />
             </linearGradient>
           </defs>
@@ -92,7 +92,7 @@ export function CigarBoxPreview({ design, size = "md" }: Props) {
             rx="3"
             fill={design.boxColor}
             opacity="0.92"
-            stroke="rgba(0,0,0,0.25)"
+            stroke="rgba(26,26,27,0.05)"
             strokeWidth="0.6"
           />
 
@@ -209,7 +209,7 @@ export function CigarBoxPreview({ design, size = "md" }: Props) {
             x="75" y="108"
             fontFamily="'Cormorant Garamond', serif"
             fontSize="6"
-            fill="rgba(212,175,55,0.8)"
+            fill="rgba(212,139,0,0.8)"
             fontStyle="italic"
             textAnchor="middle"
             letterSpacing="0.6"

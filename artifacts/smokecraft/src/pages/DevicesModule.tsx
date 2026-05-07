@@ -7,15 +7,15 @@ import { usePosContext } from "@/contexts/PosContext";
 import ConfirmModal from "@/components/ConfirmModal";
 
 const C = {
-  header:    "linear-gradient(180deg, #12100E 0%, #0E0B08ee 100%)",
-  border:    "rgba(255,210,120,0.12)",
-  text:      "#F5E7C8",
-  muted:     "#B39B77",
-  dim:       "rgba(179,155,119,0.40)",
-  card:      "rgba(255,255,255,0.045)",
-  back:      "#211D19",
-  backBorder:"rgba(255,210,120,0.18)",
-  bg:        "#080604",
+  header:    "linear-gradient(180deg, #12100E 0%, #EFEBE0ee 100%)",
+  border:    "rgba(212,139,0,0.12)",
+  text:      "#1A1A1B",
+  muted:     "#6B5E4E",
+  dim:       "rgba(107,94,78,0.48)",
+  card:      "rgba(26,26,27,0.06)",
+  back:      "#2A2A2A",
+  backBorder:"rgba(212,139,0,0.18)",
+  bg:        "#F5F2ED",
 };
 
 const typeIcons: Record<Device["type"], typeof Monitor> = { kiosk: Monitor, tablet: Tablet, mobile: Smartphone };
@@ -52,7 +52,7 @@ function DeviceCard({ device, onConfirmAction }: { device: Device; onConfirmActi
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{
             width: 44, height: 44, borderRadius: 12,
-            background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.08)",
+            background: "rgba(0,0,0,0.04)", border: "1px solid rgba(26,26,27,0.02)",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
             <Icon size={22} color={online ? C.text : C.dim} />
@@ -218,7 +218,7 @@ export default function DevicesModule() {
             zIndex: 9999, padding: "14px 24px", borderRadius: 14,
             background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)",
             backdropFilter: "blur(8px)", display: "flex", alignItems: "center", gap: 10,
-            boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+            boxShadow: "0 4px 20px rgba(26,26,27,0.03)",
           }}
         >
           <ShieldAlert size={18} color="#ef4444" />

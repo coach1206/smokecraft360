@@ -19,14 +19,14 @@ import { DEMO_VENUE, DEMO_KPIS, LIVE_EVENTS, MAXWELL_INTROS } from "@/data/train
 import { useTrainingData, logTrainingEvent, trainingFetch } from "@/hooks/useTrainingApi";
 
 const T = {
-  bg:     "#06040a",
-  card:   "rgba(255,255,255,0.04)",
-  border: "rgba(201,168,76,0.15)",
-  gold:   "#c9a84c",
-  goldB:  "#d4af37",
-  text:   "rgba(240,232,212,0.92)",
-  muted:  "rgba(240,232,212,0.50)",
-  light:  "rgba(240,232,212,0.75)",
+  bg:     "#F5F2ED",
+  card:   "rgba(26,26,27,0.06)",
+  border: "rgba(212,139,0,0.15)",
+  gold:   "#D48B00",
+  goldB:  "#D48B00",
+  text:   "rgba(26,26,27,0.90)",
+  muted:  "rgba(26,26,27,0.48)",
+  light:  "rgba(26,26,27,0.72)",
   green:  "#34d399",
   blue:   "#60a5fa",
   amber:  "#f59e0b",
@@ -253,7 +253,7 @@ export default function TrainingHub() {
       <div style={{
         position: "fixed", top: -60, left: "50%", transform: "translateX(-50%)",
         width: 700, height: 220,
-        background: `radial-gradient(ellipse, rgba(201,168,76,0.08) 0%, transparent 70%)`,
+        background: `radial-gradient(ellipse, rgba(212,139,0,0.08) 0%, transparent 70%)`,
         pointerEvents: "none", zIndex: 0,
       }} />
 
@@ -295,7 +295,7 @@ export default function TrainingHub() {
           {/* Venue banner */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             style={{
-              background: "linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(201,168,76,0.03) 100%)",
+              background: "linear-gradient(135deg, rgba(212,139,0,0.08) 0%, rgba(212,139,0,0.03) 100%)",
               border: `1px solid ${T.border}`, borderRadius: 14, padding: "20px 24px", marginBottom: 24,
               display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12,
             }}

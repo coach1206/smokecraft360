@@ -22,7 +22,7 @@ export interface ExperienceFrameProps {
 
 export default function ExperienceFrame({
   children,
-  accent  = "rgba(212,175,55,0.22)",
+  accent  = "rgba(212,139,0,0.22)",
   padding = "24px 26px",
   className,
   style,
@@ -41,7 +41,7 @@ export default function ExperienceFrame({
         backdropFilter:  "blur(14px)",
         WebkitBackdropFilter: "blur(14px)",
         boxShadow:
-          "0 24px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)",
+          "0 24px 60px rgba(26,26,27,0.22), inset 0 1px 0 rgba(26,26,27,0.06)",
         color: "#F5EBDD",
         ...style,
       }}

@@ -11,14 +11,14 @@ import { getAuthHeaders } from "@/services/auth";
 const BASE = "/api";
 
 const C = {
-  bg:     "#06040a",
-  panel:  "rgba(255,255,255,0.04)",
-  border: "rgba(201,168,76,0.15)",
-  gold:   "#c9a84c",
-  goldD:  "#d4af37",
-  text:   "rgba(240,232,212,0.92)",
-  muted:  "rgba(240,232,212,0.45)",
-  dim:    "rgba(240,232,212,0.25)",
+  bg:     "#F5F2ED",
+  panel:  "rgba(26,26,27,0.06)",
+  border: "rgba(212,139,0,0.15)",
+  gold:   "#D48B00",
+  goldD:  "#D48B00",
+  text:   "rgba(26,26,27,0.90)",
+  muted:  "rgba(26,26,27,0.44)",
+  dim:    "rgba(26,26,27,0.25)",
   red:    "#ef4444",
   green:  "#22c55e",
   amber:  "#f59e0b",
@@ -81,7 +81,7 @@ function CategoryBadge({ cat }: { cat: string }) {
       fontSize: 9, fontWeight: 700, letterSpacing: "0.15em",
       textTransform: "uppercase", padding: "2px 7px",
       borderRadius: 999, border: `1px solid ${C.border}`,
-      color: C.muted, background: "rgba(255,255,255,0.04)",
+      color: C.muted, background: "rgba(26,26,27,0.06)",
     }}>{cat}</span>
   );
 }
@@ -508,7 +508,7 @@ export default function EnterpriseGovernance() {
                           <div style={{ fontSize: 11, color: C.muted, marginBottom: 8 }}>{item.insight}</div>
                           <div style={{
                             padding: "8px 12px", borderRadius: 8,
-                            background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`,
+                            background: "rgba(26,26,27,0.05)", border: `1px solid ${C.border}`,
                             fontSize: 11, color: C.dim, fontStyle: "italic", marginBottom: 8,
                           }}>"{item.messageBody}"</div>
                           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -627,7 +627,7 @@ export default function EnterpriseGovernance() {
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             style={{
-              position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)",
+              position: "fixed", inset: 0, background: "rgba(26,26,27,0.32)",
               display: "flex", alignItems: "center", justifyContent: "center",
               zIndex: 200, backdropFilter: "blur(6px)",
             }}
@@ -638,7 +638,7 @@ export default function EnterpriseGovernance() {
               style={{
                 width: 380, background: "#0d0a12",
                 border: `1px solid ${C.border}`, borderRadius: 20,
-                padding: 24, boxShadow: "0 24px 80px rgba(0,0,0,0.7)",
+                padding: 24, boxShadow: "0 24px 80px rgba(26,26,27,0.32)",
               }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: C.gold, marginBottom: 4 }}>Change Role</div>
               <div style={{ fontSize: 13, color: C.muted, marginBottom: 20 }}>

@@ -216,7 +216,7 @@ function ClipShape({ id, geo }: { id: string; geo: GlassGeo }) {
 
 function OutlinePath({ geo, glassStroke }: { geo: GlassGeo; glassStroke: string }) {
   const sharedProps = {
-    fill: "rgba(255,255,255,0.04)",
+    fill: "rgba(26,26,27,0.06)",
     stroke: glassStroke,
     strokeWidth: 1.5,
     strokeLinejoin: "round" as const,
@@ -227,13 +227,13 @@ function OutlinePath({ geo, glassStroke }: { geo: GlassGeo; glassStroke: string 
         ? <polygon points={geo.outline.points} {...sharedProps} />
         : <path d={geo.outline.d} {...sharedProps} />}
       {geo.stem && (
-        <path d={geo.stem} fill="rgba(255,255,255,0.04)" stroke={glassStroke} strokeWidth={1.2} />
+        <path d={geo.stem} fill="rgba(26,26,27,0.06)" stroke={glassStroke} strokeWidth={1.2} />
       )}
       {geo.base && (
-        <path d={geo.base} fill="rgba(255,255,255,0.05)" stroke={glassStroke} strokeWidth={1.2} />
+        <path d={geo.base} fill="rgba(26,26,27,0.07)" stroke={glassStroke} strokeWidth={1.2} />
       )}
       {geo.handle && (
-        <path d={geo.handle} fill="rgba(255,255,255,0.04)" stroke={glassStroke} strokeWidth={1.4} />
+        <path d={geo.handle} fill="rgba(26,26,27,0.06)" stroke={glassStroke} strokeWidth={1.4} />
       )}
     </>
   );
@@ -543,8 +543,8 @@ export default function CraftRenderer({
 
         {/* Liquid body gradient overlay (darker bottom, lighter top) */}
         <linearGradient id="liquidGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="rgba(255,255,255,0.15)" />
-          <stop offset="100%" stopColor="rgba(0,0,0,0.30)" />
+          <stop offset="0%"   stopColor="rgba(26,26,27,0.17)" />
+          <stop offset="100%" stopColor="rgba(26,26,27,0.06)" />
         </linearGradient>
       </defs>
 

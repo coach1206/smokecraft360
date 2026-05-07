@@ -22,7 +22,7 @@ export const DEFAULT_VAPE_STATE: VapeDesignState = {
 };
 
 const MUTED    = "rgba(180,155,100,0.45)";
-const GOLD_DIM = "rgba(212,175,55,0.55)";
+const GOLD_DIM = "rgba(212,139,0,0.55)";
 
 const GRADIENT_PALETTE = [
   { from: "#1A1B4B", to: "#6B21A8", label: "Neon Violet" },
@@ -101,8 +101,8 @@ export function VapePreview({
         </linearGradient>
         <linearGradient id="vape-sheen" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%"   stopColor="rgba(255,255,255,0)" />
-          <stop offset="30%"  stopColor="rgba(255,255,255,0.12)" />
-          <stop offset="60%"  stopColor="rgba(255,255,255,0.06)" />
+          <stop offset="30%"  stopColor="rgba(26,26,27,0.14)" />
+          <stop offset="60%"  stopColor="rgba(26,26,27,0.08)" />
           <stop offset="100%" stopColor="rgba(255,255,255,0)" />
         </linearGradient>
         <clipPath id="device-clip">
@@ -116,8 +116,8 @@ export function VapePreview({
 
       {/* Screen area */}
       <rect x="48" y="50" width="64" height="80" rx="8"
-        fill="rgba(0,0,0,0.35)"
-        stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        fill="rgba(26,26,27,0.08)"
+        stroke="rgba(26,26,27,0.14)" strokeWidth="1" />
 
       {/* Logo symbol */}
       <g transform="translate(64, 62) scale(1.15)"
@@ -170,7 +170,7 @@ export function VapePreview({
       </g>
 
       {/* Bottom button */}
-      <rect x="62" y="265" width="36" height="10" rx="5" fill="rgba(255,255,255,0.15)" />
+      <rect x="62" y="265" width="36" height="10" rx="5" fill="rgba(26,26,27,0.17)" />
 
       {/* LED glow */}
       <circle cx="80" cy="295" r="5"
@@ -179,7 +179,7 @@ export function VapePreview({
 
       {/* Mouthpiece */}
       <rect x="52" y="12" width="56" height="12" rx="6"
-        fill="rgba(0,0,0,0.4)"
+        fill="rgba(26,26,27,0.10)"
         stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
     </motion.svg>
   );
@@ -194,14 +194,14 @@ export function VapeDesignPanel({ state, onChange, tab }: Props) {
     return (
       <div className="flex flex-col items-center gap-3 py-4">
         <div className="p-8 rounded-2xl flex items-center justify-center"
-          style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.05)", minHeight: 300 }}>
+          style={{ background: "rgba(26,26,27,0.08)", border: "1px solid rgba(26,26,27,0.07)", minHeight: 300 }}>
           <VapePreview
             state={state}
             onDrag={(off) => set("labelOffset", off)}
           />
         </div>
         <p className="text-[8px] uppercase tracking-[0.28em]" style={{ color: MUTED }}>
-          Device Preview · <span style={{ color: "rgba(212,175,55,0.4)" }}>Drag label to reposition</span>
+          Device Preview · <span style={{ color: "rgba(212,139,0,0.4)" }}>Drag label to reposition</span>
         </p>
       </div>
     );
@@ -218,7 +218,7 @@ export function VapeDesignPanel({ state, onChange, tab }: Props) {
           maxLength={12}
           placeholder="Arctic Mango…"
           className="w-full bg-transparent outline-none font-serif text-xl py-2 border-b"
-          style={{ borderColor: "rgba(212,175,55,0.25)", color: "rgba(230,210,175,0.9)" }}
+          style={{ borderColor: "rgba(212,139,0,0.25)", color: "rgba(230,210,175,0.9)" }}
         />
       </div>
 
@@ -232,8 +232,8 @@ export function VapeDesignPanel({ state, onChange, tab }: Props) {
                 onClick={() => onChange({ ...state, gradientFrom: p.from, gradientTo: p.to })}
                 className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs transition-all"
                 style={{
-                  background: active ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.03)",
-                  border: active ? "1px solid rgba(255,255,255,0.3)" : "1px solid rgba(255,255,255,0.07)",
+                  background: active ? "rgba(26,26,27,0.10)" : "rgba(26,26,27,0.05)",
+                  border: active ? "1px solid rgba(255,255,255,0.3)" : "1px solid rgba(26,26,27,0.09)",
                   color: active ? "rgba(255,255,255,0.9)" : MUTED,
                 }}>
                 <span className="w-4 h-4 rounded-full flex-shrink-0"
@@ -253,8 +253,8 @@ export function VapeDesignPanel({ state, onChange, tab }: Props) {
               onClick={() => set("logoSymbol", sym.id)}
               className="flex flex-col items-center gap-1 py-3 rounded-xl text-xs transition-all"
               style={state.logoSymbol === sym.id
-                ? { background: "rgba(212,175,55,0.13)", border: "1px solid rgba(212,175,55,0.4)", color: GOLD_DIM }
-                : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: MUTED }
+                ? { background: "rgba(212,139,0,0.13)", border: "1px solid rgba(212,139,0,0.4)", color: GOLD_DIM }
+                : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: MUTED }
               }>
               <svg width="22" height="22" viewBox="0 0 32 32"
                 fill={sym.id === "wave" ? "none" : "currentColor"}
@@ -275,7 +275,7 @@ export function VapeDesignPanel({ state, onChange, tab }: Props) {
           <button
             onClick={() => set("labelOffset", { x: 0, y: 0 })}
             className="px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.15em]"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: MUTED }}>
+            style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: MUTED }}>
             Reset Position
           </button>
           <span className="text-[9px]" style={{ color: "rgba(180,155,100,0.3)" }}>

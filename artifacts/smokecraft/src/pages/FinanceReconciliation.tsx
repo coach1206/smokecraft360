@@ -28,14 +28,14 @@ import type { AxLayoutTab } from "../components/ax/AxLayout";
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
 const T = {
-  bg:        "#06040a",
-  surface:   "rgba(255,255,255,0.04)",
-  border:    "rgba(201,168,76,0.18)",
-  gold:      "#c9a84c",
-  goldBright:"#d4af37",
-  text:      "rgba(240,232,212,0.92)",
+  bg:        "#F5F2ED",
+  surface:   "rgba(26,26,27,0.06)",
+  border:    "rgba(212,139,0,0.18)",
+  gold:      "#D48B00",
+  goldBright:"#D48B00",
+  text:      "rgba(26,26,27,0.90)",
   textMuted: "rgba(240,232,212,0.48)",
-  textLight: "rgba(240,232,212,0.75)",
+  textLight: "rgba(26,26,27,0.72)",
   green:     "#34d399",
   amber:     "#f59e0b",
   red:       "#ef4444",
@@ -118,7 +118,7 @@ function GlassCard({ children, style, glow }: {
     <div style={{
       background: T.surface, border: `1px solid ${T.border}`,
       borderRadius: 12, backdropFilter: "blur(12px)",
-      boxShadow: glow ? `0 0 24px ${glow}22, inset 0 1px 0 rgba(255,255,255,0.05)` : "inset 0 1px 0 rgba(255,255,255,0.05)",
+      boxShadow: glow ? `0 0 24px ${glow}22, inset 0 1px 0 rgba(26,26,27,0.07)` : "inset 0 1px 0 rgba(26,26,27,0.07)",
       ...style,
     }}>
       {children}
@@ -154,7 +154,7 @@ function ScoreGauge({ score, label }: { score: number; label: string }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
       <svg width={108} height={108} viewBox="0 0 108 108">
-        <circle cx={54} cy={54} r={44} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={8} />
+        <circle cx={54} cy={54} r={44} fill="none" stroke="rgba(26,26,27,0.08)" strokeWidth={8} />
         <motion.circle
           cx={54} cy={54} r={44} fill="none" stroke={color} strokeWidth={8}
           strokeLinecap="round"

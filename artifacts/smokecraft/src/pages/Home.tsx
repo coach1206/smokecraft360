@@ -166,7 +166,7 @@ const DEMO: { category: "cigar" | "alcohol"; flavors: string[]; strength: number
 
 const SMOKE_PLAYGROUND_CONFIG: PlaygroundConfig = {
   craft: "smoke", craftLabel: "SmokeCraft",
-  accent: "#D4AF37", accentSoft: "#C49A25",
+  accent: "#D48B00", accentSoft: "#C49A25",
   tint: "rgba(40,25,5,0.5)",
   background: "/images/cigar.png",
   brandNameLabel: "Brand Name",
@@ -180,7 +180,7 @@ const SMOKE_PLAYGROUND_CONFIG: PlaygroundConfig = {
     { id: "leaf",     label: "Leaf 🌿"   },
   ],
   colorSwatches: [
-    { id: "gold",     label: "Gold",     primary: "#2A1F08", accent: "#D4AF37" },
+    { id: "gold",     label: "Gold",     primary: "#2A1F08", accent: "#D48B00" },
     { id: "black",    label: "Onyx",     primary: "#141010", accent: "#8B7355" },
     { id: "burgundy", label: "Burgundy", primary: "#3A0F18", accent: "#C4708A" },
     { id: "navy",     label: "Navy",     primary: "#0F1B35", accent: "#4A8AC4" },
@@ -711,9 +711,9 @@ export default function Home() {
         style={{
           position: "fixed", inset: 14, pointerEvents: "none", zIndex: 100,
           borderRadius: 18,
-          border: "1px solid rgba(212,175,55,0.22)",
+          border: "1px solid rgba(212,139,0,0.22)",
           boxShadow:
-            "inset 0 0 80px rgba(0,0,0,0.55), 0 0 0 14px #000, 0 0 60px rgba(212,175,55,0.06)",
+            "inset 0 0 80px rgba(26,26,27,0.22), 0 0 0 14px #000, 0 0 60px rgba(212,139,0,0.06)",
         }}
       />
 
@@ -726,26 +726,26 @@ export default function Home() {
             position: "fixed", top: 0, left: 0, right: 0, zIndex: 55,
             pointerEvents: "none",
             padding: "12px 20px 10px",
-            background: "linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%)",
+            background: "linear-gradient(180deg, rgba(26,26,27,0.18) 0%, transparent 100%)",
           }}
         >
           <div style={{ maxWidth: 480, margin: "0 auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 5 }}>
-              <span style={{ fontSize: 9, color: "rgba(212,175,55,0.7)", letterSpacing: "0.28em", textTransform: "uppercase", fontWeight: 600 }}>
+              <span style={{ fontSize: 9, color: "rgba(212,139,0,0.7)", letterSpacing: "0.28em", textTransform: "uppercase", fontWeight: 600 }}>
                 {blendStatus}
               </span>
-              <span style={{ fontSize: 10, color: "rgba(212,175,55,0.6)", letterSpacing: "0.18em", fontWeight: 600 }}>
+              <span style={{ fontSize: 10, color: "rgba(212,139,0,0.6)", letterSpacing: "0.18em", fontWeight: 600 }}>
                 {blendProgress}%
               </span>
             </div>
-            <div style={{ height: 3, borderRadius: 999, background: "rgba(212,175,55,0.12)", overflow: "hidden" }}>
+            <div style={{ height: 3, borderRadius: 999, background: "rgba(212,139,0,0.12)", overflow: "hidden" }}>
               <motion.div
                 animate={{ width: `${blendProgress}%` }}
                 transition={{ duration: 0.6, ease: [0.22,1,0.36,1] }}
                 style={{
                   height: "100%",
                   background: "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(245,205,90,0.95))",
-                  boxShadow: "0 0 12px rgba(212,175,55,0.45)",
+                  boxShadow: "0 0 12px rgba(212,139,0,0.45)",
                 }}
               />
             </div>
@@ -767,15 +767,15 @@ export default function Home() {
               transform: "translateX(-50%)",
               zIndex: 60,
               background: "rgba(28,18,8,0.88)",
-              border: "1px solid rgba(212,175,55,0.45)",
-              color: "rgba(212,175,55,0.94)",
+              border: "1px solid rgba(212,139,0,0.45)",
+              color: "rgba(212,139,0,0.94)",
               padding: "11px 26px",
               borderRadius: 999,
               fontFamily: "var(--app-font-serif)",
               fontSize: 12, letterSpacing: "0.22em", textTransform: "uppercase", fontWeight: 500,
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
-              boxShadow: "0 10px 38px rgba(0,0,0,0.55), 0 0 50px rgba(212,175,55,0.18)",
+              boxShadow: "0 10px 38px rgba(26,26,27,0.22), 0 0 50px rgba(212,139,0,0.18)",
               pointerEvents: "none",
               maxWidth: "calc(100vw - 40px)",
               textAlign: "center",
@@ -807,7 +807,7 @@ export default function Home() {
       {/* Elite ambient overlay */}
       {isElite && (
         <div className="fixed inset-0 pointer-events-none z-0"
-          style={{ background: "radial-gradient(ellipse 100% 60% at 50% 0%, rgba(212,175,55,0.04) 0%, transparent 60%)" }} />
+          style={{ background: "radial-gradient(ellipse 100% 60% at 50% 0%, rgba(212,139,0,0.04) 0%, transparent 60%)" }} />
       )}
 
       {/* Offline + Install banners */}
@@ -831,21 +831,21 @@ export default function Home() {
           padding: "9px 14px",
           background: "rgba(20,14,8,0.78)",
           color: "rgba(235,215,175,0.92)",
-          border: "1px solid rgba(212,175,55,0.28)",
+          border: "1px solid rgba(212,139,0,0.28)",
           borderRadius: 999,
           fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase",
           cursor: "pointer",
           backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
-          boxShadow: "0 6px 24px rgba(0,0,0,0.45)",
+          boxShadow: "0 6px 24px rgba(26,26,27,0.14)",
           transition: "transform 250ms ease, opacity 250ms ease, border-color 250ms ease",
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = "translateY(-1px)";
-          e.currentTarget.style.borderColor = "rgba(212,175,55,0.55)";
+          e.currentTarget.style.borderColor = "rgba(212,139,0,0.55)";
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = "translateY(0)";
-          e.currentTarget.style.borderColor = "rgba(212,175,55,0.28)";
+          e.currentTarget.style.borderColor = "rgba(212,139,0,0.28)";
         }}
       >
         <ArrowLeft size={12} />
@@ -876,8 +876,8 @@ export default function Home() {
                 position: "relative", maxWidth: 440, width: "100%",
                 padding: "44px 32px 38px", borderRadius: 24,
                 background: "rgba(20,14,8,0.9)",
-                border: "1px solid rgba(212,175,55,0.32)",
-                boxShadow: "0 30px 90px rgba(0,0,0,0.7), 0 0 80px rgba(212,175,55,0.16)",
+                border: "1px solid rgba(212,139,0,0.32)",
+                boxShadow: "0 30px 90px rgba(26,26,27,0.32), 0 0 80px rgba(212,139,0,0.16)",
                 textAlign: "center",
               }}
             >
@@ -889,10 +889,10 @@ export default function Home() {
                   width: 150, height: 150, borderRadius: "50%", margin: "0 auto 26px",
                   background: "radial-gradient(circle at 32% 30%, rgba(245,210,110,0.65), rgba(150,90,30,0.5) 45%, rgba(40,22,10,0.88))",
                   filter: "blur(7px)",
-                  boxShadow: "0 0 70px rgba(212,175,55,0.32), inset 0 0 30px rgba(255,200,100,0.2)",
+                  boxShadow: "0 0 70px rgba(212,139,0,0.32), inset 0 0 30px rgba(255,200,100,0.2)",
                 }}
               />
-              <p style={{ color: "rgba(212,175,55,0.7)", fontSize: 11, letterSpacing: "0.32em", textTransform: "uppercase", marginBottom: 12 }}>
+              <p style={{ color: "rgba(212,139,0,0.7)", fontSize: 11, letterSpacing: "0.32em", textTransform: "uppercase", marginBottom: 12 }}>
                 Crafted &amp; Locked
               </p>
               <h2 className="font-serif" style={{ fontSize: "clamp(1.7rem, 5vw, 2.3rem)", color: "rgba(245,235,221,0.96)", fontWeight: 300, marginBottom: 10, letterSpacing: "0.04em" }}>
@@ -904,14 +904,14 @@ export default function Home() {
               <motion.button
                 onClick={handleReveal}
                 data-testid="btn-reveal"
-                whileHover={{ scale: 1.02, boxShadow: "0 0 0 1px rgba(212,175,55,0.7), 0 18px 50px rgba(0,0,0,0.6), 0 0 80px rgba(212,175,55,0.32)" }}
+                whileHover={{ scale: 1.02, boxShadow: "0 0 0 1px rgba(212,139,0,0.7), 0 18px 50px rgba(26,26,27,0.26), 0 0 80px rgba(212,139,0,0.32)" }}
                 whileTap={{ scale: 0.95 }}
                 style={{
                   minHeight: 64, padding: "0 40px", borderRadius: 6, border: "none", cursor: "pointer",
                   background: "linear-gradient(135deg,hsl(43 75% 40%),hsl(45 85% 52%),hsl(43 75% 42%))",
                   color: "#1A1410", fontFamily: "var(--app-font-serif)",
                   fontSize: 16, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase",
-                  boxShadow: "0 0 0 1px rgba(212,175,55,0.4), 0 12px 36px rgba(0,0,0,0.5), 0 0 60px rgba(212,175,55,0.2)",
+                  boxShadow: "0 0 0 1px rgba(212,139,0,0.4), 0 12px 36px rgba(26,26,27,0.18), 0 0 60px rgba(212,139,0,0.2)",
                 }}
               >
                 Reveal My Blend
@@ -978,8 +978,8 @@ export default function Home() {
             background:     "rgba(20,15,10,0.85)",                       /* lightened per UX brief */
             backdropFilter: "blur(20px) saturate(1.4)",
             WebkitBackdropFilter: "blur(20px) saturate(1.4)",
-            borderLeft:     "1px solid rgba(212,175,55,0.18)",
-            boxShadow:      "-6px 0 36px rgba(0,0,0,0.55)",
+            borderLeft:     "1px solid rgba(212,139,0,0.18)",
+            boxShadow:      "-6px 0 36px rgba(26,26,27,0.22)",
           }}>
           <div className="p-5">
             <ExperienceRightPanel
@@ -1009,8 +1009,8 @@ export default function Home() {
               {venue.logoText}
             </h1>
             <div className="flex items-center gap-2 mt-1.5">
-              <div className="h-px w-8" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.35))" }} />
-              <p className="text-xs font-medium uppercase tracking-[0.32em]" style={{ color: "rgba(212,175,55,0.55)" }}>{venue.tagline}</p>
+              <div className="h-px w-8" style={{ background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.35))" }} />
+              <p className="text-xs font-medium uppercase tracking-[0.32em]" style={{ color: "rgba(212,139,0,0.55)" }}>{venue.tagline}</p>
             </div>
           </motion.div>
           <ProfileBadge profile={profile} onOpenVault={() => setVaultOpen(true)} />
@@ -1033,7 +1033,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.18, duration: 0.6 }}
                 className="uppercase tracking-[0.35em] text-xs mb-6"
-                style={{ color: "rgba(212,175,55,0.65)" }}
+                style={{ color: "rgba(212,139,0,0.65)" }}
               >
                 Curated for the Connoisseur
               </motion.p>
@@ -1080,7 +1080,7 @@ export default function Home() {
                 style={{
                   height: 1,
                   width: 80,
-                  background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.55), transparent)",
+                  background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.55), transparent)",
                   marginBottom: "2.8rem",
                 }}
               />
@@ -1093,7 +1093,7 @@ export default function Home() {
                 onClick={() => { playClick(); setPhase("form"); setBgKey(`experience_${category}`); }}
                 whileHover={{
                   scale: 1.03,
-                  boxShadow: "0 0 0 1px rgba(212,175,55,0.65), 0 16px 48px rgba(0,0,0,0.55), 0 0 80px rgba(212,175,55,0.22)",
+                  boxShadow: "0 0 0 1px rgba(212,139,0,0.65), 0 16px 48px rgba(26,26,27,0.22), 0 0 80px rgba(212,139,0,0.22)",
                 }}
                 whileTap={{ scale: 0.97 }}
                 style={{
@@ -1110,7 +1110,7 @@ export default function Home() {
                   letterSpacing: "0.22em",
                   textTransform: "uppercase",
                   cursor: "pointer",
-                  boxShadow: "0 0 0 1px rgba(212,175,55,0.38), 0 10px 36px rgba(0,0,0,0.45), 0 0 55px rgba(212,175,55,0.12)",
+                  boxShadow: "0 0 0 1px rgba(212,139,0,0.38), 0 10px 36px rgba(26,26,27,0.14), 0 0 55px rgba(212,139,0,0.12)",
                   position: "relative",
                   overflow: "hidden",
                 }}
@@ -1118,7 +1118,7 @@ export default function Home() {
                 <motion.div
                   style={{
                     position: "absolute", inset: 0, pointerEvents: "none",
-                    background: "linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.14) 50%, transparent 65%)",
+                    background: "linear-gradient(105deg, transparent 35%, rgba(26,26,27,0.16) 50%, transparent 65%)",
                     backgroundSize: "200% 100%",
                   }}
                   animate={{ backgroundPosition: ["200% 0", "-200% 0"] }}
@@ -1137,7 +1137,7 @@ export default function Home() {
                     transition={{ opacity: { duration: 3.4, repeat: Infinity, ease: "easeInOut" }, y: { duration: 0.6 } }}
                     style={{
                       marginTop: 14, textAlign: "center",
-                      color: "rgba(212,175,55,0.7)",
+                      color: "rgba(212,139,0,0.7)",
                       fontSize: 11, letterSpacing: "0.32em", textTransform: "uppercase", fontWeight: 600,
                     }}
                   >
@@ -1162,7 +1162,7 @@ export default function Home() {
                     textTransform: "uppercase",
                     cursor: "pointer",
                   }}
-                  whileHover={{ color: "rgba(212,175,55,0.65)" }}
+                  whileHover={{ color: "rgba(212,139,0,0.65)" }}
                 >
                   Try 15-Second Demo
                 </motion.button>
@@ -1202,7 +1202,7 @@ export default function Home() {
                       style={{ display: "flex", flexDirection: "column", gap: 24 }}
                     >
                       <div style={{ textAlign: "center" }}>
-                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 1 of {category === "cigar" ? 5 : 4}</p>
+                        <p style={{ color: "rgba(212,139,0,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 1 of {category === "cigar" ? 5 : 4}</p>
                         <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Choose Your Experience</h2>
                       </div>
 
@@ -1273,7 +1273,7 @@ export default function Home() {
                                     ? { scale: { duration: 2.6, repeat: Infinity, ease: "easeInOut" }, opacity: { duration: 0.35 } }
                                     : { duration: 0.35 }
                                   }
-                                  whileHover={{ scale: 1.03, boxShadow: "0 0 36px rgba(212,175,55,0.45), 0 18px 48px rgba(0,0,0,0.55)" }}
+                                  whileHover={{ scale: 1.03, boxShadow: "0 0 36px rgba(212,139,0,0.45), 0 18px 48px rgba(26,26,27,0.22)" }}
                                   whileTap={{   scale: 0.97 }}
                                   className="group"
                                   style={{
@@ -1284,14 +1284,14 @@ export default function Home() {
                                     overflow: "hidden",
                                     cursor: "pointer",
                                     border: isSel
-                                      ? "2px solid rgba(212,175,55,0.85)"
-                                      : "1px solid rgba(212,175,55,0.25)",
-                                    background: "rgba(255,255,255,0.05)",
+                                      ? "2px solid rgba(212,139,0,0.85)"
+                                      : "1px solid rgba(212,139,0,0.25)",
+                                    background: "rgba(26,26,27,0.07)",
                                     backdropFilter: "blur(12px)",
                                     WebkitBackdropFilter: "blur(12px)",
                                     boxShadow: isSel
-                                      ? "0 0 0 4px rgba(212,175,55,0.18), 0 0 38px rgba(212,175,55,0.42), 0 18px 50px rgba(0,0,0,0.55)"
-                                      : "0 8px 28px rgba(0,0,0,0.40)",
+                                      ? "0 0 0 4px rgba(212,139,0,0.18), 0 0 38px rgba(212,139,0,0.42), 0 18px 50px rgba(26,26,27,0.22)"
+                                      : "0 8px 28px rgba(26,26,27,0.10)",
                                     appearance: "none",
                                     padding: 0,
                                   }}
@@ -1336,8 +1336,8 @@ export default function Home() {
                                     style={{
                                       position: "absolute", inset: 0,
                                       background: isSel
-                                        ? "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.20) 40%, rgba(15,8,2,0.78) 100%)"
-                                        : "linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.32) 40%, rgba(0,0,0,0.78) 100%)",
+                                        ? "linear-gradient(180deg, rgba(26,26,27,0.02) 0%, rgba(26,26,27,0.04) 40%, rgba(15,8,2,0.78) 100%)"
+                                        : "linear-gradient(180deg, rgba(26,26,27,0.03) 0%, rgba(26,26,27,0.07) 40%, rgba(26,26,27,0.38) 100%)",
                                       transition: "background 0.4s ease",
                                     }}
                                   />
@@ -1346,8 +1346,8 @@ export default function Home() {
                                     <div style={{
                                       position: "absolute", top: 16, right: 16,
                                       width: 12, height: 12, borderRadius: 999,
-                                      background: "linear-gradient(135deg, #b07c14, #D4AF37)",
-                                      boxShadow: "0 0 16px rgba(212,175,55,0.85)",
+                                      background: "linear-gradient(135deg, #b07c14, #D48B00)",
+                                      boxShadow: "0 0 16px rgba(212,139,0,0.85)",
                                     }} />
                                   )}
                                   {/* Title + subtitle */}
@@ -1361,7 +1361,7 @@ export default function Home() {
                                       fontWeight: 500,
                                       color: "#F5E6C8",
                                       letterSpacing: "0.03em",
-                                      textShadow: "0 2px 12px rgba(0,0,0,0.85)",
+                                      textShadow: "0 2px 12px rgba(26,26,27,0.45)",
                                       marginBottom: 6,
                                       lineHeight: 1.05,
                                     }}>
@@ -1372,7 +1372,7 @@ export default function Home() {
                                       color: "rgba(232,212,172,0.92)",
                                       letterSpacing: "0.10em",
                                       textTransform: "uppercase",
-                                      textShadow: "0 1px 8px rgba(0,0,0,0.85)",
+                                      textShadow: "0 1px 8px rgba(26,26,27,0.45)",
                                     }}>
                                       {c.subtitle}
                                     </p>
@@ -1386,14 +1386,14 @@ export default function Home() {
 
                       <motion.button
                         onClick={() => goToStep(category === "cigar" ? 1 : 2)}
-                        whileHover={{ scale: 1.02, boxShadow: "0 0 0 1px rgba(212,175,55,0.6), 0 14px 44px rgba(0,0,0,0.55)" }}
+                        whileHover={{ scale: 1.02, boxShadow: "0 0 0 1px rgba(212,139,0,0.6), 0 14px 44px rgba(26,26,27,0.22)" }}
                         whileTap={{ scale: 0.94 }}
                         style={{
                           minHeight: 64, width: "100%", borderRadius: 6, border: "none", cursor: "pointer",
                           background: "linear-gradient(135deg,hsl(43 75% 40%),hsl(45 85% 52%),hsl(43 75% 42%))",
                           color: "#1A1410", fontFamily: "var(--app-font-serif)", fontSize: 16,
                           fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase",
-                          boxShadow: "0 0 0 1px rgba(212,175,55,0.35), 0 10px 36px rgba(0,0,0,0.45)",
+                          boxShadow: "0 0 0 1px rgba(212,139,0,0.35), 0 10px 36px rgba(26,26,27,0.14)",
                         }}
                       >
                         {category === "cigar" ? "Continue — Cigar Structure" : "Continue — Choose Flavors"}
@@ -1412,7 +1412,7 @@ export default function Home() {
                       style={{ display: "flex", flexDirection: "column", gap: 24 }}
                     >
                       <div style={{ textAlign: "center" }}>
-                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 2 of 5</p>
+                        <p style={{ color: "rgba(212,139,0,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 2 of 5</p>
                         <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Cigar Structure</h2>
                         <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Choose your shape and the time you have</p>
                       </div>
@@ -1441,7 +1441,7 @@ export default function Home() {
                       style={{ display: "flex", flexDirection: "column", gap: 24 }}
                     >
                       <div style={{ textAlign: "center" }}>
-                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Step 3 of 5" : "Step 2 of 4"}</p>
+                        <p style={{ color: "rgba(212,139,0,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Step 3 of 5" : "Step 2 of 4"}</p>
                         <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Your Palate</h2>
                         <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Swipe right to add · left to skip</p>
                       </div>
@@ -1467,7 +1467,7 @@ export default function Home() {
                       style={{ display: "flex", flexDirection: "column", gap: 24 }}
                     >
                       <div style={{ textAlign: "center" }}>
-                        <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Step 4 of 5" : "Step 3 of 4"}</p>
+                        <p style={{ color: "rgba(212,139,0,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Step 4 of 5" : "Step 3 of 4"}</p>
                         <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Your Strength</h2>
                         <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Swipe right to select · left for next</p>
                       </div>
@@ -1494,7 +1494,7 @@ export default function Home() {
                       {!moodDone ? (
                         <>
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ color: "rgba(212,175,55,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Step 5 of 5" : "Step 4 of 4"}</p>
+                            <p style={{ color: "rgba(212,139,0,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Step 5 of 5" : "Step 4 of 4"}</p>
                             <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Your Atmosphere</h2>
                             <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Swipe right when it resonates</p>
                           </div>
@@ -1513,7 +1513,7 @@ export default function Home() {
                           style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 28 }}
                         >
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ color: "rgba(212,175,55,0.72)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 14 }}>Your experience is taking shape</p>
+                            <p style={{ color: "rgba(212,139,0,0.72)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 14 }}>Your experience is taking shape</p>
                             <h2 className="font-serif" style={{ fontSize: "clamp(1.8rem,4vw,2.5rem)", color: "rgba(245,235,221,0.95)", fontWeight: 300 }}>Ready to Reveal</h2>
                           </div>
 
@@ -1525,26 +1525,26 @@ export default function Home() {
                               strength === 1 ? "Mild" : strength <= 3 ? "Medium" : "Full",
                               mood.charAt(0).toUpperCase() + mood.slice(1),
                             ].filter(Boolean).map(tag => (
-                              <span key={tag} style={{ padding: "7px 18px", borderRadius: 20, background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.32)", color: "rgba(212,175,55,0.88)", fontSize: 13, letterSpacing: "0.1em", fontWeight: 600 }}>{tag}</span>
+                              <span key={tag} style={{ padding: "7px 18px", borderRadius: 20, background: "rgba(212,139,0,0.1)", border: "1px solid rgba(212,139,0,0.32)", color: "rgba(212,139,0,0.88)", fontSize: 13, letterSpacing: "0.1em", fontWeight: 600 }}>{tag}</span>
                             ))}
                           </div>
 
-                          <div style={{ height: 1, width: 80, background: "linear-gradient(90deg,transparent,rgba(212,175,55,0.48),transparent)" }} />
+                          <div style={{ height: 1, width: 80, background: "linear-gradient(90deg,transparent,rgba(212,139,0,0.48),transparent)" }} />
 
                           {/* Primary CTA */}
                           <motion.button data-testid="btn-discover" onClick={handleDiscover}
-                            whileHover={{ scale: 1.02, boxShadow: "0 0 0 1px rgba(212,175,55,0.62), 0 16px 50px rgba(0,0,0,0.55), 0 0 75px rgba(212,175,55,0.22)" }}
+                            whileHover={{ scale: 1.02, boxShadow: "0 0 0 1px rgba(212,139,0,0.62), 0 16px 50px rgba(26,26,27,0.22), 0 0 75px rgba(212,139,0,0.22)" }}
                             whileTap={{ scale: 0.94 }}
                             style={{
                               minHeight: 68, minWidth: 300, padding: "0 44px", borderRadius: 6, border: "none", cursor: "pointer",
                               background: "linear-gradient(135deg,hsl(43 75% 40%),hsl(45 85% 52%),hsl(43 75% 42%))",
                               color: "#1A1410", fontFamily: "var(--app-font-serif)", fontSize: 18,
                               fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase",
-                              boxShadow: "0 0 0 1px rgba(212,175,55,0.38), 0 10px 36px rgba(0,0,0,0.45), 0 0 55px rgba(212,175,55,0.1)",
+                              boxShadow: "0 0 0 1px rgba(212,139,0,0.38), 0 10px 36px rgba(26,26,27,0.14), 0 0 55px rgba(212,139,0,0.1)",
                               position: "relative", overflow: "hidden",
                             }}
                           >
-                            <motion.div style={{ position:"absolute", inset:0, pointerEvents:"none", background:"linear-gradient(105deg,transparent 35%,rgba(255,255,255,0.15) 50%,transparent 65%)", backgroundSize:"200% 100%" }}
+                            <motion.div style={{ position:"absolute", inset:0, pointerEvents:"none", background:"linear-gradient(105deg,transparent 35%,rgba(26,26,27,0.17) 50%,transparent 65%)", backgroundSize:"200% 100%" }}
                               animate={{ backgroundPosition: ["200% 0","-200% 0"] }}
                               transition={{ duration: 3.5, repeat: Infinity, ease: "linear", repeatDelay: 2 }}
                             />
@@ -1554,17 +1554,17 @@ export default function Home() {
                           {/* Secondary buttons */}
                           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
                             <motion.button data-testid="btn-start-presentation" onClick={startPresentation}
-                              whileHover={{ borderColor: "rgba(212,175,55,0.55)", color: "rgba(212,175,55,0.9)" }}
+                              whileHover={{ borderColor: "rgba(212,139,0,0.55)", color: "rgba(212,139,0,0.9)" }}
                               whileTap={{ scale: 0.94 }}
-                              style={{ padding:"11px 22px", background:"rgba(212,175,55,0.05)", border:"1px solid rgba(212,175,55,0.28)", color:"rgba(212,175,55,0.65)", borderRadius:6, cursor:"pointer", fontSize:11, letterSpacing:"0.22em", textTransform:"uppercase" }}
+                              style={{ padding:"11px 22px", background:"rgba(212,139,0,0.05)", border:"1px solid rgba(212,139,0,0.28)", color:"rgba(212,139,0,0.65)", borderRadius:6, cursor:"pointer", fontSize:11, letterSpacing:"0.22em", textTransform:"uppercase" }}
                             >
                               Guided Tour
                             </motion.button>
                             {venue.features.demoMode && (
                               <motion.button data-testid="btn-try-demo" onClick={handleTryDemo}
-                                whileHover={{ color: "rgba(212,175,55,0.65)" }}
+                                whileHover={{ color: "rgba(212,139,0,0.65)" }}
                                 whileTap={{ scale: 0.94 }}
-                                style={{ padding:"11px 22px", background:"transparent", border:"1px dashed rgba(212,175,55,0.2)", color:"rgba(180,155,100,0.4)", borderRadius:6, cursor:"pointer", fontSize:11, letterSpacing:"0.22em", textTransform:"uppercase" }}
+                                style={{ padding:"11px 22px", background:"transparent", border:"1px dashed rgba(212,139,0,0.2)", color:"rgba(180,155,100,0.4)", borderRadius:6, cursor:"pointer", fontSize:11, letterSpacing:"0.22em", textTransform:"uppercase" }}
                               >
                                 Try Demo
                               </motion.button>
@@ -1587,14 +1587,14 @@ export default function Home() {
                   transition={{ delay: 0.15, duration: 0.5 }}
                   className="rounded-2xl p-4"
                   style={{
-                    background: "linear-gradient(135deg, rgba(212,175,55,0.08), rgba(180,130,30,0.04))",
-                    border: "1px solid rgba(212,175,55,0.25)",
-                    boxShadow: "0 0 30px rgba(212,175,55,0.06)",
+                    background: "linear-gradient(135deg, rgba(212,139,0,0.08), rgba(180,130,30,0.04))",
+                    border: "1px solid rgba(212,139,0,0.25)",
+                    boxShadow: "0 0 30px rgba(212,139,0,0.06)",
                   }}
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <Crown size={11} style={{ color: "rgba(212,175,55,0.7)" }} />
-                    <span className="text-[8px] uppercase tracking-[0.25em]" style={{ color: "rgba(212,175,55,0.55)" }}>
+                    <Crown size={11} style={{ color: "rgba(212,139,0,0.7)" }} />
+                    <span className="text-[8px] uppercase tracking-[0.25em]" style={{ color: "rgba(212,139,0,0.55)" }}>
                       Maestro del Fuego · Exclusive
                     </span>
                   </div>
@@ -1608,7 +1608,7 @@ export default function Home() {
                       background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
                       color: "hsl(22 18% 6%)",
                     }}
-                    whileHover={{ scale: 1.01, boxShadow: "0 0 24px rgba(212,175,55,0.2)" }}
+                    whileHover={{ scale: 1.01, boxShadow: "0 0 24px rgba(212,139,0,0.2)" }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <Flame size={12} />Create Your Signature Cigar
@@ -1621,7 +1621,7 @@ export default function Home() {
                 <a href="/dashboard"
                   className="text-[8px] uppercase tracking-[0.22em] transition-colors duration-200"
                   style={{ color: "rgba(180,155,100,0.22)" }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,175,55,0.45)")}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,139,0,0.45)")}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(180,155,100,0.22)")}
                 >
                   Partner Dashboard
@@ -1686,7 +1686,7 @@ export default function Home() {
                 transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
                 style={{
                   position: "absolute", inset: 0,
-                  background: "radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.92) 80%)",
+                  background: "radial-gradient(ellipse at center, rgba(26,26,27,0.22) 0%, rgba(26,26,27,0.52) 80%)",
                   pointerEvents: "none", zIndex: 6,
                 }}
               />
@@ -1709,9 +1709,9 @@ export default function Home() {
               />
               <motion.div className="mb-8 text-center"
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.9 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.32em", textTransform: "uppercase", color: "rgba(212,175,55,0.65)", marginBottom: 8 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.32em", textTransform: "uppercase", color: "rgba(212,139,0,0.65)", marginBottom: 8 }}>
                   Step 7 of 7
-                  {isDemoMode && <span style={{ marginLeft: 12, color: "rgba(212,175,55,0.50)" }}>· Demo</span>}
+                  {isDemoMode && <span style={{ marginLeft: 12, color: "rgba(212,139,0,0.50)" }}>· Demo</span>}
                 </p>
                 <h2 className="font-serif" style={{ fontSize: "clamp(1.7rem, 4vw, 2.6rem)", fontWeight: 700, color: "rgba(245,230,200,0.97)", letterSpacing: "0.04em", lineHeight: 1.1 }}>
                   Your Experience Is Ready
@@ -1744,11 +1744,11 @@ export default function Home() {
                       padding: "6px 14px", borderRadius: 999,
                       fontSize: 10.5, letterSpacing: "0.24em", textTransform: "uppercase", fontWeight: 700,
                       background: revealIsNewBest
-                        ? "linear-gradient(135deg, rgba(212,175,55,0.22), rgba(180,130,30,0.12))"
+                        ? "linear-gradient(135deg, rgba(212,139,0,0.22), rgba(180,130,30,0.12))"
                         : "rgba(40,28,14,0.55)",
                       border: revealIsNewBest
                         ? "1px solid rgba(245,205,90,0.55)"
-                        : "1px solid rgba(212,175,55,0.18)",
+                        : "1px solid rgba(212,139,0,0.18)",
                       color: revealIsNewBest ? "rgba(245,225,170,0.96)" : "rgba(200,175,135,0.72)",
                     }}
                   >
@@ -1769,9 +1769,9 @@ export default function Home() {
                 <motion.div
                   animate={{
                     boxShadow: [
-                      "0 0 0 1px rgba(212,175,55,0.45), 0 0 30px rgba(212,175,55,0.18)",
-                      "0 0 0 1px rgba(212,175,55,0.7), 0 0 60px rgba(212,175,55,0.38)",
-                      "0 0 0 1px rgba(212,175,55,0.45), 0 0 30px rgba(212,175,55,0.18)",
+                      "0 0 0 1px rgba(212,139,0,0.45), 0 0 30px rgba(212,139,0,0.18)",
+                      "0 0 0 1px rgba(212,139,0,0.7), 0 0 60px rgba(212,139,0,0.38)",
+                      "0 0 0 1px rgba(212,139,0,0.45), 0 0 30px rgba(212,139,0,0.18)",
                     ],
                   }}
                   transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
@@ -1786,7 +1786,7 @@ export default function Home() {
                     delayMs={1400}
                     durationMs={1500}
                     className="font-serif"
-                    style={{ fontSize: 38, fontWeight: 600, color: "rgba(212,175,55,0.96)", letterSpacing: "0.02em", lineHeight: 1, fontVariantNumeric: "tabular-nums", minWidth: 64, display: "inline-block", textAlign: "right" }}
+                    style={{ fontSize: 38, fontWeight: 600, color: "rgba(212,139,0,0.96)", letterSpacing: "0.02em", lineHeight: 1, fontVariantNumeric: "tabular-nums", minWidth: 64, display: "inline-block", textAlign: "right" }}
                   />
                   <span style={{ fontSize: 15, color: "rgba(210,190,155,0.55)", letterSpacing: "0.1em" }}>/ 100</span>
                 </motion.div>
@@ -1801,7 +1801,7 @@ export default function Home() {
                       <div style={{ fontSize: 9, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(180,155,100,0.55)", marginBottom: 6 }}>
                         {m.k}
                       </div>
-                      <div style={{ height: 4, width: 76, borderRadius: 2, background: "rgba(212,175,55,0.12)", overflow: "hidden" }}>
+                      <div style={{ height: 4, width: 76, borderRadius: 2, background: "rgba(212,139,0,0.12)", overflow: "hidden" }}>
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${m.v}%` }}
@@ -1809,13 +1809,13 @@ export default function Home() {
                           style={{ height: "100%", background: "linear-gradient(90deg, rgba(180,130,30,0.85), rgba(245,205,90,0.95))" }}
                         />
                       </div>
-                      <div style={{ fontSize: 11, color: "rgba(212,175,55,0.78)", marginTop: 6, fontWeight: 600 }}>{m.v}</div>
+                      <div style={{ fontSize: 11, color: "rgba(212,139,0,0.78)", marginTop: 6, fontWeight: 600 }}>{m.v}</div>
                     </div>
                   ))}
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, marginTop: 4 }}>
-                  <p style={{ fontSize: 11, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(212,175,55,0.72)" }}>
+                  <p style={{ fontSize: 11, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(212,139,0,0.72)" }}>
                     Top {comparisonPct}% of blends created
                   </p>
                   <p style={{ fontSize: 12, color: "rgba(210,190,155,0.55)", letterSpacing: "0.05em" }}>
@@ -1875,8 +1875,8 @@ export default function Home() {
                       gap: 14, marginBottom: 22, padding: "16px 18px",
                       borderRadius: 14,
                       background: "linear-gradient(135deg, rgba(40,28,14,0.55), rgba(20,15,10,0.35))",
-                      border: "1px solid rgba(212,175,55,0.18)",
-                      boxShadow: "inset 0 1px 0 rgba(255,225,160,0.06), 0 8px 24px rgba(0,0,0,0.35)",
+                      border: "1px solid rgba(212,139,0,0.18)",
+                      boxShadow: "inset 0 1px 0 rgba(255,225,160,0.06), 0 8px 24px rgba(26,26,27,0.08)",
                     }}
                     data-testid="reveal-spec-strip"
                   >
@@ -1884,7 +1884,7 @@ export default function Home() {
                       <div key={s.k} style={{
                         display: "flex", flexDirection: "column", alignItems: "center",
                         minWidth: 78, padding: "0 8px",
-                        borderLeft: i === 0 ? "none" : "1px solid rgba(212,175,55,0.10)",
+                        borderLeft: i === 0 ? "none" : "1px solid rgba(212,139,0,0.10)",
                       }}>
                         <span style={{
                           fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase",
@@ -1919,11 +1919,11 @@ export default function Home() {
                   <motion.button onClick={() => setBandOpen(true)}
                     className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs uppercase tracking-[0.18em]"
                     style={{
-                      background: "linear-gradient(135deg, rgba(180,130,30,0.18), rgba(212,175,55,0.09))",
-                      border: "1px solid rgba(212,175,55,0.32)",
-                      color: "rgba(212,175,55,0.8)",
+                      background: "linear-gradient(135deg, rgba(180,130,30,0.18), rgba(212,139,0,0.09))",
+                      border: "1px solid rgba(212,139,0,0.32)",
+                      color: "rgba(212,139,0,0.8)",
                     }}
-                    whileHover={{ boxShadow: "0 0 22px rgba(212,175,55,0.2)", borderColor: "rgba(212,175,55,0.55)" }}
+                    whileHover={{ boxShadow: "0 0 22px rgba(212,139,0,0.2)", borderColor: "rgba(212,139,0,0.55)" }}
                     whileTap={{ scale: 0.96 }}
                     data-testid="btn-create-blend">
                     <Flame size={12} />Create My Blend
@@ -1937,9 +1937,9 @@ export default function Home() {
                   initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.1, duration: 0.6 }}
                   className="mt-8 rounded-xl p-5"
-                  style={{ background: "rgba(212,175,55,0.03)", border: "1px solid rgba(212,175,55,0.12)" }}
+                  style={{ background: "rgba(212,139,0,0.03)", border: "1px solid rgba(212,139,0,0.12)" }}
                 >
-                  <p className="text-[9px] uppercase tracking-[0.28em] mb-4" style={{ color: "rgba(212,175,55,0.4)" }}>
+                  <p className="text-[9px] uppercase tracking-[0.28em] mb-4" style={{ color: "rgba(212,139,0,0.4)" }}>
                     Not Available at This Venue · Request for Future Stock
                   </p>
                   <div className="space-y-2">
@@ -1948,7 +1948,7 @@ export default function Home() {
                       return (
                         <div key={item.id}
                           className="flex items-center justify-between gap-4 px-4 py-3 rounded-xl"
-                          style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                          style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
                           <div className="min-w-0">
                             <p className="font-serif text-sm truncate" style={{ color: "rgba(200,180,145,0.75)" }}>{item.name}</p>
                             <p className="text-[8px] uppercase tracking-[0.15em] mt-0.5" style={{ color: "rgba(180,155,100,0.35)" }}>
@@ -1960,10 +1960,10 @@ export default function Home() {
                             disabled={requested}
                             className="flex items-center gap-1.5 px-3 py-2 rounded-full text-[9px] uppercase tracking-[0.15em] flex-shrink-0 transition-all duration-300"
                             style={requested
-                              ? { background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)", color: "rgba(212,175,55,0.55)" }
-                              : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(180,155,100,0.5)" }
+                              ? { background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.2)", color: "rgba(212,139,0,0.55)" }
+                              : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(180,155,100,0.5)" }
                             }
-                            whileHover={!requested ? { borderColor: "rgba(212,175,55,0.35)", color: "rgba(212,175,55,0.75)", background: "rgba(212,175,55,0.06)" } : {}}
+                            whileHover={!requested ? { borderColor: "rgba(212,139,0,0.35)", color: "rgba(212,139,0,0.75)", background: "rgba(212,139,0,0.06)" } : {}}
                             whileTap={!requested ? { scale: 0.96 } : {}}
                           >
                             {requested
@@ -2001,7 +2001,7 @@ export default function Home() {
                 <button data-testid="btn-start-over" onClick={handleStartOver}
                   className="inline-flex items-center gap-2.5 text-xs uppercase tracking-[0.25em] group transition-all duration-300"
                   style={{ color: "rgba(180,155,100,0.4)" }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,175,55,0.7)")}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,139,0,0.7)")}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(180,155,100,0.4)")}>
                   <RotateCcw size={13} className="group-hover:-rotate-90 transition-transform duration-500" />
                   {isDemoMode ? "Exit Demo" : "Begin Anew"}

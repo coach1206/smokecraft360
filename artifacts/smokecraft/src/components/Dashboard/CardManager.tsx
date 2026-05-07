@@ -12,7 +12,7 @@ interface CardManagerProps {
 type CraftCategory = "cigar" | "alcohol" | "beer" | "vape";
 
 const CATEGORIES: { id: CraftCategory; label: string; color: string }[] = [
-  { id: "cigar",   label: "Cigars",  color: "#d4af37" },
+  { id: "cigar",   label: "Cigars",  color: "#D48B00" },
   { id: "alcohol", label: "Spirits", color: "#8b5cf6" },
   { id: "beer",    label: "Beer",    color: "#f59e0b" },
   { id: "vape",    label: "Vape",    color: "#06b6d4" },
@@ -109,7 +109,7 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
     }
   }, [handleUpload, patchState]);
 
-  const catColor = CATEGORIES.find(c => c.id === activeCategory)?.color ?? "#d4af37";
+  const catColor = CATEGORIES.find(c => c.id === activeCategory)?.color ?? "#D48B00";
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
@@ -131,8 +131,8 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
             onClick={() => setActiveCategory(cat.id)}
             style={{
               padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 600,
-              background: activeCategory === cat.id ? `${cat.color}20` : "rgba(255,255,255,0.03)",
-              border: `1px solid ${activeCategory === cat.id ? `${cat.color}50` : "rgba(255,255,255,0.06)"}`,
+              background: activeCategory === cat.id ? `${cat.color}20` : "rgba(26,26,27,0.05)",
+              border: `1px solid ${activeCategory === cat.id ? `${cat.color}50` : "rgba(26,26,27,0.08)"}`,
               color: activeCategory === cat.id ? cat.color : "rgba(232,224,200,0.5)",
               cursor: "pointer",
             }}
@@ -145,7 +145,7 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
       {filtered.length === 0 ? (
         <div style={{
           padding: "40px 20px", textAlign: "center", borderRadius: 14,
-          background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(255,255,255,0.1)",
+          background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(255,255,255,0.1)",
         }}>
           <ImagePlus size={32} color="rgba(232,224,200,0.2)" style={{ margin: "0 auto 12px" }} />
           <div style={{ fontSize: 13, color: "rgba(232,224,200,0.4)" }}>
@@ -176,7 +176,7 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
                     borderRadius: 14, overflow: "hidden",
                     background: s.dragOver
                       ? `${catColor}10`
-                      : "rgba(255,255,255,0.03)",
+                      : "rgba(26,26,27,0.05)",
                     border: `1px solid ${
                       s.status === "error"   ? "rgba(239,68,68,0.4)"   :
                       s.status === "success" ? "rgba(52,211,153,0.4)"  :
@@ -192,7 +192,7 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
                   {/* Image area */}
                   <div style={{
                     width: "100%", aspectRatio: "1",
-                    background: hasImage ? "none" : "rgba(255,255,255,0.02)",
+                    background: hasImage ? "none" : "rgba(26,26,27,0.04)",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     position: "relative", overflow: "hidden",
                   }}>
@@ -217,7 +217,7 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
                     {s.status === "uploading" && (
                       <div style={{
                         position: "absolute", inset: 0,
-                        background: "rgba(0,0,0,0.65)",
+                        background: "rgba(26,26,27,0.30)",
                         display: "flex", flexDirection: "column",
                         alignItems: "center", justifyContent: "center", gap: 8,
                       }}>

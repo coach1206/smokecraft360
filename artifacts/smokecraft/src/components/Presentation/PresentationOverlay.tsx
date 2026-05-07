@@ -135,7 +135,7 @@ export function PresentationOverlay() {
             <motion.div
               key="backdrop"
               className="fixed inset-0"
-              style={{ background: "rgba(0,0,0,0.72)", zIndex: 50, pointerEvents: "none" }}
+              style={{ background: "rgba(26,26,27,0.34)", zIndex: 50, pointerEvents: "none" }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -157,8 +157,8 @@ export function PresentationOverlay() {
                     width:         rect.width  + (PAD + 6) * 2,
                     height:        rect.height + (PAD + 6) * 2,
                     borderRadius:  18,
-                    border:        "1px solid rgba(212,175,55,0.28)",
-                    boxShadow:     "0 0 28px rgba(212,175,55,0.22), inset 0 0 28px rgba(212,175,55,0.04)",
+                    border:        "1px solid rgba(212,139,0,0.28)",
+                    boxShadow:     "0 0 28px rgba(212,139,0,0.22), inset 0 0 28px rgba(212,139,0,0.04)",
                     pointerEvents: "none",
                     zIndex:        51,
                   }}
@@ -179,8 +179,8 @@ export function PresentationOverlay() {
                     height:        rect.height + PAD * 2,
                     borderRadius:  14,
                     background:    "transparent",
-                    boxShadow:     "0 0 0 9999px rgba(0,0,0,0.72)",
-                    border:        "1.5px solid rgba(212,175,55,0.55)",
+                    boxShadow:     "0 0 0 9999px rgba(26,26,27,0.34)",
+                    border:        "1.5px solid rgba(212,139,0,0.55)",
                     pointerEvents: "none",
                     zIndex:        52,
                   }}
@@ -206,15 +206,15 @@ export function PresentationOverlay() {
               <div
                 style={{
                   background: "linear-gradient(155deg, rgba(22,14,5,0.97), rgba(12,7,2,0.98))",
-                  border:     "1px solid rgba(212,175,55,0.22)",
-                  boxShadow:  "0 16px 56px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,175,55,0.06) inset",
+                  border:     "1px solid rgba(212,139,0,0.22)",
+                  boxShadow:  "0 16px 56px rgba(26,26,27,0.32), 0 0 0 1px rgba(212,139,0,0.06) inset",
                   borderRadius: 18,
                   overflow: "hidden",
                 }}
               >
                 {/* Auto-play progress bar */}
                 {autoPlay && !isLoading && (
-                  <div className="h-0.5 w-full" style={{ background: "rgba(255,255,255,0.04)" }}>
+                  <div className="h-0.5 w-full" style={{ background: "rgba(26,26,27,0.06)" }}>
                     <motion.div
                       className="h-full"
                       style={{
@@ -231,10 +231,10 @@ export function PresentationOverlay() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-                        style={{ background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.2)" }}>
-                        <Presentation size={9} style={{ color: "rgba(212,175,55,0.7)" }} />
+                        style={{ background: "rgba(212,139,0,0.1)", border: "1px solid rgba(212,139,0,0.2)" }}>
+                        <Presentation size={9} style={{ color: "rgba(212,139,0,0.7)" }} />
                         <span className="text-[8px] uppercase tracking-[0.22em]"
-                          style={{ color: "rgba(212,175,55,0.65)" }}>
+                          style={{ color: "rgba(212,139,0,0.65)" }}>
                           Guided Tour
                         </span>
                       </div>
@@ -242,9 +242,9 @@ export function PresentationOverlay() {
                     <button
                       onClick={exit}
                       className="p-1.5 rounded-full transition-colors duration-200"
-                      style={{ background: "rgba(255,255,255,0.04)" }}
-                      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)")}
-                      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)")}
+                      style={{ background: "rgba(26,26,27,0.06)" }}
+                      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(26,26,27,0.11)")}
+                      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(26,26,27,0.06)")}
                       title="Exit Presentation"
                     >
                       <X size={12} style={{ color: "rgba(180,155,100,0.55)" }} />
@@ -257,7 +257,7 @@ export function PresentationOverlay() {
                       <div className="flex items-center gap-2 mb-3">
                         <motion.div
                           className="w-5 h-5 rounded-full border-2 flex-shrink-0"
-                          style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.75)" }}
+                          style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.75)" }}
                           animate={{ rotate: 360 }}
                           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                         />
@@ -275,7 +275,7 @@ export function PresentationOverlay() {
                   </div>
 
                   {/* Divider */}
-                  <div className="mb-4 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.16), transparent)" }} />
+                  <div className="mb-4 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.16), transparent)" }} />
 
                   {/* Progress dots */}
                   <div className="flex items-center justify-between">
@@ -287,10 +287,10 @@ export function PresentationOverlay() {
                           animate={{
                             width:      i === currentStep ? 16 : 5,
                             background: i === currentStep
-                              ? "rgba(212,175,55,0.75)"
+                              ? "rgba(212,139,0,0.75)"
                               : i < currentStep
-                                ? "rgba(212,175,55,0.3)"
-                                : "rgba(255,255,255,0.12)",
+                                ? "rgba(212,139,0,0.3)"
+                                : "rgba(26,26,27,0.14)",
                           }}
                           style={{ height: 5 }}
                           transition={{ duration: 0.3 }}
@@ -312,16 +312,16 @@ export function PresentationOverlay() {
                       disabled={isFirst}
                       className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] uppercase tracking-[0.15em] transition-all"
                       style={isFirst ? {
-                        background: "rgba(255,255,255,0.02)",
-                        border:     "1px solid rgba(255,255,255,0.05)",
+                        background: "rgba(26,26,27,0.04)",
+                        border:     "1px solid rgba(26,26,27,0.07)",
                         color:      "rgba(180,155,100,0.2)",
                         cursor:     "not-allowed",
                       } : {
-                        background: "rgba(255,255,255,0.04)",
-                        border:     "1px solid rgba(255,255,255,0.08)",
+                        background: "rgba(26,26,27,0.06)",
+                        border:     "1px solid rgba(26,26,27,0.10)",
                         color:      "rgba(180,155,100,0.5)",
                       }}
-                      whileHover={!isFirst ? { borderColor: "rgba(212,175,55,0.25)", color: "rgba(212,175,55,0.65)" } : {}}
+                      whileHover={!isFirst ? { borderColor: "rgba(212,139,0,0.25)", color: "rgba(212,139,0,0.65)" } : {}}
                       whileTap={!isFirst ? { scale: 0.96 } : {}}
                     >
                       <ChevronLeft size={11} />Back
@@ -332,15 +332,15 @@ export function PresentationOverlay() {
                       onClick={toggleAutoPlay}
                       className="p-2 rounded-xl transition-all"
                       style={autoPlay ? {
-                        background: "rgba(212,175,55,0.1)",
-                        border:     "1px solid rgba(212,175,55,0.25)",
-                        color:      "rgba(212,175,55,0.7)",
+                        background: "rgba(212,139,0,0.1)",
+                        border:     "1px solid rgba(212,139,0,0.25)",
+                        color:      "rgba(212,139,0,0.7)",
                       } : {
-                        background: "rgba(255,255,255,0.03)",
-                        border:     "1px solid rgba(255,255,255,0.07)",
+                        background: "rgba(26,26,27,0.05)",
+                        border:     "1px solid rgba(26,26,27,0.09)",
                         color:      "rgba(180,155,100,0.35)",
                       }}
-                      whileHover={{ borderColor: "rgba(212,175,55,0.3)", color: "rgba(212,175,55,0.65)" }}
+                      whileHover={{ borderColor: "rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.65)" }}
                       whileTap={{ scale: 0.95 }}
                       title={autoPlay ? "Pause auto-play" : "Enable auto-play (5s per step)"}
                     >
@@ -353,10 +353,10 @@ export function PresentationOverlay() {
                       className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[10px] uppercase tracking-[0.15em] relative overflow-hidden"
                       style={{
                         background: isLast
-                          ? "linear-gradient(135deg, rgba(212,175,55,0.25), rgba(180,130,30,0.18))"
+                          ? "linear-gradient(135deg, rgba(212,139,0,0.25), rgba(180,130,30,0.18))"
                           : "linear-gradient(135deg, hsl(43 75% 40%), hsl(45 85% 50%))",
-                        border: isLast ? "1px solid rgba(212,175,55,0.4)" : "none",
-                        color: isLast ? "rgba(212,175,55,0.9)" : "hsl(22 18% 6%)",
+                        border: isLast ? "1px solid rgba(212,139,0,0.4)" : "none",
+                        color: isLast ? "rgba(212,139,0,0.9)" : "hsl(22 18% 6%)",
                       }}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.97 }}
@@ -374,7 +374,7 @@ export function PresentationOverlay() {
                       onClick={exit}
                       className="text-[9px] uppercase tracking-[0.2em] transition-colors duration-200"
                       style={{ color: "rgba(180,155,100,0.3)" }}
-                      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,175,55,0.55)")}
+                      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,139,0,0.55)")}
                       onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(180,155,100,0.3)")}
                     >
                       Exit Presentation

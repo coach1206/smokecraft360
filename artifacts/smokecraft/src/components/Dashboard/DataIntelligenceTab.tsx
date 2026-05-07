@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 
 // ── colour tokens ──────────────────────────────────────────────────────────────
-const G  = (a: number) => `rgba(212,175,55,${a})`;
+const G  = (a: number) => `rgba(212,139,0,${a})`;
 const W  = (a: number) => `rgba(255,255,255,${a})`;
 const D  = (a: number) => `rgba(0,0,0,${a})`;
 
@@ -167,7 +167,7 @@ function HeatCell({ hour, events, max }: { hour: number; events: number; max: nu
   return (
     <div className="flex flex-col items-center gap-1">
       <div className="w-7 h-7 rounded-md flex items-center justify-center text-[8px]"
-        style={{ background: `rgba(212,175,55,${intensity * 0.7 + 0.04})`, color: W(intensity > 0.5 ? 0.8 : 0.3) }}>
+        style={{ background: `rgba(212,139,0,${intensity * 0.7 + 0.04})`, color: W(intensity > 0.5 ? 0.8 : 0.3) }}>
         {events > 0 ? events : ""}
       </div>
       <span className="text-[7px]" style={{ color: W(0.2) }}>{h}</span>

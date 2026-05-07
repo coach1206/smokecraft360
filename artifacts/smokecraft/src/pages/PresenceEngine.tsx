@@ -33,13 +33,13 @@ import {
 // ── Design tokens ──────────────────────────────────────────────────────────────
 
 const C = {
-  bg:      "#06040a",
+  bg:      "#F5F2ED",
   glass:   "rgba(255,255,255,0.028)",
   glassMid:"rgba(255,255,255,0.048)",
-  border:  "rgba(255,255,255,0.07)",
-  gold:    "#c9a84c",
-  goldDim: "rgba(201,168,76,0.50)",
-  text:    "#f0e8d4",
+  border:  "rgba(26,26,27,0.09)",
+  gold:    "#D48B00",
+  goldDim: "rgba(212,139,0,0.50)",
+  text:    "#1A1A1B",
   muted:   "rgba(240,232,212,0.48)",
   dim:     "rgba(240,232,212,0.26)",
 };
@@ -267,7 +267,7 @@ function ArrivalCard({ event, onAck, onDismiss }: {
                 {event.pairingSuggestion && (
                   <div style={{
                     padding: "10px 12px", borderRadius: 10,
-                    background: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.16)",
+                    background: "rgba(212,139,0,0.06)", border: "1px solid rgba(212,139,0,0.16)",
                   }}>
                     <div style={{ fontSize: 8, color: C.goldDim, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 3 }}>
                       Pairing Ready
@@ -302,10 +302,10 @@ function ArrivalCard({ event, onAck, onDismiss }: {
                 <div style={{
                   display: "flex", alignItems: "center", gap: 7,
                   padding: "9px 12px", borderRadius: 10,
-                  background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.20)",
+                  background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.20)",
                 }}>
-                  <Star size={12} color="#d4af37" />
-                  <span style={{ fontSize: 11, color: "#d4af37", fontWeight: 600 }}>
+                  <Star size={12} color="#D48B00" />
+                  <span style={{ fontSize: 11, color: "#D48B00", fontWeight: 600 }}>
                     +{event.loyaltyBonus} loyalty points awarded on arrival
                   </span>
                 </div>
@@ -419,7 +419,7 @@ function ArrivalFeedTab() {
       {visible.length === 0 ? (
         <div style={{
           padding: "40px", textAlign: "center", borderRadius: 16,
-          border: `1px dashed ${C.border}`, background: "rgba(255,255,255,0.01)",
+          border: `1px dashed ${C.border}`, background: "rgba(26,26,27,0.02)",
         }}>
           <Users size={28} color={C.dim} style={{ margin: "0 auto 10px" }} />
           <div style={{ fontSize: 13, color: C.muted }}>No arrivals yet.</div>
@@ -581,7 +581,7 @@ function GuestRosterTab() {
                             {guest.savedBlends.map(b => (
                               <span key={b} style={{
                                 fontSize: 10, color: C.muted, padding: "3px 10px", borderRadius: 20,
-                                background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`,
+                                background: "rgba(26,26,27,0.06)", border: `1px solid ${C.border}`,
                               }}>{b}</span>
                             ))}
                           </div>
@@ -709,14 +709,14 @@ function WalletPassCard({ pass }: { pass: NonNullable<ReturnType<typeof useAxiom
           background: `linear-gradient(135deg, ${pass.primaryColor}, rgba(6,4,10,0.95))`,
           border: `1px solid ${pass.accentColor}35`,
           padding: "24px 26px",
-          boxShadow: `0 16px 48px ${pass.accentColor}18, 0 4px 16px rgba(0,0,0,0.6)`,
+          boxShadow: `0 16px 48px ${pass.accentColor}18, 0 4px 16px rgba(26,26,27,0.26)`,
           display: "flex", flexDirection: "column", justifyContent: "space-between",
           overflow: "hidden",
         }}>
           {/* Shine overlay */}
           <div style={{
             position: "absolute", top: 0, left: 0, right: 0, height: "40%",
-            background: "linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 100%)",
+            background: "linear-gradient(180deg, rgba(26,26,27,0.08) 0%, transparent 100%)",
             borderRadius: "20px 20px 0 0",
           }} />
 
@@ -870,10 +870,10 @@ function ReservePassTab() {
               style={{
                 flex: 1, padding: "13px", borderRadius: 12,
                 background: "linear-gradient(135deg, #1a1a1a, #000)",
-                border: "1px solid rgba(255,255,255,0.15)",
+                border: "1px solid rgba(26,26,27,0.17)",
                 color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
+                boxShadow: "0 4px 16px rgba(26,26,27,0.18)",
               }}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="white">
@@ -886,7 +886,7 @@ function ReservePassTab() {
               style={{
                 flex: 1, padding: "13px", borderRadius: 12,
                 background: "linear-gradient(135deg, #1565C0, #0D47A1)",
-                border: "1px solid rgba(255,255,255,0.15)",
+                border: "1px solid rgba(26,26,27,0.17)",
                 color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 boxShadow: "0 4px 16px rgba(13,71,161,0.4)",
@@ -902,7 +902,7 @@ function ReservePassTab() {
 
           <div style={{
             marginTop: 12, padding: "10px 13px", borderRadius: 10,
-            background: "rgba(255,255,255,0.02)", border: `1px solid ${C.border}`,
+            background: "rgba(26,26,27,0.04)", border: `1px solid ${C.border}`,
             fontSize: 10, color: C.dim, textAlign: "center",
           }}>
             Wallet issuance requires server-side certificate integration. Pass data is live — connect your Apple/Google developer account to activate.
@@ -1000,7 +1000,7 @@ function GeofencePanel() {
 
       {geofenceActive && geofenceDistance != null && (
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ flex: 1, height: 5, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+          <div style={{ flex: 1, height: 5, borderRadius: 3, background: "rgba(26,26,27,0.08)", overflow: "hidden" }}>
             <motion.div
               animate={{ width: `${Math.max(5, 100 - Math.min(100, geofenceDistance / 2))}%` }}
               transition={{ duration: 0.8 }}
@@ -1085,7 +1085,7 @@ function PresenceIntelTab() {
           label="VIP Arrival Rate"
           value={`${Math.round(presenceIntel.vipArrivalRate * 100)}%`}
           sub="Reserve+ tier guests"
-          accent="#d4af37"
+          accent="#D48B00"
         />
         <IntelMetric
           label="Loyalty Activation"
@@ -1183,12 +1183,12 @@ export default function PresenceEngine() {
         <div style={{
           position: "absolute", inset: 0,
           background:
-            "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(201,168,76,0.06) 0%, transparent 65%)," +
+            "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(212,139,0,0.06) 0%, transparent 65%)," +
             "linear-gradient(180deg, transparent 0%, rgba(6,4,10,0.92) 100%)",
         }} />
         <div style={{
           position: "absolute", top: 0, left: 0, right: 0, height: 1,
-          background: "linear-gradient(90deg, transparent, rgba(201,168,76,0.3), rgba(52,211,153,0.2), transparent)",
+          background: "linear-gradient(90deg, transparent, rgba(212,139,0,0.3), rgba(52,211,153,0.2), transparent)",
         }} />
       </div>
 
@@ -1207,7 +1207,7 @@ export default function PresenceEngine() {
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
               width: 44, height: 44, borderRadius: 12,
-              background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`,
+              background: "rgba(26,26,27,0.06)", border: `1px solid ${C.border}`,
               color: C.muted, cursor: "pointer",
             }}
           >
@@ -1272,7 +1272,7 @@ export default function PresenceEngine() {
         display: "flex", alignItems: "center", gap: 18,
         padding: "8px 20px",
         borderBottom: `1px solid ${C.border}`,
-        background: "rgba(0,0,0,0.28)", backdropFilter: "blur(12px)",
+        background: "rgba(26,26,27,0.06)", backdropFilter: "blur(12px)",
         overflowX: "auto", flexShrink: 0,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
@@ -1280,8 +1280,8 @@ export default function PresenceEngine() {
           <span style={{ fontSize: 8.5, letterSpacing: "0.22em", color: C.dim, textTransform: "uppercase" }}>Presence</span>
         </div>
         {[
-          { label: "VIP RECOGNITION",  state: "ACTIVE",   color: "#d4af37" },
-          { label: "MENTOR LAYER",     state: "ONLINE",   color: "#c9a84c" },
+          { label: "VIP RECOGNITION",  state: "ACTIVE",   color: "#D48B00" },
+          { label: "MENTOR LAYER",     state: "ONLINE",   color: "#D48B00" },
           { label: "WIFI CONTINUITY",  state: "READY",    color: "#60a5fa" },
           { label: "LOYALTY WATCH",    state: "TRACKING", color: "#34d399" },
           { label: "HOST ALERTS",      state: "LIVE",     color: "#22c55e" },

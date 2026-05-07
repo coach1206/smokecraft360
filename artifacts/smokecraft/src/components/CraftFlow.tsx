@@ -598,7 +598,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         position: "fixed", inset: 0, zIndex: -1,
         background:
           `radial-gradient(ellipse at 50% 30%, ${config.theme.tint}, transparent 55%),` +
-          "linear-gradient(180deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.92) 100%)",
+          "linear-gradient(180deg, rgba(26,26,27,0.34) 0%, rgba(26,26,27,0.52) 100%)",
       }} />
 
       {/* Header */}
@@ -607,7 +607,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         padding: "24px 32px 12px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
-        <div style={{ textShadow: "0 2px 8px rgba(0,0,0,0.85)" }}>
+        <div style={{ textShadow: "0 2px 8px rgba(26,26,27,0.45)" }}>
           <h1 style={{
             fontFamily: "var(--app-font-serif, Georgia, serif)",
             fontSize: "clamp(28px, 3.2vw, 44px)",
@@ -764,7 +764,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                   style={{
                     marginTop: 8,
                     background: `linear-gradient(135deg, ${config.theme.accent}, ${config.theme.accentSoft})`,
-                    color: "#0a0806", border: "none",
+                    color: "#F5F2ED", border: "none",
                     padding: "16px 36px", borderRadius: 999,
                     fontSize: 13, fontWeight: 700,
                     letterSpacing: "0.28em", textTransform: "uppercase",
@@ -812,7 +812,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                         border: `1px solid ${config.theme.accent}55`,
                         cursor: "pointer", padding: 0, color: "inherit",
                         background: style.gradient,
-                        boxShadow: "0 18px 50px rgba(0,0,0,0.55)",
+                        boxShadow: "0 18px 50px rgba(26,26,27,0.22)",
                         textAlign: "left",
                       }}
                     >
@@ -829,13 +829,13 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                       {/* Cinematic gradient overlay (above canvas, below text) */}
                       <div style={{
                         position: "absolute", inset: 0,
-                        background: "linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.38) 52%, rgba(0,0,0,0.90) 100%)",
+                        background: "linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(26,26,27,0.09) 52%, rgba(26,26,27,0.50) 100%)",
                         pointerEvents: "none",
                         zIndex: 2,
                       }} />
                       <div style={{
                         position: "absolute", top: 16, right: 20,
-                        fontSize: 56, lineHeight: 1, color: "rgba(255,255,255,0.18)",
+                        fontSize: 56, lineHeight: 1, color: "rgba(26,26,27,0.20)",
                         zIndex: 3,
                       }} aria-hidden>{style.glyph}</div>
                       <div style={{
@@ -848,7 +848,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                         <h3 style={{
                           fontFamily: "var(--app-font-serif, Georgia, serif)",
                           fontSize: 22, fontWeight: 600, margin: 0, color: "#FFFFFF",
-                          textShadow: "0 2px 12px rgba(0,0,0,0.85)",
+                          textShadow: "0 2px 12px rgba(26,26,27,0.45)",
                         }}>{style.title}</h3>
                         <p style={{
                           margin: "8px 0 0", fontSize: 11,
@@ -1019,7 +1019,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                             whileTap={{ scale: 0.96 }}
                             style={{
                               background: `linear-gradient(135deg, ${config.theme.accent}, ${config.theme.accentSoft})`,
-                              color: "#0a0806", border: "none",
+                              color: "#F5F2ED", border: "none",
                               padding: "12px 22px", borderRadius: 999,
                               fontSize: 11, fontWeight: 700,
                               letterSpacing: "0.26em", textTransform: "uppercase",
@@ -1103,7 +1103,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                             whileTap={{ scale: 0.96 }}
                             style={{
                               background: `linear-gradient(135deg, ${config.theme.accent}, ${config.theme.accentSoft})`,
-                              color: "#0a0806", border: "none",
+                              color: "#F5F2ED", border: "none",
                               padding: "12px 22px", borderRadius: 999,
                               fontSize: 11, fontWeight: 700,
                               letterSpacing: "0.22em", textTransform: "uppercase",
@@ -1160,8 +1160,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 ].map((s) => (
                   <div key={s.label} style={{
                     padding: "10px 12px",
-                    background: "rgba(255,255,255,0.03)",
-                    border: "1px solid rgba(255,255,255,0.06)",
+                    background: "rgba(26,26,27,0.05)",
+                    border: "1px solid rgba(26,26,27,0.08)",
                     borderRadius: 10,
                   }}>
                     <div style={{ fontSize: 8, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(232,224,200,0.4)", marginBottom: 3 }}>{s.label}</div>
@@ -1259,7 +1259,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
             exit={{ opacity: 0 }}
             style={{
               position: "fixed", inset: 0, zIndex: 200,
-              background: "rgba(0,0,0,0.72)",
+              background: "rgba(26,26,27,0.34)",
               display: "flex", alignItems: "center", justifyContent: "center",
               backdropFilter: "blur(8px)",
               WebkitBackdropFilter: "blur(8px)",
@@ -1313,7 +1313,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                   onClick={handleResume}
                   style={{
                     background: `linear-gradient(135deg, ${config.theme.accent}, ${config.theme.accentSoft})`,
-                    color: "#0a0806", border: "none",
+                    color: "#F5F2ED", border: "none",
                     padding: "12px 28px", borderRadius: 999,
                     fontSize: 12, fontWeight: 700,
                     letterSpacing: "0.22em", textTransform: "uppercase",
@@ -1438,7 +1438,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
               background: "linear-gradient(135deg, #F59E0B, #D97706)",
               borderRadius: 999,
               display: "inline-flex", alignItems: "center", gap: 10,
-              fontSize: 14, fontWeight: 800, color: "#0a0806",
+              fontSize: 14, fontWeight: 800, color: "#F5F2ED",
               letterSpacing: "0.22em", textTransform: "uppercase",
               boxShadow: "0 24px 64px rgba(245,158,11,0.55)",
               whiteSpace: "nowrap",

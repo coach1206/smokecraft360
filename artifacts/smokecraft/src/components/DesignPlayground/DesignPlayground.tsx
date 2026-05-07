@@ -306,7 +306,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
             style={{
               position: "relative",
               borderRadius: 20,
-              background: "rgba(255,255,255,0.022)",
+              background: "rgba(26,26,27,0.03)",
               border: `1px solid ${config.accent}1A`,
               overflow: "hidden",
               display: "flex", alignItems: "center", justifyContent: "center",
@@ -343,7 +343,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                 borderRadius: productR,
                 background: `linear-gradient(155deg, ${swatch.primary}, ${swatch.accent}20)`,
                 border: `2px solid ${swatch.accent}50`,
-                boxShadow: `0 24px 72px rgba(0,0,0,0.65), 0 0 40px ${swatch.accent}18`,
+                boxShadow: `0 24px 72px rgba(26,26,27,0.30), 0 0 40px ${swatch.accent}18`,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 flexDirection: "column", gap: 6,
                 flexShrink: 0,
@@ -386,7 +386,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                 padding: "7px 15px", borderRadius: 999,
                 background: `linear-gradient(135deg, ${swatch.primary}dd, ${swatch.accent}28)`,
                 border: `1px solid ${swatch.accent}66`,
-                boxShadow: `0 6px 22px rgba(0,0,0,0.55), 0 0 12px ${swatch.accent}18`,
+                boxShadow: `0 6px 22px rgba(26,26,27,0.22), 0 0 12px ${swatch.accent}18`,
                 fontSize: 14,
                 fontFamily: "var(--app-font-serif, Georgia, serif)",
                 fontWeight: 600,
@@ -423,7 +423,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                 border: `1px solid ${swatch.accent}55`,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 20,
-                boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
+                boxShadow: "0 4px 16px rgba(26,26,27,0.18)",
                 transform: `scale(${canvasScale})`,
                 transformOrigin: "center",
               }}>
@@ -479,8 +479,8 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                     style={{
                       display: "flex", alignItems: "center", gap: 5,
                       padding: "4px 9px", borderRadius: 999,
-                      background: selectedColor === sw.id ? `${sw.accent}20` : "rgba(255,255,255,0.04)",
-                      border: `1px solid ${selectedColor === sw.id ? sw.accent + "70" : "rgba(255,255,255,0.08)"}`,
+                      background: selectedColor === sw.id ? `${sw.accent}20` : "rgba(26,26,27,0.06)",
+                      border: `1px solid ${selectedColor === sw.id ? sw.accent + "70" : "rgba(26,26,27,0.10)"}`,
                       color: sw.locked ? "rgba(180,155,100,0.3)" : selectedColor === sw.id ? sw.accent : "rgba(180,155,100,0.6)",
                       fontSize: 11, fontWeight: 600, letterSpacing: "0.07em",
                       opacity: sw.locked ? 0.6 : 1,
@@ -504,8 +504,8 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                     onClick={() => setSelectedEmblem(em.id)}
                     style={{
                       padding: "4px 10px", borderRadius: 8, fontSize: 12,
-                      background: selectedEmblem === em.id ? `${config.accent}15` : "rgba(255,255,255,0.04)",
-                      border: `1px solid ${selectedEmblem === em.id ? config.accent + "55" : "rgba(255,255,255,0.08)"}`,
+                      background: selectedEmblem === em.id ? `${config.accent}15` : "rgba(26,26,27,0.06)",
+                      border: `1px solid ${selectedEmblem === em.id ? config.accent + "55" : "rgba(26,26,27,0.10)"}`,
                       color: selectedEmblem === em.id ? config.accent : "rgba(180,155,100,0.6)",
                       cursor: "pointer", fontWeight: 500,
                     }}
@@ -526,8 +526,8 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                       onClick={() => !sf.locked && setSelectFields(prev => ({ ...prev, [sf.id]: opt.id }))}
                       style={{
                         padding: "4px 10px", borderRadius: 8, fontSize: 12,
-                        background: !sf.locked && selectFields[sf.id] === opt.id ? `${config.accent}15` : "rgba(255,255,255,0.04)",
-                        border: `1px solid ${!sf.locked && selectFields[sf.id] === opt.id ? config.accent + "55" : "rgba(255,255,255,0.08)"}`,
+                        background: !sf.locked && selectFields[sf.id] === opt.id ? `${config.accent}15` : "rgba(26,26,27,0.06)",
+                        border: `1px solid ${!sf.locked && selectFields[sf.id] === opt.id ? config.accent + "55" : "rgba(26,26,27,0.10)"}`,
                         color: !sf.locked && selectFields[sf.id] === opt.id ? config.accent : "rgba(180,155,100,0.6)",
                         cursor: sf.locked ? "not-allowed" : "pointer",
                       }}
@@ -585,7 +585,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
               whileTap={{ scale: 0.97 }}
               style={{
                 width: "100%", padding: "10px 18px", borderRadius: 12, flexShrink: 0,
-                background: saved ? "rgba(100,200,120,0.1)" : "rgba(255,255,255,0.04)",
+                background: saved ? "rgba(100,200,120,0.1)" : "rgba(26,26,27,0.06)",
                 border: `1px solid ${saved ? "rgba(100,200,120,0.32)" : config.accent + "28"}`,
                 color: saved ? "rgba(100,200,120,0.85)" : "rgba(232,224,200,0.7)",
                 fontSize: 11, fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase",
@@ -643,7 +643,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                 width: "100%", padding: "14px 20px", borderRadius: 14, flexShrink: 0,
                 background: `linear-gradient(135deg, ${config.accent}, ${config.accentSoft})`,
                 border: "none",
-                color: "#0a0806",
+                color: "#F5F2ED",
                 fontSize: 12, fontWeight: 700, letterSpacing: "0.26em", textTransform: "uppercase",
                 cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 9,

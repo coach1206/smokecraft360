@@ -47,15 +47,15 @@ export function OfflineQueueBanner() {
         position: "fixed", right: 16, bottom: 16, zIndex: 9000,
         background: online ? "rgba(20,18,14,0.95)" : "rgba(140,40,30,0.95)",
         color: "#e8e0c8", padding: "10px 14px", borderRadius: 999,
-        border: "1px solid rgba(212,175,55,0.4)", fontSize: 13,
+        border: "1px solid rgba(212,139,0,0.4)", fontSize: 13,
         display: "flex", alignItems: "center", gap: 10,
-        boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+        boxShadow: "0 8px 24px rgba(26,26,27,0.10)",
       }}
     >
       <span style={{
         width: 8, height: 8, borderRadius: "50%",
-        background: online ? "#d4af37" : "#ff6b6b",
-        boxShadow: online ? "0 0 8px #d4af37" : "0 0 8px #ff6b6b",
+        background: online ? "#D48B00" : "#ff6b6b",
+        boxShadow: online ? "0 0 8px #D48B00" : "0 0 8px #ff6b6b",
       }} />
       <span>
         {online ? "" : "Offline · "}
@@ -68,8 +68,8 @@ export function OfflineQueueBanner() {
           onClick={handleSync}
           disabled={syncing}
           style={{
-            background: "transparent", color: "#d4af37",
-            border: "1px solid rgba(212,175,55,0.4)", borderRadius: 999,
+            background: "transparent", color: "#D48B00",
+            border: "1px solid rgba(212,139,0,0.4)", borderRadius: 999,
             padding: "3px 10px", fontSize: 12, cursor: "pointer",
           }}
         >{syncing ? "Syncing…" : "Sync now"}</button>

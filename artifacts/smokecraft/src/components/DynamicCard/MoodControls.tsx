@@ -45,8 +45,8 @@ export default function MoodControls() {
               padding: "8px 14px", borderRadius: 999, cursor: "pointer",
               border: active
                 ? `1.5px solid ${preset.color}`
-                : "1.5px solid rgba(255,255,255,0.12)",
-              background: active ? `${preset.color}18` : "rgba(255,255,255,0.04)",
+                : "1.5px solid rgba(26,26,27,0.14)",
+              background: active ? `${preset.color}18` : "rgba(26,26,27,0.06)",
               color: active ? preset.color : "rgba(232,224,200,0.6)",
               fontSize: 11, fontWeight: active ? 700 : 500,
               letterSpacing: "0.08em",

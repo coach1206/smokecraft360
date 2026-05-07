@@ -134,7 +134,7 @@ function drawLiquid(
   const grad = ctx.createLinearGradient(0, y0 - physics.waveStrength, 0, h);
   grad.addColorStop(0,   `rgba(${r},${g},${b},0.92)`);
   grad.addColorStop(0.4, `rgba(${r},${g},${b},0.78)`);
-  grad.addColorStop(1,   `rgba(0,0,0,0.65)`);
+  grad.addColorStop(1,   `rgba(26,26,27,0.30)`);
   ctx.fillStyle = grad;
   ctx.fill();
 

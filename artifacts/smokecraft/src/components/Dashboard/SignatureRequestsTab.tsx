@@ -25,14 +25,14 @@ import {
 } from "@/services/api";
 import type { BlendDesign }                 from "@/services/storage";
 
-const GOLD_DIM = "rgba(212,175,55,0.5)";
+const GOLD_DIM = "rgba(212,139,0,0.5)";
 
 const STATUS_COLORS: Record<string, string> = {
   draft:      "rgba(180,155,100,0.65)",
   submitted:  "rgba(100,160,230,0.8)",
   review:     "rgba(230,180,60,0.9)",
   approved:   "rgba(52,200,120,0.85)",
-  production: "rgba(212,175,55,0.95)",
+  production: "rgba(212,139,0,0.95)",
   rejected:   "rgba(239,68,68,0.75)",
 };
 
@@ -96,7 +96,7 @@ function RequestCard({ record, manufacturers, onUpdated }: {
   return (
     <motion.div layout
       className="rounded-xl overflow-hidden"
-      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)" }}>
+      style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.09)" }}>
 
       {/* Summary row */}
       <button className="w-full flex items-center gap-4 p-4 text-left" onClick={() => setOpen((x) => !x)}>
@@ -118,7 +118,7 @@ function RequestCard({ record, manufacturers, onUpdated }: {
             By {record.userName} · {new Date(record.createdAt).toLocaleDateString()}
           </p>
           {record.manufacturer && (
-            <p className="text-[8px]" style={{ color: "rgba(212,175,55,0.45)" }}>
+            <p className="text-[8px]" style={{ color: "rgba(212,139,0,0.45)" }}>
               Assigned: {record.manufacturer.name}
             </p>
           )}
@@ -135,7 +135,7 @@ function RequestCard({ record, manufacturers, onUpdated }: {
           <motion.div
             initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden">
-            <div className="px-4 pb-4 space-y-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+            <div className="px-4 pb-4 space-y-4" style={{ borderTop: "1px solid rgba(26,26,27,0.08)" }}>
 
               {/* Cigar spec summary */}
               <div className="pt-3 grid grid-cols-2 gap-2 text-[8px]">
@@ -166,7 +166,7 @@ function RequestCard({ record, manufacturers, onUpdated }: {
                       className="px-2.5 py-1.5 rounded-lg text-[8px] uppercase tracking-wider transition-all"
                       style={status === s
                         ? { background: `${STATUS_COLORS[s]}18`, border: `1px solid ${STATUS_COLORS[s]}40`, color: STATUS_COLORS[s] }
-                        : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.4)" }
+                        : { background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.4)" }
                       }>{s}</button>
                   ))}
                 </div>
@@ -181,8 +181,8 @@ function RequestCard({ record, manufacturers, onUpdated }: {
                       <button key={ps.id} onClick={() => setStage(ps.id)}
                         className="flex-1 py-1.5 rounded-lg text-[8px] uppercase tracking-wide transition-all"
                         style={stage === ps.id
-                          ? { background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.3)", color: GOLD_DIM }
-                          : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.4)" }
+                          ? { background: "rgba(212,139,0,0.1)", border: "1px solid rgba(212,139,0,0.3)", color: GOLD_DIM }
+                          : { background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.4)" }
                         }>{ps.label}</button>
                     ))}
                   </div>
@@ -196,7 +196,7 @@ function RequestCard({ record, manufacturers, onUpdated }: {
                 </p>
                 <select value={manufacturerId} onChange={(e) => setManufacturerId(e.target.value)}
                   className="w-full bg-transparent outline-none text-xs py-2 px-3 rounded-lg cursor-pointer"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(200,180,145,0.75)" }}>
+                  style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: "rgba(200,180,145,0.75)" }}>
                   <option value="">— No manufacturer —</option>
                   {manufacturers.map((m) => (
                     <option key={m.id} value={m.id}>{m.name} ({m.specialty})</option>
@@ -235,7 +235,7 @@ function RequestCard({ record, manufacturers, onUpdated }: {
               <div className="flex justify-end gap-2 pt-1">
                 <motion.button onClick={() => setOpen(false)}
                   className="px-3 py-2 rounded-lg text-[9px] uppercase tracking-[0.15em]"
-                  style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(180,155,100,0.45)" }}
+                  style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.45)" }}
                   whileHover={{ color: GOLD_DIM }} whileTap={{ scale: 0.97 }}>
                   Cancel
                 </motion.button>
@@ -305,7 +305,7 @@ export function SignatureRequestsTab() {
         </div>
         <motion.button onClick={load}
           className="p-2 rounded-lg"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(180,155,100,0.5)" }}
+          style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}
           whileHover={{ color: GOLD_DIM }} whileTap={{ scale: 0.95 }}>
           <RefreshCw size={12} />
         </motion.button>
@@ -324,12 +324,12 @@ export function SignatureRequestsTab() {
 
       {/* Filter */}
       <div className="flex gap-1 flex-wrap p-0.5 rounded-lg w-fit"
-        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+        style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)" }}>
         {(["all", ...ALL_STATUSES] as const).map((f) => (
           <button key={f} onClick={() => setFilter(f)}
             className="px-2.5 py-1.5 rounded-md text-[8px] uppercase tracking-[0.12em] transition-all duration-200"
             style={filter === f
-              ? { background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.25)", color: "rgba(212,175,55,0.85)" }
+              ? { background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.25)", color: "rgba(212,139,0,0.85)" }
               : { color: "rgba(180,155,100,0.45)" }
             }>
             {f}{f !== "all" && counts[f as Status] ? ` (${counts[f as Status]})` : ""}
@@ -341,12 +341,12 @@ export function SignatureRequestsTab() {
       {loading ? (
         <div className="flex justify-center py-12">
           <motion.div className="w-8 h-8 rounded-full border-2"
-            style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "rgba(212,175,55,0.7)" }}
+            style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.7)" }}
             animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
         </div>
       ) : displayed.length === 0 ? (
         <div className="py-12 text-center rounded-xl"
-          style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.06)" }}>
+          style={{ background: "rgba(26,26,27,0.03)", border: "1px solid rgba(26,26,27,0.08)" }}>
           <Crown size={24} className="mx-auto mb-3" style={{ color: "rgba(180,155,100,0.2)" }} />
           <p className="text-xs" style={{ color: "rgba(180,155,100,0.38)" }}>
             No {filter === "all" ? "" : filter + " "}signature requests

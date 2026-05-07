@@ -24,13 +24,13 @@ import {
 // ── Tokens matching HandoffContainer's dark-chrome palette ────────────────────
 
 const T = {
-  gold:    "#C9A84C",
-  goldDim: "rgba(201,168,76,0.45)",
-  text:    "#F0E8D4",
-  muted:   "rgba(240,232,212,0.45)",
-  dim:     "rgba(240,232,212,0.22)",
-  surface: "rgba(255,255,255,0.04)",
-  border:  "rgba(255,255,255,0.08)",
+  gold:    "#D48B00",
+  goldDim: "rgba(212,139,0,0.45)",
+  text:    "#1A1A1B",
+  muted:   "rgba(26,26,27,0.44)",
+  dim:     "rgba(26,26,27,0.22)",
+  surface: "rgba(26,26,27,0.06)",
+  border:  "rgba(26,26,27,0.10)",
   green:   "#4ade80",
   red:     "#f87171",
   blue:    "#60a5fa",
@@ -54,7 +54,7 @@ function StatCard({
     <div style={{
       flex: 1,
       padding: "12px 14px",
-      background: "rgba(0,0,0,0.38)",
+      background: "rgba(26,26,27,0.09)",
       border: `1px solid ${T.border}`,
       borderRadius: 12,
     }}>
@@ -83,7 +83,7 @@ function RevenueView({ totalLift, isDynamicActive, occupancy }: { totalLift: num
         </div>
         <div style={{
           padding: "3px 10px", borderRadius: 99, fontSize: 8, fontWeight: 700,
-          background: isDynamicActive ? "rgba(74,222,128,0.12)" : "rgba(255,255,255,0.05)",
+          background: isDynamicActive ? "rgba(74,222,128,0.12)" : "rgba(26,26,27,0.07)",
           border: `1px solid ${isDynamicActive ? "rgba(74,222,128,0.30)" : T.border}`,
           color: isDynamicActive ? T.green : T.dim,
           letterSpacing: "0.14em", textTransform: "uppercase",
@@ -96,7 +96,7 @@ function RevenueView({ totalLift, isDynamicActive, occupancy }: { totalLift: num
       <div style={{
         height: 80, display: "flex", alignItems: "flex-end", justifyContent: "space-around",
         gap: 4, padding: "0 4px",
-        background: "rgba(0,0,0,0.28)", borderRadius: 12, border: `1px solid ${T.border}`,
+        background: "rgba(26,26,27,0.06)", borderRadius: 12, border: `1px solid ${T.border}`,
       }}>
         {BAR_HEIGHTS.map((h, i) => (
           <motion.div
@@ -126,7 +126,7 @@ function RevenueView({ totalLift, isDynamicActive, occupancy }: { totalLift: num
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
           style={{
             padding: "10px 14px", borderRadius: 10,
-            background: "rgba(201,168,76,0.06)", border: `1px solid ${T.goldDim}`,
+            background: "rgba(212,139,0,0.06)", border: `1px solid ${T.goldDim}`,
             fontSize: 11, color: T.muted, display: "flex", alignItems: "center", gap: 8,
           }}>
           <TrendingUp size={12} color={T.gold} />
@@ -154,7 +154,7 @@ function AnalyticsView({ occupancy }: { occupancy: number }) {
       </div>
 
       {/* Occupancy meter */}
-      <div style={{ padding: "14px 16px", background: "rgba(0,0,0,0.32)", borderRadius: 12, border: `1px solid ${T.border}` }}>
+      <div style={{ padding: "14px 16px", background: "rgba(26,26,27,0.07)", borderRadius: 12, border: `1px solid ${T.border}` }}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
           <div style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.16em", color: T.muted, display: "flex", alignItems: "center", gap: 6 }}>
             <Users size={10} color={T.muted} /> Live Occupancy
@@ -163,7 +163,7 @@ function AnalyticsView({ occupancy }: { occupancy: number }) {
             {occupancy}%
           </span>
         </div>
-        <div style={{ height: 6, borderRadius: 99, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+        <div style={{ height: 6, borderRadius: 99, background: "rgba(26,26,27,0.08)", overflow: "hidden" }}>
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${occupancy}%` }}
@@ -184,7 +184,7 @@ function AnalyticsView({ occupancy }: { occupancy: number }) {
       </div>
 
       {/* Sentiment */}
-      <div style={{ padding: "14px 16px", background: "rgba(0,0,0,0.28)", borderRadius: 12, border: `1px solid ${T.border}` }}>
+      <div style={{ padding: "14px 16px", background: "rgba(26,26,27,0.06)", borderRadius: 12, border: `1px solid ${T.border}` }}>
         <div style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: "0.16em", color: T.muted, marginBottom: 12 }}>
           Guest Sentiment
         </div>
@@ -197,7 +197,7 @@ function AnalyticsView({ occupancy }: { occupancy: number }) {
                 </div>
                 <span style={{ fontSize: 11, fontWeight: 700, color }}>{pct}%</span>
               </div>
-              <div style={{ height: 4, borderRadius: 99, background: "rgba(255,255,255,0.05)" }}>
+              <div style={{ height: 4, borderRadius: 99, background: "rgba(26,26,27,0.07)" }}>
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${pct}%` }}
@@ -232,7 +232,7 @@ function CampaignsView() {
           initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
           style={{
             padding: "14px 16px",
-            background: "rgba(0,0,0,0.32)",
+            background: "rgba(26,26,27,0.07)",
             border: `1px solid ${c.color}22`,
             borderRadius: 14,
             display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -263,7 +263,7 @@ function CampaignsView() {
 
       <div style={{
         padding: "10px 14px", borderRadius: 10,
-        background: "rgba(255,255,255,0.02)", border: `1px solid ${T.border}`,
+        background: "rgba(26,26,27,0.04)", border: `1px solid ${T.border}`,
         fontSize: 10, color: T.dim, textAlign: "center",
       }}>
         Manage full campaign suite in Campaigns module
@@ -291,11 +291,11 @@ function OperationsView() {
           style={{
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             padding: "11px 14px", borderRadius: 11, textDecoration: "none",
-            background: "rgba(255,255,255,0.02)", border: `1px solid ${T.border}`,
+            background: "rgba(26,26,27,0.04)", border: `1px solid ${T.border}`,
             fontSize: 11, fontWeight: 600, color: T.muted,
             transition: "border-color 0.15s, color 0.15s",
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,76,0.35)"; (e.currentTarget as HTMLElement).style.color = "#F0E8D4"; }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(212,139,0,0.35)"; (e.currentTarget as HTMLElement).style.color = "#1A1A1B"; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = T.border; (e.currentTarget as HTMLElement).style.color = T.muted; }}
         >
           <ExternalLink size={12} />

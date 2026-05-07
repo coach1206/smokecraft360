@@ -45,7 +45,7 @@ export default function VoicePanel({
   commentary,
   autoSpeak    = false,
   onTranscript,
-  accent       = "rgba(212,175,55,0.55)",
+  accent       = "rgba(212,139,0,0.55)",
   testId       = "voice-panel",
 }: VoicePanelProps) {
   const { i18n }   = useTranslation();
@@ -80,7 +80,7 @@ export default function VoicePanel({
         style={{
           margin: "0 0 14px", fontSize: 10,
           letterSpacing: "0.32em", textTransform: "uppercase",
-          color: "#D4AF37", fontWeight: 600,
+          color: "#D48B00", fontWeight: 600,
         }}
       >
         AI Sommelier
@@ -136,8 +136,8 @@ export default function VoicePanel({
               onClick={() => setPersona(p)}
               style={{
                 flex: 1,
-                background:    active ? "rgba(212,175,55,0.22)" : "rgba(255,255,255,0.04)",
-                border:        `1px solid ${active ? "#D4AF37" : "rgba(255,255,255,0.1)"}`,
+                background:    active ? "rgba(212,139,0,0.22)" : "rgba(26,26,27,0.06)",
+                border:        `1px solid ${active ? "#D48B00" : "rgba(255,255,255,0.1)"}`,
                 color:         active ? "#FFFFFF" : "#A8A8A8",
                 padding:       "8px 0",
                 borderRadius:  10,
@@ -167,7 +167,7 @@ export default function VoicePanel({
             }}
             style={{
               flex: 1,
-              background:    voice.isSpeaking ? "#5A2C08" : "#D4AF37",
+              background:    voice.isSpeaking ? "#5A2C08" : "#D48B00",
               color:         voice.isSpeaking ? "#FFFFFF" : "#0A0604",
               border:        "none",
               padding:       "12px 14px",
@@ -201,9 +201,9 @@ export default function VoicePanel({
             aria-pressed={mic.isListening}
             style={{
               minWidth: 52,
-              background:    mic.isListening ? "#8B1A1A" : "rgba(255,255,255,0.06)",
+              background:    mic.isListening ? "#8B1A1A" : "rgba(26,26,27,0.08)",
               color:         "#FFFFFF",
-              border:        `1px solid ${mic.isListening ? "#FF4040" : "rgba(255,255,255,0.15)"}`,
+              border:        `1px solid ${mic.isListening ? "#FF4040" : "rgba(26,26,27,0.17)"}`,
               padding:       "12px 14px",
               borderRadius:  10,
               fontSize:      14,

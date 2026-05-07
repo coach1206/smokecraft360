@@ -30,14 +30,14 @@ const SHELL_PARTICLES = Array.from({ length: 14 }, (_, i) => ({
 }));
 
 export function DashboardShell({
-  title, subtitle, accent = "#C9A84C", backTo = "/dashboard", icon, actions, children,
+  title, subtitle, accent = "#D48B00", backTo = "/dashboard", icon, actions, children,
 }: DashboardShellProps) {
   const [, navigate] = useLocation();
 
   return (
     <div style={{
       height: "100dvh", display: "flex", flexDirection: "column",
-      overflow: "hidden", background: "#080604", color: "#F5E7C8",
+      overflow: "hidden", background: "#F5F2ED", color: "#1A1A1B",
       position: "relative",
     }}>
       {/* Ambient top glow */}
@@ -67,10 +67,10 @@ export function DashboardShell({
         position: "relative", zIndex: 10, flexShrink: 0,
         display: "flex", alignItems: "center", gap: 14,
         padding: "13px 22px",
-        borderBottom: "1px solid rgba(255,210,120,0.10)",
-        background: "linear-gradient(180deg, #13110E 0%, #0E0B09EE 100%)",
+        borderBottom: "1px solid rgba(212,139,0,0.10)",
+        background: "linear-gradient(180deg, #EFEBE0 0%, #EFEBE0EE 100%)",
         backdropFilter: "blur(20px)",
-        boxShadow: "0 1px 0 rgba(255,210,120,0.06), 0 4px 24px rgba(0,0,0,0.45)",
+        boxShadow: "0 1px 0 rgba(212,139,0,0.06), 0 4px 24px rgba(26,26,27,0.14)",
       }}>
         {/* Back button */}
         <motion.button
@@ -79,9 +79,9 @@ export function DashboardShell({
           style={{
             display: "flex", alignItems: "center", justifyContent: "center",
             width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-            background: "#211D19", border: "1px solid rgba(255,210,120,0.18)",
-            color: "#B39B77", cursor: "pointer",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.35)",
+            background: "#2A2A2A", border: "1px solid rgba(212,139,0,0.18)",
+            color: "#6B5E4E", cursor: "pointer",
+            boxShadow: "0 2px 8px rgba(26,26,27,0.08)",
           }}
         >
           <ArrowLeft size={20} />
@@ -94,7 +94,7 @@ export function DashboardShell({
             {title}
           </div>
           {subtitle && (
-            <div style={{ fontSize: 12, color: "#B39B77", marginTop: 1 }}>{subtitle}</div>
+            <div style={{ fontSize: 12, color: "#6B5E4E", marginTop: 1 }}>{subtitle}</div>
           )}
         </div>
 

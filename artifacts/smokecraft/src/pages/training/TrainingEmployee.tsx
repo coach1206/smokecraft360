@@ -20,9 +20,9 @@ import {
 } from "@/hooks/useTrainingApi";
 
 const T = {
-  bg: "#06040a", card: "rgba(255,255,255,0.04)", border: "rgba(201,168,76,0.15)",
-  gold: "#c9a84c", text: "rgba(240,232,212,0.92)", muted: "rgba(240,232,212,0.48)",
-  light: "rgba(240,232,212,0.75)", green: "#34d399", amber: "#f59e0b",
+  bg: "#F5F2ED", card: "rgba(26,26,27,0.06)", border: "rgba(212,139,0,0.15)",
+  gold: "#D48B00", text: "rgba(26,26,27,0.90)", muted: "rgba(240,232,212,0.48)",
+  light: "rgba(26,26,27,0.72)", green: "#34d399", amber: "#f59e0b",
 };
 
 const ROLE_CONTENT: Record<string, Array<{ step: string; title: string; body: string }>> = {
@@ -238,7 +238,7 @@ export default function TrainingEmployee() {
                     await persistStep(stepIdx, false);
                     setStepIdx((s) => s + 1);
                   }} style={{
-                    background: role.color, border: "none", borderRadius: 9, color: "#06040a",
+                    background: role.color, border: "none", borderRadius: 9, color: "#F5F2ED",
                     padding: "10px 22px", cursor: "pointer", fontSize: 12, fontWeight: 700,
                     display: "flex", alignItems: "center", gap: 6,
                   }}>
@@ -250,7 +250,7 @@ export default function TrainingEmployee() {
                     await persistStep(stepIdx, true);
                     setShowSignOff(true);
                   }} style={{
-                    background: T.gold, border: "none", borderRadius: 9, color: "#06040a",
+                    background: T.gold, border: "none", borderRadius: 9, color: "#F5F2ED",
                     padding: "10px 22px", cursor: "pointer", fontSize: 12, fontWeight: 700,
                     display: "flex", alignItems: "center", gap: 6,
                   }}>

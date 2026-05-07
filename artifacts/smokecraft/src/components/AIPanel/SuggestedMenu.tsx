@@ -44,12 +44,12 @@ export default function SuggestedMenu({
   if (loading || items.length === 0) return null;
 
   return (
-    <div data-testid={testId} style={{ marginTop: 24, paddingTop: 20, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+    <div data-testid={testId} style={{ marginTop: 24, paddingTop: 20, borderTop: "1px solid rgba(26,26,27,0.10)" }}>
       <p
         style={{
           margin: "0 0 14px", fontSize: 10,
           letterSpacing: "0.32em", textTransform: "uppercase",
-          color: "#D4AF37", fontWeight: 600,
+          color: "#D48B00", fontWeight: 600,
         }}
       >
         From the kitchen — pairs with this
@@ -70,8 +70,8 @@ export default function SuggestedMenu({
             disabled={!onSelect}
             style={{
               textAlign:    "left",
-              background:   "rgba(255,255,255,0.04)",
-              border:       "1px solid rgba(212,175,55,0.18)",
+              background:   "rgba(26,26,27,0.06)",
+              border:       "1px solid rgba(212,139,0,0.18)",
               borderRadius: 14,
               padding:      "14px 16px",
               cursor:       onSelect ? "pointer" : "default",
@@ -88,7 +88,7 @@ export default function SuggestedMenu({
               >
                 {item.name}
               </h4>
-              <span style={{ fontSize: 13, color: "#D4AF37", fontWeight: 700 }}>
+              <span style={{ fontSize: 13, color: "#D48B00", fontWeight: 700 }}>
                 ${(item.priceCents / 100).toFixed(2)}
               </span>
             </div>

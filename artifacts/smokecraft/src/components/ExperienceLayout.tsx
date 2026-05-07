@@ -53,8 +53,8 @@ export function ExperienceLayout({ sidebar, children, rightPanel }: Props) {
                 background:     "rgba(10,8,5,0.75)",
                 backdropFilter: "blur(20px) saturate(1.4)",
                 WebkitBackdropFilter: "blur(20px) saturate(1.4)",
-                borderLeft:     "1px solid rgba(212,175,55,0.09)",
-                boxShadow:      "-4px 0 32px rgba(0,0,0,0.5)",
+                borderLeft:     "1px solid rgba(212,139,0,0.09)",
+                boxShadow:      "-4px 0 32px rgba(26,26,27,0.18)",
               }}
               initial={{ x: 300, opacity: 0 }}
               animate={{ x: 0,   opacity: 1 }}

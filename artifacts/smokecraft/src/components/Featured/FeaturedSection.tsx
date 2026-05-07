@@ -65,14 +65,14 @@ export function FeaturedSection({ featured, onSelect }: FeaturedSectionProps) {
     >
       {/* Section header — explicit upsell label per the brief. */}
       <div className="flex items-center gap-3 mb-5">
-        <Sparkles size={16} style={{ color: "rgba(212,175,55,0.85)" }} />
+        <Sparkles size={16} style={{ color: "rgba(212,139,0,0.85)" }} />
         <span style={{
           fontSize: 13, textTransform: "uppercase", letterSpacing: "0.28em",
           color: "rgba(232,212,172,0.92)", fontWeight: 700,
         }}>
           Upgrade Your Experience
         </span>
-        <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, rgba(212,175,55,0.3), transparent)" }} />
+        <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, rgba(212,139,0,0.3), transparent)" }} />
       </div>
 
       <div className={`grid gap-3 ${featured.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
@@ -113,12 +113,12 @@ function FeaturedCard({
     <Wrapper
       onClick={onSelect ? () => onSelect(product) : undefined}
       className="relative rounded-xl overflow-hidden flex flex-col text-left"
-      whileHover={onSelect ? { scale: 1.02, boxShadow: "0 8px 28px rgba(212,175,55,0.25)" } : {}}
+      whileHover={onSelect ? { scale: 1.02, boxShadow: "0 8px 28px rgba(212,139,0,0.25)" } : {}}
       whileTap={onSelect   ? { scale: 0.97 } : {}}
       style={{
-        background: "linear-gradient(135deg, rgba(212,175,55,0.10), rgba(255,245,220,0.025))",
-        border: "1px solid rgba(212,175,55,0.32)",                             /* stronger gold per brief */
-        boxShadow: "0 6px 22px rgba(0,0,0,0.35), 0 0 0 1px rgba(212,175,55,0.08) inset",
+        background: "linear-gradient(135deg, rgba(212,139,0,0.10), rgba(255,245,220,0.025))",
+        border: "1px solid rgba(212,139,0,0.32)",                             /* stronger gold per brief */
+        boxShadow: "0 6px 22px rgba(26,26,27,0.08), 0 0 0 1px rgba(212,139,0,0.08) inset",
         cursor: onSelect ? "pointer" : "default",
         appearance: "none",
         width: "100%",
@@ -132,9 +132,9 @@ function FeaturedCard({
             position: "absolute", top: 10, right: 10,
             padding: "5px 11px", borderRadius: 999,
             fontSize: 13, fontWeight: 700, letterSpacing: "0.04em",
-            background: "linear-gradient(135deg, #b07c14, #D4AF37)",
-            color: "#1A1208",
-            boxShadow: "0 4px 14px rgba(212,175,55,0.45)",
+            background: "linear-gradient(135deg, #b07c14, #D48B00)",
+            color: "#EFEBE0",
+            boxShadow: "0 4px 14px rgba(212,139,0,0.45)",
           }}>{delta}</span>
         )}
       </div>
@@ -142,7 +142,7 @@ function FeaturedCard({
       <div className="p-4 relative">
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,175,55,0.06), transparent)" }}
+          style={{ background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,139,0,0.06), transparent)" }}
         />
 
         {/* Badge row — at most one psychology badge + the category. */}
@@ -152,8 +152,8 @@ function FeaturedCard({
               display: "inline-flex", alignItems: "center", gap: 5,
               padding: "4px 10px", borderRadius: 999,
               fontSize: 11, textTransform: "uppercase", letterSpacing: "0.16em", fontWeight: 700,
-              background: "rgba(212,175,55,0.18)",
-              border: "1px solid rgba(212,175,55,0.45)",
+              background: "rgba(212,139,0,0.18)",
+              border: "1px solid rgba(212,139,0,0.45)",
               color: "rgba(245,225,180,0.95)",
             }}>
               <Badge size={11} />{badge.label}
@@ -163,7 +163,7 @@ function FeaturedCard({
             padding: "4px 10px", borderRadius: 999,
             fontSize: 11, textTransform: "capitalize", letterSpacing: "0.06em",
             background: "rgba(255,245,220,0.05)",
-            border: "1px solid rgba(212,175,55,0.16)",
+            border: "1px solid rgba(212,139,0,0.16)",
             color: "rgba(200,180,140,0.78)",
           }}>
             {product.category}
@@ -183,8 +183,8 @@ function FeaturedCard({
             <span key={note} style={{
               padding: "3px 9px", borderRadius: 999, fontSize: 12,
               textTransform: "capitalize",
-              background: "rgba(212,175,55,0.08)",
-              border: "1px solid rgba(212,175,55,0.22)",
+              background: "rgba(212,139,0,0.08)",
+              border: "1px solid rgba(212,139,0,0.22)",
               color: "rgba(225,205,165,0.88)",
             }}>{note}</span>
           ))}
@@ -201,7 +201,7 @@ function FeaturedCard({
               {[1, 2, 3, 4, 5].map((dot) => (
                 <div key={dot} style={{
                   width: 7, height: 7, borderRadius: 999,
-                  background: dot <= product.strength ? "rgba(212,175,55,0.85)" : "rgba(255,255,255,0.10)",
+                  background: dot <= product.strength ? "rgba(212,139,0,0.85)" : "rgba(26,26,27,0.12)",
                 }} />
               ))}
             </div>
