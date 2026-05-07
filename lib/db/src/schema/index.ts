@@ -98,3 +98,4 @@ export * from "./environmentSyncHistory";
 export * from "./securityAuditTrail";
 export * from "./guestBadges";
 export * from "./serverPulseEvents";
+export * from "./venueStaff";

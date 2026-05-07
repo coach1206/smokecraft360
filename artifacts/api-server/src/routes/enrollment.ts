@@ -24,7 +24,9 @@ const router = Router();
 
 const enrollSchema = z.object({
   firstName:            z.string().min(1).max(50).trim(),
-  lastInitial:          z.string().length(1).toUpperCase(),
+  // lastInitial is optional — derived from lastName if not provided
+  lastInitial:          z.string().length(1).optional(),
+  lastName:             z.string().min(1).max(80).trim().optional(),  // Universal Identity Key
   phoneLast4:           z.string().length(4).regex(/^\d{4}$/).optional(),
   email:                z.string().email().optional(),
   gender:               z.string().optional(),
@@ -41,8 +43,11 @@ const enrollSchema = z.object({
 router.post("/enroll", async (req, res) => {
   const body = enrollSchema.parse(req.body);
 
+  // Derive lastInitial from lastName if not explicitly provided (new Universal Identity Key flow)
+  const lastInitial = body.lastInitial
+    ?? (body.lastName ? body.lastName[0]!.toUpperCase() : "X");
   const phoneSuffix = body.phoneLast4 ?? String(Math.floor(1000 + Math.random() * 9000));
-  const publicId    = `${body.firstName} ${body.lastInitial} · ${phoneSuffix}`;
+  const publicId    = `${body.firstName} ${lastInitial} · ${phoneSuffix}`;
 
   // Use guest-chosen mentor if provided, otherwise auto-assign
   const resolvedMentorId = body.mentorId && getMentorById(body.mentorId)
@@ -59,7 +64,8 @@ router.post("/enroll", async (req, res) => {
     .values({
       publicId,
       firstName:            body.firstName,
-      lastInitial:          body.lastInitial,
+      lastInitial:          lastInitial,
+      lastName:             body.lastName,
       phoneLast4:           body.phoneLast4,
       email:                body.email,
       gender:               body.gender,
@@ -88,25 +94,50 @@ router.post("/enroll", async (req, res) => {
 });
 
 // ── POST /api/enrollment/return ───────────────────────────────────────────────
+// Supports two lookup strategies:
+//   1. lastName  + phoneLast4  (Universal Identity Key — spec requirement)
+//   2. firstName + phoneLast4  (legacy / kiosk fast-return)
 
 const returnSchema = z.object({
-  firstName:  z.string().min(1).trim(),
+  lastName:   z.string().min(1).trim().optional(),
+  firstName:  z.string().min(1).trim().optional(),
   phoneLast4: z.string().length(4).regex(/^\d{4}$/),
+}).refine(d => d.lastName || d.firstName, {
+  message: "Either lastName or firstName is required",
 });
 
 router.post("/return", async (req, res) => {
-  const { firstName, phoneLast4 } = returnSchema.parse(req.body);
+  const { lastName, firstName, phoneLast4 } = returnSchema.parse(req.body);
 
-  const [existing] = await db
-    .select()
-    .from(guestProfilesTable)
-    .where(
-      and(
-        eq(guestProfilesTable.firstName, firstName),
-        eq(guestProfilesTable.phoneLast4, phoneLast4),
-      ),
-    )
-    .limit(1);
+  // Try lastName lookup first (Universal Identity Key)
+  let existing: typeof guestProfilesTable.$inferSelect | undefined;
+
+  if (lastName) {
+    [existing] = await db
+      .select()
+      .from(guestProfilesTable)
+      .where(
+        and(
+          eq(guestProfilesTable.lastName, lastName),
+          eq(guestProfilesTable.phoneLast4, phoneLast4),
+        ),
+      )
+      .limit(1);
+  }
+
+  // Fallback to firstName lookup (backwards compat)
+  if (!existing && firstName) {
+    [existing] = await db
+      .select()
+      .from(guestProfilesTable)
+      .where(
+        and(
+          eq(guestProfilesTable.firstName, firstName),
+          eq(guestProfilesTable.phoneLast4, phoneLast4),
+        ),
+      )
+      .limit(1);
+  }
 
   if (!existing) {
     res.status(404).json({ error: "Guest not found" });
@@ -122,7 +153,7 @@ router.post("/return", async (req, res) => {
     .where(eq(guestProfilesTable.id, existing.id))
     .returning();
 
-  const mentor = getMentorById(profile.assignedMentorId ?? "");
+  const mentor = getMentorById(profile!.assignedMentorId ?? "");
 
   res.json({ profile, mentor, returning: true });
 });

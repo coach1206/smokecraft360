@@ -103,6 +103,8 @@ import ExecutiveWarRoom               from "@/pages/ExecutiveWarRoom";
 import ManufacturerWarRoom            from "@/pages/ManufacturerWarRoom";
 import InvestorSimulator              from "@/pages/InvestorSimulator";
 import IdentityLedger                from "@/pages/IdentityLedger";
+import ServiceSagePage               from "@/pages/ServiceSagePage";
+import EstablishmentSetupPage        from "@/pages/EstablishmentSetupPage";
 import { StaffBOHFeed }              from "@/components/StaffBOHFeed";
 
 const queryClient = new QueryClient();
@@ -191,6 +193,8 @@ function Router() {
       <Route path="/admin/manual"             component={VenueManual}         />
       <Route path="/training/staff"           component={StaffTraining}       />
       <Route path="/identity-ledger"          component={IdentityLedger}      />
+      <Route path="/staff/sage"               component={ServiceSagePage}     />
+      <Route path="/venue-setup"              component={EstablishmentSetupPage} />
       {/* Dynamic per-theme entry URL (/smokecraft, /pourcraft, /grillcraft …).
           Declared LAST in the Switch so explicit app routes above always win;
           loadTheme() resolves the active theme from the first path segment.

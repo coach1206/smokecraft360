@@ -53,13 +53,12 @@ const QUESTIONS: Question[] = [
   },
   {
     type:        "text",
-    id:          "lastInitial",
-    prompt:      "And your last initial?",
-    sub:         "Combined with your name to create your private lounge identity.",
-    placeholder: "e.g. A",
-    maxLength:   1,
-    transform:   (v) => v.toUpperCase().replace(/[^A-Z]/g, ""),
-    validate:    (v) => /^[A-Z]$/.test(v.trim()),
+    id:          "lastName",
+    prompt:      "And your last name?",
+    sub:         "Your Universal Identity Key — reconnects you to your Mentor and Mastery Score at any Axiom venue.",
+    placeholder: "e.g. Rivera",
+    maxLength:   80,
+    validate:    (v) => v.trim().length > 0,
   },
   {
     type:        "text",
@@ -331,7 +330,7 @@ export default function EnrollmentFlow({ craftType: _craftType, onComplete, onSk
             {/* Text input */}
             {question.type === "text" && (
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {question.id === "lastInitial" && (
+                {question.id === "lastName" && (
                   <p style={{
                     textAlign:     "center",
                     fontSize:      "0.7rem",
@@ -340,7 +339,7 @@ export default function EnrollmentFlow({ craftType: _craftType, onComplete, onSk
                     textTransform: "uppercase",
                     margin:        0,
                   }}>
-                    Single letter only — A through Z
+                    Used to reconnect you at any Axiom venue
                   </p>
                 )}
                 <input
@@ -354,9 +353,7 @@ export default function EnrollmentFlow({ craftType: _craftType, onComplete, onSk
                     const transformed = q.transform ? q.transform(raw) : raw;
                     if (q.transform && raw.length > 0 && transformed.length === 0) {
                       setError(
-                        question.id === "lastInitial"
-                          ? "Please enter a letter (A–Z)."
-                          : question.id === "phoneLast4"
+                        question.id === "phoneLast4"
                           ? "Numbers only — 4 digits."
                           : "Please enter a valid answer."
                       );
@@ -380,7 +377,7 @@ export default function EnrollmentFlow({ craftType: _craftType, onComplete, onSk
                     outline:       "none",
                     width:         "100%",
                     caretColor:    "rgba(212,139,0,0.8)",
-                    letterSpacing: (question.id === "lastInitial" || question.id === "phoneLast4") ? "0.3em" : undefined,
+                    letterSpacing: question.id === "phoneLast4" ? "0.3em" : undefined,
                   }}
                 />
                 {error && (

@@ -1,0 +1,30 @@
+PASTE THIS INTO THE REPLIT AGENT:
+Role: Lead Enterprise Operations & Identity Architect for Axiom OS.
+Objective: Build the Venue & Staff Management Ecosystem and formalize the Universal Identity Key for persistent guest recognition.
+1. THE UNIVERSAL IDENTITY KEY (LOGIN LOGIC):
+• Persistence Engine: Implement a login system where returning guests access their profile using [Last Name] + [Last 4 Digits of Phone].
+• This "Key" must instantly reconnect them to their Chosen Mentor, their Mastery Score, and their Golden Box Progress regardless of which Axiom venue they are in.
+• Neural Wiring: Ensure the guest_identity_profiles table is indexed to support this unique login combination.
+2. THE VENUE ONBOARDING PORTAL (OWNER VIEW):
+• Create a high-end "Establishment Setup" flow for venue owners.
+• Inventory Intake: Build a simple interface for the owner to list their current Cigar/Spirit/Beer stock. The AI Sage must pull from this list when providing guest nudges.
+• Staff Management: A portal to create staff IDs and assign them to specific sections or tables.
+3. THE SERVICE SAGE DASHBOARD (STAFF VIEW):
+• Build a high-utility, mobile-responsive Waitstaff Dashboard.
+• The Live Floor: A grid view of active tables.
+• The Nudge Feed: When a guest at Table [X] completes a "Draft," the server receives an instant alert:
+• Ex: "Guest: [Last Name]. Level: [Apprentice]. Recommendation: Serve [Inventory Item] for +10 Mastery."
+• Conversion Tracker: A button for the server to "Confirm Sale." This logs the ROI for the owner’s Executive View (Phase 2).
+4. THE STAFF INITIATION (3-SLIDE QUICK-START):
+• Implement a 60-second "Staff Onboarding" slideshow within the portal:
+• Slide 1: How the Game Drives Tips (Expert guests spend 20% more).
+• Slide 2: Understanding the Nudge (How to use the Sage’s advice as a sales tool).
+• Slide 3: Prestige Recognition (Congratulating high-level "Sommeliers" to build loyalty).
+5. VISUAL STANDARDS:
+• Industrial-Luxe Back-Office: Use a clean, high-contrast version of the Axiom theme. Focus on high-speed utility and "glance-able" data.
+GO. Close the loop between Guest, Staff, and Venue.
+What this solves for you:
+• Data Portability: Your users aren't locked to one building. They carry their status with them using that Last Name + Last 4 code. This makes Axiom OS a national network, not just an app.
+• Staff Buy-In: By showing the waitstaff that the "Nudge" helps them get higher tips and sales, you ensure they actually use the system instead of ignoring it.
+• Owner ROI: The owner can now see exactly how many drinks or cigars were sold specifically because the AI Sage recommended them.
+Once the Agent finishes this, the "Sovereign Organism" is fully staffed and ready for the first pilot venue.

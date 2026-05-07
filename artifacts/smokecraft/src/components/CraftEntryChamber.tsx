@@ -382,9 +382,13 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
 
   async function handleMentorSelected(mentorId: string) {
     try {
+      const lastName    = pendingAnswers?.lastName;
+      const lastInitial = pendingAnswers?.lastInitial
+        ?? (lastName ? lastName[0]!.toUpperCase() : "A");
       await enroll({
         firstName:            pendingAnswers?.firstName ?? "",
-        lastInitial:          pendingAnswers?.lastInitial ?? "A",
+        lastInitial,
+        lastName,
         phoneLast4:           pendingAnswers?.phoneLast4 || undefined,
         email:                pendingAnswers?.email || undefined,
         gender:               pendingAnswers?.gender || undefined,

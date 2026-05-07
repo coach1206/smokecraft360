@@ -1,0 +1,25 @@
+PASTE THIS INTO THE REPLIT AGENT:
+Role: Lead Backend & Systems Architect for Axiom OS.
+Objective: Implement the Staff-to-Guest Integration Layer and the Universal Identity Authentication system.
+1. IMPLEMENT THE "MASTER KEY" LOGIN:
+• Create a login endpoint /api/auth/guest-return.
+• Logic: Allow guests to retrieve their profile using Last Name and Last 4 Digits of Phone.
+• Persistence: Ensure this pulls their total_mastery, chosen_mentor, and golden_box_progress into the current session.
+2. BUILD THE INVENTORY MATCHING ENGINE:
+• Implement logic in /engines/inventory_matcher.js that compares the guest's Draft Profile (Flavor, Body, Texture) against the venue_inventory table.
+• The Nudge Logic: The engine must prioritize items with a high premium_tier that match the guest’s taste to maximize venue ROI.
+3. ACTIVATE THE STAFF DASHBOARD API:
+• Create endpoints for /api/staff/login (via PIN) and /api/staff/tables.
+• Real-time Wiring: Use WebSockets or a Server-Sent Events (SSE) stream to push the "Server Pulse" to the Staff UI.
+• Data Payload: Every nudge sent to staff must include the Guest's Name, Mastery Level, and the "Sage's Recommendation."
+4. REVENUE TRACKING:
+• Create a POST /api/sales/confirm-nudge endpoint.
+• When a waitress confirms a sale from a nudge, update the venue_revenue_pressure table and increase the guest's Mastery XP.
+VISUAL STANDARDS:
+• All backend logs should be clean and professional. The Staff UI should remain high-utility with "Large-Target" buttons for fast-paced environments.
+GO. Wire the Backend Intelligence.
+Why this is the "Final Fix":
+• The Key works: You now have a way for guests to "belong" to your network forever.
+• The Staff works: The waitress is no longer just a server; she’s an Expert closer backed by your AI.
+• The Money works: You are now tracking "Nudge-to-Sale" conversion, which is the exact metric you need to prove the system's value to the venue owner.
+The "Sovereign Organism" is officially wired and ready for the first real-world interaction.

@@ -53,7 +53,8 @@ export interface Mentor {
 
 export interface EnrollPayload {
   firstName:            string;
-  lastInitial:          string;
+  lastInitial?:         string;  // optional — derived from lastName on the server if absent
+  lastName?:            string;  // Universal Identity Key: Last Name + Phone Last 4
   phoneLast4?:          string;
   email?:               string;
   gender?:              string;
