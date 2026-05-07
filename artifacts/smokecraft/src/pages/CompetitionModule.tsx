@@ -1524,8 +1524,8 @@ export default function CompetitionModule() {
                     padding: "64px 20px", color: "rgba(26,26,27,0.30)", textAlign: "center",
                   }}>
                     <Trophy size={40} />
-                    <div style={{ fontSize: 15, fontWeight: 600 }}>No tournaments yet</div>
-                    <div style={{ fontSize: 12 }}>Use the Create Tournament button to run your first competition.</div>
+                    <div style={{ fontSize: 15, fontWeight: 600 }}>No tournaments created yet</div>
+                    <div style={{ fontSize: 12, maxWidth: 280 }}>Tap "Create Tournament" to launch your first competition — venue-wide, daily, or grand series.</div>
                   </div>
                 ) : (
                   <>
@@ -1594,13 +1594,92 @@ export default function CompetitionModule() {
               <RefreshCw size={24} color="rgba(26,26,27,0.30)" style={{ animation: "spin 1s linear infinite" }} />
             </div>
           ) : visible.length === 0 ? (
-            <div style={{
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 12,
-              padding: "64px 20px", color: "rgba(26,26,27,0.30)", textAlign: "center",
-            }}>
-              <Trophy size={40} />
-              <div style={{ fontSize: 15, fontWeight: 600 }}>No active tournaments</div>
-              <div style={{ fontSize: 12 }}>Check back soon — competitions reset regularly.</div>
+
+            <div style={{ padding: "0 0 16px" }}>
+              {/* ── LEGEND SERIES — Mock featured tournament ── */}
+              <div style={{
+                borderRadius: 18, overflow: "hidden", marginBottom: 16,
+                background: "linear-gradient(135deg, rgba(212,139,0,0.12) 0%, rgba(212,139,0,0.04) 100%)",
+                border: "1.5px solid rgba(212,139,0,0.45)",
+                boxShadow: "0 8px 32px rgba(212,139,0,0.08)",
+              }}>
+                {/* Header */}
+                <div style={{ padding: "18px 20px 14px", borderBottom: "1px solid rgba(212,139,0,0.18)" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ fontSize: 22 }}>🏆</span>
+                      <div>
+                        <div style={{ fontSize: 17, fontWeight: 800, color: "#D48B00" }}>Legend Series</div>
+                        <div style={{ fontSize: 11, color: "rgba(26,26,27,0.45)" }}>Grand · Multi-craft · All venues</div>
+                      </div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{
+                        padding: "3px 10px", borderRadius: 99, fontSize: 9, fontWeight: 800,
+                        letterSpacing: "0.14em", textTransform: "uppercase",
+                        background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.35)", color: "#22c55e",
+                      }}>● LIVE</div>
+                      <div style={{ fontSize: 10, color: "rgba(26,26,27,0.38)", marginTop: 4 }}>Resets in 6h 22m</div>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: 16 }}>
+                    {[["247", "Entrants"], ["$2,400", "Prize Pool"], ["1st", "1 Week Free"]].map(([v, l]) => (
+                      <div key={l}>
+                        <div style={{ fontSize: 15, fontWeight: 700, color: "#1A1A1B" }}>{v}</div>
+                        <div style={{ fontSize: 9, color: "rgba(26,26,27,0.38)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{l}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Live Leaderboard */}
+                <div style={{ padding: "14px 20px" }}>
+                  <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(26,26,27,0.30)", marginBottom: 12 }}>
+                    Live Leaderboard
+                  </div>
+                  {[
+                    { rank: 1, name: "Marcus R.",   venue: "The Vault",       pts: 2847, craft: "smoke", badge: "🥇" },
+                    { rank: 2, name: "Sofia M.",    venue: "Oak & Ember",     pts: 2341, craft: "pour",  badge: "🥈" },
+                    { rank: 3, name: "Omar K.",     venue: "The Reserve",     pts: 1998, craft: "smoke", badge: "🥉" },
+                    { rank: 4, name: "Jade T.",     venue: "Velvet Room",     pts: 1654, craft: "brew",  badge: "4" },
+                    { rank: 5, name: "Theo B.",     venue: "The Vault",       pts: 1102, craft: "pour",  badge: "5" },
+                  ].map((entry) => (
+                    <div key={entry.rank} style={{
+                      display: "flex", alignItems: "center", gap: 12,
+                      padding: "10px 14px", borderRadius: 12, marginBottom: 6,
+                      background: entry.rank <= 3 ? `rgba(212,139,0,0.06)` : "rgba(26,26,27,0.03)",
+                      border: `1px solid ${entry.rank === 1 ? "rgba(212,139,0,0.35)" : entry.rank <= 3 ? "rgba(212,139,0,0.15)" : "rgba(26,26,27,0.08)"}`,
+                    }}>
+                      <div style={{ width: 30, textAlign: "center", fontSize: entry.rank <= 3 ? 16 : 12, fontWeight: 700, color: entry.rank <= 3 ? "#D48B00" : "rgba(26,26,27,0.35)" }}>
+                        {entry.badge}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1A1B" }}>{entry.name}</div>
+                        <div style={{ fontSize: 10, color: "rgba(26,26,27,0.38)" }}>{entry.venue} · {entry.craft.toUpperCase()}</div>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <div style={{ fontSize: 15, fontWeight: 800, color: "#D48B00" }}>{entry.pts.toLocaleString()}</div>
+                        <div style={{ fontSize: 9, color: "rgba(26,26,27,0.30)", textTransform: "uppercase", letterSpacing: "0.1em" }}>pts</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* ── Coming up next ── */}
+              <div style={{ display: "flex", gap: 10 }}>
+                {[
+                  { label: "Happy Hour Hustle", type: "DAILY",  color: "#22c55e",  starts: "Starts 4 PM" },
+                  { label: "Weekly Smoke-Off",  type: "WEEKLY", color: "#D48B00",  starts: "Sat · 7 PM"  },
+                ].map(t => (
+                  <div key={t.label} style={{
+                    flex: 1, padding: "14px 16px", borderRadius: 14,
+                    background: `${t.color}08`, border: `1px solid ${t.color}25`,
+                  }}>
+                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.16em", textTransform: "uppercase", color: t.color, marginBottom: 5 }}>{t.type}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1A1B", marginBottom: 3 }}>{t.label}</div>
+                    <div style={{ fontSize: 10, color: "rgba(26,26,27,0.38)" }}>{t.starts}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
             <>

@@ -9,7 +9,7 @@ import ConfirmModal from "@/components/ConfirmModal";
 import BackgroundLayer from "@/components/Layout/BackgroundLayer";
 
 const C = {
-  header:    "linear-gradient(180deg, #12100E 0%, #EFEBE0ee 100%)",
+  header:    "rgba(16,14,12,0.97)",
   border:    "rgba(212,139,0,0.12)",
   text:      "#1A1A1B",
   muted:     "#6B5E4E",
@@ -28,12 +28,12 @@ const PRESTIGE_COLORS: Record<string, string> = {
 };
 
 const DEMO_STAFF = [
-  { id: "ds1", name: "Marcus Rivera",  role: "manager", status: "active",   pin: "1111", table: "Table 4",    prestige: "Connoisseur" },
-  { id: "ds2", name: "Jess Laurent",   role: "staff",   status: "active",   pin: "2222", table: "Bar Station", prestige: "Novice"      },
-  { id: "ds3", name: "Omar Chen",      role: "staff",   status: "active",   pin: "3333", table: "Table 1",    prestige: "Master"      },
-  { id: "ds4", name: "Sofia Reyes",    role: "owner",   status: "active",   pin: "4444", table: "—",          prestige: "Legend"      },
-  { id: "ds5", name: "Theo Marchetti", role: "staff",   status: "inactive", pin: "5555", table: "—",          prestige: "Novice"      },
-] as const;
+  { id: "ds1", name: "Marcus Rivera",  role: "manager", status: "active",   pin: "1111", table: "Table 4",    prestige: "Legend",      lift: 48 },
+  { id: "ds2", name: "Jess Laurent",   role: "staff",   status: "active",   pin: "2222", table: "Bar Station", prestige: "Novice",      lift: 12 },
+  { id: "ds3", name: "Omar Chen",      role: "staff",   status: "active",   pin: "3333", table: "Table 1",    prestige: "Master",      lift: 31 },
+  { id: "ds4", name: "Sofia Reyes",    role: "owner",   status: "active",   pin: "4444", table: "—",          prestige: "Master",      lift: 0  },
+  { id: "ds5", name: "Theo Marchetti", role: "staff",   status: "inactive", pin: "5555", table: "—",          prestige: "Novice",      lift: 0  },
+];
 
 export default function StaffModule() {
   const [, navigate] = useLocation();
@@ -94,7 +94,7 @@ export default function StaffModule() {
             style={{ gridColumn: "1/-1", borderRadius: 16, background: C.card, border: `1px solid ${C.border}`, overflow: "hidden", marginBottom: 4 }}>
             {/* Table header */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 120px", gap: 0, padding: "10px 20px", background: "rgba(212,139,0,0.04)", borderBottom: `1px solid ${C.border}` }}>
-              {["STAFF MEMBER", "ROLE", "TABLE STATUS", "PRESTIGE RANK", ""].map(h => (
+              {["STAFF MEMBER", "ROLE", "TABLE STATUS", "PRESTIGE RANK", "REV LIFT", ""].map(h => (
                 <div key={h} style={{ fontSize: 9, fontWeight: 700, color: C.dim, letterSpacing: "0.14em", textTransform: "uppercase" }}>{h}</div>
               ))}
             </div>
@@ -107,7 +107,7 @@ export default function StaffModule() {
                 <motion.div key={member.id}
                   initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
                   style={{
-                    display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 120px",
+                    display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 88px 120px",
                     alignItems: "center", gap: 0, padding: "14px 20px",
                     borderBottom: i < DEMO_STAFF.length - 1 ? `1px solid ${C.border}` : "none",
                     opacity: isActive ? 1 : 0.5,
@@ -139,12 +139,21 @@ export default function StaffModule() {
                     <Star size={11} color={pColor} />
                     <span style={{ fontSize: 12, fontWeight: 600, color: pColor }}>{member.prestige}</span>
                   </div>
+                  {/* Revenue Lift */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                    <span style={{
+                      fontSize: 13, fontWeight: 700,
+                      color: (member as { lift?: number }).lift ? "#4ade80" : "rgba(26,26,27,0.25)",
+                    }}>
+                      {(member as { lift?: number }).lift ? `$${(member as { lift?: number }).lift}` : "—"}
+                    </span>
+                  </div>
                   {/* Status pill */}
                   <div style={{ display: "flex", justifyContent: "flex-end" }}>
                     <span style={{
                       padding: "4px 10px", borderRadius: 20, fontSize: 10, fontWeight: 700,
-                      background: isActive ? "rgba(34,197,94,0.08)" : "rgba(100,116,139,0.08)",
-                      border: `1px solid ${isActive ? "rgba(34,197,94,0.22)" : "rgba(100,116,139,0.2)"}`,
+                      background: isActive ? "rgba(34,197,94,0.08)" : "rgba(100,116,139,0.14)",
+                      border: `1px solid ${isActive ? "rgba(34,197,94,0.22)" : "rgba(100,116,139,0.35)"}`,
                       color: isActive ? "#22c55e" : "#64748b",
                     }}>{isActive ? "Active" : "Off shift"}</span>
                   </div>
@@ -203,8 +212,8 @@ export default function StaffModule() {
                   style={{
                     display: "flex", alignItems: "center", gap: 6,
                     padding: "10px 16px", borderRadius: 10, fontSize: 12, fontWeight: 600,
-                    background: member.status === "active" ? "rgba(100,116,139,0.08)" : "rgba(34,197,94,0.08)",
-                    border: `1px solid ${member.status === "active" ? "rgba(100,116,139,0.2)" : "rgba(34,197,94,0.2)"}`,
+                    background: member.status === "active" ? "rgba(100,116,139,0.14)" : "rgba(34,197,94,0.08)",
+                    border: `1px solid ${member.status === "active" ? "rgba(100,116,139,0.35)" : "rgba(34,197,94,0.2)"}`,
                     color: member.status === "active" ? "#64748b" : "#22c55e",
                     cursor: "pointer", minHeight: 42,
                   }}>

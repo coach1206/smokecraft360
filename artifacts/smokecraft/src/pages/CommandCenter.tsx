@@ -10,6 +10,7 @@ import { useEngagementContext } from "@/contexts/EngagementContext";
 import SystemStatusPanel from "@/components/SystemStatusPanel";
 import LiveKpi from "@/components/LiveKpi";
 import { useVenueContext } from "@/contexts/VenueContext";
+import { playSwitch }      from "@/lib/audioEngine";
 
 // ── Ambient particles ──────────────────────────────────────────────────────────
 
@@ -117,7 +118,7 @@ export default function CommandCenter() {
   const statusColor = cc.systemStatus === "operational" ? "#22c55e" : cc.systemStatus === "degraded" ? "#f59e0b" : "#ef4444";
 
   return (
-    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: "radial-gradient(ellipse 120% 60% at 40% 0%, #1C1710 0%, #EFEBE0 55%, #050402 100%)", position: "relative" }}>
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: "#F5F2ED", position: "relative" }}>
       <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212,139,0,0.07) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
       <CCParticles />
       {/* ── Header ── */}
@@ -130,7 +131,7 @@ export default function CommandCenter() {
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/")}
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: C.muted, cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: C.back, border: `1px solid ${C.backBorder}`, color: "rgba(212,139,0,0.80)", cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
             <ArrowLeft size={20} />
           </motion.button>
           <div>
@@ -206,7 +207,7 @@ export default function CommandCenter() {
                 boxShadow: `0 16px 48px rgba(26,26,27,0.32), 0 4px 12px rgba(26,26,27,0.18), 0 0 0 1px ${tile.color}44, inset 0 1px 0 rgba(26,26,27,0.16)`,
               }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => { engagement.trackAction("navigate", { tile: tile.id }); navigate(tile.route); }}
+              onClick={() => { playSwitch(); engagement.trackAction("navigate", { tile: tile.id }); navigate(tile.route); }}
               style={{
                 display: "flex", alignItems: "center", gap: 14,
                 padding: "20px 18px",
@@ -226,7 +227,7 @@ export default function CommandCenter() {
               }} />
               <div style={{
                 position: "absolute", inset: 0,
-                background: `linear-gradient(160deg, rgba(245,242,237,0.58) 0%, rgba(245,242,237,0.24) 60%, ${tile.color}32 100%)`,
+                background: `linear-gradient(160deg, rgba(18,14,8,0.70) 0%, rgba(18,14,8,0.40) 60%, ${tile.color}55 100%)`,
                 pointerEvents: "none",
               }} />
               {(tile.id === "smokecraft" || tile.id === "brewcraft" || tile.id === "pourcraft" || tile.id === "vapecraft") && (
@@ -235,14 +236,14 @@ export default function CommandCenter() {
                   fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
                   textTransform: "uppercase",
                   color: tile.color,
-                  background: "rgba(245,242,237,0.72)",
+                  background: "rgba(18,14,8,0.84)",
                   border: `1px solid ${tile.color}55`,
                   padding: "2px 8px", borderRadius: 999,
                 }}>🔥 Trending</div>
               )}
               <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 16, fontWeight: 700, color: "#1A1A1B", marginBottom: 3, textShadow: "0 1px 6px rgba(26,26,27,0.50)" }}>{tile.title}</div>
-                <div style={{ fontSize: 13, color: "rgba(210,190,155,0.72)", marginBottom: 5, textShadow: "0 1px 4px rgba(26,26,27,0.45)" }}>{tile.desc}</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: "rgba(245,235,220,0.96)", marginBottom: 3, textShadow: "0 1px 6px rgba(0,0,0,0.75)" }}>{tile.title}</div>
+                <div style={{ fontSize: 13, color: "rgba(245,235,220,0.60)", marginBottom: 5, textShadow: "0 1px 4px rgba(0,0,0,0.70)" }}>{tile.desc}</div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: tile.color, textShadow: "0 1px 4px rgba(26,26,27,0.40)" }}>{data}</div>
               </div>
             </motion.button>

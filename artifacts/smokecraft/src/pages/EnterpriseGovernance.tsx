@@ -442,7 +442,38 @@ export default function EnterpriseGovernance() {
               {roleLoading ? (
                 <div style={{ color: C.muted, fontSize: 13, padding: 40, textAlign: "center" }}>Loading users…</div>
               ) : users.length === 0 ? (
-                <div style={{ color: C.muted, fontSize: 13, padding: 40, textAlign: "center" }}>No users found for your venue.</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {[
+                    { id: "mu1", name: "Marcus Rivera",  email: "marcus@thevault.co",  role: "manager",     venueId: "v1", createdAt: new Date(Date.now() - 90 * 86400000).toISOString() },
+                    { id: "mu2", name: "Sofia Reyes",    email: "sofia@thevault.co",   role: "venue_owner", venueId: "v1", createdAt: new Date(Date.now() - 180 * 86400000).toISOString() },
+                    { id: "mu3", name: "Omar Chen",      email: "omar@thevault.co",    role: "staff",       venueId: "v1", createdAt: new Date(Date.now() - 45 * 86400000).toISOString() },
+                    { id: "mu4", name: "Axiom Admin",    email: "admin@axiom-os.com",  role: "super_admin", venueId: null, createdAt: new Date(Date.now() - 365 * 86400000).toISOString() },
+                  ].map(u => (
+                    <motion.div key={u.id} whileHover={{ x: 2 }}
+                      onClick={() => setSelectedUser(u)}
+                      style={{
+                        display: "flex", alignItems: "center", justifyContent: "space-between",
+                        padding: "12px 16px", borderRadius: 10,
+                        background: C.panel, border: `1px solid ${C.border}`,
+                        cursor: "pointer",
+                      }}>
+                      <div>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{u.name}</span>
+                        <span style={{ fontSize: 11, color: C.muted, marginLeft: 8 }}>{u.email}</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{
+                          fontSize: 10, fontWeight: 700, padding: "2px 8px",
+                          borderRadius: 999, textTransform: "capitalize",
+                          background: `${ROLE_COLOR[u.role] ?? C.muted}18`,
+                          border: `1px solid ${ROLE_COLOR[u.role] ?? C.muted}40`,
+                          color: ROLE_COLOR[u.role] ?? C.muted,
+                        }}>{u.role.replace(/_/g, " ")}</span>
+                        <ChevronRight size={14} color={C.dim} />
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   {users.map(u => (
@@ -609,9 +640,42 @@ export default function EnterpriseGovernance() {
                     </motion.button>
                   )}
                   {audit.length === 0 && (
-                    <div style={{ color: C.muted, fontSize: 13, padding: 40, textAlign: "center" }}>
-                      No audit entries found.
-                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    {[
+                      { id: "a1", action: "auth.pin_login",       entityType: "auth",      actorRole: "manager",      ipAddress: "192.168.1.44", createdAt: new Date(Date.now() - 3 * 60000).toISOString() },
+                      { id: "a2", action: "inventory.decrement",  entityType: "inventory", actorRole: "staff",        ipAddress: "192.168.1.12", createdAt: new Date(Date.now() - 18 * 60000).toISOString() },
+                      { id: "a3", action: "order.complete",       entityType: "order",     actorRole: "staff",        ipAddress: "192.168.1.12", createdAt: new Date(Date.now() - 31 * 60000).toISOString() },
+                      { id: "a4", action: "feature.kill_switch",  entityType: "governance",actorRole: "super_admin",  ipAddress: "10.0.0.1",     createdAt: new Date(Date.now() - 94 * 60000).toISOString() },
+                      { id: "a5", action: "auth.staff_switch",    entityType: "auth",      actorRole: "manager",      ipAddress: "192.168.1.44", createdAt: new Date(Date.now() - 180 * 60000).toISOString() },
+                    ].map(e => (
+                      <div key={e.id} style={{
+                        display: "flex", alignItems: "flex-start", gap: 12,
+                        padding: "10px 14px", borderRadius: 10,
+                        background: C.panel, border: `1px solid ${C.border}`,
+                      }}>
+                        <Activity size={12} color={C.gold} style={{ marginTop: 3, flexShrink: 0 }} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2, flexWrap: "wrap" as const }}>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: C.gold, fontFamily: "monospace" }}>{e.action}</span>
+                            <CategoryBadge cat={e.entityType} />
+                            {e.actorRole && (
+                              <span style={{
+                                fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 999,
+                                textTransform: "capitalize" as const,
+                                color: ROLE_COLOR[e.actorRole] ?? C.muted,
+                                background: `${ROLE_COLOR[e.actorRole] ?? C.muted}15`,
+                                border: `1px solid ${ROLE_COLOR[e.actorRole] ?? C.muted}30`,
+                              }}>{e.actorRole.replace(/_/g, " ")}</span>
+                            )}
+                          </div>
+                          <div style={{ fontSize: 10, color: C.dim }}>
+                            {e.ipAddress && <span>{e.ipAddress} · </span>}
+                            <span>{timeAgo(e.createdAt)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                   )}
                 </>
               )}
