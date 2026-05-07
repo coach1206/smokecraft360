@@ -1,0 +1,25 @@
+PASTE THIS INTO THE REPLIT AGENT:
+Role: Lead FinTech & Affiliate Systems Architect.
+Objective: Implement the Venue Commission Logic across all Axiom OS exit points. Every interaction with DayOne360 and WifeX must be permanently tied to the hosting venue’s unique identifier.
+1. VENUE ID ENFORCEMENT:
+• Global Variable: Establish a current_venue_id at the root of the Axiom application. This ID must be assigned during the Venue Onboarding phase.
+• Link Injector: Every outgoing link to DayOne360, DayOne360 Corporate, and WifeX must automatically append the venue_id as a tracking parameter (e.g., ?aff_id=[VENUE_ID]&sub_id=[GUEST_KEY]).
+2. THE COMMISSION LEDGER (DB):
+• Table: commission_tracking
+• transaction_id: Unique ID.
+• venue_id: Linked to the venue registry.
+• source_platform: (DayOne360_Leisure, DayOne360_Corp, WifeX).
+• status: (Pending, Confirmed, Paid).
+• amount: Calculated based on the service tier.
+• Logic: When the DayOne360 or WifeX API sends a "Success" webhook, the ledger must automatically credit the correct venue.
+3. THE OWNER’S REVENUE PULSE:
+• Update the Executive Dashboard to show a live "Referral Revenue" counter.
+• Transparency: Show exactly which guest (using their Identity Key) triggered the referral, so the owner sees the system is working in real-time.
+• The "Top Referrer" Alert: If a specific staff member (Waitress ID) facilitates a high-value booking, highlight them for a bonus to encourage staff participation.
+4. COOKIE & SESSION STICKINESS:
+• Ensure that the referral ID is stored in the guest's Universal Identity Ledger.
+• The "30-Day Window": If the guest logs in to DayOne360 later from their home computer using the same Last Name + Last 4, the original venue must still receive the commission.
+5. VISUAL REINFORCEMENT:
+• Add a subtle, premium tag on the exit bridge: "Preferred Partner of [Venue Name]. Your exclusive rates are applied." This makes the guest feel like they are getting a deal because they are at that specific establishment.
+GO. Lock in the Revenue.
+The Final Business Model (The Axiom Trinity)
