@@ -5,6 +5,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ── KIOSK CONSOLE RESET ── */
+html, body, #root {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #050505;
+}
+
 @theme inline {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -802,7 +812,7 @@
   /* ── AXIOM PREMIER — scoped theme wrapper ── */
   .axiom-theme {
     --axiom-body-bg:     #0a0a0b;
-    --gold-luster:       linear-gradient(180deg, #fff9e6 0%, #d4af37 50%, #8a6d3b 100%);
+    --gold-luster:       linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%);
     --gold-luster-color: #f9e29a; /* flat color fallback for gradient color-stop usage */
     background: radial-gradient(circle at 50% 50%, #1c1c1e 0%, #0a0a0b 100%);
     min-height: 100vh;
@@ -858,6 +868,29 @@
   .machined-btn:active {
     transform: scale(0.97);
     box-shadow: 0 2px 5px rgba(0,0,0,0.90);
+  }
+
+  /* ── CONSOLE SLAB — heavier-bottom hardware panel ── */
+  .console-slab {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border-radius: 32px;
+    border-top:    2px solid rgba(255,255,255,0.20);
+    border-left:   1px solid rgba(255,255,255,0.10);
+    border-bottom: 4px solid rgba(0,0,0,0.60);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.90);
+  }
+
+  /* ── GOLD ENGRAVED — deeper glow letterpress variant ── */
+  .gold-engraved {
+    background: var(--gold-luster);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 10px rgba(212,175,55,0.40));
+    font-weight: 900;
+    letter-spacing: 0.3em;
   }
 
   /* Restore .gold-text inside axiom-theme — uses flat color so the gradient stop stays valid */
