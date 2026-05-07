@@ -11,7 +11,7 @@ import { motion, AnimatePresence }          from "framer-motion";
 import { useLocation }                      from "wouter";
 import {
   Users, TrendingUp, BarChart3, BookOpen, Map,
-  Award, Play, ArrowLeft, DollarSign, WifiOff,
+  Award, Play, ArrowLeft, DollarSign, WifiOff, FileText,
 } from "lucide-react";
 import Maxwell                              from "@/components/Maxwell";
 import TrainingBanner                       from "@/components/training/TrainingBanner";
@@ -41,6 +41,7 @@ const MODES = [
   { id: "walkthrough",    title: "Venue Walkthrough",  subtitle: "10-step setup flow",       desc: "From first launch to full operation — guided touchscreen walkthrough.",                icon: Map,         color: T.purple, route: "/training/walkthrough" },
   { id: "scenarios",      title: "Scenario Missions",  subtitle: "8 training scenarios",     desc: "Real-world simulations with scoring, coaching, and Maxwell guidance.",                 icon: BookOpen,    color: T.amber,  route: "/training/scenarios" },
   { id: "certifications", title: "Certifications",     subtitle: "Training records",         desc: "View earned certifications and track completion across all roles.",                    icon: Award,       color: "#06b6d4",route: "/training/certifications" },
+  { id: "manual",         title: "Operator's Manual",  subtitle: "Classified · Rev 2.6.0",  desc: "Master guide to hidden gates, Revenue Brain, inventory catalog, affiliate logic, and acoustic branding.", icon: FileText,    color: "#ef4444",route: "/training/manual" },
 ];
 
 const EVENT_COLORS: Record<string, string> = {

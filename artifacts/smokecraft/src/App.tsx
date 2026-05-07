@@ -95,6 +95,7 @@ import TrainingSales                  from "@/pages/training/TrainingSales";
 import TrainingWalkthrough            from "@/pages/training/TrainingWalkthrough";
 import TrainingScenarios              from "@/pages/training/TrainingScenarios";
 import TrainingCertifications         from "@/pages/training/TrainingCertifications";
+import TrainingManual                  from "@/pages/training/TrainingManual";
 
 const queryClient = new QueryClient();
 
@@ -141,6 +142,7 @@ function Router() {
       <Route path="/training/walkthrough"      component={TrainingWalkthrough}       />
       <Route path="/training/scenarios"        component={TrainingScenarios}         />
       <Route path="/training/certifications"   component={TrainingCertifications}    />
+      <Route path="/training/manual"             component={TrainingManual}            />
       <Route path="/admin/intel"               component={OwnerIntelPanel}         />
       <Route path="/admin/experience-control" component={ExperienceControlPanel}  />
       {/* Legacy craft routes — redirect into the Universal Swipe Engine */}
