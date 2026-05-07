@@ -32,7 +32,7 @@ const C = {
   gold:     "#D48B00",
   goldDim:  "rgba(212,139,0,0.45)",
   text:     "rgba(26,26,27,0.90)",
-  muted:    "rgba(240,232,212,0.52)",
+  muted:    "rgba(26,26,27,0.52)",
   dim:      "rgba(26,26,27,0.28)",
   green:    "#34d399",
   blue:     "#60a5fa",
@@ -188,11 +188,62 @@ export default function MobileHub() {
       <div style={{ position: "relative", zIndex: 1, maxWidth: 420, margin: "0 auto", padding: "0 0 48px" }}>
 
         {/* ── Top bar ── */}
-        <div style={{ padding: "16px 20px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ padding: "16px 20px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ fontSize: 13, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: C.goldDim, letterSpacing: "0.18em" }}>
             AXIOM OS
           </div>
           <div style={{ fontSize: 10, color: C.dim }}>{today}</div>
+        </div>
+
+        {/* ── After-Hours Banner ── */}
+        <div style={{ padding: "0 16px 20px" }}>
+          <motion.div
+            initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div style={{
+              borderRadius: 16,
+              background: "linear-gradient(135deg, rgba(8,6,4,0.94) 0%, rgba(20,14,6,0.96) 100%)",
+              border: "1px solid rgba(212,139,0,0.22)",
+              padding: "16px 18px",
+              display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
+              boxShadow: "0 0 32px rgba(212,139,0,0.08), inset 0 1px 0 rgba(212,139,0,0.10)",
+            }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
+                  <motion.div
+                    style={{ width: 6, height: 6, borderRadius: "50%", background: "#f87171", flexShrink: 0 }}
+                    animate={{ opacity: [1, 0.3, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  <span style={{ fontSize: 9, fontWeight: 700, color: "#f87171", letterSpacing: "0.22em", textTransform: "uppercase" }}>
+                    Lounge Closed
+                  </span>
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#F0E8D4", fontFamily: "'Cormorant Garamond', serif", letterSpacing: "0.04em" }}>
+                  After-Hours Concierge
+                </div>
+                <div style={{ fontSize: 10, color: "rgba(240,232,212,0.42)", marginTop: 3 }}>
+                  Reopens tomorrow · 4:00 PM — book now for early-bird pricing
+                </div>
+              </div>
+              <a
+                href="/craft-hub"
+                style={{
+                  flexShrink: 0,
+                  fontSize: 10, fontWeight: 700, letterSpacing: "0.12em",
+                  color: C.gold, textDecoration: "none",
+                  padding: "8px 14px", borderRadius: 10,
+                  border: "1px solid rgba(212,139,0,0.30)",
+                  background: "rgba(212,139,0,0.08)",
+                  display: "flex", alignItems: "center", gap: 5,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                ← Lounge
+              </a>
+            </div>
+          </motion.div>
         </div>
 
         {/* ── 1. PRESTIGE IDENTITY ── */}
