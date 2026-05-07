@@ -158,7 +158,6 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
             objectFit: "cover",
             objectPosition: "center",
             opacity: 1,
-            filter: "brightness(1.2) contrast(1.1)",
             display: "block",
           }}
         />
@@ -180,8 +179,8 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
         transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Bottom content */}
-      <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", padding: "28px 32px", zIndex: 20 }}>
+      {/* Bottom content — glass lens over text zone */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", padding: "28px 32px", zIndex: 20, backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}>
         <h2 style={{
           fontSize: "clamp(1rem, 1.8vw, 1.875rem)",
           fontStyle: "italic",
@@ -193,10 +192,12 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
           whiteSpace: "nowrap",
           ...(isSmoke
             ? {
-                background: "linear-gradient(to bottom, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
+                background: "linear-gradient(90deg, #8a6d3b 0%, #fff9e6 25%, #d4af37 50%, #fff9e6 75%, #8a6d3b 100%)",
+                backgroundSize: "200% auto",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 filter: "drop-shadow(0 0 12px rgba(212,175,55,.55))",
+                animation: "gold-shimmer 5s linear infinite",
               }
             : {
                 background: "linear-gradient(to bottom, #fff 0%, #999 100%)",
@@ -210,30 +211,12 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
           color: "#fff",
           opacity: 0.5,
           fontSize: "10px",
-          marginBottom: 18,
+          marginBottom: 0,
           letterSpacing: ".4em",
           textTransform: "uppercase",
         }}>
           {sub}
         </p>
-        {/* Machined enter — thin line + [ENTER] */}
-        <div
-          style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}
-          onClick={e => { e.stopPropagation(); navigate(route); }}
-        >
-          <div style={{
-            flex: 1,
-            height: "0.5px",
-            background: isSmoke ? "#d4af37" : "rgba(255,255,255,0.25)",
-          }} />
-          <span style={{
-            color: isSmoke ? "#d4af37" : "rgba(255,255,255,0.55)",
-            fontSize: "9px",
-            letterSpacing: "0.4em",
-            textTransform: "uppercase",
-            fontWeight: 700,
-          }}>[ ENTER ]</span>
-        </div>
       </div>
     </motion.div>
   );
@@ -434,19 +417,28 @@ export default function TitanCraftDeck() {
             {view === "grid" ? (
               <motion.main
                 key="grid"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 transition={{ duration: 0.28 }}
-                className="grid grid-cols-2 grid-rows-2 gap-8 h-[70vh] px-14 my-6"
+                className="titan-carousel flex-grow flex items-stretch"
+                style={{
+                  display: "flex",
+                  overflowX: "scroll",
+                  scrollSnapType: "x mandatory",
+                  gap: 24,
+                  padding: "16px 56px",
+                  alignItems: "stretch",
+                }}
               >
                 {CRAFT_MODULES.map((mod, i) => (
-                  <motion.div
+                  <div
                     key={mod.id}
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.06 + i * 0.08, duration: 0.44, ease: [0.22, 1, 0.36, 1] }}
-                    className="min-h-0 h-full"
+                    style={{
+                      flexShrink: 0,
+                      width: "clamp(560px, 72vw, 860px)",
+                      scrollSnapAlign: "center",
+                    }}
                   >
                     <CraftCard
                       id={mod.id}
@@ -455,7 +447,7 @@ export default function TitanCraftDeck() {
                       route={mod.route}
                       active={activeIndex === i}
                     />
-                  </motion.div>
+                  </div>
                 ))}
               </motion.main>
             ) : (

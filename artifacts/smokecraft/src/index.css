@@ -15,6 +15,14 @@ html, body, #root {
   background-color: #050505;
 }
 
+/* ── Titan Kinetic Carousel ── */
+@keyframes gold-shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+.titan-carousel::-webkit-scrollbar { display: none; }
+.titan-carousel { scrollbar-width: none; -ms-overflow-style: none; }
+
 @theme inline {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
