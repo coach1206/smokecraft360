@@ -21,8 +21,12 @@ import MoodControls             from "@/components/DynamicCard/MoodControls";
 import DynamicCard              from "@/components/DynamicCard/DynamicCard";
 import LiveEngineController     from "@/components/DynamicCard/LiveEngineController";
 import { CRAFT_MODULES }        from "@/data/craftScenes";
-import { useGuestProfile }      from "@/contexts/GuestProfileContext";
-import TickerTape              from "@/components/TickerTape";
+import { useGuestProfile }         from "@/contexts/GuestProfileContext";
+import TickerTape                 from "@/components/TickerTape";
+import LogoAnchor                 from "@/components/LogoAnchor";
+import EnvironmentPulseOverlay    from "@/components/EnvironmentPulseOverlay";
+import { useKioskLock }           from "@/hooks/useKioskLock";
+import TitanEngine                from "@/engines/titan_engine";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
@@ -361,6 +365,33 @@ function CraftHubInner() {
   const [showReturn, setShowReturn] = useState(false);
   const [portal, setPortal] = useState<{ route: string; color: string } | null>(null);
 
+  // ── Kiosk Lock — disables context menu, F-keys, Ctrl shortcuts, back-nav ────
+  useKioskLock(true);
+
+  // ── Hardware NFC listener — fires on Axiom Coin tap ─────────────────────────
+  useEffect(() => {
+    if (!("NDEFReader" in window)) return;
+    const controller = new AbortController();
+    (async (): Promise<void> => {
+      try {
+        type NdefLike = { scan: (opts?: { signal?: AbortSignal }) => Promise<void>; onreading: ((e: { serialNumber: string }) => void) | null };
+        const ndef = new (window as unknown as { NDEFReader: new () => NdefLike }).NDEFReader();
+        await ndef.scan({ signal: controller.signal });
+        ndef.onreading = async (event: { serialNumber: string }) => {
+          const venueId = ((): string | undefined => {
+            for (const k of ["axiom_jwt","auth_token","axiom_token","smokecraft_token"]) {
+              const t = localStorage.getItem(k);
+              if (t) try { return (JSON.parse(atob(t.split(".")[1]!)) as { venueId?: string }).venueId ?? undefined; } catch { /* next */ }
+            }
+            return undefined;
+          })();
+          await TitanEngine.handleNFCTap(event.serialNumber, venueId);
+        };
+      } catch { /* NFC not permitted or unavailable */ }
+    })();
+    return () => controller.abort();
+  }, []);
+
   // ── Staff escape hatch — tap the time display 5× to go to /operations ───────
   const staffTaps    = useRef(0);
   const staffTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -663,6 +694,18 @@ function CraftHubInner() {
         ))}
       </div>
 
+      {/* ── Partner LogoAnchors — DayOne360 & WifeX ── */}
+      <div style={{ position: "relative", zIndex: 10, flexShrink: 0 }}>
+        <div style={{ display: "flex" }}>
+          <div style={{ flex: 1 }}>
+            <LogoAnchor partner="DayOne360" variant="bar" />
+          </div>
+          <div style={{ flex: 1 }}>
+            <LogoAnchor partner="WifeX" variant="bar" />
+          </div>
+        </div>
+      </div>
+
       {/* ── Operational status footer ── */}
       <footer style={{
         position:       "relative",
@@ -763,6 +806,7 @@ export default function CraftHub() {
         <LiveEngineController />
         <CraftHubInner />
         <TickerTape position="bottom" />
+        <EnvironmentPulseOverlay />
       </PreferenceProvider>
     </UserProfileProvider>
   );
