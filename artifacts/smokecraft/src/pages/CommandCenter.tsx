@@ -226,7 +226,7 @@ export default function CommandCenter() {
               }} />
               <div style={{
                 position: "absolute", inset: 0,
-                background: `linear-gradient(160deg, rgba(8,6,4,0.58) 0%, rgba(8,6,4,0.24) 60%, ${tile.color}32 100%)`,
+                background: `linear-gradient(160deg, rgba(245,242,237,0.58) 0%, rgba(245,242,237,0.24) 60%, ${tile.color}32 100%)`,
                 pointerEvents: "none",
               }} />
               {(tile.id === "smokecraft" || tile.id === "brewcraft" || tile.id === "pourcraft" || tile.id === "vapecraft") && (
@@ -235,7 +235,7 @@ export default function CommandCenter() {
                   fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
                   textTransform: "uppercase",
                   color: tile.color,
-                  background: "rgba(8,6,4,0.72)",
+                  background: "rgba(245,242,237,0.72)",
                   border: `1px solid ${tile.color}55`,
                   padding: "2px 8px", borderRadius: 999,
                 }}>🔥 Trending</div>

@@ -53,7 +53,7 @@ export const SignaturePad = forwardRef<SignaturePadHandle, Props>(function Signa
     const ctx = getCtx();
     if (!ctx) return;
     ctx.scale(dpr, dpr);
-    ctx.fillStyle   = "#ffffff";
+    ctx.fillStyle   = "#1A1A1B";
     ctx.fillRect(0, 0, width, height);
     ctx.strokeStyle = "#0a0a0a";
     ctx.lineWidth   = 2.4;
@@ -100,7 +100,7 @@ export const SignaturePad = forwardRef<SignaturePadHandle, Props>(function Signa
     clear: () => {
       const c = canvasRef.current; if (!c) return;
       const ctx = getCtx(); if (!ctx) return;
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = "#1A1A1B";
       ctx.fillRect(0, 0, width, height);
       setEmpty(true);
       onChange?.(null, true);
@@ -118,7 +118,7 @@ export const SignaturePad = forwardRef<SignaturePadHandle, Props>(function Signa
       onPointerUp={end}
       onPointerCancel={end}
       style={{
-        background:   "#ffffff",
+        background:   "#1A1A1B",
         borderRadius: 8,
         border:       "1px solid rgba(212,139,0,0.4)",
         cursor:       "crosshair",

@@ -35,7 +35,7 @@ export function FoodSection({ foodPairings }: FoodSectionProps) {
           >
             Complete Your Experience
           </h3>
-          <p className="text-[9px] uppercase tracking-[0.28em] mt-1" style={{ color: "rgba(180,155,100,0.38)" }}>
+          <p className="text-[9px] uppercase tracking-[0.28em] mt-1" style={{ color: "rgba(107,94,78,0.38)" }}>
             Recommended Food Pairings
           </p>
         </div>
@@ -45,7 +45,7 @@ export function FoodSection({ foodPairings }: FoodSectionProps) {
       {/* Food cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {foodPairings.map((food, i) => {
-          const meta = CATEGORY_META[food.category] ?? { color: "rgba(180,155,100,0.6)", label: food.category };
+          const meta = CATEGORY_META[food.category] ?? { color: "rgba(107,94,78,0.58)", label: food.category };
           return (
             <motion.div
               key={food.id}
@@ -127,7 +127,7 @@ function FoodCard({
         </h4>
 
         {/* Description */}
-        <p className="text-xs leading-relaxed flex-1" style={{ color: "rgba(180,155,100,0.6)" }}>
+        <p className="text-xs leading-relaxed flex-1" style={{ color: "rgba(107,94,78,0.58)" }}>
           {food.description}
         </p>
 

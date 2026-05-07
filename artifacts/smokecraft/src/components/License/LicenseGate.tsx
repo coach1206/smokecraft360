@@ -150,7 +150,7 @@ export function LicenseGate() {
             >
               {venue.logoText}
             </p>
-            <p className="text-[10px] uppercase tracking-[0.4em] mb-10" style={{ color: "rgba(180,155,100,0.45)" }}>
+            <p className="text-[10px] uppercase tracking-[0.4em] mb-10" style={{ color: "rgba(107,94,78,0.45)" }}>
               {venue.tagline}
             </p>
 
@@ -173,7 +173,7 @@ export function LicenseGate() {
             >
               Subscription Required to Continue
             </h2>
-            <p className="text-sm leading-relaxed mb-8" style={{ color: "rgba(180,155,100,0.65)" }}>
+            <p className="text-sm leading-relaxed mb-8" style={{ color: "rgba(107,94,78,0.62)" }}>
               Please renew your service to unlock this experience.
             </p>
 
@@ -184,7 +184,7 @@ export function LicenseGate() {
                 className="flex items-center justify-center gap-2 py-3.5 px-6 rounded font-serif text-sm uppercase tracking-[0.2em] transition-all"
                 style={{
                   background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
-                  color:      "hsl(22 18% 6%)",
+                  color:      "#F5F2ED",
                   boxShadow:  "0 0 30px rgba(212,139,0,0.18)",
                 }}
               >
@@ -213,7 +213,7 @@ export function LicenseGate() {
                 style={{
                   background: "rgba(26,26,27,0.06)",
                   border:     "1px solid rgba(255,255,255,0.1)",
-                  color:      "rgba(180,155,100,0.7)",
+                  color:      "rgba(107,94,78,0.68)",
                 }}
               >
                 <LifeBuoy size={13} />
@@ -222,7 +222,7 @@ export function LicenseGate() {
             </div>
 
             {license.offline && (
-              <p className="mt-8 text-[9px] uppercase tracking-[0.25em]" style={{ color: "rgba(180,155,100,0.3)" }}>
+              <p className="mt-8 text-[9px] uppercase tracking-[0.25em]" style={{ color: "rgba(107,94,78,0.30)" }}>
                 Offline — showing last known status
               </p>
             )}

@@ -224,7 +224,7 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
                   style={{ background: "rgba(26,26,27,0.06)" }}
                   onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(26,26,27,0.10)")}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(26,26,27,0.06)")}>
-                  <X size={16} style={{ color: "rgba(180,155,100,0.55)" }} />
+                  <X size={16} style={{ color: "rgba(107,94,78,0.52)" }} />
                 </button>
               </div>
 
@@ -235,20 +235,20 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
 
                 {/* Selection summary */}
                 <div>
-                  <p className="text-[9px] uppercase tracking-[0.25em] mb-3" style={{ color: "rgba(180,155,100,0.45)" }}>Your Selection</p>
+                  <p className="text-[9px] uppercase tracking-[0.25em] mb-3" style={{ color: "rgba(107,94,78,0.45)" }}>Your Selection</p>
                   <div className="space-y-2">
                     {cigar && <SelectionRow icon={<Cigarette size={13} />} label={cigar.name} sublabel="CIGAR" color="rgba(212,139,0,0.7)" />}
                     {drink && <SelectionRow icon={<Wine size={13} />}       label={drink.name} sublabel="PAIRING" color="rgba(130,170,220,0.7)" />}
                     {food  && <SelectionRow icon={<UtensilsCrossed size={13} />} label={food.name} sublabel="FOOD" color="rgba(180,120,60,0.7)" />}
                     {!cigar && !drink && !food && (
-                      <p className="text-sm italic" style={{ color: "rgba(180,155,100,0.4)" }}>No items selected</p>
+                      <p className="text-sm italic" style={{ color: "rgba(107,94,78,0.40)" }}>No items selected</p>
                     )}
                   </div>
                 </div>
 
                 {/* Order type selector */}
                 <div>
-                  <p className="text-[9px] uppercase tracking-[0.25em] mb-3" style={{ color: "rgba(180,155,100,0.45)" }}>How would you like it?</p>
+                  <p className="text-[9px] uppercase tracking-[0.25em] mb-3" style={{ color: "rgba(107,94,78,0.45)" }}>How would you like it?</p>
                   <div className="grid grid-cols-3 gap-2">
                     {ORDER_TYPES.map(({ type, label, sublabel, icon }) => {
                       const isSelected  = selectedType === type;
@@ -260,18 +260,18 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
                           disabled={isDisabled}
                           className="relative flex flex-col items-center gap-2 p-3 rounded-xl text-center transition-all duration-300"
                           style={isSelected ? {
-                            background: "linear-gradient(135deg, rgba(212,139,0,0.15), rgba(180,130,30,0.1))",
+                            background: "linear-gradient(135deg, rgba(212,139,0,0.15), rgba(212,139,0,0.1))",
                             border:     "1px solid rgba(212,139,0,0.5)",
                             color:      "rgba(235,215,175,0.95)",
                           } : isDisabled ? {
                             background: "rgba(26,26,27,0.04)",
                             border:     "1px solid rgba(26,26,27,0.07)",
-                            color:      "rgba(180,155,100,0.25)",
+                            color:      "rgba(107,94,78,0.25)",
                             cursor:     "not-allowed",
                           } : {
                             background: "rgba(26,26,27,0.06)",
                             border:     "1px solid rgba(26,26,27,0.10)",
-                            color:      "rgba(180,155,100,0.6)",
+                            color:      "rgba(107,94,78,0.58)",
                           }}
                           whileHover={!isDisabled && !isSelected ? { borderColor: "rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.8)" } : {}}
                           whileTap={!isDisabled ? { scale: 0.97 } : {}}
@@ -284,7 +284,7 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
                           <span style={{ color: isSelected ? "rgba(212,139,0,0.9)" : "inherit" }}>{icon}</span>
                           <div>
                             <p className="text-[10px] font-medium leading-tight">{label}</p>
-                            <p className="text-[8px] mt-0.5 leading-tight" style={{ color: isSelected ? "rgba(212,139,0,0.5)" : "rgba(180,155,100,0.35)" }}>{sublabel}</p>
+                            <p className="text-[8px] mt-0.5 leading-tight" style={{ color: isSelected ? "rgba(212,139,0,0.5)" : "rgba(107,94,78,0.35)" }}>{sublabel}</p>
                           </div>
                         </motion.button>
                       );
@@ -297,7 +297,7 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
                   {selectedType === "table" && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.3 }}>
-                      <label className="block text-[9px] uppercase tracking-[0.25em] mb-2" style={{ color: "rgba(180,155,100,0.45)" }}>
+                      <label className="block text-[9px] uppercase tracking-[0.25em] mb-2" style={{ color: "rgba(107,94,78,0.45)" }}>
                         Table Number (optional)
                       </label>
                       <input
@@ -349,11 +349,11 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
                   className="w-full py-4 rounded-xl font-serif text-base tracking-[0.18em] uppercase relative overflow-hidden"
                   style={canSubmit ? {
                     background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
-                    color:      "hsl(22 18% 6%)",
+                    color:      "#F5F2ED",
                     boxShadow:  "0 4px 24px rgba(212,139,0,0.3)",
                   } : {
                     background: "rgba(26,26,27,0.07)",
-                    color:      "rgba(180,155,100,0.3)",
+                    color:      "rgba(107,94,78,0.30)",
                     cursor:     "not-allowed",
                   }}
                   whileHover={canSubmit ? { scale: 1.01, boxShadow: "0 6px 32px rgba(212,139,0,0.4)" } : {}}
@@ -398,7 +398,7 @@ function SelectionRow({ icon, label, sublabel, color }: { icon: React.ReactNode;
       <span style={{ color }} className="flex-shrink-0">{icon}</span>
       <div className="flex-1 min-w-0">
         <p className="text-sm truncate" style={{ color: "rgba(220,200,165,0.85)" }}>{label}</p>
-        <p className="text-[8px] uppercase tracking-[0.2em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>{sublabel}</p>
+        <p className="text-[8px] uppercase tracking-[0.2em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>{sublabel}</p>
       </div>
     </div>
   );
@@ -460,10 +460,10 @@ function DeliveryStatusBadge({
     return (
       <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
         style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)" }}>
-        <MapPin size={14} className="flex-shrink-0" style={{ color: "rgba(180,155,100,0.5)" }} />
+        <MapPin size={14} className="flex-shrink-0" style={{ color: "rgba(107,94,78,0.50)" }} />
         <div>
-          <p className="text-xs" style={{ color: "rgba(180,155,100,0.65)" }}>Location access denied</p>
-          <p className="text-[9px] mt-0.5" style={{ color: "rgba(180,155,100,0.38)" }}>
+          <p className="text-xs" style={{ color: "rgba(107,94,78,0.62)" }}>Location access denied</p>
+          <p className="text-[9px] mt-0.5" style={{ color: "rgba(107,94,78,0.38)" }}>
             Enable location in your browser settings to check delivery availability
           </p>
         </div>
@@ -474,9 +474,9 @@ function DeliveryStatusBadge({
     return (
       <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
         style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.10)" }}>
-        <MapPin size={14} className="flex-shrink-0" style={{ color: "rgba(180,155,100,0.45)" }} />
+        <MapPin size={14} className="flex-shrink-0" style={{ color: "rgba(107,94,78,0.45)" }} />
         <div className="flex-1">
-          <p className="text-xs" style={{ color: "rgba(180,155,100,0.6)" }}>Could not check location</p>
+          <p className="text-xs" style={{ color: "rgba(107,94,78,0.58)" }}>Could not check location</p>
         </div>
         <button onClick={onRetry} className="text-[9px] uppercase tracking-[0.12em] px-2 py-1 rounded"
           style={{ background: "rgba(212,139,0,0.1)", color: "rgba(212,139,0,0.65)" }}>

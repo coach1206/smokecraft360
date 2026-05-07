@@ -59,7 +59,7 @@ export default function PaymentCancel() {
           Order Canceled
         </h1>
 
-        <p className="text-sm mb-8" style={{ color: "rgba(180,155,100,0.55)" }}>
+        <p className="text-sm mb-8" style={{ color: "rgba(107,94,78,0.52)" }}>
           Your {BRAND.name} experience was canceled.
           <br />No charge was made.
         </p>
@@ -79,7 +79,7 @@ export default function PaymentCancel() {
             className="inline-flex items-center gap-2 px-7 py-3 rounded-full text-xs uppercase tracking-[0.22em]"
             style={{
               background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
-              color:      "hsl(22 18% 6%)",
+              color:      "#F5F2ED",
               boxShadow:  "0 4px 20px rgba(212,139,0,0.22)",
             }}
             whileHover={{ scale: 1.03 }}
@@ -94,7 +94,7 @@ export default function PaymentCancel() {
             style={{
               background: "rgba(26,26,27,0.06)",
               border:     "1px solid rgba(26,26,27,0.11)",
-              color:      "rgba(180,155,100,0.55)",
+              color:      "rgba(107,94,78,0.52)",
             }}
             whileHover={{ borderColor: "rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.7)" }}
             whileTap={{ scale: 0.97 }}
@@ -107,7 +107,7 @@ export default function PaymentCancel() {
       {/* Footer */}
       <motion.p
         className="absolute bottom-6 text-[8px] uppercase tracking-[0.22em]"
-        style={{ color: "rgba(180,155,100,0.18)" }}
+        style={{ color: "rgba(107,94,78,0.18)" }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}

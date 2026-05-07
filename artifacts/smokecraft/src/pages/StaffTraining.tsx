@@ -18,7 +18,7 @@ import {
 
 const C = {
   bg:     "#F5F4F0",
-  card:   "#FFFFFF",
+  card:   "#1A1A1B",
   border: "rgba(26,20,16,0.09)",
   text:   "#1A1410",
   muted:  "rgba(26,20,16,0.45)",
@@ -295,7 +295,7 @@ export default function StaffTraining() {
 
       {/* Header */}
       <div className="no-print" style={{
-        background: "#FFFFFF", borderBottom: `1px solid ${C.border}`,
+        background: "#1A1A1B", borderBottom: `1px solid ${C.border}`,
         padding: "0 24px", position: "sticky", top: 0, zIndex: 20,
       }}>
         <div style={{ maxWidth: 820, margin: "0 auto", display: "flex", alignItems: "center", gap: 14, height: 60 }}>

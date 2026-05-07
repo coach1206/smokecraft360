@@ -48,14 +48,14 @@ export default function OwnerIntelPanel() {
   return (
     <BackgroundLayer
       image={getBackground("analytics")}
-      style={{ minHeight: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8" }}
+      style={{ minHeight: "100dvh", display: "flex", flexDirection: "column", color: "#1A1A1B" }}
     >
       {/* Header */}
       <div style={{
         display: "flex", alignItems: "center", gap: 14,
         padding: "16px 24px",
         borderBottom: "1px solid rgba(26,26,27,0.08)",
-        background: "rgba(10,8,6,0.82)", backdropFilter: "blur(8px)",
+        background: "rgba(245,242,237,0.82)", backdropFilter: "blur(8px)",
         flexShrink: 0,
       }}>
         <motion.button
@@ -66,21 +66,21 @@ export default function OwnerIntelPanel() {
             width: 40, height: 40, borderRadius: 10,
             background: "rgba(26,26,27,0.06)",
             border: "1px solid rgba(26,26,27,0.10)",
-            color: "rgba(232,224,200,0.5)", cursor: "pointer",
+            color: "rgba(26,26,27,0.48)", cursor: "pointer",
           }}
         >
           <ArrowLeft size={18} />
         </motion.button>
         <div>
           <div style={{ fontSize: 17, fontWeight: 700, color: "#D48B00" }}>Owner Intelligence</div>
-          <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>Action-based insights · Updated live</div>
+          <div style={{ fontSize: 11, color: "rgba(26,26,27,0.40)" }}>Action-based insights · Updated live</div>
         </div>
       </div>
 
       {/* Body */}
       <div style={{ flex: 1, padding: "32px 24px", maxWidth: 900, margin: "0 auto", width: "100%" }}>
         {loading && (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 300, gap: 12, color: "rgba(232,224,200,0.5)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 300, gap: 12, color: "rgba(26,26,27,0.48)" }}>
             <Loader2 size={22} style={{ animation: "spin 1s linear infinite" }} />
             <span style={{ fontSize: 14, letterSpacing: "0.18em", textTransform: "uppercase" }}>Loading intelligence…</span>
           </div>
@@ -109,7 +109,7 @@ export default function OwnerIntelPanel() {
                   transition={{ duration: 0.4 }}
                   style={{
                     padding: "24px 22px", borderRadius: 18,
-                    background: "linear-gradient(155deg, rgba(212,139,0,0.12), rgba(10,8,6,0.7))",
+                    background: "linear-gradient(155deg, rgba(212,139,0,0.12), rgba(245,242,237,0.7))",
                     border: "1px solid rgba(212,139,0,0.3)",
                   }}
                 >
@@ -117,8 +117,8 @@ export default function OwnerIntelPanel() {
                     <TrendingUp size={16} color="#D48B00" />
                     <span style={{ fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", color: "#D48B00", fontWeight: 700 }}>Trending Now</span>
                   </div>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: "#fff" }}>{quick.trend}</div>
-                  <div style={{ fontSize: 12, color: "rgba(232,224,200,0.5)", marginTop: 6 }}>Most-picked style combination this session</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: "#1A1A1B" }}>{quick.trend}</div>
+                  <div style={{ fontSize: 12, color: "rgba(26,26,27,0.48)", marginTop: 6 }}>Most-picked style combination this session</div>
                 </motion.div>
 
                 <motion.div
@@ -127,7 +127,7 @@ export default function OwnerIntelPanel() {
                   transition={{ duration: 0.4, delay: 0.08 }}
                   style={{
                     padding: "24px 22px", borderRadius: 18,
-                    background: "linear-gradient(155deg, rgba(52,211,153,0.10), rgba(10,8,6,0.7))",
+                    background: "linear-gradient(155deg, rgba(52,211,153,0.10), rgba(245,242,237,0.7))",
                     border: "1px solid rgba(52,211,153,0.25)",
                   }}
                 >
@@ -135,8 +135,8 @@ export default function OwnerIntelPanel() {
                     <Zap size={16} color="#34d399" />
                     <span style={{ fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", color: "#34d399", fontWeight: 700 }}>Top Creator</span>
                   </div>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: "#fff" }}>{quick.topCreator}</div>
-                  <div style={{ fontSize: 12, color: "rgba(232,224,200,0.5)", marginTop: 6 }}>Highest craft score this period</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: "#1A1A1B" }}>{quick.topCreator}</div>
+                  <div style={{ fontSize: 12, color: "rgba(26,26,27,0.48)", marginTop: 6 }}>Highest craft score this period</div>
                 </motion.div>
               </div>
             )}
@@ -150,11 +150,11 @@ export default function OwnerIntelPanel() {
                   transition={{ duration: 0.4, delay: 0.14 }}
                   style={{
                     padding: "22px 24px", borderRadius: 18, marginBottom: 20,
-                    background: "rgba(10,8,6,0.55)",
+                    background: "rgba(245,242,237,0.55)",
                     border: "1px solid rgba(26,26,27,0.09)",
                   }}
                 >
-                  <div style={{ fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(232,224,200,0.4)", fontWeight: 700, marginBottom: 10 }}>
+                  <div style={{ fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(26,26,27,0.40)", fontWeight: 700, marginBottom: 10 }}>
                     Customers Prefer
                   </div>
                   <div style={{ fontSize: 20, fontWeight: 700, color: "#D48B00" }}>{summary.topPreference}</div>
@@ -162,7 +162,7 @@ export default function OwnerIntelPanel() {
 
                 {/* Action list */}
                 <div>
-                  <div style={{ fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(232,224,200,0.4)", fontWeight: 700, marginBottom: 14 }}>
+                  <div style={{ fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(26,26,27,0.40)", fontWeight: 700, marginBottom: 14 }}>
                     Do This
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -175,7 +175,7 @@ export default function OwnerIntelPanel() {
                         style={{
                           display: "flex", alignItems: "center", gap: 14,
                           padding: "16px 20px", borderRadius: 14,
-                          background: "rgba(10,8,6,0.55)",
+                          background: "rgba(245,242,237,0.55)",
                           border: "1px solid rgba(26,26,27,0.08)",
                         }}
                       >
@@ -188,7 +188,7 @@ export default function OwnerIntelPanel() {
                         }}>
                           <ShoppingBag size={13} color="#D48B00" />
                         </div>
-                        <span style={{ fontSize: 15, color: "#e8e0c8", fontWeight: 500 }}>{action}</span>
+                        <span style={{ fontSize: 15, color: "#1A1A1B", fontWeight: 500 }}>{action}</span>
                       </motion.div>
                     ))}
                   </div>

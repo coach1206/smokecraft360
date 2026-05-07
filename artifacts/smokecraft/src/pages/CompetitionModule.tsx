@@ -135,7 +135,7 @@ function CountdownDisplay({ endAt, color }: { endAt: string; color: string }) {
       {parts.map(({ v, l }) => (
         <span key={l} style={{ fontVariantNumeric: "tabular-nums" }}>
           <span style={{ fontSize: 18, fontWeight: 800, color }}>{String(v).padStart(2, "0")}</span>
-          <span style={{ fontSize: 11, color: "rgba(232,224,200,0.45)", marginLeft: 2 }}>{l}</span>
+          <span style={{ fontSize: 11, color: "rgba(26,26,27,0.44)", marginLeft: 2 }}>{l}</span>
         </span>
       ))}
     </div>
@@ -146,7 +146,7 @@ function CountdownDisplay({ endAt, color }: { endAt: string; color: string }) {
 
 function RankBadge({ rank }: { rank: number }) {
   const colors: Record<number, string> = { 1: "#D48B00", 2: "#9ca3af", 3: "#b87333" };
-  const c = colors[rank] ?? "rgba(232,224,200,0.3)";
+  const c = colors[rank] ?? "rgba(26,26,27,0.30)";
   return (
     <div style={{
       width: 32, height: 32, borderRadius: "50%", background: `${c}20`,
@@ -225,7 +225,7 @@ function TournamentCard({
           <Icon size={20} color={meta.color} />
         </div>
         <div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#e8e0c8", marginBottom: 2 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#1A1A1B", marginBottom: 2 }}>
             {tournament.title}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -235,7 +235,7 @@ function TournamentCard({
               border: `1px solid ${meta.color}30`, padding: "1px 7px", borderRadius: 999,
             }}>{meta.label}</span>
             {tournament.craftType && (
-              <span style={{ fontSize: 10, color: "rgba(232,224,200,0.4)", textTransform: "capitalize" }}>
+              <span style={{ fontSize: 10, color: "rgba(26,26,27,0.40)", textTransform: "capitalize" }}>
                 · {tournament.craftType}
               </span>
             )}
@@ -244,25 +244,25 @@ function TournamentCard({
       </div>
 
       {tournament.description && (
-        <div style={{ fontSize: 12, color: "rgba(232,224,200,0.55)", lineHeight: 1.5 }}>
+        <div style={{ fontSize: 12, color: "rgba(26,26,27,0.52)", lineHeight: 1.5 }}>
           {tournament.description}
         </div>
       )}
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
         <div>
-          <div style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>
+          <div style={{ fontSize: 10, color: "rgba(26,26,27,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>
             Time Remaining
           </div>
           <CountdownDisplay endAt={tournament.endAt} color={meta.color} />
         </div>
 
         <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>
+          <div style={{ fontSize: 10, color: "rgba(26,26,27,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>
             <Users size={9} style={{ marginRight: 3, verticalAlign: "middle" }} />
             Entrants
           </div>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "#e8e0c8" }}>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1A1B" }}>
             {tournament.entrantCount}
           </div>
         </div>
@@ -276,13 +276,13 @@ function TournamentCard({
         }}>
           <span style={{ fontSize: 11, color: "#22c55e", fontWeight: 700 }}>✓ You&apos;re in</span>
           {tournament.userRank !== null && (
-            <span style={{ fontSize: 11, color: "rgba(232,224,200,0.5)" }}>
-              · Rank <span style={{ color: "#e8e0c8", fontWeight: 700 }}>#{tournament.userRank}</span>
+            <span style={{ fontSize: 11, color: "rgba(26,26,27,0.48)" }}>
+              · Rank <span style={{ color: "#1A1A1B", fontWeight: 700 }}>#{tournament.userRank}</span>
             </span>
           )}
           {tournament.userScore !== null && (
-            <span style={{ fontSize: 11, color: "rgba(232,224,200,0.5)" }}>
-              · <span style={{ color: "#e8e0c8", fontWeight: 700 }}>{tournament.userScore}</span> pts
+            <span style={{ fontSize: 11, color: "rgba(26,26,27,0.48)" }}>
+              · <span style={{ color: "#1A1A1B", fontWeight: 700 }}>{tournament.userScore}</span> pts
             </span>
           )}
         </div>
@@ -295,14 +295,14 @@ function TournamentCard({
           background: "rgba(212,139,0,0.06)", border: "1px solid rgba(212,139,0,0.15)",
         }}>
           <Trophy size={12} color="#D48B00" />
-          <span style={{ fontSize: 11, color: "rgba(232,224,200,0.65)" }}>
+          <span style={{ fontSize: 11, color: "rgba(26,26,27,0.62)" }}>
             1st: <span style={{ color: "#D48B00", fontWeight: 600 }}>{tournament.prizeFirst}</span>
           </span>
         </div>
       )}
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-        <ChevronRight size={16} color="rgba(232,224,200,0.3)" />
+        <ChevronRight size={16} color="rgba(26,26,27,0.30)" />
       </div>
     </motion.button>
   );
@@ -337,7 +337,7 @@ function LeaderboardPanel({
       exit={{ opacity: 0, x: 40 }}
       style={{
         display: "flex", flexDirection: "column", height: "100%",
-        background: "rgba(10,8,6,0.95)",
+        background: "rgba(245,242,237,0.95)",
         border: `1px solid ${meta.color}30`, borderRadius: 20,
         overflow: "hidden",
       }}
@@ -354,7 +354,7 @@ function LeaderboardPanel({
               display: "flex", alignItems: "center", gap: 6,
               padding: "6px 12px", borderRadius: 10,
               background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
-              color: "rgba(232,224,200,0.5)", cursor: "pointer", fontSize: 12,
+              color: "rgba(26,26,27,0.48)", cursor: "pointer", fontSize: 12,
             }}
           >
             <ArrowLeft size={14} /> Back
@@ -380,7 +380,7 @@ function LeaderboardPanel({
                 padding: "8px 18px", borderRadius: 12,
                 background: tournament.status === "active" ? meta.color : "rgba(26,26,27,0.08)",
                 border: "none", cursor: tournament.status === "active" && !entering ? "pointer" : "not-allowed",
-                color: tournament.status === "active" ? "#000" : "rgba(232,224,200,0.3)",
+                color: tournament.status === "active" ? "#1A1A1B" : "rgba(26,26,27,0.30)",
                 fontWeight: 700, fontSize: 13,
                 opacity: entering ? 0.7 : 1,
               }}
@@ -399,8 +399,8 @@ function LeaderboardPanel({
             <Icon size={24} color={meta.color} />
           </div>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: "#e8e0c8" }}>{tournament.title}</div>
-            <div style={{ fontSize: 11, color: "rgba(232,224,200,0.45)", marginTop: 2 }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1A1B" }}>{tournament.title}</div>
+            <div style={{ fontSize: 11, color: "rgba(26,26,27,0.44)", marginTop: 2 }}>
               {tournament.description}
             </div>
           </div>
@@ -408,12 +408,12 @@ function LeaderboardPanel({
 
         <div style={{ display: "flex", gap: 16, marginTop: 14, flexWrap: "wrap" }}>
           <div>
-            <div style={{ fontSize: 9, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>Ends In</div>
+            <div style={{ fontSize: 9, color: "rgba(26,26,27,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>Ends In</div>
             <CountdownDisplay endAt={tournament.endAt} color={meta.color} />
           </div>
           <div>
-            <div style={{ fontSize: 9, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>Entrants</div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: "#e8e0c8" }}>{tournament.entrantCount}</div>
+            <div style={{ fontSize: 9, color: "rgba(26,26,27,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>Entrants</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1A1B" }}>{tournament.entrantCount}</div>
           </div>
         </div>
 
@@ -443,7 +443,7 @@ function LeaderboardPanel({
 
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px" }}>
         <div style={{
-          fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.4)",
+          fontSize: 11, fontWeight: 700, color: "rgba(26,26,27,0.40)",
           textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 12,
         }}>
           Live Leaderboard
@@ -451,12 +451,12 @@ function LeaderboardPanel({
 
         {loading ? (
           <div style={{ display: "flex", justifyContent: "center", padding: 32 }}>
-            <RefreshCw size={20} color="rgba(232,224,200,0.3)" style={{ animation: "spin 1s linear infinite" }} />
+            <RefreshCw size={20} color="rgba(26,26,27,0.30)" style={{ animation: "spin 1s linear infinite" }} />
           </div>
         ) : entries.length === 0 ? (
           <div style={{
             display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
-            padding: "40px 20px", color: "rgba(232,224,200,0.3)", textAlign: "center",
+            padding: "40px 20px", color: "rgba(26,26,27,0.30)", textAlign: "center",
           }}>
             <Trophy size={32} />
             <div style={{ fontSize: 13, fontWeight: 600 }}>No entries yet</div>
@@ -467,7 +467,7 @@ function LeaderboardPanel({
             {entries.map((entry, i) => {
               const rank = entry.rank ?? i + 1;
               const rankColors: Record<number, string> = { 1: "#D48B00", 2: "#9ca3af", 3: "#b87333" };
-              const c = rankColors[rank] ?? "rgba(232,224,200,0.6)";
+              const c = rankColors[rank] ?? "rgba(26,26,27,0.58)";
               const isMe = userId !== null && entry.userId === userId;
               return (
                 <motion.div
@@ -489,7 +489,7 @@ function LeaderboardPanel({
                   <RankBadge rank={rank} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: isMe ? "#e8e0c8" : "#e8e0c8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: isMe ? "#1A1A1B" : "#1A1A1B", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {entry.userName ?? "Guest"}
                       </div>
                       {isMe && (
@@ -501,13 +501,13 @@ function LeaderboardPanel({
                         }}>You</span>
                       )}
                     </div>
-                    <div style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", marginTop: 2 }}>
+                    <div style={{ fontSize: 10, color: "rgba(26,26,27,0.35)", marginTop: 2 }}>
                       Entered {new Date(entry.joinedAt).toLocaleDateString()}
                     </div>
                   </div>
                   <div style={{ textAlign: "right" }}>
                     <div style={{ fontSize: 20, fontWeight: 800, color: isMe ? "#22c55e" : c }}>{entry.score}</div>
-                    <div style={{ fontSize: 9, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em" }}>pts</div>
+                    <div style={{ fontSize: 9, color: "rgba(26,26,27,0.35)", textTransform: "uppercase", letterSpacing: "0.1em" }}>pts</div>
                   </div>
                 </motion.div>
               );
@@ -667,8 +667,8 @@ function CreateTournamentModal({
               <Plus size={18} color={meta.color} />
             </div>
             <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#e8e0c8" }}>Create Tournament</div>
-              <div style={{ fontSize: 10, color: "rgba(232,224,200,0.4)" }}>Venue Command Hub</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#1A1A1B" }}>Create Tournament</div>
+              <div style={{ fontSize: 10, color: "rgba(26,26,27,0.40)" }}>Venue Command Hub</div>
             </div>
           </div>
           <motion.button
@@ -678,7 +678,7 @@ function CreateTournamentModal({
               width: 32, height: 32, borderRadius: 8, display: "flex",
               alignItems: "center", justifyContent: "center",
               background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
-              color: "rgba(232,224,200,0.5)", cursor: "pointer",
+              color: "rgba(26,26,27,0.48)", cursor: "pointer",
             }}
           >
             <X size={16} />
@@ -699,7 +699,7 @@ function CreateTournamentModal({
 
           {/* Title */}
           <div>
-            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
               Tournament Title <span style={{ color: "#ef4444" }}>*</span>
             </label>
             <input
@@ -710,7 +710,7 @@ function CreateTournamentModal({
               style={{
                 width: "100%", padding: "10px 14px", borderRadius: 10, boxSizing: "border-box",
                 background: "rgba(26,26,27,0.06)", border: `1px solid ${errors.title ? "#ef4444" : "rgba(255,255,255,0.1)"}`,
-                color: "#e8e0c8", fontSize: 13, outline: "none",
+                color: "#1A1A1B", fontSize: 13, outline: "none",
               }}
             />
             {errors.title && <div style={{ fontSize: 11, color: "#ef4444", marginTop: 4 }}>{errors.title}</div>}
@@ -718,7 +718,7 @@ function CreateTournamentModal({
 
           {/* Type */}
           <div>
-            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
               Tournament Type <span style={{ color: "#ef4444" }}>*</span>
             </label>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -735,7 +735,7 @@ function CreateTournamentModal({
                       fontSize: 11, fontWeight: 700, letterSpacing: "0.05em",
                       background: active ? `${tmeta.color}22` : "rgba(26,26,27,0.05)",
                       border: active ? `1px solid ${tmeta.color}60` : "1px solid rgba(26,26,27,0.10)",
-                      color: active ? tmeta.color : "rgba(232,224,200,0.4)",
+                      color: active ? tmeta.color : "rgba(26,26,27,0.40)",
                     }}
                   >
                     {tmeta.label}
@@ -744,14 +744,14 @@ function CreateTournamentModal({
               })}
             </div>
             {errors.type && <div style={{ fontSize: 11, color: "#ef4444", marginTop: 6 }}>{errors.type}</div>}
-            <div style={{ fontSize: 10, color: "rgba(232,224,200,0.3)", marginTop: 6 }}>
+            <div style={{ fontSize: 10, color: "rgba(26,26,27,0.30)", marginTop: 6 }}>
               Duration: {form.type === "live" ? "30 min" : form.type === "daily" ? "24 hours" : form.type === "weekly" ? "7 days" : form.type === "venue" ? "75 days" : "180 days"}
             </div>
           </div>
 
           {/* Craft Type */}
           <div>
-            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
               Craft Type
             </label>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -767,7 +767,7 @@ function CreateTournamentModal({
                       fontSize: 11, fontWeight: 600, textTransform: "capitalize",
                       background: active ? "rgba(212,139,0,0.15)" : "rgba(26,26,27,0.05)",
                       border: active ? "1px solid rgba(212,139,0,0.5)" : "1px solid rgba(26,26,27,0.10)",
-                      color: active ? "#D48B00" : "rgba(232,224,200,0.4)",
+                      color: active ? "#D48B00" : "rgba(26,26,27,0.40)",
                     }}
                   >
                     {ct}
@@ -779,7 +779,7 @@ function CreateTournamentModal({
 
           {/* Start Time */}
           <div>
-            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
               Start Time
             </label>
             <input
@@ -789,17 +789,17 @@ function CreateTournamentModal({
               style={{
                 width: "100%", padding: "10px 14px", borderRadius: 10, boxSizing: "border-box",
                 background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-                color: "#e8e0c8", fontSize: 13, outline: "none",
+                color: "#1A1A1B", fontSize: 13, outline: "none",
                 colorScheme: "dark",
               }}
             />
-            <div style={{ fontSize: 10, color: "rgba(232,224,200,0.3)", marginTop: 4 }}>Leave at current time to start immediately.</div>
+            <div style={{ fontSize: 10, color: "rgba(26,26,27,0.30)", marginTop: 4 }}>Leave at current time to start immediately.</div>
           </div>
 
           {/* Description */}
           <div>
-            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
-              Description <span style={{ color: "rgba(232,224,200,0.25)" }}>(optional)</span>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+              Description <span style={{ color: "rgba(26,26,27,0.25)" }}>(optional)</span>
             </label>
             <textarea
               value={form.description}
@@ -810,7 +810,7 @@ function CreateTournamentModal({
               style={{
                 width: "100%", padding: "10px 14px", borderRadius: 10, boxSizing: "border-box",
                 background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-                color: "#e8e0c8", fontSize: 13, outline: "none", resize: "vertical",
+                color: "#1A1A1B", fontSize: 13, outline: "none", resize: "vertical",
                 fontFamily: "inherit",
               }}
             />
@@ -818,8 +818,8 @@ function CreateTournamentModal({
 
           {/* Prizes */}
           <div>
-            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
-              Custom Prizes <span style={{ color: "rgba(232,224,200,0.25)" }}>(optional — defaults applied if blank)</span>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+              Custom Prizes <span style={{ color: "rgba(26,26,27,0.25)" }}>(optional — defaults applied if blank)</span>
             </label>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {(["prizeFirst", "prizeSecond", "prizeThird"] as const).map((key, i) => (
@@ -832,7 +832,7 @@ function CreateTournamentModal({
                     style={{
                       flex: 1, padding: "8px 12px", borderRadius: 9,
                       background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
-                      color: "#e8e0c8", fontSize: 12, outline: "none",
+                      color: "#1A1A1B", fontSize: 12, outline: "none",
                     }}
                   />
                 </div>
@@ -842,8 +842,8 @@ function CreateTournamentModal({
 
           {/* Max Entrants */}
           <div>
-            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
-              Max Entrants <span style={{ color: "rgba(232,224,200,0.25)" }}>(optional)</span>
+            <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 6 }}>
+              Max Entrants <span style={{ color: "rgba(26,26,27,0.25)" }}>(optional)</span>
             </label>
             <input
               type="number"
@@ -854,7 +854,7 @@ function CreateTournamentModal({
               style={{
                 width: "100%", padding: "10px 14px", borderRadius: 10, boxSizing: "border-box",
                 background: "rgba(26,26,27,0.06)", border: `1px solid ${errors.maxEntrants ? "#ef4444" : "rgba(255,255,255,0.1)"}`,
-                color: "#e8e0c8", fontSize: 13, outline: "none",
+                color: "#1A1A1B", fontSize: 13, outline: "none",
               }}
             />
             {errors.maxEntrants && <div style={{ fontSize: 11, color: "#ef4444", marginTop: 4 }}>{errors.maxEntrants}</div>}
@@ -865,7 +865,7 @@ function CreateTournamentModal({
         <div style={{
           display: "flex", gap: 10, padding: "16px 22px",
           borderTop: "1px solid rgba(26,26,27,0.08)",
-          background: "rgba(10,8,6,0.5)",
+          background: "rgba(245,242,237,0.5)",
         }}>
           <motion.button
             whileTap={{ scale: 0.97 }}
@@ -873,7 +873,7 @@ function CreateTournamentModal({
             style={{
               flex: 1, padding: "11px 20px", borderRadius: 12,
               background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
-              color: "rgba(232,224,200,0.5)", cursor: "pointer", fontSize: 13, fontWeight: 600,
+              color: "rgba(26,26,27,0.48)", cursor: "pointer", fontSize: 13, fontWeight: 600,
             }}
           >
             Cancel
@@ -886,7 +886,7 @@ function CreateTournamentModal({
             style={{
               flex: 2, padding: "11px 20px", borderRadius: 12,
               background: submitting ? "rgba(212,139,0,0.3)" : meta.color,
-              border: "none", color: submitting ? "rgba(232,224,200,0.5)" : "#000",
+              border: "none", color: submitting ? "rgba(26,26,27,0.48)" : "#1A1A1B",
               cursor: submitting ? "not-allowed" : "pointer",
               fontSize: 13, fontWeight: 700,
               opacity: submitting ? 0.8 : 1,
@@ -998,7 +998,7 @@ function MyTournamentRow({
 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "#e8e0c8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#1A1A1B", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {tournament.title}
             </span>
             <StatusBadge status={tournament.status} />
@@ -1009,27 +1009,27 @@ function MyTournamentRow({
               color: meta.color,
             }}>{meta.label}</span>
             {tournament.craftType && (
-              <span style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", textTransform: "capitalize" }}>
+              <span style={{ fontSize: 10, color: "rgba(26,26,27,0.35)", textTransform: "capitalize" }}>
                 · {tournament.craftType}
               </span>
             )}
-            <span style={{ fontSize: 10, color: "rgba(232,224,200,0.35)" }}>
+            <span style={{ fontSize: 10, color: "rgba(26,26,27,0.35)" }}>
               Started {new Date(tournament.startAt).toLocaleDateString()}
             </span>
           </div>
         </div>
 
         <div style={{ textAlign: "right", flexShrink: 0 }}>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "#e8e0c8" }}>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1A1B" }}>
             {tournament.entrantCount}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 3, justifyContent: "flex-end" }}>
-            <Users size={9} color="rgba(232,224,200,0.35)" />
-            <span style={{ fontSize: 9, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.08em" }}>entrants</span>
+            <Users size={9} color="rgba(26,26,27,0.35)" />
+            <span style={{ fontSize: 9, color: "rgba(26,26,27,0.35)", textTransform: "uppercase", letterSpacing: "0.08em" }}>entrants</span>
           </div>
         </div>
 
-        <ChevronRight size={14} color="rgba(232,224,200,0.25)" style={{ flexShrink: 0 }} />
+        <ChevronRight size={14} color="rgba(26,26,27,0.25)" style={{ flexShrink: 0 }} />
       </motion.button>
 
       {/* Action bar — only for actionable statuses */}
@@ -1060,7 +1060,7 @@ function MyTournamentRow({
                   style={{
                     padding: "6px 10px", borderRadius: 8, cursor: "pointer",
                     background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-                    color: "rgba(232,224,200,0.4)", fontSize: 11, fontWeight: 600,
+                    color: "rgba(26,26,27,0.40)", fontSize: 11, fontWeight: 600,
                   }}
                 >
                   Keep
@@ -1104,7 +1104,7 @@ function MyTournamentRow({
                   style={{
                     padding: "6px 10px", borderRadius: 8, cursor: "pointer",
                     background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-                    color: "rgba(232,224,200,0.4)", fontSize: 11, fontWeight: 600,
+                    color: "rgba(26,26,27,0.40)", fontSize: 11, fontWeight: 600,
                   }}
                 >
                   Keep
@@ -1341,7 +1341,7 @@ export default function CompetitionModule() {
   return (
     <BackgroundLayer
       image={getBackground("dashboard")}
-      style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}
+      style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#1A1A1B", overflow: "hidden" }}
     >
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
@@ -1349,7 +1349,7 @@ export default function CompetitionModule() {
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "12px 20px", borderBottom: "1px solid rgba(26,26,27,0.08)",
-        background: "rgba(10,8,6,0.85)", backdropFilter: "blur(8px)", flexShrink: 0,
+        background: "rgba(245,242,237,0.85)", backdropFilter: "blur(8px)", flexShrink: 0,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <motion.button
@@ -1359,14 +1359,14 @@ export default function CompetitionModule() {
               display: "flex", alignItems: "center", justifyContent: "center",
               width: 44, height: 44, borderRadius: 12,
               background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
-              color: "rgba(232,224,200,0.5)", cursor: "pointer",
+              color: "rgba(26,26,27,0.48)", cursor: "pointer",
             }}
           >
             <ArrowLeft size={20} />
           </motion.button>
           <div>
             <div style={{ fontSize: 18, fontWeight: 700, color: "#D48B00" }}>Competitions</div>
-            <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>Craft Tournaments · Live Leaderboards</div>
+            <div style={{ fontSize: 11, color: "rgba(26,26,27,0.40)" }}>Craft Tournaments · Live Leaderboards</div>
           </div>
         </div>
 
@@ -1394,7 +1394,7 @@ export default function CompetitionModule() {
               display: "flex", alignItems: "center", justifyContent: "center",
               width: 40, height: 40, borderRadius: 12,
               background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
-              color: "rgba(232,224,200,0.5)", cursor: "pointer",
+              color: "rgba(26,26,27,0.48)", cursor: "pointer",
             }}
           >
             <RefreshCw size={16} />
@@ -1407,7 +1407,7 @@ export default function CompetitionModule() {
         <div style={{
           display: "flex", gap: 4, padding: "10px 20px",
           borderBottom: "1px solid rgba(26,26,27,0.08)",
-          background: "rgba(10,8,6,0.75)", flexShrink: 0,
+          background: "rgba(245,242,237,0.75)", flexShrink: 0,
         }}>
           {(["browse", "mine"] as const).map(tab => {
             const isActive = activeTab === tab;
@@ -1421,7 +1421,7 @@ export default function CompetitionModule() {
                   fontSize: 12, fontWeight: 700, letterSpacing: "0.03em",
                   background: isActive ? "rgba(212,139,0,0.15)" : "rgba(26,26,27,0.05)",
                   border: isActive ? "1px solid rgba(212,139,0,0.4)" : "1px solid rgba(26,26,27,0.09)",
-                  color: isActive ? "#D48B00" : "rgba(232,224,200,0.4)",
+                  color: isActive ? "#D48B00" : "rgba(26,26,27,0.40)",
                 }}
               >
                 {tab === "browse" ? "Browse" : "My Tournaments"}
@@ -1436,7 +1436,7 @@ export default function CompetitionModule() {
         <div style={{
           display: "flex", gap: 8, padding: "12px 20px",
           borderBottom: "1px solid rgba(26,26,27,0.06)",
-          background: "rgba(10,8,6,0.6)", flexShrink: 0, overflowX: "auto",
+          background: "rgba(245,242,237,0.6)", flexShrink: 0, overflowX: "auto",
         }}>
           {(["all", "live", "daily", "weekly", "venue", "grand"] as const).map(t => {
             const active = filterType === t;
@@ -1452,7 +1452,7 @@ export default function CompetitionModule() {
                   textTransform: "capitalize", whiteSpace: "nowrap",
                   background: active ? `${color}20` : "rgba(26,26,27,0.05)",
                   border: active ? `1px solid ${color}50` : "1px solid rgba(26,26,27,0.10)",
-                  color: active ? color : "rgba(232,224,200,0.4)",
+                  color: active ? color : "rgba(26,26,27,0.40)",
                 }}
               >
                 {t === "all" ? "All" : TYPE_META[t].label}
@@ -1497,7 +1497,7 @@ export default function CompetitionModule() {
                 <div style={{
                   display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4,
                 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.15em" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(26,26,27,0.35)", textTransform: "uppercase", letterSpacing: "0.15em" }}>
                     All Tournaments You Created
                   </div>
                   <motion.button
@@ -1507,7 +1507,7 @@ export default function CompetitionModule() {
                       display: "flex", alignItems: "center", justifyContent: "center",
                       width: 32, height: 32, borderRadius: 9,
                       background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
-                      color: "rgba(232,224,200,0.4)", cursor: "pointer",
+                      color: "rgba(26,26,27,0.40)", cursor: "pointer",
                     }}
                   >
                     <RefreshCw size={13} />
@@ -1516,12 +1516,12 @@ export default function CompetitionModule() {
 
                 {loadingMine ? (
                   <div style={{ display: "flex", justifyContent: "center", padding: 48 }}>
-                    <RefreshCw size={24} color="rgba(232,224,200,0.3)" style={{ animation: "spin 1s linear infinite" }} />
+                    <RefreshCw size={24} color="rgba(26,26,27,0.30)" style={{ animation: "spin 1s linear infinite" }} />
                   </div>
                 ) : myTournaments.length === 0 ? (
                   <div style={{
                     display: "flex", flexDirection: "column", alignItems: "center", gap: 12,
-                    padding: "64px 20px", color: "rgba(232,224,200,0.3)", textAlign: "center",
+                    padding: "64px 20px", color: "rgba(26,26,27,0.30)", textAlign: "center",
                   }}>
                     <Trophy size={40} />
                     <div style={{ fontSize: 15, fontWeight: 600 }}>No tournaments yet</div>
@@ -1550,7 +1550,7 @@ export default function CompetitionModule() {
                               background: `${color}08`, border: `1px solid ${color}20`,
                             }}>
                               <div style={{ fontSize: 20, fontWeight: 800, color }}>{value}</div>
-                              <div style={{ fontSize: 9, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 2 }}>{label}</div>
+                              <div style={{ fontSize: 9, color: "rgba(26,26,27,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 2 }}>{label}</div>
                             </div>
                           ))}
                         </div>
@@ -1591,12 +1591,12 @@ export default function CompetitionModule() {
         }}>
           {loadingList ? (
             <div style={{ display: "flex", justifyContent: "center", padding: 48 }}>
-              <RefreshCw size={24} color="rgba(232,224,200,0.3)" style={{ animation: "spin 1s linear infinite" }} />
+              <RefreshCw size={24} color="rgba(26,26,27,0.30)" style={{ animation: "spin 1s linear infinite" }} />
             </div>
           ) : visible.length === 0 ? (
             <div style={{
               display: "flex", flexDirection: "column", alignItems: "center", gap: 12,
-              padding: "64px 20px", color: "rgba(232,224,200,0.3)", textAlign: "center",
+              padding: "64px 20px", color: "rgba(26,26,27,0.30)", textAlign: "center",
             }}>
               <Trophy size={40} />
               <div style={{ fontSize: 15, fontWeight: 600 }}>No active tournaments</div>
@@ -1623,7 +1623,7 @@ export default function CompetitionModule() {
                 <>
                   {featured.length > 0 && (
                     <div style={{
-                      fontSize: 10, fontWeight: 700, color: "rgba(232,224,200,0.3)",
+                      fontSize: 10, fontWeight: 700, color: "rgba(26,26,27,0.30)",
                       textTransform: "uppercase", letterSpacing: "0.2em", marginTop: 4,
                     }}>
                       All Competitions
@@ -1683,7 +1683,7 @@ export default function CompetitionModule() {
                 <div>
                   <div style={{
                     display: "flex", alignItems: "center", gap: 6, marginBottom: 10,
-                    fontSize: 10, fontWeight: 700, color: "rgba(232,224,200,0.4)",
+                    fontSize: 10, fontWeight: 700, color: "rgba(26,26,27,0.40)",
                     textTransform: "uppercase", letterSpacing: "0.15em",
                   }}>
                     <BarChart2 size={11} />
@@ -1692,7 +1692,7 @@ export default function CompetitionModule() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {liveCtx.craftLeaderboard.slice(0, 5).map((entry, i) => {
                       const rankColors: Record<number, string> = { 1: "#D48B00", 2: "#9ca3af", 3: "#b87333" };
-                      const c = rankColors[i + 1] ?? "rgba(232,224,200,0.4)";
+                      const c = rankColors[i + 1] ?? "rgba(26,26,27,0.40)";
                       return (
                         <div key={i} style={{
                           display: "flex", alignItems: "center", gap: 8,
@@ -1710,10 +1710,10 @@ export default function CompetitionModule() {
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{
-                              fontSize: 12, fontWeight: 600, color: "#e8e0c8",
+                              fontSize: 12, fontWeight: 600, color: "#1A1A1B",
                               overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                             }}>{entry.name}</div>
-                            <div style={{ fontSize: 9, color: "rgba(232,224,200,0.35)", textTransform: "capitalize" }}>
+                            <div style={{ fontSize: 9, color: "rgba(26,26,27,0.35)", textTransform: "capitalize" }}>
                               {entry.craft} craft
                             </div>
                           </div>
@@ -1730,7 +1730,7 @@ export default function CompetitionModule() {
                 <div>
                   <div style={{
                     display: "flex", alignItems: "center", gap: 6, marginBottom: 10,
-                    fontSize: 10, fontWeight: 700, color: "rgba(232,224,200,0.4)",
+                    fontSize: 10, fontWeight: 700, color: "rgba(26,26,27,0.40)",
                     textTransform: "uppercase", letterSpacing: "0.15em",
                   }}>
                     <MapPin size={11} />
@@ -1738,7 +1738,7 @@ export default function CompetitionModule() {
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {liveCtx.loungeLeague.map((lounge, i) => {
-                      const c = i === 0 ? "#D48B00" : "rgba(232,224,200,0.4)";
+                      const c = i === 0 ? "#D48B00" : "rgba(26,26,27,0.40)";
                       return (
                         <div key={i} style={{
                           display: "flex", alignItems: "center", gap: 8,
@@ -1750,7 +1750,7 @@ export default function CompetitionModule() {
                             #{lounge.rank}
                           </span>
                           <div style={{
-                            flex: 1, fontSize: 12, fontWeight: 600, color: "#e8e0c8",
+                            flex: 1, fontSize: 12, fontWeight: 600, color: "#1A1A1B",
                             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                           }}>
                             {lounge.loungeName}
@@ -1778,7 +1778,7 @@ export default function CompetitionModule() {
               position: "fixed", bottom: 28, left: "50%", transform: "translateX(-50%)",
               background: "rgba(30,25,18,0.95)", border: "1px solid rgba(212,139,0,0.4)",
               borderRadius: 14, padding: "12px 24px",
-              fontSize: 13, fontWeight: 600, color: "#e8e0c8",
+              fontSize: 13, fontWeight: 600, color: "#1A1A1B",
               zIndex: 1000, backdropFilter: "blur(12px)",
               boxShadow: "0 8px 32px rgba(26,26,27,0.26)",
             }}

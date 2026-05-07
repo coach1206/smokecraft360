@@ -16,7 +16,7 @@ export function EliteUnlockAnimation({ onComplete }: EliteUnlockAnimationProps) 
     <motion.div
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center"
       style={{
-        background: "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(120,80,5,0.6) 0%, rgba(10,6,2,0.97) 65%)",
+        background: "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(120,80,5,0.6) 0%, rgba(245,242,237,0.97) 65%)",
       }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -55,7 +55,7 @@ export function EliteUnlockAnimation({ onComplete }: EliteUnlockAnimationProps) 
         <div
           className="w-20 h-20 rounded-full flex items-center justify-center"
           style={{
-            background: "radial-gradient(circle, rgba(180,130,30,0.3), rgba(212,139,0,0.08))",
+            background: "radial-gradient(circle, rgba(212,139,0,0.3), rgba(212,139,0,0.08))",
             boxShadow: "0 0 40px rgba(212,139,0,0.35), 0 0 80px rgba(212,139,0,0.12)",
             border: "1px solid rgba(212,139,0,0.4)",
           }}
@@ -105,7 +105,7 @@ export function EliteUnlockAnimation({ onComplete }: EliteUnlockAnimationProps) 
       <motion.button
         onClick={onComplete}
         className="mt-10 text-[10px] uppercase tracking-[0.3em]"
-        style={{ color: "rgba(180,155,100,0.3)" }}
+        style={{ color: "rgba(107,94,78,0.30)" }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.2, duration: 0.6 }}

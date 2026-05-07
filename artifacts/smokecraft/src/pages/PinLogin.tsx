@@ -147,7 +147,7 @@ export default function PinLogin() {
         style={{
           position: "absolute",
           inset: 0,
-          background: "radial-gradient(ellipse at center, rgba(10,8,6,0.55) 0%, rgba(10,8,6,0.82) 100%)",
+          background: "radial-gradient(ellipse at center, rgba(245,242,237,0.55) 0%, rgba(245,242,237,0.82) 100%)",
           pointerEvents: "none",
         }}
       />
@@ -163,7 +163,7 @@ export default function PinLogin() {
           background: "rgba(26,26,27,0.08)",
           border: "1px solid rgba(26,26,27,0.14)",
           borderRadius: 12, padding: "10px 18px",
-          color: "rgba(232,224,200,0.7)", fontSize: 14,
+          color: "rgba(26,26,27,0.68)", fontSize: 14,
           cursor: "pointer", zIndex: 10,
         }}
       >
@@ -182,7 +182,7 @@ export default function PinLogin() {
           width: "100%",
           maxWidth: 380,
           margin: "0 16px",
-          background: "rgba(18,14,10,0.72)",
+          background: "rgba(245,242,237,0.72)",
           border: "1px solid rgba(212,139,0,0.18)",
           borderRadius: 24,
           backdropFilter: "blur(24px)",
@@ -304,7 +304,7 @@ export default function PinLogin() {
                     ? "rgba(212,139,0,0.45)"
                     : isClear
                     ? "rgba(239,68,68,0.75)"
-                    : "#e8e0c8",
+                    : "#1A1A1B",
                   border: `1px solid ${
                     goReady
                       ? "rgba(212,139,0,0.5)"
@@ -331,7 +331,7 @@ export default function PinLogin() {
       <div style={{
         position: "absolute", bottom: 20,
         fontSize: 10, textTransform: "uppercase", letterSpacing: "0.22em",
-        color: "rgba(232,224,200,0.2)", pointerEvents: "none", zIndex: 10,
+        color: "rgba(26,26,27,0.20)", pointerEvents: "none", zIndex: 10,
       }}>
         Powered by Axiom OS
       </div>

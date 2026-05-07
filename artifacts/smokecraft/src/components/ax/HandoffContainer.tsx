@@ -405,7 +405,7 @@ function CraftCard({
         <div
           style={{
             position: "absolute", top: 10, right: 10,
-            background: "rgba(8,6,4,0.72)",
+            background: "rgba(245,242,237,0.72)",
             border: "1px solid rgba(26,26,27,0.10)",
             borderRadius: 8, padding: "4px 8px",
             backdropFilter: "blur(10px)",
@@ -423,7 +423,7 @@ function CraftCard({
             {priceInfo.label}
           </div>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "flex-end", gap: 1 }}>
-            <span style={{ fontSize: 8, color: "rgba(240,232,212,0.4)", fontWeight: 400 }}>$</span>
+            <span style={{ fontSize: 8, color: "rgba(26,26,27,0.40)", fontWeight: 400 }}>$</span>
             <div style={{ overflow: "hidden", height: 16 }}>
               <AnimatePresence mode="popLayout" initial={false}>
                 <motion.span
@@ -724,7 +724,7 @@ function StaffPanel({
               textTransform: "uppercase", cursor: "pointer", outline: "none",
               background: isDynamicActive ? "rgba(212,139,0,0.14)" : "rgba(26,26,27,0.07)",
               border: `1px solid ${isDynamicActive ? "rgba(212,139,0,0.45)" : "rgba(26,26,27,0.12)"}`,
-              color: isDynamicActive ? "#D48B00" : "rgba(240,232,212,0.3)",
+              color: isDynamicActive ? "#D48B00" : "rgba(26,26,27,0.30)",
               padding: "3px 10px", borderRadius: 99, transition: "all 0.22s",
             }}
           >
@@ -1052,7 +1052,7 @@ function StaffPanel({
                   <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: i < 2 ? 10 : 0 }}>
                     <span style={{ fontSize: 15, width: 22, flexShrink: 0 }}>{emoji}</span>
                     <div style={{
-                      width: 82, fontSize: 8, color: "rgba(240,232,212,0.4)",
+                      width: 82, fontSize: 8, color: "rgba(26,26,27,0.40)",
                       letterSpacing: "0.08em", flexShrink: 0,
                     }}>
                       {label}
@@ -1289,7 +1289,7 @@ function PatronView({
                 animate={{ opacity: [1, 0.3, 1], scale: [1, 1.5, 1] }}
                 transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
               />
-              <span style={{ fontSize: 8, color: "rgba(240,232,212,0.3)", letterSpacing: "0.14em" }}>
+              <span style={{ fontSize: 8, color: "rgba(26,26,27,0.30)", letterSpacing: "0.14em" }}>
                 {n.label}
               </span>
               <span style={{ fontSize: 8, color: n.color, fontWeight: 700, letterSpacing: "0.1em" }}>
@@ -1529,7 +1529,7 @@ function PatronView({
             style={{
               position: "absolute", top: 56, left: "50%", transform: "translateX(-50%)",
               zIndex: 60,
-              background: "linear-gradient(135deg, rgba(18,14,10,0.97), rgba(24,18,12,0.95))",
+              background: "linear-gradient(135deg, rgba(245,242,237,0.97), rgba(24,18,12,0.95))",
               border: `1px solid ${RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#D48B00"}55`,
               borderRadius: 12, padding: "10px 20px",
               backdropFilter: "blur(20px)",
@@ -1578,7 +1578,7 @@ function PatronView({
             transition={{ type: "spring", stiffness: 340, damping: 34 }}
             style={{
               position: "absolute", bottom: 52, left: 12, right: 12, zIndex: 50,
-              background: "linear-gradient(135deg, rgba(18,14,10,0.96), rgba(22,17,12,0.94))",
+              background: "linear-gradient(135deg, rgba(245,242,237,0.96), rgba(22,17,12,0.94))",
               border: "1px solid rgba(212,139,0,0.28)",
               borderRadius: 14,
               padding: "12px 16px",
@@ -1633,7 +1633,7 @@ function PatronView({
             style={{
               position: "absolute", inset: 0,
               zIndex: 200,
-              background: "rgba(8,6,4,0.96)",
+              background: "rgba(245,242,237,0.96)",
               backdropFilter: "blur(16px)",
               overflowY: "auto",
             }}
@@ -1645,7 +1645,7 @@ function PatronView({
                 background: "rgba(26,26,27,0.08)",
                 border: "1px solid rgba(26,26,27,0.14)",
                 borderRadius: 8, padding: "6px 14px",
-                color: "rgba(240,232,212,0.6)", fontSize: 11,
+                color: "rgba(26,26,27,0.58)", fontSize: 11,
                 cursor: "pointer", zIndex: 10,
               }}
             >✕ Close</button>

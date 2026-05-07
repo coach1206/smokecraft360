@@ -113,7 +113,7 @@ export default function TouchscreenHome() {
   return (
     <BackgroundLayer image={getBackground("touchHome")} style={{
         minHeight: "100dvh",
-        color: "#e8e0c8",
+        color: "#1A1A1B",
         padding: "40px 20px env(safe-area-inset-bottom, 20px)",
         display: "flex",
         flexDirection: "column",
@@ -133,7 +133,7 @@ export default function TouchscreenHome() {
         >
           SmokeCraft 360
         </h1>
-        <p style={{ fontSize: 14, color: "rgba(232,224,200,0.55)", margin: 0 }}>
+        <p style={{ fontSize: 14, color: "rgba(26,26,27,0.52)", margin: 0 }}>
           Select your interface
         </p>
       </div>
@@ -189,14 +189,14 @@ export default function TouchscreenHome() {
               <div style={{
                 fontSize: 15,
                 fontWeight: 700,
-                color: "#e8e0c8",
+                color: "#1A1A1B",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
               }}>
                 {announcement.title}
               </div>
-              <div style={{ fontSize: 11, color: "rgba(232,224,200,0.5)", marginTop: 2 }}>
+              <div style={{ fontSize: 11, color: "rgba(26,26,27,0.48)", marginTop: 2 }}>
                 {typeLabel} · Join the competition now
               </div>
             </div>
@@ -213,7 +213,7 @@ export default function TouchscreenHome() {
                 borderRadius: 10,
                 background: accentColor,
                 border: "none",
-                color: "#000",
+                color: "#1A1A1B",
                 fontWeight: 700,
                 fontSize: 12,
                 cursor: "pointer",
@@ -243,7 +243,7 @@ export default function TouchscreenHome() {
                 padding: 0,
               }}
             >
-              <X size={12} color="rgba(232,224,200,0.5)" />
+              <X size={12} color="rgba(26,26,27,0.48)" />
             </motion.button>
           </motion.div>
         )}
@@ -280,7 +280,7 @@ export default function TouchscreenHome() {
           background: "rgba(26,26,27,0.06)",
           border: "1px solid rgba(26,26,27,0.10)",
           borderRadius: 14,
-          color: "rgba(232,224,200,0.5)",
+          color: "rgba(26,26,27,0.48)",
           fontSize: 14,
           cursor: "pointer",
         }}

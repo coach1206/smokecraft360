@@ -49,7 +49,7 @@ const INPUT_BASE: React.CSSProperties = {
   background: "rgba(26,26,27,0.07)",
   border: "1px solid rgba(212,139,0,0.18)",
   borderRadius: 8,
-  color: "rgba(240,232,212,0.9)",
+  color: "rgba(26,26,27,0.88)",
   fontSize: 13,
   padding: "10px 12px",
   outline: "none",

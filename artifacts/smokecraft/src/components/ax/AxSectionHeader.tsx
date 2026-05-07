@@ -31,7 +31,7 @@ export function AxSectionHeader({
           {Icon && <Icon size={13} color="rgba(212,139,0,0.7)" />}
           <span style={{
             fontSize: 10, fontWeight: 700,
-            color: "rgba(240,232,212,0.5)",
+            color: "rgba(26,26,27,0.50)",
             textTransform: "uppercase", letterSpacing: "0.13em",
           }}>
             {title}

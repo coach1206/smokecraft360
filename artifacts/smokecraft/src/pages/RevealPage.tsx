@@ -241,7 +241,7 @@ export default function RevealPage() {
       }} />
       <div style={{
         position: "fixed", inset: 0,
-        background: "linear-gradient(180deg, rgba(10,8,6,0.7) 0%, rgba(10,8,6,0.5) 50%, rgba(10,8,6,0.9) 100%)",
+        background: "linear-gradient(180deg, rgba(245,242,237,0.7) 0%, rgba(245,242,237,0.5) 50%, rgba(245,242,237,0.9) 100%)",
         pointerEvents: "none",
         zIndex: 0,
       }} />
@@ -425,7 +425,7 @@ function ChemMeter({ label, value, accent }: { label: string; value: number; acc
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
         <span style={{
           fontSize: 8, letterSpacing: "0.2em", textTransform: "uppercase" as const,
-          color: "rgba(232,224,200,0.38)", fontWeight: 600,
+          color: "rgba(26,26,27,0.38)", fontWeight: 600,
         }}>{label}</span>
         <span style={{ fontSize: 9, color: accent, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
           {value}
@@ -784,7 +784,7 @@ function RevealCard({ rec, rank, theme, ordering, ordered, error, onOrder, delay
                 transition={{ duration: 0.7, repeat: Infinity, ease: "linear" }}
                 style={{
                   width: 14, height: 14, borderRadius: "50%",
-                  border: "2px solid rgba(10,8,6,0.3)",
+                  border: "2px solid rgba(245,242,237,0.3)",
                   borderTop: "2px solid #F5F2ED",
                 }}
               />
@@ -865,7 +865,7 @@ function OrderConfirmModal({
       exit={{ opacity: 0 }}
       style={{
         position: "fixed", inset: 0,
-        background: "rgba(8,6,4,0.85)",
+        background: "rgba(245,242,237,0.85)",
         zIndex: 100,
         display: "flex", alignItems: "center", justifyContent: "center",
         padding: 24,

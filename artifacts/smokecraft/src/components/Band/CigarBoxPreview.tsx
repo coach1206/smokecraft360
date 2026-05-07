@@ -148,7 +148,7 @@ export function CigarBoxPreview({ design, size = "md" }: Props) {
             </linearGradient>
           </defs>
         </motion.svg>
-        <p className="mt-2 text-[8px] uppercase tracking-[0.25em]" style={{ color: "rgba(180,155,100,0.4)" }}>
+        <p className="mt-2 text-[8px] uppercase tracking-[0.25em]" style={{ color: "rgba(107,94,78,0.40)" }}>
           Top
         </p>
       </div>
@@ -170,7 +170,7 @@ export function CigarBoxPreview({ design, size = "md" }: Props) {
             </linearGradient>
             <linearGradient id={`wood-${design.woodTone}-front`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%"  stopColor={dark} />
-              <stop offset="100%" stopColor="#000" stopOpacity="0.85" />
+              <stop offset="100%" stopColor="#1A1A1B" stopOpacity="0.85" />
             </linearGradient>
           </defs>
 
@@ -217,7 +217,7 @@ export function CigarBoxPreview({ design, size = "md" }: Props) {
             {design.limitedEditionName || "Reserve No. 1"}
           </text>
         </motion.svg>
-        <p className="mt-2 text-[8px] uppercase tracking-[0.25em]" style={{ color: "rgba(180,155,100,0.4)" }}>
+        <p className="mt-2 text-[8px] uppercase tracking-[0.25em]" style={{ color: "rgba(107,94,78,0.40)" }}>
           Angled
         </p>
       </div>

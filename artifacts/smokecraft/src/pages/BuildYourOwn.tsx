@@ -132,7 +132,7 @@ export default function BuildYourOwn() {
   const stepNum = step === "base" ? 1 : step === "modifiers" ? 2 : step === "name" ? 3 : 4;
 
   return (
-    <div data-testid="build-your-own-page" style={{ position: "relative", minHeight: "100vh", color: "#FFFFFF" }}>
+    <div data-testid="build-your-own-page" style={{ position: "relative", minHeight: "100vh", color: "#1A1A1B" }}>
       <div aria-hidden style={{
         position: "fixed", inset: 0,
         backgroundImage: `url(${pourBg})`, backgroundSize: "cover", backgroundPosition: "center",
@@ -153,7 +153,7 @@ export default function BuildYourOwn() {
           <h1 style={{
             fontFamily: "var(--app-font-serif, Georgia, serif)",
             fontSize: "clamp(28px, 3.2vw, 44px)", margin: 0, fontWeight: 600,
-            color: "#FFFFFF", letterSpacing: "0.02em",
+            color: "#1A1A1B", letterSpacing: "0.02em",
           }}>
             Build Your Drink
           </h1>
@@ -232,7 +232,7 @@ export default function BuildYourOwn() {
                         <div style={{ width: 24, height: 2, marginBottom: 10, background: `linear-gradient(90deg, ${spirit.accent}, transparent)` }} />
                         <h3 style={{
                           fontFamily: "var(--app-font-serif, Georgia, serif)",
-                          fontSize: 20, fontWeight: 600, margin: 0, color: "#FFFFFF",
+                          fontSize: 20, fontWeight: 600, margin: 0, color: "#1A1A1B",
                           textShadow: "0 2px 8px rgba(26,26,27,0.32)",
                         }}>
                           {spirit.name}
@@ -282,7 +282,7 @@ export default function BuildYourOwn() {
                         style={{
                           background: active ? `${base.accent}25` : "rgba(26,26,27,0.07)",
                           border: `1px solid ${active ? base.accent : "rgba(255,255,255,0.1)"}`,
-                          color: active ? "#FFFFFF" : "#E5E5E5",
+                          color: active ? "#1A1A1B" : "#E5E5E5",
                           padding: "14px 16px",
                           borderRadius: 14,
                           cursor: "pointer",
@@ -364,7 +364,7 @@ export default function BuildYourOwn() {
                       width: "100%", padding: "14px 18px",
                       background: "rgba(26,26,27,0.08)",
                       border: "1px solid rgba(26,26,27,0.17)",
-                      borderRadius: 12, color: "#FFFFFF",
+                      borderRadius: 12, color: "#1A1A1B",
                       fontFamily: "var(--app-font-serif, Georgia, serif)",
                       fontSize: 22, fontWeight: 600,
                       outline: "none",
@@ -423,7 +423,7 @@ export default function BuildYourOwn() {
                     </p>
                     <h2 style={{
                       fontFamily: "var(--app-font-serif, Georgia, serif)",
-                      fontSize: 36, fontWeight: 600, margin: "0 0 6px", color: "#FFFFFF",
+                      fontSize: 36, fontWeight: 600, margin: "0 0 6px", color: "#1A1A1B",
                     }}>
                       {drinkName || "Unnamed"}
                     </h2>
@@ -466,7 +466,7 @@ export default function BuildYourOwn() {
                         </p>
                         <h4 style={{
                           fontFamily: "var(--app-font-serif, Georgia, serif)",
-                          fontSize: 20, fontWeight: 600, margin: "0 0 4px", color: "#FFFFFF",
+                          fontSize: 20, fontWeight: 600, margin: "0 0 4px", color: "#1A1A1B",
                         }}>
                           {matchResult.name}
                         </h4>

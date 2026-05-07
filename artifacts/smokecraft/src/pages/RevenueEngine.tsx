@@ -186,7 +186,7 @@ function ModuleCard({ accent, image, label, sublabel, statusNode, children, dela
         borderRadius:   22,
         overflow:       "hidden",
         border:         `1px solid ${C.border}`,
-        background:     "rgba(8,6,4,0.82)",
+        background:     "rgba(245,242,237,0.82)",
         backdropFilter: "blur(18px)",
         WebkitBackdropFilter: "blur(18px)",
         boxShadow:      `0 16px 56px rgba(26,26,27,0.26), 0 0 0 1px ${accent}10 inset`,
@@ -206,7 +206,7 @@ function ModuleCard({ accent, image, label, sublabel, statusNode, children, dela
         }} />
         <div style={{
           position: "absolute", inset: 0,
-          background: `linear-gradient(180deg, transparent 0%, rgba(8,6,4,0.92) 100%),
+          background: `linear-gradient(180deg, transparent 0%, rgba(245,242,237,0.92) 100%),
                        linear-gradient(135deg, ${accent}12 0%, transparent 60%)`,
         }} />
         {/* OLED glow edge */}
@@ -315,7 +315,7 @@ function AttractionEngine() {
   const statusBadge = (
     <div style={{
       display: "flex", alignItems: "center", gap: 6,
-      background: "rgba(8,6,4,0.70)",
+      background: "rgba(245,242,237,0.70)",
       border: `1px solid ${ACCENT_A}28`,
       borderRadius: 20, padding: "5px 11px",
       backdropFilter: "blur(10px)",
@@ -546,7 +546,7 @@ function SlowHourRecovery() {
   const statusBadge = (
     <div style={{
       display: "flex", alignItems: "center", gap: 6,
-      background: "rgba(8,6,4,0.70)", border: `1px solid ${isDeadPeriod ? "#ef444428" : "#22c55e28"}`,
+      background: "rgba(245,242,237,0.70)", border: `1px solid ${isDeadPeriod ? "#ef444428" : "#22c55e28"}`,
       borderRadius: 20, padding: "5px 11px", backdropFilter: "blur(10px)",
     }}>
       <PulseDot color={isDeadPeriod ? "#ef4444" : "#22c55e"} />
@@ -682,7 +682,7 @@ function EventActivation() {
   const statusBadge = (
     <div style={{
       display: "flex", alignItems: "center", gap: 6,
-      background: "rgba(8,6,4,0.70)", border: `1px solid ${ACCENT_E}28`,
+      background: "rgba(245,242,237,0.70)", border: `1px solid ${ACCENT_E}28`,
       borderRadius: 20, padding: "5px 11px", backdropFilter: "blur(10px)",
     }}>
       <CalendarDays size={10} color={ACCENT_E} />
@@ -837,7 +837,7 @@ function GuestLoyaltyFlow() {
   const statusBadge = (
     <div style={{
       display: "flex", alignItems: "center", gap: 6,
-      background: "rgba(8,6,4,0.70)", border: `1px solid ${ACCENT_L}28`,
+      background: "rgba(245,242,237,0.70)", border: `1px solid ${ACCENT_L}28`,
       borderRadius: 20, padding: "5px 11px", backdropFilter: "blur(10px)",
     }}>
       <PulseDot color={ACCENT_L} />
@@ -955,7 +955,7 @@ function CraftSupplyIntel() {
   const statusBadge = (
     <div style={{
       display: "flex", alignItems: "center", gap: 6,
-      background: "rgba(8,6,4,0.70)",
+      background: "rgba(245,242,237,0.70)",
       border: `1px solid ${critical.length > 0 ? "#ef444428" : low.length > 0 ? "#f97316" + "28" : "#22c55e28"}`,
       borderRadius: 20, padding: "5px 11px", backdropFilter: "blur(10px)",
     }}>
@@ -1096,7 +1096,7 @@ function RevenueCommandPanel() {
         gridColumn: "span 2",
         borderRadius: 20, overflow: "hidden",
         border: `1px solid ${C.border}`,
-        background: "rgba(8,6,4,0.82)",
+        background: "rgba(245,242,237,0.82)",
         backdropFilter: "blur(18px)",
         boxShadow: `0 12px 40px rgba(26,26,27,0.22), 0 0 0 1px ${accent}10 inset`,
         padding: "22px 24px",
@@ -1194,7 +1194,7 @@ function RevenueCommandPanel() {
                 <motion.div
                   animate={{ x: t.on ? 16 : 0 }}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  style={{ width: 14, height: 14, borderRadius: "50%", background: t.on ? "#fff" : C.muted }}
+                  style={{ width: 14, height: 14, borderRadius: "50%", background: t.on ? "#1A1A1B" : C.muted }}
                 />
               </div>
             </motion.button>

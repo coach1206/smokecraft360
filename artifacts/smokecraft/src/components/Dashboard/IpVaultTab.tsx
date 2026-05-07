@@ -116,13 +116,13 @@ export function IpVaultTab() {
             <FileLock size={16} style={{ color: "rgba(212,139,0,0.7)" }} />
             IP Vault
           </h2>
-          <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+          <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>
             Owner-only · NDA-gated · Hash-pinned evidence registry
             {nda?.signedAt && ` · NDA signed ${fmt(nda.signedAt)} as ${nda.name}`}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <label className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.6)" }}>
+          <label className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em]" style={{ color: "rgba(107,94,78,0.58)" }}>
             <input type="checkbox" checked={includeRetired} onChange={(e) => setIncludeRetired(e.target.checked)}
               data-testid="toggle-retired" />
             Include retired
@@ -133,7 +133,7 @@ export function IpVaultTab() {
           </button>
           <button onClick={() => setShowCreate(true)} data-testid="btn-new-asset"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] uppercase tracking-[0.18em]"
-            style={{ background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.45)" }}>
+            style={{ background: "rgba(212,139,0,0.18)", color: "rgba(212,139,0,0.95)", border: "1px solid rgba(212,139,0,0.45)" }}>
             <Plus size={11} /> New Asset
           </button>
         </div>
@@ -151,12 +151,12 @@ export function IpVaultTab() {
       </AnimatePresence>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-[11px]" style={{ color: "rgba(180,155,100,0.6)" }}>
+        <div className="flex items-center gap-2 text-[11px]" style={{ color: "rgba(107,94,78,0.58)" }}>
           <Loader2 size={12} className="animate-spin" /> Loading vault…
         </div>
       ) : items.length === 0 ? (
         <div className="text-[11px] px-4 py-8 rounded text-center"
-          style={{ background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(212,139,0,0.2)", color: "rgba(180,155,100,0.5)" }}>
+          style={{ background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(212,139,0,0.2)", color: "rgba(107,94,78,0.50)" }}>
           No assets registered yet. Click "New Asset" to add the first one.
         </div>
       ) : (
@@ -181,7 +181,7 @@ export function IpVaultTab() {
                         data-testid={`ip-status-${a.id}`}>
                         {a.status}
                       </span>
-                      <span className="text-[9px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.55)" }}>
+                      <span className="text-[9px] uppercase tracking-[0.15em]" style={{ color: "rgba(107,94,78,0.52)" }}>
                         {a.kind}
                       </span>
                     </div>
@@ -192,26 +192,26 @@ export function IpVaultTab() {
                       <div className="grid grid-cols-2 gap-2 mt-2">
                         {a.fileUrl && (
                           <div className="rounded-md p-2" style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
-                            <div className="text-[9px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(180,155,100,0.55)" }}>File URL</div>
+                            <div className="text-[9px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(107,94,78,0.52)" }}>File URL</div>
                             <a href={a.fileUrl} target="_blank" rel="noreferrer" className="font-mono text-[11px] truncate block underline"
                               style={{ color: "rgba(212,139,0,0.85)" }} title={a.fileUrl}>{a.fileUrl}</a>
                           </div>
                         )}
                         {a.fileHash && (
                           <div className="rounded-md p-2" style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
-                            <div className="text-[9px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(180,155,100,0.55)" }}>Hash</div>
+                            <div className="text-[9px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(107,94,78,0.52)" }}>Hash</div>
                             <div className="font-mono text-[10px] truncate" style={{ color: "rgba(230,210,175,0.85)" }} title={a.fileHash}>{a.fileHash}</div>
                           </div>
                         )}
                       </div>
                     )}
-                    <div className="text-[10px] mt-2" style={{ color: "rgba(180,155,100,0.5)" }}>
+                    <div className="text-[10px] mt-2" style={{ color: "rgba(107,94,78,0.50)" }}>
                       Created {fmt(a.createdAt)}
                       {a.registeredAt && ` · Registered ${fmt(a.registeredAt)}`}
                       {a.retiredAt    && ` · Retired ${fmt(a.retiredAt)}`}
                       {a.authorship   && ` · ${a.authorship}`}
                     </div>
-                    {a.notes && <div className="text-[10px] mt-1 italic" style={{ color: "rgba(180,155,100,0.55)" }}>{a.notes}</div>}
+                    {a.notes && <div className="text-[10px] mt-1 italic" style={{ color: "rgba(107,94,78,0.52)" }}>{a.notes}</div>}
 
                     {isActive && (
                       <div className="flex items-center gap-1.5 mt-3 flex-wrap">
@@ -289,7 +289,7 @@ function NdaGate({ onSign, error }: { onSign: (name: string) => Promise<void>; e
         </div>
       )}
 
-      <label className="block text-[10px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(180,155,100,0.6)" }}>
+      <label className="block text-[10px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(107,94,78,0.58)" }}>
         Type your full legal name
       </label>
       <input value={name} onChange={(e) => setName(e.target.value)}
@@ -368,7 +368,7 @@ function CreateAssetForm({
     >
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-serif text-[14px]" style={{ color: "rgba(230,210,175,0.9)" }}>New IP Asset</h3>
-        <button onClick={onCancel} className="p-1 rounded" style={{ color: "rgba(180,155,100,0.6)" }}>
+        <button onClick={onCancel} className="p-1 rounded" style={{ color: "rgba(107,94,78,0.58)" }}>
           <X size={14} />
         </button>
       </div>
@@ -413,12 +413,12 @@ function CreateAssetForm({
       </div>
       <div className="flex items-center justify-end gap-2 mt-4">
         <button onClick={onCancel} className="px-3 py-1.5 rounded-md text-[10px] uppercase tracking-[0.18em]"
-          style={{ background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.6)", border: "1px solid rgba(26,26,27,0.08)" }}>
+          style={{ background: "rgba(26,26,27,0.06)", color: "rgba(107,94,78,0.58)", border: "1px solid rgba(26,26,27,0.08)" }}>
           Cancel
         </button>
         <button onClick={submit} disabled={!title.trim() || busy} data-testid="new-submit"
           className="px-3 py-1.5 rounded-md text-[10px] uppercase tracking-[0.18em] flex items-center gap-1.5"
-          style={{ background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.45)", opacity: !title.trim() || busy ? 0.5 : 1 }}>
+          style={{ background: "rgba(212,139,0,0.18)", color: "rgba(212,139,0,0.95)", border: "1px solid rgba(212,139,0,0.45)", opacity: !title.trim() || busy ? 0.5 : 1 }}>
           {busy ? <Loader2 size={11} className="animate-spin" /> : <Plus size={11} />}
           Create Draft
         </button>
@@ -430,7 +430,7 @@ function CreateAssetForm({
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <div className="text-[9px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(180,155,100,0.6)" }}>{children}</div>;
+  return <div className="text-[9px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(107,94,78,0.58)" }}>{children}</div>;
 }
 
 function ActBtn({ label, icon, onClick, disabled, tone, testId }: {

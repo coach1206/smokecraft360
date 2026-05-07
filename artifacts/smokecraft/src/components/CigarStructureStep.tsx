@@ -354,7 +354,7 @@ export function CigarStructureStep({
             borderRadius: 12,
             border: "1px solid rgba(212,139,0,0.6)",
             background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
-            color: "hsl(22 18% 6%)",
+            color: "#F5F2ED",
             fontWeight: 700,
             fontSize: 13,
             letterSpacing: "0.2em",

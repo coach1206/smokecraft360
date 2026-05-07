@@ -52,10 +52,10 @@ function KpiCard({ icon, label, value, gold, warning }: {
                 : "1px solid rgba(26,26,27,0.08)",
       }}>
       <div className="flex items-center gap-2 mb-2">
-        <span style={{ color: gold ? GOLD_DIM : warning ? "rgba(239,90,80,0.6)" : "rgba(180,155,100,0.5)" }}>
+        <span style={{ color: gold ? GOLD_DIM : warning ? "rgba(239,90,80,0.6)" : "rgba(107,94,78,0.50)" }}>
           {icon}
         </span>
-        <p className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.4)" }}>{label}</p>
+        <p className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(107,94,78,0.40)" }}>{label}</p>
       </div>
       <p className="text-3xl font-serif" style={{ color: gold ? GOLD : warning ? "rgba(239,100,90,0.85)" : "rgba(210,190,155,0.82)", fontWeight: 300 }}>
         {value}
@@ -70,7 +70,7 @@ function SectionHeader({ title, subtitle, icon }: { title: string; subtitle?: st
       {icon && <span style={{ color: GOLD_DIM }}>{icon}</span>}
       <div>
         <h3 className="font-serif text-base" style={{ color: "rgba(220,200,165,0.88)", fontWeight: 300 }}>{title}</h3>
-        {subtitle && <p className="text-[8px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(180,155,100,0.38)" }}>{subtitle}</p>}
+        {subtitle && <p className="text-[8px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(107,94,78,0.38)" }}>{subtitle}</p>}
       </div>
     </div>
   );
@@ -96,11 +96,11 @@ function RestockCard({ suggestion, i }: { suggestion: IntelligenceRestockSuggest
             {style.label}
           </span>
           <span className="text-[7px] uppercase tracking-[0.12em] flex-shrink-0"
-            style={{ color: "rgba(180,155,100,0.35)" }}>
+            style={{ color: "rgba(107,94,78,0.35)" }}>
             {suggestion.category}
           </span>
         </div>
-        <p className="text-[10px]" style={{ color: "rgba(180,155,100,0.55)" }}>{suggestion.reason}</p>
+        <p className="text-[10px]" style={{ color: "rgba(107,94,78,0.52)" }}>{suggestion.reason}</p>
       </div>
       <ArrowUpRight size={14} style={{ color: style.color, flexShrink: 0, marginTop: 2 }} />
     </motion.div>
@@ -117,12 +117,12 @@ function ProductListRow({ name, category, metric, metricLabel, trendScore, i }: 
       style={{ borderBottom: "1px solid rgba(26,26,27,0.06)" }}
     >
       <div className="flex items-center gap-3 min-w-0">
-        <span className="text-xs tabular-nums w-4 text-right flex-shrink-0" style={{ color: "rgba(180,155,100,0.3)" }}>
+        <span className="text-xs tabular-nums w-4 text-right flex-shrink-0" style={{ color: "rgba(107,94,78,0.30)" }}>
           {i + 1}
         </span>
         <div className="min-w-0">
           <p className="font-serif text-xs truncate" style={{ color: "rgba(210,190,155,0.82)" }}>{name}</p>
-          <p className="text-[8px] uppercase tracking-[0.12em] mt-0.5" style={{ color: "rgba(180,155,100,0.35)" }}>{category}</p>
+          <p className="text-[8px] uppercase tracking-[0.12em] mt-0.5" style={{ color: "rgba(107,94,78,0.35)" }}>{category}</p>
         </div>
       </div>
       <div className="flex items-center gap-3 flex-shrink-0 ml-4">
@@ -136,7 +136,7 @@ function ProductListRow({ name, category, metric, metricLabel, trendScore, i }: 
         )}
         <div className="text-right">
           <p className="text-sm font-serif" style={{ color: GOLD_DIM, fontWeight: 300 }}>{metric}</p>
-          <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(180,155,100,0.3)" }}>{metricLabel}</p>
+          <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(107,94,78,0.30)" }}>{metricLabel}</p>
         </div>
       </div>
     </motion.div>
@@ -156,7 +156,7 @@ function FlavorBar({ flavor, count, max, i }: { flavor: string; count: number; m
           initial={{ width: 0 }}
           animate={{ width: `${(count / max) * 100}%` }}
           transition={{ duration: 0.7, ease: "easeOut", delay: i * 0.05 }}
-          style={{ background: "linear-gradient(90deg, rgba(180,130,30,0.6), rgba(212,139,0,0.85))" }}
+          style={{ background: "linear-gradient(90deg, rgba(212,139,0,0.6), rgba(212,139,0,0.85))" }}
         />
       </div>
     </div>
@@ -173,7 +173,7 @@ function Panel({ children }: { children: React.ReactNode }) {
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <p className="text-xs italic py-4 text-center" style={{ color: "rgba(180,155,100,0.3)" }}>{message}</p>
+    <p className="text-xs italic py-4 text-center" style={{ color: "rgba(107,94,78,0.30)" }}>{message}</p>
   );
 }
 
@@ -210,7 +210,7 @@ export function InventoryIntelligenceTab() {
           <motion.div className="w-10 h-10 rounded-full mx-auto mb-4 border-2"
             style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.7)" }}
             animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
-          <p className="text-[9px] uppercase tracking-[0.28em] text-center" style={{ color: "rgba(180,155,100,0.4)" }}>
+          <p className="text-[9px] uppercase tracking-[0.28em] text-center" style={{ color: "rgba(107,94,78,0.40)" }}>
             Analysing inventory…
           </p>
         </div>
@@ -221,7 +221,7 @@ export function InventoryIntelligenceTab() {
   if (error) {
     return (
       <div className="py-12 text-center">
-        <Brain size={28} className="mx-auto mb-3" style={{ color: "rgba(180,155,100,0.2)" }} />
+        <Brain size={28} className="mx-auto mb-3" style={{ color: "rgba(107,94,78,0.20)" }} />
         <p className="text-xs" style={{ color: "rgba(239,68,68,0.6)" }}>{error}</p>
         <button onClick={load} className="mt-4 text-[9px] uppercase tracking-[0.18em] px-4 py-2 rounded-lg"
           style={{ background: "rgba(212,139,0,0.07)", border: "1px solid rgba(212,139,0,0.2)", color: "rgba(212,139,0,0.65)" }}>
@@ -253,19 +253,19 @@ export function InventoryIntelligenceTab() {
             <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
               Inventory Intelligence
             </h2>
-            <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+            <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>
               Demand signals · predictive restocking · stock health
             </p>
           </div>
           <div className="flex items-center gap-3">
             {data.generatedAt && (
-              <p className="text-[8px]" style={{ color: "rgba(180,155,100,0.3)" }}>
+              <p className="text-[8px]" style={{ color: "rgba(107,94,78,0.30)" }}>
                 Updated {new Date(data.generatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </p>
             )}
             <motion.button onClick={load}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[9px] uppercase tracking-[0.15em]"
-              style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}
+              style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(107,94,78,0.50)" }}
               whileHover={{ borderColor: "rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.7)" }}
               whileTap={{ scale: 0.96 }}>
               <RefreshCw size={10} />Refresh
@@ -376,14 +376,14 @@ export function InventoryIntelligenceTab() {
                       style={{ background: "rgba(212,139,0,0.04)", border: "1px solid rgba(212,139,0,0.12)" }}>
                       <div className="min-w-0">
                         <p className="text-xs font-serif truncate" style={{ color: "rgba(210,190,155,0.82)" }}>{item.name}</p>
-                        <p className="text-[8px] uppercase tracking-[0.12em]" style={{ color: "rgba(180,155,100,0.38)" }}>{item.category}</p>
+                        <p className="text-[8px] uppercase tracking-[0.12em]" style={{ color: "rgba(107,94,78,0.38)" }}>{item.category}</p>
                       </div>
                       <div className="flex items-center gap-1.5 flex-shrink-0 ml-3">
                         <div className="w-1.5 h-1.5 rounded-full" style={{ background: item.quantity === 1 ? "rgba(239,90,80,0.7)" : "rgba(212,139,0,0.6)" }} />
                         <span className="text-sm font-serif" style={{ color: item.quantity === 1 ? "rgba(239,100,90,0.8)" : GOLD_DIM }}>
                           {item.quantity}
                         </span>
-                        <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.35)" }}>left</span>
+                        <span className="text-[8px]" style={{ color: "rgba(107,94,78,0.35)" }}>left</span>
                       </div>
                     </motion.div>
                   ))}
@@ -408,7 +408,7 @@ export function InventoryIntelligenceTab() {
                       <XCircle size={12} style={{ color: "rgba(239,68,68,0.45)", flexShrink: 0 }} />
                       <div className="min-w-0">
                         <p className="text-xs font-serif truncate" style={{ color: "rgba(200,175,145,0.75)" }}>{item.name}</p>
-                        <p className="text-[8px] uppercase tracking-[0.12em]" style={{ color: "rgba(180,155,100,0.35)" }}>{item.category}</p>
+                        <p className="text-[8px] uppercase tracking-[0.12em]" style={{ color: "rgba(107,94,78,0.35)" }}>{item.category}</p>
                       </div>
                     </motion.div>
                   ))}
@@ -493,7 +493,7 @@ export function InventoryIntelligenceTab() {
                       style={{ color: isCigar ? "rgba(212,139,0,0.45)" : "rgba(130,150,212,0.5)" }}>
                       {cat.category}
                     </p>
-                    <p className="text-[8px] mt-0.5" style={{ color: "rgba(180,155,100,0.35)" }}>
+                    <p className="text-[8px] mt-0.5" style={{ color: "rgba(107,94,78,0.35)" }}>
                       {cat.count} sessions
                     </p>
                   </div>
@@ -507,7 +507,7 @@ export function InventoryIntelligenceTab() {
         <div className="rounded-xl p-5 text-center"
           style={{ background: "rgba(212,139,0,0.02)", border: "1px dashed rgba(212,139,0,0.1)" }}>
           <Brain size={20} className="mx-auto mb-2" style={{ color: "rgba(212,139,0,0.2)" }} />
-          <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.3)" }}>
+          <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(107,94,78,0.30)" }}>
             Future: automated restock alerts · distributor integration · demand forecasting
           </p>
         </div>

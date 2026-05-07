@@ -191,7 +191,7 @@ export default function DynamicCard({ module: mod, onClick }: Props) {
         {/* Module title */}
         <div style={{
           fontFamily: "var(--app-font-serif, Georgia, serif)",
-          fontSize: 21, fontWeight: 800, color: "#fff",
+          fontSize: 21, fontWeight: 800, color: "#1A1A1B",
           letterSpacing: "0.02em", lineHeight: 1.1,
           textShadow: "0 2px 12px rgba(26,26,27,0.32)",
         }}>

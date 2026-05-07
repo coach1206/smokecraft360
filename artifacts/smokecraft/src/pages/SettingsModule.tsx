@@ -152,7 +152,7 @@ export default function SettingsModule() {
                 </div>
                 <div>
                   <div style={{ fontSize: 18, fontWeight: 700, color: item.color, textTransform: "capitalize" }}>{item.value}</div>
-                  <div style={{ fontSize: 10, color: "rgba(232,224,200,0.4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{item.label}</div>
+                  <div style={{ fontSize: 10, color: "rgba(26,26,27,0.40)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{item.label}</div>
                 </div>
               </motion.div>
             );
@@ -166,12 +166,12 @@ export default function SettingsModule() {
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
             <Paintbrush size={14} color={brandColor} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Venue Branding</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Venue Branding</span>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 16 }}>
             <div>
-              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(26,26,27,0.40)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em" }}>
                 <Type size={12} /> Venue Name
               </label>
               <input
@@ -180,14 +180,14 @@ export default function SettingsModule() {
                 style={{
                   width: "100%", padding: "12px 14px", borderRadius: 10, fontSize: 14, fontWeight: 600,
                   background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
-                  color: "#e8e0c8", outline: "none", boxSizing: "border-box",
+                  color: "#1A1A1B", outline: "none", boxSizing: "border-box",
                 }}
                 onFocus={(e) => { e.target.style.borderColor = `${brandColor}60`; }}
                 onBlur={(e) => { e.target.style.borderColor = "rgba(26,26,27,0.10)"; }}
               />
             </div>
             <div>
-              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(26,26,27,0.40)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em" }}>
                 <Type size={12} /> Tagline
               </label>
               <input
@@ -196,7 +196,7 @@ export default function SettingsModule() {
                 style={{
                   width: "100%", padding: "12px 14px", borderRadius: 10, fontSize: 14,
                   background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
-                  color: "#e8e0c8", outline: "none", boxSizing: "border-box",
+                  color: "#1A1A1B", outline: "none", boxSizing: "border-box",
                 }}
                 onFocus={(e) => { e.target.style.borderColor = `${brandColor}60`; }}
                 onBlur={(e) => { e.target.style.borderColor = "rgba(26,26,27,0.10)"; }}
@@ -205,7 +205,7 @@ export default function SettingsModule() {
           </div>
 
           <div style={{ marginBottom: 16 }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(26,26,27,0.40)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em" }}>
               <Image size={12} /> Logo Image URL
             </label>
             <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
@@ -216,7 +216,7 @@ export default function SettingsModule() {
                 style={{
                   flex: 1, padding: "12px 14px", borderRadius: 10, fontSize: 13,
                   background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
-                  color: "#e8e0c8", outline: "none",
+                  color: "#1A1A1B", outline: "none",
                 }}
                 onFocus={(e) => { e.target.style.borderColor = `${brandColor}60`; }}
                 onBlur={(e) => { e.target.style.borderColor = "rgba(26,26,27,0.10)"; }}
@@ -239,7 +239,7 @@ export default function SettingsModule() {
           </div>
 
           <div style={{ marginBottom: 18 }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(26,26,27,0.40)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em" }}>
               <Palette size={12} /> Primary Color
             </label>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
@@ -255,7 +255,7 @@ export default function SettingsModule() {
                     display: "flex", alignItems: "center", justifyContent: "center",
                   }}
                 >
-                  {brandColor === c && <Check size={14} color="#fff" strokeWidth={3} />}
+                  {brandColor === c && <Check size={14} color="#1A1A1B" strokeWidth={3} />}
                 </button>
               ))}
               <input
@@ -292,9 +292,9 @@ export default function SettingsModule() {
             )}
             <div>
               <div style={{ fontSize: 16, fontWeight: 700, color: brandColor }}>{brandName || "Venue Name"}</div>
-              <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>{brandTagline || "Your tagline"}</div>
+              <div style={{ fontSize: 11, color: "rgba(26,26,27,0.40)" }}>{brandTagline || "Your tagline"}</div>
             </div>
-            <div style={{ marginLeft: "auto", fontSize: 10, color: "rgba(232,224,200,0.3)", textTransform: "uppercase" }}>Preview</div>
+            <div style={{ marginLeft: "auto", fontSize: 10, color: "rgba(26,26,27,0.30)", textTransform: "uppercase" }}>Preview</div>
           </div>
 
           {brandError && (
@@ -315,7 +315,7 @@ export default function SettingsModule() {
               width: "100%", padding: "14px", borderRadius: 12,
               cursor: brandSaving ? "wait" : "pointer",
               background: `linear-gradient(135deg, ${brandColor}, ${brandColor}cc)`,
-              border: "none", fontSize: 14, fontWeight: 700, color: "#fff",
+              border: "none", fontSize: 14, fontWeight: 700, color: "#1A1A1B",
               letterSpacing: "0.05em",
               opacity: brandSaving ? 0.6 : 1,
             }}
@@ -332,13 +332,13 @@ export default function SettingsModule() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <Image size={14} color={brandColor} />
-              <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Background Images</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Background Images</span>
             </div>
             {bgSaved && (
               <span style={{ fontSize: 11, color: "#34d399", fontWeight: 600 }}>Saved!</span>
             )}
           </div>
-          <div style={{ fontSize: 11, color: "rgba(232,224,200,0.35)", marginBottom: 14, lineHeight: 1.5 }}>
+          <div style={{ fontSize: 11, color: "rgba(26,26,27,0.35)", marginBottom: 14, lineHeight: 1.5 }}>
             Customize background images for each screen. Paste an image URL or leave blank for the default.
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -352,7 +352,7 @@ export default function SettingsModule() {
                   border: `1px solid ${isCustom ? `${brandColor}30` : "rgba(26,26,27,0.08)"}`,
                 }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: isCustom ? brandColor : "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: isCustom ? brandColor : "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                       {BACKGROUND_LABELS[key]}
                     </span>
                     {isCustom && (
@@ -369,7 +369,7 @@ export default function SettingsModule() {
                           display: "flex", alignItems: "center", justifyContent: "center",
                           width: 22, height: 22, borderRadius: 6, cursor: "pointer",
                           background: "rgba(26,26,27,0.08)", border: "1px solid rgba(255,255,255,0.1)",
-                          color: "rgba(232,224,200,0.4)", padding: 0,
+                          color: "rgba(26,26,27,0.40)", padding: 0,
                         }}
                       >
                         <RotateCcw size={10} />
@@ -394,7 +394,7 @@ export default function SettingsModule() {
                       style={{
                         flex: 1, padding: "8px 10px", borderRadius: 8, fontSize: 11,
                         background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
-                        color: "#e8e0c8", outline: "none", minWidth: 0,
+                        color: "#1A1A1B", outline: "none", minWidth: 0,
                       }}
                       onFocus={(e) => { e.target.style.borderColor = `${brandColor}60`; }}
                       onBlur={(e) => { e.target.style.borderColor = "rgba(26,26,27,0.10)"; }}
@@ -412,8 +412,8 @@ export default function SettingsModule() {
           marginBottom: 16,
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-            <Layers size={14} color="rgba(232,224,200,0.5)" />
-            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Operating Mode</span>
+            <Layers size={14} color="rgba(26,26,27,0.48)" />
+            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Operating Mode</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {POS_MODES.map((mode) => {
@@ -447,10 +447,10 @@ export default function SettingsModule() {
                     )}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: selected ? info.color : "#e8e0c8", marginBottom: 4 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: selected ? info.color : "#1A1A1B", marginBottom: 4 }}>
                       {info.label}
                     </div>
-                    <div style={{ fontSize: 12, color: "rgba(232,224,200,0.45)", lineHeight: 1.5 }}>
+                    <div style={{ fontSize: 12, color: "rgba(26,26,27,0.44)", lineHeight: 1.5 }}>
                       {info.description}
                     </div>
                   </div>
@@ -476,25 +476,25 @@ export default function SettingsModule() {
           background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.08)",
           marginBottom: 16,
         }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14 }}>
             Active Session
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.06)" }}>
-              <div style={{ fontSize: 11, color: "rgba(232,224,200,0.3)", marginBottom: 4 }}>Current User</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#e8e0c8" }}>{pos.currentUser?.name ?? "None"}</div>
+              <div style={{ fontSize: 11, color: "rgba(26,26,27,0.30)", marginBottom: 4 }}>Current User</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#1A1A1B" }}>{pos.currentUser?.name ?? "None"}</div>
             </div>
             <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.06)" }}>
-              <div style={{ fontSize: 11, color: "rgba(232,224,200,0.3)", marginBottom: 4 }}>Role</div>
+              <div style={{ fontSize: 11, color: "rgba(26,26,27,0.30)", marginBottom: 4 }}>Role</div>
               <div style={{ fontSize: 14, fontWeight: 600, color: "#D48B00", textTransform: "capitalize" }}>{pos.currentUser?.role ?? "—"}</div>
             </div>
             <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.06)" }}>
-              <div style={{ fontSize: 11, color: "rgba(232,224,200,0.3)", marginBottom: 4 }}>Orders This Session</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#e8e0c8" }}>{pos.orders.length}</div>
+              <div style={{ fontSize: 11, color: "rgba(26,26,27,0.30)", marginBottom: 4 }}>Orders This Session</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#1A1A1B" }}>{pos.orders.length}</div>
             </div>
             <div style={{ padding: "12px 14px", borderRadius: 10, background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.06)" }}>
-              <div style={{ fontSize: 11, color: "rgba(232,224,200,0.3)", marginBottom: 4 }}>Cart Items</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#e8e0c8" }}>{pos.cart.reduce((s, c) => s + c.quantity, 0)}</div>
+              <div style={{ fontSize: 11, color: "rgba(26,26,27,0.30)", marginBottom: 4 }}>Cart Items</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#1A1A1B" }}>{pos.cart.reduce((s, c) => s + c.quantity, 0)}</div>
             </div>
           </div>
         </div>
@@ -504,8 +504,8 @@ export default function SettingsModule() {
           background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.08)",
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-            <FileText size={14} color="rgba(232,224,200,0.5)" />
-            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(232,224,200,0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Recent Audit Log</span>
+            <FileText size={14} color="rgba(26,26,27,0.48)" />
+            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Recent Audit Log</span>
           </div>
           {cc.auditLog.slice(0, 10).map((entry, i) => {
             const time = new Date(entry.timestamp);
@@ -516,10 +516,10 @@ export default function SettingsModule() {
                   display: "flex", gap: 12, padding: "10px 0",
                   borderBottom: i < 9 ? "1px solid rgba(26,26,27,0.05)" : "none",
                 }}>
-                <div style={{ fontSize: 11, color: "rgba(232,224,200,0.25)", minWidth: 50, flexShrink: 0 }}>{timeStr}</div>
+                <div style={{ fontSize: 11, color: "rgba(26,26,27,0.25)", minWidth: 50, flexShrink: 0 }}>{timeStr}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, color: "rgba(232,224,200,0.6)" }}>{entry.details}</div>
-                  <div style={{ fontSize: 10, color: "rgba(232,224,200,0.25)", marginTop: 2 }}>{entry.user} · {entry.action}</div>
+                  <div style={{ fontSize: 12, color: "rgba(26,26,27,0.58)" }}>{entry.details}</div>
+                  <div style={{ fontSize: 10, color: "rgba(26,26,27,0.25)", marginTop: 2 }}>{entry.user} · {entry.action}</div>
                 </div>
               </motion.div>
             );

@@ -254,7 +254,7 @@ export default function EnrollmentFlow({ craftType, onComplete, onSkip }: Enroll
       <div style={{
         position:   "absolute",
         inset:      0,
-        background: "rgba(4,3,2,0.92)",
+        background: "rgba(245,242,237,0.92)",
       }} />
 
       <AmbientParticles />

@@ -128,7 +128,7 @@ export function LiveOrders() {
               </motion.span>
             )}
           </div>
-          <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+          <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>
             {DEMO_MODE ? "Simulated orders — demo mode" : "Auto-refreshes every 30 s"}
           </p>
         </div>
@@ -141,7 +141,7 @@ export function LiveOrders() {
           <motion.button onClick={() => load()} className="p-2 rounded-lg"
             style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.09)" }}
             whileHover={{ borderColor: "rgba(212,139,0,0.3)" }} whileTap={{ scale: 0.95 }}>
-            <RefreshCw size={12} style={{ color: "rgba(180,155,100,0.5)" }} className={loading ? "animate-spin" : ""} />
+            <RefreshCw size={12} style={{ color: "rgba(107,94,78,0.50)" }} className={loading ? "animate-spin" : ""} />
           </motion.button>
         </div>
       </div>
@@ -163,8 +163,8 @@ export function LiveOrders() {
       ) : orders.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-14 gap-3">
           <ClipboardList size={28} style={{ color: "rgba(212,139,0,0.2)" }} />
-          <p className="text-sm italic" style={{ color: "rgba(180,155,100,0.35)" }}>No orders yet</p>
-          <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.22)" }}>
+          <p className="text-sm italic" style={{ color: "rgba(107,94,78,0.35)" }}>No orders yet</p>
+          <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(107,94,78,0.25)" }}>
             Orders appear here when customers request experiences
           </p>
         </div>
@@ -200,7 +200,7 @@ export function LiveOrders() {
           {/* Recently Completed */}
           {completed.length > 0 && (
             <div>
-              <p className="text-[9px] uppercase tracking-[0.22em] mb-3" style={{ color: "rgba(180,155,100,0.35)" }}>
+              <p className="text-[9px] uppercase tracking-[0.22em] mb-3" style={{ color: "rgba(107,94,78,0.35)" }}>
                 Recently Completed
               </p>
               <div className="space-y-2">
@@ -309,11 +309,11 @@ function OrderCard({
           </span>
           {order.tableNumber && (
             <span className="text-[8px] px-1.5 py-0.5 rounded"
-              style={{ background: "rgba(26,26,27,0.07)", color: "rgba(180,155,100,0.55)" }}>
+              style={{ background: "rgba(26,26,27,0.07)", color: "rgba(107,94,78,0.52)" }}>
               Table {order.tableNumber}
             </span>
           )}
-          <span className="text-[8px] ml-auto" style={{ color: "rgba(180,155,100,0.35)" }}>
+          <span className="text-[8px] ml-auto" style={{ color: "rgba(107,94,78,0.35)" }}>
             #{shortId}
           </span>
         </div>
@@ -328,12 +328,12 @@ function OrderCard({
             ))}
           </div>
         ) : (
-          <p className="text-[9px] italic mb-2" style={{ color: "rgba(180,155,100,0.35)" }}>No items listed</p>
+          <p className="text-[9px] italic mb-2" style={{ color: "rgba(107,94,78,0.35)" }}>No items listed</p>
         )}
 
         <div className="flex items-center gap-1.5">
-          <Clock size={9} style={{ color: "rgba(180,155,100,0.35)" }} />
-          <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.38)" }}>{formatAge(order.createdAt)}</span>
+          <Clock size={9} style={{ color: "rgba(107,94,78,0.35)" }} />
+          <span className="text-[8px]" style={{ color: "rgba(107,94,78,0.38)" }}>{formatAge(order.createdAt)}</span>
         </div>
       </div>
 
@@ -345,7 +345,7 @@ function OrderCard({
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.12em] transition-all duration-200"
           style={{
             background: "linear-gradient(135deg, hsl(43 75% 38%), hsl(45 85% 48%))",
-            color:      "hsl(22 18% 6%)",
+            color:      "#F5F2ED",
           }}
           whileTap={{ scale: 0.96 }}
         >
@@ -359,7 +359,7 @@ function OrderCard({
           onClick={() => !isUpdating && onAction(order, secondaryAction.status)}
           disabled={isUpdating}
           className="flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.12em] transition-all duration-200"
-          style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.4)" }}
+          style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(107,94,78,0.40)" }}
           whileHover={{ borderColor: "rgba(239,68,68,0.3)", color: "rgba(239,68,68,0.6)" }}
           whileTap={{ scale: 0.96 }}
         >
@@ -380,8 +380,8 @@ function CompactOrderRow({ order }: { order: Order }) {
       <span className="text-xs flex-1 truncate" style={{ color: "rgba(200,180,140,0.6)" }}>
         {items.join(" + ") || "Order"}
       </span>
-      <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.3)" }}>#{shortId}</span>
-      <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.28)" }}>{formatAge(order.createdAt)}</span>
+      <span className="text-[8px]" style={{ color: "rgba(107,94,78,0.30)" }}>#{shortId}</span>
+      <span className="text-[8px]" style={{ color: "rgba(107,94,78,0.28)" }}>{formatAge(order.createdAt)}</span>
     </div>
   );
 }

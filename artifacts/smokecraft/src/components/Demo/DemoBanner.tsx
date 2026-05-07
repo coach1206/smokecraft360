@@ -73,7 +73,7 @@ export function DemoBanner() {
             <p className="text-[9px] uppercase tracking-[0.25em] mb-1" style={{ color: "rgba(212,139,0,0.5)" }}>
               Demo Safe Mode
             </p>
-            <p className="text-[10px] leading-relaxed" style={{ color: "rgba(180,155,100,0.65)" }}>
+            <p className="text-[10px] leading-relaxed" style={{ color: "rgba(107,94,78,0.62)" }}>
               Payments simulated. No real charges. Dashboard populated with sample data.
             </p>
             <div className="h-px w-full my-1" style={{ background: "rgba(212,139,0,0.1)" }} />
@@ -84,7 +84,7 @@ export function DemoBanner() {
               style={resetting ? {
                 background: "rgba(26,26,27,0.06)",
                 border:     "1px solid rgba(26,26,27,0.08)",
-                color:      "rgba(180,155,100,0.35)",
+                color:      "rgba(107,94,78,0.35)",
                 cursor:     "not-allowed",
               } : {
                 background: "rgba(212,139,0,0.08)",

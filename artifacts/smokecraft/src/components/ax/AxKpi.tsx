@@ -50,7 +50,7 @@ export function AxKpi({ label, value, prefix, suffix, color, sub, icon: Icon }: 
     <AxCard glow={c} style={{ padding: "18px 20px" }}>
       {Icon && <Icon size={13} color={c} style={{ marginBottom: 8 }} />}
       <div style={{
-        fontSize: 10, color: "rgba(240,232,212,0.5)",
+        fontSize: 10, color: "rgba(26,26,27,0.50)",
         textTransform: "uppercase", letterSpacing: "0.11em", marginBottom: 6,
       }}>
         {label}

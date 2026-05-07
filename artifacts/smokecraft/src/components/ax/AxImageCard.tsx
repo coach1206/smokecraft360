@@ -107,7 +107,7 @@ export function AxImageCard({
           display: "flex", flexDirection: "column",
           alignItems: "center", justifyContent: "center",
           gap: 6,
-          background: `radial-gradient(ellipse at 50% 30%, ${fallbackColor}18 0%, rgba(8,6,4,0.6) 100%)`,
+          background: `radial-gradient(ellipse at 50% 30%, ${fallbackColor}18 0%, rgba(245,242,237,0.60) 100%)`,
         }}>
           {fallbackLabel ? (
             <div style={{

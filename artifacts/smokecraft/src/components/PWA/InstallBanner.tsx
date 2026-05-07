@@ -62,7 +62,7 @@ export function InstallBanner() {
         onClick={install}
         className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full text-xs uppercase tracking-[0.18em] cursor-pointer"
         style={{
-          background:  "linear-gradient(135deg, rgba(180,130,30,0.25), rgba(212,139,0,0.15))",
+          background:  "linear-gradient(135deg, rgba(212,139,0,0.25), rgba(212,139,0,0.15))",
           border:      "1px solid rgba(212,139,0,0.4)",
           color:       "rgba(212,139,0,0.9)",
           boxShadow:   "0 4px 20px rgba(26,26,27,0.10), 0 0 20px rgba(212,139,0,0.08)",

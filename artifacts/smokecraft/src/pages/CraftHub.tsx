@@ -194,7 +194,7 @@ function FastReturnModal({ onClose }: { onClose: () => void }) {
         position:        "fixed",
         inset:           0,
         zIndex:          300,
-        background:      "rgba(4,3,2,0.92)",
+        background:      "rgba(245,242,237,0.92)",
         backdropFilter:  "blur(8px)",
         display:         "flex",
         alignItems:      "center",
@@ -423,7 +423,7 @@ function CraftHubInner() {
         alignItems:     "center",
         padding:        "14px 24px",
         borderBottom:   `1px solid ${C.border}`,
-        background:     "rgba(8,6,4,0.85)",
+        background:     "rgba(245,242,237,0.85)",
         backdropFilter: "blur(16px)",
         flexShrink:     0,
         gap:            16,
@@ -672,7 +672,7 @@ function CraftHubInner() {
         alignItems:     "center",
         gap:            20,
         flexShrink:     0,
-        background:     "rgba(8,6,4,0.9)",
+        background:     "rgba(245,242,237,0.90)",
         backdropFilter: "blur(12px)",
       }}>
         {CRAFT_MODULES.map(mod => (

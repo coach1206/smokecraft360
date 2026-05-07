@@ -20,7 +20,7 @@ export const FoundersDashboard = () => {
 
         <div className="bg-white/5 p-4 rounded-lg border border-white/10">
           <p className="text-[10px] uppercase opacity-50">Lounge Load</p>
-          <p className="text-3xl font-mono text-white">{occupancy}%</p>
+          <p className="text-3xl font-mono text-[#1A1A1B]">{occupancy}%</p>
         </div>
       </div>
     </div>

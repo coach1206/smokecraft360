@@ -116,8 +116,8 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
         <ImagePlus size={16} color={catColor} />
-        <span style={{ fontSize: 14, fontWeight: 700, color: "#e8e0c8" }}>Card Manager</span>
-        <span style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginLeft: 4 }}>
+        <span style={{ fontSize: 14, fontWeight: 700, color: "#1A1A1B" }}>Card Manager</span>
+        <span style={{ fontSize: 11, color: "rgba(26,26,27,0.40)", marginLeft: 4 }}>
           Upload or drag-and-drop images onto any card
         </span>
       </div>
@@ -133,7 +133,7 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
               padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 600,
               background: activeCategory === cat.id ? `${cat.color}20` : "rgba(26,26,27,0.05)",
               border: `1px solid ${activeCategory === cat.id ? `${cat.color}50` : "rgba(26,26,27,0.08)"}`,
-              color: activeCategory === cat.id ? cat.color : "rgba(232,224,200,0.5)",
+              color: activeCategory === cat.id ? cat.color : "rgba(26,26,27,0.48)",
               cursor: "pointer",
             }}
           >
@@ -147,8 +147,8 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
           padding: "40px 20px", textAlign: "center", borderRadius: 14,
           background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(255,255,255,0.1)",
         }}>
-          <ImagePlus size={32} color="rgba(232,224,200,0.2)" style={{ margin: "0 auto 12px" }} />
-          <div style={{ fontSize: 13, color: "rgba(232,224,200,0.4)" }}>
+          <ImagePlus size={32} color="rgba(26,26,27,0.20)" style={{ margin: "0 auto 12px" }} />
+          <div style={{ fontSize: 13, color: "rgba(26,26,27,0.40)" }}>
             No cards in this category yet
           </div>
         </div>
@@ -206,7 +206,7 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
                       />
                     ) : (
                       <div style={{ textAlign: "center" }}>
-                        <ImagePlus size={28} color="rgba(232,224,200,0.15)" />
+                        <ImagePlus size={28} color="rgba(26,26,27,0.15)" />
                         {s.dragOver && (
                           <div style={{ fontSize: 10, color: catColor, marginTop: 6 }}>Drop to upload</div>
                         )}
@@ -234,7 +234,7 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
                             transition: "width 0.2s ease",
                           }} />
                         </div>
-                        <div style={{ fontSize: 10, color: "rgba(232,224,200,0.5)" }}>
+                        <div style={{ fontSize: 10, color: "rgba(26,26,27,0.48)" }}>
                           {Math.round(s.progress)}%
                         </div>
                       </div>
@@ -278,7 +278,7 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
                   {/* Card footer */}
                   <div style={{ padding: "10px 12px" }}>
                     <div style={{
-                      fontSize: 12, fontWeight: 600, color: "#e8e0c8",
+                      fontSize: 12, fontWeight: 600, color: "#1A1A1B",
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                       marginBottom: 2,
                     }}>
@@ -293,7 +293,7 @@ export function CardManager({ inventory, onRefresh }: CardManagerProps) {
                         rel="noopener noreferrer"
                         style={{
                           display: "inline-flex", alignItems: "center", gap: 3,
-                          fontSize: 9, color: "rgba(232,224,200,0.3)",
+                          fontSize: 9, color: "rgba(26,26,27,0.30)",
                           textDecoration: "none", marginBottom: 6,
                         }}
                       >

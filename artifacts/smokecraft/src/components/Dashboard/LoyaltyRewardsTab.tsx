@@ -21,7 +21,7 @@ import {
 
 const GOLD     = "rgba(212,139,0,1)";
 const GOLD_DIM = "rgba(212,139,0,0.55)";
-const MUTED    = "rgba(180,155,100,0.4)";
+const MUTED    = "rgba(107,94,78,0.40)";
 
 const TYPE_LABELS: Record<string, string> = {
   discount:   "Discount",
@@ -277,14 +277,14 @@ export function LoyaltyRewardsTab() {
         <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 text-center">
           {[
             { tier: "Explorer",          perk: "Welcome bonus 50 pts",     color: "rgba(160,140,110,0.7)" },
-            { tier: "Enthusiast",        perk: "5% discount rewards",       color: "rgba(180,155,100,0.8)" },
+            { tier: "Enthusiast",        perk: "5% discount rewards",       color: "rgba(107,94,78,0.78)" },
             { tier: "Aficionado",        perk: "Early product access",      color: "rgba(200,165,80,0.85)" },
             { tier: "Connoisseur",       perk: "VIP &amp; priority perks",  color: "rgba(212,139,0,0.9)"  },
             { tier: "Maestro del Fuego", perk: "Elite access + events",     color: "rgba(212,139,0,1)"    },
           ].map(({ tier, perk, color }) => (
             <div key={tier} className="rounded-lg p-2.5" style={{ background: `${color}08`, border: `1px solid ${color}20` }}>
               <p className="text-[8px] font-serif" style={{ color }}>{tier}</p>
-              <p className="text-[7px] mt-1 leading-snug" style={{ color: "rgba(180,155,100,0.5)" }}
+              <p className="text-[7px] mt-1 leading-snug" style={{ color: "rgba(107,94,78,0.50)" }}
                 dangerouslySetInnerHTML={{ __html: perk }} />
             </div>
           ))}
@@ -328,7 +328,7 @@ export function LoyaltyRewardsTab() {
 
               {rewards.length === 0 && !showForm && (
                 <div className="py-12 text-center">
-                  <Gift size={28} className="mx-auto mb-3" style={{ color: "rgba(180,155,100,0.2)" }} />
+                  <Gift size={28} className="mx-auto mb-3" style={{ color: "rgba(107,94,78,0.20)" }} />
                   <p className="text-xs" style={{ color: MUTED }}>No rewards yet — click Add Reward to create one</p>
                 </div>
               )}

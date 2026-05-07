@@ -42,7 +42,7 @@ export function ProfileBadge({ profile, onOpenVault }: ProfileBadgeProps) {
         style={{
           background: "rgba(26,26,27,0.06)",
           border:     "1px solid rgba(26,26,27,0.11)",
-          color:      "rgba(180,155,100,0.65)",
+          color:      "rgba(107,94,78,0.62)",
         }}
         whileHover={{
           borderColor: "rgba(212,139,0,0.4)",
@@ -72,7 +72,7 @@ export function ProfileBadge({ profile, onOpenVault }: ProfileBadgeProps) {
             ? {
                 background: isMaestro
                   ? "linear-gradient(135deg, rgba(120,80,5,0.25), rgba(212,139,0,0.12))"
-                  : "linear-gradient(135deg, rgba(180,130,30,0.2), rgba(212,139,0,0.1))",
+                  : "linear-gradient(135deg, rgba(212,139,0,0.2), rgba(212,139,0,0.1))",
                 border:    `1px solid ${tier.borderColor}`,
                 boxShadow: isMaestro
                   ? "0 0 20px rgba(212,139,0,0.18)"
@@ -133,7 +133,7 @@ export function ProfileBadge({ profile, onOpenVault }: ProfileBadgeProps) {
           </span>
           {!isConnoisseur && (
             <span className="text-[7px] uppercase tracking-[0.12em] mt-0.5"
-              style={{ color: "rgba(180,155,100,0.4)" }}>
+              style={{ color: "rgba(107,94,78,0.40)" }}>
               {xp} XP
             </span>
           )}

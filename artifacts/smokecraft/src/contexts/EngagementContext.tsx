@@ -41,8 +41,8 @@ function ToastIcon({ type }: { type: "zap" | "flame" | "save" }) {
   };
   const icons = {
     zap:   <Zap   size={18} color="#F5F2ED" fill="#F5F2ED" />,
-    flame: <Flame size={18} color="#fff"    fill="#fff"    />,
-    save:  <BookMarked size={16} color="#fff" />,
+    flame: <Flame size={18} color="#1A1A1B"    fill="#1A1A1B"    />,
+    save:  <BookMarked size={16} color="#1A1A1B" />,
   };
   const borders = {
     zap:   "rgba(212,139,0,0.4)",
@@ -113,7 +113,7 @@ function PointsToast({ reward }: { reward: { action: EngagementAction; points: n
         <div style={{ fontSize: isBig ? 17 : 15, fontWeight: 700, color: colorMap[meta.icon] }}>
           +{reward.points} pts
         </div>
-        <div style={{ fontSize: 11, color: "rgba(232,224,200,0.5)" }}>
+        <div style={{ fontSize: 11, color: "rgba(26,26,27,0.48)" }}>
           {meta.label}
         </div>
       </div>

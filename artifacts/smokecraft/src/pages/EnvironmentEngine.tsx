@@ -47,7 +47,7 @@ function Slider({
   return (
     <div style={{ marginBottom: 20 }}>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-        <span style={{ color: "rgba(240,232,212,0.7)", fontSize: 13, letterSpacing: "0.05em" }}>{label}</span>
+        <span style={{ color: "rgba(26,26,27,0.68)", fontSize: 13, letterSpacing: "0.05em" }}>{label}</span>
         <span style={{ color: "#D48B00", fontSize: 13, fontWeight: 600 }}>{value}{unit}</span>
       </div>
       <input
@@ -83,8 +83,8 @@ function Toggle({ label, desc, value, onChange }: {
       }}
     >
       <div>
-        <div style={{ color: "rgba(240,232,212,0.9)", fontSize: 14, fontWeight: 500 }}>{label}</div>
-        <div style={{ color: "rgba(240,232,212,0.4)", fontSize: 12, marginTop: 2 }}>{desc}</div>
+        <div style={{ color: "rgba(26,26,27,0.88)", fontSize: 14, fontWeight: 500 }}>{label}</div>
+        <div style={{ color: "rgba(26,26,27,0.40)", fontSize: 12, marginTop: 2 }}>{desc}</div>
       </div>
       <div style={{
         width: 40, height: 22,
@@ -99,7 +99,7 @@ function Toggle({ label, desc, value, onChange }: {
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
           style={{
             position: "absolute", top: 2, width: 18, height: 18,
-            background: "#fff", borderRadius: "50%",
+            background: "#1A1A1B", borderRadius: "50%",
           }}
         />
       </div>
@@ -235,7 +235,7 @@ export default function EnvironmentEnginePage() {
             <h1 style={{ margin: 0, fontSize: "clamp(18px,4vw,26px)", fontWeight: 500, letterSpacing: "0.06em", color: "#D48B00" }}>
               Environmental Reaction Engine
             </h1>
-            <div style={{ fontSize: 12, color: "rgba(240,232,212,0.4)", marginTop: 2, letterSpacing: "0.1em" }}>
+            <div style={{ fontSize: 12, color: "rgba(26,26,27,0.40)", marginTop: 2, letterSpacing: "0.1em" }}>
               AXIOM OS · ATMOSPHERE INTELLIGENCE
             </div>
           </div>
@@ -270,7 +270,7 @@ export default function EnvironmentEnginePage() {
           <div style={{
             padding: "6px 14px",
             background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)",
-            borderRadius: 20, fontSize: 12, color: "rgba(240,232,212,0.5)", letterSpacing: "0.08em",
+            borderRadius: 20, fontSize: 12, color: "rgba(26,26,27,0.50)", letterSpacing: "0.08em",
           }}>
             ◷ {timeLabel}
           </div>
@@ -280,7 +280,7 @@ export default function EnvironmentEnginePage() {
             background: env.automationEnabled ? "rgba(34,197,94,0.1)" : "rgba(26,26,27,0.06)",
             border: `1px solid ${env.automationEnabled ? "rgba(34,197,94,0.3)" : "rgba(26,26,27,0.10)"}`,
             borderRadius: 20, fontSize: 12, letterSpacing: "0.08em",
-            color: env.automationEnabled ? "#4ade80" : "rgba(240,232,212,0.4)",
+            color: env.automationEnabled ? "#4ade80" : "rgba(26,26,27,0.40)",
           }}>
             {env.automationEnabled ? "● AUTO" : "○ MANUAL"}
           </div>
@@ -362,7 +362,7 @@ export default function EnvironmentEnginePage() {
                           <span style={{ fontSize: 14, fontWeight: 600, color: active ? "#D48B00" : "rgba(26,26,27,0.82)", letterSpacing: "0.04em" }}>{cfg.label}</span>
                           {active && <span style={{ marginLeft: "auto", fontSize: 10, color: "#D48B00", letterSpacing: "0.1em" }}>ACTIVE</span>}
                         </div>
-                        <div style={{ fontSize: 12, color: "rgba(240,232,212,0.4)", lineHeight: 1.5, marginBottom: 12 }}>{cfg.description}</div>
+                        <div style={{ fontSize: 12, color: "rgba(26,26,27,0.40)", lineHeight: 1.5, marginBottom: 12 }}>{cfg.description}</div>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                           <Meter label="Glow"    value={cfg.glowMult * 100} />
                           <Meter label="Density" value={cfg.particleMult * 100} />
@@ -485,7 +485,7 @@ export default function EnvironmentEnginePage() {
             {tab === "Analytics" && (
               <div>
                 {analyticsLoading && (
-                  <div style={{ color: "rgba(240,232,212,0.4)", fontSize: 13, padding: "40px 0", textAlign: "center" }}>Loading...</div>
+                  <div style={{ color: "rgba(26,26,27,0.40)", fontSize: 13, padding: "40px 0", textAlign: "center" }}>Loading...</div>
                 )}
                 {analytics && !analyticsLoading && (() => {
                   const a = analytics as {
@@ -523,7 +523,7 @@ export default function EnvironmentEnginePage() {
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 10 }}>
                           {Object.entries(a.eventAtmosphereRoi).map(([k, v]) => (
                             <div key={k} style={{ padding: "14px 16px", background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)", borderRadius: 10 }}>
-                              <div style={{ fontSize: 12, color: "rgba(240,232,212,0.5)", marginBottom: 6 }}>{EVENT_ATMOSPHERE_CONFIG[k as EventAtmosphere]?.label ?? k}</div>
+                              <div style={{ fontSize: 12, color: "rgba(26,26,27,0.50)", marginBottom: 6 }}>{EVENT_ATMOSPHERE_CONFIG[k as EventAtmosphere]?.label ?? k}</div>
                               <div style={{ fontSize: 14, color: "#4ade80", fontWeight: 600 }}>{v.engagementLift} engagement</div>
                               <div style={{ fontSize: 13, color: "#D48B00" }}>{v.avgOrderValue} avg order</div>
                             </div>
@@ -585,7 +585,7 @@ function Meter({ label, value }: { label: string; value: number }) {
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ padding: "18px 20px", background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)", borderRadius: 12 }}>
-      <div style={{ fontSize: 11, color: "rgba(240,232,212,0.4)", letterSpacing: "0.1em", marginBottom: 6 }}>{label.toUpperCase()}</div>
+      <div style={{ fontSize: 11, color: "rgba(26,26,27,0.40)", letterSpacing: "0.1em", marginBottom: 6 }}>{label.toUpperCase()}</div>
       <div style={{ fontSize: 24, color: "#D48B00", fontWeight: 600 }}>{value}</div>
     </div>
   );

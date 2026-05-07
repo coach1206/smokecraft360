@@ -91,7 +91,7 @@ export function FeaturedSection({ featured, onSelect }: FeaturedSectionProps) {
       <p style={{
         marginTop: 10, fontSize: 11, textAlign: "center",
         textTransform: "uppercase", letterSpacing: "0.22em",
-        color: "rgba(180,155,100,0.5)",
+        color: "rgba(107,94,78,0.50)",
       }}>
         Partner-supported selections
       </p>

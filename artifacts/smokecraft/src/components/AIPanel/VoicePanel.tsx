@@ -93,7 +93,7 @@ export default function VoicePanel({
             style={{
               fontFamily: "var(--app-font-serif, Georgia, serif)",
               fontSize: 17, lineHeight: 1.45,
-              margin: "0 0 10px", color: "#FFFFFF",
+              margin: "0 0 10px", color: "#1A1A1B",
               fontWeight: 500,
             }}
           >
@@ -138,7 +138,7 @@ export default function VoicePanel({
                 flex: 1,
                 background:    active ? "rgba(212,139,0,0.22)" : "rgba(26,26,27,0.06)",
                 border:        `1px solid ${active ? "#D48B00" : "rgba(255,255,255,0.1)"}`,
-                color:         active ? "#FFFFFF" : "#A8A8A8",
+                color:         active ? "#1A1A1B" : "#A8A8A8",
                 padding:       "8px 0",
                 borderRadius:  10,
                 fontSize:      11,
@@ -168,7 +168,7 @@ export default function VoicePanel({
             style={{
               flex: 1,
               background:    voice.isSpeaking ? "#5A2C08" : "#D48B00",
-              color:         voice.isSpeaking ? "#FFFFFF" : "#0A0604",
+              color:         voice.isSpeaking ? "#1A1A1B" : "#0A0604",
               border:        "none",
               padding:       "12px 14px",
               borderRadius:  10,
@@ -202,7 +202,7 @@ export default function VoicePanel({
             style={{
               minWidth: 52,
               background:    mic.isListening ? "#8B1A1A" : "rgba(26,26,27,0.08)",
-              color:         "#FFFFFF",
+              color:         "#1A1A1B",
               border:        `1px solid ${mic.isListening ? "#FF4040" : "rgba(26,26,27,0.17)"}`,
               padding:       "12px 14px",
               borderRadius:  10,

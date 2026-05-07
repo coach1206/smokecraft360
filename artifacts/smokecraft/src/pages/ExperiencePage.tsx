@@ -671,7 +671,7 @@ export default function ExperiencePage() {
       }} />
       <div style={{
         position: "absolute", inset: 0,
-        background: "linear-gradient(180deg, rgba(8,6,4,0.72) 0%, rgba(8,6,4,0.45) 50%, rgba(8,6,4,0.85) 100%)",
+        background: "linear-gradient(180deg, rgba(245,242,237,0.72) 0%, rgba(245,242,237,0.45) 50%, rgba(245,242,237,0.85) 100%)",
         pointerEvents: "none",
       }} />
       {/* Ambient particles — same visual DNA as CraftHub */}

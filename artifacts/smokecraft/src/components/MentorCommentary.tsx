@@ -58,7 +58,7 @@ export default function MentorCommentary({ mentor, line, whyNote, accentColor }:
         width:           34,
         height:          34,
         borderRadius:    "50%",
-        background:      `radial-gradient(135deg, ${accentColor}18 0%, rgba(4,3,2,0.7) 100%)`,
+        background:      `radial-gradient(135deg, ${accentColor}18 0%, rgba(245,242,237,0.7) 100%)`,
         border:          `1px solid ${accentColor}40`,
         display:         "flex",
         alignItems:      "center",

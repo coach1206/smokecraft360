@@ -97,11 +97,11 @@ export default function Entry() {
           fontFamily: "'Playfair Display', serif", letterSpacing: "0.03em",
         }}>Axiom OS</h1>
         <h2 style={{
-          fontSize: 14, fontWeight: 400, color: "rgba(232,224,200,0.6)",
+          fontSize: 14, fontWeight: 400, color: "rgba(26,26,27,0.58)",
           margin: "0 0 4px", letterSpacing: "0.08em",
         }}>Command Hub</h2>
         <p style={{
-          fontSize: 12, color: "rgba(232,224,200,0.35)", margin: 0,
+          fontSize: 12, color: "rgba(26,26,27,0.35)", margin: 0,
           fontStyle: "italic",
         }}>If you've got vision, we've got direction.</p>
       </motion.div>
@@ -155,12 +155,12 @@ export default function Entry() {
                 }} />
                 <div style={{
                   position: "absolute", inset: 0,
-                  background: `linear-gradient(180deg, rgba(10,8,6,0.15) 0%, rgba(10,8,6,0.45) 70%, rgba(10,8,6,0.75) 100%)`,
+                  background: `linear-gradient(180deg, rgba(245,242,237,0.15) 0%, rgba(245,242,237,0.45) 70%, rgba(245,242,237,0.75) 100%)`,
                   pointerEvents: "none",
                 }} />
                 <div style={{ position: "relative", textAlign: "center", marginTop: "auto" }}>
                   <div style={{
-                    fontSize: 18, fontWeight: 700, color: "#fff",
+                    fontSize: 18, fontWeight: 700, color: "#1A1A1B",
                     letterSpacing: "0.02em", marginBottom: 4,
                     textShadow: "0 1px 4px rgba(26,26,27,0.32)",
                   }}>{tile.title}</div>
@@ -181,7 +181,7 @@ export default function Entry() {
         transition={{ delay: 0.6, duration: 0.4 }}
         style={{
           marginTop: 24, fontSize: 10, textTransform: "uppercase",
-          letterSpacing: "0.2em", color: "rgba(232,224,200,0.2)",
+          letterSpacing: "0.2em", color: "rgba(26,26,27,0.20)",
           position: "relative", zIndex: 1,
         }}
       >Powered by Axiom OS</motion.div>

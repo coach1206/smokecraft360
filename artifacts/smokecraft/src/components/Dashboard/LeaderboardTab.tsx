@@ -37,7 +37,7 @@ function RankBadge({ rank }: { rank: number }) {
   }
   return (
     <span className="flex-shrink-0 w-6 text-center text-[9px] tabular-nums"
-      style={{ color: "rgba(180,155,100,0.35)" }}>
+      style={{ color: "rgba(107,94,78,0.35)" }}>
       {rank}
     </span>
   );
@@ -46,12 +46,12 @@ function RankBadge({ rank }: { rank: number }) {
 function LevelPip({ title }: { title: string }) {
   const colors: Record<string, string> = {
     "Explorer":          "rgba(160,140,110,0.65)",
-    "Enthusiast":        "rgba(180,155,100,0.75)",
+    "Enthusiast":        "rgba(107,94,78,0.72)",
     "Aficionado":        "rgba(200,165,80,0.8)",
     "Connoisseur":       "rgba(212,139,0,0.9)",
     "Maestro del Fuego": "rgba(212,139,0,1)",
   };
-  const color = colors[title] ?? "rgba(180,155,100,0.6)";
+  const color = colors[title] ?? "rgba(107,94,78,0.58)";
   return (
     <span className="text-[7px] uppercase tracking-wider px-1.5 py-0.5 rounded-full"
       style={{ background: `${color}12`, border: `1px solid ${color}30`, color }}>
@@ -75,11 +75,11 @@ function LeaderRow({ rank, name, sub, score, label, level, i }: {
           <p className="font-serif text-xs" style={{ color: "rgba(210,190,155,0.85)" }}>{name}</p>
           <LevelPip title={level.title} />
         </div>
-        <p className="text-[8px] mt-0.5" style={{ color: "rgba(180,155,100,0.38)" }}>{sub}</p>
+        <p className="text-[8px] mt-0.5" style={{ color: "rgba(107,94,78,0.38)" }}>{sub}</p>
       </div>
       <div className="text-right flex-shrink-0">
         <p className="text-sm font-serif" style={{ color: GOLD_DIM, fontWeight: 300 }}>{score.toLocaleString()}</p>
-        <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(180,155,100,0.28)" }}>{label}</p>
+        <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(107,94,78,0.28)" }}>{label}</p>
       </div>
     </motion.div>
   );
@@ -96,11 +96,11 @@ function Board({ title, subtitle, icon, children, empty }: {
         <span style={{ color: GOLD_DIM }}>{icon}</span>
         <div>
           <h3 className="font-serif text-sm" style={{ color: "rgba(220,200,165,0.88)", fontWeight: 300 }}>{title}</h3>
-          <p className="text-[7px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(180,155,100,0.35)" }}>{subtitle}</p>
+          <p className="text-[7px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(107,94,78,0.35)" }}>{subtitle}</p>
         </div>
       </div>
       {empty
-        ? <p className="text-xs text-center py-4" style={{ color: "rgba(180,155,100,0.3)" }}>
+        ? <p className="text-xs text-center py-4" style={{ color: "rgba(107,94,78,0.30)" }}>
             No data yet — verified orders populate the leaderboard
           </p>
         : children
@@ -133,13 +133,13 @@ export function LeaderboardTab() {
           <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
             Leaderboard
           </h2>
-          <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+          <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>
             Competition · status · bragging rights
           </p>
         </div>
         <motion.button onClick={load}
           className="p-2 rounded-lg"
-          style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}
+          style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(107,94,78,0.50)" }}
           whileHover={{ color: GOLD_DIM }} whileTap={{ scale: 0.95 }}>
           <RefreshCw size={12} />
         </motion.button>
@@ -157,7 +157,7 @@ export function LeaderboardTab() {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[9px] uppercase tracking-[0.12em] transition-all duration-200"
             style={tab === t.id
               ? { background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.25)", color: "rgba(212,139,0,0.85)" }
-              : { color: "rgba(180,155,100,0.45)" }
+              : { color: "rgba(107,94,78,0.45)" }
             }>{t.icon}{t.label}</button>
         ))}
       </div>
@@ -170,8 +170,8 @@ export function LeaderboardTab() {
         </div>
       ) : !data ? (
         <div className="py-12 text-center">
-          <Trophy size={28} className="mx-auto mb-3" style={{ color: "rgba(180,155,100,0.2)" }} />
-          <p className="text-xs" style={{ color: "rgba(180,155,100,0.4)" }}>Could not load leaderboard</p>
+          <Trophy size={28} className="mx-auto mb-3" style={{ color: "rgba(107,94,78,0.20)" }} />
+          <p className="text-xs" style={{ color: "rgba(107,94,78,0.40)" }}>Could not load leaderboard</p>
         </div>
       ) : (
         <AnimatePresence mode="wait">
@@ -219,11 +219,11 @@ export function LeaderboardTab() {
                     <RankBadge rank={i + 1} />
                     <div className="flex-1">
                       <p className="font-serif text-xs" style={{ color: "rgba(210,190,155,0.85)" }}>{u.name}</p>
-                      <p className="text-[8px]" style={{ color: "rgba(180,155,100,0.38)" }}>Trending this week</p>
+                      <p className="text-[8px]" style={{ color: "rgba(107,94,78,0.38)" }}>Trending this week</p>
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-serif" style={{ color: GOLD_DIM, fontWeight: 300 }}>{u.orderCount}</p>
-                      <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(180,155,100,0.28)" }}>orders</p>
+                      <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(107,94,78,0.28)" }}>orders</p>
                     </div>
                   </motion.div>
                 ))}
@@ -235,11 +235,11 @@ export function LeaderboardTab() {
 
       {/* Level guide */}
       <div className="rounded-xl p-5" style={{ background: "rgba(212,139,0,0.02)", border: "1px solid rgba(212,139,0,0.1)" }}>
-        <p className="text-[8px] uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(180,155,100,0.4)" }}>Level Progression</p>
+        <p className="text-[8px] uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(107,94,78,0.40)" }}>Level Progression</p>
         <div className="space-y-2">
           {[
             { title: "Explorer",          orders: "0+",  xp: "0+",   color: "rgba(160,140,110,0.65)" },
-            { title: "Enthusiast",        orders: "5+",  xp: "50+",  color: "rgba(180,155,100,0.75)" },
+            { title: "Enthusiast",        orders: "5+",  xp: "50+",  color: "rgba(107,94,78,0.72)" },
             { title: "Aficionado",        orders: "15+", xp: "150+", color: "rgba(200,165,80,0.8)"   },
             { title: "Connoisseur",       orders: "30+", xp: "350+", color: "rgba(212,139,0,0.9)"   },
             { title: "Maestro del Fuego", orders: "60+", xp: "700+", color: "rgba(212,139,0,1)"     },
@@ -249,13 +249,13 @@ export function LeaderboardTab() {
                 <div className="w-2 h-2 rounded-full" style={{ background: tier.color }} />
                 <span className="text-[10px] font-serif" style={{ color: tier.color }}>{tier.title}</span>
               </div>
-              <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.38)" }}>
+              <span className="text-[8px]" style={{ color: "rgba(107,94,78,0.38)" }}>
                 {tier.orders} verified orders · {tier.xp} XP
               </span>
             </div>
           ))}
         </div>
-        <p className="text-[8px] mt-3 pt-3" style={{ color: "rgba(180,155,100,0.28)", borderTop: "1px solid rgba(26,26,27,0.07)" }}>
+        <p className="text-[8px] mt-3 pt-3" style={{ color: "rgba(107,94,78,0.28)", borderTop: "1px solid rgba(26,26,27,0.07)" }}>
           Maestro del Fuego unlocks: Signature Cigar Creator · Custom Band Designer
         </p>
       </div>

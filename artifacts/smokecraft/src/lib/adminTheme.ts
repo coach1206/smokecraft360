@@ -19,7 +19,7 @@ export const BG = {
   panel:     "#181512",      // standard panel surface
   elevated:  "#2A2A2A",      // elevated / floating panels
   interactive:"#2A241E",     // hover / interactive surfaces
-  overlay:   "rgba(8,6,4,0.72)", // modal backdrops
+  overlay:   "rgba(245,242,237,0.72)", // modal backdrops
 } as const;
 
 // ─── Glass surfaces (for cards / panels) ────────────────────────────────────

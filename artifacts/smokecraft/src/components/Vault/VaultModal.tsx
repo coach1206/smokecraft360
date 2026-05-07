@@ -89,12 +89,12 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
               <div className="flex items-center justify-between px-7 py-5 flex-shrink-0">
                 <div>
                   <h2 className="font-serif text-2xl" style={{ fontWeight: 300, color: "rgba(230,210,175,0.9)" }}>My Vault</h2>
-                  <p className="text-[10px] uppercase tracking-[0.25em] mt-0.5" style={{ color: "rgba(180,155,100,0.45)" }}>
+                  <p className="text-[10px] uppercase tracking-[0.25em] mt-0.5" style={{ color: "rgba(107,94,78,0.45)" }}>
                     {profile.savedExperiences.length} experiences · {profile.savedBlends.length} blends · {savedBuilds.length} builds
                   </p>
                 </div>
                 <button onClick={onClose} className="w-9 h-9 rounded-full flex items-center justify-center"
-                  style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}>
+                  style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(107,94,78,0.50)" }}>
                   <X size={15} />
                 </button>
               </div>
@@ -102,7 +102,7 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
               {/* Profile strip */}
               <div className="mx-6 mb-4 p-4 rounded-xl flex-shrink-0"
                 style={{
-                  background: isElite ? "linear-gradient(135deg, rgba(180,130,30,0.18), rgba(212,139,0,0.08))" : "rgba(26,26,27,0.05)",
+                  background: isElite ? "linear-gradient(135deg, rgba(212,139,0,0.18), rgba(212,139,0,0.08))" : "rgba(26,26,27,0.05)",
                   border: isElite ? "1px solid rgba(212,139,0,0.3)" : "1px solid rgba(26,26,27,0.09)",
                 }}>
                 <div className="flex items-center justify-between mb-3">
@@ -120,7 +120,7 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
                   <span className="text-xs font-serif italic px-3 py-1 rounded-full"
                     style={isElite
                       ? { background: "rgba(212,139,0,0.12)", color: "rgba(212,139,0,0.85)", border: "1px solid rgba(212,139,0,0.25)" }
-                      : { background: "rgba(26,26,27,0.07)", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(26,26,27,0.10)" }
+                      : { background: "rgba(26,26,27,0.07)", color: "rgba(107,94,78,0.52)", border: "1px solid rgba(26,26,27,0.10)" }
                     }>
                     {isElite ? "Elite Member" : "Connoisseur"}
                   </span>
@@ -134,7 +134,7 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
                       transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
                     />
                   </div>
-                  <span className="text-[10px] tabular-nums" style={{ color: "rgba(180,155,100,0.55)" }}>
+                  <span className="text-[10px] tabular-nums" style={{ color: "rgba(107,94,78,0.52)" }}>
                     {isElite ? "MAX" : `${profile.score} / ${ELITE_THRESHOLD}`}
                   </span>
                 </div>
@@ -146,8 +146,8 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
                   <button key={t} onClick={() => handleTabChange(t)}
                     className="flex-1 py-2.5 text-[10px] uppercase tracking-[0.15em] rounded-full transition-all duration-300 flex items-center justify-center gap-1.5"
                     style={tab === t
-                      ? { background: "linear-gradient(135deg, rgba(180,130,30,0.28), rgba(212,139,0,0.15))", color: "rgba(212,139,0,0.9)", border: "1px solid rgba(212,139,0,0.3)" }
-                      : { color: "rgba(180,155,100,0.45)" }
+                      ? { background: "linear-gradient(135deg, rgba(212,139,0,0.28), rgba(212,139,0,0.15))", color: "rgba(212,139,0,0.9)", border: "1px solid rgba(212,139,0,0.3)" }
+                      : { color: "rgba(107,94,78,0.45)" }
                     }>
                     {t === "experiences" ? <Flame size={10} /> : t === "blends" ? <BookMarked size={10} /> : <Layers size={10} />}
                     {t}
@@ -182,7 +182,7 @@ export function VaultModal({ profile, isOpen, onClose, onRemove, onRemoveBlend, 
                         className="w-8 h-8 rounded-full"
                         style={{ border: "2px solid rgba(212,139,0,0.15)", borderTopColor: "rgba(212,139,0,0.7)" }}
                       />
-                      <p className="text-[10px] uppercase tracking-[0.22em]" style={{ color: "rgba(180,155,100,0.4)" }}>Loading builds…</p>
+                      <p className="text-[10px] uppercase tracking-[0.22em]" style={{ color: "rgba(107,94,78,0.40)" }}>Loading builds…</p>
                     </div>
                   ) : savedBuilds.length === 0 ? (
                     <EmptyState label="No builds saved yet" sub="Complete a craft experience to save your build card" />
@@ -225,10 +225,10 @@ function EmptyState({ label, sub }: { label: string; sub: string }) {
       className="flex flex-col items-center justify-center py-16 gap-4">
       <div className="w-14 h-14 rounded-full flex items-center justify-center"
         style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)" }}>
-        <Flame size={22} style={{ color: "rgba(180,155,100,0.3)" }} />
+        <Flame size={22} style={{ color: "rgba(107,94,78,0.30)" }} />
       </div>
-      <p className="font-serif text-lg italic" style={{ color: "rgba(180,155,100,0.35)" }}>{label}</p>
-      <p className="text-[10px] uppercase tracking-[0.22em] text-center" style={{ color: "rgba(180,155,100,0.22)" }}>{sub}</p>
+      <p className="font-serif text-lg italic" style={{ color: "rgba(107,94,78,0.35)" }}>{label}</p>
+      <p className="text-[10px] uppercase tracking-[0.22em] text-center" style={{ color: "rgba(107,94,78,0.25)" }}>{sub}</p>
     </motion.div>
   );
 }
@@ -247,12 +247,12 @@ function ExperienceCard({ experience, index, onRemove }: { experience: SavedExpe
         style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "rgba(239,68,68,0.7)" }}>
         <Trash2 size={11} />
       </button>
-      <p className="text-[9px] uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(180,155,100,0.4)" }}>{date}</p>
+      <p className="text-[9px] uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(107,94,78,0.40)" }}>{date}</p>
       {top && (
         <div className="mb-3">
           <div className="flex items-center gap-2 mb-1">
             <Flame size={10} style={{ color: "rgba(212,139,0,0.5)" }} />
-            <span className="text-[9px] uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.45)" }}>{top.category}</span>
+            <span className="text-[9px] uppercase tracking-[0.18em]" style={{ color: "rgba(107,94,78,0.45)" }}>{top.category}</span>
           </div>
           <h4 className="font-serif text-base leading-tight" style={{ color: "rgba(230,210,175,0.85)" }}>{top.name}</h4>
           <div className="flex flex-wrap gap-1 mt-1.5">
@@ -265,7 +265,7 @@ function ExperienceCard({ experience, index, onRemove }: { experience: SavedExpe
       )}
       {topPairing && (
         <div className="pt-3" style={{ borderTop: "1px solid rgba(26,26,27,0.08)" }}>
-          <p className="text-[9px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(180,155,100,0.35)" }}>Paired with</p>
+          <p className="text-[9px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(107,94,78,0.35)" }}>Paired with</p>
           <p className="font-serif text-sm italic" style={{ color: "rgba(212,139,0,0.6)" }}>{topPairing.name}</p>
         </div>
       )}
@@ -275,7 +275,7 @@ function ExperienceCard({ experience, index, onRemove }: { experience: SavedExpe
           {experience.preferences.mood}
         </span>
         <span className="text-[8px] uppercase tracking-[0.15em] px-2 py-0.5 rounded-full"
-          style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.4)" }}>
+          style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(107,94,78,0.40)" }}>
           str {experience.preferences.strength}/5
         </span>
       </div>
@@ -298,7 +298,7 @@ function BlendCard({ blend, index, onRemove }: { blend: SavedBlend; index: numbe
       </button>
 
       <div className="flex items-center gap-2 mb-3">
-        <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.4)" }}>{date}</p>
+        <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(107,94,78,0.40)" }}>{date}</p>
         {hasFullExperience && (
           <span className="text-[8px] uppercase tracking-[0.15em] px-2 py-0.5 rounded-full"
             style={{ background: "rgba(212,139,0,0.08)", border: "1px solid rgba(212,139,0,0.2)", color: "rgba(212,139,0,0.6)" }}>
@@ -400,7 +400,7 @@ function BuildCard({ build, index, onReexport }: { build: SavedBuildCard; index:
                 flexDirection: "column",
               }}>
                 <span className="font-serif font-bold leading-none" style={{ fontSize: 11, color: accent }}>{out5}</span>
-                <span className="text-[7px] leading-none" style={{ color: "rgba(232,224,200,0.4)", letterSpacing: "0.1em" }}>/5</span>
+                <span className="text-[7px] leading-none" style={{ color: "rgba(26,26,27,0.40)", letterSpacing: "0.1em" }}>/5</span>
               </div>
             </div>
           </div>
@@ -408,21 +408,21 @@ function BuildCard({ build, index, onReexport }: { build: SavedBuildCard; index:
 
         {/* Recommendation name */}
         <div className="mb-3">
-          <p className="text-[9px] uppercase tracking-[0.25em] mb-0.5" style={{ color: "rgba(232,224,200,0.4)" }}>Top Pick</p>
-          <h4 className="font-serif text-base leading-snug" style={{ color: "#fff" }}>{build.recommendationName || "—"}</h4>
+          <p className="text-[9px] uppercase tracking-[0.25em] mb-0.5" style={{ color: "rgba(26,26,27,0.40)" }}>Top Pick</p>
+          <h4 className="font-serif text-base leading-snug" style={{ color: "#1A1A1B" }}>{build.recommendationName || "—"}</h4>
         </div>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-1.5 mb-4">
           {build.styleTitle && (
             <span className="text-[9px] px-2.5 py-1 rounded-full"
-              style={{ background: `${accent}14`, border: `1px solid ${accent}30`, color: "rgba(232,224,200,0.7)" }}>
+              style={{ background: `${accent}14`, border: `1px solid ${accent}30`, color: "rgba(26,26,27,0.68)" }}>
               {build.styleTitle}
             </span>
           )}
           {build.moodTitle && (
             <span className="text-[9px] px-2.5 py-1 rounded-full"
-              style={{ background: `${accent}14`, border: `1px solid ${accent}30`, color: "rgba(232,224,200,0.7)" }}>
+              style={{ background: `${accent}14`, border: `1px solid ${accent}30`, color: "rgba(26,26,27,0.68)" }}>
               {build.moodTitle}
             </span>
           )}
@@ -434,7 +434,7 @@ function BuildCard({ build, index, onReexport }: { build: SavedBuildCard; index:
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-3" style={{ borderTop: `1px solid ${accent}18` }}>
-          <span className="text-[9px]" style={{ color: "rgba(232,224,200,0.3)", letterSpacing: "0.1em" }}>{date}</span>
+          <span className="text-[9px]" style={{ color: "rgba(26,26,27,0.30)", letterSpacing: "0.1em" }}>{date}</span>
           <motion.button
             type="button"
             onClick={onReexport}
@@ -459,7 +459,7 @@ function BuildCard({ build, index, onReexport }: { build: SavedBuildCard; index:
 function ExperienceRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div className="flex items-baseline justify-between gap-2">
-      <p className="text-[9px] uppercase tracking-[0.18em] flex-shrink-0" style={{ color: "rgba(180,155,100,0.35)" }}>{label}</p>
+      <p className="text-[9px] uppercase tracking-[0.18em] flex-shrink-0" style={{ color: "rgba(107,94,78,0.35)" }}>{label}</p>
       <p className="font-serif text-xs italic text-right" style={{ color: accent ? "rgba(212,139,0,0.65)" : "rgba(210,190,155,0.65)" }}>
         {value || "—"}
       </p>

@@ -46,7 +46,7 @@ export function OfflineQueueBanner() {
       style={{
         position: "fixed", right: 16, bottom: 16, zIndex: 9000,
         background: online ? "rgba(20,18,14,0.95)" : "rgba(140,40,30,0.95)",
-        color: "#e8e0c8", padding: "10px 14px", borderRadius: 999,
+        color: "#1A1A1B", padding: "10px 14px", borderRadius: 999,
         border: "1px solid rgba(212,139,0,0.4)", fontSize: 13,
         display: "flex", alignItems: "center", gap: 10,
         boxShadow: "0 8px 24px rgba(26,26,27,0.10)",

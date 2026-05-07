@@ -31,7 +31,7 @@ export default function DemoExperienceCenter() {
   return (
     <BackgroundLayer image={getBackground("demoCenter")} blur={2} style={{
         minHeight: "100dvh",
-        color: "#e8e0c8",
+        color: "#1A1A1B",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -62,7 +62,7 @@ export default function DemoExperienceCenter() {
         >
           Experience Center
         </h1>
-        <p style={{ fontSize: 14, color: "rgba(232,224,200,0.5)", margin: 0, maxWidth: 420 }}>
+        <p style={{ fontSize: 14, color: "rgba(26,26,27,0.48)", margin: 0, maxWidth: 420 }}>
           Explore each craft experience. Tap a card to begin.
         </p>
       </div>
@@ -87,7 +87,7 @@ export default function DemoExperienceCenter() {
             background: "rgba(26,26,27,0.06)",
             border: "1px solid rgba(26,26,27,0.10)",
             borderRadius: 14,
-            color: "rgba(232,224,200,0.5)",
+            color: "rgba(26,26,27,0.48)",
             fontSize: 14,
             cursor: "pointer",
           }}

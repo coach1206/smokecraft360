@@ -117,7 +117,7 @@ export function DemoNdaModal({ onComplete, deviceId, venueId }: Props) {
       data-testid="demo-nda-modal"
       style={{
         position: "fixed", inset: 0, zIndex: 9999,
-        background: "rgba(8,6,4,0.96)",
+        background: "rgba(245,242,237,0.96)",
         display: "flex", alignItems: "center", justifyContent: "center",
         padding: 24, opacity: fading ? 0 : 1,
         transition: "opacity 300ms ease-out", overflowY: "auto",
@@ -126,7 +126,7 @@ export function DemoNdaModal({ onComplete, deviceId, venueId }: Props) {
       <div style={{
         background: "linear-gradient(180deg, #14110c 0%, #F5F2ED 100%)",
         border: "1px solid rgba(212,139,0,0.35)", borderRadius: 16,
-        padding: 32, maxWidth: 640, width: "100%", color: "#e8e0c8",
+        padding: 32, maxWidth: 640, width: "100%", color: "#1A1A1B",
         boxShadow: "0 30px 80px rgba(26,26,27,0.26)",
         position: "relative",
       }}>
@@ -240,7 +240,7 @@ export function DemoNdaModal({ onComplete, deviceId, venueId }: Props) {
           style={{
             marginTop: 22, width: "100%", padding: "14px 16px",
             background: canSubmit ? "linear-gradient(180deg, #D48B00 0%, #a98828 100%)" : "rgba(212,139,0,0.18)",
-            color: canSubmit ? "#F5F2ED" : "rgba(232,224,200,0.5)",
+            color: canSubmit ? "#F5F2ED" : "rgba(26,26,27,0.48)",
             border: "none", borderRadius: 10, fontSize: 15, fontWeight: 600,
             letterSpacing: "0.05em", cursor: canSubmit ? "pointer" : "not-allowed",
             transition: "background 200ms",
@@ -256,7 +256,7 @@ const lblText: React.CSSProperties = { fontSize: 12, textTransform: "uppercase",
 const lbl: React.CSSProperties = { display: "block", marginTop: 16, ...lblText };
 const inp: React.CSSProperties = {
   marginTop: 6, width: "100%", padding: "10px 12px",
-  background: "#F5F2ED", color: "#fff",
+  background: "#F5F2ED", color: "#1A1A1B",
   border: "1px solid rgba(212,139,0,0.3)", borderRadius: 8, fontSize: 14,
   outline: "none", boxSizing: "border-box",
 };

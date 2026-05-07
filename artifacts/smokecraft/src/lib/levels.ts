@@ -28,7 +28,7 @@ export const LEVEL_TIERS: LevelTier[] = [
   {
     index: 1, title: "Enthusiast", subtitle: "Developing the palate",
     minOrders: 5,  minXp: 50,
-    color: "rgba(180,155,100,0.8)", borderColor: "rgba(180,155,100,0.3)",
+    color: "rgba(107,94,78,0.78)", borderColor: "rgba(107,94,78,0.30)",
     isElite: false, unlocksBlend: false,
   },
   {

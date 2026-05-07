@@ -50,7 +50,7 @@ export const DEFAULT_SMOKE_STATE: SmokeDesignState = {
 
 const GOLD     = "rgba(212,139,0,0.9)";
 const GOLD_DIM = "rgba(212,139,0,0.55)";
-const MUTED    = "rgba(180,155,100,0.45)";
+const MUTED    = "rgba(107,94,78,0.45)";
 
 const WOOD_LABELS: Record<WoodTone, string> = {
   mahogany: "Mahogany", walnut: "Walnut", cedar: "Cedar",
@@ -294,7 +294,7 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
             style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: MUTED }}>
             Reset to Center
           </button>
-          <span className="text-[9px]" style={{ color: "rgba(180,155,100,0.3)" }}>
+          <span className="text-[9px]" style={{ color: "rgba(107,94,78,0.30)" }}>
             or drag ⠿ in Preview tab
           </span>
         </div>
@@ -302,7 +302,7 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
 
       {/* Description */}
       <div>
-        <Label>Notes <span style={{ color: "rgba(180,155,100,0.3)", fontSize: 9, textTransform: "none", letterSpacing: 0 }}>(optional)</span></Label>
+        <Label>Notes <span style={{ color: "rgba(107,94,78,0.30)", fontSize: 9, textTransform: "none", letterSpacing: 0 }}>(optional)</span></Label>
         <textarea rows={2} maxLength={160}
           value={state.description}
           onChange={e => set("description", e.target.value)}
@@ -416,7 +416,7 @@ export function SmokeDesignPanel({ state, onChange, tab }: Props) {
                   </button>
                 ))}
               </div>
-              <p className="text-[8px] mt-1.5" style={{ color: "rgba(180,155,100,0.3)" }}>
+              <p className="text-[8px] mt-1.5" style={{ color: "rgba(107,94,78,0.30)" }}>
                 Cedar wood → choose Cedar under Wood Tone above.
               </p>
             </div>

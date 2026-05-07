@@ -27,7 +27,7 @@ export const COLOR_OPTIONS: ColorOption[] = [
   { id: "forest",   label: "Forest",   primary: "#0F2018", accent: "#6AB87A", text: "#C4E8CC" },
   { id: "crimson",  label: "Crimson",  primary: "#2A0808", accent: "#C46060", text: "#F0C4C4" },
   { id: "obsidian", label: "Obsidian", primary: "#060606", accent: "#A0A0A0", text: "#E0E0E0", eliteOnly: true },
-  { id: "platinum", label: "Platinum", primary: "#1A1814", accent: "#C8C8C8", text: "#FFFFFF",  eliteOnly: true },
+  { id: "platinum", label: "Platinum", primary: "#1A1814", accent: "#C8C8C8", text: "#1A1A1B",  eliteOnly: true },
   { id: "jade",     label: "Jade",     primary: "#041C14", accent: "#3DB88A", text: "#B0F0D8",  eliteOnly: true },
   { id: "rose",     label: "Rose",     primary: "#200A14", accent: "#E07090", text: "#F8D0E0",  eliteOnly: true },
 ];

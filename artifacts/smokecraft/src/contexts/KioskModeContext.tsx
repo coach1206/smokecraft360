@@ -376,7 +376,7 @@ function KioskInactivityOverlay({
             <p className="font-serif text-2xl" style={{ color: "rgba(230,210,175,0.9)", fontWeight: 300 }}>
               Still there?
             </p>
-            <p className="text-sm" style={{ color: "rgba(180,155,100,0.55)" }}>
+            <p className="text-sm" style={{ color: "rgba(107,94,78,0.52)" }}>
               Session will reset in {countdown} second{countdown !== 1 ? "s" : ""}
             </p>
           </div>
@@ -384,7 +384,7 @@ function KioskInactivityOverlay({
           <div className="flex gap-3">
             <motion.button onClick={onDismiss}
               className="flex items-center gap-2 px-8 py-3 rounded-xl font-medium"
-              style={{ background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))", color: "hsl(22 18% 6%)", fontSize: 14 }}
+              style={{ background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))", color: "#F5F2ED", fontSize: 14 }}
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
               Continue Session
             </motion.button>
@@ -397,7 +397,7 @@ function KioskInactivityOverlay({
             </motion.button>
           </div>
 
-          <p className="text-[8px] uppercase tracking-[0.25em] mt-2" style={{ color: "rgba(180,155,100,0.25)" }}>
+          <p className="text-[8px] uppercase tracking-[0.25em] mt-2" style={{ color: "rgba(107,94,78,0.25)" }}>
             SmokeCraft 360 · Kiosk Mode
           </p>
         </motion.div>
@@ -418,13 +418,13 @@ export function KioskModeBanner() {
       style={{ background: "rgba(10,8,5,0.95)", borderTop: "1px solid rgba(212,139,0,0.15)", backdropFilter: "blur(8px)" }}>
       <div className="flex items-center gap-3">
         <Monitor size={11} style={{ color: "rgba(212,139,0,0.5)" }} />
-        <span className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.4)" }}>
+        <span className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(107,94,78,0.40)" }}>
           {mode === "kiosk" ? "Kiosk" : "Tablet"} Mode{tableNumber ? ` · Table ${tableNumber}` : ""}
         </span>
       </div>
       <button onClick={reset}
         className="flex items-center gap-1.5 text-[7px] uppercase tracking-wider px-2.5 py-1 rounded"
-        style={{ color: "rgba(180,155,100,0.35)", border: "1px solid rgba(180,155,100,0.15)" }}>
+        style={{ color: "rgba(107,94,78,0.35)", border: "1px solid rgba(107,94,78,0.18)" }}>
         <RotateCcw size={8} />Reset
       </button>
     </div>

@@ -48,7 +48,7 @@ const CATEGORIES: { id: Category; label: string }[] = [
 
 const GOLD     = "rgba(212,139,0,1)";
 const GOLD_DIM = "rgba(212,139,0,0.45)";
-const WARM     = "rgba(180,155,100,0.55)";
+const WARM     = "rgba(107,94,78,0.52)";
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -128,7 +128,7 @@ export function InsightsTab() {
                 className="px-3 py-1 rounded-full text-[9px] uppercase tracking-[0.14em] transition-all"
                 style={timeRange === tr.id
                   ? { background: "rgba(212,139,0,0.15)", border: "1px solid rgba(212,139,0,0.35)", color: "rgba(212,139,0,0.9)" }
-                  : { border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.45)" }
+                  : { border: "1px solid rgba(26,26,27,0.09)", color: "rgba(107,94,78,0.45)" }
                 }>{tr.label}</button>
             ))}
           </div>
@@ -142,7 +142,7 @@ export function InsightsTab() {
                 className="px-3 py-1 rounded-full text-[9px] uppercase tracking-[0.14em] transition-all"
                 style={category === c.id
                   ? { background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.85)" }
-                  : { border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.45)" }
+                  : { border: "1px solid rgba(26,26,27,0.09)", color: "rgba(107,94,78,0.45)" }
                 }>{c.label}</button>
             ))}
           </div>
@@ -272,7 +272,7 @@ export function InsightsTab() {
               action={
                 <button onClick={() => setPerfOpen((p) => !p)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.14em] transition-all"
-                  style={{ border: "1px solid rgba(26,26,27,0.11)", color: "rgba(180,155,100,0.5)" }}>
+                  style={{ border: "1px solid rgba(26,26,27,0.11)", color: "rgba(107,94,78,0.50)" }}>
                   {perfOpen ? "Collapse" : "Expand"} <ChevronDown size={10}
                     style={{ transform: perfOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
                 </button>
@@ -286,7 +286,7 @@ export function InsightsTab() {
                 )}
               </AnimatePresence>
               {!perfOpen && (
-                <p className="text-xs italic text-center py-4" style={{ color: "rgba(180,155,100,0.3)" }}>
+                <p className="text-xs italic text-center py-4" style={{ color: "rgba(107,94,78,0.30)" }}>
                   Click "Expand" to view per-product analytics
                 </p>
               )}
@@ -308,7 +308,7 @@ export function InsightsTab() {
 
       {!data && !loading && !error && (
         <div className="py-20 text-center">
-          <p className="text-sm italic" style={{ color: "rgba(180,155,100,0.35)" }}>No insight data yet — run some recommendations first</p>
+          <p className="text-sm italic" style={{ color: "rgba(107,94,78,0.35)" }}>No insight data yet — run some recommendations first</p>
         </div>
       )}
     </div>
@@ -326,7 +326,7 @@ function FlavorChart({ data }: { data: { flavor: string; count: number }[] }) {
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData} layout="vertical" margin={{ left: 8, right: 24, top: 4, bottom: 4 }}>
           <CartesianGrid horizontal={false} stroke="rgba(26,26,27,0.06)" />
-          <XAxis type="number" tick={{ fontSize: 9, fill: "rgba(180,155,100,0.4)" }} axisLine={false} tickLine={false} />
+          <XAxis type="number" tick={{ fontSize: 9, fill: "rgba(107,94,78,0.40)" }} axisLine={false} tickLine={false} />
           <YAxis type="category" dataKey="flavor" width={72}
             tick={{ fontSize: 10, fill: "rgba(200,180,145,0.7)", fontFamily: "serif" }}
             axisLine={false} tickLine={false} />
@@ -364,7 +364,7 @@ function TimeSeriesChart({ data }: { data: { day: string; count: number }[] }) {
             </linearGradient>
           </defs>
           <CartesianGrid vertical={false} stroke="rgba(26,26,27,0.06)" />
-          <XAxis dataKey="label" tick={{ fontSize: 9, fill: "rgba(180,155,100,0.4)" }} axisLine={false} tickLine={false} />
+          <XAxis dataKey="label" tick={{ fontSize: 9, fill: "rgba(107,94,78,0.40)" }} axisLine={false} tickLine={false} />
           <YAxis hide />
           <Tooltip
             contentStyle={{
@@ -390,7 +390,7 @@ function RankList({ items, valueLabel, accentColor }: {
   accentColor: string;
 }) {
   if (items.length === 0) {
-    return <p className="text-xs italic py-4 text-center" style={{ color: "rgba(180,155,100,0.3)" }}>No data yet</p>;
+    return <p className="text-xs italic py-4 text-center" style={{ color: "rgba(107,94,78,0.30)" }}>No data yet</p>;
   }
   const max = items[0]?.count ?? 1;
 
@@ -400,17 +400,17 @@ function RankList({ items, valueLabel, accentColor }: {
         <div key={item.productId}>
           <div className="flex items-center justify-between mb-0.5">
             <div className="flex items-center gap-2 min-w-0">
-              <span className="text-[9px] w-4 text-right flex-shrink-0" style={{ color: "rgba(180,155,100,0.3)" }}>{i + 1}</span>
+              <span className="text-[9px] w-4 text-right flex-shrink-0" style={{ color: "rgba(107,94,78,0.30)" }}>{i + 1}</span>
               <span className="font-serif text-xs truncate" style={{ color: "rgba(210,190,155,0.82)" }}>{item.name}</span>
               {item.tier && (
                 <span className="text-[7px] uppercase tracking-wider px-1 py-0.5 rounded flex-shrink-0"
-                  style={{ background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.4)" }}>
+                  style={{ background: "rgba(26,26,27,0.06)", color: "rgba(107,94,78,0.40)" }}>
                   {item.tier}
                 </span>
               )}
             </div>
             <span className="text-[10px] flex-shrink-0 ml-2 font-serif" style={{ color: accentColor }}>
-              {item.count} <span style={{ fontSize: 8, color: "rgba(180,155,100,0.4)" }}>{valueLabel}</span>
+              {item.count} <span style={{ fontSize: 8, color: "rgba(107,94,78,0.40)" }}>{valueLabel}</span>
             </span>
           </div>
           <div className="h-0.5 rounded-full overflow-hidden ml-6" style={{ background: "rgba(26,26,27,0.07)" }}>
@@ -435,7 +435,7 @@ function BrandPerfTable({ brands }: { brands: NonNullable<InsightsData["brandPer
           <tr style={{ borderBottom: "1px solid rgba(26,26,27,0.08)" }}>
             {["Brand", "Category", "Shown", "Selected", "Ordered", "Select Rate", "Order Rate"].map((h) => (
               <th key={h} className="text-left pb-2 pr-4 text-[8px] uppercase tracking-[0.18em]"
-                style={{ color: "rgba(180,155,100,0.4)", fontWeight: 400 }}>{h}</th>
+                style={{ color: "rgba(107,94,78,0.40)", fontWeight: 400 }}>{h}</th>
             ))}
           </tr>
         </thead>
@@ -448,7 +448,7 @@ function BrandPerfTable({ brands }: { brands: NonNullable<InsightsData["brandPer
                 <span className="text-[8px] uppercase tracking-wider px-1.5 py-0.5 rounded"
                   style={{ background: "rgba(212,139,0,0.07)", color: "rgba(212,139,0,0.6)" }}>{b.category}</span>
               </td>
-              <td className="py-2.5 pr-4" style={{ color: "rgba(180,155,100,0.65)" }}>{b.shown.toLocaleString()}</td>
+              <td className="py-2.5 pr-4" style={{ color: "rgba(107,94,78,0.62)" }}>{b.shown.toLocaleString()}</td>
               <td className="py-2.5 pr-4" style={{ color: "rgba(200,180,145,0.75)" }}>{b.selected.toLocaleString()}</td>
               <td className="py-2.5 pr-4" style={{ color: "rgba(212,139,0,0.75)" }}>{b.ordered.toLocaleString()}</td>
               <RateCell rate={b.selectRate} />
@@ -462,7 +462,7 @@ function BrandPerfTable({ brands }: { brands: NonNullable<InsightsData["brandPer
 }
 
 function RateCell({ rate }: { rate: number }) {
-  const color = rate >= 20 ? "rgba(100,200,120,0.75)" : rate >= 8 ? "rgba(212,139,0,0.75)" : "rgba(180,155,100,0.45)";
+  const color = rate >= 20 ? "rgba(100,200,120,0.75)" : rate >= 8 ? "rgba(212,139,0,0.75)" : "rgba(107,94,78,0.45)";
   return (
     <td className="py-2.5 pr-4">
       <div className="flex items-center gap-2">
@@ -485,7 +485,7 @@ function ProductPerfTable({ products }: { products: NonNullable<InsightsData["pr
           <tr style={{ borderBottom: "1px solid rgba(26,26,27,0.08)" }}>
             {["Product", "Cat", "Views", "← Skip", "Select →", "Selected", "Ordered", "Conv%"].map((h) => (
               <th key={h} className="text-left pb-2 pr-3 text-[8px] uppercase tracking-[0.16em]"
-                style={{ color: "rgba(180,155,100,0.4)", fontWeight: 400 }}>{h}</th>
+                style={{ color: "rgba(107,94,78,0.40)", fontWeight: 400 }}>{h}</th>
             ))}
           </tr>
         </thead>
@@ -495,18 +495,18 @@ function ProductPerfTable({ products }: { products: NonNullable<InsightsData["pr
               <td className="py-2 pr-3 font-serif max-w-[140px] truncate" style={{ color: "rgba(210,190,155,0.82)" }}>{p.name}</td>
               <td className="py-2 pr-3">
                 <span className="text-[7px] uppercase tracking-wider px-1 py-0.5 rounded"
-                  style={{ background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.45)" }}>
+                  style={{ background: "rgba(26,26,27,0.06)", color: "rgba(107,94,78,0.45)" }}>
                   {p.category.slice(0, 3)}
                 </span>
               </td>
-              <td className="py-2 pr-3" style={{ color: "rgba(180,155,100,0.55)" }}>{p.views}</td>
+              <td className="py-2 pr-3" style={{ color: "rgba(107,94,78,0.52)" }}>{p.views}</td>
               <td className="py-2 pr-3" style={{ color: "rgba(239,120,80,0.65)" }}>{p.swipeLeft}</td>
               <td className="py-2 pr-3" style={{ color: "rgba(100,200,120,0.65)" }}>{p.swipeRight}</td>
               <td className="py-2 pr-3" style={{ color: "rgba(212,139,0,0.75)" }}>{p.selected}</td>
               <td className="py-2 pr-3" style={{ color: "rgba(212,139,0,0.9)" }}>{p.ordered}</td>
               <td className="py-2 pr-3">
                 <span style={{
-                  color: p.conversionRate >= 20 ? "rgba(100,200,120,0.8)" : p.conversionRate >= 5 ? "rgba(212,139,0,0.75)" : "rgba(180,155,100,0.4)",
+                  color: p.conversionRate >= 20 ? "rgba(100,200,120,0.8)" : p.conversionRate >= 5 ? "rgba(212,139,0,0.75)" : "rgba(107,94,78,0.40)",
                   fontSize: 10,
                 }}>{p.conversionRate}%</span>
               </td>
@@ -525,7 +525,7 @@ function TrendCard({ item }: { item: NonNullable<InsightsData["trending"]>[numbe
   const isUp   = item.velocity  > 0;
   const isFlat = item.velocity === 0;
 
-  const color  = isNew || isUp ? "rgba(100,200,120,0.75)" : isFlat ? "rgba(180,155,100,0.5)" : "rgba(239,120,80,0.65)";
+  const color  = isNew || isUp ? "rgba(100,200,120,0.75)" : isFlat ? "rgba(107,94,78,0.50)" : "rgba(239,120,80,0.65)";
   const Icon   = isNew || isUp ? TrendingUp : isFlat ? Minus : TrendingDown;
   const velTxt = isNew ? "New" : `${item.velocity > 0 ? "+" : ""}${item.velocity}%`;
 
@@ -537,7 +537,7 @@ function TrendCard({ item }: { item: NonNullable<InsightsData["trending"]>[numbe
       }}>
       <div className="flex items-start justify-between mb-2">
         <span className="text-[8px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded"
-          style={{ background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.45)" }}>
+          style={{ background: "rgba(26,26,27,0.06)", color: "rgba(107,94,78,0.45)" }}>
           {item.category}
         </span>
         <div className="flex items-center gap-1">
@@ -549,11 +549,11 @@ function TrendCard({ item }: { item: NonNullable<InsightsData["trending"]>[numbe
         {item.name}
       </p>
       <div className="flex items-center gap-2 mt-2">
-        <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.4)" }}>
+        <span className="text-[8px]" style={{ color: "rgba(107,94,78,0.40)" }}>
           {item.recentCount} recent
         </span>
         {item.priorCount > 0 && (
-          <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.3)" }}>
+          <span className="text-[8px]" style={{ color: "rgba(107,94,78,0.30)" }}>
             · {item.priorCount} prior
           </span>
         )}
@@ -574,12 +574,12 @@ function FunnelCard({ label, value, sub, icon, highlight }: {
         border: highlight ? "1px solid rgba(212,139,0,0.22)" : "1px solid rgba(26,26,27,0.08)",
       }}>
       <div className="flex items-center justify-between mb-2">{icon}
-        <span className="text-[8px] uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.4)" }}>{label}</span>
+        <span className="text-[8px] uppercase tracking-[0.18em]" style={{ color: "rgba(107,94,78,0.40)" }}>{label}</span>
       </div>
       <p className="text-3xl font-serif" style={{ color: highlight ? GOLD : "rgba(210,190,155,0.85)", fontWeight: 300 }}>
         {value.toLocaleString()}
       </p>
-      <p className="text-[9px] mt-1" style={{ color: "rgba(180,155,100,0.45)" }}>{sub}</p>
+      <p className="text-[9px] mt-1" style={{ color: "rgba(107,94,78,0.45)" }}>{sub}</p>
     </div>
   );
 }
@@ -614,7 +614,7 @@ function Section({ title, subtitle, children, compact, action, icon }: {
               <h3 className="font-serif text-base" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>{title}</h3>
             </div>
             {subtitle && (
-              <p className="text-[8px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(180,155,100,0.38)" }}>{subtitle}</p>
+              <p className="text-[8px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(107,94,78,0.38)" }}>{subtitle}</p>
             )}
           </div>
           {action}
@@ -678,7 +678,7 @@ function CampaignInsightsSection({
 
   const STATUS_COLORS: Record<string, string> = {
     active:    "rgba(100,200,120,0.75)",
-    draft:     "rgba(180,155,100,0.5)",
+    draft:     "rgba(107,94,78,0.50)",
     paused:    "rgba(212,139,0,0.7)",
     completed: "rgba(130,150,212,0.65)",
     cancelled: "rgba(239,90,80,0.55)",
@@ -699,7 +699,7 @@ function CampaignInsightsSection({
       ) : campaigns.length === 0 ? (
         <div className="py-10 text-center">
           <Megaphone size={28} className="mx-auto mb-3" style={{ color: "rgba(212,139,0,0.18)" }} />
-          <p className="text-xs italic" style={{ color: "rgba(180,155,100,0.35)" }}>
+          <p className="text-xs italic" style={{ color: "rgba(107,94,78,0.35)" }}>
             No campaigns yet — create one in the Campaigns tab to start tracking placement performance
           </p>
         </div>
@@ -722,7 +722,7 @@ function CampaignInsightsSection({
                 <p className="text-2xl font-serif" style={{ color: gold ? GOLD : "rgba(210,190,155,0.82)", fontWeight: 300 }}>
                   {value}
                 </p>
-                <p className="text-[8px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+                <p className="text-[8px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>
                   {label}
                 </p>
               </div>
@@ -732,7 +732,7 @@ function CampaignInsightsSection({
           {/* ── Per-campaign bar chart of impressions ────────────────────── */}
           {rows.length > 0 && (
             <div className="space-y-2.5">
-              <p className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.4)" }}>
+              <p className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(107,94,78,0.40)" }}>
                 Impressions by campaign
               </p>
               {rows.slice(0, 6).map((r, i) => (
@@ -757,7 +757,7 @@ function CampaignInsightsSection({
                       )}
                       <span className="text-[10px] font-serif" style={{ color: GOLD_DIM }}>
                         {r.impressions.toLocaleString()}
-                        <span className="text-[8px] ml-1" style={{ color: "rgba(180,155,100,0.35)" }}>imp</span>
+                        <span className="text-[8px] ml-1" style={{ color: "rgba(107,94,78,0.35)" }}>imp</span>
                       </span>
                     </div>
                   </div>
@@ -767,8 +767,8 @@ function CampaignInsightsSection({
                       animate={{ width: `${maxImpressions > 0 ? (r.impressions / maxImpressions) * 100 : 0}%` }}
                       transition={{ duration: 0.8, ease: "easeOut", delay: i * 0.06 }}
                       style={{ background: r.active
-                        ? "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(212,139,0,0.85))"
-                        : "rgba(180,155,100,0.25)"
+                        ? "linear-gradient(90deg, rgba(212,139,0,0.7), rgba(212,139,0,0.85))"
+                        : "rgba(107,94,78,0.25)"
                       }} />
                   </div>
                 </div>
@@ -783,7 +783,7 @@ function CampaignInsightsSection({
                 <tr style={{ borderBottom: "1px solid rgba(26,26,27,0.08)" }}>
                   {["Campaign", "Status", "Products", "Impressions", "Clicks", "CTR", "Orders", "CVR", "CPM"].map((h) => (
                     <th key={h} className="text-left pb-2 pr-3 text-[8px] uppercase tracking-[0.16em]"
-                      style={{ color: "rgba(180,155,100,0.4)", fontWeight: 400 }}>{h}</th>
+                      style={{ color: "rgba(107,94,78,0.40)", fontWeight: 400 }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -804,24 +804,24 @@ function CampaignInsightsSection({
                         {r.status}
                       </span>
                     </td>
-                    <td className="py-2.5 pr-3" style={{ color: "rgba(180,155,100,0.55)" }}>{r.productCount}</td>
+                    <td className="py-2.5 pr-3" style={{ color: "rgba(107,94,78,0.52)" }}>{r.productCount}</td>
                     <td className="py-2.5 pr-3" style={{ color: "rgba(200,180,145,0.7)" }}>{r.impressions.toLocaleString()}</td>
                     <td className="py-2.5 pr-3" style={{ color: "rgba(200,180,145,0.75)" }}>{r.clicks.toLocaleString()}</td>
                     <td className="py-2.5 pr-3">
                       <span style={{
-                        color: r.ctr >= 10 ? "rgba(100,200,120,0.8)" : r.ctr >= 3 ? "rgba(212,139,0,0.75)" : "rgba(180,155,100,0.45)",
+                        color: r.ctr >= 10 ? "rgba(100,200,120,0.8)" : r.ctr >= 3 ? "rgba(212,139,0,0.75)" : "rgba(107,94,78,0.45)",
                         fontSize: 10,
                       }}>{r.ctr}%</span>
                     </td>
                     <td className="py-2.5 pr-3" style={{ color: "rgba(212,139,0,0.8)" }}>{r.conversions}</td>
                     <td className="py-2.5 pr-3">
                       <span style={{
-                        color: r.cvr >= 10 ? "rgba(100,200,120,0.8)" : r.cvr >= 2 ? "rgba(212,139,0,0.75)" : "rgba(180,155,100,0.4)",
+                        color: r.cvr >= 10 ? "rgba(100,200,120,0.8)" : r.cvr >= 2 ? "rgba(212,139,0,0.75)" : "rgba(107,94,78,0.40)",
                         fontSize: 10,
                       }}>{r.cvr}%</span>
                     </td>
                     <td className="py-2.5 pr-3" style={{ color: "rgba(212,139,0,0.55)", fontSize: 10 }}>
-                      {r.roiLabel ?? <span style={{ color: "rgba(180,155,100,0.25)" }}>—</span>}
+                      {r.roiLabel ?? <span style={{ color: "rgba(107,94,78,0.25)" }}>—</span>}
                     </td>
                   </motion.tr>
                 ))}
@@ -845,7 +845,7 @@ function FuturePanel() {
   return (
     <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
       <div className="rounded-xl p-5 relative overflow-hidden"
-        style={{ background: "rgba(180,130,30,0.03)", border: "1px solid rgba(212,139,0,0.12)" }}>
+        style={{ background: "rgba(212,139,0,0.03)", border: "1px solid rgba(212,139,0,0.12)" }}>
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "radial-gradient(ellipse at 90% 20%, rgba(212,139,0,0.05), transparent 55%)" }} />
         <div className="relative">
@@ -856,7 +856,7 @@ function FuturePanel() {
               Coming Soon
             </span>
           </div>
-          <p className="text-[10px] mb-5" style={{ color: "rgba(180,155,100,0.45)" }}>
+          <p className="text-[10px] mb-5" style={{ color: "rgba(107,94,78,0.45)" }}>
             Features planned to make insights commercially valuable to brands and distributors
           </p>
           <div className="grid sm:grid-cols-2 gap-3">
@@ -866,7 +866,7 @@ function FuturePanel() {
                 <div className="flex-shrink-0 mt-0.5" style={{ color: GOLD_DIM }}>{f.icon}</div>
                 <div>
                   <p className="text-xs font-medium mb-0.5" style={{ color: "rgba(210,190,155,0.75)" }}>{f.label}</p>
-                  <p className="text-[9px] leading-relaxed" style={{ color: "rgba(180,155,100,0.4)" }}>{f.desc}</p>
+                  <p className="text-[9px] leading-relaxed" style={{ color: "rgba(107,94,78,0.40)" }}>{f.desc}</p>
                 </div>
               </div>
             ))}

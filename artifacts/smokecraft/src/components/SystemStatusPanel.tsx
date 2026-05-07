@@ -33,7 +33,7 @@ function StatusRow({ icon: Icon, label, value, color }: {
         <Icon size={18} color={color} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 11, color: "rgba(232,224,200,0.35)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 2 }}>
+        <div style={{ fontSize: 11, color: "rgba(26,26,27,0.35)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 2 }}>
           {label}
         </div>
         <div style={{ fontSize: 14, fontWeight: 600, color, textTransform: "capitalize" }}>
@@ -100,8 +100,8 @@ export default function SystemStatusPanel({ open, onClose }: SystemStatusPanelPr
               flexShrink: 0,
             }}>
               <div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: "#e8e0c8" }}>System Status</div>
-                <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)" }}>Real-time health overview</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: "#1A1A1B" }}>System Status</div>
+                <div style={{ fontSize: 11, color: "rgba(26,26,27,0.40)" }}>Real-time health overview</div>
               </div>
               <motion.button
                 whileTap={{ scale: 0.9 }}
@@ -111,7 +111,7 @@ export default function SystemStatusPanel({ open, onClose }: SystemStatusPanelPr
                   background: "rgba(26,26,27,0.06)",
                   border: "1px solid rgba(26,26,27,0.10)",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  color: "rgba(232,224,200,0.5)", cursor: "pointer",
+                  color: "rgba(26,26,27,0.48)", cursor: "pointer",
                 }}
               >
                 <X size={18} />
@@ -144,16 +144,16 @@ export default function SystemStatusPanel({ open, onClose }: SystemStatusPanelPr
                 }}>
                   <div style={{
                     display: "flex", alignItems: "center", gap: 6, marginBottom: 10,
-                    fontSize: 11, color: "rgba(232,224,200,0.35)",
+                    fontSize: 11, color: "rgba(26,26,27,0.35)",
                     textTransform: "uppercase", letterSpacing: "0.08em",
                   }}>
                     <FileText size={12} />
                     Last Audit Event
                   </div>
-                  <div style={{ fontSize: 13, color: "rgba(232,224,200,0.6)", marginBottom: 4, lineHeight: 1.4 }}>
+                  <div style={{ fontSize: 13, color: "rgba(26,26,27,0.58)", marginBottom: 4, lineHeight: 1.4 }}>
                     {lastAudit.details}
                   </div>
-                  <div style={{ fontSize: 11, color: "rgba(232,224,200,0.25)" }}>
+                  <div style={{ fontSize: 11, color: "rgba(26,26,27,0.25)" }}>
                     {lastAudit.user} · {new Date(lastAudit.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · {lastAudit.action}
                   </div>
                 </div>
@@ -163,7 +163,7 @@ export default function SystemStatusPanel({ open, onClose }: SystemStatusPanelPr
             <div style={{
               padding: "12px 20px",
               borderTop: "1px solid rgba(26,26,27,0.08)",
-              fontSize: 10, color: "rgba(232,224,200,0.2)",
+              fontSize: 10, color: "rgba(26,26,27,0.20)",
               textTransform: "uppercase", letterSpacing: "0.12em",
               textAlign: "center", flexShrink: 0,
             }}>

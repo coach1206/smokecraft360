@@ -46,7 +46,7 @@ export function AxLoadingState({ rows = 3, columns = 4, rowHeight = 72, message 
       ))}
       {message && (
         <div style={{
-          fontSize: 11, color: "rgba(240,232,212,0.3)",
+          fontSize: 11, color: "rgba(26,26,27,0.30)",
           textAlign: "center", marginTop: 20,
           letterSpacing: "0.06em",
         }}>

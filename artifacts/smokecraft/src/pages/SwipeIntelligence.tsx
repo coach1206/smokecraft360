@@ -225,7 +225,7 @@ export default function SwipeIntelligence() {
 
       {/* Header */}
       <div style={{
-        background: "#FFFFFF",
+        background: "#1A1A1B",
         borderBottom: `1px solid ${C.border}`,
         padding: "0 24px",
         position: "sticky", top: 0, zIndex: 20,
@@ -270,7 +270,7 @@ export default function SwipeIntelligence() {
                   padding: "6px 14px", borderRadius: 8, fontSize: 13,
                   fontWeight: tab === t.id ? 600 : 400,
                   background: tab === t.id ? "#1A1410" : "transparent",
-                  color: tab === t.id ? "#FFFFFF" : C.muted,
+                  color: tab === t.id ? "#1A1A1B" : C.muted,
                   border: "none", cursor: "pointer",
                   transition: "all 0.15s ease",
                 }}

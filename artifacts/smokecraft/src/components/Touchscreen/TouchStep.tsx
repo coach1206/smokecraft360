@@ -19,7 +19,7 @@ export function TouchStep({ title, description, children }: TouchStepProps) {
         style={{
           fontSize: 20,
           fontWeight: 600,
-          color: "#e8e0c8",
+          color: "#1A1A1B",
           margin: "0 0 4px",
           fontFamily: "'Playfair Display', serif",
         }}
@@ -30,7 +30,7 @@ export function TouchStep({ title, description, children }: TouchStepProps) {
         <p
           style={{
             fontSize: 14,
-            color: "rgba(232,224,200,0.55)",
+            color: "rgba(26,26,27,0.52)",
             margin: "0 0 20px",
             lineHeight: 1.5,
           }}

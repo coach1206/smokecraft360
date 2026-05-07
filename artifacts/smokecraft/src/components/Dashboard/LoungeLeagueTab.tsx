@@ -19,7 +19,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const GOLD     = "rgba(212,139,0,1)";
 const GOLD_DIM = "rgba(212,139,0,0.55)";
-const MUTED    = "rgba(180,155,100,0.4)";
+const MUTED    = "rgba(107,94,78,0.40)";
 
 // ── Badge config ───────────────────────────────────────────────────────────────
 
@@ -305,7 +305,7 @@ export function LoungeLeagueTab() {
             {league.length === 0 ? (
               <div className="py-10 text-center rounded-xl"
                 style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.07)" }}>
-                <Trophy size={24} className="mx-auto mb-3" style={{ color: "rgba(180,155,100,0.15)" }} />
+                <Trophy size={24} className="mx-auto mb-3" style={{ color: "rgba(107,94,78,0.18)" }} />
                 <p className="text-xs" style={{ color: MUTED }}>No lounge data yet — venues will appear here as orders are verified</p>
               </div>
             ) : (

@@ -71,7 +71,7 @@ export function CardStack({
       </div>
 
       {/* Swipe hint */}
-      <p className="text-[10px] uppercase tracking-[0.25em] mb-5" style={{ color: "rgba(180,155,100,0.38)" }}>
+      <p className="text-[10px] uppercase tracking-[0.25em] mb-5" style={{ color: "rgba(107,94,78,0.38)" }}>
         Drag the card · or use buttons
       </p>
 
@@ -92,7 +92,7 @@ export function CardStack({
           data-testid="btn-like"
           onClick={() => handleSwipe("right")}
           className="w-14 h-14 rounded-full flex items-center justify-center"
-          style={{ background: "linear-gradient(135deg, rgba(180,130,30,0.22), rgba(212,139,0,0.14))", border: "1px solid rgba(212,139,0,0.4)", color: "rgba(212,139,0,0.9)", boxShadow: "0 0 16px rgba(212,139,0,0.1)" }}
+          style={{ background: "linear-gradient(135deg, rgba(212,139,0,0.22), rgba(212,139,0,0.14))", border: "1px solid rgba(212,139,0,0.4)", color: "rgba(212,139,0,0.9)", boxShadow: "0 0 16px rgba(212,139,0,0.1)" }}
           whileHover={{ scale: 1.08, boxShadow: "0 0 26px rgba(212,139,0,0.28)", borderColor: "rgba(212,139,0,0.7)" }}
           whileTap={{ scale: 0.95 }}
         >

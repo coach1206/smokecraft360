@@ -160,17 +160,17 @@ export default function ExperiencesModule() {
   const stepLabels = activeExp ? [...activeExp.questions.map((_q, i) => `Step ${i + 1}`), "Reveal"] : [];
 
   return (
-    <BackgroundLayer image={getBackground("experiences")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#e8e0c8", overflow: "hidden" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(26,26,27,0.08)", background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
+    <BackgroundLayer image={getBackground("experiences")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#1A1A1B", overflow: "hidden" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(26,26,27,0.08)", background: "rgba(245,242,237,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={phase === "select" ? () => navigate("/dashboard") : phase === "campaigns" ? () => setPhase("select") : reset}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(232,224,200,0.5)", cursor: "pointer" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(26,26,27,0.48)", cursor: "pointer" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 22, fontWeight: 700, color: "#e8e0c8", fontFamily: "'Playfair Display', serif", letterSpacing: "0.02em" }}>
+          <div style={{ fontSize: 22, fontWeight: 700, color: "#1A1A1B", fontFamily: "'Playfair Display', serif", letterSpacing: "0.02em" }}>
             {phase === "campaigns" ? "Campaigns" : phase === "select" ? "Craft Your Experience" : activeExp?.title}
           </div>
-          <div style={{ fontSize: 10, color: "rgba(232,224,200,0.45)", letterSpacing: "0.25em", textTransform: "uppercase", marginTop: 2 }}>
+          <div style={{ fontSize: 10, color: "rgba(26,26,27,0.44)", letterSpacing: "0.25em", textTransform: "uppercase", marginTop: 2 }}>
             {phase === "campaigns" ? "Create promotional campaigns" : phase === "select" ? "Tap to begin your journey" : phase === "questions" ? `Question ${questionIdx + 1} of ${activeExp?.questions.length}` : "Your recommendation"}
           </div>
         </div>
@@ -218,12 +218,12 @@ export default function ExperiencesModule() {
                   }} />
                   <div style={{
                     position: "absolute", inset: 0,
-                    background: `linear-gradient(180deg, rgba(10,8,6,0.1) 0%, rgba(10,8,6,0.4) 50%, rgba(10,8,6,0.92) 100%)`,
+                    background: `linear-gradient(180deg, rgba(245,242,237,0.1) 0%, rgba(245,242,237,0.4) 50%, rgba(245,242,237,0.92) 100%)`,
                     pointerEvents: "none",
                   }} />
                   <div style={{ position: "relative", padding: "18px 20px 20px", textAlign: "left" }}>
                     <div style={{
-                      fontSize: 22, fontWeight: 700, color: "#fff",
+                      fontSize: 22, fontWeight: 700, color: "#1A1A1B",
                       fontFamily: "'Playfair Display', serif",
                       textShadow: "0 2px 8px rgba(26,26,27,0.40)",
                       marginBottom: 6,
@@ -245,7 +245,7 @@ export default function ExperiencesModule() {
                 width: 6, height: 6, borderRadius: "50%", background: activeExp.color,
                 boxShadow: `0 0 16px ${activeExp.color}`, margin: "0 auto 20px",
               }} />
-              <h2 style={{ fontSize: 24, fontWeight: 600, color: "#e8e0c8", marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>
+              <h2 style={{ fontSize: 24, fontWeight: 600, color: "#1A1A1B", marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>
                 {activeExp.questions[questionIdx].prompt}
               </h2>
               <div style={{
@@ -266,7 +266,7 @@ export default function ExperiencesModule() {
                     style={{
                       padding: "18px 24px", borderRadius: 14, fontSize: 16, fontWeight: 500,
                       background: "rgba(26,26,27,0.06)", border: `1px solid ${activeExp.color}25`,
-                      color: "#e8e0c8", cursor: "pointer", minHeight: 56,
+                      color: "#1A1A1B", cursor: "pointer", minHeight: 56,
                       transition: "all 0.15s",
                     }}>
                     {opt}
@@ -282,7 +282,7 @@ export default function ExperiencesModule() {
               {/* Dim/blur veil so the lounge background reads as ambience, not noise */}
               <div style={{
                 position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none",
-                background: "radial-gradient(ellipse at center, rgba(10,8,6,0.65) 0%, rgba(10,8,6,0.93) 75%)",
+                background: "radial-gradient(ellipse at center, rgba(245,242,237,0.65) 0%, rgba(245,242,237,0.93) 75%)",
                 backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
               }} />
               <div style={{
@@ -296,12 +296,12 @@ export default function ExperiencesModule() {
                 <aside style={{
                   position: "sticky", top: 0,
                   padding: "20px 18px",
-                  background: "linear-gradient(180deg, rgba(14,10,8,0.85), rgba(10,8,6,0.65))",
+                  background: "linear-gradient(180deg, rgba(14,10,8,0.85), rgba(245,242,237,0.65))",
                   border: "1px solid rgba(26,26,27,0.08)", borderRadius: 16,
                   display: "flex", flexDirection: "column", gap: 18,
                 }}>
                   <div>
-                    <div style={{ fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(232,224,200,0.45)", marginBottom: 6 }}>Experience Hub</div>
+                    <div style={{ fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(26,26,27,0.44)", marginBottom: 6 }}>Experience Hub</div>
                     <div style={{ fontSize: 16, fontWeight: 600, color: "#f4ecd4", fontFamily: "'Playfair Display', serif" }}>{activeExp.title} 360</div>
                   </div>
                   <div style={{ height: 1, background: `linear-gradient(90deg, transparent, ${activeExp.color}40, transparent)` }} />
@@ -318,11 +318,11 @@ export default function ExperiencesModule() {
                             fontSize: 10, fontWeight: 700,
                             background: isCurrent ? `${activeExp.color}` : isDone ? `${activeExp.color}25` : "rgba(26,26,27,0.07)",
                             border: `1px solid ${isCurrent || isDone ? activeExp.color + "80" : "rgba(255,255,255,0.1)"}`,
-                            color: isCurrent ? "#F5F2ED" : isDone ? activeExp.color : "rgba(232,224,200,0.4)",
+                            color: isCurrent ? "#F5F2ED" : isDone ? activeExp.color : "rgba(26,26,27,0.40)",
                           }}>{isDone ? <Check size={11} /> : i + 1}</div>
                           <div style={{ minWidth: 0 }}>
-                            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: isCurrent ? "#f4ecd4" : isDone ? "rgba(232,224,200,0.7)" : "rgba(232,224,200,0.35)" }}>{label}</div>
-                            {sub && <div style={{ fontSize: 10, color: "rgba(232,224,200,0.4)", marginTop: 2, lineHeight: 1.3 }}>{sub}</div>}
+                            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: isCurrent ? "#f4ecd4" : isDone ? "rgba(26,26,27,0.68)" : "rgba(26,26,27,0.35)" }}>{label}</div>
+                            {sub && <div style={{ fontSize: 10, color: "rgba(26,26,27,0.40)", marginTop: 2, lineHeight: 1.3 }}>{sub}</div>}
                           </div>
                         </li>
                       );
@@ -334,7 +334,7 @@ export default function ExperiencesModule() {
                         width: "100%", padding: "10px 14px", borderRadius: 10,
                         fontSize: 10, fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase",
                         background: "transparent", border: "1px solid rgba(26,26,27,0.14)",
-                        color: "rgba(232,224,200,0.55)", cursor: "pointer",
+                        color: "rgba(26,26,27,0.52)", cursor: "pointer",
                       }}>↺ Start Over</motion.button>
                   </div>
                 </aside>
@@ -346,7 +346,7 @@ export default function ExperiencesModule() {
                     <h2 style={{ fontSize: 32, fontWeight: 600, color: "#f4ecd4", fontFamily: "'Playfair Display', serif", margin: "0 0 8px", letterSpacing: "0.01em" }}>
                       Crafted for your moment
                     </h2>
-                    <p style={{ fontSize: 12, color: "rgba(232,224,200,0.5)", fontStyle: "italic", letterSpacing: "0.06em", margin: 0 }}>
+                    <p style={{ fontSize: 12, color: "rgba(26,26,27,0.48)", fontStyle: "italic", letterSpacing: "0.06em", margin: 0 }}>
                       {answers.join("  ·  ")}
                     </p>
                   </div>
@@ -372,11 +372,11 @@ export default function ExperiencesModule() {
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                             <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", padding: "4px 10px", borderRadius: 4, background: `${activeExp.color}20`, color: activeExp.color, border: `1px solid ${activeExp.color}50` }}>Top Match</span>
                             {fp.isSponsored && <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", padding: "4px 9px", borderRadius: 4, background: "rgba(212,139,0,0.18)", color: "#D48B00", border: "1px solid rgba(212,139,0,0.35)" }}>Sponsored</span>}
-                            {fp.brandTag && <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.16em", textTransform: "uppercase", padding: "4px 9px", borderRadius: 4, background: "rgba(26,26,27,0.08)", color: "rgba(232,224,200,0.75)", border: "1px solid rgba(26,26,27,0.14)" }}>{fp.brandTag}</span>}
+                            {fp.brandTag && <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.16em", textTransform: "uppercase", padding: "4px 9px", borderRadius: 4, background: "rgba(26,26,27,0.08)", color: "rgba(26,26,27,0.72)", border: "1px solid rgba(26,26,27,0.14)" }}>{fp.brandTag}</span>}
                             {fp.campaignTag && <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.16em", textTransform: "uppercase", padding: "4px 9px", borderRadius: 4, background: `${activeExp.color}18`, color: activeExp.color, border: `1px solid ${activeExp.color}40` }}>{fp.campaignTag}</span>}
                           </div>
                           <div style={{ fontSize: 28, fontWeight: 600, color: "#f4ecd4", fontFamily: "'Playfair Display', serif", lineHeight: 1.1 }}>{featured.name}</div>
-                          <div style={{ fontSize: 13, color: "rgba(232,224,200,0.55)", fontStyle: "italic", lineHeight: 1.4 }}>{activeExp.pairings.default}</div>
+                          <div style={{ fontSize: 13, color: "rgba(26,26,27,0.52)", fontStyle: "italic", lineHeight: 1.4 }}>{activeExp.pairings.default}</div>
                           <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginTop: 6 }}>
                             <div style={{ fontSize: 32, fontWeight: 700, color: activeExp.color, fontFamily: "'Playfair Display', serif", textShadow: `0 0 28px ${activeExp.color}66` }}>${featured.price}</div>
                             {(fp.xpReward || fp.rewardLabel) && (
@@ -407,7 +407,7 @@ export default function ExperiencesModule() {
 
                   {secondary.length > 0 && (
                     <div>
-                      <div style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(232,224,200,0.5)", marginBottom: 12, fontWeight: 600 }}>Also recommended</div>
+                      <div style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(26,26,27,0.48)", marginBottom: 12, fontWeight: 600 }}>Also recommended</div>
                       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
                         {secondary.map((prod, idx) => {
                           const added = addedIds.has(prod.id);
@@ -424,11 +424,11 @@ export default function ExperiencesModule() {
                               }}>
                               <KioskProductImage src={prod.image} alt={prod.name} category={prod.category} width={64} height={64} borderRadius={10} />
                               <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontSize: 13, fontWeight: 600, color: "#e8e0c8", lineHeight: 1.2, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</div>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: "#1A1A1B", lineHeight: 1.2, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prod.name}</div>
                                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                   <div style={{ fontSize: 14, fontWeight: 700, color: activeExp.color }}>${prod.price}</div>
                                   {sp.isSponsored && <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.16em", color: "rgba(212,139,0,0.7)" }}>SPON</span>}
-                                  {sp.brandTag && !sp.isSponsored && <span style={{ fontSize: 8, fontWeight: 600, letterSpacing: "0.16em", color: "rgba(232,224,200,0.5)" }}>{sp.brandTag}</span>}
+                                  {sp.brandTag && !sp.isSponsored && <span style={{ fontSize: 8, fontWeight: 600, letterSpacing: "0.16em", color: "rgba(26,26,27,0.48)" }}>{sp.brandTag}</span>}
                                 </div>
                               </div>
                               <motion.button whileTap={{ scale: 0.92 }}
@@ -480,7 +480,7 @@ export default function ExperiencesModule() {
                     <>
                       <div>
                         <div style={{ fontSize: 22, fontWeight: 600, color: "#f4ecd4", fontFamily: "'Playfair Display', serif", lineHeight: 1.15, marginBottom: 4 }}>{featured.name}</div>
-                        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(232,224,200,0.5)" }}>{f?.tier ?? "Premium"}</div>
+                        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(26,26,27,0.48)" }}>{f?.tier ?? "Premium"}</div>
                       </div>
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                         {[
@@ -490,16 +490,16 @@ export default function ExperiencesModule() {
                           { label: "Tier", value: f?.tier ?? "Premium" },
                         ].map((stat) => (
                           <div key={stat.label} style={{ padding: "10px 12px", background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.08)", borderRadius: 10 }}>
-                            <div style={{ fontSize: 8, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(232,224,200,0.4)", marginBottom: 3 }}>{stat.label}</div>
-                            <div style={{ fontSize: 12, fontWeight: 600, color: "#e8e0c8" }}>{stat.value}</div>
+                            <div style={{ fontSize: 8, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(26,26,27,0.40)", marginBottom: 3 }}>{stat.label}</div>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: "#1A1A1B" }}>{stat.value}</div>
                           </div>
                         ))}
                       </div>
                       <div>
-                        <div style={{ fontSize: 9, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(232,224,200,0.5)", marginBottom: 8, fontWeight: 600 }}>Tasting Notes</div>
+                        <div style={{ fontSize: 9, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(26,26,27,0.48)", marginBottom: 8, fontWeight: 600 }}>Tasting Notes</div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                           {tastingNotes.slice(0, 6).map((n) => (
-                            <span key={n} style={{ fontSize: 11, padding: "5px 11px", borderRadius: 999, background: `${activeExp.color}15`, border: `1px solid ${activeExp.color}35`, color: "#e8e0c8" }}>{n}</span>
+                            <span key={n} style={{ fontSize: 11, padding: "5px 11px", borderRadius: 999, background: `${activeExp.color}15`, border: `1px solid ${activeExp.color}35`, color: "#1A1A1B" }}>{n}</span>
                           ))}
                         </div>
                       </div>
@@ -511,11 +511,11 @@ export default function ExperiencesModule() {
                         <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 9, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: activeExp.color, marginBottom: 8 }}>
                           <Sparkles size={11} /> Why It Works
                         </div>
-                        <p style={{ fontSize: 12, color: "rgba(232,224,200,0.78)", lineHeight: 1.55, margin: 0 }}>{whyItWorks}</p>
+                        <p style={{ fontSize: 12, color: "rgba(26,26,27,0.78)", lineHeight: 1.55, margin: 0 }}>{whyItWorks}</p>
                       </div>
                     </>
                   ) : (
-                    <div style={{ fontSize: 12, color: "rgba(232,224,200,0.5)", fontStyle: "italic" }}>No matching products in stock right now.</div>
+                    <div style={{ fontSize: 12, color: "rgba(26,26,27,0.48)", fontStyle: "italic" }}>No matching products in stock right now.</div>
                   )}
                 </aside>
               </div>
@@ -545,8 +545,8 @@ export default function ExperiencesModule() {
                       }}>
                         <Megaphone size={20} color={tpl.color} />
                       </div>
-                      <div style={{ fontSize: 16, fontWeight: 600, color: "#e8e0c8", marginBottom: 4 }}>{tpl.name}</div>
-                      <div style={{ fontSize: 12, color: "rgba(232,224,200,0.4)", marginBottom: 14 }}>{tpl.desc}</div>
+                      <div style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1B", marginBottom: 4 }}>{tpl.name}</div>
+                      <div style={{ fontSize: 12, color: "rgba(26,26,27,0.40)", marginBottom: 14 }}>{tpl.desc}</div>
                       <motion.button whileTap={{ scale: 0.93 }}
                         onClick={() => !created && createCampaign(tpl.id, tpl.name)}
                         disabled={created}

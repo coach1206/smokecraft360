@@ -51,7 +51,7 @@ export default function Leaderboard({ accentColor }: { accentColor: string }) {
     <div style={{
       padding: "14px",
       borderRadius: 12,
-      background: `linear-gradient(145deg, rgba(10,8,6,0.75), ${accentColor}08)`,
+      background: `linear-gradient(145deg, rgba(245,242,237,0.75), ${accentColor}08)`,
       border: `1px solid ${accentColor}25`,
       marginTop: 12,
     }}>
@@ -94,19 +94,19 @@ export default function Leaderboard({ accentColor }: { accentColor: string }) {
           >
             <span style={{
               fontSize: 10, fontWeight: 800, minWidth: 16, textAlign: "center",
-              color: RANK_COLORS[i] ?? "rgba(232,224,200,0.4)",
+              color: RANK_COLORS[i] ?? "rgba(26,26,27,0.40)",
             }}>
               {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
             </span>
-            <span style={{ fontSize: 11, color: "rgba(232,224,200,0.85)", flex: 1, fontWeight: i === 0 ? 700 : 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <span style={{ fontSize: 11, color: "rgba(26,26,27,0.82)", flex: 1, fontWeight: i === 0 ? 700 : 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {entry.name}
             </span>
-            <span style={{ fontSize: 10, color: "rgba(232,224,200,0.4)", flexShrink: 0 }}>
+            <span style={{ fontSize: 10, color: "rgba(26,26,27,0.40)", flexShrink: 0 }}>
               {CRAFT_GLYPHS[entry.craft] ?? ""}
             </span>
             <span style={{
               fontSize: 11, fontWeight: 700, flexShrink: 0,
-              color: i === 0 ? accentColor : "rgba(232,224,200,0.65)",
+              color: i === 0 ? accentColor : "rgba(26,26,27,0.62)",
             }}>
               {entry.score.toFixed(1)}
             </span>

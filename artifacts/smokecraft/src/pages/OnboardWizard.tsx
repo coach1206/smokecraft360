@@ -24,9 +24,9 @@ const C = {
   bg:     "#F5F2ED",
   gold:   "#D48B00",
   goldDim:"rgba(212,139,0,0.55)",
-  text:   "#e8e0c8",
-  muted:  "rgba(232,224,200,0.5)",
-  dim:    "rgba(232,224,200,0.3)",
+  text:   "#1A1A1B",
+  muted:  "rgba(26,26,27,0.48)",
+  dim:    "rgba(26,26,27,0.30)",
   card:   "rgba(26,26,27,0.05)",
   border: "rgba(26,26,27,0.10)",
 };
@@ -121,7 +121,7 @@ function StepProgress({ current }: { current: number }) {
             }}>
               {done
                 ? <Check size={16} color={step.color} />
-                : <Icon size={16} color={active ? step.color : "rgba(232,224,200,0.3)"} />
+                : <Icon size={16} color={active ? step.color : "rgba(26,26,27,0.30)"} />
               }
             </div>
             {i < STEPS.length - 1 && (
@@ -264,7 +264,7 @@ function StepCraftSelection({ data, set }: { data: WizardData; set: (k: keyof Wi
               border: `1px solid ${selected ? craft.color : "rgba(255,255,255,0.1)"}`,
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <Icon size={18} color={selected ? craft.color : "rgba(232,224,200,0.3)"} />
+              <Icon size={18} color={selected ? craft.color : "rgba(26,26,27,0.30)"} />
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: selected ? craft.color : C.text, marginBottom: 3 }}>
@@ -309,7 +309,7 @@ function StepInventoryPreview({ data, onQtyChange }: {
     <button key={label} onClick={onClick} style={{
       width: 24, height: 24, borderRadius: 6, cursor: "pointer", flexShrink: 0,
       background: "rgba(26,26,27,0.08)", border: "1px solid rgba(255,255,255,0.1)",
-      color: "rgba(232,224,200,0.7)", fontSize: 12, fontWeight: 700,
+      color: "rgba(26,26,27,0.68)", fontSize: 12, fontWeight: 700,
       display: "flex", alignItems: "center", justifyContent: "center",
     }}>{label}</button>
   );
@@ -355,7 +355,7 @@ function StepInventoryPreview({ data, onQtyChange }: {
       <div style={{
         padding: "12px 16px", borderRadius: 12,
         background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.15)",
-        fontSize: 12, color: "rgba(232,224,200,0.5)", lineHeight: 1.6,
+        fontSize: 12, color: "rgba(26,26,27,0.48)", lineHeight: 1.6,
       }}>
         {crafts.length > 0
           ? `${crafts.reduce((n, c) => n + (PREVIEW_CATALOG[c]?.length ?? 0), 0)} products across ${crafts.length} craft module${crafts.length > 1 ? "s" : ""}.`
@@ -482,7 +482,7 @@ function StepAiPreview({ data, set }: { data: WizardData; set: (k: keyof WizardD
         {loading ? (
           <span style={{ color: "rgba(167,139,250,0.5)" }}>Generating AI strategy…</span>
         ) : previewErr ? (
-          <span style={{ color: "rgba(232,224,200,0.4)" }}>Preview available after authentication. Your config will be applied on launch.</span>
+          <span style={{ color: "rgba(26,26,27,0.40)" }}>Preview available after authentication. Your config will be applied on launch.</span>
         ) : preview ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -499,7 +499,7 @@ function StepAiPreview({ data, set }: { data: WizardData; set: (k: keyof WizardD
               <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 4 }}>
                 {Object.entries(preview.experienceFlowWeights).map(([k, v]) => (
                   <div key={k} style={{ flex: 1, textAlign: "center" }}>
-                    <div style={{ fontSize: 10, color: "rgba(232,224,200,0.4)", textTransform: "uppercase", marginBottom: 3 }}>{k}</div>
+                    <div style={{ fontSize: 10, color: "rgba(26,26,27,0.40)", textTransform: "uppercase", marginBottom: 3 }}>{k}</div>
                     <div style={{
                       height: 4, borderRadius: 2,
                       background: "rgba(167,139,250,0.15)",
@@ -514,7 +514,7 @@ function StepAiPreview({ data, set }: { data: WizardData; set: (k: keyof WizardD
             )}
           </div>
         ) : (
-          <span style={{ color: "rgba(232,224,200,0.4)" }}>Select options above to preview your AI configuration.</span>
+          <span style={{ color: "rgba(26,26,27,0.40)" }}>Select options above to preview your AI configuration.</span>
         )}
       </div>
     </div>
@@ -529,7 +529,7 @@ function StratCard({ label, value, color }: { label: string; value: string; colo
       textAlign: "center", minWidth: 72,
     }}>
       <div style={{ fontSize: 14, fontWeight: 700, color }}>{value}</div>
-      <div style={{ fontSize: 10, color: "rgba(232,224,200,0.4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: 2 }}>{label}</div>
+      <div style={{ fontSize: 10, color: "rgba(26,26,27,0.40)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: 2 }}>{label}</div>
     </div>
   );
 }
@@ -781,7 +781,7 @@ export default function OnboardWizard() {
           transition={{ duration: 0.3 }}
           style={{
             padding: 28, borderRadius: 20,
-            background: "rgba(10,8,6,0.7)",
+            background: "rgba(245,242,237,0.7)",
             border: `1px solid ${currentStep.color}25`,
             backdropFilter: "blur(20px)",
             marginBottom: 16,
@@ -839,7 +839,7 @@ export default function OnboardWizard() {
             style={{
               flex: 2, padding: "14px", borderRadius: 14, cursor: loading ? "wait" : "pointer",
               background: `linear-gradient(135deg, ${currentStep.color}, ${currentStep.color}cc)`,
-              border: "none", color: "#fff", fontSize: 14, fontWeight: 700,
+              border: "none", color: "#1A1A1B", fontSize: 14, fontWeight: 700,
               display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
               opacity: loading ? 0.6 : 1,
             }}

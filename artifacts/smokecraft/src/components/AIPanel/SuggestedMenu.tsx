@@ -82,7 +82,7 @@ export default function SuggestedMenu({
               <h4
                 style={{
                   margin: 0, fontSize: 14, fontWeight: 600,
-                  color: "#FFFFFF",
+                  color: "#1A1A1B",
                   fontFamily: "var(--app-font-serif, Georgia, serif)",
                 }}
               >

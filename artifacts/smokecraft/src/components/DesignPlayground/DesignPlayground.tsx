@@ -235,7 +235,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
       animate={controls}
       style={{
         position: "fixed", inset: 0, zIndex: 200,
-        background: "rgba(8,6,4,0.97)",
+        background: "rgba(245,242,237,0.97)",
         display: "flex", flexDirection: "column",
         overflow: "hidden",
       }}
@@ -251,7 +251,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
       {/* Tint overlay */}
       <div style={{
         position: "absolute", inset: 0, zIndex: 1,
-        background: `radial-gradient(ellipse at 30% 50%, ${config.tint}, transparent 65%), linear-gradient(135deg,rgba(8,6,4,0.72),rgba(8,6,4,0.88))`,
+        background: `radial-gradient(ellipse at 30% 50%, ${config.tint}, transparent 65%), linear-gradient(135deg,rgba(245,242,237,0.72),rgba(245,242,237,0.88))`,
         pointerEvents: "none",
       }} />
 
@@ -280,7 +280,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
               margin: "4px 0 0",
               fontSize: "clamp(20px, 2.2vw, 28px)",
               fontFamily: "var(--app-font-serif, Georgia, serif)",
-              fontWeight: 600, color: "#fff", letterSpacing: "0.02em",
+              fontWeight: 600, color: "#1A1A1B", letterSpacing: "0.02em",
             }}>
               Design First. Build Worthy of It.
             </h1>
@@ -435,7 +435,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
             <p style={{
               position: "absolute", bottom: 12,
               fontSize: 9, letterSpacing: "0.24em", textTransform: "uppercase",
-              color: "rgba(232,224,200,0.22)", fontWeight: 600,
+              color: "rgba(26,26,27,0.22)", fontWeight: 600,
               pointerEvents: "none",
             }}>
               Drag · Pinch to scale
@@ -461,7 +461,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                   border: "none", borderBottom: `1px solid ${config.accent}30`,
                   outline: "none",
                   fontFamily: "var(--app-font-serif, Georgia, serif)",
-                  fontSize: 18, color: "rgba(232,224,200,0.95)",
+                  fontSize: 18, color: "rgba(26,26,27,0.90)",
                   caretColor: config.accent, padding: "5px 0",
                   letterSpacing: "0.04em",
                 }}
@@ -481,7 +481,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                       padding: "4px 9px", borderRadius: 999,
                       background: selectedColor === sw.id ? `${sw.accent}20` : "rgba(26,26,27,0.06)",
                       border: `1px solid ${selectedColor === sw.id ? sw.accent + "70" : "rgba(26,26,27,0.10)"}`,
-                      color: sw.locked ? "rgba(180,155,100,0.3)" : selectedColor === sw.id ? sw.accent : "rgba(180,155,100,0.6)",
+                      color: sw.locked ? "rgba(107,94,78,0.30)" : selectedColor === sw.id ? sw.accent : "rgba(107,94,78,0.58)",
                       fontSize: 11, fontWeight: 600, letterSpacing: "0.07em",
                       opacity: sw.locked ? 0.6 : 1,
                       cursor: sw.locked ? "not-allowed" : "pointer",
@@ -506,7 +506,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                       padding: "4px 10px", borderRadius: 8, fontSize: 12,
                       background: selectedEmblem === em.id ? `${config.accent}15` : "rgba(26,26,27,0.06)",
                       border: `1px solid ${selectedEmblem === em.id ? config.accent + "55" : "rgba(26,26,27,0.10)"}`,
-                      color: selectedEmblem === em.id ? config.accent : "rgba(180,155,100,0.6)",
+                      color: selectedEmblem === em.id ? config.accent : "rgba(107,94,78,0.58)",
                       cursor: "pointer", fontWeight: 500,
                     }}
                   >
@@ -528,7 +528,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                         padding: "4px 10px", borderRadius: 8, fontSize: 12,
                         background: !sf.locked && selectFields[sf.id] === opt.id ? `${config.accent}15` : "rgba(26,26,27,0.06)",
                         border: `1px solid ${!sf.locked && selectFields[sf.id] === opt.id ? config.accent + "55" : "rgba(26,26,27,0.10)"}`,
-                        color: !sf.locked && selectFields[sf.id] === opt.id ? config.accent : "rgba(180,155,100,0.6)",
+                        color: !sf.locked && selectFields[sf.id] === opt.id ? config.accent : "rgba(107,94,78,0.58)",
                         cursor: sf.locked ? "not-allowed" : "pointer",
                       }}
                     >
@@ -556,7 +556,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                   border: "none",
                   borderBottom: `1px solid ${config.accent}${config.engravingLocked ? "15" : "28"}`,
                   outline: "none", fontSize: 13,
-                  color: config.engravingLocked ? "rgba(180,155,100,0.3)" : "rgba(210,190,155,0.85)",
+                  color: config.engravingLocked ? "rgba(107,94,78,0.30)" : "rgba(210,190,155,0.85)",
                   caretColor: config.accent, padding: "5px 0",
                 }}
               />
@@ -587,7 +587,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                 width: "100%", padding: "10px 18px", borderRadius: 12, flexShrink: 0,
                 background: saved ? "rgba(100,200,120,0.1)" : "rgba(26,26,27,0.06)",
                 border: `1px solid ${saved ? "rgba(100,200,120,0.32)" : config.accent + "28"}`,
-                color: saved ? "rgba(100,200,120,0.85)" : "rgba(232,224,200,0.7)",
+                color: saved ? "rgba(100,200,120,0.85)" : "rgba(26,26,27,0.68)",
                 fontSize: 11, fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase",
                 cursor: saving ? "default" : "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
@@ -612,7 +612,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                 >
                   <div style={{
                     padding: "11px 13px", borderRadius: 12,
-                    background: `linear-gradient(135deg, ${config.accent}0E, rgba(10,8,6,0.5))`,
+                    background: `linear-gradient(135deg, ${config.accent}0E, rgba(245,242,237,0.5))`,
                     border: `1px solid ${config.accent}28`,
                   }}>
                     <p style={{
@@ -624,7 +624,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                     </p>
                     <p style={{
                       margin: 0, fontSize: 12,
-                      color: "rgba(232,224,200,0.8)",
+                      color: "rgba(26,26,27,0.78)",
                       lineHeight: 1.65,
                     }}>
                       {critique}
@@ -654,7 +654,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
             </motion.button>
             <p style={{
               textAlign: "center", margin: "7px 0 0", flexShrink: 0,
-              fontSize: 10, color: "rgba(180,155,100,0.3)", letterSpacing: "0.1em",
+              fontSize: 10, color: "rgba(107,94,78,0.30)", letterSpacing: "0.1em",
               fontStyle: "italic",
             }}>
               Now build something worthy of this.
@@ -676,7 +676,7 @@ function PanelSection({
       <p style={{
         margin: "0 0 7px", fontSize: 9,
         letterSpacing: "0.28em", textTransform: "uppercase",
-        color: locked ? "rgba(180,155,100,0.28)" : accent,
+        color: locked ? "rgba(107,94,78,0.28)" : accent,
         fontWeight: 700,
         display: "flex", alignItems: "center", gap: 5,
       }}>

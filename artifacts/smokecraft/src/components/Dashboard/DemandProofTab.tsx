@@ -57,15 +57,15 @@ function KpiCard({
                   : "1px solid rgba(26,26,27,0.08)",
       }}>
       <div className="flex items-center gap-2 mb-2">
-        <span style={{ color: gold ? GOLD_DIM : warning ? "rgba(239,90,80,0.6)" : "rgba(180,155,100,0.5)" }}>
+        <span style={{ color: gold ? GOLD_DIM : warning ? "rgba(239,90,80,0.6)" : "rgba(107,94,78,0.50)" }}>
           {icon}
         </span>
-        <p className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.4)" }}>{label}</p>
+        <p className="text-[8px] uppercase tracking-[0.2em]" style={{ color: "rgba(107,94,78,0.40)" }}>{label}</p>
       </div>
       <p className="text-3xl font-serif" style={{ color: gold ? GOLD : warning ? "rgba(239,100,90,0.85)" : "rgba(210,190,155,0.82)", fontWeight: 300 }}>
         {display}
       </p>
-      {sub && <p className="text-[8px] mt-1" style={{ color: "rgba(180,155,100,0.35)" }}>{sub}</p>}
+      {sub && <p className="text-[8px] mt-1" style={{ color: "rgba(107,94,78,0.35)" }}>{sub}</p>}
     </div>
   );
 }
@@ -88,7 +88,7 @@ function SectionHeader({ title, subtitle, icon }: { title: string; subtitle?: st
       {icon && <span style={{ color: GOLD_DIM }}>{icon}</span>}
       <div>
         <h3 className="font-serif text-base" style={{ color: "rgba(220,200,165,0.88)", fontWeight: 300 }}>{title}</h3>
-        {subtitle && <p className="text-[8px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(180,155,100,0.38)" }}>{subtitle}</p>}
+        {subtitle && <p className="text-[8px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(107,94,78,0.38)" }}>{subtitle}</p>}
       </div>
     </div>
   );
@@ -106,10 +106,10 @@ function ScoreBar({ name, category, score, maxScore, selections, oosRequests, or
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-[9px] tabular-nums w-4 text-right flex-shrink-0"
-            style={{ color: "rgba(180,155,100,0.3)" }}>{i + 1}</span>
+            style={{ color: "rgba(107,94,78,0.30)" }}>{i + 1}</span>
           <div className="min-w-0">
             <span className="font-serif text-xs truncate block" style={{ color: "rgba(210,190,155,0.82)" }}>{name}</span>
-            <span className="text-[7px] uppercase tracking-[0.12em]" style={{ color: "rgba(180,155,100,0.35)" }}>{category}</span>
+            <span className="text-[7px] uppercase tracking-[0.12em]" style={{ color: "rgba(107,94,78,0.35)" }}>{category}</span>
           </div>
         </div>
         <div className="flex items-center gap-3 flex-shrink-0 ml-3">
@@ -121,7 +121,7 @@ function ScoreBar({ name, category, score, maxScore, selections, oosRequests, or
           )}
           <div className="text-right">
             <p className="text-sm font-serif" style={{ color: GOLD_MID, fontWeight: 300 }}>{score}</p>
-            <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(180,155,100,0.3)" }}>score</p>
+            <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(107,94,78,0.30)" }}>score</p>
           </div>
         </div>
       </div>
@@ -131,10 +131,10 @@ function ScoreBar({ name, category, score, maxScore, selections, oosRequests, or
             initial={{ width: 0 }}
             animate={{ width: `${pct}%` }}
             transition={{ duration: 0.7, ease: "easeOut", delay: i * 0.05 }}
-            style={{ background: "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(212,139,0,0.9))" }}
+            style={{ background: "linear-gradient(90deg, rgba(212,139,0,0.7), rgba(212,139,0,0.9))" }}
           />
         </div>
-        <div className="flex gap-2 flex-shrink-0 text-[7px]" style={{ color: "rgba(180,155,100,0.4)" }}>
+        <div className="flex gap-2 flex-shrink-0 text-[7px]" style={{ color: "rgba(107,94,78,0.40)" }}>
           {selections > 0 && <span>{selections}sel</span>}
           {oosRequests > 0 && <span style={{ color: "rgba(239,80,80,0.55)" }}>{oosRequests}req</span>}
           {orders > 0 && <span style={{ color: GOLD_DIM }}>{orders}ord</span>}
@@ -156,7 +156,7 @@ function FlavorBar({ flavor, count, max, i }: { flavor: string; count: number; m
           initial={{ width: 0 }}
           animate={{ width: `${(count / max) * 100}%` }}
           transition={{ duration: 0.7, ease: "easeOut", delay: i * 0.05 }}
-          style={{ background: "linear-gradient(90deg, rgba(180,130,30,0.6), rgba(212,139,0,0.85))" }}
+          style={{ background: "linear-gradient(90deg, rgba(212,139,0,0.6), rgba(212,139,0,0.85))" }}
         />
       </div>
     </div>
@@ -186,16 +186,16 @@ function MissedSalesRow({ name, category, score, oosRequests, i }: {
       style={{ background: "rgba(239,68,68,0.04)", border: "1px solid rgba(239,68,68,0.12)" }}>
       <div className="min-w-0">
         <p className="font-serif text-xs truncate" style={{ color: "rgba(210,190,155,0.82)" }}>{name}</p>
-        <p className="text-[8px] uppercase tracking-[0.12em] mt-0.5" style={{ color: "rgba(180,155,100,0.38)" }}>{category}</p>
+        <p className="text-[8px] uppercase tracking-[0.12em] mt-0.5" style={{ color: "rgba(107,94,78,0.38)" }}>{category}</p>
       </div>
       <div className="flex items-center gap-4 flex-shrink-0 ml-4">
         <div className="text-right">
           <p className="text-xs font-serif" style={{ color: "rgba(239,100,90,0.8)" }}>{oosRequests}</p>
-          <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(180,155,100,0.3)" }}>requests</p>
+          <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(107,94,78,0.30)" }}>requests</p>
         </div>
         <div className="text-right">
           <p className="text-xs font-serif" style={{ color: GOLD_DIM }}>{score}</p>
-          <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(180,155,100,0.3)" }}>demand</p>
+          <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(107,94,78,0.30)" }}>demand</p>
         </div>
       </div>
     </motion.div>
@@ -218,7 +218,7 @@ function OpportunityCard({ opp, i }: { opp: DemandOpportunity; i: number }) {
               style={{ background: `${style.color}18`, border: `1px solid ${style.border}`, color: style.color }}>
               {style.label}
             </span>
-            <span className="text-[7px]" style={{ color: "rgba(180,155,100,0.4)" }}>
+            <span className="text-[7px]" style={{ color: "rgba(107,94,78,0.40)" }}>
               {opp.totalRequests} total request{opp.totalRequests !== 1 ? "s" : ""}
             </span>
           </div>
@@ -246,7 +246,7 @@ function CopyButton({ getValue, label }: { getValue: () => string; label: string
       style={{
         background: copied ? "rgba(212,139,0,0.1)" : "rgba(26,26,27,0.06)",
         border: copied ? "1px solid rgba(212,139,0,0.3)" : "1px solid rgba(26,26,27,0.10)",
-        color: copied ? "rgba(212,139,0,0.8)" : "rgba(180,155,100,0.5)",
+        color: copied ? "rgba(212,139,0,0.8)" : "rgba(107,94,78,0.50)",
       }}
       whileHover={{ borderColor: "rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.7)", background: "rgba(212,139,0,0.06)" }}
       whileTap={{ scale: 0.97 }}>
@@ -275,19 +275,19 @@ function MissingDemandRow({ item, i }: { item: MissingDemandItem; i: number }) {
       style={{ background: "rgba(239,68,68,0.04)", border: "1px solid rgba(239,68,68,0.12)" }}>
       <div className="min-w-0">
         <p className="font-serif text-xs truncate" style={{ color: "rgba(210,190,155,0.85)" }}>{item.productName}</p>
-        <p className="text-[8px] uppercase tracking-[0.12em] mt-0.5" style={{ color: "rgba(180,155,100,0.38)" }}>
+        <p className="text-[8px] uppercase tracking-[0.12em] mt-0.5" style={{ color: "rgba(107,94,78,0.38)" }}>
           {item.category} · last {ago}
         </p>
       </div>
       <div className="flex items-center gap-4 flex-shrink-0 ml-4">
         <div className="text-right">
           <p className="text-sm font-serif" style={{ color: "rgba(239,100,90,0.85)" }}>{item.requestCount}</p>
-          <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(180,155,100,0.3)" }}>requests</p>
+          <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(107,94,78,0.30)" }}>requests</p>
         </div>
         {item.trendScore > 0 && (
           <div className="text-right">
             <p className="text-xs font-serif" style={{ color: GOLD_DIM }}>{Math.round(item.trendScore * 100)}</p>
-            <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(180,155,100,0.3)" }}>trend</p>
+            <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(107,94,78,0.30)" }}>trend</p>
           </div>
         )}
       </div>
@@ -305,21 +305,21 @@ function RequestedRow({ name, category, score, views, selections, orders, i }: {
     <motion.div
       initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
       className="flex items-center gap-3 py-2.5" style={{ borderBottom: "1px solid rgba(26,26,27,0.06)" }}>
-      <span className="text-[9px] tabular-nums w-4 text-right flex-shrink-0" style={{ color: "rgba(180,155,100,0.3)" }}>
+      <span className="text-[9px] tabular-nums w-4 text-right flex-shrink-0" style={{ color: "rgba(107,94,78,0.30)" }}>
         {i + 1}
       </span>
       <div className="flex-1 min-w-0">
         <p className="font-serif text-xs truncate" style={{ color: "rgba(210,190,155,0.82)" }}>{name}</p>
-        <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(180,155,100,0.32)" }}>{category}</p>
+        <p className="text-[7px] uppercase tracking-[0.1em]" style={{ color: "rgba(107,94,78,0.32)" }}>{category}</p>
       </div>
-      <div className="flex items-center gap-3 flex-shrink-0 text-[7px]" style={{ color: "rgba(180,155,100,0.4)" }}>
+      <div className="flex items-center gap-3 flex-shrink-0 text-[7px]" style={{ color: "rgba(107,94,78,0.40)" }}>
         {views > 0      && <span>{views}v</span>}
         {selections > 0 && <span>{selections}sel</span>}
         {orders > 0     && <span style={{ color: GOLD_DIM }}>{orders}ord</span>}
       </div>
       <div className="text-right flex-shrink-0 w-10">
         <p className="text-xs font-serif" style={{ color: GOLD_MID, fontWeight: 300 }}>{Math.round(score)}</p>
-        <p className="text-[7px] uppercase tracking-[0.08em]" style={{ color: "rgba(180,155,100,0.28)" }}>pts</p>
+        <p className="text-[7px] uppercase tracking-[0.08em]" style={{ color: "rgba(107,94,78,0.28)" }}>pts</p>
       </div>
     </motion.div>
   );
@@ -366,7 +366,7 @@ export function DemandProofTab() {
             style={{ borderColor: "rgba(212,139,0,0.2)", borderTopColor: "rgba(212,139,0,0.7)" }}
             animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
           <p className="text-[9px] uppercase tracking-[0.28em] text-center"
-            style={{ color: "rgba(180,155,100,0.4)" }}>Compiling proof data…</p>
+            style={{ color: "rgba(107,94,78,0.40)" }}>Compiling proof data…</p>
         </div>
       </div>
     );
@@ -375,7 +375,7 @@ export function DemandProofTab() {
   if (error) {
     return (
       <div className="py-12 text-center">
-        <BarChart3 size={28} className="mx-auto mb-3" style={{ color: "rgba(180,155,100,0.2)" }} />
+        <BarChart3 size={28} className="mx-auto mb-3" style={{ color: "rgba(107,94,78,0.20)" }} />
         <p className="text-xs mb-4" style={{ color: "rgba(239,68,68,0.6)" }}>{error}</p>
         <button onClick={load} className="text-[9px] uppercase tracking-[0.18em] px-4 py-2 rounded-lg"
           style={{ background: "rgba(212,139,0,0.07)", border: "1px solid rgba(212,139,0,0.2)", color: "rgba(212,139,0,0.65)" }}>
@@ -435,19 +435,19 @@ export function DemandProofTab() {
             <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
               Demand Proof
             </h2>
-            <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+            <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>
               Real customer demand · missed revenue · distributor proof
             </p>
           </div>
           <div className="flex items-center gap-2">
             {proof.generatedAt && (
-              <p className="text-[8px]" style={{ color: "rgba(180,155,100,0.3)" }}>
+              <p className="text-[8px]" style={{ color: "rgba(107,94,78,0.30)" }}>
                 {new Date(proof.generatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </p>
             )}
             <motion.button onClick={load}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[9px] uppercase tracking-[0.15em]"
-              style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}
+              style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(107,94,78,0.50)" }}
               whileHover={{ borderColor: "rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.7)" }}
               whileTap={{ scale: 0.96 }}>
               <RefreshCw size={10} />Refresh
@@ -514,7 +514,7 @@ export function DemandProofTab() {
                 <MissingDemandRow key={item.productId} item={item} i={i} />
               ))}
             </div>
-            <p className="text-[8px] mt-3" style={{ color: "rgba(180,155,100,0.3)" }}>
+            <p className="text-[8px] mt-3" style={{ color: "rgba(107,94,78,0.30)" }}>
               Request counts are persisted — they survive server restarts and accumulate over time.
             </p>
           </Panel>
@@ -549,7 +549,7 @@ export function DemandProofTab() {
           <Panel>
             <SectionHeader title="Top Demanded — Cigars" subtitle="By weighted demand score" icon={<Flame size={13} />} />
             {proof.topDemandedCigars.length === 0
-              ? <p className="text-xs italic py-4 text-center" style={{ color: "rgba(180,155,100,0.3)" }}>
+              ? <p className="text-xs italic py-4 text-center" style={{ color: "rgba(107,94,78,0.30)" }}>
                   No cigar demand data yet
                 </p>
               : proof.topDemandedCigars.slice(0, 8).map((d, i) => (
@@ -566,7 +566,7 @@ export function DemandProofTab() {
           <Panel>
             <SectionHeader title="Top Demanded — Spirits" subtitle="By weighted demand score" icon={<Flame size={13} />} />
             {proof.topDemandedAlcohol.length === 0
-              ? <p className="text-xs italic py-4 text-center" style={{ color: "rgba(180,155,100,0.3)" }}>
+              ? <p className="text-xs italic py-4 text-center" style={{ color: "rgba(107,94,78,0.30)" }}>
                   No spirits demand data yet
                 </p>
               : proof.topDemandedAlcohol.slice(0, 8).map((d, i) => (
@@ -598,7 +598,7 @@ export function DemandProofTab() {
                 ].map((cat) => (
                   <div key={cat.label} className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full" style={{ background: cat.color }} />
-                    <p className="text-[9px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.45)" }}>
+                    <p className="text-[9px] uppercase tracking-[0.15em]" style={{ color: "rgba(107,94,78,0.45)" }}>
                       {cat.label} <span style={{ color: cat.color }}>{cat.value}%</span>
                     </p>
                   </div>
@@ -622,7 +622,7 @@ export function DemandProofTab() {
               ))}
             </div>
             {opps.length === 0 && (
-              <p className="text-xs italic py-2 text-center" style={{ color: "rgba(180,155,100,0.3)" }}>
+              <p className="text-xs italic py-2 text-center" style={{ color: "rgba(107,94,78,0.30)" }}>
                 Opportunities appear once out-of-stock demand builds across venues
               </p>
             )}
@@ -636,7 +636,7 @@ export function DemandProofTab() {
             <CopyButton getValue={exportText} label="Copy Text Summary" />
             <CopyButton getValue={exportJson} label="Copy JSON Data" />
           </div>
-          <p className="text-[8px] mt-3" style={{ color: "rgba(180,155,100,0.3)" }}>
+          <p className="text-[8px] mt-3" style={{ color: "rgba(107,94,78,0.30)" }}>
             Paste into emails, pitch decks, or distributor proposals to prove real customer demand.
           </p>
         </Panel>
@@ -645,7 +645,7 @@ export function DemandProofTab() {
         <div className="rounded-xl p-5 text-center"
           style={{ background: "rgba(212,139,0,0.02)", border: "1px dashed rgba(212,139,0,0.1)" }}>
           <DollarSign size={18} className="mx-auto mb-2" style={{ color: "rgba(212,139,0,0.2)" }} />
-          <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.3)" }}>
+          <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(107,94,78,0.30)" }}>
             Future: scheduled PDF reports · email delivery · brand portal sharing · ROI calculator
           </p>
         </div>

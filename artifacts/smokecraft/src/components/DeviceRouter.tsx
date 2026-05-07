@@ -187,7 +187,7 @@ export function KioskShell({ children }: { children: ReactNode }) {
         position: "absolute", top: 0, left: 0, right: 0, zIndex: 9000,
         height: 30, display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 16px", background: "rgba(26,26,27,0.30)", backdropFilter: "blur(8px)",
-        fontSize: 10, fontWeight: 700, color: "rgba(232,224,200,0.4)",
+        fontSize: 10, fontWeight: 700, color: "rgba(26,26,27,0.40)",
         letterSpacing: "0.12em", textTransform: "uppercase", pointerEvents: "none",
       }}>
         <span>Axiom OS · Kiosk</span>
@@ -223,7 +223,7 @@ export function PosShell({ children }: { children: ReactNode }) {
             display: "flex", alignItems: "center", gap: 5,
             padding: "5px 12px", borderRadius: 8, cursor: "pointer",
             background: "rgba(26,26,27,0.07)", border: "1px solid rgba(26,26,27,0.12)",
-            color: "rgba(232,224,200,0.65)", fontSize: 12, fontWeight: 700,
+            color: "rgba(26,26,27,0.62)", fontSize: 12, fontWeight: 700,
           }}
         >
           ← Back
@@ -233,7 +233,7 @@ export function PosShell({ children }: { children: ReactNode }) {
           Axiom Commerce
         </span>
         <div style={{ flex: 1 }} />
-        <span style={{ fontSize: 10, color: "rgba(232,224,200,0.25)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+        <span style={{ fontSize: 10, color: "rgba(26,26,27,0.25)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
           Axiom OS
         </span>
       </div>
@@ -259,7 +259,7 @@ export function TabletShell({ children }: { children: ReactNode }) {
             display: "flex", alignItems: "center", gap: 4,
             padding: "5px 10px", borderRadius: 8, cursor: "pointer",
             background: "rgba(26,26,27,0.07)", border: "1px solid rgba(26,26,27,0.10)",
-            color: "rgba(232,224,200,0.6)", fontSize: 12, fontWeight: 700,
+            color: "rgba(26,26,27,0.58)", fontSize: 12, fontWeight: 700,
           }}
         >
           ← Back
@@ -285,7 +285,7 @@ export function MobileShell({ children }: { children: ReactNode }) {
         flex: 1, height: "100%", background: "none", border: "none", cursor: "pointer",
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
         gap: 2, fontSize: 10, fontWeight: 600,
-        color: location === path ? "#D48B00" : "rgba(232,224,200,0.45)",
+        color: location === path ? "#D48B00" : "rgba(26,26,27,0.44)",
       }}
     >
       <span style={{ fontSize: 18, lineHeight: 1 }}>{icon}</span>

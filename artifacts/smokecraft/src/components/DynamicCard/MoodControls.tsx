@@ -18,7 +18,7 @@ export default function MoodControls() {
     <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
       <span style={{
         fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase",
-        color: "rgba(232,224,200,0.35)", fontWeight: 700, marginRight: 4,
+        color: "rgba(26,26,27,0.35)", fontWeight: 700, marginRight: 4,
       }}>
         Mood
       </span>
@@ -47,7 +47,7 @@ export default function MoodControls() {
                 ? `1.5px solid ${preset.color}`
                 : "1.5px solid rgba(26,26,27,0.14)",
               background: active ? `${preset.color}18` : "rgba(26,26,27,0.06)",
-              color: active ? preset.color : "rgba(232,224,200,0.6)",
+              color: active ? preset.color : "rgba(26,26,27,0.58)",
               fontSize: 11, fontWeight: active ? 700 : 500,
               letterSpacing: "0.08em",
               display: "flex", alignItems: "center", gap: 6,

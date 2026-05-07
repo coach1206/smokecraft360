@@ -458,7 +458,7 @@ export default function AnalyticsModule() {
                   style={{
                     padding: "10px 20px", borderRadius: 10, fontSize: 13, fontWeight: 600,
                     background: (!adjustProduct || adjustDelta === 0) ? "rgba(154,120,32,0.08)" : `linear-gradient(135deg, ${C.gold}, #7A5F14)`,
-                    color: (!adjustProduct || adjustDelta === 0) ? `${C.gold}60` : "#FFFFFF",
+                    color: (!adjustProduct || adjustDelta === 0) ? `${C.gold}60` : "#1A1A1B",
                     border: "none", cursor: (!adjustProduct || adjustDelta === 0) ? "not-allowed" : "pointer",
                     whiteSpace: "nowrap", boxShadow: (!adjustProduct || adjustDelta === 0) ? "none" : "0 2px 8px rgba(154,120,32,0.25)",
                   }}

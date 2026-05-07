@@ -153,7 +153,7 @@ function Meter({ label, value, accent }: { label: string; value: number; accent:
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
         <span style={{
           fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase",
-          color: "rgba(232,224,200,0.45)", fontWeight: 600,
+          color: "rgba(26,26,27,0.44)", fontWeight: 600,
         }}>
           {label}
         </span>
@@ -229,7 +229,7 @@ export default function LivePreviewPanel({
         style={{
           width:               28,
           flexShrink:          0,
-          background:          "rgba(10,8,6,0.84)",
+          background:          "rgba(245,242,237,0.84)",
           border:              `1px solid ${accentColor}30`,
           borderRight:         isOpen ? "none" : undefined,
           borderRadius:        isOpen ? "10px 0 0 10px" : "10px",
@@ -267,7 +267,7 @@ export default function LivePreviewPanel({
           width:               W,
           maxHeight:           "88vh",
           overflowY:           "auto",
-          background:          "rgba(10,8,6,0.86)",
+          background:          "rgba(245,242,237,0.86)",
           backdropFilter:      "blur(14px)",
           WebkitBackdropFilter: "blur(14px)",
           padding:             "18px 16px 22px",
@@ -285,9 +285,9 @@ export default function LivePreviewPanel({
             }}>
               Live Preview
             </p>
-            <p style={{ margin: "3px 0 0", fontSize: 11, color: "rgba(232,224,200,0.5)" }}>
+            <p style={{ margin: "3px 0 0", fontSize: 11, color: "rgba(26,26,27,0.48)" }}>
               {styleLabel
-                ? <><span style={{ color: "rgba(232,224,200,0.8)" }}>{styleLabel}</span>{moodLabel ? ` · ${moodLabel}` : ""}</>
+                ? <><span style={{ color: "rgba(26,26,27,0.78)" }}>{styleLabel}</span>{moodLabel ? ` · ${moodLabel}` : ""}</>
                 : "Select a style to begin"}
             </p>
           </div>
@@ -346,7 +346,7 @@ export default function LivePreviewPanel({
           }}>
             <span style={{
               fontSize: 9, letterSpacing: "0.26em", textTransform: "uppercase",
-              color: "rgba(232,224,200,0.45)", fontWeight: 600,
+              color: "rgba(26,26,27,0.44)", fontWeight: 600,
             }}>
               Craft Score
             </span>

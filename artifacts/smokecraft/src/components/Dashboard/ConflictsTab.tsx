@@ -86,19 +86,19 @@ export function ConflictsTab() {
           <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
             Data Conflicts
           </h2>
-          <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+          <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>
             Cross-source mismatches · Vendor / POS / Distributor / Admin · Atomic resolve
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Filter size={11} style={{ color: "rgba(180,155,100,0.5)" }} />
+          <Filter size={11} style={{ color: "rgba(107,94,78,0.50)" }} />
           {(["open", "resolved", "dismissed", "all"] as const).map((f) => (
             <button key={f} onClick={() => setFilter(f)}
               data-testid={`filter-${f}`}
               className="px-2.5 py-1 rounded-full text-[9px] uppercase tracking-[0.15em] transition-all"
               style={filter === f
-                ? { background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.45)" }
-                : { background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(26,26,27,0.08)" }}>
+                ? { background: "rgba(212,139,0,0.18)", color: "rgba(212,139,0,0.95)", border: "1px solid rgba(212,139,0,0.45)" }
+                : { background: "rgba(26,26,27,0.06)", color: "rgba(107,94,78,0.52)", border: "1px solid rgba(26,26,27,0.08)" }}>
               {f === "all" ? "All" : STATUS_LABEL[f]}
             </button>
           ))}
@@ -118,12 +118,12 @@ export function ConflictsTab() {
       )}
 
       {loading ? (
-        <div className="flex items-center gap-2 text-[11px]" style={{ color: "rgba(180,155,100,0.6)" }}>
+        <div className="flex items-center gap-2 text-[11px]" style={{ color: "rgba(107,94,78,0.58)" }}>
           <Loader2 size={12} className="animate-spin" /> Loading conflicts…
         </div>
       ) : items.length === 0 ? (
         <div className="text-[11px] px-4 py-8 rounded text-center"
-          style={{ background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(212,139,0,0.2)", color: "rgba(180,155,100,0.5)" }}>
+          style={{ background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(212,139,0,0.2)", color: "rgba(107,94,78,0.50)" }}>
           {filter === "open" ? "No open conflicts. All data sources agree." : "No conflicts in this view."}
         </div>
       ) : (
@@ -153,7 +153,7 @@ export function ConflictsTab() {
                           data-testid={`conflict-status-${r.id}`}>
                           {STATUS_LABEL[r.status]}
                         </span>
-                        <span className="text-[9px]" style={{ color: "rgba(180,155,100,0.45)" }}>
+                        <span className="text-[9px]" style={{ color: "rgba(107,94,78,0.45)" }}>
                           {r.entityId.slice(0, 12)}{r.entityId.length > 12 ? "…" : ""}
                         </span>
                       </div>
@@ -163,13 +163,13 @@ export function ConflictsTab() {
                         <SourceCard source={r.sourceB} value={r.valueB} label="B" />
                       </div>
 
-                      <div className="text-[10px] mt-2" style={{ color: "rgba(180,155,100,0.5)" }}>
+                      <div className="text-[10px] mt-2" style={{ color: "rgba(107,94,78,0.50)" }}>
                         Detected {formatDateTime(r.detectedAt)}
                         {r.resolvedAt && ` · Resolved ${formatDateTime(r.resolvedAt)} (${r.resolution})`}
                         {r.resolvedValue !== null && ` → kept "${r.resolvedValue}"`}
                       </div>
                       {r.notes && (
-                        <div className="text-[10px] mt-1 italic" style={{ color: "rgba(180,155,100,0.55)" }}>
+                        <div className="text-[10px] mt-1 italic" style={{ color: "rgba(107,94,78,0.52)" }}>
                           {r.notes}
                         </div>
                       )}
@@ -204,11 +204,11 @@ export function ConflictsTab() {
                           <button onClick={() => resolve(r, "use_custom", customValue)} disabled={!customValue.trim() || acting[r.id]}
                             data-testid={`custom-submit-${r.id}`}
                             className="px-3 py-1 rounded-md text-[9px] uppercase tracking-[0.15em]"
-                            style={{ background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.45)", opacity: !customValue.trim() ? 0.5 : 1 }}>
+                            style={{ background: "rgba(212,139,0,0.18)", color: "rgba(212,139,0,0.95)", border: "1px solid rgba(212,139,0,0.45)", opacity: !customValue.trim() ? 0.5 : 1 }}>
                             Save
                           </button>
                           <button onClick={() => { setCustomFor(null); setCustomValue(""); }}
-                            className="p-1 rounded-md" style={{ color: "rgba(180,155,100,0.55)" }}>
+                            className="p-1 rounded-md" style={{ color: "rgba(107,94,78,0.52)" }}>
                             <X size={12} />
                           </button>
                         </div>
@@ -230,7 +230,7 @@ function SourceCard({ source, value, label }: { source: string; value: string; l
     <div className="rounded-md p-2"
       style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
       <div className="flex items-center justify-between text-[9px] uppercase tracking-[0.18em] mb-1"
-        style={{ color: "rgba(180,155,100,0.55)" }}>
+        style={{ color: "rgba(107,94,78,0.52)" }}>
         <span>Source {label}</span>
         <span style={{ color: "rgba(212,139,0,0.7)" }}>{source}</span>
       </div>

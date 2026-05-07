@@ -71,7 +71,7 @@ function ProductCard({ product, onAdd, disabled }: { product: Product; onAdd: ()
       />
       <div style={{ padding: "10px 12px", textAlign: "left", flex: 1 }}>
         <div style={{
-          fontSize: 13, fontWeight: 600, color: "#e8e0c8",
+          fontSize: 13, fontWeight: 600, color: "#1A1A1B",
           lineHeight: 1.3, marginBottom: 4,
           overflow: "hidden", textOverflow: "ellipsis",
           display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const,
@@ -82,7 +82,7 @@ function ProductCard({ product, onAdd, disabled }: { product: Product; onAdd: ()
           </span>
           <span style={{
             fontSize: 11, fontWeight: 500,
-            color: isLow ? "#f59e0b" : "rgba(232,224,200,0.35)",
+            color: isLow ? "#f59e0b" : "rgba(26,26,27,0.35)",
           }}>
             {isOut ? "Out" : `${product.stock} left`}
           </span>
@@ -135,7 +135,7 @@ function ProcessingOverlay() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
         style={{
-          fontSize: 24, fontWeight: 700, color: "#e8e0c8",
+          fontSize: 24, fontWeight: 700, color: "#1A1A1B",
           fontFamily: "'Playfair Display', serif", margin: 0,
         }}
       >Processing Payment</motion.h2>
@@ -143,7 +143,7 @@ function ProcessingOverlay() {
         initial={{ opacity: 0 }}
         animate={{ opacity: [0.3, 0.7, 0.3] }}
         transition={{ repeat: Infinity, duration: 2 }}
-        style={{ fontSize: 14, color: "rgba(232,224,200,0.5)" }}
+        style={{ fontSize: 14, color: "rgba(26,26,27,0.48)" }}
       >Verifying with payment provider...</motion.div>
     </motion.div>
   );
@@ -192,7 +192,7 @@ function SuccessOverlay({ order, reward, onDismiss }: {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
         style={{
-          fontSize: 28, fontWeight: 700, color: "#e8e0c8",
+          fontSize: 28, fontWeight: 700, color: "#1A1A1B",
           fontFamily: "'Playfair Display', serif", margin: 0,
         }}
       >Payment Confirmed</motion.h2>
@@ -200,7 +200,7 @@ function SuccessOverlay({ order, reward, onDismiss }: {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        style={{ fontSize: 15, color: "rgba(232,224,200,0.5)" }}
+        style={{ fontSize: 15, color: "rgba(26,26,27,0.48)" }}
       >{order.id} — ${order.total.toFixed(2)}</motion.div>
 
       <AnimatePresence>
@@ -228,7 +228,7 @@ function SuccessOverlay({ order, reward, onDismiss }: {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7 }}
-        style={{ fontSize: 12, color: "rgba(232,224,200,0.25)", marginTop: 8 }}
+        style={{ fontSize: 12, color: "rgba(26,26,27,0.25)", marginTop: 8 }}
       >Tap anywhere to continue</motion.div>
     </motion.div>
   );
@@ -270,7 +270,7 @@ function FailedOverlay({ error, onRetry, onDismiss }: {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
         style={{
-          fontSize: 24, fontWeight: 700, color: "#e8e0c8",
+          fontSize: 24, fontWeight: 700, color: "#1A1A1B",
           fontFamily: "'Playfair Display', serif", margin: 0,
         }}
       >Payment Failed</motion.h2>
@@ -298,7 +298,7 @@ function FailedOverlay({ error, onRetry, onDismiss }: {
             padding: "14px 28px", borderRadius: 14,
             background: "rgba(26,26,27,0.08)",
             border: "1px solid rgba(255,255,255,0.1)",
-            color: "rgba(232,224,200,0.6)", fontSize: 15, fontWeight: 600,
+            color: "rgba(26,26,27,0.58)", fontSize: 15, fontWeight: 600,
             cursor: "pointer",
           }}
         >Dismiss</motion.button>
@@ -408,12 +408,12 @@ export default function PosMode() {
   return (
     <BackgroundLayer image={getBackground("pos")} style={{
       height: "100dvh", display: "flex", flexDirection: "column",
-      color: "#e8e0c8", overflow: "hidden",
+      color: "#1A1A1B", overflow: "hidden",
     }}>
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "12px 20px", borderBottom: "1px solid rgba(26,26,27,0.08)",
-        background: "rgba(10,8,6,0.8)", backdropFilter: "blur(8px)",
+        background: "rgba(245,242,237,0.8)", backdropFilter: "blur(8px)",
         flexShrink: 0,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -425,13 +425,13 @@ export default function PosMode() {
               width: 44, height: 44, borderRadius: 12,
               background: "rgba(26,26,27,0.06)",
               border: "1px solid rgba(26,26,27,0.10)",
-              color: "rgba(232,224,200,0.5)", cursor: "pointer",
+              color: "rgba(26,26,27,0.48)", cursor: "pointer",
             }}
           ><ArrowLeft size={20} /></motion.button>
           <div>
             <span style={{ fontSize: 18, fontWeight: 700, color: "#D48B00" }}>POS</span>
             {pos.currentUser && (
-              <span style={{ fontSize: 12, color: "rgba(232,224,200,0.4)", marginLeft: 10 }}>
+              <span style={{ fontSize: 12, color: "rgba(26,26,27,0.40)", marginLeft: 10 }}>
                 · {pos.currentUser.name} ({pos.currentUser.role})
               </span>
             )}
@@ -439,7 +439,7 @@ export default function PosMode() {
         </div>
         <div style={{
           display: "flex", alignItems: "center", gap: 8,
-          fontSize: 13, color: "rgba(232,224,200,0.4)",
+          fontSize: 13, color: "rgba(26,26,27,0.40)",
         }}>
           <ShoppingCart size={16} />
           <span>{cartCount} item{cartCount !== 1 ? "s" : ""}</span>
@@ -462,7 +462,7 @@ export default function PosMode() {
             {pos.orders.length === 0 ? (
               <div style={{
                 padding: 20, textAlign: "center",
-                fontSize: 13, color: "rgba(232,224,200,0.2)",
+                fontSize: 13, color: "rgba(26,26,27,0.20)",
               }}>No orders yet</div>
             ) : (
               pos.orders.map(order => {
@@ -481,11 +481,11 @@ export default function PosMode() {
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
                       <span style={{ fontSize: 12, fontWeight: 600, color: statusColor }}>{order.id}</span>
-                      <span style={{ fontSize: 12, color: "rgba(232,224,200,0.4)" }}>${order.total.toFixed(2)}</span>
+                      <span style={{ fontSize: 12, color: "rgba(26,26,27,0.40)" }}>${order.total.toFixed(2)}</span>
                     </div>
                     <div style={{
                       display: "flex", justifyContent: "space-between", alignItems: "center",
-                      fontSize: 11, color: "rgba(232,224,200,0.3)",
+                      fontSize: 11, color: "rgba(26,26,27,0.30)",
                     }}>
                       <span>
                         {order.items.length} item{order.items.length !== 1 ? "s" : ""}
@@ -568,7 +568,7 @@ export default function PosMode() {
                   background: activeCategory === cat.id
                     ? "linear-gradient(135deg, #D48B00, #a98828)"
                     : "rgba(26,26,27,0.06)",
-                  color: activeCategory === cat.id ? "#F5F2ED" : "rgba(232,224,200,0.5)",
+                  color: activeCategory === cat.id ? "#F5F2ED" : "rgba(26,26,27,0.48)",
                   border: `1px solid ${activeCategory === cat.id ? "#D48B00" : "rgba(26,26,27,0.08)"}`,
                   cursor: "pointer", whiteSpace: "nowrap",
                   minHeight: 44,
@@ -615,7 +615,7 @@ export default function PosMode() {
                   animate={{ opacity: 1 }}
                   style={{
                     padding: 24, textAlign: "center",
-                    fontSize: 13, color: "rgba(232,224,200,0.2)",
+                    fontSize: 13, color: "rgba(26,26,27,0.20)",
                   }}
                 >Tap a product to start an order</motion.div>
               ) : (
@@ -638,10 +638,10 @@ export default function PosMode() {
                   >
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{
-                        fontSize: 13, fontWeight: 600, color: "#e8e0c8",
+                        fontSize: 13, fontWeight: 600, color: "#1A1A1B",
                         overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                       }}>{item.product.name}</div>
-                      <div style={{ fontSize: 12, color: "rgba(232,224,200,0.4)" }}>
+                      <div style={{ fontSize: 12, color: "rgba(26,26,27,0.40)" }}>
                         ${item.product.price} each
                       </div>
                     </div>
@@ -653,7 +653,7 @@ export default function PosMode() {
                           width: 36, height: 36, borderRadius: 10,
                           background: "rgba(26,26,27,0.06)",
                           border: "1px solid rgba(26,26,27,0.10)",
-                          color: "#e8e0c8", cursor: "pointer",
+                          color: "#1A1A1B", cursor: "pointer",
                           display: "flex", alignItems: "center", justifyContent: "center",
                         }}
                       ><Minus size={14} /></motion.button>
@@ -668,14 +668,14 @@ export default function PosMode() {
                           width: 36, height: 36, borderRadius: 10,
                           background: "rgba(26,26,27,0.06)",
                           border: "1px solid rgba(26,26,27,0.10)",
-                          color: "#e8e0c8", cursor: "pointer",
+                          color: "#1A1A1B", cursor: "pointer",
                           display: "flex", alignItems: "center", justifyContent: "center",
                         }}
                       ><Plus size={14} /></motion.button>
                     </div>
                     <div style={{
                       minWidth: 56, textAlign: "right",
-                      fontSize: 14, fontWeight: 700, color: "#e8e0c8",
+                      fontSize: 14, fontWeight: 700, color: "#1A1A1B",
                     }}>${(item.product.price * item.quantity).toFixed(2)}</div>
                     <motion.button
                       whileTap={{ scale: 0.85 }}
@@ -723,7 +723,7 @@ export default function PosMode() {
           }}>
             <div style={{
               display: "flex", justifyContent: "space-between",
-              marginBottom: 4, fontSize: 13, color: "rgba(232,224,200,0.4)",
+              marginBottom: 4, fontSize: 13, color: "rgba(26,26,27,0.40)",
             }}>
               <span>Subtotal</span>
               <span>${cartTotal.toFixed(2)}</span>
@@ -748,7 +748,7 @@ export default function PosMode() {
             )}
             <div style={{
               display: "flex", justifyContent: "space-between",
-              marginBottom: 16, fontSize: 20, fontWeight: 700, color: "#e8e0c8",
+              marginBottom: 16, fontSize: 20, fontWeight: 700, color: "#1A1A1B",
             }}>
               <span>Total</span>
               <span>${rewardEligible ? (cartTotal * 0.9).toFixed(2) : cartTotal.toFixed(2)}</span>
@@ -763,7 +763,7 @@ export default function PosMode() {
                   flex: 1, minHeight: 56, borderRadius: 14,
                   background: "rgba(26,26,27,0.06)",
                   border: "1px solid rgba(26,26,27,0.10)",
-                  color: (pos.cart.length === 0 || isLocked) ? "rgba(232,224,200,0.2)" : "rgba(232,224,200,0.5)",
+                  color: (pos.cart.length === 0 || isLocked) ? "rgba(26,26,27,0.20)" : "rgba(26,26,27,0.48)",
                   fontSize: 14, fontWeight: 600,
                   cursor: (pos.cart.length === 0 || isLocked) ? "not-allowed" : "pointer",
                 }}

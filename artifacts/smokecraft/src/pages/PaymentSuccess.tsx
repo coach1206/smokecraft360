@@ -52,7 +52,7 @@ export default function PaymentSuccess() {
         <motion.div
           className="relative w-28 h-28 rounded-full flex items-center justify-center"
           style={{
-            background: "linear-gradient(135deg, rgba(212,139,0,0.15), rgba(180,130,30,0.08))",
+            background: "linear-gradient(135deg, rgba(212,139,0,0.15), rgba(212,139,0,0.08))",
             border:     "1px solid rgba(212,139,0,0.45)",
             boxShadow:  "0 0 50px rgba(212,139,0,0.22), 0 0 100px rgba(212,139,0,0.06) inset",
           }}
@@ -86,20 +86,20 @@ export default function PaymentSuccess() {
           Welcome to<br />{BRAND.name}
         </h1>
 
-        <p className="text-base mb-2" style={{ color: "rgba(180,155,100,0.7)" }}>
+        <p className="text-base mb-2" style={{ color: "rgba(107,94,78,0.68)" }}>
           Your experience is being prepared.
         </p>
-        <p className="text-sm mb-8" style={{ color: "rgba(180,155,100,0.45)" }}>
+        <p className="text-sm mb-8" style={{ color: "rgba(107,94,78,0.45)" }}>
           A staff member will have everything ready for you shortly.
         </p>
 
         {/* Reference */}
         {shortRef && (
           <div className="flex items-center justify-center gap-2 mb-8">
-            <Clock size={11} style={{ color: "rgba(180,155,100,0.35)" }} />
+            <Clock size={11} style={{ color: "rgba(107,94,78,0.35)" }} />
             <span
               className="text-[9px] uppercase tracking-[0.22em]"
-              style={{ color: "rgba(180,155,100,0.4)" }}
+              style={{ color: "rgba(107,94,78,0.40)" }}
             >
               Payment ref: {shortRef}
             </span>
@@ -120,7 +120,7 @@ export default function PaymentSuccess() {
           className="inline-flex items-center gap-2 px-8 py-3 rounded-full text-xs uppercase tracking-[0.25em]"
           style={{
             background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
-            color:      "hsl(22 18% 6%)",
+            color:      "#F5F2ED",
             boxShadow:  "0 4px 24px rgba(212,139,0,0.28)",
           }}
           whileHover={{ scale: 1.03, boxShadow: "0 6px 32px rgba(212,139,0,0.4)" }}
@@ -133,7 +133,7 @@ export default function PaymentSuccess() {
       {/* Footer */}
       <motion.p
         className="absolute bottom-6 text-[8px] uppercase tracking-[0.22em]"
-        style={{ color: "rgba(180,155,100,0.2)" }}
+        style={{ color: "rgba(107,94,78,0.20)" }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}

@@ -49,7 +49,7 @@ export function FlowProgressBar({ steps, currentStep }: FlowProgressBarProps) {
               <div
                 style={{
                   fontSize: 10,
-                  color: isActive ? "#D48B00" : isComplete ? "rgba(232,224,200,0.7)" : "rgba(232,224,200,0.35)",
+                  color: isActive ? "#D48B00" : isComplete ? "rgba(26,26,27,0.68)" : "rgba(26,26,27,0.35)",
                   fontWeight: isActive ? 600 : 400,
                   whiteSpace: "nowrap",
                   letterSpacing: "0.03em",

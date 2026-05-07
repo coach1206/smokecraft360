@@ -247,7 +247,7 @@ export function PresentationOverlay() {
                       onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(26,26,27,0.06)")}
                       title="Exit Presentation"
                     >
-                      <X size={12} style={{ color: "rgba(180,155,100,0.55)" }} />
+                      <X size={12} style={{ color: "rgba(107,94,78,0.52)" }} />
                     </button>
                   </div>
 
@@ -269,7 +269,7 @@ export function PresentationOverlay() {
                     >
                       {step.title}
                     </h3>
-                    <p className="text-xs leading-relaxed" style={{ color: "rgba(180,155,100,0.62)" }}>
+                    <p className="text-xs leading-relaxed" style={{ color: "rgba(107,94,78,0.62)" }}>
                       {step.subtitle}
                     </p>
                   </div>
@@ -297,7 +297,7 @@ export function PresentationOverlay() {
                         />
                       ))}
                     </div>
-                    <span className="text-[9px] tabular-nums" style={{ color: "rgba(180,155,100,0.35)" }}>
+                    <span className="text-[9px] tabular-nums" style={{ color: "rgba(107,94,78,0.35)" }}>
                       {currentStep + 1} / {totalSteps}
                     </span>
                   </div>
@@ -314,12 +314,12 @@ export function PresentationOverlay() {
                       style={isFirst ? {
                         background: "rgba(26,26,27,0.04)",
                         border:     "1px solid rgba(26,26,27,0.07)",
-                        color:      "rgba(180,155,100,0.2)",
+                        color:      "rgba(107,94,78,0.20)",
                         cursor:     "not-allowed",
                       } : {
                         background: "rgba(26,26,27,0.06)",
                         border:     "1px solid rgba(26,26,27,0.10)",
-                        color:      "rgba(180,155,100,0.5)",
+                        color:      "rgba(107,94,78,0.50)",
                       }}
                       whileHover={!isFirst ? { borderColor: "rgba(212,139,0,0.25)", color: "rgba(212,139,0,0.65)" } : {}}
                       whileTap={!isFirst ? { scale: 0.96 } : {}}
@@ -338,7 +338,7 @@ export function PresentationOverlay() {
                       } : {
                         background: "rgba(26,26,27,0.05)",
                         border:     "1px solid rgba(26,26,27,0.09)",
-                        color:      "rgba(180,155,100,0.35)",
+                        color:      "rgba(107,94,78,0.35)",
                       }}
                       whileHover={{ borderColor: "rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.65)" }}
                       whileTap={{ scale: 0.95 }}
@@ -353,10 +353,10 @@ export function PresentationOverlay() {
                       className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[10px] uppercase tracking-[0.15em] relative overflow-hidden"
                       style={{
                         background: isLast
-                          ? "linear-gradient(135deg, rgba(212,139,0,0.25), rgba(180,130,30,0.18))"
+                          ? "linear-gradient(135deg, rgba(212,139,0,0.25), rgba(212,139,0,0.18))"
                           : "linear-gradient(135deg, hsl(43 75% 40%), hsl(45 85% 50%))",
                         border: isLast ? "1px solid rgba(212,139,0,0.4)" : "none",
-                        color: isLast ? "rgba(212,139,0,0.9)" : "hsl(22 18% 6%)",
+                        color: isLast ? "rgba(212,139,0,0.9)" : "#F5F2ED",
                       }}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.97 }}
@@ -373,9 +373,9 @@ export function PresentationOverlay() {
                     <button
                       onClick={exit}
                       className="text-[9px] uppercase tracking-[0.2em] transition-colors duration-200"
-                      style={{ color: "rgba(180,155,100,0.3)" }}
+                      style={{ color: "rgba(107,94,78,0.30)" }}
                       onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,139,0,0.55)")}
-                      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(180,155,100,0.3)")}
+                      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(107,94,78,0.30)")}
                     >
                       Exit Presentation
                     </button>

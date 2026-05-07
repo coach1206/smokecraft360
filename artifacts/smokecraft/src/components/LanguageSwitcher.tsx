@@ -30,7 +30,7 @@ export function LanguageSwitcher({ variant = "compact", className = "" }: Props)
     <label
       data-testid="language-switcher"
       aria-label={t("language.label", "Language")}
-      className={`inline-flex items-center gap-2 rounded-md border border-white/15 bg-black/40 px-2 py-1 text-xs text-white/80 hover:bg-black/55 ${className}`}
+      className={`inline-flex items-center gap-2 rounded-md border border-white/15 bg-black/40 px-2 py-1 text-xs text-[#1A1A1B]/80 hover:bg-black/55 ${className}`}
     >
       <Globe size={14} aria-hidden />
       <select
@@ -39,7 +39,7 @@ export function LanguageSwitcher({ variant = "compact", className = "" }: Props)
         className="appearance-none bg-transparent pr-1 text-xs uppercase tracking-wider focus:outline-none"
       >
         {SUPPORTED_LANGUAGES.map((lang) => (
-          <option key={lang.code} value={lang.code} className="bg-black text-white">
+          <option key={lang.code} value={lang.code} className="bg-black text-[#1A1A1B]">
             {variant === "full" ? `${lang.flag}  ${lang.label}` : lang.code.toUpperCase()}
           </option>
         ))}

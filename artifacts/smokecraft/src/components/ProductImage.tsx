@@ -77,7 +77,7 @@ export function ProductImage({ url, alt, category, height = 220, className = "",
       ) : showFallback ? (
         /* Real product photo fallback — object-contain so the transparent PNG stays clean */
         <div className="absolute inset-0 flex items-center justify-center"
-          style={{ background: "linear-gradient(160deg, rgba(20,12,4,0.6) 0%, rgba(10,6,2,0.8) 100%)" }}>
+          style={{ background: "linear-gradient(160deg, rgba(20,12,4,0.6) 0%, rgba(245,242,237,0.8) 100%)" }}>
           <img
             src={fallbackSrc!}
             alt={alt}
@@ -99,7 +99,7 @@ export function ProductImage({ url, alt, category, height = 220, className = "",
           height: "55%",
           background: lightCard
             ? "linear-gradient(to bottom, transparent 0%, rgba(240,228,210,0.9) 100%)"
-            : "linear-gradient(to bottom, transparent 0%, rgba(10,6,2,0.92) 100%)",
+            : "linear-gradient(to bottom, transparent 0%, rgba(245,242,237,0.92) 100%)",
         }}
       />
     </div>

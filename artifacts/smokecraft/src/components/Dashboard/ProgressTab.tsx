@@ -27,7 +27,7 @@ import { LEVEL_TIERS, levelProgress, nextTier } from "@/lib/levels";
 
 const GOLD     = "rgba(212,139,0,1)";
 const GOLD_DIM = "rgba(212,139,0,0.55)";
-const MUTED    = "rgba(180,155,100,0.4)";
+const MUTED    = "rgba(107,94,78,0.40)";
 
 // ── Achievement definitions ────────────────────────────────────────────────────
 
@@ -185,7 +185,7 @@ function BadgeCard({ badge, unlocked }: { badge: Achievement; unlocked: boolean 
         style={{
           background: unlocked ? "rgba(212,139,0,0.12)" : "rgba(26,26,27,0.06)",
           border:     unlocked ? "1px solid rgba(212,139,0,0.3)"  : "1px solid rgba(26,26,27,0.10)",
-          color:      unlocked ? GOLD_DIM : "rgba(180,155,100,0.25)",
+          color:      unlocked ? GOLD_DIM : "rgba(107,94,78,0.25)",
         }}>
         {unlocked ? badge.icon : <Lock size={12} />}
       </div>
@@ -193,7 +193,7 @@ function BadgeCard({ badge, unlocked }: { badge: Achievement; unlocked: boolean 
         <p className="text-xs font-serif leading-tight" style={{ color: unlocked ? "rgba(220,200,165,0.9)" : MUTED }}>
           {badge.label}
         </p>
-        <p className="text-[7px] mt-0.5 leading-snug truncate" style={{ color: "rgba(180,155,100,0.35)" }}>
+        <p className="text-[7px] mt-0.5 leading-snug truncate" style={{ color: "rgba(107,94,78,0.35)" }}>
           {badge.desc}
         </p>
       </div>
@@ -227,7 +227,7 @@ function XpBar({ current, next, pct }: { current: number; next: number | null; p
         />
       </div>
       <div className="flex justify-between">
-        <span className="text-[7px] uppercase tracking-widest" style={{ color: "rgba(180,155,100,0.3)" }}>
+        <span className="text-[7px] uppercase tracking-widest" style={{ color: "rgba(107,94,78,0.30)" }}>
           Progress
         </span>
         <span className="text-[7px] tabular-nums" style={{ color: MUTED }}>{pct}%</span>
@@ -297,7 +297,7 @@ function RewardCard({
 
       <div className="flex flex-col items-end gap-2 flex-shrink-0">
         <div className="text-right">
-          <p className="font-serif text-base" style={{ color: canAfford ? GOLD_DIM : "rgba(180,155,100,0.35)", fontWeight: 300 }}>
+          <p className="font-serif text-base" style={{ color: canAfford ? GOLD_DIM : "rgba(107,94,78,0.35)", fontWeight: 300 }}>
             {reward.pointsCost}
           </p>
           <p className="text-[7px] uppercase tracking-wider" style={{ color: MUTED }}>pts</p>
@@ -394,7 +394,7 @@ export function ProgressTab() {
   if (!data) {
     return (
       <div className="py-16 text-center">
-        <Award size={28} className="mx-auto mb-3" style={{ color: "rgba(180,155,100,0.2)" }} />
+        <Award size={28} className="mx-auto mb-3" style={{ color: "rgba(107,94,78,0.20)" }} />
         <p className="text-xs" style={{ color: MUTED }}>Could not load progression data</p>
       </div>
     );
@@ -500,7 +500,7 @@ export function ProgressTab() {
                   transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
                   style={{ background: "linear-gradient(90deg, rgba(160,110,10,0.8), rgba(212,139,0,0.9))" }} />
               </div>
-              <p className="text-[7px]" style={{ color: "rgba(180,155,100,0.3)" }}>
+              <p className="text-[7px]" style={{ color: "rgba(107,94,78,0.30)" }}>
                 {ptsToNext} more pts to unlock this reward
               </p>
             </div>
@@ -556,7 +556,7 @@ export function ProgressTab() {
         <XpBar current={data.xp} next={next?.minXp ?? null} pct={pct} />
 
         {next && (
-          <p className="text-[8px] mt-3" style={{ color: "rgba(180,155,100,0.35)" }}>
+          <p className="text-[8px] mt-3" style={{ color: "rgba(107,94,78,0.35)" }}>
             Next: <span style={{ color: MUTED }}>{next.title}</span> · Needs {next.minOrders} orders + {next.minXp} XP
           </p>
         )}
@@ -586,7 +586,7 @@ export function ProgressTab() {
       {loyalty && available.length === 0 && (
         <div className="rounded-xl p-6 text-center"
           style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.08)" }}>
-          <Gift size={24} className="mx-auto mb-2" style={{ color: "rgba(180,155,100,0.2)" }} />
+          <Gift size={24} className="mx-auto mb-2" style={{ color: "rgba(107,94,78,0.20)" }} />
           <p className="text-xs" style={{ color: MUTED }}>No rewards available yet — keep earning points</p>
         </div>
       )}
@@ -631,7 +631,7 @@ export function ProgressTab() {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <StatCard label="Verified Orders"    value={data.totalVerifiedOrders} icon={<Trophy size={13} />}          color="rgba(212,139,0,0.85)" />
           <StatCard label="Cigars Smoked"      value={data.totalCigarsSmoked}   icon={<Cigarette size={13} />}       color="rgba(200,165,80,0.8)"  />
-          <StatCard label="Drinks Tried"       value={data.totalDrinksTried}    icon={<GlassWater size={13} />}      color="rgba(180,155,100,0.8)" />
+          <StatCard label="Drinks Tried"       value={data.totalDrinksTried}    icon={<GlassWater size={13} />}      color="rgba(107,94,78,0.78)" />
           <StatCard label="Food Orders"        value={data.totalFoodOrders}     icon={<UtensilsCrossed size={13} />} color="rgba(160,140,110,0.7)" />
           <StatCard label="Blends Created"     value={data.blendsCreated}       icon={<Palette size={13} />}         color="rgba(212,139,0,0.7)"  />
           <StatCard label="Unique Products"    value={data.uniqueProductsTried} icon={<Star size={13} />}            color="rgba(200,165,80,0.75)" />
@@ -643,7 +643,7 @@ export function ProgressTab() {
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <div>
             <p className="text-[8px] uppercase tracking-[0.22em]" style={{ color: MUTED }}>Achievements</p>
-            <p className="text-[7px] mt-0.5" style={{ color: "rgba(180,155,100,0.3)" }}>
+            <p className="text-[7px] mt-0.5" style={{ color: "rgba(107,94,78,0.30)" }}>
               {earnedCount} / {ACHIEVEMENTS.length} unlocked
             </p>
           </div>
@@ -718,16 +718,16 @@ export function ProgressTab() {
             { label: "Welcome (first order)", xp: "—",      pts: "+50 pts" },
           ].map(({ label, xp, pts }) => (
             <div key={label} className="flex items-center justify-between gap-2">
-              <span className="text-[9px]" style={{ color: "rgba(180,155,100,0.55)" }}>{label}</span>
+              <span className="text-[9px]" style={{ color: "rgba(107,94,78,0.52)" }}>{label}</span>
               <div className="flex items-center gap-2 flex-shrink-0">
                 <span className="text-[8px] font-medium" style={{ color: GOLD_DIM }}>{xp}</span>
-                <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.4)" }}>·</span>
-                <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.7)" }}>{pts}</span>
+                <span className="text-[8px]" style={{ color: "rgba(107,94,78,0.40)" }}>·</span>
+                <span className="text-[8px]" style={{ color: "rgba(107,94,78,0.68)" }}>{pts}</span>
               </div>
             </div>
           ))}
         </div>
-        <p className="text-[7px] mt-4 pt-3" style={{ color: "rgba(180,155,100,0.28)", borderTop: "1px solid rgba(26,26,27,0.07)" }}>
+        <p className="text-[7px] mt-4 pt-3" style={{ color: "rgba(107,94,78,0.28)", borderTop: "1px solid rgba(26,26,27,0.07)" }}>
           XP and points are only awarded on staff-verified orders. Unverified orders do not count.
         </p>
       </div>

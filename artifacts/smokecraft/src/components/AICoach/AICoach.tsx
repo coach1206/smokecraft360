@@ -341,7 +341,7 @@ export default function AICoach({
                   background:   `${accentColor}0d`,
                   cursor:       "pointer",
                   textAlign:    "left",
-                  color:        "#E8E0C8",
+                  color:        "#1A1A1B",
                   transition:   "background 0.15s",
                 }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = `${accentColor}20`; }}
@@ -356,7 +356,7 @@ export default function AICoach({
                 }}>
                   {opt.label}
                 </span>
-                <span style={{ fontSize: 11, color: "rgba(232,224,200,0.72)" }}>
+                <span style={{ fontSize: 11, color: "rgba(26,26,27,0.72)" }}>
                   {opt.desc}
                 </span>
               </button>
@@ -370,7 +370,7 @@ export default function AICoach({
                 fontSize:      9,
                 letterSpacing: "0.2em",
                 textTransform: "uppercase",
-                color:         "rgba(232,224,200,0.3)",
+                color:         "rgba(26,26,27,0.30)",
                 background:    "transparent",
                 border:        "none",
                 cursor:        "pointer",
@@ -394,7 +394,7 @@ export default function AICoach({
               display:              "flex",
               alignItems:           "flex-start",
               gap:                  10,
-              background:           "rgba(10,8,6,0.84)",
+              background:           "rgba(245,242,237,0.84)",
               border:               `1px solid ${accentColor}26`,
               borderRadius:         14,
               padding:              "11px 12px",
@@ -426,7 +426,7 @@ export default function AICoach({
               margin:     0,
               fontSize:   12,
               lineHeight: 1.48,
-              color:      "rgba(232,224,200,0.92)",
+              color:      "rgba(26,26,27,0.92)",
               fontFamily: "var(--app-font-serif, Georgia, serif)",
               minWidth:   0,
             }}>
@@ -444,7 +444,7 @@ export default function AICoach({
                 background: "transparent",
                 border:     "none",
                 cursor:     "pointer",
-                color:      muted ? "rgba(232,224,200,0.28)" : `${accentColor}bb`,
+                color:      muted ? "rgba(26,26,27,0.28)" : `${accentColor}bb`,
                 padding:    "2px 0 2px 4px",
                 lineHeight: 1,
               }}

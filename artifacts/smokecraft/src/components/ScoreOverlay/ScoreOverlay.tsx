@@ -78,7 +78,7 @@ export default function ScoreOverlay({ score, feedback, rankMessage, accentColor
             >
               {score.toFixed(1)}
             </motion.div>
-            <div style={{ fontSize: 9, color: "rgba(232,224,200,0.45)", letterSpacing: "0.22em", textTransform: "uppercase", marginTop: 2 }}>/ 5.0</div>
+            <div style={{ fontSize: 9, color: "rgba(26,26,27,0.44)", letterSpacing: "0.22em", textTransform: "uppercase", marginTop: 2 }}>/ 5.0</div>
           </div>
         </div>
 
@@ -89,7 +89,7 @@ export default function ScoreOverlay({ score, feedback, rankMessage, accentColor
           transition={{ delay: 0.65, duration: 0.4 }}
           style={{
             fontFamily: "var(--app-font-serif, Georgia, serif)",
-            fontSize: 18, fontWeight: 600, color: "#fff",
+            fontSize: 18, fontWeight: 600, color: "#1A1A1B",
             margin: "0 0 12px", lineHeight: 1.3,
           }}
         >

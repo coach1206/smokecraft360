@@ -145,10 +145,10 @@ export default function InactivityGuard() {
               <AlertTriangle size={32} color="#ef4444" />
             </div>
 
-            <div style={{ fontSize: 20, fontWeight: 700, color: "#e8e0c8", marginBottom: 8 }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1A1A1B", marginBottom: 8 }}>
               Session Timeout
             </div>
-            <div style={{ fontSize: 13, color: "rgba(232,224,200,0.5)", marginBottom: 20 }}>
+            <div style={{ fontSize: 13, color: "rgba(26,26,27,0.48)", marginBottom: 20 }}>
               Session inactive. Restarting automatically in:
             </div>
 

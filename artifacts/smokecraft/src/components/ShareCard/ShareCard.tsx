@@ -51,7 +51,7 @@ function ScoreBadge({ score, accent, accentSoft }: { score: number; accent: stri
             fontSize: 18, fontWeight: 800, color: accent,
             fontFamily: "Georgia, serif", lineHeight: 1,
           }}>{out5}</span>
-          <span style={{ fontSize: 9, color: "rgba(232,224,200,0.5)", letterSpacing: "0.15em" }}>/ 5</span>
+          <span style={{ fontSize: 9, color: "rgba(26,26,27,0.48)", letterSpacing: "0.15em" }}>/ 5</span>
         </div>
       </div>
       <span style={{
@@ -125,10 +125,10 @@ function ShareCardVisual({
         <p style={{
           margin: "0 0 4px", fontSize: 9,
           letterSpacing: "0.3em", textTransform: "uppercase",
-          color: "rgba(232,224,200,0.45)", fontFamily: "system-ui, sans-serif",
+          color: "rgba(26,26,27,0.44)", fontFamily: "system-ui, sans-serif",
         }}>Top Pick</p>
         <h2 style={{
-          margin: 0, fontSize: 22, fontWeight: 600, color: "#fff",
+          margin: 0, fontSize: 22, fontWeight: 600, color: "#1A1A1B",
           lineHeight: 1.2,
         }}>{recommendationName}</h2>
       </div>
@@ -141,7 +141,7 @@ function ShareCardVisual({
             borderRadius: 999,
             background: `${accent}18`,
             border: `1px solid ${accent}35`,
-            color: "rgba(232,224,200,0.75)",
+            color: "rgba(26,26,27,0.72)",
             fontSize: 11, fontWeight: 500,
             fontFamily: "system-ui, sans-serif",
             letterSpacing: "0.05em",
@@ -166,7 +166,7 @@ function ShareCardVisual({
         paddingTop: 14, marginTop: 4,
       }}>
         <span style={{
-          fontSize: 10, color: "rgba(232,224,200,0.35)",
+          fontSize: 10, color: "rgba(26,26,27,0.35)",
           fontFamily: "system-ui, sans-serif",
           letterSpacing: "0.12em",
         }}>smokecraft.app</span>
@@ -295,7 +295,7 @@ export default function ShareCard(props: ShareCardProps) {
                 letterSpacing: "0.38em", textTransform: "uppercase",
                 color: accent, fontWeight: 700,
               }}>Share Your Build</p>
-              <p style={{ margin: 0, fontSize: 12, color: "rgba(232,224,200,0.45)" }}>
+              <p style={{ margin: 0, fontSize: 12, color: "rgba(26,26,27,0.44)" }}>
                 Export your craft result as an image
               </p>
             </div>
@@ -303,9 +303,9 @@ export default function ShareCard(props: ShareCardProps) {
               type="button"
               onClick={onClose}
               style={{
-                background: "rgba(232,224,200,0.08)", border: "none",
+                background: "rgba(26,26,27,0.08)", border: "none",
                 width: 32, height: 32, borderRadius: 999,
-                color: "rgba(232,224,200,0.55)", cursor: "pointer",
+                color: "rgba(26,26,27,0.52)", cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}
             >

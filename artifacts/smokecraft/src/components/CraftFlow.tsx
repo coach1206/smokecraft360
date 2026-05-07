@@ -586,7 +586,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
       : "Curated for your selections.");
 
   return (
-    <div data-testid={`${config.testIdPrefix}-page`} style={{ position: "relative", minHeight: "100dvh", color: "#FFFFFF", overflow: "hidden" }}>
+    <div data-testid={`${config.testIdPrefix}-page`} style={{ position: "relative", minHeight: "100dvh", color: "#1A1A1B", overflow: "hidden" }}>
       {/* Background */}
       <div aria-hidden style={{
         position: "fixed", inset: 0, zIndex: -2,
@@ -611,7 +611,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
           <h1 style={{
             fontFamily: "var(--app-font-serif, Georgia, serif)",
             fontSize: "clamp(28px, 3.2vw, 44px)",
-            margin: 0, fontWeight: 600, color: "#FFFFFF",
+            margin: 0, fontWeight: 600, color: "#1A1A1B",
             letterSpacing: "0.02em",
           }}>{config.title}</h1>
           <p style={{
@@ -642,15 +642,15 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
             display: "inline-flex", alignItems: "center", gap: 20,
             padding: "7px 20px",
             borderRadius: 999,
-            background: `linear-gradient(90deg, ${config.theme.accent}18, rgba(10,8,6,0.55))`,
+            background: `linear-gradient(90deg, ${config.theme.accent}18, rgba(245,242,237,0.55))`,
             border: `1px solid ${config.theme.accent}35`,
             backdropFilter: "blur(8px)",
-            fontSize: 12, color: "rgba(232,224,200,0.85)",
+            fontSize: 12, color: "rgba(26,26,27,0.82)",
             letterSpacing: "0.04em",
           }}>
             <span>🔥 <strong style={{ color: config.theme.accent }}>{intelStrip.trend}</strong></span>
             <span style={{ opacity: 0.35 }}>·</span>
-            <span>🏆 <strong style={{ color: "#fff" }}>{intelStrip.topCreator}</strong></span>
+            <span>🏆 <strong style={{ color: "#1A1A1B" }}>{intelStrip.topCreator}</strong></span>
           </div>
         </div>
       )}
@@ -668,7 +668,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
           <div style={{
             position: "sticky", top: 12,
             padding: "22px 20px",
-            background: "rgba(10,8,6,0.55)",
+            background: "rgba(245,242,237,0.55)",
             border: `1px solid ${config.theme.accent}25`,
             borderRadius: 18,
             backdropFilter: "blur(10px)",
@@ -686,7 +686,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 label === "Style" ? config.language.stepStyleLabel :
                 label === "Profile" ? config.language.stepProfileLabel :
                 label;
-              const accentColor = done ? "#7A9A6A" : active ? config.theme.accent : "rgba(232,224,200,0.35)";
+              const accentColor = done ? "#7A9A6A" : active ? config.theme.accent : "rgba(26,26,27,0.35)";
               return (
                 <div key={label} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
                   <span style={{
@@ -710,8 +710,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
               style={{
                 marginTop: 18, width: "100%",
                 background: "transparent",
-                color: phase === "intro" ? "rgba(232,224,200,0.25)" : "rgba(232,224,200,0.7)",
-                border: `1px solid ${phase === "intro" ? "rgba(232,224,200,0.15)" : "rgba(232,224,200,0.3)"}`,
+                color: phase === "intro" ? "rgba(26,26,27,0.25)" : "rgba(26,26,27,0.68)",
+                border: `1px solid ${phase === "intro" ? "rgba(26,26,27,0.15)" : "rgba(26,26,27,0.30)"}`,
                 padding: "10px 14px", borderRadius: 10,
                 fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase",
                 cursor: phase === "intro" ? "default" : "pointer",
@@ -733,7 +733,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 data-testid={`${config.testIdPrefix}-intro`}
                 style={{
                   padding: "60px 40px",
-                  background: `linear-gradient(155deg, ${config.theme.accent}10, rgba(10,8,6,0.6))`,
+                  background: `linear-gradient(155deg, ${config.theme.accent}10, rgba(245,242,237,0.6))`,
                   border: `1px solid ${config.theme.accent}30`,
                   borderRadius: 22, textAlign: "center",
                   minHeight: 460, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 24,
@@ -742,10 +742,10 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 <h2 style={{
                   fontFamily: "var(--app-font-serif, Georgia, serif)",
                   fontSize: "clamp(28px, 3.6vw, 44px)", fontWeight: 600, margin: 0,
-                  color: "#FFFFFF", maxWidth: 640, lineHeight: 1.2,
+                  color: "#1A1A1B", maxWidth: 640, lineHeight: 1.2,
                 }}>{config.language.introHeadline}</h2>
                 <p style={{
-                  fontSize: 15, color: "rgba(232,224,200,0.7)",
+                  fontSize: 15, color: "rgba(26,26,27,0.68)",
                   maxWidth: 520, lineHeight: 1.6, margin: 0,
                 }}>{config.language.introBody}</p>
                 <motion.button
@@ -847,7 +847,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                         <div style={{ width: 32, height: 2, marginBottom: 14, background: `linear-gradient(90deg, ${config.theme.accent}, transparent)` }} />
                         <h3 style={{
                           fontFamily: "var(--app-font-serif, Georgia, serif)",
-                          fontSize: 22, fontWeight: 600, margin: 0, color: "#FFFFFF",
+                          fontSize: 22, fontWeight: 600, margin: 0, color: "#1A1A1B",
                           textShadow: "0 2px 12px rgba(26,26,27,0.45)",
                         }}>{style.title}</h3>
                         <p style={{
@@ -870,8 +870,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                   letterSpacing: "0.32em", textTransform: "uppercase",
                   color: config.theme.accent, fontWeight: 700,
                 }}>Step 2 — {config.language.profilePrompt}</p>
-                <p style={{ margin: "0 0 22px", fontSize: 13, color: "rgba(232,224,200,0.55)" }}>
-                  Picked <span style={{ color: "#fff", fontWeight: 600 }}>{selectedStyle.title}</span>. Now set the mood.
+                <p style={{ margin: "0 0 22px", fontSize: 13, color: "rgba(26,26,27,0.52)" }}>
+                  Picked <span style={{ color: "#1A1A1B", fontWeight: 600 }}>{selectedStyle.title}</span>. Now set the mood.
                 </p>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
                   {config.moods.map((m, i) => (
@@ -888,9 +888,9 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                       style={{
                         textAlign: "left", padding: "22px 20px", minHeight: 140,
                         borderRadius: 18, cursor: "pointer",
-                        background: `linear-gradient(155deg, ${config.theme.accent}12, rgba(10,8,6,0.7))`,
+                        background: `linear-gradient(155deg, ${config.theme.accent}12, rgba(245,242,237,0.7))`,
                         border: `1px solid ${config.theme.accent}40`,
-                        color: "#fff",
+                        color: "#1A1A1B",
                         display: "flex", flexDirection: "column", justifyContent: "space-between",
                       }}
                     >
@@ -900,7 +900,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                           fontFamily: "var(--app-font-serif, Georgia, serif)",
                           fontSize: 18, fontWeight: 600, margin: "10px 0 6px",
                         }}>{m.title}</h4>
-                        <p style={{ margin: 0, fontSize: 12, color: "rgba(232,224,200,0.65)", lineHeight: 1.5 }}>{m.desc}</p>
+                        <p style={{ margin: 0, fontSize: 12, color: "rgba(26,26,27,0.62)", lineHeight: 1.5 }}>{m.desc}</p>
                       </div>
                     </motion.button>
                   ))}
@@ -942,8 +942,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                   <div style={{
                     padding: 40, borderRadius: 18,
                     border: `1px solid ${config.theme.accent}30`,
-                    background: "rgba(10,8,6,0.6)",
-                    textAlign: "center", color: "rgba(232,224,200,0.7)",
+                    background: "rgba(245,242,237,0.6)",
+                    textAlign: "center", color: "rgba(26,26,27,0.68)",
                   }}>
                     No matching products in stock right now. Try a different style or check back later.
                   </div>
@@ -961,7 +961,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                     <div style={{
                       padding: "22px 22px",
                       borderRadius: 20,
-                      background: `linear-gradient(155deg, ${config.theme.accent}15, rgba(10,8,6,0.75))`,
+                      background: `linear-gradient(155deg, ${config.theme.accent}15, rgba(245,242,237,0.75))`,
                       border: `1px solid ${config.theme.accent}50`,
                       boxShadow: `0 30px 80px ${config.theme.accent}25`,
                       display: "grid",
@@ -985,9 +985,9 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                           }}>{config.language.productLabel}</p>
                           <h3 style={{
                             fontFamily: "var(--app-font-serif, Georgia, serif)",
-                            margin: "0 0 6px", fontSize: 26, fontWeight: 600, color: "#fff",
+                            margin: "0 0 6px", fontSize: 26, fontWeight: 600, color: "#1A1A1B",
                           }}>{featured.name}</h3>
-                          <p style={{ margin: 0, fontSize: 13, color: "rgba(232,224,200,0.65)", lineHeight: 1.5 }}>
+                          <p style={{ margin: 0, fontSize: 13, color: "rgba(26,26,27,0.62)", lineHeight: 1.5 }}>
                             {(featured.flavorNotes ?? []).join(" · ")}
                           </p>
                         </div>
@@ -1069,7 +1069,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                         <div style={{
                           padding: "18px 20px",
                           borderRadius: 18,
-                          background: `linear-gradient(145deg, ${config.theme.accent}14, rgba(10,8,6,0.7))`,
+                          background: `linear-gradient(145deg, ${config.theme.accent}14, rgba(245,242,237,0.7))`,
                           border: `1px solid ${config.theme.accent}40`,
                           boxShadow: `0 20px 60px ${config.theme.accent}18`,
                           display: "flex",
@@ -1086,12 +1086,12 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                               <Sparkles size={11} /> Signature Studio Unlocked
                             </div>
                             <p style={{
-                              margin: 0, fontSize: 13, fontWeight: 600, color: "#fff",
+                              margin: 0, fontSize: 13, fontWeight: 600, color: "#1A1A1B",
                               fontFamily: "var(--app-font-serif, Georgia, serif)",
                             }}>
                               Design Your Signature
                             </p>
-                            <p style={{ margin: "4px 0 0", fontSize: 11, color: "rgba(232,224,200,0.55)", lineHeight: 1.4 }}>
+                            <p style={{ margin: "4px 0 0", fontSize: 11, color: "rgba(26,26,27,0.52)", lineHeight: 1.4 }}>
                               Score {(scoreState.score / 10).toFixed(1)} — you've unlocked the full design studio.
                             </p>
                           </div>
@@ -1131,7 +1131,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
             <div style={{
               position: "sticky", top: 12,
               padding: "22px 20px",
-              background: "rgba(10,8,6,0.65)",
+              background: "rgba(245,242,237,0.65)",
               border: `1px solid ${config.theme.accent}30`,
               borderRadius: 18,
               display: "flex", flexDirection: "column", gap: 18,
@@ -1146,7 +1146,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 }}>Signature Profile</p>
                 <h4 style={{
                   fontFamily: "var(--app-font-serif, Georgia, serif)",
-                  margin: 0, fontSize: 18, fontWeight: 600, color: "#fff",
+                  margin: 0, fontSize: 18, fontWeight: 600, color: "#1A1A1B",
                 }}>{featured.name}</h4>
               </div>
 
@@ -1164,8 +1164,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                     border: "1px solid rgba(26,26,27,0.08)",
                     borderRadius: 10,
                   }}>
-                    <div style={{ fontSize: 8, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(232,224,200,0.4)", marginBottom: 3 }}>{s.label}</div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>{s.value}</div>
+                    <div style={{ fontSize: 8, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(26,26,27,0.40)", marginBottom: 3 }}>{s.label}</div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: "#1A1A1B" }}>{s.value}</div>
                   </div>
                 ))}
               </div>
@@ -1175,7 +1175,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 <div>
                   <div style={{
                     fontSize: 9, letterSpacing: "0.24em", textTransform: "uppercase",
-                    color: "rgba(232,224,200,0.5)", marginBottom: 8, fontWeight: 600,
+                    color: "rgba(26,26,27,0.48)", marginBottom: 8, fontWeight: 600,
                   }}>Tasting Notes</div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                     {tastingNotes.slice(0, 6).map((n) => (
@@ -1183,7 +1183,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                         fontSize: 11, padding: "5px 11px", borderRadius: 999,
                         background: `${config.theme.accent}15`,
                         border: `1px solid ${config.theme.accent}40`,
-                        color: "#fff",
+                        color: "#1A1A1B",
                       }}>{n}</span>
                     ))}
                   </div>
@@ -1203,7 +1203,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 }}>
                   <Sparkles size={11} /> Why It Works
                 </div>
-                <p style={{ fontSize: 12, color: "rgba(232,224,200,0.78)", lineHeight: 1.55, margin: 0 }}>{whyItWorks}</p>
+                <p style={{ fontSize: 12, color: "rgba(26,26,27,0.78)", lineHeight: 1.55, margin: 0 }}>{whyItWorks}</p>
               </div>
               <Leaderboard accentColor={config.theme.accent} />
             </div>
@@ -1281,7 +1281,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
               <div style={{ fontSize: 44, marginBottom: 14 }}>⚗️</div>
               <h2 style={{
                 fontFamily: "var(--app-font-serif, Georgia, serif)",
-                fontSize: 26, color: "#fff", margin: "0 0 10px",
+                fontSize: 26, color: "#1A1A1B", margin: "0 0 10px",
               }}>Resume Your Build?</h2>
               {(() => {
                 const expiresAt = resumeSession.expiresAt
@@ -1290,7 +1290,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 const m = Math.floor(remSecs / 60);
                 const s = remSecs % 60;
                 return (
-                  <p style={{ color: "rgba(232,224,200,0.65)", fontSize: 14, lineHeight: 1.6, margin: "0 0 6px" }}>
+                  <p style={{ color: "rgba(26,26,27,0.62)", fontSize: 14, lineHeight: 1.6, margin: "0 0 6px" }}>
                     You have{" "}
                     <span style={{ color: config.theme.accent, fontWeight: 700 }}>
                       {m}:{String(s).padStart(2, "0")}
@@ -1300,7 +1300,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 );
               })()}
               <p style={{
-                color: "rgba(232,224,200,0.38)", fontSize: 12,
+                color: "rgba(26,26,27,0.38)", fontSize: 12,
                 margin: "0 0 30px", fontStyle: "italic",
               }}>
                 "Let's see if you can finish this."
@@ -1327,8 +1327,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                   onClick={handleStartFresh}
                   style={{
                     background: "transparent",
-                    color: "rgba(232,224,200,0.62)",
-                    border: "1px solid rgba(232,224,200,0.22)",
+                    color: "rgba(26,26,27,0.62)",
+                    border: "1px solid rgba(26,26,27,0.22)",
                     padding: "12px 28px", borderRadius: 999,
                     fontSize: 12, fontWeight: 600,
                     letterSpacing: "0.22em", textTransform: "uppercase",
@@ -1371,10 +1371,10 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
               <div style={{ fontSize: 52, marginBottom: 16 }}>⏰</div>
               <h2 style={{
                 fontFamily: "var(--app-font-serif, Georgia, serif)",
-                fontSize: 30, color: "#fff", margin: "0 0 10px",
+                fontSize: 30, color: "#1A1A1B", margin: "0 0 10px",
               }}>Time's Up</h2>
               <p style={{
-                color: "rgba(232,224,200,0.58)", fontSize: 14, lineHeight: 1.6,
+                color: "rgba(26,26,27,0.58)", fontSize: 14, lineHeight: 1.6,
                 margin: "0 0 32px",
               }}>
                 Your session has expired. See what you crafted — your streak resets on the next build.
@@ -1392,7 +1392,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                 }}
                 style={{
                   background: "linear-gradient(135deg, #EF4444, #B91C1C)",
-                  color: "#fff", border: "none",
+                  color: "#1A1A1B", border: "none",
                   padding: "14px 34px", borderRadius: 999,
                   fontSize: 12, fontWeight: 700,
                   letterSpacing: "0.26em", textTransform: "uppercase",
@@ -1483,7 +1483,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         zIndex: 50,
         display: "flex", alignItems: "center", justifyContent: "center",
         padding: "10px 24px",
-        background: `linear-gradient(90deg, rgba(10,8,6,0.92) 0%, ${config.theme.accent}18 50%, rgba(10,8,6,0.92) 100%)`,
+        background: `linear-gradient(90deg, rgba(245,242,237,0.92) 0%, ${config.theme.accent}18 50%, rgba(245,242,237,0.92) 100%)`,
         borderTop: `1px solid ${config.theme.accent}22`,
         backdropFilter: "blur(8px)",
         pointerEvents: "none",
@@ -1504,7 +1504,7 @@ function SecondaryCard({ label, product, accent, testId }: { label: string; prod
   return (
     <div data-testid={testId} style={{
       padding: "14px 16px",
-      background: "rgba(10,8,6,0.55)",
+      background: "rgba(245,242,237,0.55)",
       border: `1px solid ${accent}25`,
       borderRadius: 14,
       display: "flex", gap: 12, alignItems: "center",
@@ -1521,9 +1521,9 @@ function SecondaryCard({ label, product, accent, testId }: { label: string; prod
           fontSize: 8, letterSpacing: "0.28em", textTransform: "uppercase",
           color: accent, fontWeight: 700, marginBottom: 2,
         }}>{label}</div>
-        <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{product.name}</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "#1A1A1B", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{product.name}</div>
         {product.flavorNotes && product.flavorNotes.length > 0 && (
-          <div style={{ fontSize: 11, color: "rgba(232,224,200,0.55)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <div style={{ fontSize: 11, color: "rgba(26,26,27,0.52)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {product.flavorNotes.slice(0, 2).join(" · ")}
           </div>
         )}

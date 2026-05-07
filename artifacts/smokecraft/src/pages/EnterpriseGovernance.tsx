@@ -306,7 +306,7 @@ export default function EnterpriseGovernance() {
             {t.id === "automation-queue" && health && health.pendingApprovals > 0 && (
               <span style={{
                 fontSize: 9, fontWeight: 700, background: C.amber,
-                color: "#000", borderRadius: 999, padding: "1px 6px", marginLeft: 2,
+                color: "#1A1A1B", borderRadius: 999, padding: "1px 6px", marginLeft: 2,
               }}>{health.pendingApprovals}</span>
             )}
           </button>

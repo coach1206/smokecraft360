@@ -179,9 +179,9 @@ export default function Dashboard() {
             <motion.div className="flex items-center gap-3 mb-1"
               initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
               <a href="/" className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] transition-colors duration-200"
-                style={{ color: "rgba(180,155,100,0.45)" }}
+                style={{ color: "rgba(107,94,78,0.45)" }}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,139,0,0.75)")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(180,155,100,0.45)")}>
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(107,94,78,0.45)")}>
                 <ArrowLeft size={11} />SmokeCraft
               </a>
             </motion.div>
@@ -210,14 +210,14 @@ export default function Dashboard() {
                 <LanguageSwitcher variant="compact" />
                 <motion.button onClick={load}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs uppercase tracking-[0.15em] transition-all"
-                  style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}
+                  style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(107,94,78,0.50)" }}
                   whileHover={{ borderColor: "rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.7)" }}
                   whileTap={{ scale: 0.97 }}>
                   <RefreshCw size={12} />
                 </motion.button>
                 <motion.button onClick={logout}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all"
-                  style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(180,155,100,0.4)" }}
+                  style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)", color: "rgba(107,94,78,0.40)" }}
                   whileHover={{ borderColor: "rgba(239,68,68,0.3)", color: "rgba(239,68,68,0.6)" }}
                   whileTap={{ scale: 0.97 }}>
                   <LogOut size={12} />
@@ -227,7 +227,7 @@ export default function Dashboard() {
               <motion.button onClick={() => setShowLogin(true)}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs uppercase tracking-[0.15em]"
                 style={{
-                  background: "linear-gradient(135deg, rgba(180,130,30,0.2), rgba(212,139,0,0.1))",
+                  background: "linear-gradient(135deg, rgba(212,139,0,0.2), rgba(212,139,0,0.1))",
                   border: "1px solid rgba(212,139,0,0.3)", color: "rgba(212,139,0,0.8)",
                 }}
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
@@ -258,12 +258,12 @@ export default function Dashboard() {
               <h3 className="font-serif text-xl mb-2" style={{ color: "rgba(220,200,165,0.8)", fontWeight: 300 }}>
                 Restricted Area
               </h3>
-              <p className="text-sm mb-6" style={{ color: "rgba(180,155,100,0.5)" }}>
+              <p className="text-sm mb-6" style={{ color: "rgba(107,94,78,0.50)" }}>
                 Sign in with a partner account to access product visibility controls and analytics.
               </p>
               <motion.button onClick={() => setShowLogin(true)}
                 className="px-6 py-3 rounded-xl text-sm uppercase tracking-[0.15em]"
-                style={{ background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))", color: "hsl(22 18% 6%)" }}
+                style={{ background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))", color: "#F5F2ED" }}
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
                 <span className="flex items-center gap-2"><Shield size={13} />Sign In to Dashboard</span>
               </motion.button>
@@ -292,7 +292,7 @@ export default function Dashboard() {
                 <motion.div className="w-10 h-10 rounded-full mx-auto mb-4 border-2"
                   style={{ borderColor: "rgba(212,139,0,0.3)", borderTopColor: "rgba(212,139,0,0.8)" }}
                   animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
-                <p className="text-[10px] uppercase tracking-[0.25em] text-center" style={{ color: "rgba(180,155,100,0.4)" }}>Loading…</p>
+                <p className="text-[10px] uppercase tracking-[0.25em] text-center" style={{ color: "rgba(107,94,78,0.40)" }}>Loading…</p>
               </motion.div>
             </div>
           ) : error ? (
@@ -344,15 +344,15 @@ export default function Dashboard() {
                         <div className="grid grid-cols-3 gap-4">
                           <div className="text-center">
                             <p className="font-serif text-2xl" style={{ color: "rgba(230,210,175,0.9)", fontWeight: 300 }}>{shareStats.totalShares}</p>
-                            <p className="text-[11px] uppercase tracking-[0.16em] mt-1" style={{ color: "rgba(180,155,100,0.48)" }}>Total Shares</p>
+                            <p className="text-[11px] uppercase tracking-[0.16em] mt-1" style={{ color: "rgba(107,94,78,0.48)" }}>Total Shares</p>
                           </div>
                           <div className="text-center">
                             <p className="font-serif text-2xl" style={{ color: "rgba(230,210,175,0.9)", fontWeight: 300 }}>{shareStats.downloadCount}</p>
-                            <p className="text-[11px] uppercase tracking-[0.16em] mt-1" style={{ color: "rgba(180,155,100,0.48)" }}>Downloads</p>
+                            <p className="text-[11px] uppercase tracking-[0.16em] mt-1" style={{ color: "rgba(107,94,78,0.48)" }}>Downloads</p>
                           </div>
                           <div className="text-center">
                             <p className="font-serif text-2xl" style={{ color: "rgba(230,210,175,0.9)", fontWeight: 300 }}>{shareStats.nativeCount}</p>
-                            <p className="text-[11px] uppercase tracking-[0.16em] mt-1" style={{ color: "rgba(180,155,100,0.48)" }}>Native Shares</p>
+                            <p className="text-[11px] uppercase tracking-[0.16em] mt-1" style={{ color: "rgba(107,94,78,0.48)" }}>Native Shares</p>
                           </div>
                         </div>
                         {shareStats.byCraft.length > 0 && (
@@ -383,7 +383,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between">
                       <div>
                         <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>Product Visibility</h2>
-                        <p className="text-[11px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(180,155,100,0.42)" }}>
+                        <p className="text-[11px] uppercase tracking-[0.18em] mt-0.5" style={{ color: "rgba(107,94,78,0.42)" }}>
                           Adjust boost, sponsored placement, and product images
                         </p>
                       </div>
@@ -395,7 +395,7 @@ export default function Dashboard() {
                               className="px-3 py-1.5 text-[11px] uppercase tracking-[0.15em] rounded-full transition-all duration-200"
                               style={filter === f
                                 ? { background: "rgba(212,139,0,0.15)", color: "rgba(212,139,0,0.85)", border: "1px solid rgba(212,139,0,0.3)" }
-                                : { color: "rgba(180,155,100,0.5)" }
+                                : { color: "rgba(107,94,78,0.50)" }
                               }>{f}</button>
                           ))}
                         </div>
@@ -405,7 +405,7 @@ export default function Dashboard() {
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] uppercase tracking-[0.15em] transition-all duration-200"
                           style={{
                             background: "rgba(212,139,0,0.18)",
-                            color:      "rgba(230,200,120,0.95)",
+                            color:      "rgba(212,139,0,0.95)",
                             border:     "1px solid rgba(212,139,0,0.45)",
                           }}>
                           <Plus size={11} /> New Product
@@ -453,7 +453,7 @@ export default function Dashboard() {
                 {/* ── IP Vault tab (super_admin only) ────────────────────────── */}
                 {activeTab === "ip-vault" && user?.role === "super_admin" && <IpVaultTab />}
                 {activeTab === "ip-vault" && user?.role !== "super_admin" && (
-                  <div className="text-center py-16 text-sm" style={{ color: "rgba(180,155,100,0.6)" }}>
+                  <div className="text-center py-16 text-sm" style={{ color: "rgba(107,94,78,0.58)" }}>
                     The IP Vault is restricted to <span className="text-emerald-300">super_admin</span> accounts.
                   </div>
                 )}
@@ -470,7 +470,7 @@ export default function Dashboard() {
                       <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
                         Brands &amp; Distributors
                       </h2>
-                      <p className="text-[11px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+                      <p className="text-[11px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>
                         Brand partner directory · product attribution · campaign readiness
                       </p>
                     </div>
@@ -487,7 +487,7 @@ export default function Dashboard() {
                       <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
                         Campaigns
                       </h2>
-                      <p className="text-[11px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+                      <p className="text-[11px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>
                         Sponsored placement · product assignment · performance tracking
                       </p>
                     </div>
@@ -504,7 +504,7 @@ export default function Dashboard() {
                       <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
                         Brand Insights
                       </h2>
-                      <p className="text-[11px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+                      <p className="text-[11px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>
                         Customer behavior · product performance · flavor trends · brand analytics
                       </p>
                     </div>
@@ -624,14 +624,14 @@ export default function Dashboard() {
 
                     <div className="mb-2">
                       <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>Performance Analytics</h2>
-                      <p className="text-[11px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>Persistent across server restarts</p>
+                      <p className="text-[11px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>Persistent across server restarts</p>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="rounded-xl p-5" style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)" }}>
-                        <p className="text-[11px] uppercase tracking-[0.22em] mb-4" style={{ color: "rgba(180,155,100,0.45)" }}>Top Impressions</p>
+                        <p className="text-[11px] uppercase tracking-[0.22em] mb-4" style={{ color: "rgba(107,94,78,0.45)" }}>Top Impressions</p>
                         {analytics.topPerformers.length === 0
-                          ? <p className="text-xs italic" style={{ color: "rgba(180,155,100,0.3)" }}>No impressions yet — run some recommendations</p>
+                          ? <p className="text-xs italic" style={{ color: "rgba(107,94,78,0.30)" }}>No impressions yet — run some recommendations</p>
                           : <div className="space-y-3">{analytics.topPerformers.map((p) => (
                               <ImpressionBar key={p.id} item={p} max={analytics.topPerformers[0]?.impressions || 1} />
                             ))}</div>
@@ -642,7 +642,7 @@ export default function Dashboard() {
                           <Sparkles size={9} />Sponsored Performance
                         </p>
                         {analytics.sponsored.length === 0
-                          ? <p className="text-xs italic" style={{ color: "rgba(180,155,100,0.35)" }}>No sponsored products yet</p>
+                          ? <p className="text-xs italic" style={{ color: "rgba(107,94,78,0.35)" }}>No sponsored products yet</p>
                           : <div className="space-y-3">{analytics.sponsored.map((p) => (
                               <ImpressionBar key={p.id} item={p} max={Math.max(...analytics.sponsored.map((s) => s.impressions), 1)} gold />
                             ))}</div>
@@ -695,10 +695,10 @@ function StatCard({ icon, label, value, accent, gold }: {
         background: gold ? "rgba(212,139,0,0.07)" : "rgba(26,26,27,0.05)",
         border: gold ? "1px solid rgba(212,139,0,0.20)" : accent ? "1px solid rgba(212,139,0,0.12)" : "1px solid rgba(26,26,27,0.09)",
       }}>
-      <div style={{ color: gold ? "rgba(212,139,0,0.7)" : "rgba(180,155,100,0.5)" }}>{icon}</div>
+      <div style={{ color: gold ? "rgba(212,139,0,0.7)" : "rgba(107,94,78,0.50)" }}>{icon}</div>
       <div>
         <p className="text-2xl font-serif" style={{ color: gold ? "rgba(230,210,175,0.9)" : "rgba(210,190,155,0.8)", fontWeight: 300 }}>{value}</p>
-        <p className="text-[11px] uppercase tracking-[0.16em] mt-0.5" style={{ color: "rgba(180,155,100,0.45)" }}>{label}</p>
+        <p className="text-[11px] uppercase tracking-[0.16em] mt-0.5" style={{ color: "rgba(107,94,78,0.45)" }}>{label}</p>
       </div>
     </div>
   );
@@ -734,7 +734,7 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
             : <ImagePlus size={16} className="absolute inset-0 m-auto" style={{ color: "rgba(212,139,0,0.3)" }} />
           }
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 rounded-lg"
-            style={{ background: "rgba(10,6,2,0.65)" }}>
+            style={{ background: "rgba(245,242,237,0.65)" }}>
             <ImagePlus size={14} style={{ color: "rgba(212,139,0,0.85)" }} />
           </div>
         </button>
@@ -757,25 +757,25 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
           )}
         </div>
         <div className="flex items-center gap-2 mt-1">
-          <span className="text-[11px] uppercase tracking-[0.10em]" style={{ color: "rgba(180,155,100,0.42)" }}>{item.category}</span>
-          <span style={{ color: "rgba(180,155,100,0.22)" }}>·</span>
-          <span className="text-[11px] uppercase tracking-[0.10em]" style={{ color: "rgba(180,155,100,0.42)" }}>{item.tier}</span>
+          <span className="text-[11px] uppercase tracking-[0.10em]" style={{ color: "rgba(107,94,78,0.42)" }}>{item.category}</span>
+          <span style={{ color: "rgba(107,94,78,0.25)" }}>·</span>
+          <span className="text-[11px] uppercase tracking-[0.10em]" style={{ color: "rgba(107,94,78,0.42)" }}>{item.tier}</span>
           {item.impressions > 0 && (
-            <><span style={{ color: "rgba(180,155,100,0.22)" }}>·</span>
-            <span className="text-[11px]" style={{ color: "rgba(180,155,100,0.40)" }}>{item.impressions} impressions</span></>
+            <><span style={{ color: "rgba(107,94,78,0.25)" }}>·</span>
+            <span className="text-[11px]" style={{ color: "rgba(107,94,78,0.40)" }}>{item.impressions} impressions</span></>
           )}
         </div>
       </div>
 
       <div className="flex flex-col items-center gap-1.5">
-        <p className="text-[11px] uppercase tracking-[0.13em]" style={{ color: "rgba(180,155,100,0.38)" }}>Boost</p>
+        <p className="text-[11px] uppercase tracking-[0.13em]" style={{ color: "rgba(107,94,78,0.38)" }}>Boost</p>
         <div className="flex gap-1">
           {[0, 1, 2, 3].map((lvl) => (
             <button key={lvl} onClick={() => onBoostChange(lvl)}
               className="w-8 h-8 rounded text-xs font-medium transition-all duration-200"
               style={item.boostLevel === lvl
                 ? { background: "rgba(212,139,0,0.2)", border: "1px solid rgba(212,139,0,0.5)", color: "rgba(212,139,0,0.9)" }
-                : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.4)" }
+                : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(107,94,78,0.40)" }
               }>{lvl}</button>
           ))}
         </div>
@@ -787,9 +787,9 @@ function ProductRow({ item, isSaving, justSaved, onBoostChange, onSponsoredChang
           ? { background: "rgba(212,139,0,0.1)", border: "1px solid rgba(212,139,0,0.3)" }
           : { background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)" }
         }>
-        <Sparkles size={12} style={{ color: item.sponsored ? "rgba(212,139,0,0.8)" : "rgba(180,155,100,0.35)" }} />
+        <Sparkles size={12} style={{ color: item.sponsored ? "rgba(212,139,0,0.8)" : "rgba(107,94,78,0.35)" }} />
         <span className="text-[11px] uppercase tracking-[0.1em]"
-          style={{ color: item.sponsored ? "rgba(212,139,0,0.7)" : "rgba(180,155,100,0.35)" }}>
+          style={{ color: item.sponsored ? "rgba(212,139,0,0.7)" : "rgba(107,94,78,0.35)" }}>
           {item.sponsored ? "On" : "Off"}
         </span>
       </button>
@@ -816,14 +816,14 @@ function ImpressionBar({ item, max, gold }: { item: InventoryItem; max: number; 
     <div className="space-y-1">
       <div className="flex items-center justify-between gap-2">
         <span className="font-serif text-xs truncate" style={{ color: "rgba(200,180,145,0.8)" }}>{item.name}</span>
-        <span className="text-xs flex-shrink-0" style={{ color: gold ? "rgba(212,139,0,0.7)" : "rgba(180,155,100,0.55)" }}>
+        <span className="text-xs flex-shrink-0" style={{ color: gold ? "rgba(212,139,0,0.7)" : "rgba(107,94,78,0.52)" }}>
           {item.impressions}
         </span>
       </div>
       <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(26,26,27,0.08)" }}>
         <motion.div className="h-full rounded-full"
           initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, ease: "easeOut" }}
-          style={{ background: gold ? "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(212,139,0,0.9))" : "rgba(180,155,100,0.5)" }} />
+          style={{ background: gold ? "linear-gradient(90deg, rgba(212,139,0,0.7), rgba(212,139,0,0.9))" : "rgba(107,94,78,0.50)" }} />
       </div>
     </div>
   );

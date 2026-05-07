@@ -52,7 +52,7 @@ export default function VendorTouchscreen() {
   return (
     <BackgroundLayer image={getBackground("vendorTouch")} style={{
         minHeight: "100dvh",
-        color: "#e8e0c8",
+        color: "#1A1A1B",
         padding: "32px 20px env(safe-area-inset-bottom, 20px)",
       }}
     >
@@ -69,7 +69,7 @@ export default function VendorTouchscreen() {
           >
             Vendor Portal
           </h1>
-          <p style={{ fontSize: 13, color: "rgba(232,224,200,0.45)", margin: "4px 0 0" }}>
+          <p style={{ fontSize: 13, color: "rgba(26,26,27,0.44)", margin: "4px 0 0" }}>
             Products & campaign management
           </p>
         </div>
@@ -93,7 +93,7 @@ export default function VendorTouchscreen() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: 40, color: "rgba(232,224,200,0.3)" }}>Loading...</div>
+        <div style={{ textAlign: "center", padding: 40, color: "rgba(26,26,27,0.30)" }}>Loading...</div>
       ) : (
         <RoleHomeGrid sections={sections} onSelect={handleSelect} />
       )}

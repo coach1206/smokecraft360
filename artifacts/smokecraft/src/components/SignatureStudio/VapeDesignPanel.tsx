@@ -21,7 +21,7 @@ export const DEFAULT_VAPE_STATE: VapeDesignState = {
   labelOffset:  { x: 0, y: 0 },
 };
 
-const MUTED    = "rgba(180,155,100,0.45)";
+const MUTED    = "rgba(107,94,78,0.45)";
 const GOLD_DIM = "rgba(212,139,0,0.55)";
 
 const GRADIENT_PALETTE = [
@@ -278,7 +278,7 @@ export function VapeDesignPanel({ state, onChange, tab }: Props) {
             style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: MUTED }}>
             Reset Position
           </button>
-          <span className="text-[9px]" style={{ color: "rgba(180,155,100,0.3)" }}>
+          <span className="text-[9px]" style={{ color: "rgba(107,94,78,0.30)" }}>
             or drag label in Preview tab
           </span>
         </div>

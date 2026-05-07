@@ -80,9 +80,9 @@ export function LoginModal({ onClose, showClose = true }: LoginModalProps) {
               </h2>
             </div>
             {showClose && (
-              <button onClick={onClose} className="p-1.5 rounded-lg transition-colors" style={{ color: "rgba(180,155,100,0.4)" }}
+              <button onClick={onClose} className="p-1.5 rounded-lg transition-colors" style={{ color: "rgba(107,94,78,0.40)" }}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(212,139,0,0.7)")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(180,155,100,0.4)")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(107,94,78,0.40)")}
               >
                 <X size={16} />
               </button>
@@ -96,7 +96,7 @@ export function LoginModal({ onClose, showClose = true }: LoginModalProps) {
                 className="flex-1 py-2 text-[10px] uppercase tracking-[0.2em] rounded-full transition-all duration-200"
                 style={tab === t
                   ? { background: "rgba(212,139,0,0.14)", color: "rgba(212,139,0,0.85)", border: "1px solid rgba(212,139,0,0.28)" }
-                  : { color: "rgba(180,155,100,0.45)" }
+                  : { color: "rgba(107,94,78,0.45)" }
                 }
               >
                 {t === "login" ? "Sign In" : "Register"}
@@ -134,7 +134,7 @@ export function LoginModal({ onClose, showClose = true }: LoginModalProps) {
 
             {/* Password */}
             <div>
-              <label className="block text-[9px] uppercase tracking-[0.2em] mb-1.5" style={{ color: "rgba(180,155,100,0.5)" }}>Password</label>
+              <label className="block text-[9px] uppercase tracking-[0.2em] mb-1.5" style={{ color: "rgba(107,94,78,0.50)" }}>Password</label>
               <div className="relative">
                 <input
                   type={showPwd ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)}
@@ -149,7 +149,7 @@ export function LoginModal({ onClose, showClose = true }: LoginModalProps) {
                 />
                 <button type="button" onClick={() => setShowPwd(!showPwd)}
                   className="absolute right-3 top-1/2 -translate-y-1/2"
-                  style={{ color: "rgba(180,155,100,0.4)" }}>
+                  style={{ color: "rgba(107,94,78,0.40)" }}>
                   {showPwd ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
@@ -162,7 +162,7 @@ export function LoginModal({ onClose, showClose = true }: LoginModalProps) {
                   initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25 }}
                 >
-                  <label className="block text-[9px] uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(180,155,100,0.5)" }}>Role</label>
+                  <label className="block text-[9px] uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(107,94,78,0.50)" }}>Role</label>
                   <div className="grid grid-cols-1 gap-1.5">
                     {ROLE_OPTIONS.map((opt) => (
                       <button key={opt.value} type="button" onClick={() => setRole(opt.value)}
@@ -172,11 +172,11 @@ export function LoginModal({ onClose, showClose = true }: LoginModalProps) {
                           : { background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.09)" }
                         }>
                         <span className="text-xs font-serif" style={{ color: role === opt.value ? "rgba(230,210,175,0.9)" : "rgba(200,180,145,0.6)" }}>{opt.label}</span>
-                        <span className="text-[9px]" style={{ color: "rgba(180,155,100,0.35)" }}>{opt.hint}</span>
+                        <span className="text-[9px]" style={{ color: "rgba(107,94,78,0.35)" }}>{opt.hint}</span>
                       </button>
                     ))}
                   </div>
-                  <p className="mt-2 text-[8px]" style={{ color: "rgba(180,155,100,0.3)" }}>
+                  <p className="mt-2 text-[8px]" style={{ color: "rgba(107,94,78,0.30)" }}>
                     The first registered account becomes Super Admin automatically.
                   </p>
                 </motion.div>
@@ -191,7 +191,7 @@ export function LoginModal({ onClose, showClose = true }: LoginModalProps) {
                 background: submitting
                   ? "rgba(212,139,0,0.15)"
                   : "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))",
-                color: submitting ? "rgba(212,139,0,0.6)" : "hsl(22 18% 6%)",
+                color: submitting ? "rgba(212,139,0,0.6)" : "#F5F2ED",
               }}
               whileHover={!submitting ? { scale: 1.01 } : {}}
               whileTap={!submitting ? { scale: 0.99 } : {}}
@@ -224,7 +224,7 @@ function InputField({ label, type, value, onChange, placeholder }: {
 }) {
   return (
     <div>
-      <label className="block text-[9px] uppercase tracking-[0.2em] mb-1.5" style={{ color: "rgba(180,155,100,0.5)" }}>{label}</label>
+      <label className="block text-[9px] uppercase tracking-[0.2em] mb-1.5" style={{ color: "rgba(107,94,78,0.50)" }}>{label}</label>
       <input
         type={type} value={value} onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder} required

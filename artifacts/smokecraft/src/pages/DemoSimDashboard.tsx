@@ -27,9 +27,9 @@ import { getAuthHeaders }  from "@/services/auth";
 const C = {
   gold:   "#D48B00",
   goldDim:"rgba(212,139,0,0.6)",
-  text:   "#e8e0c8",
-  muted:  "rgba(232,224,200,0.5)",
-  dim:    "rgba(232,224,200,0.28)",
+  text:   "#1A1A1B",
+  muted:  "rgba(26,26,27,0.48)",
+  dim:    "rgba(26,26,27,0.28)",
   card:   "rgba(26,26,27,0.05)",
   border: "rgba(26,26,27,0.10)",
 };
@@ -78,7 +78,7 @@ function fmt$(n: number) {
 }
 
 function EventRow({ event }: { event: SimEvent }) {
-  const color = EVENT_COLORS[event.type] ?? "#e8e0c8";
+  const color = EVENT_COLORS[event.type] ?? "#1A1A1B";
   const Icon  = EVENT_ICONS[event.type] ?? Activity;
   const p     = event.payload;
 
@@ -270,7 +270,7 @@ export default function DemoSimDashboard() {
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "12px 20px", borderBottom: `1px solid ${C.border}`,
-        background: "rgba(10,8,6,0.85)", backdropFilter: "blur(12px)", flexShrink: 0,
+        background: "rgba(245,242,237,0.85)", backdropFilter: "blur(12px)", flexShrink: 0,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => navigate("/dashboard")}

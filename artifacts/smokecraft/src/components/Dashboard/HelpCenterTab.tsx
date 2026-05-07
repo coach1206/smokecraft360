@@ -117,19 +117,19 @@ export function HelpCenterTab() {
           <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
             Help Center
           </h2>
-          <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+          <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>
             Support tickets · {isSuper ? "All venues · Triage console" : "Your venue · Open ↔ Close"}
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <Filter size={11} style={{ color: "rgba(180,155,100,0.5)" }} />
+          <Filter size={11} style={{ color: "rgba(107,94,78,0.50)" }} />
           {(["open", "in_progress", "resolved", "closed", "all"] as const).map((f) => (
             <button key={f} onClick={() => setFilter(f)}
               data-testid={`help-filter-${f}`}
               className="px-2.5 py-1 rounded-full text-[9px] uppercase tracking-[0.15em] transition-all"
               style={filter === f
-                ? { background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.45)" }
-                : { background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(26,26,27,0.08)" }}>
+                ? { background: "rgba(212,139,0,0.18)", color: "rgba(212,139,0,0.95)", border: "1px solid rgba(212,139,0,0.45)" }
+                : { background: "rgba(26,26,27,0.06)", color: "rgba(107,94,78,0.52)", border: "1px solid rgba(26,26,27,0.08)" }}>
               {f === "all" ? "All" : STATUS_LABEL[f]}
             </button>
           ))}
@@ -143,7 +143,7 @@ export function HelpCenterTab() {
             <button onClick={() => setShowCompose(true)}
               data-testid="help-new-ticket"
               className="flex items-center gap-1.5 px-3 py-1 rounded-md text-[10px] uppercase tracking-[0.15em]"
-              style={{ background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.45)" }}>
+              style={{ background: "rgba(212,139,0,0.18)", color: "rgba(212,139,0,0.95)", border: "1px solid rgba(212,139,0,0.45)" }}>
               <Plus size={11} /> New
             </button>
           )}
@@ -163,13 +163,13 @@ export function HelpCenterTab() {
       )}
 
       {loading ? (
-        <div className="flex items-center gap-2 text-[11px]" style={{ color: "rgba(180,155,100,0.6)" }}>
+        <div className="flex items-center gap-2 text-[11px]" style={{ color: "rgba(107,94,78,0.58)" }}>
           <Loader2 size={12} className="animate-spin" /> Loading tickets…
         </div>
       ) : tickets.length === 0 ? (
         <div className="text-[11px] px-4 py-8 rounded text-center"
           data-testid="help-empty"
-          style={{ background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(212,139,0,0.2)", color: "rgba(180,155,100,0.5)" }}>
+          style={{ background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(212,139,0,0.2)", color: "rgba(107,94,78,0.50)" }}>
           {filter === "open" ? "No open tickets. Quiet on the wire." : "No tickets in this view."}
         </div>
       ) : (
@@ -213,7 +213,7 @@ export function HelpCenterTab() {
                       <div className="text-[11px] line-clamp-2" style={{ color: "rgba(230,210,175,0.6)" }}>
                         {t.body}
                       </div>
-                      <div className="text-[10px] mt-2" style={{ color: "rgba(180,155,100,0.5)" }}>
+                      <div className="text-[10px] mt-2" style={{ color: "rgba(107,94,78,0.50)" }}>
                         Opened {formatDateTime(t.createdAt)} · Updated {formatDateTime(t.updatedAt)}
                         {t.resolvedAt && ` · Resolved ${formatDateTime(t.resolvedAt)}`}
                       </div>
@@ -265,7 +265,7 @@ function ComposeForm({ onCancel, onCreated }: {
         <span className="text-[10px] uppercase tracking-[0.18em]" style={{ color: "rgba(212,139,0,0.7)" }}>
           New Support Ticket
         </span>
-        <button onClick={onCancel} className="p-1 rounded" style={{ color: "rgba(180,155,100,0.5)" }}>
+        <button onClick={onCancel} className="p-1 rounded" style={{ color: "rgba(107,94,78,0.50)" }}>
           <X size={12} />
         </button>
       </div>
@@ -283,7 +283,7 @@ function ComposeForm({ onCancel, onCreated }: {
           color: "rgba(230,210,175,0.92)", padding: "8px 10px", borderRadius: 5 }} />
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-1.5">
-          <span className="text-[9px] uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.55)" }}>
+          <span className="text-[9px] uppercase tracking-[0.18em]" style={{ color: "rgba(107,94,78,0.52)" }}>
             Priority
           </span>
           {(["low", "normal", "high"] as const).map((p) => (
@@ -291,8 +291,8 @@ function ComposeForm({ onCancel, onCreated }: {
               data-testid={`help-compose-priority-${p}`}
               className="px-2 py-0.5 rounded-full text-[9px] uppercase tracking-[0.15em]"
               style={priority === p
-                ? { background: "rgba(212,139,0,0.2)", color: "rgba(230,200,120,0.95)", border: "1px solid rgba(212,139,0,0.5)" }
-                : { background: "transparent", color: "rgba(180,155,100,0.55)", border: "1px solid rgba(26,26,27,0.10)" }}>
+                ? { background: "rgba(212,139,0,0.2)", color: "rgba(212,139,0,0.95)", border: "1px solid rgba(212,139,0,0.5)" }
+                : { background: "transparent", color: "rgba(107,94,78,0.52)", border: "1px solid rgba(26,26,27,0.10)" }}>
               {PRIORITY_LABEL[p]}
             </button>
           ))}
@@ -405,7 +405,7 @@ function TicketDetail({ ticket, isSuper, currentUserId, onBack, onTicketUpdated 
       <button onClick={onBack}
         data-testid="help-back"
         className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em]"
-        style={{ color: "rgba(180,155,100,0.7)" }}>
+        style={{ color: "rgba(107,94,78,0.68)" }}>
         <ArrowLeft size={11} /> Back to tickets
       </button>
 
@@ -427,7 +427,7 @@ function TicketDetail({ ticket, isSuper, currentUserId, onBack, onTicketUpdated 
                 {ticket.priority === "high" && <Flame size={9} />} {PRIORITY_LABEL[ticket.priority]}
               </span>
             </div>
-            <div className="text-[10px]" style={{ color: "rgba(180,155,100,0.5)" }}>
+            <div className="text-[10px]" style={{ color: "rgba(107,94,78,0.50)" }}>
               Opened {formatDateTime(ticket.createdAt)} · Updated {formatDateTime(ticket.updatedAt)}
               {ticket.resolvedAt && ` · Resolved ${formatDateTime(ticket.resolvedAt)}`}
             </div>
@@ -440,7 +440,7 @@ function TicketDetail({ ticket, isSuper, currentUserId, onBack, onTicketUpdated 
 
         {allowed.length > 0 && (
           <div className="flex items-center gap-1.5 mt-4 flex-wrap">
-            <span className="text-[9px] uppercase tracking-[0.18em] mr-1" style={{ color: "rgba(180,155,100,0.55)" }}>
+            <span className="text-[9px] uppercase tracking-[0.18em] mr-1" style={{ color: "rgba(107,94,78,0.52)" }}>
               Move to:
             </span>
             {allowed.map((next) => {
@@ -472,19 +472,19 @@ function TicketDetail({ ticket, isSuper, currentUserId, onBack, onTicketUpdated 
       <div className="rounded-lg"
         style={{ background: "rgba(26,26,27,0.05)", border: "1px solid rgba(212,139,0,0.1)" }}>
         <div className="px-3 py-2 text-[9px] uppercase tracking-[0.22em]"
-          style={{ color: "rgba(180,155,100,0.55)", borderBottom: "1px solid rgba(212,139,0,0.08)" }}>
+          style={{ color: "rgba(107,94,78,0.52)", borderBottom: "1px solid rgba(212,139,0,0.08)" }}>
           Thread
         </div>
         <div ref={threadRef}
           data-testid="help-thread"
           className="max-h-[420px] overflow-y-auto p-3 space-y-2">
           {loading ? (
-            <div className="flex items-center gap-2 text-[11px]" style={{ color: "rgba(180,155,100,0.6)" }}>
+            <div className="flex items-center gap-2 text-[11px]" style={{ color: "rgba(107,94,78,0.58)" }}>
               <Loader2 size={12} className="animate-spin" /> Loading…
             </div>
           ) : messages.length === 0 ? (
             <div className="text-[11px] text-center py-6"
-              style={{ color: "rgba(180,155,100,0.45)" }}>
+              style={{ color: "rgba(107,94,78,0.45)" }}>
               No replies yet.
             </div>
           ) : (
@@ -503,7 +503,7 @@ function TicketDetail({ ticket, isSuper, currentUserId, onBack, onTicketUpdated 
                       {m.body}
                     </div>
                     <div className="text-[9px] mt-1 uppercase tracking-[0.18em]"
-                      style={{ color: "rgba(180,155,100,0.45)" }}>
+                      style={{ color: "rgba(107,94,78,0.45)" }}>
                       {mine ? "You" : (isSuper ? m.authorId.slice(0, 8) : "Support")} · {formatDateTime(m.createdAt)}
                     </div>
                   </div>
@@ -527,7 +527,7 @@ function TicketDetail({ ticket, isSuper, currentUserId, onBack, onTicketUpdated 
             <button onClick={send} disabled={!reply.trim() || posting}
               data-testid="help-reply-send"
               className="flex items-center gap-1.5 px-3 py-2 rounded-md text-[10px] uppercase tracking-[0.15em]"
-              style={{ background: "rgba(212,139,0,0.18)", color: "rgba(230,200,120,0.95)",
+              style={{ background: "rgba(212,139,0,0.18)", color: "rgba(212,139,0,0.95)",
                 border: "1px solid rgba(212,139,0,0.45)",
                 opacity: !reply.trim() || posting ? 0.5 : 1 }}>
               {posting ? <Loader2 size={11} className="animate-spin" /> : <Send size={11} />}
@@ -536,7 +536,7 @@ function TicketDetail({ ticket, isSuper, currentUserId, onBack, onTicketUpdated 
           </div>
         ) : (
           <div className="p-3 text-[10px] text-center uppercase tracking-[0.18em]"
-            style={{ color: "rgba(180,155,100,0.45)", borderTop: "1px solid rgba(212,139,0,0.08)" }}>
+            style={{ color: "rgba(107,94,78,0.45)", borderTop: "1px solid rgba(212,139,0,0.08)" }}>
             Ticket is closed — reopen to reply.
           </div>
         )}

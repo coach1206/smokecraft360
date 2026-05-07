@@ -36,7 +36,7 @@ const CONFIGS: Record<TransitionType, TransitionConfig> = {
   },
   order: {
     darkOpacity: 0.60,
-    color:       "rgba(10,6,2,1)",
+    color:       "rgba(245,242,237,1)",
     holdMs:      100,
     fadeInMs:    350,
     fadeOutMs:   500,

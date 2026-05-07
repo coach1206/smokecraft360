@@ -59,7 +59,7 @@ const BG = "#F5F2ED";
 const GOLD = "#D48B00";
 const BORDER = "rgba(212,139,0,0.16)";
 const MUTED = "rgba(240,232,212,0.42)";
-const TEXT = "rgba(240,232,212,0.9)";
+const TEXT = "rgba(26,26,27,0.88)";
 
 export function AxLayout({
   title, subtitle, onBack, backLabel = "Back", rightSlot,
@@ -184,7 +184,7 @@ export function AxLayout({
                 {label}
                 {badge != null && badge > 0 && (
                   <span style={{
-                    background: "#ef4444", color: "#fff",
+                    background: "#ef4444", color: "#1A1A1B",
                     borderRadius: "50%", fontSize: 9, fontWeight: 700,
                     width: 14, height: 14,
                     display: "flex", alignItems: "center", justifyContent: "center",

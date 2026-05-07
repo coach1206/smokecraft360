@@ -77,14 +77,14 @@ function Slider({
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
           <span style={{ color: GOLD, opacity: 0.7 }}>{icon}</span>
-          <span style={{ fontSize: 13, fontWeight: 600, color: "#e8e0c8", letterSpacing: "0.04em" }}>{label}</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#1A1A1B", letterSpacing: "0.04em" }}>{label}</span>
         </div>
         <span style={{
           fontSize: 13, fontWeight: 700, color: GOLD,
           minWidth: 36, textAlign: "right",
         }}>{value}</span>
       </div>
-      <p style={{ fontSize: 11, color: "rgba(232,224,200,0.38)", margin: "0 0 8px" }}>{hint}</p>
+      <p style={{ fontSize: 11, color: "rgba(26,26,27,0.38)", margin: "0 0 8px" }}>{hint}</p>
       <div style={{ position: "relative", height: 36, display: "flex", alignItems: "center" }}>
         <div style={{
           position: "absolute", left: 0, right: 0, height: 4,
@@ -136,7 +136,7 @@ function PerfModeSelector({
     <div>
       <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 10 }}>
         <Cpu size={14} style={{ color: GOLD, opacity: 0.7 }} />
-        <span style={{ fontSize: 13, fontWeight: 600, color: "#e8e0c8", letterSpacing: "0.04em" }}>Performance Mode</span>
+        <span style={{ fontSize: 13, fontWeight: 600, color: "#1A1A1B", letterSpacing: "0.04em" }}>Performance Mode</span>
       </div>
       <div style={{ display: "flex", gap: 8 }}>
         {modes.map(m => (
@@ -152,7 +152,7 @@ function PerfModeSelector({
               background: value === m.key
                 ? `${GOLD}12`
                 : "rgba(26,26,27,0.05)",
-              color: value === m.key ? GOLD : "rgba(232,224,200,0.5)",
+              color: value === m.key ? GOLD : "rgba(26,26,27,0.48)",
               cursor: "pointer",
               textAlign: "center",
               transition: "all 0.2s ease",
@@ -185,8 +185,8 @@ function VenueModeSelector({
     <div style={{ marginTop: 20 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 10 }}>
         <Zap size={14} style={{ color: GOLD, opacity: 0.7 }} />
-        <span style={{ fontSize: 13, fontWeight: 600, color: "#e8e0c8", letterSpacing: "0.04em" }}>Venue Mode</span>
-        <span style={{ fontSize: 10, color: "rgba(232,224,200,0.35)", marginLeft: 4 }}>shapes orchestrator defaults</span>
+        <span style={{ fontSize: 13, fontWeight: 600, color: "#1A1A1B", letterSpacing: "0.04em" }}>Venue Mode</span>
+        <span style={{ fontSize: 10, color: "rgba(26,26,27,0.35)", marginLeft: 4 }}>shapes orchestrator defaults</span>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 }}>
         {VENUE_MODE_OPTIONS.map(m => (
@@ -202,7 +202,7 @@ function VenueModeSelector({
               background: value === m.key
                 ? `${GOLD}12`
                 : "rgba(26,26,27,0.05)",
-              color: value === m.key ? GOLD : "rgba(232,224,200,0.5)",
+              color: value === m.key ? GOLD : "rgba(26,26,27,0.48)",
               cursor: "pointer",
               textAlign: "center",
               transition: "all 0.18s ease",
@@ -219,7 +219,7 @@ function VenueModeSelector({
           style={{
             marginTop: 6, width: "100%", padding: "5px",
             background: "none", border: "none",
-            color: "rgba(232,224,200,0.3)", fontSize: 11, cursor: "pointer",
+            color: "rgba(26,26,27,0.30)", fontSize: 11, cursor: "pointer",
           }}
         >
           Clear (inherit global)
@@ -261,7 +261,7 @@ function LivePreview({ settings }: { settings: PanelSettings }) {
 
       {/* Glow preview */}
       <div>
-        <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 8 }}>Atmosphere Glow</div>
+        <div style={{ fontSize: 11, color: "rgba(26,26,27,0.40)", marginBottom: 8 }}>Atmosphere Glow</div>
         <div style={{
           height: 60, borderRadius: 10,
           background: `rgba(14,10,6,0.9)`,
@@ -281,7 +281,7 @@ function LivePreview({ settings }: { settings: PanelSettings }) {
 
       {/* Particle density preview */}
       <div>
-        <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 8 }}>Particle Density</div>
+        <div style={{ fontSize: 11, color: "rgba(26,26,27,0.40)", marginBottom: 8 }}>Particle Density</div>
         <div style={{
           height: 50, borderRadius: 10,
           background: "rgba(14,10,6,0.9)",
@@ -317,7 +317,7 @@ function LivePreview({ settings }: { settings: PanelSettings }) {
 
       {/* Motion speed preview */}
       <div>
-        <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 8 }}>Motion Calmness</div>
+        <div style={{ fontSize: 11, color: "rgba(26,26,27,0.40)", marginBottom: 8 }}>Motion Calmness</div>
         <div style={{
           height: 28, borderRadius: 8,
           background: "rgba(14,10,6,0.9)",
@@ -340,7 +340,7 @@ function LivePreview({ settings }: { settings: PanelSettings }) {
 
       {/* Reveal pacing */}
       <div>
-        <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 8 }}>Reveal Pacing</div>
+        <div style={{ fontSize: 11, color: "rgba(26,26,27,0.40)", marginBottom: 8 }}>Reveal Pacing</div>
         <motion.div
           animate={{ scale: [1, revealScale, 1] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -358,7 +358,7 @@ function LivePreview({ settings }: { settings: PanelSettings }) {
 
       {/* Sound */}
       <div>
-        <div style={{ fontSize: 11, color: "rgba(232,224,200,0.4)", marginBottom: 8 }}>
+        <div style={{ fontSize: 11, color: "rgba(26,26,27,0.40)", marginBottom: 8 }}>
           Sound Volume — <span style={{ color: GOLD }}>{volPct}%</span>
         </div>
         <div style={{
@@ -474,7 +474,7 @@ export default function ExperienceControlPanel() {
   if (!allowed) {
     return (
       <div style={{ minHeight: "100dvh", background: DARK, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ color: "rgba(232,224,200,0.4)", fontSize: 14 }}>Admin access required.</p>
+        <p style={{ color: "rgba(26,26,27,0.40)", fontSize: 14 }}>Admin access required.</p>
       </div>
     );
   }
@@ -482,13 +482,13 @@ export default function ExperienceControlPanel() {
   const curSettings = settings[activeTab];
 
   return (
-    <div style={{ minHeight: "100dvh", background: DARK, color: "#e8e0c8", display: "flex", flexDirection: "column" }}>
+    <div style={{ minHeight: "100dvh", background: DARK, color: "#1A1A1B", display: "flex", flexDirection: "column" }}>
       {/* ── Header ── */}
       <div style={{
         display: "flex", alignItems: "center", gap: 14,
         padding: "16px 24px",
         borderBottom: "1px solid rgba(26,26,27,0.08)",
-        background: "rgba(10,8,6,0.92)", backdropFilter: "blur(10px)",
+        background: "rgba(245,242,237,0.92)", backdropFilter: "blur(10px)",
         position: "sticky", top: 0, zIndex: 20,
         flexShrink: 0,
       }}>
@@ -498,16 +498,16 @@ export default function ExperienceControlPanel() {
             display: "flex", alignItems: "center", gap: 6,
             background: "rgba(26,26,27,0.07)", border: "1px solid rgba(255,255,255,0.1)",
             borderRadius: 10, padding: "7px 13px",
-            color: "rgba(232,224,200,0.55)", fontSize: 13, cursor: "pointer",
+            color: "rgba(26,26,27,0.52)", fontSize: 13, cursor: "pointer",
           }}
         >
           <ArrowLeft size={14} /> Back
         </button>
         <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: "#e8e0c8" }}>
+          <h1 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: "#1A1A1B" }}>
             Experience Control Panel
           </h1>
-          <p style={{ margin: 0, fontSize: 12, color: "rgba(232,224,200,0.4)" }}>
+          <p style={{ margin: 0, fontSize: 12, color: "rgba(26,26,27,0.40)" }}>
             Tune the immersive atmosphere without touching code
           </p>
         </div>
@@ -553,7 +553,7 @@ export default function ExperienceControlPanel() {
               borderBottom: "none",
               borderColor: activeTab === tab.key ? `${GOLD}40` : "transparent",
               background: activeTab === tab.key ? `${GOLD}0a` : "transparent",
-              color: activeTab === tab.key ? GOLD : "rgba(232,224,200,0.42)",
+              color: activeTab === tab.key ? GOLD : "rgba(26,26,27,0.42)",
               fontSize: 13, fontWeight: activeTab === tab.key ? 700 : 500,
               cursor: "pointer", whiteSpace: "nowrap",
               transition: "all 0.18s ease",
@@ -660,7 +660,7 @@ export default function ExperienceControlPanel() {
             <div style={{ position: "sticky", top: 88 }}>
               <LivePreview settings={curSettings} />
               <p style={{
-                fontSize: 11, color: "rgba(232,224,200,0.25)",
+                fontSize: 11, color: "rgba(26,26,27,0.25)",
                 textAlign: "center", marginTop: 12, lineHeight: 1.6,
               }}>
                 Changes apply live. Click Save to persist to database.

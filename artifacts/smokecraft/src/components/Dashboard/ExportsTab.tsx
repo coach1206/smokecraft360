@@ -97,7 +97,7 @@ export function ExportsTab() {
           <Download size={16} style={{ color: "rgba(212,139,0,0.7)" }} />
           Exports
         </h2>
-        <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+        <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>
           CSV / JSON exports · {isSuper ? "Global scope" : "Tenant-scoped to your venue"} · Audit-logged
         </p>
       </div>
@@ -174,16 +174,16 @@ export function ExportsTab() {
 
       {/* ── History ───────────────────────────────────────────────────────── */}
       <div>
-        <h3 className="text-[10px] uppercase tracking-[0.18em] mb-2" style={{ color: "rgba(180,155,100,0.6)" }}>
+        <h3 className="text-[10px] uppercase tracking-[0.18em] mb-2" style={{ color: "rgba(107,94,78,0.58)" }}>
           Recent exports
         </h3>
         {loading ? (
-          <div className="flex items-center gap-2 text-[11px]" style={{ color: "rgba(180,155,100,0.6)" }}>
+          <div className="flex items-center gap-2 text-[11px]" style={{ color: "rgba(107,94,78,0.58)" }}>
             <Loader2 size={12} className="animate-spin" /> Loading…
           </div>
         ) : history.length === 0 ? (
           <div className="text-[11px] px-4 py-6 text-center rounded"
-            style={{ background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(212,139,0,0.18)", color: "rgba(180,155,100,0.5)" }}>
+            style={{ background: "rgba(26,26,27,0.04)", border: "1px dashed rgba(212,139,0,0.18)", color: "rgba(107,94,78,0.50)" }}>
             No exports yet.
           </div>
         ) : (
@@ -197,7 +197,7 @@ export function ExportsTab() {
                     ? <FileSpreadsheet size={12} style={{ color: "rgba(212,139,0,0.7)" }} />
                     : <FileJson        size={12} style={{ color: "rgba(212,139,0,0.7)" }} />}
                   <span className="font-serif text-[12px]" style={{ color: "rgba(230,210,175,0.92)" }}>{h.scope}</span>
-                  <span className="text-[9px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.55)" }}>
+                  <span className="text-[9px] uppercase tracking-[0.15em]" style={{ color: "rgba(107,94,78,0.52)" }}>
                     {h.format}
                   </span>
                   {h.status === "failed" && (
@@ -207,7 +207,7 @@ export function ExportsTab() {
                     </span>
                   )}
                 </div>
-                <div className="text-[10px] flex items-center gap-3 flex-shrink-0" style={{ color: "rgba(180,155,100,0.55)" }}>
+                <div className="text-[10px] flex items-center gap-3 flex-shrink-0" style={{ color: "rgba(107,94,78,0.52)" }}>
                   <span>{h.rowCount} rows</span>
                   <span>{fmtBytes(h.byteCount)}</span>
                   <span>{fmt(h.createdAt)}</span>
@@ -222,5 +222,5 @@ export function ExportsTab() {
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <div className="text-[9px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(180,155,100,0.6)" }}>{children}</div>;
+  return <div className="text-[9px] uppercase tracking-[0.18em] mb-1" style={{ color: "rgba(107,94,78,0.58)" }}>{children}</div>;
 }

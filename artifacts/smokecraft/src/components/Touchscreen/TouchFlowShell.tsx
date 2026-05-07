@@ -48,7 +48,7 @@ export function TouchFlowShell({
       style={{
         minHeight: "100dvh",
         background: "linear-gradient(180deg, #0c0a07 0%, #F5F2ED 100%)",
-        color: "#e8e0c8",
+        color: "#1A1A1B",
         display: "flex",
         flexDirection: "column",
         padding: "24px 20px env(safe-area-inset-bottom, 20px)",
@@ -75,7 +75,7 @@ export function TouchFlowShell({
               background: "transparent",
               border: "1px solid rgba(26,26,27,0.14)",
               borderRadius: 12,
-              color: "rgba(232,224,200,0.6)",
+              color: "rgba(26,26,27,0.58)",
               padding: "0 20px",
               fontSize: 14,
               cursor: "pointer",
@@ -100,7 +100,7 @@ export function TouchFlowShell({
               ...BTN_BASE,
               flex: 1,
               background: "rgba(26,26,27,0.08)",
-              color: "rgba(232,224,200,0.8)",
+              color: "rgba(26,26,27,0.78)",
               border: "1px solid rgba(255,255,255,0.1)",
             }}
           >
@@ -118,7 +118,7 @@ export function TouchFlowShell({
               background: nextDisabled
                 ? "rgba(212,139,0,0.15)"
                 : "linear-gradient(180deg, #D48B00 0%, #a98828 100%)",
-              color: nextDisabled ? "rgba(232,224,200,0.4)" : "#F5F2ED",
+              color: nextDisabled ? "rgba(26,26,27,0.40)" : "#F5F2ED",
               opacity: nextDisabled ? 0.6 : 1,
               cursor: nextDisabled ? "not-allowed" : "pointer",
             }}

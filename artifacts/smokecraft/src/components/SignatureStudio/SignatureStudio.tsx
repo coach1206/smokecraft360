@@ -67,7 +67,7 @@ const CRAFT_HEADLINE: Record<CraftType, string> = {
 
 const GOLD     = "rgba(212,139,0,0.95)";
 const GOLD_DIM = "rgba(212,139,0,0.55)";
-const MUTED    = "rgba(180,155,100,0.42)";
+const MUTED    = "rgba(107,94,78,0.42)";
 
 export interface SignatureStudioProps {
   isOpen:           boolean;
@@ -597,7 +597,7 @@ export default function SignatureStudio({
                       </div>
                     ) : drafts.length === 0 ? (
                       <div className="py-8 text-center">
-                        <Clock size={22} className="mx-auto mb-3" style={{ color: "rgba(180,155,100,0.2)" }} />
+                        <Clock size={22} className="mx-auto mb-3" style={{ color: "rgba(107,94,78,0.20)" }} />
                         <p className="text-xs" style={{ color: MUTED }}>
                           No saved drafts yet — design something and save it first.
                         </p>
@@ -642,7 +642,7 @@ export default function SignatureStudio({
                                   {Boolean((payload as Record<string, unknown>)["submitted"]) && (
                                     <div className="absolute bottom-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center"
                                       style={{ background: "rgba(100,200,120,0.9)" }}>
-                                      <Check size={8} color="#fff" />
+                                      <Check size={8} color="#1A1A1B" />
                                     </div>
                                   )}
                                   {isSelected && (
@@ -652,7 +652,7 @@ export default function SignatureStudio({
                                 <p className="text-[9px] text-center w-full truncate" style={{ color: MUTED }}>
                                   {draft.draftName || "Draft"}
                                 </p>
-                                <p className="text-[8px] text-center" style={{ color: "rgba(180,155,100,0.25)" }}>
+                                <p className="text-[8px] text-center" style={{ color: "rgba(107,94,78,0.25)" }}>
                                   {new Date(draft.updatedAt).toLocaleDateString()}
                                 </p>
                               </motion.button>

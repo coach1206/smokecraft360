@@ -56,14 +56,14 @@ function QrModal({ orderId, onClose }: { orderId: string; onClose: () => void })
         <p className="font-serif text-lg" style={{ color: "rgba(225,205,165,0.9)", fontWeight: 300 }}>
           Order QR Code
         </p>
-        <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.45)" }}>
+        <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(107,94,78,0.45)" }}>
           Scan to verify this experience
         </p>
         <div className="w-52 h-52 rounded-xl overflow-hidden flex items-center justify-center"
           style={{ background: "rgba(26,26,27,0.10)", border: "1px solid rgba(212,139,0,0.15)" }}>
           <img src={url} alt="Order QR" className="w-full h-full object-contain" />
         </div>
-        <p className="text-[8px] font-mono" style={{ color: "rgba(180,155,100,0.35)" }}>
+        <p className="text-[8px] font-mono" style={{ color: "rgba(107,94,78,0.35)" }}>
           #{orderId.slice(0, 8).toUpperCase()}
         </p>
         <button onClick={onClose}
@@ -128,10 +128,10 @@ function OrderCard({ order, onVerified }: {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
             <StatusBadge verified={order.verified} status={order.status} />
-            <span className="text-[8px] font-mono" style={{ color: "rgba(180,155,100,0.3)" }}>
+            <span className="text-[8px] font-mono" style={{ color: "rgba(107,94,78,0.30)" }}>
               #{order.id.slice(0, 8).toUpperCase()}
             </span>
-            <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.3)" }}>{timeAgo}</span>
+            <span className="text-[8px]" style={{ color: "rgba(107,94,78,0.30)" }}>{timeAgo}</span>
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
@@ -169,7 +169,7 @@ function OrderCard({ order, onVerified }: {
             <motion.button
               onClick={() => setQrOpen(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[9px] uppercase tracking-[0.12em]"
-              style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: "rgba(180,155,100,0.5)" }}
+              style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: "rgba(107,94,78,0.50)" }}
               whileHover={{ borderColor: "rgba(212,139,0,0.3)", color: GOLD_DIM }}
               whileTap={{ scale: 0.96 }}>
               <QrCode size={10} />QR
@@ -281,7 +281,7 @@ export function VerifyOrdersTab() {
           <h2 className="font-serif text-xl" style={{ color: "rgba(230,210,175,0.85)", fontWeight: 300 }}>
             Order Verification
           </h2>
-          <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>
+          <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>
             Verify guest experiences · award XP · scan QR codes
           </p>
         </div>
@@ -294,7 +294,7 @@ export function VerifyOrdersTab() {
           )}
           <motion.button onClick={load}
             className="p-2 rounded-lg"
-            style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}
+            style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(107,94,78,0.50)" }}
             whileHover={{ color: GOLD_DIM }} whileTap={{ scale: 0.95 }}>
             <RefreshCw size={12} />
           </motion.button>
@@ -314,7 +314,7 @@ export function VerifyOrdersTab() {
               border:     gold ? "1px solid rgba(212,139,0,0.18)" : "1px solid rgba(26,26,27,0.08)",
             }}>
             <p className="text-2xl font-serif" style={{ color: gold ? GOLD : "rgba(210,190,155,0.8)", fontWeight: 300 }}>{value}</p>
-            <p className="text-[8px] uppercase tracking-[0.18em] mt-1" style={{ color: "rgba(180,155,100,0.38)" }}>{label}</p>
+            <p className="text-[8px] uppercase tracking-[0.18em] mt-1" style={{ color: "rgba(107,94,78,0.38)" }}>{label}</p>
           </div>
         ))}
       </div>
@@ -327,7 +327,7 @@ export function VerifyOrdersTab() {
             className="px-3 py-1.5 rounded-md text-[9px] uppercase tracking-[0.15em] transition-all duration-200"
             style={filter === f
               ? { background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.25)", color: "rgba(212,139,0,0.85)" }
-              : { color: "rgba(180,155,100,0.45)" }
+              : { color: "rgba(107,94,78,0.45)" }
             }>{f}</button>
         ))}
       </div>
@@ -342,8 +342,8 @@ export function VerifyOrdersTab() {
       ) : displayed.length === 0 ? (
         <div className="py-12 text-center rounded-xl"
           style={{ background: "rgba(26,26,27,0.03)", border: "1px solid rgba(26,26,27,0.08)" }}>
-          <ShieldCheck size={24} className="mx-auto mb-3" style={{ color: "rgba(180,155,100,0.2)" }} />
-          <p className="text-xs" style={{ color: "rgba(180,155,100,0.35)" }}>
+          <ShieldCheck size={24} className="mx-auto mb-3" style={{ color: "rgba(107,94,78,0.20)" }} />
+          <p className="text-xs" style={{ color: "rgba(107,94,78,0.35)" }}>
             {filter === "pending" ? "No pending orders to verify" : "No orders found"}
           </p>
         </div>
@@ -359,7 +359,7 @@ export function VerifyOrdersTab() {
 
       {/* Info note */}
       <div className="rounded-xl p-4" style={{ background: "rgba(212,139,0,0.02)", border: "1px dashed rgba(212,139,0,0.1)" }}>
-        <p className="text-[8px] uppercase tracking-[0.18em]" style={{ color: "rgba(180,155,100,0.3)" }}>
+        <p className="text-[8px] uppercase tracking-[0.18em]" style={{ color: "rgba(107,94,78,0.30)" }}>
           XP is only awarded on verified orders · Cigar +10 · Drink +8 · Food +4 · Full combo +20 bonus · New product +5 bonus
         </p>
       </div>

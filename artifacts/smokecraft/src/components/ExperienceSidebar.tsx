@@ -99,7 +99,7 @@ export function ExperienceSidebar({ activeStep, completed, values = {}, onReset,
               className="relative flex items-center gap-3 px-3 py-3 rounded-xl w-full text-left"
               style={{
                 background: isActive
-                  ? "linear-gradient(135deg, rgba(212,139,0,0.15), rgba(180,130,30,0.08))"
+                  ? "linear-gradient(135deg, rgba(212,139,0,0.15), rgba(212,139,0,0.08))"
                   : isCompleted ? "rgba(212,139,0,0.05)" : "transparent",
                 border: isActive
                   ? "1px solid rgba(212,139,0,0.35)"
@@ -224,7 +224,7 @@ export function ExperienceSidebar({ activeStep, completed, values = {}, onReset,
       {/* ── Footer ───────────────────────────────────────────── */}
       <div className="px-6 py-4">
         <div className="h-px mb-3" style={{ background: "rgba(212,139,0,0.10)" }} />
-        <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.28em", textAlign: "center", color: "rgba(180,155,100,0.4)" }}>
+        <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.28em", textAlign: "center", color: "rgba(107,94,78,0.40)" }}>
           SmokeCraft 360 · Est. 2024
         </p>
       </div>

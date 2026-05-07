@@ -89,7 +89,7 @@ export function NewProductForm({ onClose, onCreated }: Props) {
   };
   const labelStyle: React.CSSProperties = {
     fontSize: 9, textTransform: "uppercase", letterSpacing: "0.18em",
-    color: "rgba(180,155,100,0.55)", marginBottom: 4, display: "block",
+    color: "rgba(107,94,78,0.52)", marginBottom: 4, display: "block",
   };
 
   return (
@@ -117,7 +117,7 @@ export function NewProductForm({ onClose, onCreated }: Props) {
               New Product Submission
             </h3>
             <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5"
-              style={{ color: "rgba(180,155,100,0.45)" }}>
+              style={{ color: "rgba(107,94,78,0.45)" }}>
               Venue inventory · Reviewed by admin
             </p>
           </div>
@@ -166,32 +166,32 @@ export function NewProductForm({ onClose, onCreated }: Props) {
           </div>
 
           <div>
-            <label style={labelStyle}>Flavor notes * <span style={{ textTransform: "none", letterSpacing: 0, color: "rgba(180,155,100,0.4)" }}>(comma-separated)</span></label>
+            <label style={labelStyle}>Flavor notes * <span style={{ textTransform: "none", letterSpacing: 0, color: "rgba(107,94,78,0.40)" }}>(comma-separated)</span></label>
             <input value={flavorNotes} onChange={(e) => setFlavorNotes(e.target.value)}
               placeholder="cocoa, leather, espresso"
               style={inputStyle} required disabled={submitting} />
           </div>
 
           <div>
-            <label style={labelStyle}>Mood tags <span style={{ textTransform: "none", letterSpacing: 0, color: "rgba(180,155,100,0.4)" }}>(comma-separated)</span></label>
+            <label style={labelStyle}>Mood tags <span style={{ textTransform: "none", letterSpacing: 0, color: "rgba(107,94,78,0.40)" }}>(comma-separated)</span></label>
             <input value={moodTags} onChange={(e) => setMoodTags(e.target.value)}
               placeholder="celebration, late-night"
               style={inputStyle} disabled={submitting} />
           </div>
 
           <div>
-            <label style={labelStyle}>Pairing tags <span style={{ textTransform: "none", letterSpacing: 0, color: "rgba(180,155,100,0.4)" }}>(comma-separated)</span></label>
+            <label style={labelStyle}>Pairing tags <span style={{ textTransform: "none", letterSpacing: 0, color: "rgba(107,94,78,0.40)" }}>(comma-separated)</span></label>
             <input value={pairingTags} onChange={(e) => setPairingTags(e.target.value)}
               placeholder="bourbon, rye, dark-rum"
               style={inputStyle} disabled={submitting} />
           </div>
 
           <div>
-            <label style={labelStyle}>Product photo <span style={{ textTransform: "none", letterSpacing: 0, color: "rgba(180,155,100,0.4)" }}>(optional · jpg/png/webp · ≤ 8 MB)</span></label>
+            <label style={labelStyle}>Product photo <span style={{ textTransform: "none", letterSpacing: 0, color: "rgba(107,94,78,0.40)" }}>(optional · jpg/png/webp · ≤ 8 MB)</span></label>
             <label className="flex items-center gap-2 cursor-pointer transition-all"
               style={{ ...inputStyle, justifyContent: "flex-start" }}>
               <Upload size={13} style={{ color: "rgba(212,139,0,0.7)" }} />
-              <span style={{ color: file ? "rgba(230,210,175,0.92)" : "rgba(180,155,100,0.5)" }}>
+              <span style={{ color: file ? "rgba(230,210,175,0.92)" : "rgba(107,94,78,0.50)" }}>
                 {file ? file.name : "Choose image…"}
               </span>
               <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
@@ -210,14 +210,14 @@ export function NewProductForm({ onClose, onCreated }: Props) {
           <div className="flex items-center gap-2 pt-2">
             <button type="button" onClick={onClose} disabled={submitting}
               className="flex-1 px-4 py-2 rounded-md text-[10px] uppercase tracking-[0.18em] transition-colors"
-              style={{ background: "rgba(26,26,27,0.06)", color: "rgba(180,155,100,0.6)", border: "1px solid rgba(26,26,27,0.10)" }}>
+              style={{ background: "rgba(26,26,27,0.06)", color: "rgba(107,94,78,0.58)", border: "1px solid rgba(26,26,27,0.10)" }}>
               Cancel
             </button>
             <button type="submit" disabled={submitting || done}
               className="flex-[2] px-4 py-2 rounded-md text-[10px] uppercase tracking-[0.18em] flex items-center justify-center gap-2 transition-all"
               style={{
                 background: done ? "rgba(80,160,90,0.25)" : "rgba(212,139,0,0.18)",
-                color:      done ? "rgba(180,255,190,0.95)" : "rgba(230,200,120,0.95)",
+                color:      done ? "rgba(180,255,190,0.95)" : "rgba(212,139,0,0.95)",
                 border:     `1px solid ${done ? "rgba(80,160,90,0.5)" : "rgba(212,139,0,0.45)"}`,
                 opacity:    submitting ? 0.7 : 1,
               }}>

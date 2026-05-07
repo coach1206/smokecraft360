@@ -23,7 +23,7 @@ import {
 // ── Status config ──────────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; Icon: React.ElementType }> = {
-  draft:     { label: "Draft",     color: "rgba(180,155,100,0.6)",  bg: "rgba(180,155,100,0.07)", Icon: Circle       },
+  draft:     { label: "Draft",     color: "rgba(107,94,78,0.58)",  bg: "rgba(107,94,78,0.07)", Icon: Circle       },
   active:    { label: "Active",    color: "rgba(100,200,120,0.8)",  bg: "rgba(100,200,120,0.07)", Icon: CheckCircle2 },
   paused:    { label: "Paused",    color: "rgba(212,139,0,0.75)",  bg: "rgba(212,139,0,0.07)",  Icon: PauseCircle  },
   completed: { label: "Completed", color: "rgba(130,150,212,0.7)",  bg: "rgba(130,150,212,0.06)", Icon: Award        },
@@ -147,7 +147,7 @@ export function CampaignsTab() {
         <motion.button onClick={() => setShowCreate(true)} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
           className="flex items-center gap-2 w-full px-4 py-3 rounded-xl text-xs uppercase tracking-[0.15em]"
           style={{
-            background: "linear-gradient(135deg, rgba(180,130,30,0.18), rgba(212,139,0,0.08))",
+            background: "linear-gradient(135deg, rgba(212,139,0,0.18), rgba(212,139,0,0.08))",
             border: "1px solid rgba(212,139,0,0.3)",
             color: "rgba(212,139,0,0.85)",
           }}>
@@ -165,7 +165,7 @@ export function CampaignsTab() {
           <div className="flex-1 flex flex-col items-center justify-center py-12 gap-3"
             style={{ border: "1px dashed rgba(212,139,0,0.12)", borderRadius: 12 }}>
             <Megaphone size={24} style={{ color: "rgba(212,139,0,0.25)" }} />
-            <p className="text-[9px] uppercase tracking-[0.2em] text-center" style={{ color: "rgba(180,155,100,0.35)" }}>
+            <p className="text-[9px] uppercase tracking-[0.2em] text-center" style={{ color: "rgba(107,94,78,0.35)" }}>
               No campaigns yet
             </p>
           </div>
@@ -202,15 +202,15 @@ export function CampaignsTab() {
                       className="text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full transition-all"
                       style={c.active
                         ? { background: "rgba(100,200,120,0.1)", border: "1px solid rgba(100,200,120,0.25)", color: "rgba(100,200,120,0.75)" }
-                        : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.4)" }
+                        : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(107,94,78,0.40)" }
                       }>
                       {c.active ? "Live" : "Off"}
                     </button>
                   </div>
                   {c.productCount !== undefined && c.productCount > 0 && (
                     <div className="flex items-center gap-1 mt-1.5">
-                      <Package size={9} style={{ color: "rgba(180,155,100,0.35)" }} />
-                      <span className="text-[8px]" style={{ color: "rgba(180,155,100,0.38)" }}>
+                      <Package size={9} style={{ color: "rgba(107,94,78,0.35)" }} />
+                      <span className="text-[8px]" style={{ color: "rgba(107,94,78,0.38)" }}>
                         {c.productCount} product{c.productCount !== 1 ? "s" : ""}
                       </span>
                     </div>
@@ -273,7 +273,7 @@ export function CampaignsTab() {
               <p className="font-serif text-base" style={{ color: "rgba(220,200,165,0.45)", fontWeight: 300 }}>
                 Select a campaign to view details
               </p>
-              <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(180,155,100,0.3)" }}>
+              <p className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "rgba(107,94,78,0.30)" }}>
                 or create a new one to get started
               </p>
             </motion.div>
@@ -305,7 +305,7 @@ function PerformancePanel({ perf }: { perf: CampaignPerformance }) {
       </div>
       {pacing && (
         <div className="space-y-1.5">
-          <div className="flex justify-between text-[8px]" style={{ color: "rgba(180,155,100,0.45)" }}>
+          <div className="flex justify-between text-[8px]" style={{ color: "rgba(107,94,78,0.45)" }}>
             <span>Campaign progress — day {pacing.daysElapsed}/{pacing.daysTotal}</span>
             <span>{pacing.pct}%</span>
           </div>
@@ -313,11 +313,11 @@ function PerformancePanel({ perf }: { perf: CampaignPerformance }) {
             <motion.div className="h-full rounded-full"
               initial={{ width: 0 }} animate={{ width: `${pacing.pct}%` }}
               transition={{ duration: 0.7 }}
-              style={{ background: "linear-gradient(90deg, rgba(180,130,30,0.7), rgba(212,139,0,0.85))" }} />
+              style={{ background: "linear-gradient(90deg, rgba(212,139,0,0.7), rgba(212,139,0,0.85))" }} />
           </div>
           {pacing.impressionGoalPct !== null && (
             <>
-              <div className="flex justify-between text-[8px]" style={{ color: "rgba(180,155,100,0.4)" }}>
+              <div className="flex justify-between text-[8px]" style={{ color: "rgba(107,94,78,0.40)" }}>
                 <span>Impression goal progress</span>
                 <span>{pacing.impressionGoalPct}%</span>
               </div>
@@ -344,12 +344,12 @@ function PerfCard({ label, value, icon, sub, gold }: {
         background: gold ? "rgba(212,139,0,0.06)" : "rgba(26,26,27,0.04)",
         border: gold ? "1px solid rgba(212,139,0,0.18)" : "1px solid rgba(26,26,27,0.08)",
       }}>
-      <div className="mb-1" style={{ color: gold ? "rgba(212,139,0,0.55)" : "rgba(180,155,100,0.4)" }}>{icon}</div>
+      <div className="mb-1" style={{ color: gold ? "rgba(212,139,0,0.55)" : "rgba(107,94,78,0.40)" }}>{icon}</div>
       <p className="text-2xl font-serif" style={{ color: gold ? "rgba(230,210,175,0.9)" : "rgba(210,190,155,0.82)", fontWeight: 300 }}>
         {value.toLocaleString()}
       </p>
-      <p className="text-[8px] uppercase tracking-wider mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>{label}</p>
-      {sub && <p className="text-[8px] mt-1" style={{ color: gold ? "rgba(212,139,0,0.65)" : "rgba(180,155,100,0.5)" }}>{sub}</p>}
+      <p className="text-[8px] uppercase tracking-wider mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>{label}</p>
+      {sub && <p className="text-[8px] mt-1" style={{ color: gold ? "rgba(212,139,0,0.65)" : "rgba(107,94,78,0.50)" }}>{sub}</p>}
     </div>
   );
 }
@@ -398,7 +398,7 @@ function CampaignForm({
           {title}
         </h3>
         {onCancel && (
-          <button onClick={onCancel} style={{ color: "rgba(180,155,100,0.4)" }}>
+          <button onClick={onCancel} style={{ color: "rgba(107,94,78,0.40)" }}>
             <X size={14} />
           </button>
         )}
@@ -430,7 +430,7 @@ function CampaignForm({
             className="flex items-center gap-2 px-3 py-2 rounded-lg w-full text-xs transition-all"
             style={active
               ? { background: "rgba(100,200,120,0.08)", border: "1px solid rgba(100,200,120,0.25)", color: "rgba(100,200,120,0.8)" }
-              : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(180,155,100,0.5)" }
+              : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(107,94,78,0.50)" }
             }>
             {active ? <CheckCircle2 size={12} /> : <Circle size={12} />}
             {active ? "Active — boosting products" : "Inactive"}
@@ -483,7 +483,7 @@ function CampaignForm({
         {onCancel && (
           <button onClick={onCancel}
             className="px-3 py-2 rounded-lg text-xs"
-            style={{ color: "rgba(180,155,100,0.5)", border: "1px solid rgba(26,26,27,0.10)" }}>
+            style={{ color: "rgba(107,94,78,0.50)", border: "1px solid rgba(26,26,27,0.10)" }}>
             Cancel
           </button>
         )}
@@ -492,7 +492,7 @@ function CampaignForm({
           className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs uppercase tracking-[0.13em]"
           style={{
             background: "linear-gradient(135deg, hsl(43 75% 40%), hsl(45 85% 50%))",
-            color: "hsl(22 18% 6%)",
+            color: "#F5F2ED",
             opacity: saving || !name.trim() ? 0.5 : 1,
           }}>
           <Save size={11} />
@@ -548,7 +548,7 @@ function ProductAssignPanel({
             <Package size={13} className="inline mr-2" style={{ color: "rgba(212,139,0,0.5)" }} />
             Assign Products
           </h3>
-          <p className="text-[8px] uppercase tracking-wider mt-0.5" style={{ color: "rgba(180,155,100,0.38)" }}>
+          <p className="text-[8px] uppercase tracking-wider mt-0.5" style={{ color: "rgba(107,94,78,0.38)" }}>
             Select products to include in this campaign — they'll receive the campaign score boost
           </p>
         </div>
@@ -578,7 +578,7 @@ function ProductAssignPanel({
               <div className="w-3 h-3 rounded-sm flex-shrink-0 flex items-center justify-center"
                 style={isChecked
                   ? { background: "rgba(212,139,0,0.3)", border: "1px solid rgba(212,139,0,0.6)" }
-                  : { border: "1px solid rgba(180,155,100,0.3)" }
+                  : { border: "1px solid rgba(107,94,78,0.30)" }
                 }>
                 {isChecked && <div className="w-1.5 h-1.5 rounded-sm" style={{ background: "rgba(212,139,0,0.9)" }} />}
               </div>
@@ -586,7 +586,7 @@ function ProductAssignPanel({
                 <p className="text-xs truncate font-serif" style={{ color: isChecked ? "rgba(220,200,165,0.9)" : "rgba(200,180,140,0.7)" }}>
                   {item.name}
                 </p>
-                <p className="text-[8px] uppercase tracking-wider" style={{ color: "rgba(180,155,100,0.38)" }}>
+                <p className="text-[8px] uppercase tracking-wider" style={{ color: "rgba(107,94,78,0.38)" }}>
                   {item.category} · {item.tier}
                 </p>
               </div>
@@ -602,7 +602,7 @@ function ProductAssignPanel({
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[8px] uppercase tracking-[0.18em] mb-1.5" style={{ color: "rgba(180,155,100,0.45)" }}>
+    <p className="text-[8px] uppercase tracking-[0.18em] mb-1.5" style={{ color: "rgba(107,94,78,0.45)" }}>
       {children}
     </p>
   );

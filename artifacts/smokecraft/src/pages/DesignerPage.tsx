@@ -359,7 +359,7 @@ function PickerButton({
         padding: "10px 14px", borderRadius: 10, cursor: "pointer",
         border: active ? `1.5px solid ${color ?? "#D48B00"}` : "1.5px solid rgba(255,255,255,0.1)",
         background: active ? `${color ?? "#D48B00"}14` : "rgba(26,26,27,0.05)",
-        color: "#fff", fontSize: 12, fontWeight: active ? 700 : 500,
+        color: "#1A1A1B", fontSize: 12, fontWeight: active ? 700 : 500,
         display: "flex", alignItems: "center", gap: 6,
       }}
     >
@@ -443,7 +443,7 @@ export default function DesignerPage() {
     <div style={{
       minHeight: "100dvh",
       background: "radial-gradient(ellipse at 30% 20%, #EFEBE0 0%, #F5F2ED 60%, #050402 100%)",
-      color: "#e8e0c8",
+      color: "#1A1A1B",
       fontFamily: "var(--app-font-sans, system-ui, sans-serif)",
       display: "flex", flexDirection: "column",
     }}>
@@ -460,7 +460,7 @@ export default function DesignerPage() {
             background: "rgba(26,26,27,0.08)", border: "1px solid rgba(255,255,255,0.1)",
             borderRadius: 12, width: 40, height: 40,
             display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer", color: "rgba(232,224,200,0.8)", flexShrink: 0,
+            cursor: "pointer", color: "rgba(26,26,27,0.78)", flexShrink: 0,
           }}
         >
           <ArrowLeft size={18} />
@@ -469,11 +469,11 @@ export default function DesignerPage() {
         <div>
           <h1 style={{
             fontFamily: "var(--app-font-serif, Georgia, serif)",
-            fontSize: 20, fontWeight: 700, color: "#fff", margin: 0,
+            fontSize: 20, fontWeight: 700, color: "#1A1A1B", margin: 0,
           }}>
             Craft Visual Engine
           </h1>
-          <p style={{ fontSize: 10, color: "rgba(232,224,200,0.4)", margin: 0, letterSpacing: "0.14em", textTransform: "uppercase" }}>
+          <p style={{ fontSize: 10, color: "rgba(26,26,27,0.40)", margin: 0, letterSpacing: "0.14em", textTransform: "uppercase" }}>
             Signature Product Designer
           </p>
         </div>
@@ -487,7 +487,7 @@ export default function DesignerPage() {
                 padding: "7px 12px", borderRadius: 10, cursor: "pointer",
                 border: craft === c.id ? `1.5px solid ${accent}` : "1.5px solid rgba(255,255,255,0.1)",
                 background: craft === c.id ? `${accent}14` : "rgba(26,26,27,0.05)",
-                fontSize: 11, fontWeight: 600, color: "rgba(232,224,200,0.85)",
+                fontSize: 11, fontWeight: 600, color: "rgba(26,26,27,0.82)",
                 display: "flex", alignItems: "center", gap: 5,
               }}
             >
@@ -515,7 +515,7 @@ export default function DesignerPage() {
 
           {/* Brand name */}
           <div>
-            <label style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(232,224,200,0.45)", fontWeight: 700, display: "block", marginBottom: 10 }}>
+            <label style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(26,26,27,0.44)", fontWeight: 700, display: "block", marginBottom: 10 }}>
               Brand Engraving
             </label>
             <input
@@ -532,7 +532,7 @@ export default function DesignerPage() {
                 outline: "none", fontFamily: "var(--app-font-serif, Georgia, serif)",
               }}
             />
-            <p style={{ fontSize: 10, color: "rgba(232,224,200,0.3)", marginTop: 6 }}>
+            <p style={{ fontSize: 10, color: "rgba(26,26,27,0.30)", marginTop: 6 }}>
               {20 - brand.length} chars remaining
             </p>
           </div>
@@ -540,7 +540,7 @@ export default function DesignerPage() {
           {/* Wood type */}
           {craft === "smoke" && (
             <div>
-              <label style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(232,224,200,0.45)", fontWeight: 700, display: "block", marginBottom: 10 }}>
+              <label style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(26,26,27,0.44)", fontWeight: 700, display: "block", marginBottom: 10 }}>
                 Wood
               </label>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
@@ -559,7 +559,7 @@ export default function DesignerPage() {
                       backgroundImage: `${w.grain}, ${w.base}`,
                       border: "1px solid rgba(26,26,27,0.06)",
                     }} />
-                    <span style={{ fontSize: 11, fontWeight: wood === w.id ? 700 : 500, color: "#fff" }}>{w.name}</span>
+                    <span style={{ fontSize: 11, fontWeight: wood === w.id ? 700 : 500, color: "#1A1A1B" }}>{w.name}</span>
                   </motion.button>
                 ))}
               </div>
@@ -568,7 +568,7 @@ export default function DesignerPage() {
 
           {/* Trim */}
           <div>
-            <label style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(232,224,200,0.45)", fontWeight: 700, display: "block", marginBottom: 10 }}>
+            <label style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(26,26,27,0.44)", fontWeight: 700, display: "block", marginBottom: 10 }}>
               Trim
             </label>
             <div style={{ display: "flex", gap: 8 }}>
@@ -586,7 +586,7 @@ export default function DesignerPage() {
           {/* Interior (smoke only) */}
           {craft === "smoke" && (
             <div>
-              <label style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(232,224,200,0.45)", fontWeight: 700, display: "block", marginBottom: 10 }}>
+              <label style={{ fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(26,26,27,0.44)", fontWeight: 700, display: "block", marginBottom: 10 }}>
                 Interior
               </label>
               <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
@@ -634,7 +634,7 @@ export default function DesignerPage() {
                 onClick={handleReset}
                 style={{
                   background: "rgba(26,26,27,0.09)",
-                  color: "rgba(232,224,200,0.7)",
+                  color: "rgba(26,26,27,0.68)",
                   border: "1px solid rgba(26,26,27,0.16)",
                   padding: "13px 20px", borderRadius: 12,
                   fontSize: 11, fontWeight: 600,
@@ -685,7 +685,7 @@ export default function DesignerPage() {
                     style={{
                       flex: 1,
                       background: "rgba(26,26,27,0.07)",
-                      color: "rgba(232,224,200,0.7)",
+                      color: "rgba(26,26,27,0.68)",
                       border: "1.5px solid rgba(26,26,27,0.14)",
                       padding: "12px 8px", borderRadius: 10,
                       fontSize: 11, fontWeight: 600,
@@ -725,7 +725,7 @@ export default function DesignerPage() {
             padding: "48px 32px",
             display: "flex", flexDirection: "column",
             alignItems: "center", gap: 20,
-            background: "rgba(10,8,6,0.6)",
+            background: "rgba(245,242,237,0.6)",
             borderRadius: 24,
             position: "relative",
           }}>
@@ -766,7 +766,7 @@ export default function DesignerPage() {
                 <div key={label} style={{
                   fontSize: 10, padding: "4px 10px", borderRadius: 999,
                   background: `${accent}12`, border: `1px solid ${accent}30`,
-                  color: "rgba(232,224,200,0.65)", letterSpacing: "0.1em",
+                  color: "rgba(26,26,27,0.62)", letterSpacing: "0.1em",
                 }}>
                   {label}
                 </div>
@@ -783,7 +783,7 @@ export default function DesignerPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 style={{
-                  fontSize: 11, color: "rgba(232,224,200,0.3)",
+                  fontSize: 11, color: "rgba(26,26,27,0.30)",
                   marginTop: 20, letterSpacing: "0.14em", textAlign: "center",
                 }}
               >

@@ -22,7 +22,7 @@ import type { BlendDesign }       from "@/services/storage";
 
 const GOLD     = "rgba(212,139,0,1)";
 const GOLD_DIM = "rgba(212,139,0,0.55)";
-const MUTED    = "rgba(180,155,100,0.4)";
+const MUTED    = "rgba(107,94,78,0.40)";
 
 // ── Status helpers ─────────────────────────────────────────────────────────────
 
@@ -30,7 +30,7 @@ const STATUS_ORDER = ["draft", "submitted", "review", "approved", "production"] 
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   draft:      { label: "Draft",       color: MUTED,                         icon: <Flame size={11} />        },
-  submitted:  { label: "Submitted",   color: "rgba(180,155,100,0.75)",       icon: <Clock size={11} />        },
+  submitted:  { label: "Submitted",   color: "rgba(107,94,78,0.72)",       icon: <Clock size={11} />        },
   review:     { label: "In Review",   color: GOLD_DIM,                      icon: <Clock size={11} />        },
   approved:   { label: "Approved",    color: "rgba(100,200,120,0.75)",       icon: <CheckCircle2 size={11} /> },
   production: { label: "Production",  color: "rgba(212,139,0,0.9)",         icon: <Package size={11} />      },
@@ -286,7 +286,7 @@ function RequestCard({ req }: { req: SignatureRequestItem }) {
                 </div>
               )}
 
-              <p className="text-[7px]" style={{ color: "rgba(180,155,100,0.25)" }}>
+              <p className="text-[7px]" style={{ color: "rgba(107,94,78,0.25)" }}>
                 Submitted {new Date(req.createdAt).toLocaleDateString()}
               </p>
             </div>
@@ -397,7 +397,7 @@ export function SignatureCreationsTab() {
         </div>
       ) : requests.length === 0 ? (
         <div className="py-12 text-center">
-          <Crown size={28} className="mx-auto mb-3" style={{ color: "rgba(180,155,100,0.15)" }} />
+          <Crown size={28} className="mx-auto mb-3" style={{ color: "rgba(107,94,78,0.18)" }} />
           <p className="text-xs mb-4" style={{ color: MUTED }}>
             {isMaestro ? "No signature designs yet — create your first one" : "No submissions available"}
           </p>

@@ -27,7 +27,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const GOLD     = "rgba(212,139,0,1)";
 const GOLD_DIM = "rgba(212,139,0,0.55)";
-const MUTED    = "rgba(180,155,100,0.4)";
+const MUTED    = "rgba(107,94,78,0.40)";
 
 // ── Type icons ─────────────────────────────────────────────────────────────────
 
@@ -285,11 +285,11 @@ function DeviceRow({
 
       {/* ID row */}
       <div className="px-4 pb-3 flex items-center gap-2">
-        <p className="text-[7px] font-mono" style={{ color: "rgba(180,155,100,0.25)" }}>
+        <p className="text-[7px] font-mono" style={{ color: "rgba(107,94,78,0.25)" }}>
           {device.id.slice(0, 18)}…
         </p>
         <button onClick={copyId} className="transition-colors"
-          style={{ color: copied ? "rgba(100,200,120,0.6)" : "rgba(180,155,100,0.25)" }}>
+          style={{ color: copied ? "rgba(100,200,120,0.6)" : "rgba(107,94,78,0.25)" }}>
           {copied ? <Check size={8} /> : <Copy size={8} />}
         </button>
       </div>
@@ -580,7 +580,7 @@ export function DeviceManagerTab() {
       ) : devices.length === 0 ? (
         <div className="py-10 text-center rounded-xl"
           style={{ background: "rgba(26,26,27,0.04)", border: "1px solid rgba(26,26,27,0.07)" }}>
-          <Monitor size={28} className="mx-auto mb-3" style={{ color: "rgba(180,155,100,0.15)" }} />
+          <Monitor size={28} className="mx-auto mb-3" style={{ color: "rgba(107,94,78,0.18)" }} />
           <p className="text-xs mb-4" style={{ color: MUTED }}>
             No devices registered yet — add your first device above
           </p>

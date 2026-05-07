@@ -286,7 +286,7 @@ function GlassButton({ label, sub, icon, accent, onClick, primary }: GlassButton
       }} />
 
       <div style={{
-        color: hov ? accent : primary ? accent : "rgba(240,232,212,0.5)",
+        color: hov ? accent : primary ? accent : "rgba(26,26,27,0.50)",
         transition: "color 0.2s ease",
         flexShrink: 0,
       }}>
@@ -655,7 +655,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             justifyContent: "center",
             gap:            24,
             borderTop:      "1px solid rgba(26,26,27,0.07)",
-            background:     "rgba(6,4,2,0.65)",
+            background:     "rgba(245,242,237,0.65)",
             backdropFilter: "blur(12px)",
           }}
         >

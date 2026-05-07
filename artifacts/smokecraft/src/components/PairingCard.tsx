@@ -40,7 +40,7 @@ export function PairingCard({ product }: PairingCardProps) {
           >
             {product.category}
           </span>
-          <span className="text-[9px] uppercase tracking-[0.15em]" style={{ color: "rgba(180,155,100,0.45)" }}>
+          <span className="text-[9px] uppercase tracking-[0.15em]" style={{ color: "rgba(107,94,78,0.45)" }}>
             {product.tier}
           </span>
         </div>
@@ -49,7 +49,7 @@ export function PairingCard({ product }: PairingCardProps) {
           {product.name}
         </h3>
 
-        <p className="text-[9px] uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(180,155,100,0.55)" }}>
+        <p className="text-[9px] uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(107,94,78,0.52)" }}>
           Tasting Notes
         </p>
         <div className="flex flex-wrap gap-1.5 mb-4">
@@ -68,7 +68,7 @@ export function PairingCard({ product }: PairingCardProps) {
         </div>
 
         <div className="mt-auto pt-3" style={{ borderTop: "1px solid rgba(26,26,27,0.08)" }}>
-          <p className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: "rgba(180,155,100,0.5)" }}>
+          <p className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: "rgba(107,94,78,0.50)" }}>
             Pairs beautifully with
           </p>
           <p className="text-xs italic" style={{ color: "rgba(212,139,0,0.65)" }}>

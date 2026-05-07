@@ -202,7 +202,7 @@ export default function PrintExport({ type, data, label, buttonStyle }: PrintExp
         style={{
           display: "flex", alignItems: "center", gap: 6, padding: "7px 14px",
           background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-          borderRadius: 8, color: "rgba(240,232,212,0.6)", fontSize: 11, cursor: "pointer",
+          borderRadius: 8, color: "rgba(26,26,27,0.58)", fontSize: 11, cursor: "pointer",
           ...buttonStyle,
         }}
       >
@@ -218,7 +218,7 @@ export default function PrintExport({ type, data, label, buttonStyle }: PrintExp
         style={{
           display: "flex", alignItems: "center", gap: 6, padding: "7px 14px",
           background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-          borderRadius: 8, color: "rgba(240,232,212,0.6)", fontSize: 11, cursor: "pointer",
+          borderRadius: 8, color: "rgba(26,26,27,0.58)", fontSize: 11, cursor: "pointer",
           ...buttonStyle,
         }}
       >
@@ -243,7 +243,7 @@ export default function PrintExport({ type, data, label, buttonStyle }: PrintExp
             <button key={key} onClick={() => handleExport(key)} style={{
               display: "flex", alignItems: "center", gap: 8, width: "100%",
               padding: "9px 12px", background: "transparent", border: "none",
-              borderRadius: 7, color: "rgba(240,232,212,0.8)", fontSize: 11,
+              borderRadius: 7, color: "rgba(26,26,27,0.78)", fontSize: 11,
               cursor: "pointer", textAlign: "left",
             }}>
               <FileText size={11} color={T.gold} /> {lbl}

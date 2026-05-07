@@ -162,7 +162,7 @@ export default function TasteChallenge({ product, cigar, accent = "#D48B00", tes
         >
           <h4 style={{
             fontFamily: "var(--app-font-serif, Georgia, serif)",
-            fontSize: 28, fontWeight: 600, margin: "0 0 8px", color: "#FFFFFF",
+            fontSize: 28, fontWeight: 600, margin: "0 0 8px", color: "#1A1A1B",
           }}>
             {score.correct}/{score.total}
           </h4>
@@ -213,7 +213,7 @@ export default function TasteChallenge({ product, cigar, accent = "#D48B00", tes
             data-testid={`${testId}-question`}
             style={{
               fontFamily: "var(--app-font-serif, Georgia, serif)",
-              fontSize: 18, fontWeight: 600, margin: "0 0 18px", color: "#FFFFFF",
+              fontSize: 18, fontWeight: 600, margin: "0 0 18px", color: "#1A1A1B",
               lineHeight: 1.4,
             }}
           >
@@ -232,7 +232,7 @@ export default function TasteChallenge({ product, cigar, accent = "#D48B00", tes
                 if (isCorrect) {
                   bg = "rgba(122,154,106,0.25)";
                   border = "1px solid rgba(122,154,106,0.6)";
-                  color = "#FFFFFF";
+                  color = "#1A1A1B";
                 } else if (isSelected && !isCorrect) {
                   bg = "rgba(229,129,143,0.2)";
                   border = "1px solid rgba(229,129,143,0.5)";

@@ -53,7 +53,7 @@ export default function VenueTouchscreen() {
   return (
     <BackgroundLayer image={getBackground("venueTouch")} style={{
         minHeight: "100dvh",
-        color: "#e8e0c8",
+        color: "#1A1A1B",
         padding: "32px 20px env(safe-area-inset-bottom, 20px)",
       }}
     >
@@ -70,7 +70,7 @@ export default function VenueTouchscreen() {
           >
             Venue Operations
           </h1>
-          <p style={{ fontSize: 13, color: "rgba(232,224,200,0.45)", margin: "4px 0 0" }}>
+          <p style={{ fontSize: 13, color: "rgba(26,26,27,0.44)", margin: "4px 0 0" }}>
             {user?.name ? `Welcome, ${user.name}` : "Manage your venue"}
           </p>
         </div>
@@ -83,7 +83,7 @@ export default function VenueTouchscreen() {
             background: "rgba(26,26,27,0.06)",
             border: "1px solid rgba(26,26,27,0.10)",
             borderRadius: 12,
-            color: "rgba(232,224,200,0.6)",
+            color: "rgba(26,26,27,0.58)",
             fontSize: 13,
             cursor: "pointer",
           }}
@@ -93,7 +93,7 @@ export default function VenueTouchscreen() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: 40, color: "rgba(232,224,200,0.3)" }}>Loading...</div>
+        <div style={{ textAlign: "center", padding: 40, color: "rgba(26,26,27,0.30)" }}>Loading...</div>
       ) : (
         <RoleHomeGrid sections={sections} onSelect={handleSelect} />
       )}

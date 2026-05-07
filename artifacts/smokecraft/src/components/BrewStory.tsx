@@ -149,7 +149,7 @@ export default function BrewStory({ product, accent = "#D48B00", testId = "brews
           >
             <h4 style={{
               fontFamily: "var(--app-font-serif, Georgia, serif)",
-              fontSize: 20, fontWeight: 600, margin: "0 0 12px", color: "#FFFFFF",
+              fontSize: 20, fontWeight: 600, margin: "0 0 12px", color: "#1A1A1B",
             }}>
               {panels[idx].title}
             </h4>

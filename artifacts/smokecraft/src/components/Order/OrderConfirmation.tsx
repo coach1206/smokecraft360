@@ -70,7 +70,7 @@ export function OrderConfirmation({ orderId, orderType, onDismiss }: OrderConfir
         <motion.div
           className="relative w-24 h-24 rounded-full flex items-center justify-center"
           style={{
-            background: "linear-gradient(135deg, rgba(212,139,0,0.15), rgba(180,130,30,0.08))",
+            background: "linear-gradient(135deg, rgba(212,139,0,0.15), rgba(212,139,0,0.08))",
             border:     "1px solid rgba(212,139,0,0.4)",
             boxShadow:  "0 0 40px rgba(212,139,0,0.2), 0 0 80px rgba(212,139,0,0.08) inset",
           }}
@@ -94,7 +94,7 @@ export function OrderConfirmation({ orderId, orderType, onDismiss }: OrderConfir
           Your experience<br />is being prepared
         </h2>
 
-        <p className="text-sm mb-6" style={{ color: "rgba(180,155,100,0.6)" }}>
+        <p className="text-sm mb-6" style={{ color: "rgba(107,94,78,0.58)" }}>
           {config.subtitle}
         </p>
 
@@ -111,8 +111,8 @@ export function OrderConfirmation({ orderId, orderType, onDismiss }: OrderConfir
 
         {/* Reference number */}
         <div className="flex items-center justify-center gap-2 mb-10">
-          <Clock size={11} style={{ color: "rgba(180,155,100,0.35)" }} />
-          <span className="text-[10px] uppercase tracking-[0.22em]" style={{ color: "rgba(180,155,100,0.4)" }}>
+          <Clock size={11} style={{ color: "rgba(107,94,78,0.35)" }} />
+          <span className="text-[10px] uppercase tracking-[0.22em]" style={{ color: "rgba(107,94,78,0.40)" }}>
             Ref: {shortId}
           </span>
         </div>
@@ -124,7 +124,7 @@ export function OrderConfirmation({ orderId, orderType, onDismiss }: OrderConfir
           style={{
             background: "rgba(26,26,27,0.07)",
             border:     "1px solid rgba(255,255,255,0.1)",
-            color:      "rgba(180,155,100,0.65)",
+            color:      "rgba(107,94,78,0.62)",
           }}
           whileHover={{ background: "rgba(212,139,0,0.08)", borderColor: "rgba(212,139,0,0.25)", color: "rgba(212,139,0,0.8)" }}
           whileTap={{ scale: 0.97 }}

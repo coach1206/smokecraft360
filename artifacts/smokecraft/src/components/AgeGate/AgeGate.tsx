@@ -100,17 +100,17 @@ export default function AgeGate({ children }: AgeGateProps) {
 
               <h1 style={{
                 fontFamily: "var(--app-font-serif, Georgia, serif)",
-                fontSize: 28, fontWeight: 700, color: "#fff",
+                fontSize: 28, fontWeight: 700, color: "#1A1A1B",
                 margin: "0 0 10px", letterSpacing: "-0.01em",
               }}>
                 Age Verification
               </h1>
               <p style={{
-                fontSize: 14, color: "rgba(232,224,200,0.62)",
+                fontSize: 14, color: "rgba(26,26,27,0.62)",
                 lineHeight: 1.65, margin: "0 0 36px",
               }}>
                 This experience contains tobacco, alcohol, and/or vape products.
-                You must be <strong style={{ color: "rgba(232,224,200,0.9)" }}>21 years of age or older</strong> to continue.
+                You must be <strong style={{ color: "rgba(26,26,27,0.88)" }}>21 years of age or older</strong> to continue.
               </p>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -139,8 +139,8 @@ export default function AgeGate({ children }: AgeGateProps) {
                   onClick={handleDeny}
                   style={{
                     background: "transparent",
-                    color: "rgba(232,224,200,0.38)",
-                    border: "1px solid rgba(232,224,200,0.12)",
+                    color: "rgba(26,26,27,0.38)",
+                    border: "1px solid rgba(26,26,27,0.12)",
                     padding: "13px 28px", borderRadius: 999,
                     fontSize: 12, fontWeight: 500,
                     letterSpacing: "0.14em", textTransform: "uppercase",
@@ -152,7 +152,7 @@ export default function AgeGate({ children }: AgeGateProps) {
               </div>
 
               <p style={{
-                fontSize: 10, color: "rgba(232,224,200,0.22)",
+                fontSize: 10, color: "rgba(26,26,27,0.22)",
                 marginTop: 28, lineHeight: 1.5, letterSpacing: "0.04em",
               }}>
                 By entering you confirm you are of legal purchasing age in your jurisdiction.
@@ -168,12 +168,12 @@ export default function AgeGate({ children }: AgeGateProps) {
               <div style={{ fontSize: 48, marginBottom: 20 }}>🔒</div>
               <h2 style={{
                 fontFamily: "var(--app-font-serif, Georgia, serif)",
-                fontSize: 22, color: "#fff", margin: "0 0 12px",
+                fontSize: 22, color: "#1A1A1B", margin: "0 0 12px",
               }}>
                 Access Restricted
               </h2>
               <p style={{
-                fontSize: 14, color: "rgba(232,224,200,0.52)", lineHeight: 1.65,
+                fontSize: 14, color: "rgba(26,26,27,0.52)", lineHeight: 1.65,
               }}>
                 You must be 21 or older to access this experience.
                 Please see a staff member for assistance.

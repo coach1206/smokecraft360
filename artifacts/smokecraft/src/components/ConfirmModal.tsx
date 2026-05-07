@@ -53,8 +53,8 @@ export default function ConfirmModal({
               <AlertTriangle size={28} color={accentColor} />
             </div>
 
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#e8e0c8", marginBottom: 8 }}>{title}</div>
-            <div style={{ fontSize: 13, color: "rgba(232,224,200,0.5)", lineHeight: 1.6, marginBottom: 24 }}>{message}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#1A1A1B", marginBottom: 8 }}>{title}</div>
+            <div style={{ fontSize: 13, color: "rgba(26,26,27,0.48)", lineHeight: 1.6, marginBottom: 24 }}>{message}</div>
 
             <div style={{ display: "flex", gap: 12 }}>
               <motion.button
@@ -63,7 +63,7 @@ export default function ConfirmModal({
                 style={{
                   flex: 1, padding: "14px", borderRadius: 12, fontSize: 14, fontWeight: 600,
                   background: "rgba(26,26,27,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-                  color: "rgba(232,224,200,0.6)", cursor: "pointer", minHeight: 48,
+                  color: "rgba(26,26,27,0.58)", cursor: "pointer", minHeight: 48,
                 }}
               >{cancelLabel}</motion.button>
               <motion.button
@@ -75,7 +75,7 @@ export default function ConfirmModal({
                     ? "linear-gradient(135deg, #ef4444, #dc2626)"
                     : "linear-gradient(135deg, #D48B00, #a98828)",
                   border: "none",
-                  color: danger ? "#fff" : "#F5F2ED",
+                  color: danger ? "#1A1A1B" : "#F5F2ED",
                   cursor: "pointer", minHeight: 48,
                 }}
               >{confirmLabel}</motion.button>

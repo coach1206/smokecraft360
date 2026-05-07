@@ -43,16 +43,16 @@ export default function SessionTimer({
   const dash = RING_CIRCUMFERENCE * pct;
 
   const ringColor =
-    isExpired   ? "rgba(232,224,200,0.18)" :
+    isExpired   ? "rgba(26,26,27,0.18)" :
     isCountdown ? "#EF4444" :
     isIdle      ? "#F59E0B" :
     accentColor;
 
   const textColor =
-    isExpired   ? "rgba(232,224,200,0.28)" :
+    isExpired   ? "rgba(26,26,27,0.28)" :
     isCountdown ? "#EF4444" :
     isIdle      ? "#F59E0B" :
-    "#FFFFFF";
+    "#1A1A1B";
 
   const pulseAnim = isCountdown
     ? { opacity: [1, 0.55, 1] }
@@ -73,7 +73,7 @@ export default function SessionTimer({
         alignItems:        "center",
         gap:               8,
         padding:           "5px 14px 5px 5px",
-        background:        "rgba(10,8,6,0.6)",
+        background:        "rgba(245,242,237,0.6)",
         border:            `1px solid ${ringColor}35`,
         borderRadius:      999,
         backdropFilter:    "blur(10px)",

@@ -154,7 +154,7 @@ export function BandCreatorModal({
                 </p>
               </div>
               <button onClick={handleClose} className="w-9 h-9 rounded-full flex items-center justify-center"
-                style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.5)" }}>
+                style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(107,94,78,0.50)" }}>
                 <X size={15} />
               </button>
             </div>
@@ -165,7 +165,7 @@ export function BandCreatorModal({
               {/* Live band preview */}
               <div className="flex flex-col items-center py-6 rounded-xl" style={{ background: "rgba(26,26,27,0.06)" }}>
                 <CigarBandPreview design={design} blendName={blendName} style={style} size="md" />
-                <p className="mt-4 text-[9px] uppercase tracking-[0.25em]" style={{ color: "rgba(180,155,100,0.35)" }}>Live Preview</p>
+                <p className="mt-4 text-[9px] uppercase tracking-[0.25em]" style={{ color: "rgba(107,94,78,0.35)" }}>Live Preview</p>
               </div>
 
               {/* Blend name */}
@@ -192,7 +192,7 @@ export function BandCreatorModal({
                       className="px-4 py-2 rounded-full text-sm font-serif tracking-wide transition-all duration-300"
                       style={style === s.id
                         ? { background: "rgba(212,139,0,0.16)", border: "1px solid rgba(212,139,0,0.5)", color: "rgba(212,139,0,0.95)" }
-                        : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(180,155,100,0.6)" }
+                        : { background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(107,94,78,0.58)" }
                       }
                     >{s.label}</button>
                   ))}
@@ -214,7 +214,7 @@ export function BandCreatorModal({
                         style={{
                           background: active ? c.primary : "rgba(26,26,27,0.06)",
                           border: active ? `1px solid ${c.accent}` : "1px solid rgba(26,26,27,0.10)",
-                          color: active ? c.text : locked ? "rgba(180,155,100,0.3)" : "rgba(180,155,100,0.65)",
+                          color: active ? c.text : locked ? "rgba(107,94,78,0.30)" : "rgba(107,94,78,0.62)",
                           opacity: locked ? 0.55 : 1,
                           cursor: locked ? "not-allowed" : "pointer",
                         }}
@@ -248,7 +248,7 @@ export function BandCreatorModal({
                         style={{
                           background: active ? "rgba(212,139,0,0.16)" : "rgba(26,26,27,0.06)",
                           border: active ? "1px solid rgba(212,139,0,0.5)" : "1px solid rgba(26,26,27,0.10)",
-                          color: active ? "rgba(212,139,0,0.95)" : locked ? "rgba(180,155,100,0.3)" : "rgba(180,155,100,0.6)",
+                          color: active ? "rgba(212,139,0,0.95)" : locked ? "rgba(107,94,78,0.30)" : "rgba(107,94,78,0.58)",
                           opacity: locked ? 0.55 : 1,
                           cursor: locked ? "not-allowed" : "pointer",
                         }}
@@ -275,7 +275,7 @@ export function BandCreatorModal({
                         style={{
                           background: active ? "rgba(212,139,0,0.14)" : "rgba(26,26,27,0.06)",
                           border: active ? "1px solid rgba(212,139,0,0.45)" : "1px solid rgba(26,26,27,0.10)",
-                          color: active ? "rgba(212,139,0,0.9)" : locked ? "rgba(180,155,100,0.3)" : "rgba(180,155,100,0.6)",
+                          color: active ? "rgba(212,139,0,0.9)" : locked ? "rgba(107,94,78,0.30)" : "rgba(107,94,78,0.58)",
                           fontFamily: t.id === "sans" ? "'Inter'" : "'Cormorant Garamond', serif",
                           fontStyle: t.id === "italic" ? "italic" : "normal",
                           opacity: locked ? 0.55 : 1,
@@ -296,7 +296,7 @@ export function BandCreatorModal({
                   <Label>
                     Signature Food Pairing
                     {!isElite && (
-                      <span className="ml-2 text-[8px] normal-case tracking-normal" style={{ color: "rgba(180,155,100,0.35)" }}>
+                      <span className="ml-2 text-[8px] normal-case tracking-normal" style={{ color: "rgba(107,94,78,0.35)" }}>
                         — customize at Elite
                       </span>
                     )}
@@ -316,13 +316,13 @@ export function BandCreatorModal({
                             style={{
                               background: isSelected ? "rgba(212,139,0,0.1)" : "rgba(26,26,27,0.05)",
                               border: isSelected ? "1px solid rgba(212,139,0,0.38)" : "1px solid rgba(26,26,27,0.09)",
-                              color: isSelected ? "rgba(230,210,175,0.9)" : "rgba(180,155,100,0.6)",
+                              color: isSelected ? "rgba(230,210,175,0.9)" : "rgba(107,94,78,0.58)",
                             }}
                           >
                             <span className="text-xl leading-none">{emoji}</span>
                             <div className="flex-1 min-w-0">
                               <p className="font-serif text-sm leading-tight">{food.name}</p>
-                              <p className="text-[10px] mt-0.5 truncate" style={{ color: "rgba(180,155,100,0.45)" }}>
+                              <p className="text-[10px] mt-0.5 truncate" style={{ color: "rgba(107,94,78,0.45)" }}>
                                 {food.description.slice(0, 60)}…
                               </p>
                             </div>
@@ -344,7 +344,7 @@ export function BandCreatorModal({
                       <span className="text-xl leading-none">{CATEGORY_EMOJI[foodPairings[0].category] ?? "🍽"}</span>
                       <div className="flex-1">
                         <p className="font-serif text-sm" style={{ color: "rgba(210,190,155,0.75)" }}>{foodPairings[0].name}</p>
-                        <p className="text-[9px] mt-0.5" style={{ color: "rgba(180,155,100,0.4)" }}>Auto-selected pairing</p>
+                        <p className="text-[9px] mt-0.5" style={{ color: "rgba(107,94,78,0.40)" }}>Auto-selected pairing</p>
                       </div>
                       <div className="flex items-center gap-1.5 px-2 py-1 rounded"
                         style={{ background: "rgba(212,139,0,0.07)", border: "1px solid rgba(212,139,0,0.15)" }}>
@@ -359,7 +359,7 @@ export function BandCreatorModal({
               {/* Description */}
               <div>
                 <Label>
-                  Description <span style={{ color: "rgba(180,155,100,0.35)", fontSize: "10px" }}>(optional)</span>
+                  Description <span style={{ color: "rgba(107,94,78,0.35)", fontSize: "10px" }}>(optional)</span>
                 </Label>
                 <textarea rows={2} maxLength={120}
                   placeholder="Describe your signature blend…"
@@ -429,7 +429,7 @@ export function BandCreatorModal({
                       )}
 
                       <p className="mt-3 text-center text-[9px] uppercase tracking-[0.2em]"
-                        style={{ color: copied ? "rgba(100,200,120,0.8)" : "rgba(180,155,100,0.35)" }}>
+                        style={{ color: copied ? "rgba(100,200,120,0.8)" : "rgba(107,94,78,0.35)" }}>
                         {copied ? "✓ Link & text copied" : "Link copied — paste or scan to share"}
                       </p>
                     </div>
@@ -442,7 +442,7 @@ export function BandCreatorModal({
             <div className="flex-shrink-0 px-7 py-5 flex items-center gap-3" style={{ borderTop: "1px solid rgba(26,26,27,0.08)" }}>
               <motion.button onClick={handleShare}
                 className="flex items-center gap-2 px-4 py-3 rounded text-xs uppercase tracking-[0.18em]"
-                style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: "rgba(180,155,100,0.55)" }}
+                style={{ background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.11)", color: "rgba(107,94,78,0.52)" }}
                 whileHover={{ borderColor: "rgba(212,139,0,0.35)", color: "rgba(212,139,0,0.75)" }}
                 whileTap={{ scale: 0.97 }}>
                 <Share2 size={13} />Share
@@ -452,7 +452,7 @@ export function BandCreatorModal({
                 className="flex-1 flex items-center justify-center gap-2 py-3 font-serif text-base tracking-[0.18em] uppercase rounded"
                 style={savedState
                   ? { background: "rgba(100,200,120,0.12)", border: "1px solid rgba(100,200,120,0.3)", color: "rgba(100,200,120,0.8)" }
-                  : { background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))", color: "hsl(22 18% 6%)", boxShadow: "0 0 30px rgba(212,139,0,0.1)" }
+                  : { background: "linear-gradient(135deg, hsl(43 75% 42%), hsl(45 85% 52%))", color: "#F5F2ED", boxShadow: "0 0 30px rgba(212,139,0,0.1)" }
                 }
                 whileHover={!savedState ? { boxShadow: "0 0 40px rgba(212,139,0,0.2)" } : {}}
                 whileTap={!savedState ? { scale: 0.99 } : {}}>
@@ -478,7 +478,7 @@ export function BandCreatorModal({
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ color: "rgba(180,155,100,0.5)" }}>
+    <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ color: "rgba(107,94,78,0.50)" }}>
       {children}
     </p>
   );
@@ -487,7 +487,7 @@ function Label({ children }: { children: React.ReactNode }) {
 function InfoPill({ label, value, icon }: { label: string; value: string; icon?: string }) {
   return (
     <div>
-      <p className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: "rgba(180,155,100,0.4)" }}>{label}</p>
+      <p className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: "rgba(107,94,78,0.40)" }}>{label}</p>
       <p className="font-serif text-sm italic" style={{ color: "rgba(210,190,155,0.7)" }}>
         {icon && <span className="mr-1 not-italic">{icon}</span>}
         {value || "—"}

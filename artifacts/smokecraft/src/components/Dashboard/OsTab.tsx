@@ -98,7 +98,7 @@ export function OsTab() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Activity className="text-emerald-400" size={20} />
-          <h2 className="text-lg font-semibold text-white">Axiom OS</h2>
+          <h2 className="text-lg font-semibold text-[#1A1A1B]">Axiom OS</h2>
           <span className="ml-2 rounded bg-emerald-500/15 px-2 py-0.5 text-xs text-emerald-300">super_admin</span>
         </div>
         <div className="flex items-center gap-2">
@@ -112,7 +112,7 @@ export function OsTab() {
             <RefreshCw size={12} className={loading ? "animate-spin" : ""} /> Refresh
           </button>
           <a href={osEventsCsvUrl(filters)} target="_blank" rel="noreferrer"
-            className="flex items-center gap-1 rounded bg-emerald-600 px-2 py-1 text-xs text-white hover:bg-emerald-500">
+            className="flex items-center gap-1 rounded bg-emerald-600 px-2 py-1 text-xs text-[#1A1A1B] hover:bg-emerald-500">
             <Download size={12} /> CSV
           </a>
         </div>
@@ -120,15 +120,15 @@ export function OsTab() {
 
       {/* Filters */}
       <div className="grid grid-cols-2 gap-2 rounded-lg bg-zinc-900/50 p-3 md:grid-cols-5">
-        <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-white" placeholder="venueId"
+        <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-[#1A1A1B]" placeholder="venueId"
           value={filters.venueId   ?? ""} onChange={e => setFilters(f => ({ ...f, venueId:   e.target.value || undefined }))} />
-        <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-white" placeholder="userId"
+        <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-[#1A1A1B]" placeholder="userId"
           value={filters.userId    ?? ""} onChange={e => setFilters(f => ({ ...f, userId:    e.target.value || undefined }))} />
-        <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-white" placeholder="eventType (e.g. view)"
+        <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-[#1A1A1B]" placeholder="eventType (e.g. view)"
           value={filters.eventType ?? ""} onChange={e => setFilters(f => ({ ...f, eventType: e.target.value || undefined }))} />
-        <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-white" placeholder="module (smokecraft…)"
+        <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-[#1A1A1B]" placeholder="module (smokecraft…)"
           value={filters.module    ?? ""} onChange={e => setFilters(f => ({ ...f, module:    e.target.value || undefined }))} />
-        <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-white" type="number" placeholder="limit (max 1000)"
+        <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-[#1A1A1B]" type="number" placeholder="limit (max 1000)"
           value={filters.limit ?? 100} onChange={e => setFilters(f => ({ ...f, limit: Number(e.target.value) || 100 }))} />
       </div>
 
@@ -178,7 +178,7 @@ export function OsTab() {
           {cmdIcon} Command console
         </h3>
         <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
-          <select className="rounded bg-zinc-800 px-2 py-1 text-xs text-white"
+          <select className="rounded bg-zinc-800 px-2 py-1 text-xs text-[#1A1A1B]"
             value={cmdKind} onChange={e => setCmdKind(e.target.value as CmdKind)}>
             <option value="theme.switch">theme.switch</option>
             <option value="venue.lock">venue.lock</option>
@@ -187,16 +187,16 @@ export function OsTab() {
             <option value="subscription.extend_grace">subscription.extend_grace</option>
           </select>
 
-          <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-white" placeholder="venueId (uuid)"
+          <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-[#1A1A1B]" placeholder="venueId (uuid)"
             value={cmdVenue} onChange={e => setCmdVenue(e.target.value)} />
 
           {cmdKind === "theme.switch" && (
-            <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-white" placeholder="themeProfile slug"
+            <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-[#1A1A1B]" placeholder="themeProfile slug"
               value={cmdTheme} onChange={e => setCmdTheme(e.target.value)} />
           )}
           {cmdKind === "flag.toggle" && (
             <>
-              <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-white" placeholder="flag name"
+              <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-[#1A1A1B]" placeholder="flag name"
                 value={cmdName} onChange={e => setCmdName(e.target.value)} />
               <label className="flex items-center gap-1 text-xs text-zinc-300">
                 <input type="checkbox" checked={cmdEnabled} onChange={e => setCmdEnabled(e.target.checked)} /> enabled
@@ -204,12 +204,12 @@ export function OsTab() {
             </>
           )}
           {cmdKind === "subscription.extend_grace" && (
-            <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-white" type="number" min={1} max={90}
+            <input className="rounded bg-zinc-800 px-2 py-1 text-xs text-[#1A1A1B]" type="number" min={1} max={90}
               placeholder="days (1-90)" value={cmdDays} onChange={e => setCmdDays(Number(e.target.value) || 7)} />
           )}
 
           <button onClick={() => void submitCommand()} disabled={cmdBusy || !cmdVenue}
-            className="col-span-full flex items-center justify-center gap-1 rounded bg-emerald-600 px-3 py-1.5 text-xs text-white hover:bg-emerald-500 disabled:opacity-50">
+            className="col-span-full flex items-center justify-center gap-1 rounded bg-emerald-600 px-3 py-1.5 text-xs text-[#1A1A1B] hover:bg-emerald-500 disabled:opacity-50">
             <Send size={12} /> {cmdBusy ? "Running…" : "Execute"}
           </button>
         </div>

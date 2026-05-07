@@ -79,7 +79,7 @@ function TabBtn({ label, active, badge, onClick }: {
       {label}
       {badge != null && badge > 0 && (
         <span style={{
-          background: "#f59e0b", color: "#000", fontSize: 9, fontWeight: 800,
+          background: "#f59e0b", color: "#1A1A1B", fontSize: 9, fontWeight: 800,
           padding: "1px 6px", borderRadius: 10, minWidth: 16, textAlign: "center",
         }}>{badge}</span>
       )}
@@ -683,7 +683,7 @@ function QRPattern({ data }: { data: string }) {
       {cells.map((v, i) => (
         <div key={i} style={{
           width: 10, height: 10, borderRadius: 1.5,
-          background: v ? "#fff" : "transparent",
+          background: v ? "#1A1A1B" : "transparent",
         }} />
       ))}
     </div>
@@ -871,7 +871,7 @@ function ReservePassTab() {
                 flex: 1, padding: "13px", borderRadius: 12,
                 background: "linear-gradient(135deg, #1a1a1a, #000)",
                 border: "1px solid rgba(26,26,27,0.17)",
-                color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer",
+                color: "#1A1A1B", fontSize: 13, fontWeight: 700, cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 boxShadow: "0 4px 16px rgba(26,26,27,0.18)",
               }}
@@ -887,7 +887,7 @@ function ReservePassTab() {
                 flex: 1, padding: "13px", borderRadius: 12,
                 background: "linear-gradient(135deg, #1565C0, #0D47A1)",
                 border: "1px solid rgba(26,26,27,0.17)",
-                color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer",
+                color: "#1A1A1B", fontSize: 13, fontWeight: 700, cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 boxShadow: "0 4px 16px rgba(13,71,161,0.4)",
               }}

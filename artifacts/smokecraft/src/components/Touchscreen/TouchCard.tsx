@@ -94,7 +94,7 @@ export function TouchCard({
           style={{
             fontSize: isLarge ? 18 : 15,
             fontWeight: 600,
-            color: variant === "gold" ? "#D48B00" : "#e8e0c8",
+            color: variant === "gold" ? "#D48B00" : "#1A1A1B",
             letterSpacing: "0.02em",
             fontFamily: "'Playfair Display', serif",
           }}
@@ -105,7 +105,7 @@ export function TouchCard({
           <div
             style={{
               fontSize: isLarge ? 13 : 11,
-              color: "rgba(232,224,200,0.55)",
+              color: "rgba(26,26,27,0.52)",
               marginTop: 4,
               lineHeight: 1.4,
               fontFamily: "'Inter', sans-serif",
