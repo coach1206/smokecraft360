@@ -105,6 +105,7 @@ import InvestorSimulator              from "@/pages/InvestorSimulator";
 import IdentityLedger                from "@/pages/IdentityLedger";
 import ServiceSagePage               from "@/pages/ServiceSagePage";
 import EstablishmentSetupPage        from "@/pages/EstablishmentSetupPage";
+import PromoDashboard                from "@/pages/PromoDashboard";
 import { StaffBOHFeed }              from "@/components/StaffBOHFeed";
 
 const queryClient = new QueryClient();
@@ -144,6 +145,7 @@ function Router() {
       <Route path="/receipt/:tabId"              component={AxiomReceipt}              />
       <Route path="/mobile-hub"                  component={MobileHub}                 />
       <Route path="/finance-reconciliation"    component={FinanceReconciliation}     />
+      <Route path="/promo-dashboard"           component={PromoDashboard}            />
       <Route path="/pitch"                     component={PitchPage}                 />
       <Route path="/training"                  component={TrainingHub}               />
       <Route path="/training/employee"         component={TrainingEmployee}          />
