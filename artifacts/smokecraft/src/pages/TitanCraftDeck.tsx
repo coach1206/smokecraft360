@@ -60,8 +60,8 @@ function CraftCard({ id, title, color, route }: CardProps) {
 
   return (
     <motion.div
-      className="relative group glass-card rounded-xl overflow-hidden cursor-pointer"
-      whileHover={{ scale: 1.018, boxShadow: `0 0 28px ${color}40, 0 10px 30px rgba(0,0,0,0.50)` }}
+      className="relative group axiom-card overflow-hidden cursor-pointer"
+      whileHover={{ scale: 1.018, boxShadow: `0 0 28px ${color}40, 0 10px 40px rgba(0,0,0,0.80)` }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => navigate(route)}
@@ -145,7 +145,7 @@ function EnvPulse() {
   const gold = "var(--gold-luster)";
 
   return (
-    <div className="steel-texture rounded-lg p-4 flex justify-between items-center border-l-2"
+    <div className="steel-panel rounded-lg p-4 flex justify-between items-center border-l-2"
       style={{ borderLeftColor: isDeviant ? "#f59e0b" : "var(--ax-gold)" }}>
       <div>
         <div className="text-[8px] font-bold uppercase tracking-widest" style={{ color: gold }}>
@@ -191,14 +191,14 @@ export default function TitanCraftDeck() {
           transition={{ duration: 0.35 }}
           className="h-screen w-full flex flex-col"
           style={{
-            background: "var(--steel-bg)",
-            color: "#e0e0e0",
+            background: "var(--axiom-body-bg, var(--steel-bg))",
+            color: "white",
             fontFamily: "var(--app-font-sans, system-ui, sans-serif)",
             overflow: "hidden",
           }}
         >
           {/* Header */}
-          <header className="flex justify-between items-center px-10 pt-8 pb-6 border-b border-white/5 flex-shrink-0">
+          <header className="flex justify-between items-center px-10 pt-8 pb-6 gold-trim flex-shrink-0 steel-panel">
             <div className="flex items-center gap-2">
               <motion.div
                 className="h-1 w-6 rounded-full bg-emerald-500"

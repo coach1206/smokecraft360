@@ -1,0 +1,44 @@
+import React, { useState, useEffect } from 'react';
+
+const demographicData = [
+  { craft: "Beer", group: "Young Professional", img: "https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=300" },
+  { craft: "Pork", group: "Executive Traveler", img: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=300" },
+  { craft: "Smoke", group: "Luxury Connoisseur", img: "https://images.unsplash.com/photo-1527030280862-64139fba04ca?w=300" },
+  { craft: "Vape", group: "Social Elite", img: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=300" }
+];
+
+export default function App() {
+  const [index, setIndex] = useState(0);
+  useEffect(() => { const timer = setInterval(() => setIndex(i => (i + 1) % 4), 5000); return () => clearInterval(timer); }, []);
+
+  return (
+    <div className="p-8 h-screen flex flex-col justify-between select-none">
+      <header className="flex justify-between items-center gold-trim pb-4">
+        <h1 className="text-xs tracking-[0.4em] font-bold text-yellow-600 uppercase">Axiom OS // Titan Active</h1>
+        <div className="flex gap-4 text-[10px] uppercase opacity-50"><span>Kiosk Locked</span><span>NFC Ready</span></div>
+      </header>
+
+      <main className="grid grid-cols-2 gap-8 flex-grow mt-10">
+        {demographicData.map((d, i) => (
+          <div key={i} className="axiom-card p-6 flex items-center gap-6 transition-all duration-1000">
+            <img src={index === i ? d.img : demographicData[(index+i)%4].img} className="w-24 h-24 object-cover rounded-md border border-yellow-500/20 shadow-xl" />
+            <div>
+              <p className="text-[10px] text-yellow-600 font-bold uppercase tracking-widest">{d.craft} Craft</p>
+              <h2 className="text-2xl font-light italic">{index === i ? d.group : "Analyzing..."}</h2>
+            </div>
+          </div>
+        ))}
+      </main>
+
+      <footer className="flex justify-between items-center steel-panel p-6 mt-10 rounded-lg border-t border-yellow-900/30">
+        <div className="flex items-center gap-4">
+          <div className="w-4 h-4 bg-yellow-600 rotate-45 shadow-[0_0_10px_gold]" />
+          <span className="font-bold tracking-widest text-white uppercase">Smokecraft 360</span>
+        </div>
+        <div className="text-[10px] opacity-40 uppercase tracking-tighter text-right">
+          Environment Pulse: Nominal <br /> Lounge Vitality: High
+        </div>
+      </footer>
+    </div>
+  );
+}

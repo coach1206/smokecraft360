@@ -244,6 +244,12 @@
   --steel-bg:          #09090a;
   --gold-luster:       #f9e29a;
   --gold-glow:         rgba(212,175,55,0.15);
+
+  /* ── Sovereign Terminal tokens — Material & Humidor palette ── */
+  --gold:              #d4af37;
+  --steel:             #1a1a1c;
+  --glow:              rgba(212,175,55,0.10);
+  --axiom-body-bg:     radial-gradient(circle at center, #121214 0%, #050505 100%);
 }
 
 @layer base {
@@ -742,6 +748,26 @@
     opacity: 0.18;
     mix-blend-mode: multiply;
     background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='256' height='256' filter='url(%23g)' opacity='1'/></svg>");
+  }
+
+  /* ── axiom-card — sovereign terminal dark glass card ── */
+  .axiom-card {
+    background:     rgba(20,20,22,0.90);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border:         1px solid rgba(212,175,55,0.20);
+    border-radius:  12px;
+    box-shadow:     0 10px 40px rgba(0,0,0,0.80);
+  }
+
+  /* ── gold-trim — warm gold ruled-line accent ── */
+  .gold-trim {
+    border-bottom: 2px solid var(--gold);
+  }
+
+  /* ── steel-panel — deep obsidian gradient panel ── */
+  .steel-panel {
+    background: linear-gradient(145deg, #1e1e21 0%, #0a0a0b 100%);
   }
 
   /* ── TITAN steel-texture — obsidian machined-metal surface ── */
