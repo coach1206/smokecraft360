@@ -22,17 +22,24 @@ import { getXP, addXP, getCurrentLevel, xpProgressPct } from "@/lib/xpStore";
 // ── Unsplash hero images mapped by craft id ────────────────────────────────
 
 const CRAFT_IMAGES: Record<string, string> = {
-  smoke: "https://images.unsplash.com/photo-1527030280862-64139fba04ca?q=80&w=400&fit=crop",
-  pour:  "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=400&fit=crop",
-  brew:  "https://images.unsplash.com/photo-1535958636474-b021ee887b13?q=80&w=400&fit=crop",
-  vape:  "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=400&fit=crop",
+  smoke: "https://images.unsplash.com/photo-1527030280862-64139fba04ca?q=80&w=800&fit=crop",
+  pour:  "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=800&fit=crop",
+  brew:  "https://images.unsplash.com/photo-1535958636474-b021ee887b13?q=80&w=800&fit=crop",
+  vape:  "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&fit=crop",
 };
 
 const CRAFT_SUBS: Record<string, string> = {
-  smoke: "Luxury Connoisseurs",
-  pour:  "Executive Travelers",
-  brew:  "Young Professionals",
-  vape:  "Social Elite",
+  smoke: "Premium Tobacco // Ritual Prep",
+  pour:  "Spirits // Vessel Geometry",
+  brew:  "Craft Beer // Fermentation Lab",
+  vape:  "Vapor // Cloud Architecture",
+};
+
+const CRAFT_CTAS: Record<string, string> = {
+  smoke: "Enter Atelier",
+  pour:  "Explore Spirits",
+  brew:  "Enter Brewery",
+  vape:  "Enter Vapor Lab",
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -58,71 +65,61 @@ interface CardProps {
 function CraftCard({ id, title, color, route, active }: CardProps) {
   const [, navigate] = useLocation();
   const img = CRAFT_IMAGES[id] ?? CRAFT_IMAGES.smoke;
-  const sub = CRAFT_SUBS[id] ?? "Select Clientele";
+  const sub = CRAFT_SUBS[id]  ?? "Select Clientele";
+  const cta = CRAFT_CTAS[id]  ?? "Enter";
+  const isSmoke = id === "smoke";
 
   return (
     <motion.div
-      className="relative group axiom-card overflow-hidden cursor-pointer"
+      className="glass-card relative group cursor-pointer"
       animate={{
-        scale:   active ? 1.035 : 1,
-        opacity: active ? 1 : 0.58,
+        scale:   active ? 1.025 : 1,
+        opacity: active ? 1 : 0.70,
         boxShadow: active
-          ? `0 0 0 1px ${color}90, 0 0 28px ${color}40, 0 10px 40px rgba(0,0,0,0.80)`
-          : "0 0 0 1px rgba(212,175,55,0.12), 0 10px 30px rgba(0,0,0,0.50)",
+          ? `0 0 0 1px ${color}90, 0 0 32px ${color}50, 0 16px 48px rgba(0,0,0,0.85)`
+          : "0 0 0 1px rgba(255,255,255,0.10), 0 10px 30px rgba(0,0,0,0.60)",
       }}
-      whileTap={{ scale: active ? 1.01 : 0.98 }}
+      whileTap={{ scale: active ? 1.01 : 0.97 }}
       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => navigate(route)}
     >
+      {/* Full-bleed hero image — positioned by .glass-card img */}
+      <img src={img} alt={title} />
+
+      {/* Gradient overlay — darkens bottom for legibility */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
+
       {/* Animated top accent */}
       <motion.div
         style={{ background: color }}
-        className="absolute top-0 left-0 right-0 h-[2px]"
-        animate={{ opacity: active ? [0.6, 1, 0.6] : [0.2, 0.35, 0.2] }}
+        className="absolute top-0 left-0 right-0 h-[2px] z-20"
+        animate={{ opacity: active ? [0.7, 1, 0.7] : [0.2, 0.4, 0.2] }}
         transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Gradient bleed */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: `linear-gradient(to bottom right, ${color}14 0%, transparent 55%, rgba(0,0,0,0.35) 100%)` }}
-      />
-
-      <div className="relative h-full p-6 flex flex-col justify-between">
-        {/* Header row */}
-        <div className="flex justify-between items-start">
-          <div className="relative">
-            <img
-              src={img}
-              alt={title}
-              className="w-24 h-24 rounded-lg object-cover"
-              style={{ border: `1px solid ${color}${active ? "55" : "22"}` }}
-            />
-            <div
-              className="absolute inset-0 rounded-lg pointer-events-none"
-              style={{ background: `linear-gradient(135deg, ${color}18 0%, transparent 60%)` }}
-            />
-          </div>
-          <div className="text-right">
-            <p className="text-[10px] tracking-[0.3em] uppercase font-bold mb-1" style={{ color }}>
-              {title}
-            </p>
-            <h2 className="text-2xl font-light text-white italic tracking-wide leading-tight">
-              Craft Hub
-            </h2>
-          </div>
-        </div>
-
-        {/* Footer row */}
-        <div className="mt-8 pt-4 border-t border-white/5 flex justify-between items-center text-[10px] uppercase tracking-tighter opacity-50">
-          <span>Target: {sub}</span>
-          <motion.div
-            className="h-2 w-2 rounded-full"
-            style={{ background: active ? "#10b981" : "#4b5563" }}
-            animate={active ? { scale: [1, 1.5, 1], opacity: [0.7, 1, 0.7] } : {}}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
+      {/* Bottom content */}
+      <div className="absolute bottom-0 left-0 p-8 z-20 w-full">
+        <p className="text-[10px] tracking-[0.35em] uppercase font-bold mb-2 opacity-70" style={{ color }}>
+          {title}
+        </p>
+        <h2 className={`text-3xl italic mb-2 leading-tight ${isSmoke ? "gold-luster-text" : "text-white/90"}`}
+          style={isSmoke ? {} : { color }}>
+          Craft Hub
+        </h2>
+        <p className="text-white/50 text-[10px] tracking-widest uppercase mb-6">{sub}</p>
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          className={`px-6 py-2 text-[10px] uppercase tracking-widest bg-black/40 backdrop-blur-md ${isSmoke ? "gold-luster-text" : ""}`}
+          style={{
+            border: `1px solid ${isSmoke ? "rgba(212,175,55,0.50)" : color + "60"}`,
+            color:  isSmoke ? undefined : color,
+            cursor: "pointer",
+          }}
+          onClick={e => { e.stopPropagation(); navigate(route); }}
+        >
+          {cta}
+        </motion.button>
       </div>
     </motion.div>
   );
@@ -268,6 +265,7 @@ export default function TitanCraftDeck() {
                   Titan Engine // Active
                 </span>
               </div>
+              <div className="h-[2px] w-full bg-gradient-to-r from-yellow-500 to-transparent mt-1" />
               <p className="text-[10px] text-white/40 tracking-[0.2em] mt-1 italic">Connoisseur Intelligence Engine</p>
             </div>
 
