@@ -1,0 +1,98 @@
+Proceed in the EXACT architectural sequence defined in the AXIOM OS Infinite Architecture document.
+
+Begin immediately with:
+
+PHASE 0 → Neural Substrate  
+THEN  
+PHASE 1 → Venue DNA Profiles  
+THEN  
+PHASE 2 → Spatial Haptics + Sonic DNA
+
+Do NOT skip ahead or parallelize phases. The intelligence foundation must exist before predictive adaptation layers are introduced.
+
+IMPORTANT ARCHITECTURAL DIRECTIVE:
+
+Phase 2 must be implemented as a hardware-agnostic orchestration architecture.
+
+Build:
+• acoustic intelligence layer  
+• haptic event architecture  
+• wearable signal infrastructure  
+• environmental trigger APIs  
+• device abstraction layers  
+• spatial resonance routing  
+• sonic DNA orchestration  
+• tactile feedback engine
+
+DO NOT:
+• hard-code vendor-specific hardware  
+• tightly couple the architecture to any physical device manufacturer  
+• require proprietary venue hardware to run core AXIOM OS functionality
+
+Treat physical integrations as:
+MODULAR PLUG-IN ADAPTERS.
+
+The architecture must support future integrations with:
+• Android vibration APIs  
+• Apple wearable systems  
+• Samsung wearables  
+• smart lighting  
+• smart floors  
+• directional speakers  
+• scent systems  
+• IoT venue infrastructure  
+• environmental hardware controllers
+
+without requiring architectural rewrites later.
+
+PHASE 2 FALLBACK RULE:
+
+If venue hardware is unavailable, AXIOM OS must gracefully simulate:
+• environmental resonance  
+• acoustic intelligence  
+• tactile reinforcement  
+• atmospheric feedback
+
+through:
+• layered audio  
+• visual telemetry  
+• liquid-glass reactions  
+• environmental motion  
+• mobile vibration APIs when available  
+• UI material physics
+
+The venue must still feel:
+premium,
+alive,
+and emotionally intelligent,
+even without advanced hardware installed.
+
+This ensures scalable deployment tiers:
+
+LEVEL 1 → Tablet-only venue  
+LEVEL 2 → Enhanced audio venue  
+LEVEL 3 → Full intelligent sensory venue
+
+without rebuilding the core architecture.
+
+Maintain ALL AXIOM OS design directives:
+• cinematic environmental depth  
+• floating spatial interfaces  
+• liquid-glass material physics  
+• smoked-glass telemetry  
+• no flat UI  
+• no spreadsheet operational systems  
+• no emojis or glyphs  
+• persistent AXIOM OS branding  
+• realistic imagery only  
+• touch-first ergonomics  
+• weighted damping motion  
+• calm luxury operational energy
+
+Core philosophy enforcement:
+Calm Is Power  
+Smooth Is Intelligence  
+Control Is Luxury
+
+Proceed with implementation immediately beginning at:
+PHASE 0 — Neural Substrate.

@@ -421,12 +421,18 @@ import staffFloorRouter        from "./routes/staffFloor";
 import leaderboardRouter        from "./routes/leaderboard";
 import snapshotRouter,
        { operationalRouter }   from "./routes/sessionSnapshots";
+import neuralSubstrateRouter   from "./routes/neuralSubstrate";
+import venueDNARouter          from "./routes/venueDNA";
+import spatialHapticsRouter    from "./routes/spatialHaptics";
 app.use("/api/mentor",        mentorAIRouter);
 app.use("/api/xp",            xpEngineRouter);
 app.use("/api/staff",         staffFloorRouter);
 app.use("/api/leaderboard",   leaderboardRouter);
 app.use("/api/snapshots",     snapshotRouter);
 app.use("/api/operational",   operationalRouter);
+app.use("/api/neural",        neuralSubstrateRouter);
+app.use("/api/venue-dna",     venueDNARouter);
+app.use("/api",               spatialHapticsRouter);
 app.use("/api",                         usersRouter);
 app.use("/api",                         aiRouter);
 app.use("/api/admin/entitlements",      entitlementsRouter);
