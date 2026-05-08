@@ -295,15 +295,8 @@ function App() {
                   <OrchestratorProvider>
                   <HandoffProvider>
                     <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                      <LoungeEnvironment>
-                        <GlobalAmbientOverlay />
-                        <PersistentAmbientLayer />
-                        <ParticleSystem />
-                        <GlobalBackButton />
-                        <InactivityGuard />
                         <Router />
                         <AxiomBootManager />
-                      </LoungeEnvironment>
                     </WouterRouter>
                     <EeisOverlay />
                     <StaffBOHFeed />

@@ -36,7 +36,7 @@ const TitanCraftDeck = () => {
 };
 
 const quadStyle = { position: 'relative', border: '0.5px solid rgba(255,255,255,0.1)', overflow: 'hidden' };
-const imgStyle = { width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', opacity: 1, filter: 'brightness(1.1)' };
+const imgStyle = { width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block', opacity: 1, filter: 'brightness(1.1)' };
 const coreStyle = { position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '14px', height: '14px', borderRadius: '50%', background: '#d4af37', animation: 'breathe 3s infinite', zIndex: 100, border: '2px solid #fff' };
 const goldLabel = { position: 'absolute', bottom: '20px', left: '20px', fontWeight: '900', letterSpacing: '0.3em', background: 'linear-gradient(180deg, #fff9e6, #d4af37)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' };
 const silverLabel = { position: 'absolute', bottom: '20px', left: '20px', fontWeight: '900', letterSpacing: '0.3em', color: '#c0c0c0' };
