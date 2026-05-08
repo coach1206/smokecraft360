@@ -1,0 +1,811 @@
+FINAL — AXIOM OS MASTER SYSTEM PROMPT
+
+UNIVERSAL CRAFT INTELLIGENCE + LIVE OPERATIONAL HANDOFF ARCHITECTURE
+
+COMPLETE CANONICAL REPLIT IMPLEMENTATION DOCUMENT
+
+MISSING / REQUIRED
+
+The following systems MUST exist and be fully integrated together before declaring the platform complete.
+
+⸻
+
+CORE AXIOM OS SYSTEMS
+
+• AXIOM OS startup engine
+• Neural Bridge real-time event architecture
+• Universal Craft Engine
+• Cross-craft intelligence engine
+• OpenAI conversational AI integration
+• OpenAI voice integration
+• Mentor personality system
+• Universal gamification engine
+• Dynamic XP + ranking system
+• Universal leaderboard engine
+• Dynamic challenge engine
+• Behavioral analytics engine
+• Predictive recommendation engine
+• Persistent memory engine
+• Adaptive difficulty engine
+• Universal reward engine
+• Achievement + badge system
+• AI pairing intelligence
+• Environmental animation engine
+• Dynamic audio engine
+• Session snapshot + restore engine
+• Operational handoff engine
+• Staff operational cockpit
+• Real-time telemetry engine
+• Live inventory sync system
+• Venue recommendation engine
+• Multi-device synchronization
+• Loyalty + event system
+• Assisted discovery mode
+• VIP intelligence engine
+• Real-time websocket architecture
+• Universal profile database
+• Touchscreen optimization system
+
+⸻
+
+FAILURE PREVENTION CHECKLIST
+
+DO NOT:
+• create static screens
+• create dead pauses
+• use generic POS layouts
+• use flat UI
+• use static images
+• use abrupt transitions
+• use emoji/cartoon styling
+• create disconnected craft systems
+• create visual-only features without backend logic
+• hardcode challenge questions into frontend files
+• interrupt immersion during operational handoff
+• freeze the customer experience completely
+• create spreadsheet-looking staff dashboards
+• allow instant mastery progression
+• use traditional menu navigation patterns
+
+MUST:
+• maintain cinematic movement at all times
+• keep environments alive continuously
+• use realistic smoke/liquid/vapor animation
+• maintain luxury Apple/Tesla-level smoothness
+• use real-time synchronization
+• use OpenAI dynamically across all systems
+• track behavioral analytics silently
+• maintain cross-craft intelligence sharing
+• support touchscreen/tablet/desktop
+• use GPU-accelerated animation
+• use layered ambient audio
+• maintain immersive environmental storytelling
+• ensure operational handoffs feel invisible
+• preserve customer session state during handoff
+• synchronize customer + staff recommendations in real time
+
+⸻
+
+PLATFORM PURPOSE
+
+This is NOT:
+• a website
+• a POS
+• a kiosk
+• a dashboard
+
+Build a production-grade:
+
+AXIOM OS
+
+Luxury Behavioral Intelligence Operating System
+
+Containing:
+• SmokeCraft
+• PourCraft
+• BrewCraft
+• VapeCraft
+
+The system should feel like:
+
+Apple + Tesla + luxury hospitality + behavioral AI + cinematic lounge environment.
+
+The user should feel:
+they entered a living intelligent ecosystem.
+
+⸻
+
+UNIVERSAL EXPERIENCE FLOW
+
+PHASE 1 — AXIOM OS STARTUP
+
+“The Machine Awakens”
+
+Startup sequence:
+
+1. Black screen
+2. Ambient low-frequency hum
+3. PROFOUND INNOVATIONS reveal
+4. “Powered by AXIOM OS”
+5. Rotating concentric Axiom rings
+6. Neural Bridge activation
+7. Telemetry lines appear
+8. Environment synchronization begins
+
+Tiny system text:
+
+• Neural Bridge Connected
+• Mentor Intelligence Active
+• Behavioral Systems Online
+• Experience Engines Active
+• Environmental Sync Complete
+• Predictive Intelligence Ready
+
+Visual style:
+• obsidian black
+• smoked glass
+• metallic reflections
+• ember gold
+• subtle fog
+• cinematic depth
+
+NO flat UI.
+
+⸻
+
+PHASE 2 — CRAFT HUB ENTRY
+
+“Choose Your World”
+
+Display 4 orbiting craft worlds:
+
+• SmokeCraft
+• PourCraft
+• BrewCraft
+• VapeCraft
+
+Each world:
+• moves slowly
+• reacts to touch
+• breathes visually
+• contains living cinematic previews
+
+⸻
+
+CRAFT IDENTITIES
+
+SMOKECRAFT
+
+• glowing ember
+• drifting smoke
+• walnut lounge
+• gold reflections
+
+POURCRAFT
+
+• whiskey pour
+• crystal reflections
+• liquid swirl
+
+BREWCRAFT
+
+• beer foam
+• carbonation
+• copper brewery lighting
+
+VAPECRAFT
+
+• vapor clouds
+• neon reflections
+• futuristic atmosphere
+
+⸻
+
+PHASE 3 — MENTOR SELECTION
+
+“Every Master Had A Guide”
+
+User selects AI mentor:
+
+• Traditionalist
+• Scientist
+• Collector
+• Social Expert
+• Sommelier
+• Rebel
+
+Each mentor includes:
+• unique OpenAI system prompts
+• unique voice personality
+• different educational style
+• challenge behavior
+• reward psychology
+
+⸻
+
+OPENAI VOICE SYSTEM
+
+Allow:
+• male/female
+• calm
+• sophisticated
+• futuristic concierge
+• luxury lounge tone
+
+Persist voice selection.
+
+Voice remains active throughout experience.
+
+⸻
+
+PHASE 3A — EXPERIENCE LEVEL SELECTION
+
+“Where Does Your Journey Begin?”
+
+Levels:
+
+LEVEL 1 — Curious Explorer
+
+Guided learning.
+Easy XP.
+
+LEVEL 2 — Lounge Enthusiast
+
+Moderate challenge.
+
+LEVEL 3 — Craft Specialist
+
+Advanced understanding.
+Gain OR lose XP.
+
+LEVEL 4 — Aficionado
+
+Behavioral + sensory mastery.
+
+LEVEL 5 — Golden Box Candidate
+
+Elite challenge tier.
+
+⸻
+
+UNIVERSAL MASTER SCORE
+
+All users maintain:
+
+0–100 Craft Score
+
+Progression:
+0–20 → Explorer
+21–40 → Enthusiast
+41–60 → Specialist
+61–85 → Aficionado
+86–100 → Golden Box Tier
+
+Users can:
+gain OR lose points.
+
+⸻
+
+PHASE 4 — CINEMATIC CRAFT OPENINGS
+
+SMOKECRAFT
+
+Immediately upon entry:
+• cigar ignition
+• ember glow
+• drifting smoke
+• ash formation
+• jazz ambience
+
+Mentor says:
+
+“Every great cigar tells a story.”
+
+Smoke continues moving indefinitely.
+
+⸻
+
+POURCRAFT
+
+• liquor pour animation
+• ice movement
+• condensation
+• glass reflections
+
+Audio:
+• pour sounds
+• glass clinks
+• ice settling
+
+⸻
+
+BREWCRAFT
+
+• beer tap pouring
+• foam rising
+• carbonation bubbles
+• brewery ambiance
+
+⸻
+
+VAPECRAFT
+
+• reactive vapor clouds
+• LED pulse
+• futuristic atmosphere
+
+⸻
+
+IMPORTANT
+
+Animations NEVER stop.
+
+The environment must always feel:
+alive,
+breathing,
+reactive.
+
+⸻
+
+PHASE 5 — GOLDEN BOX INTRO
+
+“The Legend”
+
+Introduce prestige system:
+
+• XP
+• mastery
+• elite unlocks
+• hidden rewards
+• events
+• challenge tiers
+
+Possible universal elite system:
+
+AXIOM BLACK TIER
+
+⸻
+
+PHASE 6 — OPTIONAL USER ENTRY
+
+“Join The Challenge”
+
+Optional:
+• name
+• age
+• state
+• phone
+
+Benefits:
+• rewards
+• challenges
+• leaderboard
+• event invites
+• exclusive offers
+
+Immediately trigger:
+
++100 XP
+
+Use:
+• particles
+• glow
+• mentor praise
+• dopamine reward effects
+
+⸻
+
+PHASE 7 — UNIVERSAL GAMIFIED JOURNEY ENGINE
+
+Build modular AI-driven question engine.
+
+Questions generated dynamically using:
+• OpenAI
+• mentor personality
+• user skill level
+• venue inventory
+• behavioral history
+
+⸻
+
+UNIVERSAL QUESTION TYPES
+
+Every craft includes:
+• region selection
+• flavor profiles
+• intensity
+• pairing style
+• mood
+• equipment preference
+• advanced challenges
+• sensory analysis
+• behavioral choices
+
+⸻
+
+SMOKECRAFT QUESTIONS
+
+Include:
+• tobacco regions
+• wrapper types
+• binder/filler
+• vitolas
+• cuts
+• smoke duration
+• pairing science
+
+Use:
+realistic animated cigars.
+
+Explain:
+what each choice affects.
+
+⸻
+
+POURCRAFT QUESTIONS
+
+Include:
+• whiskey regions
+• barrel aging
+• proof preference
+• cocktail styles
+
+⸻
+
+BREWCRAFT QUESTIONS
+
+Include:
+• hops
+• malts
+• fermentation
+• IBU
+
+⸻
+
+VAPECRAFT QUESTIONS
+
+Include:
+• airflow
+• nicotine
+• vapor density
+• device preference
+
+⸻
+
+AI MENTOR ENGINE
+
+Mentors:
+• explain dynamically
+• adapt difficulty
+• maintain memory
+• educate conversationally
+• challenge intelligently
+
+NO robotic responses.
+
+⸻
+
+XP + DOPAMINE ENGINE
+
+Include:
+• XP gain/loss
+• achievements
+• badges
+• sound rewards
+• glow effects
+• ember pulses
+• leaderboard movement
+
+Examples:
++25 XP
+−5 XP
+
+Feedback should feel elegant.
+
+⸻
+
+DYNAMIC DIFFICULTY ENGINE
+
+Difficulty adapts based on:
+• skill level
+• engagement
+• answer quality
+• behavioral patterns
+
+Experts receive:
+• sensory analysis
+• pairing reconstruction
+• region identification
+• advanced logic challenges
+
+⸻
+
+PREDICTIVE ANALYTICS ENGINE
+
+Track:
+• behavior
+• timing
+• selections
+• spending
+• emotional patterns
+• engagement depth
+• pairing interests
+
+Generate:
+• AI recommendations
+• upsell opportunities
+• retention predictions
+• personalized rewards
+
+⸻
+
+CUSTOM CREATION ENGINE
+
+Advanced users unlock:
+
+SMOKECRAFT
+
+Custom cigar box:
+• mahogany
+• walnut
+• ebony
+• amber oak
+
+Custom bands:
+• crest
+• foil
+• monogram
+• uploaded logo
+
+⸻
+
+POURCRAFT
+
+Custom bottle + label designer.
+
+BREWCRAFT
+
+Custom beer identity creator.
+
+VAPECRAFT
+
+Custom flavor + device creator.
+
+⸻
+
+UNIVERSAL PROFILE SYSTEM
+
+Persist:
+• mentor
+• XP
+• achievements
+• rankings
+• challenge history
+• voice profile
+• preferences
+• pairings
+• predictive insights
+• craft scores
+• overall Axiom score
+
+Use PostgreSQL + Drizzle ORM.
+
+⸻
+
+UNIVERSAL CROSS-CRAFT INTELLIGENCE
+
+One shared profile across:
+• SmokeCraft
+• PourCraft
+• BrewCraft
+• VapeCraft
+
+Cross-craft learning influences recommendations.
+
+⸻
+
+OPERATIONAL HANDOFF SYSTEM
+
+“Assisted Discovery Mode”
+
+When staff activates handoff:
+
+Customer experience DOES NOT stop.
+
+Instead:
+the environment transitions into:
+
+ASSISTED DISCOVERY MODE
+
+⸻
+
+CUSTOMER EXPERIENCE DURING HANDOFF
+
+The environment:
+• softens slightly
+• continues moving
+• remains immersive
+
+A smoked-glass overlay appears.
+
+Messages:
+
+“A Craft Specialist is preparing your experience.”
+
+OR:
+
+“Personalizing your next recommendation…”
+
+⸻
+
+IMPORTANT
+
+The customer experience remains:
+alive,
+active,
+immersive.
+
+NOT frozen.
+
+⸻
+
+LIVE DISCOVERY MODE
+
+While staff operates backend controls:
+
+Customer sees:
+• humidor recommendations
+• featured cigars
+• featured pours
+• pairings
+• seasonal selections
+• rare products
+• event recommendations
+
+All dynamically tied to:
+• venue inventory
+• user behavior
+• flavor profile
+• current mood
+• AI recommendations
+
+⸻
+
+SYNCHRONIZED CUSTOMER + STAFF INTELLIGENCE
+
+When customer builds a profile:
+
+Backend analyzes:
+• flavor preferences
+• inventory
+• pairings
+• promotions
+• spending signals
+
+⸻
+
+CUSTOMER RECEIVES
+
+Examples:
+
+“Tonight’s Recommended Pairing”
+
+• rotating cigar visuals
+• drink recommendations
+• humidor specials
+
+⸻
+
+STAFF RECEIVES
+
+Real-time AI insight:
+
+“Guest likely receptive to premium bourbon pairing.”
+
+Including:
+• conversion confidence
+• reward opportunity
+• VIP potential
+
+⸻
+
+STAFF HANDOFF TRANSITION
+
+Customer UI:
+• slows slightly
+• becomes translucent
+• telemetry appears beneath
+
+Axiom rings emerge.
+
+Message:
+
+“Operational Layer Activated”
+
+⸻
+
+STAFF FIRST SCREEN
+
+LIVE FLOOR OVERVIEW
+
+NOT spreadsheets.
+
+NOT POS grids.
+
+⸻
+
+STAFF SCREEN INCLUDES
+
+• active guest tiles
+• live experiences
+• XP levels
+• AI insights
+• pairing opportunities
+• loyalty status
+• table intelligence
+• reward triggers
+• operational alerts
+
+⸻
+
+AI OPERATIONAL INSIGHTS
+
+Examples:
+
+Guest likely receptive to premium pairing.
+
+Engagement dropping at Table 4.
+
+Reward trigger recommended now.
+
+⸻
+
+QUICK ACTIONS
+
+Staff can:
+• send pairing
+• trigger reward
+• escalate VIP experience
+• notify server
+• reserve product
+• push recommendation
+• unlock challenge
+
+⸻
+
+SESSION SNAPSHOT SYSTEM
+
+Before handoff:
+
+Backend captures:
+• UI state
+• mentor state
+• XP
+• progression
+• challenge status
+• animations
+• audio state
+
+When staff exits:
+customer resumes EXACTLY where they left off.
+
+NO reloads.
+NO resets.
+
+⸻
+
+BACKEND ARCHITECTURE
+
+Use:
+• websocket event system
+• Neural Bridge event bus
+• real-time telemetry
+• live synchronization
+• optimistic updates
+• session state reconciliation
+
+NO polling architecture.
+
+⸻
+
+REQUIRED DATABASE TABLES
