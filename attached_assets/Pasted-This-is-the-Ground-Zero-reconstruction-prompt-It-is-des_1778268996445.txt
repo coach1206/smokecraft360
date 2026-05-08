@@ -1,0 +1,54 @@
+This is the "Ground Zero" reconstruction prompt. It is designed to strip away the "web-page" layers and force the Replit Agent to build a Luminous Hardware Terminal.
+
+Paste this exactly into the Replit Agent to restore the Axiom OS:
+
+THE LUMINOUS SOVEREIGN: COMMAND CENTER REBUILD
+"SYSTEM IDENTITY OVERRIDE: This is a Luxury Hospitality Operating System, not a website. You have buried the UI in 'mud' and 'haze.' Execute a full architectural reconstruction of TitanCraftDeck.tsx to achieve the 'Apple Vision Pro meets Machined Cockpit' aesthetic:
+
+1. KILL THE DARKNESS (Light Restoration):
+
+Action: Remove all global bg-black/80, opacity-70, or walnut-haze overlays.
+
+Requirement: The AI-generated imagery must be 100% visible, sharp, and vibrant. Replace 'Dark Mud' with high-contrast cinematic lighting.
+
+2. THE HARDWARE GRID (2x2 Kinetic Fix):
+
+Layout: Hard-code a fixed 2x2 grid. gap: 0; height: calc(100vh - 140px);.
+
+The Blend: Use soft linear-gradients on the inner edges so the Smoke, Spirits, Brew, and Vapor environments bleed into each other organically. No black 'dead-zone' cross in the center.
+
+Image Physics: Use style={{ objectFit: 'cover', objectPosition: 'top' }}. HEADS MUST NOT BE CUT OFF.
+
+3. METALLIC MATERIAL ENGINE:
+
+Action: Replace all flat borders with reflective Brushed Silver & Champagne Gold.
+
+CSS Spec: border-top: 1.5px solid; border-image: linear-gradient(to right, #8a6d3b, #fff9e6, #8a6d3b) 1;. This must look like reflective titanium.
+
+4. THE AXIOM CORE (Center Pulse):
+
+Action: At the center intersection of the grid, mount a subtle, breathing 'Axiom Core' orb.
+
+Spec: 1px gold ring with a shadow-[0_0_40px_rgba(212,175,55,0.4)]. It must pulse like a heartbeat.
+
+5. DUAL KINETIC TICKERS (Top & Bottom):
+
+Top Ticker: Razor-thin silver bar scrolling: AXIOM INTELLIGENCE // REVENUE ENGINE ACTIVE // INVENTORY SYNC LIVE.
+
+Bottom Ticker: 40px Obsidian strip with a seamless infinite gold scroll: >>> DAYONE 360 ADV /// REVENUE OPTIMIZED /// LIVE UPDATE: 25% OFF EXOTIC VAPOR ATELIER >>>.
+
+Typography: text-[13px], tracking-[0.5em], bold metallic gold. No 'license plate' frames.
+
+6. SMOKECRAFT HERO STATUS:
+
+Action: Apply filter: saturate(1.2) brightness(1.1) specifically to the Smokecraft 360 module. The cigar embers and gold must pop.
+
+7. BRANDING & IDENTITY:
+
+Ensure the titles [ SMOKECRAFT 360 ], [ POURCRAFT 360 ], [ BREWCRAFT 360 ], and [ VAPECRAFT 360 ] are laser-etched gold and razor-sharp.
+
+8. VIEWPORT LOCK:
+
+Set height: 100vh; overflow: hidden;. This is a machine terminal. Nothing bleeds off-screen.
+
+If it looks like a flat website or a dark wallpaper, you have failed. Make it glow like elite hardware."
