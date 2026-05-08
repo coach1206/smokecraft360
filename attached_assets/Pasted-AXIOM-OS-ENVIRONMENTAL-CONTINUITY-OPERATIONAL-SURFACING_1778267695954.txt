@@ -1,0 +1,223 @@
+AXIOM OS — ENVIRONMENTAL CONTINUITY + OPERATIONAL SURFACING FIX
+
+MISSION:
+Complete the transition from:
+“software experience”
+into:
+“living environmental intelligence system.”
+
+The dashboard/POS feeling has been removed.
+
+NOW:
+the environment itself must become:
+the operating system.
+
+==================================================
+FIX 1 — ENVIRONMENTAL CONTINUITY
+==================================================
+
+CURRENT PROBLEM:
+Craft experiences still feel:
+like routes opening.
+
+THIS IS WRONG.
+
+SmokeCraft,
+PourCraft,
+BrewCraft,
+VapeCraft
+
+must feel like:
+the SAME environment evolving into different atmospheric states.
+
+==================================================
+REQUIRED FIX
+==================================================
+
+DO NOT:
+hard route transition.
+
+DO NOT:
+fade to new screens.
+
+DO:
+morph the EXISTING environment.
+
+==================================================
+IMPLEMENT:
+==================================================
+
+CREATE:
+client/src/engines/EnvironmentalContinuityEngine.ts
+
+PURPOSE:
+Persist and morph:
+• particles
+• atmosphere
+• lighting
+• sensory pacing
+• environmental rhythm
+• intelligence pulse states
+
+BETWEEN:
+all craft experiences.
+
+==================================================
+EXAMPLE
+==================================================
+
+SmokeCraft entering:
+• embers intensify
+• warmth deepens
+• smoke density rises
+• metallic cigar reflections emerge
+• audio lowers and thickens
+
+PourCraft entering:
+• liquid reflections spread
+• amber refractive lighting increases
+• whiskey shimmer appears
+• fluid movement activates
+
+NO:
+“page switch feeling.”
+
+==================================================
+FIX 2 — OPERATIONAL SURFACING
+==================================================
+
+CURRENT PROBLEM:
+The EEIS operational layer still feels:
+like an overlay.
+
+THIS IS WRONG.
+
+The intelligence layer must feel:
+hidden INSIDE the environment.
+
+==================================================
+REQUIRED FIX
+==================================================
+
+WHEN STAFF TOUCHES SCREEN:
+
+THE ENVIRONMENT ITSELF MUST:
+become operational.
+
+==================================================
+IMPLEMENT:
+==================================================
+
+CREATE:
+client/src/engines/OperationalSurfacingEngine.ts
+
+PURPOSE:
+Controls:
+• operational emergence
+• telemetry surfacing
+• orchestration reveal
+• predictive signal visibility
+• environment-to-operations morphing
+
+==================================================
+HANDOFF TRANSITION
+==================================================
+
+DO:
+• ripple distortion wave
+• environmental dimming
+• signal pulse activation
+• atmosphere stabilization
+• telemetry emergence
+• hidden intelligence reveal
+
+DO NOT:
+open a dashboard.
+
+==================================================
+THE EEIS LAYER MUST FEEL LIKE:
+==================================================
+
+the venue's hidden nervous system becoming visible.
+
+NOT:
+admin software.
+
+==================================================
+FIX 3 — SENSORY WEIGHT
+==================================================
+
+CURRENT PROBLEM:
+The environment still lacks:
+physical emotional weight.
+
+==================================================
+IMPLEMENT:
+==================================================
+
+CREATE:
+client/src/engines/SensoryWeightEngine.ts
+
+PURPOSE:
+Controls:
+• weighted motion
+• tactile illusion
+• environmental breathing
+• signal synchronization
+• motion inertia
+• sensory pacing
+• atmospheric pressure feeling
+
+==================================================
+ADD:
+==================================================
+
+• low-frequency ambient pulse synchronization
+• cinematic environmental breathing
+• subtle sound-reactive motion
+• weighted ripple inertia
+• tactile touch response
+• environmental resonance
+
+==================================================
+MOTION REQUIREMENTS
+==================================================
+
+ALL movement must feel:
+• cinematic
+• expensive
+• heavy
+• intentional
+• alive
+
+NO:
+generic app animation.
+
+==================================================
+FINAL EXPERIENCE TARGET
+==================================================
+
+AXIOM OS must now feel like:
+a living hospitality intelligence environment.
+
+Guests should feel:
+they are inside:
+an intelligent adaptive atmosphere.
+
+NOT:
+using software.
+
+==================================================
+FINAL RULE
+==================================================
+
+NO MORE:
+page-switch feeling.
+dashboard feeling.
+overlay feeling.
+software feeling.
+
+THE ENVIRONMENT ITSELF IS NOW:
+THE OPERATING SYSTEM.
+
+IMPLEMENT FULL ENVIRONMENTAL CONTINUITY + OPERATIONAL SURFACING NOW.
