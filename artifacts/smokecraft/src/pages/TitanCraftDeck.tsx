@@ -1,17 +1,94 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 /* ─────────────────────────────────────────────
    TITAN CRAFT DECK — Machined Hardware Terminal
-   Responsive: full chassis on desktop/tablet landscape,
-   screen-only on mobile portrait.
+   Rotating image carousel per quad, crossfade
 ───────────────────────────────────────────────── */
 
+const CRAFT_IMAGES: Record<string, string[]> = {
+  smoke: [
+    '/images/scenes/smokecraft-card.jpg',
+    '/images/smoke/smoke_lounge.png',
+    '/images/smoke/smoke_woman.png',
+    '/images/smoke/smoke_group.png',
+    '/images/smoke/smoke_urban.png',
+    '/images/smoke/smoke_solo.png',
+    '/images/smoke/smoke_selection.png',
+    '/images/scenes/social.jpg',
+    '/images/scenes/bold.jpg',
+    '/images/scenes/reflective.jpg',
+  ],
+  pour: [
+    '/images/scenes/pourcraft-card.jpg',
+    '/images/pour/pour_bar.png',
+    '/images/pour/pour_cocktail.png',
+    '/images/pour/pour_tasting.png',
+    '/images/pour/pour_whiskey.png',
+    '/images/pour/pour_wine.png',
+    '/images/pour/pour_aged.png',
+    '/images/scenes/relaxed.jpg',
+  ],
+  brew: [
+    '/images/scenes/brewcraft-card.jpg',
+    '/images/brew/brew_outdoor.png',
+    '/images/brew/brew_taproom.png',
+    '/images/brew/brew_flight.png',
+    '/images/brew/brew_pouring.png',
+    '/images/brew/brew_barrel.png',
+  ],
+  vape: [
+    '/images/scenes/vapecraft-card.jpg',
+    '/images/vape/vape_social.png',
+    '/images/vape/vape_hookah.png',
+    '/images/vape/vape_modern.png',
+    '/images/vape/vape_device.png',
+  ],
+};
+
 const QUADS = [
-  { name: 'SMOKECRAFT 360', sub: 'LOCOPOSTAL ANCHORS', img: '/images/scenes/smokecraft-card.jpg', gold: true  },
-  { name: 'POURCRAFT 360',  sub: 'PRESTIGE SPEND',     img: '/images/scenes/pourcraft-card.jpg',  gold: false },
-  { name: 'BREWCRAFT 360',  sub: 'PALATE SENTIMENT',   img: '/images/scenes/brewcraft-card.jpg',  gold: false },
-  { name: 'VAPECRAFT 360',  sub: 'ENVIRONMENT PULSE',  img: '/images/scenes/vapecraft-card.jpg',  gold: false },
+  { key: 'smoke', name: 'SMOKECRAFT 360', sub: 'LOCOPOSTAL ANCHORS', gold: true  },
+  { key: 'pour',  name: 'POURCRAFT 360',  sub: 'PRESTIGE SPEND',     gold: false },
+  { key: 'brew',  name: 'BREWCRAFT 360',  sub: 'PALATE SENTIMENT',   gold: false },
+  { key: 'vape',  name: 'VAPECRAFT 360',  sub: 'ENVIRONMENT PULSE',  gold: false },
 ];
+
+/** Each craft rotates independently on a staggered interval */
+function useRotatingIndex(length: number, intervalMs: number, offset: number) {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const id = setInterval(() => setIdx(i => (i + 1) % length), intervalMs);
+      return () => clearInterval(id);
+    }, offset);
+    return () => clearTimeout(t);
+  }, [length, intervalMs, offset]);
+  return idx;
+}
+
+function CraftQuad({ craftKey, name, sub, gold }: { craftKey: string; name: string; sub: string; gold: boolean }) {
+  const images = CRAFT_IMAGES[craftKey];
+  const idx    = useRotatingIndex(images.length, 4500, QUADS.findIndex(q => q.key === craftKey) * 900);
+  const prev   = (idx - 1 + images.length) % images.length;
+
+  return (
+    <div className="tcd-quad">
+      {/* Previous image fades out */}
+      <img key={`prev-${craftKey}-${prev}`} src={images[prev]} className="tcd-img tcd-img-out" alt="" />
+      {/* Current image fades in */}
+      <img key={`cur-${craftKey}-${idx}`}  src={images[idx]}  className="tcd-img tcd-img-in"  alt="" />
+      <div className="tcd-vignette"/>
+      <div className="tcd-tile-bar">
+        <DiamondIcon color={gold ? '#d4af37' : '#c0c0c0'}/>
+        <div className="tcd-tile-text">
+          <div className={`tcd-tile-name ${gold ? 'tcd-gold' : 'tcd-silver'}`}>{name}</div>
+          <div className="tcd-tile-sub">{sub}</div>
+        </div>
+      </div>
+      <div className={`tcd-corner-tl ${gold ? 'tcd-gold-border' : 'tcd-silver-border'}`}/>
+      <div className={`tcd-corner-br ${gold ? 'tcd-gold-border' : 'tcd-silver-border'}`}/>
+    </div>
+  );
+}
 
 const DiamondIcon = ({ color }: { color: string }) => (
   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
@@ -49,7 +126,6 @@ const TitanCraftDeck = () => (
     {/* ── CENTER ── */}
     <div className="tcd-center">
 
-      {/* TOP BEZEL */}
       <div className="tcd-top-bezel">
         <div className="tcd-engine-badge">
           <span className="tcd-green-dot"/>
@@ -62,32 +138,16 @@ const TitanCraftDeck = () => (
         </div>
       </div>
 
-      {/* SCREEN */}
       <div className="tcd-screen">
         <div className="tcd-screen-glow"/>
         <div className="tcd-grid">
-          {QUADS.map((q,i) => (
-            <div key={i} className="tcd-quad">
-              <img src={q.img} className="tcd-img" alt={q.name}/>
-              <div className="tcd-vignette"/>
-              <div className="tcd-tile-bar">
-                <DiamondIcon color={q.gold ? '#d4af37' : '#c0c0c0'}/>
-                <div className="tcd-tile-text">
-                  <div className={q.gold ? 'tcd-tile-name tcd-gold' : 'tcd-tile-name tcd-silver'}>{q.name}</div>
-                  <div className="tcd-tile-sub">{q.sub}</div>
-                </div>
-              </div>
-              <div className={`tcd-corner-tl ${q.gold ? 'tcd-gold-border' : 'tcd-silver-border'}`}/>
-              <div className={`tcd-corner-br ${q.gold ? 'tcd-gold-border' : 'tcd-silver-border'}`}/>
-            </div>
-          ))}
+          {QUADS.map(q => <CraftQuad key={q.key} craftKey={q.key} name={q.name} sub={q.sub} gold={q.gold}/>)}
         </div>
         <div className="tcd-seam-h"/>
         <div className="tcd-seam-v"/>
         <div className="tcd-orb"/>
       </div>
 
-      {/* BOTTOM BEZEL */}
       <div className="tcd-bottom-bezel">
         <div className="tcd-coin-tap">
           <svg width="16" height="16" viewBox="0 0 18 18" fill="none" style={{marginRight:6,flexShrink:0}}>
@@ -102,7 +162,6 @@ const TitanCraftDeck = () => (
           </div>
         </div>
       </div>
-
     </div>
 
     {/* ── RIGHT PANEL ── */}
@@ -114,9 +173,7 @@ const TitanCraftDeck = () => (
         ))}
       </div>
       <div className="tcd-btns">
-        {[0,1,2].map(i => (
-          <div key={i} className="tcd-btn"><div className="tcd-btn-inner"/></div>
-        ))}
+        {[0,1,2].map(i => <div key={i} className="tcd-btn"><div className="tcd-btn-inner"/></div>)}
       </div>
       <div className="tcd-grips">
         {Array.from({length:8}).map((_,i) => <div key={i} className="tcd-grip"/>)}
@@ -124,7 +181,6 @@ const TitanCraftDeck = () => (
     </div>
 
     <style>{`
-      /* ── TOKENS ── */
       :root {
         --gold:   linear-gradient(180deg,#fff9e6 0%,#d4af37 45%,#b8860b 75%,#8a6d3b 100%);
         --silver: linear-gradient(180deg,#ffffff 0%,#c0c0c0 50%,#4d4d4d 100%);
@@ -132,28 +188,18 @@ const TitanCraftDeck = () => (
         --gold-dim: 1px solid rgba(212,175,55,0.35);
         --carbon: repeating-linear-gradient(135deg,#1c1c1c 0px,#1c1c1c 2px,#141414 2px,#141414 8px);
       }
+      .tcd-chassis { position:fixed; inset:0; display:flex; background:var(--carbon); overflow:hidden; }
 
-      /* ── CHASSIS ── */
-      .tcd-chassis {
-        position: fixed; inset: 0;
-        display: flex;
-        background: var(--carbon);
-        overflow: hidden;
-      }
-
-      /* ── LEFT PANEL ── */
+      /* ── LEFT ── */
       .tcd-left {
-        width: 84px; flex-shrink: 0;
-        display: flex; flex-direction: column; align-items: center;
-        padding: 16px 0 10px;
-        background: linear-gradient(180deg,#1a1a1a,#0f0f0f);
-        border-right: var(--gold-rim);
-        gap: 14px;
+        width:84px; flex-shrink:0; display:flex; flex-direction:column; align-items:center;
+        padding:16px 0 10px; background:linear-gradient(180deg,#1a1a1a,#0f0f0f);
+        border-right:var(--gold-rim); gap:14px;
       }
       .tcd-titan-logo { display:flex; flex-direction:column; align-items:center; gap:5px; }
       .tcd-titan-lbl  {
         font-size:8px; letter-spacing:.2em; text-align:center; line-height:1.4;
-        background: var(--gold); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+        background:var(--gold); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
         font-family:monospace; font-weight:900;
       }
       .tcd-telem { display:flex; flex-direction:column; gap:5px; width:100%; padding:0 8px; }
@@ -175,27 +221,21 @@ const TitanCraftDeck = () => (
 
       /* ── TOP BEZEL ── */
       .tcd-top-bezel {
-        height:36px; flex-shrink:0;
-        display:flex; align-items:center; justify-content:space-between;
-        padding:0 12px;
-        background:linear-gradient(180deg,#111,#0a0a0a);
-        border-bottom:var(--gold-rim);
-        gap:8px;
+        height:36px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
+        padding:0 12px; background:linear-gradient(180deg,#111,#0a0a0a); border-bottom:var(--gold-rim); gap:8px;
       }
       .tcd-engine-badge { display:flex; align-items:center; gap:5px; flex-shrink:0; }
       .tcd-green-dot {
         display:inline-block; width:6px; height:6px; border-radius:50%;
-        background:#00e676; box-shadow:0 0 6px #00e676;
-        animation: tcd-pulse 2s infinite; flex-shrink:0;
+        background:#00e676; box-shadow:0 0 6px #00e676; animation:tcd-pulse 2s infinite; flex-shrink:0;
       }
       .tcd-engine-txt {
         font-size:8px; letter-spacing:.2em; font-family:monospace; font-weight:700; white-space:nowrap;
         background:var(--gold); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
       }
       .tcd-wordmark {
-        font-size:14px; font-weight:900; letter-spacing:.5em; font-family:monospace; white-space:nowrap;
+        font-size:14px; font-weight:900; letter-spacing:.5em; font-family:monospace; white-space:nowrap; flex-shrink:0;
         background:var(--gold); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-        flex-shrink:0;
       }
       .tcd-kiosk-badge { display:flex; align-items:center; gap:5px; flex-shrink:0; }
       .tcd-kiosk-txt {
@@ -206,36 +246,34 @@ const TitanCraftDeck = () => (
       /* ── SCREEN ── */
       .tcd-screen {
         flex:1; position:relative; background:#030303; overflow:hidden;
-        box-shadow:inset 0 0 40px rgba(0,0,0,.8), inset 0 0 1px rgba(212,175,55,.2);
+        box-shadow:inset 0 0 40px rgba(0,0,0,.8),inset 0 0 1px rgba(212,175,55,.2);
       }
       .tcd-screen-glow {
         position:absolute; inset:0; pointer-events:none; z-index:50;
         background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(212,175,55,.06) 0%,transparent 70%);
       }
       .tcd-grid {
-        position:absolute; inset:0;
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        grid-template-rows:1fr 1fr;
+        position:absolute; inset:0; display:grid;
+        grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;
       }
 
-      /* ── QUAD ── */
-      .tcd-quad  { position:relative; overflow:hidden; }
-      .tcd-img   {
+      /* ── QUAD + CROSSFADE ── */
+      .tcd-quad     { position:relative; overflow:hidden; }
+      .tcd-img      {
         position:absolute; inset:0; width:100%; height:100%;
         object-fit:cover; object-position:center; display:block;
         filter:brightness(.75) saturate(1.1);
       }
+      .tcd-img-in  { animation:tcd-fadein 1.2s ease forwards; z-index:2; }
+      .tcd-img-out { opacity:0; z-index:1; }
       .tcd-vignette {
         position:absolute; inset:0; pointer-events:none; z-index:5;
         background:radial-gradient(ellipse 90% 90% at 50% 50%,transparent 30%,rgba(0,0,0,.55) 100%);
       }
       .tcd-tile-bar {
         position:absolute; bottom:0; left:0; right:0;
-        display:flex; align-items:center; gap:7px;
-        padding:8px 10px 10px;
-        background:linear-gradient(0deg,rgba(0,0,0,.88) 0%,transparent 100%);
-        z-index:10;
+        display:flex; align-items:center; gap:7px; padding:8px 10px 10px;
+        background:linear-gradient(0deg,rgba(0,0,0,.88) 0%,transparent 100%); z-index:10;
       }
       .tcd-tile-text { min-width:0; }
       .tcd-tile-name {
@@ -245,13 +283,11 @@ const TitanCraftDeck = () => (
       .tcd-tile-sub  { font-size:7px; letter-spacing:.18em; color:rgba(255,255,255,.35); font-family:monospace; margin-top:1px; white-space:nowrap; }
       .tcd-gold   { background:var(--gold);   -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
       .tcd-silver { background:var(--silver); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-
-      /* Corner accents */
-      .tcd-corner-tl, .tcd-corner-br { position:absolute; width:14px; height:14px; z-index:10; }
+      .tcd-corner-tl,.tcd-corner-br { position:absolute; width:14px; height:14px; z-index:10; }
       .tcd-corner-tl { top:0; left:0; border-top:1.5px solid transparent; border-left:1.5px solid transparent; }
       .tcd-corner-br { bottom:0; right:0; border-bottom:1.5px solid transparent; border-right:1.5px solid transparent; }
-      .tcd-gold-border   { border-color:#d4af37 !important; }
-      .tcd-silver-border { border-color:#888    !important; }
+      .tcd-gold-border   { border-color:#d4af37!important; }
+      .tcd-silver-border { border-color:#888!important; }
 
       /* Seams + orb */
       .tcd-seam-h {
@@ -269,16 +305,13 @@ const TitanCraftDeck = () => (
         width:12px; height:12px; border-radius:50%;
         background:radial-gradient(circle,#fff9e6 0%,#d4af37 55%,#8a6d3b 100%);
         border:1.5px solid rgba(255,255,255,.6);
-        animation:tcd-breathe 3s ease-in-out infinite;
-        z-index:40; pointer-events:none;
+        animation:tcd-breathe 3s ease-in-out infinite; z-index:40; pointer-events:none;
       }
 
       /* ── BOTTOM BEZEL ── */
       .tcd-bottom-bezel {
-        height:36px; flex-shrink:0;
-        display:flex; align-items:center;
-        background:linear-gradient(180deg,#0a0a0a,#111);
-        border-top:var(--gold-rim); overflow:hidden;
+        height:36px; flex-shrink:0; display:flex; align-items:center;
+        background:linear-gradient(180deg,#0a0a0a,#111); border-top:var(--gold-rim); overflow:hidden;
       }
       .tcd-coin-tap { display:flex; align-items:center; padding:0 12px; border-right:var(--gold-dim); flex-shrink:0; }
       .tcd-coin-txt {
@@ -294,19 +327,14 @@ const TitanCraftDeck = () => (
 
       /* ── RIGHT PANEL ── */
       .tcd-right {
-        width:72px; flex-shrink:0;
-        display:flex; flex-direction:column; align-items:center;
-        padding:14px 0 10px;
-        background:linear-gradient(180deg,#1a1a1a,#0f0f0f);
-        border-left:var(--gold-rim);
-        gap:16px;
+        width:72px; flex-shrink:0; display:flex; flex-direction:column; align-items:center;
+        padding:14px 0 10px; background:linear-gradient(180deg,#1a1a1a,#0f0f0f);
+        border-left:var(--gold-rim); gap:16px;
       }
       .tcd-dial {
         width:46px; height:46px; border-radius:50%; position:relative;
         background:radial-gradient(circle at 35% 35%,#3a3a3a 0%,#1a1a1a 60%,#0a0a0a 100%);
-        border:2px solid #d4af37;
-        box-shadow:0 0 0 1px #8a6d3b, 0 4px 12px rgba(0,0,0,.6);
-        flex-shrink:0;
+        border:2px solid #d4af37; box-shadow:0 0 0 1px #8a6d3b,0 4px 12px rgba(0,0,0,.6); flex-shrink:0;
       }
       .tcd-dial-inner {
         position:absolute; inset:6px; border-radius:50%;
@@ -314,48 +342,35 @@ const TitanCraftDeck = () => (
         display:flex; align-items:center; justify-content:center;
       }
       .tcd-dial-dot { width:6px; height:6px; border-radius:50%; background:#d4af37; box-shadow:0 0 6px #d4af37; }
-      .tcd-notch {
-        position:absolute; width:2px; height:6px;
-        background:#d4af37; border-radius:1px;
-        top:50%; left:50%; transform-origin:50% 28px;
-      }
+      .tcd-notch { position:absolute; width:2px; height:6px; background:#d4af37; border-radius:1px; top:50%; left:50%; transform-origin:50% 28px; }
       .tcd-notch:nth-child(2n) { background:#444; }
-
       .tcd-btns { display:flex; flex-direction:column; gap:8px; }
       .tcd-btn  {
         width:36px; height:18px; border-radius:4px;
-        background:linear-gradient(180deg,#2a2a2a,#111);
-        border:1px solid #d4af37;
+        background:linear-gradient(180deg,#2a2a2a,#111); border:1px solid #d4af37;
         box-shadow:0 2px 6px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.08);
         display:flex; align-items:center; justify-content:center;
       }
-      .tcd-btn-inner {
-        width:18px; height:3px; border-radius:2px;
-        background:linear-gradient(90deg,#8a6d3b,#d4af37,#8a6d3b);
-      }
+      .tcd-btn-inner { width:18px; height:3px; border-radius:2px; background:linear-gradient(90deg,#8a6d3b,#d4af37,#8a6d3b); }
 
       /* ── KEYFRAMES ── */
+      @keyframes tcd-fadein  { from{opacity:0} to{opacity:1} }
       @keyframes tcd-breathe { 0%,100%{box-shadow:0 0 14px 3px #d4af37aa} 50%{box-shadow:0 0 32px 8px #d4af37ee} }
-      @keyframes tcd-marquee  { from{transform:translateX(100%)} to{transform:translateX(-100%)} }
-      @keyframes tcd-pulse    { 0%,100%{opacity:1} 50%{opacity:.4} }
+      @keyframes tcd-marquee { from{transform:translateX(100%)} to{transform:translateX(-100%)} }
+      @keyframes tcd-pulse   { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-      /* ── RESPONSIVE: hide side panels on portrait mobile ── */
-      @media (max-width: 600px) {
-        .tcd-left, .tcd-right { display:none; }
-        .tcd-top-bezel { padding:0 8px; height:32px; }
-        .tcd-engine-txt { display:none; }
-        .tcd-wordmark { font-size:11px; letter-spacing:.3em; }
+      /* ── RESPONSIVE ── */
+      @media (max-width:600px) {
+        .tcd-left,.tcd-right { display:none; }
+        .tcd-engine-txt      { display:none; }
+        .tcd-wordmark  { font-size:11px; letter-spacing:.3em; }
         .tcd-kiosk-txt { font-size:7px; letter-spacing:.08em; }
         .tcd-tile-name { font-size:8px; letter-spacing:.15em; }
       }
-
-      /* ── RESPONSIVE: tablet landscape ── */
-      @media (max-width: 900px) and (orientation: landscape) {
-        .tcd-left, .tcd-right { width:60px; }
-        .tcd-telem-val { font-size:10px; }
+      @media (max-width:900px) and (orientation:landscape) {
+        .tcd-left,.tcd-right { width:58px; }
         .tcd-wordmark  { font-size:12px; letter-spacing:.35em; }
-        .tcd-engine-txt{ font-size:7px; }
-        .tcd-kiosk-txt { font-size:7px; }
+        .tcd-engine-txt,.tcd-kiosk-txt { font-size:7px; }
       }
     `}</style>
   </div>
