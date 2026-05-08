@@ -63,3 +63,21 @@ export type {
   FlowEvent,
   FlowState,
 }                                          from "./ExperienceFlowOrchestrator";
+
+export { EnvironmentalContinuityEngine }   from "./EnvironmentalContinuityEngine";
+export type {
+  SensoryProfile,
+  ContinuousEnvironmentState,
+}                                          from "./EnvironmentalContinuityEngine";
+
+export { OperationalSurfacingEngine }      from "./OperationalSurfacingEngine";
+export type {
+  SurfacingPhase,
+  SurfacingState,
+}                                          from "./OperationalSurfacingEngine";
+
+export { SensoryWeightEngine }             from "./SensoryWeightEngine";
+export type {
+  SensoryWeightState,
+  TouchRipple,
+}                                          from "./SensoryWeightEngine";
