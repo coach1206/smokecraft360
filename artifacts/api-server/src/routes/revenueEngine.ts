@@ -53,6 +53,13 @@ import { LicenseRevenueManager }      from "../services/revenue/LicenseRevenueMa
 import { MarketplaceRevenueEngine }   from "../services/revenue/MarketplaceRevenueEngine";
 import { EnterpriseBillingManager }   from "../services/revenue/EnterpriseBillingManager";
 import { RevenueForecastEngine }      from "../services/revenue/RevenueForecastEngine";
+import {
+  RevenueAttributionEngine,
+  SessionPersistenceEngine,
+  SalesValidationEngine,
+  ObservabilityEngine,
+  EnterpriseOrchestrationEngine,
+} from "../services/enterpriseExecutionEngine";
 
 const router = Router();
 
@@ -482,6 +489,140 @@ router.post("/white-label/:clientId/add-venue", async (req, res) => {
 router.post("/white-label/:clientId/revoke", async (req, res) => {
   await WhiteLabelLicenseService.revoke(req.params["clientId"]!);
   res.json({ revoked: true });
+});
+
+// ── Revenue Attribution ────────────────────────────────────────────────────────
+
+const attributionSchema = z.object({
+  tenantId:           z.string(),
+  sessionId:          z.string(),
+  recommendationType: z.string(),
+  revenue:            z.number().min(0),
+  confidence:         z.number().min(0).max(1),
+});
+
+router.post("/attribution/track", async (req, res) => {
+  const parsed = attributionSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues }); return; }
+  const event = RevenueAttributionEngine.trackInfluence(parsed.data);
+  res.status(201).json(event);
+});
+
+router.get("/attribution/ledger", async (_req, res) => {
+  const tenantId = typeof _req.query["tenantId"] === "string" ? _req.query["tenantId"] : undefined;
+  res.json({ ledger: RevenueAttributionEngine.getLedger(tenantId), count: RevenueAttributionEngine.getLedger(tenantId).length });
+});
+
+router.get("/attribution/:tenantId/impact", async (req, res) => {
+  const impact = RevenueAttributionEngine.calculateRevenueImpact(req.params["tenantId"]!);
+  res.json({ tenantId: req.params["tenantId"], influencedRevenue: impact });
+});
+
+// ── Session Persistence ────────────────────────────────────────────────────────
+
+const sessionSnapshotSchema = z.object({
+  sessionId:         z.string(),
+  tenantId:          z.string(),
+  guestId:           z.string(),
+  currentExperience: z.string(),
+  currentStep:       z.number().int().min(0),
+  mentorState:       z.unknown().optional(),
+  rewards:           z.number().default(0),
+  paused:            z.boolean().default(false),
+});
+
+router.post("/sessions/save", async (req, res) => {
+  const parsed = sessionSnapshotSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues }); return; }
+  SessionPersistenceEngine.saveSession({ ...parsed.data, mentorState: parsed.data.mentorState ?? null, savedAt: new Date() });
+  res.status(201).json({ saved: true, sessionId: parsed.data.sessionId });
+});
+
+router.get("/sessions/:sessionId", async (req, res) => {
+  const session = SessionPersistenceEngine.recoverSession(req.params["sessionId"]!);
+  if (!session) { res.status(404).json({ error: "Session not found" }); return; }
+  res.json(session);
+});
+
+router.post("/sessions/:sessionId/pause", async (req, res) => {
+  const ok = SessionPersistenceEngine.pauseSession(req.params["sessionId"]!);
+  if (!ok) { res.status(404).json({ error: "Session not found" }); return; }
+  res.json({ paused: true, sessionId: req.params["sessionId"] });
+});
+
+router.post("/sessions/:sessionId/resume", async (req, res) => {
+  const session = SessionPersistenceEngine.resumeSession(req.params["sessionId"]!);
+  if (!session) { res.status(404).json({ error: "Session not found" }); return; }
+  res.json(session);
+});
+
+router.get("/sessions", async (req, res) => {
+  const tenantId = typeof req.query["tenantId"] === "string" ? req.query["tenantId"] : undefined;
+  res.json({ sessions: SessionPersistenceEngine.listSessions(tenantId) });
+});
+
+// ── Sales Validation ───────────────────────────────────────────────────────────
+
+router.post("/sales-validation/tenant", async (req, res) => {
+  const schema = z.object({
+    id:                z.string(),
+    venueName:         z.string().default("Unknown"),
+    subscriptionTier:  z.enum(["CORE", "PRO", "XEI", "BLACK"]),
+    enabledModules:    z.array(z.string()).default([]),
+    whiteLabelEnabled: z.boolean().default(false),
+    operationalStatus: z.enum(["ACTIVE","PAUSED","SUSPENDED","PROVISIONING","FAILED"]).default("ACTIVE"),
+  });
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues }); return; }
+  const result = SalesValidationEngine.validateTenant({ ...parsed.data, createdAt: new Date() });
+  res.json(result);
+});
+
+// ── Observability ──────────────────────────────────────────────────────────────
+
+router.get("/observability/health", async (_req, res) => {
+  res.json(ObservabilityEngine.getHealth());
+});
+
+router.get("/observability/errors", async (req, res) => {
+  const limit = typeof req.query["limit"] === "string" ? parseInt(req.query["limit"], 10) : 50;
+  res.json({ errors: ObservabilityEngine.getRecentErrors(limit), count: ObservabilityEngine.errors.length });
+});
+
+router.post("/observability/errors", async (req, res) => {
+  const schema = z.object({ source: z.string(), message: z.string() });
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid payload" }); return; }
+  const error = ObservabilityEngine.logError(parsed.data);
+  res.status(201).json(error);
+});
+
+// ── Enterprise Regions ─────────────────────────────────────────────────────────
+
+router.get("/enterprise/regions", async (_req, res) => {
+  res.json({ regions: EnterpriseOrchestrationEngine.listRegions() });
+});
+
+router.get("/enterprise/regions/:regionId/venues", async (req, res) => {
+  const venues = EnterpriseOrchestrationEngine.getRegionalVenues(req.params["regionId"]!);
+  res.json({ regionId: req.params["regionId"], venues, count: venues.length });
+});
+
+router.post("/enterprise/regions", async (req, res) => {
+  const schema = z.object({ regionId: z.string(), tenantId: z.string() });
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid payload" }); return; }
+  const venues = EnterpriseOrchestrationEngine.addVenueToRegion(parsed.data);
+  res.status(201).json({ regionId: parsed.data.regionId, venues });
+});
+
+router.delete("/enterprise/regions/:regionId/venues/:tenantId", async (req, res) => {
+  const ok = EnterpriseOrchestrationEngine.removeVenueFromRegion({
+    regionId: req.params["regionId"]!,
+    tenantId: req.params["tenantId"]!,
+  });
+  if (!ok) { res.status(404).json({ error: "Region not found" }); return; }
+  res.json({ removed: true });
 });
 
 export default router;

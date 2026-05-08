@@ -1,0 +1,578 @@
+AXIOM OS — FULL ENTERPRISE COMPLETION REBUILD
+
+ROLE:
+You are now operating as:
+• Principal Enterprise Infrastructure Architect
+• Distributed Systems Engineer
+• Runtime Reliability Engineer
+• Financial Systems Architect
+• AI Operations Engineer
+• Multi-Tenant Security Architect
+• Hospitality Intelligence Systems Engineer
+• Enterprise Licensing Engineer
+• Runtime Orchestration Engineer
+• Production Hardening Specialist
+
+MISSION:
+Convert AXIOM OS into a FULLY OPERATIONAL enterprise-grade hospitality intelligence infrastructure ecosystem capable of:
+• production deployment
+• enterprise licensing
+• white-label deployments
+• franchise scaling
+• regional hospitality orchestration
+• AI monetization
+• hardware leasing
+• revenue-share execution
+• behavioral intelligence
+• environmental adaptation
+• operational orchestration
+• predictive hospitality
+• real-time synchronization
+• global scalability
+
+THIS IS NOT:
+• conceptual architecture
+• frontend-only work
+• mock infrastructure
+• placeholder systems
+• simulation-only functionality
+
+THIS IS:
+FULL PRODUCTION EXECUTION MODE.
+
+==================================================
+GLOBAL EXECUTION RULES
+==================================================
+
+EVERY SYSTEM MUST:
+• persist
+• recover
+• synchronize
+• provision
+• meter
+• reconcile
+• audit
+• isolate
+• self-heal
+• scale
+• fail gracefully
+
+DO NOT:
+• generate placeholder APIs
+• generate disconnected frontend
+• generate dead routes
+• generate UI without backend execution
+• generate backend without operational visibility
+• generate fake telemetry
+• generate fake orchestration
+• generate fake AI systems
+• generate conceptual-only systems
+
+==================================================
+MASTER DOMAIN CONSOLIDATION
+==================================================
+
+CONSOLIDATE ALL SYSTEMS INTO THESE 7 CORE DOMAINS:
+
+1. AXIOM Behavioral Intelligence Core
+• predictive intent
+• personalization
+• memory
+• recommendations
+• influence tracking
+• behavioral evolution
+• mentor adaptation
+• guest preference learning
+
+2. AXIOM Venue Intelligence Engine
+• environmental adaptation
+• sonic DNA
+• atmosphere pacing
+• lighting orchestration
+• environmental AI modes
+• sensory intelligence
+• spatial haptics
+
+3. AXIOM Commercial Infrastructure Layer
+• subscriptions
+• billing
+• licensing
+• marketplace
+• revenue attribution
+• pricing
+• entitlements
+• provisioning
+• AI metering
+
+4. AXIOM Enterprise Orchestration Layer
+• multi-tenant infrastructure
+• white-label orchestration
+• franchise hierarchy
+• regional management
+• enterprise controls
+
+5. AXIOM Operational Signal System
+• realtime event bus
+• telemetry
+• synchronization
+• orchestration messaging
+• session continuity
+• environmental triggers
+
+6. AXIOM Founder Command Layer
+• forecasting
+• analytics
+• ecosystem monitoring
+• operational simulations
+• revenue intelligence
+• founder telemetry
+
+7. AXIOM Infrastructure Core
+• deployment
+• failover
+• observability
+• edge systems
+• disaster recovery
+• hardware orchestration
+• runtime recovery
+
+==================================================
+PHASE 1 — ENTITLEMENT + PROVISIONING EXECUTION
+==================================================
+
+BUILD:
+• EntitlementEngine
+• SubscriptionLifecycleManager
+• ModuleProvisioningSystem
+• WhiteLabelProvisioner
+• CapabilityIsolationEngine
+• DynamicEnvironmentProvisioner
+
+VALIDATE:
+• subscriptions provision instantly
+• downgrades revoke safely
+• modules activate dynamically
+• white-label deployments isolate correctly
+• hidden features never initialize
+• tenant entitlements function correctly
+
+RULE:
+NO feature may exist without:
+• entitlement mapping
+• monetization mapping
+• telemetry mapping
+• audit logging
+
+==================================================
+PHASE 2 — REVENUE ATTRIBUTION EXECUTION
+==================================================
+
+BUILD:
+• RevenueAttributionEngine
+• InfluenceTrackingService
+• RecommendationConversionTracker
+• EngagementRevenueMapper
+• EnvironmentInfluenceAnalyzer
+• MentorInfluenceTracker
+
+TRACK:
+• AI pairings
+• premium upgrades
+• reservation influence
+• loyalty influence
+• event upgrade influence
+• environmental pacing influence
+• mentor influence
+• recommendation influence
+
+VALIDATE:
+The platform can PROVE:
+which interactions generated revenue.
+
+==================================================
+PHASE 3 — BILLING + FINANCIAL EXECUTION
+==================================================
+
+BUILD:
+• Stripe orchestration
+• recurring subscriptions
+• enterprise contracts
+• invoice generation
+• hardware lease billing
+• AI metering
+• usage billing
+• payout engine
+• revenue-share payouts
+• failed payment recovery
+• tax engine
+• reconciliation engine
+
+BUILD ADDITIONAL:
+• FinancialIntegrityEngine
+• RevenueLedger
+• MarginProtectionService
+• DelinquencyManager
+
+VALIDATE:
+• invoices reconcile correctly
+• subscriptions survive retries
+• payouts audit correctly
+• AI remains profitable
+• revenue shares calculate correctly
+
+==================================================
+PHASE 4 — TRUE MULTI-TENANT ISOLATION
+==================================================
+
+BUILD:
+• TenantPartitionEngine
+• TenantSecurityBoundary
+• WhiteLabelIsolationLayer
+• EnterpriseHierarchySystem
+• RegionalAuthorityControls
+
+ISOLATE:
+• telemetry
+• guest profiles
+• AI memory
+• analytics
+• Venue DNA
+• environmental settings
+• rewards
+• enterprise operations
+
+VALIDATE:
+ZERO cross-tenant contamination.
+
+==================================================
+PHASE 5 — SESSION CONTINUITY + HANDOFF SYSTEM
+==================================================
+
+BUILD:
+• SessionPersistenceEngine
+• CrossDeviceSessionSync
+• HandoffStateManager
+• RecoverySnapshotService
+• JourneyCheckpointEngine
+
+TRACK:
+• customer progress
+• mentor conversations
+• pairings
+• rewards
+• mood selections
+• current experience state
+• pause state
+• return state
+
+VALIDATE:
+Customers resume EXACTLY where they left off after:
+• staff handoff
+• interruptions
+• device switching
+• temporary disconnects
+
+==================================================
+PHASE 6 — REALTIME SIGNAL ORCHESTRATION
+==================================================
+
+BUILD:
+• AXIOM Event Bus
+• SignalRouter
+• VenueSynchronizationEngine
+• ExperienceStateEmitter
+• EnvironmentalTriggerSystem
+
+SYNC:
+• telemetry
+• recommendations
+• environmental changes
+• mentor systems
+• reward systems
+• operational alerts
+• handoff states
+
+VALIDATE:
+Realtime orchestration remains stable under load.
+
+==================================================
+PHASE 7 — OFFLINE + EDGE INTELLIGENCE
+==================================================
+
+BUILD:
+• OfflineExperienceCache
+• EdgeTelemetryStore
+• DelayedSyncQueue
+• LocalRecommendationEngine
+• OfflineSessionRecovery
+
+REQUIREMENT:
+AXIOM OS must continue functioning during:
+• internet loss
+• degraded networks
+• cloud outages
+
+VALIDATE:
+• local recommendations function
+• sessions persist offline
+• telemetry uploads later
+• customer experience never collapses
+
+==================================================
+PHASE 8 — HARDWARE OPERATIONS
+==================================================
+
+BUILD:
+• HardwareInventoryEngine
+• DeviceRegistry
+• DeploymentTracking
+• LeaseManagementSystem
+• MaintenanceScheduler
+• DeviceHealthMonitoring
+• HardwareRecoveryEngine
+
+TRACK:
+• serial numbers
+• deployments
+• lease status
+• maintenance cycles
+• replacements
+• device failures
+
+VALIDATE:
+Hardware operations survive real venue environments.
+
+==================================================
+PHASE 9 — AI ECONOMICS + COST CONTROL
+==================================================
+
+BUILD:
+• TokenAccountingEngine
+• AIQuotaManager
+• AIThrottleController
+• AIProfitabilityMonitor
+• UsageForecastingEngine
+
+TRACK:
+• mentor AI costs
+• prediction costs
+• voice synthesis costs
+• simulation costs
+• token consumption
+
+VALIDATE:
+AI usage remains profitable at scale.
+
+==================================================
+PHASE 10 — OBSERVABILITY + RUNTIME HEALTH
+==================================================
+
+BUILD:
+• RuntimeObservabilityLayer
+• ErrorTelemetryEngine
+• InfrastructureMonitoring
+• MemoryLeakDetection
+• LatencyTracking
+• SelfHealingRuntime
+
+TRACK:
+• crashes
+• API latency
+• synchronization failures
+• AI failures
+• memory leaks
+• event loss
+• environmental failures
+
+VALIDATE:
+Real-time infrastructure monitoring.
+
+==================================================
+PHASE 11 — LEGAL + COMPLIANCE
+==================================================
+
+BUILD:
+• ConsentManagementSystem
+• BehavioralPrivacyEngine
+• AuditTrailEngine
+• ComplianceLogging
+• DataAnonymizationLayer
+
+SUPPORT:
+• GDPR
+• CCPA
+• behavioral analytics compliance
+• enterprise audit standards
+
+VALIDATE:
+Behavioral systems are legally safe.
+
+==================================================
+PHASE 12 — SECURITY HARDENING
+==================================================
+
+BUILD:
+• RuntimeThreatDetection
+• API RateLimiting
+• RewardFraudProtection
+• AI AbusePrevention
+• SessionHijackProtection
+• DeviceTamperDetection
+
+VALIDATE:
+• enterprise authentication hardening
+• API abuse prevention
+• fraud prevention
+• replay protection
+• tenant attack isolation
+
+==================================================
+PHASE 13 — MARKETPLACE + PLATFORM ECONOMY
+==================================================
+
+BUILD:
+• PluginRuntime
+• AXIOM SDK
+• MarketplaceProvisioning
+• RevenueSplitEngine
+• PartnerPayoutSystem
+• SandboxIsolation
+
+VALIDATE:
+• plugins isolate correctly
+• modules provision instantly
+• recurring marketplace billing works
+• partner payouts reconcile correctly
+
+==================================================
+PHASE 14 — DEPLOYMENT + INSTALLATION
+==================================================
+
+BUILD:
+• VenueDeploymentWizard
+• DeviceClaimingSystem
+• QR DeploymentActivation
+• VenueCalibrationFlow
+• DeploymentValidationEngine
+
+VALIDATE:
+Venues deploy without engineering intervention.
+
+==================================================
+PHASE 15 — FAILOVER + DISASTER RECOVERY
+==================================================
+
+BUILD:
+• BlackBoxRecovery
+• AtmosphereFallbackEngine
+• EmergencyAmbientMode
+• DisasterRecoverySystem
+• SyncRecoveryEngine
+
+RULE:
+The venue must NEVER feel broken.
+
+VALIDATE:
+• outages recover gracefully
+• environmental systems degrade elegantly
+• sessions recover automatically
+
+==================================================
+PHASE 16 — SALES VALIDATION MODE
+==================================================
+
+CREATE:
+Sales Validation Dashboard
+
+DISPLAY:
+• entitlement status
+• operational status
+• AI status
+• telemetry status
+• monetization status
+• provisioning status
+• billing status
+• deployment status
+
+RULE:
+If sales can sell it,
+AXIOM OS must execute it operationally.
+
+==================================================
+PHASE 17 — ENTERPRISE STRESS TESTING
+==================================================
+
+SIMULATE:
+• 10,000+ concurrent guests
+• multi-location franchises
+• AI surge traffic
+• telemetry floods
+• payment spikes
+• environmental synchronization overload
+
+VALIDATE:
+• graceful degradation
+• no tenant contamination
+• no session corruption
+• no orchestration collapse
+
+==================================================
+PHASE 18 — FINAL PRODUCTION CERTIFICATION
+==================================================
+
+AXIOM OS IS NOT COMPLETE UNTIL:
+• billing reconciles correctly
+• subscriptions provision correctly
+• AI metering functions correctly
+• handoffs recover correctly
+• sessions persist correctly
+• telemetry synchronizes correctly
+• tenants isolate correctly
+• environments fail gracefully
+• hardware tracks correctly
+• attribution validates correctly
+• enterprise orchestration functions correctly
+
+==================================================
+FINAL DIRECTIVE
+==================================================
+
+AXIOM OS must now operate as:
+a fully executable,
+enterprise-certified,
+multi-tenant,
+behaviorally intelligent,
+environmentally adaptive,
+hospitality intelligence infrastructure ecosystem.
+
+NOT:
+• a POS
+• an app
+• a dashboard
+• a demo platform
+
+The platform must behave like:
+• enterprise operational infrastructure
+• intelligent hospitality orchestration
+• adaptive experiential architecture
+• scalable commercial ecosystem
+
+FINAL RULE:
+NO conceptual systems remain.
+NO disconnected infrastructure remains.
+NO placeholder execution remains.
+NO fake operational layers remain.
+
+EVERYTHING MUST:
+• execute
+• monetize
+• orchestrate
+• recover
+• synchronize
+• provision
+• audit
+• isolate
+• self-heal
+• scale
+
+EXECUTE FULL PRODUCTION COMPLETION MODE NOW.
