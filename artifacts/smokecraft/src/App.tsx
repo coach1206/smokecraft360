@@ -81,6 +81,7 @@ import { OrchestratorProvider }       from "@/contexts/OrchestratorContext";
 import { PersistentAmbientLayer }      from "@/components/PersistentAmbientLayer";
 import { ParticleSystem }              from "@/components/ParticleSystem";
 import { GlobalAmbientOverlay }        from "@/components/GlobalAmbientOverlay";
+import { LoungeEnvironment }           from "@/components/LoungeEnvironment";
 import EnvironmentEnginePage          from "@/pages/EnvironmentEngine";
 import EnterpriseIntelligence         from "@/pages/EnterpriseIntelligence";
 import MasterOperations               from "@/pages/MasterOperations";
@@ -249,12 +250,14 @@ function App() {
                   <EnvironmentProvider>
                   <OrchestratorProvider>
                     <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                      <GlobalAmbientOverlay />
-                      <PersistentAmbientLayer />
-                      <ParticleSystem />
-                      <GlobalBackButton />
-                      <InactivityGuard />
-                      <Router />
+                      <LoungeEnvironment>
+                        <GlobalAmbientOverlay />
+                        <PersistentAmbientLayer />
+                        <ParticleSystem />
+                        <GlobalBackButton />
+                        <InactivityGuard />
+                        <Router />
+                      </LoungeEnvironment>
                     </WouterRouter>
                     <StaffBOHFeed />
                     <PosAuditBridge />

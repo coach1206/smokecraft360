@@ -22,6 +22,8 @@ html, body, #root {
 }
 .titan-carousel::-webkit-scrollbar { display: none; }
 .titan-carousel { scrollbar-width: none; -ms-overflow-style: none; }
+.hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
 
 @theme inline {
   --color-background: hsl(var(--background));

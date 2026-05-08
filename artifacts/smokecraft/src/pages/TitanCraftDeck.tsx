@@ -1,25 +1,18 @@
 /**
- * TitanCraftDeck — Axiom OS TITAN-styled craft portal.
- * Route: /titan-hub
+ * TitanCraftDeck — Axiom OS cinematic craft portal.
+ * Route: / and /titan-hub
  *
- * Dark steel kiosk surface using the TITAN CSS class system:
- *   .glass-card, .gold-text, .steel-texture
- *
- * Data: live CRAFT_MODULES (smoke / pour / brew / vape).
- * Cards navigate to /experience/:type on tap.
- * Footer: Smokecraft 360 brand mark, WifeX affiliate link,
- *         live Environment Pulse widget from IoT API.
+ * Emotional target: entering a private members lounge, not navigating software.
+ * Structure: wordmark header → cinematic craft scene carousel → minimal footer.
+ * No tabs, no status badges, no telemetry labels, no dashboard chrome.
  */
 
 import { useEffect, useRef, useState } from "react";
-import { useLocation }             from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
-import { CRAFT_MODULES }           from "@/data/craftScenes";
-import TitanEngine, { AtmosphereReading } from "@/engines/titan_engine";
-import { handleOutboundRedirect }  from "@/lib/affiliateLink";
-import { getXP, addXP, getCurrentLevel, xpProgressPct } from "@/lib/xpStore";
+import { useLocation }                 from "wouter";
+import { motion, AnimatePresence }     from "framer-motion";
+import { CRAFT_MODULES }               from "@/data/craftScenes";
 
-// ── Hero images mapped by craft id ────────────────────────────────────────
+// ── Craft scene data ──────────────────────────────────────────────────────────
 
 const CRAFT_IMAGES: Record<string, string> = {
   smoke: "/images/scenes/smokecraft-card.jpg",
@@ -29,75 +22,13 @@ const CRAFT_IMAGES: Record<string, string> = {
 };
 
 const CRAFT_SUBS: Record<string, string> = {
-  smoke: "Molecular Leaf Lab // Ritual Prep",
-  pour:  "Vessel Geometry // Spirit Sync",
-  brew:  "Fermentation Lab // Craft Intelligence",
-  vape:  "Cloud Architecture // Vapor Sync",
+  smoke: "Molecular Leaf Lab · Ritual Prep",
+  pour:  "Vessel Geometry · Spirit Sync",
+  brew:  "Fermentation Lab · Craft Intelligence",
+  vape:  "Cloud Architecture · Vapor Sync",
 };
 
-const CRAFT_CTAS: Record<string, string> = {
-  smoke: "Enter Atelier",
-  pour:  "Explore Spirits",
-  brew:  "Enter Brewery",
-  vape:  "Enter Vapor Lab",
-};
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function getVenueId(): string | null {
-  for (const k of ["axiom_jwt","auth_token","axiom_token","smokecraft_token"]) {
-    const t = localStorage.getItem(k);
-    if (t) try { return (JSON.parse(atob(t.split(".")[1]!)) as { venueId?: string }).venueId ?? null; } catch { /* next */ }
-  }
-  return null;
-}
-
-// ── Vitality widget ───────────────────────────────────────────────────────────
-
-function VitalityWidget() {
-  const [time, setTime] = useState("");
-  useEffect(() => {
-    const update = () =>
-      setTime(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
-    update();
-    const id = setInterval(update, 1000);
-    return () => clearInterval(id);
-  }, []);
-  return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 12,
-      background: "rgba(0,0,0,.65)",
-      border: "1px solid rgba(212,175,55,.25)",
-      padding: "10px 18px", borderRadius: 12,
-      backdropFilter: "blur(20px)",
-      boxShadow: "0 0 20px rgba(212,175,55,.12)",
-    }}>
-      <motion.div
-        style={{
-          width: 12, height: 12, borderRadius: "50%",
-          background: "#00ff84",
-          boxShadow: "0 0 12px rgba(0,255,132,.9), 0 0 24px rgba(0,255,132,.5)",
-          flexShrink: 0,
-        }}
-        animate={{ opacity: [1, 0.55, 1] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <div>
-        <div style={{ color: "#d4af37", fontSize: ".7rem", letterSpacing: ".2em", textTransform: "uppercase" }}>
-          Vitality
-        </div>
-        <div style={{ color: "#fff", fontSize: ".95rem", marginTop: 2 }}>
-          Synchronizing
-        </div>
-      </div>
-      <div style={{ marginLeft: 16, color: "rgba(255,255,255,.55)", letterSpacing: ".12em", fontSize: ".85rem" }}>
-        {time}
-      </div>
-    </div>
-  );
-}
-
-// ── Craft card ────────────────────────────────────────────────────────────────
+// ── Craft card — cinematic scene tile ─────────────────────────────────────────
 
 interface CardProps {
   id:     string;
@@ -109,111 +40,119 @@ interface CardProps {
 
 function CraftCard({ id, title, color, route, active }: CardProps) {
   const [, navigate] = useLocation();
-  const img     = CRAFT_IMAGES[id] ?? CRAFT_IMAGES.smoke;
-  const sub     = CRAFT_SUBS[id]   ?? "";
-  const cta     = CRAFT_CTAS[id]   ?? "Enter";
+  const img  = CRAFT_IMAGES[id]  ?? CRAFT_IMAGES["smoke"]!;
+  const sub  = CRAFT_SUBS[id]    ?? "";
   const isSmoke = id === "smoke";
-
-  const goldLuster: React.CSSProperties = {
-    background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    filter: "drop-shadow(0 0 12px rgba(212,175,55,.5))",
-  };
 
   return (
     <motion.div
-      className="cursor-pointer h-full group"
+      className="cursor-pointer h-full"
       style={{
-        position: "relative",
-        overflow: "hidden",
-        borderRadius: 40,
-        borderTop: "1px solid rgba(255,255,255,0.3)",
-        borderLeft: "1px solid rgba(255,255,255,0.1)",
-        background: "#121214",
-        backdropFilter: "blur(20px)",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-end",
+        position:       "relative",
+        overflow:       "hidden",
+        borderRadius:   40,
+        borderTop:      "1px solid rgba(255,255,255,0.18)",
+        borderLeft:     "1px solid rgba(255,255,255,0.06)",
+        background:     "#0a0806",
       }}
       animate={{
-        scale:   active ? 1.02 : 1,
-        opacity: active ? 1 : 0.72,
-        boxShadow: active
-          ? `0 50px 100px rgba(0,0,0,0.9), 0 0 0 1px ${color}80, 0 0 36px ${color}40`
-          : "0 50px 100px rgba(0,0,0,0.9)",
+        scale:      active ? 1.025 : 0.975,
+        opacity:    active ? 1 : 0.55,
+        boxShadow:  active
+          ? `0 60px 120px rgba(0,0,0,0.95), 0 0 0 1px ${color}60, 0 0 48px ${color}25`
+          : "0 40px 80px rgba(0,0,0,0.8)",
       }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => navigate(route)}
     >
-      {/* Full-bleed hero image — overflow-hidden wrapper forces cover clipping */}
+      {/* Full-bleed hero image */}
       <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-        <img
+        <motion.img
           src={img}
           alt={title}
+          animate={{ scale: active ? 1.04 : 1 }}
+          transition={{ duration: 6, ease: "easeInOut" }}
           style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
+            width:          "100%",
+            height:         "100%",
+            objectFit:      "cover",
             objectPosition: "center",
-            opacity: 1,
-            display: "block",
+            display:        "block",
           }}
         />
       </div>
 
-      {/* Precision shadow — bottom text zone only, product stays crystal clear */}
+      {/* Deep gradient — bottom text zone only */}
       <div style={{
-        position: "absolute",
-        inset: 0,
-        zIndex: 10,
-        background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 40%)",
+        position:   "absolute",
+        inset:      0,
+        zIndex:     10,
+        background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.10) 45%, transparent 100%)",
       }} />
 
-      {/* Animated top accent line */}
+      {/* Top atmosphere */}
+      <div style={{
+        position:   "absolute",
+        top:        0,
+        left:       0,
+        right:      0,
+        height:     "35%",
+        zIndex:     10,
+        background: `linear-gradient(to bottom, ${color}15 0%, transparent 100%)`,
+      }} />
+
+      {/* Animated top accent line — breathing */}
       <motion.div
-        style={{ background: color }}
-        className="absolute top-0 left-0 right-0 h-[2px] z-20"
-        animate={{ opacity: active ? [0.7, 1, 0.7] : [0.15, 0.35, 0.15] }}
-        transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+        style={{ background: color, position: "absolute", top: 0, left: 0, right: 0, height: "1.5px", zIndex: 20 }}
+        animate={{ opacity: active ? [0.6, 1, 0.6] : [0.08, 0.20, 0.08] }}
+        transition={{ duration: active ? 3 : 5, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Bottom content — glass lens over text zone */}
-      <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", padding: "28px 32px", zIndex: 20, backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}>
+      {/* Bottom text zone */}
+      <div style={{
+        position:       "absolute",
+        bottom:         0,
+        left:           0,
+        width:          "100%",
+        padding:        "32px 36px",
+        zIndex:         20,
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
+      }}>
         <h2 style={{
-          fontSize: "clamp(1rem, 1.8vw, 1.875rem)",
-          fontStyle: "italic",
-          letterSpacing: "0.6em",
-          marginBottom: 8,
-          lineHeight: 1,
-          textTransform: "uppercase",
-          fontWeight: 900,
-          whiteSpace: "nowrap",
+          fontSize:        "clamp(1rem, 1.6vw, 1.75rem)",
+          fontStyle:       "italic",
+          letterSpacing:   "0.55em",
+          marginBottom:    10,
+          lineHeight:      1,
+          textTransform:   "uppercase",
+          fontWeight:      900,
+          whiteSpace:      "nowrap",
           ...(isSmoke
             ? {
-                background: "linear-gradient(90deg, #8a6d3b 0%, #fff9e6 25%, #d4af37 50%, #fff9e6 75%, #8a6d3b 100%)",
-                backgroundSize: "200% auto",
+                background:           "linear-gradient(90deg, #8a6d3b 0%, #fff9e6 25%, #d4af37 50%, #fff9e6 75%, #8a6d3b 100%)",
+                backgroundSize:       "200% auto",
                 WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                filter: "drop-shadow(0 0 12px rgba(212,175,55,.55))",
-                animation: "gold-shimmer 5s linear infinite",
+                WebkitTextFillColor:  "transparent",
+                filter:               "drop-shadow(0 0 12px rgba(212,175,55,.5))",
+                animation:            "gold-shimmer 5s linear infinite",
               }
             : {
-                background: "linear-gradient(to bottom, #fff 0%, #999 100%)",
+                background:           "linear-gradient(to bottom, rgba(255,255,255,0.92) 0%, rgba(200,200,200,0.55) 100%)",
                 WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
+                WebkitTextFillColor:  "transparent",
               }),
         }}>
           {title}
         </h2>
         <p style={{
-          color: "#fff",
-          opacity: 0.5,
-          fontSize: "10px",
-          marginBottom: 0,
-          letterSpacing: ".4em",
-          textTransform: "uppercase",
+          color:          "#E8DCC8",
+          opacity:        0.38,
+          fontSize:       "9px",
+          letterSpacing:  ".38em",
+          textTransform:  "uppercase",
+          marginBottom:   0,
         }}>
           {sub}
         </p>
@@ -222,105 +161,36 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
   );
 }
 
-// ── Environment Pulse widget ──────────────────────────────────────────────────
-
-const BARS = [3, 6, 4, 8, 2, 7];
-
-function EnvPulse() {
-  const [reading, setReading] = useState<AtmosphereReading | null>(null);
-
-  useEffect(() => {
-    const venueId = getVenueId();
-    if (!venueId) return;
-    TitanEngine.syncEnvironment(venueId).then(r => { if (r) setReading(r); });
-  }, []);
-
-  const vitality = reading?.vitality ?? null;
-  const isDeviant = reading?.isDeviant ?? false;
-  const label = isDeviant ? "⚠ DEVIANT" : vitality !== null ? "NOMINAL" : "MONITORING";
-  const gold = "var(--gold-luster)";
-
-  return (
-    <div className="steel-panel rounded-lg p-4 flex justify-between items-center border-l-2"
-      style={{ borderLeftColor: isDeviant ? "#f59e0b" : "var(--ax-gold)" }}>
-      <div>
-        <div className="text-[8px] font-bold uppercase tracking-widest" style={{ color: gold }}>
-          Environment Pulse
-        </div>
-        <div className="text-xs text-white uppercase mt-0.5 font-semibold">
-          {label}
-        </div>
-        {vitality !== null && (
-          <div className="text-[8px] text-white/35 mt-0.5">{vitality}% vitality</div>
-        )}
-      </div>
-      <div className="flex gap-1 h-8 items-end">
-        {BARS.map((h, i) => (
-          <motion.div
-            key={i}
-            className="w-2 rounded-sm"
-            style={{ background: isDeviant ? "rgba(245,158,11,0.55)" : "rgba(212,139,0,0.45)" }}
-            animate={{ height: [`${h * 10}%`, `${Math.min(100, h * 10 + 15)}%`, `${h * 10}%`] }}
-            transition={{ duration: 1.8 + i * 0.3, repeat: Infinity, ease: "easeInOut" }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-type View = "grid" | "atelier";
-
-type LeafKey = "maduro" | "habano" | "connecticut";
-type CutKey  = "straight" | "vcut" | "punch";
-
-const LEAF_KNOWLEDGE: Record<LeafKey, { note: string; intensity: number; synergy: string }> = {
-  maduro:      { note: "Earthy/Sweet",   intensity: 8, synergy: "Stout/Bourbon" },
-  habano:      { note: "Spicy/Nutty",    intensity: 7, synergy: "Rye/IPA"       },
-  connecticut: { note: "Creamy/Cedar",   intensity: 4, synergy: "Pilsner/Cognac"},
-};
-
-const CUT_PHYSICS: Record<CutKey, { label: string; velocity: string; temp: string; longevity: string }> = {
-  straight: { label: "Straight", velocity: "Low",     temp: "Cool",  longevity: "+15m" },
-  vcut:     { label: "V-Cut",    velocity: "High",    temp: "Warm",  longevity: "−5m"  },
-  punch:    { label: "Punch",    velocity: "Intense", temp: "Hot",   longevity: "+20m" },
-};
-
 export default function TitanCraftDeck() {
-  const [, navigate]           = useLocation();
-  const [mounted, setMounted]  = useState(false);
+  const [, navigate]          = useLocation();
+  const [mounted, setMounted] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [view, setView]        = useState<View>("grid");
-  const carouselRef            = useRef<HTMLElement | null>(null);
-  const [xp, setXp]            = useState(0);
-  const [build, setBuild]      = useState<{ leaf: LeafKey; cut: CutKey }>({
-    leaf: "maduro",
-    cut:  "straight",
-  });
-  const [mentorMsg, setMentorMsg] = useState("Awaiting first selection…");
+  const [time, setTime]       = useState("");
+  const carouselRef           = useRef<HTMLDivElement | null>(null);
 
+  useEffect(() => { setMounted(true); }, []);
+
+  // Live clock — environmental presence indicator
   useEffect(() => {
-    setMounted(true);
-    setXp(getXP());
+    const update = () =>
+      setTime(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+    update();
+    const id = setInterval(update, 1_000);
+    return () => clearInterval(id);
   }, []);
 
-  // Sync XP when tab regains focus (NFC may have fired on another page)
+  // Auto-rotation every 7s — slow, deliberate, like a hotel lobby display
   useEffect(() => {
-    const onFocus = () => setXp(getXP());
-    window.addEventListener("focus", onFocus);
-    return () => window.removeEventListener("focus", onFocus);
-  }, []);
-
-  // Auto-rotation every 6s — paused while in atelier view
-  useEffect(() => {
-    if (view !== "grid") return;
-    const iv = setInterval(() => setActiveIndex(i => (i + 1) % CRAFT_MODULES.length), 6_000);
+    const iv = setInterval(
+      () => setActiveIndex(i => (i + 1) % CRAFT_MODULES.length),
+      7_000,
+    );
     return () => clearInterval(iv);
-  }, [view]);
+  }, []);
 
-  // Scroll carousel to active card whenever activeIndex changes
+  // Scroll carousel to active card
   useEffect(() => {
     const el = carouselRef.current;
     if (!el) return;
@@ -329,19 +199,6 @@ export default function TitanCraftDeck() {
     card.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
   }, [activeIndex]);
 
-  const level   = getCurrentLevel(xp);
-  const pct     = xpProgressPct(xp);
-
-  const runAnalysis = (leaf: LeafKey = build.leaf, cut: CutKey = build.cut) => {
-    const l = LEAF_KNOWLEDGE[leaf];
-    const c = CUT_PHYSICS[cut];
-    setMentorMsg(
-      `Sage Analysis: The ${c.temp} draw of the ${c.label} will amplify the ${l.note} notes. Pair with a ${l.synergy}.`
-    );
-    const next = addXP(10);
-    setXp(next);
-  };
-
   return (
     <AnimatePresence>
       {mounted && (
@@ -349,292 +206,209 @@ export default function TitanCraftDeck() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.35 }}
+          transition={{ duration: 0.9, ease: "easeInOut" }}
           id="axiom-terminal"
           className="axiom-theme axiom-terminal h-screen w-full flex flex-col"
-          style={{
-            fontFamily: "var(--app-font-sans, system-ui, sans-serif)",
-            overflow: "hidden",
-          }}
+          style={{ fontFamily: "var(--app-font-sans, system-ui, sans-serif)", overflow: "hidden" }}
         >
-          {/* Ambient amber vignette — top-center radial glow */}
-          <div className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(circle at 50% 0%, rgba(212,175,55,0.15) 0%, transparent 70%)", zIndex: 0 }} />
+          {/* Ambient amber radial — top-center whiskey warmth */}
+          <div
+            aria-hidden
+            style={{
+              position:   "absolute",
+              inset:      0,
+              pointerEvents: "none",
+              background: "radial-gradient(ellipse 70% 45% at 50% 0%, rgba(200,135,51,0.11) 0%, transparent 70%)",
+              zIndex:     0,
+            }}
+          />
 
-          {/* Header */}
-          <header className="relative z-10 flex justify-between items-center px-10 border-b border-white/10 flex-shrink-0"
-            style={{ height: 90 }}>
-            {/* Left — logo + tagline */}
+          {/* Floor depth — walnut shadow rising from bottom */}
+          <div
+            aria-hidden
+            style={{
+              position:      "absolute",
+              inset:         0,
+              pointerEvents: "none",
+              background:    "radial-gradient(ellipse 90% 50% at 50% 105%, rgba(18,10,4,0.75) 0%, transparent 70%)",
+              zIndex:        0,
+            }}
+          />
+
+          {/* ── Header — wordmark + live clock only ── */}
+          <header
+            className="relative z-10 flex justify-between items-end flex-shrink-0"
+            style={{ padding: "36px 48px 20px" }}
+          >
+            {/* Wordmark */}
             <div>
               <div style={{
-                background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
+                background:           "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
                 WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                filter: "drop-shadow(0 0 15px rgba(212,175,55,.6))",
-                fontSize: "32px",
-                letterSpacing: ".4em",
-                fontWeight: 900,
-                textTransform: "uppercase",
-                margin: 0,
+                WebkitTextFillColor:  "transparent",
+                filter:               "drop-shadow(0 0 18px rgba(212,175,55,.45))",
+                fontSize:             "clamp(22px, 2.4vw, 30px)",
+                letterSpacing:        ".5em",
+                fontWeight:           900,
+                textTransform:        "uppercase",
               }}>
                 Axiom 360
               </div>
               <div style={{
-                fontSize: "10px",
-                letterSpacing: "0.6em",
-                opacity: 0.4,
-                marginTop: 8,
+                fontSize:      "8px",
+                letterSpacing: "0.55em",
+                opacity:       0.28,
+                marginTop:     7,
                 textTransform: "uppercase",
+                color:         "#E8DCC8",
               }}>
-                Sovereign OS // Premier Terminal
+                Sovereign Experience OS
               </div>
             </div>
 
-            {/* Centre — view toggle */}
-            <div className="flex gap-1 steel-panel rounded-full p-1">
-              {(["grid", "atelier"] as View[]).map(v => (
-                <button
-                  key={v}
-                  onClick={() => setView(v)}
-                  className="px-5 py-1.5 rounded-full text-[9px] uppercase tracking-widest font-bold transition-all"
-                  style={{
-                    background: view === v ? "rgba(212,175,55,0.18)" : "transparent",
-                    color: view === v ? "var(--gold)" : "rgba(255,255,255,0.30)",
-                    border: "none", cursor: "pointer",
-                  }}
-                >
-                  {v === "grid" ? "Craft Grid" : "Atelier"}
-                </button>
-              ))}
-            </div>
-
-            {/* Right — status badge */}
-            <div style={{ background: "transparent", padding: "7px 22px", borderRadius: 999, border: "0.5px solid #d4af37" }}>
-              <span style={{
-                background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                fontSize: "12px",
-                fontWeight: 900,
-                letterSpacing: "0.4em",
-                textTransform: "uppercase",
-              }}>STATUS: NOMINAL</span>
+            {/* Live clock — ambient time presence */}
+            <div style={{
+              fontSize:      "13px",
+              letterSpacing: "0.25em",
+              opacity:       0.35,
+              color:         "#E8DCC8",
+              fontWeight:    300,
+            }}>
+              {time}
             </div>
           </header>
 
-          {/* Main — grid or atelier */}
-          <AnimatePresence mode="wait">
-            {view === "grid" ? (
-              <motion.main
-                key="grid"
-                ref={carouselRef}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.28 }}
-                className="titan-carousel flex-grow flex items-stretch"
+          {/* ── Scene label ── */}
+          <div
+            className="relative z-10 flex justify-center"
+            style={{ marginBottom: 14 }}
+          >
+            <div style={{
+              fontSize:      "7.5px",
+              letterSpacing: "0.65em",
+              textTransform: "uppercase",
+              opacity:       0.20,
+              color:         "#E8DCC8",
+            }}>
+              Select your craft
+            </div>
+          </div>
+
+          {/* ── Craft carousel ── */}
+          <main
+            ref={carouselRef}
+            className="hide-scrollbar flex-grow flex items-stretch"
+            style={{
+              display:         "flex",
+              overflowX:       "scroll",
+              scrollSnapType:  "x mandatory",
+              gap:             20,
+              padding:         "0 72px 0",
+              alignItems:      "stretch",
+            }}
+          >
+            {CRAFT_MODULES.map((mod, i) => (
+              <div
+                key={mod.id}
+                onClick={() => setActiveIndex(i)}
                 style={{
-                  display: "flex",
-                  overflowX: "scroll",
-                  scrollSnapType: "x mandatory",
-                  gap: 24,
-                  padding: "16px 56px",
-                  alignItems: "stretch",
+                  flexShrink:      0,
+                  width:           "clamp(270px, 34vw, 490px)",
+                  height:          "100%",
+                  scrollSnapAlign: "center",
+                  cursor:          "pointer",
                 }}
               >
-                {CRAFT_MODULES.map((mod, i) => (
-                  <div
-                    key={mod.id}
-                    style={{
-                      flexShrink: 0,
-                      width: "clamp(300px, 38vw, 520px)",
-                      height: "100%",
-                      scrollSnapAlign: "center",
-                    }}
-                  >
-                    <CraftCard
-                      id={mod.id}
-                      title={mod.title}
-                      color={mod.color}
-                      route={mod.route}
-                      active={activeIndex === i}
-                    />
-                  </div>
-                ))}
-              </motion.main>
-            ) : (
-              <motion.main
-                key="atelier"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.28 }}
-                className="flex-grow px-10 py-6 min-h-0 flex items-center"
-              >
-                {/* Single slab-3d wrapper — both sections inside */}
-                <div className="slab-3d w-full p-12 grid grid-cols-2 gap-12 relative overflow-hidden">
+                <CraftCard
+                  id={mod.id}
+                  title={mod.title}
+                  color={mod.color}
+                  route={mod.route}
+                  active={activeIndex === i}
+                />
+              </div>
+            ))}
+          </main>
 
-                  {/* Ambient light catcher */}
-                  <div className="absolute -top-24 -left-24 w-64 h-64 bg-yellow-500/10 rounded-full blur-[100px] pointer-events-none" />
+          {/* ── Dot navigation indicators ── */}
+          <div
+            className="relative z-10 flex justify-center gap-2"
+            style={{ padding: "14px 0" }}
+          >
+            {CRAFT_MODULES.map((_, i) => (
+              <motion.button
+                key={i}
+                onClick={() => setActiveIndex(i)}
+                animate={{
+                  width:           activeIndex === i ? 22 : 5,
+                  opacity:         activeIndex === i ? 0.85 : 0.22,
+                  backgroundColor: activeIndex === i ? "#C88733" : "rgba(232,220,200,0.5)",
+                }}
+                transition={{ duration: 0.45, ease: "easeOut" }}
+                style={{
+                  height:       5,
+                  borderRadius: 3,
+                  border:       "none",
+                  cursor:       "pointer",
+                  padding:      0,
+                  flexShrink:   0,
+                }}
+                aria-label={`Craft ${i + 1}`}
+              />
+            ))}
+          </div>
 
-                  {/* LEFT — Molecular Atelier */}
-                  <section className="flex flex-col justify-between border-r border-white/5 pr-12 z-10">
-                    <div>
-                      <h2 className="gold-luster-text italic text-4xl mb-6">Leaf Atelier</h2>
-                      <p className="text-sm text-white/70 leading-relaxed mb-6 font-light">
-                        {LEAF_KNOWLEDGE[build.leaf].note} — {LEAF_KNOWLEDGE[build.leaf].synergy} synergy.
-                        Selecting a Maduro wrapper will intensify the nutty character of your blend.
-                      </p>
-                      <div className="grid grid-cols-3 gap-4 mb-6">
-                        {(Object.keys(LEAF_KNOWLEDGE) as LeafKey[]).map(leaf => (
-                          <motion.button
-                            key={leaf}
-                            whileTap={{ scale: 0.96 }}
-                            onClick={() => {
-                              const next = { ...build, leaf };
-                              setBuild(next);
-                              runAnalysis(leaf, build.cut);
-                            }}
-                            className="machined-btn py-4 text-[10px] uppercase font-bold tracking-widest"
-                            style={{
-                              border: build.leaf === leaf
-                                ? "1px solid rgba(212,175,55,0.80)"
-                                : undefined,
-                              color: build.leaf === leaf ? "var(--gold)" : "rgba(255,255,255,0.55)",
-                              borderRadius: 6,
-                            }}
-                          >
-                            {leaf}
-                          </motion.button>
-                        ))}
-                      </div>
-                      {/* Intensity bar */}
-                      <div>
-                        <div className="flex justify-between text-[9px] text-white/30 uppercase mb-1">
-                          <span>Intensity</span>
-                          <span>{LEAF_KNOWLEDGE[build.leaf].intensity}/10</span>
-                        </div>
-                        <div className="h-0.5 bg-white/10 rounded-full overflow-hidden">
-                          <motion.div
-                            className="h-full rounded-full"
-                            style={{ background: "var(--gold)" }}
-                            animate={{ width: `${LEAF_KNOWLEDGE[build.leaf].intensity * 10}%` }}
-                            transition={{ duration: 0.5, ease: "easeOut" }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-
-                  {/* RIGHT — Physics & Prep */}
-                  <section className="flex flex-col justify-between z-10">
-                    <div>
-                      <h2 className="text-white/90 italic text-4xl mb-6">Vessel &amp; Prep</h2>
-                      {/* Sage mentor message */}
-                      <p className="text-sm text-white/60 leading-relaxed mb-8 font-light italic border-l-2 border-yellow-500/40 pl-4">
-                        "{mentorMsg}"
-                      </p>
-                      {/* Cut selector */}
-                      <div className="flex gap-3 mb-8">
-                        {(Object.keys(CUT_PHYSICS) as CutKey[]).map(cut => (
-                          <motion.button
-                            key={cut}
-                            whileTap={{ scale: 0.96 }}
-                            onClick={() => {
-                              setBuild(b => ({ ...b, cut }));
-                              runAnalysis(build.leaf, cut);
-                            }}
-                            className="machined-btn flex-1 py-4 text-[10px] uppercase font-bold tracking-widest"
-                            style={{
-                              border: build.cut === cut
-                                ? "1px solid rgba(212,175,55,0.80)"
-                                : undefined,
-                              color: build.cut === cut ? "var(--gold)" : "rgba(255,255,255,0.55)",
-                              borderRadius: 6,
-                            }}
-                          >
-                            {CUT_PHYSICS[cut].label}
-                          </motion.button>
-                        ))}
-                      </div>
-                      {/* Ritual longevity */}
-                      <div className="p-4 border-l-2 border-emerald-500 bg-emerald-500/5 rounded-r-lg">
-                        <p className="text-[10px] uppercase text-emerald-500 font-bold mb-1 tracking-widest">
-                          Ritual Longevity
-                        </p>
-                        <motion.p
-                          key={build.cut}
-                          initial={{ opacity: 0, y: 6 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="text-2xl font-light text-white"
-                        >
-                          {CUT_PHYSICS[build.cut].longevity} Smoke Time
-                        </motion.p>
-                        <p className="text-[9px] text-white/30 mt-1 uppercase tracking-widest">
-                          {CUT_PHYSICS[build.cut].velocity} draw · {CUT_PHYSICS[build.cut].temp} temp
-                        </p>
-                      </div>
-                    </div>
-                    {/* Commence Ritual CTA */}
-                    <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => navigate("/craft-hub")}
-                      className="mt-6 bg-yellow-600/20 border border-yellow-500/60 py-5 gold-luster-text text-[11px] uppercase tracking-[0.4em]"
-                      style={{
-                        boxShadow: "0 0 20px rgba(212,175,55,0.20)",
-                        borderRadius: 8,
-                        cursor: "pointer",
-                      }}
-                    >
-                      Commence Ritual
-                    </motion.button>
-                  </section>
-
-                </div>
-              </motion.main>
-            )}
-          </AnimatePresence>
-
-          {/* Footer */}
-          <footer className="relative z-10 flex justify-between items-center border-t border-white/10 flex-shrink-0"
-            style={{
-              height: 80,
-              padding: "0 36px",
-              background: "linear-gradient(180deg, rgba(10,10,10,.7) 0%, rgba(0,0,0,.95) 100%)",
-            }}>
-            {/* Left — diamond + telemetry */}
-            <div className="flex items-center gap-5">
-              <div style={{
-                width: 18, height: 18,
-                background: "#d4af37",
-                transform: "rotate(45deg)",
-                boxShadow: "0 0 30px #d4af37",
-                flexShrink: 0,
-              }} />
-              <span style={{
-                fontSize: 11,
-                letterSpacing: "0.6em",
-                opacity: 0.4,
+          {/* ── Footer — ultra minimal ── */}
+          <footer
+            className="relative z-10 flex justify-between items-center flex-shrink-0"
+            style={{ padding: "8px 48px 28px" }}
+          >
+            {/* New guest entry — whispered, not shouted */}
+            <button
+              onClick={() => navigate("/enrollment")}
+              style={{
+                background:    "none",
+                border:        "none",
+                color:         "rgba(232,220,200,0.18)",
+                fontSize:      "7.5px",
+                letterSpacing: "0.5em",
                 textTransform: "uppercase",
-                color: "#fff",
-              }}>
-                Titan Engine // Live Telemetry
-              </span>
+                cursor:        "pointer",
+                padding:       0,
+                fontFamily:    "inherit",
+              }}
+            >
+              New Guest
+            </button>
+
+            {/* Brand mark — centered */}
+            <div style={{
+              fontSize:      "8px",
+              letterSpacing: "0.45em",
+              textTransform: "uppercase",
+              color:         "#C88733",
+              opacity:       0.22,
+            }}>
+              Axiom Sovereign OS
             </div>
 
-            {/* Right — version */}
-            <span style={{
-              background: "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              fontSize: "10px",
-              opacity: 0.6,
-              letterSpacing: "0.4em",
-              textTransform: "uppercase",
-            }}>
-              Axiom Sovereign OS v3.0
-            </span>
+            {/* Returning guest */}
+            <button
+              onClick={() => navigate("/craft-hub")}
+              style={{
+                background:    "none",
+                border:        "none",
+                color:         "rgba(232,220,200,0.18)",
+                fontSize:      "7.5px",
+                letterSpacing: "0.5em",
+                textTransform: "uppercase",
+                cursor:        "pointer",
+                padding:       0,
+                fontFamily:    "inherit",
+              }}
+            >
+              Returning?
+            </button>
           </footer>
         </motion.div>
       )}
