@@ -1,0 +1,544 @@
+CONTINUATION — FINAL MASTER IMPLEMENTATION PROMPT
+AXIOM EXPERIENCE NERVOUS SYSTEM
+CRAFT HUB 360
+FULL CONTINUOUS BUILD
+PART 2 CONTINUATION
+
+==================================================
+CREATE:
+client/src/components/experience/LevelSelection.tsx
+==================================================
+
+CODE:
+
+import { motion } from 'framer-motion';
+
+const levels = [
+  {
+    title: 'Curious Guest',
+    description:
+      'A guided introduction into the craft experience.',
+  },
+  {
+    title: 'Explorer',
+    description:
+      'Discover deeper flavor journeys and unlocks.',
+  },
+  {
+    title: 'Scholar',
+    description:
+      'Advanced discovery paths and educational immersion.',
+  },
+  {
+    title: 'Master',
+    description:
+      'Unlock reserve experiences and hidden pathways.',
+  },
+];
+
+export default function LevelSelection({
+  onSelect,
+}: any) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-[1200px] mx-auto">
+
+      {levels.map((level, index) => (
+        <motion.div
+          key={level.title}
+          initial={{
+            opacity: 0,
+            y: 40,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            duration: 1,
+            delay: index * 0.2,
+          }}
+          whileHover={{
+            scale: 1.02,
+          }}
+          onClick={() => onSelect(level.title)}
+          className="
+            relative
+            overflow-hidden
+            rounded-[30px]
+            border border-white/10
+            bg-white/5
+            backdrop-blur-xl
+            p-10
+            cursor-pointer
+            transition-all
+            duration-700
+            hover:border-amber-400/40
+            hover:bg-white/10
+          "
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent pointer-events-none" />
+
+          <h2 className="text-3xl text-white mb-4 tracking-wide">
+            {level.title}
+          </h2>
+
+          <p className="text-white/60 leading-relaxed">
+            {level.description}
+          </p>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+==================================================
+CREATE:
+client/src/components/experience/MoodDiscovery.tsx
+==================================================
+
+CODE:
+
+import { motion } from 'framer-motion';
+
+const moods = [
+  'Relaxed',
+  'Celebration',
+  'Late Night',
+  'Bold',
+  'Smooth',
+  'Adventurous',
+  'Social',
+  'Luxury',
+];
+
+export default function MoodDiscovery({
+  onSelect,
+}: any) {
+  return (
+    <div className="flex flex-wrap gap-4 justify-center">
+
+      {moods.map((mood, index) => (
+        <motion.button
+          key={mood}
+          initial={{
+            opacity: 0,
+            scale: 0.8,
+          }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+          }}
+          transition={{
+            duration: 0.6,
+            delay: index * 0.1,
+          }}
+          whileHover={{
+            scale: 1.08,
+          }}
+          whileTap={{
+            scale: 0.95,
+          }}
+          onClick={() => onSelect(mood)}
+          className="
+            px-6
+            py-4
+            rounded-full
+            bg-white/10
+            border border-white/10
+            text-white
+            backdrop-blur-xl
+            transition-all
+            duration-500
+            hover:bg-amber-500/20
+            hover:border-amber-400/40
+          "
+        >
+          {mood}
+        </motion.button>
+      ))}
+    </div>
+  );
+}
+
+==================================================
+CREATE:
+client/src/components/experience/JourneyGenerator.tsx
+==================================================
+
+CODE:
+
+export function generateJourney(
+  craftType: string,
+  mood: string
+) {
+  if (craftType === 'pourcraft') {
+    return [
+      'Discovery Pour',
+      'Flavor Expansion',
+      'Reserve Experience',
+      'Signature Cocktail',
+    ];
+  }
+
+  if (craftType === 'brewcraft') {
+    return [
+      'Regional Flight',
+      'Barrel Discovery',
+      'Hop Expansion',
+      'Rare Brew Unlock',
+    ];
+  }
+
+  if (craftType === 'vapecraft') {
+    return [
+      'Flavor Layer',
+      'Atmosphere Sync',
+      'Cloud Expansion',
+      'Sensory Enhancement',
+    ];
+  }
+
+  return [
+    'Ember Introduction',
+    'Pairing Discovery',
+    'Maduro Journey',
+    'Reserve Lounge',
+  ];
+}
+
+==================================================
+CREATE:
+client/src/components/experience/ExperienceRecap.tsx
+==================================================
+
+CODE:
+
+import { motion } from 'framer-motion';
+
+export default function ExperienceRecap({
+  recap,
+}: any) {
+  return (
+    <motion.div
+      initial={{
+        opacity: 0,
+      }}
+      animate={{
+        opacity: 1,
+      }}
+      transition={{
+        duration: 1.5,
+      }}
+      className="
+        max-w-[900px]
+        mx-auto
+        text-center
+        p-12
+        rounded-[40px]
+        border border-white/10
+        bg-black/30
+        backdrop-blur-2xl
+      "
+    >
+      <h2 className="text-5xl text-white mb-8 tracking-[0.15em]">
+        EXPERIENCE RECAP
+      </h2>
+
+      <div className="space-y-6 text-white/70 text-lg leading-relaxed">
+
+        <p>
+          Tonight you explored:
+        </p>
+
+        <div className="flex flex-wrap gap-4 justify-center">
+
+          {recap.discoveries?.map((item: string) => (
+            <div
+              key={item}
+              className="
+                px-5
+                py-3
+                rounded-full
+                bg-amber-500/10
+                border border-amber-400/20
+                text-amber-200
+              "
+            >
+              {item}
+            </div>
+          ))}
+        </div>
+
+        <p>
+          New unlocks and future journeys await.
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+==================================================
+CREATE:
+client/src/components/social/GroupExperiencePanel.tsx
+==================================================
+
+CODE:
+
+import { motion } from 'framer-motion';
+
+export default function GroupExperiencePanel() {
+  return (
+    <motion.div
+      initial={{
+        opacity: 0,
+        y: 40,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
+      transition={{
+        duration: 1,
+      }}
+      className="
+        rounded-[30px]
+        bg-white/5
+        border border-white/10
+        backdrop-blur-xl
+        p-8
+      "
+    >
+      <h2 className="text-3xl text-white mb-6">
+        Group Experience
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div className="bg-white/5 rounded-2xl p-6">
+          <h3 className="text-white text-xl mb-3">
+            Collaborative Journeys
+          </h3>
+
+          <p className="text-white/60">
+            Build experiences together.
+          </p>
+        </div>
+
+        <div className="bg-white/5 rounded-2xl p-6">
+          <h3 className="text-white text-xl mb-3">
+            Table Unlocks
+          </h3>
+
+          <p className="text-white/60">
+            Unlock shared sensory experiences.
+          </p>
+        </div>
+
+        <div className="bg-white/5 rounded-2xl p-6">
+          <h3 className="text-white text-xl mb-3">
+            Flavor Challenges
+          </h3>
+
+          <p className="text-white/60">
+            Discover and compete socially.
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+==================================================
+CREATE:
+client/src/components/experience/RulesIntro.tsx
+==================================================
+
+CODE:
+
+import { motion } from 'framer-motion';
+
+export default function RulesIntro({
+  craftTitle,
+}: any) {
+  return (
+    <motion.div
+      initial={{
+        opacity: 0,
+      }}
+      animate={{
+        opacity: 1,
+      }}
+      transition={{
+        duration: 1.4,
+      }}
+      className="
+        max-w-[1000px]
+        mx-auto
+        text-center
+        px-8
+        py-16
+      "
+    >
+      <h1 className="text-6xl text-white mb-10 tracking-[0.2em]">
+        {craftTitle}
+      </h1>
+
+      <div className="space-y-8 text-white/70 text-xl leading-relaxed">
+
+        <p>
+          This experience is designed for exploration,
+          discovery, and sensory immersion.
+        </p>
+
+        <p>
+          Every journey evolves your 360 profile,
+          unlocks hidden experiences,
+          and adapts to your preferences.
+        </p>
+
+        <p>
+          Curiosity unlocks progression.
+          Exploration unlocks mastery.
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+==================================================
+CREATE:
+client/src/components/experience/ExperienceShell.tsx
+==================================================
+
+CODE:
+
+import CinematicTransition from './CinematicTransition';
+import AtmosphereLayer from './AtmosphereLayer';
+import EnvironmentRenderer from '../environment/EnvironmentRenderer';
+
+export default function ExperienceShell({
+  craftType,
+  children,
+}: any) {
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-black">
+
+      <AtmosphereLayer />
+
+      <EnvironmentRenderer craftType={craftType} />
+
+      <div className="relative z-20">
+        <CinematicTransition>
+          {children}
+        </CinematicTransition>
+      </div>
+    </div>
+  );
+}
+
+==================================================
+CREATE:
+client/src/pages/PourCraft360.tsx
+==================================================
+
+CODE:
+
+import ExperienceShell from '@/components/experience/ExperienceShell';
+import OnboardingSequence from '@/components/experience/OnboardingSequence';
+import RulesIntro from '@/components/experience/RulesIntro';
+
+export default function PourCraft360() {
+  return (
+    <ExperienceShell craftType="pourcraft">
+
+      <OnboardingSequence
+        title="POURCRAFT 360"
+        subtitle="Tonight is not about ordering a drink. It is about crafting an experience."
+      />
+
+      <RulesIntro craftTitle="POURCRAFT 360" />
+
+    </ExperienceShell>
+  );
+}
+
+==================================================
+CREATE:
+client/src/pages/BrewCraft360.tsx
+==================================================
+
+CODE:
+
+import ExperienceShell from '@/components/experience/ExperienceShell';
+import OnboardingSequence from '@/components/experience/OnboardingSequence';
+import RulesIntro from '@/components/experience/RulesIntro';
+
+export default function BrewCraft360() {
+  return (
+    <ExperienceShell craftType="brewcraft">
+
+      <OnboardingSequence
+        title="BREWCRAFT 360"
+        subtitle="Every brew tells a story. Tonight, you discover yours."
+      />
+
+      <RulesIntro craftTitle="BREWCRAFT 360" />
+
+    </ExperienceShell>
+  );
+}
+
+==================================================
+CREATE:
+client/src/pages/VapeCraft360.tsx
+==================================================
+
+CODE:
+
+import ExperienceShell from '@/components/experience/ExperienceShell';
+import OnboardingSequence from '@/components/experience/OnboardingSequence';
+import RulesIntro from '@/components/experience/RulesIntro';
+
+export default function VapeCraft360() {
+  return (
+    <ExperienceShell craftType="vapecraft">
+
+      <OnboardingSequence
+        title="VAPECRAFT 360"
+        subtitle="Flavor becomes atmosphere. Atmosphere becomes experience."
+      />
+
+      <RulesIntro craftTitle="VAPECRAFT 360" />
+
+    </ExperienceShell>
+  );
+}
+
+==================================================
+FINAL SYSTEM GOAL
+==================================================
+
+The platform should now feel like:
+a living luxury hospitality intelligence ecosystem.
+
+NOT:
+apps.
+
+NOT:
+menus.
+
+NOT:
+dashboards.
+
+The system should feel:
+• emotionally aware
+• visually cinematic
+• educational
+• psychologically engaging
+• socially immersive
+• environmentally reactive
+• behaviorally adaptive
+• unforgettable
+
+This is:
+the future nervous system of experiential hospitality powered by Axiom OS.

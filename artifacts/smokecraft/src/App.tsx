@@ -54,6 +54,10 @@ import Axiom360            from "@/pages/Axiom360";
 import TitanCraftDeck           from "@/pages/TitanCraftDeck";
 import DemographicIntelligence  from "@/pages/DemographicIntelligence";
 import ExperienceControlPanel from "@/pages/ExperienceControlPanel";
+import SmokeCraft360  from "@/pages/SmokeCraft360";
+import PourCraft360   from "@/pages/PourCraft360";
+import BrewCraft360   from "@/pages/BrewCraft360";
+import VapeCraft360   from "@/pages/VapeCraft360";
 import { DemoBanner }            from "@/components/Demo/DemoBanner";
 import { OfflineQueueBanner }   from "@/components/Demo/OfflineQueueBanner";
 import { PresentationOverlay }   from "@/components/Presentation/PresentationOverlay";
@@ -191,6 +195,11 @@ function Router() {
       <Route path="/manufacturer-war-room"     component={ManufacturerWarRoom}     />
       <Route path="/investor-simulator"        component={InvestorSimulator}       />
       <Route path="/craft-selector" component={CraftOrbSelector} />
+      {/* 360 immersive experience pages */}
+      <Route path="/smokecraft-360" component={SmokeCraft360} />
+      <Route path="/pourcraft-360"  component={PourCraft360}  />
+      <Route path="/brewcraft-360"  component={BrewCraft360}  />
+      <Route path="/vapecraft-360"  component={VapeCraft360}  />
       {/* Legacy craft routes — redirect into the Universal Swipe Engine */}
       <Route path="/brewcraft"       component={() => { window.location.replace("/experience/brew"); return null; }} />
       <Route path="/pourcraft"       component={() => { window.location.replace("/experience/pour"); return null; }} />
