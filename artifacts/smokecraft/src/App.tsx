@@ -76,6 +76,8 @@ import OperatorReadiness     from "@/pages/OperatorReadiness";
 import StaffTraining         from "@/pages/StaffTraining";
 import VenueManual           from "@/pages/VenueManual";
 import GlobalBackButton from "@/components/Layout/GlobalBackButton";
+import EeisOverlay     from "@/components/EeisOverlay";
+import { HandoffProvider } from "@/contexts/HandoffContext";
 import InactivityGuard                 from "@/components/InactivityGuard";
 import PosAuditBridge                  from "@/components/PosAuditBridge";
 import { useSystemVersion }            from "@/hooks/useSystemVersion";
@@ -290,6 +292,7 @@ function App() {
                 <DeviceRouterProvider>
                   <EnvironmentProvider>
                   <OrchestratorProvider>
+                  <HandoffProvider>
                     <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
                       <LoungeEnvironment>
                         <GlobalAmbientOverlay />
@@ -301,6 +304,7 @@ function App() {
                         <AxiomBootManager />
                       </LoungeEnvironment>
                     </WouterRouter>
+                    <EeisOverlay />
                     <StaffBOHFeed />
                     <PosAuditBridge />
                     <PresentationOverlay />
@@ -310,6 +314,7 @@ function App() {
                     <LicenseGate />
                     <NeuralBridgeOverlay />
                     <Toaster />
+                  </HandoffProvider>
                   </OrchestratorProvider>
                   </EnvironmentProvider>
                 </DeviceRouterProvider>

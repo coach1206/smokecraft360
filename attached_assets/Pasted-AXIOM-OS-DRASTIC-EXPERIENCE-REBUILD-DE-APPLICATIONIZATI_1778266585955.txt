@@ -1,0 +1,199 @@
+AXIOM OS — DRASTIC EXPERIENCE REBUILD
+DE-APPLICATIONIZATION EXECUTION PROMPT
+
+ROLE:
+Senior Spatial Experience Architect, Cinematic Systems Designer, Environmental UX Engineer, Apple/Tesla Interaction Architect, and Hospitality Intelligence Experience Director.
+
+MISSION:
+Completely remove the feeling that AXIOM OS is:
+• software
+• an application
+• a dashboard
+• a POS
+• a tablet UI
+
+The platform currently still exposes:
+application architecture.
+
+THIS MUST BE ELIMINATED.
+
+==================================================
+CORE FAILURE
+==================================================
+
+The current implementation still feels like:
+• tiles
+• panels
+• cards
+• software sections
+• dashboard navigation
+
+Even with improved visuals,
+the EXPERIENCE STRUCTURE still feels:
+like software.
+
+This is the root problem.
+
+==================================================
+THE DRASTIC FIX
+==================================================
+
+STOP BUILDING:
+application layouts.
+
+START BUILDING:
+environmental intelligence spaces.
+
+==================================================
+REMOVE
+==================================================
+
+REMOVE:
+• obvious tiles
+• homepage cards
+• boxed navigation
+• dashboard grids
+• visible application scaffolding
+• traditional software hierarchy
+
+The user should NEVER feel:
+they are navigating software.
+
+==================================================
+REPLACE WITH
+==================================================
+
+CREATE:
+SPATIAL ENVIRONMENTAL ORCHESTRATION.
+
+The ENVIRONMENT itself becomes:
+the interface.
+
+==================================================
+CRAFT EXPERIENCES
+==================================================
+
+SmokeCraft,
+PourCraft,
+BrewCraft,
+VapeCraft
+
+must NO LONGER appear as:
+tiles or cards.
+
+Instead:
+each craft becomes:
+a living environmental state.
+
+==================================================
+SMOKECRAFT STATE
+==================================================
+
+CREATE:
+• ember atmosphere
+• drifting smoke currents
+• warm sensory glow
+• subtle ash particles
+• atmospheric warmth
+• cigar-band metallic highlights
+
+The environment itself should INVITE entry.
+
+==================================================
+POURCRAFT STATE
+==================================================
+
+CREATE:
+• liquid reflections
+• whiskey light refractions
+• flowing amber atmosphere
+• glass shimmer
+• cinematic liquid movement
+
+==================================================
+BREWCRAFT STATE
+==================================================
+
+CREATE:
+• deep barrel warmth
+• subtle foam textures
+• hop particle movement
+• copper highlights
+• warm brewery atmosphere
+
+==================================================
+VAPECRAFT STATE
+==================================================
+
+CREATE:
+• atmospheric vapor currents
+• reactive cloud movement
+• neon environmental accents
+• kinetic sensory movement
+
+==================================================
+INTERACTION MODEL
+==================================================
+
+DO NOT:
+click obvious boxes.
+
+DO:
+allow users to naturally ENTER environmental states.
+
+Interaction should feel:
+organic,
+immersive,
+and atmospheric.
+
+==================================================
+XEI + EEIS OPERATIONAL LAYER
+==================================================
+
+The operational layer must NO LONGER appear:
+as admin dashboards.
+
+WHEN STAFF TOUCHES THE SCREEN:
+
+THE ENVIRONMENT MUST:
+morph.
+
+CREATE:
+• ripple-wave distortion
+• environmental pulse
+• operational emergence
+• hidden intelligence surfacing
+• cinematic telemetry reveal
+
+==================================================
+THE OPERATIONAL OVERLAY
+==================================================
+
+The EEIS layer should feel like:
+hidden intelligence infrastructure becoming visible beneath the lounge environment.
+
+NOT:
+switching pages.
+
+==================================================
+DISPLAY OPERATIONAL INTELLIGENCE AS:
+==================================================
+
+• flowing telemetry
+• predictive pulses
+• environmental synchronization
+• guest pacing
+• recommendation influence
+• sensory orchestration
+• atmospheric adaptation
+
+ALL VISUALIZED:
+inside the environment itself.
+
+==================================================
+REMOVE SOFTWARE FEEL
+==================================================
+
+The system should NEVER visually expose:
+• menus
+• software layouts
