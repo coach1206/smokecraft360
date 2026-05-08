@@ -275,6 +275,54 @@ export class EnterpriseOrchestrationEngine {
   }
 }
 
+// ── Telemetry Engine ─────────────────────────────────────────────────────────
+
+export interface TelemetryEvent {
+  id:        string;
+  tenantId:  string;
+  signal:    string;
+  payload:   unknown;
+  timestamp: Date;
+}
+
+export class TelemetryEngine {
+  static readonly events: TelemetryEvent[] = [];
+
+  static emit(params: {
+    tenantId: string;
+    signal:   string;
+    payload:  unknown;
+  }): TelemetryEvent {
+    const event: TelemetryEvent = {
+      id:        crypto.randomUUID(),
+      tenantId:  params.tenantId,
+      signal:    params.signal,
+      payload:   params.payload,
+      timestamp: new Date(),
+    };
+    this.events.push(event);
+    axiomBus.emitSignal("TENANT_PROVISIONED", event); // reuse bus as generic carrier
+    logger.debug({ tenantId: params.tenantId, signal: params.signal }, "telemetry emitted");
+    return event;
+  }
+
+  static getByTenant(tenantId: string): TelemetryEvent[] {
+    return this.events.filter(e => e.tenantId === tenantId);
+  }
+
+  static getRecent(limit = 100): TelemetryEvent[] {
+    return this.events.slice(-limit);
+  }
+
+  static getStats(): { total: number; signals: Record<string, number> } {
+    const signals: Record<string, number> = {};
+    for (const e of this.events) {
+      signals[e.signal] = (signals[e.signal] ?? 0) + 1;
+    }
+    return { total: this.events.length, signals };
+  }
+}
+
 // ── Signal Orchestrator (boot-time wiring) ────────────────────────────────────
 
 export class SignalOrchestrator {
