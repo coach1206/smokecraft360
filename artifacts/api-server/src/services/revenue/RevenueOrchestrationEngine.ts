@@ -208,4 +208,55 @@ export class RevenueOrchestrationEngine {
     const r = rows[0]!;
     return { streamId: "enterprise", streamName: "Franchise + Enterprise", mrrCents: parseInt(r.mrr, 10), arrCents: parseInt(r.mrr, 10) * 12, activeCount: parseInt(r.cnt, 10), growthPct: null, churnRisk: "low" };
   }
+
+  // ── Revenue Event Log ────────────────────────────────────────────────────────
+
+  static async recordEvent(params: {
+    venueId:     string;
+    revenueType: string;
+    amountCents: number;
+    metadata?:   Record<string, unknown>;
+  }): Promise<{ id: string }> {
+    const { rows } = await pool.query<{ id: string }>(
+      `INSERT INTO revenue_events (venue_id, revenue_type, amount_cents, metadata)
+       VALUES ($1, $2, $3, $4) RETURNING id`,
+      [params.venueId, params.revenueType, params.amountCents, JSON.stringify(params.metadata ?? {})],
+    );
+    return { id: rows[0]!.id };
+  }
+
+  static async getRevenueEvents(venueId: string, limit = 50): Promise<Array<{
+    id: string; venueId: string; revenueType: string; amountCents: number;
+    metadata: Record<string, unknown>; createdAt: string;
+  }>> {
+    const { rows } = await pool.query<{
+      id: string; venue_id: string; revenue_type: string; amount_cents: number;
+      metadata: Record<string, unknown>; created_at: string;
+    }>(
+      `SELECT * FROM revenue_events WHERE venue_id = $1 ORDER BY created_at DESC LIMIT $2`,
+      [venueId, limit],
+    ).catch(() => ({ rows: [] as never[] }));
+
+    return rows.map(r => ({
+      id: r.id, venueId: r.venue_id, revenueType: r.revenue_type,
+      amountCents: r.amount_cents, metadata: r.metadata, createdAt: r.created_at,
+    }));
+  }
+
+  static async getPlatformRevenueEventsFeed(limit = 100): Promise<Array<{
+    id: string; venueId: string; revenueType: string; amountCents: number; createdAt: string;
+  }>> {
+    const { rows } = await pool.query<{
+      id: string; venue_id: string; revenue_type: string; amount_cents: number; created_at: string;
+    }>(
+      `SELECT id, venue_id, revenue_type, amount_cents, created_at
+       FROM revenue_events ORDER BY created_at DESC LIMIT $1`,
+      [limit],
+    ).catch(() => ({ rows: [] as never[] }));
+
+    return rows.map(r => ({
+      id: r.id, venueId: r.venue_id, revenueType: r.revenue_type,
+      amountCents: r.amount_cents, createdAt: r.created_at,
+    }));
+  }
 }

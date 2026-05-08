@@ -331,4 +331,157 @@ router.post("/enterprise/white-label", async (req, res) => {
   res.status(201).json(license);
 });
 
+// ── Licensing / EntitlementEngine ─────────────────────────────────────────────
+
+import { EntitlementEngine }         from "../services/revenue/EntitlementEngine";
+import { ProvisioningEngine }         from "../services/revenue/ProvisioningEngine";
+import { AffiliateCommissionEngine }  from "../services/revenue/AffiliateCommissionEngine";
+import { WhiteLabelLicenseService }   from "../services/revenue/WhiteLabelLicenseService";
+
+router.post("/licensing/feature/enable", async (req, res) => {
+  const { venueId, featureKey, source, expiresAt } = req.body ?? {};
+  if (!venueId || !featureKey) { res.status(400).json({ error: "venueId + featureKey required" }); return; }
+  const result = await EntitlementEngine.enableFeature({ venueId, featureKey, source, expiresAt });
+  res.json(result);
+});
+
+router.post("/licensing/feature/disable", async (req, res) => {
+  const { venueId, featureKey } = req.body ?? {};
+  if (!venueId || !featureKey) { res.status(400).json({ error: "venueId + featureKey required" }); return; }
+  const result = await EntitlementEngine.disableFeature({ venueId, featureKey });
+  res.json(result);
+});
+
+router.get("/licensing/features/:venueId", async (req, res) => {
+  const features = await EntitlementEngine.listForVenue(req.params["venueId"]!);
+  res.json({ features, count: features.length });
+});
+
+router.get("/licensing/features/:venueId/check/:featureKey", async (req, res) => {
+  const access = await EntitlementEngine.checkFeature(req.params["venueId"]!, req.params["featureKey"]!);
+  res.json({ access, venueId: req.params["venueId"], featureKey: req.params["featureKey"] });
+});
+
+// ── Provisioning ──────────────────────────────────────────────────────────────
+
+router.post("/provision/:venueId/:tier", async (req, res) => {
+  const tier = (req.params["tier"] ?? "").toUpperCase() as import("../services/revenue/ProvisioningEngine").AxiomTier;
+  if (!["CORE","PRO","XEI","BLACK"].includes(tier)) {
+    res.status(400).json({ error: "tier must be CORE | PRO | XEI | BLACK" }); return;
+  }
+  const result = await ProvisioningEngine.provisionTier(req.params["venueId"]!, tier);
+  res.json(result);
+});
+
+router.post("/deprovision/:venueId", async (req, res) => {
+  const { fromTier, toTier } = req.body ?? {};
+  if (!fromTier || !toTier) { res.status(400).json({ error: "fromTier + toTier required" }); return; }
+  const result = await ProvisioningEngine.deprovisionTier(req.params["venueId"]!, fromTier, toTier);
+  res.json(result);
+});
+
+router.get("/provision/tier-map", async (_req, res) => {
+  res.json({ tiers: ProvisioningEngine.getTierMap() });
+});
+
+// ── Revenue Events ────────────────────────────────────────────────────────────
+
+router.post("/events", async (req, res) => {
+  const { venueId, revenueType, amountCents, metadata } = req.body ?? {};
+  if (!venueId || !revenueType) { res.status(400).json({ error: "venueId + revenueType required" }); return; }
+  const event = await RevenueOrchestrationEngine.recordEvent({ venueId, revenueType, amountCents: amountCents ?? 0, metadata });
+  res.status(201).json(event);
+});
+
+router.get("/events/platform", async (req, res) => {
+  const limit = parseInt(req.query["limit"] as string ?? "100", 10);
+  const events = await RevenueOrchestrationEngine.getPlatformRevenueEventsFeed(limit);
+  res.json({ events, count: events.length });
+});
+
+router.get("/events/:venueId", async (req, res) => {
+  const limit = parseInt(req.query["limit"] as string ?? "50", 10);
+  const events = await RevenueOrchestrationEngine.getRevenueEvents(req.params["venueId"]!, limit);
+  res.json({ events, count: events.length });
+});
+
+// ── Affiliate Commission Engine ───────────────────────────────────────────────
+
+router.post("/affiliate/commission", async (req, res) => {
+  const { venueId, source, grossCents, externalProductId, referrerId, metadata } = req.body ?? {};
+  if (!venueId || !source || !grossCents) { res.status(400).json({ error: "venueId, source, grossCents required" }); return; }
+  const result = await AffiliateCommissionEngine.recordAndQueue({ venueId, source, grossCents, externalProductId, referrerId, metadata });
+  res.status(201).json(result);
+});
+
+router.get("/affiliate/commission/calculate", async (req, res) => {
+  const { grossCents, source, referrerId } = req.query as Record<string, string>;
+  if (!grossCents || !source) { res.status(400).json({ error: "grossCents + source required" }); return; }
+  const calc = AffiliateCommissionEngine.calculateCommission({ grossCents: parseInt(grossCents, 10), source, referrerId });
+  res.json(calc);
+});
+
+router.get("/affiliate/commission/queue", async (req, res) => {
+  const queue = await AffiliateCommissionEngine.getPayoutQueue(req.query["venueId"] as string | undefined);
+  res.json(queue);
+});
+
+router.post("/affiliate/commission/mark-paid", async (req, res) => {
+  const { eventIds } = req.body ?? {};
+  if (!Array.isArray(eventIds) || !eventIds.length) { res.status(400).json({ error: "eventIds[] required" }); return; }
+  const count = await AffiliateCommissionEngine.markPaid(eventIds);
+  res.json({ marked: count });
+});
+
+router.get("/affiliate/commission/rates", async (_req, res) => {
+  res.json({ rates: AffiliateCommissionEngine.getPartnerRates() });
+});
+
+// ── White-Label Provisioning (dedicated service) ──────────────────────────────
+
+const wlProvisionSchema = z.object({
+  clientId:         z.string(),
+  clientName:       z.string(),
+  tier:             z.enum(["standard","enterprise","full_white_label"]).default("standard"),
+  branding:         z.object({
+    brandName:    z.string(),
+    primaryColor: z.string().optional(),
+    logoUrl:      z.string().optional(),
+    domain:       z.string().optional(),
+    accentColor:  z.string().optional(),
+    fontFamily:   z.string().optional(),
+    tagline:      z.string().optional(),
+  }),
+  maxVenues:        z.number().int().min(1).default(1),
+  monthlyRateCents: z.number().int().min(0),
+});
+
+router.post("/white-label/provision", async (req, res) => {
+  const parsed = wlProvisionSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid payload", issues: parsed.error.issues }); return; }
+  const result = await WhiteLabelLicenseService.provision(parsed.data);
+  res.status(201).json(result);
+});
+
+router.get("/white-label/active", async (_req, res) => {
+  const licenses = await WhiteLabelLicenseService.listActive();
+  res.json({ licenses, count: licenses.length });
+});
+
+router.get("/white-label/:clientId/branding", async (req, res) => {
+  const branding = await WhiteLabelLicenseService.getBrandingConfig(req.params["clientId"]!);
+  if (!branding) { res.status(404).json({ error: "No active white-label license for this client" }); return; }
+  res.json(branding);
+});
+
+router.post("/white-label/:clientId/add-venue", async (req, res) => {
+  const result = await WhiteLabelLicenseService.addVenueDeployment(req.params["clientId"]!);
+  res.json(result);
+});
+
+router.post("/white-label/:clientId/revoke", async (req, res) => {
+  await WhiteLabelLicenseService.revoke(req.params["clientId"]!);
+  res.json({ revoked: true });
+});
+
 export default router;
