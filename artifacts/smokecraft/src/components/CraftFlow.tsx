@@ -30,6 +30,8 @@ import {
   type CraftSessionState,
 } from "@/services/craftSessionApi";
 import ShareCard from "@/components/ShareCard/ShareCard";
+import { JourneyPath }       from "@/components/UniversalExperience/JourneyPath";
+import { ExperienceRecap }   from "@/components/UniversalExperience/ExperienceRecap";
 
 export type CraftCategory = "beer" | "alcohol" | "vape";
 
@@ -196,6 +198,11 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const [coachResuming,  setCoachResuming ] = useState(false);
   const [studioOpen,     setStudioOpen    ] = useState(false);
   const [showShareCard,  setShowShareCard ] = useState(false);
+  // Stage 5 — Journey Path overlay (shown between profile→match)
+  const [showJourney,          setShowJourney         ] = useState(false);
+  const [pendingJourneyMood,   setPendingJourneyMood  ] = useState<CraftMoodCard | null>(null);
+  // Stage 9 — Experience Recap overlay (shown on "Complete Session" in reveal)
+  const [showRecap,            setShowRecap           ] = useState(false);
 
   const phaseIndex = useMemo(() => {
     const order: Phase[] = ["intro", "style", "profile", "match", "reveal"];
@@ -551,10 +558,20 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     if (isExpired) return;
     setSelectedMood(m);
     if (selectedStyle) {
-      void runMatch(selectedStyle, m);
       void updateScore(selectedStyle, m, "profile");
+      // Stage 5 — show Journey Path before running the match
+      setPendingJourneyMood(m);
+      setShowJourney(true);
     }
-  }, [selectedStyle, runMatch, updateScore, isExpired]);
+  }, [selectedStyle, updateScore, isExpired]);
+
+  function handleJourneyContinue() {
+    setShowJourney(false);
+    if (selectedStyle && pendingJourneyMood) {
+      void runMatch(selectedStyle, pendingJourneyMood);
+    }
+    setPendingJourneyMood(null);
+  }
 
   /**
    * Called by AICoach A/B/C fix card when the user picks a corrective option.
@@ -1118,6 +1135,31 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                         </div>
                       </motion.div>
                     )}
+
+                    {/* ── Stage 9: Complete Session CTA ──────────────────── */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.75, duration: 0.4 }}
+                      style={{ marginTop: 28, textAlign: "center" }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setShowRecap(true)}
+                        style={{
+                          background: "transparent",
+                          border: `1px solid ${config.theme.accent}40`,
+                          borderRadius: 999, padding: "12px 32px",
+                          color: config.theme.accent,
+                          fontSize: 11, fontWeight: 700,
+                          letterSpacing: "0.22em", textTransform: "uppercase",
+                          cursor: "pointer",
+                          display: "inline-flex", alignItems: "center", gap: 8,
+                        }}
+                      >
+                        <Sparkles size={12} /> Complete Session
+                      </button>
+                    </motion.div>
                   </>
                 )}
               </motion.div>
@@ -1404,6 +1446,37 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
               </motion.button>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Stage 5: Journey Path overlay ──────────────────────────── */}
+      <AnimatePresence>
+        {showJourney && (
+          <JourneyPath
+            craftType={craftType}
+            accent={config.theme.accent}
+            styleTitle={selectedStyle?.title}
+            moodTitle={selectedMood?.title ?? (pendingJourneyMood?.title)}
+            onContinue={handleJourneyContinue}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Stage 9: Experience Recap overlay ──────────────────────── */}
+      <AnimatePresence>
+        {showRecap && (
+          <ExperienceRecap
+            craftType={craftType}
+            accent={config.theme.accent}
+            accentSoft={config.theme.accentSoft}
+            styleTitle={selectedStyle?.title}
+            moodTitle={selectedMood?.title}
+            flavorNotes={resp?.featured?.[0]?.flavorNotes ?? []}
+            featuredName={resp?.featured?.[0]?.name}
+            score={scoreState.score}
+            onRestart={() => { setShowRecap(false); reset(); }}
+            onClose={() => setShowRecap(false)}
+          />
         )}
       </AnimatePresence>
 

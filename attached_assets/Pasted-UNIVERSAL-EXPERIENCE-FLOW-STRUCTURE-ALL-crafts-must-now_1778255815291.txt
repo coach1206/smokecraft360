@@ -1,0 +1,350 @@
+UNIVERSAL EXPERIENCE FLOW STRUCTURE
+
+ALL crafts must now follow this structure:
+
+FLOW STAGE 1 — ENTRY SEQUENCE
+
+When users first click a craft:
+
+DO NOT instantly show menus or products.
+
+Instead:
+launch a cinematic atmospheric introduction.
+
+The environment should:
+• fade in slowly
+• establish emotional tone
+• animate atmospheric visuals
+• reveal craft identity
+• introduce the experience philosophy
+
+Examples:
+
+POURCRAFT 360
+
+Warm gold reflections.
+Liquid movement.
+Soft jazz/lounge atmosphere.
+Crystal reflections.
+Slow cinematic camera motion.
+
+Voice/text intro:
+“Tonight is not about ordering a drink.
+It’s about crafting an experience.”
+
+⸻
+
+BrewCraft 360
+
+Copper/brass atmosphere.
+Barrel textures.
+Foam movement.
+Industrial luxury brewery energy.
+
+Voice/text intro:
+“Every brew tells a story.
+Tonight, you discover yours.”
+
+⸻
+
+VapeCraft 360
+
+Neon haze.
+Reactive vapor trails.
+Futuristic ambient visuals.
+
+Voice/text intro:
+“Flavor is atmosphere.
+Atmosphere is experience.”
+
+⸻
+
+FLOW STAGE 2 — EXPERIENCE EXPLANATION
+
+Each craft must explain:
+
+• what this experience is
+• how progression works
+• what users unlock
+• how discovery works
+• how mastery works
+• how pairings work
+• how personalization evolves
+
+This should feel:
+luxurious and mysterious,
+NOT instructional manuals.
+
+Examples:
+• unlock hidden journeys
+• evolve your taste identity
+• discover reserve experiences
+• build your sensory profile
+• master flavor families
+• create your signature path
+
+⸻
+
+FLOW STAGE 3 — LEVEL SELECTION
+
+Users choose their experience level.
+
+This controls:
+• UI complexity
+• educational depth
+• recommendation complexity
+• progression speed
+• sensory guidance
+
+Example structure:
+
+POURCRAFT 360
+
+• Curious Guest
+• Cocktail Explorer
+• Spirit Enthusiast
+• Mixology Scholar
+• Reserve Master
+
+⸻
+
+BrewCraft 360
+
+• Casual Drinker
+• Craft Curious
+• Hop Explorer
+• Beer Scholar
+• Master Taster
+
+⸻
+
+VapeCraft 360
+
+• Flavor Curious
+• Cloud Explorer
+• Atmosphere Builder
+• Flavor Architect
+• Sensory Master
+
+⸻
+
+FLOW STAGE 4 — TASTE / MOOD DISCOVERY
+
+Users enter guided discovery.
+
+The system asks:
+• mood
+• flavor direction
+• atmosphere preference
+• social energy
+• strength preference
+• experience goal
+
+This must feel conversational and immersive.
+
+NOT forms.
+
+The UI should:
+• glide
+• react
+• animate softly
+• feel emotionally responsive
+
+⸻
+
+FLOW STAGE 5 — EXPERIENCE PATH GENERATION
+
+The system creates:
+a personalized journey path.
+
+Examples:
+
+POURCRAFT 360
+
+“Tonight’s Journey”
+• Discovery Pour
+• Flavor Expansion
+• Signature Cocktail
+• Reserve Unlock
+
+⸻
+
+BrewCraft 360
+
+“Tonight’s Flight”
+• Regional Discovery
+• Barrel Exploration
+• Rare Brew Unlock
+• Pairing Finish
+
+⸻
+
+VapeCraft 360
+
+“Tonight’s Atmosphere”
+• Flavor Base
+• Cloud Layer
+• Ambient Sync
+• Sensory Enhancement
+
+⸻
+
+FLOW STAGE 6 — LIVE INTERACTION EXPERIENCE
+
+NOW users enter:
+the active craft experience.
+
+This is where:
+• recommendations appear
+• crafting happens
+• unlocks occur
+• bartender/brewer interaction happens
+• social interactions activate
+• environmental reactions trigger
+
+This must feel:
+alive and evolving.
+
+⸻
+
+FLOW STAGE 7 — EDUCATIONAL DISCOVERY
+
+Education must happen THROUGH interaction.
+
+Examples:
+• unlock spirit history during crafting
+• reveal brewing science during tasting
+• explain terpene chemistry during flavor building
+
+Never:
+large information walls.
+
+The user should feel:
+they discovered the knowledge themselves.
+
+⸻
+
+FLOW STAGE 8 — PROGRESSION + REWARDS
+
+After interaction:
+users gain:
+• progression
+• unlocks
+• new pathways
+• flavor mastery
+• hidden experiences
+• signature status
+
+The reward system should feel:
+exclusive and luxurious.
+
+NOT arcade-style.
+
+⸻
+
+FLOW STAGE 9 — EXPERIENCE RECAP
+
+At the end:
+generate a cinematic recap.
+
+Examples:
+
+POURCRAFT 360
+
+“Tonight you explored:
+Smoked Vanilla,
+Dark Cherry,
+Aged Tequila,
+and Reserve Oak profiles.”
+
+⸻
+
+BrewCraft 360
+
+“You unlocked:
+Belgian Barrel Discovery
+and Hop Profile Expansion.”
+
+⸻
+
+VapeCraft 360
+
+“You evolved your:
+Citrus Vapor Signature.”
+
+The recap should:
+encourage return visits and future discovery.
+
+⸻
+
+FLOW STAGE 10 — RETURN USER FLOW
+
+Returning users should experience:
+
+“Welcome back.”
+
+The system remembers:
+• preferences
+• progression
+• favorite paths
+• prior unlocks
+• sensory profile
+
+Users can:
+• continue journeys
+• revisit favorites
+• unlock advanced paths
+• challenge new experiences
+
+⸻
+
+SOCIAL EXPERIENCE FLOW
+
+Add:
+• group onboarding
+• collaborative tasting journeys
+• table-wide unlocks
+• social progression
+• shared discovery events
+• multiplayer flavor voting
+
+The system should support:
+interactive nightlife experiences.
+
+⸻
+
+ENVIRONMENTAL IMMERSION SYSTEM
+
+Each flow stage should affect:
+• lighting visuals
+• motion pacing
+• particle effects
+• sound atmosphere
+• environmental overlays
+• emotional ambiance
+
+The interface should feel:
+responsive to the journey itself.
+
+⸻
+
+FINAL SYSTEM GOAL
+
+The user should feel:
+• immersed
+• guided
+• elevated
+• educated
+• entertained
+• emotionally connected
+
+The venue should feel:
+alive,
+intelligent,
+and unforgettable.
+
+The experience should feel less like:
+using software
+
+and more like:
+entering a premium interactive world powered by Axi

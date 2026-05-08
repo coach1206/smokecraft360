@@ -31,6 +31,9 @@ import MentorReveal               from "@/components/MentorReveal";
 import MasteryPitchScreen         from "@/components/MasteryPitchScreen";
 import MentorSelectionScreen      from "@/components/MentorSelectionScreen";
 import { generateReturnGreeting }  from "@/lib/mentorIntelligence";
+import { ExperienceExplanation }  from "@/components/UniversalExperience/ExperienceExplanation";
+import { LevelSelection }         from "@/components/UniversalExperience/LevelSelection";
+import type { ExperienceLevel }   from "@/components/UniversalExperience/LevelSelection";
 
 // ── Per-craft chamber configuration ──────────────────────────────────────────
 
@@ -357,16 +360,20 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
     return generateReturnGreeting(guestProfile, mentor);
   }, [isReturning, guestProfile, mentor]);
 
-  // Sovereign flow: pitch → enrollment → mentor-select → mentor
-  const [scene, setScene] = useState<"chamber" | "pitch" | "enrollment" | "mentor-select" | "mentor">("chamber");
+  // Universal Experience Flow: chamber → explanation → level-select → pitch → enrollment → mentor-select → mentor
+  const [scene, setScene] = useState<"chamber" | "explanation" | "level-select" | "pitch" | "enrollment" | "mentor-select" | "mentor">("chamber");
   // Answers from EnrollmentFlow, held until mentor is selected
   const [pendingAnswers, setPendingAnswers] = useState<Record<string, string> | null>(null);
+  // Selected experience level (Stage 3), unused by this component but held for future pass-through
+  const [_selectedLevel, _setSelectedLevel] = useState<ExperienceLevel | null>(null);
 
   function handleBeginClick() {
     if (guestProfile && mentor) {
+      // Returning user — skip new stages, go straight to mentor greeting
       setScene("mentor");
     } else {
-      setScene("pitch");
+      // New user — full Universal Experience Flow
+      setScene("explanation");
     }
   }
 
@@ -708,6 +715,33 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
           ))}
         </motion.div>
       </motion.div>
+
+      {/* ── Stage 2: Experience Explanation overlay ── */}
+      <AnimatePresence>
+        {scene === "explanation" && (
+          <ExperienceExplanation
+            craftType={type as "smoke" | "pour" | "brew" | "vape"}
+            accent={accent}
+            onContinue={() => setScene("level-select")}
+            onBack={() => setScene("chamber")}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Stage 3: Level Selection overlay ── */}
+      <AnimatePresence>
+        {scene === "level-select" && (
+          <LevelSelection
+            craftType={type as "smoke" | "pour" | "brew" | "vape"}
+            accent={accent}
+            onSelect={(level) => {
+              _setSelectedLevel(level);
+              setScene("pitch");
+            }}
+            onBack={() => setScene("explanation")}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ── Mastery pitch overlay ── */}
       <AnimatePresence>
