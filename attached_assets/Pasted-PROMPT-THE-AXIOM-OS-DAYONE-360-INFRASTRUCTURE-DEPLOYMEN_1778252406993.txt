@@ -1,0 +1,39 @@
+PROMPT: THE AXIOM OS "DAYONE 360" INFRASTRUCTURE DEPLOYMENT
+ROLE: Senior Systems Architect & Creative Technologist.
+MISSION: Build AXIOM OS, a multi-tenant, living hospitality intelligence layer for DayOne 360. This is not a dashboard; it is a scalable Operating System for luxury venues (Cigar Lounges, Spirits Bars, High-End Hospitality) designed for global licensing.
+1. SYSTEM IDENTITY & VISUAL DNA (THE WIFE X STANDARD)
+• Interface Physics: Liquid-glass architecture. Use Spatial Fluid Dynamics—UI elements must move like mercury (merging/stretching).
+• Layout: Fixed 2x2 Command Grid ([CIGAR][SPIRITS] / [BREW][VAPOR]). No carousels. No flat UI.
+• Materials: Matte black, brushed silver, warm gold, smoked glass.
+• Emotional Target: "Piloting a luxury hospitality command center."
+2. MULTI-TENANT ARCHITECTURE (THE LICENSING LAYER)
+• Tenant Partitioning: Build a TenantDNAEngine allowing external businesses to "buy in."
+• Brand Skinning: Owners can select a "Base Personality" (e.g., Executive Elite, VIP-Centric, High-Energy Social).
+• Hardware Agnostic: Create an AxiomHardwareBridge to auto-claim and control 3rd-party smart lighting (DMX/Hue), Spatial Audio, and POS systems.
+3. THE IMPLEMENTATION SEQUENCE (STRICT ORDER)
+PHASE 0: THE NEURAL SUBSTRATE (BASELINE)
+• NeuralIngestionEngine: Capture "Human Chaos" data to baseline un-managed guest flow.
+• ChaosAnalyticsService: Define the performance gap between standard operations and Axiom Intelligence.
+PHASE 1: VENUE DNA & BIOMETRIC SYNC
+• VenueDNAService: Define the soul, rhythm, and pacing of the specific venue.
+• BiometricPulseMapping: Use vision-based signals to detect guest arousal/relaxation levels and feed them into the environment.
+PHASE 2: THE 360 REVENUE BRIDGE (API INTEGRATION)
+• DayOne 360 Integration: Hard-code API bridges for Aviationstack, Airalo, and Allianz.
+• Monetization: Enable "Atomic Transactions" (Stripe/Lemon Squeezy) so business owners earn affiliate revenue through the interface.
+PHASE 3: SPATIAL HAPTICS & SONIC DNA
+• SpatialAcousticEngine: Manage room frequencies and "heartbeat" sub-bass rhythms.
+• HapticResonanceService: Synchronize staff wearables with guest behavioral triggers.
+PHASE 4: PREDICTIVE INTENT ENGINE (THE TESLA LAYER)
+• IntentProbabilityEngine: Predict guest needs 120 seconds before they occur.
+• PredictiveNudgeService: Subtly shift lighting/telemetry to guide behavior before friction sets in.
+PHASE 5: FOUNDER/OWNER INTELLIGENCE (THE GOD-VIEW)
+• Visuals: Emotional heatmaps and "Opportunity Zones" for the business owner.
+• PredictiveOutcomeSimulator: A "What-If" slider allowing owners to simulate energy shifts or price changes before execution.
+PHASE 6: ATMOSPHERIC FAILOVER
+• BlackBoxRecovery: Cache the "Venue Soul" locally. If the cloud dies, the atmosphere must remain intelligent and operational on edge hardware.
+4. TECHNICAL CONSTRAINTS
+• No "Software" Language: Replace "Loading" with "Calibrating," "User" with "Guest," and "Settings" with "DNA Configuration."
+• Performance: Gradual particle simplification during high-load (AdaptivePerformanceService) to maintain buttery smoothness.
+• Interaction: Weighted damping on all scrolls and hovers. Every touch must feel expensive.
+FINAL GOAL: Transform DayOne 360 from a travel agency into a global provider of Experience Enhancement Intelligence Systems (EEIS).
+EXECUTE IN SEQUENCE.
