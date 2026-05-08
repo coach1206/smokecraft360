@@ -57,17 +57,17 @@ const BOTTOM_ITEMS = [
 
 // ── Shared style token ────────────────────────────────────────────────────────
 
+// Spec-exact gold hardware gradient
 const GOLD_TEXT: React.CSSProperties = {
-  background:           "linear-gradient(90deg, #8a6d3b 0%, #fff9e6 28%, #d4af37 52%, #fff9e6 76%, #8a6d3b 100%)",
-  backgroundSize:       "200% auto",
+  background:           "linear-gradient(to bottom, #FFF9E6 0%, #D4AF37 40%, #B8860B 70%, #8A6D3B 100%)",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor:  "transparent",
-  filter:               "drop-shadow(0 0 8px rgba(212,175,55,0.50))",
+  filter:               "drop-shadow(0 0 10px rgba(212,175,55,0.55))",
 };
 
+// Spec-exact silver chassis gradient
 const SILVER_TEXT: React.CSSProperties = {
-  background:           "linear-gradient(90deg, rgba(200,200,215,0.55) 0%, rgba(230,228,220,0.80) 50%, rgba(200,200,215,0.55) 100%)",
-  backgroundSize:       "200% auto",
+  background:           "linear-gradient(to bottom, #FFFFFF 0%, #C0C0C0 50%, #4D4D4D 100%)",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor:  "transparent",
 };
@@ -87,17 +87,17 @@ const STYLES = `
     0%, 100% {
       box-shadow:
         0 0 0 1px rgba(212,175,55,0.55),
-        0 0 18px rgba(212,175,55,0.22),
-        0 0 50px rgba(212,175,55,0.10);
+        0 0 12px rgba(212,175,55,0.30),
+        0 0 40px rgba(212,175,55,0.15);
       transform: translate(-50%,-50%) scale(1);
     }
     50% {
       box-shadow:
         0 0 0 1px rgba(255,249,230,0.95),
-        0 0 40px rgba(212,175,55,0.65),
-        0 0 120px rgba(212,175,55,0.28),
-        0 0 200px rgba(212,175,55,0.10);
-      transform: translate(-50%,-50%) scale(1.18);
+        0 0 40px rgba(212,175,55,0.60),
+        0 0 100px rgba(212,175,55,0.30),
+        0 0 160px rgba(212,175,55,0.12);
+      transform: translate(-50%,-50%) scale(1.22);
     }
   }
   @keyframes gold-sweep {
@@ -122,29 +122,26 @@ const STYLES = `
     animation: titan-bot-scroll 54s linear infinite;
     will-change: transform;
   }
-  /* Label shimmer for smoke */
+  /* Gold hardware label — spec gradient, animated sweep */
   .gold-label-shimmer {
-    background: linear-gradient(90deg, #8a6d3b 0%, #fff9e6 22%, #d4af37 48%, #fff9e6 74%, #8a6d3b 100%);
-    background-size: 200% auto;
+    background: linear-gradient(to bottom, #FFF9E6 0%, #D4AF37 40%, #B8860B 70%, #8A6D3B 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: gold-sweep 4.2s linear infinite;
-    filter: drop-shadow(0 0 12px rgba(212,175,55,0.65));
+    filter: drop-shadow(0 0 14px rgba(212,175,55,0.70));
   }
+  /* Silver chassis label — spec gradient */
   .silver-label {
-    background: linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(200,200,215,0.68) 100%);
+    background: linear-gradient(to bottom, #FFFFFF 0%, #C0C0C0 50%, #4D4D4D 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 5px rgba(255,255,255,0.22));
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.28));
   }
-  /* HUD text — gold sweep for >>> items, muted gold for rest */
+  /* HUD gold — kinetic sweep for >>> items */
   .hud-gold-sweep {
-    background: linear-gradient(90deg, #8a6d3b, #fff9e6, #d4af37, #fff9e6, #8a6d3b);
-    background-size: 200% auto;
+    background: linear-gradient(to bottom, #FFF9E6 0%, #D4AF37 40%, #B8860B 70%, #8A6D3B 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: gold-sweep 5s linear infinite;
-    filter: drop-shadow(0 0 10px rgba(212,175,55,0.55));
+    filter: drop-shadow(0 0 10px rgba(212,175,55,0.60));
   }
 `;
 
@@ -220,17 +217,19 @@ function BottomTicker() {
   const doubled = [...BOTTOM_ITEMS, ...BOTTOM_ITEMS];
   return (
     <div style={{
-      position:   "absolute",
-      bottom:     0,
-      left:       0,
-      right:      0,
-      height:     40,
-      zIndex:     80,
-      overflow:   "hidden",
-      display:    "flex",
-      alignItems: "center",
-      // Deep dark base so gold pops without competing with imagery
-      background: "linear-gradient(0deg, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.30) 80%, transparent 100%)",
+      position:       "absolute",
+      bottom:         0,
+      left:           0,
+      right:          0,
+      height:         40,
+      zIndex:         80,
+      overflow:       "hidden",
+      display:        "flex",
+      alignItems:     "center",
+      // Obsidian strip — frosted glass over the environment
+      background:     "rgba(0, 0, 0, 0.42)",
+      backdropFilter: "blur(12px)",
+      WebkitBackdropFilter: "blur(12px)",
     }}>
       <div style={{ position:"absolute", left:0, top:0, bottom:0, width:60, zIndex:2, pointerEvents:"none",
         background:"linear-gradient(to right, rgba(0,0,0,0.70), transparent)" }} />
@@ -362,15 +361,14 @@ function AxiomCore() {
   return (
     <div
       style={{
-        position:  "absolute",
-        top:       "50%",
-        left:      "50%",
-        zIndex:    100,
-        // Animated via CSS — breathing 3s cycle
-        width:     16,
-        height:    16,
+        position:     "absolute",
+        top:          "50%",
+        left:         "50%",
+        zIndex:       100,
+        width:        12,
+        height:       12,
         borderRadius: "50%",
-        background:   "radial-gradient(circle, #fff9e6 0%, #d4af37 50%, #8a6d3b 100%)",
+        background:   "radial-gradient(circle, #fff9e6 0%, #d4af37 48%, #8a6d3b 100%)",
         animation:    "axiom-core-breathe 3s ease-in-out infinite",
         pointerEvents:"none",
       }}
@@ -424,12 +422,23 @@ interface QuadProps {
   position: QuadPos;
 }
 
-// Inner corner position for each quadrant — where the blend gradient originates
-const INNER_CORNER: Record<QuadPos, string> = {
-  tl: "bottom right",
-  tr: "bottom left",
-  bl: "top right",
-  br: "top left",
+// Outer corner = the corner pointing away from grid center (stays sharp/visible)
+// mask-image fades from opaque at the outer corner → transparent at the inner corner
+// Result: each environment is fully visible in its own territory, melts into the
+// shared center where the AxiomCore orb lives.
+const OUTER_CORNER: Record<QuadPos, string> = {
+  tl: "top left",
+  tr: "top right",
+  bl: "bottom left",
+  br: "bottom right",
+};
+
+// Rim lighting — Silver Glint spec
+const RIM: Record<QuadPos, React.CSSProperties> = {
+  tl: { borderTop: "1.5px solid rgba(255,255,255,0.40)", borderLeft:  "1px solid rgba(255,255,255,0.10)" },
+  tr: { borderTop: "1.5px solid rgba(255,255,255,0.40)", borderRight: "1px solid rgba(255,255,255,0.10)" },
+  bl: { borderBottom: "1.5px solid rgba(255,255,255,0.40)", borderLeft:  "1px solid rgba(255,255,255,0.10)" },
+  br: { borderBottom: "1.5px solid rgba(255,255,255,0.40)", borderRight: "1px solid rgba(255,255,255,0.10)" },
 };
 
 function EnvironmentQuad({ id, title, color, route, position }: QuadProps) {
@@ -440,15 +449,24 @@ function EnvironmentQuad({ id, title, color, route, position }: QuadProps) {
   const label  = `[ ${title.toUpperCase()} 360 ]`;
   const isSmoke = id === "smoke";
 
+  // mask-image: environment is fully visible at its outer corner, fades to
+  // transparent toward the grid center — "smoke in a room" organic merge
+  const maskValue = `radial-gradient(ellipse 105% 105% at ${OUTER_CORNER[position]}, black 45%, transparent 82%)`;
+
   return (
     <div
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       onClick={() => navigate(route)}
       style={{
-        position: "relative",
-        overflow: "hidden",
-        cursor:   "pointer",
+        position:             "relative",
+        overflow:             "hidden",
+        cursor:               "pointer",
+        // Mask — organic fade from outer corner toward grid center
+        maskImage:            maskValue,
+        WebkitMaskImage:      maskValue,
+        // Rim lighting — Silver Glint on machined edges
+        ...RIM[position],
       }}
     >
       {/* ── Environment image — full-bleed, heads visible ── */}
@@ -463,23 +481,9 @@ function EnvironmentQuad({ id, title, color, route, position }: QuadProps) {
           objectFit:      "cover",
           objectPosition: "top",
           display:        "block",
-          // Smoke dominance — gold embers and luster pop
           filter: isSmoke
             ? "saturate(1.5) brightness(1.1)"
             : "saturate(1.0) brightness(1.0)",
-          transition: "filter 0.5s ease",
-        }}
-      />
-
-      {/* ── Environmental blend — inner corner radial, organic not geometric ── */}
-      <div
-        style={{
-          position:      "absolute",
-          inset:         0,
-          zIndex:        8,
-          pointerEvents: "none",
-          // Radial gradient at the inner corner — fades environments into each other
-          background: `radial-gradient(ellipse 70% 70% at ${INNER_CORNER[position]}, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.12) 55%, transparent 75%)`,
         }}
       />
 

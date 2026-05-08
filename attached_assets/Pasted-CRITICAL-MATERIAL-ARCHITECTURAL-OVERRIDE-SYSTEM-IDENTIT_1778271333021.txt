@@ -1,0 +1,40 @@
+CRITICAL MATERIAL & ARCHITECTURAL OVERRIDE
+"SYSTEM IDENTITY PURGE: Your previous 'flat' designs are unacceptable. You are burning credits on a design that looks like a prototype. Execute this DRASTIC MATERIAL RECONSTRUCTION in TitanCraftDeck.tsx now:
+
+1. THE METALLIC LUSTER (No more flat color):
+
+Gold Hardware: All labels (SMOKECRAFT 360, etc.) and the AXIOM OS logo must use:
+background: linear-gradient(to bottom, #FFF9E6 0%, #D4AF37 40%, #B8860B 70%, #8A6D3B 100%); -webkit-background-clip: text; color: transparent;
+
+Silver Chassis: All secondary telemetry and the Top Ticker must use:
+background: linear-gradient(to bottom, #FFFFFF 0%, #C0C0C0 50%, #4D4D4D 100%); -webkit-background-clip: text; color: transparent;
+
+Rim Lighting: On every quadrant, add a border-top: 1.5px solid rgba(255, 255, 255, 0.4) and border-left: 1px solid rgba(255, 255, 255, 0.1). This creates the 'Silver Glint' of machined edges.
+
+2. KILL THE CENTER BOX (Organic Merge):
+
+Set gap: 0.
+
+Apply a mask-image: radial-gradient(circle at center, black 15%, transparent 85%) to the meeting corners of the images. They must melt together like smoke in a room.
+
+3. THE KINETIC DIGITAL TICKER (No License Plate):
+
+Delete the solid footer bar.
+
+Rebuild: An obsidian-black absolute strip (bg-black/40 backdrop-blur-md) pinned to the bottom.
+
+Motion: Implement an infinite right-to-left scroll.
+
+Text: Must be Metallic Gold, tracking-[0.6em], bold. Content: >>> DAYONE 360 ADV /// REVENUE ENGINE: OPTIMIZED /// SYSTEM LINK: STABLE >>>
+
+4. IMAGE PROPORTION LOCK (Stop the Smash):
+
+Requirement: Every image MUST be aspect-ratio: auto; object-fit: cover; object-position: top;.
+
+Diversity: Use high-fashion, polished AI realism. No more generic stock photos.
+
+5. THE CENTER CORE:
+
+Mount a 12px gold orb at the exact center (top: 50%, left: 50%). Add a shadow-[0_0_40px_rgba(212,175,55,0.6)] with a slow 'breathing' animation.
+
+STOP building a website. Build a machine. If I see a rounded card or flat yellow text, I will reject the build."
