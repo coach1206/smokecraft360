@@ -1,0 +1,163 @@
+Restore the original AXIOM OS gold-and-silver hospitality command center layout immediately.
+
+The current build drifted away from the original Axiom OS identity.
+It now feels too cinematic, oversized, blurry, and gallery-focused.
+
+Restore the interface to the original operational machine aesthetic.
+
+MANDATORY FIXES:
+
+1. Restore the 2x2 operational grid layout.
+
+Required structure:
+[CIGAR] [SPIRITS]
+[BREW ] [VAPOR ]
+
+DO NOT use:
+
+* horizontal carousel
+* cinematic slider
+* oversized center cards
+* stacked slideshow behavior
+
+Use:
+
+```css
+display: grid;
+grid-template-columns: 1fr 1fr;
+grid-template-rows: 1fr 1fr;
+gap: 14px;
+height: calc(100vh - 170px);
+padding: 14px;
+```
+
+2. Restore the original premium metallic visual system.
+
+Use:
+
+* matte black
+* brushed silver
+* warm gold
+* champagne bronze
+* metallic edge lighting
+
+REMOVE:
+
+* walnut haze
+* blur overlays
+* smoky opacity layers
+* muddy amber wash
+* atmospheric fog
+
+Luxury must come from:
+
+* contrast
+* reflections
+* metallic highlights
+* sharp texture detail
+* glass depth
+
+NOT blur.
+
+3. Restore realistic hospitality imagery.
+
+Use:
+
+* premium cigar lounges
+* bartenders
+* whiskey pours
+* beer closeups
+* luxury vapor lounges
+* social hospitality scenes
+* realistic warm environments
+
+Images must feel:
+
+* alive
+* social
+* premium
+* tactile
+* emotionally immersive
+
+Technical image rules:
+
+```css
+object-fit: cover;
+object-position: center;
+filter: none;
+transform: scale(1);
+```
+
+4. Restore the AXIOM OS operational header.
+
+Center:
+AXIOM OS
+POWERED BY CRAFTHUB
+
+Top telemetry strip:
+
+* AXIOM INTELLIGENCE
+* RECOMMENDATION ENGINE ACTIVE
+* INVENTORY SYNC LIVE
+* TASTE PROFILE READY
+* REVENUE BRAIN ONLINE
+
+Right side:
+
+* craft module count
+* curated scenes count
+* operational indicators
+
+Typography:
+
+* metallic silver
+* gold accents
+* precision spacing
+* thin luxury hardware font
+
+5. Restore the operational footer bar.
+
+Footer must include:
+
+* metallic gold text
+* module indicators
+* live operational timestamp
+* terminal-style status strip
+
+Example:
+DAYONE 360 ADV
+LIVE STATUS: ACTIVE
+SYSTEM LINK: STABLE
+AXIOM NODE: CONNECTED
+RECOMMENDATION ENGINE: READY
+
+6. Card behavior must feel premium and controlled.
+
+Use:
+
+* soft hover elevation
+* metallic glow
+* subtle reflections
+* smooth transitions
+* tactile movement
+
+DO NOT:
+
+* aggressively zoom
+* cinematic drift
+* blur surrounding UI
+* overscale cards
+
+FINAL TARGET:
+
+The interface should feel like:
+“An intelligent luxury hospitality operating system running inside a premium machine.”
+
+Preserve:
+
+* realism
+* hospitality energy
+* operational telemetry
+* metallic luxury
+* command-center structure
+* gold-and-silver AXIOM OS identity

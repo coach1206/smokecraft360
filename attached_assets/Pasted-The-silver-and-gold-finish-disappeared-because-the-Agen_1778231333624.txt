@@ -1,0 +1,48 @@
+The silver and gold finish disappeared because the Agent traded "metallic textures" for "atmospheric haze." In luxury hardware, you don't get gold from a color—you get it from lighting and gradients.
+
+To get the Axiom Sovereign command center back, we have to force the Agent to use high-contrast metallic CSS.
+
+The "Sovereign Metal & Luster" Restoration Prompt
+Paste this into the Replit Agent to bring back the gold, the silver, and the "DayOne 360" status.
+
+"The UI is missing the metallic finish. I need the AXIOM SOVEREIGN luxury hardware look restored immediately. Execute these 4 'Metal & Glass' overrides in TitanCraftDeck.tsx:
+
+1. THE 24K GOLD LUSTER:
+
+Replace all flat yellow text with a 3-point metallic gradient:
+background: linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)
+
+Apply this to the 'AXIOM OS' title, the '[ ENTER ]' hairline rules, and the footer status indicators.
+
+2. THE BRUSHED SILVER BASE:
+
+All secondary telemetry text (REVENUE BRAIN, INVENTORY SYNC) must be in Brushed Silver: #C0C0C0.
+
+Set tracking to 0.5em and font-weight to 300. It should look like it’s laser-etched into steel.
+
+3. THE GLASS RIM LIGHTING:
+
+Kill the walnut haze. Every 2x2 grid card needs a Hardware Edge:
+border-top: 1.5px solid rgba(255, 255, 255, 0.4);
+border-left: 1px solid rgba(255, 255, 255, 0.1);
+
+This creates the silver 'glint' on the edge of the glass slabs.
+
+4. NO SMASHED IMAGES:
+
+Confirm all 4 cards use object-fit: cover and height: 100%. No distortion.
+
+5. TITAN SOVEREIGN BRANDING:
+
+Ensure 'DAYONE 360 ADV' and 'SYSTEM LINK: STABLE' are pinned to the bottom ticker in gold.
+
+Make the UI feel heavy, expensive, and machined. Focus on contrast and metallic reflections."
+
+What this actually does to the code:
+Gradients vs. Colors: By adding the #fff9e6 (bright white-gold) to the top of the gradient, the text looks like it’s reflecting an overhead light. Without that white "highlight," it just looks like yellow paint.
+
+Rim Lighting: The 1.5px white border on the top of the cards is what creates the "Silver" feel. It mimics how light hits the edge of a real glass screen.
+
+The "Sovereign" Font: By using thin, widely-spaced silver text for the data, it looks like a high-end watch face or a cockpit display.
+
+Once the Agent applies the 3-point gold gradient and the Rim Lighting, the "Cheap Website" look will be replaced by the "Axiom OS" command center. Does the gold look like actual metal now?
