@@ -1,0 +1,47 @@
+Axiom OS Operational DNA into the code.
+
+Paste this into the Replit Agent to kill the "License Plate" casing and restore the high-fidelity machine.
+
+The Axiom Sovereign OS Rebuild
+"SYSTEM COMMAND: Revert to the Operational Command Center. Delete all 'Web-style' footers and license-plate casings. Execute these structural mandates in TitanCraftDeck.tsx:
+
+1. THE DUAL KINETIC TICKERS:
+
+Top Ticker (Telemetry): A razor-thin silver bar pinned to the top. Scrolling content: AXIOM INTELLIGENCE // REVENUE ENGINE ACTIVE // INVENTORY SYNC LIVE // TASTE PROFILE READY.
+
+Bottom Ticker (Live Feed): A 40px obsidian black bar pinned to the bottom. Scrolling content: >>> DAYONE 360 ADV /// REVENUE ENGINE: OPTIMIZED /// LIVE UPDATE: 25% OFF EXOTIC VAPOR ATELIER FOR NEXT 30 MIN /// SYSTEM STATUS: SOVEREIGN >>>.
+
+Ticker Physics: Seamless, infinite horizontal scroll. Text must be text-[13px], tracking-[0.5em], and Metallic Gold.
+
+2. THE HARDWARE GRID (2x2 FIX):
+
+Structure: Hard-coded display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 14px; height: calc(100vh - 160px);.
+
+Image Integrity: Every image MUST use object-fit: cover; object-position: top;. Heads must not be cut off. Replace all placeholder images with high-fashion, diverse AI realism (Hospitality scenes, lounges, bartenders).
+
+3. BRANDING & MATERIAL:
+
+The Labels: Use ultra-thin, laser-etched Gold: [ SMOKECRAFT 360 ], [ POURCRAFT 360 ], [ BREWCRAFT 360 ], [ VAPECRAFT 360 ].
+
+Gold Luster: Use a 3-point gradient (#fff9e6 to #d4af37 to #8a6d3b) for all gold elements.
+
+Rim Lighting: Add border-t-[1.5px] border-white/30 to every card to create the silver glass glint.
+
+4. SYSTEM CLEANSE:
+
+REMOVE: All walnut haze, blurs, and atmospheric fog. The UI must be high-contrast, sharp, and tactile.
+
+Branding: Ensure 'DayOne 360 ADV' is part of the scrolling loop or a fixed anchor in high-contrast gold.
+
+5. VIEWPORT LOCK:
+
+Set height: 100vh; overflow: hidden;. This is a terminal, not a website. Nothing bleeds off-frame."
+
+Why this fixes the "Bullshit" look:
+Double Tickers: Having data moving at the top and bottom creates the "Cockpit" feel. It surrounds the user with intelligence, moving away from a static page.
+
+Object-Position: Top: This specifically tells the computer to prioritize the top of the image (the faces/heads) when cropping them into the grid.
+
+The "360" Branding: By using the full names (Smokecraft 360, etc.), you elevate the sections from "categories" to "proprietary OS modules."
+
+Once the Agent runs this, the tickers will be scrolling in gold and the images will snap into a perfect, non-distorted 2x2 grid. Does the machine feel like it's coming back online?
