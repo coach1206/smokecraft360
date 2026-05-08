@@ -1,0 +1,644 @@
+FINAL — AXIOM OS MASTER IMPLEMENTATION PROMPT
+
+UNIVERSAL CRAFT INTELLIGENCE + BEHAVIORAL EXPERIENCE OPERATING SYSTEM
+
+CANONICAL REPLIT BUILD DOCUMENT
+
+MISSING / REQUIRED
+
+The following systems are REQUIRED and must be fully wired together before declaring the platform complete.
+
+⸻
+
+CORE OS SYSTEMS
+
+• AXIOM OS startup engine
+• Neural Bridge event architecture
+• Universal Craft Engine
+• Cross-craft intelligence system
+• OpenAI conversational AI integration
+• OpenAI voice integration
+• Mentor personality engine
+• Universal gamification engine
+• Dynamic XP engine
+• Universal leaderboard engine
+• Real-time progression engine
+• Behavioral analytics engine
+• Predictive recommendation engine
+• User profile memory engine
+• Adaptive difficulty engine
+• Universal reward engine
+• Achievement + badge system
+• AI pairing engine
+• Live session orchestration system
+• Environmental animation engine
+• Dynamic audio engine
+• Real-time operational telemetry system
+• Staff operational handoff layer
+• Universal profile database
+• Real-time synchronization system
+• Persistent challenge engine
+• Dynamic question engine
+• Loyalty + event system
+• Multi-device synchronization
+• Touchscreen optimization system
+
+⸻
+
+FAILURE PREVENTION CHECKLIST
+
+DO NOT:
+• create flat/static UI
+• use generic dashboards
+• use emojis or cartoon graphics
+• use abrupt transitions
+• use dead/still screens
+• use static background images
+• create disconnected craft systems
+• create visual-only features with no backend wiring
+• use boring forms
+• allow instant mastery progression
+• create separate ranking systems without shared architecture
+• create chaotic staff dashboards
+• use generic POS styling
+• break immersion during handoffs
+• hardcode challenge questions into frontend files
+
+MUST:
+• maintain cinematic environmental motion at all times
+• use realistic smoke/liquid/vapor animation
+• use layered sound design
+• maintain premium luxury design language
+• use OpenAI dynamically throughout system
+• persist all XP + rankings + preferences
+• track behavioral analytics silently
+• maintain shared cross-craft intelligence
+• support touchscreen/kiosk/tablet/desktop
+• use smooth GPU-accelerated transitions
+• maintain Tesla/Apple-level UI smoothness
+• ensure all craft systems feel unified
+• keep UI responsive and alive
+• create true operating system feel
+• maintain realistic depth, motion, and lighting
+
+⸻
+
+PLATFORM PURPOSE
+
+This is NOT a website.
+
+This is NOT a POS system.
+
+This is NOT a menu.
+
+Build a production-grade luxury behavioral intelligence operating system called:
+
+AXIOM OS
+
+Containing:
+
+• SmokeCraft
+• PourCraft
+• BrewCraft
+• VapeCraft
+
+All powered by ONE shared universal architecture.
+
+The system should feel like:
+
+Apple + Tesla + luxury lounge + behavioral AI + cinematic hospitality.
+
+The user should feel like:
+they entered a living intelligent environment.
+
+⸻
+
+UNIVERSAL EXPERIENCE FLOW
+
+PHASE 1 — AXIOM OS STARTUP
+
+“The Machine Awakens”
+
+Startup sequence:
+
+1. Black screen
+2. Low ambient startup hum
+3. PROFOUND INNOVATIONS reveal
+4. “Powered by AXIOM OS”
+5. Rotating concentric rings
+6. Telemetry lines appear
+7. Environmental synchronization animation
+8. Neural Bridge activation
+
+Tiny operational text:
+
+• Neural Bridge Connected
+• Mentor Intelligence Active
+• Behavioral Systems Online
+• Experience Engines Active
+• Environmental Sync Complete
+• Predictive Intelligence Ready
+
+Visual style:
+• smoked glass
+• obsidian black
+• metallic silver
+• ember gold
+• cinematic glow
+• realistic reflections
+• subtle fog
+• layered depth
+
+NO flat UI.
+
+⸻
+
+PHASE 2 — CRAFT HUB ENTRY
+
+“Choose Your World”
+
+Display 4 orbiting craft worlds:
+
+• SmokeCraft
+• PourCraft
+• BrewCraft
+• VapeCraft
+
+Each world must:
+• rotate slowly
+• breathe visually
+• react to touch/hover
+• contain living cinematic environments
+
+NO static buttons.
+
+⸻
+
+CRAFT VISUAL IDENTITIES
+
+SMOKECRAFT
+
+• cigar smoke
+• glowing ember
+• walnut wood
+• gold trim
+• dark lounge ambiance
+
+POURCRAFT
+
+• whiskey swirl
+• ice reflections
+• crystal glass
+• amber glow
+
+BREWCRAFT
+
+• beer foam
+• carbonation bubbles
+• copper brewery tones
+
+VAPECRAFT
+
+• reactive vapor clouds
+• neon lighting
+• futuristic reflections
+
+⸻
+
+PHASE 3 — MENTOR SELECTION
+
+“Every Master Had A Guide”
+
+User selects AI mentor.
+
+Mentors:
+• Traditionalist
+• Scientist
+• Collector
+• Social Expert
+• Sommelier
+• Rebel
+
+Each mentor contains:
+• unique OpenAI system prompts
+• different personality
+• different teaching style
+• unique challenge behavior
+• different reward psychology
+• unique voice tone
+
+⸻
+
+OPENAI VOICE SYSTEM
+
+Allow user to choose:
+• male/female
+• calm
+• sophisticated
+• futuristic concierge
+• lounge host
+• deep luxury voice
+
+Persist voice profile to DB.
+
+Voice remains active throughout experience.
+
+⸻
+
+PHASE 3A — EXPERIENCE LEVEL SELECTION
+
+“Where Does Your Journey Begin?”
+
+User selects current craft experience level.
+
+LEVELS:
+
+LEVEL 1 — Curious Explorer
+
+Heavy guidance.
+Easy XP.
+
+LEVEL 2 — Lounge Enthusiast
+
+Moderate challenge.
+More terminology.
+
+LEVEL 3 — Craft Specialist
+
+Advanced knowledge.
+Gain OR lose XP.
+
+LEVEL 4 — Aficionado
+
+Behavioral + sensory challenges.
+
+LEVEL 5 — Golden Box Candidate
+
+Elite mastery tier.
+Very difficult.
+
+⸻
+
+UNIVERSAL MASTER SCORE
+
+All users maintain:
+
+0–100 Craft Score
+
+Users can:
+GAIN or LOSE points.
+
+Ranking ranges:
+
+0–20 → Explorer
+21–40 → Enthusiast
+41–60 → Specialist
+61–85 → Aficionado
+86–100 → Golden Box Tier
+
+⸻
+
+PHASE 4 — CINEMATIC CRAFT OPENINGS
+
+SMOKECRAFT ENTRY
+
+Immediately upon opening:
+
+• cigar ignites
+• ember glows
+• smoke rolls dynamically
+• ash forms subtly
+• smoke drifts continuously
+• jazz lounge ambience activates
+
+Mentor says:
+
+“Every great cigar tells a story.”
+
+Environment remains alive continuously.
+
+⸻
+
+POURCRAFT ENTRY
+
+• realistic liquor pour
+• ice movement
+• liquid swirl
+• condensation
+• luxury bar reflections
+
+Audio:
+• pour sound
+• glass clink
+• ice settling
+
+⸻
+
+BREWCRAFT ENTRY
+
+• beer tap animation
+• foam rising
+• carbonation movement
+• brewery ambiance
+
+⸻
+
+VAPECRAFT ENTRY
+
+• vapor cloud simulation
+• LED pulse
+• futuristic vapor movement
+• atmospheric lighting
+
+⸻
+
+IMPORTANT
+
+Animations NEVER fully stop.
+
+Everything should feel:
+• breathing
+• alive
+• reactive
+• premium
+
+⸻
+
+PHASE 5 — GOLDEN BOX INTRO
+
+“The Legend”
+
+After craft opening:
+
+Introduce prestige progression system.
+
+Explain:
+• XP
+• mastery
+• challenges
+• elite unlocks
+• rankings
+• events
+• hidden rewards
+
+Possible universal elite branding:
+
+AXIOM BLACK TIER
+
+OR craft-specific prestige tiers.
+
+⸻
+
+PHASE 6 — OPTIONAL USER ENTRY
+
+“Join The Challenge”
+
+Optional reward enrollment:
+
+Fields:
+• name
+• age
+• state
+• phone number
+
+Explain:
+• exclusive offers
+• rewards
+• challenges
+• leaderboard
+• event invitations
+• progression tracking
+
+Immediately trigger:
+
++100 XP
+
+Use:
+• particle effects
+• glow
+• sound
+• mentor praise
+• dopamine reinforcement
+
+⸻
+
+PHASE 7 — UNIVERSAL GAMIFIED JOURNEY ENGINE
+
+Build modular AI-driven question system.
+
+Questions dynamically generated using:
+• DB content
+• OpenAI
+• mentor personality
+• user skill level
+
+⸻
+
+UNIVERSAL QUESTION CATEGORIES
+
+Every craft must contain:
+• region selection
+• flavor profile
+• intensity preference
+• pairing style
+• experience mood
+• equipment preference
+• advanced knowledge challenge
+• sensory challenge
+• behavioral challenge
+
+⸻
+
+SMOKECRAFT QUESTIONS
+
+Include:
+• tobacco regions
+• wrapper types
+• filler/binder
+• vitolas
+• cigar cuts
+• smoke duration
+• pairing science
+
+Display:
+realistic animated cigars.
+
+Explain:
+what each choice affects.
+
+⸻
+
+POURCRAFT QUESTIONS
+
+Include:
+• whiskey regions
+• bourbon types
+• proof preference
+• barrel aging
+• cocktail style
+• sipping style
+
+⸻
+
+BREWCRAFT QUESTIONS
+
+Include:
+• hops
+• malt profiles
+• beer styles
+• fermentation
+• IBU
+• serving style
+
+⸻
+
+VAPECRAFT QUESTIONS
+
+Include:
+• airflow
+• nicotine level
+• vapor density
+• flavor layering
+• device style
+• cloud preference
+
+⸻
+
+AI MENTOR ENGINE
+
+Mentors must:
+• educate dynamically
+• explain choices
+• adapt to skill level
+• challenge users intelligently
+• maintain memory context
+• use conversational OpenAI responses
+
+NO robotic canned text.
+
+⸻
+
+XP + DOPAMINE ENGINE
+
+System includes:
+• XP gain/loss
+• achievements
+• badges
+• glow animations
+• sound rewards
+• ember pulses
+• leaderboard movement
+• praise moments
+
+Examples:
++25 XP
+−5 XP
+
+Feedback should feel elegant.
+
+⸻
+
+DYNAMIC DIFFICULTY ENGINE
+
+Questions adapt based on:
+• level
+• behavior
+• answer accuracy
+• engagement depth
+
+Experts receive:
+• advanced sensory analysis
+• technical pairing challenges
+• flavor reconstruction
+• region identification
+• situational logic questions
+
+⸻
+
+PREDICTIVE ANALYTICS ENGINE
+
+Track:
+• selections
+• timing
+• spending behavior
+• emotional preferences
+• engagement patterns
+• pairings
+• loyalty tendencies
+• mentor responsiveness
+
+Generate:
+• AI recommendations
+• retention predictions
+• upsell opportunities
+• personalized rewards
+• dynamic experiences
+
+⸻
+
+CUSTOM CREATION ENGINE
+
+Advanced users unlock:
+
+SMOKECRAFT
+
+Custom cigar box creator:
+• mahogany
+• walnut
+• ebony
+• amber oak
+
+Custom bands:
+• crest
+• monogram
+• foil
+• uploaded logo
+• signature
+
+⸻
+
+POURCRAFT
+
+Custom bottle + label designer.
+
+BREWCRAFT
+
+Custom beer identity system.
+
+VAPECRAFT
+
+Custom flavor + device skin creator.
+
+⸻
+
+UNIVERSAL PROFILE SYSTEM
+
+Persist:
+• mentor
+• XP
+• achievements
+• rankings
+• challenge history
+• preferences
+• pairings
+• voice profile
+• predictive insights
+• craft scores
+• overall Axiom score
+
+Use PostgreSQL + Drizzle ORM.
+
+⸻
+
+UNIVERSAL CROSS-CRAFT INTELLIGENCE
+
+One user profile shared across:
+• SmokeCraft
+• PourCraft
+• BrewCraft
+• VapeCraft
+
+The system should learn across ALL crafts.
+
+Example:
+SmokeCraft preferences influence PourCraft recommendat
