@@ -424,10 +424,14 @@ import snapshotRouter,
 import neuralSubstrateRouter   from "./routes/neuralSubstrate";
 import venueDNARouter          from "./routes/venueDNA";
 import spatialHapticsRouter    from "./routes/spatialHaptics";
-import axiomConnectRouter      from "./routes/axiomConnect";
-import environmentalModeRouter from "./routes/environmentalMode";
-import predictiveIntentRouter  from "./routes/predictiveIntent";
+import axiomConnectRouter        from "./routes/axiomConnect";
+import environmentalModeRouter   from "./routes/environmentalMode";
+import predictiveIntentRouter    from "./routes/predictiveIntent";
 import founderIntelligenceRouter from "./routes/founderIntelligence";
+import plumbingRouter            from "./routes/plumbing";
+import { BlackBoxRecovery }          from "./services/blackBoxRecovery";
+import { FounderIntelligenceStream } from "./services/founderIntelligenceStream";
+import { startPredictiveIntentWorker } from "./workers/predictiveIntentWorker";
 app.use("/api/mentor",        mentorAIRouter);
 app.use("/api/xp",            xpEngineRouter);
 app.use("/api/staff",         staffFloorRouter);
@@ -441,6 +445,7 @@ app.use("/api/connect",       axiomConnectRouter);
 app.use("/api/env-mode",      environmentalModeRouter);
 app.use("/api/intent",        predictiveIntentRouter);
 app.use("/api/founder",       founderIntelligenceRouter);
+app.use("/api/plumbing",      plumbingRouter);
 app.use("/api",                         usersRouter);
 app.use("/api",                         aiRouter);
 app.use("/api/admin/entitlements",      entitlementsRouter);
@@ -465,6 +470,8 @@ app.use("/api",                         demoSimulateRouter);
 
 // Start background workers
 if (process.env["NODE_ENV"] !== "test") {
+  BlackBoxRecovery.init();
+  startPredictiveIntentWorker();
   startAggregationWorker();
   startExperienceAutomation();
   startSessionCleanupWorker();

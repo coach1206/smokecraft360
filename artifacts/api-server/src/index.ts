@@ -91,6 +91,10 @@ try {
 const httpServer = http.createServer(app);
 initSocketServer(httpServer);
 
+// Wire Founder Intelligence WebSocket stream (requires Socket.io to be ready)
+const { FounderIntelligenceStream } = await import("./services/founderIntelligenceStream");
+FounderIntelligenceStream.init();
+
 httpServer.listen(port, (err?: Error) => {
   if (err) {
     logger.error({ err }, "Error listening on port");

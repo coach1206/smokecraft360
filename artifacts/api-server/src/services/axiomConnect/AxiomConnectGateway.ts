@@ -16,8 +16,10 @@ import { AviationstackAdapter, type FlightStatus }  from "./AviationstackAdapter
 import { AiraloAdapter,        type EsimOffer }      from "./AiraloAdapter";
 import { AllianzAdapter,       type InsuranceQuote } from "./AllianzAdapter";
 import { MoodShiftEngine,      type MoodShift }      from "./MoodShiftEngine";
-import { getIO }    from "../../lib/socketServer";
-import { logger }   from "../../lib/logger";
+import { getIO }            from "../../lib/socketServer";
+import { logger }           from "../../lib/logger";
+import { VenueStateEngine } from "../venueStateEngine";
+import { NeuralEventBus }   from "../neuralEventBus";
 
 export interface GatewayStatus {
   aviationstack: "live" | "simulated";
@@ -68,12 +70,20 @@ export class AxiomConnectGateway {
     const moodShift = MoodShiftEngine.derive({ flightStatus, esimOffers, insuranceQuote });
 
     if (moodShift && params.venueId) {
+      // Persist to VenueStateEngine so all services can read the current mood
+      VenueStateEngine.setMood(params.venueId, moodShift);
+
       getIO().to(`venue:${params.venueId}`).emit("neural:mood_shift", {
         guestId:   params.guestId,
         venueId:   params.venueId,
         moodShift,
         timestamp: new Date().toISOString(),
       });
+
+      // Publish flight telemetry to bus for downstream consumers
+      if (flightStatus) {
+        NeuralEventBus.publish("travel.flight_update", { flightStatus, guestId: params.guestId }, params.venueId);
+      }
 
       logger.info({ guestId: params.guestId, mood: moodShift.mood, intensity: moodShift.intensity }, "mood shift dispatched");
     }

@@ -19,6 +19,8 @@ import { getIO }  from "../lib/socketServer";
 import { logger } from "../lib/logger";
 import { HapticResonanceService } from "./haptics/HapticResonanceService";
 import { SpatialAcousticEngine }  from "./haptics/SpatialAcousticEngine";
+import { MqttBridgeService }      from "./mqttBridgeService";
+import { VenueStateEngine }       from "./venueStateEngine";
 
 export type EnvironmentMode =
   | "lounge"           // slow, warm amber, languid drift
@@ -186,6 +188,9 @@ export class EnvironmentalModeEngine {
     const state  = { mode, activatedAt: new Date().toISOString(), triggeredBy };
     venueStates.set(venueId, state);
 
+    // Persist to centralised VenueStateEngine so all services see current mode
+    VenueStateEngine.setMode(venueId, mode, triggeredBy);
+
     const io = getIO();
     io.to(`venue:${venueId}`).emit("environment:mode_changed", {
       venueId,
@@ -195,6 +200,9 @@ export class EnvironmentalModeEngine {
       triggeredBy,
       ts: state.activatedAt,
     });
+
+    // Dispatch MQTT hardware burst — sub-100ms path (no DB round-trip)
+    MqttBridgeService.dispatchModeChange(venueId, config);
 
     HapticResonanceService.trigger(config.hapticPattern, {
       intensity: "subtle",
