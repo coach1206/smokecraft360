@@ -1,0 +1,27 @@
+THE PLUMBING: REVENUE & DATA PIPELINES (Phase 2)
+To make DayOne 360 accessible for other businesses, the backend must handle Multi-Tenant Data Isolation.
+• Database: PostgreSQL with Row Level Security (RLS). This ensures Business A can never see Business B’s guest heatmaps.
+• Revenue Bridge: A centralized AffiliateService that maps every guest interaction to the owner's Stripe Connect account.
+4. THE ENVIRONMENTAL ADAPTER (The Muscle)
+This connects the "Brain" to the physical hardware (Lighting/Audio).
+• Protocol: MQTT (Message Queuing Telemetry Transport). It is ultra-lightweight and perfect for IoT.
+• The Logic:
+1.	Intent Engine decides: "Increase luxury energy by 10%."
+2.	MQTT Broker sends a message: venue/001/lighting/warm_gold/brightness/90.
+3.	Hardware Adapter (Phase 3) executes the change in <50ms.
+5. THE BACKEND "PLUMBING" PROMPT
+Use this prompt to generate the actual code structure for the backend:
+PROMPT: INITIALIZE AXIOM_BACKEND_INFRASTRUCTURE
+COMMAND: Build a multi-tenant Node.js/TypeScript backend for AXIOM OS.
+CORE SERVICES TO BUILD:
+1.	Auth_Sovereignty_Service: Handle JWT-based multi-tenancy for different business owners.
+2.	Neural_Event_Bus: Use Redis Pub/Sub to link Travel API updates (Aviationstack) to Environmental AI Modes.
+3.	Axiom_Connect_Gateway:
+• Implement Aviationstack Webhooks for real-time flight tracking.
+• Implement Airalo/Allianz affiliate link generation engine.
+4.	Venue_State_Engine: Create a persistent "Atmospheric State" in Redis that stores current Lighting, Haptics, and Sonic DNA levels.
+5.	Predictive_Intent_Worker: A background worker that analyzes GuestBehaviorLogs to calculate the next "Premium Conversion Moment."
+6.	Founder_Intelligence_API: A high-speed WebSocket stream for the Cinematic Heatmaps (Phase 6).
+TECHNICAL REQUIREMENT: * Latency: Must be sub-100ms for environmental triggers.
+• Resilience: Implement the BlackBoxRecovery logic—if the main database is offline, the Edge Memory Core (Local Cache) must handle all venue interactions.
+RESULT: The backend is now the invisible "Ghost in the Machine" that makes the 2x2 grid feel alive.

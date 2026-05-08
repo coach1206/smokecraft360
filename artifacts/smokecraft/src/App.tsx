@@ -112,7 +112,8 @@ import PromoDashboard                from "@/pages/PromoDashboard";
 import { StaffBOHFeed }              from "@/components/StaffBOHFeed";
 import AxiomStartup       from "@/pages/AxiomStartup";
 import CraftOrbSelector    from "@/pages/CraftOrbSelector";
-import StaffFloorCockpit   from "@/pages/StaffFloorCockpit";
+import StaffFloorCockpit            from "@/pages/StaffFloorCockpit";
+import FounderIntelligenceDashboard from "@/pages/FounderIntelligenceDashboard";
 
 const queryClient = new QueryClient();
 
@@ -223,8 +224,9 @@ function Router() {
       <Route path="/training/staff"           component={StaffTraining}       />
       <Route path="/identity-ledger"          component={IdentityLedger}      />
       <Route path="/staff/sage"               component={ServiceSagePage}     />
-      <Route path="/staff/floor"              component={StaffFloorCockpit}   />
-      <Route path="/venue-setup"              component={EstablishmentSetupPage} />
+      <Route path="/staff/floor"              component={StaffFloorCockpit}           />
+      <Route path="/venue-setup"              component={EstablishmentSetupPage}      />
+      <Route path="/founder/intelligence"     component={FounderIntelligenceDashboard} />
       {/* Dynamic per-theme entry URL (/smokecraft, /pourcraft, /grillcraft …).
           Declared LAST in the Switch so explicit app routes above always win;
           loadTheme() resolves the active theme from the first path segment.

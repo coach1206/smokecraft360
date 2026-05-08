@@ -1,0 +1,33 @@
+ACTION ORDER: INTEGRATED INTELLIGENCE DEPLOYMENT
+TO: Engineering Team / AI Agent
+SUBJECT: Phase 2-6 Convergence for DayOne 360
+THE DECISION: UNIFIED INFRASTRUCTURE
+Phase 2 (Travel APIs) is the Input Layer for Phase 5 (Predictive Intent).
+• Aviationstack is not just for booking; it provides the Telemetry (delay/arrival status) that triggers the Environmental AI Modes (Phase 4).
+• Airalo/Allianz are the Atomic Commerce engines that monetize the CIGAR and SPIRITS modules through cross-domain upselling.
+THE RAPID PROMPT (PHASES 2, 4, 5, 6)
+COMMAND: Proceed with the following integration sequence. Do not branch the codebase.
+1. INITIALIZE THE REVENUE BRIDGE (PHASE 2)
+• TASK: Build the AxiomConnectGateway.
+• ACTION: Integrate Aviationstack, Airalo, and Allianz as Global Services.
+• LOGIC: These services must feed the VenueSoulCache. If a flight is delayed, the system must flag a "Mood Shift" in the guest profile.
+2. DEPLOY ENVIRONMENTAL AI MODES (PHASE 4)
+• TASK: Build the AtmosphereController and EnvironmentalModeEngine.
+• ACTION: Map the 2x2 Command Grid to specific Modes:
+• Lounge Mode: Low-intensity lighting, slow particle drift.
+• VIP/Peak Mode: High-energy telemetry, sharp reflections, faster weighted damping.
+• MATERIAL: Ensure Spatial Fluid Dynamics (mercury-flow transitions) are active between modes.
+3. ACTIVATE PREDICTIVE INTENT (PHASE 5)
+• TASK: Connect Phase 2 Data to Phase 4 Environment.
+• LOGIC: * Input: Aviationstack confirms guest landing + Airalo eSIM activation.
+• Prediction: Guest will arrive in 45 mins with high fatigue.
+• Action: Axiom OS pre-calibrates the BREW and SPIRITS modules to "Relaxed Luxury" mode.
+4. FOUNDER INTELLIGENCE LAYER (PHASE 6)
+• TASK: Build the EmotionalHeatmapEngine and OpportunityZoneMapper.
+• ACTION: Create the What-If Simulation Slider.
+• RULE: Visualize the revenue impact of the Travel APIs (Phase 2) alongside venue engagement.
+EXECUTION STATUS:
+• PHASE 2: Start Bridge Construction (Integrated).
+• PHASE 4-6: Parallelize with Phase 2 data streams.
+• TONE: Maintain Calm Is Power. Every transition must be buttery smooth.
+MOVE FORWARD NOW. Establish the API Bridge (Phase 2) first so Phases 4-6 have real intelligence to act upon.
