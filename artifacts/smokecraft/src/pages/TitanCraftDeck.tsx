@@ -1,9 +1,12 @@
 /**
- * TitanCraftDeck — Axiom OS Luminous Hardware Terminal.
+ * TitanCraftDeck — Axiom OS Sovereign Environmental Core.
  * Route: /titan-hub
  *
- * Identity: machined cockpit meets luxury hospitality intelligence OS.
- * Layout: top ticker → header → seamless 2×2 hardware grid + AxiomCore → bottom ticker
+ * Identity: 3D Environmental HUD. Not a website. Not a card grid.
+ * A luxury hospitality machine — full-bleed, full-environment, full-sovereign.
+ *
+ * Layout: full-screen 2×2 environmental canvas with floating HUD overlays.
+ * No rounded corners. No borders. No cards. Four environments bleeding into one.
  */
 
 import { useEffect, useState }     from "react";
@@ -52,86 +55,96 @@ const BOTTOM_ITEMS = [
   "SYSTEM LINK: STABLE",
 ];
 
-// ── Material constants ────────────────────────────────────────────────────────
+// ── Shared style token ────────────────────────────────────────────────────────
 
-const GOLD_LUSTER: React.CSSProperties = {
-  background:           "linear-gradient(180deg, #fff9e6 0%, #d4af37 45%, #8a6d3b 100%)",
+const GOLD_TEXT: React.CSSProperties = {
+  background:           "linear-gradient(90deg, #8a6d3b 0%, #fff9e6 28%, #d4af37 52%, #fff9e6 76%, #8a6d3b 100%)",
+  backgroundSize:       "200% auto",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor:  "transparent",
-  filter:               "drop-shadow(0 0 10px rgba(212,175,55,.45))",
+  filter:               "drop-shadow(0 0 8px rgba(212,175,55,0.50))",
 };
 
-const SILVER: React.CSSProperties = {
-  background:           "linear-gradient(180deg, #f0f0f2 0%, #c8c8d0 55%, #909098 100%)",
+const SILVER_TEXT: React.CSSProperties = {
+  background:           "linear-gradient(90deg, rgba(200,200,215,0.55) 0%, rgba(230,228,220,0.80) 50%, rgba(200,200,215,0.55) 100%)",
+  backgroundSize:       "200% auto",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor:  "transparent",
 };
 
-// Reflective titanium border — appears machined
-const TITANIUM_BORDER = "linear-gradient(to right, #6b5428, #fff9e6, #d4af37, #fff9e6, #6b5428) 1";
-
-// ── Keyframe styles ───────────────────────────────────────────────────────────
+// ── Keyframes ─────────────────────────────────────────────────────────────────
 
 const STYLES = `
-  @keyframes axiom-top-scroll {
+  @keyframes titan-top-scroll {
     0%   { transform: translateX(0); }
     100% { transform: translateX(-50%); }
   }
-  @keyframes axiom-bot-scroll {
+  @keyframes titan-bot-scroll {
     0%   { transform: translateX(0); }
     100% { transform: translateX(-50%); }
   }
-  @keyframes axiom-core-pulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(212,175,55,0.25), 0 0 60px rgba(212,175,55,0.12), 0 0 0 1px rgba(212,175,55,0.50); transform: scale(1); }
-    50%       { box-shadow: 0 0 40px rgba(212,175,55,0.55), 0 0 100px rgba(212,175,55,0.25), 0 0 0 1px rgba(255,249,230,0.90); transform: scale(1.06); }
+  @keyframes axiom-core-breathe {
+    0%, 100% {
+      box-shadow:
+        0 0 0 1px rgba(212,175,55,0.55),
+        0 0 18px rgba(212,175,55,0.22),
+        0 0 50px rgba(212,175,55,0.10);
+      transform: translate(-50%,-50%) scale(1);
+    }
+    50% {
+      box-shadow:
+        0 0 0 1px rgba(255,249,230,0.95),
+        0 0 40px rgba(212,175,55,0.65),
+        0 0 120px rgba(212,175,55,0.28),
+        0 0 200px rgba(212,175,55,0.10);
+      transform: translate(-50%,-50%) scale(1.18);
+    }
   }
-  @keyframes gold-shimmer {
+  @keyframes gold-sweep {
     0%   { background-position: 200% center; }
     100% { background-position: -200% center; }
   }
-  @keyframes card-edge-shimmer {
-    0%   { opacity: 0.55; }
-    50%  { opacity: 0.95; }
-    100% { opacity: 0.55; }
+  @keyframes hud-pulse {
+    0%, 100% { opacity: 0.72; }
+    50%       { opacity: 1; }
   }
-  .axiom-top-track {
+  .titan-top-track {
     display: inline-flex;
     align-items: center;
     white-space: nowrap;
-    animation: axiom-top-scroll 38s linear infinite;
+    animation: titan-top-scroll 40s linear infinite;
     will-change: transform;
   }
-  .axiom-bot-track {
+  .titan-bot-track {
     display: inline-flex;
     align-items: center;
     white-space: nowrap;
-    animation: axiom-bot-scroll 52s linear infinite;
+    animation: titan-bot-scroll 54s linear infinite;
     will-change: transform;
   }
-  .axiom-core-orb {
-    animation: axiom-core-pulse 3.2s ease-in-out infinite;
-  }
-  .craft-label-gold {
+  /* Label shimmer for smoke */
+  .gold-label-shimmer {
     background: linear-gradient(90deg, #8a6d3b 0%, #fff9e6 22%, #d4af37 48%, #fff9e6 74%, #8a6d3b 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: gold-shimmer 4.5s linear infinite;
-    filter: drop-shadow(0 0 10px rgba(212,175,55,0.55));
+    animation: gold-sweep 4.2s linear infinite;
+    filter: drop-shadow(0 0 12px rgba(212,175,55,0.65));
   }
-  .craft-label-silver {
-    background: linear-gradient(to bottom, rgba(255,255,255,0.98) 0%, rgba(200,200,215,0.72) 100%);
+  .silver-label {
+    background: linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(200,200,215,0.68) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 6px rgba(255,255,255,0.30));
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.22));
   }
-  /* Metallic titanium top edge on each card */
-  .card-titanium-top {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1.5px;
-    background: linear-gradient(to right, #6b5428, #fff9e6, #d4af37, #fff9e6, #6b5428);
-    z-index: 20;
+  /* HUD text — gold sweep for >>> items, muted gold for rest */
+  .hud-gold-sweep {
+    background: linear-gradient(90deg, #8a6d3b, #fff9e6, #d4af37, #fff9e6, #8a6d3b);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gold-sweep 5s linear infinite;
+    filter: drop-shadow(0 0 10px rgba(212,175,55,0.55));
   }
 `;
 
@@ -140,53 +153,60 @@ const STYLES = `
 function PulseDot({ color }: { color: string }) {
   return (
     <motion.span
-      animate={{ opacity: [1, 0.35, 1] }}
-      transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+      animate={{ opacity: [1, 0.28, 1] }}
+      transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
       style={{
         display:      "inline-block",
         width:        5,
         height:       5,
         borderRadius: "50%",
         background:   color,
-        boxShadow:    `0 0 7px ${color}cc`,
+        boxShadow:    `0 0 7px ${color}`,
         flexShrink:   0,
       }}
     />
   );
 }
 
-// ── Top kinetic ticker ────────────────────────────────────────────────────────
+// ── Top HUD ticker — transparent, projected onto scene ────────────────────────
 
 function TopTicker() {
   const doubled = [...TOP_ITEMS, ...TOP_ITEMS];
   return (
     <div style={{
-      height:       24,
-      background:   "linear-gradient(180deg, #040404 0%, #0a0a0c 100%)",
-      borderBottom: "1px solid rgba(255,255,255,0.07)",
-      overflow:     "hidden",
-      flexShrink:   0,
-      display:      "flex",
-      alignItems:   "center",
-      position:     "relative",
+      position:   "absolute",
+      top:        0,
+      left:       0,
+      right:      0,
+      height:     28,
+      zIndex:     80,
+      overflow:   "hidden",
+      display:    "flex",
+      alignItems: "center",
+      // Transparent bar — text projected onto environment below
+      background: "linear-gradient(180deg, rgba(0,0,0,0.55) 0%, transparent 100%)",
     }}>
-      <div style={{ position:"absolute", left:0, top:0, bottom:0, width:48, zIndex:2, pointerEvents:"none", background:"linear-gradient(to right, #040404, transparent)" }} />
-      <div style={{ position:"absolute", right:0, top:0, bottom:0, width:48, zIndex:2, pointerEvents:"none", background:"linear-gradient(to left, #040404, transparent)" }} />
+      {/* Edge fade masks */}
+      <div style={{ position:"absolute", left:0, top:0, bottom:0, width:60, zIndex:2, pointerEvents:"none",
+        background:"linear-gradient(to right, rgba(0,0,0,0.60), transparent)" }} />
+      <div style={{ position:"absolute", right:0, top:0, bottom:0, width:60, zIndex:2, pointerEvents:"none",
+        background:"linear-gradient(to left, rgba(0,0,0,0.60), transparent)" }} />
 
-      <div className="axiom-top-track">
+      <div className="titan-top-track">
         {doubled.map((item, i) => (
           <span key={i} style={{ display:"inline-flex", alignItems:"center" }}>
             <span style={{
+              ...SILVER_TEXT,
               fontSize:      12,
-              letterSpacing: "0.48em",
+              letterSpacing: "0.6em",
+              fontWeight:    700,
               textTransform: "uppercase",
-              color:         "rgba(195,200,215,0.55)",
-              fontWeight:    500,
-              paddingInline: 8,
+              paddingInline: 10,
+              animation:     "hud-pulse 4s ease-in-out infinite",
             }}>
               {item}
             </span>
-            <span style={{ color:"rgba(180,180,200,0.18)", fontSize:8, paddingInline:10 }}>//</span>
+            <span style={{ color:"rgba(212,175,55,0.22)", fontSize:8, paddingInline:8 }}>//</span>
           </span>
         ))}
       </div>
@@ -194,39 +214,142 @@ function TopTicker() {
   );
 }
 
-// ── Bottom kinetic ticker ─────────────────────────────────────────────────────
+// ── Bottom HUD ticker — gold, projected ───────────────────────────────────────
 
 function BottomTicker() {
   const doubled = [...BOTTOM_ITEMS, ...BOTTOM_ITEMS];
   return (
     <div style={{
+      position:   "absolute",
+      bottom:     0,
+      left:       0,
+      right:      0,
       height:     40,
-      background: "#030303",
-      borderTop:  "1px solid rgba(212,175,55,0.18)",
+      zIndex:     80,
       overflow:   "hidden",
-      flexShrink: 0,
       display:    "flex",
       alignItems: "center",
-      position:   "relative",
+      // Deep dark base so gold pops without competing with imagery
+      background: "linear-gradient(0deg, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.30) 80%, transparent 100%)",
     }}>
-      <div style={{ position:"absolute", left:0, top:0, bottom:0, width:60, zIndex:2, pointerEvents:"none", background:"linear-gradient(to right, #030303, transparent)" }} />
-      <div style={{ position:"absolute", right:0, top:0, bottom:0, width:60, zIndex:2, pointerEvents:"none", background:"linear-gradient(to left, #030303, transparent)" }} />
+      <div style={{ position:"absolute", left:0, top:0, bottom:0, width:60, zIndex:2, pointerEvents:"none",
+        background:"linear-gradient(to right, rgba(0,0,0,0.70), transparent)" }} />
+      <div style={{ position:"absolute", right:0, top:0, bottom:0, width:60, zIndex:2, pointerEvents:"none",
+        background:"linear-gradient(to left, rgba(0,0,0,0.70), transparent)" }} />
 
-      <div className="axiom-bot-track">
+      {/* Hair-line gold rule above bottom feed */}
+      <div style={{
+        position:   "absolute",
+        top:        0, left: "8%", right: "8%",
+        height:     "0.5px",
+        background: "linear-gradient(to right, transparent, rgba(212,175,55,0.50) 20%, rgba(255,249,230,0.80) 50%, rgba(212,175,55,0.50) 80%, transparent)",
+        zIndex:     3,
+      }} />
+
+      <div className="titan-bot-track">
         {doubled.map((item, i) => (
           <span key={i} style={{ display:"inline-flex", alignItems:"center" }}>
-            <span style={{
-              fontSize:      13,
-              letterSpacing: "0.5em",
-              textTransform: "uppercase",
-              fontWeight:    item.startsWith(">>>") ? 800 : 500,
-              paddingInline: 10,
-              ...(item.startsWith(">>>") ? GOLD_LUSTER : { color:"rgba(212,175,55,0.72)" }),
-            }}>
+            <span
+              className={item.startsWith(">>>") ? "hud-gold-sweep" : undefined}
+              style={{
+                fontSize:      13,
+                letterSpacing: "0.6em",
+                textTransform: "uppercase",
+                fontWeight:    item.startsWith(">>>") ? 800 : 600,
+                paddingInline: 10,
+                ...(!item.startsWith(">>>") ? { color:"rgba(212,175,55,0.75)" } : {}),
+              }}
+            >
               {item}
             </span>
-            <span style={{ color:"rgba(212,175,55,0.24)", fontSize:8, paddingInline:8 }}>///</span>
+            <span style={{ color:"rgba(212,175,55,0.28)", fontSize:8, paddingInline:8 }}>///</span>
           </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Floating header — transparent HUD strip ───────────────────────────────────
+
+function HudHeader({ time, date, craftCount }: { time: string; date: string; craftCount: number }) {
+  return (
+    <div style={{
+      position:       "absolute",
+      top:            28,
+      left:           0,
+      right:          0,
+      zIndex:         75,
+      display:        "flex",
+      alignItems:     "center",
+      justifyContent: "space-between",
+      padding:        "6px 24px",
+      background:     "linear-gradient(180deg, rgba(0,0,0,0.38) 0%, transparent 100%)",
+      pointerEvents:  "none",
+    }}>
+
+      {/* Left — clock */}
+      <div style={{ minWidth: 130, pointerEvents:"none" }}>
+        <div style={{
+          ...SILVER_TEXT,
+          fontSize:           "18px",
+          letterSpacing:      "0.10em",
+          fontWeight:         200,
+          fontVariantNumeric: "tabular-nums",
+        }}>
+          {time}
+        </div>
+        <div style={{
+          fontSize:      "6px",
+          letterSpacing: "0.36em",
+          color:         "rgba(200,180,120,0.44)",
+          textTransform: "uppercase",
+          marginTop:     2,
+        }}>
+          {date}
+        </div>
+      </div>
+
+      {/* Center — wordmark */}
+      <div style={{ textAlign:"center", pointerEvents:"none" }}>
+        <div style={{
+          ...GOLD_TEXT,
+          fontSize:      "clamp(15px, 1.8vw, 22px)",
+          letterSpacing: "0.65em",
+          fontWeight:    900,
+          textTransform: "uppercase",
+        }}>
+          Axiom OS
+        </div>
+        <div style={{
+          fontSize:      "5.5px",
+          letterSpacing: "0.55em",
+          textTransform: "uppercase",
+          color:         "rgba(200,180,120,0.38)",
+          marginTop:     3,
+        }}>
+          Experience Engine
+        </div>
+      </div>
+
+      {/* Right — indicators */}
+      <div style={{ minWidth: 130, display:"flex", flexDirection:"column", gap:4, alignItems:"flex-end", pointerEvents:"none" }}>
+        {[
+          { label: `${craftCount} Craft Modules`, dot: "#D4AF37" },
+          { label: "12 Curated Scenes",           dot: "#5ab85a" },
+          { label: "Intelligence Active",          dot: "#D4AF37" },
+        ].map(({ label, dot }, i) => (
+          <div key={i} style={{ display:"flex", alignItems:"center", gap:6 }}>
+            <span style={{
+              fontSize:      "5.5px",
+              letterSpacing: "0.28em",
+              textTransform: "uppercase",
+              color:         "rgba(200,180,120,0.44)",
+            }}>
+              {label}
+            </span>
+            <PulseDot color={dot} />
+          </div>
         ))}
       </div>
     </div>
@@ -237,98 +360,98 @@ function BottomTicker() {
 
 function AxiomCore() {
   return (
-    <div style={{
-      position:      "absolute",
-      top:           "50%",
-      left:          "50%",
-      transform:     "translate(-50%, -50%)",
-      zIndex:        100,
-      pointerEvents: "none",
-    }}>
-      {/* Outer radial halo — bleeds into all four cards */}
-      <div style={{
-        position:     "absolute",
-        top:          "50%",
-        left:         "50%",
-        transform:    "translate(-50%, -50%)",
-        width:        160,
-        height:       160,
+    <div
+      style={{
+        position:  "absolute",
+        top:       "50%",
+        left:      "50%",
+        zIndex:    100,
+        // Animated via CSS — breathing 3s cycle
+        width:     16,
+        height:    16,
         borderRadius: "50%",
-        background:   "radial-gradient(ellipse, rgba(212,175,55,0.12) 0%, transparent 72%)",
+        background:   "radial-gradient(circle, #fff9e6 0%, #d4af37 50%, #8a6d3b 100%)",
+        animation:    "axiom-core-breathe 3s ease-in-out infinite",
         pointerEvents:"none",
+      }}
+    />
+  );
+}
+
+// ── Center hair-line seams — laser-etched, fade at edges ──────────────────────
+
+function CenterSeams() {
+  return (
+    <>
+      {/* Horizontal seam — fades at left/right edges */}
+      <div style={{
+        position:      "absolute",
+        top:           "50%",
+        left:          0,
+        right:         0,
+        height:        "0.5px",
+        transform:     "translateY(-50%)",
+        background:    "linear-gradient(to right, transparent 0%, rgba(212,175,55,0.20) 10%, rgba(255,249,230,0.50) 30%, rgba(212,175,55,0.60) 50%, rgba(255,249,230,0.50) 70%, rgba(212,175,55,0.20) 90%, transparent 100%)",
+        zIndex:        90,
+        pointerEvents: "none",
       }} />
 
-      {/* Breathing orb */}
-      <div
-        className="axiom-core-orb"
-        style={{
-          width:        14,
-          height:       14,
-          borderRadius: "50%",
-          background:   "radial-gradient(circle, #fff9e6 0%, #d4af37 55%, #8a6d3b 100%)",
-          position:     "relative",
-        }}
-      />
-    </div>
+      {/* Vertical seam — fades at top/bottom edges */}
+      <div style={{
+        position:      "absolute",
+        top:           0,
+        bottom:        0,
+        left:          "50%",
+        width:         "0.5px",
+        transform:     "translateX(-50%)",
+        background:    "linear-gradient(to bottom, transparent 0%, rgba(212,175,55,0.20) 10%, rgba(255,249,230,0.50) 30%, rgba(212,175,55,0.60) 50%, rgba(255,249,230,0.50) 70%, rgba(212,175,55,0.20) 90%, transparent 100%)",
+        zIndex:        90,
+        pointerEvents: "none",
+      }} />
+    </>
   );
 }
 
-// ── Zone bleed — inner-corner gradient per card ───────────────────────────────
+// ── Environmental quadrant — full-bleed, no card ──────────────────────────────
 
-function ZoneBleed({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
-  const origins: Record<string, string> = {
-    tl: "100% 100%",
-    tr: "0% 100%",
-    bl: "100% 0%",
-    br: "0% 0%",
-  };
-  return (
-    <div style={{
-      position:      "absolute",
-      inset:         0,
-      zIndex:        30,
-      pointerEvents: "none",
-      background:    `radial-gradient(ellipse 55% 55% at ${origins[position]}, rgba(0,0,0,0.72) 0%, transparent 65%)`,
-    }} />
-  );
-}
+type QuadPos = "tl" | "tr" | "bl" | "br";
 
-// ── Craft card — luminous hardware tile ──────────────────────────────────────
-
-interface CardProps {
+interface QuadProps {
   id:       string;
   title:    string;
   color:    string;
   route:    string;
-  position: "tl" | "tr" | "bl" | "br";
+  position: QuadPos;
 }
 
-function CraftCard({ id, title, color, route, position }: CardProps) {
-  const [, navigate]  = useLocation();
+// Inner corner position for each quadrant — where the blend gradient originates
+const INNER_CORNER: Record<QuadPos, string> = {
+  tl: "bottom right",
+  tr: "bottom left",
+  bl: "top right",
+  br: "top left",
+};
+
+function EnvironmentQuad({ id, title, color, route, position }: QuadProps) {
+  const [, navigate] = useLocation();
   const [hov, setHov] = useState(false);
-  const img           = CRAFT_IMAGES[id] ?? CRAFT_IMAGES["smoke"]!;
-  const sub           = CRAFT_SUBS[id]   ?? "";
-  const label         = `[ ${title.toUpperCase()} 360 ]`;
-  const isSmoke       = id === "smoke";
-  const isGold        = isSmoke;
+  const img    = CRAFT_IMAGES[id] ?? CRAFT_IMAGES["smoke"]!;
+  const sub    = CRAFT_SUBS[id]   ?? "";
+  const label  = `[ ${title.toUpperCase()} 360 ]`;
+  const isSmoke = id === "smoke";
 
   return (
-    <motion.div
-      onHoverStart={() => setHov(true)}
-      onHoverEnd={() => setHov(false)}
+    <div
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
       onClick={() => navigate(route)}
-      animate={{
-        filter: hov ? "brightness(1.06)" : "brightness(1.0)",
-      }}
-      transition={{ duration: 0.28, ease: "easeOut" }}
       style={{
         position: "relative",
         overflow: "hidden",
         cursor:   "pointer",
-        height:   "100%",
       }}
     >
-      {/* Hero image — full visibility, no dark veil */}
+      {/* ── Environment image — full-bleed, heads visible ── */}
       <img
         src={img}
         alt={title}
@@ -340,82 +463,78 @@ function CraftCard({ id, title, color, route, position }: CardProps) {
           objectFit:      "cover",
           objectPosition: "top",
           display:        "block",
-          // Smoke gets a luster boost — embers and gold must pop
-          filter:         isSmoke
-            ? "saturate(1.2) brightness(1.1)"
+          // Smoke dominance — gold embers and luster pop
+          filter: isSmoke
+            ? "saturate(1.5) brightness(1.1)"
             : "saturate(1.0) brightness(1.0)",
+          transition: "filter 0.5s ease",
         }}
       />
 
-      {/* Legibility gradient — only at bottom third, not a full fog */}
+      {/* ── Environmental blend — inner corner radial, organic not geometric ── */}
+      <div
+        style={{
+          position:      "absolute",
+          inset:         0,
+          zIndex:        8,
+          pointerEvents: "none",
+          // Radial gradient at the inner corner — fades environments into each other
+          background: `radial-gradient(ellipse 70% 70% at ${INNER_CORNER[position]}, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.12) 55%, transparent 75%)`,
+        }}
+      />
+
+      {/* ── Bottom legibility ramp — only bottom 28% ── */}
       <div style={{
-        position:   "absolute",
-        inset:      0,
-        zIndex:     10,
-        background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.20) 30%, transparent 52%)",
+        position:      "absolute",
+        inset:         0,
+        zIndex:        9,
+        pointerEvents: "none",
+        background:    "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.12) 28%, transparent 44%)",
       }} />
 
-      {/* Zone bleed — inner corner dark gradient for seamless grid merge */}
-      <ZoneBleed position={position} />
+      {/* ── Hover scale hint — subtle, not jarring ── */}
+      <motion.div
+        animate={{ opacity: hov ? 1 : 0 }}
+        transition={{ duration: 0.30 }}
+        style={{
+          position:      "absolute",
+          inset:         0,
+          zIndex:        10,
+          pointerEvents: "none",
+          background:    `radial-gradient(ellipse 60% 40% at 50% 0%, ${color}0d 0%, transparent 60%)`,
+        }}
+      />
 
-      {/* Titanium top edge — reflective machined bar */}
-      <div className="card-titanium-top" />
-
-      {/* Inner vertical edge — left or right titanium bar for grid seams */}
-      {(position === "tl" || position === "bl") && (
-        <div style={{
-          position:   "absolute",
-          top:        0, bottom:0, right:0,
-          width:      1.5,
-          zIndex:     25,
-          background: "linear-gradient(to bottom, #6b5428, #fff9e6, #d4af37, #fff9e6, #6b5428)",
-        }} />
-      )}
-
-      {/* Craft color accent line — top, breathing */}
+      {/* ── Craft color accent line — top edge breathing ── */}
       <motion.div
         style={{
           position:   "absolute",
           top:        0, left:0, right:0,
           height:     2,
-          zIndex:     21,
+          zIndex:     12,
           background: color,
-          opacity:    0,
         }}
-        animate={{ opacity: hov ? [0.9, 1, 0.9] : [0.30, 0.55, 0.30] }}
-        transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ opacity: hov ? [0.95, 1, 0.95] : [0.25, 0.50, 0.25] }}
+        transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Corner metallic reflection on hover */}
-      <motion.div
-        animate={{ opacity: hov ? 1 : 0 }}
-        transition={{ duration: 0.22 }}
-        style={{
-          position:      "absolute",
-          inset:         0,
-          zIndex:        15,
-          pointerEvents: "none",
-          background:    `radial-gradient(ellipse 55% 40% at 0% 0%, rgba(255,255,255,0.065) 0%, transparent 55%),
-                          radial-gradient(ellipse 35% 25% at 100% 100%, ${color}14 0%, transparent 55%)`,
-        }}
-      />
-
-      {/* Bottom text — laser-etched precision */}
+      {/* ── Label — laser-etched ── */}
       <div style={{
-        position: "absolute",
-        bottom:   0,
-        left:     0,
-        width:    "100%",
-        padding:  "14px 18px",
-        zIndex:   35,
+        position:      "absolute",
+        bottom:        0,
+        left:          0,
+        width:         "100%",
+        padding:       "12px 18px",
+        zIndex:        20,
+        pointerEvents: "none",
       }}>
         <h2
-          className={isGold ? "craft-label-gold" : "craft-label-silver"}
+          className={isSmoke ? "gold-label-shimmer" : "silver-label"}
           style={{
-            fontSize:      "clamp(0.70rem, 1.0vw, 1.05rem)",
+            fontSize:      "clamp(0.68rem, 0.95vw, 1.0rem)",
             fontStyle:     "italic",
-            letterSpacing: "0.50em",
-            marginBottom:  5,
+            letterSpacing: "0.52em",
+            marginBottom:  4,
             lineHeight:    1,
             textTransform: "uppercase",
             fontWeight:    900,
@@ -425,30 +544,24 @@ function CraftCard({ id, title, color, route, position }: CardProps) {
           {label}
         </h2>
         <p style={{
-          fontSize:      "6.5px",
+          fontSize:      "6px",
           letterSpacing: "0.40em",
           textTransform: "uppercase",
-          color:         "rgba(220,210,180,0.44)",
+          color:         "rgba(220,210,180,0.42)",
           marginBottom:  0,
         }}>
           {sub}
         </p>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-const POSITIONS: Record<number, "tl" | "tr" | "bl" | "br"> = {
-  0: "tl",
-  1: "tr",
-  2: "bl",
-  3: "br",
-};
+const QUAD_POSITIONS: QuadPos[] = ["tl", "tr", "bl", "br"];
 
 export default function TitanCraftDeck() {
-  const [, navigate]          = useLocation();
   const [mounted, setMounted] = useState(false);
   const [time, setTime]       = useState("");
   const [date, setDate]       = useState("");
@@ -476,156 +589,55 @@ export default function TitanCraftDeck() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.35, ease: "easeInOut" }}
+            transition={{ duration: 0.40, ease: "easeInOut" }}
             style={{
-              height:        "100vh",
-              width:         "100%",
-              overflow:      "hidden",
-              display:       "flex",
-              flexDirection: "column",
-              background:    "#050505",
-              fontFamily:    "var(--app-font-sans, system-ui, sans-serif)",
+              position: "relative",
+              height:   "100vh",
+              width:    "100%",
+              overflow: "hidden",
+              background: "#030303",
             }}
           >
 
-            {/* 1. Top kinetic ticker */}
-            <TopTicker />
-
-            {/* 2. Header */}
-            <header style={{
-              display:        "flex",
-              alignItems:     "center",
-              justifyContent: "space-between",
-              padding:        "7px 22px",
-              background:     "#070709",
-              borderBottom:   "1px solid rgba(212,175,55,0.12)",
-              flexShrink:     0,
-            }}>
-
-              {/* Left — live clock */}
-              <div style={{ minWidth: 150 }}>
-                <div style={{
-                  ...SILVER,
-                  fontSize:           "19px",
-                  letterSpacing:      "0.12em",
-                  fontWeight:         200,
-                  fontVariantNumeric: "tabular-nums",
-                }}>
-                  {time}
-                </div>
-                <div style={{
-                  fontSize:      "6px",
-                  letterSpacing: "0.36em",
-                  color:         "rgba(200,180,120,0.38)",
-                  textTransform: "uppercase",
-                  marginTop:     2,
-                }}>
-                  {date}
-                </div>
-              </div>
-
-              {/* Center — AXIOM OS wordmark */}
-              <div style={{ textAlign: "center" }}>
-                <div style={{
-                  ...GOLD_LUSTER,
-                  fontSize:      "clamp(16px, 2vw, 24px)",
-                  letterSpacing: "0.60em",
-                  fontWeight:    900,
-                  textTransform: "uppercase",
-                }}>
-                  Axiom OS
-                </div>
-                <div style={{
-                  fontSize:      "6px",
-                  letterSpacing: "0.52em",
-                  textTransform: "uppercase",
-                  color:         "rgba(200,180,120,0.36)",
-                  marginTop:     3,
-                }}>
-                  Experience Engine
-                </div>
-              </div>
-
-              {/* Right — status indicators */}
-              <div style={{ minWidth: 150, display:"flex", flexDirection:"column", gap:4, alignItems:"flex-end" }}>
-                {[
-                  { label: `${CRAFT_MODULES.length} Craft Modules`, dot: "#D4AF37" },
-                  { label: "12 Curated Scenes",                     dot: "#5ab85a" },
-                  { label: "Intelligence Active",                    dot: "#D4AF37" },
-                ].map(({ label, dot }, i) => (
-                  <div key={i} style={{ display:"flex", alignItems:"center", gap:6 }}>
-                    <span style={{
-                      fontSize:      "6px",
-                      letterSpacing: "0.30em",
-                      textTransform: "uppercase",
-                      color:         "rgba(200,180,120,0.42)",
-                    }}>
-                      {label}
-                    </span>
-                    <PulseDot color={dot} />
-                  </div>
-                ))}
-              </div>
-            </header>
-
-            {/* 3. 2×2 hardware grid — seamless, gap:0 */}
-            <main style={{
+            {/* ── Full-bleed 2×2 environmental grid — no gap, no border, no card ── */}
+            <div style={{
+              position:            "absolute",
+              inset:               0,
               display:             "grid",
               gridTemplateColumns: "1fr 1fr",
               gridTemplateRows:    "1fr 1fr",
               gap:                 0,
-              flex:                "1 1 0",
-              minHeight:           0,
-              overflow:            "hidden",
-              position:            "relative",
-              // Outer titanium frame — machined perimeter
-              borderTop:   "1.5px solid",
-              borderImage: TITANIUM_BORDER,
             }}>
-
               {CRAFT_MODULES.map((mod, idx) => (
-                <CraftCard
+                <EnvironmentQuad
                   key={mod.id}
                   id={mod.id}
                   title={mod.title}
                   color={mod.color}
                   route={mod.route}
-                  position={POSITIONS[idx] ?? "tl"}
+                  position={QUAD_POSITIONS[idx] ?? "tl"}
                 />
               ))}
+            </div>
 
-              {/* AxiomCore — breathing gold orb at grid center */}
-              <AxiomCore />
+            {/* ── Global amber color grade — unifies all four environments ── */}
+            <div style={{
+              position:      "absolute",
+              inset:         0,
+              zIndex:        5,
+              pointerEvents: "none",
+              background:    "rgba(180, 120, 0, 0.07)",
+            }} />
 
-              {/* Horizontal center seam — titanium bar */}
-              <div style={{
-                position:      "absolute",
-                top:           "50%",
-                left:          0,
-                right:         0,
-                height:        1.5,
-                transform:     "translateY(-50%)",
-                background:    "linear-gradient(to right, transparent 0%, #6b5428 12%, #fff9e6 30%, #d4af37 50%, #fff9e6 70%, #6b5428 88%, transparent 100%)",
-                zIndex:        50,
-                pointerEvents: "none",
-              }} />
+            {/* ── Laser-etched center seams ── */}
+            <CenterSeams />
 
-              {/* Vertical center seam — titanium bar */}
-              <div style={{
-                position:      "absolute",
-                top:           0,
-                bottom:        0,
-                left:          "50%",
-                width:         1.5,
-                transform:     "translateX(-50%)",
-                background:    "linear-gradient(to bottom, transparent 0%, #6b5428 12%, #fff9e6 30%, #d4af37 50%, #fff9e6 70%, #6b5428 88%, transparent 100%)",
-                zIndex:        50,
-                pointerEvents: "none",
-              }} />
+            {/* ── Axiom Core — breathing gold orb at grid intersection ── */}
+            <AxiomCore />
 
-            </main>
-
-            {/* 4. Bottom kinetic ticker */}
+            {/* ── Floating HUD overlays ── */}
+            <TopTicker />
+            <HudHeader time={time} date={date} craftCount={CRAFT_MODULES.length} />
             <BottomTicker />
 
           </motion.div>

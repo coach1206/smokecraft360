@@ -1,0 +1,46 @@
+SYSTEM COMMAND: SOVEREIGN ENVIRONMENTAL CORE REBUILD
+"CRITICAL ARCHITECTURAL OVERRIDE: You are a Systems Engineer building a Luxury Hospitality Machine. Your previous 'Card/SaaS' layouts are rejected. Execute this 3D Environmental HUD reconstruction in TitanCraftDeck.tsx:
+
+1. THE DEATH OF THE CARD (Full-Bleed Canvas):
+
+Delete all rounded-xl, border, and bg-card classes.
+
+Structure: Create an edge-to-edge 2x2 grid. Every image must be width: 100%; height: 100%; object-fit: cover; object-position: top;.
+
+Environmental Blending: Apply a mask-image: radial-gradient(circle at center, black 10%, transparent 90%) to the inner-meeting corner of every quadrant.
+
+Result: The 4 scenes must bleed into each other organically. No black cross. No lines.
+
+2. SMOKECRAFT 360 DOMINANCE (Global Luster):
+
+Action: Apply a global amber-gold color-grade overlay (opacity-10) to the entire screen to unify the whiskey, smoke, and brew.
+
+Luster: On the SmokeCraft quadrant, apply filter: saturate(1.5) brightness(1.1). The gold bands and embers must pop with 'Apple Vision Pro' clarity.
+
+3. THE HUD (Heads-Up Display) LAYERING:
+
+The Tickers: Remove all background bars. The Top Telemetry and Bottom Live Feed must be bg-transparent. The text should look projected onto the smoke/glass.
+
+Typography: Use Metallic Gold Gradient for text. text-[13px], font-bold, tracking-[0.6em].
+
+Bottom Feed Content: >>> DAYONE 360 ADV /// REVENUE OPTIMIZED /// LIVE UPDATE: 25% OFF EXOTIC VAPOR ATELIER >>>.
+
+4. MACHINED 'AXIOM CORE' CENTER:
+
+The Orb: At the dead center intersection, mount a 16px glowing gold orb.
+
+Animation: Implement a 'breathing' box-shadow pulse that illuminates the surrounding environment every 3 seconds.
+
+Hardware Seams: Add 1px gold 'laser-etched' hair-lines that fade out before they hit the screen edges.
+
+5. DIVERSE HIGH-FASHION REALISM:
+
+Requirement: Use ultra-polished, diverse, high-society hospitality images.
+
+Pro proportions: Confirm object-fit: cover. No smashed heads. No distorted bodies.
+
+6. VIEWPORT PHYSICAL LOCK:
+
+Set height: 100vh; overflow: hidden;. This is a fixed terminal. Nothing scrolls vertically. All branding (DayOne 360 ADV) must be pinned and visible.
+
+If I see a rounded box or a 'card' container, the code is invalid. Build the machine. Build the environment. Build the Sovereign OS."
