@@ -24,6 +24,7 @@ import { DeviceManagerTab }          from "@/components/Dashboard/DeviceManagerT
 import { OsTab }                     from "@/components/Dashboard/OsTab";
 import { EntitlementsTab }           from "@/components/Dashboard/EntitlementsTab";
 import { SalesTiersTab }             from "@/components/Dashboard/SalesTiersTab";
+import { RevenueAttributionTab }     from "@/components/Dashboard/RevenueAttributionTab";
 import { DataIntelligenceTab }       from "@/components/Dashboard/DataIntelligenceTab";
 import { NewProductForm }            from "@/components/Dashboard/NewProductForm";
 import { ReservationsTab }           from "@/components/Dashboard/ReservationsTab";
@@ -45,7 +46,7 @@ import { useAuth }                   from "@/contexts/AuthContext";
 import { canAccessDashboard }        from "@/services/auth";
 
 type CategoryFilter = "all" | "cigar" | "alcohol";
-type DashTab = "overview" | "products" | "card-manager" | "reservations" | "conflicts" | "ip-vault" | "exports" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os" | "help" | "entitlements" | "data-intel" | "sales-tiers";
+type DashTab = "overview" | "products" | "card-manager" | "reservations" | "conflicts" | "ip-vault" | "exports" | "brands" | "campaigns" | "insights" | "intelligence" | "demand" | "verify" | "leaderboard" | "signatures" | "progress" | "loyalty" | "analytics" | "lounge-league" | "my-creations" | "devices" | "os" | "help" | "entitlements" | "data-intel" | "sales-tiers" | "revenue-attribution";
 
 const TABS: { id: DashTab; label: string; icon: React.ReactNode; superAdminOnly?: boolean }[] = [
   { id: "overview",     label: "Overview",              icon: <BarChart3 size={12} />    },
@@ -73,7 +74,8 @@ const TABS: { id: DashTab; label: string; icon: React.ReactNode; superAdminOnly?
   { id: "os",           label: "Axiom OS",              icon: <Activity size={12} />     },
   { id: "entitlements", label: "Feature Control",       icon: <ShieldCheck size={12} />, superAdminOnly: true },
   { id: "data-intel",   label: "Data Intelligence",     icon: <Brain size={12} />       },
-  { id: "sales-tiers",  label: "Sales & Licensing",     icon: <DollarSign size={12} />, superAdminOnly: true },
+  { id: "sales-tiers",        label: "Sales & Licensing",     icon: <DollarSign size={12} />, superAdminOnly: true },
+  { id: "revenue-attribution",label: "Revenue Attribution",   icon: <Activity   size={12} />, superAdminOnly: true },
 ];
 
 export default function Dashboard() {
@@ -686,6 +688,21 @@ export default function Dashboard() {
                 )}
                 {activeTab === "sales-tiers" && user?.role !== "super_admin" && (
                   <motion.div key="sales-tiers-locked"
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}
+                    style={{ padding: "40px 0", textAlign: "center", color: "rgba(245,242,237,0.35)", fontSize: 13 }}>
+                    Super admin access required.
+                  </motion.div>
+                )}
+
+                {activeTab === "revenue-attribution" && user?.role === "super_admin" && (
+                  <motion.div key="revenue-attribution"
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}>
+                    <RevenueAttributionTab />
+                  </motion.div>
+                )}
+                {activeTab === "revenue-attribution" && user?.role !== "super_admin" && (
+                  <motion.div key="revenue-attribution-locked"
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}
                     style={{ padding: "40px 0", textAlign: "center", color: "rgba(245,242,237,0.35)", fontSize: 13 }}>
                     Super admin access required.

@@ -1,0 +1,351 @@
+AXIOM OS — ENTERPRISE EXECUTION + SALES VALIDATION PROMPT
+
+ROLE:
+Senior Enterprise Systems Engineer, Revenue Infrastructure Architect, Hospitality Intelligence Integrator, Financial Systems Engineer, Multi-Tenant Orchestration Specialist, and Production Hardening Lead.
+
+MISSION:
+Audit, wire, activate, validate, and operationalize EVERY monetization, licensing, entitlement, orchestration, provisioning, behavioral, AI, hardware, and enterprise infrastructure layer inside AXIOM OS so the platform FULLY performs the commercial capabilities promised by the sales team.
+
+This is NOT:
+• a mockup pass
+• a frontend-only enhancement
+• conceptual architecture
+• placeholder infrastructure
+
+This IS:
+FULL EXECUTION MODE.
+
+The objective is:
+If the sales team sells a capability, AXIOM OS must ACTUALLY execute that capability operationally, financially, behaviorally, technically, and visually.
+
+==================================================
+GLOBAL EXECUTION RULES
+==================================================
+
+Every system inside AXIOM OS must be:
+
+• wired
+• operational
+• provisioned
+• callable
+• testable
+• auditable
+• monetizable
+• scalable
+• entitlement-controlled
+• tenant-isolated
+• revenue-trackable
+
+NO:
+• dead routes
+• placeholder telemetry
+• disconnected frontend
+• fake AI systems
+• frontend-only operational layers
+• UI without backend execution
+• backend without visible operational output
+
+==================================================
+PHASE 1 — ENTITLEMENT + PROVISIONING CORE
+==================================================
+
+FULLY WIRE:
+• EntitlementEngine
+• ProvisioningEngine
+• SubscriptionStateEngine
+• TenantCapabilityMap
+• DynamicEnvironmentProvisioner
+• LicenseAuthorityService
+
+VALIDATE:
+• subscriptions activate features automatically
+• downgrades revoke features automatically
+• à la carte modules provision instantly
+• hidden features remain inaccessible
+• enterprise licenses dynamically expand capability access
+• white-label deployments provision correctly
+
+REQUIREMENT:
+Every feature must respond dynamically to:
+• subscription tier
+• purchased modules
+• enterprise contracts
+• hardware assignments
+• AI usage permissions
+• tenant authority
+
+==================================================
+PHASE 2 — REVENUE ATTRIBUTION ENGINE
+==================================================
+
+FULLY WIRE:
+• RevenueAttributionEngine
+• InfluenceTrackingService
+• ExperienceConversionTracker
+• BehavioralRevenueMapper
+• PremiumEngagementAnalyzer
+
+TRACK:
+• AI-generated pairings
+• recommendation conversions
+• VIP upgrades
+• event upgrades
+• reservations
+• reward-to-purchase flow
+• atmosphere influence
+• mentor influence
+• premium upsells
+• loyalty activations
+
+VALIDATE:
+The platform can PROVE:
+which interactions influenced revenue.
+
+==================================================
+PHASE 3 — BILLING + ACCOUNTING INFRASTRUCTURE
+==================================================
+
+FULLY WIRE:
+• Stripe subscriptions
+• recurring billing
+• annual contracts
+• invoice generation
+• tax calculations
+• failed payment recovery
+• hardware lease billing
+• AI metering
+• usage billing
+• payout systems
+• commission systems
+• enterprise contracts
+• revenue reconciliation
+
+VALIDATE:
+• upgrades bill correctly
+• downgrades prorate correctly
+• invoices generate correctly
+• hardware billing executes correctly
+• AI metering tracks correctly
+• revenue shares calculate correctly
+
+==================================================
+PHASE 4 — TRUE MULTI-TENANT ISOLATION
+==================================================
+
+VALIDATE:
+• tenant isolation
+• Venue DNA separation
+• AI memory partitioning
+• telemetry isolation
+• analytics isolation
+• operational data isolation
+• white-label isolation
+• enterprise hierarchy isolation
+
+CRITICAL RULE:
+NO cross-tenant contamination.
+
+==================================================
+PHASE 5 — ENTERPRISE ORCHESTRATION
+==================================================
+
+FULLY WIRE:
+• franchise hierarchy
+• regional operator control
+• enterprise dashboards
+• Founder Intelligence
+• cross-venue orchestration
+• enterprise role authority
+• regional telemetry
+• enterprise analytics
+
+VALIDATE:
+Organizations can:
+• manage multiple venues
+• synchronize environments
+• analyze cross-location intelligence
+• orchestrate enterprise operations centrally
+
+==================================================
+PHASE 6 — HARDWARE LEASING + DEVICE OPS
+==================================================
+
+FULLY WIRE:
+• HardwareInventoryEngine
+• DeviceRegistry
+• LeaseManagementSystem
+• deployment tracking
+• maintenance scheduling
+• replacement workflows
+• warranty tracking
+• hardware telemetry
+
+VALIDATE:
+• devices assign correctly
+• leases calculate correctly
+• deployments track accurately
+• hardware billing executes properly
+
+==================================================
+PHASE 7 — AI ECONOMICS + METERING
+==================================================
+
+FULLY WIRE:
+• token accounting
+• AI quota management
+• profitability tracking
+• AI throttling
+• OpenAI cost tracking
+• enterprise AI controls
+
+VALIDATE:
+• AI usage bills accurately
+• overages enforce correctly
+• quotas function properly
+• AI profitability remains visible
+
+==================================================
+PHASE 8 — MARKETPLACE + MODULE SYSTEM
+==================================================
+
+FULLY WIRE:
+• plugin runtime
+• module subscriptions
+• marketplace purchases
+• revenue splits
+• partner payouts
+• entitlement synchronization
+• sandbox execution
+
+VALIDATE:
+• modules activate instantly
+• recurring billing functions
+• partner payouts calculate correctly
+• tenant isolation remains secure
+
+==================================================
+PHASE 9 — SUPER ADMIN + FOUNDER CONTROL CENTER
+==================================================
+
+FULLY WIRE:
+• pricing controls
+• manual overrides
+• subscription controls
+• enterprise provisioning
+• module activation
+• AI controls
+• revenue forecasting
+• ecosystem monitoring
+• operational telemetry
+
+FOUNDERS MUST BE ABLE TO:
+• raise/lower pricing
+• activate/deactivate packages
+• provision enterprise contracts
+• manage white-label deployments
+• monitor ecosystem health live
+• view revenue intelligence globally
+
+INTERFACE STYLE:
+• cinematic operational intelligence
+• liquid-glass UI
+• spatial telemetry
+• no spreadsheets
+• no flat dashboards
+
+==================================================
+PHASE 10 — SALES VALIDATION MODE
+==================================================
+
+CREATE:
+SALES VALIDATION CHECKLIST SYSTEM
+
+Every monetizable capability must display:
+• entitlement status
+• provisioning status
+• operational status
+• billing status
+• telemetry status
+• AI status
+• revenue tracking status
+
+RULE:
+If sales can sell it,
+AXIOM OS must operationally execute it.
+
+==================================================
+PHASE 11 — EXPERIENCE SYSTEM VALIDATION
+==================================================
+
+FULLY VALIDATE:
+• SmokeCraft 360
+• PourCraft 360
+• BrewCraft 360
+• VapeCraft 360
+• CoreCraft 360
+
+CONFIRM:
+• onboarding works
+• mentor AI works
+• gamification works
+• predictive recommendations work
+• environmental adaptation works
+• reward systems work
+• handoff systems work
+• return handoff resumes correctly
+• customer sessions persist correctly
+• telemetry updates live
+
+==================================================
+PHASE 12 — HARDENING + INFRASTRUCTURE STABILITY
+==================================================
+
+VALIDATE:
+• no dead routes
+• no broken APIs
+• no fake telemetry
+• no disconnected systems
+• no orphan monetization paths
+• no UI-only infrastructure
+
+AXIOM OS must behave:
+like enterprise infrastructure,
+NOT a prototype.
+
+==================================================
+FINAL EXECUTION DIRECTIVE
+==================================================
+
+AXIOM OS must now operate as:
+a fully executable hospitality intelligence infrastructure platform.
+
+Every promise made by:
+• sales
+• licensing
+• white-label agreements
+• enterprise contracts
+• franchise deployments
+
+must be:
+• operational
+• measurable
+• monetizable
+• auditable
+• scalable
+• automatically provisioned
+
+FINAL RULE:
+If AXIOM OS claims intelligence,
+it must produce intelligence.
+
+If AXIOM OS claims monetization,
+it must generate measurable monetization infrastructure.
+
+If AXIOM OS claims orchestration,
+it must operationally orchestrate.
+
+NO conceptual systems.
+NO fake infrastructure.
+NO simulation-only monetization.
+
+EXECUTE FULL INFRASTRUCTURE ACTIVATION NOW.
