@@ -1,0 +1,302 @@
+MASTER EXPERIENCE OVERRIDE PROMPT
+
+Completely override and rebuild the ENTIRE visual and emotional experience layer of the SmokeCraft / AXIOM OS platform.
+
+The platform must NO LONGER feel like a website, admin dashboard, POS app, or SaaS product.
+
+It must feel like a living luxury hospitality operating system embedded inside a high-end jazz lounge, cigar club, whiskey vault, and private members environment.
+
+The interface should feel like:
+• obsidian glass architecture
+• smoked crystal surfaces
+• dark walnut interiors
+• brushed black titanium
+• warm brass reflections
+• velvet shadows
+• cinematic lounge lighting
+• atmospheric intelligence
+
+The system should emotionally feel:
+• calm
+• intelligent
+• emotionally aware
+• expensive
+• immersive
+• restrained
+• tactile
+• cinematic
+• culturally elevated
+
+NOT flashy.
+NOT loud.
+NOT overdesigned.
+
+The user should feel:
+“I’m inside a luxury environment.”
+NOT:
+“I’m using software.”
+
+GLOBAL VISUAL SYSTEM
+
+Implement a SINGLE unified visual language across ALL pages, routes, overlays, tables, dashboards, modals, kiosks, POS screens, analytics, onboarding flows, and customer experiences.
+
+Everything must obey the same:
+• spacing system
+• typography hierarchy
+• lighting philosophy
+• shadow behavior
+• material behavior
+• animation system
+• atmosphere layer
+• emotional pacing
+
+NO screen may visually feel disconnected from another.
+
+The entire platform must feel like ONE world.
+
+MATERIAL SYSTEM
+
+Globally replace all flat web-app visuals with cinematic material realism.
+
+ALL surfaces should resemble:
+• smoked obsidian glass
+• matte black titanium
+• dark walnut wood
+• warm brass accents
+• crystal reflections
+• soft atmospheric haze
+• luxury leather texture
+• low-light lounge architecture
+
+Panels must feel:
+• layered
+• thick
+• tactile
+• physically manufactured
+
+Use:
+• deep backdrop blur
+• layered transparency
+• subtle reflections
+• cinematic shadows
+• edge illumination
+• soft gradient lighting
+• atmospheric depth
+
+Remove all flat rectangles and generic cards.
+
+COLOR SYSTEM
+
+Globally enforce this palette:
+
+Primary:
+• Obsidian Black #050505
+• Deep Charcoal #121212
+• Walnut Brown #2A1F17
+
+Secondary:
+• Smoke Gray #4B4B4B
+• Jazz Navy #0D1A24
+
+Accents:
+• Whiskey Amber #C88733
+• Muted Brass #8A6A3A
+• Warm Cream #E8DCC8
+
+Gold must ONLY be used sparingly as an accent.
+
+NO neon colors.
+NO RGB lighting.
+NO cyberpunk visuals.
+NO oversaturated gradients.
+
+LIGHTING SYSTEM
+
+Create a cinematic lighting engine across the platform.
+
+The interface should resemble:
+• candlelight reflections
+• whiskey glow
+• ember warmth
+• dim jazz club lighting
+• luxury ambient architecture
+
+Lighting must:
+• glow softly
+• fade naturally
+• never overpower content
+• create atmosphere instead of effects
+
+Implement:
+• soft edge glows
+• ambient shadow layering
+• subtle reflection passes
+• warm depth gradients
+• cinematic vignette control
+
+NO harsh highlights.
+NO sharp contrast overload.
+
+TYPOGRAPHY SYSTEM
+
+Completely redesign typography hierarchy.
+
+Typography should feel:
+• editorial
+• premium
+• cinematic
+• spacious
+• emotionally calm
+
+Use:
+• oversized headings
+• breathing room
+• elegant spacing
+• reduced text density
+• strong visual hierarchy
+
+The UI should resemble:
+a luxury magazine mixed with a private lounge control system.
+
+Remove:
+• tiny crowded labels
+• dashboard text overload
+• excessive metrics density
+
+MOTION SYSTEM
+
+Globally override ALL animations.
+
+Movement must feel:
+• like smoke
+• like jazz
+• like liquid
+• like breathing
+• like candlelight
+
+Use:
+• slow fades
+• atmospheric dissolves
+• soft glides
+• frictionless transitions
+• ambient pulsing
+
+Remove:
+• bounce animations
+• aggressive scaling
+• snapping transitions
+• jitter movement
+• gamer-style effects
+
+Animation timing should feel:
+expensive and emotionally controlled.
+
+AMBIENT ATMOSPHERE ENGINE
+
+Add a subtle global atmosphere layer.
+
+Implement:
+• slow drifting smoke textures
+• soft cinematic grain
+• low-opacity moving reflections
+• ambient depth haze
+• subtle glass shimmer
+• warm shadow movement
+• low-motion environmental life
+
+These effects must be:
+extremely subtle,
+almost subconscious.
+
+The environment should feel:
+alive without distracting the user.
+
+EXPERIENCE FLOW
+
+Every user journey must feel emotionally connected.
+
+From:
+• login
+• onboarding
+• recommendations
+• pairings
+• POS
+• analytics
+• reservations
+• VIP
+• checkout
+
+everything must emotionally feel like:
+the same luxury world.
+
+No screen should break immersion.
+
+CUSTOMER EXPERIENCE MODE
+
+Guest-facing interfaces should feel:
+• magical
+• elegant
+• effortless
+• emotionally intelligent
+• premium
+• intimate
+
+NOT:
+technical,
+corporate,
+or transactional.
+
+The system should feel like:
+a private concierge mixed with a cinematic lounge environment.
+
+STAFF EXPERIENCE MODE
+
+Staff UI should feel:
+• fast
+• clean
+• intelligent
+• low-stress
+• elite
+• operationally powerful
+
+Like:
+a luxury vehicle cockpit.
+
+NOT:
+a cluttered POS system.
+
+EXPERIENCE GOVERNANCE SYSTEM
+
+Before rendering ANY screen or component, enforce these rules:
+
+REJECT if it feels:
+• generic
+• loud
+• cluttered
+• flashy
+• SaaS-like
+• nightclub-like
+• gamer-like
+• cheap
+• overly tech-focused
+
+ONLY approve if it feels:
+• emotionally immersive
+• architecturally luxurious
+• materially believable
+• calm
+• cinematic
+• premium
+• atmospheric
+• emotionally intelligent
+
+FINAL EXPERIENCE TARGET
+
+The final system should feel like:
+
+“Apple designed a behavioral hospitality OS for luxury jazz lounges, cigar clubs, whiskey vaults, and prestige nightlife environments.”
+
+Users should leave saying:
+
+“I don’t know how to explain it…
+that place just feels incredible.”
