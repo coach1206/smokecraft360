@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster }         from "@/components/ui/toaster";
@@ -110,8 +110,28 @@ import ServiceSagePage               from "@/pages/ServiceSagePage";
 import EstablishmentSetupPage        from "@/pages/EstablishmentSetupPage";
 import PromoDashboard                from "@/pages/PromoDashboard";
 import { StaffBOHFeed }              from "@/components/StaffBOHFeed";
+import AxiomStartup    from "@/pages/AxiomStartup";
+import CraftOrbSelector from "@/pages/CraftOrbSelector";
 
 const queryClient = new QueryClient();
+
+// ── One-time cinematic boot sequence ─────────────────────────────────────────
+// Renders as a fixed overlay above the entire app on first session visit.
+
+function AxiomBootManager() {
+  const [show, setShow] = useState(() => {
+    try { return !sessionStorage.getItem("axiom_booted"); } catch { return false; }
+  });
+  if (!show) return null;
+  return (
+    <AxiomStartup
+      onComplete={() => {
+        try { sessionStorage.setItem("axiom_booted", "1"); } catch { /* */ }
+        setShow(false);
+      }}
+    />
+  );
+}
 
 function Router() {
   return (
@@ -167,6 +187,7 @@ function Router() {
       <Route path="/executive-war-room"        component={ExecutiveWarRoom}        />
       <Route path="/manufacturer-war-room"     component={ManufacturerWarRoom}     />
       <Route path="/investor-simulator"        component={InvestorSimulator}       />
+      <Route path="/craft-selector" component={CraftOrbSelector} />
       {/* Legacy craft routes — redirect into the Universal Swipe Engine */}
       <Route path="/brewcraft"       component={() => { window.location.replace("/experience/brew"); return null; }} />
       <Route path="/pourcraft"       component={() => { window.location.replace("/experience/pour"); return null; }} />
@@ -257,6 +278,7 @@ function App() {
                         <GlobalBackButton />
                         <InactivityGuard />
                         <Router />
+                        <AxiomBootManager />
                       </LoungeEnvironment>
                     </WouterRouter>
                     <StaffBOHFeed />

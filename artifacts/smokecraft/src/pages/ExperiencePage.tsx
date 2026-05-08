@@ -27,6 +27,7 @@ import InsightBubble from "@/components/InsightBubble";
 import MasteryScoreHUD from "@/components/MasteryScoreHUD";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { generateMentorLine, generateWhyThisWorks } from "@/lib/mentorIntelligence";
+import { CraftCinematicOpening } from "@/components/CraftCinematicOpening";
 
 // ── Ambient particles — same visual language as CraftHub ──────────────────────
 
@@ -537,6 +538,20 @@ export default function ExperiencePage() {
   const [sessionScore, setSessionScore] = useState(0);
   const [conflictFlash, setConflictFlash] = useState<{ penalty: number } | null>(null);
   const conflictTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [xpFlash,    setXpFlash]    = useState<{ amount: number; positive: boolean } | null>(null);
+  const xpFlashTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  // Cinematic opening — shows once per craft per session (sessionStorage flag)
+  const [showCinematic, setShowCinematic] = useState(() => {
+    try {
+      const key = `axiom_cinematic_${type}`;
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, "1");
+        return true;
+      }
+      return false;
+    } catch { return false; }
+  });
   const [commentary,  setCommentary]  = useState<{ line: string; whyNote: string | null } | null>(null);
   const commentaryTimer               = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -631,6 +646,12 @@ export default function ExperiencePage() {
 
         setSessionScore(prev => Math.min(100, Math.max(0, prev + baseGain - penalty + bonus)));
 
+        // XP flash overlay — adaptive difficulty feedback
+        const netXp = baseGain + bonus - penalty;
+        if (xpFlashTimer.current !== undefined) clearTimeout(xpFlashTimer.current);
+        setXpFlash({ amount: Math.abs(netXp), positive: netXp >= 0 });
+        xpFlashTimer.current = setTimeout(() => setXpFlash(null), 1600);
+
         if (hasConflict && penalty > 0) {
           setConflictFlash({ penalty });
           if (conflictTimer.current !== undefined) clearTimeout(conflictTimer.current);
@@ -705,6 +726,14 @@ export default function ExperiencePage() {
 
   return (
     <>
+    {/* ── Cinematic craft opening — first visit per craft per session ── */}
+    {showCinematic && (
+      <CraftCinematicOpening
+        type={type}
+        onComplete={() => setShowCinematic(false)}
+      />
+    )}
+
     <SessionReturnBanner
       visible={returnBanner}
       craftType={type}
@@ -908,6 +937,49 @@ export default function ExperiencePage() {
             whyNote={commentary.whyNote}
             accentColor={theme.accent}
           />
+        )}
+      </AnimatePresence>
+
+      {/* XP gain / penalty flash — adaptive difficulty feedback */}
+      <AnimatePresence>
+        {xpFlash && (
+          <motion.div
+            key={`xp-${xpFlash.amount}-${xpFlash.positive}`}
+            initial={{ opacity: 0, y: 12, scale: 0.85 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.92 }}
+            transition={{ type: "spring", stiffness: 420, damping: 28 }}
+            style={{
+              position:   "fixed",
+              top:        44,
+              right:      20,
+              zIndex:     80,
+              display:    "flex",
+              alignItems: "center",
+              gap:        6,
+              background: xpFlash.positive
+                ? "rgba(212,139,0,0.14)"
+                : "rgba(239,68,68,0.10)",
+              border: `1px solid ${xpFlash.positive ? "rgba(212,139,0,0.45)" : "rgba(239,68,68,0.35)"}`,
+              borderRadius: 10,
+              padding:    "7px 14px",
+              backdropFilter: "blur(14px)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <motion.span
+              animate={{ opacity: [1, 0.5, 1] }}
+              transition={{ duration: 0.5, repeat: 2 }}
+              style={{
+                fontSize:   13,
+                fontWeight: 900,
+                color:      xpFlash.positive ? "#D48B00" : "#ef4444",
+                letterSpacing: "0.05em",
+              }}
+            >
+              {xpFlash.positive ? `+${xpFlash.amount} XP` : `−${xpFlash.amount} XP`}
+            </motion.span>
+          </motion.div>
         )}
       </AnimatePresence>
 
