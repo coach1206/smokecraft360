@@ -11,7 +11,7 @@
  *         live Environment Pulse widget from IoT API.
  */
 
-import { useEffect, useState }     from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation }             from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { CRAFT_MODULES }           from "@/data/craftScenes";
@@ -293,6 +293,7 @@ export default function TitanCraftDeck() {
   const [mounted, setMounted]  = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [view, setView]        = useState<View>("grid");
+  const carouselRef            = useRef<HTMLElement | null>(null);
   const [xp, setXp]            = useState(0);
   const [build, setBuild]      = useState<{ leaf: LeafKey; cut: CutKey }>({
     leaf: "maduro",
@@ -318,6 +319,15 @@ export default function TitanCraftDeck() {
     const iv = setInterval(() => setActiveIndex(i => (i + 1) % CRAFT_MODULES.length), 6_000);
     return () => clearInterval(iv);
   }, [view]);
+
+  // Scroll carousel to active card whenever activeIndex changes
+  useEffect(() => {
+    const el = carouselRef.current;
+    if (!el) return;
+    const card = el.children[activeIndex] as HTMLElement | undefined;
+    if (!card) return;
+    card.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [activeIndex]);
 
   const level   = getCurrentLevel(xp);
   const pct     = xpProgressPct(xp);
@@ -417,6 +427,7 @@ export default function TitanCraftDeck() {
             {view === "grid" ? (
               <motion.main
                 key="grid"
+                ref={carouselRef}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -436,7 +447,7 @@ export default function TitanCraftDeck() {
                     key={mod.id}
                     style={{
                       flexShrink: 0,
-                      width: "clamp(560px, 72vw, 860px)",
+                      width: "clamp(300px, 38vw, 520px)",
                       height: "100%",
                       scrollSnapAlign: "center",
                     }}
