@@ -1,0 +1,268 @@
+FINAL — SMOKECRAFT CINEMATIC ENVIRONMENT REBUILD PROMPT
+MISSING / REQUIRED
+The current frontend still emotionally behaves like:
+• a redesigned SaaS dashboard
+• a polished admin app
+• component-based web software
+• luxury-themed UI instead of a luxury environment
+Even after token upgrades, the platform still contains:
+• visible “dashboard energy”
+• obvious card-grid architecture
+• route/page feeling
+• generic frontend composition
+• disconnected emotional flow
+• app-like navigation behavior
+• visible UI structure instead of atmospheric immersion
+• functional layouts instead of cinematic scene composition
+This rebuild must OVERRIDE that completely.
+This is NOT a styling update.
+This is a FULL FRONTEND EXPERIENCE TRANSFORMATION.
+
+FAILURE PREVENTION CHECKLIST
+The rebuild MUST NOT feel like:
+• SaaS software
+• a POS terminal
+• an admin dashboard
+• a web application
+• a crypto UI
+• nightclub tech
+• gaming UI
+• generic “luxury dark mode”
+• component libraries stacked together
+REJECT anything that:
+• feels flat
+• feels corporate
+• feels overly technical
+• feels cluttered
+• feels overly animated
+• feels visually loud
+• exposes too much interface structure
+• reveals obvious “cards and sections”
+• behaves like a productivity app
+ONLY approve designs that feel:
+• cinematic
+• atmospheric
+• emotionally immersive
+• physically believable
+• architecturally luxurious
+• calm
+• restrained
+• tactile
+• environmental
+• emotionally intelligent
+
+MASTER REBUILD DIRECTIVE
+Completely rebuild the ENTIRE SmokeCraft / AXIOM OS frontend experience as a CINEMATIC ENVIRONMENT SYSTEM instead of a traditional web application.
+The platform must no longer feel like navigating pages and dashboards.
+The platform must feel like moving through interconnected luxury environments inside a high-end jazz lounge, whiskey vault, cigar club, and private members atmosphere.
+The interface should emotionally resemble:
+• Aman Hotel atmosphere
+• Tokyo jazz lounge intimacy
+• Rolls Royce interior design
+• Apple-level restraint
+• Leica luxury minimalism
+• cinematic hospitality architecture
+• emotional environmental storytelling
+The technology itself should disappear behind the atmosphere.
+The user should feel:
+“I am inside a living luxury environment.”
+NOT:
+“I am using software.”
+
+GLOBAL ENVIRONMENT WRAPPER
+Build a MASTER ENVIRONMENT ENGINE that globally controls ALL pages, routes, modals, overlays, dashboards, onboarding flows, POS interfaces, staff systems, analytics, VIP experiences, and guest interactions.
+This wrapper must globally control:
+• atmosphere
+• cinematic depth
+• ambient lighting
+• environmental reflections
+• smoke movement
+• material realism
+• motion pacing
+• emotional continuity
+• sensory layering
+• scene transitions
+Every route must feel like:
+another room inside the same venue.
+NOT:
+another webpage.
+
+REMOVE ALL DASHBOARD ENERGY
+Completely eliminate:
+• obvious admin layouts
+• flat section grids
+• visible dashboard structures
+• generic widget layouts
+• component-library appearance
+• obvious card systems
+• traditional web-app spacing
+• visible SaaS behavior
+Replace with:
+• cinematic scene composition
+• environmental layering
+• immersive focal zones
+• architectural layout behavior
+• spatial storytelling
+• atmospheric transitions
+• emotional pacing
+The interface should feel:
+walkable and cinematic.
+
+ENVIRONMENTAL SURFACE SYSTEM
+Replace all visible “cards” and generic panels with architectural surfaces.
+Every surface should feel:
+• carved into the environment
+• physically manufactured
+• layered behind glass
+• materially believable
+• emotionally heavy
+• luxury-grade
+Materials must resemble:
+• smoked obsidian glass
+• dark walnut
+• matte black titanium
+• brushed brass
+• crystal reflections
+• velvet shadow depth
+• whiskey-toned ambient lighting
+Use:
+• layered backdrop blur
+• cinematic shadow depth
+• subtle edge reflections
+• low-opacity ambient lighting
+• physical depth separation
+• atmospheric haze
+NO flat web-app rectangles.
+
+SCENE-BASED EXPERIENCE DESIGN
+The application must behave like a sequence of emotional cinematic scenes.
+Each major area should have its own emotional atmosphere while remaining part of the same unified world.
+Examples:
+Jazz Experience
+• deep noir blue
+• soft trumpet ambience
+• cinematic shadows
+• slow movement
+• emotional intimacy
+Whiskey Vault
+• warm amber glow
+• liquid reflections
+• heavy atmospheric depth
+• dark walnut textures
+VIP Environment
+• minimal obsidian luxury
+• restrained prestige
+• low visual noise
+• emotionally quiet confidence
+Admin Command Center
+• matte black operational calm
+• cinematic control-room feel
+• focused hierarchy
+• hidden complexity
+• premium restraint
+
+MOTION ENGINE REBUILD
+Completely replace all current UI animations with ENVIRONMENTAL MOTION.
+Motion should resemble:
+• drifting smoke
+• liquid movement
+• jazz pacing
+• breathing architecture
+• cinematic dissolves
+• candlelight transitions
+Use:
+• soft fades
+• ambient movement
+• low-speed transitions
+• layered parallax depth
+• atmospheric gliding
+• slow focus shifts
+Remove:
+• bounce animations
+• aggressive scaling
+• snapping interactions
+• gamer-style movement
+• hyperactive UI behavior
+Movement should feel:
+calm,
+expensive,
+and emotionally intelligent.
+
+SPATIAL RHYTHM REBUILD
+Redesign ALL spacing and layout structure using cinematic architectural pacing.
+Implement:
+• oversized breathing room
+• asymmetrical composition
+• focal-point hierarchy
+• negative space
+• immersive framing
+• environmental depth zones
+Luxury should feel:
+spacious,
+not dense.
+The interface should feel:
+like entering rooms,
+not viewing dashboards.
+
+INFORMATION DENSITY CONTROL
+Reduce visible interface noise globally.
+Remove:
+• excessive labels
+• unnecessary buttons
+• dashboard overload
+• visible complexity
+• repetitive UI elements
+• overly dense analytics
+Implement:
+• progressive reveal
+• emotional hierarchy
+• focused storytelling
+• simplified interaction surfaces
+• calm information pacing
+The system should feel:
+emotionally effortless.
+
+AMBIENT ATMOSPHERE LAYER
+Add subtle environmental life across the ENTIRE application.
+Implement:
+• drifting smoke layers
+• cinematic grain
+• ambient haze
+• soft reflection movement
+• ember glow behavior
+• low-opacity light breathing
+• atmospheric depth shifting
+Effects must remain:
+subtle,
+luxurious,
+and subconscious.
+The atmosphere should feel:
+alive without distraction.
+
+NAVIGATION REBUILD
+Reduce visible navigation structure.
+Navigation should feel:
+invisible,
+cinematic,
+and environmental.
+Replace:
+• obvious app navigation
+• SaaS tab systems
+• rigid dashboard routing
+With:
+• immersive scene transitions
+• emotionally guided flow
+• environmental movement between states
+The user should feel:
+guided through an experience,
+not navigating software.
+
+FINAL EXPERIENCE TARGET
+The final SmokeCraft / AXIOM OS frontend should feel like:
+“A living luxury behavioral environment where cinematic atmosphere, emotional pacing, jazz culture, whiskey ritual, cigar craftsmanship, and invisible AI intelligence merge into one immersive hospitality operating system.”
+The user should leave feeling:
+emotionally transformed,
+not technologically impressed.
+The final emotional reaction should be:
+“I don’t know how they built this…
+but this place feels unforgettable.”
