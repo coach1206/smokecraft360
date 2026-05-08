@@ -110,8 +110,9 @@ import ServiceSagePage               from "@/pages/ServiceSagePage";
 import EstablishmentSetupPage        from "@/pages/EstablishmentSetupPage";
 import PromoDashboard                from "@/pages/PromoDashboard";
 import { StaffBOHFeed }              from "@/components/StaffBOHFeed";
-import AxiomStartup    from "@/pages/AxiomStartup";
-import CraftOrbSelector from "@/pages/CraftOrbSelector";
+import AxiomStartup       from "@/pages/AxiomStartup";
+import CraftOrbSelector    from "@/pages/CraftOrbSelector";
+import StaffFloorCockpit   from "@/pages/StaffFloorCockpit";
 
 const queryClient = new QueryClient();
 
@@ -222,6 +223,7 @@ function Router() {
       <Route path="/training/staff"           component={StaffTraining}       />
       <Route path="/identity-ledger"          component={IdentityLedger}      />
       <Route path="/staff/sage"               component={ServiceSagePage}     />
+      <Route path="/staff/floor"              component={StaffFloorCockpit}   />
       <Route path="/venue-setup"              component={EstablishmentSetupPage} />
       {/* Dynamic per-theme entry URL (/smokecraft, /pourcraft, /grillcraft …).
           Declared LAST in the Switch so explicit app routes above always win;

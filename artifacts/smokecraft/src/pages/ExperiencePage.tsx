@@ -28,6 +28,11 @@ import MasteryScoreHUD from "@/components/MasteryScoreHUD";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { generateMentorLine, generateWhyThisWorks } from "@/lib/mentorIntelligence";
 import { CraftCinematicOpening } from "@/components/CraftCinematicOpening";
+import MentorChatBubble from "@/components/MentorChatBubble";
+import AchievementUnlock, { type Achievement } from "@/components/AchievementUnlock";
+import ProgressionHUD from "@/components/ProgressionHUD";
+import AssistedDiscoveryOverlay from "@/components/AssistedDiscoveryOverlay";
+import ChallengeModal, { type ChallengeQuestion } from "@/components/ChallengeModal";
 
 // ── Ambient particles — same visual language as CraftHub ──────────────────────
 
@@ -555,6 +560,35 @@ export default function ExperiencePage() {
   const [commentary,  setCommentary]  = useState<{ line: string; whyNote: string | null } | null>(null);
   const commentaryTimer               = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
+  // ── AI Mentor + Progression + Challenge state ────────────────────────────
+  const [mentorTrigger,      setMentorTrigger]      = useState(0);
+  const [mentorSwipeAction,  setMentorSwipeAction]  = useState<"add" | "skip" | null>(null);
+  const [mentorItemName,     setMentorItemName]     = useState<string | null>(null);
+  const [pendingAchievement, setPendingAchievement] = useState<Achievement | null>(null);
+  const [localXp,            setLocalXp]            = useState(0);
+  const [activeChallenge,    setActiveChallenge]    = useState<ChallengeQuestion | null>(null);
+  const addSwipeRef = useRef(0);
+
+  async function triggerChallenge() {
+    if (!guestProfile) return;
+    try {
+      const res = await fetch("/api/mentor/generate-challenge", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({
+          craftType:      type,
+          guestLevel:     guestProfile.masteryTier ?? "explorer",
+          recentTags:     addedTags.slice(-8),
+          guestProfileId: guestProfile.id,
+          sessionId,
+        }),
+      });
+      if (!res.ok) return;
+      const data = await res.json() as ChallengeQuestion;
+      setActiveChallenge(data);
+    } catch { /* non-fatal */ }
+  }
+
   // Signal craft type to environment engine on mount; reset orchestrator session
   useEffect(() => {
     if (!envCtx) return;
@@ -651,6 +685,37 @@ export default function ExperiencePage() {
         if (xpFlashTimer.current !== undefined) clearTimeout(xpFlashTimer.current);
         setXpFlash({ amount: Math.abs(netXp), positive: netXp >= 0 });
         xpFlashTimer.current = setTimeout(() => setXpFlash(null), 1600);
+
+        // ── AI Mentor streaming response ────────────────────────────────────
+        setMentorSwipeAction("add");
+        setMentorItemName((card as { title?: string }).title ?? null);
+        setMentorTrigger(prev => prev + 1);
+
+        // ── Persist XP to server + check achievements ───────────────────────
+        if (guestProfile?.id) {
+          setLocalXp(prev => prev + netXp);
+          fetch("/api/xp/award", {
+            method:  "POST",
+            headers: { "Content-Type": "application/json" },
+            body:    JSON.stringify({
+              guestProfileId: guestProfile.id,
+              craftType:      type,
+              amount:         netXp,
+              reason:         netXp >= 0 ? "swipe_add" : "swipe_conflict",
+              metadata:       { tags: card.tags },
+            }),
+          }).then(async r => {
+            if (!r.ok) return;
+            const data = await r.json() as { newAchievements?: Achievement[] };
+            if (data.newAchievements?.length) setPendingAchievement(data.newAchievements[0]!);
+          }).catch(() => {});
+        }
+
+        // ── Challenge engine — every 5 ADD swipes ───────────────────────────
+        addSwipeRef.current += 1;
+        if (addSwipeRef.current % 5 === 0) {
+          setTimeout(() => { void triggerChallenge(); }, 900);
+        }
 
         if (hasConflict && penalty > 0) {
           setConflictFlash({ penalty });
@@ -928,9 +993,20 @@ export default function ExperiencePage() {
         </div>{/* /fixed-size inner box */}
       </div>
 
-      {/* Mentor Insight Bubble — cinematic floating card on each ADD swipe */}
+      {/* AI Mentor Chat — streaming OpenAI response after each ADD swipe */}
+      <MentorChatBubble
+        mentorId={mentor?.id ?? "traditionalist"}
+        craftType={type as "smoke" | "pour" | "brew" | "vape"}
+        recentTags={addedTags.slice(-8)}
+        guestLevel={guestProfile?.masteryTier ?? "explorer"}
+        swipeAction={mentorSwipeAction}
+        itemName={mentorItemName}
+        trigger={mentorTrigger}
+      />
+
+      {/* Fallback static insight for when no mentor AI (skip swipes / whyNote) */}
       <AnimatePresence>
-        {commentary && mentor && (
+        {commentary?.whyNote && mentor && mentorTrigger === 0 && (
           <InsightBubble
             mentor={mentor}
             line={commentary.line}
@@ -1120,6 +1196,42 @@ export default function ExperiencePage() {
         guestName={guestProfile.firstName}
       />
     )}
+
+    {/* Progression HUD — persistent XP bar + tier at top */}
+    {guestProfile && !showChamber && (
+      <ProgressionHUD
+        guestProfileId={guestProfile.id}
+        craftType={type as "smoke" | "pour" | "brew" | "vape"}
+        localXp={localXp}
+        onAchievement={setPendingAchievement}
+      />
+    )}
+
+    {/* Achievement unlock — cinematic badge overlay */}
+    <AchievementUnlock
+      achievement={pendingAchievement}
+      onDismiss={() => setPendingAchievement(null)}
+    />
+
+    {/* Assisted discovery — staff handoff smoked glass overlay */}
+    <AssistedDiscoveryOverlay
+      guestProfileId={guestProfile?.id ?? null}
+      craftType={type as "smoke" | "pour" | "brew" | "vape"}
+    />
+
+    {/* AI Challenge modal — fires every 5 ADD swipes */}
+    <ChallengeModal
+      challenge={activeChallenge}
+      craftType={type as "smoke" | "pour" | "brew" | "vape"}
+      guestLevel={guestProfile?.masteryTier ?? "explorer"}
+      onAnswer={(wasCorrect, xp) => {
+        setLocalXp(prev => prev + xp);
+        if (xpFlashTimer.current !== undefined) clearTimeout(xpFlashTimer.current);
+        setXpFlash({ amount: Math.abs(xp), positive: xp > 0 });
+        xpFlashTimer.current = setTimeout(() => setXpFlash(null), 1600);
+      }}
+      onDismiss={() => setActiveChallenge(null)}
+    />
 
     {/* ── Atmosphere overlay — shown after chamber / on return, before first swipe ── */}
     <AnimatePresence>
