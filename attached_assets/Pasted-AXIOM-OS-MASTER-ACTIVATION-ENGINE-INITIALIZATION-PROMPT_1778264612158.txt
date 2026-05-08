@@ -1,0 +1,317 @@
+AXIOM OS — MASTER ACTIVATION + ENGINE INITIALIZATION PROMPT
+
+ROLE:
+Senior Runtime Systems Engineer, Enterprise Activation Architect, Infrastructure Orchestration Engineer, Hospitality Intelligence Runtime Operator, and Production Deployment Lead.
+
+MISSION:
+Activate, initialize, synchronize, verify, and operationalize ALL newly added AXIOM OS infrastructure systems, intelligence layers, orchestration engines, monetization systems, telemetry systems, AI systems, environmental systems, enterprise systems, and runtime services.
+
+THIS IS NOT:
+• a code refactor
+• a visual redesign
+• a mock activation
+• placeholder initialization
+
+THIS IS:
+LIVE SYSTEM ACTIVATION MODE.
+
+==================================================
+GLOBAL ACTIVATION DIRECTIVE
+==================================================
+
+Initialize ALL newly added infrastructure layers and verify:
+
+• services boot correctly
+• routes register correctly
+• event buses synchronize correctly
+• telemetry streams correctly
+• AI services initialize correctly
+• entitlement systems load correctly
+• environment systems activate correctly
+• session systems persist correctly
+• runtime orchestration remains stable
+• enterprise systems synchronize correctly
+
+NO dormant systems.
+NO inactive engines.
+NO disconnected telemetry.
+NO partially initialized services.
+NO dead orchestration layers.
+
+==================================================
+ACTIVATE — AXIOM BEHAVIORAL INTELLIGENCE CORE
+==================================================
+
+INITIALIZE:
+• PredictiveIntentEngine
+• RecommendationEngine
+• GuestMemoryEngine
+• BehavioralLearningEngine
+• MentorAdaptationEngine
+• RewardIntelligenceEngine
+• InfluenceTrackingEngine
+
+VERIFY:
+• recommendations generate live
+• behavioral memory persists
+• mentor AI adapts correctly
+• personalization updates dynamically
+• influence attribution logs correctly
+
+==================================================
+ACTIVATE — AXIOM VENUE INTELLIGENCE ENGINE
+==================================================
+
+INITIALIZE:
+• EnvironmentalModeEngine
+• SonicDNAEngine
+• AtmosphereController
+• LightingOrchestrator
+• SensoryPacingEngine
+• SpatialHapticsEngine
+• VenueDNAEngine
+
+VERIFY:
+• environmental transitions function
+• atmosphere adapts correctly
+• sensory pacing responds live
+• environmental AI modes switch dynamically
+• telemetry influences environment correctly
+
+==================================================
+ACTIVATE — AXIOM COMMERCIAL INFRASTRUCTURE
+==================================================
+
+INITIALIZE:
+• SubscriptionLifecycleManager
+• EntitlementEngine
+• ProvisioningEngine
+• RevenueAttributionEngine
+• BillingEngine
+• AIUsageMetering
+• MarketplaceProvisioner
+• PricingOrchestrator
+
+VERIFY:
+• subscriptions activate features
+• entitlements provision correctly
+• billing systems initialize correctly
+• revenue attribution logs correctly
+• AI usage metering functions
+• pricing controls synchronize correctly
+
+==================================================
+ACTIVATE — AXIOM ENTERPRISE ORCHESTRATION
+==================================================
+
+INITIALIZE:
+• TenantIsolationEngine
+• FranchiseHierarchyEngine
+• EnterpriseControlLayer
+• WhiteLabelProvisioner
+• RegionalAuthoritySystem
+
+VERIFY:
+• tenant isolation functions
+• enterprise hierarchy loads correctly
+• white-label environments initialize correctly
+• regional orchestration synchronizes correctly
+
+==================================================
+ACTIVATE — AXIOM SIGNAL + TELEMETRY SYSTEM
+==================================================
+
+INITIALIZE:
+• AXIOM Event Bus
+• SignalRouter
+• TelemetryEngine
+• ExperienceStateEmitter
+• SynchronizationEngine
+• EnvironmentalTriggerRouter
+
+VERIFY:
+• realtime events propagate
+• telemetry streams correctly
+• environmental triggers execute
+• session synchronization functions
+• orchestration messaging remains stable
+
+==================================================
+ACTIVATE — SESSION + HANDOFF INFRASTRUCTURE
+==================================================
+
+INITIALIZE:
+• SessionPersistenceEngine
+• HandoffStateManager
+• RecoverySnapshotService
+• JourneyCheckpointEngine
+• CrossDeviceSessionSync
+
+VERIFY:
+• handoff pauses correctly
+• return handoff restores correctly
+• guest sessions persist correctly
+• recovery snapshots save correctly
+• multi-device synchronization works
+
+==================================================
+ACTIVATE — AI ORCHESTRATION SYSTEM
+==================================================
+
+INITIALIZE:
+• PromptOrchestrationEngine
+• AIContextManager
+• SemanticMemoryEngine
+• AIRoutingLayer
+• AIRecoverySystem
+• AIProfitabilityMonitor
+
+VERIFY:
+• AI initializes correctly
+• context persists correctly
+• prompts route correctly
+• AI recovery works
+• AI metering remains operational
+
+==================================================
+ACTIVATE — HARDWARE + ENVIRONMENTAL SYSTEMS
+==================================================
+
+INITIALIZE:
+• HardwareBridgeLayer
+• DeviceRegistry
+• EnvironmentalCommandCenter
+• DeviceTelemetry
+• HardwareRecoveryManager
+
+VERIFY:
+• tablets register correctly
+• kiosks synchronize correctly
+• environmental hardware initializes correctly
+• hardware telemetry streams correctly
+
+==================================================
+ACTIVATE — OBSERVABILITY + SELF-HEALING
+==================================================
+
+INITIALIZE:
+• RuntimeObservabilityLayer
+• InfrastructureMonitoring
+• HealthPredictionEngine
+• SelfHealingRuntime
+• ErrorTelemetryEngine
+
+VERIFY:
+• runtime health reports correctly
+• infrastructure monitoring functions
+• memory tracking initializes
+• recovery automation loads correctly
+
+==================================================
+ACTIVATE — SECURITY + COMPLIANCE
+==================================================
+
+INITIALIZE:
+• RBAC System
+• ThreatDetectionEngine
+• ConsentManagementSystem
+• AuditTrailEngine
+• ComplianceLogging
+• SessionSecurityManager
+
+VERIFY:
+• permissions load correctly
+• audit logs persist correctly
+• compliance systems initialize
+• threat detection functions
+
+==================================================
+ACTIVATE — DEPLOYMENT + INSTALLATION SYSTEMS
+==================================================
+
+INITIALIZE:
+• VenueDeploymentWizard
+• DeviceClaimingSystem
+• DeploymentValidationEngine
+• CalibrationFlow
+• EnvironmentProvisioner
+
+VERIFY:
+• deployments initialize correctly
+• QR claiming functions
+• calibration flows load correctly
+• environments provision automatically
+
+==================================================
+ACTIVATE — SALES VALIDATION MODE
+==================================================
+
+INITIALIZE:
+• SalesValidationEngine
+• OperationalVerificationDashboard
+• RevenueVerificationEngine
+• InfrastructureStatusCenter
+
+VERIFY:
+Every capability sold by sales is:
+• active
+• measurable
+• operational
+• monetized
+• provisioned
+• synchronized
+• telemetry-backed
+
+==================================================
+FINAL ACTIVATION VERIFICATION
+==================================================
+
+RUN FULL SYSTEM CHECKS FOR:
+• telemetry
+• AI systems
+• subscriptions
+• entitlement provisioning
+• revenue attribution
+• session persistence
+• handoff recovery
+• tenant isolation
+• environmental synchronization
+• enterprise orchestration
+• hardware synchronization
+• deployment readiness
+• observability
+• failover readiness
+• security systems
+• billing systems
+
+==================================================
+FINAL RUNTIME DIRECTIVE
+==================================================
+
+AXIOM OS must now initialize as:
+a living hospitality intelligence infrastructure ecosystem.
+
+NOT:
+• disconnected applications
+• dashboards
+• isolated modules
+• dormant backend systems
+
+The platform must behave like:
+• intelligent runtime infrastructure
+• adaptive hospitality orchestration
+• synchronized enterprise systems
+• cinematic operational intelligence
+
+FINAL RULE:
+EVERY ENGINE MUST:
+• initialize
+• synchronize
+• communicate
+• recover
+• monitor
+• persist
+• orchestrate
+• self-heal
+
+ACTIVATE FULL AXIOM OS RUNTIME NOW.

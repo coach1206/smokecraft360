@@ -15,9 +15,10 @@
  * Stripe is NOT imported here — billing is handled by EnterpriseBillingManager.
  */
 
-import crypto       from "crypto";
+import crypto          from "crypto";
 import { EventEmitter } from "events";
-import { logger }   from "../lib/logger";
+import { logger }       from "../lib/logger";
+import { pool }         from "@workspace/db";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -76,6 +77,51 @@ export interface ObservabilityError {
   timestamp: Date;
 }
 
+// ── DB Schema Init ────────────────────────────────────────────────────────────
+
+export async function initAxiomSchema(): Promise<void> {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS axiom_telemetry (
+      id           TEXT PRIMARY KEY,
+      tenant_id    TEXT NOT NULL,
+      signal       TEXT NOT NULL,
+      payload      JSONB,
+      recorded_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_axiom_telemetry_tenant ON axiom_telemetry(tenant_id);
+    CREATE INDEX IF NOT EXISTS idx_axiom_telemetry_signal ON axiom_telemetry(signal);
+
+    CREATE TABLE IF NOT EXISTS axiom_revenue_attributions (
+      id                   TEXT PRIMARY KEY,
+      tenant_id            TEXT NOT NULL,
+      session_id           TEXT NOT NULL,
+      recommendation_type  TEXT NOT NULL,
+      influenced_revenue   NUMERIC(12,2) NOT NULL,
+      confidence           NUMERIC(5,4)  NOT NULL,
+      attributed_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_axiom_attr_tenant ON axiom_revenue_attributions(tenant_id);
+
+    CREATE TABLE IF NOT EXISTS axiom_session_snapshots (
+      session_id          TEXT PRIMARY KEY,
+      tenant_id           TEXT NOT NULL,
+      guest_id            TEXT NOT NULL,
+      current_experience  TEXT NOT NULL,
+      current_step        INT  NOT NULL DEFAULT 0,
+      mentor_state        JSONB,
+      rewards             NUMERIC(10,2) NOT NULL DEFAULT 0,
+      paused              BOOLEAN NOT NULL DEFAULT FALSE,
+      saved_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_axiom_snapshot_tenant ON axiom_session_snapshots(tenant_id);
+  `);
+  logger.info("axiom DB schema ready");
+}
+
+// Call at module load — non-blocking, errors logged not thrown
+initAxiomSchema().catch(err => logger.error({ err }, "axiom schema init failed"));
+
 // ── AXIOM Event Bus ───────────────────────────────────────────────────────────
 
 export type AxiomSignal =
@@ -132,6 +178,16 @@ export class RevenueAttributionEngine {
     this.ledger.push(event);
     axiomBus.emitSignal("REVENUE_ATTRIBUTED", event);
     logger.info({ tenantId: params.tenantId, revenue: params.revenue }, "revenue influence tracked");
+
+    pool.query(
+      `INSERT INTO axiom_revenue_attributions
+         (id, tenant_id, session_id, recommendation_type, influenced_revenue, confidence)
+       VALUES ($1,$2,$3,$4,$5,$6)
+       ON CONFLICT (id) DO NOTHING`,
+      [event.id, event.tenantId, event.sessionId, event.recommendationType,
+       event.influencedRevenue, event.confidence],
+    ).catch(err => logger.error({ err }, "axiom attribution persist failed"));
+
     return event;
   }
 
@@ -155,10 +211,58 @@ export class SessionPersistenceEngine {
     this.snapshots.set(snapshot.sessionId, snapshot);
     axiomBus.emitSignal("SESSION_SAVED", snapshot);
     logger.info({ sessionId: snapshot.sessionId }, "session saved");
+
+    pool.query(
+      `INSERT INTO axiom_session_snapshots
+         (session_id, tenant_id, guest_id, current_experience, current_step,
+          mentor_state, rewards, paused, saved_at, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW())
+       ON CONFLICT (session_id) DO UPDATE SET
+         current_experience = EXCLUDED.current_experience,
+         current_step       = EXCLUDED.current_step,
+         mentor_state       = EXCLUDED.mentor_state,
+         rewards            = EXCLUDED.rewards,
+         paused             = EXCLUDED.paused,
+         updated_at         = NOW()`,
+      [snapshot.sessionId, snapshot.tenantId, snapshot.guestId,
+       snapshot.currentExperience, snapshot.currentStep,
+       snapshot.mentorState != null ? JSON.stringify(snapshot.mentorState) : null,
+       snapshot.rewards, snapshot.paused, snapshot.savedAt],
+    ).catch(err => logger.error({ err }, "axiom session persist failed"));
   }
 
-  static recoverSession(sessionId: string): SessionSnapshot | undefined {
-    return this.snapshots.get(sessionId);
+  static async recoverSession(sessionId: string): Promise<SessionSnapshot | undefined> {
+    const mem = this.snapshots.get(sessionId);
+    if (mem) return mem;
+
+    try {
+      const { rows } = await pool.query<{
+        session_id: string; tenant_id: string; guest_id: string;
+        current_experience: string; current_step: number;
+        mentor_state: unknown; rewards: string; paused: boolean; saved_at: Date;
+      }>(
+        `SELECT * FROM axiom_session_snapshots WHERE session_id = $1 LIMIT 1`,
+        [sessionId],
+      );
+      if (!rows[0]) return undefined;
+      const r = rows[0];
+      const snap: SessionSnapshot = {
+        sessionId:         r.session_id,
+        tenantId:          r.tenant_id,
+        guestId:           r.guest_id,
+        currentExperience: r.current_experience,
+        currentStep:       r.current_step,
+        mentorState:       r.mentor_state,
+        rewards:           parseFloat(r.rewards),
+        paused:            r.paused,
+        savedAt:           r.saved_at,
+      };
+      this.snapshots.set(sessionId, snap);
+      return snap;
+    } catch (err) {
+      logger.error({ err }, "axiom session recover from DB failed");
+      return undefined;
+    }
   }
 
   static pauseSession(sessionId: string): boolean {
@@ -168,6 +272,12 @@ export class SessionPersistenceEngine {
     this.snapshots.set(sessionId, session);
     axiomBus.emitSignal("SESSION_PAUSED", { sessionId });
     logger.info({ sessionId }, "session paused");
+
+    pool.query(
+      `UPDATE axiom_session_snapshots SET paused = true, updated_at = NOW() WHERE session_id = $1`,
+      [sessionId],
+    ).catch(err => logger.error({ err }, "axiom pause persist failed"));
+
     return true;
   }
 
@@ -178,6 +288,12 @@ export class SessionPersistenceEngine {
     this.snapshots.set(sessionId, session);
     axiomBus.emitSignal("SESSION_RESUMED", { sessionId });
     logger.info({ sessionId }, "session resumed");
+
+    pool.query(
+      `UPDATE axiom_session_snapshots SET paused = false, updated_at = NOW() WHERE session_id = $1`,
+      [sessionId],
+    ).catch(err => logger.error({ err }, "axiom resume persist failed"));
+
     return session;
   }
 
@@ -301,8 +417,16 @@ export class TelemetryEngine {
       timestamp: new Date(),
     };
     this.events.push(event);
-    axiomBus.emitSignal("TENANT_PROVISIONED", event); // reuse bus as generic carrier
     logger.debug({ tenantId: params.tenantId, signal: params.signal }, "telemetry emitted");
+
+    pool.query(
+      `INSERT INTO axiom_telemetry (id, tenant_id, signal, payload)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (id) DO NOTHING`,
+      [event.id, event.tenantId, event.signal,
+       event.payload != null ? JSON.stringify(event.payload) : null],
+    ).catch(err => logger.error({ err }, "axiom telemetry persist failed"));
+
     return event;
   }
 

@@ -90,7 +90,7 @@ router.post("/session/save", async (req, res) => {
 });
 
 router.get("/session/:id", async (req, res) => {
-  const session = SessionPersistenceEngine.recoverSession(req.params["id"]!);
+  const session = await SessionPersistenceEngine.recoverSession(req.params["id"]!);
   if (!session) { res.status(404).json({ error: "Session not found" }); return; }
   res.json(session);
 });

@@ -1,0 +1,285 @@
+AXIOM OS — EEIS AUTHENTICATION SCREEN CORRECTION PROMPT
+
+ROLE:
+Senior Cinematic Interface Designer, Luxury Systems UI Architect, Apple/Tesla Interaction Designer, and Hospitality Intelligence Experience Engineer.
+
+MISSION:
+Redesign and harden the AXIOM OS authentication and handoff interface so it no longer feels like:
+• a luxury website
+• a generic tablet PIN screen
+• a soft glassmorphism demo
+
+The interface must now feel like:
+a living hospitality intelligence operating system.
+
+The emotional target is:
+“secure operational intelligence”
+NOT:
+“pretty web UI.”
+
+==================================================
+CORE VISUAL DIRECTIVE
+==================================================
+
+CURRENT PROBLEM:
+The screen is:
+• too hazy
+• too soft
+• too passive
+• too flat
+• lacking operational authority
+
+The interface currently feels:
+like a premium webpage.
+
+It must instead feel:
+like a luxury operational cockpit.
+
+==================================================
+VISUAL DNA REQUIREMENTS
+==================================================
+
+KEEP:
+• matte cream + champagne gold palette
+• cinematic luxury atmosphere
+• minimalism
+• smoked glass layering
+• premium typography
+• warm environmental tones
+
+REMOVE:
+• excessive blur haze
+• washed-out overlays
+• flat button feeling
+• static environments
+• generic keypad behavior
+
+==================================================
+EEIS AUTHORITY LAYER
+==================================================
+
+ADD:
+subtle operational intelligence indicators.
+
+Examples:
+• EEIS Venue Access
+• AXIOM Operational Authentication
+• Sensory Mesh Online
+• Venue Intelligence Active
+• Environmental Sync Stable
+• Session Security Verified
+
+STYLE:
+Tiny.
+Elegant.
+Cinematic.
+Operational.
+
+NOT:
+dashboard-like.
+
+==================================================
+KEYPAD REDESIGN
+==================================================
+
+The keypad must feel:
+• tactile
+• intelligent
+• expensive
+• physical
+• responsive
+
+REQUIRED INTERACTION:
+• buttons depress naturally
+• soft ripple wave on touch
+• ambient glow response
+• edge lighting reaction
+• micro vibration illusion
+• subtle pressure animation
+• weighted damping movement
+
+REFERENCE FEEL:
+Tesla UI
+high-end elevator systems
+luxury automotive controls
+Blackmagic hardware surfaces
+
+==================================================
+MOTION SYSTEM
+==================================================
+
+REPLACE:
+generic fades.
+
+USE:
+• weighted damping
+• mercury-like transitions
+• liquid-glass movement
+• subtle environmental breathing
+• cinematic inertia
+
+EVERY movement should feel:
+controlled,
+intentional,
+expensive.
+
+NO aggressive zooms.
+NO cheap animations.
+
+==================================================
+BACKGROUND ENVIRONMENT
+==================================================
+
+The environment must NEVER feel static.
+
+ADD:
+• slow atmospheric movement
+• subtle light drifting
+• ambient particulate glow
+• soft environmental breathing
+• reactive warmth shifts
+
+The environment should feel:
+alive.
+
+==================================================
+OPERATIONAL TELEMETRY
+==================================================
+
+ADD:
+small live operational indicators.
+
+Examples:
+• AI Active
+• Venue Sync Stable
+• EEIS Online
+• Environmental Intelligence Active
+• Session Recovery Ready
+
+STYLE:
+minimal,
+premium,
+low-opacity,
+non-distracting.
+
+The screen must subtly communicate:
+“This system is alive.”
+
+==================================================
+MATERIAL DEPTH
+==================================================
+
+INCREASE:
+• shadow depth
+• edge lighting
+• layered glass realism
+• subtle reflections
+• material realism
+• lighting gradients
+
+REMOVE:
+• flat surfaces
+• weak shadows
+• overly matte dead panels
+
+==================================================
+HANDOFF TRANSITION
+==================================================
+
+WHEN STAFF TOUCHES THE SCREEN:
+
+DO NOT:
+hard cut.
+
+USE:
+• ripple dissolve
+• environmental distortion wave
+• sensory pulse transition
+• liquid-glass phase shift
+
+The customer screen should:
+morph into the EEIS operational interface.
+
+The transition should feel:
+like the environment itself is responding.
+
+==================================================
+RETURN HANDOFF
+==================================================
+
+WHEN STAFF RELEASES CONTROL:
+
+USE:
+• reverse ripple wave
+• cinematic dissolve
+• session restoration animation
+• environment recalibration
+
+The customer MUST resume:
+exactly where they left off.
+
+NO session restart.
+NO reload feeling.
+NO interruption sensation.
+
+==================================================
+INFRASTRUCTURE REQUIREMENTS
+==================================================
+
+MOVE:
+• telemetry
+• session snapshots
+• revenue attribution
+• handoff state
+
+OUT OF:
+temporary memory maps.
+
+INTO:
+PostgreSQL persistence.
+
+CREATE:
+• axiom_telemetry
+• axiom_revenue_attributions
+• axiom_session_snapshots
+• axiom_handoff_states
+
+VALIDATE:
+• sessions survive restart
+• telemetry persists correctly
+• handoff restoration works
+• runtime recovery succeeds
+
+==================================================
+FINAL EXPERIENCE TARGET
+==================================================
+
+The guest should feel:
+they are interacting with:
+• intelligent luxury infrastructure
+• adaptive hospitality technology
+• cinematic operational intelligence
+
+NOT:
+• a tablet app
+• a website
+• a POS system
+
+The venue should feel:
+alive,
+aware,
+synchronized,
+premium,
+and operationally intelligent.
+
+==================================================
+FINAL RULE
+==================================================
+
+AXIOM OS must now feel like:
+Apple designed a hospitality intelligence operating system for luxury environments.
+
+NOT:
+a web dashboard.
+
+EXECUTE FULL EEIS AUTHORITY REBUILD NOW.
