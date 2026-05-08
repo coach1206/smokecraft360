@@ -103,7 +103,7 @@ class SignalVisualizationEngineClass {
     if (this.tickTimer) return;
     this.tick(); // immediate first tick
     this.tickTimer  = setInterval(() => this.tick(),  this.getTickMs());
-    this.pruneTimer = setInterval(() => this.prune(), 800);
+    this.pruneTimer = setInterval(() => this.prune(), 1200); // slower prune = smoother decay
   }
 
   stop(): void {
@@ -141,26 +141,26 @@ class SignalVisualizationEngineClass {
 
   private getTickMs(): number {
     const score = ExperienceStateEngine.getEngagementScore();
-    // 2.5s at idle → 600ms at peak engagement
-    return Math.max(600, 2500 - score * 19);
+    // 4s at idle → 1200ms at peak — elegant, not frantic
+    return Math.max(1200, 4000 - score * 28);
   }
 
   private tick(): void {
-    // Pick a signal type weighted by session state
-    const score = ExperienceStateEngine.getEngagementScore();
-    const pacing = ExperienceStateEngine.getPacing();
+    const score     = ExperienceStateEngine.getEngagementScore();
+    const pacing    = ExperienceStateEngine.getPacing();
     const isHandoff = ExperienceStateEngine.getState().isStaffHandoff;
 
     const type = isHandoff
       ? "handoff_signal"
       : this.weightedRandomType(score, pacing);
 
-    const intensity = 30 + Math.round(score * 0.65) + Math.round(Math.random() * 20);
-    this.emitSignal(type, Math.min(100, intensity));
+    // Intensity: softer baseline, gentler variation — premium not clinical
+    const intensity = 25 + Math.round(score * 0.55) + Math.round(Math.random() * 15);
+    this.emitSignal(type, Math.min(90, intensity));
 
-    // Occasionally emit a secondary signal for visual richness
-    if (score > 50 && Math.random() > 0.55) {
-      setTimeout(() => this.emitSignal("orchestration_route", 45), 200);
+    // Secondary signal only at high engagement and low probability — never busy
+    if (score > 65 && Math.random() > 0.78) {
+      setTimeout(() => this.emitSignal("orchestration_route", 35), 380);
     }
 
     // Reschedule with updated tick rate
@@ -175,7 +175,8 @@ class SignalVisualizationEngineClass {
     if (!routes?.length) return;
 
     const [fromId, toId] = routes[Math.floor(Math.random() * routes.length)];
-    const ttl = 900 + intensity * 5;
+    // Longer TTL — signals linger gracefully rather than snapping off
+    const ttl = 1400 + intensity * 8;
 
     const event: SignalEvent = {
       id: nextId(), type, fromNode: fromId, toNode: toId,
@@ -184,9 +185,9 @@ class SignalVisualizationEngineClass {
 
     this.signals.set(event.id, event);
 
-    // Activate nodes
+    // Activate nodes — gentler activation increment
     this.activateNode(fromId, intensity);
-    this.activateNode(toId,   Math.round(intensity * 0.8));
+    this.activateNode(toId,   Math.round(intensity * 0.65));
 
     this.broadcast();
   }
@@ -196,7 +197,7 @@ class SignalVisualizationEngineClass {
     if (!node) return;
     this.nodes.set(id, {
       ...node,
-      activity:     Math.min(100, node.activity + intensity * 0.4),
+      activity:     Math.min(100, node.activity + intensity * 0.30), // gentler
       lastSignalTs: Date.now(),
     });
   }
@@ -213,10 +214,10 @@ class SignalVisualizationEngineClass {
       }
     });
 
-    // Decay node activity
+    // Slower decay — nodes stay warm longer (elegant residual glow)
     this.nodes.forEach((node, id) => {
       if (node.activity > 0) {
-        this.nodes.set(id, { ...node, activity: Math.max(0, node.activity - 8) });
+        this.nodes.set(id, { ...node, activity: Math.max(0, node.activity - 4) });
         changed = true;
       }
     });
@@ -225,10 +226,11 @@ class SignalVisualizationEngineClass {
   }
 
   private weightedRandomType(score: number, pacing: string): SignalType {
-    const pool: SignalType[] = ["telemetry_pulse", "orchestration_route"];
-    if (score > 20) pool.push("predictive_tick", "session_sync");
-    if (score > 45) pool.push("recommendation_fire", "venue_dna_sync");
-    if (score > 70) pool.push("revenue_attribution", "recommendation_fire");
+    // Lean heavily toward ambient signals at low engagement — feels like resting breath
+    const pool: SignalType[] = ["telemetry_pulse", "telemetry_pulse", "orchestration_route"];
+    if (score > 25) pool.push("predictive_tick", "session_sync");
+    if (score > 50) pool.push("recommendation_fire", "venue_dna_sync");
+    if (score > 72) pool.push("revenue_attribution");
     return pool[Math.floor(Math.random() * pool.length)];
   }
 

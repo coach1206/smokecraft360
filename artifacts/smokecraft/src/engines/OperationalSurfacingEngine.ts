@@ -51,14 +51,14 @@ export interface SurfacingState {
 
 type PhaseListener  = (state: SurfacingState) => void;
 
-// Phase timing in ms
+// Phase timing in ms — extended for cinematic luxury weight
 const PHASE_DURATIONS: Record<SurfacingPhase, number> = {
   ambient:     0,
-  distortion:  380,
-  dimming:     420,
-  emergence:   500,
-  operational: 0,    // held until releaseHandoff() called
-  restoring:   680,
+  distortion:  540,   // ripple has time to fully propagate and decay
+  dimming:     620,   // guest layer retreats deliberately — not snapped away
+  emergence:   760,   // intelligence reveals itself with gravity
+  operational: 0,     // held until releaseHandoff() called
+  restoring:   980,   // guest atmosphere reclaims space slowly — like waking up
 };
 
 class OperationalSurfacingEngineClass {
@@ -240,45 +240,50 @@ class OperationalSurfacingEngineClass {
         };
 
       case "dimming":
+        // Guest layer dims deeply — intelligence emerges beneath, not on top
         return {
           ...state,
-          guestOpacity:     1 - state.progress * 0.72,
-          telemetryAlpha:   state.progress * 0.20,
-          signalBrightness: state.progress * 0.15,
+          guestOpacity:     1 - state.progress * 0.82,   // deeper dim
+          telemetryAlpha:   state.progress * 0.12,        // barely hints before emergence
+          signalBrightness: state.progress * 0.08,
           distortionMag:    0,
         };
 
       case "emergence":
+        // Intelligence surfaces slowly — like eyes adjusting to a new light
         return {
           ...state,
-          guestOpacity:     0.28,
-          telemetryAlpha:   0.20 + state.progress * 0.80,
-          signalBrightness: 0.15 + state.progress * 0.85,
+          guestOpacity:     0.18,                          // deeper retreat during emergence
+          telemetryAlpha:   0.12 + state.progress * 0.88,
+          signalBrightness: 0.08 + state.progress * 0.92,
           distortionMag:    0,
         };
 
       case "operational":
         return {
           ...state,
-          guestOpacity:     0.28,
+          guestOpacity:     0.18,  // guest environment barely visible — venue IS the intelligence
           telemetryAlpha:   1,
           signalBrightness: 1,
           distortionMag:    0,
         };
 
       case "restoring":
+        // Guest atmosphere returns with gravity — slow start, confident arrival
         return {
           ...state,
-          guestOpacity:     0.28 + state.progress * 0.72,
+          guestOpacity:     0.18 + state.progress * 0.82,
           telemetryAlpha:   1 - state.progress,
           signalBrightness: 1 - state.progress,
-          distortionMag:    state.progress < 0.3 ? state.progress * 0.5 : 0,
+          // Gentle reverse ripple in first 20% only — then smooth restore
+          distortionMag:    state.progress < 0.20 ? state.progress * 0.35 : 0,
         };
     }
   }
 
   private easeOut(t: number): number {
-    return 1 - Math.pow(1 - t, 3);
+    // Quintic ease-out — more luxury weight than cubic
+    return 1 - Math.pow(1 - t, 5);
   }
 
   private emit(): void {

@@ -49,14 +49,14 @@ const CRAFT_COLORS: Record<NonNullable<CraftType>, string> = {
 const DEFAULT_STATE: EnvironmentalState = {
   activeCraft:     null,
   mode:            "neutral",
-  intensity:       20,
-  particleDensity: 20,
-  breathCycleMs:   4500,
-  glowOpacity:     0.06,
+  intensity:       22,
+  particleDensity: 22,
+  breathCycleMs:   5500,  // slower resting breath — more meditative
+  glowOpacity:     0.07,
   backgroundDim:   0.88,
   atmosphereColor: "#D48B00",
-  saturation:      30,
-  transitionEase:  "cubic-bezier(0.22, 1, 0.36, 1)",
+  saturation:      32,
+  transitionEase:  "cubic-bezier(0.16, 1, 0.30, 1)",  // luxury ease-out
 };
 
 type EnvListener = (state: EnvironmentalState) => void;
@@ -123,8 +123,8 @@ class EnvironmentalOrchestratorEngineClass {
     };
     this.emit();
 
-    // Auto-return to immersive after cinematic peak
-    this.morphTimeout = setTimeout(() => this.morphTo(craft, 70), 900);
+    // Hold cinematic peak longer — the moment is earned, let it breathe
+    this.morphTimeout = setTimeout(() => this.morphTo(craft, 72), 1400);
   }
 
   /** Called when staff handoff begins — dims environment, surfaces telemetry. */
@@ -173,7 +173,8 @@ class EnvironmentalOrchestratorEngineClass {
     if (this.state.mode === "cinematic" || this.state.mode === "operational") return;
 
     const color = craft ? CRAFT_COLORS[craft] : this.state.atmosphereColor;
-    const intensity = Math.min(95, 20 + score * 0.75);
+    // Floor at 28 so the environment is always alive — never fully inert
+    const intensity = Math.min(95, 28 + score * 0.70);
 
     this.state = {
       ...this.state,
@@ -191,12 +192,13 @@ class EnvironmentalOrchestratorEngineClass {
   }
 
   private pacingToBreath(pacing: EmotionalPacing): number {
+    // Longer breath cycles = heavier, more cinematic atmosphere
     switch (pacing) {
-      case "ambient":   return 5000;
-      case "building":  return 3200;
-      case "peak":      return 1800;
-      case "cooling":   return 4200;
-      case "suspended": return 7000;
+      case "ambient":   return 6200;   // slow, meditative rest
+      case "building":  return 4000;   // engagement building — rhythm quickens
+      case "peak":      return 2200;   // immersed — alive and pulsing
+      case "cooling":   return 5200;   // settling — longer exhale
+      case "suspended": return 8500;   // handoff — environment holds its breath
     }
   }
 

@@ -49,35 +49,35 @@ const SENSORY_PROFILES: Record<NonNullable<CraftType>, SensoryProfile> = {
     primaryColor:       "#F4A03A",
     secondaryColor:     "#D4682E",
     ambientLux:         28,
-    warmth:             82,
-    density:            72,
-    refractionStrength: 12,
-    breathAmplitude:    0.035,
-    breathFrequency:    0.16,
-    motionInertia:      0.82,
-    particleSize:       5,
-    particleOpacity:    0.52,
-    glowRadius:         90,
-    glowOpacity:        0.18,
-    backgroundFilter:   "brightness(0.30) saturate(1.2) sepia(0.18)",
+    warmth:             88,      // richer warmth — deep ember heat
+    density:            78,      // denser smoke cloud
+    refractionStrength: 14,
+    breathAmplitude:    0.042,   // deeper breathing — more alive
+    breathFrequency:    0.13,    // slower — meditative ember rhythm
+    motionInertia:      0.88,    // heavier — smoke moves with weight
+    particleSize:       6,
+    particleOpacity:    0.56,
+    glowRadius:         110,     // broader amber warmth
+    glowOpacity:        0.22,
+    backgroundFilter:   "brightness(0.27) saturate(1.3) sepia(0.22)",
     soundTexture:       "thick",
   },
   pour: {
     craft:              "pour",
     primaryColor:       "#E8C060",
     secondaryColor:     "#D48B00",
-    ambientLux:         42,
-    warmth:             68,
-    density:            38,
-    refractionStrength: 78,
-    breathAmplitude:    0.022,
-    breathFrequency:    0.22,
-    motionInertia:      0.60,
+    ambientLux:         45,
+    warmth:             72,
+    density:            40,
+    refractionStrength: 88,      // champagne gold liquid shimmer at full strength
+    breathAmplitude:    0.026,
+    breathFrequency:    0.20,
+    motionInertia:      0.66,
     particleSize:       3,
-    particleOpacity:    0.70,
-    glowRadius:         120,
-    glowOpacity:        0.28,
-    backgroundFilter:   "brightness(0.34) saturate(1.4) sepia(0.10)",
+    particleOpacity:    0.74,
+    glowRadius:         140,     // wider champagne halo
+    glowOpacity:        0.32,    // brighter — reflective glass feeling
+    backgroundFilter:   "brightness(0.32) saturate(1.5) sepia(0.08)",
     soundTexture:       "crystalline",
   },
   brew: {
@@ -85,35 +85,35 @@ const SENSORY_PROFILES: Record<NonNullable<CraftType>, SensoryProfile> = {
     primaryColor:       "#C4782A",
     secondaryColor:     "#8B5E3C",
     ambientLux:         35,
-    warmth:             55,
-    density:            58,
-    refractionStrength: 30,
-    breathAmplitude:    0.028,
-    breathFrequency:    0.18,
-    motionInertia:      0.72,
-    particleSize:       6,
-    particleOpacity:    0.44,
-    glowRadius:         80,
-    glowOpacity:        0.14,
-    backgroundFilter:   "brightness(0.28) saturate(1.1) sepia(0.22)",
+    warmth:             58,
+    density:            62,
+    refractionStrength: 34,
+    breathAmplitude:    0.032,   // industrial rhythm — copper machinery
+    breathFrequency:    0.16,
+    motionInertia:      0.78,    // heavier industrial weight
+    particleSize:       7,
+    particleOpacity:    0.48,
+    glowRadius:         90,
+    glowOpacity:        0.16,
+    backgroundFilter:   "brightness(0.26) saturate(1.15) sepia(0.26)",
     soundTexture:       "warm",
   },
   vape: {
     craft:              "vape",
     primaryColor:       "#A08EFF",
     secondaryColor:     "#4A90D9",
-    ambientLux:         55,
-    warmth:             22,
-    density:            82,
-    refractionStrength: 45,
-    breathAmplitude:    0.018,
-    breathFrequency:    0.28,
-    motionInertia:      0.45,
-    particleSize:       14,
-    particleOpacity:    0.28,
-    glowRadius:         140,
-    glowOpacity:        0.22,
-    backgroundFilter:   "brightness(0.35) saturate(0.8) hue-rotate(200deg)",
+    ambientLux:         58,
+    warmth:             18,      // cooler — ethereal chill
+    density:            86,      // dense vapor cloud
+    refractionStrength: 52,
+    breathAmplitude:    0.020,
+    breathFrequency:    0.26,
+    motionInertia:      0.52,    // lighter — vapor drifts freely
+    particleSize:       16,      // larger cloud blobs
+    particleOpacity:    0.30,
+    glowRadius:         160,     // wide cool halo
+    glowOpacity:        0.26,
+    backgroundFilter:   "brightness(0.33) saturate(0.75) hue-rotate(210deg)",
     soundTexture:       "vaporous",
   },
 };
@@ -173,7 +173,8 @@ class EnvironmentalContinuityEngineClass {
 
     const fromProfile = { ...this.current };
     const toProfile   = SENSORY_PROFILES[craft];
-    const duration    = durationMs ?? (600 + this.current.motionInertia * 1000);
+    // Luxury weight: minimum 1100ms, scales with inertia up to 2500ms
+    const duration    = durationMs ?? (1100 + this.current.motionInertia * 1600);
     const startTs     = performance.now();
     const prevCraft   = this.current.craft as CraftType;
 
@@ -182,9 +183,15 @@ class EnvironmentalContinuityEngineClass {
       const rawT     = Math.min(1, elapsed / duration);
       const t        = this.easeInOutQuart(rawT);
 
+      // Atmospheric carryover: outgoing properties linger in the first 40%
+      // of the transition — the new atmosphere has to "earn" its space.
+      const carryoverT = rawT < 0.40
+        ? this.easeInExpo(rawT / 0.40) * 0.55   // very slow start
+        : 0.55 + this.easeInOutQuart((rawT - 0.40) / 0.60) * 0.45;
+
       this.current = {
-        ...this.lerpProfile(fromProfile, toProfile, t),
-        morphProgress: t,
+        ...this.lerpProfile(fromProfile, toProfile, carryoverT),
+        morphProgress: carryoverT,
         isMorphing:    rawT < 1,
         prevCraft,
       };
@@ -239,8 +246,9 @@ class EnvironmentalContinuityEngineClass {
       particleOpacity:    lerp(a.particleOpacity,     b.particleOpacity),
       glowRadius:         lerp(a.glowRadius,          b.glowRadius),
       glowOpacity:        lerp(a.glowOpacity,         b.glowOpacity),
-      backgroundFilter:   t < 0.5 ? a.backgroundFilter : b.backgroundFilter,
-      soundTexture:       t < 0.5 ? a.soundTexture    : b.soundTexture,
+      // Filter crossfade: blur out at t=0.35, commit at t=0.50, clear at t=0.65
+      backgroundFilter:   t < 0.50 ? a.backgroundFilter : b.backgroundFilter,
+      soundTexture:       t < 0.55 ? a.soundTexture    : b.soundTexture,
     };
   }
 
@@ -263,6 +271,11 @@ class EnvironmentalContinuityEngineClass {
 
   private easeInOutQuart(t: number): number {
     return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+  }
+
+  /** Very slow entry, fast exit — makes outgoing atmosphere feel heavy to leave. */
+  private easeInExpo(t: number): number {
+    return t === 0 ? 0 : Math.pow(2, 10 * t - 10);
   }
 
   private emit(): void {
