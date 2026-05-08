@@ -1,0 +1,431 @@
+
+# AXIOM OS — LOADUP + HANDOFF + VENUE VIEW CODE
+
+## 1. AXIOM OS LOAD-UP SCREEN
+### `client/src/pages/AxiomBoot.tsx`
+
+```tsx
+import { motion } from "framer-motion";
+
+export default function AxiomBoot() {
+  return (
+    <div className="h-screen w-full bg-black overflow-hidden relative flex items-center justify-center">
+
+      {/* Background Glow */}
+      <div className="absolute inset-0 bg-gradient-to-b from-amber-900/10 to-black" />
+
+      {/* Fog */}
+      <div className="absolute inset-0 opacity-20 bg-[url('/textures/fog.png')] bg-cover animate-pulse" />
+
+      {/* Center Content */}
+      <div className="relative z-10 flex flex-col items-center">
+
+        {/* AXIOM RINGS */}
+        <motion.div
+          initial={{ rotate: 0 }}
+          animate={{ rotate: 360 }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="w-56 h-56 rounded-full border border-amber-400/50 shadow-[0_0_80px_rgba(251,191,36,0.25)]"
+        />
+
+        {/* LOGO */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 2 }}
+          className="mt-12 text-5xl tracking-[12px] text-white font-light"
+        >
+          AXIOM OS
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+          className="text-zinc-500 mt-4 text-sm tracking-[5px]"
+        >
+          POWERED BY PROFOUND INNOVATIONS
+        </motion.p>
+
+        {/* TELEMETRY */}
+        <div className="mt-12 text-zinc-500 text-xs space-y-2">
+          <p>Neural Bridge Connected</p>
+          <p>Behavioral Systems Online</p>
+          <p>Mentor Intelligence Active</p>
+          <p>Environmental Sync Stable</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+# 2. RIPPLE HANDOFF EFFECT
+### `client/src/components/RippleTransition.tsx`
+
+```tsx
+import { motion, AnimatePresence } from "framer-motion";
+
+interface Props {
+  active: boolean;
+}
+
+export default function RippleTransition({ active }: Props) {
+  return (
+    <AnimatePresence>
+      {active && (
+        <motion.div
+          initial={{
+            scale: 0,
+            opacity: 0.9
+          }}
+          animate={{
+            scale: 15,
+            opacity: 0
+          }}
+          exit={{
+            opacity: 0
+          }}
+          transition={{
+            duration: 1.8,
+            ease: "easeOut"
+          }}
+          className="
+            absolute
+            top-1/2
+            left-1/2
+            -translate-x-1/2
+            -translate-y-1/2
+            w-40
+            h-40
+            rounded-full
+            border
+            border-amber-400/70
+            backdrop-blur-xl
+            z-50
+          "
+        />
+      )}
+    </AnimatePresence>
+  );
+}
+```
+
+---
+
+# 3. HANDOFF SCREEN
+### `client/src/components/HandoffOverlay.tsx`
+
+```tsx
+import { motion } from "framer-motion";
+
+export default function HandoffOverlay() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1 }}
+      className="
+        fixed inset-0
+        bg-black/70
+        backdrop-blur-2xl
+        z-50
+        flex
+        items-center
+        justify-center
+      "
+    >
+      <div className="text-center">
+        <div className="text-amber-400 text-4xl tracking-[6px]">
+          OPERATIONAL LAYER ACTIVATED
+        </div>
+
+        <p className="text-zinc-400 mt-6 tracking-[3px]">
+          Preparing Venue Intelligence
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+```
+
+---
+
+# 4. ASSISTED DISCOVERY MODE
+### WHAT CUSTOMER SEES DURING HANDOFF
+### `client/src/pages/AssistedDiscoveryMode.tsx`
+
+```tsx
+export default function AssistedDiscoveryMode() {
+  return (
+    <div className="h-screen bg-black text-white relative overflow-hidden">
+
+      {/* Smoke Video */}
+      <video
+        autoPlay
+        muted
+        loop
+        className="absolute inset-0 object-cover w-full h-full opacity-20"
+      >
+        <source src="/videos/smoke.mp4" />
+      </video>
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/50" />
+
+      <div className="relative z-10 p-10">
+
+        <h1 className="text-5xl text-amber-400">
+          Your Craft Specialist Is Preparing Your Experience
+        </h1>
+
+        <p className="mt-4 text-zinc-400">
+          Personalized recommendations are being prepared for you.
+        </p>
+
+        {/* Recommendations */}
+        <div className="grid grid-cols-3 gap-6 mt-16">
+
+          <div className="bg-zinc-900/70 rounded-3xl p-6 border border-zinc-800">
+            <h2 className="text-xl mb-4">Featured Humidor</h2>
+            <p>Padron 1964 Anniversary</p>
+          </div>
+
+          <div className="bg-zinc-900/70 rounded-3xl p-6 border border-zinc-800">
+            <h2 className="text-xl mb-4">Recommended Pairing</h2>
+            <p>Woodford Reserve Double Oak</p>
+          </div>
+
+          <div className="bg-zinc-900/70 rounded-3xl p-6 border border-zinc-800">
+            <h2 className="text-xl mb-4">Tonight’s Reserve</h2>
+            <p>Limited Dominican Reserve Blend</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+# 5. VENUE / STAFF VIEW
+### `client/src/pages/StaffCockpit.tsx`
+
+```tsx
+export default function StaffCockpit() {
+  return (
+    <div className="min-h-screen bg-black text-white p-8">
+
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-10">
+
+        <div>
+          <h1 className="text-5xl text-amber-400">
+            Live Floor Overview
+          </h1>
+
+          <p className="text-zinc-500 mt-2">
+            Operational Layer Active
+          </p>
+        </div>
+
+        <button
+          className="
+            bg-amber-400
+            text-black
+            px-6
+            py-4
+            rounded-full
+            font-semibold
+          "
+        >
+          Resume Guest Experience
+        </button>
+      </div>
+
+      {/* GUEST GRID */}
+      <div className="grid grid-cols-3 gap-6">
+
+        {/* TILE */}
+        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
+
+          <h2 className="text-2xl mb-4">
+            Table 12
+          </h2>
+
+          <div className="space-y-2 text-zinc-300">
+            <p>SmokeCraft</p>
+            <p>XP: 58</p>
+            <p>Rank: Specialist</p>
+            <p>Pairing Interest: Bourbon</p>
+            <p>VIP Probability: High</p>
+          </div>
+
+          <div className="mt-6">
+            <p className="text-amber-400">
+              AI Insight:
+            </p>
+
+            <p className="text-zinc-400 mt-2">
+              Guest likely receptive to premium Maduro pairing.
+            </p>
+          </div>
+
+          {/* QUICK ACTIONS */}
+          <div className="grid grid-cols-2 gap-3 mt-6">
+
+            <button className="bg-zinc-800 rounded-xl p-3">
+              Send Pairing
+            </button>
+
+            <button className="bg-zinc-800 rounded-xl p-3">
+              Push Reward
+            </button>
+
+            <button className="bg-zinc-800 rounded-xl p-3">
+              VIP Upgrade
+            </button>
+
+            <button className="bg-zinc-800 rounded-xl p-3">
+              Notify Server
+            </button>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+# 6. SESSION SNAPSHOT BACKEND
+### `server/services/SessionSnapshotService.ts`
+
+```ts
+interface Snapshot {
+  sessionId: string;
+  route: string;
+  xp: number;
+  mentor: string;
+  challengeStep: number;
+}
+
+const sessionSnapshots = new Map<string, Snapshot>();
+
+export class SessionSnapshotService {
+
+  static save(snapshot: Snapshot) {
+    sessionSnapshots.set(snapshot.sessionId, snapshot);
+  }
+
+  static restore(sessionId: string) {
+    return sessionSnapshots.get(sessionId);
+  }
+
+}
+```
+
+---
+
+# 7. HANDOFF ROUTES
+### `server/routes/handoff.ts`
+
+```ts
+import express from "express";
+import { SessionSnapshotService } from "../services/SessionSnapshotService";
+
+const router = express.Router();
+
+router.post("/handoff/start", async (req, res) => {
+
+  const {
+    sessionId,
+    snapshot
+  } = req.body;
+
+  SessionSnapshotService.save({
+    sessionId,
+    ...snapshot
+  });
+
+  return res.json({
+    success: true,
+    mode: "operational"
+  });
+});
+
+router.post("/handoff/return", async (req, res) => {
+
+  const { sessionId } = req.body;
+
+  const snapshot =
+    SessionSnapshotService.restore(sessionId);
+
+  return res.json({
+    success: true,
+    snapshot
+  });
+});
+
+export default router;
+```
+
+---
+
+# 8. RESUME EXPERIENCE BUTTON LOGIC
+### `client/src/hooks/useResumeExperience.ts`
+
+```tsx
+import axios from "axios";
+
+export async function resumeExperience(sessionId: string) {
+
+  const res = await axios.post(
+    "/api/handoff/return",
+    { sessionId }
+  );
+
+  return res.data.snapshot;
+}
+```
+
+---
+
+# 9. VENUE STATUS BAR
+### `client/src/components/VenueStatus.tsx`
+
+```tsx
+export default function VenueStatus() {
+  return (
+    <div className="
+      fixed top-0 left-0 right-0
+      bg-zinc-950/80
+      backdrop-blur-xl
+      border-b border-zinc-800
+      p-4
+      flex justify-between
+      text-sm
+      text-zinc-400
+    ">
+
+      <div>Active Guests: 24</div>
+      <div>VIP Guests: 3</div>
+      <div>Pending Pairings: 4</div>
+      <div>AI Alerts: 2</div>
+
+    </div>
+  );
+}
+```

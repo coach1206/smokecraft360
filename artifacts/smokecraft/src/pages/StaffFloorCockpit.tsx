@@ -9,6 +9,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LiveLeaderboard from "@/components/LiveLeaderboard";
+import VenueStatus from "@/components/VenueStatus";
 
 interface GuestTile {
   sessionId:      string;
@@ -58,12 +59,13 @@ const TIER_COLOR: Record<string, string> = {
 type QuickAction = "handoff" | "end-handoff" | "push-pairing" | "vip";
 
 export default function StaffFloorCockpit() {
-  const [guests,      setGuests]      = useState<GuestTile[]>([]);
-  const [loading,     setLoading]     = useState(true);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [actionMsg,   setActionMsg]   = useState<string | null>(null);
-  const [aiLoading,   setAiLoading]   = useState<string | null>(null);
-  const [aiInsights,  setAiInsights]  = useState<Record<string, string>>({});
+  const [guests,       setGuests]       = useState<GuestTile[]>([]);
+  const [loading,      setLoading]      = useState(true);
+  const [lastUpdated,  setLastUpdated]  = useState<Date | null>(null);
+  const [actionMsg,    setActionMsg]    = useState<string | null>(null);
+  const [aiLoading,    setAiLoading]    = useState<string | null>(null);
+  const [aiInsights,   setAiInsights]   = useState<Record<string, string>>({});
+  const [resumingAll,  setResumingAll]  = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   async function fetchFloor() {
@@ -82,6 +84,29 @@ export default function StaffFloorCockpit() {
     pollRef.current = setInterval(fetchFloor, 8000);
     return () => { if (pollRef.current !== undefined) clearInterval(pollRef.current); };
   }, []);
+
+  async function resumeAllSessions() {
+    const active = guests.filter(g => g.inHandoff);
+    if (active.length === 0) { showMsg("No active handoffs to resume"); return; }
+    setResumingAll(true);
+    try {
+      await Promise.all(active.map(g =>
+        fetch("/api/operational/end", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            staffSessionId: `floor-resume-${g.sessionId}`,
+            staffUserId:    "floor-staff",
+            snapshotId:     null,
+          }),
+        }).catch(() => {}),
+      ));
+      showMsg(`${active.length} session${active.length > 1 ? "s" : ""} resumed`);
+      fetchFloor();
+    } finally {
+      setResumingAll(false);
+    }
+  }
 
   async function handleAction(action: QuickAction, guest: GuestTile) {
     if (!guest.guestProfileId) return;
@@ -172,8 +197,12 @@ export default function StaffFloorCockpit() {
       color:       "#F5F2ED",
       fontFamily:  "'Cormorant Garamond', serif",
       padding:     "24px",
+      paddingTop:  "68px",
       overflowY:   "auto",
     }}>
+      {/* ── Fixed top status bar ─────────────────────────────────────────────── */}
+      <VenueStatus guests={guests} lastUpdated={lastUpdated} />
+
       {/* Header */}
       <div style={{ marginBottom: "28px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -192,20 +221,52 @@ export default function StaffFloorCockpit() {
             </h1>
           </div>
 
-          <div style={{ textAlign: "right" }}>
-            <motion.div
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: "flex-end" }}
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            {/* Resume All button */}
+            <motion.button
+              onClick={resumeAllSessions}
+              whileTap={{ scale: 0.95 }}
+              disabled={resumingAll}
+              style={{
+                background:    guests.some(g => g.inHandoff)
+                  ? "linear-gradient(135deg, #D48B00, #C87820)"
+                  : "rgba(255,255,255,0.05)",
+                border:        guests.some(g => g.inHandoff)
+                  ? "none"
+                  : "1px solid rgba(255,255,255,0.1)",
+                color:         guests.some(g => g.inHandoff) ? "#0A0A0B" : "#6B5E4E",
+                padding:       "10px 20px",
+                borderRadius:  "24px",
+                fontSize:      "12px",
+                fontWeight:    700,
+                letterSpacing: "0.06em",
+                cursor:        resumingAll ? "wait" : "pointer",
+                fontFamily:    "'Cormorant Garamond', serif",
+                boxShadow:     guests.some(g => g.inHandoff)
+                  ? "0 4px 18px rgba(212,139,0,0.35)"
+                  : "none",
+                transition:    "all 0.25s ease",
+                whiteSpace:    "nowrap",
+              }}
             >
-              <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#7EC8A0" }} />
-              <span style={{ fontSize: "11px", color: "#7EC8A0", letterSpacing: "0.1em" }}>LIVE</span>
-            </motion.div>
-            {lastUpdated && (
-              <div style={{ fontSize: "10px", color: "#6B5E4E", marginTop: "2px" }}>
-                Updated {elapsed(lastUpdated.toISOString())}
-              </div>
-            )}
+              {resumingAll ? "Resuming…" : "Resume Guest Experience"}
+            </motion.button>
+
+            <div style={{ textAlign: "right" }}>
+              <motion.div
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: "flex-end" }}
+              >
+                <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#7EC8A0" }} />
+                <span style={{ fontSize: "11px", color: "#7EC8A0", letterSpacing: "0.1em" }}>LIVE</span>
+              </motion.div>
+              {lastUpdated && (
+                <div style={{ fontSize: "10px", color: "#6B5E4E", marginTop: "2px" }}>
+                  Updated {elapsed(lastUpdated.toISOString())}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
