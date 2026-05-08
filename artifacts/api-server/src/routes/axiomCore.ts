@@ -41,6 +41,7 @@ import {
   type OperationalStatus,
 }                                          from "../services/enterpriseExecutionEngine";
 import { HardwareLeaseManager }            from "../services/revenue/HardwareLeaseManager";
+import { RuntimeActivationService }        from "../services/runtimeActivation";
 
 const router = Router();
 
@@ -249,6 +250,21 @@ router.post("/hardware/lease", async (req, res) => {
 router.get("/hardware/:venueId", async (req, res) => {
   const result = await HardwareLeaseManager.listByVenue(req.params["venueId"]!);
   res.json({ venueId: req.params["venueId"], ...result });
+});
+
+// ── Runtime Activation Status ─────────────────────────────────────────────────
+
+router.get("/activation/status", async (_req, res) => {
+  if (!RuntimeActivationService.report) {
+    res.status(503).json({ error: "Activation not yet complete" });
+    return;
+  }
+  res.json(RuntimeActivationService.report);
+});
+
+router.post("/activation/refresh", async (_req, res) => {
+  const report = await RuntimeActivationService.run();
+  res.json(report);
 });
 
 export default router;

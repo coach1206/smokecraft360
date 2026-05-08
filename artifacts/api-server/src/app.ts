@@ -432,6 +432,7 @@ import plumbingRouter            from "./routes/plumbing";
 import revenueEngineRouter       from "./routes/revenueEngine";
 import axiomCoreRouter           from "./routes/axiomCore";
 import { BlackBoxRecovery }          from "./services/blackBoxRecovery";
+import { RuntimeActivationService }  from "./services/runtimeActivation";
 import { FounderIntelligenceStream } from "./services/founderIntelligenceStream";
 import { startPredictiveIntentWorker }    from "./workers/predictiveIntentWorker";
 import { startRecurringBillingWorker }    from "./workers/recurringBillingWorker";
@@ -478,8 +479,10 @@ app.use("/api",                         demoSimulateRouter);
 if (process.env["NODE_ENV"] !== "test") {
   BlackBoxRecovery.init();
   startPredictiveIntentWorker();
+  RuntimeActivationService.registerWorker("predictiveIntent");
   startRecurringBillingWorker();
   startAIUsageWorker();
+  RuntimeActivationService.registerWorker("aiUsage");
   startAggregationWorker();
   startExperienceAutomation();
   startSessionCleanupWorker();
@@ -489,6 +492,11 @@ if (process.env["NODE_ENV"] !== "test") {
   startTournamentWorker();
   startFailedWebhookWorker();
   startReconciliationWorker();
+  RuntimeActivationService.registerWorker("reconciliation");
+
+  RuntimeActivationService.run().catch(err =>
+    logger.error({ err }, "AXIOM OS — Runtime Activation failed"),
+  );
 }
 
 // ── 404 + global error handler ────────────────────────────────────────────────
