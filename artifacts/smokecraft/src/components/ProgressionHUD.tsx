@@ -78,6 +78,7 @@ export default function ProgressionHUD({ guestProfileId, craftType, localXp, onA
       setPrevTotal(displayXp);
       return () => clearTimeout(t);
     }
+    return undefined;
   }, [displayXp]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const tier     = tierInfo?.tier     ?? "explorer";

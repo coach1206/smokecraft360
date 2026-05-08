@@ -8,6 +8,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import LiveLeaderboard from "@/components/LiveLeaderboard";
 
 interface GuestTile {
   sessionId:      string;
@@ -230,6 +231,11 @@ export default function StaffFloorCockpit() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* ── Live Leaderboard panel ─────────────────────────────────────────── */}
+      <div style={{ marginBottom: "24px", display: "flex", justifyContent: "flex-end" }}>
+        <LiveLeaderboard craftType="global" compact limit={8} />
       </div>
 
       {/* Guest tiles */}

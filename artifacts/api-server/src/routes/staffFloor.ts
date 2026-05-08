@@ -66,7 +66,7 @@ router.get("/floor", async (req, res) => {
         .where(eq(guestProfilesTable.id, s.guestProfileId))
         .limit(1).catch(() => []);
 
-      if (gp) guest = gp as typeof guest;
+      if (gp) guest = gp as unknown as typeof guest;
 
       // XP total from transactions ledger
       const xpResult = await db

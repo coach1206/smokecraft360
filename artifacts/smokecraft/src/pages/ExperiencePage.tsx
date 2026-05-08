@@ -33,6 +33,8 @@ import AchievementUnlock, { type Achievement } from "@/components/AchievementUnl
 import ProgressionHUD from "@/components/ProgressionHUD";
 import AssistedDiscoveryOverlay from "@/components/AssistedDiscoveryOverlay";
 import ChallengeModal, { type ChallengeQuestion } from "@/components/ChallengeModal";
+import CraftSensoryCanvas from "@/components/CraftSensoryCanvas";
+import StaffRippleTransition from "@/components/StaffRippleTransition";
 
 // ── Ambient particles — same visual language as CraftHub ──────────────────────
 
@@ -790,6 +792,7 @@ export default function ExperiencePage() {
   // ── Render: Main ─────────────────────────────────────────────────────────
 
   return (
+    <StaffRippleTransition>
     <>
     {/* ── Cinematic craft opening — first visit per craft per session ── */}
     {showCinematic && (
@@ -831,6 +834,13 @@ export default function ExperiencePage() {
       }} />
       {/* Ambient particles — same visual DNA as CraftHub */}
       <ExpParticles accent={theme.accent} />
+
+      {/* ── Craft Sensory Canvas — physics-based ambient overlay ─────────────── */}
+      <CraftSensoryCanvas
+        craftType={type as "smoke" | "pour" | "brew" | "vape"}
+        accent={theme.accent}
+        intensity={0.55}
+      />
 
       {/* Header */}
       <div style={{
@@ -1360,6 +1370,7 @@ export default function ExperiencePage() {
       )}
     </AnimatePresence>
     </>
+    </StaffRippleTransition>
   );
 }
 

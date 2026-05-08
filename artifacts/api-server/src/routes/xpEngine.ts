@@ -8,10 +8,12 @@
 
 import { Router } from "express";
 import { z } from "zod";
-import { db } from "@workspace/db";
+import { db, pool } from "@workspace/db";
 import { xpTransactionsTable, guestAchievementsTable, ACHIEVEMENT_REGISTRY } from "@workspace/db/schema";
 import { eq, desc, sql } from "drizzle-orm";
 import { logger } from "../lib/logger";
+import { getIO } from "../lib/socketServer";
+import { broadcastLeaderboard } from "./leaderboard";
 
 const router = Router();
 
@@ -75,6 +77,39 @@ router.post("/award", async (req, res) => {
     if (guestProfileId) {
       newAchievements.push(...await checkAndAwardAchievements(guestProfileId, newTotal, craftType));
     }
+
+    // Log to reward_events for analytics
+    try {
+      const craftScore = Math.min(100, Math.max(0, Math.round((newTotal / 500) * 100)));
+      await pool.query(
+        `INSERT INTO reward_events (guest_profile_id, user_id, event_type, craft_type, xp_delta, craft_score_after, trigger_source, metadata)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [
+          guestProfileId ?? null, userId ?? null,
+          amount >= 0 ? "xp_gain" : "xp_loss",
+          craftType ?? null, amount, craftScore,
+          reason, JSON.stringify(metadata ?? {}),
+        ],
+      );
+    } catch { /* non-blocking */ }
+
+    // Broadcast XP burst + leaderboard update via Socket.io
+    try {
+      const io = getIO();
+      io.emit("xp_burst", {
+        guestProfileId: guestProfileId ?? null,
+        amount, newTotal, tier: tierInfo.tier, ts: Date.now(),
+      });
+      if (newAchievements.length > 0) {
+        io.emit("achievement_unlocked", {
+          guestProfileId,
+          achievements: newAchievements.map(a => ({ id: a.achievementId, name: a.achievementName, xpValue: a.xpValue })),
+          ts: Date.now(),
+        });
+      }
+      // Non-blocking leaderboard refresh
+      broadcastLeaderboard(craftType).catch(() => {});
+    } catch { /* non-blocking */ }
 
     res.json({ success: true, transactionId: txn?.id, newTotal, tier: tierInfo, newAchievements });
   } catch (err) {
