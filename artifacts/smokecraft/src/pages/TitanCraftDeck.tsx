@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation }                 from "wouter";
 import { motion, AnimatePresence }     from "framer-motion";
 import { CRAFT_MODULES }               from "@/data/craftScenes";
+import TickerTape                      from "@/components/TickerTape";
 
 // ── Craft scene data ──────────────────────────────────────────────────────────
 
@@ -89,17 +90,6 @@ function CraftCard({ id, title, color, route, active }: CardProps) {
         inset:      0,
         zIndex:     10,
         background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.10) 45%, transparent 100%)",
-      }} />
-
-      {/* Top atmosphere */}
-      <div style={{
-        position:   "absolute",
-        top:        0,
-        left:       0,
-        right:      0,
-        height:     "35%",
-        zIndex:     10,
-        background: `linear-gradient(to bottom, ${color}15 0%, transparent 100%)`,
       }} />
 
       {/* Animated top accent line — breathing */}
@@ -294,17 +284,18 @@ export default function TitanCraftDeck() {
             </div>
           </div>
 
-          {/* ── Craft carousel ── */}
+          {/* ── Craft carousel — 60vh so ticker + footer always visible ── */}
           <main
             ref={carouselRef}
-            className="hide-scrollbar flex-grow flex items-stretch"
+            className="hide-scrollbar flex-shrink-0"
             style={{
               display:         "flex",
               overflowX:       "scroll",
               scrollSnapType:  "x mandatory",
               gap:             20,
-              padding:         "0 72px 0",
+              padding:         "0 72px",
               alignItems:      "stretch",
+              height:          "60vh",
             }}
           >
             {CRAFT_MODULES.map((mod, i) => (
@@ -358,10 +349,10 @@ export default function TitanCraftDeck() {
             ))}
           </div>
 
-          {/* ── Footer — ultra minimal ── */}
+          {/* ── Footer — ultra minimal, lifted above ticker ── */}
           <footer
             className="relative z-10 flex justify-between items-center flex-shrink-0"
-            style={{ padding: "8px 48px 28px" }}
+            style={{ padding: "8px 48px 12px" }}
           >
             {/* New guest entry — whispered, not shouted */}
             <button
@@ -410,6 +401,9 @@ export default function TitanCraftDeck() {
               Returning?
             </button>
           </footer>
+
+          {/* ── Bottom ticker — live Axiom status & brand feed ── */}
+          <TickerTape position="bottom" />
         </motion.div>
       )}
     </AnimatePresence>

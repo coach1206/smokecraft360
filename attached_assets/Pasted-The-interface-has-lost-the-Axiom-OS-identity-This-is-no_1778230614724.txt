@@ -1,0 +1,181 @@
+The interface has lost the Axiom OS identity.
+This is no longer reading like a precision terminal or intelligent cockpit. It has drifted into a soft “luxury gallery” aesthetic and stripped away the operational machine layer that made the system feel alive.
+
+Critical terminal elements have been buried or removed:
+
+Bottom ticker missing
+DayOne 360 branding missing
+Telemetry and machine feedback removed
+Hardware framing lost
+Images distorted and smashed
+Atmospheric haze overpowering the UI
+Utility visibility sacrificed for mood styling
+
+This system is not a lifestyle landing page.
+It is a live operational command environment.
+
+Restore TitanCraftDeck.tsx to the following architecture immediately:
+
+IMAGE RESTORATION — RAW VISUAL CLARITY
+Every product image must use:
+object-fit: cover;
+object-position: center;
+
+Requirements:
+
+Images must remain razor sharp
+No blur overlays
+No walnut haze layered over images
+No fog filters
+No atmospheric washout
+Preserve raw AI texture detail
+Preserve leather, cigar band, glass, smoke, bottle, and metallic textures exactly as rendered
+
+The user must feel like they are looking at physical premium objects inside a machine interface.
+
+RESTORE THE TERMINAL TICKER
+Rebuild the bottom ticker system.
+
+Specs:
+
+Thin black terminal strip anchored to bottom
+Metallic gold scrolling text
+Font size: text-[10px]
+Tracking: tracking-[0.4em]
+Continuous horizontal motion
+Real terminal cadence
+
+Content examples:
+
+DAYONE 360 ADV
+LIVE STATUS ACTIVE
+SYSTEM LINK STABLE
+RECOMMENDATION ENGINE READY
+AXIOM NODE CONNECTED
+
+The ticker is not clutter.
+The ticker is prestige.
+It creates the feeling of a live enterprise machine.
+
+RESTORE THE “VAULT” PROPORTIONS
+Current layout is oversized and pushing core utility off-screen.
+
+Adjust layout:
+
+height: 60vh;
+max-height: 60vh;
+overflow: hidden;
+
+Requirements:
+
+Footer visible
+Ticker visible
+Header visible
+No card bleed
+No oversized cinematic scaling
+Entire interface must feel contained inside engineered glass hardware
+
+The user should see:
+
+product
+status
+branding
+telemetry
+ticker
+all simultaneously without scrolling.
+HARDWARE HEADER RESTORATION
+Restore the true terminal header.
+
+Left:
+
+AXIOM 360 branding
+
+Right:
+
+live digital clock
+active node indicator
+
+Typography style:
+
+metallic gradient
+white → gold → bronze
+precision hardware aesthetic
+no soft luxury typography
+
+The top bar should feel like:
+
+aviation hardware
+military terminal
+exotic vehicle dashboard
+advanced control surface
+CAROUSEL PHYSICS
+The carousel must move like weighted machinery.
+
+Requirements:
+
+Heavy friction
+Momentum drag
+Smooth inertial deceleration
+Precision snapping
+No lightweight mobile swipe feel
+
+Movement should feel engineered and expensive.
+
+REMOVE THE “ATMOSPHERIC HAZE” PROBLEM
+The system is overusing blur and fog to simulate luxury.
+
+That is incorrect.
+
+Luxury hardware atmosphere comes from:
+
+contrast
+lighting
+reflections
+depth
+metallic edges
+shadow precision
+motion restraint
+
+NOT from blur.
+
+Reduce:
+
+haze overlays
+grain opacity
+fog effects
+smoked wash layers
+
+Increase:
+
+edge lighting
+metallic highlights
+glass reflections
+terminal contrast
+object clarity
+FINAL EXPERIENCE TARGET
+The final feeling should be:
+
+“An intelligent luxury command terminal powering premium craft experiences.”
+
+NOT:
+
+art gallery
+blog
+cinematic wallpaper
+vaporwave dashboard
+mood board
+
+This is a machine cockpit.
+
+The interface should feel:
+
+operational
+alive
+expensive
+intelligent
+physical
+responsive
+controlled
+
+The user must instantly understand:
+“I am operating inside a premium live system

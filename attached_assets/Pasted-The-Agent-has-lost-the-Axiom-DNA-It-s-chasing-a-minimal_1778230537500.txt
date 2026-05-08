@@ -1,0 +1,27 @@
+The Agent has lost the "Axiom DNA." It's chasing a minimalist "art gallery" vibe and has completely deleted the Terminal Utility—the ticker, the telemetry, and the realistic textures that make it feel like a functioning machine.
+
+If you can't see the bottom ticker or the "DayOne 360" branding, the Agent has pushed the layout off the screen and buried the "Machine" elements under that "walnut haze." We need to pull the camera back and restore the Physical Hardware look.
+
+The "Axiom Core Restoration" Fix Prompt
+Paste this into the Replit Agent to bring back the ticker, the clarity, and the machine-feel:
+
+"This is not a blog; it is a Terminal. You have stripped away the utility and the images are still smashed. Reset the architecture of TitanCraftDeck.tsx to these specs:
+
+Image Realism Fix: Force object-fit: cover on every card image. The images must be 100% sharp with zero atmospheric haze or walnut grain over the top. We need the raw AI-generated texture to be visible.
+
+Restore the Ticker: Bring back the Bottom Ticker/Ticker Tape. It should be a thin, black bar with scrolling gold text (text-[10px], tracking-[0.4em]) showing 'DayOne 360 ADV' and live status updates.
+
+The 'Vault' Layout: Shrink the main card container height to 60vh so the ticker and footer are visible at the bottom of the screen. No element should bleed off the glass.
+
+Hardware Header: Restore the 'Axiom 360' branding in the top left and a live digital clock in the top right. Use the Gold Luster Gradient (White to Gold to Bronze) so it looks like metal.
+
+Interaction: Ensure the horizontal carousel actually 'slides.' If a user swipes, it should move with heavy friction.
+
+The goal is a functioning Machined Cockpit. I want to see the product, the status, and the ticker simultaneously. Lift the haze and show the machine."
+
+Why the Agent is failing you right now:
+The "Haze" trap: The Agent thinks "Atmosphere" means making everything blurry. In luxury hardware, atmosphere comes from lighting, not blur. By lifting the haze, the AI images will look like real objects again.
+
+Missing Ticker: The Agent likely deleted the ticker because it thought it was "clutter." In a terminal, the ticker is what provides the Prestige. It makes the user feel like they are looking at a live, expensive system.
+
+The Smash: By forcing object-fit: cover and lowering the height to 60vh, the image will finally fill its container without stretching or being pushed off-screen.
