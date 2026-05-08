@@ -261,7 +261,7 @@ const TitanCraftDeck = () => (
       .tcd-quad     { position:relative; overflow:hidden; }
       .tcd-img      {
         position:absolute; inset:0; width:100%; height:100%;
-        object-fit:cover; object-position:center; display:block;
+        object-fit:cover; object-position:50% 20%; display:block;
         filter:brightness(.75) saturate(1.1);
       }
       .tcd-img-in  { animation:tcd-fadein 1.2s ease forwards; z-index:2; }
