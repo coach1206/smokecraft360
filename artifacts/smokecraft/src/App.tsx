@@ -148,7 +148,7 @@ function AxiomBootManager() {
 function Router() {
   return (
     <Switch>
-      <Route path="/"           component={EnvironmentalOrchestrator} />
+      <Route path="/"           component={TitanCraftDeck} />
       <Route path="/craft-hub"  component={CraftHub}          />
       <Route path="/titan-hub"   component={TitanCraftDeck}           />
       <Route path="/titan-demo"  component={DemographicIntelligence}  />
