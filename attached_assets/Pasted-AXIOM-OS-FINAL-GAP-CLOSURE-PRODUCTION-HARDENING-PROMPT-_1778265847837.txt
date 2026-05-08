@@ -1,0 +1,275 @@
+AXIOM OS — FINAL GAP CLOSURE + PRODUCTION HARDENING PROMPT
+
+ROLE:
+Principal Infrastructure Hardening Engineer, Enterprise Reliability Architect, Runtime Stability Engineer, Security Engineer, Load Testing Engineer, Deployment Engineer, and Production Certification Lead.
+
+MISSION:
+Close ALL remaining operational maturity gaps preventing AXIOM OS from becoming a stable, production-safe, enterprise hospitality intelligence platform.
+
+THIS IS NOT:
+• feature expansion
+• conceptual architecture
+• new system invention
+• UI redesign
+
+THIS IS:
+FINAL HARDENING + REALITY VALIDATION MODE.
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+The platform architecture now exists.
+
+The remaining mission is:
+• stabilization
+• hardening
+• validation
+• optimization
+• deployment maturity
+• real-world survivability
+
+==================================================
+PHASE 1 — DATABASE HARDENING
+==================================================
+
+OBJECTIVE:
+Production-certify PostgreSQL infrastructure.
+
+IMPLEMENT:
+• proper indexes
+• query optimization
+• DB backups
+• replication
+• migration validation
+• archival strategy
+• rollback recovery
+• transaction safety
+
+VALIDATE:
+• no data corruption
+• no orphan records
+• no failed recovery states
+• safe concurrent writes
+
+==================================================
+PHASE 2 — SECURITY HARDENING
+==================================================
+
+OBJECTIVE:
+Enterprise-grade security validation.
+
+IMPLEMENT:
+• MFA
+• RBAC verification
+• API rate limiting
+• tenant isolation verification
+• auth hardening
+• session expiration
+• replay attack prevention
+• penetration testing hooks
+• audit validation
+
+VALIDATE:
+• no privilege escalation
+• no tenant crossover
+• no insecure endpoints
+
+==================================================
+PHASE 3 — SCALE TESTING
+==================================================
+
+OBJECTIVE:
+Stress-test infrastructure under real enterprise conditions.
+
+SIMULATE:
+• 10,000+ sessions
+• websocket floods
+• telemetry spikes
+• AI request surges
+• environmental sync overload
+• multi-location traffic
+
+VALIDATE:
+• graceful degradation
+• no session corruption
+• no orchestration collapse
+• stable recovery
+
+==================================================
+PHASE 4 — HARDWARE VALIDATION
+==================================================
+
+OBJECTIVE:
+Validate real-world venue hardware operations.
+
+TEST:
+• tablets
+• kiosks
+• smart TVs
+• lighting systems
+• environmental sync
+• reconnect recovery
+• WiFi interruptions
+
+VALIDATE:
+• reconnect stability
+• hardware recovery
+• synchronization persistence
+
+==================================================
+PHASE 5 — AI STABILITY + COST CONTROL
+==================================================
+
+OBJECTIVE:
+Production-safe AI infrastructure.
+
+IMPLEMENT:
+• provider failover
+• retry pipelines
+• moderation enforcement
+• AI queue protection
+• token runaway protection
+• AI cost monitoring
+• response caching
+
+VALIDATE:
+• AI survives provider outages
+• AI costs remain controlled
+• AI latency remains stable
+
+==================================================
+PHASE 6 — OBSERVABILITY + ALERTING
+==================================================
+
+OBJECTIVE:
+Make AXIOM operationally observable.
+
+IMPLEMENT:
+• runtime monitoring
+• latency monitoring
+• memory tracking
+• infrastructure alerts
+• AI alerts
+• telemetry alerts
+• recovery notifications
+
+VALIDATE:
+• failures detected immediately
+• alerts trigger correctly
+• runtime health visible globally
+
+==================================================
+PHASE 7 — DEPLOYMENT MATURITY
+==================================================
+
+OBJECTIVE:
+Operationalize deployments.
+
+IMPLEMENT:
+• CI/CD
+• rollback systems
+• environment provisioning
+• deployment validation
+• health checks
+• startup validation
+• deployment automation
+
+VALIDATE:
+• deployments recover safely
+• rollback works correctly
+• environments provision automatically
+
+==================================================
+PHASE 8 — PILOT VENUE VALIDATION
+==================================================
+
+OBJECTIVE:
+Validate AXIOM in real hospitality environments.
+
+DEPLOY TO:
+• cigar lounges
+• cocktail lounges
+• whiskey bars
+• luxury venues
+
+TRACK:
+• guest engagement
+• handoff stability
+• AI influence
+• recommendation conversion
+• hardware reliability
+• environmental response
+
+VALIDATE:
+• real-world operational stability
+• guest adoption
+• staff usability
+• environmental synchronization
+
+==================================================
+PHASE 9 — EXPERIENCE REFINEMENT
+==================================================
+
+OBJECTIVE:
+Perfect the emotional experience.
+
+OPTIMIZE:
+• motion timing
+• ripple transitions
+• environmental pacing
+• tactile realism
+• metallic materials
+• sensory synchronization
+• emotional flow
+
+REQUIREMENT:
+The platform must FEEL:
+alive,
+intelligent,
+luxury-grade,
+and operationally cinematic.
+
+==================================================
+PHASE 10 — FINAL CERTIFICATION
+==================================================
+
+AXIOM OS IS ONLY CONSIDERED COMPLETE WHEN:
+
+• telemetry survives failures
+• AI survives outages
+• sessions recover correctly
+• handoffs restore correctly
+• tenants isolate correctly
+• environments fail gracefully
+• billing reconciles correctly
+• hardware reconnects correctly
+• deployments recover correctly
+• alerts function correctly
+• stress tests pass successfully
+• pilot venues operate successfully
+
+==================================================
+FINAL DIRECTIVE
+==================================================
+
+NO new conceptual systems.
+
+FOCUS ONLY ON:
+• stabilization
+• optimization
+• validation
+• recovery
+• hardening
+• operational excellence
+• deployment maturity
+
+AXIOM OS must now evolve from:
+advanced infrastructure
+
+INTO:
+stable,
+battle-tested,
+production-certified hospitality intelligence infrastructure.
+
+EXECUTE FINAL GAP CLOSURE NOW.

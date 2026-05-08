@@ -129,6 +129,16 @@ export const voiceQueueEnqueueLimiter = rateLimit({
   message: { error: "Too many voice commands queued — please wait a moment" },
 });
 
+/* AI endpoint limiter — every call burns paid tokens (OpenAI / ElevenLabs).
+ * 10/min/IP is generous for a human asking the mentor AI questions in real time
+ * (one question every 6 seconds is already aggressive); it chokes off a runaway
+ * client or misconfigured frontend that might loop requests and blow the token budget. */
+export const aiLimiter = rateLimit({
+  ...shared,
+  limit:   10,
+  message: { error: "Too many AI requests — please wait a moment before asking again" },
+});
+
 /* Memory-write limiter — authed writes (POST/PATCH/DELETE on /api/memories).
  * A legitimate user might bulk-set ~50 memories during onboarding, so 60/min/IP
  * leaves slack while still choking off a runaway client cycling keys to thrash

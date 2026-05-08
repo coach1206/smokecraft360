@@ -431,13 +431,19 @@ import founderIntelligenceRouter from "./routes/founderIntelligence";
 import plumbingRouter            from "./routes/plumbing";
 import revenueEngineRouter       from "./routes/revenueEngine";
 import axiomCoreRouter           from "./routes/axiomCore";
-import { BlackBoxRecovery }          from "./services/blackBoxRecovery";
-import { RuntimeActivationService }  from "./services/runtimeActivation";
-import { FounderIntelligenceStream } from "./services/founderIntelligenceStream";
+import { BlackBoxRecovery }               from "./services/blackBoxRecovery";
+import { RuntimeActivationService }       from "./services/runtimeActivation";
+import { FounderIntelligenceStream }      from "./services/founderIntelligenceStream";
+import {
+  validateEnv,
+  initProductionIndexes,
+  deepHealthCheck,
+}                                         from "./services/productionHardening";
+import { aiLimiter }                      from "./middleware/rateLimit";
 import { startPredictiveIntentWorker }    from "./workers/predictiveIntentWorker";
 import { startRecurringBillingWorker }    from "./workers/recurringBillingWorker";
 import { startAIUsageWorker }             from "./workers/aiUsageWorker";
-app.use("/api/mentor",        mentorAIRouter);
+app.use("/api/mentor",        aiLimiter, mentorAIRouter);
 app.use("/api/xp",            xpEngineRouter);
 app.use("/api/staff",         staffFloorRouter);
 app.use("/api/leaderboard",   leaderboardRouter);
@@ -475,8 +481,24 @@ app.use("/api",                         onboardingRouter);
 app.use("/api",                         aiConfigureRouter);
 app.use("/api",                         demoSimulateRouter);
 
+// ── Deep health endpoint ───────────────────────────────────────────────────────
+
+app.get("/api/health/deep", async (_req, res) => {
+  try {
+    const report = await deepHealthCheck();
+    const status = report.overallStatus === "unhealthy" ? 503 : 200;
+    res.status(status).json(report);
+  } catch (err) {
+    logger.error({ err }, "deep health check failed");
+    res.status(500).json({ error: "health check failed" });
+  }
+});
+
 // Start background workers
 if (process.env["NODE_ENV"] !== "test") {
+  // Validate required environment variables immediately at startup
+  validateEnv();
+
   BlackBoxRecovery.init();
   startPredictiveIntentWorker();
   RuntimeActivationService.registerWorker("predictiveIntent");
@@ -494,9 +516,11 @@ if (process.env["NODE_ENV"] !== "test") {
   startReconciliationWorker();
   RuntimeActivationService.registerWorker("reconciliation");
 
-  RuntimeActivationService.run().catch(err =>
-    logger.error({ err }, "AXIOM OS — Runtime Activation failed"),
-  );
+  // Non-blocking DB index hardening + runtime activation
+  Promise.all([
+    initProductionIndexes(),
+    RuntimeActivationService.run(),
+  ]).catch(err => logger.error({ err }, "AXIOM OS — startup hardening failed"));
 }
 
 // ── 404 + global error handler ────────────────────────────────────────────────

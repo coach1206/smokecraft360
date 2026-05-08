@@ -12,6 +12,7 @@ import { openai } from "@workspace/integrations-openai-ai-server";
 import { db } from "@workspace/db";
 import { challengeProgressTable } from "@workspace/db/schema";
 import { logger } from "../lib/logger";
+import { aiResponseCache } from "../services/productionHardening";
 
 const router = Router();
 
@@ -157,6 +158,16 @@ router.post("/generate-challenge", async (req, res) => {
 
   const userMessage = `Generate a ${guestLevel}-level question about ${craftFocus[craftType] ?? craftType}. ${tagContext} Make it specific, educational, and elegant.`;
 
+  // Check TTL cache — cache key is deterministic on craftType + level + tags
+  // (sessionId / guestProfileId are excluded so challenges are reusable across guests)
+  const cacheKey = `challenge:${craftType}:${guestLevel}:${recentTags.slice(0, 6).sort().join(",")}`;
+  const cached = aiResponseCache.get(cacheKey);
+  if (cached) {
+    logger.debug({ cacheKey }, "generate-challenge: cache hit");
+    res.json({ ...JSON.parse(cached), cached: true });
+    return;
+  }
+
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-4.1-mini",
@@ -175,6 +186,9 @@ router.post("/generate-challenge", async (req, res) => {
     const challenge = JSON.parse(jsonMatch[0]) as {
       question: string; options: string[]; correctIndex: number; explanation: string;
     };
+
+    // Cache the raw challenge JSON for 10 min (excludes challengeId — added after)
+    aiResponseCache.set(cacheKey, JSON.stringify(challenge));
 
     // Persist to DB
     let challengeId: string | undefined;
