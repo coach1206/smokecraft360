@@ -51,7 +51,8 @@ import VendorTouchscreen    from "@/pages/VendorTouchscreen";
 import DemoExperienceCenter from "@/pages/DemoExperienceCenter";
 import CraftHub            from "@/pages/CraftHub";
 import Axiom360            from "@/pages/Axiom360";
-import TitanCraftDeck           from "@/pages/TitanCraftDeck";
+import TitanCraftDeck              from "@/pages/TitanCraftDeck";
+import EnvironmentalOrchestrator   from "@/pages/EnvironmentalOrchestrator";
 import DemographicIntelligence  from "@/pages/DemographicIntelligence";
 import ExperienceControlPanel from "@/pages/ExperienceControlPanel";
 import SmokeCraft360         from "@/pages/SmokeCraft360";
@@ -147,7 +148,7 @@ function AxiomBootManager() {
 function Router() {
   return (
     <Switch>
-      <Route path="/"           component={TitanCraftDeck}     />
+      <Route path="/"           component={EnvironmentalOrchestrator} />
       <Route path="/craft-hub"  component={CraftHub}          />
       <Route path="/titan-hub"   component={TitanCraftDeck}           />
       <Route path="/titan-demo"  component={DemographicIntelligence}  />

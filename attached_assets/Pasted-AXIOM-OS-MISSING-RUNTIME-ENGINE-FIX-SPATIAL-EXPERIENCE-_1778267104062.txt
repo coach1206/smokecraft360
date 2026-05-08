@@ -1,0 +1,184 @@
+AXIOM OS — MISSING RUNTIME ENGINE FIX
+SPATIAL EXPERIENCE + ENVIRONMENTAL ORCHESTRATION IMPLEMENTATION
+
+MISSION:
+Implement the missing runtime orchestration layers required to fully remove the software/dashboard/POS feeling from AXIOM OS.
+
+The infrastructure now exists.
+
+The missing layer is:
+LIVE EXPERIENCE ORCHESTRATION.
+
+==================================================
+CREATE THESE MISSING RUNTIME ENGINES
+==================================================
+
+CREATE:
+client/src/engines/ExperienceStateEngine.ts
+
+PURPOSE:
+Controls:
+• guest states
+• emotional pacing
+• environment states
+• experience transitions
+• orchestration flow
+• active craft state
+• session continuity
+
+==================================================
+
+CREATE:
+client/src/engines/EnvironmentalOrchestrator.ts
+
+PURPOSE:
+Controls:
+• environmental morphing
+• atmospheric transitions
+• adaptive environment reactions
+• sensory pacing
+• environmental intensity
+• cinematic state shifting
+
+==================================================
+
+CREATE:
+client/src/engines/SpatialNavigationEngine.ts
+
+PURPOSE:
+REPLACE:
+traditional navigation logic.
+
+ENABLE:
+• atmospheric drifting
+• immersive transitions
+• environmental entry states
+• contextual movement
+• cinematic navigation
+
+NO:
+tiles.
+NO:
+dashboard navigation.
+
+==================================================
+
+CREATE:
+client/src/engines/SignalVisualizationEngine.ts
+
+PURPOSE:
+Controls:
+• telemetry pulses
+• orchestration routing
+• operational heartbeat
+• intelligence flow
+• live synchronization visualization
+• environmental AI movement
+
+The system must visually feel:
+alive.
+
+==================================================
+
+CREATE:
+client/src/engines/CinematicTransitionEngine.ts
+
+PURPOSE:
+Controls:
+• ripple transitions
+• liquid-glass morphing
+• phase-shift transitions
+• environmental distortion waves
+• operational overlay emergence
+• handoff restoration transitions
+
+==================================================
+
+CREATE:
+client/src/engines/EnvironmentalMemoryEngine.ts
+
+PURPOSE:
+Controls:
+• atmosphere persistence
+• guest continuity
+• sensory continuity
+• return-state restoration
+• emotional continuity
+• environmental calibration recovery
+
+==================================================
+
+CREATE:
+client/src/engines/ExperienceFlowOrchestrator.ts
+
+PURPOSE:
+Controls:
+• onboarding progression
+• mood discovery flow
+• adaptive recommendation pacing
+• mentor timing
+• recap transitions
+• unlock progression
+• journey orchestration
+
+==================================================
+GLOBAL SYSTEM RULES
+==================================================
+
+REMOVE:
+• app feeling
+• dashboard feeling
+• POS feeling
+• page navigation feeling
+
+REPLACE WITH:
+• environmental interaction
+• atmospheric orchestration
+• cinematic operational intelligence
+• spatial experience flow
+
+==================================================
+VISUAL REQUIREMENTS
+==================================================
+
+THE ENVIRONMENT ITSELF MUST:
+• behave like the interface
+• react intelligently
+• morph dynamically
+• pulse operationally
+• synchronize atmospherically
+
+==================================================
+XEI + EEIS REQUIREMENTS
+==================================================
+
+VISUALLY SURFACE:
+• predictive intelligence
+• telemetry movement
+• orchestration routing
+• environmental synchronization
+• operational heartbeat
+• venue intelligence
+
+==================================================
+HANDOFF REQUIREMENTS
+==================================================
+
+STAFF HANDOFF MUST:
+• ripple morph
+• surface hidden operational intelligence
+• maintain guest continuity
+• preserve environment state
+• preserve journey state
+
+==================================================
+FINAL RULE
+==================================================
+
+AXIOM OS must now behave like:
+a living hospitality intelligence environment.
+
+NOT:
+software.
+
+IMPLEMENT ALL MISSING RUNTIME ORCHESTRATION ENGINES NOW.
