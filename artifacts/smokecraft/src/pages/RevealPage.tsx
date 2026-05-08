@@ -280,21 +280,26 @@ export default function RevealPage() {
     return (
       <div style={{
         position: "fixed", inset: 0,
-        background: "#F5F2ED",
+        background: "#050505",
         display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center",
         gap: 18,
       }}>
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse 70% 50% at 50% 0%, rgba(200,135,51,0.07) 0%, transparent 60%)",
+          pointerEvents: "none",
+        }} />
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 1.4, repeat: Infinity, ease: "linear" }}
           style={{
             width: 48, height: 48, borderRadius: "50%",
-            border: "3px solid rgba(212,139,0,0.18)",
-            borderTop: "3px solid #D48B00",
+            border: "2px solid rgba(200,135,51,0.14)",
+            borderTop: "2px solid #C88733",
           }}
         />
-        <p style={{ color: "rgba(240,232,216,0.45)", fontSize: 14 }}>
+        <p style={{ color: "rgba(232,220,200,0.40)", fontSize: 13, letterSpacing: "0.1em" }}>
           Crafting your perfect match…
         </p>
       </div>
@@ -306,26 +311,34 @@ export default function RevealPage() {
   return (
     <div style={{
       minHeight:     "100dvh",
-      background:    "#F5F2ED",
-      color:         "#f0e8d8",
+      background:    "#050505",
+      color:         "#E8DCC8",
       display:       "flex",
       flexDirection: "column",
     }}>
-      {/* Background */}
+      {/* Background — faint craft image, deeply shadowed */}
       <div style={{
         position: "fixed", inset: 0,
         backgroundImage: `url(${theme.bgImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        opacity: 0.06,
-        filter: "blur(5px)",
-        transform: "scale(1.06)",
+        opacity: 0.05,
+        filter: "blur(8px) saturate(0.4)",
+        transform: "scale(1.08)",
         pointerEvents: "none",
         zIndex: 0,
       }} />
+      {/* Obsidian overlay — deep lounge atmosphere */}
       <div style={{
         position: "fixed", inset: 0,
-        background: "linear-gradient(180deg, rgba(245,242,237,0.7) 0%, rgba(245,242,237,0.5) 50%, rgba(245,242,237,0.9) 100%)",
+        background: "linear-gradient(180deg, rgba(5,5,5,0.82) 0%, rgba(5,5,5,0.60) 40%, rgba(5,5,5,0.90) 100%)",
+        pointerEvents: "none",
+        zIndex: 0,
+      }} />
+      {/* Ambient whiskey warmth — top glow */}
+      <div style={{
+        position: "fixed", inset: 0,
+        background: "radial-gradient(ellipse 70% 40% at 50% 0%, rgba(200,135,51,0.08) 0%, transparent 60%)",
         pointerEvents: "none",
         zIndex: 0,
       }} />
@@ -479,10 +492,10 @@ export default function RevealPage() {
           style={{
             width: "100%", maxWidth: 380, padding: "13px",
             borderRadius: 12,
-            background: "rgba(26,26,27,0.06)",
-            border: "1px solid rgba(26,26,27,0.10)",
-            color: "rgba(240,232,216,0.42)",
-            fontSize: 13, cursor: "pointer",
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            color: "rgba(232,220,200,0.35)",
+            fontSize: 13, cursor: "pointer", letterSpacing: "0.05em",
           }}
         >
           Refine my profile — swipe again
@@ -533,20 +546,20 @@ function ChemMeter({ label, value, accent }: { label: string; value: number; acc
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
         <span style={{
           fontSize: 8, letterSpacing: "0.2em", textTransform: "uppercase" as const,
-          color: "rgba(26,26,27,0.38)", fontWeight: 600,
+          color: "rgba(232,220,200,0.30)", fontWeight: 600,
         }}>{label}</span>
         <span style={{ fontSize: 9, color: accent, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
           {value}
         </span>
       </div>
-      <div style={{ height: 3, borderRadius: 2, background: "rgba(26,26,27,0.09)" }}>
+      <div style={{ height: 2, borderRadius: 2, background: "rgba(255,255,255,0.07)" }}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${value}%` }}
-          transition={{ duration: 0.9, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.1, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}
           style={{
             height: "100%", borderRadius: 2,
-            background: `linear-gradient(90deg, ${accent}55, ${accent})`,
+            background: `linear-gradient(90deg, ${accent}44, ${accent})`,
           }}
         />
       </div>
@@ -625,7 +638,7 @@ function MentorIntelSection({ chemistry, mentorName, intelInsight, accentColor }
           margin: 0, fontSize: 12,
           fontFamily: "'Cormorant Garamond', Georgia, serif",
           fontStyle: "italic", fontWeight: 300, lineHeight: 1.52,
-          color: "rgba(26,26,27,0.48)",
+          color: "rgba(232,220,200,0.45)",
           borderLeft: `1.5px solid ${accentColor}22`,
           paddingLeft: 10,
         }}>
@@ -641,7 +654,7 @@ function MentorIntelSection({ chemistry, mentorName, intelInsight, accentColor }
           transition={{ delay: 1.1 }}
           style={{
             margin: "9px 0 0", fontSize: 11, lineHeight: 1.55,
-            color: "rgba(26,26,27,0.28)", fontStyle: "italic",
+            color: "rgba(232,220,200,0.25)", fontStyle: "italic",
           }}
         >
           {intelInsight}
@@ -677,14 +690,14 @@ function RevealCard({ rec, rank, theme, ordering, ordered, error, onOrder, delay
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
       style={{
-        background:   "rgba(18,12,8,0.88)",
-        border:       `1px solid ${isTopPick ? `${theme.accent}45` : "rgba(26,26,27,0.09)"}`,
+        background:   "linear-gradient(160deg, rgba(22,16,10,0.92) 0%, rgba(12,9,5,0.96) 100%)",
+        border:       `1px solid ${isTopPick ? `${theme.accent}40` : "rgba(255,255,255,0.06)"}`,
         borderRadius: 22,
         overflow:     "hidden",
-        backdropFilter: "blur(16px)",
+        backdropFilter: "blur(20px)",
         boxShadow:    isTopPick
-          ? `0 12px 48px rgba(26,26,27,0.22), 0 0 0 1px ${theme.accent}18 inset`
-          : "0 6px 24px rgba(26,26,27,0.08)",
+          ? `0 20px 60px rgba(0,0,0,0.70), 0 0 40px ${theme.accent}10`
+          : "0 10px 40px rgba(0,0,0,0.55)",
       }}
     >
       {/* Image banner */}
@@ -710,7 +723,7 @@ function RevealCard({ rec, rank, theme, ordering, ordered, error, onOrder, delay
                 background: `linear-gradient(135deg, ${theme.accent}, ${theme.accentSoft})`,
                 borderRadius: 8, padding: "5px 12px",
                 fontSize: 10, fontWeight: 800,
-                color: "#F5F2ED", letterSpacing: "0.12em",
+                color: "#050505", letterSpacing: "0.12em",
               }}
             >
               TOP PICK
@@ -747,11 +760,11 @@ function RevealCard({ rec, rank, theme, ordering, ordered, error, onOrder, delay
             width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
             background: isTopPick
               ? `linear-gradient(135deg, ${theme.accent}, ${theme.accentSoft})`
-              : "rgba(26,26,27,0.08)",
-            border: `1px solid ${isTopPick ? "transparent" : "rgba(255,255,255,0.1)"}`,
+              : "rgba(255,255,255,0.05)",
+            border: `1px solid ${isTopPick ? "transparent" : "rgba(255,255,255,0.08)"}`,
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 12, fontWeight: 700,
-            color: isTopPick ? "#F5F2ED" : "rgba(240,232,216,0.4)",
+            color: isTopPick ? "#050505" : "rgba(232,220,200,0.35)",
           }}>
             {rank}
           </div>
@@ -785,15 +798,15 @@ function RevealCard({ rec, rank, theme, ordering, ordered, error, onOrder, delay
         <div style={{ marginBottom: 12 }}>
           <div style={{
             display: "flex", justifyContent: "space-between",
-            fontSize: 11, color: "rgba(240,232,216,0.38)",
+            fontSize: 11, color: "rgba(232,220,200,0.32)",
             marginBottom: 5, letterSpacing: "0.06em",
           }}>
             <span>Taste Match</span>
             <span style={{ color: theme.accent, fontWeight: 600 }}>{rec.tasteMatch}%</span>
           </div>
           <div style={{
-            height: 5, borderRadius: 4,
-            background: "rgba(26,26,27,0.09)",
+            height: 4, borderRadius: 4,
+            background: "rgba(255,255,255,0.06)",
             overflow: "hidden",
           }}>
             <motion.div
@@ -810,8 +823,8 @@ function RevealCard({ rec, rank, theme, ordering, ordered, error, onOrder, delay
 
         {/* Reason */}
         <p style={{
-          fontSize: 13, color: "rgba(240,232,216,0.58)",
-          lineHeight: 1.55, margin: "0 0 10px",
+          fontSize: 13, color: "rgba(232,220,200,0.55)",
+          lineHeight: 1.60, margin: "0 0 10px",
         }}>
           {rec.reason}
         </p>
@@ -864,15 +877,15 @@ function RevealCard({ rec, rank, theme, ordering, ordered, error, onOrder, delay
             borderRadius:   13,
             border:         "none",
             background:     ordered
-              ? "rgba(52,211,153,0.12)"
+              ? "rgba(52,211,153,0.10)"
               : rec.stockStatus === "out"
-              ? "rgba(26,26,27,0.06)"
+              ? "rgba(255,255,255,0.04)"
               : `linear-gradient(135deg, ${theme.accent}, ${theme.accentSoft})`,
             color:          ordered
-              ? "#34d399"
+              ? "#4ade80"
               : rec.stockStatus === "out"
-              ? "rgba(240,232,216,0.25)"
-              : "#F5F2ED",
+              ? "rgba(232,220,200,0.20)"
+              : "#050505",
             fontSize:       14,
             fontWeight:     700,
             cursor:         ordered || rec.stockStatus === "out" ? "default" : "pointer",
@@ -892,8 +905,8 @@ function RevealCard({ rec, rank, theme, ordering, ordered, error, onOrder, delay
                 transition={{ duration: 0.7, repeat: Infinity, ease: "linear" }}
                 style={{
                   width: 14, height: 14, borderRadius: "50%",
-                  border: "2px solid rgba(245,242,237,0.3)",
-                  borderTop: "2px solid #F5F2ED",
+                  border: "2px solid rgba(5,5,5,0.25)",
+                  borderTop: "2px solid #050505",
                 }}
               />
               Adding…
@@ -929,15 +942,15 @@ function EmptyState({
     >
       <div style={{
         width: 72, height: 72, borderRadius: "50%",
-        background: "rgba(26,26,27,0.06)",
-        border: "1px solid rgba(26,26,27,0.10)",
+        background: "rgba(255,255,255,0.04)",
+        border: "1px solid rgba(255,255,255,0.07)",
         display: "flex", alignItems: "center", justifyContent: "center",
       }}>
-        <ShoppingBag size={30} color="rgba(240,232,216,0.25)" />
+        <ShoppingBag size={30} color="rgba(232,220,200,0.22)" />
       </div>
-      <p style={{ color: "rgba(240,232,216,0.38)", textAlign: "center", lineHeight: 1.65, maxWidth: 280, fontSize: 14 }}>
+      <p style={{ color: "rgba(232,220,200,0.36)", textAlign: "center", lineHeight: 1.65, maxWidth: 280, fontSize: 14 }}>
         No stocked inventory matched your profile yet.<br />
-        <span style={{ fontSize: 12, color: "rgba(240,232,216,0.25)" }}>
+        <span style={{ fontSize: 12, color: "rgba(232,220,200,0.22)" }}>
           Add product tags in the inventory dashboard to improve recommendations.
         </span>
       </p>
@@ -973,11 +986,11 @@ function OrderConfirmModal({
       exit={{ opacity: 0 }}
       style={{
         position: "fixed", inset: 0,
-        background: "rgba(245,242,237,0.85)",
+        background: "rgba(5,5,5,0.82)",
         zIndex: 100,
         display: "flex", alignItems: "center", justifyContent: "center",
         padding: 24,
-        backdropFilter: "blur(8px)",
+        backdropFilter: "blur(20px)",
       }}
       onClick={onClose}
     >
@@ -988,13 +1001,13 @@ function OrderConfirmModal({
         transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
         onClick={e => e.stopPropagation()}
         style={{
-          background: "rgba(18,12,8,0.98)",
-          border: `1px solid ${theme.accent}35`,
+          background: "linear-gradient(160deg, rgba(26,18,10,0.98) 0%, rgba(10,7,4,1) 100%)",
+          border: `1px solid ${theme.accent}30`,
           borderRadius: 24,
           padding: "40px 32px 32px",
           maxWidth: 360, width: "100%",
           textAlign: "center",
-          boxShadow: `0 24px 80px rgba(26,26,27,0.32), 0 0 60px ${theme.accent}20`,
+          boxShadow: `0 40px 100px rgba(0,0,0,0.90), 0 0 80px ${theme.accent}12`,
         }}
       >
         {/* Checkmark */}
@@ -1019,12 +1032,12 @@ function OrderConfirmModal({
         </motion.div>
 
         <h3 style={{
-          fontSize: 20, fontWeight: 700, color: "#f0e8d8",
+          fontSize: 20, fontWeight: 700, color: "#E8DCC8",
           fontFamily: "'Playfair Display', serif", margin: "0 0 8px",
         }}>
           Added to Order
         </h3>
-        <p style={{ fontSize: 14, color: "rgba(240,232,216,0.55)", margin: "0 0 6px" }}>
+        <p style={{ fontSize: 14, color: "rgba(232,220,200,0.52)", margin: "0 0 6px" }}>
           {confirm.itemName}
         </p>
         {confirm.priceCents > 0 && (
@@ -1032,7 +1045,7 @@ function OrderConfirmModal({
             ${(confirm.priceCents / 100).toFixed(2)}
           </p>
         )}
-        <p style={{ fontSize: 12, color: "rgba(240,232,216,0.3)", margin: "0 0 24px" }}>
+        <p style={{ fontSize: 12, color: "rgba(232,220,200,0.25)", margin: "0 0 24px", letterSpacing: "0.04em" }}>
           A reservation has been held. Complete your order at the counter.
         </p>
 
@@ -1043,7 +1056,7 @@ function OrderConfirmModal({
             width: "100%", padding: "14px",
             borderRadius: 12,
             background: `linear-gradient(135deg, ${theme.accent}, ${theme.accentSoft})`,
-            border: "none", color: "#F5F2ED",
+            border: "none", color: "#050505",
             fontSize: 14, fontWeight: 700, cursor: "pointer",
           }}
         >
