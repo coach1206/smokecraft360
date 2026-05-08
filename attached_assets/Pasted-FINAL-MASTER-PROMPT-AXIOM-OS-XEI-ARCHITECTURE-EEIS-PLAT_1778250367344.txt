@@ -1,0 +1,808 @@
+FINAL MASTER PROMPT
+
+AXIOM OS + XEI ARCHITECTURE + EEIS PLATFORM
+
+COMPLETE MERGED HOSPITALITY INTELLIGENCE ECOSYSTEM
+
+FULL PRODUCTION IMPLEMENTATION PROMPT
+
+MISSING / REQUIRED
+
+Before building, verify or create these foundational systems first:
+
+• Neural Bridge real-time event architecture
+• Websocket synchronization system
+• OpenAI integration
+• OpenAI Voice integration
+• Session snapshot + restore engine
+• Operational handoff engine
+• Assisted Discovery Mode
+• Environmental animation engine
+• GPU-accelerated rendering layer
+• Dynamic telemetry system
+• Behavioral analytics engine
+• Predictive recommendation engine
+• AI mentor architecture
+• Universal progression engine
+• XP + achievement architecture
+• Layered sound engine
+• Live inventory synchronization
+• Staff operational cockpit
+• Touchscreen optimization system
+• Persistent profile architecture
+• Real-time AI insight engine
+
+If ANY are missing:
+build BEFORE continuing.
+
+⸻
+
+FAILURE PREVENTION CHECKLIST
+
+DO NOT:
+• build flat UI
+• use dead/static backgrounds
+• use generic POS layouts
+• use spreadsheets as primary UX
+• use SaaS-style dashboards
+• use tiny buttons
+• use abrupt transitions
+• use cartoon effects
+• use emojis
+• use glyph icon packs
+• use static inventory tables
+• use traditional menu-heavy navigation
+• trap users in flows
+• break environmental immersion
+• allow the environment to fully stop moving
+• visually disconnect branding from AXIOM OS
+
+MUST:
+• maintain cinematic environmental motion
+• preserve luxury realism
+• use liquid-glass dimensionality
+• maintain atmospheric depth
+• create touch-first ergonomics
+• preserve Apple/Tesla-level smoothness
+• use floating spatial layers
+• maintain persistent AXIOM branding
+• create operational elegance
+• preserve immersive transitions
+• use realistic imagery only
+• include global back buttons + escape systems
+• make the venue feel alive
+
+⸻
+
+MASTER PLATFORM IDENTITY
+
+Build a living hospitality intelligence ecosystem called:
+
+AXIOM OS
+
+Powered by:
+
+PROFOUND INNOVATIONS
+
+Containing immersive intelligent environments:
+
+• SmokeCraft 360
+• PourCraft 360
+• BrewCraft 360
+• VapeCraft 360
+• CoreCraft 360
+
+Powered by:
+
+XEI ARCHITECTURE
+
+Experience Enhancement Intelligence
+
+Containing:
+
+EEIS
+
+Experience Enhancement Intelligence System
+
+This is NOT:
+• a POS
+• a dashboard
+• a kiosk
+• a website
+• an ordering app
+
+This is:
+
+A Living Hospitality Intelligence Environment
+
+The system should feel like:
+
+Apple Vision Pro
+
+* Tesla telemetry
+* luxury hospitality
+* behavioral AI
+* cinematic lounge environments.
+
+⸻
+
+EEIS PLATFORM POSITIONING
+
+Globally replace ALL “POS” terminology with:
+
+EEIS
+
+Experience Enhancement Intelligence System
+
+The system must NEVER be referred to as:
+• POS
+• point of sale
+• admin dashboard
+• venue software
+
+Instead use:
+• Experience Intelligence
+• Experience Orchestration
+• Live Experience Floor
+• Experience Control Layer
+• Guest Dynamics
+• XEI Insights
+• Operational Experience Layer
+• Venue Intelligence
+• Experience Enhancement Layer
+
+The emotional positioning should be:
+
+“This intelligently enhances hospitality experiences.”
+
+NOT:
+
+“This processes transactions.”
+
+⸻
+
+AXIOM ATMOSPHERIC INTERFACE SYSTEM
+
+Build a proprietary visual language called:
+
+AXIOM ATMOSPHERIC INTERFACE SYSTEM
+
+The interface must feel:
+• alive
+• dimensional
+• luxurious
+• atmospheric
+• intelligent
+• cinematic
+• operational
+• reactive
+
+NOT:
+software-like.
+
+⸻
+
+AXIOM MATERIAL SYSTEM
+
+Create a proprietary material system called:
+
+AXIOM MATERIAL
+
+Use:
+• liquid-glass distortion
+• smoked-glass transparency
+• obsidian depth
+• walnut textures
+• metallic telemetry
+• ember edge glow
+• environmental fog
+• floating reflections
+• cinematic blur depth
+• light bloom
+• atmospheric particles
+
+Panels should feel:
+physical,
+premium,
+and immersive.
+
+⸻
+
+PERSISTENT AXIOM BRANDING
+
+AXIOM OS branding must ALWAYS exist within the environment.
+
+Examples:
+• etched telemetry marks
+• metallic logo reflections
+• floating Axiom rings
+• operational watermarking
+• ambient signature overlays
+• smoked-glass embossing
+
+The user should ALWAYS subconsciously feel:
+they are INSIDE AXIOM OS.
+
+⸻
+
+GLOBAL CRAFT BRANDING
+
+ALL environments MUST use official naming:
+
+• SmokeCraft 360
+• PourCraft 360
+• BrewCraft 360
+• VapeCraft 360
+• CoreCraft 360
+
+Future systems MUST follow:
+
+[Name]Craft 360
+
+Never use generic labels like:
+“drink menu”
+“beer app”
+“cigar section.”
+
+⸻
+
+ENVIRONMENTAL DEPTH RULE
+
+NO screen should EVER feel:
+flat,
+empty,
+or static.
+
+ALL environments must contain:
+• smoke
+• particles
+• vapor
+• telemetry movement
+• reflections
+• atmospheric fog
+• ember glow
+• dimensional lighting
+• cinematic blur
+• environmental movement
+
+Nothing should ever fully stop moving.
+
+⸻
+
+MICRO-MOTION ENGINE
+
+Create continuous subtle motion:
+• smoke drifting
+• ember pulsing
+• telemetry breathing
+• liquid movement
+• glass shimmer
+• vapor flow
+• reflection shifts
+• light bleeding
+• particle drifting
+
+This creates:
+psychological aliveness.
+
+⸻
+
+DYNAMIC LIGHTING SYSTEM
+
+Lighting adapts based on:
+• craft selected
+• venue activity
+• operational mode
+• challenge progression
+• loyalty level
+• engagement energy
+• time of day
+
+Lighting Profiles:
+
+SMOKECRAFT 360
+
+Warm ember glow
+Walnut reflections
+Dark lounge warmth
+
+POURCRAFT 360
+
+Amber crystal lighting
+Liquid reflections
+Gold refractions
+
+BREWCRAFT 360
+
+Copper warmth
+Foam brightness
+Brewery atmosphere
+
+VAPECRAFT 360
+
+Neon pulse
+Reactive vapor glow
+Atmospheric LED lighting
+
+CORECRAFT 360
+
+Operational telemetry
+Neural Bridge pulse
+Master intelligence glow
+
+⸻
+
+TOUCH-FIRST ERGONOMICS
+
+The platform must feel:
+built for touch.
+
+Use:
+• large interaction surfaces
+• ripple responses
+• swipe gestures
+• hold interactions
+• magnetic snapping
+• pressure-reactive visuals
+• spatial movement
+
+Everything should feel:
+sculptural and tactile.
+
+⸻
+
+BACK BUTTON + ESCAPE SYSTEM
+
+ALL environments MUST contain:
+• back buttons
+• escape pathways
+• safe return flows
+
+Use:
+floating smoked-glass navigation pills with ripple-wave interactions.
+
+Navigation should:
+glide environments backward,
+NOT abruptly switch pages.
+
+⸻
+
+NO EMOJIS OR GLYPHS
+
+Globally prohibit:
+• emojis
+• cartoon icons
+• playful glyph packs
+• startup-style illustrations
+
+Use ONLY:
+• realistic imagery
+• cinematic symbols
+• metallic telemetry indicators
+• environmental cues
+• etched operational iconography
+
+⸻
+
+AXIOM STARTUP EXPERIENCE
+
+Create cinematic startup:
+
+1. Black screen
+2. Low-frequency ambient hum
+3. PROFOUND INNOVATIONS reveal
+4. AXIOM OS reveal
+5. Rotating Axiom rings
+6. Neural Bridge activation
+7. Telemetry synchronization
+8. Environmental systems online
+
+Display:
+
+INITIALIZING CRAFT ENVIRONMENTS
+
+Loading:
+• SmokeCraft 360
+• PourCraft 360
+• BrewCraft 360
+• VapeCraft 360
+• CoreCraft 360
+
+Use:
+• fog
+• reflections
+• metallic lighting
+• telemetry
+• cinematic atmosphere
+
+⸻
+
+CRAFT HUB
+
+Display floating immersive worlds:
+
+• SmokeCraft 360
+• PourCraft 360
+• BrewCraft 360
+• VapeCraft 360
+• CoreCraft 360
+
+Each world:
+• breathes visually
+• reacts to touch
+• moves continuously
+• contains environmental previews
+
+NO static buttons.
+
+⸻
+
+MENTOR SYSTEM
+
+Allow users to select AI mentors:
+• Traditionalist
+• Scientist
+• Collector
+• Sommelier
+• Social Expert
+• Rebel
+
+Each mentor:
+• unique OpenAI prompts
+• unique voice
+• unique challenge style
+• unique educational tone
+• unique reward psychology
+
+Use OpenAI voices:
+• calm
+• sophisticated
+• luxury concierge
+• futuristic lounge host
+
+Persist globally.
+
+⸻
+
+EXPERIENCE LEVEL SYSTEM
+
+Levels:
+• Curious Explorer
+• Lounge Enthusiast
+• Craft Specialist
+• Aficionado
+• Golden Box Candidate
+
+Universal score:
+
+0–100 Craft Score
+
+Users can:
+gain OR lose XP.
+
+⸻
+
+GOLDEN BOX PRESTIGE SYSTEM
+
+Build:
+• prestige unlocks
+• hidden rewards
+• elite progression
+• loyalty tiers
+• AXIOM BLACK TIER
+
+Users should NEVER instantly become masters.
+
+⸻
+
+GAMIFICATION + AI ENGINE
+
+Use OpenAI dynamically for:
+• challenge generation
+• sensory analysis
+• pairing intelligence
+• mentor conversations
+• difficulty scaling
+• behavioral adaptation
+
+Track:
+• timing
+• engagement
+• emotional behavior
+• pairings
+• loyalty
+• flavor preferences
+• spending patterns
+
+Generate:
+• predictive recommendations
+• upsell opportunities
+• VIP opportunities
+• retention predictions
+• reward triggers
+
+⸻
+
+OPERATIONAL HANDOFF SYSTEM
+
+When staff activates operational mode using:
+• NFC
+• fingerprint
+• hidden hotspot
+• badge tap
+• QR
+• PIN gesture
+
+DO NOT switch screens.
+
+Instead:
+the environment transforms.
+
+⸻
+
+HANDOFF TRANSITION
+
+1. Ripple-wave expands
+2. UI distorts like liquid glass
+3. Smoke/liquids soften
+4. Telemetry emerges beneath surface
+5. Smoked-glass overlay appears
+6. EEIS operational layer morphs upward
+
+Display:
+
+Operational Layer Activated
+
+The transition should feel:
+like reality reconfigured itself.
+
+⸻
+
+ASSISTED DISCOVERY MODE
+
+Customer experience NEVER fully pauses.
+
+Instead:
+customer enters:
+
+Assisted Discovery Mode
+
+Customer sees:
+• featured pairings
+• humidor recommendations
+• premium products
+• venue specials
+• cinematic rotating visuals
+
+Environment remains alive continuously.
+
+⸻
+
+EEIS OPERATIONAL COCKPIT
+
+Build:
+
+LIVE EXPERIENCE FLOOR
+
+NOT:
+spreadsheet POS systems.
+
+Use:
+large floating experience tiles.
+
+Each tile displays:
+• XP level
+• loyalty status
+• challenge progression
+• pairing interests
+• AI insights
+• VIP probability
+• operational opportunities
+
+Touching tiles expands spatially.
+
+⸻
+
+VISUAL PRODUCT WALLS
+
+Do NOT use inventory tables.
+
+Build:
+• floating cigar walls
+• animated bottle displays
+• immersive beer displays
+• premium vape walls
+
+Touch interactions should feel:
+instant and physical.
+
+⸻
+
+AI INSIGHT ENGINE
+
+AI quietly assists constantly.
+
+Examples:
+• “Guest likely receptive to Maduro pairing.”
+• “VIP upgrade opportunity available.”
+• “Reward trigger recommended.”
+
+AI should feel:
+ambient,
+not chatbot-like.
+
+⸻
+
+SESSION SNAPSHOT + RESTORE
+
+Before operational mode:
+capture:
+• exact screen
+• XP state
+• mentor state
+• recommendations
+• challenge progress
+• environment state
+• audio state
+• animation state
+
+Store in:
+
+session_snapshots
+
+⸻
+
+RETURN HANDOFF SYSTEM
+
+Staff exits using:
+
+Resume Guest Experience
+
+or
+
+Release Experience
+
+NEVER:
+logout/admin off.
+
+Reverse ripple transition:
+• telemetry retracts
+• operational layers dissolve
+• smoked glass clears
+• environmental movement fully restores
+
+Restore customer EXACTLY where they left off.
+
+NO:
+• reloads
+• resets
+• homepage returns
+• progression loss
+
+Mentor resumes naturally:
+
+“Your experience has been updated.”
+
+⸻
+
+SOUND DESIGN ENGINE
+
+Build layered cinematic audio:
+• lounge ambience
+• ember crackle
+• liquid pours
+• telemetry hums
+• glass resonance
+• vapor ambience
+• soft operational pulses
+
+NO harsh arcade sounds.
+
+⸻
+
+REQUIRED FRONTEND STACK
+
+Use:
+• React
+• TypeScript
+• Tailwind
+• Framer Motion
+• GSAP
+• WebGL/canvas
+• Zustand
+• React Query
+
+⸻
+
+REQUIRED BACKEND STACK
+
+Use:
+• Node.js
+• Express
+• PostgreSQL
+• Drizzle ORM
+• websocket architecture
+• Neural Bridge event system
+• OpenAI APIs
+• OpenAI Voice
+
+⸻
+
+REQUIRED DATABASE TABLES
+
+users
+guest_profiles
+craft_sessions
+session_snapshots
+mentor_profiles
+xp_transactions
+reward_events
+challenge_progress
+ai_recommendations
+venue_inventory
+venue_devices
+staff_sessions
+operational_logs
+behavioral_analytics
+pairing_history
+leaderboards
+live_events
+device_states
+
+⸻
+
+REQUIRED SERVICES
+
+NeuralBridgeService
+OperationalModeService
+SessionSnapshotService
+MentorAIService
+BehaviorAnalyticsService
+RewardEngineService
+LeaderboardService
+ChallengeEngineService
+LiveTelemetryService
+EnvironmentStateService
+VenueRecommendationService
+AssistedDiscoveryService
+
+⸻
+
+FINAL EXPERIENCE GOAL
+
+The finished system should feel like:
+
+AXIOM OS
+
+The Living Hospitality Intelligence Environment
+
+Powered by:
+
+XEI Architecture
+
+Containing:
+
+EEIS
+
+Experience Enhancement Intelligence System
+
+Supporting:
+• SmokeCraft 360
+• PourCraft 360
+• BrewCraft 360
+• VapeCraft 360
+• CoreCraft 360
+
+where:
+• environments feel alive
+• operations feel invisible
+• hospitality becomes predictive
+• AI feels ambient
+• staff feel empowered
+• customers feel emotionally understood
+• branding feels embedded into reality itself
+• technology disappears into atmosphere
+
+The final emotional reaction should be:
+
+“This doesn’t feel like software. It feels like the future of hospitality.”
