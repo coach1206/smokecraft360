@@ -114,6 +114,7 @@ import AxiomStartup       from "@/pages/AxiomStartup";
 import CraftOrbSelector    from "@/pages/CraftOrbSelector";
 import StaffFloorCockpit            from "@/pages/StaffFloorCockpit";
 import FounderIntelligenceDashboard from "@/pages/FounderIntelligenceDashboard";
+import RevenueCommandCenter        from "@/pages/RevenueCommandCenter";
 
 const queryClient = new QueryClient();
 
@@ -227,6 +228,7 @@ function Router() {
       <Route path="/staff/floor"              component={StaffFloorCockpit}           />
       <Route path="/venue-setup"              component={EstablishmentSetupPage}      />
       <Route path="/founder/intelligence"     component={FounderIntelligenceDashboard} />
+      <Route path="/revenue-command-center"  component={RevenueCommandCenter} />
       {/* Dynamic per-theme entry URL (/smokecraft, /pourcraft, /grillcraft …).
           Declared LAST in the Switch so explicit app routes above always win;
           loadTheme() resolves the active theme from the first path segment.
