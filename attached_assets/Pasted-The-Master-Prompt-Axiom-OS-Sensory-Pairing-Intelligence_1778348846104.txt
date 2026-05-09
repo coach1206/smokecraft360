@@ -1,0 +1,64 @@
+The Master Prompt: Axiom OS Sensory & Pairing Intelligence Rebuild
+Role: You are an elite Full-Stack Engineer and UX Motion Designer. You are rebuilding the SmokeCraft 360 and Pourcraft 360 modules into a unified, high-stimulation "Master Blender" ritual powered by a deep intelligence engine.
+
+PART 1: THE BRAIN (Pairing Intelligence Engine)
+The current system collects data but fails to match it. You must build a True Pairing Intelligence Engine that replaces generic results with "Luxury Sommelier" logic.
+
+1. Create server/services/PairingIntelligenceEngine.ts:
+
+Logic: Analyze the flavor profile, smoke profile, strength, body, guest mood, and pacing.
+
+Output: Generate a Primary Cigar Match, 2–3 Similar Cigars, and Perfect Liquor/Beer/Cocktail pairings based on real venue inventory.
+
+2. Create server/services/CigarFlavorGraph.ts & LiquorPairingEngine.ts:
+
+Graph: Map cigars by body, wrapper, spice, creaminess, and region to allow similarity scoring.
+
+Liquor Engine: Use the venue's actual inventory. Match Bold/Earthy/Maduro profiles with oak-heavy whiskey or cognac; match Creamy/Mild profiles with espresso martinis or amber ales.
+
+3. Create server/services/InventoryPairingResolver.ts:
+
+Constraint: ONLY recommend products currently in the venue’s DB. No "hallucinated" brands.
+
+PART 2: THE SENSES (High-Stimulation UI/UX)
+The interface must feel like "Apple-level" luxury—tactile, cinematic, and in constant motion.
+
+1. Total Visual Immersion (Every Question):
+
+Tobacco & Wrappers: Use macro-HD images for every choice (Seco, Ligero, Maduro, etc.). Show the oil, veins, and texture.
+
+Interactive Vitolas: Use 3D renders for shapes (Robusto, Toro, Churchill). As the user moves the "Smoke Time" slider, the cigar image must physically grow or shrink.
+
+The Cut: Show macro shots of Straight, V-Cut, and Punch.
+
+2. The "Mentor" Voice & Audio Control:
+
+Voice: Implement a TTS "Mentor" that explains why a pairing works (e.g., "The caramel oak finish of the bourbon complements the cocoa notes in this Maduro").
+
+Mute Toggle: Add a gold "Audio Wave" icon in the header. Users must be able to toggle the voice on/off. If muted, the mentor’s wisdom appears only as text.
+
+3. Visual Atmosphere:
+
+Backgrounds: Set opacity to 0.4 with a 15px backdrop blur. Backgrounds must be in motion (slow-drifting smoke or swirling spirits).
+
+Synergy Halo: A gold ring progress bar fills toward 100/100 as the user completes the ritual.
+
+XP System: A visible "Palate Architect" XP counter updates in real-time.
+
+PART 3: THE HANDOFF (Staff Nudge System)
+When the experience ends, the system must empower the lounge staff.
+
+1. Staff View:
+
+Display the Guest Flavor Profile and the "Confidence Score" of the match.
+
+Provide Suggested Conversational Wording: "Guest prefers richer earthy profiles. Recommend the Padron 1964 with an Angel’s Envy pairing. Suggest the Reserva line as a premium upgrade."
+
+TECHNICAL EXECUTION RULES:
+Zero Dullness: No static cards or black gradients. Use resolveCardImage to map flavor profiles (Smoky, Creamy, Nutty) to cinematic assets.
+
+Cinematic Reveal: The final recommendation must feel like a "reveal," not an e-commerce checkout. Display the cigar image, liquor image, and a deep explanation of the "Alchemy" between them.
+
+Tech Stack: Use Tailwind CSS for glassmorphism, Framer Motion for liquid transitions, and ensure the UI is locked for tablet orientation.
+
+EXECUTE FULL PAIRING INTELLIGENCE AND SENSORY REBUILD NOW.

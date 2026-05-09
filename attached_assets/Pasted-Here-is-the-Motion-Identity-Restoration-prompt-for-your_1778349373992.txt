@@ -1,0 +1,50 @@
+Here is the "Motion & Identity Restoration" prompt for your development agent, merging the fix for the four modules into the larger architectural build.
+
+The "Sensory & Movement" Prompt: Modulor Flow Restoration
+Role: You are an elite Full-Stack Engineer and UX Motion Designer. You are rebuilding the four "Craft" modules into a unified, high-stimulation "Master Blender" ritual powered by a deep intelligence engine.
+
+PART 1: THE SENSES & IDENTITY (UI/UX Restoration)
+The interface must feel like "Apple-level" luxury—tactile, cinematic, and in constant motion. The static state and unapproved demographic imagery in the SMOKECRAFT module must be removed.
+
+1. "Zero Dullness" Motion Policy (REPLIT AGENT COMMAND: Restore Rotation):
+
+The Issue: The four modules are static. This is a primary UX failure.
+
+The Fix: Every module component (SmokeCraft, Pourcraft, Brewcraft, Vapecraft) must utilize the CigarFlavorGraph.ts to inform continuous, subtle "in motion" transitions.
+
+Logic: As a user hovers or taps on "Pourcraft," the adjacent modules must subtly "recede" with a liquid, slow-fade motion, while the selected module expands with a gentle, glowing pulse. Use Framer Motion or GSAP. Static images are strictly prohibited.
+
+2. SMOKECRAFT Identity Fix (REPLIT AGENT COMMAND: Remove Demographic Images):
+
+The Issue: The SMOKECRAFT module currently displays specific individuals. This is a design failure.
+
+The Fix: Remove all specific demographic imagery from the SMOKECRAFT component. Replace them with the high-definition, interactive assets required for universal visual mapping (all questions):
+
+The "Cinematic Replacement": The module must use the asset pool derived from PART 2, SECTION 1 (e.g., macro-HD images of Seco, Viso, or Ligero leaf textures, highlight their distinct veins and oils, and the Cigar shapes/Vitolas (Robusto, Toro, Churchill) showing distinct color gradients (light tan to deep obsidian)).
+
+Technical Implementation: Refactor the SMOKECRAFT module to only load assets that fulfill the "ritual" of selection.
+
+3. Atmosphere & Gamification Visibility:
+
+Backgrounds: Set opacity to 0.4 with a 15px backdrop blur (glassmorphism filter). Backgrounds must be in subtle motion—slow-drifting smoke or amber liquid swirling.
+
+XP System: A visible "Palate Architect" XP counter updates in real-time.
+
+PART 2: THE BRAIN (Pairing Intelligence & Sensory Journey)
+This intelligence layer must provide 100/100 Synergy.
+
+1. Create/Update: server/services/PairingIntelligenceEngine.ts:
+
+Logic: Analyze flavor profile, guest mood, and pacing.
+
+Output: Generate a Primary Cigar Match, Similar Cigars, and Perfect Liquor pairings based on real venue inventory (InventoryPairingResolver.ts). No "hallucinated" brands.
+
+2. Sensory Command & The "Mentor" Voice:
+
+Audio Feedback: Implement a TTS "Mentor" who explains why the pairing works (e.g., "The caramel oak finish of the bourbon complements the cocoa notes...").
+
+Mute Toggle: Add a gold "Audio Wave" icon in the header for audio control. If muted, the mentor's wisdom appears only as text.
+
+TECHNICAL EXECUTION RULE FOR REPLIT:
+
+"Refactor all *.jsx components for the four modules (SmokeCraft, Pourcraft, Brewcraft, Vapecraft). Restore the active rotation logic using Framer Motion. In SmokeCraft.jsx, purge all specific demographic imagery immediately. Load assets dynamically from the config.js mapping for tobacco leaves, wrapper profiles, and interactive vitolas. Update the global isMuted state to control the Mentor Voice and ensure the background blur (15px backdrop filter) is consistent."
