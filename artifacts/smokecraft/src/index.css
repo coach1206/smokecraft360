@@ -86,22 +86,75 @@ body::after {
   animation: ax-mentor-drift 8s ease-in-out infinite;
 }
 
-/* ── Axiom OS Tablet-First Touch Refactor ─────────────────────────────────── */
-/* Disable browser default tap/scroll chrome; force every surface to feel native */
+/* ── Axiom OS Tablet-First Touch Engine ──────────────────────────────────── */
+/* Kiosk mode: no browser scrolling, no tap chrome, no hover state leakage.  */
 
 html, body, #root {
   -webkit-user-select: none;
   -moz-user-select:    none;
   user-select:         none;
   -webkit-tap-highlight-color: transparent;
-  touch-action: pan-y;
-  overscroll-behavior: contain;
+  /* none = kills all panning AND pinch-zoom — correct for locked kiosk tablet */
+  touch-action: none;
+  overscroll-behavior: none;
+  /* Prevent rubber-band bounce on iOS WebView / Capacitor */
+  position: fixed;
+  width: 100%;
+  height: 100%;
 }
 
 /* Allow text selection only in explicit input areas */
 input, textarea, [contenteditable], .ax-selectable {
   -webkit-user-select: text;
   user-select: text;
+  /* Restore vertical pan for scrollable inputs inside a fixed shell */
+  touch-action: pan-y;
+}
+
+/* ── Global :hover suppression for touch/coarse-pointer surfaces ─────────── */
+/* On a tablet there is no cursor — hover states linger after tap and look    */
+/* broken. Strip them entirely for coarse-pointer environments (touch screen).*/
+@media (pointer: coarse) {
+  *:hover {
+    /* Reset the three most common hover mutations */
+    opacity:    unset !important;
+    background: unset !important;
+    color:      unset !important;
+    box-shadow: unset !important;
+    border-color: unset !important;
+    filter:     unset !important;
+    transform:  unset !important;
+  }
+  /* Re-allow hover-declared classes that opt-in explicitly */
+  .ax-hover-ok:hover {
+    opacity:    revert;
+    background: revert;
+    color:      revert;
+    box-shadow: revert;
+    border-color: revert;
+    filter:     revert;
+    transform:  revert;
+  }
+  /* Suppress cursor: pointer — pointless on touch */
+  * { cursor: default !important; }
+  input, textarea, [contenteditable] { cursor: text !important; }
+}
+
+/* ── Universal :active scale feedback — "native feel" press response ─────── */
+/* Every tappable surface depresses 4% on contact, springs back on release.  */
+button:active,
+[role="button"]:active,
+.ax-tappable:active,
+a:active {
+  transform: scale(0.96);
+  transition: transform 0.08s ease-out;
+}
+/* Restore on release */
+button,
+[role="button"],
+.ax-tappable,
+a {
+  transition: transform 0.15s ease-out;
 }
 
 /* ── Haptic Visual Ripple ─────────────────────────────────────────────────── */
