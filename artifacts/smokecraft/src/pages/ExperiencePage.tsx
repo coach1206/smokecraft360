@@ -793,6 +793,40 @@ export default function ExperiencePage() {
   return (
     <StaffRippleTransition>
     <>
+    {/* ── Hardware gold ticker — persists across entire experience phase ── */}
+    <div style={{
+      position:     "fixed",
+      bottom:       0, left: 0, right: 0,
+      height:       32,
+      background:   "rgba(0,0,0,0.95)",
+      borderTop:    "1px solid #d4af37",
+      display:      "flex",
+      alignItems:   "center",
+      overflow:     "hidden",
+      zIndex:       9999,
+      pointerEvents:"none",
+    }}>
+      <div style={{
+        display:       "flex",
+        alignItems:    "center",
+        whiteSpace:    "nowrap",
+        animation:     "axiom-ticker-scroll 28s linear infinite",
+        color:         "#d4af37",
+        fontSize:      10,
+        fontWeight:    700,
+        letterSpacing: "0.22em",
+        fontFamily:    "monospace",
+        textTransform: "uppercase",
+      }}>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <span key={i} style={{ marginRight: "6rem" }}>
+            AXIOM OS /// {theme.label.toUpperCase()} ENGINE: ACTIVE /// DISCOVERY MODE /// SOVEREIGN PROTOCOL: RUNNING /// MENTOR INTELLIGENCE: ONLINE /// TASTE PROFILE: BUILDING ///
+          </span>
+        ))}
+      </div>
+      <style>{`@keyframes axiom-ticker-scroll { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
+    </div>
+
     {/* ── Cinematic craft opening — first visit per craft per session ── */}
     {showCinematic && (
       <CraftCinematicOpening
@@ -1377,35 +1411,35 @@ export default function ExperiencePage() {
 
 const FALLBACK_CARDS: Record<string, ExperienceItem[]> = {
   smoke: [
-    { id: "s1", title: "Smoky & Bold",     description: "The kind of smoke that stays long after midnight.",          image: "/images/smoke/smoke_lounge.png", type: "smoke", tags: ["smoky","bold","earthy"],    intensity: 8, baseScore: 70 },
-    { id: "s2", title: "Creamy & Smooth",  description: "Smooth enough to make silence feel luxurious.",              image: "/images/smoke/smoke_solo.png",   type: "smoke", tags: ["creamy","smooth","sweet"],   intensity: 4, baseScore: 50 },
-    { id: "s3", title: "Spicy & Complex",  description: "Bold enough to interrupt a conversation.",                   image: "/images/smoke/smoke_woman.png",  type: "smoke", tags: ["spicy","complex","bold"],     intensity: 7, baseScore: 65 },
-    { id: "s4", title: "Cedar & Wood",     description: "Aged cedar and slow warmth. The room changes when it opens.",image: null,                            type: "smoke", tags: ["cedar","woody","aromatic"],   intensity: 5, baseScore: 52 },
-    { id: "s5", title: "Sweet & Mild",     description: "Easy enough to forget you're being seduced.",               image: null,                            type: "smoke", tags: ["sweet","mild","light"],       intensity: 2, baseScore: 40 },
-    { id: "s6", title: "Earthy & Natural", description: "Grounded. Deep. The kind you return to.",                   image: null,                            type: "smoke", tags: ["earthy","cedar","medium"],     intensity: 5, baseScore: 55 },
+    { id: "s1", title: "Smoky & Bold",     description: "The kind of smoke that stays long after midnight.",           image: "/images/smoke/smoke_lounge.png",    type: "smoke", tags: ["smoky","bold","earthy"],    intensity: 8, baseScore: 70 },
+    { id: "s2", title: "Creamy & Smooth",  description: "Smooth enough to make silence feel luxurious.",               image: "/images/smoke/smoke_solo.png",      type: "smoke", tags: ["creamy","smooth","sweet"],   intensity: 4, baseScore: 50 },
+    { id: "s3", title: "Spicy & Complex",  description: "Bold enough to interrupt a conversation.",                    image: "/images/smoke/smoke_woman.png",     type: "smoke", tags: ["spicy","complex","bold"],     intensity: 7, baseScore: 65 },
+    { id: "s4", title: "Cedar & Wood",     description: "Aged cedar and slow warmth. The room changes when it opens.", image: "/images/smoke/smoke_selection.png", type: "smoke", tags: ["cedar","woody","aromatic"],   intensity: 5, baseScore: 52 },
+    { id: "s5", title: "Sweet & Mild",     description: "Easy enough to forget you're being seduced.",                 image: "/images/smoke/smoke_group.png",     type: "smoke", tags: ["sweet","mild","light"],       intensity: 2, baseScore: 40 },
+    { id: "s6", title: "Earthy & Natural", description: "Grounded. Deep. The kind you return to.",                    image: "/images/smoke/smoke_urban.png",     type: "smoke", tags: ["earthy","cedar","medium"],     intensity: 5, baseScore: 55 },
   ],
   pour: [
-    { id: "p1", title: "Oak & Vanilla",    description: "Barrel-kissed warmth. Meant to be lingered over.",          image: "/images/pour/pour_bar.png",      type: "pour",  tags: ["oak","vanilla","sweet"],      intensity: 5, baseScore: 60 },
-    { id: "p2", title: "Peated & Smoky",   description: "Peat and old leather. Something you remember years later.", image: null,                            type: "pour",  tags: ["peat","smoky","bold"],        intensity: 8, baseScore: 72 },
-    { id: "p3", title: "Caramel & Spice",  description: "Spiced heat that warms from the inside out.",               image: null,                            type: "pour",  tags: ["caramel","spiced","warm"],    intensity: 6, baseScore: 63 },
-    { id: "p4", title: "Citrus & Bright",  description: "Bright enough to wake the room.",                           image: null,                            type: "pour",  tags: ["citrus","light","crisp"],      intensity: 3, baseScore: 45 },
-    { id: "p5", title: "Rich & Full",      description: "Dark fruit and depth. The pour that earns its glass.",      image: null,                            type: "pour",  tags: ["rich","bold","dark"],          intensity: 7, baseScore: 68 },
-    { id: "p6", title: "Floral & Delicate",description: "Barely there. Which is exactly why it stays with you.",    image: null,                            type: "pour",  tags: ["floral","light","delicate"],   intensity: 2, baseScore: 40 },
+    { id: "p1", title: "Oak & Vanilla",     description: "Barrel-kissed warmth. Meant to be lingered over.",          image: "/images/pour/pour_bar.png",      type: "pour", tags: ["oak","vanilla","sweet"],      intensity: 5, baseScore: 60 },
+    { id: "p2", title: "Peated & Smoky",    description: "Peat and old leather. Something you remember years later.", image: "/images/pour/pour_whiskey.png",  type: "pour", tags: ["peat","smoky","bold"],        intensity: 8, baseScore: 72 },
+    { id: "p3", title: "Caramel & Spice",   description: "Spiced heat that warms from the inside out.",               image: "/images/pour/pour_aged.png",     type: "pour", tags: ["caramel","spiced","warm"],    intensity: 6, baseScore: 63 },
+    { id: "p4", title: "Citrus & Bright",   description: "Bright enough to wake the room.",                           image: "/images/pour/pour_cocktail.png", type: "pour", tags: ["citrus","light","crisp"],     intensity: 3, baseScore: 45 },
+    { id: "p5", title: "Rich & Full",       description: "Dark fruit and depth. The pour that earns its glass.",      image: "/images/pour/pour_tasting.png",  type: "pour", tags: ["rich","bold","dark"],         intensity: 7, baseScore: 68 },
+    { id: "p6", title: "Floral & Delicate", description: "Barely there. Which is exactly why it stays with you.",    image: "/images/pour/pour_wine.png",     type: "pour", tags: ["floral","light","delicate"],  intensity: 2, baseScore: 40 },
   ],
   brew: [
-    { id: "b1", title: "Hoppy & Bitter",   description: "Bitter with intention. The kind that grows on you.",        image: null, type: "brew", tags: ["hoppy","crisp","bitter"],     intensity: 7, baseScore: 62 },
-    { id: "b2", title: "Crisp & Light",    description: "Cold and clean. Let the moment do the work.",              image: null, type: "brew", tags: ["crisp","light","smooth"],     intensity: 2, baseScore: 40 },
-    { id: "b3", title: "Malty & Toasted",  description: "Toasted malt and quiet warmth. Something worth slowing down for.", image: null, type: "brew", tags: ["malty","toasted","smooth"],   intensity: 5, baseScore: 55 },
-    { id: "b4", title: "Dark Roast",       description: "Coffee and chocolate in the same breath. Unapologetically heavy.", image: null, type: "brew", tags: ["dark roast","chocolate"],      intensity: 8, baseScore: 70 },
-    { id: "b5", title: "Fruity & Juicy",   description: "Tropical haze and fresh pull. Summer in a glass.",         image: null, type: "brew", tags: ["fruity","tropical","juicy"],  intensity: 4, baseScore: 52 },
-    { id: "b6", title: "Wheat & Smooth",   description: "Light enough for afternoon. Rich enough to remember.",     image: null, type: "brew", tags: ["smooth","wheat","light"],     intensity: 3, baseScore: 45 },
+    { id: "b1", title: "Hoppy & Bitter",  description: "Bitter with intention. The kind that grows on you.",              image: "/images/brew/brew_taproom.png",  type: "brew", tags: ["hoppy","crisp","bitter"],    intensity: 7, baseScore: 62 },
+    { id: "b2", title: "Crisp & Light",   description: "Cold and clean. Let the moment do the work.",                     image: "/images/brew/brew_outdoor.png",  type: "brew", tags: ["crisp","light","smooth"],    intensity: 2, baseScore: 40 },
+    { id: "b3", title: "Malty & Toasted", description: "Toasted malt and quiet warmth. Something worth slowing down for.", image: "/images/brew/brew_barrel.png",   type: "brew", tags: ["malty","toasted","smooth"],  intensity: 5, baseScore: 55 },
+    { id: "b4", title: "Dark Roast",      description: "Coffee and chocolate in the same breath. Unapologetically heavy.", image: "/images/brew/brew_pouring.png",  type: "brew", tags: ["dark roast","chocolate"],     intensity: 8, baseScore: 70 },
+    { id: "b5", title: "Fruity & Juicy",  description: "Tropical haze and fresh pull. Summer in a glass.",                image: "/images/brew/brew_flight.png",   type: "brew", tags: ["fruity","tropical","juicy"], intensity: 4, baseScore: 52 },
+    { id: "b6", title: "Wheat & Smooth",  description: "Light enough for afternoon. Rich enough to remember.",             image: "/images/brew/brew_taproom.png",  type: "brew", tags: ["smooth","wheat","light"],     intensity: 3, baseScore: 45 },
   ],
   vape: [
-    { id: "v1", title: "Mint & Cool",      description: "Icy-clean. Like stepping outside after a long night.",     image: null, type: "vape", tags: ["mint","cool","crisp"],        intensity: 6, baseScore: 60 },
-    { id: "v2", title: "Berry & Sweet",    description: "Ripe and deep. Dessert you can carry with you.",           image: null, type: "vape", tags: ["berry","sweet","fruity"],     intensity: 5, baseScore: 55 },
-    { id: "v3", title: "Cream & Smooth",   description: "Velvet smooth. No edges, no apologies.",                  image: null, type: "vape", tags: ["cream","smooth","vanilla"],   intensity: 4, baseScore: 50 },
-    { id: "v4", title: "Tropical Burst",   description: "Mango and heat. Somewhere you've never been but recognize.", image: null, type: "vape", tags: ["tropical","fruity","exotic"], intensity: 6, baseScore: 58 },
-    { id: "v5", title: "Dense Cloud",      description: "Maximum presence. Minimum explanation needed.",            image: null, type: "vape", tags: ["dense cloud","smooth","cool"], intensity: 7, baseScore: 65 },
-    { id: "v6", title: "Cool Citrus",      description: "Citrus edge with a cooling pull. Sharp and honest.",       image: null, type: "vape", tags: ["citrus","cool","fresh"],      intensity: 5, baseScore: 52 },
+    { id: "v1", title: "Mint & Cool",     description: "Icy-clean. Like stepping outside after a long night.",       image: "/images/vape/vape_modern.png",  type: "vape", tags: ["mint","cool","crisp"],        intensity: 6, baseScore: 60 },
+    { id: "v2", title: "Berry & Sweet",   description: "Ripe and deep. Dessert you can carry with you.",             image: "/images/vape/vape_social.png",  type: "vape", tags: ["berry","sweet","fruity"],     intensity: 5, baseScore: 55 },
+    { id: "v3", title: "Cream & Smooth",  description: "Velvet smooth. No edges, no apologies.",                    image: "/images/vape/vape_hookah.png",  type: "vape", tags: ["cream","smooth","vanilla"],   intensity: 4, baseScore: 50 },
+    { id: "v4", title: "Tropical Burst",  description: "Mango and heat. Somewhere you've never been but recognize.", image: "/images/vape/vape_device.png",  type: "vape", tags: ["tropical","fruity","exotic"], intensity: 6, baseScore: 58 },
+    { id: "v5", title: "Dense Cloud",     description: "Maximum presence. Minimum explanation needed.",              image: "/images/vape/vape_hookah.png",  type: "vape", tags: ["dense cloud","smooth","cool"], intensity: 7, baseScore: 65 },
+    { id: "v6", title: "Cool Citrus",     description: "Citrus edge with a cooling pull. Sharp and honest.",         image: "/images/vape/vape_modern.png",  type: "vape", tags: ["citrus","cool","fresh"],      intensity: 5, baseScore: 52 },
   ],
 };
