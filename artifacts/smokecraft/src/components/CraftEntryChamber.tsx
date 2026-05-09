@@ -369,11 +369,15 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
   const [_selectedLevel, _setSelectedLevel] = useState<ExperienceLevel | null>(null);
 
   function handleBeginClick() {
-    if (guestProfile && mentor) {
-      // Returning user — skip new stages, go straight to mentor greeting
+    // Only skip enrollment when the stored mentor actually belongs to THIS craft.
+    // If a guest enrolled via SmokeCraft (juan-valez) and then visits BrewCraft,
+    // mentor.craftType !== type → send them through the BrewCraft mentor flow.
+    const mentorMatchesCraft = mentor?.craftType === type;
+    if (guestProfile && mentor && mentorMatchesCraft) {
+      // Returning user with correct craft mentor — go straight to reveal
       setScene("mentor");
     } else {
-      // New user — full Universal Experience Flow
+      // New user OR cross-craft session → full flow for this craft
       setScene("explanation");
     }
   }
