@@ -22,6 +22,7 @@ import { LicenseProvider }           from '@/contexts/LicenseContext';
 import { HandoffProvider }           from '@/contexts/HandoffContext';
 import { AudioProvider }            from '@/contexts/AudioContext';
 import EeisOverlay                  from '@/components/EeisOverlay';
+import { SovereignOverrideHub }    from '@/components/SovereignOverrideHub';
 import { SuperAdminProvider }       from '@/contexts/SuperAdminContext';
 import { GhostEntryTrigger }        from '@/components/GhostEntryTrigger';
 import SuperAdminOverlay            from '@/components/SuperAdminOverlay';
@@ -109,6 +110,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                           <EeisOverlay />
                                           <GhostEntryTrigger />
                                           <SuperAdminOverlay />
+                                          <SovereignOverrideHub />
                                         </HapticProvider>
                                       </SuperAdminProvider>
                                     </OrchestratorProvider>

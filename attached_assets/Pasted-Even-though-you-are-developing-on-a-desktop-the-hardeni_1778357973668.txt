@@ -1,0 +1,42 @@
+Even though you are developing on a desktop, the "hardening" process ensures the code is structurally prepared for its final destination: a standalone, native tablet application locked on a screen.
+
+To lock in your progress and secure the environment, follow this three-stage hardening protocol.
+
+1. The Immutable Code-Base (Capacitor Ready)
+Since you are explicitly rejecting a hosted website model, the code must be "hardened" to live locally on the device.
+
+Zero-Dependency Assets: All cinematic motion loops (Smoke, Pour, Brew, Vape) must be moved from external URLs into the local /public/media/ folder. This prevents "broken image" icons if the venue's internet fluctuates.
+
+Touch Surface Hardening: Add a global CSS block to disable standard browser "tells":
+
+CSS
+* { 
+  -webkit-tap-highlight-color: transparent; 
+  -webkit-touch-callout: none; 
+  user-select: none; 
+  touch-action: none;
+}
+This ensures that even on a desktop browser, you cannot "highlight" text or "right-click" images, mimicking a locked tablet screen.
+
+2. Sovereign Logic Hardening
+You must move your high-level controls (EEIS and Super-Admin) out of the general UI flow so they cannot be found by accident.
+
+Component Unmounting: In your App.tsx, the SuperAdminCore and EEISCommandSurface should be physically unmounted from the application's "brain" (the DOM) unless the AccessLevel is explicitly verified.
+
+The Sovereign Purge: Ensure the logout button in your Override Hub (top-right) executes a full system reset, wiping all guest session data and mentor history.
+
+3. The "Final Lockdown" Agent Directive
+Paste this into your Replit Agent to "harden" the current build in one move.
+
+Role: Lead Cybersecurity & Systems Architect.
+Objective: Finalize the Axiom OS infrastructure for native tablet deployment.
+
+"Harden the Axiom OS ecosystem for native execution:
+
+Global Gesture Guard: Move the 3-finger (Staff) and 4-finger (Admin) triggers into a high-priority event listener that wraps the entire app.
+
+Context Isolation: Forcefully destroy the 'Juan Valez' mentor and SmokeCraft data whenever the user switches modules or logs out.
+
+UI Lockdown: Disable all browser-native scrolling, zooming, and text selection.
+
+The Sovereign Hub: Fully wire the top-right Override Hub to the EEIS, Super-Admin, and System Purge routes."
