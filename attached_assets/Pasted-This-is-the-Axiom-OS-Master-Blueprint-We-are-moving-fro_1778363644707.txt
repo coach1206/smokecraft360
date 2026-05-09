@@ -1,0 +1,75 @@
+This is the Axiom OS Master Blueprint. We are moving from a static interface to a Sensory Operating System that spans across all four crafts: Smoke, Pour, Brew, and Vape. Each craft follows the same high-velocity "Legendary" architecture but utilizes its own specific sensory metadata, mentor personalities, and "Ritual" mechanics.
+
+The Universal Experience Engine Architecture
+Every craft module within the Axiom OS is now wired with the following 6-Stage Core Logic.
+
+Stage 1: The Environmental Detection Engine
+The app doesn't just "start." It observes.
+
+Atmospheric Sync: The background motion speed (Smoke, Liquid, or Vapor) and UI color temperature automatically shift based on the time of day and venue energy.
+
+Inventory Guard: The "Perfect Pairing" engine filters all recommendations through the Live Venue Inventory Substitution Engine.
+
+Stage 2: The Cinematic Ritual (Onboarding)
+No more flat menus. The entry is a "Luxury Documentary" storytelling sequence.
+
+SmokeCraft: Focuses on Combustion & Construction.
+
+PourCraft: Focuses on Viscosity & Distillation.
+
+BrewCraft: Focuses on Carbonation & Fermentation.
+
+VapeCraft: Focuses on Fluidity & Cloud Geometry.
+
+Stage 3: The Mentor Relationship System
+Mentors are now behavioral AI entities that remember your risk tolerance and previous "Sovereign Blends".
+
+Sommelier (Pour): Sophisticated, focuses on finish compatibility and aging.
+
+Master Brewer (Brew): Technical, focuses on bitterness units and aroma layering.
+
+Master Artisan (Smoke): Philosophical, focuses on wrapper integrity and draw resistance.
+
+Stage 4: The 3D Creation Suite (Master Artisan)
+This is where the guest builds their bespoke product.
+
+Tactile Construction: Real-time 3D assembly of the cigar box, band, or beverage flight.
+
+The Decal Engine: Guests upload logos to be physically "engraved" into the wood textures or "foil-stamped" onto bands.
+
+Stage 5: The EEIS Staff Handoff Intelligence
+The hidden layer for revenue optimization.
+
+Staff View: When you trigger the 3-finger gesture, the screen reveals Upsell Probability and Guest Spending Tendencies.
+
+Operational Trigger: Staff sees the exact "Pairing Probability" for the inventory items currently on the shelf.
+
+Stage 6: The Emotional Exit & Archive
+The session doesn't "end"—it archives.
+
+Session Vault: Guests receive a digital record of their "Harmony Score" and "Sovereign Achievement".
+
+Retention Hook: A tease for the next "Lounge Challenge" or "Prestige Unlock" to ensure they return.
+
+The "One Move" Replit Agent Directive: Full Craft Sync
+Copy and paste this into the Agent. This will replicate the SmokeCraft architecture across PourCraft, BrewCraft, and VapeCraft while specializing the sensory data for each.
+
+Role: Lead Experience Architect & Full-Stack Developer.
+Objective: Deploy the Universal Experience Engine across all CraftHub modules.
+
+[EXECUTION STEPS]
+Architecture Cloning: Use the SmokeCraft 360 Complete Experience Architecture as the master logic template for Pour, Brew, and Vape.
+
+Sensory Specialization:
+
+PourCraft: Map flavor notes to "Oak, Peat, Spice, and Fruit." Use the Liquid Gold motion engine.
+
+BrewCraft: Map to "Hops, Malt, Crispness, and Body." Use the Rising Carbonation motion engine.
+
+VapeCraft: Map to "Density, Cloud Geometry, and Flavor Layering." Use the Fluid Vapor motion engine.
+
+The Master Artisan Bridge: Link the CigarArtisan360 (Box & Band Designer) to the Sovereign Order Flow. Ensure all designs are emailed to jc@360enterprisesservices.com.
+
+EEIS Integration: Every craft must have a hidden EEIS Intelligence Layer that displays real-time inventory-aware recommendations and revenue triggers.
+
+Touch Hardening: Ensure the Sovereign Override Hub in the top-right corner works across all four modules for instant staff bypass.

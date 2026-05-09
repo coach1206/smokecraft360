@@ -1,0 +1,101 @@
+The Universal Experience Brain (ExperienceEngine.tsx)
+This "wires" the state management for all four crafts. It ensures that if a guest is building a cigar in SmokeCraft, the EEIS staff layer knows exactly which flavor profile is being selected in real-time.
+
+JavaScript
+import React, { createContext, useContext, useReducer } from 'react';
+
+// Central Intelligence State
+const initialState = {
+  activeModule: 'portal', // smoke, pour, brew, vape
+  guestProfile: { name: '', preferences: [], history: [] },
+  sessionData: { currentRound: 1, score: 0, pairings: [] },
+  inventoryStatus: 'synced',
+  eeisMode: false,
+};
+
+const ExperienceContext = createContext();
+
+export const ExperienceProvider = ({ children }) => {
+  const [state, dispatch] = useReducer((state, action) => {
+    switch (action.type) {
+      case 'SET_MODULE': return { ...state, activeModule: action.payload };
+      case 'UPDATE_PROFILE': return { ...state, guestProfile: { ...state.guestProfile, ...action.payload } };
+      case 'TOGGLE_EEIS': return { ...state, eeisMode: !state.eeisMode };
+      case 'SOVEREIGN_PURGE': return initialState; // Absolute reset for JC's security
+      default: return state;
+    }
+  }, initialState);
+
+  return (
+    <ExperienceContext.Provider value={{ state, dispatch }}>
+      {children}
+    </ExperienceContext.Provider>
+  );
+};
+2. The Touch-Responsive Interaction Wire
+This refactors your buttons into Tactile Control Surfaces. Since you are targeting Android first, we use onTouchStart to eliminate the 300ms "web lag".
+
+JavaScript
+const TactileCard = ({ title, onTrigger }) => {
+  return (
+    <div 
+      className="relative group overflow-hidden rounded-xl border border-gold/20 bg-black/40 backdrop-blur-md"
+      onTouchStart={(e) => {
+        e.currentTarget.style.transform = 'scale(0.96)';
+        e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.8)';
+      }}
+      onTouchEnd={(e) => {
+        e.currentTarget.style.transform = 'scale(1)';
+        e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.2)';
+        onTrigger(); // Launches the Craft Module
+      }}
+    >
+      <div className="p-8">
+        <h2 className="text-gold tracking-[0.3em] font-bold uppercase">{title}</h2>
+        <p className="text-silver text-xs mt-2 opacity-60">INITIALIZE RITUAL</p>
+      </div>
+    </div>
+  );
+};
+3. The Master Order & Analytics Wire
+This connects the CigarArtisan360 designer directly to your business email. When a user finalizes their wood and band selection, it sends the "Build Sheet" to you.
+
+JavaScript
+const finalizeOrder = async (designData) => {
+  const payload = {
+    to: "jc@360enterprisesservices.com",
+    subject: "SOVEREIGN ORDER: Bespoke Cigar Design",
+    body: `
+      Guest: ${designData.guestName}
+      Wood: ${designData.woodType}
+      Band Concept: ${designData.bandStyle}
+      Logo URL: ${designData.customLogoUrl}
+      EEIS Probability: ${designData.harmonyScore}%
+    `,
+  };
+
+  // Sends the data to your Replit Backend Order Gateway
+  await fetch('/api/sovereign-order', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+};
+The "Legendary" Replit Agent Directive
+Paste this entire block into the Replit Agent. It will force all these systems to sync and harden the code for your Android tablet build.
+
+Role: Lead Systems Engineer & Experience Architect.
+Objective: Wire the Axiom OS Experience Engine across all modules.
+
+Mount the ExperienceProvider: Wrap the entire App.tsx in the context provider to ensure global memory persistence.
+
+Connect the Hub: Force the Sovereign Override Hub in the top-right to appear on every screen with a z-index of 9999.
+
+Wire Artisan 360: Connect the 3D wood/band designer to the order gateway at jc@360enterprisesservices.com.
+
+Harden for Android: Apply touch-action: none and disable all browser-native scrolling/zooming.
+
+Cinematic Sync: Replace all static backgrounds with the local .mp4 motion loops (Smoke, Liquid, Vapor).
+
+EEIS Link: Ensure the 3-finger staff gesture reveals the Staff Intelligence Layer with live inventory-aware recommendations.
+
+After the Agent finishes, your top-right button will be live, your images will be replaced by cinematic motion, and your custom cigar designs will have a direct line to your email.
