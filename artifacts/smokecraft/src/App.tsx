@@ -32,6 +32,8 @@ const MasterOperations      = lazy(() => import('@/pages/MasterOperations'));
 const CommandCenter         = lazy(() => import('@/pages/CommandCenter'));
 const CentralCommand        = lazy(() => import('@/pages/CentralCommand'));
 const PosMode               = lazy(() => import('@/pages/PosMode'));
+const PinLogin              = lazy(() => import('@/pages/PinLogin'));
+const Axiom360              = lazy(() => import('@/pages/Axiom360'));
 const StaffModule           = lazy(() => import('@/pages/StaffModule'));
 const TouchscreenHome       = lazy(() => import('@/pages/TouchscreenHome'));
 const Entry                 = lazy(() => import('@/pages/Entry'));
@@ -707,6 +709,12 @@ export default function App() {
           </Route>
           <Route path="/pos">
             <SubPageProviders><PosMode /></SubPageProviders>
+          </Route>
+          <Route path="/pin-login">
+            <SubPageProviders><PinLogin /></SubPageProviders>
+          </Route>
+          <Route path="/axiom360">
+            <SubPageProviders><Axiom360 /></SubPageProviders>
           </Route>
           <Route path="/staff">
             <SubPageProviders><StaffModule /></SubPageProviders>

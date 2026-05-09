@@ -110,7 +110,7 @@ const CRAFT_BASE_PRICE: Record<string, number> = {
 // Rotates through the weighted-ranked scenes every `intervalMs` ms.
 // `offsetMs` staggers each card so they never all flip simultaneously.
 
-const ROTATE_INTERVAL_MS = 9000;
+const ROTATE_INTERVAL_MS = 22000;
 
 function useSceneRotation(
   craftId:    string,
@@ -552,7 +552,7 @@ function PriceTicker({ craftPrices }: { craftPrices: Record<string, PriceInfo> }
     <div
       className="relative z-10 flex-shrink-0 overflow-hidden"
       style={{
-        height: 64,
+        height: 88,
         background: BG,
         borderTop: "1.5px solid rgba(255,179,71,0.38)",
       }}
@@ -573,11 +573,11 @@ function PriceTicker({ craftPrices }: { craftPrices: Record<string, PriceInfo> }
           <motion.span
             animate={{ opacity:[1, 0.5, 1] }}
             transition={{ duration:1.2, repeat:Infinity }}
-            style={{ fontFamily:MON, fontSize:9, fontWeight:800,
+            style={{ fontFamily:MON, fontSize:12, fontWeight:800,
               letterSpacing:"0.20em", color:"#f87171", textTransform:"uppercase", whiteSpace:"nowrap" }}
           >● BROADCAST</motion.span>
         ) : (
-          <span style={{ fontFamily:MON, fontSize:9, fontWeight:700,
+          <span style={{ fontFamily:MON, fontSize:12, fontWeight:700,
             letterSpacing:"0.20em", color:"rgba(255,179,71,0.50)", textTransform:"uppercase", whiteSpace:"nowrap" }}>
             MARKET RATES
           </span>
@@ -595,29 +595,35 @@ function PriceTicker({ craftPrices }: { craftPrices: Record<string, PriceInfo> }
           position:"absolute", left:"50%", top:"50%",
           transform:"translate(-50%,-50%)",
           zIndex:6,
-          display:"flex", alignItems:"center", gap:7,
-          padding:"6px 14px",
-          borderRadius:10,
+          display:"flex", alignItems:"center", gap:10,
+          padding:"10px 22px",
+          borderRadius:12,
           background:"rgba(6,4,3,0.92)",
           backdropFilter:"blur(10px)",
-          border:"1px solid rgba(91,63,160,0.35)",
+          border:"1.5px solid rgba(91,63,160,0.50)",
           textDecoration:"none",
-          boxShadow:"0 0 18px rgba(91,63,160,0.18)",
+          boxShadow:"0 0 24px rgba(91,63,160,0.28), 0 2px 8px rgba(0,0,0,0.4)",
           cursor:"pointer",
         }}
       >
-        {/* Globe + plane SVG */}
-        <svg viewBox="0 0 28 28" width="18" height="18" fill="none" style={{ flexShrink:0 }}>
-          <circle cx="14" cy="14" r="9.5" stroke="rgba(167,139,250,0.75)" strokeWidth="1.2"/>
-          <ellipse cx="14" cy="14" rx="4.8" ry="9.5" stroke="rgba(167,139,250,0.38)" strokeWidth="0.9"/>
-          <line x1="4.5" y1="14" x2="23.5" y2="14" stroke="rgba(167,139,250,0.30)" strokeWidth="0.9"/>
+        {/* Globe + plane SVG — enlarged */}
+        <svg viewBox="0 0 28 28" width="26" height="26" fill="none" style={{ flexShrink:0 }}>
+          <circle cx="14" cy="14" r="9.5" stroke="rgba(167,139,250,0.85)" strokeWidth="1.4"/>
+          <ellipse cx="14" cy="14" rx="4.8" ry="9.5" stroke="rgba(167,139,250,0.45)" strokeWidth="1.0"/>
+          <line x1="4.5" y1="14" x2="23.5" y2="14" stroke="rgba(167,139,250,0.38)" strokeWidth="1.0"/>
           <path d="M18 7.5 L15.5 12.5 L11.5 11 L10 12.5 L13.5 14 L11.5 18 L14 17 L15.5 20.5 L17.5 18.5 L15.5 14 L20.5 10.5 Z"
-            fill="rgba(167,139,250,0.85)"/>
+            fill="rgba(167,139,250,0.95)"/>
         </svg>
-        <span style={{ fontFamily:MON, fontSize:9, fontWeight:700,
-          color:"rgba(167,139,250,0.80)", letterSpacing:"0.14em", whiteSpace:"nowrap" }}>
-          DAYONE360
-        </span>
+        <div style={{ display:"flex", flexDirection:"column", gap:2 }}>
+          <span style={{ fontFamily:MON, fontSize:13, fontWeight:800,
+            color:"rgba(167,139,250,0.95)", letterSpacing:"0.18em", whiteSpace:"nowrap" }}>
+            DAYONE360
+          </span>
+          <span style={{ fontFamily:MON, fontSize:9, fontWeight:600,
+            color:"rgba(167,139,250,0.45)", letterSpacing:"0.14em", whiteSpace:"nowrap" }}>
+            ELITE TRAVEL
+          </span>
+        </div>
       </a>
 
       {/* ── Scrolling content ── */}
@@ -1881,6 +1887,21 @@ function PatronView({
         background: "rgba(8,6,4,0.86)", backdropFilter: "blur(24px)",
         borderBottom: "1px solid rgba(255,179,71,0.15)",
       }}>
+        {/* Home button — top-left escape */}
+        <button
+          onClick={() => navigate("/craft-hub")}
+          style={{
+            position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
+            display: "flex", alignItems: "center", gap: 5,
+            background: "rgba(255,179,71,0.08)",
+            border: "1px solid rgba(255,179,71,0.22)",
+            borderRadius: 8, padding: "5px 11px",
+            color: "rgba(255,179,71,0.65)", fontSize: 10, fontWeight: 700,
+            letterSpacing: "0.14em", cursor: "pointer", outline: "none",
+          }}
+        >
+          ‹ HOME
+        </button>
         <AnimatePresence mode="wait">
           <motion.div
             key={tickerIdx}
