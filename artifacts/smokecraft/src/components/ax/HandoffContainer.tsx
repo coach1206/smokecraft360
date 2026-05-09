@@ -1768,14 +1768,7 @@ function PatronView({
   const [stimulationVisible, setStimulation] = useState(false);
   const [rankUpVisible, setRankUpVisible]    = useState(false);
   const [rankUpLabel,   setRankUpLabel]      = useState("");
-  const [founderPatronOpen, setFounderPatronOpen] = useState(false);
   const [travelOpen, setTravelOpen] = useState(false);
-  const [tickerIdx,  setTickerIdx]  = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setTickerIdx(i => (i + 1) % PULSE_MSGS.length), 3800);
-    return () => clearInterval(id);
-  }, []);
-  const logoHoldTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const { activeMode } = useAxiom360();
   const isDark = activeMode !== "staff";
@@ -1832,441 +1825,375 @@ function PatronView({
     return () => clearTimeout(id);
   }, []);
 
-  // Live clock
-  const [time, setTime] = useState(() =>
-    new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-  );
-  useEffect(() => {
-    const id = setInterval(
-      () => setTime(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })),
-      10_000,
-    );
-    return () => clearInterval(id);
-  }, []);
-
   function handleCraftTap(craft: typeof CRAFTS[number]) {
     setActiveCraft(craft.id);
     setActiveMood(CRAFT_MOOD[craft.id] ?? "bold");
     setBurstKey((k) => k + 1);
     onCraftSelect(craft);
-    // Award XP for each craft selection (rank-up detection runs in useEffect)
     playClick();
     addXP(50);
-    // Accumulate surge lift whenever a patron enters the experience during peak
     const _base = CRAFT_BASE_PRICE[craft.id] ?? 20;
     const _info = calculateDynamicPrice(_base, occupancy, isDynamicActive, isMember);
     if (_info.price !== _base) processSale(_base, _info.price);
     setTimeout(() => setPortal({ route: craft.route, color: craft.color }), 320);
   }
 
+  // ── Full-bleed scene images for environmental layer system ─────────────────
+  const smokeImg = useSceneRotation("smoke", 0);
+  const pourImg  = useSceneRotation("pour",  3400);
+  const brewImg  = useSceneRotation("brew",  6200);
+  const vapeImg  = useSceneRotation("vape",  9800);
+
+  // ── Ember particle data (seeded once) ─────────────────────────────────────
+  const EMBERS = useRef(Array.from({ length: 22 }, (_, i) => ({
+    id:      i,
+    x:       4  + Math.random() * 60,
+    y:       12 + Math.random() * 72,
+    size:    1.1 + Math.random() * 2.8,
+    opacity: 0.40 + Math.random() * 0.50,
+    dur:     8  + Math.random() * 14,
+    delay:   Math.random() * 12,
+    drift:   (Math.random() - 0.45) * 30,
+    color:   (["#D48B00", "#E8A020", "#F5C842"] as const)[Math.floor(Math.random() * 3)],
+  }))).current;
+
+  // ── NEW RETURN: cinematic environmental composition ────────────────────────
   return (
     <div
-      className="absolute inset-0 flex flex-col overflow-hidden grainy-texture"
-      style={{
-        background: isDark ? "#080604" : "#F5F2ED",
-        color:      isDark ? "#F0E8D4" : "#1A1A1B",
-        fontFamily: "'Inter', system-ui, sans-serif",
-      }}
+      className="absolute inset-0 overflow-hidden"
+      style={{ background: "#040302", fontFamily: "'Inter', system-ui, sans-serif" }}
     >
-      {/* Lounge Pulse ambient cloud — color syncs to active mood */}
-      <Pulse
-        id="patron"
-        color={pulseColor}
-        size={560}
-        blur={36}
-        minOpacity={0.05}
-        maxOpacity={0.18}
-        burst={burstKey > 0}
-        style={{ top: "40%", left: "50%", transform: "translate(-50%, -50%)" }}
+      {/* ══ ENV LAYER 0: SmokeCraft — dominant full-bleed base environment ══ */}
+      <AnimatePresence initial={false}>
+        {smokeImg && (
+          <motion.img
+            key={smokeImg}
+            src={smokeImg}
+            alt="" aria-hidden
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 0.90, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 3.5, ease: "easeInOut" }}
+            style={{
+              position: "absolute", inset: 0,
+              width: "100%", height: "100%",
+              objectFit: "cover", objectPosition: "center 28%",
+              pointerEvents: "none",
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ══ ENV LAYER 1: Secondary craft edge blends — no hard boundaries ══ */}
+      {/* PourCraft — amber reflections spilling from right */}
+      <AnimatePresence initial={false}>
+        {pourImg && (
+          <motion.img key={pourImg} src={pourImg} alt="" aria-hidden
+            initial={{ opacity: 0 }} animate={{ opacity: 0.20 }} exit={{ opacity: 0 }}
+            transition={{ duration: 4.5, ease: "easeInOut" }}
+            style={{
+              position: "absolute", top: 0, right: 0, bottom: 0, width: "40%",
+              objectFit: "cover", objectPosition: "left center",
+              maskImage: "linear-gradient(270deg, rgba(0,0,0,0.60) 0%, transparent 100%)",
+              WebkitMaskImage: "linear-gradient(270deg, rgba(0,0,0,0.60) 0%, transparent 100%)",
+              pointerEvents: "none",
+            }}
+          />
+        )}
+      </AnimatePresence>
+      {/* BrewCraft — teal haze contaminating bottom-left */}
+      <AnimatePresence initial={false}>
+        {brewImg && (
+          <motion.img key={brewImg} src={brewImg} alt="" aria-hidden
+            initial={{ opacity: 0 }} animate={{ opacity: 0.14 }} exit={{ opacity: 0 }}
+            transition={{ duration: 5, ease: "easeInOut" }}
+            style={{
+              position: "absolute", bottom: 0, left: 0, width: "44%", height: "40%",
+              objectFit: "cover", objectPosition: "center top",
+              maskImage: "linear-gradient(45deg, rgba(0,0,0,0.55) 0%, transparent 80%)",
+              WebkitMaskImage: "linear-gradient(45deg, rgba(0,0,0,0.55) 0%, transparent 80%)",
+              pointerEvents: "none",
+            }}
+          />
+        )}
+      </AnimatePresence>
+      {/* VapeCraft — vapor haze at upper-right edge */}
+      <AnimatePresence initial={false}>
+        {vapeImg && (
+          <motion.img key={vapeImg} src={vapeImg} alt="" aria-hidden
+            initial={{ opacity: 0 }} animate={{ opacity: 0.11 }} exit={{ opacity: 0 }}
+            transition={{ duration: 5.5, ease: "easeInOut" }}
+            style={{
+              position: "absolute", top: 0, right: 0, width: "36%", height: "34%",
+              objectFit: "cover",
+              maskImage: "linear-gradient(225deg, rgba(0,0,0,0.50) 0%, transparent 75%)",
+              WebkitMaskImage: "linear-gradient(225deg, rgba(0,0,0,0.50) 0%, transparent 75%)",
+              pointerEvents: "none",
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ══ ENV LAYER 2: Atmospheric depth overlays ══ */}
+      {/* Champagne-gold warmth — SmokeCraft zone illumination */}
+      <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none", background: [
+        "radial-gradient(ellipse 72% 62% at 32% 60%, rgba(212,139,0,0.24) 0%, transparent 65%)",
+        "radial-gradient(ellipse 48% 42% at 18% 78%, rgba(180,100,0,0.15) 0%, transparent 62%)",
+        "radial-gradient(ellipse 100% 52% at 50% 100%, rgba(0,0,0,0.78) 0%, transparent 52%)",
+        "radial-gradient(ellipse 100% 42% at 50% 0%,   rgba(0,0,0,0.65) 0%, transparent 52%)",
+      ].join(",") }} />
+      {/* Cinema vignette — deepens edges */}
+      <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none",
+        background: "radial-gradient(ellipse 86% 86% at 50% 50%, transparent 45%, rgba(0,0,0,0.76) 100%)" }} />
+      {/* Left column depth — text legibility over image */}
+      <div aria-hidden style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: "50%",
+        background: "linear-gradient(90deg, rgba(4,3,2,0.52) 0%, transparent 100%)", pointerEvents: "none" }} />
+
+      {/* ══ ENV LAYER 3: Metallic light streaks — horizontal cinematic glints ══ */}
+      <motion.div aria-hidden
+        animate={{ x: ["-115%", "230%"], opacity: [0, 0.60, 0] }}
+        transition={{ duration: 10, repeat: Infinity, delay: 5, ease: "easeInOut", repeatDelay: 20 }}
+        style={{ position: "absolute", top: "38%", left: 0, width: "26%", height: 1.2, zIndex: 8,
+          background: "linear-gradient(90deg,transparent,rgba(212,175,55,0.60),rgba(235,215,155,0.85),rgba(212,175,55,0.60),transparent)",
+          filter: "blur(0.8px)", pointerEvents: "none" }}
+      />
+      <motion.div aria-hidden
+        animate={{ x: ["-115%", "230%"], opacity: [0, 0.30, 0] }}
+        transition={{ duration: 15, repeat: Infinity, delay: 12, ease: "easeInOut", repeatDelay: 25 }}
+        style={{ position: "absolute", top: "41%", left: 0, width: "16%", height: 0.8, zIndex: 8,
+          background: "linear-gradient(90deg,transparent,rgba(200,185,150,0.50),transparent)",
+          pointerEvents: "none" }}
       />
 
-      {/* ══ THE PULSE — Top Ticker ══ */}
-      <div style={{
-        position: "relative", zIndex: 20, flexShrink: 0,
-        height: 45, display: "flex", alignItems: "center", justifyContent: "center",
-        background: "rgba(8,6,4,0.86)", backdropFilter: "blur(24px)",
-        borderBottom: "1px solid rgba(255,179,71,0.15)",
-      }}>
-        {/* Home button — top-left escape */}
-        <button
-          onClick={() => navigate("/craft-hub")}
+      {/* ══ ENV LAYER 4: Smoke wisps — atmospheric drift ══ */}
+      {([0, 1, 2, 3] as const).map(i => (
+        <motion.div key={i} aria-hidden
+          animate={{ x: ["0%", `${20 + i * 9}%`], opacity: [0, 0.20 - i * 0.04, 0.10, 0] }}
+          transition={{ duration: 22 + i * 6, repeat: Infinity, delay: i * 6, ease: "easeInOut" }}
           style={{
-            position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
-            display: "flex", alignItems: "center", gap: 5,
-            background: "rgba(255,179,71,0.08)",
-            border: "1px solid rgba(255,179,71,0.22)",
-            borderRadius: 8, padding: "5px 11px",
-            color: "rgba(255,179,71,0.65)", fontSize: 10, fontWeight: 700,
-            letterSpacing: "0.14em", cursor: "pointer", outline: "none",
+            position: "absolute", left: `${-6 + i * 4}%`, top: `${26 + i * 12}%`,
+            width: `${40 + i * 7}vw`, height: `${24 + i * 5}vh`,
+            background: "radial-gradient(ellipse 58% 48% at 38% 50%, rgba(245,230,195,0.16) 0%, transparent 70%)",
+            filter: "blur(48px)", borderRadius: "50%", pointerEvents: "none", zIndex: 9,
           }}
-        >
-          ‹ HOME
-        </button>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={tickerIdx}
-            initial={{ opacity: 0, y: 9 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{    opacity: 0, y: -9 }}
-            transition={{ duration: 0.42, ease: "easeInOut" }}
-            style={{
-              fontFamily: "'Courier New', monospace",
-              fontSize: 10, fontWeight: 700, letterSpacing: "0.38em",
-              textTransform: "uppercase", color: "#FFB347",
-              textShadow: "0 0 8px #FFB347, 0 0 24px rgba(255,179,71,0.45), 0 0 48px rgba(255,179,71,0.18)",
-            }}
-          >
-            ● {PULSE_MSGS[tickerIdx].text}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+        />
+      ))}
 
-      {/* Header */}
-      <header
-        className="relative z-10 flex items-center gap-4 px-5 py-3 flex-shrink-0"
+      {/* ══ ENV LAYER 5: Ember particles — floating gold embers ══ */}
+      {EMBERS.map(e => (
+        <motion.div key={e.id} aria-hidden
+          animate={{ y: [0, -(58 + e.size * 20)], opacity: [0, e.opacity, e.opacity * 0.65, 0], x: [0, e.drift] }}
+          transition={{ duration: e.dur, repeat: Infinity, delay: e.delay, ease: "easeOut" }}
+          style={{
+            position: "absolute", left: `${e.x}%`, top: `${e.y}%`,
+            width: e.size, height: e.size, borderRadius: "50%",
+            background: e.color, boxShadow: `0 0 ${e.size * 4}px ${e.color}CC`,
+            pointerEvents: "none", zIndex: 10,
+          }}
+        />
+      ))}
+
+      {/* ══ AMBIENT: Lounge Pulse cloud — syncs to active mood ══ */}
+      <Pulse id="patron" color={pulseColor} size={500} blur={40}
+        minOpacity={0.04} maxOpacity={0.15} burst={burstKey > 0}
+        style={{ top: "45%", left: "38%", transform: "translate(-50%,-50%)", zIndex: 11 }} />
+
+      {/* ══ SPATIAL ZONES: Craft entries — zero boxes, zero cards ══ */}
+
+      {/* ─ SmokeCraft — dominant center-left environmental anchor ─ */}
+      <motion.button
+        initial={{ opacity: 0, x: -28 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.55, duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
+        onClick={() => handleCraftTap(CRAFTS[0])}
         style={{
-          borderBottom: `1px solid ${isDark ? "rgba(240,232,212,0.09)" : "rgba(26,26,27,0.09)"}`,
-          background: "rgba(13,11,9,0.88)",
-          backdropFilter: "blur(18px)",
+          position: "absolute", left: "7%", top: "50%", transform: "translateY(-50%)",
+          background: "none", border: "none", cursor: "pointer",
+          textAlign: "left", padding: 0, outline: "none", zIndex: 30,
         }}
       >
-        <motion.div
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.55 }}
-          className="flex flex-col"
-          style={{ cursor: "default", userSelect: "none" }}
-          onPointerDown={() => {
-            logoHoldTimer.current = setTimeout(() => setFounderPatronOpen(true), 5000);
-          }}
-          onPointerUp={() => clearTimeout(logoHoldTimer.current)}
-          onPointerLeave={() => clearTimeout(logoHoldTimer.current)}
-          onPointerCancel={() => clearTimeout(logoHoldTimer.current)}
-        >
-          <span
-            className="font-bold uppercase leading-none"
-            style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontSize: "clamp(18px, 2.4vw, 22px)",
-              color: isDark ? "#F0E8D4" : "#1A1A1B",
-              letterSpacing: "0.18em",
-            }}
-          >
-            Axiom 360
-          </span>
-          <span
-            className="uppercase"
-            style={{ fontSize: 8, color: "rgba(212,139,0,0.5)", letterSpacing: "0.3em", marginTop: 2 }}
-          >
-            Experience OS
-          </span>
-        </motion.div>
-
-        {/* Status dots */}
-        <div className="flex items-center gap-5 flex-1 overflow-x-auto scrollbar-none ml-2">
-          {[
-            { label: "AI Engine",    state: "ACTIVE",  color: "#4ade80" },
-            { label: "Taste Engine", state: "READY",   color: "#D48B00" },
-            { label: "Revenue",      state: "ONLINE",  color: "#a78bfa" },
-            { label: "Inventory",    state: "SYNC",    color: "#60a5fa" },
-          ].map((n) => (
-            <div key={n.label} className="flex items-center gap-1.5 flex-shrink-0">
-              <motion.div
-                className="rounded-full"
-                style={{ width: 4, height: 4, background: n.color }}
-                animate={{ opacity: [1, 0.3, 1], scale: [1, 1.5, 1] }}
-                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-              />
-              <span style={{ fontSize: 8, color: isDark ? "rgba(240,232,212,0.40)" : "rgba(26,26,27,0.30)", letterSpacing: "0.14em" }}>
-                {n.label}
-              </span>
-              <span style={{ fontSize: 8, color: n.color, fontWeight: 700, letterSpacing: "0.1em" }}>
-                {n.state}
-              </span>
-            </div>
-          ))}
+        <motion.div animate={{ opacity: [0.55, 1, 0.55] }}
+          transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
+          style={{ fontFamily: "'Courier New',monospace", fontSize: "clamp(10px,1.2vw,13px)",
+            color: "#D48B00", letterSpacing: "0.40em",
+            textShadow: "0 0 20px rgba(212,139,0,0.70)", marginBottom: 12 }}
+        >◈ SMOKECRAFT</motion.div>
+        <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif",
+          fontSize: "clamp(52px,8vw,92px)", fontWeight: 300,
+          color: "#F0E8D4", letterSpacing: "-0.01em", lineHeight: 0.88,
+          textShadow: "0 4px 48px rgba(0,0,0,0.80), 0 0 90px rgba(212,139,0,0.16)",
+          marginBottom: 18 }}>
+          Smoke<br />
+          <span style={{ fontWeight: 700, color: "#D48B00", fontStyle: "italic" }}>Craft</span>
         </div>
-
-        {/* Clock */}
-        <div
-          className="flex-shrink-0 flex items-center gap-2"
-          style={{ fontSize: 10, color: isDark ? "rgba(240,232,212,0.35)" : "rgba(26,26,27,0.25)", letterSpacing: "0.12em" }}
-        >
-          <motion.div
-            className="rounded-full"
-            style={{ width: 5, height: 5, background: "#34d399" }}
-            animate={{ opacity: [1, 0.3, 1] }}
-            transition={{ duration: 2.2, repeat: Infinity }}
-          />
-          {time}
+        <div style={{ fontFamily: "'Courier New',monospace",
+          fontSize: "clamp(7px,0.85vw,10px)", fontWeight: 700,
+          letterSpacing: "0.32em", color: "rgba(212,139,0,0.62)",
+          textTransform: "uppercase", textShadow: "0 0 14px rgba(212,139,0,0.28)",
+          marginBottom: 8 }}>
+          Premium Tobacco · Reserve Collection
         </div>
-      </header>
-
-      {/* Hero label + mood chips */}
-      <div className="relative z-10 px-5 pt-4 pb-2 flex-shrink-0">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.18, duration: 0.5 }}
-          style={{
-            fontFamily: "'Cormorant Garamond', Georgia, serif",
-            fontSize: "clamp(15px, 2.2vw, 21px)",
-            fontWeight: 300,
-            color: isDark ? "#F0E8D4" : "#1A1A1B",
-          }}
-        >
-          Select your{" "}
-          <span style={{ color: pulseColor, fontWeight: 600, transition: "color 0.6s ease" }}>
-            experience.
-          </span>
+        <motion.div animate={{ opacity: [0.48, 0.85, 0.48] }}
+          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+          style={{ fontFamily: "'Courier New',monospace",
+            fontSize: "clamp(7px,0.80vw,9px)", fontWeight: 700,
+            letterSpacing: "0.28em", color: "rgba(240,232,212,0.45)",
+            textTransform: "uppercase" }}>
+          Tap to enter the experience ›
         </motion.div>
-        <p style={{ fontSize: 10, color: isDark ? "rgba(240,232,212,0.45)" : "rgba(26,26,27,0.38)", marginTop: 5 }}>
-          The AI engine curates in real time — tap to begin.
-        </p>
+      </motion.button>
 
-        {/* ── Mood chips ── */}
-        {/* Tapping shifts the Pulse ambient cloud color. Card taps auto-select. */}
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.32, duration: 0.45 }}
-          className="flex items-center gap-2 mt-3"
-        >
-          {(Object.entries(MOOD_CONFIG) as [MoodKey, typeof MOOD_CONFIG[MoodKey]][]).map(([key, cfg]) => {
-            const active = activeMood === key;
-            return (
-              <button
-                key={key}
-                onClick={() => {
-                  setActiveMood(active ? null : key);
-                  setBurstKey((k) => k + 1);
-                }}
-                style={{
-                  fontSize: 8,
-                  fontWeight: 700,
-                  letterSpacing: "0.22em",
-                  padding: "4px 10px",
-                  borderRadius: 99,
-                  border: `1px solid ${active ? cfg.color : isDark ? "rgba(240,232,212,0.16)" : "rgba(26,26,27,0.16)"}`,
-                  background: active ? `${cfg.color}22` : "rgba(13,11,9,0.6)",
-                  color: active ? cfg.color : isDark ? "rgba(240,232,212,0.50)" : "rgba(26,26,27,0.38)",
-                  cursor: "pointer",
-                  outline: "none",
-                  transition: "all 0.28s ease",
-                  boxShadow: active
-                    ? `0 0 10px ${cfg.color}44, inset 0 1px 0 ${isDark ? "rgba(240,232,212,0.08)" : "rgba(26,26,27,0.08)"}`
-                    : `inset 0 1px 0 ${isDark ? "rgba(240,232,212,0.06)" : "rgba(26,26,27,0.06)"}`,
-                }}
-              >
-                {cfg.label}
-              </button>
-            );
-          })}
-          {activeMood && (
-            <motion.span
-              initial={{ opacity: 0, x: -4 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0 }}
-              style={{
-                fontSize: 8,
-                color: isDark ? "rgba(240,232,212,0.35)" : "rgba(26,26,27,0.28)",
-                letterSpacing: "0.1em",
-                marginLeft: 2,
-              }}
-            >
-              · mood active
-            </motion.span>
-          )}
-        </motion.div>
-      </div>
-
-      {/* 4 Craft Cards — Cine-Vertical 2×2 grid, full flex height */}
-      <div
-        className="relative z-10 flex-1 min-h-0 px-4"
+      {/* ─ PourCraft — upper-right atmospheric zone ─ */}
+      <motion.button
+        initial={{ opacity: 0, x: 18 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 1.0, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+        onClick={() => handleCraftTap(CRAFTS[1])}
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          gridTemplateRows:    "minmax(0, 1fr) minmax(0, 1fr)",
-          gap: 10,
-          paddingBottom: 8,
+          position: "absolute", right: "7%", top: "17%",
+          background: "none", border: "none", cursor: "pointer",
+          textAlign: "right", padding: 0, outline: "none", zIndex: 30,
         }}
       >
-        {CRAFTS.map((craft, i) => (
-          <CraftCard
-            key={craft.id}
-            craft={craft}
-            idx={i}
-            onTap={() => handleCraftTap(craft)}
-            priceInfo={craftPrices[craft.id] ?? calculateDynamicPrice(CRAFT_BASE_PRICE[craft.id] ?? 20, occupancy, isDynamicActive, isMember)}
-          />
+        <motion.div animate={{ opacity: [0.35, 0.68, 0.35] }}
+          transition={{ duration: 4.4, repeat: Infinity, ease: "easeInOut", delay: 0.9 }}
+          style={{ fontFamily: "'Courier New',monospace", fontSize: "clamp(7px,0.80vw,10px)",
+            color: "#9B7FD4", letterSpacing: "0.32em",
+            textShadow: "0 0 16px rgba(155,127,212,0.55)", marginBottom: 8 }}
+        >◇ POURCRAFT</motion.div>
+        <div style={{ fontFamily: "'Cormorant Garamond',serif",
+          fontSize: "clamp(26px,3.8vw,46px)", fontWeight: 300,
+          color: "rgba(240,232,212,0.68)", letterSpacing: "0.02em", lineHeight: 0.95,
+          textShadow: "0 2px 22px rgba(0,0,0,0.65), 0 0 44px rgba(155,127,212,0.12)" }}>
+          Curated<br />Spirits
+        </div>
+      </motion.button>
+
+      {/* ─ BrewCraft — lower-left environmental zone ─ */}
+      <motion.button
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+        onClick={() => handleCraftTap(CRAFTS[2])}
+        style={{
+          position: "absolute", left: "7%", bottom: "20%",
+          background: "none", border: "none", cursor: "pointer",
+          textAlign: "left", padding: 0, outline: "none", zIndex: 30,
+        }}
+      >
+        <motion.div animate={{ opacity: [0.32, 0.65, 0.32] }}
+          transition={{ duration: 5.0, repeat: Infinity, ease: "easeInOut", delay: 1.6 }}
+          style={{ fontFamily: "'Courier New',monospace", fontSize: "clamp(7px,0.80vw,10px)",
+            color: "#3BBFA3", letterSpacing: "0.32em",
+            textShadow: "0 0 16px rgba(59,191,163,0.50)", marginBottom: 6 }}
+        >◎ BREWCRAFT</motion.div>
+        <div style={{ fontFamily: "'Cormorant Garamond',serif",
+          fontSize: "clamp(22px,3.0vw,38px)", fontWeight: 300,
+          color: "rgba(240,232,212,0.58)", letterSpacing: "0.02em", lineHeight: 0.95,
+          textShadow: "0 2px 18px rgba(0,0,0,0.60)" }}>
+          Artisan<br />Beer
+        </div>
+      </motion.button>
+
+      {/* ─ VapeCraft — lower-right atmospheric zone ─ */}
+      <motion.button
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.4, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+        onClick={() => handleCraftTap(CRAFTS[3])}
+        style={{
+          position: "absolute", right: "8%", bottom: "22%",
+          background: "none", border: "none", cursor: "pointer",
+          textAlign: "right", padding: 0, outline: "none", zIndex: 30,
+        }}
+      >
+        <motion.div animate={{ opacity: [0.28, 0.55, 0.28] }}
+          transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 2.2 }}
+          style={{ fontFamily: "'Courier New',monospace", fontSize: "clamp(7px,0.80vw,10px)",
+            color: "#5BC4F5", letterSpacing: "0.32em",
+            textShadow: "0 0 16px rgba(91,196,245,0.45)", marginBottom: 6 }}
+        >◉ VAPECRAFT</motion.div>
+        <div style={{ fontFamily: "'Cormorant Garamond',serif",
+          fontSize: "clamp(20px,2.6vw,34px)", fontWeight: 300,
+          color: "rgba(240,232,212,0.50)", letterSpacing: "0.02em", lineHeight: 0.95,
+          textShadow: "0 2px 16px rgba(0,0,0,0.55)" }}>
+          Next-Gen<br />Vapor
+        </div>
+      </motion.button>
+
+
+      {/* ══ UI CHROME: Bottom floating craft navigator — Vision Pro style ══ */}
+      <motion.div
+        initial={{ opacity: 0, y: 22 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.75, duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+        style={{
+          position: "absolute", bottom: 96, left: "50%", transform: "translateX(-50%)",
+          zIndex: 50, display: "flex", alignItems: "center", gap: 2,
+          background: "rgba(6,4,2,0.82)",
+          backdropFilter: "blur(32px)", WebkitBackdropFilter: "blur(32px)",
+          border: "1px solid rgba(212,175,55,0.16)",
+          borderRadius: 999,
+          padding: "10px 22px",
+          boxShadow: ["0 10px 44px rgba(0,0,0,0.68)", "inset 0 1px 0 rgba(212,175,55,0.14)",
+            "inset 0 -1px 0 rgba(0,0,0,0.38)"].join(","),
+        }}
+      >
+        {CRAFTS.map((craft) => (
+          <button key={craft.id} onClick={() => handleCraftTap(craft)} style={{
+            display: "flex", alignItems: "center", gap: 6, padding: "8px 16px",
+            background: activeCraft === craft.id ? `${craft.color}18` : "transparent",
+            border: `1px solid ${activeCraft === craft.id ? `${craft.color}45` : "transparent"}`,
+            borderRadius: 999, cursor: "pointer", outline: "none", transition: "all 0.24s ease",
+          }}>
+            <span style={{ fontSize: 13,
+              color: activeCraft === craft.id ? craft.color : "rgba(240,232,212,0.38)",
+              textShadow: activeCraft === craft.id ? `0 0 10px ${craft.color}88` : "none",
+              transition: "color 0.24s ease" }}>{craft.glyph}</span>
+            <span style={{ fontFamily: "'Courier New',monospace", fontSize: 9, fontWeight: 700,
+              letterSpacing: "0.18em", textTransform: "uppercase", whiteSpace: "nowrap",
+              color: activeCraft === craft.id ? craft.color : "rgba(240,232,212,0.32)",
+              transition: "color 0.24s ease" }}>{craft.id}</span>
+          </button>
         ))}
-      </div>
-
-      {/* DayOne360 — bottom-centre anchor bar, above ticker, live hyperlink */}
-      <div
-        className="relative z-10 flex-shrink-0"
-        style={{ padding: "0 16px 8px" }}
-      >
-        <motion.a
-          href={buildAffiliateLink("https://www.dayone360.com")}
-          target="_blank"
-          rel="noopener noreferrer"
+        <div style={{ width: 1, height: 18, background: "rgba(212,175,55,0.14)", margin: "0 6px" }} />
+        <button onClick={() => { toggleMember(); setBurstKey(k => k + 1); }} style={{
+          display: "flex", alignItems: "center", gap: 5, padding: "8px 14px",
+          background: isMember ? "rgba(74,222,128,0.10)" : "transparent",
+          border: `1px solid ${isMember ? "rgba(74,222,128,0.36)" : "transparent"}`,
+          borderRadius: 999, cursor: "pointer", outline: "none", transition: "all 0.24s ease",
+        }}>
+          <span style={{ fontSize: 7, color: isMember ? "#4ade80" : "rgba(240,232,212,0.25)" }}>
+            {isMember ? "⬤" : "◯"}
+          </span>
+          <span style={{ fontFamily: "'Courier New',monospace", fontSize: 8, fontWeight: 700,
+            letterSpacing: "0.18em", whiteSpace: "nowrap",
+            color: isMember ? "#4ade80" : "rgba(240,232,212,0.26)" }}>
+            {isMember ? "MEMBER" : "GUEST"}
+          </span>
+        </button>
+        <div style={{ width: 1, height: 18, background: "rgba(212,175,55,0.12)", margin: "0 6px" }} />
+        <a href={buildAffiliateLink("https://www.dayone360.com")}
+          target="_blank" rel="noopener noreferrer"
           onClick={() => void logOutboundClick("DAYONE360_LEISURE")}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 13,
-            height: 52, borderRadius: 14, textDecoration: "none",
-            background: "linear-gradient(135deg, rgba(14,10,28,0.95) 0%, rgba(20,14,38,0.97) 50%, rgba(8,6,16,0.95) 100%)",
-            border: "1px solid rgba(167,139,250,0.28)",
-            boxShadow: "0 0 22px rgba(212,175,55,0.14), 0 4px 18px rgba(0,0,0,0.55), inset 0 1px 0 rgba(167,139,250,0.10)",
-            position: "relative", overflow: "hidden",
-          }}
-          whileHover={{ boxShadow: "0 0 32px rgba(212,175,55,0.22), 0 6px 24px rgba(0,0,0,0.60), inset 0 1px 0 rgba(167,139,250,0.14)" }}
-        >
-          {/* Radial purple ambient */}
-          <div style={{ position:"absolute", inset:0, pointerEvents:"none",
-            background:"radial-gradient(ellipse 60% 90% at 15% 50%, rgba(167,139,250,0.10), transparent)" }} />
-          {/* Globe + plane mark */}
-          <div style={{ flexShrink:0, width:34, height:34, borderRadius:10,
-            background:"rgba(167,139,250,0.10)", border:"1px solid rgba(167,139,250,0.28)",
-            display:"flex", alignItems:"center", justifyContent:"center", position:"relative", zIndex:1 }}>
-            <svg viewBox="0 0 32 32" width="20" height="20" fill="none">
-              <circle cx="16" cy="16" r="11" stroke="#a78bfa" strokeWidth="1.3" opacity="0.85"/>
-              <ellipse cx="16" cy="16" rx="5.5" ry="11" stroke="#a78bfa" strokeWidth="1" opacity="0.45"/>
-              <line x1="5" y1="16" x2="27" y2="16" stroke="#a78bfa" strokeWidth="0.9" opacity="0.38"/>
-              <path d="M21 8 L18 14 L13 12 L11 14 L15 16 L13 20 L16 19 L18 23 L20 21 L18 16 L23 12 Z"
-                fill="#a78bfa" opacity="0.90"/>
-            </svg>
-          </div>
-          {/* Label */}
-          <div style={{ position:"relative", zIndex:1 }}>
-            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:16, fontWeight:700,
-              color:"#F0E8D4", letterSpacing:"0.04em", lineHeight:1.1,
-              textShadow:"0 0 12px rgba(212,175,55,0.45), 0 2px 8px rgba(0,0,0,0.70)" }}>
-              DayOne360 Travel
-            </div>
-            <div style={{ fontFamily:"'Courier New',monospace", fontSize:8, fontWeight:700,
-              color:"rgba(167,139,250,0.65)", letterSpacing:"0.18em", textTransform:"uppercase", marginTop:2 }}>
-              Preferred Partner of {getVenueDisplayName()} · Exclusive rates applied
-            </div>
-          </div>
-          {/* Arrow */}
-          <div style={{ position:"relative", zIndex:1, marginLeft:4,
-            fontFamily:"'Courier New',monospace", fontSize:11, color:"rgba(167,139,250,0.50)" }}>›</div>
-        </motion.a>
-      </div>
+          style={{ display: "flex", alignItems: "center", gap: 5, padding: "8px 14px",
+            borderRadius: 999, textDecoration: "none" }}>
+          <svg viewBox="0 0 20 20" width="11" height="11" fill="none">
+            <circle cx="10" cy="10" r="7" stroke="rgba(167,139,250,0.65)" strokeWidth="1.2"/>
+            <ellipse cx="10" cy="10" rx="3.5" ry="7" stroke="rgba(167,139,250,0.32)" strokeWidth="0.9"/>
+            <path d="M13.5 5.5 L11.5 9.5 L8.5 8.5 L7.5 9.5 L10 11 L8.5 14 L10.5 13.5 L11.5 16 L13 14.5 L11.5 11 L15 8.5 Z"
+              fill="rgba(167,139,250,0.82)"/>
+          </svg>
+          <span style={{ fontFamily: "'Courier New',monospace", fontSize: 8, fontWeight: 700,
+            letterSpacing: "0.18em", color: "rgba(167,139,250,0.52)", whiteSpace: "nowrap" }}>D1360</span>
+        </a>
+        <div style={{ width: 1, height: 16, background: "rgba(212,175,55,0.08)", margin: "0 4px" }} />
+        <span style={{ fontFamily: "'Courier New',monospace", fontSize: 7,
+          letterSpacing: "0.14em", color: "rgba(240,232,212,0.11)" }}>Hold top 3s · Staff</span>
+      </motion.div>
 
-      {/* Price Ticker — live LED strip */}
-      <PriceTicker craftPrices={craftPrices} />
 
-      {/* Footer */}
-      <footer
-        className="relative z-10 flex items-center gap-4 px-5 py-2.5 flex-shrink-0"
-        style={{
-          borderTop: "1px solid rgba(26,26,27,0.08)",
-          background: "rgba(13,11,9,0.92)",
-          backdropFilter: "blur(12px)",
-        }}
-      >
-        {CRAFTS.map((c, i) => (
-          <div key={c.id} className="flex items-center gap-1.5">
-            <motion.div
-              className="rounded-full"
-              style={{ width: 4, height: 4, background: c.color }}
-              animate={{ scale: [1, 1.5, 1], opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 }}
-            />
-            <span
-              className="uppercase"
-              style={{ fontSize: 8, color: "rgba(26,26,27,0.22)", letterSpacing: "0.2em" }}
-            >
-              {c.id}
-            </span>
-          </div>
-        ))}
-
-        {/* ── Prestige rank badge ── */}
-        {(() => {
-          const cfg  = RANK_CONFIG[rank];
-          const prog = xpProgress(xp);
-          const next = xpToNextRank(xp);
-          return (
-            <div
-              style={{
-                display: "flex", flexDirection: "column", alignItems: "center",
-                gap: 2, marginLeft: "auto",
-              }}
-              title={next ? `${next} XP to next rank` : "Maximum rank achieved"}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <span style={{ fontSize: 8, color: cfg.color }}>{cfg.glyph}</span>
-                <span style={{
-                  fontSize: 7.5, fontWeight: 700, letterSpacing: "0.18em",
-                  textTransform: "uppercase", color: cfg.color,
-                }}>
-                  {rank}
-                </span>
-              </div>
-              {/* XP progress bar */}
-              <div style={{
-                width: 52, height: 2, borderRadius: 99,
-                background: "rgba(26,26,27,0.10)",
-                overflow: "hidden",
-              }}>
-                <motion.div
-                  animate={{ width: `${prog * 100}%` }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
-                  style={{
-                    height: "100%", borderRadius: 99,
-                    background: cfg.color,
-                    boxShadow: `0 0 4px ${cfg.color}88`,
-                  }}
-                />
-              </div>
-            </div>
-          );
-        })()}
-
-        {/* Member Access toggle */}
-        <button
-          onClick={() => { toggleMember(); setBurstKey((k) => k + 1); }}
-          style={{
-            marginLeft: "auto",
-            display: "flex", alignItems: "center", gap: 5,
-            fontSize: 7.5, fontWeight: 700, letterSpacing: "0.16em",
-            textTransform: "uppercase", cursor: "pointer", outline: "none",
-            background: isMember ? "rgba(74,222,128,0.12)" : "rgba(26,26,27,0.07)",
-            border: `1px solid ${isMember ? "rgba(74,222,128,0.45)" : "rgba(26,26,27,0.14)"}`,
-            color: isMember ? "#4ade80" : "rgba(240,232,212,0.32)",
-            padding: "3px 10px", borderRadius: 99,
-            transition: "all 0.28s ease",
-            boxShadow: isMember ? "0 0 8px rgba(74,222,128,0.2)" : "none",
-          }}
-        >
-          {isMember ? (
-            <>
-              <span style={{ fontSize: 8 }}>⬤</span>
-              Price Locked
-            </>
-          ) : (
-            <>
-              <span style={{ fontSize: 8, opacity: 0.5 }}>◯</span>
-              Member Access
-            </>
-          )}
-        </button>
-
-        <div
-          className="text-[8px] uppercase tracking-widest"
-          style={{ color: "rgba(240,232,212,0.16)" }}
-        >
-          Hold top-center 3s · Staff
-        </div>
-      </footer>
-
-      {/* ── Rank-up toast ── */}
+      {/* ══ Rank-up toast ══ */}
       <AnimatePresence>
         {rankUpVisible && (
           <motion.div
@@ -2282,33 +2209,21 @@ function PatronView({
               borderRadius: 12, padding: "10px 20px",
               backdropFilter: "blur(20px)",
               boxShadow: `0 6px 28px rgba(26,26,27,0.26), 0 0 16px ${RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#D48B00"}22`,
-              display: "flex", alignItems: "center", gap: 10,
-              whiteSpace: "nowrap",
+              display: "flex", alignItems: "center", gap: 10, whiteSpace: "nowrap",
             }}
           >
-            <motion.span
-              animate={{ rotate: [0, 18, -14, 8, 0], scale: [1, 1.35, 1] }}
+            <motion.span animate={{ rotate: [0, 18, -14, 8, 0], scale: [1, 1.35, 1] }}
               transition={{ duration: 0.7 }}
-              style={{
-                fontSize: 18,
-                color: RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#D48B00",
-              }}
-            >
+              style={{ fontSize: 18, color: RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#D48B00" }}>
               {RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.glyph ?? "✦"}
             </motion.span>
             <div>
-              <div style={{
-                fontSize: 7.5, fontWeight: 700, letterSpacing: "0.28em",
+              <div style={{ fontSize: 7.5, fontWeight: 700, letterSpacing: "0.28em",
                 textTransform: "uppercase",
-                color: RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#D48B00",
-                marginBottom: 1,
-              }}>
+                color: RANK_CONFIG[rankUpLabel as keyof typeof RANK_CONFIG]?.color ?? "#D48B00", marginBottom: 1 }}>
                 Rank Achieved
               </div>
-              <div style={{
-                fontSize: 13, fontWeight: 700, color: "#1A1A1B",
-                letterSpacing: "0.06em",
-              }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1A1B", letterSpacing: "0.06em" }}>
                 {rankUpLabel}
               </div>
             </div>
@@ -2316,39 +2231,27 @@ function PatronView({
         )}
       </AnimatePresence>
 
-      {/* ── Session Stimulation notification (fires at 40 min) ── */}
+      {/* ══ Session stimulation notification ══ */}
       <AnimatePresence>
         {stimulationVisible && (
           <motion.div
-            initial={{ y: 80, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 80, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 340, damping: 34 }}
+            initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }} transition={{ type: "spring", stiffness: 340, damping: 34 }}
             style={{
-              position: "absolute", bottom: 52, left: 12, right: 12, zIndex: 50,
+              position: "absolute", bottom: 106, left: 12, right: 12, zIndex: 50,
               background: "linear-gradient(135deg, rgba(245,242,237,0.96), rgba(22,17,12,0.94))",
-              border: "1px solid rgba(212,139,0,0.28)",
-              borderRadius: 14,
-              padding: "12px 16px",
+              border: "1px solid rgba(212,139,0,0.28)", borderRadius: 14, padding: "12px 16px",
               backdropFilter: "blur(18px)",
               boxShadow: "0 8px 32px rgba(26,26,27,0.22), 0 0 20px rgba(212,139,0,0.08)",
               display: "flex", alignItems: "center", gap: 12,
             }}
           >
-            <div style={{
-              width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
-              background: "rgba(212,139,0,0.15)",
-              border: "1px solid rgba(212,139,0,0.4)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 13,
-            }}>
-              ✦
-            </div>
+            <div style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
+              background: "rgba(212,139,0,0.15)", border: "1px solid rgba(212,139,0,0.4)",
+              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13 }}>✦</div>
             <div style={{ flex: 1 }}>
-              <div style={{
-                fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
-                textTransform: "uppercase", color: "#D48B00", marginBottom: 2,
-              }}>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
+                textTransform: "uppercase", color: "#D48B00", marginBottom: 2 }}>
                 Enhance Your Session
               </div>
               <div style={{ fontSize: 10, color: "rgba(26,26,27,0.62)", lineHeight: 1.4 }}>
@@ -2356,82 +2259,41 @@ function PatronView({
                 or house charcuterie to reset and elevate your experience.
               </div>
             </div>
-            <button
-              onClick={() => setStimulation(false)}
-              style={{
-                fontSize: 14, color: isDark ? "rgba(240,232,212,0.38)" : "rgba(26,26,27,0.28)",
-                background: "none", border: "none", cursor: "pointer",
-                lineHeight: 1, padding: "2px 4px", flexShrink: 0,
-              }}
-            >
-              ×
-            </button>
+            <button onClick={() => setStimulation(false)} style={{
+              fontSize: 14, color: "rgba(240,232,212,0.38)",
+              background: "none", border: "none", cursor: "pointer",
+              lineHeight: 1, padding: "2px 4px", flexShrink: 0 }}>×</button>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── Travel Concierge Modal (DayOne360) ── */}
+      {/* ══ Travel Concierge Modal (DayOne360) ══ */}
       <AnimatePresence>
         {travelOpen && <TravelConciergeModal onClose={() => setTravelOpen(false)} />}
       </AnimatePresence>
 
-      {/* ── Founder Dashboard — secret 5-second logo long-press ── */}
-      <AnimatePresence>
-        {founderPatronOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{
-              position: "absolute", inset: 0,
-              zIndex: 200,
-              background: "rgba(245,242,237,0.96)",
-              backdropFilter: "blur(16px)",
-              overflowY: "auto",
-            }}
-          >
-            <button
-              onClick={() => setFounderPatronOpen(false)}
-              style={{
-                position: "absolute", top: 16, right: 20,
-                background: "rgba(26,26,27,0.08)",
-                border: "1px solid rgba(26,26,27,0.14)",
-                borderRadius: 8, padding: "6px 14px",
-                color: "rgba(26,26,27,0.58)", fontSize: 11,
-                cursor: "pointer", zIndex: 10,
-              }}
-            >✕ Close</button>
-            <FoundersDashboard />
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Portal curtain */}
+      {/* ══ Portal curtain — craft entry transition ══ */}
       <AnimatePresence>
         {portal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ duration: 0.48 }}
             onAnimationComplete={() => navigate(portal.route)}
             className="fixed inset-0 z-[200] flex items-center justify-center"
-            style={{ background: isDark ? "#080604" : "#F5F2ED" }}
-          >
+            style={{ background: "#040302" }}>
             <motion.div
               initial={{ scale: 0.05, opacity: 0.9 }}
               animate={{ scale: 5, opacity: 0 }}
               transition={{ duration: 0.48, ease: "easeOut" }}
-              style={{
-                width: 200, height: 200, borderRadius: "50%",
-                background: `radial-gradient(circle, ${portal.color}55 0%, transparent 70%)`,
-              }}
+              style={{ width: 200, height: 200, borderRadius: "50%",
+                background: `radial-gradient(circle, ${portal.color}55 0%, transparent 70%)` }}
             />
           </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
+
 }
 
 // ── HandoffContainer — root orchestrator ──────────────────────────────────────
@@ -2463,6 +2325,39 @@ export function HandoffContainer() {
   }, []);
 
   useEffect(() => () => { if (holdTimerRef.current) clearTimeout(holdTimerRef.current); }, []);
+
+  const [, navigate] = useLocation();
+
+  // Chrome bar clock
+  const [hcTime, setHcTime] = useState(() =>
+    new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+  );
+  useEffect(() => {
+    const id = setInterval(
+      () => setHcTime(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })),
+      10_000,
+    );
+    return () => clearInterval(id);
+  }, []);
+
+  // Chrome bar PULSE_MSGS ticker
+  const [hcTickerIdx, setHcTickerIdx] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setHcTickerIdx(i => (i + 1) % PULSE_MSGS.length), 3800);
+    return () => clearInterval(id);
+  }, []);
+
+  // PriceTicker craft prices
+  const { occupancy, isDynamicActive, isMember } = useAxiomStore();
+  const hcCraftPrices = useMemo(
+    () => Object.fromEntries(
+      CRAFTS.map((c) => [
+        c.id,
+        calculateDynamicPrice(CRAFT_BASE_PRICE[c.id] ?? 20, occupancy, isDynamicActive, isMember),
+      ]),
+    ),
+    [occupancy, isDynamicActive, isMember],
+  ) as Record<string, PriceInfo>;
 
   return (
     <div className="fixed inset-0 overflow-hidden bg-axiom-graphite">
@@ -2509,6 +2404,70 @@ export function HandoffContainer() {
       <AnimatePresence>
         {flashing && <OverrideFlash />}
       </AnimatePresence>
+
+      {/* ══ UI CHROME: Metallic top nano-bar — viewport-absolute ══ */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, zIndex: 200, height: 52,
+        background: "linear-gradient(180deg, rgba(4,3,2,0.94) 0%, rgba(4,3,2,0.65) 75%, transparent 100%)",
+        display: "flex", alignItems: "center", padding: "0 16px", gap: 14,
+        boxShadow: "inset 0 1px 0 rgba(212,175,55,0.14)",
+        pointerEvents: activeMode === "staff" ? "none" : "auto",
+      }}>
+        <button onClick={() => navigate("/craft-hub")} style={{
+          background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.18)",
+          borderRadius: 7, padding: "4px 10px", color: "rgba(212,175,55,0.62)",
+          fontSize: 9, fontWeight: 700, letterSpacing: "0.16em",
+          cursor: "pointer", outline: "none", flexShrink: 0,
+          boxShadow: "inset 0 1px 0 rgba(255,235,150,0.10)",
+        }}>‹ HOME</button>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexShrink: 0, userSelect: "none" }}>
+          <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 15, fontWeight: 600,
+            letterSpacing: "0.22em", textTransform: "uppercase",
+            color: "rgba(240,232,212,0.72)", textShadow: "0 0 20px rgba(212,175,55,0.22)" }}>
+            Axiom OS
+          </span>
+          <span style={{ fontFamily: "'Courier New',monospace", fontSize: 7,
+            color: "rgba(212,139,0,0.38)", letterSpacing: "0.28em", textTransform: "uppercase" }}>
+            Experience Engine
+          </span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, overflow: "hidden" }}>
+          {([
+            { label: "AI", color: "#4ade80" },
+            { label: "REVENUE", color: "#a78bfa" },
+            { label: "SYNC", color: "#60a5fa" },
+          ] as const).map(n => (
+            <div key={n.label} style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+              <motion.div style={{ width: 3.5, height: 3.5, borderRadius: "50%", background: n.color }}
+                animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 2.4, repeat: Infinity }} />
+              <span style={{ fontSize: 7.5, color: "rgba(240,232,212,0.26)", letterSpacing: "0.18em" }}>{n.label}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0,
+          fontFamily: "'Courier New',monospace", fontSize: 9,
+          color: "rgba(240,232,212,0.30)", letterSpacing: "0.12em" }}>
+          <motion.div style={{ width: 4, height: 4, borderRadius: "50%", background: "#34d399" }}
+            animate={{ opacity: [1, 0.2, 1] }} transition={{ duration: 2.2, repeat: Infinity }} />
+          {hcTime}
+        </div>
+        <AnimatePresence mode="wait">
+          <motion.div key={hcTickerIdx}
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.38 }}
+            style={{ fontFamily: "'Courier New',monospace", fontSize: 8, fontWeight: 700,
+              letterSpacing: "0.28em", textTransform: "uppercase",
+              color: "#FFB347", textShadow: "0 0 8px rgba(255,179,71,0.45)", flexShrink: 0 }}>
+            ● {PULSE_MSGS[hcTickerIdx].text}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* ══ PriceTicker — viewport bottom, absolute within fixed container ══ */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 88, overflow: "hidden", zIndex: 200,
+        pointerEvents: activeMode === "staff" ? "none" : "auto" }}>
+        <PriceTicker craftPrices={hcCraftPrices} />
+      </div>
     </div>
   );
 }
