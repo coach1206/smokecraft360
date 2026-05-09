@@ -25,6 +25,7 @@ import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, Zap, Compass } from "lucide-react";
 import type { CraftTheme } from "@/lib/craftThemes";
+import { AudioWaveToggle }        from "@/contexts/AudioContext";
 import { useGuestProfile }        from "@/contexts/GuestProfileContext";
 import EnrollmentFlow             from "@/components/EnrollmentFlow";
 import MentorReveal               from "@/components/MentorReveal";
@@ -52,9 +53,10 @@ const CHAMBER: Record<string, ChamberConfig> = {
     tagline:    "Curated through atmosphere, flavor, strength, and mood.",
     atmosphere: "Aged cedar  ·  Ember warmth  ·  Reserve selections",
     images: [
-      "/images/smoke/smoke_selection.png",
-      "/images/cigar2.png",
-      "/images/cigar4.png",
+      "/images/lounge-bg.jpg",
+      "/images/scenes/smokecraft-card.jpg",
+      "/images/scenes/bold.jpg",
+      "/images/scenes/relaxed.jpg",
     ],
   },
   pour: {
@@ -470,49 +472,56 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
           <ArrowLeft size={13} /> Portal
         </motion.button>
 
-        {/* ── Guest identity badge (if enrolled) ── */}
-        {guestProfile && (
-          <motion.div
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-            style={{
-              position:       "absolute",
-              top:            18, right: 20,
-              zIndex:         10,
+        {/* ── Top-right controls: mute toggle + optional guest badge ── */}
+        <motion.div
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.5 }}
+          style={{
+            position:    "absolute",
+            top:         18, right: 20,
+            zIndex:      10,
+            display:     "flex",
+            alignItems:  "center",
+            gap:         8,
+          }}
+        >
+          <AudioWaveToggle />
+          {guestProfile && (
+            <div style={{
               display:        "flex",
               alignItems:     "center",
               gap:            7,
-              background:     "rgba(26,26,27,0.14)",
-              border:         `1px solid ${accent}30`,
+              background:     "rgba(0,0,0,0.50)",
+              border:         `1px solid ${accent}40`,
               borderRadius:   10,
               padding:        "8px 14px",
               backdropFilter: "blur(12px)",
-            }}
-          >
-            <div style={{
-              width:          20, height: 20,
-              borderRadius:   "50%",
-              background:     `${accent}20`,
-              border:         `1px solid ${accent}50`,
-              display:        "flex",
-              alignItems:     "center",
-              justifyContent: "center",
-              fontSize:       9,
-              color:          accent,
-              fontWeight:     700,
             }}>
-              {guestProfile.firstName[0]}
+              <div style={{
+                width:          20, height: 20,
+                borderRadius:   "50%",
+                background:     `${accent}20`,
+                border:         `1px solid ${accent}50`,
+                display:        "flex",
+                alignItems:     "center",
+                justifyContent: "center",
+                fontSize:       9,
+                color:          accent,
+                fontWeight:     700,
+              }}>
+                {guestProfile.firstName[0]}
+              </div>
+              <span style={{
+                fontSize:      10,
+                color:         `${accent}90`,
+                letterSpacing: "0.08em",
+              }}>
+                {guestProfile.publicId}
+              </span>
             </div>
-            <span style={{
-              fontSize:      10,
-              color:         `${accent}80`,
-              letterSpacing: "0.08em",
-            }}>
-              {guestProfile.publicId}
-            </span>
-          </motion.div>
-        )}
+          )}
+        </motion.div>
 
         {/* ── Central content ── */}
         <div style={{

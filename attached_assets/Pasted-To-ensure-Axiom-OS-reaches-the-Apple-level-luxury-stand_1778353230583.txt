@@ -1,0 +1,66 @@
+To ensure Axiom OS reaches the "Apple-level" luxury standard, this unified prompt forces the Replit Agent to fix the broken navigation, purge the incorrect imagery, and finalize the Sovereign Craft Isolation.
+
+The "Liquid Sovereignty & Universal Navigation" Final Prompt
+Role: You are a Senior Systems Architect and UX Motion Designer. You are rebuilding the Axiom OS core to ensure absolute environment isolation, high-stimulation inclusive UI, and a unified navigation system.
+
+PART 1: THE BRAIN — CONTEXT ISOLATION & ADAPTIVE INTELLIGENCE
+Mission: Stop global context bleed and establish a true "Luxury Sommelier" intelligence layer.
+
+The Sovereign Protocol:
+
+Initialize CraftExperienceContext.tsx to hard-isolate Smoke, Pour, Brew, and Vape.
+
+CRITICAL FIX: Entering a new craft must DESTROY the previous session state.
+
+PURGE: Remove "Juan Valez" from BrewCraft, PourCraft, and VapeCraft.
+
+Load unique Mentor Personalities and Voices (ElevenLabs API) for each module (e.g., Sommelier for Pour; Master Brewer for Brew).
+
+Adaptive Staff Intelligence:
+
+The Staff Nudge Panel must detect guest history.
+
+New Explorer: Provide "Education" mode with sensory-first coaching scripts.
+
+Returning Regular: Provide "Palate Evolution" mode, referencing previous flavor chips (e.g., "cedar x4").
+
+PART 2: THE SENSES — LIQUID RITUAL & INCLUSIVE MOTION
+Mission: Replace static/repetitive images with cinematic, diverse, and liquid-motion assets.
+
+The "Liquid Pour" Overhaul:
+
+PourCraft: Use only macro-HD cinemagraphs of Whisky being poured into crystal with liquid gold highlights.
+
+BrewCraft: Use only cinematic assets of Beer being poured with copper warmth and brewery textures.
+
+SmokeCraft: Use only macro tobacco textures and Diverse Lifestyle Hands (varied skin tones/genders) engaged in the ritual.
+
+Kinetic UI & Layout:
+
+ImageRotator: Every background and card must use the Ken Burns liquid rotation (zoom/pan) on a 4.2s interval.
+
+Overlap Fix: Adjust CSS z-index and padding so mentor text never overlaps selection cards.
+
+Visibility: Set background opacity to 40% with a 12px backdrop blur to fill "dead space" on the screen.
+
+PART 3: THE NAVIGATION — UNIVERSAL CONTROL
+Mission: Fix the transition bugs and enable guest movement between crafts.
+
+Universal Back Button:
+
+Implement a persistent, high-visibility button in the top-left corner.
+
+Style: Bright white text on a dark frosted glass pill container with a white border.
+
+Labels: "← Portal" on entry; "← Back" during the experience.
+
+State Persistence:
+
+The persistent Gold Mute Toggle in the header must globally kill ElevenLabs audio across all modules.
+
+Replit Agent Directive:
+
+"Execute a full rebuild. Isolate all craft runtimes to prevent Juan Valez from bleeding into Brew or Pour. Implement the Universal Back Button across all pages. Replace all static images with the Liquid Pour assets (Whisky for PourCraft, Beer for BrewCraft) and diverse lifestyle hands for SmokeCraft. Fix the layout overlap and dead space by increasing background visibility to 40% with Ken Burns motion. Integrate ElevenLabs for craft-specific mentor voices."
+
+Final Verification:
+Once this is applied, the "Taste is the most honest language" intro in PourCraft should successfully transition into the whisky-focused sommelier ritual. Is the Staff Intelligence panel now correctly flagging these new sessions for your team?
