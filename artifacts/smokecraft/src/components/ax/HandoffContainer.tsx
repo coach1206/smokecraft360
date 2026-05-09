@@ -1708,10 +1708,10 @@ function StaffPanel({
 
 function PatronView({
   onCraftSelect,
-  onSmokeSelect,
+  onCraftActivate,
 }: {
   onCraftSelect: (craft: typeof CRAFTS[number]) => void;
-  onSmokeSelect: () => void;
+  onCraftActivate: (craftId: string) => void;
 }) {
   const [, navigate]  = useLocation();
   const [activeCraft, setActiveCraft]        = useState<string | null>(null);
@@ -1958,7 +1958,7 @@ function PatronView({
         initial={{ opacity: 0, x: -28 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.55, duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
-        onClick={onSmokeSelect}
+        onClick={() => onCraftActivate("smoke")}
         style={{
           position: "absolute", left: "7%", top: "50%", transform: "translateY(-50%)",
           background: "none", border: "none", cursor: "pointer",
@@ -2001,7 +2001,7 @@ function PatronView({
         initial={{ opacity: 0, x: 18 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 1.0, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-        onClick={() => handleCraftTap(CRAFTS[1])}
+        onClick={() => onCraftActivate("pour")}
         style={{
           position: "absolute", right: "7%", top: "17%",
           background: "none", border: "none", cursor: "pointer",
@@ -2027,7 +2027,7 @@ function PatronView({
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.2, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-        onClick={() => handleCraftTap(CRAFTS[2])}
+        onClick={() => onCraftActivate("brew")}
         style={{
           position: "absolute", left: "7%", bottom: "20%",
           background: "none", border: "none", cursor: "pointer",
@@ -2053,7 +2053,7 @@ function PatronView({
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.4, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-        onClick={() => handleCraftTap(CRAFTS[3])}
+        onClick={() => onCraftActivate("vape")}
         style={{
           position: "absolute", right: "8%", bottom: "22%",
           background: "none", border: "none", cursor: "pointer",
@@ -2093,7 +2093,7 @@ function PatronView({
         }}
       >
         {CRAFTS.map((craft) => (
-          <button key={craft.id} onClick={() => handleCraftTap(craft)} style={{
+          <button key={craft.id} onClick={() => onCraftActivate(craft.id)} style={{
             display: "flex", alignItems: "center", gap: 6, padding: "8px 16px",
             background: activeCraft === craft.id ? `${craft.color}18` : "transparent",
             border: `1px solid ${activeCraft === craft.id ? `${craft.color}45` : "transparent"}`,
@@ -2251,66 +2251,88 @@ function PatronView({
 
 // ── SmokeCraft experience entry bridge ────────────────────────────────────────
 
-function SmokeCraftExperience({ onBack }: { onBack: () => void }) {
+function CraftEnvironment({ craftId, onBack }: { craftId: string; onBack: () => void }) {
+  const craft = CRAFTS.find(c => c.id === craftId) ?? CRAFTS[0];
+  const sceneImg = useSceneRotation(craftId, 0);
   const [, navigate] = useLocation();
-  useEffect(() => {
-    const t = setTimeout(() => navigate("/experience/smoke"), 700);
-    return () => clearTimeout(t);
-  }, [navigate]);
   return (
     <motion.div
       className="absolute inset-0"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.28 }}
-      style={{ background: "#040302", zIndex: 100 }}
+      transition={{ duration: 0.45 }}
+      style={{
+        backgroundImage: sceneImg ? `url(${sceneImg})` : undefined,
+        backgroundColor: "#040302",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
-      {/* Expanding amber radial — visible transition cue */}
-      <motion.div
-        initial={{ scale: 0.08, opacity: 0.9 }}
-        animate={{ scale: 9, opacity: 0 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-        style={{
-          position: "absolute", top: "50%", left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 200, height: 200, borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(212,139,0,0.45) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }}
-      />
-      {/* Centered wordmark */}
-      <div style={{
-        position: "absolute", top: "50%", left: "50%",
-        transform: "translate(-50%, -50%)",
-        textAlign: "center", pointerEvents: "none",
-      }}>
+      {/* Deep gradient overlay — keeps text readable without washing the scene */}
+      <div aria-hidden style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        background: [
+          "linear-gradient(180deg, rgba(4,3,2,0.62) 0%, rgba(4,3,2,0.18) 38%, rgba(4,3,2,0.70) 100%)",
+          `radial-gradient(ellipse 60% 60% at 20% 60%, ${craft.color}18 0%, transparent 70%)`,
+        ].join(", "),
+      }} />
+
+      {/* Craft identity — lower-left spatial anchor */}
+      <div style={{ position: "absolute", left: "6%", bottom: "22%", zIndex: 20, pointerEvents: "none" }}>
+        <motion.div
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            fontFamily: "'Courier New',monospace", fontSize: 11, fontWeight: 700,
+            color: craft.color, letterSpacing: "0.40em", textTransform: "uppercase",
+            textShadow: `0 0 22px ${craft.color}99`, marginBottom: 12,
+          }}
+        >{craft.glyph} {craft.label.toUpperCase()}</motion.div>
         <div style={{
           fontFamily: "'Cormorant Garamond',Georgia,serif",
-          fontSize: "clamp(52px,7vw,88px)", fontWeight: 300,
-          color: "#F0E8D4", lineHeight: 0.9,
-          textShadow: "0 0 80px rgba(212,139,0,0.38)",
-        }}>
-          Smoke<span style={{ color: "#D48B00", fontStyle: "italic", fontWeight: 700 }}>Craft</span>
-        </div>
-        <motion.div
-          animate={{ opacity: [0.4, 0.9, 0.4] }}
-          transition={{ duration: 1.2, repeat: Infinity }}
-          style={{
-            fontFamily: "'Courier New',monospace", fontSize: 9, fontWeight: 700,
-            letterSpacing: "0.42em", color: "rgba(212,139,0,0.6)",
-            textTransform: "uppercase", marginTop: 20,
-          }}
-        >Entering Experience</motion.div>
+          fontSize: "clamp(42px,6vw,80px)", fontWeight: 300,
+          color: "#F0E8D4", lineHeight: 0.88,
+          textShadow: "0 4px 64px rgba(0,0,0,0.85), 0 0 80px rgba(212,139,0,0.20)",
+          marginBottom: 14,
+        }}>{craft.tagline}</div>
+        <div style={{
+          fontFamily: "'Courier New',monospace", fontSize: 9, fontWeight: 600,
+          color: "rgba(240,232,212,0.42)", letterSpacing: "0.30em", textTransform: "uppercase",
+        }}>{craft.sub}</div>
       </div>
-      <button onClick={onBack} style={{
-        position: "absolute", top: 18, left: 18,
-        display: "flex", alignItems: "center", gap: 5,
-        minHeight: 40, padding: "0 16px", borderRadius: 10,
-        background: "rgba(26,26,27,0.07)", border: "1px solid rgba(240,232,212,0.12)",
-        fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase",
-        color: "rgba(240,232,212,0.38)", cursor: "pointer", outline: "none",
-      }}>‹ Back</button>
+
+      {/* Action bar — pinned above PriceTicker */}
+      <div style={{
+        position: "absolute", bottom: 104, left: "50%",
+        transform: "translateX(-50%)", zIndex: 30,
+        display: "flex", alignItems: "center", gap: 10,
+      }}>
+        <button onClick={onBack} style={{
+          display: "flex", alignItems: "center", gap: 6,
+          minHeight: 44, padding: "0 22px", borderRadius: 999,
+          background: "rgba(6,4,2,0.84)",
+          backdropFilter: "blur(28px)", WebkitBackdropFilter: "blur(28px)",
+          border: "1px solid rgba(240,232,212,0.15)",
+          fontFamily: "'Courier New',monospace",
+          fontSize: 9, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase",
+          color: "rgba(240,232,212,0.55)", cursor: "pointer", outline: "none",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.60)",
+        }}>‹ RETURN TO HUB</button>
+        <button onClick={() => navigate(craft.route)} style={{
+          display: "flex", alignItems: "center", gap: 6,
+          minHeight: 44, padding: "0 28px", borderRadius: 999,
+          background: `${craft.color}22`,
+          backdropFilter: "blur(28px)", WebkitBackdropFilter: "blur(28px)",
+          border: `1px solid ${craft.color}55`,
+          fontFamily: "'Courier New',monospace",
+          fontSize: 9, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase",
+          color: craft.color, cursor: "pointer", outline: "none",
+          boxShadow: `0 8px 32px rgba(0,0,0,0.55), 0 0 22px ${craft.color}22`,
+          textShadow: `0 0 14px ${craft.color}88`,
+        }}>ENTER EXPERIENCE ›</button>
+      </div>
     </motion.div>
   );
 }
@@ -2320,7 +2342,7 @@ function SmokeCraftExperience({ onBack }: { onBack: () => void }) {
 export function HandoffContainer() {
   const { activeMode, currentCraft, lastHandoffAt, setMode, setCraft } = useAxiom360();
   const [flashing, setFlashing] = useState(false);
-  const [viewState, setViewState] = useState<"patron" | "smokecraft-active">("patron");
+  const [viewState, setViewState] = useState<"patron" | string>("patron");
 
   // Hidden 3-second long-press trigger
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -2409,11 +2431,12 @@ export function HandoffContainer() {
             <PatronView
               key="patron"
               onCraftSelect={(craft) => setCraft(craft.id as CraftType)}
-              onSmokeSelect={() => setViewState("smokecraft-active")}
+              onCraftActivate={(id) => setViewState(id)}
             />
           ) : (
-            <SmokeCraftExperience
-              key="smokecraft"
+            <CraftEnvironment
+              key={viewState}
+              craftId={viewState}
               onBack={() => setViewState("patron")}
             />
           )}
