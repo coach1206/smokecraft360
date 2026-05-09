@@ -6,13 +6,15 @@
  * Design: Brushed Graphite / Smoked Titanium / Warm Honey Amber.
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSuperAdmin } from "@/contexts/SuperAdminContext";
 import { PermissionGate } from "@/components/PermissionGate";
 import { AccessLevel, getTierLabel, type FeatureMask } from "@/lib/authorityEngine";
-import { Shield, Power, Lock, Zap, Package, Eye, EyeOff, LogOut } from "lucide-react";
+import { Shield, Power, Lock, Zap, Package, Eye, EyeOff, LogOut, Activity, TrendingUp, Mail, Users } from "lucide-react";
 import { useHaptic } from "@/contexts/HapticContext";
+import { useCraftExperience } from "@/contexts/CraftExperienceContext";
+import { useGuestProfile }    from "@/contexts/GuestProfileContext";
 
 // ── Tokens ────────────────────────────────────────────────────────────────────
 const GOLD     = "#D48B00";
@@ -22,13 +24,14 @@ const OBSIDIAN = "#1A1A1B";
 const CREAM    = "#F5F2ED";
 const PANEL_BG = "rgba(22,20,18,0.97)";
 
-type Tab = "kill" | "inventory" | "masking" | "authority";
+type Tab = "kill" | "inventory" | "masking" | "authority" | "pulse";
 
 const TABS: { id: Tab; label: string; icon: React.ReactNode; tier: AccessLevel }[] = [
-  { id: "kill",      label: "Kill Switches",    icon: <Power size={13} />,  tier: AccessLevel.SHIFT_LEAD },
-  { id: "inventory", label: "Inventory",        icon: <Package size={13} />, tier: AccessLevel.SHIFT_LEAD },
-  { id: "masking",   label: "Feature Masking",  icon: <Eye size={13} />,    tier: AccessLevel.SHIFT_LEAD },
-  { id: "authority", label: "Authority",        icon: <Shield size={13} />, tier: AccessLevel.SOVEREIGN  },
+  { id: "kill",      label: "Kill Switches",    icon: <Power size={13} />,    tier: AccessLevel.SHIFT_LEAD },
+  { id: "inventory", label: "Inventory",        icon: <Package size={13} />,  tier: AccessLevel.SHIFT_LEAD },
+  { id: "masking",   label: "Feature Masking",  icon: <Eye size={13} />,      tier: AccessLevel.SHIFT_LEAD },
+  { id: "authority", label: "Authority",        icon: <Shield size={13} />,   tier: AccessLevel.SOVEREIGN  },
+  { id: "pulse",     label: "Revenue Pulse",    icon: <Activity size={13} />, tier: AccessLevel.SHIFT_LEAD },
 ];
 
 const FEATURE_LABELS: Record<FeatureMask, string> = {
@@ -154,6 +157,19 @@ function TabBar({ active, setActive }: { active: Tab; setActive: (t: Tab) => voi
 function KillSwitchesTab() {
   const { killSwitches, toggleKillSwitch, authority } = useSuperAdmin();
   const { triggerHaptic } = useHaptic();
+  const { purgeSessions }  = useCraftExperience();
+  const { clearGuest }     = useGuestProfile();
+
+  const handleToggle = useCallback(async (name: string, currentlyEnabled: boolean) => {
+    triggerHaptic("kill", 0.5, 0.5);
+    await toggleKillSwitch(name);
+    // Session Blackout: also purge all frontend session data immediately
+    if (name === "session_blackout" && !currentlyEnabled) {
+      purgeSessions();
+      clearGuest();
+    }
+  }, [toggleKillSwitch, triggerHaptic, purgeSessions, clearGuest]);
+
   return (
     <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 10 }}>
       <div style={{ fontSize: 8, color: `${CREAM}35`, letterSpacing: "0.18em", marginBottom: 4, fontFamily: "'Space Mono', monospace" }}>
@@ -177,6 +193,11 @@ function KillSwitchesTab() {
                   fontFamily: "'Space Mono', monospace",
                 }}>
                   {sw.label}
+                  {sw.name === "session_blackout" && (
+                    <span style={{ marginLeft: 8, fontSize: 7, color: "#ef444460", letterSpacing: "0.1em" }}>
+                      · GLOBAL SYSTEM RESET
+                    </span>
+                  )}
                 </div>
                 <div style={{ fontSize: 9, color: `${CREAM}35`, fontFamily: "'Space Mono', monospace" }}>
                   {sw.description}
@@ -194,7 +215,7 @@ function KillSwitchesTab() {
                 )}
                 <button
                   disabled={!canToggle}
-                  onClick={() => { if (canToggle) { triggerHaptic("kill", 0.5, 0.5); toggleKillSwitch(sw.name); } }}
+                  onClick={() => { if (canToggle) handleToggle(sw.name, sw.enabled); }}
                   style={{
                     width:      48, height: 26, borderRadius: 13,
                     border:     "none", cursor: canToggle ? "pointer" : "not-allowed",
@@ -399,6 +420,142 @@ function AuthorityTab() {
   );
 }
 
+// ── Revenue Pulse Tab ─────────────────────────────────────────────────────────
+
+const SENTIMENT_BARS = [
+  { label: "Earthy / Woody",  pct: 68, color: "#b87333" },
+  { label: "Spiced / Pepper", pct: 54, color: "#D48B00" },
+  { label: "Sweet / Honey",   pct: 47, color: "#d4af37" },
+  { label: "Smooth / Creamy", pct: 81, color: "#9BA3B2" },
+  { label: "Bold / Full Body",pct: 39, color: "#8b5cf6" },
+];
+
+const EMAIL_GATEWAY = "jc@360enterprisesservices.com";
+
+function PulseTab() {
+  const [sessions,  setSessions]  = useState(() => Math.floor(Math.random() * 6) + 3);
+  const [revenue,   setRevenue]   = useState(() => Math.floor(Math.random() * 800) + 400);
+  const [orders,    setOrders]    = useState(() => Math.floor(Math.random() * 3));
+  const tickRef = useRef(0);
+
+  // Simulate live fluctuations while overlay is open
+  useEffect(() => {
+    const t = setInterval(() => {
+      tickRef.current++;
+      if (tickRef.current % 4 === 0)
+        setSessions(s => Math.max(1, s + (Math.random() > 0.5 ? 1 : -1)));
+      if (tickRef.current % 2 === 0)
+        setRevenue(r => r + Math.floor(Math.random() * 18));
+      if (tickRef.current % 11 === 0 && Math.random() > 0.6)
+        setOrders(o => o + 1);
+    }, 1800);
+    return () => clearInterval(t);
+  }, []);
+
+  const mailtoHref = `mailto:${EMAIL_GATEWAY}?subject=Axiom%20OS%20Design%20Orders%20(${orders}%20pending)&body=Design%20order%20summary%20from%20Axiom%20OS%20Ghost%20Layer.%0A%0AActive%20Sessions%3A%20${sessions}%0ARevenue%20This%20Hour%3A%20%24${revenue}%0APending%20Design%20Orders%3A%20${orders}`;
+
+  return (
+    <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 18 }}>
+
+      {/* ── Live Metrics Row ── */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+        {[
+          { icon: <Users size={14} color={GOLD} />,       label: "Active Sessions", value: sessions,         unit: ""   },
+          { icon: <TrendingUp size={14} color="#22c55e" />, label: "Revenue / hr",  value: `$${revenue}`,    unit: ""   },
+          { icon: <Activity size={14} color="#8b5cf6" />,  label: "Design Orders",  value: orders,           unit: "pending" },
+        ].map(m => (
+          <div key={m.label} style={{
+            padding: "14px 12px", borderRadius: 12,
+            border:  `1px solid ${GOLD}18`,
+            background: "rgba(255,255,255,0.02)",
+            display: "flex", flexDirection: "column", gap: 6, alignItems: "center",
+          }}>
+            {m.icon}
+            <div style={{ fontSize: 18, fontWeight: 700, color: CREAM, fontFamily: "'Space Mono', monospace" }}>
+              {m.value}
+            </div>
+            <div style={{ fontSize: 7, color: `${CREAM}35`, letterSpacing: "0.14em", textAlign: "center" }}>
+              {m.label}
+              {m.unit && <span style={{ color: GOLD, marginLeft: 4 }}>{m.unit}</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Guest Sentiment ── */}
+      <div>
+        <div style={{ fontSize: 8, color: `${CREAM}35`, letterSpacing: "0.18em", marginBottom: 12, fontFamily: "'Space Mono', monospace" }}>
+          LIVE GUEST SENTIMENT — FLAVOR PROFILE DISTRIBUTION
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {SENTIMENT_BARS.map(bar => (
+            <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ fontSize: 8, color: `${CREAM}60`, width: 110, flexShrink: 0, fontFamily: "'Space Mono', monospace" }}>
+                {bar.label}
+              </div>
+              <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${bar.pct}%` }}
+                  transition={{ duration: 1.2, ease: "easeOut" }}
+                  style={{ height: "100%", borderRadius: 3, background: `linear-gradient(90deg, ${bar.color}60, ${bar.color})` }}
+                />
+              </div>
+              <div style={{ fontSize: 8, color: bar.color, width: 28, textAlign: "right", fontFamily: "'Space Mono', monospace" }}>
+                {bar.pct}%
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Design Orders Email Gateway ── */}
+      <div style={{
+        padding:    "16px 18px", borderRadius: 12,
+        border:     `1px solid ${GOLD}25`,
+        background: "rgba(212,139,0,0.05)",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+              <Mail size={12} color={GOLD} />
+              <span style={{ fontSize: 9, fontWeight: 700, color: GOLD, letterSpacing: "0.14em", fontFamily: "'Space Mono', monospace" }}>
+                DESIGN ORDERS GATEWAY
+              </span>
+            </div>
+            <div style={{ fontSize: 8, color: `${CREAM}40`, fontFamily: "'Space Mono', monospace" }}>
+              {EMAIL_GATEWAY}
+            </div>
+            <div style={{ fontSize: 7, color: `${CREAM}28`, marginTop: 3, fontFamily: "'Space Mono', monospace" }}>
+              {orders} bespoke cigar design{orders !== 1 ? "s" : ""} pending · tap to dispatch
+            </div>
+          </div>
+          <motion.a
+            href={mailtoHref}
+            whileTap={{ scale: 0.94 }}
+            style={{
+              display:         "flex", alignItems: "center", gap: 6,
+              padding:         "10px 16px", borderRadius: 8,
+              background:      `${GOLD}18`,
+              border:          `1px solid ${GOLD}40`,
+              color:           GOLD,
+              fontSize:        8, fontWeight: 700, letterSpacing: "0.12em",
+              textDecoration:  "none",
+              whiteSpace:      "nowrap",
+              fontFamily:      "'Space Mono', monospace",
+              cursor:          "pointer",
+              touchAction:     "manipulation",
+            }}
+          >
+            <Mail size={10} /> SEND DIGEST
+          </motion.a>
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
 // ── Main overlay ──────────────────────────────────────────────────────────────
 
 export default function SuperAdminOverlay() {
@@ -447,6 +604,7 @@ export default function SuperAdminOverlay() {
               {tab === "kill"      && <KillSwitchesTab />}
               {tab === "inventory" && <InventoryTab />}
               {tab === "masking"   && <MaskingTab />}
+              {tab === "pulse"     && <PulseTab />}
               {tab === "authority" && (
                 <PermissionGate requiredTier={AccessLevel.SOVEREIGN} mask={false}>
                   <AuthorityTab />
