@@ -86,7 +86,6 @@ function MenuItem({ icon, label, sub, accent, danger, onClick }: MenuItemProps) 
       data-override-hub
       whileTap={{ scale: 0.96, backgroundColor: `${accent}14` }}
       onClick={(e) => { e.stopPropagation(); onClick(); }}
-      onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); onClick(); }}
       style={{
         display:    "flex",
         alignItems: "center",
@@ -305,7 +304,6 @@ export function SovereignOverrideHub() {
         data-override-hub
         whileTap={{ scale: 0.94 }}
         onClick={handleOpen}
-        onTouchEnd={(e) => { e.preventDefault(); handleOpen(e); }}
         style={{
           position:             "fixed",
           top:                  12,
