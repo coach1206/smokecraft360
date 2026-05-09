@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 export default function TitanCraftDeck() {
-  // Fix: Explicitly define the state type so TS doesn't complain
   const [activeCraft, setActiveCraft] = useState<any>(null);
 
   const styles: Record<string, React.CSSProperties> = {
@@ -10,7 +9,7 @@ export default function TitanCraftDeck() {
     quadrant: { position: 'relative', overflow: 'hidden', cursor: 'pointer', border: '1px solid rgba(212,175,55,0.1)' },
     envStage: { position: 'absolute', inset: 0, zIndex: 100, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' },
     goldText: { fontWeight: '900', letterSpacing: '0.35em', textTransform: 'uppercase', color: '#d4af37' },
-    ticker: { position: 'absolute', bottom: 0, width: '100%', height: '35px', background: 'rgba(0,0,0,0.95)', borderTop: '2px solid #d4af37', display: 'flex', alignItems: 'center', zIndex: 300 },
+    ticker: { position: 'absolute', bottom: 0, width: '100%', height: '35px', background: 'rgba(0,0,0,0.95)', borderTop: '2px solid #d4af37', display: 'flex', alignItems: 'center', zIndex: 300, paddingLeft: '20px' },
     backBtn: { position: 'absolute', top: '40px', left: '40px', zIndex: 400, padding: '12px 24px', background: 'rgba(0,0,0,0.8)', border: '1px solid #d4af37', color: '#d4af37', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }
   };
 
@@ -45,9 +44,8 @@ export default function TitanCraftDeck() {
       )}
 
       <div style={styles.ticker}>
-        {/* Fix: use a standard div with animation if marquee fails JSX check */}
-        <div style={{ color: '#d4af37', fontSize: '11px', fontWeight: 'bold', paddingLeft: '20px' }}>
-          AXIOM OS /// ENGINE STATUS: LOCKED /// NO ACTIVE GHOST TIMERS /// SOVEREIGN NODE: ONLINE
+        <div style={{ color: '#d4af37', fontSize: '11px', fontWeight: 'bold' }}>
+          AXIOM OS /// ENGINE STATUS: LOCKED /// NO GHOST TIMERS /// SOVEREIGN NODE: ONLINE
         </div>
       </div>
     </div>
