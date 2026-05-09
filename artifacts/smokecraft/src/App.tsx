@@ -25,6 +25,7 @@ import { SuperAdminProvider }       from '@/contexts/SuperAdminContext';
 import { GhostEntryTrigger }        from '@/components/GhostEntryTrigger';
 import SuperAdminOverlay            from '@/components/SuperAdminOverlay';
 import { HapticProvider }           from '@/contexts/HapticContext';
+import { UniversalTouchAnchors }   from '@/components/UniversalTouchAnchors';
 
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
@@ -100,6 +101,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                     <OrchestratorProvider>
                                       <SuperAdminProvider>
                                         <HapticProvider>
+                                          <UniversalTouchAnchors />
                                           {children}
                                           <EeisOverlay />
                                           <GhostEntryTrigger />
