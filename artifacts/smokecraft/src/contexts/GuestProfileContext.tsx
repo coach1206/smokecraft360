@@ -164,6 +164,11 @@ export function GuestProfileProvider({ children }: { children: ReactNode }) {
     setMentor(null);
     setIsReturning(false);
     sessionStorage.removeItem(STORAGE_KEY);
+    // Also purge all Axiom OS session keys so no mentor/craft/EEIS
+    // data leaks between guests or after System Purge
+    sessionStorage.removeItem("axiom_eeis_journey");
+    sessionStorage.removeItem("axiom_experience_level");
+    sessionStorage.removeItem("axiom_craft_build");
   }, []);
 
   const updateMemory = useCallback(async (

@@ -1,0 +1,57 @@
+To round out the Axiom OS ecosystem, we are adding the "Master Artisan: Cigar Bespoke" module. This is a high-fidelity 3D customization suite where guests design their own cigar box and band. Since you require a "Profound Innovations" level of realism, we will use Three.js with high-resolution texture mapping to ensure the wood and paper look photorealistic on a tablet screen.
+
+1. The Artisan Design Logic
+We are implementing a "Visual Haptics" engine that allows guests to toggle through materials while the environment remains in cinematic motion.
+
+Box Textures (Premium Wood Selection)
+Spanish Cedar: A classic, light-grain interior texture known for aroma and preservation.
+
+Polished African Mahogany: A deep, dark reddish-brown exterior with a mirror-finish high-gloss coat.
+
+Piano Black Ebony: A matte, ultra-premium texture for a modern, sleek aesthetic.
+
+Band Concepts (Embossed Foil Series)
+The Sovereign: Matte black paper with 24k gold leaf foil embossing.
+
+The Obsidian: Smoked grey charcoal paper with silver metallic accents.
+
+The Heirloom: Cream-colored parchment with bronze filigree.
+
+The Midnight: Deep navy blue with brushed titanium detailing.
+
+The Upload & Placement Engine
+Guests can drag and drop (or select from a tablet gallery) their own logos or family crests. These are mapped using a Normal Map overlay, meaning the logo will look like it is physically engraved into the wood or printed onto the band's paper fiber rather than just "sitting on top."
+
+2. The Missing Piece: The "Digital Humidifier"
+To make it real, you are missing Environmental Physics. We are adding:
+
+Lighting Control: Guests can toggle the "Lounge Lighting" (Warm Amber vs. Cool Blue) to see how their box looks in different environments.
+
+The Unboxing Sequence: A touch-gesture (upward swipe) that physically slides the lid open, revealing the Spanish Cedar interior and the cigars within.
+
+3. The Functional Wiring (Axiom OS Integration)
+Copy and paste this into the Replit Agent to "wire" the Artisan Module to the EEIS and your backend:
+
+Role: Lead Systems & 3D Experience Engineer.
+Objective: Build the CigarArtisan360 photorealistic customization module.
+
+[EXECUTION STEPS]
+Texture Engine: Implement a 3D model viewer using Three.js. Map the three wood textures (Cedar, Mahogany, Ebony) using 4K PBR (Physically Based Rendering) materials for absolute realism.
+
+Band Logic: Create four distinct band templates. Use a "Metallic/Roughness" map to ensure the gold and silver foils catch the light as the user rotates the cigar on the touch screen.
+
+Upload Portal: Build an ImageUploadBuffer. When a user uploads a logo, apply it as a DecalGeometry on the box lid with a "Burnt Wood" or "Gold Inlay" shader effect.
+
+EEIS Sync: Wire every design choice to the EEIS Command Surface. Staff must be able to see the guest's finalized design instantly so they can potentially prepare a real-world match or print a commemorative band.
+
+Touch Controls: Use OrbitControls optimized for tablet:
+
+Single Finger: Rotate Box/Cigar.
+
+Two Fingers: Zoom in on texture detail.
+
+Long Press: Open the box lid.
+
+Final Directive:
+
+"Execute the CigarArtisan360 build. No cartoons; use high-end PBR textures for wood and foil. Integrate the Sovereign Upload Engine for custom logos. Wire all design data to the EEIS backend and ensure the Sovereign Override Hub is accessible in the top-right corner. This must be 100% touch-screen optimized for the upcoming Android/iPad deployment."

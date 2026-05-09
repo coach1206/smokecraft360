@@ -1,0 +1,45 @@
+To complete the Super-Admin Core as a high-velocity "God Mode" dashboard, we are integrating the Axiom Eye: Multi-Stream Live Feed. This allows you to monitor the lounge's physical state directly alongside your digital data streams.
+
+The "Axiom Eye" Live Feed Architecture
+For a hospitality operational system, we use Low-Latency WebRTC or a Proxy-Stream to bypass standard browser restrictions that usually block RTSP (security camera) feeds. This ensures the video on your dashboard is nearly real-time.  
+
+Tactile Command Grid: A 4-quadrant layout styled in Smoked Obsidian glass.  
+
+Active Overlays: Real-time guest engagement pulses (e.g., "Guest 4 Started: PourCraft") are overlaid on top of the physical camera view.
+
+Tap-to-Zoom: A single touch on any camera stream expands it to full-screen using a high-speed motion transition.
+
+The "God Mode + Live Feed" Replit Agent Directive
+Copy and paste this into the Replit Agent to mount the surveillance engine into the Admin Core.
+
+Role: Lead Systems Architect & IoT Integration Engineer.
+Objective: Mount a multi-stream live camera feed into the SuperAdminCore.
+
+[EXECUTION STEPS]
+Surveillance Grid: Build the AxiomEyeGrid.tsx component. Use a 2x2 grid layout with high-gloss gold borders.
+
+Streaming Engine:  
+
+Set up a jsmpeg or WebRTC player to pull feeds from your local IP cameras.  
+
+Fallback: If no physical camera is detected, mount the "Cinematic Security Loops" (e.g., thermal-filter views of the lounge) to maintain the aesthetic.
+
+Sovereign Overlay: Add floating data-strips on top of each video feed. These should display:
+
+Zone Label (e.g., "Main Lounge South")
+
+Guest Count (from active sessions)
+
+Humidity/Temp (mock data for the "Digital Humidifier" logic)
+
+Touch Logic: Implement a "Long-Press" on any camera feed to toggle it to Thermal Mode (CSS filter: hue-rotate(180deg) brightness(1.2)), giving you that high-tech "Sovereign" feel.
+
+Final Directive:
+
+"Integrate the Axiom Eye live feed system into the SuperAdminCore. Use a 4-quadrant grid for camera streams. Ensure all feeds use the Smoked Obsidian UI style. Add the high-speed 'Tap-to-Zoom' transition. This is for the Android-first tablet build, so optimize for low-latency video rendering. Wire the system so that clicking any camera feed surfaces the 'Inventory Ghosting' controls for that specific zone."
+
+Refined Hardware Hardening (The Capacitor Prep)
+  
+Since we are deploying to Android first, the Replit Agent is also configuring your capacitor.config.ts to allow Unencrypted Local Streams (HTTP/RTSP). This is critical for Android tablets to "see" your security cameras without requiring complex SSL certificates for your local network.
+
+Once the Agent finishes this move, you will see a 'LIVE EYE' toggle in the top-right of your Super-Admin core. Shall we test the "Global Kill-Switch" logic next to ensure your emergency overrides are absolute?

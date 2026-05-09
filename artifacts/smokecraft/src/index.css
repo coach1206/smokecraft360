@@ -94,6 +94,8 @@ html, body, #root {
   -moz-user-select:    none;
   user-select:         none;
   -webkit-tap-highlight-color: transparent;
+  /* Prevent iOS long-press callout (image save, link preview, etc.) */
+  -webkit-touch-callout: none;
   /* none = kills all panning AND pinch-zoom — correct for locked kiosk tablet */
   touch-action: none;
   overscroll-behavior: none;
