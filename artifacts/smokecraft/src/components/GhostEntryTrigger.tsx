@@ -12,6 +12,7 @@ import { useRef, useEffect, useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSuperAdminSafe } from "@/contexts/SuperAdminContext";
 import { AccessLevel, GHOST_PATTERN, type SwipeDir } from "@/lib/authorityEngine";
+import { useHaptic } from "@/contexts/HapticContext";
 
 const GOLD     = "#D48B00";
 const GRAPHITE = "#1C1C1E";
@@ -42,6 +43,7 @@ export function GhostEntryTrigger() {
 }
 
 function GhostTriggerInner({ activateGhost }: { activateGhost: () => void }) {
+  const { triggerHaptic } = useHaptic();
   const holdTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [phase, setPhase]          = useState<"idle" | "holding" | "pattern" | "error">("idle");
   const [holdProg, setHoldProg]    = useState(0);
@@ -96,11 +98,17 @@ function GhostTriggerInner({ activateGhost }: { activateGhost: () => void }) {
       const next = [...prev, dir];
       const expected = GHOST_PATTERN[prev.length];
       if (dir !== expected) {
+        triggerHaptic("error", 0.5, 0.5);
         setRejected(true);
         setTimeout(() => { setRejected(false); setPattern([]); }, 900);
         return [];
       }
+      triggerHaptic("swipe",
+        (touchStart.current?.x ?? window.innerWidth * 0.5) / window.innerWidth,
+        (touchStart.current?.y ?? window.innerHeight * 0.5) / window.innerHeight,
+      );
       if (next.length === GHOST_PATTERN.length) {
+        triggerHaptic("ghost", 0.5, 0.5);
         setTimeout(() => { setPhase("idle"); setPattern([]); activateGhost(); }, 200);
       }
       return next;

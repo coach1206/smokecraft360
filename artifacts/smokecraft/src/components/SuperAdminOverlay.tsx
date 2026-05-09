@@ -12,6 +12,7 @@ import { useSuperAdmin } from "@/contexts/SuperAdminContext";
 import { PermissionGate } from "@/components/PermissionGate";
 import { AccessLevel, getTierLabel, type FeatureMask } from "@/lib/authorityEngine";
 import { Shield, Power, Lock, Zap, Package, Eye, EyeOff, LogOut } from "lucide-react";
+import { useHaptic } from "@/contexts/HapticContext";
 
 // ── Tokens ────────────────────────────────────────────────────────────────────
 const GOLD     = "#D48B00";
@@ -152,6 +153,7 @@ function TabBar({ active, setActive }: { active: Tab; setActive: (t: Tab) => voi
 
 function KillSwitchesTab() {
   const { killSwitches, toggleKillSwitch, authority } = useSuperAdmin();
+  const { triggerHaptic } = useHaptic();
   return (
     <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 10 }}>
       <div style={{ fontSize: 8, color: `${CREAM}35`, letterSpacing: "0.18em", marginBottom: 4, fontFamily: "'Space Mono', monospace" }}>
@@ -192,7 +194,7 @@ function KillSwitchesTab() {
                 )}
                 <button
                   disabled={!canToggle}
-                  onClick={() => canToggle && toggleKillSwitch(sw.name)}
+                  onClick={() => { if (canToggle) { triggerHaptic("kill", 0.5, 0.5); toggleKillSwitch(sw.name); } }}
                   style={{
                     width:      48, height: 26, borderRadius: 13,
                     border:     "none", cursor: canToggle ? "pointer" : "not-allowed",

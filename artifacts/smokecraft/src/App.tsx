@@ -24,6 +24,7 @@ import EeisOverlay                  from '@/components/EeisOverlay';
 import { SuperAdminProvider }       from '@/contexts/SuperAdminContext';
 import { GhostEntryTrigger }        from '@/components/GhostEntryTrigger';
 import SuperAdminOverlay            from '@/components/SuperAdminOverlay';
+import { HapticProvider }           from '@/contexts/HapticContext';
 
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
@@ -98,10 +99,12 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                   <EnvironmentProvider>
                                     <OrchestratorProvider>
                                       <SuperAdminProvider>
-                                        {children}
-                                        <EeisOverlay />
-                                        <GhostEntryTrigger />
-                                        <SuperAdminOverlay />
+                                        <HapticProvider>
+                                          {children}
+                                          <EeisOverlay />
+                                          <GhostEntryTrigger />
+                                          <SuperAdminOverlay />
+                                        </HapticProvider>
                                       </SuperAdminProvider>
                                     </OrchestratorProvider>
                                   </EnvironmentProvider>
