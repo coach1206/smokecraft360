@@ -1,0 +1,67 @@
+To realize the EEIS/XEI Command Surface, you need a prompt that forces the development agent to abandon traditional UI frameworks and think in terms of spatial, tactile, and cinematic orchestration.
+
+Here is the merged, master-level architectural prompt for the full EEIS Handoff & Command Surface rebuild.
+
+The "Nervous System" Prompt: EEIS Command Surface & Handoff Rebuild
+Role: You are a Senior Systems Architect and Lead Motion Designer specializing in high-end automotive telemetry (Tesla-style) and spatial computing (Apple Vision Pro-style).
+
+Objective: Build the EEIS (Environmental Engineering Intelligence System) operational command surface. This is the "nervous system" of the venue. It must NOT look like a POS, dashboard, or SaaS widget. It must feel like the venue itself has opened its hidden intelligence layer.
+
+1. THE ENTRY & EXIT (The Sovereign Handoff)
+The Hidden Trigger: Implement a "Hidden Pressure Zone" in the guest UI. Handoff is activated via a multi-touch long-press or a secret gesture (e.g., a two-finger circular rotation).
+
+The Transition Sequence:
+
+The guest environment dims 40%.
+
+A Ripple Distortion spreads from the touch point.
+
+Metallic Telemetry (brushed silver and smoked titanium) surfaces through the environment.
+
+The Exit: Releasing control must trigger a telemetry collapse, restoring the guest's session exactly where it left off with zero reloads or page flashes.
+
+2. THE VISUAL MATERIAL SYSTEM (No Hard Boxes)
+Materials: Use Brushed Silver, Smoked Titanium, Champagne Gold, and Holographic Glass.
+
+The Surface: Everything must feel floating, spatial, and pressure-sensitive. Replace all grids and cards with Floating Operational Zones.
+
+The Background: The atmosphere remains alive behind a 15px backdrop blur, but the "nervous system" signals (metallic light) are now visible.
+
+3. THE COMPONENT ARCHITECTURE (EEISCommandSurface.tsx)
+CENTER CORE (The Orb): A breathing, metallic 3D orb representing the "Venue Heartbeat." Surround it with telemetry rings and environmental pulse waves that shift based on live venue energy.
+
+LEFT SIDE (Guest Intelligence): Vertical glass intelligence strips displaying:
+
+Guest Mood & Emotional Intensity (Cinematic waves, not numbers).
+
+Journey Stage & VIP Status (Holographic metallic icons).
+
+RIGHT SIDE (Pairing Engine): Floating intelligence layers showing:
+
+Current Match: (e.g., Padron 1964) with Confidence Scores.
+
+Alchemy Text: Explaining the pairing logic in a "Luxury Sommelier" voice.
+
+Premium Upgrade: Glowing "Reserva Exclusive" nudges.
+
+LOWER SECTION (Live Operational Flow): A luxury command cockpit view of signal routing and AI orchestration pulses.
+
+4. INTERACTION MODEL (Tactile Logic)
+No Tapping: Staff interaction is driven by swipes, holds, drags, and rotations.
+
+Soundscape: Replace all "arcade/casino" sounds with a low-resonance telemetry hum and subtle metallic pulses.
+
+5. STAFF NUDGE SYSTEM (Adaptive Intelligence)
+The system must detect the guest type.
+
+New Guest: Surface "Education" telemetry (sensory-first scripts).
+
+Returning Guest: Surface "Palate Evolution" chips (e.g., "Last time you enjoyed X...").
+
+Replit Agent Directive:
+"Build the EEISCommandSurface.tsx as a hidden operational layer. Delete all POS-style layouts, tables, and grids. Implement a hidden multi-touch trigger for handoff. Use Framer Motion for the ripple transition and the breathing metallic orb. Ensure the pairing intelligence uses the InventoryPairingResolver and CigarFlavorGraph to surface real-time matches. The UI must feel like an Apple Vision Pro spatial interface merged with a Tesla cockpit."
+
+Final Experience Target:
+The staff member should not feel like they are "using software." They should feel like they are interfacing with the building’s nervous system to host the guest better.
+
+Would you like the "Staff Actions" (swipes and gestures) to trigger physical haptic feedback on the tablet to complete the tactile feel?
