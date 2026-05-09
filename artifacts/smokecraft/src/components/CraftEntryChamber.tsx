@@ -292,7 +292,7 @@ function GlassButton({ label, sub, icon, accent, onClick, primary }: GlassButton
       }} />
 
       <div style={{
-        color: hov ? accent : primary ? accent : "rgba(26,26,27,0.50)",
+        color: hov ? accent : primary ? accent : `${accent}90`,
         transition: "color 0.2s ease",
         flexShrink: 0,
       }}>
@@ -305,7 +305,7 @@ function GlassButton({ label, sub, icon, accent, onClick, primary }: GlassButton
           fontWeight:    800,
           letterSpacing: "0.16em",
           textTransform: "uppercase",
-          color:         hov ? accent : primary ? "rgba(26,26,27,0.90)" : "rgba(26,26,27,0.58)",
+          color:         hov ? accent : primary ? "rgba(240,232,212,0.97)" : "rgba(240,232,212,0.82)",
           transition:    "color 0.2s ease",
         }}>
           {label}
@@ -313,7 +313,7 @@ function GlassButton({ label, sub, icon, accent, onClick, primary }: GlassButton
         {sub && (
           <div style={{
             fontSize:      11,
-            color:         "rgba(240,232,212,0.32)",
+            color:         "rgba(240,232,212,0.72)",
             marginTop:     3,
             letterSpacing: "0.04em",
           }}>
@@ -622,7 +622,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             transition={{ delay: 0.5 }}
             style={{
               fontSize:      14,
-              color:         "rgba(26,26,27,0.48)",
+              color:         "rgba(240,232,212,0.85)",
               textAlign:     "center",
               maxWidth:      380,
               lineHeight:    1.65,
@@ -714,7 +714,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
                 transition={{ duration: 2.2, delay: i * 0.5, repeat: Infinity, ease: "easeInOut" }}
               />
               <span style={{
-                fontSize: 9, color: "rgba(26,26,27,0.28)",
+                fontSize: 9, color: "rgba(240,232,212,0.58)",
                 letterSpacing: "0.18em", textTransform: "uppercase",
               }}>
                 {label}
