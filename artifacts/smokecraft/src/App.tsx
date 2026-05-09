@@ -1,7 +1,110 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Router, Route, Switch } from 'wouter';
+import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
+import { Router, Route, Switch, useLocation } from 'wouter';
 import TitanCraftDeck from '@/pages/TitanCraftDeck';
 import AIProviderSetup from '@/pages/enterprise/AIProviderSetup';
+import { AuthProvider }              from '@/contexts/AuthContext';
+import { CommandCenterProvider }     from '@/contexts/CommandCenterContext';
+import { PosProvider }               from '@/contexts/PosContext';
+import { VenueProvider }             from '@/contexts/VenueContext';
+import { ThemeProvider }             from '@/contexts/ThemeContext';
+import { EngagementProvider }        from '@/contexts/EngagementContext';
+import { PreferenceProvider }        from '@/contexts/PreferenceContext';
+import { UserProfileProvider }       from '@/contexts/UserProfileContext';
+import { OrchestratorProvider }      from '@/contexts/OrchestratorContext';
+import { EnvironmentProvider }       from '@/contexts/EnvironmentContext';
+import { AxiomIntelligenceProvider } from '@/contexts/AxiomIntelligenceContext';
+import { AxiomPresenceProvider }     from '@/contexts/AxiomPresenceContext';
+import { GuestProfileProvider }      from '@/contexts/GuestProfileContext';
+import { KioskModeProvider }         from '@/contexts/KioskModeContext';
+import { LicenseProvider }           from '@/contexts/LicenseContext';
+import { HandoffProvider }           from '@/contexts/HandoffContext';
+
+/* ── Lazy-loaded sub-pages ─────────────────────────────────── */
+const Dashboard             = lazy(() => import('@/pages/Dashboard'));
+const SettingsModule        = lazy(() => import('@/pages/SettingsModule'));
+const AdminMaster           = lazy(() => import('@/pages/AdminMaster'));
+const OnboardWizard         = lazy(() => import('@/pages/OnboardWizard'));
+const AnalyticsModule       = lazy(() => import('@/pages/AnalyticsModule'));
+const SwipeIntelligence     = lazy(() => import('@/pages/SwipeIntelligence'));
+const CraftHub              = lazy(() => import('@/pages/CraftHub'));
+const DemoWalkthrough       = lazy(() => import('@/pages/DemoWalkthrough'));
+const MasterOperations      = lazy(() => import('@/pages/MasterOperations'));
+const CommandCenter         = lazy(() => import('@/pages/CommandCenter'));
+const CentralCommand        = lazy(() => import('@/pages/CentralCommand'));
+const PosMode               = lazy(() => import('@/pages/PosMode'));
+const StaffModule           = lazy(() => import('@/pages/StaffModule'));
+const TouchscreenHome       = lazy(() => import('@/pages/TouchscreenHome'));
+const Entry                 = lazy(() => import('@/pages/Entry'));
+const DemoExperienceCenter  = lazy(() => import('@/pages/DemoExperienceCenter'));
+const StaffTraining         = lazy(() => import('@/pages/StaffTraining'));
+const InvestorSimulator     = lazy(() => import('@/pages/InvestorSimulator'));
+const SalesValidation       = lazy(() => import('@/pages/SalesValidation'));
+const ExperiencePage        = lazy(() => import('@/pages/ExperiencePage'));
+const RevealPage            = lazy(() => import('@/pages/RevealPage'));
+const FounderControlCenter  = lazy(() => import('@/pages/FounderControlCenter'));
+const FinanceReconciliation = lazy(() => import('@/pages/FinanceReconciliation'));
+const AxiomReceipt          = lazy(() => import('@/pages/AxiomReceipt'));
+const InventoryModule       = lazy(() => import('@/pages/InventoryModule'));
+const RevenueEngine         = lazy(() => import('@/pages/RevenueEngine'));
+const CompetitionModule     = lazy(() => import('@/pages/CompetitionModule'));
+const EstablishmentSetupPage= lazy(() => import('@/pages/EstablishmentSetupPage'));
+const VenueTouchscreen      = lazy(() => import('@/pages/VenueTouchscreen'));
+const AdminTouchscreen      = lazy(() => import('@/pages/AdminTouchscreen'));
+const ExperienceControlPanel= lazy(() => import('@/pages/ExperienceControlPanel'));
+const IntelligenceManifest  = lazy(() => import('@/pages/IntelligenceManifest'));
+const AxiomPay              = lazy(() => import('@/pages/AxiomPay'));
+const Demo                  = lazy(() => import('@/pages/Demo'));
+const AxiomDemo             = lazy(() => import('@/pages/AxiomDemo'));
+
+function PageLoader() {
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid rgba(212,175,55,0.2)', borderTopColor: '#d4af37', animation: 'axiom-ring-spin 0.8s linear infinite' }} />
+    </div>
+  );
+}
+
+/* ── Full provider stack for all sub-pages ──────────────────── */
+function SubPageProviders({ children }: { children: React.ReactNode }) {
+  const venueId = typeof localStorage !== 'undefined'
+    ? (localStorage.getItem('axiom_venue_id') ?? '00000000-0000-0000-0000-000000000000')
+    : '00000000-0000-0000-0000-000000000000';
+  return (
+    <AuthProvider>
+      <LicenseProvider>
+        <VenueProvider>
+          <ThemeProvider venueId={venueId}>
+            <KioskModeProvider>
+              <CommandCenterProvider>
+                <PosProvider>
+                  <EngagementProvider>
+                    <PreferenceProvider>
+                      <UserProfileProvider>
+                        <GuestProfileProvider>
+                          <HandoffProvider>
+                            <AxiomIntelligenceProvider>
+                              <AxiomPresenceProvider>
+                                <EnvironmentProvider>
+                                  <OrchestratorProvider>
+                                    {children}
+                                  </OrchestratorProvider>
+                                </EnvironmentProvider>
+                              </AxiomPresenceProvider>
+                            </AxiomIntelligenceProvider>
+                          </HandoffProvider>
+                        </GuestProfileProvider>
+                      </UserProfileProvider>
+                    </PreferenceProvider>
+                  </EngagementProvider>
+                </PosProvider>
+              </CommandCenterProvider>
+            </KioskModeProvider>
+          </ThemeProvider>
+        </VenueProvider>
+      </LicenseProvider>
+    </AuthProvider>
+  );
+}
 
 /* ═══════════════════════════════════════════════════════════════
    AXIOM OS — 7-PHASE SOVEREIGN BOOT FLOW
@@ -312,7 +415,21 @@ const EEIS_METRICS = [
   { label: 'ATMOS HEATMAP',         value: 'SMOKE ZONE: HOT',        color: '#ff6b35' },
 ];
 
+const EEIS_NAV = [
+  { label: 'DASHBOARD',      path: '/dashboard',           color: '#d4af37' },
+  { label: 'ADMIN MASTER',   path: '/admin-master',        color: '#d4af37' },
+  { label: 'ANALYTICS',      path: '/analytics',           color: '#d4af37' },
+  { label: 'OPERATIONS',     path: '/operations',          color: '#d4af37' },
+  { label: 'SETTINGS',       path: '/settings',            color: '#d4af37' },
+  { label: 'ONBOARDING',     path: '/onboarding',          color: '#d4af37' },
+  { label: 'AI CONFIG',      path: '/enterprise/ai-config',color: '#00e676' },
+  { label: 'CRAFT HUB',      path: '/craft-hub',           color: '#d4af37' },
+  { label: 'POS MODE',       path: '/pos',                 color: '#d4af37' },
+  { label: 'FINANCE',        path: '/finance-reconciliation', color: '#d4af37' },
+];
+
 function PhaseEEIS({ onExit }: { onExit: () => void }) {
+  const [, navigate] = useLocation();
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 600 }}>
       {/* Environment dimmed behind */}
@@ -384,20 +501,41 @@ function PhaseEEIS({ onExit }: { onExit: () => void }) {
             </div>
           ))}
         </div>
-        {/* Live waveform footer */}
+        {/* Staff nav bar */}
         <div style={{
-          height: 56, background: 'rgba(0,0,0,0.9)',
+          background: 'rgba(0,0,0,0.92)',
           borderTop: '1px solid rgba(212,175,55,0.2)',
-          display: 'flex', alignItems: 'center',
-          padding: '0 20px', gap: 16,
+          display: 'flex', alignItems: 'center', flexWrap: 'wrap',
+          padding: '8px 12px', gap: 6, flexShrink: 0,
         }}>
-          <span style={{ fontSize: 8, letterSpacing: '0.3em', color: 'rgba(212,175,55,0.45)', fontFamily: 'monospace' }}>ATMOSPHERIC PULSE</span>
-          <svg width="200" height="28" viewBox="0 0 200 28">
-            <polyline points="0,14 10,8 20,18 30,6 40,20 50,10 60,16 70,4 80,22 90,12 100,14 110,7 120,19 130,9 140,17 150,5 160,21 170,11 180,15 190,8 200,14"
-              fill="none" stroke="#d4af37" strokeWidth="1.2" opacity="0.6"
-              style={{ animation: 'axiom-shimmer 3s linear infinite' }} />
-          </svg>
-          <span style={{ marginLeft: 'auto', fontSize: 8, letterSpacing: '0.3em', color: '#00e676', fontFamily: 'monospace' }}>VENUE VOLATILITY: NOMINAL</span>
+          {EEIS_NAV.map((n) => (
+            <button
+              key={n.path}
+              onClick={() => navigate(n.path)}
+              style={{
+                background: 'transparent',
+                border: `1px solid ${n.color}55`,
+                borderRadius: 2,
+                padding: '5px 10px',
+                fontSize: 8, letterSpacing: '0.25em',
+                fontFamily: 'monospace', fontWeight: 700,
+                color: n.color, cursor: 'pointer',
+                transition: 'background 0.15s, border-color 0.15s',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = `${n.color}18`; (e.currentTarget as HTMLButtonElement).style.borderColor = n.color; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.borderColor = `${n.color}55`; }}
+            >
+              {n.label}
+            </button>
+          ))}
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <svg width="120" height="24" viewBox="0 0 120 24">
+              <polyline points="0,12 8,7 16,15 24,5 32,17 40,9 48,13 56,4 64,18 72,10 80,12 88,6 96,16 104,8 112,13 120,12"
+                fill="none" stroke="#d4af37" strokeWidth="1" opacity="0.5"
+                style={{ animation: 'axiom-shimmer 3s linear infinite' }} />
+            </svg>
+            <span style={{ fontSize: 7, letterSpacing: '0.3em', color: '#00e676', fontFamily: 'monospace' }}>NOMINAL</span>
+          </div>
         </div>
       </div>
     </div>
@@ -501,22 +639,136 @@ function SovereignBootFlow() {
 
 /* ══════════════════════════════════════════════════════════════
    ROOT APP — wouter router
-   /                      → Sovereign Boot Flow (guest experience)
-   /enterprise/ai-config  → AI Provider Ownership Setup (staff/admin)
+   All sub-pages lazy-loaded; / → Sovereign Boot Flow
 ══════════════════════════════════════════════════════════════ */
 export default function App() {
-  const venueId = (typeof localStorage !== 'undefined' && localStorage.getItem('axiom_venue_id')) ?? '00000000-0000-0000-0000-000000000000';
-  const userRole = (typeof localStorage !== 'undefined' && localStorage.getItem('axiom_role')) ?? 'venue_owner';
+  const venueId  = typeof localStorage !== 'undefined' ? (localStorage.getItem('axiom_venue_id')  ?? '00000000-0000-0000-0000-000000000000') : '00000000-0000-0000-0000-000000000000';
+  const userRole = typeof localStorage !== 'undefined' ? (localStorage.getItem('axiom_role')       ?? 'venue_owner') : 'venue_owner';
   return (
     <Router>
-      <Switch>
-        <Route path="/enterprise/ai-config">
-          <AIProviderSetup venueId={venueId} userRole={userRole} />
-        </Route>
-        <Route>
-          <SovereignBootFlow />
-        </Route>
-      </Switch>
+      <Suspense fallback={<PageLoader />}>
+        <Switch>
+          {/* ── Enterprise / AI (standalone — no full provider stack needed) ── */}
+          <Route path="/enterprise/ai-config">
+            <AIProviderSetup venueId={venueId} userRole={userRole} />
+          </Route>
+
+          {/* ── All sub-pages — wrapped in full provider stack ── */}
+          <Route path="/dashboard">
+            <SubPageProviders><Dashboard /></SubPageProviders>
+          </Route>
+          <Route path="/settings">
+            <SubPageProviders><SettingsModule /></SubPageProviders>
+          </Route>
+          <Route path="/admin-master">
+            <SubPageProviders><AdminMaster /></SubPageProviders>
+          </Route>
+          <Route path="/admin-panel">
+            <SubPageProviders><AdminMaster /></SubPageProviders>
+          </Route>
+          <Route path="/onboarding">
+            <OnboardWizard />
+          </Route>
+          <Route path="/analytics">
+            <SubPageProviders><AnalyticsModule /></SubPageProviders>
+          </Route>
+          <Route path="/analytics/swipe-intelligence">
+            <SubPageProviders><SwipeIntelligence /></SubPageProviders>
+          </Route>
+          <Route path="/founder">
+            <SubPageProviders><FounderControlCenter /></SubPageProviders>
+          </Route>
+          <Route path="/command">
+            <SubPageProviders><CommandCenter /></SubPageProviders>
+          </Route>
+          <Route path="/command-center">
+            <SubPageProviders><CentralCommand /></SubPageProviders>
+          </Route>
+          <Route path="/operations">
+            <SubPageProviders><MasterOperations /></SubPageProviders>
+          </Route>
+          <Route path="/finance-reconciliation">
+            <SubPageProviders><FinanceReconciliation /></SubPageProviders>
+          </Route>
+          <Route path="/inventory">
+            <SubPageProviders><InventoryModule /></SubPageProviders>
+          </Route>
+          <Route path="/revenue">
+            <SubPageProviders><RevenueEngine /></SubPageProviders>
+          </Route>
+          <Route path="/competition">
+            <SubPageProviders><CompetitionModule /></SubPageProviders>
+          </Route>
+          <Route path="/intelligence">
+            <SubPageProviders><IntelligenceManifest /></SubPageProviders>
+          </Route>
+          <Route path="/craft-hub">
+            <SubPageProviders><CraftHub /></SubPageProviders>
+          </Route>
+          <Route path="/pos">
+            <SubPageProviders><PosMode /></SubPageProviders>
+          </Route>
+          <Route path="/staff">
+            <SubPageProviders><StaffModule /></SubPageProviders>
+          </Route>
+          <Route path="/touch">
+            <SubPageProviders><TouchscreenHome /></SubPageProviders>
+          </Route>
+          <Route path="/venue-touch">
+            <SubPageProviders><VenueTouchscreen /></SubPageProviders>
+          </Route>
+          <Route path="/admin-touch">
+            <SubPageProviders><AdminTouchscreen /></SubPageProviders>
+          </Route>
+          <Route path="/experience-control">
+            <SubPageProviders><ExperienceControlPanel /></SubPageProviders>
+          </Route>
+          <Route path="/establishment-setup">
+            <SubPageProviders><EstablishmentSetupPage /></SubPageProviders>
+          </Route>
+          <Route path="/training/employee">
+            <SubPageProviders><StaffTraining /></SubPageProviders>
+          </Route>
+          <Route path="/training/investor">
+            <SubPageProviders><InvestorSimulator /></SubPageProviders>
+          </Route>
+          <Route path="/training/sales">
+            <SubPageProviders><SalesValidation /></SubPageProviders>
+          </Route>
+          <Route path="/experience/:type">
+            <SubPageProviders><ExperiencePage /></SubPageProviders>
+          </Route>
+          <Route path="/reveal/:type">
+            <SubPageProviders><RevealPage /></SubPageProviders>
+          </Route>
+          <Route path="/enrollment">
+            <SubPageProviders><Entry /></SubPageProviders>
+          </Route>
+          <Route path="/experience-center">
+            <SubPageProviders><DemoExperienceCenter /></SubPageProviders>
+          </Route>
+          <Route path="/demo">
+            <SubPageProviders><Demo /></SubPageProviders>
+          </Route>
+          <Route path="/demo-walkthrough">
+            <SubPageProviders><DemoWalkthrough /></SubPageProviders>
+          </Route>
+          <Route path="/axiom-demo">
+            <SubPageProviders><AxiomDemo /></SubPageProviders>
+          </Route>
+          <Route path="/pay/:tabId">
+            <SubPageProviders><AxiomPay /></SubPageProviders>
+          </Route>
+          <Route path="/receipt/:tabId">
+            <SubPageProviders><AxiomReceipt /></SubPageProviders>
+          </Route>
+
+          {/* ── Default: Sovereign Boot Flow ── */}
+          <Route>
+            <SovereignBootFlow />
+          </Route>
+        </Switch>
+      </Suspense>
     </Router>
   );
 }

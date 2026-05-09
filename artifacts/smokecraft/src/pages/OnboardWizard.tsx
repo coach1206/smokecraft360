@@ -15,8 +15,9 @@ import { motion, AnimatePresence }     from "framer-motion";
 import {
   Building2, Layers, Package, Sparkles, Rocket,
   Check, ChevronRight, ChevronLeft, ArrowLeft,
-  Flame, Beer, Wine, Zap,
+  Flame, Beer, Wine, Zap, Brain,
 } from "lucide-react";
+import AIConfigStep from "@/components/onboarding/AIConfigStep";
 import BackgroundLayer                 from "@/components/Layout/BackgroundLayer";
 import { getAuthHeaders }             from "@/services/auth";
 
@@ -42,6 +43,7 @@ interface WizardData {
   pricingTier:       string;
   aiFocusCategories: string[];
   inventoryQtys:     Record<string, number>;
+  aiMode:            "managed" | "byok";
 }
 
 const INITIAL: WizardData = {
@@ -55,14 +57,16 @@ const INITIAL: WizardData = {
   pricingTier:       "premium",
   aiFocusCategories: ["cigar", "spirit"],
   inventoryQtys:     {},
+  aiMode:            "managed",
 };
 
 const STEPS = [
-  { id: "venue_info",        label: "Venue Details",      icon: Building2, color: "#D48B00" },
-  { id: "craft_selection",   label: "Craft Selection",    icon: Layers,    color: "#5b8def" },
-  { id: "inventory_preview", label: "Inventory Preview",  icon: Package,   color: "#34d399" },
-  { id: "ai_preview",        label: "AI Config Preview",  icon: Sparkles,  color: "#a78bfa" },
-  { id: "go_live",           label: "Go Live",            icon: Rocket,    color: "#f97316" },
+  { id: "venue_info",         label: "Venue Details",      icon: Building2, color: "#D48B00" },
+  { id: "craft_selection",    label: "Craft Selection",    icon: Layers,    color: "#5b8def" },
+  { id: "inventory_preview",  label: "Inventory Preview",  icon: Package,   color: "#34d399" },
+  { id: "ai_preview",         label: "AI Config Preview",  icon: Sparkles,  color: "#a78bfa" },
+  { id: "ai_infrastructure",  label: "AI Configuration",   icon: Brain,     color: "#22c55e" },
+  { id: "go_live",            label: "Go Live",            icon: Rocket,    color: "#f97316" },
 ];
 
 // Preview catalog — mirrors backend SEED_PRODUCTS
@@ -738,6 +742,13 @@ export default function OnboardWizard() {
     craft_selection:   <StepCraftSelection   data={data} set={set} />,
     inventory_preview: <StepInventoryPreview data={data} onQtyChange={setQtys} />,
     ai_preview:        <StepAiPreview        data={data} set={set} />,
+    ai_infrastructure: (
+      <AIConfigStep
+        pricingTier={data.pricingTier}
+        aiMode={data.aiMode}
+        onModeChange={(m) => set("aiMode", m)}
+      />
+    ),
     go_live:           <StepGoLive           data={data} launching={loading && isLast} />,
   };
 

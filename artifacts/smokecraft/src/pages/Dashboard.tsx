@@ -6,7 +6,9 @@ import {
   ArrowLeft, TrendingUp, Package, Sparkles, Zap, Plus, CalendarClock, AlertTriangle, FileLock, Download,
   Check, BarChart3, RefreshCw, LogOut, User, Shield, ImagePlus, Share2,
   Building2, Tag, Brain, DollarSign, ShieldCheck, Trophy, Crown, Award, Gift, Monitor, Activity, LifeBuoy,
+  Server, ChevronRight, ExternalLink,
 } from "lucide-react";
+import { useLocation } from "wouter";
 import { LiveOrders }                from "@/components/Dashboard/LiveOrders";
 import { BrandsTab }               from "@/components/Dashboard/BrandsTab";
 import { InsightsTab }             from "@/components/Dashboard/InsightsTab";
@@ -80,6 +82,7 @@ const TABS: { id: DashTab; label: string; icon: React.ReactNode; superAdminOnly?
 
 export default function Dashboard() {
   const { t } = useTranslation();
+  const [, navigate] = useLocation();
   const { user, loading: authLoading, logout } = useAuth();
 
   const [activeTab,   setActiveTab]   = useState<DashTab>("overview");
@@ -371,6 +374,57 @@ export default function Dashboard() {
                         )}
                       </div>
                     )}
+
+                    {/* AI Infrastructure entry point */}
+                    <motion.div
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => navigate("/enterprise/ai-config")}
+                      className="rounded-xl p-5"
+                      style={{
+                        background: "linear-gradient(135deg, rgba(212,139,0,0.06), rgba(212,139,0,0.02))",
+                        border: "1px solid rgba(212,139,0,0.22)",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{ background: "rgba(212,139,0,0.10)", border: "1px solid rgba(212,139,0,0.22)" }}>
+                            <Brain size={18} style={{ color: "rgba(212,139,0,0.85)" }} />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-sm" style={{ color: "rgba(230,210,175,0.9)" }}>
+                              AI Infrastructure
+                            </div>
+                            <div className="text-[11px] mt-0.5 uppercase tracking-[0.14em]" style={{ color: "rgba(107,94,78,0.55)" }}>
+                              Provider ownership · API keys · Failover · Usage
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-[0.12em] font-semibold"
+                            style={{ background: "rgba(34,197,94,0.10)", border: "1px solid rgba(34,197,94,0.22)", color: "rgba(74,222,128,0.8)" }}>
+                            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(74,222,128,0.8)", display: "inline-block" }} />
+                            Active
+                          </div>
+                          <ChevronRight size={14} style={{ color: "rgba(212,139,0,0.45)" }} />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3 mt-4">
+                        {[
+                          { label: "AI Mode",    value: "Managed",  color: "rgba(34,197,94,0.8)"   },
+                          { label: "Routing",    value: "Axiom",    color: "rgba(212,139,0,0.8)"   },
+                          { label: "Failover",   value: "Enabled",  color: "rgba(91,141,239,0.8)"  },
+                        ].map(item => (
+                          <div key={item.label} className="rounded-lg p-2.5 text-center"
+                            style={{ background: "rgba(26,26,27,0.08)", border: "1px solid rgba(26,26,27,0.10)" }}>
+                            <div className="text-[11px] uppercase tracking-[0.10em] mb-1" style={{ color: "rgba(107,94,78,0.45)" }}>{item.label}</div>
+                            <div className="text-xs font-bold" style={{ color: item.color }}>{item.value}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
 
                     <div className="rounded-xl p-6" style={{ background: "rgba(212,139,0,0.03)", border: "1px solid rgba(212,139,0,0.12)" }}>
                       <LiveOrders />

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers, ShieldAlert, Paintbrush, Image, Type, Palette, Check, RotateCcw } from "lucide-react";
+import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers, ShieldAlert, Paintbrush, Image, Type, Palette, Check, RotateCcw, Brain, ExternalLink, ChevronRight } from "lucide-react";
 import { useCommandCenter, POS_MODE_INFO, type PosOperatingMode } from "@/contexts/CommandCenterContext";
 import { usePosContext } from "@/contexts/PosContext";
 import { useVenueContext, BACKGROUND_LABELS, DEFAULT_BACKGROUNDS, type BackgroundKey } from "@/contexts/VenueContext";
@@ -469,6 +469,63 @@ export default function SettingsModule() {
               );
             })}
           </div>
+        </div>
+
+        {/* ── Intelligence Systems ── */}
+        <div style={{
+          padding: "16px", borderRadius: 14,
+          background: "rgba(212,139,0,0.04)", border: "1px solid rgba(212,139,0,0.14)",
+          marginBottom: 16,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+            <Brain size={14} color="#D48B00" />
+            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              Intelligence Systems
+            </span>
+          </div>
+          <div style={{ fontSize: 12, color: "rgba(26,26,27,0.42)", lineHeight: 1.55, marginBottom: 14 }}>
+            Configure how AI is owned, hosted, and billed across your venue deployment.
+            Choose between Axiom-managed AI or connecting your own provider keys (BYOK).
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 14 }}>
+            {[
+              { label: "AI Provider",  value: "Managed",  color: "#34d399" },
+              { label: "Routing",      value: "Axiom",    color: "#D48B00" },
+              { label: "Failover",     value: "Active",   color: "#5b8def" },
+            ].map(item => (
+              <div key={item.label} style={{
+                padding: "10px 12px", borderRadius: 10,
+                background: `${item.color}0c`, border: `1px solid ${item.color}22`,
+              }}>
+                <div style={{ fontSize: 10, color: "rgba(26,26,27,0.35)", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.08em" }}>{item.label}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: item.color }}>{item.value}</div>
+              </div>
+            ))}
+          </div>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate("/enterprise/ai-config")}
+            style={{
+              width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "12px 16px", borderRadius: 12, cursor: "pointer",
+              background: "linear-gradient(135deg, rgba(212,139,0,0.12), rgba(212,139,0,0.06))",
+              border: "1px solid rgba(212,139,0,0.30)", color: "#D48B00",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Brain size={15} color="#D48B00" />
+              <div style={{ textAlign: "left" }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#D48B00" }}>AI Infrastructure Settings</div>
+                <div style={{ fontSize: 11, color: "rgba(26,26,27,0.40)", marginTop: 2 }}>
+                  Settings → Intelligence Systems → Provider Ownership
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <ExternalLink size={12} color="#D48B00" />
+              <ChevronRight size={14} color="#D48B00" />
+            </div>
+          </motion.button>
         </div>
 
         <div style={{

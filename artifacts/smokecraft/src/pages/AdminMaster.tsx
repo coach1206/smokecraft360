@@ -9,8 +9,9 @@ import { motion, AnimatePresence }     from "framer-motion";
 import { useLocation }                 from "wouter";
 import {
   ArrowLeft, Brain, Zap, Eye, Palette, TrendingUp,
-  ChevronRight, Activity, Globe, AlertTriangle,
+  ChevronRight, Activity, Globe, AlertTriangle, Server,
 } from "lucide-react";
+import AIInfrastructurePanel from "@/components/admin/AIInfrastructurePanel";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 const C = {
@@ -36,11 +37,12 @@ const C = {
 };
 
 const SECTIONS = [
-  { id: "ai",      label: "AI Orchestrator",     code: "CL-01", icon: Brain,      color: C.gold    },
-  { id: "revenue", label: "Revenue Brain v2",     code: "CL-02", icon: TrendingUp, color: C.green   },
-  { id: "psych",   label: "Psychological Spec",   code: "CL-03", icon: Eye,        color: C.purple  },
-  { id: "sensory", label: "Sensory Visual Map",   code: "CL-04", icon: Palette,    color: C.blue    },
-  { id: "pitch",   label: "Sales Pitch Cards",    code: "CL-05", icon: Zap,        color: C.red     },
+  { id: "ai",       label: "AI Orchestrator",     code: "CL-01", icon: Brain,      color: C.gold    },
+  { id: "revenue",  label: "Revenue Brain v2",     code: "CL-02", icon: TrendingUp, color: C.green   },
+  { id: "psych",    label: "Psychological Spec",   code: "CL-03", icon: Eye,        color: C.purple  },
+  { id: "sensory",  label: "Sensory Visual Map",   code: "CL-04", icon: Palette,    color: C.blue    },
+  { id: "pitch",    label: "Sales Pitch Cards",    code: "CL-05", icon: Zap,        color: C.red     },
+  { id: "ai_infra", label: "AI Infrastructure",    code: "CL-06", icon: Server,     color: C.gold    },
 ];
 
 // ── Primitives ─────────────────────────────────────────────────────────────────
@@ -524,6 +526,11 @@ export default function AdminMaster() {
               </motion.div>
             ))}
           </div>
+
+          <Divider />
+
+          {/* ══ CL-06 · AI INFRASTRUCTURE ══ */}
+          <AIInfrastructurePanel />
 
           {/* Footer */}
           <div style={{ marginTop:44, padding:"18px 20px", borderRadius:10, border:`1px dashed ${C.border}`, textAlign:"center", background:C.surface }}>
