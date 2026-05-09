@@ -171,23 +171,65 @@ const CARD_EMBERS = [
   { x: 58, y:  3, size: 1.8, drift: 58, op: 0.32, dur: 5.0, delay: 2.7 },
 ];
 
+// ── Per-craft image pools — used when API cards have no image set ──────────
+const CRAFT_IMAGE_POOL: Record<string, string[]> = {
+  smoke: [
+    "/images/smoke/smoke_lounge.png",
+    "/images/smoke/smoke_solo.png",
+    "/images/smoke/smoke_woman.png",
+    "/images/smoke/smoke_selection.png",
+    "/images/smoke/smoke_group.png",
+    "/images/smoke/smoke_urban.png",
+  ],
+  pour: [
+    "/images/pour/pour_bar.png",
+    "/images/pour/pour_whiskey.png",
+    "/images/pour/pour_aged.png",
+    "/images/pour/pour_cocktail.png",
+    "/images/pour/pour_tasting.png",
+    "/images/pour/pour_wine.png",
+  ],
+  brew: [
+    "/images/brew/brew_taproom.png",
+    "/images/brew/brew_outdoor.png",
+    "/images/brew/brew_barrel.png",
+    "/images/brew/brew_pouring.png",
+    "/images/brew/brew_flight.png",
+  ],
+  vape: [
+    "/images/vape/vape_modern.png",
+    "/images/vape/vape_social.png",
+    "/images/vape/vape_hookah.png",
+    "/images/vape/vape_device.png",
+  ],
+};
+
+/** Deterministically pick an image from the craft pool using the card id. */
+function resolveCardImage(item: ExperienceItem): string {
+  if (item.image) return item.image;
+  const pool = CRAFT_IMAGE_POOL[item.type] ?? CRAFT_IMAGE_POOL.smoke;
+  const seed = item.id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  return pool[seed % pool.length];
+}
+
 function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }: SwipeCardProps) {
+  // Always resolve a real image — never render a gradient black card
+  const resolvedImage = resolveCardImage(item);
+
   const x       = useMotionValue(isTop ? 280 : 0);
   const rotate  = useTransform(x, [-300, 300], [-16, 16]);
   const addOp   = useTransform(x, [30, 110], [0, 1]);
   const skipOp  = useTransform(x, [-110, -30], [1, 0]);
 
-  // 2-second image failsafe — if the asset doesn't resolve in time, fall back
-  // to the craft gradient so the card is never blank.
+  // 2-second image failsafe — only triggers if the resolved image itself fails
   const [imgError,   setImgError]   = useState(false);
   const [scanFlash,  setScanFlash]  = useState(false);
   const imgTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => {
-    if (!item.image) return;
     setImgError(false);
-    imgTimeoutRef.current = setTimeout(() => setImgError(true), 2000);
+    imgTimeoutRef.current = setTimeout(() => setImgError(true), 4000);
     return () => clearTimeout(imgTimeoutRef.current);
-  }, [item.image]);
+  }, [resolvedImage]);
 
   // Ken Burns variant — pick one of three slow-zoom animations per card
   const kbClass = ["ax-kb-1","ax-kb-2","ax-kb-3"][item.id.charCodeAt(1) % 3];
@@ -284,36 +326,31 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
           : "0 14px 40px rgba(26,26,27,0.34)",
       }}>
 
-        {/* ── Sensory background image — Ken Burns slow zoom/pan, never still ── */}
-        {item.image && !imgError ? (
+        {/* ── Sensory background image — always a real photo, Ken Burns animated ── */}
+        {!imgError ? (
           <>
-            {/* Hidden probe: resolves timeout on load, sets error flag on failure */}
             <img
-              src={item.image}
+              src={resolvedImage}
               alt=""
               onLoad={() => clearTimeout(imgTimeoutRef.current)}
               onError={() => { clearTimeout(imgTimeoutRef.current); setImgError(true); }}
               style={{ display: "none" }}
             />
-            <motion.div style={{
-              position: "absolute", inset: 0,
-              overflow: "hidden",
-            }}>
-              <motion.div
-                className={kbClass}
-                style={{
-                  position:           "absolute",
-                  inset:              "-10%",
-                  backgroundImage:    `url(${item.image})`,
-                  backgroundSize:     "cover",
-                  backgroundPosition: "center top",
-                  opacity:            isTop ? imgOp : 0.72,
-                  willChange:         "transform",
-                }}
-              />
-            </motion.div>
+            <motion.div
+              className={kbClass}
+              style={{
+                position:           "absolute",
+                inset:              0,
+                backgroundImage:    `url(${resolvedImage})`,
+                backgroundSize:     "cover",
+                backgroundPosition: "center top",
+                opacity:            isTop ? imgOp : 0.72,
+                willChange:         "transform",
+              }}
+            />
           </>
         ) : (
+          /* True last-resort — only if the local asset itself 404s */
           <div style={{
             position:   "absolute",
             inset:      0,
