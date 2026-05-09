@@ -791,7 +791,7 @@ export default function App() {
 
           {/* ── Default: TitanCraftDeck 2x2 Hub ── */}
           <Route>
-            <TitanCraftDeck />
+            <SubPageProviders><TitanCraftDeck /></SubPageProviders>
           </Route>
         </Switch>
       </Suspense>
