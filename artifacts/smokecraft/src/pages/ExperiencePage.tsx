@@ -179,7 +179,8 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
 
   // 2-second image failsafe — if the asset doesn't resolve in time, fall back
   // to the craft gradient so the card is never blank.
-  const [imgError, setImgError] = useState(false);
+  const [imgError,   setImgError]   = useState(false);
+  const [scanFlash,  setScanFlash]  = useState(false);
   const imgTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => {
     if (!item.image) return;
@@ -187,6 +188,9 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
     imgTimeoutRef.current = setTimeout(() => setImgError(true), 2000);
     return () => clearTimeout(imgTimeoutRef.current);
   }, [item.image]);
+
+  // Ken Burns variant — pick one of three slow-zoom animations per card
+  const kbClass = ["ax-kb-1","ax-kb-2","ax-kb-3"][item.id.charCodeAt(1) % 3];
   // Glow trail: warm gold on right drag, cool white-blue on left drag
   const glowBg  = useTransform(
     x,
@@ -208,12 +212,16 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
     if (exiting.current || !isTop) return;
     exiting.current = true;
     playClick();
+    setScanFlash(true);
+    setTimeout(() => setScanFlash(false), 260);
     animate(x, 750, { duration: 0.3, ease: [0.4, 0, 1, 1] }).then(onSwipeRight);
   }
   function triggerLeft() {
     if (exiting.current || !isTop) return;
     exiting.current = true;
     playClick();
+    setScanFlash(true);
+    setTimeout(() => setScanFlash(false), 260);
     animate(x, -750, { duration: 0.3, ease: [0.4, 0, 1, 1] }).then(onSwipeLeft);
   }
 
@@ -247,6 +255,9 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
         touchAction: "pan-y",
       }}
     >
+      {/* ── Scanline terminal flash — fires on every swipe exit ── */}
+      {isTop && scanFlash && <div className="ax-scanline-flash" />}
+
       {/* Glow trail overlay */}
       {isTop && (
         <motion.div
@@ -273,7 +284,7 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
           : "0 14px 40px rgba(26,26,27,0.34)",
       }}>
 
-        {/* ── Sensory background image — with 2-second load failsafe ── */}
+        {/* ── Sensory background image — Ken Burns slow zoom/pan, never still ── */}
         {item.image && !imgError ? (
           <>
             {/* Hidden probe: resolves timeout on load, sets error flag on failure */}
@@ -286,12 +297,21 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
             />
             <motion.div style={{
               position: "absolute", inset: 0,
-              backgroundImage:    `url(${item.image})`,
-              backgroundSize:     "cover",
-              backgroundPosition: "center top",
-              opacity:            isTop ? imgOp : 0.72,
-              willChange:         "transform",
-            }} />
+              overflow: "hidden",
+            }}>
+              <motion.div
+                className={kbClass}
+                style={{
+                  position:           "absolute",
+                  inset:              "-10%",
+                  backgroundImage:    `url(${item.image})`,
+                  backgroundSize:     "cover",
+                  backgroundPosition: "center top",
+                  opacity:            isTop ? imgOp : 0.72,
+                  willChange:         "transform",
+                }}
+              />
+            </motion.div>
           </>
         ) : (
           <div style={{

@@ -109,6 +109,16 @@ export default function MentorReveal({ mentor, guestName, isReturning, onBegin, 
         textAlign:       "center",
       }}
     >
+      {/* ── Ambient lounge glow — slowly drifts behind content ── */}
+      <div className="ax-mentor-drift" style={{
+        position:     "absolute",
+        inset:        0,
+        pointerEvents:"none",
+        background:   `radial-gradient(ellipse 80% 60% at 50% 40%, ${accent}18 0%, transparent 65%),
+                       radial-gradient(ellipse 40% 30% at 70% 70%, ${accent}0c 0%, transparent 60%)`,
+        zIndex:       0,
+      }} />
+
       {/* Header label */}
       <motion.p
         initial={{ opacity: 0, y: 12 }}
