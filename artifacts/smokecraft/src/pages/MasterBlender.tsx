@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence, useSpring, useTransform } from "framer-motion";
 import { useLocation } from "wouter";
+import { AudioWaveToggle } from "@/contexts/AudioContext";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const GOLD      = "#d4af37";
@@ -386,17 +387,20 @@ export default function MasterBlender() {
           AXIOM OS
         </button>
 
-        {/* XP Counter */}
-        <motion.div
-          key={xp}
-          initial={{ scale: 1.3 }}
-          animate={{ scale: 1 }}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full"
-          style={{ background: "rgba(212,175,55,0.10)", border: `1px solid ${GOLD}30` }}
-        >
-          <div className="rounded-full" style={{ width: 6, height: 6, background: GOLD }} />
-          <span className="text-xs font-bold tabular-nums" style={{ color: GOLD }}>{xp} XP</span>
-        </motion.div>
+        <div className="flex items-center gap-2">
+          <AudioWaveToggle />
+          {/* XP Counter */}
+          <motion.div
+            key={xp}
+            initial={{ scale: 1.3 }}
+            animate={{ scale: 1 }}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+            style={{ background: "rgba(212,175,55,0.10)", border: `1px solid ${GOLD}30` }}
+          >
+            <div className="rounded-full" style={{ width: 6, height: 6, background: GOLD }} />
+            <span className="text-xs font-bold tabular-nums" style={{ color: GOLD }}>{xp} XP</span>
+          </motion.div>
+        </div>
       </div>
 
       {/* ── Synergy Halo (centered) ── */}

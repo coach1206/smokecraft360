@@ -1,0 +1,35 @@
+The "Sensory Command" Prompt: SmokeCraft Full Journey & Audio Control
+Objective: Rewrite the SmokeCraft questionnaire to be a fully visual and audible ritual. Every interaction—from selecting tobacco leaves to picking cigar shapes—must have a specific interactive image and an optional audio narration.
+
+1. The "Axiom Voice" Control (Mute Toggle)
+The Component: Add a high-end "Audio Wave" or "Speaker" icon in the persistent top navigation bar of the Axiom OS.
+
+Functionality:
+
+Unmuted State: The icon is gold and pulses during narration. The Text-to-Speech (TTS) "Mentor" automatically reads out flavor profiles, tobacco history, and pairing suggestions.
+
+Muted State: The icon has a slash through it and turns grey. The audio is suppressed, but the text suggestions remain visible on the cards for the user to read at their own pace.
+
+Tactile Feedback: Switching states should trigger a subtle haptic "click" and a quick visual "Toast" notification: "Mentor Audio: Muted" or "Mentor Audio: Active.".
+
+2. Comprehensive Visual Assets (Every Question)
+The system must no longer use generic backgrounds. Every step of the "ritual" needs unique, HD imagery:
+
+Tobacco Leaves: High-resolution macro shots of Seco, Viso, and Ligero leaves, highlighting their distinct textures and oils.
+
+Cigar Vitolas: Interactive 3D renders for shapes like Robusto, Toro, and Churchill. The "Smoke Time" slider should physically alter the length of the cigar on screen as the user moves it.
+
+Cuts & Prep: Real photography for Straight, V-Cut, and Punch caps.
+
+The Finish: When a user completes their profile, display a cinematic "Perfect Match" screen featuring the cigar in the venue's stock alongside its ideal spirit pairing (e.g., a slow-motion pour of Bourbon).
+
+3. High-Stimulation Progress & XP
+Synergy Halo: A gold-ring progress bar that fills toward 100/100 as the user makes choices.
+
+XP Counter: A visible "Curious Explorer" or "Palate Architect" point system that updates instantly in the corner of the screen.
+
+Visual Atmosphere: Background opacity should be set to 0.4 with a 15px backdrop blur to keep the lounge background visible without sacrificing UI clarity.
+
+Instructions for the Replit Agent:
+
+"Refactor the SmokeCraft UI to include a global isMuted state managed in the App.jsx. Add a toggle button in the header. When isMuted is false, trigger the TTS function speak(mentorText) whenever a new card or question renders. Ensure that every question object in the config.js is mapped to a local cinematic image asset (leaves, shapes, cuts) so the experience is never dull."

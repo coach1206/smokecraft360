@@ -18,6 +18,7 @@ import { GuestProfileProvider }      from '@/contexts/GuestProfileContext';
 import { KioskModeProvider }         from '@/contexts/KioskModeContext';
 import { LicenseProvider }           from '@/contexts/LicenseContext';
 import { HandoffProvider }           from '@/contexts/HandoffContext';
+import { AudioProvider }            from '@/contexts/AudioContext';
 
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
@@ -73,39 +74,41 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
     ? (localStorage.getItem('axiom_venue_id') ?? '00000000-0000-0000-0000-000000000000')
     : '00000000-0000-0000-0000-000000000000';
   return (
-    <AuthProvider>
-      <LicenseProvider>
-        <VenueProvider>
-          <ThemeProvider venueId={venueId}>
-            <KioskModeProvider>
-              <CommandCenterProvider>
-                <PosProvider>
-                  <EngagementProvider>
-                    <PreferenceProvider>
-                      <UserProfileProvider>
-                        <GuestProfileProvider>
-                          <HandoffProvider>
-                            <AxiomIntelligenceProvider>
-                              <AxiomPresenceProvider>
-                                <EnvironmentProvider>
-                                  <OrchestratorProvider>
-                                    {children}
-                                  </OrchestratorProvider>
-                                </EnvironmentProvider>
-                              </AxiomPresenceProvider>
-                            </AxiomIntelligenceProvider>
-                          </HandoffProvider>
-                        </GuestProfileProvider>
-                      </UserProfileProvider>
-                    </PreferenceProvider>
-                  </EngagementProvider>
-                </PosProvider>
-              </CommandCenterProvider>
-            </KioskModeProvider>
-          </ThemeProvider>
-        </VenueProvider>
-      </LicenseProvider>
-    </AuthProvider>
+    <AudioProvider>
+      <AuthProvider>
+        <LicenseProvider>
+          <VenueProvider>
+            <ThemeProvider venueId={venueId}>
+              <KioskModeProvider>
+                <CommandCenterProvider>
+                  <PosProvider>
+                    <EngagementProvider>
+                      <PreferenceProvider>
+                        <UserProfileProvider>
+                          <GuestProfileProvider>
+                            <HandoffProvider>
+                              <AxiomIntelligenceProvider>
+                                <AxiomPresenceProvider>
+                                  <EnvironmentProvider>
+                                    <OrchestratorProvider>
+                                      {children}
+                                    </OrchestratorProvider>
+                                  </EnvironmentProvider>
+                                </AxiomPresenceProvider>
+                              </AxiomIntelligenceProvider>
+                            </HandoffProvider>
+                          </GuestProfileProvider>
+                        </UserProfileProvider>
+                      </PreferenceProvider>
+                    </EngagementProvider>
+                  </PosProvider>
+                </CommandCenterProvider>
+              </KioskModeProvider>
+            </ThemeProvider>
+          </VenueProvider>
+        </LicenseProvider>
+      </AuthProvider>
+    </AudioProvider>
   );
 }
 

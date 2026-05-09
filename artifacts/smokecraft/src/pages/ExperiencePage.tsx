@@ -17,6 +17,7 @@ import {
 } from "framer-motion";
 import { ArrowLeft, Sparkles, Check, X, Volume2, VolumeX } from "lucide-react";
 import { playClick, playAmbientHum } from "@/lib/audioEngine";
+import { useAudio, AudioWaveToggle } from "@/contexts/AudioContext";
 import { getCraftTheme, type CraftTheme } from "@/lib/craftThemes";
 import { CraftRealism } from "@/components/CraftRealism";
 import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
@@ -267,59 +268,45 @@ function getFlavorThemedAsset(item: ExperienceItem): string {
   return pool[seed % pool.length];
 }
 
-// ── Voice of Axiom — Web Speech TTS narrator ─────────────────────────────────
+// ── Voice of Axiom — card-level TTS narrator, respects global mute ───────────
 function VoiceIcon({ item, isTop, accent }: { item: ExperienceItem; isTop: boolean; accent: string }) {
-  const [speaking, setSpeaking]   = useState(false);
-  const [muted,    setMuted]      = useState(false);
-  const spokenRef                 = useRef(false);
+  const { isMuted, speak, stopSpeak } = useAudio();
+  const [speaking,  setSpeaking]      = useState(false);
+  const spokenRef                     = useRef(false);
 
-  const speak = (e?: React.MouseEvent) => {
+  const doSpeak = (e?: React.MouseEvent) => {
     e?.stopPropagation();
-    if (muted || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
+    if (isMuted) return;
     const text = `${item.title}. ${item.description ?? ""}`.trim();
-    const utt  = new SpeechSynthesisUtterance(text);
-    utt.rate   = 0.82;
-    utt.pitch  = 0.78;
-    utt.volume = 0.92;
-    const voices = window.speechSynthesis.getVoices();
-    const deep   = voices.find(v =>
-      /Daniel|Google UK English Male|Male|Alex/i.test(v.name)
-    );
-    if (deep) utt.voice = deep;
-    utt.onstart = () => setSpeaking(true);
-    utt.onend   = () => setSpeaking(false);
-    utt.onerror = () => setSpeaking(false);
-    window.speechSynthesis.speak(utt);
+    setSpeaking(true);
+    speak(text);
+    // estimate duration then clear speaking flag
+    const est = Math.max(2000, text.length * 65);
+    setTimeout(() => setSpeaking(false), est);
   };
 
   const toggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (speaking) {
-      window.speechSynthesis?.cancel();
-      setSpeaking(false);
-      setMuted(true);
-    } else if (muted) {
-      setMuted(false);
-      speak(e);
-    } else {
-      speak(e);
-    }
+    if (speaking) { stopSpeak(); setSpeaking(false); }
+    else doSpeak(e);
   };
 
   useEffect(() => {
     if (!isTop || spokenRef.current) return;
     spokenRef.current = true;
-    const t = setTimeout(() => speak(), 900);
+    const t = setTimeout(() => doSpeak(), 900);
     return () => {
       clearTimeout(t);
-      window.speechSynthesis?.cancel();
+      stopSpeak();
+      setSpeaking(false);
       spokenRef.current = false;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTop, item.id]);
+  }, [isTop, item.id, isMuted]);
 
   const bars = [0.5, 1.0, 0.7, 0.9, 0.6];
+
+  if (isMuted) return null;
 
   return (
     <motion.button
@@ -340,23 +327,20 @@ function VoiceIcon({ item, isTop, accent }: { item: ExperienceItem; isTop: boole
         transition:     "background 0.3s, border-color 0.3s",
       }}
     >
-      {muted
-        ? <VolumeX size={11} />
-        : speaking
-          ? (
-            <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 12 }}>
-              {bars.map((h, i) => (
-                <motion.div
-                  key={i}
-                  style={{ width: 2, borderRadius: 1, background: accent }}
-                  animate={{ height: [h * 12 * 0.4, h * 12, h * 12 * 0.3] }}
-                  transition={{ duration: 0.4 + i * 0.08, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-                />
-              ))}
-            </div>
-          )
-          : <Volume2 size={11} />
-      }
+      {speaking ? (
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 12 }}>
+          {bars.map((h, i) => (
+            <motion.div
+              key={i}
+              style={{ width: 2, borderRadius: 1, background: accent }}
+              animate={{ height: [h * 12 * 0.4, h * 12, h * 12 * 0.3] }}
+              transition={{ duration: 0.4 + i * 0.08, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+            />
+          ))}
+        </div>
+      ) : (
+        <Volume2 size={11} />
+      )}
     </motion.button>
   );
 }
@@ -1224,6 +1208,7 @@ export default function ExperiencePage() {
           }}>
             {swipeCount} swiped
           </div>
+          <AudioWaveToggle />
           {type === "smoke" && (
             <motion.button
               whileTap={{ scale: 0.91 }}
