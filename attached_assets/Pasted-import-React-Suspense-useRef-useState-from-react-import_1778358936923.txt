@@ -1,0 +1,109 @@
+import React, { Suspense, useRef, useState } from 'react';
+import { Canvas, useLoader } from '@react-three/fiber';
+import { OrbitControls, PerspectiveCamera, Decal, useTexture, Float } from '@react-three/drei';
+import * as THREE from 'three';
+
+const CigarBox = ({ woodType, bandStyle, customLogo }) => {
+  const meshRef = useRef();
+  
+  // High-Resolution PBR Textures for Premium Woods
+  const textures = {
+    cedar: useTexture('/media/wood/spanish_cedar_diffuse.jpg'),
+    mahogany: useTexture('/media/wood/mahogany_polished_diffuse.jpg'),
+    ebony: useTexture('/media/wood/ebony_matte_diffuse.jpg'),
+  };
+
+  // 4K Normal Maps for Realism
+  const normalMap = useTexture('/media/wood/wood_grain_normal.jpg');
+
+  return (
+    <group>
+      {/* The Main Box Structure */}
+      <mesh ref={meshRef} castShadow receiveShadow>
+        <boxGeometry args={[4, 1.5, 3]} />
+        <meshStandardMaterial 
+          map={textures[woodType]} 
+          normalMap={normalMap}
+          roughness={woodType === 'mahogany' ? 0.1 : 0.7} 
+          metalness={0.05}
+        />
+
+        {/* The Custom Logo Placement Logic */}
+        {customLogo && (
+          <Decal
+            position={[0, 0.76, 0]} // Top of the box
+            rotation={[-Math.PI / 2, 0, 0]}
+            scale={[1.5, 1.5, 1]}
+          >
+            <meshStandardMaterial
+              map={new THREE.TextureLoader().load(customLogo)}
+              transparent
+              polygonOffset
+              polygonOffsetFactor={-1}
+            />
+          </Decal>
+        )}
+      </mesh>
+      
+      {/* Inner Spanish Cedar Lining (Visible when lid opens) */}
+      <mesh position={[0, -0.1, 0]}>
+        <boxGeometry args={[3.8, 1.3, 2.8]} />
+        <meshStandardMaterial map={textures.cedar} roughness={0.9} />
+      </mesh>
+    </group>
+  );
+};
+
+export const CigarArtisan360 = () => {
+  const [wood, setWood] = useState('mahogany');
+  const [logo, setLogo] = useState(null);
+
+  const handleLogoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) setLogo(URL.createObjectURL(file));
+  };
+
+  return (
+    <div className="w-full h-screen bg-black relative">
+      {/* UI Overlay: Liquid Gold Controls */}
+      <div className="absolute top-10 left-10 z-20 space-y-6">
+        <h1 className="text-gold font-bold text-2xl tracking-widest">MASTER ARTISAN 360</h1>
+        
+        <div className="flex flex-col space-y-2">
+          <label className="text-silver text-xs uppercase">Wood Selection</label>
+          <div className="flex gap-4">
+            {['cedar', 'mahogany', 'ebony'].map(w => (
+              <button 
+                key={w}
+                onClick={() => setWood(w)}
+                className={`px-4 py-2 border ${wood === w ? 'border-gold text-gold' : 'border-gray-700 text-gray-500'} rounded-sm uppercase text-xs`}
+              >
+                {w}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col space-y-2">
+          <label className="text-silver text-xs uppercase">Upload Custom Emblem</label>
+          <input type="file" onChange={handleLogoUpload} className="text-gray-400 text-xs cursor-pointer" />
+        </div>
+      </div>
+
+      {/* 3D Viewport */}
+      <Canvas shadows>
+        <Suspense fallback={null}>
+          <PerspectiveCamera makeDefault position={[5, 5, 5]} />
+          <ambientLight intensity={0.5} />
+          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} castShadow />
+          
+          <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.5}>
+            <CigarBox woodType={wood} customLogo={logo} />
+          </Float>
+          
+          <OrbitControls enablePan={false} minDistance={4} maxDistance={10} />
+        </Suspense>
+      </Canvas>
+    </div>
+  );
+};

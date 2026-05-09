@@ -69,6 +69,7 @@ const AxiomPay              = lazy(() => import('@/pages/AxiomPay'));
 const Demo                  = lazy(() => import('@/pages/Demo'));
 const AxiomDemo             = lazy(() => import('@/pages/AxiomDemo'));
 const MasterBlender         = lazy(() => import('@/pages/MasterBlender'));
+const CigarArtisan360       = lazy(() => import('@/pages/CigarArtisan360'));
 
 function PageLoader() {
   return (
@@ -794,6 +795,9 @@ export default function App() {
           </Route>
           <Route path="/master-blender">
             <SubPageProviders><MasterBlender /></SubPageProviders>
+          </Route>
+          <Route path="/artisan-360">
+            <SubPageProviders><CigarArtisan360 /></SubPageProviders>
           </Route>
 
           {/* ── Default: LivingPortal — motion home hub ── */}
