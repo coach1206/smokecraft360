@@ -361,10 +361,6 @@ function PhaseEnvironment({
 /* ── PHASE 4b: IMMERSION ────────────────────────────────────── */
 function PhaseImmersion({ craft, onExit }: { craft: string; onExit: () => void }) {
   const c = CRAFT_DATA[craft];
-  useEffect(() => {
-    const t = setTimeout(onExit, 12000); // auto-return after 12s
-    return () => clearTimeout(t);
-  }, [onExit]);
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 500, cursor: 'pointer' }} onClick={onExit}>
