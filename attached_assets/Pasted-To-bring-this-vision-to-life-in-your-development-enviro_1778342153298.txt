@@ -1,0 +1,44 @@
+To bring this vision to life in your development environment, you need a prompt that forces the AI to think in terms of motion design, gamification, and high-fidelity textures.
+
+Here is a comprehensive prompt you can use with your Replit Agent or UI generator to build this specific "SmokeCraft" experience:
+
+The Master Prompt: SmokeCraft 360 "Cinematic Ritual" UI
+Role: You are an elite UI/UX Motion Designer specializing in luxury "Apple-level" and "Tesla-inspired" interfaces for native tablet applications.
+
+Objective: Rewrite the "SmokeCraft" module of the Axiom OS. The current version is too static. It must be transformed into a high-stimulation, gamified "Master Blender" ritual that captures attention in a busy lounge environment.
+
+Visual Language:
+
+Aesthetic: Dark glassmorphism, deep obsidian backgrounds, and "24K Gold" accent lighting.
+
+Motion Policy: NO static transitions. Use Framer Motion (or GSAP) for "liquid" transitions, glowing pulses, and haptic-style visual feedback.
+
+Asset Type: Use high-definition imagery for:
+
+Tobacco Leaves: (Seco, Viso, Ligero) showing oily textures and veins.
+
+Wrappers: (Candela, Connecticut, Habano, Maduro, Oscuro).
+
+Shapes/Vitolas: (Robusto, Toro, Churchill, Belicoso, Lancero) with a "Smoke Time" scale.
+
+Cuts: Macro shots of Straight, V-Cut, and Punch.
+
+Core Features to Code:
+
+The Synergy Halo: A circular progress bar at the top center. As the user selects leaves, shapes, and cuts, the halo fills toward "100/100 Synergy." Use a "gold energy" glow effect when it hits 100.
+
+Interactive Leaf Selection: Replace buttons with a horizontal "Leaf Carousel." When a leaf is selected, it should "float" toward the center and trigger a "+15 XP" floating text animation.
+
+The Smoke-Time Slider: A tactile slider that physically stretches or shrinks the 3D-rendered cigar image as the user moves it from 30 min to 120 min.
+
+The Alchemy Reveal: A final animation sequence. Once 100/100 is reached, trigger a "scanning" overlay that looks like it's searching the humidor. Display the result as a "Perfect Match" featuring a high-res cigar image paired with a slow-motion video/gif of a spirit pour (e.g., Bourbon or Scotch).
+
+Point System Overlay: A visible "Experience Points" (XP) counter in the corner that tallies up points for every interaction, making the user feel like they are "Leveling Up" their palate.
+
+Technical Constraints:
+
+Designed for a standalone tablet screen (locked orientation).
+
+Zero scrolling; use a "Step-by-Step" wizard format with high-speed transitions.
+
+Ensure all buttons have a "tactile" feel—they should depress or glow intensely when touched.

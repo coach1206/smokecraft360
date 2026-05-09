@@ -942,14 +942,32 @@ export default function ExperiencePage() {
           </div>
         </div>
 
-        <div style={{
-          background: "rgba(26,26,27,0.07)",
-          border: "1px solid rgba(26,26,27,0.10)",
-          borderRadius: 10, padding: "8px 14px",
-          fontSize: 11, color: "rgba(240,232,216,0.4)",
-          fontVariantNumeric: "tabular-nums",
-        }}>
-          {swipeCount} swiped
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{
+            background: "rgba(26,26,27,0.07)",
+            border: "1px solid rgba(26,26,27,0.10)",
+            borderRadius: 10, padding: "8px 14px",
+            fontSize: 11, color: "rgba(240,232,216,0.4)",
+            fontVariantNumeric: "tabular-nums",
+          }}>
+            {swipeCount} swiped
+          </div>
+          {type === "smoke" && (
+            <motion.button
+              whileTap={{ scale: 0.91 }}
+              onClick={() => navigate("/master-blender")}
+              style={{
+                display: "flex", alignItems: "center", gap: 5,
+                background: "rgba(212,175,55,0.10)",
+                border: "1px solid rgba(212,175,55,0.36)",
+                borderRadius: 10, padding: "8px 12px",
+                fontSize: 9, fontWeight: 800, letterSpacing: "0.18em",
+                textTransform: "uppercase", color: "#d4af37", cursor: "pointer",
+              }}
+            >
+              ⚗ BLEND
+            </motion.button>
+          )}
         </div>
       </div>
 

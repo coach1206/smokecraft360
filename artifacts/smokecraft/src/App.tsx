@@ -57,6 +57,7 @@ const IntelligenceManifest  = lazy(() => import('@/pages/IntelligenceManifest'))
 const AxiomPay              = lazy(() => import('@/pages/AxiomPay'));
 const Demo                  = lazy(() => import('@/pages/Demo'));
 const AxiomDemo             = lazy(() => import('@/pages/AxiomDemo'));
+const MasterBlender         = lazy(() => import('@/pages/MasterBlender'));
 
 function PageLoader() {
   return (
@@ -765,6 +766,9 @@ export default function App() {
           </Route>
           <Route path="/receipt/:tabId">
             <SubPageProviders><AxiomReceipt /></SubPageProviders>
+          </Route>
+          <Route path="/master-blender">
+            <SubPageProviders><MasterBlender /></SubPageProviders>
           </Route>
 
           {/* ── Default: TitanCraftDeck 2x2 Hub ── */}

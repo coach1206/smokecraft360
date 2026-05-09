@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 body, html, #root { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background: #000; }
 
 /* ── Film grain overlay — covers entire UI at all times ── */
