@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
 import { Router, Route, Switch, useLocation } from 'wouter';
 import TitanCraftDeck from '@/pages/TitanCraftDeck';
+const LivingPortal = lazy(() => import('@/pages/LivingPortal'));
 import AIProviderSetup from '@/pages/enterprise/AIProviderSetup';
 import { AuthProvider }              from '@/contexts/AuthContext';
 import { CommandCenterProvider }     from '@/contexts/CommandCenterContext';
@@ -793,9 +794,9 @@ export default function App() {
             <SubPageProviders><MasterBlender /></SubPageProviders>
           </Route>
 
-          {/* ── Default: TitanCraftDeck 2x2 Hub ── */}
+          {/* ── Default: LivingPortal — motion home hub ── */}
           <Route>
-            <SubPageProviders><TitanCraftDeck /></SubPageProviders>
+            <SubPageProviders><LivingPortal /></SubPageProviders>
           </Route>
         </Switch>
       </Suspense>

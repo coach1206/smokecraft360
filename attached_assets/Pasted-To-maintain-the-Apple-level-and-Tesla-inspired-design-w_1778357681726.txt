@@ -1,0 +1,44 @@
+To maintain the "Apple-level" and "Tesla" inspired design while providing immediate operational utility, we will implement the Sovereign Override Hub in the top-right corner. This will act as the master toggle between the immersive guest experience and the high-security operational layers.
+
+1. The Override Hub Design
+Instead of a standard "Logout" button, we are building a multi-functional Tactile Command Pill.
+
+Visual Style: Smoked Obsidian glass with a Champagne Gold border and tactile typography.
+
+Location: Fixed to the absolute top-right corner of the Axiom OS screen.
+
+Idle State: Displays the current user's initials (e.g., "JC") or the system status "SOVEREIGN PROTOCOL: ACTIVE".
+
+2. The Override Menu Flow
+When a Staff or Super-Admin touches the Hub, a liquid-motion menu expands to show three distinct exit points:
+
+Option	Destination	Logic
+Operational Intelligence	EEIS System	Straight to the metallic staff telemetry and guest tracking.
+Sovereign Core	Super-Admin	Access to Kill-Switches, user provisioning, and inventory.
+System Purge	Logout/Boot	Triggers the Sovereign Purge to clear all session context and return to the boot screen.
+3. The "Override Hub" Replit Agent Directive
+Copy and paste this into the Agent to wire the top-right corner immediately.
+
+Role: Lead Systems Architect.
+Objective: Replace the static user badge with a functional Sovereign Override Hub.
+
+[EXECUTION STEPS]
+Component Creation: Build SovereignOverrideHub.tsx in the top-right corner. Use a Smoked Obsidian frosted-glass background.
+
+Touch Interaction: On onTouchStart, expand the pill into a vertical menu with three options: EEIS, Super-Admin, and System Purge.
+
+Wiring:
+
+EEIS: Route to the staff overlay with metallic silver/titanium visuals.
+
+Super-Admin: Route to the Liquid Gold/Smoked Obsidian admin core (Level 0 access only).
+
+System Purge: Execute CraftExperienceContext.clearSession() and redirect to the Portal home.
+
+Touch Hardening: Ensure the menu is 100% touch-optimized with haptic visual ripples and scale(0.98) feedback on every selection.
+
+Final Directive:
+
+"Install the Sovereign Override Hub in the top-right corner of TitanCraftDeck and all sub-modules. This is the master bypass for staff and admins to jump straight to the EEIS or Super-Admin sections. Ensure the System Purge button clears all 'Juan Valez' and mentor data instantly. No static images—the menu must feel like a liquid, high-end operational surface."
+
+Once the Agent finishes, tap the top-right corner of your screen—you will have the power to jump between the guest "front-end" and your "nervous system" back-end instantly.
