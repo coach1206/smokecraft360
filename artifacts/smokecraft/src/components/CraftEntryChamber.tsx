@@ -145,7 +145,7 @@ function RotatingBackground({ images, accent, isVape = false }: { images: string
   const cyan    = "#06b6d4";
   const magenta = "#e879f9";
   const darkRgb = isVape ? "3,0,10" : "6,4,2";
-  const imgOp   = isVape ? 0.12 : 0.32;
+  const imgOp   = isVape ? 0.55 : 0.68;
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -181,10 +181,10 @@ function RotatingBackground({ images, accent, isVape = false }: { images: string
         background: `
           radial-gradient(ellipse 80% 60% at 50% 30%, ${accent}${isVape ? "28" : "18"} 0%, transparent 70%),
           linear-gradient(180deg,
-            rgba(${darkRgb},0.75)  0%,
-            rgba(${darkRgb},0.45) 30%,
-            rgba(${darkRgb},0.55) 60%,
-            rgba(${darkRgb},0.92) 100%
+            rgba(${darkRgb},0.42)  0%,
+            rgba(${darkRgb},0.18) 30%,
+            rgba(${darkRgb},0.28) 60%,
+            rgba(${darkRgb},0.78) 100%
           )
         `,
         pointerEvents: "none",
@@ -456,11 +456,11 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             display:        "flex",
             alignItems:     "center",
             gap:            7,
-            background:     "rgba(26,26,27,0.14)",
-            border:         "1px solid rgba(255,255,255,0.1)",
+            background:     "rgba(0,0,0,0.55)",
+            border:         "1px solid rgba(255,255,255,0.35)",
             borderRadius:   10,
             padding:        "8px 14px",
-            color:          "rgba(26,26,27,0.52)",
+            color:          "rgba(255,255,255,0.92)",
             fontSize:       12,
             cursor:         "pointer",
             backdropFilter: "blur(12px)",

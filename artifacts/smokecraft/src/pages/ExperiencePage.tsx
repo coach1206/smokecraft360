@@ -1143,14 +1143,14 @@ export default function ExperiencePage() {
         backgroundImage: `url(${theme.bgImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        opacity: 0.18,
-        filter: "blur(4px)",
+        opacity: 0.48,
+        filter: "blur(3px)",
         transform: "scale(1.06)",
         pointerEvents: "none",
       }} />
       <div style={{
         position: "absolute", inset: 0,
-        background: "linear-gradient(180deg, rgba(8,6,4,0.72) 0%, rgba(8,6,4,0.42) 50%, rgba(8,6,4,0.82) 100%)",
+        background: "linear-gradient(180deg, rgba(8,6,4,0.42) 0%, rgba(8,6,4,0.18) 50%, rgba(8,6,4,0.62) 100%)",
         pointerEvents: "none",
       }} />
       {/* Ambient particles — same visual DNA as CraftHub */}
@@ -1178,10 +1178,10 @@ export default function ExperiencePage() {
           whileTap={{ scale: 0.93 }}
           style={{
             display: "flex", alignItems: "center", gap: 6,
-            background: "rgba(26,26,27,0.08)",
-            border: "1px solid rgba(255,255,255,0.1)",
+            background: "rgba(0,0,0,0.55)",
+            border: "1px solid rgba(255,255,255,0.35)",
             borderRadius: 10, padding: "8px 14px",
-            color: "rgba(240,232,216,0.65)",
+            color: "rgba(255,255,255,0.92)",
             fontSize: 13, cursor: "pointer",
           }}
         >
