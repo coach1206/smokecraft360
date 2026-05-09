@@ -390,34 +390,46 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
           </div>
         </div>
 
+        {/* ── Bottom: title shelf — dark gradient covers bottom 40% ── */}
+        <div style={{
+          position: "absolute",
+          bottom: 0, left: 0, right: 0,
+          height: "40%",
+          background: "linear-gradient(0deg, rgba(4,2,0,1) 0%, rgba(4,2,0,0.92) 40%, rgba(4,2,0,0.60) 70%, transparent 100%)",
+          pointerEvents: "none",
+          zIndex: 9,
+        }} />
+
         {/* ── Bottom: title, atmospheric description, card-level actions ── */}
         <div style={{
           position: "absolute",
           bottom: 0, left: 0, right: 0,
           padding: "20px 16px 14px",
-          background: "linear-gradient(0deg, rgba(5,3,1,0.97) 0%, rgba(5,3,1,0.82) 65%, transparent 100%)",
           display: "flex",
           flexDirection: "column",
           gap: 8,
           zIndex: 10,
         }}>
           <div style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: 18,
-            fontWeight: 700,
-            color: "rgba(240,232,212,0.96)",
-            lineHeight: 1.18,
-            textShadow: "0 2px 12px rgba(26,26,27,0.40)",
+            fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif",
+            fontSize: "clamp(1.6rem, 4vw, 2.5rem)",
+            fontWeight: 600,
+            color: "rgba(240,232,212,0.97)",
+            lineHeight: 1.12,
+            textShadow: "0 2px 18px rgba(0,0,0,0.80)",
+            letterSpacing: "-0.01em",
           }}>{item.title}</div>
 
           {item.description && (
             <p style={{
-              fontSize: 11,
-              color: "rgba(240,232,212,0.48)",
+              fontSize: "clamp(0.85rem, 2vw, 1.2rem)",
+              color: "#d4af37",
               margin: 0,
-              lineHeight: 1.55,
+              lineHeight: 1.5,
               fontStyle: "italic",
               letterSpacing: "0.01em",
+              textShadow: "0 1px 8px rgba(0,0,0,0.60)",
+              opacity: 0.88,
             }}>{item.description}</p>
           )}
 
@@ -931,12 +943,53 @@ export default function ExperiencePage() {
         overflow: "visible",
         zIndex: 10,
       }}>
+        {/* ── Mentor ghost — large ambient name faded into background ── */}
+        {mentor && (
+          <div style={{
+            position:      "absolute",
+            inset:         0,
+            display:       "flex",
+            flexDirection: "column",
+            alignItems:    "center",
+            justifyContent:"center",
+            pointerEvents: "none",
+            zIndex:        1,
+            userSelect:    "none",
+          }}>
+            <div style={{
+              fontFamily:    "'Cormorant Garamond', Georgia, serif",
+              fontSize:      "clamp(3.5rem, 14vw, 9rem)",
+              fontWeight:    300,
+              color:         `${theme.accent}`,
+              opacity:       0.055,
+              letterSpacing: "-0.04em",
+              whiteSpace:    "nowrap",
+              lineHeight:    1,
+              textTransform: "uppercase",
+            }}>
+              {mentor.name}
+            </div>
+            <div style={{
+              fontFamily:    "monospace",
+              fontSize:      "clamp(0.5rem, 1.2vw, 0.65rem)",
+              color:         theme.accent,
+              opacity:       0.12,
+              letterSpacing: "0.3em",
+              textTransform: "uppercase",
+              marginTop:     8,
+            }}>
+              YOUR GUIDE
+            </div>
+          </div>
+        )}
+
         {/* Fixed-size inner box — this is the collectible card footprint */}
         <div style={{
           position: "relative",
           width: "min(400px, 86vw)",
           height: "70vh",
           flexShrink: 0,
+          zIndex: 5,
         }}>
         <AnimatePresence mode="sync">
           {done ? (
