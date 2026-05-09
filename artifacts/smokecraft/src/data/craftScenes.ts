@@ -41,39 +41,54 @@ export interface CraftModule {
 
 export const SMOKE_SCENES: CraftScene[] = [
   {
+    id: "lounge_atm", label: "The Lounge", sub: "Reserve atmosphere — dimly lit, deeply felt",
+    image: "/images/smoke/smoke_lounge.png",
+    tags: ["premium", "night", "social", "ambient"], weight: 8,
+  },
+  {
+    id: "group_atm", label: "Social Circle", sub: "Curated group experiences",
+    image: "/images/smoke/smoke_group.png",
+    tags: ["social", "group", "premium"], weight: 7,
+  },
+  {
+    id: "selection_atm", label: "Reserve Selection", sub: "Hand-picked from the humidor",
+    image: "/images/smoke/smoke_selection.png",
+    tags: ["premium", "solo", "cedar"], weight: 7,
+  },
+  {
+    id: "urban_atm", label: "Urban Reserve", sub: "Modern craft, timeless ritual",
+    image: "/images/smoke/smoke_urban.png",
+    tags: ["premium", "urban", "night"], weight: 6,
+  },
+  {
     id: "macro_1", label: "Hand-Rolled Leaf", sub: "Aged tobacco, single origin",
     image: "/images/cigar1.png",
-    tags: ["premium", "solo"], weight: 5,
+    tags: ["premium", "solo"], weight: 3,
   },
   {
     id: "macro_2", label: "Ligero Cut", sub: "Full-body reserve selection",
     image: "/images/cigar2.png",
-    tags: ["premium", "strong", "solo"], weight: 5,
+    tags: ["premium", "strong", "solo"], weight: 3,
   },
   {
     id: "macro_3", label: "Maduro Wrapper", sub: "Dark, earthy, bold character",
     image: "/images/cigar3.png",
-    tags: ["premium", "strong"], weight: 5,
+    tags: ["premium", "strong"], weight: 3,
   },
   {
     id: "macro_4", label: "Torpedo Profile", sub: "Classic tapered construction",
     image: "/images/cigar4.png",
-    tags: ["premium", "solo", "night"], weight: 5,
+    tags: ["premium", "solo", "night"], weight: 3,
   },
   {
     id: "macro_raw", label: "Leaf & Cedar", sub: "Raw craft — before the flame",
     image: "/images/cigar.png",
-    tags: ["premium", "solo"], weight: 4,
+    tags: ["premium", "solo"], weight: 2,
   },
   {
     id: "macro_main", label: "Reserve Collection", sub: "Cedar-wrapped humidor selection",
     image: "/images/scenes/smokecraft-card.jpg",
     tags: ["premium", "solo", "night"], weight: 1,
-  },
-  {
-    id: "group", label: "Social Circle", sub: "Curated group experiences",
-    image: "/images/smoke/smoke_group.png",
-    tags: ["social", "group"], weight: 0,
   },
 ];
 

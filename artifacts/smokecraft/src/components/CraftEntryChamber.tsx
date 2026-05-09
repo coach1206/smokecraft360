@@ -54,7 +54,7 @@ const CHAMBER: Record<string, ChamberConfig> = {
     images: [
       "/images/smoke/smoke_lounge.png",
       "/images/smoke/smoke_group.png",
-      "/images/smoke/smoke_solo.png",
+      "/images/smoke/smoke_urban.png",
       "/images/smoke/smoke_selection.png",
     ],
   },

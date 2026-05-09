@@ -65,10 +65,24 @@ export async function resolveElevenLabsKey(): Promise<string | null> {
   return fromEnv && fromEnv.length > 0 ? fromEnv : null;
 }
 
-/** Default voice IDs — these are public ElevenLabs preset voices anyone can use. */
+/**
+ * Default voice IDs — public ElevenLabs preset voices.
+ *
+ * Craft persona assignments:
+ *   smoke → "Clyde"  (2EiwWnXFnvU5JabPnv8n) — deep bass, authoritative warm American male
+ *   pour  → "Daniel" (onwK4e9ZLuTAKqWW03F9) — British, refined, precise
+ *   brew  → "Josh"   (TxGEqnHWrfWFTfGW9XjX) — friendly, casual, approachable
+ *   vape  → "Adam"   (pNInz6obpgDQGcFmaJgB) — modern, clear, neutral
+ *
+ * "male" maps to Clyde (smoke default) for backwards-compat.
+ */
 export const DEFAULT_VOICES = {
   female: "EXAVITQu4vr4xnSDxMaL", // "Bella" — warm, friendly
-  male:   "TxGEqnHWrfWFTfGW9XjX", // "Josh" — calm, professional
+  male:   "2EiwWnXFnvU5JabPnv8n", // "Clyde" — deep bass, warm American male
+  smoke:  "2EiwWnXFnvU5JabPnv8n", // "Clyde" — The Warm Tobacconist
+  pour:   "onwK4e9ZLuTAKqWW03F9", // "Daniel" — The Sommelier
+  brew:   "TxGEqnHWrfWFTfGW9XjX", // "Josh" — The Master Brewer
+  vape:   "pNInz6obpgDQGcFmaJgB", // "Adam" — The Vape Artisan
 } as const;
 
 export type VoicePersona = keyof typeof DEFAULT_VOICES;

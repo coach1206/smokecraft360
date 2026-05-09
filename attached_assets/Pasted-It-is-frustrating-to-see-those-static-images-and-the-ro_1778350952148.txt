@@ -1,0 +1,40 @@
+It is frustrating to see those static images and the robotic voice still lingering after we explicitly prioritized their removal. It appears the system is successfully building the complex "brain" of the platform but is failing to physically swap the front-facing assets you see on your screen.
+
+To fix this immediately, we are moving from "requests" to Hard-Coded Enforcement. Use the following prompt to force the Agent to purge these elements and integrate the professional audio.
+
+THE "ENFORCEMENT OVERRIDE" PROMPT
+Mission: Immediate physical removal of unapproved assets and integration of professional ElevenLabs audio and UI controls.
+
+1. Physical Asset Purge (DO NOT SKIP)
+Command: Locate and PERMANENTLY DELETE the files smoke_woman.png, smoke_solo.png, or any image files depicting the two individuals shown in Screenshot 2026-05-09 at 2.20 PM.jpg.
+
+The Replacement: Hard-code the SmokeCraft module and the LiquidTileBg to use ONLY the "Diversity Pool":
+
+Rotating Assets: Diverse lifestyle hands (various skin tones) cutting cigars, pouring bourbon, and holding vitolas.
+
+Macro Textures: Oily tobacco leaves and shifting amber liquid.
+
+Motion Policy: Every tile on the hub MUST use the Ken Burns liquid rotation. The current static "Cigar" tile is a failure; fix it to match the motion of the Spirits and Vapor tiles.
+
+2. Professional Audio: ElevenLabs Integration
+The Issue: The internal system voice is too robotic and lacks the luxury feel.
+
+The Fix:
+
+Initialize the ElevenLabs API for the CraftVoiceRouter.ts.
+
+Assign the "Marcus" or "Clyde" deep-bass professional voices to the SmokeCraft Mentor to achieve the "Warm Tobacconist" feel.
+
+Ensure the voice pacing is set to a relaxed, premium speed.
+
+3. The Mute Command (Persistent UI)
+The Component: Add a high-visibility, gold-accented Mute Toggle icon in the persistent top navigation bar.
+
+The Logic:
+
+When Muted, all ElevenLabs API calls must be halted immediately.
+
+The icon must clearly reflect the state (Speaker vs. Muted Speaker) and trigger a haptic-style visual pulse upon clicking.
+
+Replit Agent Directive:
+"Stop using local system voices. Integrate the ElevenLabs API for all mentor narration. Physically delete the demographic images of the men. Replace them with a rotating, inclusive gallery of lifestyle hands and macro textures. Fix the static Cigar tile so it rotates like the others. Add a persistent gold Mute Button to the header that kills all audio globally."

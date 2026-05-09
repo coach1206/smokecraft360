@@ -15,6 +15,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { Sparkles, Cpu, Activity, RotateCcw, X } from "lucide-react";
+import { AudioWaveToggle } from "@/contexts/AudioContext";
 import { PreferenceProvider }   from "@/contexts/PreferenceContext";
 import { UserProfileProvider }  from "@/contexts/UserProfileContext";
 import MoodControls             from "@/components/DynamicCard/MoodControls";
@@ -638,13 +639,14 @@ function CraftHubInner() {
           </motion.div>
         </div>
 
-        {/* Right — staff button + module count */}
+        {/* Right — audio toggle + staff button + module count */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          style={{ display: "flex", alignItems: "center", gap: 12 }}
+          style={{ display: "flex", alignItems: "center", gap: 10 }}
         >
+          <AudioWaveToggle />
           <button
             onClick={() => navigate("/operations")}
             style={{

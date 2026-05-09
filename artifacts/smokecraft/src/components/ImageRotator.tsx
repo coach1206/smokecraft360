@@ -27,7 +27,6 @@ const CRAFT_POOLS: Record<RotatorCraftType, string[]> = {
     "/images/smoke/smoke_selection.png",
     "/images/smoke/smoke_group.png",
     "/images/smoke/smoke_urban.png",
-    "/images/smoke/smoke_solo.png",
   ],
   pour: [
     "/images/pour/pour_bar.png",
