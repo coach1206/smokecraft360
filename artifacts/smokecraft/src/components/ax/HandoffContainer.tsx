@@ -41,7 +41,6 @@ import type { CraftType } from "@/store/axiom360Store";
 import { useAxiomStore }          from "@/store/axiomStore";
 import { calculateDynamicPrice }  from "@/lib/pricing";
 import type { PriceInfo }         from "@/lib/pricing";
-import { FoundersDashboard }      from "./FoundersDashboard";
 import { SubPageRenderer }        from "./SubPageRenderer";
 import {
   xpProgress, xpToNextRank,
@@ -1071,9 +1070,7 @@ function StaffPanel({
   const [, navigate] = useLocation();
   const craft = CRAFTS.find((c) => c.id === currentCraft);
 
-  const [founderVisible, setFounderVisible] = useState(false);
   const [activeSlug, setActiveSlug]         = useState<string | null>(null);
-  const founderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevRankRef    = useRef<string | null>(null);
   const [rankAlert, setRankAlert] = useState(false);
 
@@ -1111,13 +1108,6 @@ function StaffPanel({
     }
     return [...cigars.slice(0, 2), ...spirits.slice(0, 1)].map((i, n) => ({ name: i.name, action: n === 0 ? "✓ Added" : "↔ Viewed", color: "#5BC4F5" }));
   }, [currentCraft]);
-
-  function startFounderPress() {
-    founderTimerRef.current = setTimeout(() => setFounderVisible(true), 2000);
-  }
-  function clearFounderPress() {
-    if (founderTimerRef.current) { clearTimeout(founderTimerRef.current); founderTimerRef.current = null; }
-  }
 
   const occupancyColor = occupancy > 80 ? "#b91c1c" : occupancy < 25 ? "#D48B00" : "#166534";
   const surgeActive    = occupancy > 80 && isDynamicActive;
@@ -1169,15 +1159,6 @@ function StaffPanel({
           </span>
         )}
         <div style={{ flex: 1 }} />
-        <button
-          onPointerDown={startFounderPress} onPointerUp={clearFounderPress} onPointerLeave={clearFounderPress}
-          style={{
-            minHeight: 38, padding: "0 16px", borderRadius: 9,
-            background: "rgba(212,139,0,0.14)", border: "1px solid rgba(212,139,0,0.30)",
-            fontSize: 8, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase",
-            color: "#D48B00", cursor: "default",
-          }}
-        >FOUNDER ···</button>
         <button
           onClick={onExit}
           style={{
@@ -1694,36 +1675,6 @@ function StaffPanel({
         </div>
       </div>
 
-      {/* Founder overlay */}
-      <AnimatePresence>
-        {founderVisible && (
-          <motion.div
-            key="founder-staff"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.35 }}
-            className="fixed inset-0 z-[200]"
-          >
-            <FoundersDashboard />
-            <div style={{ position: "absolute", bottom: 32, right: 32 }}>
-              <button
-                onClick={() => setFounderVisible(false)}
-                style={{
-                  display: "flex", alignItems: "center", gap: 5,
-                  fontSize: 9, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase",
-                  cursor: "pointer", outline: "none",
-                  background: "rgba(26,26,27,0.07)", border: "1px solid rgba(26,26,27,0.12)",
-                  color: "rgba(26,26,27,0.44)", padding: "5px 14px", borderRadius: 99,
-                }}
-              ><ChevronLeft size={10} /> Back</button>
-            </div>
-            <div style={{
-              position: "absolute", bottom: 40, left: 32,
-              fontSize: 7.5, color: "rgba(212,139,0,0.3)", letterSpacing: "0.2em", textTransform: "uppercase",
-            }}>Founder Access Only</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Sub-page overlay */}
       <AnimatePresence>
         {activeSlug && (
@@ -1757,8 +1708,10 @@ function StaffPanel({
 
 function PatronView({
   onCraftSelect,
+  onSmokeSelect,
 }: {
   onCraftSelect: (craft: typeof CRAFTS[number]) => void;
+  onSmokeSelect: () => void;
 }) {
   const [, navigate]  = useLocation();
   const [activeCraft, setActiveCraft]        = useState<string | null>(null);
@@ -2005,7 +1958,7 @@ function PatronView({
         initial={{ opacity: 0, x: -28 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.55, duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
-        onClick={() => handleCraftTap(CRAFTS[0])}
+        onClick={onSmokeSelect}
         style={{
           position: "absolute", left: "7%", top: "50%", transform: "translateY(-50%)",
           background: "none", border: "none", cursor: "pointer",
@@ -2296,11 +2249,78 @@ function PatronView({
 
 }
 
+// ── SmokeCraft experience entry bridge ────────────────────────────────────────
+
+function SmokeCraftExperience({ onBack }: { onBack: () => void }) {
+  const [, navigate] = useLocation();
+  useEffect(() => {
+    const t = setTimeout(() => navigate("/experience/smoke"), 700);
+    return () => clearTimeout(t);
+  }, [navigate]);
+  return (
+    <motion.div
+      className="absolute inset-0"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.28 }}
+      style={{ background: "#040302", zIndex: 100 }}
+    >
+      {/* Expanding amber radial — visible transition cue */}
+      <motion.div
+        initial={{ scale: 0.08, opacity: 0.9 }}
+        animate={{ scale: 9, opacity: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        style={{
+          position: "absolute", top: "50%", left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 200, height: 200, borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(212,139,0,0.45) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }}
+      />
+      {/* Centered wordmark */}
+      <div style={{
+        position: "absolute", top: "50%", left: "50%",
+        transform: "translate(-50%, -50%)",
+        textAlign: "center", pointerEvents: "none",
+      }}>
+        <div style={{
+          fontFamily: "'Cormorant Garamond',Georgia,serif",
+          fontSize: "clamp(52px,7vw,88px)", fontWeight: 300,
+          color: "#F0E8D4", lineHeight: 0.9,
+          textShadow: "0 0 80px rgba(212,139,0,0.38)",
+        }}>
+          Smoke<span style={{ color: "#D48B00", fontStyle: "italic", fontWeight: 700 }}>Craft</span>
+        </div>
+        <motion.div
+          animate={{ opacity: [0.4, 0.9, 0.4] }}
+          transition={{ duration: 1.2, repeat: Infinity }}
+          style={{
+            fontFamily: "'Courier New',monospace", fontSize: 9, fontWeight: 700,
+            letterSpacing: "0.42em", color: "rgba(212,139,0,0.6)",
+            textTransform: "uppercase", marginTop: 20,
+          }}
+        >Entering Experience</motion.div>
+      </div>
+      <button onClick={onBack} style={{
+        position: "absolute", top: 18, left: 18,
+        display: "flex", alignItems: "center", gap: 5,
+        minHeight: 40, padding: "0 16px", borderRadius: 10,
+        background: "rgba(26,26,27,0.07)", border: "1px solid rgba(240,232,212,0.12)",
+        fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase",
+        color: "rgba(240,232,212,0.38)", cursor: "pointer", outline: "none",
+      }}>‹ Back</button>
+    </motion.div>
+  );
+}
+
 // ── HandoffContainer — root orchestrator ──────────────────────────────────────
 
 export function HandoffContainer() {
   const { activeMode, currentCraft, lastHandoffAt, setMode, setCraft } = useAxiom360();
   const [flashing, setFlashing] = useState(false);
+  const [viewState, setViewState] = useState<"patron" | "smokecraft-active">("patron");
 
   // Hidden 3-second long-press trigger
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -2384,9 +2404,20 @@ export function HandoffContainer() {
         }
         transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
       >
-        <PatronView
-          onCraftSelect={(craft) => setCraft(craft.id as CraftType)}
-        />
+        <AnimatePresence mode="wait">
+          {viewState === "patron" ? (
+            <PatronView
+              key="patron"
+              onCraftSelect={(craft) => setCraft(craft.id as CraftType)}
+              onSmokeSelect={() => setViewState("smokecraft-active")}
+            />
+          ) : (
+            <SmokeCraftExperience
+              key="smokecraft"
+              onBack={() => setViewState("patron")}
+            />
+          )}
+        </AnimatePresence>
       </motion.div>
 
       {/* Staff Dashboard — sliding metal animation */}
@@ -2411,7 +2442,7 @@ export function HandoffContainer() {
         background: "linear-gradient(180deg, rgba(4,3,2,0.94) 0%, rgba(4,3,2,0.65) 75%, transparent 100%)",
         display: "flex", alignItems: "center", padding: "0 16px", gap: 14,
         boxShadow: "inset 0 1px 0 rgba(212,175,55,0.14)",
-        pointerEvents: activeMode === "staff" ? "none" : "auto",
+        pointerEvents: "none",
       }}>
         <button onClick={() => navigate("/craft-hub")} style={{
           background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.18)",
@@ -2465,7 +2496,7 @@ export function HandoffContainer() {
 
       {/* ══ PriceTicker — viewport bottom, absolute within fixed container ══ */}
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 88, overflow: "hidden", zIndex: 200,
-        pointerEvents: activeMode === "staff" ? "none" : "auto" }}>
+        pointerEvents: "none" }}>
         <PriceTicker craftPrices={hcCraftPrices} />
       </div>
     </div>
