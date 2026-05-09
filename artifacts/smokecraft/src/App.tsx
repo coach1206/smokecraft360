@@ -21,6 +21,9 @@ import { LicenseProvider }           from '@/contexts/LicenseContext';
 import { HandoffProvider }           from '@/contexts/HandoffContext';
 import { AudioProvider }            from '@/contexts/AudioContext';
 import EeisOverlay                  from '@/components/EeisOverlay';
+import { SuperAdminProvider }       from '@/contexts/SuperAdminContext';
+import { GhostEntryTrigger }        from '@/components/GhostEntryTrigger';
+import SuperAdminOverlay            from '@/components/SuperAdminOverlay';
 
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
@@ -94,8 +97,12 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                 <AxiomPresenceProvider>
                                   <EnvironmentProvider>
                                     <OrchestratorProvider>
-                                      {children}
-                                      <EeisOverlay />
+                                      <SuperAdminProvider>
+                                        {children}
+                                        <EeisOverlay />
+                                        <GhostEntryTrigger />
+                                        <SuperAdminOverlay />
+                                      </SuperAdminProvider>
                                     </OrchestratorProvider>
                                   </EnvironmentProvider>
                                 </AxiomPresenceProvider>

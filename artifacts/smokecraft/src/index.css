@@ -85,3 +85,55 @@ body::after {
 .ax-mentor-drift {
   animation: ax-mentor-drift 8s ease-in-out infinite;
 }
+
+/* ── Axiom OS Tablet-First Touch Refactor ─────────────────────────────────── */
+/* Disable browser default tap/scroll chrome; force every surface to feel native */
+
+html, body, #root {
+  -webkit-user-select: none;
+  -moz-user-select:    none;
+  user-select:         none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+}
+
+/* Allow text selection only in explicit input areas */
+input, textarea, [contenteditable], .ax-selectable {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* ── Haptic Visual Ripple ─────────────────────────────────────────────────── */
+/* Apply .ax-haptic to any interactive element for a tactile press burst.     */
+
+@keyframes ax-haptic-ripple {
+  0%   { transform: scale(0.85); opacity: 0.55; }
+  60%  { transform: scale(1.18); opacity: 0.22; }
+  100% { transform: scale(1.55); opacity: 0;    }
+}
+
+.ax-haptic {
+  position: relative;
+  overflow: hidden;
+}
+
+.ax-haptic::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at center, rgba(212,175,55,0.35) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ax-haptic:active::after {
+  animation: ax-haptic-ripple 0.38s ease-out forwards;
+}
+
+/* Staff ghost-layer entry affordance — ensure touch targets meet 44px minimum */
+button, [role="button"] {
+  min-height: 44px;
+  min-width:  44px;
+}

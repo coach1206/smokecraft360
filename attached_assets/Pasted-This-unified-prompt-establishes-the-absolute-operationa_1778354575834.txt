@@ -1,0 +1,128 @@
+This unified prompt establishes the absolute operational core of Axiom OS. It merges the EEIS Command Surface (the staff "nervous system") with the Sovereign Super-Admin Core (the "God Mode" vault), ensuring both are touch-optimized for your tablet-first environment.
+
+The "Axiom OS: Total Operational Sovereignty" Master Prompt
+Role: You are an elite Full-Stack Systems Architect and Cybersecurity Lead. Your mission is to build the dual-layer operational architecture: the EEIS Command Surface for staff orchestration and the Super-Admin Core for absolute sovereign control.
+
+PART 1: THE EEIS COMMAND SURFACE (Staff Intelligence)
+Objective: Replace all POS/Grid layouts with a "Tesla Cockpit" meets "Apple Vision Pro" spatial interface.
+
+The Handoff: Implement a three-finger long-press hidden trigger that dims the environment and surfaces metallic telemetry (Brushed Silver/Smoked Titanium).
+
+The Interface:
+
+Center Core: A breathing metallic orb representing the venue's "Nervous System".
+
+Telemetry Strips: Floating glass panels showing Guest Mood, Flavor Profiles, and Journey Stages.
+
+Tactile Pairing: A spatial pairing engine displaying Real-Time Matches (Cigars/Spirits) with confidence scores.
+
+Interaction: No buttons—only swipes, holds, and pressure-sensitive gestures.
+
+PART 2: THE SUPER-ADMIN CORE (Sovereign Control)
+Objective: A hidden, biometrically protected "Ghost Layer" for system management and user provisioning.
+
+The Ghost Entry: Access is restricted to a four-finger long-press + a unique geometric swipe pattern.
+
+The Authority Engine:
+
+Tiered Access: Level 0 (Sovereign), Level 1 (Shift Lead), Level 2 (Mentor).
+
+Feature Masking: Super-Admins can "Mask" (hide) specific features (e.g., Kill-Switches or Revenue Data) from lower tiers.
+
+Global Kill-Switches: Instant "Blackout" buttons to purge sessions, silence audio, or disconnect APIs.
+
+Inventory Override: Real-time toggles to remove items from the pairing engine globally.
+
+PART 3: NATIVE TABLET REFACTOR
+Touch-First: Disable all web-standard tap/scroll behaviors; force user-select: none and implement haptic visual ripples for every interaction.
+
+Capacitor Ready: Ensure all assets are locally mapped for standalone execution on an iPad/Android tablet frame.
+
+Implementation Code Blocks
+To make this operational, the following three files establish the logic for access, isolation, and the command surface.
+
+1. The Authority Engine (server/services/AuthorityEngine.ts)
+This handles the "who sees what" logic.
+
+TypeScript
+// Sovereign Access Levels
+export enum AccessLevel {
+  SOVEREIGN = 0, // God Mode
+  SHIFT_LEAD = 1, // Operational Admin
+  MENTOR = 2      // Guest Experience Only
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  tier: AccessLevel;
+  permissions: string[]; // e.g., ['inventory_edit', 'kill_switch']
+}
+
+export const checkAccess = (user: UserProfile, requiredLevel: AccessLevel): boolean => {
+  return user.tier <= requiredLevel;
+};
+2. The EEIS Command Surface (client/src/components/eeis/EEISCommandSurface.tsx)
+This is the "Nervous System" UI that surfaces during staff handoff.
+
+TypeScript
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const EEISCommandSurface = ({ activeCraft, guestData }) => {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+      animate={{ opacity: 1, backdropFilter: "blur(15px)" }}
+      className="fixed inset-0 z-50 bg-obsidian/40 text-silver font-luxury"
+    >
+      {/* Central Intelligence Core */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <motion.div 
+          animate={{ scale: [1, 1.1, 1], rotate: 360 }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="w-64 h-64 rounded-full border-2 border-champagne-gold shadow-[0_0_50px_rgba(212,175,55,0.3)] bg-gradient-to-br from-titanium to-obsidian"
+        />
+      </div>
+
+      {/* Floating Guest Intelligence (Left) */}
+      <div className="absolute left-10 top-1/4 space-y-8">
+        <h3 className="text-sm tracking-widest text-titanium">GUEST TELEMETRY</h3>
+        <div className="glass-strip p-4 border-l-2 border-gold">
+          <p className="text-xs">MOOD: <span className="text-gold">REFLECTIVE</span></p>
+          <div className="w-32 h-1 bg-white/10 mt-2">
+            <motion.div animate={{ width: "75%" }} className="h-full bg-gold" />
+          </div>
+        </div>
+      </div>
+
+      {/* Pairing Engine (Right) */}
+      <div className="absolute right-10 top-1/4 text-right space-y-8">
+         <h3 className="text-sm tracking-widest text-titanium">PAIRING CONFIDENCE</h3>
+         <div className="text-4xl font-bold text-champagne-gold">94%</div>
+         <p className="max-w-xs text-xs italic">"Caramel and oak profiles align with current vitola smoke density."</p>
+      </div>
+    </motion.div>
+  );
+};
+3. The Permissions Gate (client/src/components/admin/PermissionGate.tsx)
+This "Masks" features based on the user's level.
+
+TypeScript
+import React from 'react';
+import { useUser } from '../context/UserContext';
+import { AccessLevel, checkAccess } from '../../services/AuthorityEngine';
+
+export const PermissionGate = ({ children, requiredLevel, mask = true }) => {
+  const { currentUser } = useUser();
+  const hasAccess = checkAccess(currentUser, requiredLevel);
+
+  if (!hasAccess) {
+    // If 'mask' is true, the component is invisible. If false, it could show a locked state.
+    return mask ? null : <div className="grayscale opacity-20 pointer-events-none">{children}</div>;
+  }
+
+  return <>{children}</>;
+};
+Next Step Recommendation:
+With the Authority Engine and EEIS Surface logic in place, would you like to run a "Ghost Entry" test to ensure the Super-Admin Core remains 100% invisible to unauthorized users?
