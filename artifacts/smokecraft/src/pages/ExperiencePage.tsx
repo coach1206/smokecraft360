@@ -531,11 +531,10 @@ export default function ExperiencePage() {
   const [feedback,     setFeedback]     = useState<{ text: string; type: "add" | "skip" } | null>(null);
   const [done,         setDone]         = useState(false);
   const [returnBanner, setReturnBanner] = useState(false);
-  // Entry chamber: shows cinematic intro before swipe discovery begins.
-  // Returning guests (session storage present) skip straight to atmosphere pick.
-  const hasStoredGuest = (() => { try { return !!sessionStorage.getItem("smokecraft_guest"); } catch { return false; } })();
-  const [showChamber,          setShowChamber]          = useState(!hasStoredGuest);
-  const [showAtmosphereOverlay, setShowAtmosphereOverlay] = useState(hasStoredGuest);
+  // Entry chamber: always shows on every new navigation to /experience/:type.
+  // CraftEntryChamber handles returning guests internally (skips enrollment, goes to mentor reveal).
+  const [showChamber,          setShowChamber]          = useState(true);
+  const [showAtmosphereOverlay, setShowAtmosphereOverlay] = useState(false);
   const [localAtmosphere,      setLocalAtmosphere]      = useState<string | null>(null);
 
   // ── Intelligence layer — mentor commentary on ADD swipes ─────────────────
