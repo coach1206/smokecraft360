@@ -23,6 +23,7 @@ import DynamicCard              from "@/components/DynamicCard/DynamicCard";
 import LiveEngineController     from "@/components/DynamicCard/LiveEngineController";
 import { CRAFT_MODULES }        from "@/data/craftScenes";
 import { useGuestProfile }         from "@/contexts/GuestProfileContext";
+import { SovereignLogoutBadge }   from "@/components/SovereignLogoutBadge";
 import TickerTape                 from "@/components/TickerTape";
 import LogoAnchor                 from "@/components/LogoAnchor";
 import EnvironmentPulseOverlay    from "@/components/EnvironmentPulseOverlay";
@@ -558,28 +559,7 @@ function CraftHubInner() {
           transition={{ delay: 0.4 }}
         >
           {guestProfile ? (
-            <div style={{
-              display:    "flex",
-              alignItems: "center",
-              gap:        7,
-              padding:    "5px 10px",
-              background: "rgba(212,139,0,0.07)",
-              border:     `1px solid rgba(212,139,0,0.22)`,
-              borderRadius: 8,
-            }}>
-              <div style={{
-                width: 18, height: 18, borderRadius: "50%",
-                background: "rgba(212,139,0,0.15)",
-                border: `1px solid rgba(212,139,0,0.4)`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 8, color: C.gold, fontWeight: 700,
-              }}>
-                {guestProfile.firstName[0]}
-              </div>
-              <span style={{ fontSize: 10, color: C.goldDim, letterSpacing: "0.06em" }}>
-                {guestProfile.publicId}
-              </span>
-            </div>
+            <SovereignLogoutBadge guestProfile={guestProfile} accent={C.gold} />
           ) : (
             <motion.button
               whileTap={{ scale: 0.96 }}

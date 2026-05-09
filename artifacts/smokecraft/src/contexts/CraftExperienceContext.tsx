@@ -6,7 +6,7 @@
  *
  * Exposes:
  *   const { craftType, setCraft, sessionTags, addTag, removeTag,
- *           swipeHistory, recordSwipe, resetSession } = useCraftExperience();
+ *           swipeHistory, recordSwipe, resetSession, purgeSessions } = useCraftExperience();
  */
 
 import {
@@ -41,15 +41,17 @@ const EMPTY_SESSION = (): CraftSession => ({
 });
 
 interface CraftExperienceValue {
-  craftType:    CraftType | null;
-  sessionTags:  string[];
-  swipeHistory: SwipeRecord[];
-  sessionAge:   number;
-  setCraft:     (type: CraftType) => void;
-  addTag:       (tag: string) => void;
-  removeTag:    (tag: string) => void;
-  recordSwipe:  (record: SwipeRecord) => void;
-  resetSession: () => void;
+  craftType:     CraftType | null;
+  sessionTags:   string[];
+  swipeHistory:  SwipeRecord[];
+  sessionAge:    number;
+  setCraft:      (type: CraftType) => void;
+  addTag:        (tag: string) => void;
+  removeTag:     (tag: string) => void;
+  recordSwipe:   (record: SwipeRecord) => void;
+  resetSession:  () => void;
+  /** Sovereign Purge — clears ALL craft sessions and resets craftType to null */
+  purgeSessions: () => void;
 }
 
 const CraftExperienceContext = createContext<CraftExperienceValue | null>(null);
@@ -111,6 +113,13 @@ export function CraftExperienceProvider({ children }: { children: ReactNode }) {
     forceUpdate();
   }, [craftType, forceUpdate]);
 
+  /** Sovereign Purge — wipes every craft bucket and resets craftType to null */
+  const purgeSessions = useCallback(() => {
+    sessions.current.clear();
+    setCraftType(null);
+    forceUpdate();
+  }, [forceUpdate]);
+
   const sessionAge = currentSession
     ? Math.floor((Date.now() - currentSession.startedAt) / 1000)
     : 0;
@@ -126,6 +135,7 @@ export function CraftExperienceProvider({ children }: { children: ReactNode }) {
       removeTag,
       recordSwipe,
       resetSession,
+      purgeSessions,
     }}>
       {children}
     </CraftExperienceContext.Provider>

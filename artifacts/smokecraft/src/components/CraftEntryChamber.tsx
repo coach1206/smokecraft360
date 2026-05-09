@@ -27,6 +27,7 @@ import { ArrowLeft, Sparkles, Zap, Compass } from "lucide-react";
 import type { CraftTheme } from "@/lib/craftThemes";
 import { AudioWaveToggle }        from "@/contexts/AudioContext";
 import { useGuestProfile }        from "@/contexts/GuestProfileContext";
+import { SovereignLogoutBadge }   from "@/components/SovereignLogoutBadge";
 import EnrollmentFlow             from "@/components/EnrollmentFlow";
 import MentorReveal               from "@/components/MentorReveal";
 import MasteryPitchScreen         from "@/components/MasteryPitchScreen";
@@ -492,38 +493,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
         >
           <AudioWaveToggle />
           {guestProfile && (
-            <div style={{
-              display:        "flex",
-              alignItems:     "center",
-              gap:            7,
-              background:     "rgba(0,0,0,0.50)",
-              border:         `1px solid ${accent}40`,
-              borderRadius:   10,
-              padding:        "8px 14px",
-              backdropFilter: "blur(12px)",
-            }}>
-              <div style={{
-                width:          20, height: 20,
-                borderRadius:   "50%",
-                background:     `${accent}20`,
-                border:         `1px solid ${accent}50`,
-                display:        "flex",
-                alignItems:     "center",
-                justifyContent: "center",
-                fontSize:       9,
-                color:          accent,
-                fontWeight:     700,
-              }}>
-                {guestProfile.firstName[0]}
-              </div>
-              <span style={{
-                fontSize:      10,
-                color:         `${accent}90`,
-                letterSpacing: "0.08em",
-              }}>
-                {guestProfile.publicId}
-              </span>
-            </div>
+            <SovereignLogoutBadge guestProfile={guestProfile} accent={accent} />
           )}
         </motion.div>
 
