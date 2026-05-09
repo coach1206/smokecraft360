@@ -159,6 +159,7 @@ import masteryRouter               from "./routes/mastery";
 import pairingEngineRouter         from "./routes/pairingEngine";
 import masterBlenderRouter          from "./routes/masterBlender";
 import enterpriseAiRouter          from "./routes/enterprise-ai";
+import artisanOrdersRouter         from "./routes/artisanOrders";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -481,6 +482,7 @@ app.use("/api/mastery",                  masteryRouter);
 app.use("/api/pairing-engine",           pairingEngineRouter);
 app.use("/api/master-blender",           masterBlenderRouter);
 app.use("/api/enterprise-ai",           enterpriseAiRouter);
+app.use("/api",                         artisanOrdersRouter);
 app.use("/api",                         onboardingRouter);
 app.use("/api",                         aiConfigureRouter);
 app.use("/api",                         demoSimulateRouter);

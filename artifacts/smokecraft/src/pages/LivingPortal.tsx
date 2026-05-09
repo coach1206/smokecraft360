@@ -15,6 +15,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "wouter";
 
 /* ── Per-craft image pools ─────────────────────────────────────────────────── */
 interface CraftConfig {
@@ -243,6 +244,13 @@ function CraftTile({
 }
 
 /* ── Detail / confirmation overlay ────────────────────────────────────────── */
+const CRAFT_360_ROUTES: Record<string, string> = {
+  smoke: "/smoke-360",
+  pour:  "/pour-360",
+  brew:  "/brew-360",
+  vape:  "/vape-360",
+};
+
 function CraftDetail({
   craft,
   onBack,
@@ -250,6 +258,7 @@ function CraftDetail({
   craft:  CraftConfig;
   onBack: () => void;
 }) {
+  const [, navigate] = useLocation();
   const [idx, setIdx] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setIdx(i => (i + 1) % craft.images.length), 3500);
@@ -335,7 +344,7 @@ function CraftDetail({
 
         <motion.button
           whileTap={{ scale: 0.95 }}
-          onClick={() => { window.location.href = `/experience/${craft.id}`; }}
+          onClick={() => navigate(CRAFT_360_ROUTES[craft.id] ?? `/experience/${craft.id}`)}
           style={{
             marginTop: 28,
             padding: "20px 48px",

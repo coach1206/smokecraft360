@@ -70,6 +70,10 @@ const Demo                  = lazy(() => import('@/pages/Demo'));
 const AxiomDemo             = lazy(() => import('@/pages/AxiomDemo'));
 const MasterBlender         = lazy(() => import('@/pages/MasterBlender'));
 const CigarArtisan360       = lazy(() => import('@/pages/CigarArtisan360'));
+const SmokeCraft360         = lazy(() => import('@/pages/SmokeCraft360'));
+const PourCraft360          = lazy(() => import('@/pages/PourCraft360'));
+const BrewCraft360          = lazy(() => import('@/pages/BrewCraft360'));
+const VapeCraft360          = lazy(() => import('@/pages/VapeCraft360'));
 
 function PageLoader() {
   return (
@@ -798,6 +802,18 @@ export default function App() {
           </Route>
           <Route path="/artisan-360">
             <SubPageProviders><CigarArtisan360 /></SubPageProviders>
+          </Route>
+          <Route path="/smoke-360">
+            <SubPageProviders><SmokeCraft360 /></SubPageProviders>
+          </Route>
+          <Route path="/pour-360">
+            <SubPageProviders><PourCraft360 /></SubPageProviders>
+          </Route>
+          <Route path="/brew-360">
+            <SubPageProviders><BrewCraft360 /></SubPageProviders>
+          </Route>
+          <Route path="/vape-360">
+            <SubPageProviders><VapeCraft360 /></SubPageProviders>
           </Route>
 
           {/* ── Default: LivingPortal — motion home hub ── */}

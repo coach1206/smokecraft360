@@ -10,7 +10,7 @@
  *  • Sovereign Override Hub auto-present (global, no extra wiring needed)
  */
 
-import { Suspense, useRef, useState, useCallback, useEffect, Component } from "react";
+import { Suspense, useRef, useState, useCallback, useEffect, Component, type FormEvent } from "react";
 import type { ReactNode } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
@@ -23,7 +23,7 @@ import {
 } from "@react-three/drei";
 import * as THREE from "three";
 import { useLocation } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 const GOLD    = "#D4AF37";
@@ -527,6 +527,191 @@ function Pill({
 }
 
 // ── Main page ──────────────────────────────────────────────────────────────────
+// ── Commission modal ───────────────────────────────────────────────────────────
+type CommissionState = "idle" | "open" | "submitting" | "success" | "error";
+
+function CommissionModal({
+  wood, band, hasEmblem,
+  state, orderId,
+  guestName, notes,
+  onGuestName, onNotes,
+  onSubmit, onClose,
+}: {
+  wood: WoodId; band: BandId; hasEmblem: boolean;
+  state: CommissionState; orderId: string;
+  guestName: string; notes: string;
+  onGuestName: (v: string) => void;
+  onNotes:     (v: string) => void;
+  onSubmit:    (e: FormEvent) => void;
+  onClose:     () => void;
+}) {
+  const w = WOOD[wood];
+  const b = BAND[band];
+  const input: React.CSSProperties = {
+    width: "100%", boxSizing: "border-box" as const,
+    background: "rgba(212,175,55,0.05)",
+    border: "1px solid rgba(212,175,55,0.22)",
+    borderRadius: 8, color: "#F5F2ED",
+    fontSize: 11, fontFamily: MONO, letterSpacing: "0.06em",
+    padding: "10px 14px", outline: "none",
+    WebkitTapHighlightColor: "transparent",
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      style={{
+        position: "fixed", inset: 0, zIndex: 400,
+        background: "rgba(10,9,8,0.92)",
+        backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: 24, fontFamily: MONO,
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <motion.div
+        initial={{ y: 24, opacity: 0, scale: 0.97 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{    y: 16, opacity: 0, scale: 0.97 }}
+        transition={{ type: "spring", stiffness: 320, damping: 28 }}
+        style={{
+          background: "rgba(16,14,12,0.98)",
+          border: `1px solid rgba(212,175,55,0.28)`,
+          borderRadius: 16, padding: "28px 24px",
+          width: "100%", maxWidth: 420,
+          boxShadow: `0 32px 80px rgba(0,0,0,0.85), 0 0 40px rgba(212,175,55,0.06) inset`,
+        }}
+      >
+        {state === "success" ? (
+          /* Success screen */
+          <div style={{ textAlign: "center", padding: "12px 0" }}>
+            <motion.div
+              initial={{ scale: 0 }} animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 18, delay: 0.05 }}
+              style={{ fontSize: 40, marginBottom: 16 }}
+            >◈</motion.div>
+            <div style={{ color: GOLD, fontSize: 13, fontWeight: 700, letterSpacing: "0.22em", marginBottom: 8 }}>
+              COMMISSION RECEIVED
+            </div>
+            <div style={{ color: "rgba(212,175,55,0.45)", fontSize: 8, letterSpacing: "0.18em", marginBottom: 24 }}>
+              ORDER REFERENCE
+            </div>
+            <div style={{
+              background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.25)",
+              borderRadius: 8, padding: "10px 16px",
+              color: GOLD, fontSize: 14, letterSpacing: "0.22em", marginBottom: 20,
+            }}>{orderId}</div>
+            <div style={{ color: "rgba(245,242,237,0.45)", fontSize: 9, lineHeight: 1.7, letterSpacing: "0.08em", marginBottom: 24 }}>
+              Your bespoke commission has been routed to the Master Artisan team.
+              A detailed order summary has been sent for review.
+            </div>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={onClose} style={{
+              width: "100%", padding: "13px", borderRadius: 999,
+              background: `rgba(212,175,55,0.12)`, border: `1px solid ${GOLD}`,
+              color: GOLD, fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
+              cursor: "pointer", touchAction: "manipulation",
+              WebkitTapHighlightColor: "transparent",
+            }}>CLOSE</motion.button>
+          </div>
+        ) : (
+          /* Order form */
+          <form onSubmit={onSubmit}>
+            {/* Header */}
+            <div style={{ marginBottom: 22 }}>
+              <div style={{ color: GOLD, fontSize: 10, fontWeight: 700, letterSpacing: "0.28em", marginBottom: 4 }}>
+                ◈ COMMISSION THIS BOX
+              </div>
+              <div style={{ color: "rgba(212,175,55,0.38)", fontSize: 7.5, letterSpacing: "0.14em" }}>
+                MASTER ARTISAN 360 · BESPOKE ORDER SUBMISSION
+              </div>
+            </div>
+
+            {/* Design summary */}
+            <div style={{
+              background: "rgba(212,175,55,0.05)", border: "1px solid rgba(212,175,55,0.14)",
+              borderRadius: 10, padding: "12px 14px", marginBottom: 20, display: "flex", flexDirection: "column", gap: 6,
+            }}>
+              {[
+                ["WOOD",   w.label],
+                ["BAND",   b.label],
+                ["EMBLEM", hasEmblem ? "Custom — Uploaded" : "None"],
+              ].map(([lbl, val]) => (
+                <div key={lbl} style={{ display: "flex", gap: 10, alignItems: "baseline" }}>
+                  <span style={{ fontSize: 7, color: "rgba(212,175,55,0.4)", letterSpacing: "0.2em", minWidth: 50 }}>{lbl}</span>
+                  <span style={{ fontSize: 10, color: "#F5F2ED", letterSpacing: "0.06em" }}>{val}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Guest name */}
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 7, color: "rgba(212,175,55,0.38)", letterSpacing: "0.2em", marginBottom: 6 }}>
+                YOUR NAME <span style={{ color: "rgba(212,175,55,0.22)" }}>(OPTIONAL)</span>
+              </div>
+              <input
+                value={guestName}
+                onChange={e => onGuestName(e.target.value)}
+                placeholder="e.g. James C."
+                maxLength={80}
+                style={{ ...input, height: 40 }}
+              />
+            </div>
+
+            {/* Special instructions */}
+            <div style={{ marginBottom: 22 }}>
+              <div style={{ fontSize: 7, color: "rgba(212,175,55,0.38)", letterSpacing: "0.2em", marginBottom: 6 }}>
+                SPECIAL INSTRUCTIONS <span style={{ color: "rgba(212,175,55,0.22)" }}>(OPTIONAL)</span>
+              </div>
+              <textarea
+                value={notes}
+                onChange={e => onNotes(e.target.value)}
+                placeholder="Engraving text, quantity, occasion…"
+                maxLength={400}
+                rows={3}
+                style={{ ...input, resize: "none" as const, lineHeight: 1.6 }}
+              />
+            </div>
+
+            {/* Error */}
+            {state === "error" && (
+              <div style={{ color: "#EF4444", fontSize: 8, letterSpacing: "0.12em", marginBottom: 14, textAlign: "center" }}>
+                Submission failed — please try again
+              </div>
+            )}
+
+            {/* Buttons */}
+            <div style={{ display: "flex", gap: 10 }}>
+              <motion.button type="button" whileTap={{ scale: 0.95 }} onClick={onClose}
+                style={{
+                  flex: 1, padding: "13px", borderRadius: 999,
+                  background: "transparent", border: "1px solid rgba(212,175,55,0.20)",
+                  color: "rgba(212,175,55,0.40)", fontSize: 8, fontWeight: 700, letterSpacing: "0.2em",
+                  cursor: "pointer", touchAction: "manipulation", WebkitTapHighlightColor: "transparent",
+                }}>
+                CANCEL
+              </motion.button>
+              <motion.button type="submit" whileTap={{ scale: 0.95 }} disabled={state === "submitting"}
+                style={{
+                  flex: 2, padding: "13px", borderRadius: 999,
+                  background: state === "submitting" ? "rgba(212,175,55,0.08)" : `rgba(212,175,55,0.14)`,
+                  border: `1px solid ${state === "submitting" ? "rgba(212,175,55,0.22)" : GOLD}`,
+                  color: state === "submitting" ? "rgba(212,175,55,0.40)" : GOLD,
+                  fontSize: 8, fontWeight: 700, letterSpacing: "0.2em",
+                  cursor: state === "submitting" ? "default" : "pointer",
+                  touchAction: "manipulation", WebkitTapHighlightColor: "transparent",
+                  transition: "all 0.18s",
+                }}>
+                {state === "submitting" ? "TRANSMITTING…" : "SUBMIT COMMISSION"}
+              </motion.button>
+            </div>
+          </form>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ── Main page ──────────────────────────────────────────────────────────────────
 export default function CigarArtisan360() {
   const [, navigate] = useLocation();
   const [wood, setWood]       = useState<WoodId>("mahogany");
@@ -536,6 +721,12 @@ export default function CigarArtisan360() {
   const [hasWebGL, setHasWebGL] = useState(true);
   const longPressRef            = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileRef                 = useRef<HTMLInputElement>(null);
+
+  // Commission state
+  const [commState, setCommState] = useState<CommissionState>("idle");
+  const [guestName, setGuestName] = useState("");
+  const [notes,     setNotes]     = useState("");
+  const [orderId,   setOrderId]   = useState("");
 
   useEffect(() => {
     setHasWebGL(detectWebGL());
@@ -562,6 +753,30 @@ export default function CigarArtisan360() {
   useEffect(() => () => {
     if (logoUrl) URL.revokeObjectURL(logoUrl);
   }, [logoUrl]);
+
+  const handleCommission = useCallback(async (e: FormEvent) => {
+    e.preventDefault();
+    setCommState("submitting");
+    try {
+      const res = await fetch("/api/artisan-orders", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ wood, band, hasEmblem: !!logoUrl, guestName: guestName.trim() || undefined, notes: notes.trim() || undefined }),
+      });
+      const data = await res.json() as { success?: boolean; orderId?: string };
+      if (data.success && data.orderId) {
+        setOrderId(data.orderId);
+        setCommState("success");
+      } else {
+        setCommState("error");
+      }
+    } catch {
+      setCommState("error");
+    }
+  }, [wood, band, logoUrl, guestName, notes]);
+
+  const openCommission  = useCallback(() => { setCommState("open"); setGuestName(""); setNotes(""); setOrderId(""); }, []);
+  const closeCommission = useCallback(() => { if (commState !== "submitting") setCommState("idle"); }, [commState]);
 
   const w = WOOD[wood];
   const b = BAND[band];
@@ -731,22 +946,51 @@ export default function CigarArtisan360() {
           </div>
         </div>
 
+        {/* Commission CTA */}
+        <div style={{ borderTop: "1px solid rgba(212,175,55,0.10)", paddingTop: 12 }}>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={openCommission}
+            style={{
+              width: "100%", padding: "14px", borderRadius: 999,
+              background: "linear-gradient(135deg, rgba(212,175,55,0.16) 0%, rgba(212,175,55,0.08) 100%)",
+              border: `1px solid ${GOLD}`,
+              color: GOLD, fontSize: 9, fontWeight: 700, letterSpacing: "0.26em",
+              cursor: "pointer", touchAction: "manipulation",
+              WebkitTapHighlightColor: "transparent",
+              boxShadow: `0 0 24px rgba(212,175,55,0.12)`,
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            }}
+          >
+            <span style={{ fontSize: 12 }}>◈</span> COMMISSION THIS BOX
+          </motion.button>
+        </div>
+
         {/* Instruction strip */}
         <div style={{
           display: "flex", gap: 20, justifyContent: "center",
-          borderTop: "1px solid rgba(212,175,55,0.08)", paddingTop: 10,
+          borderTop: "1px solid rgba(212,175,55,0.06)", paddingTop: 8,
         }}>
-          {[
-            "1 FINGER — ROTATE",
-            "2 FINGERS — ZOOM",
-            "LONG PRESS — OPEN LID",
-          ].map(t => (
-            <div key={t} style={{ fontSize: 7, color: "rgba(212,175,55,0.22)", letterSpacing: "0.12em" }}>
+          {["1 FINGER — ROTATE", "2 FINGERS — ZOOM", "LONG PRESS — OPEN LID"].map(t => (
+            <div key={t} style={{ fontSize: 7, color: "rgba(212,175,55,0.20)", letterSpacing: "0.12em" }}>
               {t}
             </div>
           ))}
         </div>
       </div>
+
+      {/* ── Commission modal ── */}
+      <AnimatePresence>
+        {commState !== "idle" && (
+          <CommissionModal
+            wood={wood} band={band} hasEmblem={!!logoUrl}
+            state={commState} orderId={orderId}
+            guestName={guestName} notes={notes}
+            onGuestName={setGuestName} onNotes={setNotes}
+            onSubmit={handleCommission} onClose={closeCommission}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
