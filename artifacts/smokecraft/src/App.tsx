@@ -21,6 +21,7 @@ import { KioskModeProvider }         from '@/contexts/KioskModeContext';
 import { LicenseProvider }           from '@/contexts/LicenseContext';
 import { HandoffProvider }           from '@/contexts/HandoffContext';
 import { AudioProvider }            from '@/contexts/AudioContext';
+import { ExperienceProvider }       from '@/contexts/ExperienceContext';
 import EeisOverlay                  from '@/components/EeisOverlay';
 import { SovereignOverrideHub }    from '@/components/SovereignOverrideHub';
 import { SuperAdminProvider }       from '@/contexts/SuperAdminContext';
@@ -89,6 +90,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
     ? (localStorage.getItem('axiom_venue_id') ?? '00000000-0000-0000-0000-000000000000')
     : '00000000-0000-0000-0000-000000000000';
   return (
+    <ExperienceProvider>
     <AudioProvider>
       <AuthProvider>
         <LicenseProvider>
@@ -136,6 +138,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
         </LicenseProvider>
       </AuthProvider>
     </AudioProvider>
+    </ExperienceProvider>
   );
 }
 

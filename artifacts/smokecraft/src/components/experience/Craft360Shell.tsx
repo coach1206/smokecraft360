@@ -11,6 +11,8 @@
 import { useState, useEffect, useCallback, type ReactNode } from "react";
 import { motion, AnimatePresence }                           from "framer-motion";
 import { useLocation }                                       from "wouter";
+import { useExperience }                                     from "@/contexts/ExperienceContext";
+import { EeisIntelLayer }                                    from "@/components/eeis/EeisIntelLayer";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 export interface FlavorNote {
@@ -360,9 +362,17 @@ export function Craft360Shell({
   config:   Craft360Config;
   children: (selectedFlavors: string[]) => ReactNode;
 }) {
-  const [, navigate]   = useLocation();
-  const [stage, setStage]     = useState<Stage>("intro");
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [, navigate]              = useLocation();
+  const [stage, setStage]         = useState<Stage>("intro");
+  const [selected, setSelected]   = useState<Set<string>>(new Set());
+  const { setModule } = useExperience();
+
+  // Register active module with central intelligence state on mount
+  useEffect(() => {
+    if (config.craftId !== "smoke" && config.craftId !== "pour" &&
+        config.craftId !== "brew"  && config.craftId !== "vape") return;
+    setModule(config.craftId);
+  }, [config.craftId, setModule]);
 
   const toggleFlavor = useCallback((id: string) => {
     setSelected(prev => {
@@ -452,6 +462,9 @@ export function Craft360Shell({
           )}
         </AnimatePresence>
       </div>
+
+      {/* EEIS per-craft intelligence layer — 3-finger activation, staff-only */}
+      <EeisIntelLayer craftId={config.craftId} />
     </div>
   );
 }
