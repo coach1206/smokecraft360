@@ -26,6 +26,7 @@ import { useOrchestrator } from "@/contexts/OrchestratorContext";
 import { useAxiomIntelligence } from "@/contexts/AxiomIntelligenceContext";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
+import { useCraftExperience } from "@/contexts/CraftExperienceContext";
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 
@@ -61,6 +62,250 @@ const EDGES: [string, string][] = [
 
 function getNode(id: string) {
   return ENGINE_NODES.find(n => n.id === id)!;
+}
+
+// ── Venue Heartbeat Orb ────────────────────────────────────────────────────────
+// Breathing metallic orb representing live venue energy.
+
+const VenueHeartbeatOrb = memo(function VenueHeartbeatOrb({
+  energy = 60,
+}: { energy?: number }) {
+  const rings = [42, 54, 66];
+  return (
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "12px 0 8px" }}>
+      <div style={{ position: "relative", width: 88, height: 88 }}>
+        {/* Outer pulse rings */}
+        {rings.map((r, i) => (
+          <motion.div
+            key={i}
+            animate={{ scale: [1, 1.06 + i * 0.04, 1], opacity: [0.18, 0.35 - i * 0.06, 0.18] }}
+            transition={{ duration: 2.8 + i * 0.5, repeat: Infinity, ease: "easeInOut", delay: i * 0.6 }}
+            style={{
+              position:     "absolute",
+              inset:        `${(88 - r * 2) / 2}px`,
+              borderRadius: "50%",
+              border:       `1px solid ${GOLD}`,
+              pointerEvents: "none",
+            }}
+          />
+        ))}
+        {/* Telemetry ring — rotates with energy */}
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+          style={{
+            position: "absolute", inset: 6,
+            borderRadius: "50%",
+            border: `1px dashed ${GOLD}40`,
+          }}
+        />
+        {/* Core orb */}
+        <motion.div
+          animate={{ scale: [1, 1.05, 1], boxShadow: [
+            `0 0 18px ${GOLD}40, 0 0 6px ${GOLD}80`,
+            `0 0 36px ${GOLD}70, 0 0 12px ${GOLD}CC`,
+            `0 0 18px ${GOLD}40, 0 0 6px ${GOLD}80`,
+          ]}}
+          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            position:     "absolute",
+            inset:        20,
+            borderRadius: "50%",
+            background:   `radial-gradient(circle at 35% 30%, #C4A85A, ${GOLD} 40%, #7A5A00 80%, #3A2800)`,
+            border:       `1px solid ${GOLD}80`,
+          }}
+        />
+        {/* Energy percentage overlay */}
+        <div style={{
+          position:       "absolute", inset: 0,
+          display:        "flex", alignItems: "center", justifyContent: "center",
+          fontFamily:     "'Space Mono', monospace",
+          fontSize:       10, fontWeight: 700, color: CREAM,
+          textShadow:     `0 0 8px ${GOLD}`,
+          pointerEvents:  "none",
+        }}>
+          {energy}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+// ── Adaptive Staff Nudge ───────────────────────────────────────────────────────
+// Detects new vs returning guest and surfaces the right coaching mode.
+
+function AdaptiveNudge({
+  isNew,
+  sessionTags,
+  swipeCount,
+}: { isNew: boolean; sessionTags: string[]; swipeCount: number }) {
+  const mode   = isNew ? "EDUCATION" : "PALATE EVOLUTION";
+  const accent = isNew ? "#5BC4F5" : GOLD;
+
+  return (
+    <div style={{
+      marginTop:    8,
+      padding:      "8px 10px",
+      borderRadius: 8,
+      background:   `${accent}0D`,
+      border:       `1px solid ${accent}30`,
+    }}>
+      <div style={{
+        fontSize:      7, fontWeight: 700, letterSpacing: "0.18em",
+        color:         accent, textTransform: "uppercase",
+        fontFamily:    "'Space Mono', monospace", marginBottom: 5,
+        display:       "flex", alignItems: "center", gap: 5,
+      }}>
+        <motion.div
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 1.4, repeat: Infinity }}
+          style={{ width: 4, height: 4, borderRadius: "50%", background: accent }}
+        />
+        {mode} MODE
+      </div>
+      {isNew ? (
+        <>
+          <div style={{ fontSize: 8, color: `${CREAM}70`, lineHeight: 1.5, fontFamily: "'Space Mono', monospace" }}>
+            First-time explorer detected. Lead with sensory education — aroma first, then strength.
+          </div>
+          <div style={{ marginTop: 5, fontSize: 7, color: accent, letterSpacing: "0.08em", fontFamily: "'Space Mono', monospace" }}>
+            → SCRIPT: "Let me walk you through the experience…"
+          </div>
+        </>
+      ) : (
+        <>
+          <div style={{ fontSize: 8, color: `${CREAM}70`, lineHeight: 1.5, fontFamily: "'Space Mono', monospace" }}>
+            {swipeCount} signals logged · Reference their profile chips for continuity.
+          </div>
+          {sessionTags.slice(0, 3).map(tag => (
+            <div key={tag} style={{
+              display:      "inline-block", marginRight: 4, marginTop: 4,
+              padding:      "2px 7px", borderRadius: 20,
+              border:       `1px solid ${GOLD}35`,
+              background:   `${GOLD}10`,
+              fontSize:     7, color: `${GOLD}CC`,
+              fontFamily:   "'Space Mono', monospace", letterSpacing: "0.08em",
+            }}>
+              {tag}
+            </div>
+          ))}
+          {sessionTags.length > 3 && (
+            <div style={{ fontSize: 7, color: `${CREAM}40`, marginTop: 4, fontFamily: "'Space Mono', monospace" }}>
+              +{sessionTags.length - 3} more signals
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+// ── Pairing Live Panel ─────────────────────────────────────────────────────────
+// Fetches top pairing match for current session tags and surfaces it with
+// confidence score + "luxury sommelier" alchemy text.
+
+interface LiveMatch {
+  name:          string;
+  category:      string | null;
+  price:         string | null;
+  affinityScore: number;
+}
+
+function PairingLivePanel({ tags }: { tags: string[] }) {
+  const [match, setMatch]   = useState<LiveMatch | null>(null);
+  const [loading, setLoad]  = useState(false);
+  const prevTags            = useRef("");
+
+  useEffect(() => {
+    const key = tags.slice().sort().join(",");
+    if (!key || key === prevTags.current) return;
+    prevTags.current = key;
+    setLoad(true);
+    fetch(`/api/pairing-engine/suggest?tags=${encodeURIComponent(key)}`)
+      .then(r => r.json())
+      .then(d => { setMatch(d.suggestions?.[0] ?? null); setLoad(false); })
+      .catch(() => setLoad(false));
+  }, [tags.join(",")]);
+
+  const confidence = match ? Math.min(98, 60 + match.affinityScore) : 0;
+
+  return (
+    <div style={{
+      marginTop:    8,
+      padding:      "8px 10px",
+      borderRadius: 8,
+      background:   `${GOLD}08`,
+      border:       `1px solid ${GOLD}28`,
+    }}>
+      <div style={{
+        fontSize:   7, fontWeight: 700, letterSpacing: "0.18em",
+        color:      `${GOLD}90`, textTransform: "uppercase",
+        fontFamily: "'Space Mono', monospace", marginBottom: 6,
+      }}>
+        ◈ PAIRING INTELLIGENCE
+      </div>
+      {loading ? (
+        <motion.div
+          animate={{ opacity: [0.3, 0.8, 0.3] }}
+          transition={{ duration: 1.2, repeat: Infinity }}
+          style={{ fontSize: 8, color: `${CREAM}40`, fontFamily: "'Space Mono', monospace" }}
+        >
+          Resolving match…
+        </motion.div>
+      ) : !match || tags.length === 0 ? (
+        <div style={{ fontSize: 8, color: `${CREAM}30`, fontFamily: "'Space Mono', monospace" }}>
+          Awaiting taste signal…
+        </div>
+      ) : (
+        <>
+          <div style={{
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontSize:   13, color: CREAM, marginBottom: 2,
+          }}>
+            {match.name}
+          </div>
+          {match.category && (
+            <div style={{ fontSize: 7, color: `${CREAM}50`, letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "'Space Mono', monospace", marginBottom: 6 }}>
+              {match.category}
+            </div>
+          )}
+          {/* Confidence bar */}
+          <div style={{ marginBottom: 5 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
+              <span style={{ fontSize: 7, color: `${CREAM}50`, fontFamily: "'Space Mono', monospace", letterSpacing: "0.1em" }}>CONFIDENCE</span>
+              <span style={{ fontSize: 8, color: GOLD, fontFamily: "'Space Mono', monospace", fontWeight: 700 }}>{confidence}%</span>
+            </div>
+            <div style={{ height: 2, background: `${CREAM}10`, borderRadius: 1 }}>
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${confidence}%` }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                style={{ height: "100%", background: `linear-gradient(90deg, ${GOLD}60, ${GOLD})`, borderRadius: 1 }}
+              />
+            </div>
+          </div>
+          {/* Alchemy text */}
+          <div style={{ fontSize: 7, color: `${GOLD}80`, fontFamily: "'Space Mono', monospace", letterSpacing: "0.05em", lineHeight: 1.6 }}>
+            "A sovereign pairing — the flavor profile aligns with your guest's expressed palate at {confidence}% affinity."
+          </div>
+          {confidence >= 85 && (
+            <motion.div
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 1.6, repeat: Infinity }}
+              style={{
+                marginTop:    6, padding: "3px 8px", borderRadius: 20,
+                border:       `1px solid ${GOLD}50`, background: `${GOLD}15`,
+                fontSize:     7, color: GOLD, fontFamily: "'Space Mono', monospace",
+                letterSpacing: "0.12em", textTransform: "uppercase", display: "inline-block",
+              }}
+            >
+              ✦ Reserva Exclusive — Suggest Upgrade
+            </motion.div>
+          )}
+        </>
+      )}
+    </div>
+  );
 }
 
 // ── Signal Visualization ───────────────────────────────────────────────────────
@@ -456,6 +701,7 @@ export default function EeisOverlay() {
   const { snapshot, events, lastTick } = useAxiomIntelligence();
   const { guestProfile, mentor } = useGuestProfile();
   const { staff, devices } = useCommandCenter();
+  const { sessionTags, swipeHistory } = useCraftExperience();
 
   const [tick, setTick] = useState(0);
   useEffect(() => {
@@ -591,6 +837,11 @@ export default function EeisOverlay() {
                 <Chip label={profile?.mood ?? "idle"} active={!!profile} />
                 <Chip label={profile?.pacing ?? "balanced"} active={!!profile} />
               </div>
+              <AdaptiveNudge
+                isNew={swipeHistory.length === 0 && !guestProfile?.totalMastery}
+                sessionTags={sessionTags}
+                swipeCount={swipeHistory.length}
+              />
             </Panel>
 
             {/* ② XEI INTELLIGENCE LAYER */}
@@ -622,10 +873,14 @@ export default function EeisOverlay() {
                   </div>
                 ))}
               </div>
+              <PairingLivePanel tags={sessionTags} />
             </Panel>
 
-            {/* ③ SIGNAL VISUALIZATION — spans 2 rows */}
-            <Panel title="◉  LIVE SIGNAL VISUALIZATION" style={{ gridRow: "1 / 3", display: "flex", flexDirection: "column" }}>
+            {/* ③ VENUE HEARTBEAT + SIGNAL VISUALIZATION — spans 2 rows */}
+            <Panel title="◉  VENUE HEARTBEAT · SIGNAL CORE" style={{ gridRow: "1 / 3", display: "flex", flexDirection: "column" }}>
+              {/* Breathing metallic orb — venue energy */}
+              <VenueHeartbeatOrb energy={profile?.atmosphereIntensity ?? 60} />
+
               <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 6 }}>
                 {[
                   { label: "Telemetry", active: true },

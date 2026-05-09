@@ -20,6 +20,7 @@ import { KioskModeProvider }         from '@/contexts/KioskModeContext';
 import { LicenseProvider }           from '@/contexts/LicenseContext';
 import { HandoffProvider }           from '@/contexts/HandoffContext';
 import { AudioProvider }            from '@/contexts/AudioContext';
+import EeisOverlay                  from '@/components/EeisOverlay';
 
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
@@ -94,6 +95,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                   <EnvironmentProvider>
                                     <OrchestratorProvider>
                                       {children}
+                                      <EeisOverlay />
                                     </OrchestratorProvider>
                                   </EnvironmentProvider>
                                 </AxiomPresenceProvider>
