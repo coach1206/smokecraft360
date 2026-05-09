@@ -767,9 +767,9 @@ export default function App() {
             <SubPageProviders><AxiomReceipt /></SubPageProviders>
           </Route>
 
-          {/* ── Default: Sovereign Boot Flow ── */}
+          {/* ── Default: TitanCraftDeck 2x2 Hub ── */}
           <Route>
-            <SovereignBootFlow />
+            <TitanCraftDeck />
           </Route>
         </Switch>
       </Suspense>
