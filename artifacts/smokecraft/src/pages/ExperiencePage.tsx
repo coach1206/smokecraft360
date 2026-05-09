@@ -15,7 +15,7 @@ import {
   motion, AnimatePresence,
   useMotionValue, useTransform, animate,
 } from "framer-motion";
-import { ArrowLeft, Sparkles, Check, X } from "lucide-react";
+import { ArrowLeft, Sparkles, Check, X, Volume2, VolumeX } from "lucide-react";
 import { playClick, playAmbientHum } from "@/lib/audioEngine";
 import { getCraftTheme, type CraftTheme } from "@/lib/craftThemes";
 import { CraftRealism } from "@/components/CraftRealism";
@@ -171,65 +171,234 @@ const CARD_EMBERS = [
   { x: 58, y:  3, size: 1.8, drift: 58, op: 0.32, dur: 5.0, delay: 2.7 },
 ];
 
-// ── Per-craft image pools — used when API cards have no image set ──────────
+// ── Flavor Mapping Engine — tag-to-image precision matching ──────────────────
+// Primary match: first matching tag wins; fallback: deterministic pool pick.
+const FLAVOR_IMAGE_MAP: Record<string, Record<string, string>> = {
+  smoke: {
+    smoky:    "/images/smoke/smoke_lounge.png",
+    bold:     "/images/smoke/smoke_group.png",
+    robust:   "/images/smoke/smoke_group.png",
+    "full body": "/images/smoke/smoke_urban.png",
+    earthy:   "/images/smoke/smoke_urban.png",
+    cedar:    "/images/smoke/smoke_selection.png",
+    woody:    "/images/smoke/smoke_selection.png",
+    aromatic: "/images/smoke/smoke_selection.png",
+    creamy:   "/images/smoke/smoke_solo.png",
+    smooth:   "/images/smoke/smoke_solo.png",
+    nutty:    "/images/smoke/smoke_woman.png",
+    sweet:    "/images/smoke/smoke_woman.png",
+    mild:     "/images/smoke/smoke_woman.png",
+    light:    "/images/smoke/smoke_solo.png",
+    spicy:    "/images/smoke/smoke_group.png",
+    complex:  "/images/smoke/smoke_lounge.png",
+  },
+  pour: {
+    aged:          "/images/pour/pour_aged.png",
+    "single malt": "/images/pour/pour_whiskey.png",
+    whiskey:       "/images/pour/pour_whiskey.png",
+    bourbon:       "/images/pour/pour_whiskey.png",
+    cocktail:      "/images/pour/pour_cocktail.png",
+    wine:          "/images/pour/pour_wine.png",
+    bold:          "/images/pour/pour_bar.png",
+    robust:        "/images/pour/pour_bar.png",
+    smooth:        "/images/pour/pour_tasting.png",
+    delicate:      "/images/pour/pour_tasting.png",
+    floral:        "/images/pour/pour_wine.png",
+    fruity:        "/images/pour/pour_cocktail.png",
+    oaky:          "/images/pour/pour_aged.png",
+  },
+  brew: {
+    dark:   "/images/brew/brew_barrel.png",
+    stout:  "/images/brew/brew_barrel.png",
+    bold:   "/images/brew/brew_barrel.png",
+    smooth: "/images/brew/brew_flight.png",
+    light:  "/images/brew/brew_flight.png",
+    hoppy:  "/images/brew/brew_outdoor.png",
+    citrus: "/images/brew/brew_outdoor.png",
+    social: "/images/brew/brew_taproom.png",
+    craft:  "/images/brew/brew_taproom.png",
+    barrel: "/images/brew/brew_barrel.png",
+  },
+  vape: {
+    modern:      "/images/vape/vape_modern.png",
+    device:      "/images/vape/vape_device.png",
+    social:      "/images/vape/vape_social.png",
+    hookah:      "/images/vape/vape_hookah.png",
+    traditional: "/images/vape/vape_hookah.png",
+    fruity:      "/images/vape/vape_social.png",
+    bold:        "/images/vape/vape_modern.png",
+  },
+};
+
 const CRAFT_IMAGE_POOL: Record<string, string[]> = {
   smoke: [
-    "/images/smoke/smoke_lounge.png",
-    "/images/smoke/smoke_solo.png",
-    "/images/smoke/smoke_woman.png",
-    "/images/smoke/smoke_selection.png",
-    "/images/smoke/smoke_group.png",
-    "/images/smoke/smoke_urban.png",
+    "/images/smoke/smoke_lounge.png", "/images/smoke/smoke_solo.png",
+    "/images/smoke/smoke_woman.png",  "/images/smoke/smoke_selection.png",
+    "/images/smoke/smoke_group.png",  "/images/smoke/smoke_urban.png",
   ],
   pour: [
-    "/images/pour/pour_bar.png",
-    "/images/pour/pour_whiskey.png",
-    "/images/pour/pour_aged.png",
-    "/images/pour/pour_cocktail.png",
-    "/images/pour/pour_tasting.png",
-    "/images/pour/pour_wine.png",
+    "/images/pour/pour_bar.png",     "/images/pour/pour_whiskey.png",
+    "/images/pour/pour_aged.png",    "/images/pour/pour_cocktail.png",
+    "/images/pour/pour_tasting.png", "/images/pour/pour_wine.png",
   ],
   brew: [
-    "/images/brew/brew_taproom.png",
-    "/images/brew/brew_outdoor.png",
-    "/images/brew/brew_barrel.png",
-    "/images/brew/brew_pouring.png",
+    "/images/brew/brew_taproom.png", "/images/brew/brew_outdoor.png",
+    "/images/brew/brew_barrel.png",  "/images/brew/brew_pouring.png",
     "/images/brew/brew_flight.png",
   ],
   vape: [
-    "/images/vape/vape_modern.png",
-    "/images/vape/vape_social.png",
-    "/images/vape/vape_hookah.png",
-    "/images/vape/vape_device.png",
+    "/images/vape/vape_modern.png", "/images/vape/vape_social.png",
+    "/images/vape/vape_hookah.png", "/images/vape/vape_device.png",
   ],
 };
 
-/** Deterministically pick an image from the craft pool using the card id. */
-function resolveCardImage(item: ExperienceItem): string {
+/** Tag-first image resolver — matches flavor tags before falling back to pool. */
+function getFlavorThemedAsset(item: ExperienceItem): string {
   if (item.image) return item.image;
+  const craftMap = FLAVOR_IMAGE_MAP[item.type];
+  if (craftMap) {
+    for (const tag of item.tags) {
+      const img = craftMap[tag.toLowerCase()];
+      if (img) return img;
+    }
+  }
   const pool = CRAFT_IMAGE_POOL[item.type] ?? CRAFT_IMAGE_POOL.smoke;
   const seed = item.id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
   return pool[seed % pool.length];
 }
 
+// ── Voice of Axiom — Web Speech TTS narrator ─────────────────────────────────
+function VoiceIcon({ item, isTop, accent }: { item: ExperienceItem; isTop: boolean; accent: string }) {
+  const [speaking, setSpeaking]   = useState(false);
+  const [muted,    setMuted]      = useState(false);
+  const spokenRef                 = useRef(false);
+
+  const speak = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (muted || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const text = `${item.title}. ${item.description ?? ""}`.trim();
+    const utt  = new SpeechSynthesisUtterance(text);
+    utt.rate   = 0.82;
+    utt.pitch  = 0.78;
+    utt.volume = 0.92;
+    const voices = window.speechSynthesis.getVoices();
+    const deep   = voices.find(v =>
+      /Daniel|Google UK English Male|Male|Alex/i.test(v.name)
+    );
+    if (deep) utt.voice = deep;
+    utt.onstart = () => setSpeaking(true);
+    utt.onend   = () => setSpeaking(false);
+    utt.onerror = () => setSpeaking(false);
+    window.speechSynthesis.speak(utt);
+  };
+
+  const toggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (speaking) {
+      window.speechSynthesis?.cancel();
+      setSpeaking(false);
+      setMuted(true);
+    } else if (muted) {
+      setMuted(false);
+      speak(e);
+    } else {
+      speak(e);
+    }
+  };
+
+  useEffect(() => {
+    if (!isTop || spokenRef.current) return;
+    spokenRef.current = true;
+    const t = setTimeout(() => speak(), 900);
+    return () => {
+      clearTimeout(t);
+      window.speechSynthesis?.cancel();
+      spokenRef.current = false;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTop, item.id]);
+
+  const bars = [0.5, 1.0, 0.7, 0.9, 0.6];
+
+  return (
+    <motion.button
+      type="button"
+      onClick={toggle}
+      whileTap={{ scale: 0.88 }}
+      style={{
+        display:        "flex",
+        alignItems:     "center",
+        gap:            4,
+        background:     speaking ? `${accent}22` : "rgba(0,0,0,0.28)",
+        border:         `1px solid ${speaking ? accent + "60" : "rgba(255,255,255,0.12)"}`,
+        borderRadius:   8,
+        padding:        "4px 8px",
+        cursor:         "pointer",
+        backdropFilter: "blur(8px)",
+        color:          speaking ? accent : "rgba(255,255,255,0.55)",
+        transition:     "background 0.3s, border-color 0.3s",
+      }}
+    >
+      {muted
+        ? <VolumeX size={11} />
+        : speaking
+          ? (
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 12 }}>
+              {bars.map((h, i) => (
+                <motion.div
+                  key={i}
+                  style={{ width: 2, borderRadius: 1, background: accent }}
+                  animate={{ height: [h * 12 * 0.4, h * 12, h * 12 * 0.3] }}
+                  transition={{ duration: 0.4 + i * 0.08, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+                />
+              ))}
+            </div>
+          )
+          : <Volume2 size={11} />
+      }
+    </motion.button>
+  );
+}
+
 function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }: SwipeCardProps) {
-  // Always resolve a real image — never render a gradient black card
-  const resolvedImage = resolveCardImage(item);
+  // Always resolve a real image via the flavor mapping engine
+  const resolvedImage = getFlavorThemedAsset(item);
 
   const x       = useMotionValue(isTop ? 280 : 0);
   const rotate  = useTransform(x, [-300, 300], [-16, 16]);
   const addOp   = useTransform(x, [30, 110], [0, 1]);
   const skipOp  = useTransform(x, [-110, -30], [1, 0]);
 
-  // 2-second image failsafe — only triggers if the resolved image itself fails
+  // Image failsafe — if the local asset itself 404s we fall to gradient
   const [imgError,   setImgError]   = useState(false);
   const [scanFlash,  setScanFlash]  = useState(false);
   const imgTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => {
     setImgError(false);
-    imgTimeoutRef.current = setTimeout(() => setImgError(true), 4000);
+    imgTimeoutRef.current = setTimeout(() => setImgError(true), 5000);
     return () => clearTimeout(imgTimeoutRef.current);
   }, [resolvedImage]);
+
+  // ── Syncing Palate — fills over 5 s on top card, fires XP float on complete ──
+  const [palateProgress, setPalateProgress] = useState(0);
+  const [xpFloat,        setXpFloat]        = useState(false);
+  const palateRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+  useEffect(() => {
+    if (!isTop) { setPalateProgress(0); return; }
+    const start = Date.now();
+    const DURATION = 5000;
+    palateRef.current = setInterval(() => {
+      const p = Math.min((Date.now() - start) / DURATION, 1);
+      setPalateProgress(p);
+      if (p >= 1) {
+        clearInterval(palateRef.current);
+        setXpFloat(true);
+        setTimeout(() => setXpFloat(false), 2200);
+      }
+    }, 50);
+    return () => { clearInterval(palateRef.current); setPalateProgress(0); };
+  }, [isTop, item.id]);
 
   // Ken Burns variant — pick one of three slow-zoom animations per card
   const kbClass = ["ax-kb-1","ax-kb-2","ax-kb-3"][item.id.charCodeAt(1) % 3];
@@ -240,7 +409,7 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
     ["rgba(148,163,184,0.10)", "rgba(0,0,0,0)", "rgba(212,139,0,0.14)"],
   );
   // DISCOVER responsiveness: image brightens + card lifts as user drags right
-  const imgOp       = useTransform(x, [-80, 0, 110], [0.64, 0.76, 0.90]);
+  const imgOp       = useTransform(x, [-80, 0, 110], [0.82, 0.90, 0.98]);
   const discoverLift = useTransform(x, [-60, 0, 110], [2, 0, -5]);
   const exiting = useRef(false);
 
@@ -360,14 +529,14 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
           }} />
         )}
 
-        {/* ── Cinematic vignette — strong top + bottom frame ── */}
+        {/* ── Cinematic vignette — lifted so photo shows through ── */}
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none",
           background: `linear-gradient(180deg,
-            rgba(${vigRgb},0.70) 0%,
-            rgba(${vigRgb},0.08) 22%,
-            rgba(${vigRgb},0.06) 55%,
-            rgba(${vigRgb},0.88) 100%)`,
+            rgba(${vigRgb},0.48) 0%,
+            rgba(${vigRgb},0.04) 20%,
+            rgba(${vigRgb},0.02) 52%,
+            rgba(${vigRgb},0.72) 100%)`,
         }} />
 
         {/* ── Holographic shimmer sweep (top card only) ── */}
@@ -436,14 +605,17 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
               }}>{tag}</span>
             ))}
           </div>
-          <div style={{ display: "flex", gap: 3 }}>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} style={{
-                width: 5, height: 5, borderRadius: "50%",
-                background: i < Math.round(item.intensity / 2) ? theme.accent : "rgba(26,26,27,0.16)",
-                boxShadow: i < Math.round(item.intensity / 2) ? `0 0 4px ${theme.accent}` : "none",
-              }} />
-            ))}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 5 }}>
+            <div style={{ display: "flex", gap: 3 }}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} style={{
+                  width: 5, height: 5, borderRadius: "50%",
+                  background: i < Math.round(item.intensity / 2) ? theme.accent : "rgba(26,26,27,0.16)",
+                  boxShadow: i < Math.round(item.intensity / 2) ? `0 0 4px ${theme.accent}` : "none",
+                }} />
+              ))}
+            </div>
+            {isTop && <VoiceIcon item={item} isTop={isTop} accent={theme.accent} />}
           </div>
         </div>
 
@@ -457,15 +629,18 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
           zIndex: 9,
         }} />
 
-        {/* ── Bottom: title, atmospheric description, card-level actions ── */}
+        {/* ── Bottom: glassmorphism shelf — title, description, palate bar, actions ── */}
         <div style={{
-          position: "absolute",
-          bottom: 0, left: 0, right: 0,
-          padding: "20px 16px 14px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 8,
-          zIndex: 10,
+          position:       "absolute",
+          bottom:         0, left: 0, right: 0,
+          padding:        "20px 16px 14px",
+          display:        "flex",
+          flexDirection:  "column",
+          gap:            8,
+          zIndex:         10,
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          background:     "linear-gradient(0deg, rgba(4,2,0,0.78) 0%, rgba(4,2,0,0.52) 60%, transparent 100%)",
         }}>
           <div style={{
             fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif",
@@ -490,9 +665,69 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
             }}>{item.description}</p>
           )}
 
+          {/* ── Syncing Palate bar — fills over 5 s, triggers XP float ── */}
+          {isTop && (
+            <div style={{ position: "relative" }}>
+              <div style={{
+                display: "flex", justifyContent: "space-between",
+                marginBottom: 4,
+              }}>
+                <span style={{
+                  fontSize: 8, fontWeight: 700, letterSpacing: "0.18em",
+                  textTransform: "uppercase", color: "rgba(240,220,160,0.55)",
+                }}>
+                  {palateProgress >= 1 ? "✦ Palate Synced" : "Syncing Palate"}
+                </span>
+                <span style={{
+                  fontSize: 8, fontWeight: 700, color: theme.accent,
+                  opacity: palateProgress >= 1 ? 1 : 0.6,
+                }}>
+                  {Math.round(palateProgress * 100)}%
+                </span>
+              </div>
+              <div style={{
+                height: 3, borderRadius: 2,
+                background: "rgba(255,255,255,0.08)",
+                overflow: "hidden",
+              }}>
+                <motion.div
+                  style={{ height: "100%", borderRadius: 2, background: theme.accent }}
+                  animate={{ width: `${palateProgress * 100}%` }}
+                  transition={{ duration: 0.1 }}
+                />
+              </div>
+
+              {/* XP Float chip */}
+              <AnimatePresence>
+                {xpFloat && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, y: -36, scale: 1 }}
+                    exit={{ opacity: 0, y: -54, scale: 0.85 }}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    style={{
+                      position: "absolute", right: 0, top: 0,
+                      background: `linear-gradient(135deg, ${theme.accent}, #FFD700)`,
+                      color: "#1a1000",
+                      borderRadius: 20,
+                      padding: "4px 10px",
+                      fontSize: 10, fontWeight: 900,
+                      letterSpacing: "0.12em",
+                      boxShadow: `0 0 16px ${theme.accent}60`,
+                      pointerEvents: "none",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    +10 XP · Palate Expanded
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+
           {/* Card-level PASS / DISCOVER strip */}
           {isTop && (
-            <div style={{ display: "flex", gap: 7, marginTop: 4 }}>
+            <div style={{ display: "flex", gap: 7, marginTop: 2 }}>
               <motion.button
                 type="button"
                 whileTap={{ scale: 0.91 }}

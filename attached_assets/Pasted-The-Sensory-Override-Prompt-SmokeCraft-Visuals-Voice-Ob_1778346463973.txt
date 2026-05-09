@@ -1,0 +1,58 @@
+The "Sensory Override" Prompt: SmokeCraft Visuals & Voice
+Objective: Rewrite the card rendering and background logic to eliminate "dull" cards and replace them with high-fidelity, sensory-accurate content that matches the flavor profile.
+
+1. Flavor-Responsive Card Imagery
+The Problem: Cards currently use generic images or gradients when product images are null.
+
+The Fix: Implement a Flavor Mapping Engine. The card image must reflect the tags (Smoky, Bold, Creamy, Nutty).
+
+Smoky & Bold: Use high-contrast, macro shots of thick, swirling white smoke against dark wood.
+
+Creamy: Use soft-focus, lighter-toned imagery of silky smoke or a buttery-colored wrapper.
+
+Nutty: Use images featuring warm, earthy brown textures and roasted coffee/almond-colored smoke cues.
+
+Logic: If item.image is null, the resolveCardImage must look at item.flavorProfile and pull from a specific "Flavor Pool" of cinematic shots, ensuring the visual matches the text 1:1.
+
+2. Background Visibility & "The Living Atmosphere"
+The Problem: The background image is too dark or washed out.
+
+The Fix: Implement a Dynamic Backdrop.
+
+The background should be 20% more visible than the current version but with a "Glassmorphism" blur to ensure text remains readable.
+
+The Motion: Backgrounds must be in subtle motion—slow-drifting smoke or amber liquid swirling.
+
+Sync: When a user swiped to a "Bold" card, the background should subtly shift to a deeper, more intense amber glow. 
+
+Shutterstock
+
+3. The "Voice of Axiom" (Audio & Read-Out)
+The Problem: The lounge is loud; users need to engage through more than just reading.
+
+The Fix: Add a Speaker/Narrator UI.
+
+Visual: Add a "Sound Wave" or "Speaker" icon in the top right of the card.
+
+Function: Use a high-quality Text-to-Speech (TTS) engine (like ElevenLabs or a native Web Speech API with a deep, professional tone).
+
+Interaction: When a card appears, Axiom "whispers" the profile: "Smoky and Bold. This selection features rich, full-bodied notes with a deep leather finish."
+
+Visual Feedback: While speaking, the "Speaker" icon pulses in time with the audio frequency.
+
+4. The "Synergy" Points Display
+The Fix: Make the point system aggressive and rewarding.
+
+As they read or listen to the flavor profile, a "Syncing Palate" bar at the bottom should fill up.
+
+Display a floating "+10 XP: Palate Expanded" animation whenever they complete an audio snippet or spend 5 seconds on a card.
+
+Updated Code Logic to Request:
+"Refactor CardRenderer.jsx to use a getFlavorThemedAsset(tags) function. If the product tag is 'Smoky', use the smoke_bold_cinematic.mp4 background. Add a VoiceIcon component that triggers a TTS readout of the item.description. Ensure the background opacity is increased to 0.4 and uses a backdrop-filter: blur(12px) to keep the 'expensive' feel without losing the lounge imagery."
+
+Why this fixes the "Dull" feeling:
+Alignment: What they see (Cigar Image) matches what they read (Smoky/Bold).
+
+Audio: They don't have to strain to read in a dark lounge; they can listen to the curation.
+
+Ambience: The background becomes part of the "show" rather than a dark void.
