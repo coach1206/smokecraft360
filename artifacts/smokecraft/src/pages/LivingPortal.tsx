@@ -82,6 +82,35 @@ const CRAFTS: CraftConfig[] = [
   },
 ];
 
+/* ── Time-gated cinematic video background ───────────────────────────────── */
+function CinematicBackground() {
+  const hour = new Date().getHours();
+  const src  = hour >= 6 && hour < 17  ? "/videos/lounge-day.mp4"
+             : hour >= 17 && hour < 22 ? "/videos/lounge-evening.mp4"
+             :                           "/videos/lounge-night.mp4";
+  return (
+    <video
+      key={src}
+      autoPlay
+      muted
+      loop
+      playsInline
+      style={{
+        position:      "absolute",
+        inset:         0,
+        width:         "100%",
+        height:        "100%",
+        objectFit:     "cover",
+        zIndex:        0,
+        opacity:       0.20,
+        pointerEvents: "none",
+      }}
+    >
+      <source src={src} type="video/mp4" />
+    </video>
+  );
+}
+
 /* ── Ken Burns keyframes injected once into the document ─────────────────── */
 const KB_STYLE = `
 @keyframes lp-kb-1 {
@@ -404,6 +433,9 @@ export default function LivingPortal() {
       color:           "#fff",
       fontFamily:      "monospace",
     }}>
+      {/* Cinematic lounge atmosphere — time-gated .mp4 */}
+      <CinematicBackground />
+
       {/* 2×2 grid */}
       <div style={{
         display:             "grid",

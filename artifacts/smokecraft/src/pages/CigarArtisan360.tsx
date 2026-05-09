@@ -123,6 +123,13 @@ const BAND: Record<BandId, {
   },
 };
 
+// ── EEIS harmony matrix — wood × band affinity scores (0–100) ─────────────────
+const HARMONY: Record<WoodId, Record<BandId, number>> = {
+  cedar:    { sovereign: 92, obsidian: 85, heirloom: 78, midnight: 82 },
+  mahogany: { sovereign: 88, obsidian: 91, heirloom: 76, midnight: 84 },
+  ebony:    { sovereign: 84, obsidian: 95, heirloom: 72, midnight: 90 },
+};
+
 // ── Decal child component (isolates useTexture so it can't be called null) ────
 function LogoDecal({ url }: { url: string }) {
   const tex = useTexture(url);
@@ -758,10 +765,18 @@ export default function CigarArtisan360() {
     e.preventDefault();
     setCommState("submitting");
     try {
-      const res = await fetch("/api/artisan-orders", {
+      const harmonyScore = HARMONY[wood][band];
+      const res = await fetch("/api/sovereign-order", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ wood, band, hasEmblem: !!logoUrl, guestName: guestName.trim() || undefined, notes: notes.trim() || undefined }),
+        body: JSON.stringify({
+          guestName:     guestName.trim() || undefined,
+          woodType:      WOOD[wood].label,
+          bandStyle:     BAND[band].label,
+          customLogoUrl: logoUrl ?? "",
+          harmonyScore,
+          notes:         notes.trim() || undefined,
+        }),
       });
       const data = await res.json() as { success?: boolean; orderId?: string };
       if (data.success && data.orderId) {

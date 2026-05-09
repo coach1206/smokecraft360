@@ -43,6 +43,35 @@ const C = {
   dim:      "rgba(245,235,215,0.22)",
 };
 
+// ── Time-gated cinematic video background ─────────────────────────────────────
+function CinematicVideo() {
+  const hour = new Date().getHours();
+  const src  = hour >= 6 && hour < 17  ? "/videos/lounge-day.mp4"
+             : hour >= 17 && hour < 22 ? "/videos/lounge-evening.mp4"
+             :                           "/videos/lounge-night.mp4";
+  return (
+    <video
+      key={src}
+      autoPlay
+      muted
+      loop
+      playsInline
+      style={{
+        position:      "absolute",
+        inset:         0,
+        width:         "100%",
+        height:        "100%",
+        objectFit:     "cover",
+        zIndex:        0,
+        opacity:       0.18,
+        pointerEvents: "none",
+      }}
+    >
+      <source src={src} type="video/mp4" />
+    </video>
+  );
+}
+
 // ── Ambient particle layer ────────────────────────────────────────────────────
 
 const PARTICLES = Array.from({ length: 22 }, (_, i) => ({
@@ -635,6 +664,9 @@ function CraftHubInner() {
           zIndex:       0,
         }}
       />
+
+      {/* ── Cinematic lounge atmosphere — time-gated .mp4 ── */}
+      <CinematicVideo />
 
       {/* ── Floating particles ── */}
       <AmbientParticles />

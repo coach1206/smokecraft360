@@ -14,7 +14,7 @@
  *         smoked-titanium panel · Warm Honey Amber data labels.
  */
 
-import { useRef, useCallback, useState } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
 import { motion, AnimatePresence }        from "framer-motion";
 import { useExperience, type Module }     from "@/contexts/ExperienceContext";
 
@@ -84,6 +84,35 @@ const INTEL_DATA: Record<Exclude<Module, "portal">, {
     ],
   },
 };
+
+// ── Live inventory fetch helpers ───────────────────────────────────────────────
+const CATEGORY_MAP: Record<Exclude<Module, "portal">, string> = {
+  smoke: "cigar",
+  pour:  "alcohol",
+  brew:  "beer",
+  vape:  "vape",
+};
+
+const TIER_MARGIN: Record<string, number> = { premium: 83, mid: 69, standard: 56 };
+
+interface RawProduct { id: string; name: string; tier: string; boostLevel: number; sponsored: boolean }
+
+function productToCard(p: RawProduct): IntelCard {
+  const margin      = TIER_MARGIN[p.tier] ?? 65;
+  const stock       = Math.max(2, 18 - (p.boostLevel ?? 0) * 2);
+  const stockLabel: IntelCard["stockLabel"] =
+    stock <= 3 ? "CRITICAL" : stock <= 7 ? "LOW" : stock <= 12 ? "MED" : "HIGH";
+  return {
+    sku:        p.id.slice(0, 8).toUpperCase(),
+    label:      p.name,
+    margin,
+    stock,
+    stockLabel,
+    note: p.sponsored
+      ? `Sponsored · ${p.tier} tier · active campaign running`
+      : `${p.tier} tier · margin-optimised for tonight`,
+  };
+}
 
 const STOCK_COLORS: Record<string, string> = {
   HIGH:     "#7EC8A0",
@@ -209,6 +238,23 @@ export function EeisIntelLayer({ craftId }: EeisIntelLayerProps) {
   const { state, toggleEeis } = useExperience();
   const intel   = INTEL_DATA[craftId];
   const isOpen  = state.eeisMode;
+
+  const [liveCards,  setLiveCards]  = useState<IntelCard[] | null>(null);
+  const [dataSource, setDataSource] = useState<"live" | "cached">("cached");
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const category = CATEGORY_MAP[craftId];
+    fetch(`/api/products?category=${category}&limit=8`)
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then((products: RawProduct[]) => {
+        if (Array.isArray(products) && products.length >= 1) {
+          setLiveCards(products.slice(0, 4).map(productToCard));
+          setDataSource("live");
+        }
+      })
+      .catch(() => { /* fall back to static INTEL_DATA */ });
+  }, [isOpen, craftId]);
 
   const { holding, onTouchStart, onTouchEnd, onTouchMove } = useThreeFingerGesture(toggleEeis);
 
@@ -423,8 +469,19 @@ export function EeisIntelLayer({ craftId }: EeisIntelLayerProps) {
               <div style={{ fontSize: 7, color: "rgba(245,242,237,0.30)", letterSpacing: "0.22em" }}>
                 RANKED UPSELL INTELLIGENCE — {craftId.toUpperCase()} · SCROLL →
               </div>
-              <div style={{ fontSize: 7, color: GOLD, letterSpacing: "0.14em" }}>
-                SORTED BY MARGIN
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{
+                  fontSize: 6, fontWeight: 700, letterSpacing: "0.16em",
+                  color:       dataSource === "live" ? "#7EC8A0" : "rgba(245,242,237,0.28)",
+                  background:  dataSource === "live" ? "rgba(126,200,160,0.12)" : "rgba(255,255,255,0.05)",
+                  border:     `1px solid ${dataSource === "live" ? "rgba(126,200,160,0.35)" : "rgba(255,255,255,0.10)"}`,
+                  borderRadius: 999, padding: "2px 7px",
+                }}>
+                  {dataSource === "live" ? "● LIVE" : "CACHED"}
+                </div>
+                <div style={{ fontSize: 7, color: GOLD, letterSpacing: "0.14em" }}>
+                  SORTED BY MARGIN
+                </div>
               </div>
             </div>
 
@@ -440,7 +497,7 @@ export function EeisIntelLayer({ craftId }: EeisIntelLayerProps) {
               WebkitOverflowScrolling: "touch",
               scrollbarWidth: "none",
             }}>
-              {intel.cards.map((card, i) => (
+              {(liveCards ?? intel.cards).map((card, i) => (
                 <IntelCard key={card.sku} card={card} accent={intel.accent} idx={i} />
               ))}
 

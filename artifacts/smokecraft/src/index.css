@@ -87,6 +87,26 @@ body::after {
 }
 
 /* ── Axiom OS Tablet-First Touch Engine ──────────────────────────────────── */
+/* ── Android / Chrome hardening ─────────────────────────────────────────── */
+/* Prevent font-size auto-scaling on orientation change (Android + iOS).     */
+html {
+  -webkit-text-size-adjust: none;
+  text-size-adjust:         none;
+}
+
+/* Interactive elements must use `manipulation` (not `none`) so Android      */
+/* Chrome fires click events reliably while still blocking pinch-zoom.       */
+button, [role="button"], .ax-tappable, a, select {
+  touch-action:  manipulation;
+  -ms-touch-action: manipulation;
+}
+
+/* Prevent Android Chrome pull-to-refresh and elastic overscroll bounce.     */
+html, body {
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
+}
+
 /* Kiosk mode: no browser scrolling, no tap chrome, no hover state leakage.  */
 
 html, body, #root {
