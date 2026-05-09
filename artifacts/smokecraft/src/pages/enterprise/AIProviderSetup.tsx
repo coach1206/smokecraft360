@@ -116,12 +116,12 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
   const [toast, setToast]             = useState<{ msg: string; ok: boolean } | null>(null);
 
   // Connect-provider form
-  const [connectOpen, setConnectOpen]     = useState(false);
-  const [connectProvider, setConnectProvider] = useState<ProviderName>('openai');
-  const [connectKey, setConnectKey]       = useState('');
-  const [connectPrimary, setConnectPrimary] = useState(false);
-  const [connecting, setConnecting]       = useState(false);
-  const [validating, setValidating]       = useState<string | null>(null);
+  const [connectOpen, setConnectOpen]         = useState(false);
+  const [connectProviderName, setConnectProviderName] = useState<ProviderName>('openai');
+  const [connectKey, setConnectKey]           = useState('');
+  const [connectPrimary, setConnectPrimary]   = useState(false);
+  const [connecting, setConnecting]           = useState(false);
+  const [validating, setValidating]           = useState<string | null>(null);
 
   function showToast(msg: string, ok = true) {
     setToast({ msg, ok });
@@ -159,21 +159,20 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
     } finally { setSaving(false); }
   }
 
-  async function connectProvider() {
+  async function handleConnectProvider() {
     if (!connectKey.trim()) return;
     setConnecting(true);
     try {
       const r = await apiFetch('/providers/connect', {
         method: 'POST',
-        body: JSON.stringify({ venueId, providerName: connectProvider, apiKey: connectKey, isPrimary: connectPrimary }),
+        body: JSON.stringify({ venueId, providerName: connectProviderName, apiKey: connectKey, isPrimary: connectPrimary }),
       });
       const data = await r.json();
       if (r.ok) {
-        showToast(`${PROVIDER_META[connectProvider].label} connected. Validating…`);
+        showToast(`${PROVIDER_META[connectProviderName].label} connected. Validating…`);
         setConnectOpen(false);
         setConnectKey('');
         await loadAll();
-        // Auto-validate
         await validateProvider(data.providerId);
       } else {
         showToast(data.error ?? 'Connection failed.', false);
@@ -552,8 +551,8 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
                     <div style={{ marginBottom: 14 }}>
                       <label style={{ fontSize: 8, letterSpacing: '0.25em', color: '#64748b', display: 'block', marginBottom: 6 }}>PROVIDER</label>
                       <select
-                        value={connectProvider}
-                        onChange={e => setConnectProvider(e.target.value as ProviderName)}
+                        value={connectProviderName}
+                        onChange={e => setConnectProviderName(e.target.value as ProviderName)}
                         style={{ width: '100%', background: '#1a1a1d', border: '1px solid rgba(255,255,255,0.1)', color: '#e2e8f0',
                           padding: '8px 12px', fontSize: 10, borderRadius: 2, letterSpacing: '0.1em' }}
                       >
@@ -588,7 +587,7 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
                           color: '#64748b', fontSize: 9, letterSpacing: '0.25em', cursor: 'pointer', borderRadius: 2 }}>
                         CANCEL
                       </button>
-                      <button onClick={connectProvider} disabled={connecting || !connectKey.trim()}
+                      <button onClick={handleConnectProvider} disabled={connecting || !connectKey.trim()}
                         style={{ flex: 2, padding: '9px', background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.4)',
                           color: '#d4af37', fontSize: 9, letterSpacing: '0.25em', cursor: 'pointer', borderRadius: 2,
                           opacity: connecting || !connectKey.trim() ? 0.5 : 1 }}>
