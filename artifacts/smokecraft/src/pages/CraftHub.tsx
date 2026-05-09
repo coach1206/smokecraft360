@@ -19,7 +19,6 @@ import { AudioWaveToggle } from "@/contexts/AudioContext";
 import { PreferenceProvider }   from "@/contexts/PreferenceContext";
 import { UserProfileProvider }  from "@/contexts/UserProfileContext";
 import MoodControls             from "@/components/DynamicCard/MoodControls";
-import DynamicCard              from "@/components/DynamicCard/DynamicCard";
 import LiveEngineController     from "@/components/DynamicCard/LiveEngineController";
 import { CRAFT_MODULES }        from "@/data/craftScenes";
 import { useGuestProfile }         from "@/contexts/GuestProfileContext";
@@ -232,6 +231,107 @@ function LiquidTileBg({ craftId, color }: { craftId: string; color: string }) {
         background: `linear-gradient(160deg, ${color}28 0%, transparent 55%, rgba(8,6,4,0.82) 100%)`,
         zIndex:     1,
       }} />
+    </div>
+  );
+}
+
+// ── TactileCard — touch-first craft portal interaction ────────────────────────
+
+function TactileCard({
+  title,
+  tagline,
+  badge,
+  onTrigger,
+}: {
+  title:     string;
+  tagline:   string;
+  badge:     string;
+  onTrigger: () => void;
+}) {
+  function press(el: HTMLDivElement) {
+    el.style.transform   = "scale(0.96)";
+    el.style.borderColor = "rgba(212,139,0,0.80)";
+    el.style.boxShadow   = "0 0 32px rgba(212,139,0,0.18)";
+  }
+  function release(el: HTMLDivElement) {
+    el.style.transform   = "scale(1)";
+    el.style.borderColor = "rgba(212,139,0,0.20)";
+    el.style.boxShadow   = "none";
+  }
+
+  return (
+    <div
+      style={{
+        position:               "absolute",
+        inset:                  0,
+        zIndex:                 5,
+        borderRadius:           22,
+        border:                 "1px solid rgba(212,139,0,0.20)",
+        background:             "rgba(0,0,0,0.40)",
+        backdropFilter:         "blur(12px)",
+        WebkitBackdropFilter:   "blur(12px)",
+        transition:             "transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease",
+        display:                "flex",
+        flexDirection:          "column",
+        justifyContent:         "flex-end",
+        padding:                "0 24px 28px",
+        cursor:                 "pointer",
+        touchAction:            "manipulation",
+        WebkitTapHighlightColor: "transparent",
+      }}
+      onPointerDown={e => press(e.currentTarget)}
+      onPointerUp={e   => { release(e.currentTarget); onTrigger(); }}
+      onPointerLeave={e => release(e.currentTarget)}
+      onPointerCancel={e => release(e.currentTarget)}
+    >
+      {/* Craft badge */}
+      <div style={{
+        fontSize:     9,
+        color:        C.goldDim,
+        letterSpacing: "0.18em",
+        fontFamily:   "'Space Mono', monospace",
+        marginBottom: 8,
+        textTransform: "uppercase",
+      }}>
+        {badge}
+      </div>
+
+      {/* Title */}
+      <h2 style={{
+        margin:        0,
+        fontFamily:    "var(--app-font-serif, Georgia, serif)",
+        fontSize:      "clamp(14px, 2.4vw, 22px)",
+        fontWeight:    700,
+        color:         C.gold,
+        letterSpacing: "0.3em",
+        textTransform: "uppercase",
+        lineHeight:    1.15,
+      }}>
+        {title}
+      </h2>
+
+      {/* Ritual cue */}
+      <p style={{
+        margin:        "7px 0 0",
+        fontSize:      9,
+        color:         C.muted,
+        letterSpacing: "0.22em",
+        textTransform: "uppercase",
+        fontFamily:    "'Space Mono', monospace",
+      }}>
+        INITIALIZE RITUAL
+      </p>
+
+      {/* Tagline */}
+      <p style={{
+        margin:      "5px 0 0",
+        fontSize:    10,
+        color:       C.dim,
+        lineHeight:  1.5,
+        letterSpacing: "0.03em",
+      }}>
+        {tagline}
+      </p>
     </div>
   );
 }
@@ -761,9 +861,11 @@ function CraftHubInner() {
               transition={{ duration: 3.5 + i * 0.7, repeat: Infinity, ease: "easeInOut" }}
             />
 
-            <DynamicCard
-              module={mod}
-              onClick={() => setPortal({ route: mod.route, color: mod.color })}
+            <TactileCard
+              title={mod.title}
+              tagline={mod.tagline}
+              badge={mod.badge}
+              onTrigger={() => setPortal({ route: mod.route, color: mod.color })}
             />
           </motion.div>
         ))}
