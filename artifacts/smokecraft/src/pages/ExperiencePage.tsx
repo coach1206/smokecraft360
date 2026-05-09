@@ -1239,7 +1239,8 @@ export default function ExperiencePage() {
         zIndex: 10,
       }}>
         {/* ── Mentor ghost — large ambient name faded into background ── */}
-        {mentor && (
+        {/* Guard: only render if the stored mentor belongs to THIS craft type */}
+        {mentor && mentor.craftType === type && (
           <div style={{
             position:      "absolute",
             inset:         0,

@@ -1,89 +1,101 @@
 /**
  * UniversalBackButton — persistent frosted glass pill nav anchor.
  *
- * Renders on every route except the root portal (/).
- * Label:
- *   "← Portal"  on /craft-hub  (one level from home)
- *   "← Back"    everywhere else (mid-experience or admin modules)
+ * Renders via ReactDOM.createPortal directly to document.body so it sits
+ * ABOVE every Framer Motion stacking context (position:fixed inside a
+ * motion.div parent creates a new containing block, trapping z-index).
  *
- * Style: bright white text · dark frosted glass pill · white border
- * Position: top-left, z-index 90001 (above UniversalTouchAnchors)
- * Touch: stops propagation so it doesn't trigger the gesture anchors.
+ * Label:
+ *   "← PORTAL"  on /craft-hub  (one step from home)
+ *   "← BACK"    everywhere else (experience, admin, reveal, etc.)
+ *
+ * Hidden on / (root portal — nowhere to go back to).
  */
 
-import { useLocation } from "wouter";
+import { useEffect, useState } from "react";
+import { createPortal }        from "react-dom";
+import { useLocation }         from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 
-const PORTAL_PATHS = new Set(["/craft-hub"]);
 const HOME         = "/";
+const PORTAL_PATHS = new Set(["/craft-hub"]);
 
-function getLabel(path: string): "Portal" | "Back" {
-  return PORTAL_PATHS.has(path) ? "Portal" : "Back";
+function getLabel(path: string): string {
+  return PORTAL_PATHS.has(path) ? "← PORTAL" : "← BACK";
 }
 
 function getTarget(path: string): string | null {
-  if (PORTAL_PATHS.has(path)) return HOME;
-  return null;   // use history.back()
+  return PORTAL_PATHS.has(path) ? HOME : null;
 }
 
-export function UniversalBackButton() {
-  const [location, navigate] = useLocation();
-
-  if (location === HOME) return null;
-
+function BackPill({ location, navigate }: { location: string; navigate: (to: string) => void }) {
   const label  = getLabel(location);
   const target = getTarget(location);
 
   function handlePress(e: React.MouseEvent | React.TouchEvent) {
     e.stopPropagation();
-    if (target) {
-      navigate(target);
-    } else {
-      window.history.back();
-    }
+    e.preventDefault();
+    if (target) navigate(target);
+    else        window.history.back();
   }
 
   return (
     <AnimatePresence>
-      <motion.button
-        key="universal-back"
-        initial={{ opacity: 0, x: -12, scale: 0.9 }}
-        animate={{ opacity: 1, x: 0,   scale: 1    }}
-        exit={{    opacity: 0, x: -12, scale: 0.9  }}
-        transition={{ duration: 0.22, ease: "easeOut" }}
-        onClick={handlePress}
-        onTouchEnd={handlePress}
-        style={{
-          position:        "fixed",
-          top:             20,
-          left:            20,
-          zIndex:          90001,
-          display:         "flex",
-          alignItems:      "center",
-          gap:             6,
-          padding:         "9px 18px 9px 14px",
-          borderRadius:    999,
-          border:          "1.5px solid rgba(255,255,255,0.72)",
-          background:      "rgba(16,14,12,0.72)",
-          backdropFilter:  "blur(14px)",
-          WebkitBackdropFilter: "blur(14px)",
-          color:           "#FFFFFF",
-          fontFamily:      "'Space Mono', monospace",
-          fontSize:        11,
-          fontWeight:      700,
-          letterSpacing:   "0.12em",
-          lineHeight:      1,
-          cursor:          "pointer",
-          userSelect:      "none",
-          WebkitTapHighlightColor: "transparent",
-          touchAction:     "manipulation",
-          whiteSpace:      "nowrap",
-          boxShadow:       "0 2px 16px rgba(0,0,0,0.55)",
-        }}
-      >
-        <span style={{ fontSize: 14, lineHeight: 1, marginTop: -1 }}>←</span>
-        <span>{label.toUpperCase()}</span>
-      </motion.button>
+      {location !== HOME && (
+        <motion.button
+          key="universal-back"
+          initial={{ opacity: 0, x: -14, scale: 0.88 }}
+          animate={{ opacity: 1, x: 0,   scale: 1    }}
+          exit={{    opacity: 0, x: -14, scale: 0.88 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          onClick={handlePress}
+          onTouchEnd={handlePress}
+          style={{
+            position:             "fixed",
+            top:                  18,
+            left:                 18,
+            zIndex:               2147483647,          // INT32_MAX — always on top
+            display:              "flex",
+            alignItems:           "center",
+            gap:                  6,
+            padding:              "9px 18px 9px 13px",
+            borderRadius:         999,
+            border:               "1.5px solid rgba(255,255,255,0.75)",
+            background:           "rgba(10,8,6,0.78)",
+            backdropFilter:       "blur(18px)",
+            WebkitBackdropFilter: "blur(18px)",
+            color:                "#FFFFFF",
+            fontFamily:           "'Space Mono', monospace",
+            fontSize:             11,
+            fontWeight:           700,
+            letterSpacing:        "0.13em",
+            lineHeight:           1,
+            cursor:               "pointer",
+            userSelect:           "none",
+            WebkitTapHighlightColor: "transparent",
+            touchAction:          "manipulation",
+            whiteSpace:           "nowrap",
+            boxShadow:            "0 2px 20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06) inset",
+            outline:              "none",
+          }}
+        >
+          {label}
+        </motion.button>
+      )}
     </AnimatePresence>
+  );
+}
+
+export function UniversalBackButton() {
+  const [location, navigate] = useLocation();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <BackPill location={location} navigate={navigate} />,
+    document.body,
   );
 }
