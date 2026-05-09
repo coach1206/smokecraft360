@@ -125,33 +125,33 @@ const BREW_VOICE: CraftVoiceConfig = {
 };
 
 const VAPE_VOICE: CraftVoiceConfig = {
-  persona:  "The Vape Artisan",
-  title:    "Vapor Architect",
-  rate:     0.92,
-  pitch:    1.05,
+  persona:  "The Futuristic Flavor Curator",
+  title:    "Kinetic Vapor Architect",
+  rate:     0.90,
+  pitch:    1.08,
   volume:   0.88,
   openingLines: [
-    "The vapor dimension is wide open. Let's map your zone.",
-    "Flavor, density, temperature — three dials. All yours.",
-    "No two sessions are the same here. That's the point.",
-    "Modern craft, ancient instinct. Let's find your signal.",
+    "Welcome to the Kinetic Vapor dimension. Your frequency is unique — let's isolate it.",
+    "Reactive Haze, active profile. Every pull here is a precision event.",
+    "The vapor lattice is open. We map your zone, then we push it.",
+    "This is a different kind of craft. No legacy here — only forward motion.",
   ],
   stepLines: {
-    leaf:    "Base flavor profile first. Fruit forward stays bright; dessert profiles go deep.",
-    wrapper: "Nicotine calibration is your throttle. Start lower and climb — you can always go up.",
-    vitola:  "Device wattage shapes cloud density and heat. Higher wattage opens intensity.",
-    cut:     "Airflow control changes everything. Tight draw for intensity; open draw for cloud.",
-    reveal:  "The vapor architecture is set. Here is your sensory blueprint.",
+    leaf:    "Kinetic Vapor profile first. Bright fruit rides the leading edge; deep dessert builds in the haze.",
+    wrapper: "Nicotine calibration is your signal throttle. Start lower — the Reactive Haze amplifies as you climb.",
+    vitola:  "Device wattage controls cloud kinetics and heat saturation. Higher wattage opens the vapor lattice.",
+    cut:     "Airflow geometry changes the entire sensory event. Tight draw focuses the Kinetic Vapor; open draw releases the Reactive Haze.",
+    reveal:  "Your vapor architecture is complete. Here is your sensory frequency blueprint.",
   },
   educationLines: [
-    "New explorer — good. The vapor world is more nuanced than most expect.",
-    "Start with fruit profiles; they're the most forgiving entry points.",
-    "I'll map your preferences as we go. Nothing is locked in yet.",
+    "First session in the vapor dimension — good. Kinetic Vapor is more nuanced than surface appearances suggest.",
+    "Start with fruit-forward profiles; they're the clearest entry into the Reactive Haze spectrum.",
+    "I'm mapping your preferences in real time. The profile builds as we move through it.",
   ],
   evolutionLines: [
-    "Your flavor complexity has climbed across your sessions. You're past the beginner tier.",
-    "You've started requesting lower nicotine with higher density. That's a deliberate shift.",
-    "Your session notes show a consistent move toward dessert profiles. Your palate is settling.",
+    "Your vapor complexity has climbed significantly. The Kinetic Vapor readings are past the entry tier.",
+    "You've been pulling lower nicotine with higher cloud density. That's a deliberate shift in your Reactive Haze profile.",
+    "Your session data shows a consistent move toward complex dessert frequencies. Your palate is crystallizing.",
   ],
 };
 

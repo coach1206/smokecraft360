@@ -176,22 +176,22 @@ const CARD_EMBERS = [
 // Primary match: first matching tag wins; fallback: deterministic pool pick.
 const FLAVOR_IMAGE_MAP: Record<string, Record<string, string>> = {
   smoke: {
-    smoky:    "/images/smoke/smoke_lounge.png",
-    bold:     "/images/smoke/smoke_group.png",
-    robust:   "/images/smoke/smoke_group.png",
-    "full body": "/images/smoke/smoke_urban.png",
-    earthy:   "/images/smoke/smoke_urban.png",
+    smoky:    "/images/smoke/smoke_selection.png",
+    bold:     "/images/cigar2.png",
+    robust:   "/images/cigar3.png",
+    "full body": "/images/cigar3.png",
+    earthy:   "/images/cigar4.png",
     cedar:    "/images/smoke/smoke_selection.png",
     woody:    "/images/smoke/smoke_selection.png",
     aromatic: "/images/smoke/smoke_selection.png",
     creamy:   "/images/smoke/smoke_selection.png",
     smooth:   "/images/smoke/smoke_selection.png",
-    nutty:    "/images/smoke/smoke_urban.png",
-    sweet:    "/images/smoke/smoke_urban.png",
-    mild:     "/images/smoke/smoke_lounge.png",
+    nutty:    "/images/cigar1.png",
+    sweet:    "/images/smoke/smoke_selection.png",
+    mild:     "/images/smoke/smoke_selection.png",
     light:    "/images/smoke/smoke_selection.png",
-    spicy:    "/images/smoke/smoke_group.png",
-    complex:  "/images/smoke/smoke_lounge.png",
+    spicy:    "/images/cigar2.png",
+    complex:  "/images/cigar2.png",
   },
   pour: {
     aged:          "/images/pour/pour_aged.png",
@@ -233,9 +233,9 @@ const FLAVOR_IMAGE_MAP: Record<string, Record<string, string>> = {
 
 const CRAFT_IMAGE_POOL: Record<string, string[]> = {
   smoke: [
-    "/images/smoke/smoke_lounge.png", "/images/smoke/smoke_solo.png",
-    "/images/smoke/smoke_woman.png",  "/images/smoke/smoke_selection.png",
-    "/images/smoke/smoke_group.png",  "/images/smoke/smoke_urban.png",
+    "/images/smoke/smoke_selection.png",
+    "/images/cigar1.png", "/images/cigar2.png",
+    "/images/cigar3.png", "/images/cigar4.png",
   ],
   pour: [
     "/images/pour/pour_bar.png",     "/images/pour/pour_whiskey.png",
@@ -1759,12 +1759,12 @@ export default function ExperiencePage() {
 
 const FALLBACK_CARDS: Record<string, ExperienceItem[]> = {
   smoke: [
-    { id: "s1", title: "Smoky & Bold",     description: "The kind of smoke that stays long after midnight.",           image: "/images/smoke/smoke_lounge.png",    type: "smoke", tags: ["smoky","bold","earthy"],    intensity: 8, baseScore: 70 },
-    { id: "s2", title: "Creamy & Smooth",  description: "Smooth enough to make silence feel luxurious.",               image: "/images/smoke/smoke_solo.png",      type: "smoke", tags: ["creamy","smooth","sweet"],   intensity: 4, baseScore: 50 },
-    { id: "s3", title: "Spicy & Complex",  description: "Bold enough to interrupt a conversation.",                    image: "/images/smoke/smoke_woman.png",     type: "smoke", tags: ["spicy","complex","bold"],     intensity: 7, baseScore: 65 },
+    { id: "s1", title: "Smoky & Bold",     description: "The kind of smoke that stays long after midnight.",           image: "/images/cigar3.png",               type: "smoke", tags: ["smoky","bold","earthy"],    intensity: 8, baseScore: 70 },
+    { id: "s2", title: "Creamy & Smooth",  description: "Smooth enough to make silence feel luxurious.",               image: "/images/smoke/smoke_selection.png", type: "smoke", tags: ["creamy","smooth","sweet"],   intensity: 4, baseScore: 50 },
+    { id: "s3", title: "Spicy & Complex",  description: "Bold enough to interrupt a conversation.",                    image: "/images/cigar2.png",               type: "smoke", tags: ["spicy","complex","bold"],     intensity: 7, baseScore: 65 },
     { id: "s4", title: "Cedar & Wood",     description: "Aged cedar and slow warmth. The room changes when it opens.", image: "/images/smoke/smoke_selection.png", type: "smoke", tags: ["cedar","woody","aromatic"],   intensity: 5, baseScore: 52 },
-    { id: "s5", title: "Sweet & Mild",     description: "Easy enough to forget you're being seduced.",                 image: "/images/smoke/smoke_group.png",     type: "smoke", tags: ["sweet","mild","light"],       intensity: 2, baseScore: 40 },
-    { id: "s6", title: "Earthy & Natural", description: "Grounded. Deep. The kind you return to.",                    image: "/images/smoke/smoke_urban.png",     type: "smoke", tags: ["earthy","cedar","medium"],     intensity: 5, baseScore: 55 },
+    { id: "s5", title: "Sweet & Mild",     description: "Easy enough to forget you're being seduced.",                 image: "/images/cigar1.png",               type: "smoke", tags: ["sweet","mild","light"],       intensity: 2, baseScore: 40 },
+    { id: "s6", title: "Earthy & Natural", description: "Grounded. Deep. The kind you return to.",                    image: "/images/cigar4.png",               type: "smoke", tags: ["earthy","cedar","medium"],     intensity: 5, baseScore: 55 },
   ],
   pour: [
     { id: "p1", title: "Oak & Vanilla",     description: "Barrel-kissed warmth. Meant to be lingered over.",          image: "/images/pour/pour_bar.png",      type: "pour", tags: ["oak","vanilla","sweet"],      intensity: 5, baseScore: 60 },

@@ -52,10 +52,9 @@ const CHAMBER: Record<string, ChamberConfig> = {
     tagline:    "Curated through atmosphere, flavor, strength, and mood.",
     atmosphere: "Aged cedar  ·  Ember warmth  ·  Reserve selections",
     images: [
-      "/images/smoke/smoke_lounge.png",
-      "/images/smoke/smoke_group.png",
-      "/images/smoke/smoke_urban.png",
       "/images/smoke/smoke_selection.png",
+      "/images/cigar2.png",
+      "/images/cigar4.png",
     ],
   },
   pour: {

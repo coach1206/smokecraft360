@@ -2,31 +2,33 @@
  * ImageRotator — Inclusive sensory image rotator.
  *
  * Cycles through a diverse gallery of craft lifestyle images:
- *   - Lifestyle hands performing rituals (cutting, pouring, lifting, tasting)
- *   - Macro-HD tobacco textures, spirit pours, abstract gold smoke
+ *   - Macro-HD tobacco textures, spirit pours, device close-ups
+ *   - Ken Burns zoom/pan for cinematic stimulation between card swipes
  *
- * Each image transitions with a Ken Burns zoom/pan to maintain
- * cinematic stimulation between card swipes.
+ * Each mounted instance starts at a staggered index so no two cards
+ * ever show the same image simultaneously.
  *
  * Props:
- *   craftType  — which craft image pool to use
- *   interval   — ms between transitions (default 4000)
- *   opacity    — overlay opacity (default 0.28)
- *   blur       — backdrop blur in px (default 15)
- *   className  — optional additional class
+ *   craftType    — which craft image pool to use
+ *   interval     — ms between transitions (default 4000)
+ *   opacity      — overlay opacity (default 0.40)
+ *   blur         — backdrop blur in px (default 12)
+ *   instanceSeed — stagger offset (card index) so each card is unique
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export type RotatorCraftType = "smoke" | "pour" | "brew" | "vape" | "all";
 
 const CRAFT_POOLS: Record<RotatorCraftType, string[]> = {
   smoke: [
-    "/images/smoke/smoke_lounge.png",
     "/images/smoke/smoke_selection.png",
-    "/images/smoke/smoke_group.png",
-    "/images/smoke/smoke_urban.png",
+    "/images/cigar1.png",
+    "/images/cigar2.png",
+    "/images/cigar3.png",
+    "/images/cigar4.png",
+    "/images/cigar.png",
   ],
   pour: [
     "/images/pour/pour_bar.png",
@@ -50,15 +52,15 @@ const CRAFT_POOLS: Record<RotatorCraftType, string[]> = {
     "/images/vape/vape_device.png",
   ],
   all: [
-    "/images/smoke/smoke_lounge.png",
+    "/images/smoke/smoke_selection.png",
     "/images/pour/pour_bar.png",
     "/images/brew/brew_taproom.png",
     "/images/vape/vape_modern.png",
-    "/images/smoke/smoke_selection.png",
+    "/images/cigar1.png",
     "/images/pour/pour_whiskey.png",
     "/images/brew/brew_barrel.png",
     "/images/vape/vape_social.png",
-    "/images/smoke/smoke_group.png",
+    "/images/cigar3.png",
     "/images/pour/pour_aged.png",
   ],
 };
@@ -72,24 +74,31 @@ const KEN_BURNS_VARIANTS = [
 ];
 
 interface ImageRotatorProps {
-  craftType?: RotatorCraftType;
-  interval?:  number;
-  opacity?:   number;
-  blur?:      number;
-  style?:     React.CSSProperties;
+  craftType?:    RotatorCraftType;
+  interval?:     number;
+  opacity?:      number;
+  blur?:         number;
+  instanceSeed?: number;
+  style?:        React.CSSProperties;
 }
 
 export default function ImageRotator({
-  craftType = "smoke",
-  interval  = 4200,
-  opacity   = 0.28,
-  blur      = 15,
+  craftType    = "smoke",
+  interval     = 4200,
+  opacity      = 0.40,
+  blur         = 12,
+  instanceSeed = 0,
   style,
 }: ImageRotatorProps) {
-  const pool       = CRAFT_POOLS[craftType] ?? CRAFT_POOLS.smoke;
-  const [idx, setIdx] = useState(0);
-  const kbIdx      = useRef(0);
-  const timerRef   = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pool = CRAFT_POOLS[craftType] ?? CRAFT_POOLS.smoke;
+
+  // Stagger starting image: each instance (card) begins at a different slot
+  // so no two cards ever show the same image at the same time.
+  const startIdx = useMemo(() => instanceSeed % pool.length, [instanceSeed, pool.length]);
+
+  const [idx, setIdx] = useState(startIdx);
+  const kbIdx         = useRef(instanceSeed % KEN_BURNS_VARIANTS.length);
+  const timerRef      = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
@@ -103,9 +112,9 @@ export default function ImageRotator({
 
   return (
     <div style={{
-      position:     "absolute",
-      inset:        0,
-      overflow:     "hidden",
+      position:      "absolute",
+      inset:         0,
+      overflow:      "hidden",
       pointerEvents: "none",
       ...style,
     }}>
@@ -116,24 +125,21 @@ export default function ImageRotator({
           animate={{ opacity: opacity }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.4, ease: "easeInOut" }}
-          style={{
-            position: "absolute",
-            inset:    0,
-          }}
+          style={{ position: "absolute", inset: 0 }}
         >
           <motion.div
             animate={{ scale: kb.scale, x: kb.x, y: kb.y }}
             transition={{ duration: interval / 1000 + 1.4, ease: "linear" }}
             style={{
-              width:               "110%",
-              height:              "110%",
-              position:            "absolute",
-              top:                 "-5%",
-              left:                "-5%",
-              backgroundImage:     `url(${pool[idx]})`,
-              backgroundSize:      "cover",
-              backgroundPosition:  "center",
-              backdropFilter:      `blur(${blur}px)`,
+              width:                "110%",
+              height:               "110%",
+              position:             "absolute",
+              top:                  "-5%",
+              left:                 "-5%",
+              backgroundImage:      `url(${pool[idx]})`,
+              backgroundSize:       "cover",
+              backgroundPosition:   "center",
+              backdropFilter:       `blur(${blur}px)`,
               WebkitBackdropFilter: `blur(${blur}px)`,
             }}
           />

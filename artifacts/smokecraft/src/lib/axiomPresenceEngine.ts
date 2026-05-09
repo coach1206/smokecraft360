@@ -315,7 +315,7 @@ export function buildSeedGuests(): PresenceGuest[] {
   return [
     {
       id: "g-001", firstName: "Marcus", lastInitial: "T", phoneLast4: "4827",
-      vipTier: "reserve", mentorId: "m-01", mentorName: "Juan Valez",
+      vipTier: "reserve", mentorId: "m-01", mentorName: "Rafael Mora",
       atmospherePref: "classic", boldnessPref: "bold",
       flavorTags: ["cedar", "leather", "cocoa"],
       visitCount: 14, lastVisitAt: new Date(Date.now() - 7 * 86400000).toISOString(),
@@ -370,7 +370,7 @@ export function buildSeedGuests(): PresenceGuest[] {
     },
     {
       id: "g-006", firstName: "Nadia", lastInitial: "V", phoneLast4: "9912",
-      vipTier: "member", mentorId: "m-01", mentorName: "Juan Valez",
+      vipTier: "member", mentorId: "m-01", mentorName: "Rafael Mora",
       atmospherePref: "elevated", boldnessPref: "light",
       flavorTags: ["floral", "light", "citrus"],
       visitCount: 5, lastVisitAt: now,

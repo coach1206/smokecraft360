@@ -149,10 +149,10 @@ function IntelStatusBar() {
 
 const TILE_BG: Record<string, string[]> = {
   smoke: [
-    "/images/smoke/smoke_lounge.png",
-    "/images/smoke/smoke_selection.png",
-    "/images/smoke/smoke_group.png",
-    "/images/smoke/smoke_urban.png",
+    "/images/scenes/smokecraft-card.jpg",
+    "/images/lounge-bg.jpg",
+    "/images/scenes/craft-hub.jpg",
+    "/images/lounge-bg.png",
   ],
   pour: [
     "/images/pour/pour_bar.png",
@@ -203,7 +203,7 @@ function LiquidTileBg({ craftId, color }: { craftId: string; color: string }) {
         <motion.div
           key={idx}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.28 }}
+          animate={{ opacity: 0.40 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2, ease: "easeInOut" }}
           style={{ position: "absolute", inset: 0 }}

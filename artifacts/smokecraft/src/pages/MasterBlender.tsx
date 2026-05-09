@@ -34,13 +34,13 @@ const LEAVES = [
 const WRAPPERS = [
   {
     id: "candela", label: "Candela", sub: "Bright · Grassy · Mild",
-    xp: 12, img: "/images/smoke/smoke_lounge.png", synergy: 20,
+    xp: 12, img: "/images/smoke/smoke_selection.png", synergy: 20,
     desc: "Flash-cured to lock in chlorophyll. Rare and vivid.",
     mentorNote: "Candela is the unexpected choice — bright, grassy, almost botanical.",
   },
   {
     id: "connecticut", label: "Connecticut", sub: "Silky · Creamy · Light",
-    xp: 15, img: "/images/smoke/smoke_urban.png", synergy: 25,
+    xp: 15, img: "/images/cigar1.png", synergy: 25,
     desc: "Shade-grown elegance. The silk of the tobacco world.",
     mentorNote: "Connecticut wrapper speaks to those who appreciate understated luxury.",
   },
@@ -52,13 +52,13 @@ const WRAPPERS = [
   },
   {
     id: "maduro", label: "Maduro", sub: "Dark · Sweet · Full",
-    xp: 22, img: "/images/smoke/smoke_group.png", synergy: 25,
+    xp: 22, img: "/images/cigar4.png", synergy: 25,
     desc: "Slow-fermented darkness. Cocoa, coffee, dark fruit.",
     mentorNote: "Maduro is the wrapper that needs no introduction. It commands the room.",
   },
   {
     id: "oscuro", label: "Oscuro", sub: "Blackest · Oily · Intense",
-    xp: 25, img: "/images/smoke/smoke_urban.png", synergy: 22,
+    xp: 25, img: "/images/cigar2.png", synergy: 22,
     desc: "Beyond Maduro — maximum fermentation, maximum expression.",
     mentorNote: "Oscuro is for the initiated. Tar, espresso, dark chocolate.",
   },

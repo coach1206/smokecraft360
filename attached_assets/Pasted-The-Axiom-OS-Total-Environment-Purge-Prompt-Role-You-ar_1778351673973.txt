@@ -1,0 +1,40 @@
+The "Axiom OS: Total Environment Purge" Prompt
+Role: You are a Senior Systems Architect. You must immediately resolve the "Context Bleed" where SmokeCraft elements are contaminating other modules.
+
+1. Hard Isolation Fix (The Sovereign Protocol)
+Command: Immediately RESET the VapeCraft environment.
+
+The Issue: "Juan Valez" and cigar-related quotes are appearing in the Vape module.
+
+The Fix:
+
+Delete any persistence of SmokeCraft mentors in the CraftExperienceContext.
+
+Force-Load the "Futuristic Flavor Curator" persona for VapeCraft.
+
+Change the text: Replace cigar-focused language with "Kinetic Vapor" and "Reactive Haze" terminology.
+
+2. Visual Layout & Overlap Correction
+The Problem: Content is overlapping images, and there is significant "dead space" on the background.
+
+The Fix:
+
+Fill the Dead Space: Set the LiquidTileBg to 40% opacity (up from 28%) and ensure the Ken Burns rotation is active to eliminate the flat, empty look.
+
+Remove Text Overlap: Adjust the z-index and padding so the mentor text does not sit on top of the selection cards.
+
+Background Visibility: Ensure the background imagery is clearly visible through a 12px backdrop blur (glassmorphism), making the environment feel "full" and cinematic.
+
+3. Diverse Image Rotation (Enforcement)
+The Problem: The same images are being reused on every card, and the "two men" demographic images are still present.
+
+The Fix:
+
+Purge: Physically delete the images shown in Screenshot 2026-05-09 at 2.29 PM.jpg from the project folder.
+
+Rotate: The ImageRotator must pull unique, diverse assets (lifestyle hands of different skin tones) for every card. No two cards should show the same image at the same time.
+
+Replit Agent Directive:
+"The environment is bleeding. Remove Juan Valez from VapeCraft. Reset the CraftExperienceContext so each module is 100% sovereign. Adjust the CSS to stop text-on-image overlapping. Fill the 'dead space' by increasing the visibility of the Ken Burns background rotation. Purge the repetitive demographic images and replace them with unique, diverse lifestyle assets for every card."
+
+Is the persistent Mute Toggle currently visible and working in the header, or do we need to force-rebuild that as well?

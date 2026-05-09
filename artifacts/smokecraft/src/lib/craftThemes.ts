@@ -23,7 +23,7 @@ export const CRAFT_THEMES: Record<CraftType, CraftTheme> = {
     tagline:     "Discover your perfect cigar",
     accent:      "#D48B00",
     accentSoft:  "#a98828",
-    bgImage:     "/images/smoke/smoke_lounge.png",
+    bgImage:     "/images/cigar1.png",
     cardBg:      "rgba(18,10,4,0.88)",
     badgeLabel:  "CIGAR",
     visualWords: ["cigar", "lounge", "smoke"],
