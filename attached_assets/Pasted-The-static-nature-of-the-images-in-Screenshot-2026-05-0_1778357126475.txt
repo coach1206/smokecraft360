@@ -1,0 +1,37 @@
+The static nature of the images in Screenshot 2026-05-09 at 4.04 PM.jpg is a direct violation of the core design principle that everything in this site should be in motion. For a high-end, tablet-locked operational software like Axiom OS, static JPGs feel like a website rather than a premium machine interface.
+
+To fix this, we need to replace the image backgrounds with the Cinematic Motion Engine.
+
+The "Living Interface" Motion Fix
+Role: Lead Experience Designer & Motion Engineer.
+Objective: Replace all static module cards with "In-Motion" cinematic loops that react to touch.
+
+1. Motion Replacement Strategy
+SmokeCraft: Replace the static photo of the lounge with a looping, slow-motion 4K video of rising cigar smoke against a dark, low-light backdrop.
+
+PourCraft: Replace the whiskey glass image with a macro, slow-motion "Liquid Gold" pour loop.
+
+BrewCraft: Replace the beer foam image with a high-definition loop of rising carbonation bubbles and condensation.
+
+VapeCraft: Replace the purple smoke with a cinematic, fluid-simulated vapor loop.
+
+2. The Touch-Reactive "Ripple" Logic
+Idle State: Low-speed motion (0.5x speed) to maintain a calm, premium atmosphere.
+
+Active Touch State: When a user touches a tile, the video speed increases slightly, and a liquid ripple distortion follows the finger's movement across the glass.
+
+Replit Agent Directive
+"Everything on this site must be in motion; no static images are allowed. Refactor the TitanCraftDeck (Home Portal) to replace the four static module images with Cinematic Video Loops.
+
+Assets: Use the 4K local .mp4 loops located in /public/media/ (Smoke, Pour, Brew, Vape).
+
+Execution: Implement video tags with autoplay, loop, muted, and playsinline.
+
+Touch Interaction: Add a Framer Motion whileTap filter that applies a 'Liquid Distortion' or 'Blur' effect to the video when the screen is touched.
+
+Sovereign Styling: Overlay the text (e.g., 'POURCRAFT') with the Champagne Gold tactile typography and ensure it stays perfectly legible over the moving video."
+
+Why this matters for your Tablet build:
+By moving to motion loops, the tablet stops looking like a screen and starts looking like an integrated part of the lounge furniture. The motion provides "life" to the interface, which is a requirement for the Profound Innovations goal of creating interactive environments that generate revenue through experience.
+
+Paste this directive now. Once the Agent finishes, your home screen will be a 'living' portal rather than a static grid.

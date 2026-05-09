@@ -147,14 +147,15 @@ button:active,
 .ax-tappable:active,
 a:active {
   transform: scale(0.96);
-  transition: transform 0.08s ease-out;
+  /* Material Design standard ease — snappy depress, smooth spring-back */
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* Restore on release */
 button,
 [role="button"],
 .ax-tappable,
 a {
-  transition: transform 0.15s ease-out;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Haptic Visual Ripple ─────────────────────────────────────────────────── */

@@ -19,7 +19,7 @@
  * Warm Honey Amber (#D48B00) accents, cream typography.
  */
 
-import { useRef, useEffect, useState, memo } from "react";
+import { useRef, useEffect, useState, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useHandoff } from "@/contexts/HandoffContext";
 import { useOrchestrator } from "@/contexts/OrchestratorContext";
@@ -27,6 +27,7 @@ import { useAxiomIntelligence } from "@/contexts/AxiomIntelligenceContext";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
 import { useCraftExperience } from "@/contexts/CraftExperienceContext";
+import { EEIS_JOURNEY_KEY } from "@/components/UniversalExperience/LevelSelection";
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 
@@ -524,6 +525,44 @@ function DataRow({ label, value, highlight }: { label: string; value: string | n
   );
 }
 
+/** PulseDataRow — same as DataRow but flashes a golden pulse when `value` changes. */
+function PulseDataRow({ label, value, highlight }: { label: string; value: string | number; highlight?: boolean }) {
+  const [pulsing, setPulsing] = useState(false);
+  const prevVal = useRef(value);
+
+  useEffect(() => {
+    if (prevVal.current === value) return;
+    prevVal.current = value;
+    setPulsing(true);
+    const t = setTimeout(() => setPulsing(false), 1400);
+    return () => clearTimeout(t);
+  }, [value]);
+
+  return (
+    <motion.div
+      animate={pulsing ? { backgroundColor: [`${GOLD}00`, `${GOLD}28`, `${GOLD}00`] } : {}}
+      transition={{ duration: 1.2, ease: "easeOut" }}
+      style={{
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        marginBottom: 5, borderRadius: 4, padding: "0 2px",
+      }}
+    >
+      <span style={{ fontSize: 9, color: `${CREAM}55`, fontFamily: "'Space Mono', monospace", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+        {label}
+      </span>
+      <span style={{
+        fontSize: 10,
+        color: pulsing ? GOLD : highlight ? GOLD : `${CREAM}90`,
+        fontFamily: "'Space Mono', monospace",
+        fontWeight: pulsing || highlight ? 700 : 400,
+        transition: "color 0.3s ease",
+      }}>
+        {value}
+      </span>
+    </motion.div>
+  );
+}
+
 // ── Handoff Trigger ────────────────────────────────────────────────────────────
 // Long-press zone rendered in guest mode — bottom-right corner affordance.
 
@@ -695,6 +734,24 @@ function RippleLayer({ children }: { children: React.ReactNode }) {
 
 // ── Main EEIS Overlay ──────────────────────────────────────────────────────────
 
+/** Parsed shape of EEIS_JOURNEY_KEY sessionStorage entry */
+interface EeisJourneyEntry {
+  id:    string;
+  title: string;
+  badge: string;
+  craft: string;
+  ts:    number;
+}
+
+function readJourneyEntry(): EeisJourneyEntry | null {
+  try {
+    const raw = sessionStorage.getItem(EEIS_JOURNEY_KEY);
+    return raw ? (JSON.parse(raw) as EeisJourneyEntry) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function EeisOverlay() {
   const { isStaffMode, ripplePhase, releaseHandoff } = useHandoff();
   const { profile } = useOrchestrator();
@@ -709,6 +766,17 @@ export default function EeisOverlay() {
     return () => clearInterval(id);
   }, []);
 
+  // ── Live Journey Tier — reads from sessionStorage, updates on guest tap ──
+  const [eeisTier, setEeisTier] = useState<EeisJourneyEntry | null>(readJourneyEntry);
+
+  const refreshTier = useCallback(() => setEeisTier(readJourneyEntry()), []);
+
+  useEffect(() => {
+    // Listen for LevelSelection's synthetic StorageEvent dispatch (same-page)
+    window.addEventListener("storage", refreshTier);
+    return () => window.removeEventListener("storage", refreshTier);
+  }, [refreshTier]);
+
   const activeStaff    = staff.filter(s => s.status === "active").length;
   const onlineDevices  = snapshot?.onlineDevices ?? devices.filter(d => d.status === "online").length;
 
@@ -718,6 +786,14 @@ export default function EeisOverlay() {
     : profile.sessionDepth < 8  ? "Immersion"
     : "Mastery"
     : "Awaiting Guest";
+
+  // Build the live tier display string for the EEIS panel
+  const tierDisplay = eeisTier
+    ? `${eeisTier.title} · ${eeisTier.badge}`
+    : "—";
+  const tierCraft   = eeisTier
+    ? eeisTier.craft.toUpperCase() + "CRAFT"
+    : "—";
 
   const recentEvents = events.slice(0, 4);
   const lastTickFormatted = lastTick
@@ -824,6 +900,8 @@ export default function EeisOverlay() {
               <DataRow label="Identity"
                 value={guestProfile ? `${guestProfile.firstName} ${guestProfile.lastInitial}.` : "Anonymous"} highlight />
               <DataRow label="Journey Stage"   value={journeyStage}              highlight />
+              <PulseDataRow label="Selected Tier"  value={tierDisplay} highlight={!!eeisTier} />
+              <PulseDataRow label="Craft Module"   value={tierCraft} />
               <DataRow label="Mentor"          value={mentor?.name ?? "Unassigned"} />
               <DataRow label="Session Depth"   value={profile?.sessionDepth ?? 0} />
               <DataRow label="Mastery Tier"    value={guestProfile?.masteryTier ?? "—"} />

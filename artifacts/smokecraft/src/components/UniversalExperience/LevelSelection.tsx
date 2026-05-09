@@ -11,6 +11,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, Lock } from "lucide-react";
+import { SignalVisualizationEngine } from "@/engines/SignalVisualizationEngine";
+
+/** sessionStorage key — EEIS overlay reads this to show live journey tier */
+export const EEIS_JOURNEY_KEY = "axiom_eeis_journey";
 
 type CraftType = "smoke" | "pour" | "brew" | "vape";
 
@@ -79,6 +83,27 @@ export function LevelSelection({ craftType, accent, onSelect, onBack }: Props) {
     if (tier.locked) return;
     setSelected(tier.id);
     sessionStorage.setItem(SESSION_LEVEL_KEY, tier.id);
+
+    // ── EEIS telemetry: write journey selection for staff overlay pickup ──
+    sessionStorage.setItem(EEIS_JOURNEY_KEY, JSON.stringify({
+      id:    tier.id,
+      title: tier.title,
+      badge: tier.badge,
+      craft: craftType,
+      ts:    Date.now(),
+    }));
+
+    // ── Fire handoff_signal through the signal visualization engine ──
+    // Intensity 90 = high engagement event; staff EEIS will show a golden pulse
+    SignalVisualizationEngine.fireSignal("handoff_signal", 90);
+
+    // Dispatch a custom storage event so same-page listeners (EeisOverlay) pick it up
+    window.dispatchEvent(new StorageEvent("storage", {
+      key:      EEIS_JOURNEY_KEY,
+      newValue: sessionStorage.getItem(EEIS_JOURNEY_KEY),
+      storageArea: sessionStorage,
+    }));
+
     setTimeout(() => onSelect(tier.id), 480);
   }
 
@@ -178,8 +203,11 @@ export function LevelSelection({ craftType, accent, onSelect, onBack }: Props) {
               initial={{ opacity: 0, x: -16 }}
               animate={{ opacity: dimmed ? 0.28 : 1, x: 0 }}
               transition={{ delay: i * 0.07, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              whileTap={!tier.locked ? { scale: 0.96 } : {}}
               onMouseEnter={() => setHoverId(tier.id)}
               onMouseLeave={() => setHoverId(null)}
+              onTouchStart={() => { if (!tier.locked) setHoverId(tier.id); }}
+              onTouchEnd={() => setHoverId(null)}
               onClick={() => handleSelect(tier)}
               disabled={tier.locked}
               style={{
@@ -198,8 +226,10 @@ export function LevelSelection({ craftType, accent, onSelect, onBack }: Props) {
                 cursor: tier.locked ? "not-allowed" : "pointer",
                 textAlign: "left",
                 display: "flex", alignItems: "center", gap: 18,
-                transition: "all 0.22s ease",
+                transition: "transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease",
                 boxShadow: isSel ? `0 0 32px ${accent}28` : "none",
+                WebkitTapHighlightColor: "transparent",
+                touchAction: "manipulation",
               }}
             >
               {/* Badge */}
