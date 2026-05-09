@@ -116,3 +116,4 @@ export * from "./venueDnaProfiles";
 export * from "./personalityTraits";
 export * from "./behaviorPatterns";
 export * from "./biometricPulseMaps";
+export * from "./enterpriseAi";

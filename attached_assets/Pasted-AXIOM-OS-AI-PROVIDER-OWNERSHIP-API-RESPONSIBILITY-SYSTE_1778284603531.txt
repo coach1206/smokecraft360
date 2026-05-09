@@ -1,0 +1,332 @@
+AXIOM OS — AI PROVIDER OWNERSHIP + API RESPONSIBILITY SYSTEM
+PURCHASE FLOW + BILLING + ENTERPRISE AI CONFIGURATION
+
+MISSION:
+Implement a complete AI ownership and API responsibility system into AXIOM OS so venues clearly understand:
+
+• what is included
+• what AXIOM manages
+• what the venue must supply
+• what APIs are optional
+• what APIs are bundled
+• what APIs require BYOK (Bring Your Own Key)
+
+This system must automatically configure itself based on:
+the venue’s subscription package.
+
+==================================================
+CREATE:
+==================================================
+
+client/src/pages/enterprise/AIProviderSetup.tsx
+
+server/routes/enterprise-ai.ts
+
+shared/schema/enterprise-ai.ts
+
+==================================================
+DATABASE TABLES
+==================================================
+
+CREATE:
+==================================================
+
+venue_ai_providers
+venue_api_keys
+venue_api_usage
+venue_ai_billing_modes
+venue_ai_limits
+
+==================================================
+SUPPORTED MODES
+==================================================
+
+MODE 1:
+AXIOM MANAGED AI
+
+DESCRIPTION:
+OpenAI and supported AI providers are INCLUDED in the monthly subscription.
+
+Venue does NOT need:
+their own OpenAI account.
+
+AXIOM handles:
+• AI hosting
+• API management
+• AI routing
+• usage metering
+• infrastructure
+
+AVAILABLE FOR:
+• AXIOM CORE
+• AXIOM PRO monthly subscriptions
+• hardware lease plans
+
+==================================================
+
+MODE 2:
+BYOK (BRING YOUR OWN KEY)
+
+DESCRIPTION:
+Venue supplies:
+their own OpenAI API key.
+
+Venue is responsible for:
+• API billing
+• usage charges
+• OpenAI account management
+• provider limits
+
+AXIOM routes AI requests through:
+the venue-owned provider account.
+
+AVAILABLE FOR:
+• AXIOM XEI
+• AXIOM BLACK
+• enterprise ownership purchases
+• franchise deployments
+
+==================================================
+PURCHASE FLOW REQUIREMENTS
+==================================================
+
+WHEN VENUE PURCHASES:
+
+The system must automatically determine:
+==================================================
+
+IF:
+monthly subscription or lease
+
+THEN:
+AI INCLUDED MODE activates automatically.
+
+==================================================
+
+IF:
+full ownership purchase
+
+THEN:
+BYOK mode activates automatically.
+
+==================================================
+AI PROVIDER SETUP SCREEN
+==================================================
+
+CREATE A PREMIUM SETUP EXPERIENCE.
+
+NOT:
+developer settings.
+
+NOT:
+technical forms.
+
+==================================================
+DISPLAY:
+==================================================
+
+SECTION:
+AI Intelligence Configuration
+
+OPTIONS:
+==================================================
+
+[ INCLUDED WITH AXIOM ]
+AI services managed by AXIOM OS
+
+OR
+
+[ CONNECT YOUR OWN AI PROVIDER ]
+Use your own OpenAI or supported provider account
+
+==================================================
+IF BYOK IS SELECTED
+==================================================
+
+DISPLAY:
+==================================================
+
+• Connect OpenAI
+• Connect Anthropic
+• Connect Gemini
+• Future Provider Expansion
+
+==================================================
+ADD:
+==================================================
+
+Official signup buttons:
+• Create OpenAI Account
+• Create Anthropic Account
+• Create Gemini Account
+
+OPEN:
+official provider signup pages.
+
+==================================================
+DISPLAY CLEAR RESPONSIBILITY LANGUAGE
+==================================================
+
+IF AXIOM MANAGED:
+==================================================
+
+DISPLAY:
+“AI infrastructure, orchestration, and API usage are included within your AXIOM subscription.”
+
+==================================================
+
+IF BYOK:
+==================================================
+
+DISPLAY:
+“You are responsible for your own provider billing, API usage, and account management.”
+
+==================================================
+API MANAGEMENT CENTER
+==================================================
+
+CREATE:
+Enterprise AI Control Center
+
+==================================================
+DISPLAY:
+==================================================
+
+• provider status
+• API health
+• usage monitoring
+• request volume
+• token usage
+• provider routing
+• AI orchestration status
+• monthly consumption
+• cost estimation
+• failover provider status
+
+==================================================
+AUTO-FAILOVER SUPPORT
+==================================================
+
+IF:
+OpenAI fails
+
+THEN:
+AXIOM can automatically route to:
+• Anthropic
+• Gemini
+• backup provider
+
+IF configured.
+
+==================================================
+AI ROUTING ENGINE
+==================================================
+
+CREATE:
+Provider abstraction layer.
+
+NO hardcoded OpenAI dependency.
+
+==================================================
+CREATE:
+==================================================
+
+server/services/ai/AIRouter.ts
+
+PURPOSE:
+==================================================
+
+Route requests dynamically to:
+• OpenAI
+• Anthropic
+• Gemini
+• local providers later
+
+==================================================
+SUBSCRIPTION PACKAGE LOGIC
+==================================================
+
+AXIOM CORE
+==================================================
+
+AI INCLUDED
+
+Limited monthly AI usage cap.
+
+==================================================
+
+AXIOM PRO
+==================================================
+
+AI INCLUDED
+
+Expanded orchestration limits.
+
+==================================================
+
+AXIOM XEI
+==================================================
+
+OPTION:
+AXIOM managed
+OR
+BYOK
+
+==================================================
+
+AXIOM BLACK
+==================================================
+
+Enterprise AI ownership.
+
+BYOK strongly encouraged.
+
+Multi-provider routing enabled.
+
+==================================================
+ADMIN CONTROLS
+==================================================
+
+SUPER ADMIN CAN:
+==================================================
+
+• force provider mode
+• override AI limits
+• enable failover routing
+• monitor venue usage
+• throttle abuse
+• disable providers
+• reroute AI traffic
+
+==================================================
+FINAL EXPERIENCE TARGET
+==================================================
+
+Venues should ALWAYS understand:
+==================================================
+
+• who pays for AI
+• who owns the AI account
+• what is included
+• what is optional
+• what APIs are required
+• what AXIOM manages
+• what the venue manages
+
+NO CONFUSION.
+
+NO HIDDEN COSTS.
+
+NO MANUAL CONFIGURATION CHAOS.
+
+==================================================
+FINAL RULE
+==================================================
+
+AXIOM OS must behave like:
+a professional enterprise intelligence platform.
+
+NOT:
+a developer tool.
+
+IMPLEMENT FULL AI PROVIDER OWNERSHIP + API RESPONSIBILITY SYSTEM NOW.

@@ -1,0 +1,395 @@
+// ==========================================================
+// FILE: shared/schema/enterprise-ai.ts
+// ==========================================================
+
+import {
+  pgTable,
+  uuid,
+  varchar,
+  boolean,
+  timestamp,
+  text,
+  integer,
+  jsonb,
+} from "drizzle-orm/pg-core";
+
+export const venueAiProviders = pgTable("venue_ai_providers", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  venueId: uuid("venue_id").notNull(),
+
+  provider: varchar("provider", {
+    length: 100,
+  }).notNull(), // openai | anthropic | gemini
+
+  mode: varchar("mode", {
+    length: 50,
+  }).notNull(), // managed | byok
+
+  isActive: boolean("is_active").default(true),
+
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const venueApiKeys = pgTable("venue_api_keys", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  venueId: uuid("venue_id").notNull(),
+
+  provider: varchar("provider", {
+    length: 100,
+  }).notNull(),
+
+  encryptedKey: text("encrypted_key").notNull(),
+
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const venueAiUsage = pgTable("venue_ai_usage", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  venueId: uuid("venue_id").notNull(),
+
+  provider: varchar("provider", {
+    length: 100,
+  }).notNull(),
+
+  tokensUsed: integer("tokens_used").default(0),
+
+  requests: integer("requests").default(0),
+
+  estimatedCost: integer("estimated_cost").default(0),
+
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const venueAiBillingModes = pgTable(
+  "venue_ai_billing_modes",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    venueId: uuid("venue_id").notNull(),
+
+    billingMode: varchar("billing_mode", {
+      length: 50,
+    }).notNull(), // included | byok
+
+    packageTier: varchar("package_tier", {
+      length: 50,
+    }).notNull(),
+
+    createdAt: timestamp("created_at").defaultNow(),
+  }
+);
+
+export const venueAiLimits = pgTable("venue_ai_limits", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  venueId: uuid("venue_id").notNull(),
+
+  monthlyTokenLimit: integer(
+    "monthly_token_limit"
+  ).default(100000),
+
+  currentUsage: integer("current_usage").default(0),
+
+  hardStop: boolean("hard_stop").default(false),
+
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+
+// ==========================================================
+// FILE: server/services/ai/AIRouter.ts
+// ==========================================================
+
+type AIProvider =
+  | "openai"
+  | "anthropic"
+  | "gemini";
+
+interface RouteRequest {
+  provider: AIProvider;
+  prompt: string;
+  apiKey?: string;
+}
+
+export class AIRouter {
+  async route({
+    provider,
+    prompt,
+    apiKey,
+  }: RouteRequest) {
+    switch (provider) {
+      case "openai":
+        return this.handleOpenAI(prompt, apiKey);
+
+      case "anthropic":
+        return this.handleAnthropic(prompt, apiKey);
+
+      case "gemini":
+        return this.handleGemini(prompt, apiKey);
+
+      default:
+        throw new Error(
+          "Unsupported AI provider"
+        );
+    }
+  }
+
+  private async handleOpenAI(
+    prompt: string,
+    apiKey?: string
+  ) {
+    return {
+      provider: "openai",
+      success: true,
+      response:
+        "OpenAI response placeholder",
+    };
+  }
+
+  private async handleAnthropic(
+    prompt: string,
+    apiKey?: string
+  ) {
+    return {
+      provider: "anthropic",
+      success: true,
+      response:
+        "Anthropic response placeholder",
+    };
+  }
+
+  private async handleGemini(
+    prompt: string,
+    apiKey?: string
+  ) {
+    return {
+      provider: "gemini",
+      success: true,
+      response:
+        "Gemini response placeholder",
+    };
+  }
+}
+
+export const aiRouter = new AIRouter();
+
+
+// ==========================================================
+// FILE: server/routes/enterprise-ai.ts
+// ==========================================================
+
+import express from "express";
+
+const router = express.Router();
+
+router.get(
+  "/providers",
+  async (_req, res) => {
+    res.json({
+      success: true,
+      providers: [
+        {
+          id: "openai",
+          name: "OpenAI",
+          signup:
+            "https://platform.openai.com/signup",
+        },
+        {
+          id: "anthropic",
+          name: "Anthropic",
+          signup:
+            "https://console.anthropic.com/",
+        },
+        {
+          id: "gemini",
+          name: "Google Gemini",
+          signup:
+            "https://makersuite.google.com/",
+        },
+      ],
+    });
+  }
+);
+
+router.post(
+  "/configure",
+  async (req, res) => {
+    const {
+      venueId,
+      provider,
+      mode,
+      apiKey,
+    } = req.body;
+
+    return res.json({
+      success: true,
+      message:
+        "AI Provider configured successfully",
+      config: {
+        venueId,
+        provider,
+        mode,
+      },
+    });
+  }
+);
+
+router.get(
+  "/usage/:venueId",
+  async (req, res) => {
+    return res.json({
+      success: true,
+      usage: {
+        monthlyTokens: 242000,
+        estimatedCost: 84,
+        requests: 1931,
+      },
+    });
+  }
+);
+
+export default router;
+
+
+// ==========================================================
+// FILE: client/src/pages/enterprise/AIProviderSetup.tsx
+// ==========================================================
+
+import { useState } from "react";
+
+export default function AIProviderSetup() {
+  const [mode, setMode] = useState<
+    "included" | "byok"
+  >("included");
+
+  return (
+    <div className="min-h-screen bg-black text-white p-10">
+
+      <div className="max-w-5xl mx-auto">
+
+        <h1 className="text-5xl font-light mb-6">
+          AI Intelligence Configuration
+        </h1>
+
+        <p className="text-white/60 mb-10">
+          Configure how your venue powers
+          AXIOM intelligence.
+        </p>
+
+        <div className="grid grid-cols-2 gap-8">
+
+          <div
+            onClick={() =>
+              setMode("included")
+            }
+            className={`
+              rounded-[30px]
+              border
+              p-8
+              cursor-pointer
+              transition-all
+              ${
+                mode === "included"
+                  ? "border-amber-400 bg-amber-500/10"
+                  : "border-white/10"
+              }
+            `}
+          >
+            <h2 className="text-3xl mb-4">
+              Included With AXIOM
+            </h2>
+
+            <p className="text-white/60">
+              AI infrastructure managed
+              completely by AXIOM OS.
+            </p>
+          </div>
+
+          <div
+            onClick={() =>
+              setMode("byok")
+            }
+            className={`
+              rounded-[30px]
+              border
+              p-8
+              cursor-pointer
+              transition-all
+              ${
+                mode === "byok"
+                  ? "border-cyan-400 bg-cyan-500/10"
+                  : "border-white/10"
+              }
+            `}
+          >
+            <h2 className="text-3xl mb-4">
+              Bring Your Own AI
+            </h2>
+
+            <p className="text-white/60">
+              Connect your own OpenAI,
+              Anthropic, or Gemini account.
+            </p>
+          </div>
+        </div>
+
+        {mode === "byok" && (
+          <div className="mt-12 space-y-6">
+
+            <a
+              href="https://platform.openai.com/signup"
+              target="_blank"
+              className="block border border-white/10 rounded-2xl p-6 hover:border-amber-400"
+            >
+              Create OpenAI Account
+            </a>
+
+            <a
+              href="https://console.anthropic.com/"
+              target="_blank"
+              className="block border border-white/10 rounded-2xl p-6 hover:border-cyan-400"
+            >
+              Create Anthropic Account
+            </a>
+
+            <a
+              href="https://makersuite.google.com/"
+              target="_blank"
+              className="block border border-white/10 rounded-2xl p-6 hover:border-purple-400"
+            >
+              Create Gemini Account
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+// ==========================================================
+// FILE: server/index.ts
+// ==========================================================
+
+import enterpriseAiRoutes from "./routes/enterprise-ai";
+
+app.use(
+  "/api/enterprise-ai",
+  enterpriseAiRoutes
+);
+
+
+// ==========================================================
+// FILE: client/src/App.tsx
+// ==========================================================
+
+import AIProviderSetup from
+"./pages/enterprise/AIProviderSetup";
+
+<Route
+  path="/enterprise/ai-config"
+  component={AIProviderSetup}
+/>
