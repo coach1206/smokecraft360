@@ -15,6 +15,7 @@ import { EnvironmentProvider }       from '@/contexts/EnvironmentContext';
 import { AxiomIntelligenceProvider } from '@/contexts/AxiomIntelligenceContext';
 import { AxiomPresenceProvider }     from '@/contexts/AxiomPresenceContext';
 import { GuestProfileProvider }      from '@/contexts/GuestProfileContext';
+import { CraftExperienceProvider }   from '@/contexts/CraftExperienceContext';
 import { KioskModeProvider }         from '@/contexts/KioskModeContext';
 import { LicenseProvider }           from '@/contexts/LicenseContext';
 import { HandoffProvider }           from '@/contexts/HandoffContext';
@@ -86,6 +87,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                       <PreferenceProvider>
                         <UserProfileProvider>
                           <GuestProfileProvider>
+                            <CraftExperienceProvider>
                             <HandoffProvider>
                               <AxiomIntelligenceProvider>
                                 <AxiomPresenceProvider>
@@ -97,6 +99,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                 </AxiomPresenceProvider>
                               </AxiomIntelligenceProvider>
                             </HandoffProvider>
+                            </CraftExperienceProvider>
                           </GuestProfileProvider>
                         </UserProfileProvider>
                       </PreferenceProvider>

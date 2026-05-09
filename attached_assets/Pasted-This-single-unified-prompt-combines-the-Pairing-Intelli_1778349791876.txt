@@ -1,0 +1,56 @@
+This single, unified prompt combines the Pairing Intelligence Engine, the Sovereign Craft Context Isolation, and the Inclusive Sensory UI into one comprehensive instruction set for your development agent.
+
+The "Axiom OS: Sovereign Sensory Intelligence" Master Prompt
+Role: You are an elite Full-Stack Architect and Lead UX Motion Designer. You are rebuilding the Axiom OS core to ensure absolute environment isolation, a high-stimulation inclusive UI, and an adaptive pairing intelligence engine.
+
+PART 1: THE BRAIN — ADAPTIVE PAIRING & ISOLATION
+Mission: Fix global context bleed and establish a true "Luxury Sommelier" intelligence layer.
+
+Hard-Isolated Runtime Context:
+
+Create client/src/context/CraftExperienceContext.tsx to isolate SmokeCraft, PourCraft, BrewCraft, and VapeCraft.
+
+Entering a new craft must DESTROY the previous session; SmokeCraft data must never contaminate PourCraft.
+
+Load unique Mentor Personalities and Voices for each (e.g., Warm Tobacconist for Smoke; Sommelier for Pour) via a new CraftVoiceRouter.ts.
+
+Pairing Intelligence Engine:
+
+Build PairingIntelligenceEngine.ts to analyze flavor, strength, and mood.
+
+Use CigarFlavorGraph.ts (7-axis vector) and LiquorPairingEngine.ts to match selections to REAL venue inventory only via InventoryPairingResolver.ts.
+
+Staff Intelligence Panel: Display conversational scripts that adapt to the guest’s history. If a returning regular, focus on "Palate Evolution"; if a new explorer, focus on "Education".
+
+PART 2: THE SENSES — INCLUSIVE MOTION & VISUAL RITUAL
+Mission: Restore the "Apple-level" aesthetic by purging static, non-inclusive imagery and restoring liquid motion.
+
+Emergency Identity & Diversity Purge:
+
+In SmokeCraft.jsx, remove all static images of specific individuals.
+
+Implement an ImageRotator cycling through a diverse gallery of lifestyle hands (various skin tones/genders) performing rituals like cutting a cigar or pouring spirits.
+
+Include a continuous loop of macro-HD assets: oily tobacco textures (Seco, Ligero, Maduro), cinematic spirit pours, and abstract gold smoke.
+
+Liquid Motion UI:
+
+The four-module home screen must not be static. Use Framer Motion to ensure all elements drift and glow in a constant "liquid" state.
+
+Apply a Ken Burns effect to all background imagery to maintain high stimulation.
+
+Tactile Interaction:
+
+Interactive Vitolas: The cigar silhouette must physically grow/shrink based on the "Smoke Time" slider.
+
+Visual Calibration: Set backgrounds to 28% opacity with a 15px backdrop blur (glassmorphism).
+
+PART 3: THE MULTIMODAL FEEDBACK
+Audio "Mentor" System:
+
+Fires TTS narration on every transition to explain the "Alchemy" (e.g., "The caramel oak finish complements the cocoa notes...").
+
+Strict Constraint: The AudioContext must strictly respect the global Mute Toggle in the header.
+
+Replit Agent Command:
+"Execute a full rebuild of the CraftExperienceContext and PairingIntelligenceEngine. Isolate all craft runtimes to prevent context bleed. Refactor SmokeCraft.jsx to remove the specific demographic imagery and replace it with a rotating, diverse gallery of lifestyle hands and high-def tobacco textures. Restore liquid motion to all modules and ensure the adaptive Staff Intelligence panel is active for both new and returning guests."

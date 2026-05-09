@@ -11,7 +11,7 @@
  * Only the visual shell is rebuilt.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { Sparkles, Cpu, Activity, RotateCcw, X } from "lucide-react";
@@ -140,6 +140,96 @@ function IntelStatusBar() {
           {CRAFT_MODULES.reduce((s, m) => s + m.scenes.length, 0)} curated scenes
         </span>
       </div>
+    </div>
+  );
+}
+
+// ── Per-craft background image pool ──────────────────────────────────────────
+
+const TILE_BG: Record<string, string[]> = {
+  smoke: [
+    "/images/smoke/smoke_lounge.png",
+    "/images/smoke/smoke_selection.png",
+    "/images/smoke/smoke_group.png",
+    "/images/smoke/smoke_urban.png",
+  ],
+  pour: [
+    "/images/pour/pour_bar.png",
+    "/images/pour/pour_whiskey.png",
+    "/images/pour/pour_aged.png",
+    "/images/pour/pour_cocktail.png",
+  ],
+  brew: [
+    "/images/brew/brew_taproom.png",
+    "/images/brew/brew_outdoor.png",
+    "/images/brew/brew_barrel.png",
+    "/images/brew/brew_pouring.png",
+  ],
+  vape: [
+    "/images/vape/vape_modern.png",
+    "/images/vape/vape_social.png",
+    "/images/vape/vape_hookah.png",
+    "/images/vape/vape_device.png",
+  ],
+};
+
+const KB_MOVES = [
+  { scale: [1.08, 1.18], x: ["0%", "-3%"], y: ["0%", "-2%"] },
+  { scale: [1.10, 1.06], x: ["-2%", "2%"], y: ["0%", "2%"]  },
+  { scale: [1.06, 1.14], x: ["2%", "-2%"], y: ["-2%", "0%"] },
+  { scale: [1.12, 1.07], x: ["0%", "3%"],  y: ["2%", "-2%"] },
+];
+
+function LiquidTileBg({ craftId, color }: { craftId: string; color: string }) {
+  const pool     = TILE_BG[craftId] ?? TILE_BG.smoke;
+  const seed     = useMemo(() => Math.floor(Math.random() * pool.length), [pool.length]);
+  const [idx, setIdx] = useState(seed);
+  const kbRef    = useRef(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIdx(i => (i + 1) % pool.length);
+      kbRef.current = (kbRef.current + 1) % KB_MOVES.length;
+    }, 5000);
+    return () => clearInterval(id);
+  }, [pool.length]);
+
+  const kb = KB_MOVES[kbRef.current]!;
+
+  return (
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden", borderRadius: 22, zIndex: 0, pointerEvents: "none" }}>
+      <AnimatePresence mode="popLayout">
+        <motion.div
+          key={idx}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.28 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.2, ease: "easeInOut" }}
+          style={{ position: "absolute", inset: 0 }}
+        >
+          <motion.div
+            animate={{ scale: kb.scale, x: kb.x, y: kb.y }}
+            transition={{ duration: 6.4, ease: "linear" }}
+            style={{
+              width:              "115%",
+              height:             "115%",
+              position:           "absolute",
+              top:                "-7%",
+              left:               "-7%",
+              backgroundImage:    `url(${pool[idx]})`,
+              backgroundSize:     "cover",
+              backgroundPosition: "center",
+            }}
+          />
+        </motion.div>
+      </AnimatePresence>
+      {/* Craft-color liquid gradient overlay */}
+      <div style={{
+        position:   "absolute",
+        inset:      0,
+        background: `linear-gradient(160deg, ${color}28 0%, transparent 55%, rgba(8,6,4,0.82) 100%)`,
+        zIndex:     1,
+      }} />
     </div>
   );
 }
@@ -664,6 +754,9 @@ function CraftHubInner() {
               boxShadow:    `0 4px 32px rgba(26,26,27,0.26), 0 0 0 1px ${mod.color}18`,
             }}
           >
+            {/* Liquid Ken Burns background — cycles through craft imagery */}
+            <LiquidTileBg craftId={mod.id} color={mod.color} />
+
             {/* Breathing glow ring */}
             <GlowRing color={mod.color} />
 

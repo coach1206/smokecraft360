@@ -2,6 +2,8 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, useSpring, useTransform } from "framer-motion";
 import { useLocation } from "wouter";
 import { AudioWaveToggle, useAudio } from "@/contexts/AudioContext";
+import { useGuestProfile } from "@/contexts/GuestProfileContext";
+import { getStaffLine } from "@/lib/CraftVoiceRouter";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const GOLD      = "#d4af37";
@@ -38,13 +40,13 @@ const WRAPPERS = [
   },
   {
     id: "connecticut", label: "Connecticut", sub: "Silky · Creamy · Light",
-    xp: 15, img: "/images/smoke/smoke_solo.png", synergy: 25,
+    xp: 15, img: "/images/smoke/smoke_urban.png", synergy: 25,
     desc: "Shade-grown elegance. The silk of the tobacco world.",
     mentorNote: "Connecticut wrapper speaks to those who appreciate understated luxury.",
   },
   {
     id: "habano", label: "Habano", sub: "Earthy · Spiced · Medium",
-    xp: 18, img: "/images/smoke/smoke_woman.png", synergy: 28,
+    xp: 18, img: "/images/smoke/smoke_selection.png", synergy: 28,
     desc: "Cuban tradition meets modern construction.",
     mentorNote: "Habano is complexity in every draw — spice, leather, earth.",
   },
@@ -393,9 +395,20 @@ function AlchemyReveal({
   sel, onRestart,
 }: { sel: Sel; onRestart: () => void }) {
   const { speak } = useAudio();
+  const { guestProfile, isReturning } = useGuestProfile();
   const [phase,   setPhase]   = useState<"scan" | "result">("scan");
   const [data,    setData]    = useState<PairingResult | null>(null);
   const [staffTab, setStaffTab] = useState(false);
+
+  const sessionCount  = guestProfile?.sessionCount ?? 0;
+  const flavorHistory = guestProfile?.flavorHistory ?? [];
+  const isPalateEvolution = isReturning && sessionCount > 1;
+  const staffMode     = isPalateEvolution ? "PALATE EVOLUTION" : "EDUCATION";
+  const staffModeColor = isPalateEvolution ? "#a78bfa" : "#4ade80";
+  const staffLine     = getStaffLine("smoke", isPalateEvolution, sessionCount);
+  const topFlavors    = [...flavorHistory]
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
 
   useEffect(() => {
     const body = {
@@ -428,6 +441,7 @@ function AlchemyReveal({
       const t = setTimeout(() => speak(data.alchemyText), 800);
       return () => clearTimeout(t);
     }
+    return undefined;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, data]);
 
@@ -659,15 +673,19 @@ function AlchemyReveal({
                   className="w-full flex items-center justify-between px-4 py-3 rounded-xl"
                   style={{
                     background:     "rgba(42,42,42,0.80)",
-                    border:         `1px solid rgba(212,175,55,0.22)`,
+                    border:         `1px solid ${staffModeColor}38`,
                     backdropFilter: "blur(12px)",
                     cursor:         "pointer",
                   }}
                 >
                   <div className="flex items-center gap-2">
-                    <div className="rounded-full" style={{ width: 6, height: 6, background: "#4ade80" }} />
+                    <div className="rounded-full" style={{ width: 6, height: 6, background: staffModeColor }} />
                     <span className="text-[9px] tracking-[0.22em] uppercase font-bold" style={{ color: "rgba(240,232,212,0.70)" }}>
                       STAFF INTELLIGENCE
+                    </span>
+                    <span className="text-[8px] tracking-widest uppercase font-bold px-1.5 py-0.5 rounded"
+                      style={{ background: `${staffModeColor}20`, color: staffModeColor, border: `1px solid ${staffModeColor}40` }}>
+                      {staffMode}
                     </span>
                   </div>
                   <span style={{ color: `${GOLD}80`, fontSize: 10 }}>{staffTab ? "▲ HIDE" : "▼ SHOW"}</span>
@@ -686,15 +704,56 @@ function AlchemyReveal({
                         className="rounded-b-xl p-4 flex flex-col gap-3 text-left"
                         style={{
                           background:     "rgba(28,24,16,0.96)",
-                          border:         `1px solid rgba(212,175,55,0.15)`,
+                          border:         `1px solid ${staffModeColor}25`,
                           borderTop:      "none",
                           backdropFilter: "blur(12px)",
                         }}
                       >
+                        {/* Mode header line */}
+                        <div className="rounded-lg px-3 py-2" style={{ background: `${staffModeColor}10`, border: `1px solid ${staffModeColor}25` }}>
+                          <span className="text-[9px] tracking-widest uppercase block mb-1" style={{ color: staffModeColor }}>
+                            {isPalateEvolution ? "✦ RETURNING REGULAR" : "✦ FIRST-TIME EXPLORER"}
+                          </span>
+                          <p className="text-xs leading-relaxed italic" style={{ color: "rgba(240,232,212,0.75)" }}>
+                            {staffLine}
+                          </p>
+                        </div>
+
+                        {/* Palate Evolution: show flavor history tags */}
+                        {isPalateEvolution && topFlavors.length > 0 && (
+                          <div>
+                            <span className="text-[9px] tracking-widest uppercase block mb-1.5" style={{ color: `${staffModeColor}80` }}>
+                              KNOWN PALATE HISTORY
+                            </span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {topFlavors.map(f => (
+                                <span key={f.tag} className="px-2 py-0.5 rounded-full text-[9px] uppercase tracking-wider flex items-center gap-1"
+                                  style={{ background: `${staffModeColor}15`, border: `1px solid ${staffModeColor}35`, color: staffModeColor }}>
+                                  {f.tag}
+                                  <span style={{ opacity: 0.55 }}>×{f.count}</span>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Education mode: explain today's blend */}
+                        {!isPalateEvolution && (
+                          <div>
+                            <span className="text-[9px] tracking-widest uppercase block mb-1" style={{ color: "rgba(212,175,55,0.60)" }}>
+                              HOW TO EXPLAIN THIS BLEND
+                            </span>
+                            <p className="text-xs leading-relaxed" style={{ color: "rgba(240,232,212,0.72)" }}>
+                              Start with the wrapper — it's what the guest can see and feel. Then guide them through the body (the leaf), and finish with why the smoke time matters. Keep it sensory, not technical.
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Flavor profile tags */}
                         <div className="flex items-center justify-between">
-                          <span className="text-[9px] tracking-widest uppercase" style={{ color: `${GOLD}70` }}>FLAVOR PROFILE</span>
+                          <span className="text-[9px] tracking-widest uppercase" style={{ color: `${GOLD}70` }}>TODAY'S FLAVOR PROFILE</span>
                           <span className="text-[9px] font-bold" style={{ color: "#4ade80" }}>
-                            {data.staffNudge.confidenceScore}% MATCH CONFIDENCE
+                            {data.staffNudge.confidenceScore}% MATCH
                           </span>
                         </div>
                         <div className="flex flex-wrap gap-1.5">
@@ -705,6 +764,8 @@ function AlchemyReveal({
                             </span>
                           ))}
                         </div>
+
+                        {/* Suggested wording */}
                         <div>
                           <span className="text-[9px] tracking-widest uppercase block mb-1" style={{ color: "rgba(212,175,55,0.60)" }}>
                             SUGGESTED WORDING
@@ -713,6 +774,8 @@ function AlchemyReveal({
                             {data.staffNudge.suggestedWording}
                           </p>
                         </div>
+
+                        {/* Upsell line */}
                         <div className="rounded-lg px-3 py-2" style={{ background: "rgba(212,175,55,0.06)", border: `1px solid ${GOLD}20` }}>
                           <span className="text-[9px] tracking-widest uppercase block mb-1" style={{ color: `${GOLD}60` }}>
                             PREMIUM UPSELL
@@ -785,11 +848,11 @@ export default function MasterBlender() {
     setXp(v => v + amount);
   }, []);
 
-  function select<T extends typeof LEAVES[0]>(key: keyof Sel, item: T, e: React.MouseEvent) {
+  function select<T extends { id: string; xp: number }>(key: keyof Sel, item: T, e: React.MouseEvent) {
     setSel(s => ({ ...s, [key]: item }));
     spawnXP(item.xp, e);
     if ("mentorNote" in item) {
-      setTimeout(() => speak((item as typeof LEAVES[0]).mentorNote), 400);
+      setTimeout(() => speak(String((item as unknown as typeof LEAVES[0]).mentorNote ?? "")), 400);
     }
   }
 
