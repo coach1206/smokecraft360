@@ -48,11 +48,10 @@ export function TrifectaProvider({ children }: { children: React.ReactNode }) {
   const [cubeOpen,       setCubeOpen]       = useState(false);
 
   const triggerTrifecta = useCallback((profile: TrifectaProfile) => {
-    const result = TitanNervousSystem.calculateTrifecta(profile);
+    const result = TitanNervousSystem.getTrifecta(profile);
     setInsightPayload(result);
     setCubeOpen(true);
-    // Sonic confirmation on Trifecta reveal
-    TitanNervousSystem.audio.play("PILL_CLINK");
+    // Haptic confirmation on Trifecta reveal
     TitanNervousSystem.haptics.confirm();
   }, []);
 

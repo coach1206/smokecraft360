@@ -73,23 +73,17 @@ export function initSocketServer(httpServer: HttpServer): Server {
       }
     });
 
-    // ── SOVEREIGN_GLOBAL_COMMAND relay ─────────────────────────────────────
+    // ── SOVEREIGN_GLOBAL_DISRUPTION relay (5.2.0) ──────────────────────────
     // A super-admin kiosk emits this; the server fans it out to every other
-    // connected device (global) or to a specific venue room.
-    socket.on("SOVEREIGN_GLOBAL_COMMAND", (cmd: {
-      type:           string;
-      venueId:        string;
-      timestamp:      number;
-      authorityLevel: string;
+    // connected device globally. Payload: { type, timestamp, origin, mode }.
+    socket.on("SOVEREIGN_GLOBAL_DISRUPTION", (cmd: {
+      type:      string;
+      timestamp: number;
+      origin:    string;
+      mode:      string;
     }) => {
-      logger.info({ socketId: socket.id, type: cmd.type, venueId: cmd.venueId }, "Sovereign global command relayed");
-      if (cmd.venueId === "GLOBAL_BROADCAST") {
-        // Broadcast to ALL other connected kiosks
-        socket.broadcast.emit("SOVEREIGN_GLOBAL_COMMAND", cmd);
-      } else {
-        // Fan out only to the target venue room
-        socket.to(`venue:${cmd.venueId}`).emit("SOVEREIGN_GLOBAL_COMMAND", cmd);
-      }
+      logger.info({ socketId: socket.id, type: cmd.type, origin: cmd.origin }, "Sovereign global disruption relayed");
+      socket.broadcast.emit("SOVEREIGN_GLOBAL_DISRUPTION", cmd);
     });
 
     socket.on("disconnect", (reason) => {

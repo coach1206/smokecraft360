@@ -26,7 +26,7 @@ import { useCraftExperience } from "@/contexts/CraftExperienceContext";
 import { useSuperAdmin }     from "@/contexts/SuperAdminContext";
 import { playPillClink }     from "@/lib/audioEngine";
 import { useUnifiedCognitive } from "@/contexts/UnifiedCognitiveContext";
-import { TitanNervousSystem, PREAUTH_HOLD } from "@/lib/titanNervousSystem";
+import { TitanNervousSystem } from "@/lib/titanNervousSystem";
 
 // ── Design tokens ──────────────────────────────────────────────────────────
 const OBSIDIAN   = "rgba(10,9,8,0.92)";
@@ -249,7 +249,6 @@ function KillSwitchItem({ icon, label, sub, accent, active, onCommit }: KillSwit
       if (p >= 1) {
         holdingRef.current = false;
         setProgress(0);
-        TitanNervousSystem.haptics.heavy();
         onCommit();
       } else {
         rafRef.current = requestAnimationFrame(tick);
@@ -517,15 +516,17 @@ export function SovereignOverrideHub() {
 
   const handleBlackout = useCallback(() => {
     toggleKillSwitch("session_blackout");
-    void TitanNervousSystem.override("BLACKOUT", PREAUTH_HOLD);
+    // executeGlobalCommand fires haptics.heavy() + SOVEREIGN_GLOBAL_DISRUPTION broadcast
+    void TitanNervousSystem.executeGlobalCommand("BLACKOUT", 2001);
   }, [toggleKillSwitch]);
 
   const handleApiLock = useCallback(() => {
     toggleKillSwitch("api_disconnect");
-    void TitanNervousSystem.override("API_LOCK", PREAUTH_HOLD);
+    void TitanNervousSystem.executeGlobalCommand("API_LOCK", 2001);
   }, [toggleKillSwitch]);
 
   const handlePurge = useCallback(() => {
+    TitanNervousSystem.haptics.heavy();
     setOpen(false);
     setTimeout(() => {
       purgeSessions();

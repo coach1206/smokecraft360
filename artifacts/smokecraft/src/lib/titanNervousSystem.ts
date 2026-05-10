@@ -1,13 +1,15 @@
 /**
  * TITAN V — GLOBAL NERVOUS SYSTEM (HARDENED)
- * Version: 5.1.0 (Global Sovereign)
+ * Version: 5.2.0 // Global Market Disturber
+ * Security: Dual-Stage Long-Press & Regional Palate Mapping
  *
- * Changes from 5.0.0:
- *  - Dual-stage long-press authentication (validateCommand, 2 s minimum hold)
- *  - override() is now async — rejects with error haptic if hold insufficient
- *  - Socket event renamed → SOVEREIGN_GLOBAL_COMMAND (supports venueId targeting)
- *  - calculateTrifecta gains regional palate overlay (DR / US / EU)
- *  - haptics.heavy() + haptics.error() added
+ * API surface changes from 5.1.0:
+ *  - validateCommand(holdDuration)  — drops _command string first arg
+ *  - executeGlobalCommand()         — replaces override(); emits SOVEREIGN_GLOBAL_DISRUPTION
+ *  - getTrifecta()                  — replaces calculateTrifecta(); adds matchAffinity + visualState
+ *  - setSystemHeartbeat()           — replaces pulse(); uses haptics.thud() instead of audio
+ *  - SOVEREIGN_GLOBAL_DISRUPTION    — new socket event name
+ * Backward-compat aliases: override(), calculateTrifecta(), pulse() preserved.
  */
 
 import { groupEnergyEngine }  from "./groupEnergyEngine";
@@ -22,9 +24,11 @@ import {
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-export type LoungeMood  = "MEDITATIVE" | "FOCUSED" | "HIGH_ENERGY";
-export type OverrideType = "BLACKOUT" | "API_LOCK" | "PURGE";
-export type Region       = "DR" | "US" | "EU";
+export type LoungeMood      = "MEDITATIVE" | "FOCUSED" | "HIGH_ENERGY";
+export type OverrideType    = "BLACKOUT" | "API_LOCK" | "PURGE";
+/** 5.2.0 canonical command type — same domain as OverrideType */
+export type SovereignCommand = "BLACKOUT" | "API_LOCK" | "PURGE";
+export type Region           = "DR" | "US" | "EU";
 
 export interface TrifectaProfile {
   craftType:   "smoke" | "pour" | "brew" | "vape";
@@ -43,6 +47,10 @@ export interface TrifectaRecommendation {
 
 export interface TrifectaResult {
   affinityScore: number;
+  /** 5.2.0 alias for affinityScore — "Apple-level" precision 92–100 */
+  matchAffinity: number;
+  /** 5.2.0 visual state signal for the cube renderer */
+  visualState:   "BREATHING_GOLD";
   region:        Region;
   craft:         TrifectaRecommendation;
   pour:          TrifectaRecommendation;
@@ -192,39 +200,40 @@ export const TitanNervousSystem = {
   /**
    * Dual-stage command authentication.
    * Returns true only when hold duration meets the 2 s threshold.
-   * Pass PREAUTH_HOLD (Infinity) for server-side pre-authenticated commands.
+   * 5.2.0: single-arg signature — holdDuration only.
    */
-  async validateCommand(_command: string, duration: number): Promise<boolean> {
-    if (duration < HOLD_THRESHOLD_MS) {
-      console.warn(`TITAN_V: Command rejected — hold ${duration}ms < ${HOLD_THRESHOLD_MS}ms`);
+  async validateCommand(holdDuration: number): Promise<boolean> {
+    if (holdDuration < HOLD_THRESHOLD_MS) {
+      console.warn(`TITAN_V: SAFETY TRIGGERED - HOLD DURATION INSUFFICIENT (${holdDuration}ms)`);
       return false;
     }
     return true;
   },
 
-  // ── 2. GLOBAL OVERRIDE ───────────────────────────────────────────────────────
+  // ── 2. GLOBAL OVERRIDE EXECUTION (5.2.0) ────────────────────────────────────
   /**
-   * Async authority override with dual-stage safety lock.
-   * Rejects with error haptic if holdTime < 2 s.
-   * On success: heavy haptic → SOVEREIGN_GLOBAL_COMMAND broadcast → DOM action.
+   * Primary sovereign command API for 5.2.0.
+   * Validates hold duration internally, then broadcasts SOVEREIGN_GLOBAL_DISRUPTION
+   * to all tablets across the node network.
    *
-   * @param holdTime  Measured press duration in ms. Pass PREAUTH_HOLD to bypass.
+   * @param type         Sovereign command type
+   * @param holdDuration Measured press duration in ms (must be ≥ 2000)
    */
-  async override(type: OverrideType, holdTime: number): Promise<void> {
-    const authorized = await TitanNervousSystem.validateCommand(type, holdTime);
+  async executeGlobalCommand(type: SovereignCommand, holdDuration: number): Promise<void> {
+    const authorized = await TitanNervousSystem.validateCommand(holdDuration);
 
     if (!authorized) {
       TitanNervousSystem.haptics.error();
       return;
     }
 
-    TitanNervousSystem.haptics.heavy();
+    TitanNervousSystem.haptics.heavy(); // The "Thud" of authority
 
-    socket.emit("SOVEREIGN_GLOBAL_COMMAND", {
+    socket.emit("SOVEREIGN_GLOBAL_DISRUPTION", {
       type,
-      venueId:        "GLOBAL_BROADCAST",
-      timestamp:      Date.now(),
-      authorityLevel: "SUPER_ADMIN_GLOBAL",
+      timestamp: Date.now(),
+      origin:    "SUPER_ADMIN_MOBILE",
+      mode:      "ABSOLUTE",
     });
 
     if (type === "BLACKOUT") {
@@ -232,19 +241,35 @@ export const TitanNervousSystem = {
     }
   },
 
-  // ── 3. METABOLIC PULSE ───────────────────────────────────────────────────────
   /**
-   * Syncs document animation speed, GroupEnergyEngine mood, and sovereign tone.
+   * @deprecated 5.1.0 compat alias — use executeGlobalCommand().
+   * Bridges the old venueId-based payload into the new DISRUPTION event.
    */
-  pulse(mood: LoungeMood): void {
-    document.documentElement.style.setProperty("--hb-mult", String(SPEED[mood]));
-    groupEnergyEngine.setMood(mood);
-    TitanNervousSystem.audio.play("SOVEREIGN_SWEEP");
+  async override(type: OverrideType, holdTime: number): Promise<void> {
+    return TitanNervousSystem.executeGlobalCommand(type as SovereignCommand, holdTime);
   },
 
-  // ── 4. TRIFECTA PAIRING BRAIN ────────────────────────────────────────────────
+  // ── 3. METABOLIC SYNC (5.2.0) ───────────────────────────────────────────────
+  /**
+   * Sets the speed of every animation via --hb-mult CSS variable.
+   * Syncs GroupEnergyEngine and fires the "Sovereign Sweep" thud haptic.
+   * 5.2.0 name: setSystemHeartbeat (replaces pulse).
+   */
+  setSystemHeartbeat(mood: LoungeMood): void {
+    document.documentElement.style.setProperty("--hb-mult", String(SPEED[mood]));
+    groupEnergyEngine.setMood(mood);
+    TitanNervousSystem.haptics.thud(); // Sovereign Sweep signal
+  },
+
+  /** @deprecated 5.1.0 compat alias — use setSystemHeartbeat(). */
+  pulse(mood: LoungeMood): void {
+    TitanNervousSystem.setSystemHeartbeat(mood);
+  },
+
+  // ── 4. TRIFECTA PAIRING BRAIN (5.2.0) ───────────────────────────────────────
   /**
    * Regional + palate affinity matrix: Craft ↔ Pour ↔ Plate.
+   * 5.2.0 name: getTrifecta. Return adds matchAffinity + visualState fields.
    *
    * Priority order:
    *   1. Regional inventory map (DR / US / EU) → sets pour & plate labels
@@ -254,7 +279,7 @@ export const TitanNervousSystem = {
    * @param profile  Guest palate profile from enrollment
    * @param region   Venue region code — defaults to 'DR'
    */
-  calculateTrifecta(profile: TrifectaProfile, region: Region = "DR"): TrifectaResult {
+  getTrifecta(profile: TrifectaProfile, region: Region = "DR"): TrifectaResult {
     const score  = computeAffinityScore(profile);
     const upsell = score >= 93 ||
       profile.guestTier === "MASTER" ||
@@ -276,12 +301,19 @@ export const TitanNervousSystem = {
 
     return {
       affinityScore: score,
+      matchAffinity: score,       // 5.2.0 alias
+      visualState:   "BREATHING_GOLD",
       region,
       craft:  craftNote(profile),
       pour,
       plate,
       upsell,
     };
+  },
+
+  /** @deprecated 5.1.0 compat alias — use getTrifecta(). */
+  calculateTrifecta(profile: TrifectaProfile, region: Region = "DR"): TrifectaResult {
+    return TitanNervousSystem.getTrifecta(profile, region);
   },
 
   // ── 5. SONIC ENGINE ──────────────────────────────────────────────────────────
