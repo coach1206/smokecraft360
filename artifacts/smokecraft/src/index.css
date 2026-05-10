@@ -392,111 +392,136 @@ button, [role="button"] {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   STEALTH HANDOFF — SOVEREIGN PROTOCOL
-   Signal-node heartbeat, telemetry draw, ripple burst, and backdrop dim.
-   These run as CSS animations so they are GPU-composited and never block JS.
+   STEALTH HANDOFF — SOVEREIGN MOTION PROTOCOLS  (TITAN V · 360 Enterprises)
+   GPU-composited. Never blocks the JS thread. Zero frame-drop guarantee.
 ───────────────────────────────────────────────────────────────────────────── */
 
-/* Core heartbeat — signal nodes beat like a live server monitor */
+/* CSS custom properties — single source of truth for sovereign palette */
+:root {
+  --titan-gold:    #D4AF37;
+  --titan-amber:   #FFBF00;
+  --titan-green:   #00FF41;
+  --titan-obsidian:#050505;
+}
+
+/* 1. THE HEARTBEAT — expands 0.95→1.05 so nodes "breathe" like live servers */
 @keyframes sovereignPulse {
-  0%   { opacity: 1;    transform: scale(1);    }
-  35%  { opacity: 0.28; transform: scale(0.82); }
-  65%  { opacity: 0.28; transform: scale(0.82); }
-  100% { opacity: 1;    transform: scale(1);    }
+  0%   { transform: scale(0.95); opacity: 0.5; }
+  50%  { transform: scale(1.05); opacity: 1;   }
+  100% { transform: scale(0.95); opacity: 0.5; }
 }
 
-/* Slower ambient breath for secondary indicators */
+/* 2. THE AMBIENT BREATH — slower, for status chips */
 @keyframes sovereignBreath {
-  0%, 100% { opacity: 1;    }
-  50%       { opacity: 0.38; }
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.8; }
 }
 
-/* Telemetry line draw — used with SVG stroke-dashoffset trick */
-@keyframes sovereignLineDraw {
-  from { stroke-dashoffset: 1; }
-  to   { stroke-dashoffset: 0; }
-}
-
-/* Ripple ring expansion */
+/* 3. THE RIPPLE — contact burst, border-width collapses as ring expands */
 @keyframes sovereignRipple {
-  0%   { transform: scale(0);  opacity: 0.55; }
-  100% { transform: scale(18); opacity: 0;    }
+  0%   { transform: scale(0); opacity: 0.8; border-width: 4px; }
+  100% { transform: scale(4); opacity: 0;   border-width: 1px; }
 }
 
-/* Backdrop entrance — dim slides in */
-@keyframes sovereignDimIn {
-  from { opacity: 0; backdrop-filter: blur(0px) brightness(1);   }
-  to   { opacity: 1; backdrop-filter: blur(2px) brightness(0.72); }
+/* 4. THE TELEMETRY DRAW — SVG stroke-dashoffset: 1000 technique */
+@keyframes sovereignLineDraw {
+  from { stroke-dashoffset: 1000; }
+  to   { stroke-dashoffset: 0;    }
 }
 
-/* Command Surface spring-rise */
+/* 5. THE COCKPIT RISE — true back-ease overshoot (Tesla-style click into place) */
 @keyframes sovereignRise {
   0%   { transform: translateY(100%); }
-  60%  { transform: translateY(-6px); }
-  80%  { transform: translateY(3px);  }
+  70%  { transform: translateY(-10px); }
   100% { transform: translateY(0);    }
 }
 
-/* Utility classes ─────────────────────────────────── */
+/* ── Utility classes ──────────────────────────────── */
 
-/* Signal dot — beats with live-server rhythm */
+/* Signal dot: beats with live-server rhythm — GPU layer promoted */
 .pulse {
-  display:          inline-block;
-  animation:        sovereignPulse 1.6s ease-in-out infinite;
-  will-change:      opacity, transform;
+  will-change: opacity, transform;
+  animation:   sovereignPulse 1.6s ease-in-out infinite;
 }
 
-/* Stagger variants so not all nodes beat in sync */
-.pulse-delay-1 { animation-delay: 0.26s; }
-.pulse-delay-2 { animation-delay: 0.52s; }
-.pulse-delay-3 { animation-delay: 0.78s; }
-.pulse-delay-4 { animation-delay: 1.04s; }
+/* Organic stagger — not uniform steps, so nodes feel like independent processes */
+.pulse-delay-1 { animation-delay: 0.2s;  }
+.pulse-delay-2 { animation-delay: 0.5s;  }
+.pulse-delay-3 { animation-delay: 0.9s;  }
+.pulse-delay-4 { animation-delay: 1.3s;  }
 
-/* Ambient breath (slower, for status chips) */
+/* Ambient breath for secondary indicators */
 .sovereign-breath {
-  animation:    sovereignBreath 2.4s ease-in-out infinite;
-  will-change:  opacity;
+  will-change: opacity;
+  animation:   sovereignBreath 2.4s ease-in-out infinite;
 }
 
-/* Telemetry box — used by .telemetry-box reference in PhantomHUD */
+/* Ripple ring — spawn absolutely inside a relative container */
+.ripple-effect {
+  position:     absolute;
+  border:       1px solid var(--titan-gold);
+  border-radius:50%;
+  animation:    sovereignRipple 0.8s ease-out forwards;
+  pointer-events: none;
+}
+
+/* Telemetry SVG line — pair with stroke-dasharray="1000" on the element */
+.telemetry-line {
+  stroke-dasharray:  1000;
+  stroke-dashoffset: 1000;
+  animation: sovereignLineDraw 1.2s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+
+/* Environment shift — apply to backdrop div for GPU-composited blur+dim */
+.sovereign-dim-overlay {
+  backdrop-filter:          blur(2px) brightness(0.6);
+  -webkit-backdrop-filter:  blur(2px) brightness(0.6);
+  transition: backdrop-filter 0.5s ease;
+}
+
+/* Command surface — spring-rise with back-ease overshoot */
+.command-surface {
+  will-change: transform;
+  animation:   sovereignRise 0.6s cubic-bezier(0.175,0.885,0.32,1.1) forwards;
+  border-top-left-radius:  20px;
+  border-top-right-radius: 20px;
+}
+
+/* Telemetry panel card */
 .telemetry-box {
   background:    rgba(245,242,237,0.03);
-  border:        1px solid rgba(212,175,55,0.20);
+  border:        1px solid rgba(212,175,55,0.18);
   border-radius: 10px;
   padding:       16px;
   font-family:   'JetBrains Mono','Courier New',monospace;
   font-size:     10px;
   color:         rgba(245,242,237,0.65);
   line-height:   1.75;
+  text-transform:uppercase;
 }
 
 .telemetry-box h4 {
-  margin:          0 0 10px;
-  font-size:       8px;
-  letter-spacing:  0.22em;
-  color:           rgba(245,242,237,0.30);
-  text-transform:  uppercase;
+  margin:         0 0 10px;
+  font-size:      8px;
+  letter-spacing: 0.22em;
+  color:          rgba(245,242,237,0.30);
 }
 
-/* Stealth backdrop — separate class for vanilla usage */
+/* Stealth backdrop utility */
 .stealth-backdrop {
-  position:        fixed;
-  inset:           0;
-  background:      rgba(4,4,4,0.72);
-  backdrop-filter: blur(2px) brightness(0.72);
+  position:                fixed;
+  inset:                   0;
+  background:              rgba(4,4,4,0.72);
+  backdrop-filter:         blur(2px) brightness(0.72);
   -webkit-backdrop-filter: blur(2px) brightness(0.72);
-  animation:       sovereignDimIn 0.55s ease forwards;
-  z-index:         9997;
+  z-index:                 9997;
 }
 
-/* Command surface — spring rise */
-.stealth-command-surface {
-  animation:           sovereignRise 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
-  will-change:         transform;
-  border-top-left-radius:  20px;
-  border-top-right-radius: 20px;
+/* Pressure ring — SVG strokes bound to JS stroke-dashoffset */
+.stealth-ring-track { stroke: rgba(212,175,55,0.14); }
+.stealth-ring-fill  {
+  stroke:            var(--titan-amber);
+  stroke-width:      2;
+  stroke-linecap:    round;
+  transition:        stroke-dashoffset 0.1s linear;
 }
-
-/* Pressure ring — SVG circle uses stroke-dasharray trick */
-.stealth-ring-track  { stroke: rgba(212,175,55,0.14); }
-.stealth-ring-fill   { stroke: #D4AF37; stroke-linecap: round; transition: stroke-dashoffset 0.05s linear; }

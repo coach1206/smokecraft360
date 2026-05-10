@@ -1,0 +1,99 @@
+/* TITAN V: SOVEREIGN MOTION PROTOCOLS 
+  Entity: 360 Enterprises Services LLC
+*/
+
+:root {
+  --titan-gold: #D4AF37;
+  --titan-amber: #FFBF00;
+  --titan-green: #00FF41;
+  --titan-obsidian: #050505;
+}
+
+/* 1. THE HEARTBEAT (Server Activity Illusion) */
+@keyframes sovereignPulse {
+  0% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.5; }
+}
+
+.pulse {
+  will-change: opacity, transform;
+  animation: sovereignPulse 1.6s ease-in-out infinite;
+}
+
+/* THE STAGGER: Critical for the "Independent Process" Illusion */
+.pulse-delay-1 { animation-delay: 0.2s; }
+.pulse-delay-2 { animation-delay: 0.5s; }
+.pulse-delay-3 { animation-delay: 0.9s; }
+.pulse-delay-4 { animation-delay: 1.3s; }
+
+/* 2. THE AMBIENT BREATH */
+@keyframes sovereignBreath {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.sovereign-breath {
+  animation: sovereignBreath 2.4s ease-in-out infinite;
+}
+
+/* 3. THE RIPPLE (Contact Burst) */
+@keyframes sovereignRipple {
+  0% { transform: scale(0); opacity: 0.8; border-width: 4px; }
+  100% { transform: scale(4); opacity: 0; border-width: 1px; }
+}
+
+.ripple-effect {
+  position: absolute;
+  border: 1px solid var(--titan-gold);
+  border-radius: 50%;
+  animation: sovereignRipple 0.8s outset forwards;
+}
+
+/* 4. THE TELEMETRY DRAW */
+@keyframes sovereignLineDraw {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+
+.telemetry-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: sovereignLineDraw 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* 5. THE ENVIRONMENT SHIFT */
+.sovereign-dim-overlay {
+  backdrop-filter: blur(2px) brightness(0.6);
+  transition: backdrop-filter 0.5s ease, brightness 0.5s ease;
+}
+
+/* 6. THE COCKPIT PANEL (Tesla-Style Rise) */
+@keyframes sovereignRise {
+  0% { transform: translateY(100%); }
+  70% { transform: translateY(-10px); } /* Overshoot */
+  100% { transform: translateY(0); }
+}
+
+.command-surface {
+  animation: sovereignRise 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+}
+
+/* 7. THE STEALTH PRESSURE RING */
+.stealth-ring-fill {
+  stroke: var(--titan-amber);
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+/* 8. PANEL STYLING */
+.telemetry-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  padding: 15px;
+  border-radius: 4px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+}

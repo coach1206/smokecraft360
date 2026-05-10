@@ -210,20 +210,20 @@ function CommandSurface({ guest, craftBuild, onClose, elapsed }: CommandSurfaceP
       {/* Drag pill */}
       <div style={{ width: 36, height: 4, borderRadius: 2, background: "rgba(212,175,55,0.30)", margin: "0 auto 10px", cursor: "grab" }} />
 
-      <div style={{
-        background:   C.surface,
-        borderTop:    `1px solid ${C.border}`,
-        borderRadius: "20px 20px 0 0",
-        maxHeight:    "72dvh",
-        overflowY:    "auto",
-        boxShadow:    "0 -24px 60px rgba(0,0,0,0.7), 0 -2px 0 rgba(212,175,55,0.12)",
+      {/* command-surface — CSS back-ease rise with GPU will-change */}
+      <div className="command-surface" style={{
+        background:    C.surface,
+        borderTop:     `1px solid ${C.border}`,
+        maxHeight:     "72dvh",
+        overflowY:     "auto",
+        boxShadow:     "0 -24px 60px rgba(0,0,0,0.7), 0 -2px 0 rgba(212,175,55,0.12)",
         paddingBottom: "env(safe-area-inset-bottom, 20px)",
       }}>
 
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "18px 24px 16px", borderBottom: `1px solid ${C.border}` }}>
-          <motion.div animate={{ opacity: [1, 0.4, 1] }} transition={{ duration: 1.8, repeat: Infinity }}
-            style={{ width: 8, height: 8, borderRadius: "50%", background: C.gold }} />
+          {/* Live status dot — CSS pulse (GPU-composited, no Framer overhead) */}
+          <div className="pulse" style={{ width: 8, height: 8, borderRadius: "50%", background: C.gold, flexShrink: 0 }} />
           <div>
             <div style={{ fontFamily: C.serif, fontSize: 18, color: C.gold, letterSpacing: "0.14em", fontWeight: 300 }}>
               EEIS COMMAND SURFACE
@@ -245,7 +245,7 @@ function CommandSurface({ guest, craftBuild, onClose, elapsed }: CommandSurfaceP
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 14, padding: "20px 24px" }}>
 
           {/* Guest State */}
-          <div style={{ background: "rgba(245,242,237,0.03)", border: `1px solid ${C.border}`, borderRadius: 12, padding: "18px 16px" }}>
+          <div className="telemetry-box" style={{ borderRadius: 12, padding: "18px 16px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
               <Activity size={13} color={C.gold} />
               <span style={{ fontFamily: C.mono, fontSize: 9, color: C.amber, letterSpacing: "0.22em" }}>GUEST STATE</span>
@@ -258,7 +258,7 @@ function CommandSurface({ guest, craftBuild, onClose, elapsed }: CommandSurfaceP
           </div>
 
           {/* Build Intelligence */}
-          <div style={{ background: "rgba(245,242,237,0.03)", border: `1px solid ${C.border}`, borderRadius: 12, padding: "18px 16px" }}>
+          <div className="telemetry-box" style={{ borderRadius: 12, padding: "18px 16px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
               <Brain size={13} color={C.gold} />
               <span style={{ fontFamily: C.mono, fontSize: 9, color: C.amber, letterSpacing: "0.22em" }}>BUILD INTELLIGENCE</span>
@@ -278,7 +278,7 @@ function CommandSurface({ guest, craftBuild, onClose, elapsed }: CommandSurfaceP
           </div>
 
           {/* Signal Routing */}
-          <div style={{ background: "rgba(245,242,237,0.03)", border: `1px solid ${C.border}`, borderRadius: 12, padding: "18px 16px" }}>
+          <div className="telemetry-box" style={{ borderRadius: 12, padding: "18px 16px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
               <Radio size={13} color={C.gold} />
               <span style={{ fontFamily: C.mono, fontSize: 9, color: C.amber, letterSpacing: "0.22em" }}>SIGNAL ROUTING</span>
@@ -290,7 +290,7 @@ function CommandSurface({ guest, craftBuild, onClose, elapsed }: CommandSurfaceP
           </div>
 
           {/* Staff Tools */}
-          <div style={{ background: "rgba(245,242,237,0.03)", border: `1px solid ${C.border}`, borderRadius: 12, padding: "18px 16px" }}>
+          <div className="telemetry-box" style={{ borderRadius: 12, padding: "18px 16px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
               <Zap size={13} color={C.gold} />
               <span style={{ fontFamily: C.mono, fontSize: 9, color: C.amber, letterSpacing: "0.22em" }}>STAFF TOOLS</span>
@@ -348,15 +348,20 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
   );
 }
 
+const BEAT_DELAYS = ["", "pulse-delay-1", "pulse-delay-2", "pulse-delay-3", "pulse-delay-4"] as const;
+
+let _beatIdx = 0;
 function SignalBeat({ label, ms }: { label: string; ms: number }) {
+  const delayClass = BEAT_DELAYS[(_beatIdx++ % 4) + 1];
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-        <motion.div animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 0.8 + Math.random(), repeat: Infinity }}
-          style={{ width: 5, height: 5, borderRadius: "50%", background: C.green }} />
+        {/* CSS pulse — GPU-promoted, staggered so each node beats independently */}
+        <div className={`pulse ${delayClass}`}
+          style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--titan-green)", flexShrink: 0 }} />
         <span style={{ fontFamily: "'JetBrains Mono','Courier New',monospace", fontSize: 8, color: "rgba(245,242,237,0.30)", letterSpacing: "0.14em" }}>{label}</span>
       </div>
-      <span style={{ fontFamily: "'JetBrains Mono','Courier New',monospace", fontSize: 9, color: C.green }}>{ms}ms</span>
+      <span style={{ fontFamily: "'JetBrains Mono','Courier New',monospace", fontSize: 9, color: "var(--titan-green)" }}>{ms}ms</span>
     </div>
   );
 }
