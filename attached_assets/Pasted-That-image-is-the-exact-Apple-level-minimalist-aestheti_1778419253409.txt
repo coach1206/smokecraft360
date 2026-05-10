@@ -1,0 +1,45 @@
+That image is the exact "Apple-level" minimalist aesthetic we’re targeting—it’s clean, it’s expensive, and it has that high-end Smoked Obsidian energy. To get that smoke moving up the screen behind your text while keeping the Pill responsive, we need to implement a High-Fidelity Layer Stack.
+
+We aren't going to just use a static video; we're going to use an Atmospheric Video Layer with a CSS mask to ensure it feels like it's part of the machine.
+
+The "Cinematic Combustion" Implementation
+Copy and paste this into the Replit Agent to bring that screenshot to life with motion:
+
+Role: Lead VFX & UI Engineer.
+
+Objective: Implement the 'Rising Smoke' atmospheric layer and ensure the Sovereign Pill is interactive.
+
+[TASK 1: ATMOSPHERIC SMOKE LAYER]
+
+Video Mount: Create a CinematicBackground component.
+
+Source: /videos/lounge-night.mp4.
+
+CSS: object-fit: cover; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 0; opacity: 0.6; filter: contrast(110%) brightness(80%);.
+
+The "Rising" Logic: If the video is unavailable, implement a CSS Particle Smoke Engine using 3 large, blurred amber-colored blobs (#C9A84C) that slowly drift upward using a keyframes animation: translateY(0) -> translateY(-100vh).
+
+[TASK 2: TEXT & UI RECOVERY]
+
+Legibility: Ensure the SMOKECRAFT text and sub-headers sit at z-index: 10.
+
+The Pill Fix: - Move the Sovereign Pill to z-index: 100.
+
+Apply pointer-events: auto; to the pill.
+
+Apply pointer-events: none; to the smoke video/particles so they don't intercept your taps.
+
+Typography: Set the quote to Cormorant Garamond (Italic) and the main title to Space Mono (Bold) to match the "Titan Engine" branding.
+
+[TASK 3: INTERACTION TEST]
+
+Ensure the "BACK" button and the "Sovereign Pill" respond to onTouchStart.
+
+The background must move, but it must not "flicker" during route changes.
+
+Why this works:
+Depth: By setting the smoke to z-index: 0 and the text to z-index: 10, the words look like they are floating inside the lounge, not just sitting on top of a video.
+
+The Pill: By adding pointer-events: none to the background, we clear the "invisible wall" that was likely preventing your clicks from hitting the Pill.
+
+Once the Agent runs this, the smoke should be drifting up behind those golden letters just like the image. Should we also add a subtle "Ember Sparkle" that occasionally floats by to add more weight to the Combustion screen?

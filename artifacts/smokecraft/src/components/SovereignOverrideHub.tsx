@@ -112,7 +112,7 @@ interface MenuItemProps {
 }
 
 function MenuItem({ icon, label, sub, accent, danger, active, onClick }: MenuItemProps) {
-  const fire = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+  const fire = useCallback((e: React.PointerEvent) => {
     e.stopPropagation();
     onClick();
   }, [onClick]);
@@ -121,7 +121,7 @@ function MenuItem({ icon, label, sub, accent, danger, active, onClick }: MenuIte
     <motion.button
       data-override-hub
       whileTap={{ scale: 0.96, backgroundColor: `${accent}14` }}
-      onClick={fire}
+      onPointerDown={fire}
       style={{
         display:    "flex",
         alignItems: "center",
@@ -256,25 +256,23 @@ export function SovereignOverrideHub() {
 
   useEffect(() => { setMounted(true); }, []);
 
-  // Close on outside tap
+  // Close on outside tap — pointerdown fires once for both mouse and touch
   useEffect(() => {
     if (!open) return;
-    const handler = (e: TouchEvent | MouseEvent) => {
+    const handler = (e: PointerEvent) => {
       const target = e.target as Element;
       if (!target.closest("[data-override-hub]")) setOpen(false);
     };
     const t = setTimeout(() => {
-      window.addEventListener("touchstart", handler, { passive: true });
-      window.addEventListener("mousedown", handler);
+      window.addEventListener("pointerdown", handler);
     }, 60);
     return () => {
       clearTimeout(t);
-      window.removeEventListener("touchstart", handler);
-      window.removeEventListener("mousedown", handler);
+      window.removeEventListener("pointerdown", handler);
     };
   }, [open]);
 
-  const handleOpen = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+  const handleOpen = useCallback((e: React.PointerEvent) => {
     e.stopPropagation();
     if (pillRef.current) setPillRect(pillRef.current.getBoundingClientRect());
     const willOpen = !open;
@@ -422,7 +420,7 @@ export function SovereignOverrideHub() {
         ref={pillRef}
         data-override-hub
         whileTap={{ scale: 0.94 }}
-        onClick={handleOpen}
+        onPointerDown={handleOpen}
         style={{
           position:             "fixed",
           top:                  12,
