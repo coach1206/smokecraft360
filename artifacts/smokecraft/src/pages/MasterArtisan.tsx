@@ -18,6 +18,7 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { socket } from "@/lib/socket";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
+import { emotionalStateStore } from "@/lib/emotionalStateStore";
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 const C = {
@@ -238,13 +239,27 @@ export default function MasterArtisan() {
     vibrateDevice(50);
     setSelected(flavor.id);
 
-    // Staff EEIS real-time signal — Harmony Score update
+    // Advance emotional continuity engine — persists cross-route
+    emotionalStateStore.recordFlavorSelection(flavor.id);
+
+    // Staff EEIS real-time signal — full behavioral payload for Harmony Score
     if (socket.connected) {
+      const es = emotionalStateStore.getState();
       socket.emit("GUEST_SENSORY_UPDATE", {
-        guest:     guestName,
-        selection: flavor.id,
-        meta:      flavor.meta,
-        ts:        new Date().toISOString(),
+        guest:                    guestName,
+        selection:                flavor.id,
+        meta:                     flavor.meta,
+        emotionalState: {
+          escalationLevel:          es.escalationLevel,
+          ritualState:              es.ritualState,
+          confidence:               es.confidence,
+          hesitationScore:          es.hesitationScore,
+          immersionDepth:           es.immersionDepth,
+          premiumIntentProbability: es.premiumIntentProbability,
+          pairingLikelihood:        es.pairingLikelihood,
+          interruptionWindow:       es.interruptionWindow,
+        },
+        ts: new Date().toISOString(),
       });
     }
   }, [guestName]);
@@ -253,6 +268,8 @@ export default function MasterArtisan() {
     if (!selected || syncing) return;
     vibrateDevice(80);
     setSyncing(true);
+    // Advance emotional state — artisan engine phase deepens immersion
+    emotionalStateStore.advancePhase("artisan_engine");
     setTimeout(() => navigate("/artisan-360"), 3000);
   }, [selected, syncing, navigate]);
 

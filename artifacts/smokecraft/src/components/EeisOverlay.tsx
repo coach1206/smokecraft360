@@ -28,6 +28,7 @@ import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { useCommandCenter } from "@/contexts/CommandCenterContext";
 import { useCraftExperience } from "@/contexts/CraftExperienceContext";
 import { EEIS_JOURNEY_KEY } from "@/components/UniversalExperience/LevelSelection";
+import RitualIntelligencePanel from "@/components/RitualIntelligencePanel";
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 
@@ -951,6 +952,7 @@ export default function EeisOverlay() {
                   </div>
                 ))}
               </div>
+              <RitualIntelligencePanel />
               <PairingLivePanel tags={sessionTags} />
             </Panel>
 

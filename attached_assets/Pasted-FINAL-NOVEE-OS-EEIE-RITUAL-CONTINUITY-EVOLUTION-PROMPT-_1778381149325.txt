@@ -1,0 +1,792 @@
+FINAL
+NOVEE OS + EEIE RITUAL CONTINUITY EVOLUTION PROMPT
+EMOTIONAL CONTINUITY + ENVIRONMENTAL ESCALATION + STAFF SYNCHRONIZATION + ARTISAN DEPTH
+Paste directly into Replit Agent.
+
+MISSING / REQUIRED
+The platform has now entered:
+EXPERIENTIAL CHOREOGRAPHY PHASE
+The problem is NO LONGER:
+missing features.
+The problem is:
+
+
+emotional continuity
+
+
+atmosphere persistence
+
+
+ritual escalation
+
+
+environmental evolution
+
+
+cognitive synchronization
+
+
+sensory progression
+
+
+operational choreography
+
+
+The system now needs to feel:
+alive
+aware
+adaptive
+progressive
+ritualistic
+luxury
+cinematic
+emotionally intelligent
+DO NOT:
+
+
+flatten the UI
+
+
+simplify transitions
+
+
+downgrade immersion
+
+
+replace cinematic systems
+
+
+remove particles
+
+
+remove atmosphere
+
+
+convert this into dashboard energy
+
+
+This phase is about:
+making EEIE feel conscious.
+
+FAILURE PREVENTION CHECKLIST
+DO NOT:
+
+
+restart emotional tone between pages
+
+
+abruptly reset ambiance
+
+
+break sensory continuity
+
+
+make transitions feel mechanical
+
+
+create static atmospheres
+
+
+create repetitive sound loops
+
+
+overwhelm users with effects
+
+
+create noisy UI
+
+
+create game-like behavior
+
+
+The experience should feel:
+calm
+intelligent
+luxurious
+alive
+predictive
+ritualistic
+emotionally guided
+DO NOT:
+
+
+use fake progression
+
+
+use random particles
+
+
+use meaningless effects
+
+
+use disconnected sound triggers
+
+
+EVERY atmospheric layer must:
+respond to behavior.
+
+MASTER PROMPT
+Perform a COMPLETE RITUAL CONTINUITY EVOLUTION across NOVEE OS + EEIE.
+This phase upgrades:
+
+
+emotional continuity
+
+
+environmental escalation
+
+
+sensory progression
+
+
+staff synchronization
+
+
+artisan engine immersion
+
+
+behavioral atmosphere adaptation
+
+
+This is NOT visual polish.
+This is:
+psychological choreography engineering.
+
+PHASE A
+EMOTIONAL CONTINUITY ENGINE
+Current emotional atmosphere resets too often between pages.
+Build:
+EmotionalContinuityEngine
+This becomes:
+the persistent emotional state layer for the guest journey.
+
+REQUIRED
+Persist emotional state across:
+
+
+onboarding
+
+
+mentor selection
+
+
+sensory foundation
+
+
+artisan engine
+
+
+pairing ritual
+
+
+ordering
+
+
+completion
+
+
+staff interactions
+
+
+Track:
+
+
+emotional intensity
+
+
+exploration confidence
+
+
+pacing
+
+
+sensory alignment
+
+
+immersion depth
+
+
+hesitation
+
+
+momentum
+
+
+DO NOT reset atmosphere between routes.
+The environment should:
+evolve continuously.
+
+IMPLEMENT
+Create:
+
+
+emotionalStateStore.ts
+
+
+useEmotionalContinuity.ts
+
+
+EmotionalContextProvider.tsx
+
+
+Persist:
+
+
+emotional phase
+
+
+atmosphere intensity
+
+
+mentor resonance
+
+
+sensory direction
+
+
+ritual progression
+
+
+Use:
+Redis + local persistence + socket synchronization.
+
+PHASE B
+ENVIRONMENTAL ESCALATION ENGINE
+Current atmosphere reacts.
+It now needs to PROGRESS.
+Build:
+EnvironmentalEscalationEngine
+
+REQUIRED BEHAVIOR
+As guest confidence increases:
+
+
+smoke density increases subtly
+
+
+ember glow deepens
+
+
+audio richness expands
+
+
+ambient resonance strengthens
+
+
+particles become more dimensional
+
+
+lighting warms gradually
+
+
+mentor tone becomes more intimate
+
+
+transition pacing slows slightly
+
+
+environmental depth increases
+
+
+The experience should feel:
+like the venue is awakening around the guest.
+
+IMPLEMENT
+Track:
+
+
+ritual depth
+
+
+interaction confidence
+
+
+engagement momentum
+
+
+pairing completion
+
+
+exploration intensity
+
+
+Generate:
+dynamic escalation levels:
+
+
+DORMANT
+
+
+AWAKENING
+
+
+RESONATING
+
+
+IMMERSED
+
+
+SYNCHRONIZED
+
+
+Each level changes:
+
+
+sound mix
+
+
+particle intensity
+
+
+atmosphere
+
+
+transition behavior
+
+
+EEIE responsiveness
+
+
+visual warmth
+
+
+
+PHASE C
+STAFF SYNCHRONIZATION EVOLUTION
+Current staff handoff only shares flavor metadata.
+Expand into:
+EEIE Staff Synchronization Intelligence.
+
+IMPLEMENT
+Every guest interaction should now generate:
+
+
+hesitation score
+
+
+confidence score
+
+
+premium intent probability
+
+
+pairing likelihood
+
+
+pacing analysis
+
+
+interruption timing
+
+
+engagement depth
+
+
+exploration style
+
+
+recommendation acceptance prediction
+
+
+
+STAFF HUD UPGRADES
+Expand Harmony Score feed into:
+LIVE cognitive guidance.
+Examples:
+
+
+“Guest confidence rising rapidly.”
+
+
+“High likelihood of premium pairing acceptance.”
+
+
+“Guest deeply immersed — avoid interruption.”
+
+
+“Pairing recommendation confidence: 91%”
+
+
+“Guest showing exploration fatigue.”
+
+
+Staff should feel:
+like EEIE is whispering venue intelligence.
+
+PHASE D
+ENVIRONMENTAL MEMORY
+Build:
+EnvironmentalMemoryEngine
+The venue should remember returning guests.
+
+IMPLEMENT
+Track:
+
+
+flavor preferences
+
+
+mentor affinity
+
+
+atmosphere resonance
+
+
+pacing style
+
+
+ritual depth history
+
+
+pairing preferences
+
+
+sensory tendencies
+
+
+When returning:
+subtly adapt:
+
+
+smoke tint
+
+
+ambient warmth
+
+
+mentor tone
+
+
+soundtrack layering
+
+
+atmosphere pacing
+
+
+DO NOT:
+make changes obvious.
+The adaptation should feel:
+subconscious and luxurious.
+
+PHASE E
+ADVANCED SOUND ORCHESTRATION
+Current sound events are isolated.
+Build:
+AdaptiveSoundscapeEngine
+
+IMPLEMENT
+Dynamic layered audio system:
+
+
+ember bass resonance
+
+
+atmospheric breathing
+
+
+glass resonance
+
+
+environmental room tone
+
+
+directional ambience
+
+
+low-frequency immersion
+
+
+progression swells
+
+
+mentor proximity audio
+
+
+transition reverb
+
+
+Sound should:
+evolve with emotional progression.
+
+REQUIRED SOUND STATES
+LOW IMMERSION
+minimal ambience
+soft smoke resonance
+EXPLORATION
+richer texture
+subtle layered warmth
+IMMERSION
+deep environmental resonance
+emotional swells
+cinematic warmth
+SYNCHRONIZED
+full luxury atmosphere
+harmonic environmental blending
+low-frequency cinematic immersion
+
+PHASE F
+ARTISAN-360 DEPTH EVOLUTION
+The transition ritual is now strong.
+The Artisan Engine MUST exceed it.
+Current risk:
+the emotional energy peaks BEFORE /artisan-360.
+That CANNOT happen.
+
+REQUIRED
+/artisan-360 must feel:
+
+
+deeper
+
+
+warmer
+
+
+more intelligent
+
+
+more tactile
+
+
+more cinematic
+
+
+more alive
+
+
+than the ritual entry sequence.
+
+IMPLEMENT
+Add:
+
+
+living ember table
+
+
+reactive smoke flow
+
+
+animated tobacco texture depth
+
+
+tactile drag resistance
+
+
+mentor cinematic entrance
+
+
+ambient cinematic camera drift
+
+
+environmental breathing
+
+
+dimensional atmosphere layers
+
+
+
+3D CIGAR CREATION SHOULD FEEL LIKE:
+
+
+crafting luxury
+
+
+conducting flavor
+
+
+shaping atmosphere
+
+
+building ritual identity
+
+
+NOT:
+configuring a product.
+
+PHASE G
+EEIE RITUAL INTELLIGENCE
+Build:
+RitualIntelligenceEngine
+EEIE should now understand:
+
+
+ritual depth
+
+
+emotional immersion
+
+
+pacing rhythm
+
+
+cognitive engagement
+
+
+sensory synchronization
+
+
+Generate:
+LIVE ritual state classifications:
+
+
+CURIOUS
+
+
+EXPLORING
+
+
+FOCUSED
+
+
+IMMERSED
+
+
+SYNCHRONIZED
+
+
+FATIGUED
+
+
+EEIE adapts:
+
+
+environment
+
+
+recommendations
+
+
+mentor tone
+
+
+pacing
+
+
+transitions
+
+
+operational suggestions
+
+
+in real time.
+
+PHASE H
+CINEMATIC CONTINUITY
+Implement:
+global cinematic timing system.
+Unify:
+
+
+fade curves
+
+
+particle timing
+
+
+sound transitions
+
+
+haptic pacing
+
+
+overlay durations
+
+
+camera movement
+
+
+transition rhythm
+
+
+The ENTIRE platform should feel:
+like one continuous breathing intelligence.
+NOT:
+separate animated pages.
+
+FINAL REQUIRED OUTPUT
+Return:
+
+
+ALL modified files
+
+
+ALL created files
+
+
+ALL EEIE orchestration upgrades
+
+
+ALL emotional continuity systems
+
+
+ALL soundscape systems
+
+
+ALL environmental escalation systems
+
+
+ALL staff synchronization upgrades
+
+
+ALL artisan engine upgrades
+
+
+ALL cinematic continuity upgrades
+
+
+ALL persistence changes
+
+
+Then generate:
+FINAL RITUAL EVOLUTION REPORT
+Including:
+
+
+REAL emotional continuity %
+
+
+REAL immersion continuity %
+
+
+REAL ritual intelligence %
+
+
+REAL environmental adaptation %
+
+
+REAL sensory synchronization %
+
+
+REAL staff synchronization %
+
+
+REAL cinematic continuity %
+
+
+Then classify:
+
+
+IMMERSION SAFE
+
+
+CINEMATIC SAFE
+
+
+RITUAL CONTINUITY COMPLETE
+
+
+ENVIRONMENTALLY ADAPTIVE
+
+
+PSYCHOLOGICALLY COHESIVE
+
+
+LUXURY EXPERIENCE READY
+
+
+DO NOT flatten the experience.
+DO NOT reduce atmosphere.
+DO NOT make the system feel like software.
+This phase must behave like:
+
+the evolution of NOVEE OS into a living adaptive ritual environment.
