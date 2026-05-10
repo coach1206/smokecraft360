@@ -82,84 +82,134 @@ const CRAFTS: CraftConfig[] = [
   },
 ];
 
-/* ── Time-gated cinematic video background ───────────────────────────────── */
-function CinematicBackground() {
+/* ── Per-craft atmosphere config ─────────────────────────────────────────── */
+type BlobCfg = {
+  w: number; h: number; left: string; bottom: string;
+  color: string; blur: number; dur: string; delay: string; anim: string;
+};
+type AtmosphereCfg = { video: string; filter: string; blobs: BlobCfg[] };
+
+const ATMOSPHERE: Record<string, AtmosphereCfg> = {
+  smoke: {
+    video:  "/videos/lounge-night.mp4",
+    filter: "contrast(110%) brightness(72%)",
+    blobs: [
+      { w: 440, h: 340, left: "10%", bottom: "-5%", color: "rgba(201,168,76,0.20)", blur: 44, dur: "20s", delay: "0s",   anim: "cb-rise-0" },
+      { w: 380, h: 290, left: "40%", bottom: "-5%", color: "rgba(201,168,76,0.16)", blur: 38, dur: "26s", delay: "-8s",  anim: "cb-rise-1" },
+      { w: 500, h: 380, left: "65%", bottom: "-5%", color: "rgba(201,168,76,0.18)", blur: 50, dur: "32s", delay: "-15s", anim: "cb-rise-2" },
+    ],
+  },
+  pour: {
+    video:  "/videos/lounge-evening.mp4",
+    filter: "contrast(108%) brightness(75%) sepia(12%)",
+    blobs: [
+      { w: 420, h: 320, left: "8%",  bottom: "-5%", color: "rgba(212,178,90,0.22)", blur: 42, dur: "18s", delay: "0s",   anim: "cb-rise-0" },
+      { w: 360, h: 270, left: "38%", bottom: "-5%", color: "rgba(212,178,90,0.18)", blur: 36, dur: "22s", delay: "-6s",  anim: "cb-rise-1" },
+      { w: 480, h: 360, left: "67%", bottom: "-5%", color: "rgba(212,178,90,0.20)", blur: 48, dur: "26s", delay: "-12s", anim: "cb-rise-2" },
+    ],
+  },
+  brew: {
+    video:  "/videos/lounge-day.mp4",
+    filter: "contrast(112%) brightness(78%) saturate(110%)",
+    blobs: [
+      { w: 400, h: 300, left: "12%", bottom: "-5%", color: "rgba(200,120,40,0.24)", blur: 40, dur: "15s", delay: "0s",   anim: "cb-rise-0" },
+      { w: 340, h: 260, left: "42%", bottom: "-5%", color: "rgba(200,120,40,0.18)", blur: 34, dur: "18s", delay: "-5s",  anim: "cb-rise-1" },
+      { w: 460, h: 340, left: "64%", bottom: "-5%", color: "rgba(200,120,40,0.20)", blur: 46, dur: "22s", delay: "-10s", anim: "cb-rise-2" },
+    ],
+  },
+  vape: {
+    video:  "/videos/lounge-night.mp4",
+    filter: "contrast(105%) brightness(65%) hue-rotate(12deg)",
+    blobs: [
+      { w: 520, h: 410, left: "5%",  bottom: "-8%", color: "rgba(170,155,210,0.22)", blur: 58, dur: "38s", delay: "0s",   anim: "cb-rise-0" },
+      { w: 440, h: 350, left: "28%", bottom: "-6%", color: "rgba(155,140,200,0.18)", blur: 52, dur: "44s", delay: "-10s", anim: "cb-rise-1" },
+      { w: 380, h: 290, left: "52%", bottom: "-5%", color: "rgba(180,160,215,0.20)", blur: 46, dur: "32s", delay: "-20s", anim: "cb-rise-2" },
+      { w: 500, h: 400, left: "70%", bottom: "-8%", color: "rgba(160,145,205,0.16)", blur: 56, dur: "48s", delay: "-6s",  anim: "cb-rise-3" },
+      { w: 300, h: 240, left: "20%", bottom: "-3%", color: "rgba(175,158,212,0.14)", blur: 40, dur: "28s", delay: "-16s", anim: "cb-rise-0" },
+    ],
+  },
+};
+
+const CB_KEYFRAMES = `
+  @keyframes cb-rise-0 { 0% { transform:translateY(0) scale(1.0);  opacity:.70; } 100% { transform:translateY(-100vh) scale(1.4); opacity:0; } }
+  @keyframes cb-rise-1 { 0% { transform:translateY(0) scale(0.9);  opacity:.50; } 100% { transform:translateY(-100vh) scale(1.2); opacity:0; } }
+  @keyframes cb-rise-2 { 0% { transform:translateY(0) scale(1.1);  opacity:.60; } 100% { transform:translateY(-100vh) scale(1.5); opacity:0; } }
+  @keyframes cb-rise-3 { 0% { transform:translateY(0) scale(0.85); opacity:.55; } 100% { transform:translateY(-100vh) scale(1.3); opacity:0; } }
+`;
+
+/* ── Craft-aware cinematic background with 1.5s cross-fade ──────────────── */
+function CinematicBackground({ craftId }: { craftId: string }) {
   const [videoLoaded, setVideoLoaded] = useState(false);
-  const hour = new Date().getHours();
-  const src  = hour >= 6 && hour < 17  ? "/videos/lounge-day.mp4"
-             : hour >= 17 && hour < 22 ? "/videos/lounge-evening.mp4"
-             :                           "/videos/lounge-night.mp4";
+  const cfg      = ATMOSPHERE[craftId] ?? ATMOSPHERE.smoke;
+  const videoKey = `${cfg.video}::${craftId}`;
+
+  // Reset loaded flag whenever the target video changes
+  useEffect(() => { setVideoLoaded(false); }, [videoKey]);
+
   return (
     <>
-      {/* ── Amber smoke blob fallback — always visible, video-independent ── */}
+      {/* Inject keyframes once */}
+      <style>{CB_KEYFRAMES}</style>
+
+      {/* ── Blob layer — craft-specific, morphs with 1.5s AnimatePresence ── */}
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
-        <style>{`
-          @keyframes cb-rise-0 {
-            0%   { transform: translateY(0)      scale(1.0); opacity: 0.7; }
-            100% { transform: translateY(-100vh) scale(1.4); opacity: 0;   }
-          }
-          @keyframes cb-rise-1 {
-            0%   { transform: translateY(0)      scale(0.9); opacity: 0.5; }
-            100% { transform: translateY(-100vh) scale(1.2); opacity: 0;   }
-          }
-          @keyframes cb-rise-2 {
-            0%   { transform: translateY(0)      scale(1.1); opacity: 0.6; }
-            100% { transform: translateY(-100vh) scale(1.5); opacity: 0;   }
-          }
-        `}</style>
-        <div style={{
-          position: "absolute", bottom: "-5%", left: "12%",
-          width: 440, height: 340, borderRadius: "50%",
-          background: "radial-gradient(ellipse, rgba(201,168,76,0.20) 0%, transparent 70%)",
-          filter: "blur(44px)",
-          animation: "cb-rise-0 20s ease-out infinite",
-          pointerEvents: "none",
-        }} />
-        <div style={{
-          position: "absolute", bottom: "-5%", left: "42%",
-          width: 380, height: 290, borderRadius: "50%",
-          background: "radial-gradient(ellipse, rgba(201,168,76,0.16) 0%, transparent 70%)",
-          filter: "blur(38px)",
-          animation: "cb-rise-1 25s ease-out infinite",
-          animationDelay: "-8s",
-          pointerEvents: "none",
-        }} />
-        <div style={{
-          position: "absolute", bottom: "-5%", left: "66%",
-          width: 500, height: 380, borderRadius: "50%",
-          background: "radial-gradient(ellipse, rgba(201,168,76,0.18) 0%, transparent 70%)",
-          filter: "blur(50px)",
-          animation: "cb-rise-2 30s ease-out infinite",
-          animationDelay: "-15s",
-          pointerEvents: "none",
-        }} />
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={`blobs-${craftId}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+          >
+            {cfg.blobs.map((b, i) => (
+              <div key={i} style={{
+                position:      "absolute",
+                bottom:        b.bottom,
+                left:          b.left,
+                width:         b.w,
+                height:        b.h,
+                borderRadius:  "50%",
+                background:    `radial-gradient(ellipse, ${b.color} 0%, transparent 70%)`,
+                filter:        `blur(${b.blur}px)`,
+                animation:     `${b.anim} ${b.dur} ease-out infinite`,
+                animationDelay: b.delay,
+                pointerEvents: "none",
+              }} />
+            ))}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      {/* ── MP4 cinematic layer — fades in once loaded ── */}
-      <video
-        key={src}
-        autoPlay
-        muted
-        loop
-        playsInline
-        onCanPlay={() => setVideoLoaded(true)}
-        onError={() => setVideoLoaded(false)}
-        style={{
-          position:      "fixed",
-          top:           0,
-          left:          0,
-          width:         "100vw",
-          height:        "100vh",
-          objectFit:     "cover",
-          zIndex:        0,
-          opacity:       videoLoaded ? 0.55 : 0,
-          filter:        "contrast(110%) brightness(80%)",
-          pointerEvents: "none",
-          transition:    "opacity 1.6s ease",
-        }}
-      >
-        <source src={src} type="video/mp4" />
-      </video>
+      {/* ── Video layer — cross-fades on craft switch ── */}
+      <AnimatePresence mode="sync">
+        <motion.video
+          key={videoKey}
+          autoPlay
+          muted
+          loop
+          playsInline
+          initial={{ opacity: 0 }}
+          animate={{ opacity: videoLoaded ? 0.70 : 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+          onCanPlay={() => setVideoLoaded(true)}
+          onError={() => setVideoLoaded(false)}
+          style={{
+            position:      "fixed",
+            top:           0,
+            left:          0,
+            width:         "100vw",
+            height:        "100vh",
+            objectFit:     "cover",
+            zIndex:        0,
+            filter:        cfg.filter,
+            pointerEvents: "none",
+          }}
+        >
+          <source src={cfg.video} type="video/mp4" />
+        </motion.video>
+      </AnimatePresence>
     </>
   );
 }
@@ -191,10 +241,12 @@ function CraftTile({
   craft,
   initialOffset,
   onClick,
+  onHover,
 }: {
   craft:         CraftConfig;
   initialOffset: number;
   onClick:       () => void;
+  onHover:       () => void;
 }) {
   const [idx, setIdx] = useState(initialOffset % craft.images.length);
   const [kbIdx, setKbIdx] = useState(initialOffset % KB_CLASSES.length);
@@ -213,6 +265,7 @@ function CraftTile({
   return (
     <motion.div
       onClick={onClick}
+      onPointerEnter={onHover}
       whileTap={{ scale: 0.978, filter: "brightness(1.25)" }}
       transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
       style={{
@@ -462,7 +515,8 @@ function CraftDetail({
 
 /* ── Root component ───────────────────────────────────────────────────────── */
 export default function LivingPortal() {
-  const [selected, setSelected] = useState<CraftConfig | null>(null);
+  const [selected, setSelected]               = useState<CraftConfig | null>(null);
+  const [activeAtmosphere, setActiveAtmosphere] = useState<string>("smoke");
 
   // Inject Ken Burns keyframes once
   useEffect(() => {
@@ -486,8 +540,8 @@ export default function LivingPortal() {
       color:           "#fff",
       fontFamily:      "monospace",
     }}>
-      {/* Cinematic lounge atmosphere — time-gated .mp4 */}
-      <CinematicBackground />
+      {/* Cinematic lounge atmosphere — craft-aware .mp4 + blobs */}
+      <CinematicBackground craftId={activeAtmosphere} />
 
       {/* 2×2 grid */}
       <div style={{
@@ -503,7 +557,8 @@ export default function LivingPortal() {
             key={craft.id}
             craft={craft}
             initialOffset={i}
-            onClick={() => setSelected(craft)}
+            onHover={() => setActiveAtmosphere(craft.id)}
+            onClick={() => { setActiveAtmosphere(craft.id); setSelected(craft); }}
           />
         ))}
       </div>
