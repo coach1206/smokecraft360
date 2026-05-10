@@ -19,6 +19,10 @@ import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { socket } from "@/lib/socket";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { emotionalStateStore } from "@/lib/emotionalStateStore";
+import { crossSessionMemory }  from "@/lib/crossSessionMemory";
+import { groupEnergyEngine, type GroupEnergyState } from "@/lib/groupEnergyEngine";
+import { environmentalInfluenceEngine } from "@/lib/environmentalInfluenceEngine";
+import MentorWhisper from "@/components/MentorWhisper";
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 const C = {
@@ -236,17 +240,50 @@ const CSS_SMOKE_BLOBS = [
 ];
 
 export default function MasterArtisan() {
-  const [, navigate]          = useLocation();
-  const [selected, setSelected] = useState<string | null>(null);
-  const [syncing, setSyncing] = useState(false);
+  const [, navigate]             = useLocation();
+  const [selected, setSelected]  = useState<string | null>(null);
+  const [syncing, setSyncing]    = useState(false);
   const [videoReady, setVideoReady] = useState(false);
-  const videoRef              = useRef<HTMLVideoElement>(null);
-  const buttonControls        = useAnimation();
+  const [whisperVisible, setWhisperVisible] = useState(false);
+  const [suggestedCard, setSuggestedCard]   = useState<string | null>(null);
+  const [groupEnergy, setGroupEnergy]       = useState<GroupEnergyState>(() => groupEnergyEngine.getState());
+  const videoRef       = useRef<HTMLVideoElement>(null);
+  const mountTimeRef   = useRef<number>(Date.now());
+  const buttonControls = useAnimation();
 
-  const { guestProfile }      = useGuestProfile();
+  const { guestProfile } = useGuestProfile();
 
   // Inject CSS smoke keyframes once on mount
   useEffect(() => { injectSmokeStyles(); }, []);
+
+  // Subscribe to GroupEnergyEngine — multi-tab vibe sync
+  useEffect(() => {
+    const unsub = groupEnergyEngine.subscribe(setGroupEnergy);
+    groupEnergyEngine.recordActivity();            // announce this tab is alive
+    return unsub;
+  }, []);
+
+  // Sync video playback rate to lounge energy
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    try { v.playbackRate = groupEnergy.visual.motionSpeedMultiplier; } catch { /* ignore */ }
+  }, [groupEnergy.visual.motionSpeedMultiplier, videoReady]);
+
+  // Start hesitation timer — fires after 10 s without a selection
+  useEffect(() => {
+    if (selected || syncing) {
+      environmentalInfluenceEngine.clearHesitationTimer();
+      return;
+    }
+    mountTimeRef.current = Date.now();
+    const cardIds = FLAVORS.map(f => f.id);
+    environmentalInfluenceEngine.startHesitationTimer(cardIds, (cardId) => {
+      setSuggestedCard(cardId);
+      setWhisperVisible(true);
+    });
+    return () => environmentalInfluenceEngine.clearHesitationTimer();
+  }, [selected, syncing]);
 
   const guestName = guestProfile?.firstName
     ? `${guestProfile.firstName} ${guestProfile.lastInitial ?? ""}`.trim()
@@ -271,8 +308,17 @@ export default function MasterArtisan() {
   const handleFlavorSelect = useCallback((flavor: FlavorCard) => {
     vibrateDevice(50);
     setSelected(flavor.id);
+    setWhisperVisible(false);   // dismiss whisper the moment they choose
 
-    // Advance emotional continuity engine — persists cross-route
+    // Longitudinal memory — record flavor + confidence speed
+    const speedMs = Date.now() - mountTimeRef.current;
+    crossSessionMemory.recordFlavor(flavor.id, speedMs, "smoke");
+    crossSessionMemory.recordCraftVisit("smoke");
+
+    // Group energy — this interaction raises lounge vibe
+    groupEnergyEngine.recordActivity();
+
+    // Emotional continuity engine — persists cross-route
     emotionalStateStore.recordFlavorSelection(flavor.id);
 
     // Staff EEIS real-time signal — full behavioral payload for Harmony Score
@@ -282,6 +328,8 @@ export default function MasterArtisan() {
         guest:                    guestName,
         selection:                flavor.id,
         meta:                     flavor.meta,
+        guestTier:                crossSessionMemory.getGuestTier(),
+        loungeMood:               groupEnergyEngine.getState().mood,
         emotionalState: {
           escalationLevel:          es.escalationLevel,
           ritualState:              es.ritualState,
@@ -301,10 +349,47 @@ export default function MasterArtisan() {
     if (!selected || syncing) return;
     vibrateDevice(80);
     setSyncing(true);
+
     // Advance emotional state — artisan engine phase deepens immersion
     emotionalStateStore.advancePhase("artisan_engine");
+    groupEnergyEngine.recordActivity();
+
+    // Fire Cognitive Build Sheet email — non-blocking, fire-and-forget
+    const es        = emotionalStateStore.getState();
+    const mem       = crossSessionMemory.getMemory();
+    const energy    = groupEnergyEngine.getState();
+    const flavor    = FLAVORS.find(f => f.id === selected);
+    const lighting  = environmentalInfluenceEngine.getLightingSyncPayload(selected ?? undefined);
+    const synergy   = crossSessionMemory.getCrossCraftSuggestion();
+
+    fetch("/api/cognitive-build-sheet", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({
+        guestName:            guestName,
+        flavor:               selected,
+        flavorBody:           flavor?.meta.body,
+        flavorStrength:       flavor?.meta.strength,
+        flavorNotes:          flavor?.meta.notes,
+        guestTier:            crossSessionMemory.getGuestTier(),
+        totalSessions:        mem.totalSessions,
+        dominantFlavor:       crossSessionMemory.getDominantFlavor() ?? undefined,
+        crossCraftSuggestion: synergy?.suggestion ?? undefined,
+        escalationLevel:      es.escalationLevel,
+        ritualState:          es.ritualState,
+        confidence:           es.confidence,
+        immersionDepth:       es.immersionDepth,
+        premiumIntent:        es.premiumIntentProbability,
+        loungeMood:           energy.mood,
+        lightingHex:          lighting.hex,
+        mentor:               crossSessionMemory.getDominantMentor() ?? undefined,
+        craft:                "smoke",
+        ts:                   new Date().toISOString(),
+      }),
+    }).catch(() => { /* fire-and-forget — never block guest UX */ });
+
     setTimeout(() => navigate("/artisan-360"), 3000);
-  }, [selected, syncing, navigate]);
+  }, [selected, syncing, guestName, navigate]);
 
   return (
     <div style={{
@@ -318,25 +403,30 @@ export default function MasterArtisan() {
       {/* ── Cinematic smoke background ── */}
       <div style={{ position: "absolute", inset: 0, zIndex: 0, overflow: "hidden" }}>
 
-        {/* CSS animated smoke blobs — always visible regardless of video state */}
-        {CSS_SMOKE_BLOBS.map((b, i) => (
-          <div
-            key={i}
-            style={{
-              position:         "absolute",
-              bottom:           b.b,
-              left:             b.l,
-              width:            b.w,
-              height:           b.h,
-              borderRadius:     "50%",
-              background:       `radial-gradient(ellipse, ${b.color} 0%, transparent 70%)`,
-              filter:           "blur(30px)",
-              animation:        `${b.anim} ${b.dur} ${b.delay} infinite ease-out, smokeDrift ${b.dur} ${b.delay} infinite ease-in-out`,
-              pointerEvents:    "none",
-              willChange:       "transform, opacity",
-            }}
-          />
-        ))}
+        {/* CSS animated smoke blobs — speed governed by GroupEnergyEngine */}
+        {CSS_SMOKE_BLOBS.map((b, i) => {
+          const baseSec = parseFloat(b.dur);
+          const adjSec  = Math.round(baseSec / groupEnergy.visual.motionSpeedMultiplier);
+          const adjDur  = `${adjSec}s`;
+          return (
+            <div
+              key={i}
+              style={{
+                position:         "absolute",
+                bottom:           b.b,
+                left:             b.l,
+                width:            b.w,
+                height:           b.h,
+                borderRadius:     "50%",
+                background:       `radial-gradient(ellipse, ${b.color} 0%, transparent 70%)`,
+                filter:           `blur(30px) brightness(${groupEnergy.visual.particleBrightness})`,
+                animation:        `${b.anim} ${adjDur} ${b.delay} infinite ease-out, smokeDrift ${adjDur} ${b.delay} infinite ease-in-out`,
+                pointerEvents:    "none",
+                willChange:       "transform, opacity",
+              }}
+            />
+          );
+        })}
 
         {/* Permanent ambient warm haze — always visible at t=0, video-independent */}
         <div style={{
@@ -486,19 +576,33 @@ export default function MasterArtisan() {
         {/* Flavor cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14, width: "100%", maxWidth: 600 }}>
           {FLAVORS.map((flavor, i) => {
-            const isSelected = selected === flavor.id;
+            const isSelected  = selected === flavor.id;
+            const isSuggested = !selected && suggestedCard === flavor.id;
             return (
               <motion.button
                 key={flavor.id}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.12 + i * 0.09, ease: [0.22, 1, 0.36, 1] }}
+                animate={{
+                  opacity:   1,
+                  y:         0,
+                  // Subtle pulse on the suggested card — invisible guidance
+                  boxShadow: isSuggested
+                    ? ["0 0 12px rgba(212,175,55,0.18)", "0 0 26px rgba(212,175,55,0.42)", "0 0 12px rgba(212,175,55,0.18)"]
+                    : undefined,
+                }}
+                transition={{
+                  opacity:   { duration: 0.55, delay: 0.12 + i * 0.09, ease: [0.22, 1, 0.36, 1] },
+                  y:         { duration: 0.55, delay: 0.12 + i * 0.09, ease: [0.22, 1, 0.36, 1] },
+                  boxShadow: isSuggested ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" } : undefined,
+                }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleFlavorSelect(flavor)}
                 onTouchStart={() => handleFlavorSelect(flavor)}
                 style={{
-                  background:              isSelected ? `rgba(${hexToRgb(flavor.accent)}, 0.22)` : C.card,
-                  border:                  isSelected ? `1.5px solid ${C.goldBorder}` : `1px solid ${C.border}`,
+                  background:              isSelected  ? `rgba(${hexToRgb(flavor.accent)}, 0.22)` : C.card,
+                  border:                  isSelected  ? `1.5px solid ${C.goldBorder}`
+                                         : isSuggested ? `1px solid rgba(212,175,55,0.38)`
+                                         : `1px solid ${C.border}`,
                   borderRadius:            16,
                   padding:                 "20px 18px",
                   cursor:                  "pointer",
@@ -652,6 +756,13 @@ export default function MasterArtisan() {
           Skip ritual → enter 3D Studio
         </motion.button>
       </div>
+
+      {/* ── Mentor Whisper — hesitation guidance (EnvironmentalInfluenceEngine) ── */}
+      <MentorWhisper
+        visible={whisperVisible}
+        suggestedCardId={suggestedCard}
+        onDismiss={() => setWhisperVisible(false)}
+      />
 
       {/* ── Cinematic syncing overlay (3-second atmospheric bind) ── */}
       <AnimatePresence>
