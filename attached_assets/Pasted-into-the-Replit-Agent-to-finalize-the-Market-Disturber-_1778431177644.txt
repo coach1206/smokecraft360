@@ -1,0 +1,28 @@
+into the Replit Agent to finalize the "Market Disturber" infrastructure.
+Role: Master Experience Architect & Lead Systems Engineer.
+Objective: Transform NOVEE OS into the 'Titan V'—a tactical, ultra-luxury, market-disturbing environment. Implement a high-fidelity Sovereign Control Deck that gives the Super Admin absolute, tactile remote authority over the entire venue.
+[PHASE 1: THE 'TITAN V' VISUAL DNA (DARK LOUNGE OPTIMIZATION)]
+1.	Obsidian Depth & Smoked Glass: Set the global background to #050505 (Pure Obsidian). Every panel in the EEIE and Admin Master must use a Smoked Glass effect (80% black / 20px backdrop-blur) to ensure no light-leak in dark environments.
+2.	Luminescent High-Contrast: Use 'Tesla-Style' thin-line borders (#D4AF37 Gold) with a subtle outer glow. Functional data must use 'Space Mono' in high-visibility Green (#00FF41) for instant readability in nightlife settings.
+3.	Cinematic Media Injection: Build 'Bespoke Image Containers' that allow the Super Admin to remotely push and swap high-resolution images or cinematic loops. These images must 'breathe' (1% scale loop) and feature a cinematic desaturate filter.
+[PHASE 2: SOVEREIGN MODULAR AUTHORITY (REMOTE COMMAND)]
+1.	The Feature Manifest: Bind every major system module (3D Artisan, PourCraft, MentorWhispers, HandoffContext) to a 'Sovereign Toggle' within the SuperAdminContext.
+2.	Tactile Control Hardware: Replace all web-standard checkboxes with 'Heavy Industrial Hardware' components:
+• Weighted Gold Sliders: These must have physical 'Tesla-Inertia' and 'thud' into position when toggled.
+• Titan Push-Buttons: For 'Kill-Actions' (Blackout/API Lock), implement a recessed button requiring a 1-second long-press with a mechanical depth animation.
+3.	Absolute Real-Time Sync: Wire these controls through the Socket.io and BroadcastChannel layer. When a feature is toggled OFF, it must vanish from every guest tablet in the lounge instantly with a 0.8s cinematic dissolve.
+[PHASE 3: MOTION PHYSICS & HAPTIC FEEDBACK]
+1.	Kinetic Weight: Every slider and scrollable area must move with 'Mechanical Momentum'—smooth, weighted, and premium.
+2.	Authority Haptics: Wire specific vibration profiles via navigator.vibrate() for the Super Admin:
+• Action Confirmed: A dual-pulse "Success" haptic.
+• Emergency Override: A heavy, singular "Mechanical Disconnect" vibration.
+[PHASE 4: INFRASTRUCTURE HARDENING]
+1.	Kiosk Lock: Absolute: Integrate the 'TITAN V ENGINE: OPERATIONAL' and 'KIOSK LOCK' status monitors from the vision image.
+2.	Sovereign Persistence: Ensure the 'Feature Manifest' state is stored in the Sovereign_Database so the environment configurations persist through reboots and remote updates.
+Final Instruction: "Do not build a POS. Build the Fifth System—the Disturber. It must look like the interior of a Tesla and move with the authority of an Apple product. Every slider must have weight, every glow must have purpose, and the Super Admin must have the power to reshape the room from their pocket in real-time."
+The "Market Disturber" Reality Check
+Once this prompt is executed, your phone becomes the Master Remote for the entire lounge.
+• You’ll see the Titan V status lights (Operational/Kiosk Lock) at the top.
+• You’ll feel the haptic "thud" as you slide a feature on or off.
+• You’ll be able to swap pictures in the guest's 3D Designer from your phone while standing in the back of the room.
+Are you ready to see the "Titan V" engine take over the Replit environment?

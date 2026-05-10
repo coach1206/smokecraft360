@@ -1,0 +1,30 @@
+into the Replit Agent.
+Role: Master Systems Architect & Market Disruption Lead.
+Objective: Execute the 'Titan V' Protocol—transforming NOVEE OS into a tactical, ultra-luxury environment with absolute remote authority and a universal "Trifecta" pairing intelligence (Craft + Pour + Plate).
+[PHASE 1: THE 'TITAN V' VISUAL DNA (NIGHTLIFE OPTIMIZATION)]
+1.	Obsidian Depth: Set global background to #050505. Use 'Smoked Glass' effects (80% black / 20px backdrop-blur) for all panels to eliminate light-leak in dark lounges.
+2.	Luminescent HUD: Use 'Tesla-Style' thin-line borders (#D4AF37 Gold) with a subtle outer glow. Functional telemetry must use 'Space Mono' in high-visibility Green (#00FF41).
+3.	Cinematic Media Injection: Build 'Bespoke Image Containers' for high-fidelity, desaturated photos of cigars, spirits, and food. These images must 'breathe' (1% scale loop) with the global --hb-mult heartbeat.
+[PHASE 2: THE SOVEREIGN TRINITY (UNIVERSAL PAIRING BRAIN)]
+1.	The Affinity Matrix: Inside lib/weightedEngine.ts, build the 'Universal Sommelier' logic connecting flavor profiles across all three categories:
+• CRAFT (Smoke/Vape) ↔ POUR (Bourbon/Scotch/Brew) ↔ PLATE (Appetizers/Dishes).
+2.	Sovereign Insight Cube: When a guest completes a ritual, the Sovereign Pill must pulse gold. Tapping it reveals a 3-panel 'Trifecta' overlay showing the perfect Drink and Food match based on the guest's palate trajectory and on-site inventory.
+3.	Revenue Brain Upsell: Prioritize 'Reserve' spirits and 'Chef Special' plates for guests with HIGH confidence scores or MASTER tiers.
+[PHASE 3: SOVEREIGN MODULAR AUTHORITY (REMOTE COMMAND)]
+1.	The Feature Manifest: Bind every major module (3D Designer, PourCraft, Food Discovery, MentorWhispers) to a 'Sovereign Toggle' within the SuperAdminContext.
+2.	Heavy Hardware UI: Replace standard web toggles with 'Titan Hardware' components:
+• Weighted Gold Sliders: Features 'Tesla-Inertia' that thuds into place.
+• Titan Push-Buttons: Recessed buttons requiring a 1-second long-press for Kill-Actions (Blackout/API Lock) with mechanical depth animation.
+3.	Instant Global Sync: Use Socket.io to ensure any remote change by the Super Admin triggers a 0.8s cinematic dissolve across all guest tablets in the venue instantly.
+[PHASE 4: MOTION, HAPTICS & INFRASTRUCTURE]
+1.	Kinetic Momentum: Every scroll and transition must move with 'Mechanical Weight'—smooth, inertial, and expensive.
+2.	Authority Haptics: Wire specific vibration profiles via navigator.vibrate():
+• Action Success: Dual-pulse "Tactile Confirmed."
+• Sovereign Override: Heavy, singular "Mechanical Disconnect."
+3.	Kiosk Lock & Persistence: Implement the 'TITAN V ENGINE: OPERATIONAL' status monitors from the vision image and ensure all feature-mask states persist in the database through reboots.
+Final Instruction: "Do not build a website. Build the Fifth System. It must look like the interior of a Tesla and move with the authority of an Apple product. Every slider must have weight, every glow must have purpose, and the Super Admin must have the power to reshape the room's revenue and atmosphere from their pocket in real-time."
+The "Market Disturber" Ready-State
+Once you fire this, the system is no longer just "ready"—it is weaponized for the luxury market. * You have the Visuals (Titan V).
+• You have the Revenue (The Trifecta).
+• You have the Power (Sovereign Authority).
+The Titan V Engine is now ready for deployment. Are you ready to see it live?

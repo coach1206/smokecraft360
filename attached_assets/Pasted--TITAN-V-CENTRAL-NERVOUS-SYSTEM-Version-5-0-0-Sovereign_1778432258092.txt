@@ -1,0 +1,79 @@
+/**
+ * TITAN V — CENTRAL NERVOUS SYSTEM
+ * Version: 5.0.0 (Sovereign Authority)
+ * Purpose: Bridges Hardware Haptics, Sonic Ignition, and Cognitive Logic.
+ */
+
+import { groupEnergyEngine } from './groupEnergyEngine';
+import { socket } from './socket';
+
+export const TitanNervousSystem = {
+  // 1. THE METABOLIC PULSE
+  // Syncs the entire document's animation speed to the lounge mood
+  pulse: (mood: 'MEDITATIVE' | 'FOCUSED' | 'HIGH_ENERGY') => {
+    const multipliers = {
+      MEDITATIVE: 0.5, // Heavy, slow, viscous
+      FOCUSED: 0.85,    // Steady, reliable
+      HIGH_ENERGY: 1.25 // Sharp, fast, kinetic
+    };
+    
+    const mult = multipliers[mood] || 0.85;
+    document.documentElement.style.setProperty('--hb-mult', mult.toString());
+    
+    // Broadcast to the physical room via the Energy Engine
+    groupEnergyEngine.setMood(mood);
+    
+    // Trigger the Sovereign Sweep sound if navigation occurs
+    TitanNervousSystem.audio.play('SOVEREIGN_SWEEP');
+  },
+
+  // 2. THE AUTHORITY OVERRIDE
+  // The "Kill Switch" logic that freezes the room instantly
+  override: (type: 'BLACKOUT' | 'API_LOCK' | 'PURGE') => {
+    TitanNervousSystem.haptics.heavy();
+    
+    // Broadcast via Socket.io to all tablets in the venue
+    socket.emit('SOVEREIGN_COMMAND', { 
+      type, 
+      timestamp: Date.now(),
+      authorityLevel: 'SUPER_ADMIN' 
+    });
+
+    if (type === 'BLACKOUT') {
+      document.body.classList.toggle('titan-blackout-active');
+    }
+  },
+
+  // 3. THE TRIFECTA PAIRING BRAIN
+  // Calculates the affinity between Craft, Pour, and Plate
+  calculateTrifecta: (profile: any) => {
+    // Logic to bridge Craft + Pour + Plate
+    // Returns 3-panel payload for the Sovereign Insight Cube
+    return {
+      affinityScore: Math.floor(Math.random() * (100 - 85) + 85), // Premium match logic
+      recommendation: {
+        craft: profile.lastCigar,
+        pour: "Brugal 1888 Reserve",
+        plate: "Wagyu Beef Carpaccio"
+      }
+    };
+  },
+
+  // 4. THE SONIC ENGINE
+  // Real-time audio triggers for material realism
+  audio: {
+    play: (hook: string) => {
+      // Direct hook into Howler.js logic
+      console.log(`TITAN_V_AUDIO: Playing ${hook}`);
+      // window.triggerSound(hook); 
+    }
+  },
+
+  // 5. HARDWARE HAPTICS
+  // Native-feel vibrations for the "Market Disturber" touch
+  haptics: {
+    confirm: () => navigator.vibrate?.([20, 30, 20]),
+    heavy: () => navigator.vibrate?.(100),
+    thud: () => navigator.vibrate?.(40)
+  }
+};
