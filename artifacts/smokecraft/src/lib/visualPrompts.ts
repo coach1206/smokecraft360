@@ -141,8 +141,9 @@ export const SOUND_HOOKS = {
 
 export type SoundHook = typeof SOUND_HOOKS[CraftType][keyof typeof SOUND_HOOKS[CraftType]];
 
-/** Stub: trigger a sound hook by name. Replace body with real audio when engine is ready. */
-export function triggerSound(_hook: SoundHook, _volume = 0.7): void {
-  // TODO: wire to Web Audio API or Howler.js
-  // Example: audioEngine.play(_hook, { volume: _volume });
+/** Trigger a sound hook by name — wired to craftAudioEngine Web Audio API synthesis. */
+export function triggerSound(hook: SoundHook, volume = 0.7): void {
+  import("../services/craftAudioEngine")
+    .then(({ craftAudioEngine }) => craftAudioEngine.triggerHook(hook, volume))
+    .catch(() => { /* audio errors must never surface */ });
 }

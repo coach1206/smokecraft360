@@ -9,11 +9,17 @@
  *   travel.flight_update        — Aviationstack telemetry received
  *   travel.mood_shift           — MoodShiftEngine derived a guest mood
  *   venue.mode_changed          — EnvironmentalModeEngine activated a mode
+ *   venue.energy_changed        — VenueEnergyEngine classified a new energy state
  *   intent.prediction           — IntentProbabilityEngine fired a signal
  *   intent.nudge_executed       — PredictiveNudgeService fired a nudge
  *   operational.affiliate_event — AffiliateService recorded a transaction
+ *   operational.autonomy_event  — OperationalAutonomyEngine completed an analysis cycle
  *   hardware.mqtt_dispatch      — MqttBridgeService queued a hardware command
  *   foundation.blackbox_write   — BlackBoxRecovery wrote a venue soul snapshot
+ *   sensory.audio_trigger       — SensoryEngine emitted a craft sound signal
+ *   hospitality.prediction      — PredictiveHospitalityEngine scored a session
+ *   cluster.health_event        — VenueClusterManager detected a health transition
+ *   pos.sync_complete           — UnifiedPOSBridge completed a POS inventory sync
  *
  * All events carry: { topic, payload, ts, venueId? }
  */
@@ -25,11 +31,17 @@ export type BusTopic =
   | "travel.flight_update"
   | "travel.mood_shift"
   | "venue.mode_changed"
+  | "venue.energy_changed"
   | "intent.prediction"
   | "intent.nudge_executed"
   | "operational.affiliate_event"
+  | "operational.autonomy_event"
   | "hardware.mqtt_dispatch"
-  | "foundation.blackbox_write";
+  | "foundation.blackbox_write"
+  | "sensory.audio_trigger"
+  | "hospitality.prediction"
+  | "cluster.health_event"
+  | "pos.sync_complete";
 
 export interface BusEvent<T = unknown> {
   topic:    BusTopic;

@@ -93,6 +93,7 @@ const StaffFloorCockpit     = lazy(() => import('@/pages/StaffFloorCockpit'));
 const DevicesModule         = lazy(() => import('@/pages/DevicesModule'));
 const EnvironmentEngine     = lazy(() => import('@/pages/EnvironmentEngine'));
 const EnterpriseIntelligence = lazy(() => import('@/pages/EnterpriseIntelligence'));
+const EEIECommandCenter      = lazy(() => import('@/pages/EEIECommandCenter'));
 const EnterpriseGovernance  = lazy(() => import('@/pages/EnterpriseGovernance'));
 
 function PageLoader() {
@@ -734,6 +735,9 @@ export default function App() {
           </Route>
           <Route path="/command-center">
             <SubPageProviders><CentralCommand /></SubPageProviders>
+          </Route>
+          <Route path="/eeie-command">
+            <SubPageProviders><EEIECommandCenter /></SubPageProviders>
           </Route>
           <Route path="/operations">
             <SubPageProviders><MasterOperations /></SubPageProviders>

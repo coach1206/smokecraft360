@@ -1,0 +1,999 @@
+FINAL
+NOVEE OS + EEIE ADVANCED INTELLIGENCE EVOLUTION PROMPT
+SENSORY ENGINE + OPERATIONAL AUTONOMY + PREDICTIVE HOSPITALITY + MULTI-VENUE SCALE + REAL POS INFRASTRUCTURE
+Paste directly into Replit Agent.
+
+MISSING / REQUIRED
+The platform is NO LONGER missing features.
+The platform is now missing:
+DEPTH
+COGNITION
+DISTRIBUTED INTELLIGENCE
+ENVIRONMENTAL ORCHESTRATION
+OPERATIONAL AUTONOMY
+This phase must transform NOVEE OS + EEIE from:
+
+advanced hospitality software
+
+into:
+
+adaptive experiential infrastructure.
+
+DO NOT:
+
+
+redesign the platform
+
+
+replace existing systems
+
+
+remove current visuals
+
+
+remove cinematic architecture
+
+
+break EEIE
+
+
+break mentor systems
+
+
+downgrade experience quality
+
+
+This phase is:
+
+
+intelligence evolution
+
+
+sensory realization
+
+
+distributed orchestration
+
+
+real venue cognition
+
+
+operational automation
+
+
+physical infrastructure integration
+
+
+
+CRITICAL SYSTEMS TO EVOLVE
+Current weak/partial systems:
+
+
+Sensory Engine
+
+
+Operational Autonomy
+
+
+Predictive Hospitality
+
+
+Multi-Venue Scale
+
+
+Real POS Infrastructure
+
+
+All must become:
+REAL
+PERSISTENT
+DISTRIBUTED
+ADAPTIVE
+PRODUCTION SAFE
+
+FAILURE PREVENTION CHECKLIST
+DO NOT:
+
+
+use placeholder logic
+
+
+use fake adaptation
+
+
+use hardcoded intelligence
+
+
+use fake occupancy systems
+
+
+use simulated POS responses labeled real
+
+
+use local memory for distributed orchestration
+
+
+create disconnected AI systems
+
+
+create dashboard-heavy experiences
+
+
+create robotic environmental logic
+
+
+VERIFY:
+
+
+real adaptation execution
+
+
+real POS communication
+
+
+real distributed synchronization
+
+
+real venue orchestration
+
+
+real operational automation
+
+
+real sensory responses
+
+
+real telemetry-driven adaptation
+
+
+The system must FEEL:
+alive
+aware
+adaptive
+predictive
+emotionally intelligent
+operationally fluid
+
+MASTER EVOLUTION PROMPT
+Perform a COMPLETE ADVANCED INTELLIGENCE EVOLUTION of NOVEE OS + EEIE.
+This phase upgrades:
+
+
+sensory immersion
+
+
+venue cognition
+
+
+operational intelligence
+
+
+predictive hospitality
+
+
+multi-venue orchestration
+
+
+real POS infrastructure
+
+
+while preserving:
+
+
+all current architecture
+
+
+all current routes
+
+
+all cinematic systems
+
+
+all mentor systems
+
+
+all revenue systems
+
+
+all EEIE orchestration
+
+
+
+PHASE A
+SENSORY ENGINE REALIZATION
+Current sound/sensory systems are fragmented and partially stubbed.
+Build a REAL centralized Sensory Intelligence Engine.
+
+1. CENTRAL AUDIO ENGINE
+Create:
+server/services/sensoryEngine.ts
+Implement:
+
+
+adaptive audio orchestration
+
+
+event-triggered sound behavior
+
+
+ambient environmental mixing
+
+
+positional audio zones
+
+
+craft-specific sound profiles
+
+
+occupancy-aware sound pacing
+
+
+emotional sound modulation
+
+
+
+REQUIRED SOUND LAYERS
+SmokeCraft
+
+
+cigar crackle
+
+
+torch ignition
+
+
+ember ambience
+
+
+ash tap sounds
+
+
+humidor ambience
+
+
+smoke inhale/exhale atmosphere
+
+
+PourCraft
+
+
+whiskey pour physics
+
+
+ice cube interaction
+
+
+glass resonance
+
+
+bottle uncork sounds
+
+
+liquid swirl ambience
+
+
+BrewCraft
+
+
+foam rise
+
+
+carbonation
+
+
+tap pour sounds
+
+
+glass condensation ambience
+
+
+VapeCraft
+
+
+atmospheric vapor audio
+
+
+cloud dispersal
+
+
+energy-style vapor ambience
+
+
+
+2. ENVIRONMENTAL SENSORY ORCHESTRATION
+Create:
+EnvironmentalSensoryConductor
+Implement:
+adaptive environmental behavior based on:
+
+
+venue occupancy
+
+
+time of day
+
+
+event mode
+
+
+engagement intensity
+
+
+lounge energy
+
+
+guest density
+
+
+active craft zones
+
+
+Adapt:
+
+
+sound intensity
+
+
+animation pacing
+
+
+transition timing
+
+
+ambient visuals
+
+
+mentor tone
+
+
+recommendation depth
+
+
+
+3. HAPTIC + TOUCH FEEDBACK
+Implement:
+
+
+kiosk vibration feedback
+
+
+pressure-sensitive interactions
+
+
+subtle touch pulses
+
+
+successful action resonance
+
+
+adaptive tactile confirmation
+
+
+
+PHASE B
+OPERATIONAL AUTONOMY ENGINE
+Current EEIE reacts.
+It must become:
+predictive and autonomous.
+
+1. OPERATIONAL CONDUCTOR
+Create:
+OperationalAutonomyEngine
+This becomes:
+the venue intelligence conductor.
+Implement:
+
+
+operational monitoring
+
+
+guest engagement scoring
+
+
+venue momentum analysis
+
+
+recommendation balancing
+
+
+staff load awareness
+
+
+inventory movement optimization
+
+
+experience pacing orchestration
+
+
+congestion detection
+
+
+service delay prediction
+
+
+
+2. AUTONOMOUS STAFF ADVISORIES
+Expand:
+eeie:staff_advisory
+Implement:
+
+
+interruption timing prediction
+
+
+guest hesitation analysis
+
+
+upsell opportunity detection
+
+
+pairing confidence scoring
+
+
+social influence detection
+
+
+frustration detection
+
+
+pacing recommendations
+
+
+Examples:
+
+
+“Guest likely ready for premium pairing.”
+
+
+“Avoid interruption during deep blend exploration.”
+
+
+“High engagement drop risk detected.”
+
+
+
+3. VENUE ENERGY ENGINE
+Create:
+VenueEnergyEngine
+Track:
+
+
+guest density
+
+
+interaction speed
+
+
+engagement rhythm
+
+
+emotional pacing
+
+
+exploration intensity
+
+
+conversion activity
+
+
+Generate:
+LIVE venue energy state:
+
+
+CALM
+
+
+EXPLORATORY
+
+
+HIGH_MOMENTUM
+
+
+CONGESTED
+
+
+STAGNATING
+
+
+RECOVERY
+
+
+EEIE must adapt behavior automatically.
+
+PHASE C
+PREDICTIVE HOSPITALITY ENGINE
+This is the REAL EEIE evolution.
+
+1. GUEST BEHAVIOR MODELING
+Create:
+PredictiveHospitalityEngine
+Implement:
+
+
+hesitation detection
+
+
+curiosity scoring
+
+
+confidence scoring
+
+
+fatigue detection
+
+
+exploratory behavior analysis
+
+
+premium intent scoring
+
+
+social influence modeling
+
+
+Track:
+
+
+hover time
+
+
+abandoned selections
+
+
+revisit frequency
+
+
+mentor interaction depth
+
+
+flavor progression
+
+
+pairing behavior
+
+
+
+2. LONG-TERM MEMORY EVOLUTION
+Expand:
+memoryBrain
+Implement:
+
+
+longitudinal preference evolution
+
+
+cross-session learning
+
+
+emotional preference memory
+
+
+mentor relationship memory
+
+
+cross-craft sensory fusion
+
+
+adaptive recommendation escalation
+
+
+Examples:
+
+
+“Guest progressing toward stronger profiles.”
+
+
+“Guest historically avoids high spice pairings.”
+
+
+“Guest responds positively to Dominican wrappers.”
+
+
+
+3. PREDICTIVE RECOMMENDATIONS
+Implement:
+
+
+next-best-action prediction
+
+
+likely pairing acceptance
+
+
+likely upgrade acceptance
+
+
+likely disengagement detection
+
+
+likely reorder prediction
+
+
+event pacing optimization
+
+
+EEIE should:
+predict before user acts.
+
+PHASE D
+MULTI-VENUE SCALE EVOLUTION
+Current architecture still partially single-instance.
+Convert platform into:
+DISTRIBUTED MULTI-VENUE INFRASTRUCTURE.
+
+1. REDIS ORCHESTRATION LAYER
+Implement:
+
+
+distributed venue state
+
+
+distributed orchestration
+
+
+distributed mentor continuity
+
+
+distributed EEIE events
+
+
+distributed environmental adaptation
+
+
+Use:
+Redis pub/sub
+Redis streams
+Redis persistence
+
+2. MULTI-VENUE SESSION ENGINE
+Implement:
+
+
+venue-isolated sessions
+
+
+cross-device synchronization
+
+
+guest session recovery
+
+
+roaming device continuity
+
+
+multi-kiosk orchestration
+
+
+Prevent:
+
+
+split-brain venue state
+
+
+duplicated sessions
+
+
+inventory drift
+
+
+mentor desynchronization
+
+
+
+3. VENUE CLUSTER MANAGEMENT
+Create:
+VenueClusterManager
+Implement:
+
+
+per-venue orchestration
+
+
+health monitoring
+
+
+failover recovery
+
+
+load balancing
+
+
+distributed synchronization
+
+
+cluster diagnostics
+
+
+
+4. DISTRIBUTED INVENTORY ENGINE
+Expand inventory architecture.
+Implement:
+
+
+row-level locking
+
+
+distributed reservation queues
+
+
+atomic inventory mutations
+
+
+reconciliation recovery
+
+
+conflict resolution
+
+
+Prevent:
+
+
+double sells
+
+
+stale state
+
+
+phantom reservations
+
+
+
+PHASE E
+REAL POS INFRASTRUCTURE
+REMOVE simulated-only operational behavior.
+
+1. TOAST INTEGRATION
+Replace fixture adapter with:
+real Toast API integration.
+Implement:
+
+
+OAuth/token handling
+
+
+menu sync
+
+
+inventory sync
+
+
+order sync
+
+
+modifier sync
+
+
+payment reconciliation
+
+
+webhook listeners
+
+
+retry queues
+
+
+audit logging
+
+
+
+2. SQUARE INTEGRATION
+Implement:
+
+
+Square catalog sync
+
+
+payment sync
+
+
+terminal sync
+
+
+order sync
+
+
+inventory sync
+
+
+webhook processing
+
+
+idempotency protection
+
+
+
+3. CLOVER INTEGRATION
+Implement:
+
+
+inventory sync
+
+
+device sync
+
+
+order ingestion
+
+
+transaction reconciliation
+
+
+webhook support
+
+
+menu synchronization
+
+
+
+4. UNIVERSAL POS ABSTRACTION LAYER
+Create:
+UnifiedPOSBridge
+This becomes:
+the single orchestration layer between EEIE and all POS providers.
+Implement:
+
+
+provider abstraction
+
+
+inventory normalization
+
+
+order normalization
+
+
+webhook normalization
+
+
+conflict resolution
+
+
+retry orchestration
+
+
+provider health monitoring
+
+
+
+5. LIVE VENUE INVENTORY INTELLIGENCE
+EEIE should now:
+
+
+know inventory in real time
+
+
+adjust recommendations dynamically
+
+
+avoid unavailable pairings
+
+
+prioritize overstock movement
+
+
+assist inventory optimization
+
+
+
+PHASE F
+OBSERVABILITY + INTELLIGENCE DIAGNOSTICS
+Create:
+EEIECommandCenter
+Implement:
+
+
+live venue intelligence map
+
+
+sensory engine diagnostics
+
+
+orchestration tracing
+
+
+distributed event tracing
+
+
+mentor intelligence tracing
+
+
+environmental adaptation tracing
+
+
+operational autonomy diagnostics
+
+
+POS integration health
+
+
+inventory synchronization monitoring
+
+
+
+FINAL REQUIRED OUTPUT
+Return:
+
+
+ALL modified files
+
+
+ALL created files
+
+
+ALL Redis architecture changes
+
+
+ALL POS integrations
+
+
+ALL webhook systems
+
+
+ALL sensory engine systems
+
+
+ALL predictive hospitality systems
+
+
+ALL operational autonomy systems
+
+
+ALL multi-venue orchestration systems
+
+
+ALL distributed synchronization systems
+
+
+Then generate:
+FINAL EVOLUTION REPORT
+Including:
+
+
+REAL EEIE intelligence %
+
+
+REAL predictive hospitality %
+
+
+REAL sensory immersion %
+
+
+REAL distributed scale readiness %
+
+
+REAL operational autonomy %
+
+
+REAL POS readiness %
+
+
+REAL multi-venue readiness %
+
+
+Then classify:
+
+
+PRODUCTION SAFE
+
+
+MULTI-VENUE SAFE
+
+
+OPERATIONALLY AUTONOMOUS
+
+
+DISTRIBUTED SAFE
+
+
+IMMERSION COMPLETE
+
+
+ENTERPRISE READY
+
+
+DO NOT inflate completion percentages.
+DO NOT leave placeholder logic.
+DO NOT simulate intelligence.
+This evolution phase must behave like:
+
+the transformation of NOVEE OS into a true adaptive experiential hospitality operating system.

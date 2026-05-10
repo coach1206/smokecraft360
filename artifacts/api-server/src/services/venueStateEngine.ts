@@ -25,7 +25,8 @@ import { NeuralEventBus } from "./neuralEventBus";
 
 type VenueDimension =
   | "lighting" | "haptics" | "sonic_dna" | "mode"
-  | "guest_count" | "intent" | "mood" | "commerce";
+  | "guest_count" | "intent" | "mood" | "commerce"
+  | "energy" | "cluster_health";
 
 interface StateEntry {
   value:     unknown;
@@ -76,7 +77,7 @@ class VenueStateEngineImpl {
 
   /** Full atmospheric snapshot for a venue — used by BlackBoxRecovery. */
   snapshot(venueId: string): Record<string, unknown> {
-    const dims: VenueDimension[] = ["lighting","haptics","sonic_dna","mode","guest_count","intent","mood","commerce"];
+    const dims: VenueDimension[] = ["lighting","haptics","sonic_dna","mode","guest_count","intent","mood","commerce","energy","cluster_health"];
     const snap: Record<string, unknown> = { venueId, capturedAt: new Date().toISOString() };
     for (const d of dims) {
       const v = this.get(venueId, d);
@@ -89,7 +90,7 @@ class VenueStateEngineImpl {
   restore(snap: Record<string, unknown>): void {
     const venueId = snap["venueId"] as string;
     if (!venueId) return;
-    const dims: VenueDimension[] = ["lighting","haptics","sonic_dna","mode","guest_count","intent","mood","commerce"];
+    const dims: VenueDimension[] = ["lighting","haptics","sonic_dna","mode","guest_count","intent","mood","commerce","energy","cluster_health"];
     for (const d of dims) {
       if (snap[d] !== undefined) this.set(venueId, d, snap[d]);
     }

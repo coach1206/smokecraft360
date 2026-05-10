@@ -42,7 +42,7 @@ export interface PosAdapterConfig {
 export interface BasePosAdapter {
   readonly name: string;
   readonly displayName: string;
-  readonly connected: boolean;
+  connected: boolean;
 
   syncProducts(config: PosAdapterConfig): Promise<PosProduct[]>;
   syncInventory(config: PosAdapterConfig): Promise<PosInventoryItem[]>;
