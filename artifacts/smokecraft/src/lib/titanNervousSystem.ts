@@ -28,7 +28,7 @@ export type LoungeMood      = "MEDITATIVE" | "FOCUSED" | "HIGH_ENERGY";
 export type OverrideType    = "BLACKOUT" | "API_LOCK" | "PURGE";
 /** 5.2.0 canonical command type — same domain as OverrideType */
 export type SovereignCommand = "BLACKOUT" | "API_LOCK" | "PURGE";
-export type Region           = "DR" | "US" | "EU";
+export type Region           = "DR" | "US" | "EU" | "GLOBAL";
 
 export interface TrifectaProfile {
   craftType:   "smoke" | "pour" | "brew" | "vape";
@@ -106,6 +106,10 @@ const REGIONAL_MAP: Record<Region, {
   EU: {
     pour:  { label: "Macallan 25yr",          isReserve: true  },
     plate: { label: "Truffle Fromage",        isChefSpecial: true  },
+  },
+  GLOBAL: {
+    pour:  { label: "The Macallan Rare Cask", isReserve: true  },
+    plate: { label: "Chef's Signature Reserve", isChefSpecial: true  },
   },
 };
 
