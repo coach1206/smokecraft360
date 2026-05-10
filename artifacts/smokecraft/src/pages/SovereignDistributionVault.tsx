@@ -12,6 +12,7 @@ import {
   Copy, Check, Lock, Unlock, Download, RefreshCw, Plus,
   ChevronRight, AlertTriangle, Server, Zap, Shield,
 } from "lucide-react";
+import { SovereignDistro } from "@/lib/sovereignDistro";
 
 // ── Design tokens (Obsidian command skin) ────────────────────────────────────
 
@@ -264,7 +265,12 @@ function ShipmentsTab({
   };
 
   const toggleAuth = async (batchId: number) => {
-    await fetch(`/api/distribution/batches/${batchId}/authorize`, { method: "PUT" });
+    const res  = await fetch(`/api/distribution/batches/${batchId}/authorize`, { method: "PUT" });
+    const data = await res.json() as { authorized: boolean };
+    // If now authorized, fire SOVEREIGN_WAKE_COMMAND to all devices in the batch
+    if (data.authorized) {
+      SovereignDistro.authorizeNode(`BATCH-${batchId}`, batchId);
+    }
     onRefresh();
   };
 
@@ -524,6 +530,12 @@ function NodesTab() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // Live: refresh list whenever a new device pings NODE_PENDING_AUTHORIZATION
+  useEffect(() => {
+    const unsub = SovereignDistro.onPendingUpdate(() => load());
+    return unsub;
+  }, [load]);
 
   const pending    = nodes.filter(n => n.status === "PENDING");
   const authorized = nodes.filter(n => n.status === "AUTHORIZED");

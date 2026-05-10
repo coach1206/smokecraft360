@@ -41,6 +41,7 @@
 import { Server, type Socket } from "socket.io";
 import type { Server as HttpServer } from "http";
 import { logger } from "./logger";
+import { pool }   from "@workspace/db";
 
 let _io: Server | null = null;
 
@@ -84,6 +85,88 @@ export function initSocketServer(httpServer: HttpServer): Server {
     }) => {
       logger.info({ socketId: socket.id, type: cmd.type, origin: cmd.origin }, "Sovereign global disruption relayed");
       socket.broadcast.emit("SOVEREIGN_GLOBAL_DISRUPTION", cmd);
+    });
+
+    // ── join_batch — device joins its batch room for wake targeting ─────────
+    // Emitted by ActivationGate / SovereignDistro.registerNewNode() on connect.
+    // After joining, SOVEREIGN_WAKE will be routed to all devices in that batch.
+    socket.on("join_batch", ({ batchId }: { batchId: string | number }) => {
+      const room = `batch:${batchId}`;
+      socket.join(room);
+      logger.info({ socketId: socket.id, batchId }, "Device joined batch room");
+    });
+
+    // ── NODE_PENDING_AUTHORIZATION — device cold-start handshake ────────────
+    // Emitted by a manufacturer device on first boot (via SovereignDistro.registerNewNode).
+    // Server persists the pending state and fans the signal to all admin watchers.
+    socket.on("NODE_PENDING_AUTHORIZATION", async (payload: {
+      deviceId:  string;
+      batchId:   string | number;
+      timestamp: number;
+    }) => {
+      logger.info({ socketId: socket.id, deviceId: payload.deviceId, batchId: payload.batchId }, "NODE_PENDING_AUTHORIZATION received");
+
+      // Upsert the node as PENDING in the DB (idempotent)
+      try {
+        await pool.query(
+          `INSERT INTO registered_nodes (serial_number, batch_id, status, ip_address)
+           VALUES ($1, $2, 'PENDING', $3)
+           ON CONFLICT (serial_number) DO UPDATE
+           SET status = CASE WHEN registered_nodes.status = 'AUTHORIZED' THEN 'AUTHORIZED' ELSE 'PENDING' END,
+               ip_address = EXCLUDED.ip_address`,
+          [payload.deviceId, payload.batchId ?? null, socket.handshake.address ?? "socket"],
+        );
+      } catch (err) {
+        logger.warn({ err }, "Failed to upsert pending node from socket event");
+      }
+
+      // Broadcast to admin-connected clients so the Live Nodes tab updates live
+      socket.broadcast.emit("NODE_PENDING_UPDATE", {
+        deviceId:  payload.deviceId,
+        batchId:   payload.batchId,
+        timestamp: payload.timestamp,
+        socketId:  socket.id,
+      });
+    });
+
+    // ── SOVEREIGN_WAKE_COMMAND — admin remote activation ────────────────────
+    // Emitted by the Distribution Vault when a batch is authorized.
+    // Validates the auth key, updates the DB, then relays SOVEREIGN_WAKE to
+    // every device in the target batch room (or a specific device room).
+    socket.on("SOVEREIGN_WAKE_COMMAND", async (cmd: {
+      deviceId: string;
+      batchId?: string | number;
+      authKey:  string;
+      action:   string;
+      ts?:      number;
+    }) => {
+      // Validate the sovereign auth key
+      if (cmd.authKey !== "MASTER_KEY_360") {
+        logger.warn({ socketId: socket.id }, "SOVEREIGN_WAKE_COMMAND rejected — invalid authKey");
+        return;
+      }
+
+      logger.info({ socketId: socket.id, deviceId: cmd.deviceId, batchId: cmd.batchId, action: cmd.action }, "SOVEREIGN_WAKE_COMMAND authorized");
+
+      const wakePayload = { action: "MELT_LOCK", ts: Date.now() };
+
+      if (cmd.batchId != null) {
+        // Update all nodes in this batch to AUTHORIZED
+        try {
+          await pool.query(
+            `UPDATE registered_nodes SET status = 'AUTHORIZED' WHERE batch_id = $1 AND status = 'PENDING'`,
+            [cmd.batchId],
+          );
+        } catch (err) {
+          logger.warn({ err }, "Failed to authorize nodes in batch via socket wake");
+        }
+        // Relay SOVEREIGN_WAKE to every device in the batch room
+        _io!.to(`batch:${cmd.batchId}`).emit("SOVEREIGN_WAKE", wakePayload);
+        logger.info({ batchId: cmd.batchId }, "SOVEREIGN_WAKE relayed to batch room");
+      } else {
+        // Fallback: relay to all sockets (individual device wake)
+        socket.broadcast.emit("SOVEREIGN_WAKE", { ...wakePayload, deviceId: cmd.deviceId });
+      }
     });
 
     socket.on("disconnect", (reason) => {
