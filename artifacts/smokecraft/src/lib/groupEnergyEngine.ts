@@ -70,6 +70,7 @@ class GroupEnergyEngineClass {
   private listeners:       Set<Listener> = new Set();
   private channel:         BroadcastChannel | null = null;
   private tabCount         = 1;
+  private moodOverride:    LoungeMood | null = null;
 
   constructor() {
     this.initChannel();
@@ -92,6 +93,17 @@ class GroupEnergyEngineClass {
     this.pruneWindow();
     // Broadcast to other tabs
     try { this.channel?.postMessage({ type: "activity", ts: now }); } catch { /* ignore */ }
+    this.notify();
+  }
+
+  /**
+   * Directly override the lounge mood — used by LivingPortal hover to
+   * broadcast craft intent before organic activity thresholds are met.
+   * The override persists until the next `setMood` call or a new `recordActivity`
+   * that crosses a different organic threshold.
+   */
+  setMood(mood: LoungeMood): void {
+    this.moodOverride = mood;
     this.notify();
   }
 
@@ -137,6 +149,7 @@ class GroupEnergyEngineClass {
   }
 
   private deriveMood(epm: number): LoungeMood {
+    if (this.moodOverride) return this.moodOverride;
     if (epm > 10) return "HIGH_ENERGY";
     if (epm > 3)  return "FOCUSED";
     return "MEDITATIVE";

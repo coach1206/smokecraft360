@@ -30,7 +30,8 @@ export interface UnifiedCognitiveState {
 }
 
 export interface UnifiedCognitiveContextValue extends UnifiedCognitiveState {
-  recordInteraction: (craft?: string) => void;
+  recordInteraction:  (craft?: string) => void;
+  updateLoungeMood:   (mood: LoungeMood) => void;
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -82,6 +83,7 @@ export function useUnifiedCognitive(): UnifiedCognitiveContextValue {
       ritual_pacing:     "steady",
       atmospheric_delta: 0,
       recordInteraction: () => {},
+      updateLoungeMood:  () => {},
     };
   }
   return ctx;
@@ -115,8 +117,12 @@ export function UnifiedCognitiveProvider({ children }: { children: ReactNode }) 
     if (craft) crossSessionMemory.recordCraftVisit(craft);
   }, []);
 
+  const updateLoungeMood = useCallback((mood: LoungeMood) => {
+    groupEnergyEngine.setMood(mood);
+  }, []);
+
   return (
-    <UnifiedCognitiveContext.Provider value={{ ...state, recordInteraction }}>
+    <UnifiedCognitiveContext.Provider value={{ ...state, recordInteraction, updateLoungeMood }}>
       {children}
     </UnifiedCognitiveContext.Provider>
   );

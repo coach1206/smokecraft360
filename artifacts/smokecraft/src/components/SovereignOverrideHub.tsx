@@ -25,6 +25,7 @@ import { useGuestProfile }   from "@/contexts/GuestProfileContext";
 import { useCraftExperience } from "@/contexts/CraftExperienceContext";
 import { useSuperAdmin }     from "@/contexts/SuperAdminContext";
 import { playPillClink }     from "@/lib/audioEngine";
+import { useUnifiedCognitive } from "@/contexts/UnifiedCognitiveContext";
 
 // ── Design tokens ──────────────────────────────────────────────────────────
 const OBSIDIAN   = "rgba(10,9,8,0.92)";
@@ -239,6 +240,12 @@ function Divider({ label }: { label?: string }) {
 
 // ── Main component ─────────────────────────────────────────────────────────
 
+const PULSE_DUR: Record<string, string> = {
+  MEDITATIVE:  "3.5s",
+  FOCUSED:     "2s",
+  HIGH_ENERGY: "0.85s",
+};
+
 export function SovereignOverrideHub() {
   const [open, setOpen]         = useState(false);
   const [mounted, setMounted]   = useState(false);
@@ -250,9 +257,12 @@ export function SovereignOverrideHub() {
   const { clearGuest }          = useGuestProfile();
   const { purgeSessions }       = useCraftExperience();
   const { activateGhost, killSwitches, toggleKillSwitch } = useSuperAdmin();
+  const { lounge_mood }         = useUnifiedCognitive();
 
   const isBlackoutActive = killSwitches.find(s => s.name === "session_blackout")?.enabled ?? false;
   const isApiLockActive  = killSwitches.find(s => s.name === "api_disconnect")?.enabled  ?? false;
+
+  const pulseDur = PULSE_DUR[lounge_mood] ?? "2s";
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -353,7 +363,7 @@ export function SovereignOverrideHub() {
           width:  5, height: 5, borderRadius: "50%",
           background: (isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e",
           boxShadow:  `0 0 6px ${(isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e"}`,
-          animation:  "hub-pulse 2s ease-in-out infinite",
+          animation:  `hub-pulse ${pulseDur} ease-in-out infinite`,
         }} />
         {(isBlackoutActive || isApiLockActive) ? "⚠ SOVEREIGN OVERRIDE — ENGAGED" : "SOVEREIGN PROTOCOL · ACTIVE"}
       </div>
@@ -455,7 +465,7 @@ export function SovereignOverrideHub() {
           background:   (isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e",
           boxShadow:    `0 0 7px ${(isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e"}`,
           flexShrink:   0,
-          animation:    "hub-pulse 2s ease-in-out infinite",
+          animation:    `hub-pulse ${pulseDur} ease-in-out infinite`,
         }} />
 
         {/* Label */}

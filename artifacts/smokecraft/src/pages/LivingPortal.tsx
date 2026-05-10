@@ -16,6 +16,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
+import { useUnifiedCognitive } from "@/contexts/UnifiedCognitiveContext";
+import type { LoungeMood } from "@/lib/groupEnergyEngine";
 
 /* ── Per-craft image pools ─────────────────────────────────────────────────── */
 interface CraftConfig {
@@ -514,9 +516,17 @@ function CraftDetail({
 }
 
 /* ── Root component ───────────────────────────────────────────────────────── */
+const CRAFT_MOOD: Record<string, LoungeMood> = {
+  smoke: "MEDITATIVE",
+  vape:  "MEDITATIVE",
+  pour:  "HIGH_ENERGY",
+  brew:  "HIGH_ENERGY",
+};
+
 export default function LivingPortal() {
   const [selected, setSelected]               = useState<CraftConfig | null>(null);
   const [activeAtmosphere, setActiveAtmosphere] = useState<string>("smoke");
+  const { updateLoungeMood }                  = useUnifiedCognitive();
 
   // Inject Ken Burns keyframes once
   useEffect(() => {
@@ -529,6 +539,11 @@ export default function LivingPortal() {
   }, []);
 
   const handleBack = useCallback(() => setSelected(null), []);
+
+  const handleCraftActivate = useCallback((craftId: string) => {
+    setActiveAtmosphere(craftId);
+    updateLoungeMood(CRAFT_MOOD[craftId] ?? "FOCUSED");
+  }, [updateLoungeMood]);
 
   return (
     <div style={{
@@ -557,8 +572,8 @@ export default function LivingPortal() {
             key={craft.id}
             craft={craft}
             initialOffset={i}
-            onHover={() => setActiveAtmosphere(craft.id)}
-            onClick={() => { setActiveAtmosphere(craft.id); setSelected(craft); }}
+            onHover={() => handleCraftActivate(craft.id)}
+            onClick={() => { handleCraftActivate(craft.id); setSelected(craft); }}
           />
         ))}
       </div>
