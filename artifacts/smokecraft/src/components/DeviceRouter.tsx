@@ -190,7 +190,7 @@ export function KioskShell({ children }: { children: ReactNode }) {
         fontSize: 10, fontWeight: 700, color: "rgba(26,26,27,0.40)",
         letterSpacing: "0.12em", textTransform: "uppercase", pointerEvents: "none",
       }}>
-        <span>Axiom OS · Kiosk</span>
+        <span>NOVEE OS · Kiosk</span>
         <span>{time}</span>
       </div>
       <div style={{ paddingTop: 30, height: "100%" }}>{children}</div>
@@ -234,7 +234,7 @@ export function PosShell({ children }: { children: ReactNode }) {
         </span>
         <div style={{ flex: 1 }} />
         <span style={{ fontSize: 10, color: "rgba(26,26,27,0.25)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-          Axiom OS
+          NOVEE OS
         </span>
       </div>
       <div data-shell-panel="pos-main" style={{ flex: 1, overflow: "auto" }}>{children}</div>

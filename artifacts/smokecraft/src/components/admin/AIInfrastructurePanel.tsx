@@ -178,7 +178,7 @@ export default function AIInfrastructurePanel() {
                 <span style={{ fontSize: 14, fontWeight: 700, color: modeColor, fontFamily: C.mono }}>{modeLabel}</span>
               </div>
               <div style={{ fontSize: 9, color: C.dim, marginTop: 4 }}>
-                {isBYOK ? "Your provider keys" : "Axiom-managed"}
+                {isBYOK ? "Your provider keys" : "NOVEE-managed"}
               </div>
             </div>
 
@@ -202,7 +202,7 @@ export default function AIInfrastructurePanel() {
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <Activity size={15} color={C.amber} />
                 <span style={{ fontSize: 12, fontWeight: 700, color: C.ink, fontFamily: C.mono, textTransform: "uppercase" }}>
-                  {primaryProv?.providerName ?? (isBYOK ? "Not set" : "AXIOM AI")}
+                  {primaryProv?.providerName ?? (isBYOK ? "Not set" : "NOVEE Intelligence")}
                 </span>
               </div>
               <div style={{ fontSize: 9, color: C.dim, marginTop: 4 }}>

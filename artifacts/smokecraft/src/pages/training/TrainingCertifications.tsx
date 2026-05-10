@@ -219,7 +219,7 @@ export default function TrainingCertifications() {
           <div style={{ position: "relative" }}>
             <PrintExport
               type="certificate"
-              data={{ name: "Training Participant", roleTitle: "Axiom OS Staff", managerName: "Floor Manager" }}
+              data={{ name: "Training Participant", roleTitle: "NOVEE OS Staff", managerName: "Floor Manager" }}
               label="Export PDF"
             />
           </div>

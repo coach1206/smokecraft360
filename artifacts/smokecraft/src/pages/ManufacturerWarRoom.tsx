@@ -539,7 +539,7 @@ export default function ManufacturerWarRoom() {
           <button onClick={() => navigate(-1 as never)} style={{ background: C.glass, border: `1px solid ${C.border}`, color: C.muted, padding: "7px 14px", borderRadius: 8, cursor: "pointer", fontSize: 12, letterSpacing: "0.08em", fontFamily: "inherit" }}>← BACK</button>
           <div style={{ flex: 1 }}>
             <h1 style={{ margin: 0, fontSize: "clamp(17px,3.5vw,24px)", fontWeight: 500, color: C.purple, letterSpacing: "0.06em" }}>Manufacturer War Room</h1>
-            <div style={{ fontSize: 10, color: C.dim, letterSpacing: "0.14em", marginTop: 2 }}>AXIOM OS · PHASE 1 & 3 — BRAND INTELLIGENCE</div>
+            <div style={{ fontSize: 10, color: C.dim, letterSpacing: "0.14em", marginTop: 2 }}>NOVEE OS · PHASE 1 & 3 — BRAND INTELLIGENCE</div>
           </div>
           <motion.div animate={{ opacity: [1, 0.2, 1] }} transition={{ duration: 2.4, repeat: Infinity }} style={{ width: 7, height: 7, borderRadius: "50%", background: C.purple }} />
           <span style={{ fontSize: 10, color: C.purple, letterSpacing: "0.1em" }}>ACTIVE</span>

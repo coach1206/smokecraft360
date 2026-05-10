@@ -95,7 +95,7 @@ export default function Entry() {
         <h1 style={{
           fontSize: 28, fontWeight: 700, color: "#D48B00", margin: "0 0 2px",
           fontFamily: "'Playfair Display', serif", letterSpacing: "0.03em",
-        }}>Axiom OS</h1>
+        }}>NOVEE OS</h1>
         <h2 style={{
           fontSize: 14, fontWeight: 400, color: "rgba(26,26,27,0.58)",
           margin: "0 0 4px", letterSpacing: "0.08em",

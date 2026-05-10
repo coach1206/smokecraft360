@@ -166,7 +166,7 @@ const SLIDES = [
     subtitle: "From one lounge to a national network",
     icon: Globe,
     color: T.pink,
-    maxwellMsg: "Axiom OS is built for multi-tenant scale from day one. Tenant isolation ensures venues never see each other's data — while the network intelligence layer aggregates anonymized signals across the whole platform.",
+    maxwellMsg: "NOVEE OS is built for multi-tenant scale from day one. Tenant isolation ensures venues never see each other's data — while the network intelligence layer aggregates anonymized signals across the whole platform.",
     kpis: [
       { label: "Venue Isolation",     value: 100, suffix: "%",     color: T.green   },
       { label: "Network Data Points", value: 2.4, suffix: "M/mo", color: T.pink     },

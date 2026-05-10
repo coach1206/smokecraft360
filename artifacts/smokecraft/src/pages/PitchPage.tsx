@@ -181,7 +181,7 @@ export default function PitchPage() {
             <span style={{
               fontFamily: "'Cormorant Garamond', serif", fontWeight: 700,
               fontSize: 15, color: C.amber, letterSpacing: "0.14em",
-            }}>AXIOM OS</span>
+            }}>NOVEE OS</span>
             <div style={{ flex: 1 }} />
             {NAV.map(n => (
               <span key={n} style={{
@@ -762,7 +762,7 @@ export default function PitchPage() {
                 "Swipe-order pipeline (reservations, 15m TTL, confirm/cancel)",
                 "Kiosk armor (PIN lock, inactivity, burn-in, NDA, audit log)",
                 "Stripe payments + 15-min reconciliation worker",
-                "Axiom Receipt with QR token + multi-channel delivery",
+                "NOVEE Receipt with QR token + multi-channel delivery",
                 "Finance reconciliation dashboard (5 tabs)",
                 "DayOne360 sponsor card + Travel Concierge bottom sheet",
                 "Multi-venue, multi-role JWT auth + RBAC (6 roles)",

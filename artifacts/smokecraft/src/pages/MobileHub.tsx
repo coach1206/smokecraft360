@@ -87,7 +87,7 @@ const RETAIL_PRODUCTS = [
     href: "https://shopify.com",
   },
   {
-    id: "r3", name: "Axiom Reserve Sampler",
+    id: "r3", name: "NOVEE Reserve Sampler",
     type: "Gift Set · 5 pieces", price: 49,
     icon: Gift, color: "#A78BFA",
     desc: "Curated selection from tonight's menu. Perfect for gifting.",

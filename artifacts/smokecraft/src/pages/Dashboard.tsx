@@ -73,7 +73,7 @@ const TABS: { id: DashTab; label: string; icon: React.ReactNode; superAdminOnly?
   { id: "lounge-league",label: "Lounge League",         icon: <Trophy size={12} />       },
   { id: "devices",      label: "Device Manager",        icon: <Monitor size={12} />      },
   { id: "analytics",    label: "Analytics",             icon: <Tag size={12} />          },
-  { id: "os",           label: "Axiom OS",              icon: <Activity size={12} />     },
+  { id: "os",           label: "NOVEE OS",              icon: <Activity size={12} />     },
   { id: "entitlements", label: "Feature Control",       icon: <ShieldCheck size={12} />, superAdminOnly: true },
   { id: "data-intel",   label: "Data Intelligence",     icon: <Brain size={12} />       },
   { id: "sales-tiers",        label: "Sales & Licensing",     icon: <DollarSign size={12} />, superAdminOnly: true },
@@ -414,7 +414,7 @@ export default function Dashboard() {
                       <div className="grid grid-cols-3 gap-3 mt-4">
                         {[
                           { label: "AI Mode",    value: "Managed",  color: "rgba(34,197,94,0.8)"   },
-                          { label: "Routing",    value: "Axiom",    color: "rgba(212,139,0,0.8)"   },
+                          { label: "Routing",    value: "NOVEE",    color: "rgba(212,139,0,0.8)"   },
                           { label: "Failover",   value: "Enabled",  color: "rgba(91,141,239,0.8)"  },
                         ].map(item => (
                           <div key={item.label} className="rounded-lg p-2.5 text-center"

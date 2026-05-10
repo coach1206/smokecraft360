@@ -22,7 +22,7 @@ export interface AxiomTier {
 export const AXIOM_TIERS: Record<TierId, AxiomTier> = {
   CORE: {
     id:           "CORE",
-    displayName:  "AXIOM CORE",
+    displayName:  "NOVEE CORE",
     monthlyPrice: 499,
     annualPrice:  4990,
     setupFee:     1500,
@@ -41,7 +41,7 @@ export const AXIOM_TIERS: Record<TierId, AxiomTier> = {
 
   PRO: {
     id:           "PRO",
-    displayName:  "AXIOM PRO",
+    displayName:  "NOVEE PRO",
     monthlyPrice: 1499,
     annualPrice:  14990,
     setupFee:     3500,
@@ -63,7 +63,7 @@ export const AXIOM_TIERS: Record<TierId, AxiomTier> = {
 
   XEI: {
     id:           "XEI",
-    displayName:  "AXIOM XEI",
+    displayName:  "NOVEE XEI",
     monthlyPrice: 5000,
     annualPrice:  50000,
     setupFee:     10000,
@@ -84,7 +84,7 @@ export const AXIOM_TIERS: Record<TierId, AxiomTier> = {
 
   BLACK: {
     id:           "BLACK",
-    displayName:  "AXIOM BLACK",
+    displayName:  "NOVEE BLACK",
     monthlyPrice: 15000,
     annualPrice:  150000,
     setupFee:     50000,

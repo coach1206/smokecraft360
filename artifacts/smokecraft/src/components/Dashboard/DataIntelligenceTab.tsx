@@ -279,7 +279,7 @@ export function DataIntelligenceTab() {
             Data Intelligence
           </h2>
           <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: G(0.4) }}>
-            Axiom OS · Behavioral Analytics Engine
+            NOVEE OS · Behavioral Analytics Engine
           </p>
         </div>
         <div className="flex items-center gap-2">

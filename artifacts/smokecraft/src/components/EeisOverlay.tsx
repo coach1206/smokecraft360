@@ -839,10 +839,10 @@ export default function EeisOverlay() {
                 style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }}
               />
               <span style={{ fontSize: 10, letterSpacing: "0.28em", color: `${GOLD}CC`, textTransform: "uppercase" }}>
-                AXIOM OS · OPERATIONAL MODE
+                NOVEE OS · OPERATIONAL MODE
               </span>
               <span style={{ fontSize: 8, color: `${CREAM}30`, letterSpacing: "0.12em" }}>
-                EEIS v2 · XEI ACTIVE
+                EEIE v2 · XEI ACTIVE
               </span>
             </div>
 

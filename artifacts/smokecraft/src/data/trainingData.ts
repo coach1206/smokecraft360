@@ -224,7 +224,7 @@ export const TRAINING_SCENARIOS = [
     category: "operations",
     estimatedMin: 6,
     steps: [
-      { id: "s1", title: "Identify the shortage", description: "Review the inventory alert for Macanudo Vintage — 3 units remaining.", maxwell: "Axiom flagged this automatically when stock dropped below the reorder threshold. Navigate to Operations → Inventory to see the alert." },
+      { id: "s1", title: "Identify the shortage", description: "Review the inventory alert for Macanudo Vintage — 3 units remaining.", maxwell: "NOVEE flagged this automatically when stock dropped below the reorder threshold. Navigate to Operations → Inventory to see the alert." },
       { id: "s2", title: "Adjust recommendation engine", description: "Temporarily suppress the low-stock item from active recommendations.", maxwell: "In the inventory panel, toggle the 'suppress when low' flag. The AI will immediately route guests toward alternatives with similar profiles." },
       { id: "s3", title: "Notify distributor", description: "Submit a reorder request through the distributor portal.", maxwell: "The reorder workflow auto-fills quantity based on your 30-day average consumption. Confirm and submit — the distributor receives it instantly." },
       { id: "s4", title: "Alert floor staff", description: "Use the staff broadcast to notify cigar specialists of the shortage.", maxwell: "Real-time staff alerts prevent awkward moments when guests ask for unavailable items. A proactive team always wins." },
@@ -238,7 +238,7 @@ export const TRAINING_SCENARIOS = [
     category: "revenue",
     estimatedMin: 7,
     steps: [
-      { id: "s1", title: "Spot the signal", description: "Axiom flags Marcus Chen as an upsell candidate based on his spend history and current mood signal.", maxwell: "The behavioral intelligence system identified an upsell window — Marcus ordered a mid-tier pour but his history suggests he prefers premium. Notice the orange indicator on his tab." },
+      { id: "s1", title: "Spot the signal", description: "NOVEE flags Marcus Chen as an upsell candidate based on his spend history and current mood signal.", maxwell: "The behavioral intelligence system identified an upsell window — Marcus ordered a mid-tier pour but his history suggests he prefers premium. Notice the orange indicator on his tab." },
       { id: "s2", title: "Review the recommendation", description: "Open his active tab and see the AI's suggested upsell: Pappy Van Winkle 15yr pairing.", maxwell: "The Revenue Brain scored this pairing 94/100 — high margin, aligned with taste profile, and within his average spend range. Present it naturally." },
       { id: "s3", title: "Present the upgrade", description: "Communicate the upsell as a curated suggestion, not a sale.", maxwell: "Language matters. Try: 'Your cigar's cocoa notes pair beautifully with the Pappy 15 — we have just 4 bottles left tonight.' Exclusivity drives decisions." },
       { id: "s4", title: "Add to tab", description: "Update the tab with the upsell item and confirm the order.", maxwell: "Great. The system logged this upsell as staff-assisted revenue. This data improves the engine's future predictions for similar guests." },

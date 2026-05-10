@@ -44,7 +44,7 @@ const SLIDES = [
     title: "How the Game Drives Tips",
     subtitle: "Expert guests spend 20% more.",
     body: [
-      "Axiom OS turns every visit into a personalized discovery session. Guests earn Mastery Points as they explore — and higher-tier guests (Craftsmen, Sommeliers) spend an average of 20% more per visit.",
+      "NOVEE OS turns every visit into a personalized discovery session. Guests earn Mastery Points as they explore — and higher-tier guests (Craftsmen, Sommeliers) spend an average of 20% more per visit.",
       "Your role: guide them to their next level. A single well-placed recommendation can move a guest from Apprentice to Craftsman — and they'll remember you for it.",
     ],
     callout: "Craftsmanship-level guests tip 20% more on average.",

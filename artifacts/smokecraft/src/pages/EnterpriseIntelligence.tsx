@@ -194,7 +194,7 @@ export default function EnterpriseIntelligence() {
           <button onClick={() => navigate("/command")} style={{ background: C.glass, border: `1px solid ${C.border}`, color: C.muted, padding: "7px 14px", borderRadius: 8, cursor: "pointer", fontSize: 12, letterSpacing: "0.08em", fontFamily: "inherit" }}>← BACK</button>
           <div style={{ flex: 1 }}>
             <h1 style={{ margin: 0, fontSize: "clamp(17px,3.5vw,24px)", fontWeight: 500, color: C.goldBt, letterSpacing: "0.06em" }}>Enterprise Intelligence</h1>
-            <div style={{ fontSize: 11, color: C.dim, letterSpacing: "0.12em", marginTop: 2 }}>AXIOM OS · HOSPITALITY INTELLIGENCE LAYER</div>
+            <div style={{ fontSize: 11, color: C.dim, letterSpacing: "0.12em", marginTop: 2 }}>NOVEE OS · HOSPITALITY INTELLIGENCE LAYER</div>
           </div>
           {/* Live pulse */}
           <motion.div animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 2, repeat: Infinity }} style={{ width: 6, height: 6, borderRadius: "50%", background: C.green }} />

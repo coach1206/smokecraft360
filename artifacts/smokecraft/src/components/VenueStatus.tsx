@@ -96,7 +96,7 @@ export default function VenueStatus({ guests, lastUpdated }: Props) {
           textTransform: "uppercase",
           whiteSpace:    "nowrap",
         }}>
-          Axiom OS — Operational
+          NOVEE OS — Operational
         </span>
       </div>
 

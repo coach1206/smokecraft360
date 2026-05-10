@@ -138,7 +138,7 @@ function IntroStage({
           fontFamily:    "'Space Mono', monospace",
         }}
       >
-        ◈ AXIOM OS · {config.craftId.toUpperCase()}CRAFT 360
+        ◈ NOVEE OS · {config.craftId.toUpperCase()}CRAFT 360
       </motion.div>
 
       {/* Title */}

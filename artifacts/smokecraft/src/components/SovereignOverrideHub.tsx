@@ -270,7 +270,7 @@ export function SovereignOverrideHub() {
       <MenuItem
         icon={<IconEeis />}
         label="OPERATIONAL INTELLIGENCE"
-        sub="EEIS Nervous System · Staff Telemetry"
+        sub="EEIE Nervous System · Staff Telemetry"
         accent={AMBER}
         onClick={handleEeis}
       />

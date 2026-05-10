@@ -1,7 +1,7 @@
 {
-  "short_name": "Axiom OS",
-  "name": "Axiom OS — Experience Engine",
-  "description": "Sovereign data and lifestyle infrastructure for premium cigar lounges.",
+  "short_name": "NOVEE OS",
+  "name": "NOVEE OS — Experience Intelligence Platform",
+  "description": "An adaptive intelligence operating system designed to transform physical environments into predictive, emotionally intelligent experiences.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -19,8 +19,8 @@
   "scope": "/",
   "display": "fullscreen",
   "display_override": ["fullscreen", "standalone", "minimal-ui"],
-  "theme_color": "#D48B00",
-  "background_color": "#F5F2ED",
+  "theme_color": "#D4AF37",
+  "background_color": "#000000",
   "orientation": "landscape",
   "categories": ["lifestyle", "business"],
   "prefer_related_applications": false,
@@ -32,8 +32,8 @@
     {
       "name": "CraftHub",
       "short_name": "Craft",
-      "description": "Enter the craft experience",
-      "url": "/crafthub",
+      "description": "Enter the NOVEE OS craft experience",
+      "url": "/craft-hub",
       "icons": [{ "src": "favicon.svg", "sizes": "any" }]
     },
     {

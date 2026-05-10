@@ -1,0 +1,347 @@
+# FINAL REBRAND EXECUTION PROMPT — NOVEE OS
+
+You are performing a FULL SYSTEM-WIDE ENTERPRISE REBRAND of the existing platform ecosystem.
+
+THIS IS NOT A COSMETIC TEXT CHANGE.
+
+This is a production-safe architecture migration from:
+AXIOM OS
+
+TO:
+NOVEE OS
+
+The platform MUST remain fully operational during and after migration.
+
+====================================================
+NEW OFFICIAL BRAND STRUCTURE
+====================================================
+
+PARENT COMPANY:
+Profound Innovations
+
+MASTER INTELLIGENCE PLATFORM:
+NOVEE OS
+
+INTELLIGENCE ENGINE:
+EEIE
+(Experience Enhancement Intelligence Engine)
+
+EXPERIENCE PLATFORM:
+CraftHub
+
+MODULES:
+• SmokeCraft
+• PourCraft
+• BrewCraft
+• VapeCraft
+
+====================================================
+CORE POSITIONING
+====================================================
+
+NOVEE OS is NOT a website.
+
+NOVEE OS is:
+“An adaptive intelligence operating system designed to transform physical environments into predictive, emotionally intelligent experiences.”
+
+The website is ONLY:
+• the ecosystem gateway
+• command center
+• intelligence portal
+• onboarding layer
+• touchscreen access point
+• operational cockpit
+• AI orchestration interface
+
+DO NOT treat this platform like generic SaaS software.
+
+The system must feel:
+• cinematic
+• luxurious
+• calm
+• predictive
+• alive
+• emotionally intelligent
+• black-glass premium
+• architecturally advanced
+
+====================================================
+CRITICAL INSTRUCTIONS
+====================================================
+
+DO NOT:
+• break existing APIs
+• break database schemas
+• break authentication
+• break websocket systems
+• break telemetry systems
+• break Stripe integrations
+• break kiosk systems
+• break mobile packaging
+• break Electron wrapper
+• break admin RBAC
+• break EEIE logic
+• break offline sync systems
+
+ALL CURRENT FUNCTIONALITY MUST REMAIN OPERATIONAL.
+
+====================================================
+STEP 1 — CREATE CENTRALIZED BRAND CONFIG
+====================================================
+
+Create:
+
+shared/config/brand.ts
+
+Export:
+
+export const BRAND = {
+  name: "NOVEE",
+  platform: "NOVEE OS",
+  intelligence: "NOVEE Intelligence",
+  eeie: "EEIE",
+  engine: "Experience Enhancement Intelligence Engine",
+  poweredBy: "Powered by NOVEE Intelligence",
+  tagline: "Intelligence That Elevates",
+  parentCompany: "Profound Innovations",
+};
+
+ALL frontend/backend references MUST use this config.
+
+NO HARDCODED BRAND REFERENCES.
+
+====================================================
+STEP 2 — LEGACY COMPATIBILITY LAYER
+====================================================
+
+Create:
+
+shared/config/legacyMappings.ts
+
+Map:
+
+Axiom → NOVEE
+Axiom OS → NOVEE OS
+Axiom Commerce → NOVEE Commerce
+Axiom Intelligence → NOVEE Intelligence
+
+Maintain compatibility aliases for:
+• routes
+• APIs
+• localStorage
+• websocket namespaces
+• analytics events
+• telemetry labels
+• environment variables
+
+DO NOT DELETE LEGACY SUPPORT.
+
+====================================================
+STEP 3 — FULL FRONTEND REBRAND
+====================================================
+
+Update:
+• splash screens
+• onboarding flows
+• navbars
+• dashboards
+• kiosk overlays
+• investor demo mode
+• admin cockpit
+• AI mentor systems
+• telemetry overlays
+• PDF exports
+• login screens
+• touchscreen interfaces
+• settings panels
+• loading states
+• modals
+• notification systems
+
+Replace:
+ALL AXIOM REFERENCES
+with:
+NOVEE references.
+
+====================================================
+STEP 4 — NOVEE BOOT EXPERIENCE
+====================================================
+
+Replace previous startup experience with:
+
+1.
+Pure black screen.
+
+2.
+Low ambient environmental hum begins.
+
+3.
+Soft metallic gold pulse emerges.
+
+4.
+NOVEE logo slowly illuminates from darkness.
+
+5.
+Ambient telemetry particles drift subtly.
+
+6.
+Text fades in:
+
+“Powered by NOVEE Intelligence”
+
+7.
+EEIE initialization sequence begins:
+
+“Initializing Adaptive Environment…”
+
+8.
+CraftHub interface materializes cinematically.
+
+MOTION STYLE:
+• Apple precision
+• Tesla environmental intelligence
+• calm luxury
+• soft transitions
+• ambient depth
+• premium realism
+
+NO:
+• cheap cyberpunk effects
+• gaming aesthetics
+• cartoon motion
+• flat SaaS transitions
+
+====================================================
+STEP 5 — EEIE POSITIONING
+====================================================
+
+EEIE is NOT a POS.
+
+EEIE is:
+“A behavioral orchestration and adaptive intelligence engine.”
+
+EEIE controls:
+• predictive recommendations
+• guest engagement
+• environmental adaptation
+• AI pairing systems
+• behavioral telemetry
+• reward intelligence
+• experience personalization
+• operational intelligence
+• venue orchestration
+
+Update ALL UI descriptions and documentation accordingly.
+
+====================================================
+STEP 6 — DESIGN LANGUAGE
+====================================================
+
+Maintain:
+• obsidian black
+• smoked glass surfaces
+• metallic gold accents
+• warm amber lighting
+• cinematic depth
+• realistic imagery
+• environmental animation
+• ambient telemetry
+• premium typography
+• realistic transitions
+
+DO NOT:
+• flatten the UI
+• use generic SaaS layouts
+• use emojis
+• use placeholder imagery
+• use glyph-heavy design
+• use cartoon visuals
+
+====================================================
+STEP 7 — BACKEND REBRAND
+====================================================
+
+Update:
+• telemetry labels
+• analytics naming
+• audit logs
+• queue labels
+• websocket channels
+• Stripe metadata
+• email senders
+• PDF metadata
+• notification titles
+• monitoring systems
+• AI engine naming
+
+WITHOUT changing operational logic.
+
+====================================================
+STEP 8 — MOBILE + ELECTRON
+====================================================
+
+Update:
+• app manifests
+• Electron wrapper name
+• package names
+• splash screens
+• app titles
+• icons
+• install labels
+• PWA metadata
+• mobile packaging configs
+
+====================================================
+STEP 9 — PLATFORM POSITIONING
+====================================================
+
+NOVEE OS must position itself as:
+
+“An adaptive intelligence platform powering predictive hospitality and immersive behavioral environments.”
+
+The system should feel:
+• intelligent
+• predictive
+• emotionally aware
+• calm
+• cinematic
+• premium
+• futuristic
+• luxurious
+
+====================================================
+STEP 10 — FINAL VALIDATION
+====================================================
+
+Run:
+• full typecheck
+• API validation
+• route validation
+• websocket validation
+• Stripe validation
+• telemetry validation
+• touchscreen validation
+• admin validation
+• kiosk validation
+• Electron validation
+• mobile validation
+
+Generate:
+NOVEE_REBRAND_AUDIT.md
+
+Include:
+• migrated systems
+• preserved systems
+• compatibility aliases
+• unresolved references
+• fallback mappings
+• rollback notes
+• environment compatibility
+
+FINAL RESULT:
+
+The platform should feel like:
+a living adaptive intelligence ecosystem called NOVEE OS.
+
+NOT:
+a renamed POS system.

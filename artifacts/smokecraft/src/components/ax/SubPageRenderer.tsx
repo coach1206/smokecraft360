@@ -442,7 +442,7 @@ function DefaultView() {
         <Activity size={40} color={`${T.gold}40`} />
       </motion.div>
       <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.24em", color: T.dim, marginTop: 16, fontStyle: "italic" }}>
-        Axiom OS Intelligence: Processing Data…
+        NOVEE Intelligence: Processing Data…
       </div>
     </div>
   );

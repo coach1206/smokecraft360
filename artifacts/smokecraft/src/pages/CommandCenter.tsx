@@ -135,7 +135,7 @@ export default function CommandCenter() {
           <div>
             <div style={{ fontSize: 18, fontWeight: 700, color: C.gold }}>Command Hub</div>
             <div style={{ fontSize: 11, color: C.muted }}>
-              {pos.currentUser ? `${pos.currentUser.name} · ${pos.currentUser.role}` : "Axiom OS"}
+              {pos.currentUser ? `${pos.currentUser.name} · ${pos.currentUser.role}` : "NOVEE OS"}
             </div>
           </div>
         </div>

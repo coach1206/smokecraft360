@@ -98,7 +98,7 @@ export function OsTab() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Activity className="text-emerald-400" size={20} />
-          <h2 className="text-lg font-semibold text-[#1A1A1B]">Axiom OS</h2>
+          <h2 className="text-lg font-semibold text-[#1A1A1B]">NOVEE OS</h2>
           <span className="ml-2 rounded bg-emerald-500/15 px-2 py-0.5 text-xs text-emerald-300">super_admin</span>
         </div>
         <div className="flex items-center gap-2">

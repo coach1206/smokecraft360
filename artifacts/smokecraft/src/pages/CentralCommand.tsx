@@ -252,7 +252,7 @@ export default function CentralCommand() {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <Globe size={16} color={C.gold} />
-              <span style={{ fontSize: 18, fontWeight: 700, color: C.gold }}>Axiom Central Command</span>
+              <span style={{ fontSize: 18, fontWeight: 700, color: C.gold }}>NOVEE Central Command</span>
             </div>
             <div style={{ fontSize: 11, color: C.muted, marginTop: 1 }}>
               Remote Operations · OTA Deployment · Device Fleet
@@ -635,7 +635,7 @@ export default function CentralCommand() {
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <Cpu size={9} />
-          <span>Axiom Central Command · Remote Operations Layer</span>
+          <span>NOVEE Central Command · Remote Operations Layer</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <span style={{ display: "flex", alignItems: "center", gap: 5 }}>

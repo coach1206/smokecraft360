@@ -563,7 +563,7 @@ export default function IntelligenceManifest() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 14 }}>
               {[
                 { gate: "Gate A — Staff POS",       trigger: "3,000ms hold", location: "CraftHub title area", result: "Staff POS overlay: card processing, cart, PIN auth", constant: "HOLD_MS = 3000", color: D.amber },
-                { gate: "Gate B — Founder Panel",   trigger: "5,000ms hold", location: "Axiom OS patron logo", result: "Founder Dashboard: occupancy, lift, XP, surge toggle", constant: "logoHoldTimer = 5000ms", color: D.purple },
+                { gate: "Gate B — Founder Panel",   trigger: "5,000ms hold", location: "NOVEE OS patron logo", result: "Founder Dashboard: occupancy, lift, XP, surge toggle", constant: "logoHoldTimer = 5000ms", color: D.purple },
               ].map(r => (
                 <div key={r.gate} style={{ padding: "14px", borderRadius: 10, background: `${r.color}09`, border: `1px solid ${r.color}25` }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>

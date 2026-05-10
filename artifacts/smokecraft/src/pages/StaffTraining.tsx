@@ -321,7 +321,7 @@ export default function StaffTraining() {
             </div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Staff Training</div>
-              <div style={{ fontSize: 11, color: C.muted, letterSpacing: "0.06em" }}>AXIOM OS · 8 MODULES</div>
+              <div style={{ fontSize: 11, color: C.muted, letterSpacing: "0.06em" }}>NOVEE OS · 8 MODULES</div>
             </div>
           </div>
 
@@ -362,7 +362,7 @@ export default function StaffTraining() {
 
         {/* Print header */}
         <div style={{ display: "none" }} className="print-only">
-          <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>Axiom OS — Staff Training Guide</h1>
+          <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>NOVEE OS — Staff Training Guide</h1>
           <p style={{ color: C.muted, marginBottom: 24 }}>8 core modules for venue staff. Keep a copy at the host stand.</p>
         </div>
 

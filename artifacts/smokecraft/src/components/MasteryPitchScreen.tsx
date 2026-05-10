@@ -197,7 +197,7 @@ export default function MasteryPitchScreen({ craftType, onContinue, onSkip }: Ma
           color:         C.goldDim,
           marginBottom:  12,
         }}>
-          AXIOM OS · {craftLabel.toUpperCase()}CRAFT · SOVEREIGN INITIATION
+          NOVEE OS · {craftLabel.toUpperCase()}CRAFT · SOVEREIGN INITIATION
         </p>
 
         <h1 style={{

@@ -436,7 +436,7 @@ export default function InvestorSimulator() {
           <button onClick={() => navigate(-1 as never)} style={{ background: C.glass, border: `1px solid ${C.border}`, color: C.muted, padding: "7px 14px", borderRadius: 8, cursor: "pointer", fontSize: 12, letterSpacing: "0.08em", fontFamily: "inherit" }}>← BACK</button>
           <div style={{ flex: 1 }}>
             <h1 style={{ margin: 0, fontSize: "clamp(17px,3.5vw,24px)", fontWeight: 500, color: C.blue, letterSpacing: "0.06em" }}>Investor Simulator</h1>
-            <div style={{ fontSize: 10, color: C.dim, letterSpacing: "0.14em", marginTop: 2 }}>AXIOM OS · PHASE 6 — EXPANSION ENGINE</div>
+            <div style={{ fontSize: 10, color: C.dim, letterSpacing: "0.14em", marginTop: 2 }}>NOVEE OS · PHASE 6 — EXPANSION ENGINE</div>
           </div>
           <div style={{ fontSize: 11, color: C.muted, textAlign: "right" }}>
             <div style={{ color: C.gold, fontWeight: 600 }}>5,000</div>

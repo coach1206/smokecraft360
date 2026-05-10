@@ -382,11 +382,11 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
                   }}>
                     <div style={{ padding: '10px 16px', fontSize: 10, color: '#94a3b8', letterSpacing: '0.08em' }}>{row.item}</div>
                     <div style={{ padding: '10px 16px', fontSize: 10,
-                      color: row.axiom.includes('AXIOM') ? '#22c55e' : '#64748b', letterSpacing: '0.08em' }}>
+                      color: row.axiom.includes('NOVEE') ? '#22c55e' : '#64748b', letterSpacing: '0.08em' }}>
                       {row.axiom}
                     </div>
                     <div style={{ padding: '10px 16px', fontSize: 10,
-                      color: row.byok === 'VENUE' ? '#f59e0b' : row.byok.includes('AXIOM') ? '#22c55e' : '#94a3b8',
+                      color: row.byok === 'VENUE' ? '#f59e0b' : row.byok.includes('NOVEE') ? '#22c55e' : '#94a3b8',
                       letterSpacing: '0.08em' }}>
                       {row.byok}
                     </div>
@@ -398,9 +398,9 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
               <SectionHead title="SUBSCRIPTION PACKAGE AI ENTITLEMENTS" />
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 12 }}>
                 {[
-                  { pkg: 'axiom_core',  desc: 'AI included. Limited monthly usage cap.', features: ['AXIOM managed', 'Limited cap', 'No BYOK'] },
-                  { pkg: 'axiom_pro',   desc: 'AI included with expanded orchestration limits.', features: ['AXIOM managed', 'Expanded cap', 'No BYOK'] },
-                  { pkg: 'axiom_xei',   desc: 'Choose AXIOM-managed or connect your own provider.', features: ['Either mode', 'BYOK available', 'Single provider'] },
+                  { pkg: 'axiom_core',  desc: 'AI included. Limited monthly usage cap.', features: ['NOVEE managed', 'Limited cap', 'No BYOK'] },
+                  { pkg: 'axiom_pro',   desc: 'AI included with expanded orchestration limits.', features: ['NOVEE managed', 'Expanded cap', 'No BYOK'] },
+                  { pkg: 'axiom_xei',   desc: 'Choose NOVEE-managed or connect your own provider.', features: ['Either mode', 'BYOK available', 'Single provider'] },
                   { pkg: 'axiom_black', desc: 'Enterprise AI ownership. Multi-provider routing enabled.', features: ['BYOK recommended', 'Multi-provider', 'Failover chains'] },
                 ].map(p => {
                   const m = PACKAGE_LABELS[p.pkg];
@@ -427,7 +427,7 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
             <div>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
                 <SectionHead title="CONNECTED AI PROVIDERS"
-                  sub={config?.mode === 'byok' ? 'BYOK mode active — providers below are used for routing.' : 'AXIOM MANAGED mode active — your own providers are optional.'} />
+                  sub={config?.mode === 'byok' ? 'BYOK mode active — providers below are used for routing.' : 'NOVEE MANAGED mode active — your own providers are optional.'} />
                 {config?.byokPermitted && (
                   <button onClick={() => setConnectOpen(true)} style={{
                     background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.4)',
@@ -445,7 +445,7 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
                   letterSpacing: '0.25em', border: '1px dashed rgba(255,255,255,0.06)', borderRadius: 3,
                 }}>
                   {config?.mode === 'axiom_managed'
-                    ? 'AXIOM MANAGED — No BYOK keys required.'
+                    ? 'NOVEE MANAGED — No BYOK keys required.'
                     : 'No providers connected. Connect a provider to enable BYOK routing.'}
                 </div>
               ) : (

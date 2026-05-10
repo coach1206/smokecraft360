@@ -426,7 +426,7 @@ export default function VenueManual() {
             </div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Venue Operator Manual</div>
-              <div style={{ fontSize: 11, color: C.muted, letterSpacing: "0.06em" }}>AXIOM OS · 8 SECTIONS</div>
+              <div style={{ fontSize: 11, color: C.muted, letterSpacing: "0.06em" }}>NOVEE OS · 8 SECTIONS</div>
             </div>
           </div>
 
@@ -450,7 +450,7 @@ export default function VenueManual() {
 
         {/* Print title */}
         <div style={{ display: "none" }} className="print-header">
-          <h1 style={{ fontSize: 26, fontWeight: 800, margin: "0 0 6px" }}>Axiom OS — Venue Operator Manual</h1>
+          <h1 style={{ fontSize: 26, fontWeight: 800, margin: "0 0 6px" }}>NOVEE OS — Venue Operator Manual</h1>
           <p style={{ color: C.muted, margin: "0 0 32px" }}>8 sections covering every aspect of venue operations. Keep a printed copy at the manager station.</p>
         </div>
 
@@ -462,7 +462,7 @@ export default function VenueManual() {
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
             <BookOpen size={32} color="#D48B00" />
             <div>
-              <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em" }}>Axiom OS</div>
+              <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em" }}>NOVEE OS</div>
               <div style={{ fontSize: 13, color: "rgba(212,139,0,0.6)", letterSpacing: "0.06em" }}>VENUE OPERATOR MANUAL</div>
             </div>
           </div>

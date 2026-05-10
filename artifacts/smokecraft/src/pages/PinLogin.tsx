@@ -69,7 +69,7 @@ function useParticles(count = 22): Particle[] {
 // ── EEIS telemetry bar ────────────────────────────────────────────────────────
 
 const STATUS_ITEMS = [
-  { label: "EEIS ONLINE",        icon: Shield,   },
+  { label: "EEIE ONLINE",        icon: Shield,   },
   { label: "AI ACTIVE",          icon: Cpu,      },
   { label: "VENUE SYNC",         icon: Wifi,     },
   { label: "SESSION RECOVERY",   icon: Activity, },

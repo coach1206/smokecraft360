@@ -284,7 +284,7 @@ function PhaseCalibrate({ progress }: { progress: number }) {
         }}>
           <div style={{ fontSize: 11, letterSpacing: '0.4em', fontFamily: 'monospace',
             background: GOLD_GRAD, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            opacity: p, fontWeight: 900 }}>AXIOM OS</div>
+            opacity: p, fontWeight: 900 }}>NOVEE OS</div>
           <div style={{ fontSize: 8, letterSpacing: '0.25em', color: 'rgba(212,175,55,0.5)',
             fontFamily: 'monospace', opacity: p }}>CALIBRATING</div>
         </div>

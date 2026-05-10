@@ -36,17 +36,17 @@ const PKG_MAP: Record<string, PkgKey> = {
 };
 
 const PKG_INFO: Record<PkgKey, { label: string; color: string; canBYOK: boolean; desc: string }> = {
-  core:  { label: "AXIOM CORE",  color: C.blue,   canBYOK: false, desc: "Managed AI fully included · no provider account needed" },
-  pro:   { label: "AXIOM PRO",   color: C.green,  canBYOK: false, desc: "Managed AI fully included · optimized for scale" },
-  xei:   { label: "AXIOM XEI",   color: C.purple, canBYOK: true,  desc: "Enterprise tier · BYOK unlocked · full provider control" },
-  black: { label: "AXIOM BLACK", color: C.gold,   canBYOK: true,  desc: "Sovereign tier · unlimited BYOK · dedicated infrastructure" },
+  core:  { label: "NOVEE CORE",  color: C.blue,   canBYOK: false, desc: "Managed AI fully included · no provider account needed" },
+  pro:   { label: "NOVEE PRO",   color: C.green,  canBYOK: false, desc: "Managed AI fully included · optimized for scale" },
+  xei:   { label: "NOVEE XEI",   color: C.purple, canBYOK: true,  desc: "Enterprise tier · BYOK unlocked · full provider control" },
+  black: { label: "NOVEE BLACK", color: C.gold,   canBYOK: true,  desc: "Sovereign tier · unlimited BYOK · dedicated infrastructure" },
 };
 
 const MODE_OPTIONS: { id: AiMode; label: string; sub: string; icon: typeof Brain; color: string }[] = [
   {
     id:    "managed",
-    label: "Managed AI — Included with Axiom",
-    sub:   "Axiom hosts, routes, and bills all AI. No provider account required. Usage metered by plan.",
+    label: "Managed AI — Included with NOVEE",
+    sub:   "NOVEE hosts, routes, and bills all AI. No provider account required. Usage metered by plan.",
     icon:  Shield,
     color: C.green,
   },
@@ -152,17 +152,17 @@ export default function AIConfigStep({ pricingTier, aiMode, onModeChange }: Prop
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr auto", rowGap: 6, columnGap: 16 }}>
           {[
-            ["AI Infrastructure",       aiMode === "managed" ? "AXIOM"  : "YOU"],
-            ["API Key Management",       aiMode === "managed" ? "AXIOM"  : "YOU"],
-            ["Provider Billing",         aiMode === "managed" ? "AXIOM"  : "YOU"],
-            ["Usage Caps",               aiMode === "managed" ? "AXIOM CAPS" : "YOUR CAPS"],
-            ["Failover / Routing",       aiMode === "managed" ? "AXIOM"  : "AXIOM + YOURS"],
+            ["AI Infrastructure",       aiMode === "managed" ? "NOVEE"  : "YOU"],
+            ["API Key Management",       aiMode === "managed" ? "NOVEE"  : "YOU"],
+            ["Provider Billing",         aiMode === "managed" ? "NOVEE"  : "YOU"],
+            ["Usage Caps",               aiMode === "managed" ? "NOVEE CAPS" : "YOUR CAPS"],
+            ["Failover / Routing",       aiMode === "managed" ? "NOVEE"  : "NOVEE + YOURS"],
           ].map(([label, owner]) => (
             <div key={label} style={{ display: "contents" }}>
               <span style={{ fontSize: 11, color: C.muted }}>{label}</span>
               <span style={{
                 fontSize: 10, fontWeight: 800,
-                color: owner === "AXIOM" ? C.green : owner.startsWith("AXIOM") ? C.blue : C.gold,
+                color: owner === "NOVEE" ? C.green : owner.startsWith("NOVEE") ? C.blue : C.gold,
                 textAlign: "right", letterSpacing: "0.08em",
               }}>
                 {owner}

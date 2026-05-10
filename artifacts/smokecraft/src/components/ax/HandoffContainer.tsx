@@ -1146,7 +1146,7 @@ function StaffPanel({
             fontFamily: "'Courier New', monospace", fontSize: 9, fontWeight: 700,
             letterSpacing: "0.30em", color: "#FFB347",
             textShadow: "0 0 8px #FFB347, 0 0 20px rgba(255,179,71,0.35)",
-          }}>AXIOM OS · STAFF POS</span>
+          }}>NOVEE OS · STAFF POS</span>
         </div>
         {craft && (
           <span style={{ fontFamily: "'Courier New', monospace", fontSize: 8, letterSpacing: "0.14em", color: "rgba(240,232,212,0.35)" }}>
@@ -2478,7 +2478,7 @@ export function HandoffContainer() {
           <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 15, fontWeight: 600,
             letterSpacing: "0.22em", textTransform: "uppercase",
             color: "rgba(240,232,212,0.72)", textShadow: "0 0 20px rgba(212,175,55,0.22)" }}>
-            Axiom OS
+            NOVEE OS
           </span>
           <span style={{ fontFamily: "'Courier New',monospace", fontSize: 7,
             color: "rgba(212,139,0,0.38)", letterSpacing: "0.28em", textTransform: "uppercase" }}>

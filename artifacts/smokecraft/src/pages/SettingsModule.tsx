@@ -490,7 +490,7 @@ export default function SettingsModule() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 14 }}>
             {[
               { label: "AI Provider",  value: "Managed",  color: "#34d399" },
-              { label: "Routing",      value: "Axiom",    color: "#D48B00" },
+              { label: "Routing",      value: "NOVEE",    color: "#D48B00" },
               { label: "Failover",     value: "Active",   color: "#5b8def" },
             ].map(item => (
               <div key={item.label} style={{

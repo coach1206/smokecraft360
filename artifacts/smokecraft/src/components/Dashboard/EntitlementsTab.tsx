@@ -213,7 +213,7 @@ export function EntitlementsTab() {
           Feature Control Center
         </h2>
         <p className="text-[9px] uppercase tracking-[0.22em] mt-0.5" style={{ color: `${GOLD}0.4)` }}>
-          Axiom OS · Entitlement Engine
+          NOVEE OS · Entitlement Engine
         </p>
       </div>
 

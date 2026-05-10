@@ -327,7 +327,7 @@ export default function OperatorReadiness() {
 
         {/* Print title */}
         <div style={{ display: "none" }} className="print-header">
-          <h1 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 4px" }}>Axiom OS — Operator Readiness Checklist</h1>
+          <h1 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 4px" }}>NOVEE OS — Operator Readiness Checklist</h1>
           <p style={{ color: C.muted, margin: "0 0 24px", fontSize: 13 }}>
             Generated: {new Date().toLocaleString()} · Run before every shift
           </p>

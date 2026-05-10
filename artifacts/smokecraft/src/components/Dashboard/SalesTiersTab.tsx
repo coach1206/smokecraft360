@@ -293,7 +293,7 @@ export function SalesTiersTab() {
             Sales &amp; Licensing
           </h2>
           <p style={{ fontSize: 11, color: "rgba(245,242,237,0.4)", margin: "4px 0 0", letterSpacing: "0.08em" }}>
-            Commercial infrastructure · AXIOM OS tiers + modules
+            Commercial infrastructure · NOVEE OS tiers + modules
           </p>
         </div>
       </div>

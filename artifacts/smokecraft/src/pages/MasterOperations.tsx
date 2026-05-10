@@ -67,7 +67,7 @@ const NAV_ITEMS = [
   { id: "governance",   label: "Governance",           desc: "Roles, audit & compliance",   icon: ShieldCheck,     route: "/governance",              group: "operations" },
   { id: "central",      label: "Central Command",      desc: "OTA & remote device control", icon: Upload,          route: "/central-command",         group: "operations" },
   { id: "enterprise",   label: "Enterprise Intel",     desc: "9-tab intelligence suite",    icon: BarChart3,       route: "/enterprise-intelligence", group: "operations" },
-  { id: "axiom-pay",    label: "Axiom Pay",            desc: "Tabs · Fulfillment · Connect", icon: DollarSign,      route: "/axiom-pay",               group: "operations" },
+  { id: "axiom-pay",    label: "NOVEE Pay",            desc: "Tabs · Fulfillment · Connect", icon: DollarSign,      route: "/axiom-pay",               group: "operations" },
   { id: "launch",       label: "Launch Readiness",     desc: "Pre-launch health & risk",     icon: ShieldCheck,     route: "/launch-readiness",        group: "operations" },
   { id: "finance-recon",label: "Reconciliation",      desc: "Revenue · Payouts · Alerts",   icon: BarChart3,       route: "/finance-reconciliation",  group: "operations" },
   { id: "training",     label: "Training Mode",        desc: "Employee · Investor · Demo",   icon: BookOpen,        route: "/training",                group: "operations" },

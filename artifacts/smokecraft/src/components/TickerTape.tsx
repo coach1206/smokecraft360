@@ -41,10 +41,10 @@ interface TickerTapeProps {
 // ── Default messages — shown when no live sponsors ────────────────────────────
 
 const DEFAULT_ITEMS: TickerItem[] = [
-  { id: "d1", brandName: "Axiom OS", promoText: "Welcome to the Experience Engine — powered by Axiom OS",             pointBonus: 0, isSponsored: false, priority: 0 },
-  { id: "d2", brandName: "Axiom OS", promoText: "Every draft you complete deepens your Mastery Score",                pointBonus: 0, isSponsored: false, priority: 0 },
-  { id: "d3", brandName: "Axiom OS", promoText: "Reach Sommelier tier for exclusive venue privileges",                pointBonus: 0, isSponsored: false, priority: 0 },
-  { id: "d4", brandName: "Axiom OS", promoText: "Your Mentor remembers every choice you make",                        pointBonus: 0, isSponsored: false, priority: 0 },
+  { id: "d1", brandName: "NOVEE OS", promoText: "Welcome to the Experience Engine — powered by NOVEE Intelligence",   pointBonus: 0, isSponsored: false, priority: 0 },
+  { id: "d2", brandName: "NOVEE OS", promoText: "Every draft you complete deepens your Mastery Score",                pointBonus: 0, isSponsored: false, priority: 0 },
+  { id: "d3", brandName: "NOVEE OS", promoText: "Reach Sommelier tier for exclusive venue privileges",                pointBonus: 0, isSponsored: false, priority: 0 },
+  { id: "d4", brandName: "NOVEE OS", promoText: "Your Mentor remembers every choice you make",                        pointBonus: 0, isSponsored: false, priority: 0 },
 ];
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");

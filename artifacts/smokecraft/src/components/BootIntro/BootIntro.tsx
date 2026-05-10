@@ -1,106 +1,63 @@
 /**
- * BootIntro — Profound Innovation cinematic brand splash that plays once
- * per session BEFORE the Axiom OS interface loads. Specced across
- * briefs 25 (visual flow + sound design + sessionStorage gate) and 26
- * (CSS keyframes / colors). Mounted as a sibling overlay above the Router
- * in App.tsx so it covers every entry route on first session load.
+ * BootIntro — NOVEE OS cinematic boot sequence.
  *
- * Behaviour summary:
- *   - 0.0s  olive screen, silent
- *   - 0.3s  logo slides in from left with subtle motion blur
- *   - 1.2s  arrival sound triggers + PROFOUND/INNOVATION text fades in
- *   - 1.6s  "Software & Systems Development Company" tagline fades in
- *   - 2.0s  "Digital Infrastructure Studio" subline fades in (low opacity)
- *   - 2.8s  hold (everything still)
- *   - 3.8s  begin 1s opacity fadeout
- *   - 4.8s  unmount + render the underlying app
+ * Plays once per session before the CraftHub interface loads.
+ * Spec: pure black → gold pulse → NOVEE wordmark illuminates → ambient
+ * telemetry particles → "Powered by NOVEE Intelligence" → EEIE init line
+ * → cinematic fade to CraftHub.
  *
- * Skip: tap/click anywhere triggers the same fadeout-then-unmount path.
- * Audio: fails gracefully if browser blocks autoplay (no error UI).
- * Once-per-session: sessionStorage flag suppresses subsequent renders.
+ * Skip: tap / click / Escape anywhere collapses the sequence instantly.
+ * Audio: arrival.mp3 fires at pulse-onset; fails silently if autoplay blocked.
+ * Gate: sessionStorage flag prevents re-play within the same session.
  */
 
 import { useEffect, useRef, useState } from "react";
 import styles from "./BootIntro.module.css";
 
-const SESSION_KEY     = "smokecraft_boot_intro_seen";
-const FADEOUT_AT_MS   = 3800;
-const UNMOUNT_AT_MS   = 4800;
-const SOUND_AT_MS     = 1200; // synced with logo-arrival per brief
-const ARRIVAL_SRC     = "/sounds/arrival.mp3";
+const SESSION_KEY   = "smokecraft_boot_intro_seen";
+const SOUND_AT_MS   = 300;
+const LOGO_AT_MS    = 800;
+const POWERED_AT_MS = 2200;
+const INIT_AT_MS    = 3200;
+const FADEOUT_AT_MS = 4400;
+const UNMOUNT_AT_MS = 5300;
+const ARRIVAL_SRC   = "/sounds/arrival.mp3";
 
-/** Synchronous read of the once-per-session flag. App.tsx uses this to
- *  initialize its `ready` gate so a "seen" session never mounts BootIntro
- *  at all — eliminates the one-frame-of-nothing flash a useEffect-based
- *  signal would cause. */
+const PARTICLES = [
+  { x: 14, y: 22, size: 2,   delay: 0.0, dur: 5.2 },
+  { x: 76, y: 14, size: 1.5, delay: 0.5, dur: 6.8 },
+  { x: 86, y: 67, size: 2.5, delay: 0.9, dur: 4.6 },
+  { x: 24, y: 78, size: 1,   delay: 1.3, dur: 7.1 },
+  { x: 62, y: 88, size: 2,   delay: 0.2, dur: 5.8 },
+  { x: 44, y: 8,  size: 1.5, delay: 0.7, dur: 6.2 },
+  { x: 91, y: 42, size: 1,   delay: 1.1, dur: 4.9 },
+  { x: 8,  y: 55, size: 2,   delay: 0.4, dur: 5.5 },
+];
+
+/** Synchronous read used by App.tsx to suppress the overlay on repeat sessions. */
 export function hasSeenBootIntro(): boolean {
   if (typeof window === "undefined") return false;
-  try {
-    return window.sessionStorage.getItem(SESSION_KEY) === "1";
-  } catch {
-    return false;
-  }
+  try { return window.sessionStorage.getItem(SESSION_KEY) === "1"; } catch { return false; }
 }
 
 export interface BootIntroProps {
-  /** Called once when the intro animation completes naturally (4.8s) or
-   *  the user skips. Parent should respond by flipping its ready gate so
-   *  this component unmounts and the underlying app renders. */
   onFinish?: () => void;
 }
 
-/** Inline SVG logo — flat solid dark-green geometric mark, no outline / no
- *  glow / no 3D per brief 25. Stylized "P/I" monogram inside a soft square.
- *  Lives inline so the boot screen never depends on an extra network round-
- *  trip. Drop a real Profound Innovation logo SVG in here when it lands. */
-function PlaceholderLogo() {
-  return (
-    <svg
-      viewBox="0 0 120 120"
-      width="120"
-      height="120"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="Profound Innovation"
-      role="img"
-      className={styles["boot-logo"]}
-    >
-      {/* dark forest/olive green — flat, no gradient */}
-      <rect x="6" y="6" width="108" height="108" rx="18" fill="#2d3a23" />
-      {/* Stylized "P" — solid */}
-      <path
-        d="M36 30 L36 90 L48 90 L48 70 L62 70 C72 70 80 62 80 50 C80 38 72 30 62 30 Z M48 40 L62 40 C66 40 68 44 68 50 C68 56 66 60 62 60 L48 60 Z"
-        fill="#c5c8b4"
-      />
-      {/* Vertical "I" stem to the right of P, suggesting the second initial */}
-      <rect x="86" y="30" width="6" height="60" fill="#c5c8b4" />
-    </svg>
-  );
-}
-
 export function BootIntro({ onFinish }: BootIntroProps = {}) {
-  /* Initialize from sessionStorage SYNCHRONOUSLY so we never even paint the
-   * overlay if it's been seen this session. With the gate pattern in App.tsx
-   * the parent already pre-checks via hasSeenBootIntro(), but this guard
-   * stays as defense-in-depth for any caller that mounts us directly. */
-  const [visible, setVisible] = useState(() => !hasSeenBootIntro());
-  const [fading, setFading]   = useState(false);
-  /* Single source of truth for "we've signaled completion". Prevents
-   * onFinish from firing twice if the auto-timer and a manual skip race. */
-  const finishedRef           = useRef(false);
-  /* Latest onFinish — captured in a ref so timer callbacks always see the
-   * current callback even if the parent re-renders with a new closure. */
-  const onFinishRef           = useRef(onFinish);
-  onFinishRef.current = onFinish;
-  const audioRef              = useRef<HTMLAudioElement | null>(null);
-  const dismissedRef          = useRef(false);
-  /* Tracks the manual-dismiss unmount timer so cleanup can clear it if
-   * the component tears down during the 400ms tail (HMR / parent unmount
-   * edge case flagged by code review). */
-  const dismissTimerRef       = useRef<number | null>(null);
+  const [visible, setVisible]         = useState(() => !hasSeenBootIntro());
+  const [fading, setFading]           = useState(false);
+  const [showLogo, setShowLogo]       = useState(false);
+  const [showPowered, setShowPowered] = useState(false);
+  const [showInit, setShowInit]       = useState(false);
 
-  /* Call onFinish at most once. Centralising this here means the auto-timer,
-   * the manual skip, and any future entry point all funnel through one
-   * idempotent exit. */
+  const finishedRef     = useRef(false);
+  const onFinishRef     = useRef(onFinish);
+  onFinishRef.current   = onFinish;
+  const audioRef        = useRef<HTMLAudioElement | null>(null);
+  const dismissedRef    = useRef(false);
+  const dismissTimerRef = useRef<number | null>(null);
+
   function finish() {
     if (finishedRef.current) return;
     finishedRef.current = true;
@@ -108,36 +65,34 @@ export function BootIntro({ onFinish }: BootIntroProps = {}) {
     onFinishRef.current?.();
   }
 
-  /* Mark the session flag the moment we decide to play the intro so a fast
-   * SPA navigation during the animation can't trigger a second instance. */
   useEffect(() => {
     if (!visible) return;
     try { window.sessionStorage.setItem(SESSION_KEY, "1"); } catch { /* ignore */ }
   }, [visible]);
 
-  /* Schedule fadeout + unmount + sound. Single effect so the timers share a
-   * cleanup path and a manual skip cancels everything cleanly. */
   useEffect(() => {
     if (!visible) return;
 
-    const fadeTimer    = window.setTimeout(() => setFading(true), FADEOUT_AT_MS);
-    const unmountTimer = window.setTimeout(() => finish(),         UNMOUNT_AT_MS);
-    const soundTimer   = window.setTimeout(() => {
+    const timers: number[] = [];
+
+    timers.push(window.setTimeout(() => {
       try {
         const a = new Audio(ARRIVAL_SRC);
-        a.volume = 0.45; // medium-low per brief
+        a.volume = 0.35;
         audioRef.current = a;
         const p = a.play();
-        if (p && typeof p.catch === "function") {
-          p.catch(() => { /* autoplay blocked — silent failure per brief */ });
-        }
-      } catch { /* ignore — sound is enhancement, never required */ }
-    }, SOUND_AT_MS);
+        if (p && typeof p.catch === "function") p.catch(() => {});
+      } catch { /* ignore */ }
+    }, SOUND_AT_MS));
+
+    timers.push(window.setTimeout(() => setShowLogo(true),    LOGO_AT_MS));
+    timers.push(window.setTimeout(() => setShowPowered(true), POWERED_AT_MS));
+    timers.push(window.setTimeout(() => setShowInit(true),    INIT_AT_MS));
+    timers.push(window.setTimeout(() => setFading(true),      FADEOUT_AT_MS));
+    timers.push(window.setTimeout(() => finish(),             UNMOUNT_AT_MS));
 
     return () => {
-      window.clearTimeout(fadeTimer);
-      window.clearTimeout(unmountTimer);
-      window.clearTimeout(soundTimer);
+      timers.forEach(t => window.clearTimeout(t));
       if (dismissTimerRef.current !== null) {
         window.clearTimeout(dismissTimerRef.current);
         dismissTimerRef.current = null;
@@ -149,10 +104,6 @@ export function BootIntro({ onFinish }: BootIntroProps = {}) {
     };
   }, [visible]);
 
-  /* Click / tap / Escape / Enter to skip. Re-uses the same fade-then-unmount
-   * cadence (compressed) so the dismiss feels intentional, not abrupt. The
-   * 400ms timer is tracked in a ref so cleanup can cancel a stale setVisible
-   * if the parent unmounts during the tail. */
   function dismiss() {
     if (dismissedRef.current) return;
     dismissedRef.current = true;
@@ -172,9 +123,6 @@ export function BootIntro({ onFinish }: BootIntroProps = {}) {
     return () => window.removeEventListener("keydown", onKey);
   }, [visible]);
 
-  /* Defense-in-depth path: if a caller mounted us directly without checking
-   * hasSeenBootIntro(), still call onFinish so the parent's gate (if any)
-   * progresses. Idempotent thanks to finishedRef. */
   useEffect(() => {
     if (!visible) finish();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -184,29 +132,49 @@ export function BootIntro({ onFinish }: BootIntroProps = {}) {
 
   return (
     <div
-      className={`${styles["boot-container"]} ${fading ? styles["fade-out"] : ""}`}
+      className={`${styles.container} ${fading ? styles.fadeOut : ""}`}
       onClick={dismiss}
       role="button"
       tabIndex={0}
-      aria-label="Skip Profound Innovation intro"
+      aria-label="Skip NOVEE OS boot sequence"
       data-testid="boot-intro"
     >
-      <div className={styles.grain} />
+      {/* Ambient gold radial pulse — starts immediately */}
+      <div className={styles.pulse} />
 
-      <div className={styles["logo-wrapper"]}>
-        <PlaceholderLogo />
+      {/* Telemetry drift particles — rendered always, CSS-gated opacity */}
+      {PARTICLES.map((p, i) => (
+        <div
+          key={i}
+          className={styles.particle}
+          style={{
+            left:            `${p.x}%`,
+            top:             `${p.y}%`,
+            width:           `${p.size}px`,
+            height:          `${p.size}px`,
+            animationDelay:  `${p.delay + 1.2}s`,
+            animationDuration:`${p.dur}s`,
+          }}
+        />
+      ))}
+
+      {/* NOVEE wordmark — illuminates from pure darkness */}
+      <div className={`${styles.logoBlock} ${showLogo ? styles.logoVisible : ""}`}>
+        <div className={styles.wordmark}>NOVEE</div>
+        <div className={styles.wordmarkSub}>OS</div>
       </div>
 
-      <div className={styles["boot-text"]}>
-        <h1>PROFOUND</h1>
-        <h2>INNOVATION</h2>
-        <div className={styles.tagline}>
-          Software &amp; Systems Development Company
-        </div>
-        <div className={styles.subline}>DIGITAL INFRASTRUCTURE STUDIO</div>
+      {/* "Powered by NOVEE Intelligence" */}
+      <div className={`${styles.poweredLine} ${showPowered ? styles.lineVisible : ""}`}>
+        Powered by NOVEE Intelligence
       </div>
 
-      <div className={styles["tap-hint"]}>TAP ANYWHERE TO CONTINUE</div>
+      {/* EEIE initialization sequence */}
+      <div className={`${styles.initLine} ${showInit ? styles.lineVisible : ""}`}>
+        Initializing Adaptive Environment&hellip;
+      </div>
+
+      <div className={styles.tapHint}>TAP ANYWHERE TO CONTINUE</div>
     </div>
   );
 }

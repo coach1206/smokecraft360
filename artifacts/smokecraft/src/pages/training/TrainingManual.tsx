@@ -249,7 +249,7 @@ export default function TrainingManual() {
               {
                 label: "GATE A — Staff POS",
                 trigger: "3-second hold",
-                location: "Axiom Logo / CraftHub Title Area",
+                location: "NOVEE OS / CraftHub Title Area",
                 result: "Launches the Staff POS overlay — card processing, cart, inventory decrement, PIN auth.",
                 color: C.amber,
                 code: "HOLD_MS = 3000",
@@ -257,7 +257,7 @@ export default function TrainingManual() {
               {
                 label: "GATE B — Founder Dashboard",
                 trigger: "5-second hold",
-                location: "Axiom OS Logo in patron greeting screen",
+                location: "NOVEE OS Logo in patron greeting screen",
                 result: "Opens the Founder / Patron profile panel — occupancy, revenue lift, XP, dynamic pricing toggle.",
                 color: C.purple,
                 code: "logoHoldTimer = 5000ms",

@@ -1191,7 +1191,7 @@ export default function MasterBlender() {
           transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
         >
           {Array.from({ length: 6 }).flatMap(() => [
-            "AXIOM OS", "MASTER BLENDER: ACTIVE", "SYNERGY ENGINE: ONLINE",
+            "NOVEE OS", "MASTER BLENDER: ACTIVE", "SYNERGY ENGINE: ONLINE",
             "HUMIDOR AI: SCANNING", "PALATE CALIBRATION: LIVE",
           ]).map((t, i) => (
             <span key={i}>{t} ///</span>

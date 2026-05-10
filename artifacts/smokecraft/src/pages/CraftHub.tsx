@@ -146,7 +146,7 @@ function IntelStatusBar() {
       <div style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
         <Cpu size={12} color={C.goldDim} />
         <span style={{ fontSize: 9, letterSpacing: "0.22em", color: C.dim, textTransform: "uppercase" }}>
-          Axiom Intelligence
+          NOVEE Intelligence
         </span>
       </div>
       {AI_NODES.map(n => (
@@ -733,7 +733,7 @@ function CraftHubInner() {
               lineHeight:    1,
             }}
           >
-            Axiom OS
+            NOVEE OS
           </motion.div>
           <motion.div
             initial={{ opacity: 0 }}
@@ -747,7 +747,7 @@ function CraftHubInner() {
               marginTop:     3,
             }}
           >
-            Powered by CraftHub
+            Powered by NOVEE Intelligence
           </motion.div>
         </div>
 

@@ -39,7 +39,7 @@ function buildCertificateHTML(data: Record<string, unknown>): string {
       position: relative;
     ">
       <div style="font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #999; margin-bottom: 24px;">
-        Axiom OS · Vault Cigar Lounge · Training Mode
+        NOVEE OS · Vault Cigar Lounge · Training Mode
       </div>
       <div style="font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: #D48B00; margin-bottom: 8px;">
         Certificate of Completion
@@ -48,7 +48,7 @@ function buildCertificateHTML(data: Record<string, unknown>): string {
         ${data.name ?? "Training Participant"}
       </div>
       <div style="font-size: 14px; color: #555; margin-bottom: 28px;">
-        has successfully completed the Axiom OS Training Program for the role of
+        has successfully completed the NOVEE OS Training Program for the role of
       </div>
       <div style="font-size: 28px; font-weight: 700; color: #D48B00; border: 2px solid #D48B00; display: inline-block; padding: 10px 32px; margin-bottom: 28px;">
         ${data.roleTitle ?? "Staff Member"}
@@ -81,7 +81,7 @@ function buildInvestorSummaryHTML(): string {
   return `
     <div style="font-family: 'Georgia', serif; max-width: 720px; margin: 0 auto; padding: 40px; background: #fdfaf5;">
       <div style="text-align: center; margin-bottom: 32px; border-bottom: 2px solid #D48B00; padding-bottom: 24px;">
-        <div style="font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #999; margin-bottom: 8px;">Axiom OS · Investor Brief</div>
+        <div style="font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #999; margin-bottom: 8px;">NOVEE OS · Investor Brief</div>
         <div style="font-size: 32px; font-weight: 700; color: #1a1008;">Platform Overview</div>
         <div style="font-size: 13px; color: #666; margin-top: 6px;">Apple × Tesla × Hospitality × AI Intelligence</div>
       </div>
@@ -107,7 +107,7 @@ function buildInvestorSummaryHTML(): string {
 
 function buildWalkthroughSummaryHTML(): string {
   const steps = [
-    ["Welcome & Platform Overview", "Axiom OS introduction, design philosophy, and system architecture."],
+    ["Welcome & Platform Overview", "NOVEE OS introduction, design philosophy, and system architecture."],
     ["Venue Configuration", "Name, location, capacity, operating hours, and brand customization."],
     ["Inventory Setup", "Add products across all craft categories with stock levels and reorder thresholds."],
     ["Staff Onboarding", "Role assignment, access control, and Training Mode activation."],
@@ -121,7 +121,7 @@ function buildWalkthroughSummaryHTML(): string {
   return `
     <div style="font-family: 'Georgia', serif; max-width: 720px; margin: 0 auto; padding: 40px; background: #fdfaf5;">
       <div style="text-align: center; margin-bottom: 32px; border-bottom: 2px solid #D48B00; padding-bottom: 24px;">
-        <div style="font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #999; margin-bottom: 8px;">Axiom OS · Venue Setup Guide</div>
+        <div style="font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #999; margin-bottom: 8px;">NOVEE OS · Venue Setup Guide</div>
         <div style="font-size: 32px; font-weight: 700; color: #1a1008;">Venue Walkthrough Summary</div>
         <div style="font-size: 13px; color: #666; margin-top: 6px;">10-Step Setup From First Launch to Full Operation</div>
       </div>
@@ -146,7 +146,7 @@ function openPrintWindow(html: string, title: string) {
   if (!w) return;
   w.document.write(`
     <!DOCTYPE html><html><head>
-    <title>${title} — Axiom OS</title>
+    <title>${title} — NOVEE OS</title>
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body { background: white; }

@@ -492,7 +492,7 @@ function DashboardMetricsStep() {
 
   // ── Storytelling overlay — narrative from most recent composite event ─────────
   const storyText = useMemo(() => {
-    if (!simId || events.length === 0) return "Axiom OS is analyzing your venue in real time…";
+    if (!simId || events.length === 0) return "NOVEE OS is analyzing your venue in real time…";
     const ev = events.find(e => ["ai_recommendation", "order_placed", "user_interaction"].includes(e.type));
     if (!ev) return "Monitoring venue activity across all devices…";
     const p = ev.payload;
