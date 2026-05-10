@@ -40,11 +40,12 @@ type TriggerType = "STRESS_TRIGGER" | "VITALITY_TRIGGER" | "REVENUE_TRIGGER" | "
 type Severity    = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
 export interface SyncPayload {
-  heart_rate?:   number;
-  temperature?:  number;
-  stress_index?: number;
-  signal_db?:    number;
-  vitality?:     number;
+  heart_rate?:      number;
+  temperature?:     number;
+  stress_index?:    number;
+  signal_db?:       number;
+  vitality?:        number;
+  engagement_score?:number;
   [key: string]: unknown;
 }
 
@@ -133,20 +134,32 @@ export async function evaluateAndFireInterventions(
 ): Promise<void> {
   const jobs: Promise<void>[] = [];
 
+  // 1. HARDWARE FAIL-SAFE: signal_db < 10 → immediate inline check
+  //    (background worker also catches extended loss > 60s)
+  if (payload.signal_db != null && payload.signal_db < 10) {
+    jobs.push(fire(nodeId, "SIGNAL_FAILSAFE",
+      ["OBSIDIAN_REAUTH_REQUIRED"], "CRITICAL", payload));
+  }
+
+  // 2. STRESS TRIGGER
   if ((payload.stress_index ?? 0) > 75) {
     jobs.push(fire(nodeId, "STRESS_TRIGGER",
       ["SET_LIGHTING_CALM_BLUE", "ENGAGE_SOVEREIGN_DND"], "HIGH", payload));
   }
 
+  // 3. VITALITY TRIGGER
   if ((payload.vitality ?? 100) < 20) {
     jobs.push(fire(nodeId, "VITALITY_TRIGGER",
       ["INITIATE_RECHARGE_PROTOCOL", "NOTIFY_SOVEREIGN_OPERATOR"], "CRITICAL", payload));
   }
 
-  // Engaged patron: elevated HR + calm stress
-  if ((payload.heart_rate ?? 0) > 80 && (payload.stress_index ?? 100) < 40) {
+  // 4. REVENUE TRIGGER — explicit ENG field takes priority; falls back to HR+STR proxy
+  const engaged = payload.engagement_score != null
+    ? payload.engagement_score > 85
+    : (payload.heart_rate ?? 0) > 80 && (payload.stress_index ?? 100) < 40;
+  if (engaged) {
     jobs.push(fire(nodeId, "REVENUE_TRIGGER",
-      ["TRIGGER_UPSELL_PROMPT"], "MEDIUM", payload));
+      ["TRIGGER_UPSELL_PROMPT", "NOTIFY_HOST_PREMIUM_PAIRING"], "MEDIUM", payload));
   }
 
   await Promise.allSettled(jobs);

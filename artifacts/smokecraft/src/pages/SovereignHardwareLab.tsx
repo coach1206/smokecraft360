@@ -91,14 +91,14 @@ const TITAN_RULES: Array<{
     severity: "CRITICAL", color: "#ef4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.28)", icon: AlertTriangle,
   },
   {
-    type: "REVENUE_TRIGGER", condition: "HR > 80 + STR < 40",
-    commands: ["TRIGGER_UPSELL_PROMPT"],
+    type: "REVENUE_TRIGGER", condition: "ENG > 85 (or HR > 80 + STR < 40)",
+    commands: ["TRIGGER_UPSELL_PROMPT", "NOTIFY_HOST_PREMIUM_PAIRING"],
     severity: "MEDIUM", color: "#D4AF37", bg: "rgba(212,175,55,0.08)", border: "rgba(212,175,55,0.28)", icon: Zap,
   },
   {
-    type: "SIGNAL_FAILSAFE", condition: "SIG lost > 60s",
+    type: "SIGNAL_FAILSAFE", condition: "SIG < 10 OR lost > 60s",
     commands: ["OBSIDIAN_REAUTH_REQUIRED"],
-    severity: "HIGH", color: "#a8a29e", bg: "rgba(168,162,158,0.08)", border: "rgba(168,162,158,0.25)", icon: Radio,
+    severity: "CRITICAL", color: "#a8a29e", bg: "rgba(168,162,158,0.08)", border: "rgba(168,162,158,0.25)", icon: Radio,
   },
 ];
 
@@ -123,9 +123,15 @@ const DEMO_SCENARIOS = [
   },
   {
     label: "ENGAGED PATRON",
-    sub:   "HR=90 + STR=25 → UPSELL",
+    sub:   "ENG=92 → UPSELL + HOST",
     color: "#D4AF37",
-    payload: { heart_rate: 90, stress_index: 25, vitality: 80, signal_db: -35 },
+    payload: { engagement_score: 92, heart_rate: 90, stress_index: 25, vitality: 80, signal_db: -35 },
+  },
+  {
+    label: "SIGNAL LOST",
+    sub:   "SIG=3 → OBSIDIAN REAUTH",
+    color: "#a8a29e",
+    payload: { signal_db: 3, heart_rate: 72, stress_index: 40, vitality: 60 },
   },
 ];
 

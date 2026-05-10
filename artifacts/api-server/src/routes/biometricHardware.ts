@@ -49,8 +49,9 @@ const SyncSchema = z.object({
   heart_rate:   z.number().int().min(20).max(220).optional(),
   temperature:  z.number().min(30).max(45).optional(),
   stress_index: z.number().min(0).max(100).optional(),
-  signal_db:    z.number().optional(),
-  vitality:     z.number().int().min(0).max(100).optional(),
+  signal_db:       z.number().optional(),
+  vitality:        z.number().int().min(0).max(100).optional(),
+  engagement_score:z.number().int().min(0).max(100).optional(),
   timestamp:    z.string().optional(),
   meta:         z.record(z.unknown()).optional(),
 });

@@ -1,0 +1,48 @@
+THE MASTER RESTORATION DIRECTIVE: TITAN V SENTIENT UPGRADE
+Role: Principal Full-Stack Engineer & Systems Architect.
+Objective: Restore and activate the full suite of "Sentient Environment" upgrades developed today. The system must move from a static UI to a live State Engine linked to biometric hardware.
+
+[PHASE 1: THE BACKEND KERNEL]
+
+Biometric Endpoints: Implement/Restore the POST /api/biometrics/state-check endpoint. This must parse wearable data and trigger TITAN_EXEC commands.
+
+Intervention Logging: Implement/Restore the GET /api/system/interventions endpoint to return the last 50 automated environmental shifts.
+
+Titan V Logic: Ensure the system mirrors the Python-based decision tree for recharge sequences and stress-based "DND" (Do Not Disturb) activation.
+
+[PHASE 2: THE FRONTEND HARDWARE LAB]
+
+The Node Registry: Re-activate the Hardware Lab view. This must list all active nodes (Mirrors, Tables, Wearables) and their current vitality status.
+
+The State Engine Tab: Restore the real-time monitoring tab. It must visualize:
+
+Vitality: Real-time heart rate/stress data.
+
+Sentiment: Current environmental "mood" (e.g., Focus, Relaxation, High-Intensity).
+
+Active Protocols: Display which automated protocols are currently running.
+
+[PHASE 3: THE PHANTOM HUD ENHANCEMENTS]
+
+Biometric Overlay: Update the Phantom HUD (the hidden 3-second hold menu) to include a "Vitality" spark-line.
+
+Zero-Interruption Guarantee: Ensure that when biometrics trigger a change (like dimming lights or starting music), it happens via the additive CSS layer so the guest UI never flashes or reloads.
+
+[PHASE 4: SYSTEM WIDE SYNC]
+
+CSS Variables: Ensure :root includes all new hex codes for Titan Gold, Amber, and Bio-Green.
+
+Socket.io Heartbeat: Ensure the irregular pulse staggers (.pulse-delay-1 through 4) are applied to the Hardware Lab nodes to simulate independent biometric processing.
+
+Final Instruction: "Run a full scan of the components/ and api/ directories. If these elements are missing, rebuild them immediately based on the Titan V Infrastructure spec. The system must be Sentient by the end of this execution."
+
+Why you don't see it yet:
+Replit occasionally keeps the "Preview" on a cached version of your code. By running this prompt, you are telling the AI to:
+
+Audit the files to see what’s actually there.
+
+Re-write the missing logic into the kernel.
+
+Force a Refresh of the Hardware Lab UI.
+
+Once you paste this, check the "Hardware Lab" in your navigation. If the "State Engine" tab appears with the pulsing nodes, the system is officially back online.
