@@ -19,6 +19,7 @@ import { useLocation }    from "wouter";
 import { useHandoff }     from "@/contexts/HandoffContext";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { useCraftExperience } from "@/contexts/CraftExperienceContext";
+import { useSuperAdmin }  from "@/contexts/SuperAdminContext";
 
 // ── Design tokens ──────────────────────────────────────────────────────────
 const OBSIDIAN   = "rgba(10,9,8,0.90)";
@@ -81,11 +82,17 @@ interface MenuItemProps {
 }
 
 function MenuItem({ icon, label, sub, accent, danger, onClick }: MenuItemProps) {
+  const fire = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation();
+    onClick();
+  }, [onClick]);
+
   return (
     <motion.button
       data-override-hub
       whileTap={{ scale: 0.96, backgroundColor: `${accent}14` }}
-      onClick={(e) => { e.stopPropagation(); onClick(); }}
+      onTouchStart={fire}
+      onClick={fire}
       style={{
         display:    "flex",
         alignItems: "center",
@@ -157,10 +164,11 @@ export function SovereignOverrideHub() {
   const pillRef               = useRef<HTMLButtonElement>(null);
   const [pillRect, setPillRect] = useState<DOMRect | null>(null);
 
-  const [, navigate]        = useLocation();
-  const { triggerHandoff }  = useHandoff();
-  const { clearGuest }      = useGuestProfile();
-  const { purgeSessions }   = useCraftExperience();
+  const [, navigate]          = useLocation();
+  const { triggerHandoff }    = useHandoff();
+  const { clearGuest }        = useGuestProfile();
+  const { purgeSessions }     = useCraftExperience();
+  const { activateGhost }     = useSuperAdmin();
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -192,23 +200,24 @@ export function SovereignOverrideHub() {
 
   const handleEeis = useCallback(() => {
     setOpen(false);
-    // Trigger ripple from screen center — EEIS overlay expands from there
-    setTimeout(() => {
-      triggerHandoff(window.innerWidth / 2, window.innerHeight / 2);
-    }, 120);
-  }, [triggerHandoff]);
+    // Also arm the EEIS overlay so it can be toggled from within the page
+    triggerHandoff(window.innerWidth / 2, window.innerHeight / 2);
+    setTimeout(() => navigate("/eeie-command"), 80);
+  }, [triggerHandoff, navigate]);
 
-  const handleSovereignCore = useCallback(() => {
+  const handleGhostCore = useCallback(() => {
     setOpen(false);
-    setTimeout(() => navigate("/admin-master"), 100);
-  }, [navigate]);
+    // Force sovereign permission state — bypasses all auth guards
+    activateGhost();
+    setTimeout(() => navigate("/admin-master"), 80);
+  }, [activateGhost, navigate]);
 
   const handlePurge = useCallback(() => {
     setOpen(false);
     setTimeout(() => {
       purgeSessions();
       clearGuest();
-      navigate("/");
+      navigate("/portal");
     }, 120);
   }, [purgeSessions, clearGuest, navigate]);
 
@@ -269,17 +278,17 @@ export function SovereignOverrideHub() {
 
       <MenuItem
         icon={<IconEeis />}
-        label="OPERATIONAL INTELLIGENCE"
-        sub="EEIE Nervous System · Staff Telemetry"
+        label="EEIE INTEL"
+        sub="EEIE Command Center · Staff Telemetry"
         accent={AMBER}
         onClick={handleEeis}
       />
       <MenuItem
         icon={<IconCore />}
-        label="SOVEREIGN CORE"
-        sub="Level 0 Access · Kill-Switches · Provisioning"
+        label="GHOST CORE"
+        sub="Sovereign Access · Kill-Switches · Provisioning"
         accent={GOLD_PILL}
-        onClick={handleSovereignCore}
+        onClick={handleGhostCore}
       />
 
       {/* Divider */}
@@ -288,7 +297,7 @@ export function SovereignOverrideHub() {
       <MenuItem
         icon={<IconPurge />}
         label="SYSTEM PURGE"
-        sub="Clear Session · Return to Boot Portal"
+        sub="Clear Session · Return to Portal"
         accent={DANGER}
         danger
         onClick={handlePurge}
@@ -309,7 +318,7 @@ export function SovereignOverrideHub() {
           position:             "fixed",
           top:                  12,
           right:                14,
-          zIndex:               10000,
+          zIndex:               20000,
           display:              "flex",
           alignItems:           "center",
           gap:                  7,
