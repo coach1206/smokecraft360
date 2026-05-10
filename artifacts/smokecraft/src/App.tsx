@@ -23,6 +23,7 @@ import { HandoffProvider }           from '@/contexts/HandoffContext';
 import { AudioProvider }            from '@/contexts/AudioContext';
 import { ExperienceProvider }       from '@/contexts/ExperienceContext';
 import EeisOverlay                  from '@/components/EeisOverlay';
+import StealthHandoff               from '@/components/StealthHandoff';
 import { SovereignOverrideHub }    from '@/components/SovereignOverrideHub';
 import { SuperAdminProvider }       from '@/contexts/SuperAdminContext';
 import { GhostEntryTrigger }        from '@/components/GhostEntryTrigger';
@@ -162,6 +163,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                           <SovereignOverrideHub />
                                           <SovereignInsightCube />
                                           <SovereignSocketBridge />
+                                          <StealthHandoff />
                                         </HapticProvider>
                                         </TrifectaProvider>
                                       </SuperAdminProvider>
