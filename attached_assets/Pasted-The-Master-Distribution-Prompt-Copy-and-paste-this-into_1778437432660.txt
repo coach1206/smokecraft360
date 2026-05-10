@@ -1,0 +1,31 @@
+The "Master Distribution" Prompt
+Copy and paste this into the Replit Agent to build the packaging system:
+Role: Sovereign Systems Architect & Security Engineer.
+Objective: Build the 'Sovereign Distribution Vault' to allow for professional packaging, licensing, and remote deployment of NOVEE OS to external manufacturers.
+[PHASE 1: THE DISTRIBUTION HUD]
+1.	New Tab: Add a 'DISTRIBUTION' tab to the Super Admin.
+2.	Batch Provisioning: Create a form to "Create New Shipment."
+• Inputs: Manufacturer Name, Order Quantity, Device Type (Mirror/Table/Vehicle).
+• Output: A list of encrypted Activation Keys that will be baked into that specific build.
+[PHASE 2: THE "TITAN BUNDLE" EXPORTER]
+1.	Automated Packaging: Create a function that zips the /dist folder along with a generated license.json file.
+2.	Manufacturer Assets: Include the 'Cold Start' activation screen in the bundle so that the first thing the manufacturer sees is the "Waiting for Sovereign Authorization" QR code.
+3.	Deployment Methods:
+• Zip Drive Mode: Download the bundle directly to your computer.
+• Cloud Link Mode: Generate a password-protected, 24-hour expiring link that you can email directly from the UI.
+[PHASE 3: REMOTE AUTHENTICATION PROTOCOL]
+1.	Device Handshake: When a device from this batch is turned on, it must call POST /api/nodes/register using the baked-in Serial Number.
+2.	Sovereign Gate: The device remains in 'Obsidian Lock' mode until you toggle the 'Authorize Batch' switch in your Super Admin.
+[PHASE 4: DOCUMENTATION & LABELING]
+1.	Auto-Labeling: The system must label the export with your legal entity: 360 Enterprises Services LLC.
+2.	System Specs: Include a system_specs.json in the zip that tells the manufacturer the required RAM, CPU, and Touch-Foil sensitivity settings for optimal Titan V performance.
+How You Deploy It Globally
+Option A: The Zip Drive (Physical Handoff)
+You download the Titan Bundle from your Super Admin. You put it on a high-end metal USB drive and hand it to the manufacturer. When they plug it into their Smart Mirror computer, the installation begins, but the screen stays "Sovereign Locked" until you get paid.
+Option B: The Email Link (Digital Handoff)
+You enter the manufacturer's email in the Distribution Hub. They receive a link to your "Sovereign Download Portal." They download the software and install it in the Sprinter Vans or Glass Tables. You track their progress live as the "Pending Nodes" start popping up on your phone.
+The "Market Disturber" Checklist
+• Branding: All files are labeled with Johnie Manuel Lee Collins and 360 Enterprises Services LLC.
+• Security: The code is useless without your remote "Sovereign" activation.
+• Support: The auto-generated install guide makes you look like a top-tier tech firm.
+Once the Agent finishes this, do you want to do a "Dry Run" where you package the software and email a test link to yourself to see how it looks for the manufacturer?

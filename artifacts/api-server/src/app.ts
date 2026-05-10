@@ -169,6 +169,7 @@ import enterpriseAiRouter          from "./routes/enterprise-ai";
 import artisanOrdersRouter         from "./routes/artisanOrders";
 import sovereignOrderRouter        from "./routes/sovereignOrder";
 import sovereignEventsRouter       from "./routes/sovereignEvents";
+import sovereignDistributionRouter from "./routes/sovereignDistribution";
 import cognitiveBuildSheetRouter   from "./routes/cognitiveBuildSheet";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -496,6 +497,7 @@ app.use("/api/enterprise-ai",           enterpriseAiRouter);
 app.use("/api",                         artisanOrdersRouter);
 app.use("/api",                         sovereignOrderRouter);
 app.use("/api",                         sovereignEventsRouter);
+app.use("/api",                         sovereignDistributionRouter);
 app.use("/api",                         cognitiveBuildSheetRouter);
 app.use("/api",                         onboardingRouter);
 app.use("/api",                         aiConfigureRouter);

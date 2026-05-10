@@ -9,7 +9,7 @@ import { motion, AnimatePresence }     from "framer-motion";
 import { useLocation }                 from "wouter";
 import {
   ArrowLeft, Brain, Zap, Eye, Palette, TrendingUp,
-  ChevronRight, Activity, Globe, AlertTriangle, Server,
+  ChevronRight, Activity, Globe, AlertTriangle, Server, Package,
 } from "lucide-react";
 import AIInfrastructurePanel from "@/components/admin/AIInfrastructurePanel";
 
@@ -216,6 +216,23 @@ export default function AdminMaster() {
               </button>
             );
           })}
+
+          {/* ── Distribution Vault Link ── */}
+          <div style={{ margin:"16px 14px 0" }}>
+            <div style={{ padding:"0 0 8px", fontSize:8, fontWeight:800, color:C.muted, letterSpacing:"0.18em", textTransform:"uppercase" }}>Distribution</div>
+            <motion.button whileTap={{ scale:0.96 }}
+              onClick={() => { window.location.href = "/distribution"; }}
+              style={{ width:"100%", display:"flex", alignItems:"center", gap:9, padding:"11px 14px", borderRadius:9, background:"rgba(212,175,55,0.06)", border:`1px solid rgba(212,175,55,0.22)`, cursor:"pointer", textAlign:"left" }}>
+              <div style={{ width:30, height:30, borderRadius:8, background:"rgba(212,175,55,0.10)", border:"1px solid rgba(212,175,55,0.22)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <Package size={14} color={C.gold} />
+              </div>
+              <div>
+                <div style={{ fontSize:8, color:C.amber, fontWeight:800, letterSpacing:"0.12em" }}>DV-01 · SOVEREIGN</div>
+                <div style={{ fontSize:11, color:C.ink, fontWeight:600 }}>Distribution Vault</div>
+              </div>
+              <ChevronRight size={10} color={C.gold} style={{ marginLeft:"auto" }} />
+            </motion.button>
+          </div>
 
           {/* DayOne360 Live Link */}
           <div style={{ margin:"24px 14px 0", borderRadius:10, overflow:"hidden", border:`1px solid rgba(167,139,250,0.25)` }}>

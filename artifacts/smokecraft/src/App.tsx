@@ -101,7 +101,8 @@ const EnvironmentEngine     = lazy(() => import('@/pages/EnvironmentEngine'));
 const EnterpriseIntelligence = lazy(() => import('@/pages/EnterpriseIntelligence'));
 const EEIECommandCenter      = lazy(() => import('@/pages/EEIECommandCenter'));
 const EnterpriseGovernance  = lazy(() => import('@/pages/EnterpriseGovernance'));
-const VillaSovereign        = lazy(() => import('@/pages/VillaSovereign'));
+const VillaSovereign               = lazy(() => import('@/pages/VillaSovereign'));
+const SovereignDistributionVault   = lazy(() => import('@/pages/SovereignDistributionVault'));
 
 function PageLoader() {
   return (
@@ -927,6 +928,9 @@ export default function App() {
           {/* ── Villa Sovereign — DR Luxury Market Concierge Ritual ── */}
           <Route path="/villa-sovereign">
             <SubPageProviders><VillaSovereign /></SubPageProviders>
+          </Route>
+          <Route path="/distribution">
+            <SubPageProviders><SovereignDistributionVault /></SubPageProviders>
           </Route>
 
           {/* ── /portal — Pristine Boot State (System Purge destination) ── */}

@@ -1,0 +1,76 @@
+/**
+ * SOVEREIGN DISTRIBUTION ENGINE — v1.0.0
+ * Licensed to: 360 Enterprises Services LLC // Johnie Manuel Lee Collins
+ * Purpose: Secure Manufacturer Packaging & Remote Node Activation
+ */
+
+import { socket } from './socket';
+import { TitanNervousSystem } from './titanNervousSystem';
+
+export const SovereignDistro = {
+  // 1. GENERATE THE MANUFACTURER BUNDLE
+  // Creates a secure state for export to Zip or Email Link
+  prepareBundle: (manufacturerName: string, quantity: number, type: 'MIRROR' | 'TABLE' | 'VEHICLE') => {
+    const batchId = `BATCH-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
+    
+    const manifest = {
+      owner: "Johnie Manuel Lee Collins",
+      entity: "360 Enterprises Services LLC",
+      batchId,
+      manufacturer: manufacturerName,
+      nodeType: type,
+      quantity,
+      timestamp: new Date().toISOString(),
+      isActivated: false // STOPS SYSTEM FROM RUNNING UNTIL AUTHORIZED
+    };
+
+    console.log("TITAN_V: Bundle Prepared for Export", manifest);
+    return manifest;
+  },
+
+  // 2. THE COLD-START HANDSHAKE
+  // Fired by the manufacturer's device when first turned on
+  registerNewNode: async (deviceId: string, batchId: string) => {
+    // Device pings the Sovereign Brain in Georgia
+    socket.emit('NODE_PENDING_AUTHORIZATION', {
+      deviceId,
+      batchId,
+      timestamp: Date.now()
+    });
+    
+    // System enters 'Obsidian Lock' until isActivated is true
+    return { status: 'PENDING_SOVEREIGN_AUTH' };
+  },
+
+  // 3. REMOTE ACTIVATION (The Sovereign Key)
+  // Triggered from your Super Admin 'Distro' Tab
+  authorizeNode: (deviceId: string) => {
+    TitanNervousSystem.haptics.heavy(); // Confirm on your phone
+    
+    // Send the "Wake" signal to the specific hardware node
+    socket.emit('SOVEREIGN_WAKE_COMMAND', {
+      deviceId,
+      authKey: 'MASTER_KEY_360',
+      action: 'MELT_LOCK'
+    });
+
+    console.log(`TITAN_V: Node ${deviceId} is now LIVE globally.`);
+  }
+};
+
+/**
+ * THE ACTIVATION GATE COMPONENT (React)
+ * This is what the manufacturer sees until you hit 'Authorize'
+ */
+export const ActivationGateUI = ({ deviceId }) => (
+  <div style={{ backgroundColor: '#050505', color: '#D4AF37', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Space Mono' }}>
+    <h1 style={{ letterSpacing: '4px' }}>NOVEE OS</h1>
+    <div style={{ border: '2px solid #D4AF37', padding: '20px', marginTop: '20px' }}>
+      {/* This QR Code encodes the direct activation link for your Admin phone */}
+      <QRCode value={`https://novee-os.com/admin/activate?id=${deviceId}`} />
+    </div>
+    <p style={{ marginTop: '30px', color: '#00FF41' }}>STATUS: WAITING_FOR_SOVEREIGN_AUTHORIZATION</p>
+    <p style={{ opacity: 0.5 }}>DEVICE_ID: {deviceId}</p>
+    <p style={{ fontSize: '10px', marginTop: '50px' }}>&copy; 360 ENTERPRISES SERVICES LLC</p>
+  </div>
+);
