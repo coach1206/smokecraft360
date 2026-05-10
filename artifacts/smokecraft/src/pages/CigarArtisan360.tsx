@@ -24,6 +24,8 @@ import {
 import * as THREE from "three";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
+import { useGuestProfile } from "@/contexts/GuestProfileContext";
+import { crossSessionMemory } from "@/lib/crossSessionMemory";
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 const GOLD    = "#D4AF37";
@@ -533,7 +535,172 @@ function Pill({
   );
 }
 
-// ── Main page ──────────────────────────────────────────────────────────────────
+// ── Sovereign Vault Exit — Phase 17 cinematic exit sequence ───────────────────
+function SovereignVaultExit({
+  orderId,
+  guestName,
+  onDone,
+}: {
+  orderId:   string;
+  guestName: string;
+  onDone:    () => void;
+}) {
+  const [phase, setPhase] = useState<"fade" | "reveal" | "message" | "exit">("fade");
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase("reveal"),  700);
+    const t2 = setTimeout(() => setPhase("message"), 1600);
+    const t3 = setTimeout(() => setPhase("exit"),    4200);
+    const t4 = setTimeout(() => onDone(),            4900);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+  }, [onDone]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.7 }}
+      style={{
+        position:             "fixed",
+        inset:                0,
+        zIndex:               600,
+        background:           "rgba(6,5,4,0.97)",
+        backdropFilter:       "blur(32px)",
+        WebkitBackdropFilter: "blur(32px)",
+        display:              "flex",
+        flexDirection:        "column",
+        alignItems:           "center",
+        justifyContent:       "center",
+        fontFamily:           MONO,
+        overflow:             "hidden",
+      }}
+    >
+      {/* Ambient amber glow */}
+      <motion.div
+        animate={{ opacity: [0.08, 0.14, 0.08] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          position:     "absolute",
+          inset:        0,
+          background:   `radial-gradient(ellipse 55% 45% at 50% 50%, ${GOLD}22 0%, transparent 68%)`,
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Sigil */}
+      <AnimatePresence>
+        {phase !== "fade" && (
+          <motion.div
+            key="sigil"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 180, damping: 22 }}
+            style={{
+              fontSize:    56,
+              color:       GOLD,
+              textShadow:  `0 0 40px ${GOLD}88, 0 0 80px ${GOLD}33`,
+              marginBottom: 28,
+              lineHeight:  1,
+            }}
+          >
+            ◈
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Vault message */}
+      <AnimatePresence>
+        {phase === "message" || phase === "exit" ? (
+          <motion.div
+            key="msg"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: phase === "exit" ? 0 : 1, y: 0 }}
+            transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+            style={{ textAlign: "center", padding: "0 32px" }}
+          >
+            <div style={{
+              fontFamily:    "'Cormorant Garamond', Georgia, serif",
+              fontSize:      "clamp(18px, 3.5vw, 26px)",
+              fontWeight:    300,
+              color:         "#F5F2ED",
+              letterSpacing: "0.08em",
+              lineHeight:    1.5,
+              marginBottom:  20,
+            }}>
+              Tonight's blend has been archived<br />in the Sovereign Vault.
+            </div>
+
+            {guestName && (
+              <div style={{
+                fontSize:      9,
+                color:         `${GOLD}70`,
+                letterSpacing: "0.22em",
+                marginBottom:  16,
+                textTransform: "uppercase",
+              }}>
+                Archived for {guestName}
+              </div>
+            )}
+
+            <div style={{
+              display:       "inline-block",
+              background:    `${GOLD}0D`,
+              border:        `1px solid ${GOLD}30`,
+              borderRadius:  8,
+              padding:       "8px 20px",
+              color:         GOLD,
+              fontSize:      11,
+              letterSpacing: "0.20em",
+              marginBottom:  36,
+            }}>
+              {orderId}
+            </div>
+
+            <div>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onTouchStart={(e) => { e.stopPropagation(); onDone(); }}
+                onClick={onDone}
+                style={{
+                  padding:     "11px 28px",
+                  borderRadius: 999,
+                  border:      `1px solid ${GOLD}40`,
+                  background:  "transparent",
+                  color:       `${GOLD}60`,
+                  fontSize:    8,
+                  fontWeight:  700,
+                  letterSpacing: "0.22em",
+                  cursor:      "pointer",
+                  touchAction: "manipulation",
+                  WebkitTapHighlightColor: "transparent",
+                  fontFamily:  MONO,
+                }}
+              >
+                RETURN TO PORTAL
+              </motion.button>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      {/* Phase bar at bottom */}
+      <motion.div
+        style={{
+          position:    "absolute",
+          bottom:      0,
+          left:        0,
+          height:      1,
+          background:  `linear-gradient(90deg, transparent, ${GOLD}60, transparent)`,
+        }}
+        initial={{ width: "0%" }}
+        animate={{ width: "100%" }}
+        transition={{ duration: 4.8, ease: "linear" }}
+      />
+    </motion.div>
+  );
+}
+
 // ── Commission modal ───────────────────────────────────────────────────────────
 type CommissionState = "idle" | "open" | "submitting" | "success" | "error";
 
@@ -626,7 +793,7 @@ function CommissionModal({
             {/* Header */}
             <div style={{ marginBottom: 22 }}>
               <div style={{ color: GOLD, fontSize: 10, fontWeight: 700, letterSpacing: "0.28em", marginBottom: 4 }}>
-                ◈ COMMISSION THIS BOX
+                ◈ ARCHIVE BLEND
               </div>
               <div style={{ color: "rgba(212,175,55,0.38)", fontSize: 7.5, letterSpacing: "0.14em" }}>
                 MASTER ARTISAN 360 · BESPOKE ORDER SUBMISSION
@@ -721,6 +888,7 @@ function CommissionModal({
 // ── Main page ──────────────────────────────────────────────────────────────────
 export default function CigarArtisan360() {
   const [, navigate] = useLocation();
+  const { guestProfile } = useGuestProfile();
   const [wood, setWood]       = useState<WoodId>("mahogany");
   const [band, setBand]       = useState<BandId>("sovereign");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -730,10 +898,11 @@ export default function CigarArtisan360() {
   const fileRef                 = useRef<HTMLInputElement>(null);
 
   // Commission state
-  const [commState, setCommState] = useState<CommissionState>("idle");
-  const [guestName, setGuestName] = useState("");
-  const [notes,     setNotes]     = useState("");
-  const [orderId,   setOrderId]   = useState("");
+  const [commState,    setCommState]    = useState<CommissionState>("idle");
+  const [guestName,    setGuestName]    = useState("");
+  const [notes,        setNotes]        = useState("");
+  const [orderId,      setOrderId]      = useState("");
+  const [showVaultExit, setShowVaultExit] = useState(false);
 
   useEffect(() => {
     setHasWebGL(detectWebGL());
@@ -765,23 +934,30 @@ export default function CigarArtisan360() {
     e.preventDefault();
     setCommState("submitting");
     try {
-      const harmonyScore = HARMONY[wood][band];
+      const harmonyScore        = HARMONY[wood][band];
+      const dominant            = crossSessionMemory.getDominantFlavor();
+      const sensoryFoundation   = dominant
+        ? `${dominant.charAt(0).toUpperCase()}${dominant.slice(1)}`
+        : undefined;
+
       const res = await fetch("/api/sovereign-order", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          guestName:     guestName.trim() || undefined,
-          woodType:      WOOD[wood].label,
-          bandStyle:     BAND[band].label,
-          customLogoUrl: logoUrl ?? "",
+          guestName:         guestName.trim() || undefined,
+          woodType:          WOOD[wood].label,
+          bandStyle:         BAND[band].label,
+          customLogoUrl:     logoUrl ?? "",
           harmonyScore,
-          notes:         notes.trim() || undefined,
+          sensoryFoundation,
+          notes:             notes.trim() || undefined,
         }),
       });
       const data = await res.json() as { success?: boolean; orderId?: string };
       if (data.success && data.orderId) {
         setOrderId(data.orderId);
-        setCommState("success");
+        setCommState("idle");
+        setShowVaultExit(true);
       } else {
         setCommState("error");
       }
@@ -790,8 +966,22 @@ export default function CigarArtisan360() {
     }
   }, [wood, band, logoUrl, guestName, notes]);
 
-  const openCommission  = useCallback(() => { setCommState("open"); setGuestName(""); setNotes(""); setOrderId(""); }, []);
+  const openCommission = useCallback(() => {
+    const profileName = guestProfile
+      ? `${guestProfile.firstName}${guestProfile.lastInitial ? ` ${guestProfile.lastInitial}.` : ""}`
+      : "";
+    setGuestName(profileName);
+    setNotes("");
+    setOrderId("");
+    setCommState("open");
+  }, [guestProfile]);
+
   const closeCommission = useCallback(() => { if (commState !== "submitting") setCommState("idle"); }, [commState]);
+
+  const handleVaultDone = useCallback(() => {
+    setShowVaultExit(false);
+    navigate("/");
+  }, [navigate]);
 
   const w = WOOD[wood];
   const b = BAND[band];
@@ -965,6 +1155,7 @@ export default function CigarArtisan360() {
         <div style={{ borderTop: "1px solid rgba(212,175,55,0.10)", paddingTop: 12 }}>
           <motion.button
             whileTap={{ scale: 0.97 }}
+            onTouchStart={(e) => { e.stopPropagation(); openCommission(); }}
             onClick={openCommission}
             style={{
               width: "100%", padding: "14px", borderRadius: 999,
@@ -977,7 +1168,7 @@ export default function CigarArtisan360() {
               display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             }}
           >
-            <span style={{ fontSize: 12 }}>◈</span> COMMISSION THIS BOX
+            <span style={{ fontSize: 12 }}>◈</span> ARCHIVE BLEND
           </motion.button>
         </div>
 
@@ -1003,6 +1194,18 @@ export default function CigarArtisan360() {
             guestName={guestName} notes={notes}
             onGuestName={setGuestName} onNotes={setNotes}
             onSubmit={handleCommission} onClose={closeCommission}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Phase 17: Sovereign Vault Exit ── */}
+      <AnimatePresence>
+        {showVaultExit && (
+          <SovereignVaultExit
+            key="vault-exit"
+            orderId={orderId}
+            guestName={guestName}
+            onDone={handleVaultDone}
           />
         )}
       </AnimatePresence>

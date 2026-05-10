@@ -19,12 +19,13 @@ const router = Router();
 
 // ── Schema ──────────────────────────────────────────────────────────────────────
 const SovereignOrderSchema = z.object({
-  guestName:      z.string().max(80).optional(),
-  woodType:       z.string().max(60).optional(),
-  bandStyle:      z.string().max(80).optional(),
-  customLogoUrl:  z.string().url().max(500).optional().or(z.literal("")),
-  harmonyScore:   z.number().min(0).max(100).optional(),
-  notes:          z.string().max(400).optional(),
+  guestName:         z.string().max(80).optional(),
+  woodType:          z.string().max(60).optional(),
+  bandStyle:         z.string().max(80).optional(),
+  customLogoUrl:     z.string().url().max(500).optional().or(z.literal("")),
+  harmonyScore:      z.number().min(0).max(100).optional(),
+  sensoryFoundation: z.string().max(80).optional(),
+  notes:             z.string().max(400).optional(),
 });
 
 // ── POST /api/sovereign-order ───────────────────────────────────────────────────
@@ -44,7 +45,7 @@ router.post("/sovereign-order", async (req, res) => {
   });
 
   req.log.info(
-    { orderId, guestName: order.guestName, woodType: order.woodType, harmonyScore: order.harmonyScore },
+    { orderId, guestName: order.guestName, woodType: order.woodType, harmonyScore: order.harmonyScore, sensoryFoundation: order.sensoryFoundation },
     "sovereign-order received",
   );
 
@@ -63,29 +64,31 @@ router.post("/sovereign-order", async (req, res) => {
 
 // ── HTML email builder ──────────────────────────────────────────────────────────
 function buildEmail(o: {
-  orderId:        string;
-  ts:             string;
-  guestName?:     string;
-  woodType?:      string;
-  bandStyle?:     string;
-  customLogoUrl?: string;
-  harmonyScore?:  number;
-  notes?:         string;
+  orderId:           string;
+  ts:                string;
+  guestName?:        string;
+  woodType?:         string;
+  bandStyle?:        string;
+  customLogoUrl?:    string;
+  harmonyScore?:     number;
+  sensoryFoundation?: string;
+  notes?:            string;
 }): string {
   const score       = o.harmonyScore ?? 0;
   const scoreColor  = score >= 80 ? "#4ade80" : score >= 55 ? "#D4AF37" : "#f87171";
   const scoreLabel  = score >= 80 ? "EXCEPTIONAL MATCH" : score >= 55 ? "STRONG HARMONY" : "DEVELOPING PROFILE";
 
   const rows: [string, string][] = [
-    ["Order Reference",  `<span style="color:#D4AF37;letter-spacing:.18em">${o.orderId}</span>`],
-    ["Submitted",        o.ts],
-    ["Guest",            o.guestName || "— (Anonymous)"],
-    ["Wood Selection",   o.woodType  || "—"],
-    ["Band Concept",     o.bandStyle || "—"],
-    ["Custom Logo",      o.customLogoUrl
+    ["Order Reference",    `<span style="color:#D4AF37;letter-spacing:.18em">${o.orderId}</span>`],
+    ["Submitted",          o.ts],
+    ["Guest",              o.guestName || "— (Anonymous)"],
+    ["Sensory Foundation", o.sensoryFoundation || "—"],
+    ["Wood Selection",     o.woodType  || "—"],
+    ["Band Concept",       o.bandStyle || "—"],
+    ["Custom Logo",        o.customLogoUrl
       ? `<a href="${o.customLogoUrl}" style="color:#D4AF37">View Uploaded Asset ›</a>`
       : "None"],
-    ["EEIS Harmony",     `<span style="color:${scoreColor};font-weight:700;letter-spacing:.12em">${score}% — ${scoreLabel}</span>`],
+    ["EEIS Harmony",       `<span style="color:${scoreColor};font-weight:700;letter-spacing:.12em">${score}% — ${scoreLabel}</span>`],
     ...(o.notes ? [["Special Instructions", o.notes] as [string, string]] : []),
   ];
 
