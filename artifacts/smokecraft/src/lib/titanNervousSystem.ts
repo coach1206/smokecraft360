@@ -1,11 +1,13 @@
 /**
- * TITAN V — CENTRAL NERVOUS SYSTEM
- * Version: 5.0.0 (Sovereign Authority)
+ * TITAN V — GLOBAL NERVOUS SYSTEM (HARDENED)
+ * Version: 5.1.0 (Global Sovereign)
  *
- * Single import point for hardware haptics, sonic ignition, cognitive
- * pulse control, and the Trifecta pairing brain.
- *
- * All dependencies resolve to existing singletons — no new servers needed.
+ * Changes from 5.0.0:
+ *  - Dual-stage long-press authentication (validateCommand, 2 s minimum hold)
+ *  - override() is now async — rejects with error haptic if hold insufficient
+ *  - Socket event renamed → SOVEREIGN_GLOBAL_COMMAND (supports venueId targeting)
+ *  - calculateTrifecta gains regional palate overlay (DR / US / EU)
+ *  - haptics.heavy() + haptics.error() added
  */
 
 import { groupEnergyEngine }  from "./groupEnergyEngine";
@@ -20,7 +22,9 @@ import {
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-export type LoungeMood = "MEDITATIVE" | "FOCUSED" | "HIGH_ENERGY";
+export type LoungeMood  = "MEDITATIVE" | "FOCUSED" | "HIGH_ENERGY";
+export type OverrideType = "BLACKOUT" | "API_LOCK" | "PURGE";
+export type Region       = "DR" | "US" | "EU";
 
 export interface TrifectaProfile {
   craftType:   "smoke" | "pour" | "brew" | "vape";
@@ -31,27 +35,41 @@ export interface TrifectaProfile {
 }
 
 export interface TrifectaRecommendation {
-  label:         string;
-  rationale:     string;
-  isReserve?:    boolean;
+  label:          string;
+  rationale:      string;
+  isReserve?:     boolean;
   isChefSpecial?: boolean;
 }
 
 export interface TrifectaResult {
-  affinityScore: number;           // 85–100
+  affinityScore: number;
+  region:        Region;
   craft:         TrifectaRecommendation;
   pour:          TrifectaRecommendation;
   plate:         TrifectaRecommendation;
   upsell:        boolean;
 }
 
-// ── Internal affinity matrices ─────────────────────────────────────────────────
+// ── Safety constants ───────────────────────────────────────────────────────────
+
+/** Minimum sustained hold in milliseconds before a sovereign command fires */
+const HOLD_THRESHOLD_MS = 2_000;
+
+/**
+ * Sentinel value for pre-authenticated callers (e.g. socket commands that
+ * have already been verified server-side). Bypasses the hold check entirely.
+ */
+export const PREAUTH_HOLD = Infinity;
+
+// ── Speed map ─────────────────────────────────────────────────────────────────
 
 const SPEED: Record<LoungeMood, number> = {
   MEDITATIVE:  0.5,
   FOCUSED:     0.85,
   HIGH_ENERGY: 1.25,
 };
+
+// ── Audio hooks ───────────────────────────────────────────────────────────────
 
 const AUDIO_HOOKS: Record<string, () => void> = {
   SOVEREIGN_SWEEP: playSovereignSweep,
@@ -60,7 +78,31 @@ const AUDIO_HOOKS: Record<string, () => void> = {
   CLICK:           playClick,
 };
 
-// Pour affinity — keyed by boldness tier and atmosphere
+// ── Regional palate inventory map ─────────────────────────────────────────────
+//
+// Highest-priority signal — regional market data overrides the global affinity
+// matrix for pour and plate labels when a region is supplied.
+
+const REGIONAL_MAP: Record<Region, {
+  pour:  { label: string; isReserve: boolean };
+  plate: { label: string; isChefSpecial: boolean };
+}> = {
+  DR: {
+    pour:  { label: "Brugal 1888 Reserve",   isReserve: true  },
+    plate: { label: "Wagyu Carpaccio",        isChefSpecial: true  },
+  },
+  US: {
+    pour:  { label: "Pappy Van Winkle 15yr", isReserve: true  },
+    plate: { label: "Prime Ribeye",           isChefSpecial: true  },
+  },
+  EU: {
+    pour:  { label: "Macallan 25yr",          isReserve: true  },
+    plate: { label: "Truffle Fromage",        isChefSpecial: true  },
+  },
+};
+
+// ── Global pour affinity fallback (no region / unknown region) ────────────────
+
 const POUR_MATRIX: {
   boldMin: number;
   atmosphere?: string;
@@ -68,16 +110,15 @@ const POUR_MATRIX: {
   rationale: string;
   isReserve: boolean;
 }[] = [
-  { boldMin: 85, atmosphere: "bold",        label: "Pappy Van Winkle 15yr",     rationale: "Rare bourbon depth matches the authority of a full-bodied smoke",    isReserve: true  },
-  { boldMin: 85, atmosphere: "reflective",  label: "Glenfarclas 25yr",           rationale: "Sherried complexity echoes the contemplative weight of aged leaf",    isReserve: true  },
-  { boldMin: 75,                            label: "Brugal 1888 Reserve",         rationale: "Rich molasses and dried fruit mirror earthy Maduro undertones",       isReserve: true  },
-  { boldMin: 55, atmosphere: "social",      label: "Moët & Chandon Impérial",    rationale: "Effervescent contrast cleanses the palate between draws",             isReserve: false },
-  { boldMin: 50,                            label: "Balvenie DoubleWood 12yr",    rationale: "Gentle oak and honey bridge medium-strength craft",                   isReserve: false },
-  { boldMin: 30, atmosphere: "relaxed",     label: "Diplomático Mantuano Rum",    rationale: "Soft vanilla warmth complements lighter, aromatic leaf",              isReserve: false },
-  { boldMin: 0,                             label: "Casamigos Añejo Tequila",     rationale: "Agave earthiness opens the palate for delicate craft experiences",    isReserve: false },
+  { boldMin: 85, atmosphere: "bold",       label: "Pappy Van Winkle 15yr",  rationale: "Rare bourbon depth matches the authority of a full-bodied smoke",  isReserve: true  },
+  { boldMin: 85, atmosphere: "reflective", label: "Glenfarclas 25yr",        rationale: "Sherried complexity echoes the contemplative weight of aged leaf",  isReserve: true  },
+  { boldMin: 75,                           label: "Brugal 1888 Reserve",     rationale: "Rich molasses and dried fruit mirror earthy Maduro undertones",     isReserve: true  },
+  { boldMin: 55, atmosphere: "social",     label: "Moët & Chandon Impérial", rationale: "Effervescent contrast cleanses the palate between draws",           isReserve: false },
+  { boldMin: 50,                           label: "Balvenie DoubleWood 12yr",rationale: "Gentle oak and honey bridge medium-strength craft",                 isReserve: false },
+  { boldMin: 30, atmosphere: "relaxed",    label: "Diplomático Mantuano",    rationale: "Soft vanilla warmth complements lighter, aromatic leaf",            isReserve: false },
+  { boldMin: 0,                            label: "Casamigos Añejo",         rationale: "Agave earthiness opens the palate for delicate craft experiences",  isReserve: false },
 ];
 
-// Plate affinity — keyed by boldness tier and atmosphere
 const PLATE_MATRIX: {
   boldMin: number;
   atmosphere?: string;
@@ -85,28 +126,46 @@ const PLATE_MATRIX: {
   rationale: string;
   isChefSpecial: boolean;
 }[] = [
-  { boldMin: 80, atmosphere: "bold",        label: "Wagyu Beef Carpaccio",        rationale: "Fat-rich proteins soften strength on the palate, extending the ritual", isChefSpecial: true  },
-  { boldMin: 80,                            label: "Smoked Duck Breast",           rationale: "Shared smoke language deepens the sensory loop",                         isChefSpecial: true  },
-  { boldMin: 60, atmosphere: "reflective",  label: "Aged Manchego + Truffle Honey",rationale: "Salt and fat balance sustains mid-ritual complexity",                    isChefSpecial: true  },
-  { boldMin: 55,                            label: "Charcuterie Reserve Board",    rationale: "Cured complexity complements the draw without competing",                isChefSpecial: false },
-  { boldMin: 35, atmosphere: "social",      label: "Burrata with Heirloom Tomato", rationale: "Bright acidity refreshes the palate between rounds",                    isChefSpecial: false },
-  { boldMin: 0,                             label: "Smoked Salmon Blini",          rationale: "Delicate smoke echo without overpowering lighter craft",                 isChefSpecial: false },
+  { boldMin: 80, atmosphere: "bold",       label: "Wagyu Beef Carpaccio",        rationale: "Fat-rich proteins soften strength, extending the ritual",          isChefSpecial: true  },
+  { boldMin: 80,                           label: "Smoked Duck Breast",           rationale: "Shared smoke language deepens the sensory loop",                   isChefSpecial: true  },
+  { boldMin: 60, atmosphere: "reflective", label: "Aged Manchego + Truffle Honey",rationale: "Salt and fat balance sustains mid-ritual complexity",              isChefSpecial: true  },
+  { boldMin: 55,                           label: "Charcuterie Reserve Board",    rationale: "Cured complexity complements the draw without competing",          isChefSpecial: false },
+  { boldMin: 35, atmosphere: "social",     label: "Burrata with Heirloom Tomato", rationale: "Bright acidity refreshes the palate between rounds",              isChefSpecial: false },
+  { boldMin: 0,                            label: "Smoked Salmon Blini",          rationale: "Delicate smoke echo without overpowering lighter craft",           isChefSpecial: false },
 ];
 
-function scoredPour(profile: TrifectaProfile): TrifectaRecommendation {
-  const match = POUR_MATRIX.find(p =>
+// ── Affinity helpers ───────────────────────────────────────────────────────────
+
+function rationalePour(profile: TrifectaProfile): string {
+  const row = POUR_MATRIX.find(p =>
     profile.boldness >= p.boldMin &&
     (!p.atmosphere || p.atmosphere === profile.atmosphere),
   ) ?? POUR_MATRIX[POUR_MATRIX.length - 1];
-  return { label: match.label, rationale: match.rationale, isReserve: match.isReserve };
+  return row.rationale;
 }
 
-function scoredPlate(profile: TrifectaProfile): TrifectaRecommendation {
-  const match = PLATE_MATRIX.find(p =>
+function rationalePlate(profile: TrifectaProfile): string {
+  const row = PLATE_MATRIX.find(p =>
     profile.boldness >= p.boldMin &&
     (!p.atmosphere || p.atmosphere === profile.atmosphere),
   ) ?? PLATE_MATRIX[PLATE_MATRIX.length - 1];
-  return { label: match.label, rationale: match.rationale, isChefSpecial: match.isChefSpecial };
+  return row.rationale;
+}
+
+function globalPour(profile: TrifectaProfile): TrifectaRecommendation {
+  const row = POUR_MATRIX.find(p =>
+    profile.boldness >= p.boldMin &&
+    (!p.atmosphere || p.atmosphere === profile.atmosphere),
+  ) ?? POUR_MATRIX[POUR_MATRIX.length - 1];
+  return { label: row.label, rationale: row.rationale, isReserve: row.isReserve };
+}
+
+function globalPlate(profile: TrifectaProfile): TrifectaRecommendation {
+  const row = PLATE_MATRIX.find(p =>
+    profile.boldness >= p.boldMin &&
+    (!p.atmosphere || p.atmosphere === profile.atmosphere),
+  ) ?? PLATE_MATRIX[PLATE_MATRIX.length - 1];
+  return { label: row.label, rationale: row.rationale, isChefSpecial: row.isChefSpecial };
 }
 
 function craftNote(profile: TrifectaProfile): TrifectaRecommendation {
@@ -117,8 +176,7 @@ function craftNote(profile: TrifectaProfile): TrifectaRecommendation {
   };
 }
 
-function affinityScore(profile: TrifectaProfile): number {
-  // Base 87 + up to 13 points for boldness extremes and tier
+function computeAffinityScore(profile: TrifectaProfile): number {
   let score = 87;
   if (profile.boldness >= 80 || profile.boldness <= 25) score += 4;
   if (profile.atmosphere !== "social") score += 3;
@@ -130,9 +188,53 @@ function affinityScore(profile: TrifectaProfile): number {
 
 export const TitanNervousSystem = {
 
+  // ── 1. SAFETY LOCK ──────────────────────────────────────────────────────────
   /**
-   * 1. THE METABOLIC PULSE
-   * Syncs document animation speed + GroupEnergyEngine + Sovereign Sweep sound.
+   * Dual-stage command authentication.
+   * Returns true only when hold duration meets the 2 s threshold.
+   * Pass PREAUTH_HOLD (Infinity) for server-side pre-authenticated commands.
+   */
+  async validateCommand(_command: string, duration: number): Promise<boolean> {
+    if (duration < HOLD_THRESHOLD_MS) {
+      console.warn(`TITAN_V: Command rejected — hold ${duration}ms < ${HOLD_THRESHOLD_MS}ms`);
+      return false;
+    }
+    return true;
+  },
+
+  // ── 2. GLOBAL OVERRIDE ───────────────────────────────────────────────────────
+  /**
+   * Async authority override with dual-stage safety lock.
+   * Rejects with error haptic if holdTime < 2 s.
+   * On success: heavy haptic → SOVEREIGN_GLOBAL_COMMAND broadcast → DOM action.
+   *
+   * @param holdTime  Measured press duration in ms. Pass PREAUTH_HOLD to bypass.
+   */
+  async override(type: OverrideType, holdTime: number): Promise<void> {
+    const authorized = await TitanNervousSystem.validateCommand(type, holdTime);
+
+    if (!authorized) {
+      TitanNervousSystem.haptics.error();
+      return;
+    }
+
+    TitanNervousSystem.haptics.heavy();
+
+    socket.emit("SOVEREIGN_GLOBAL_COMMAND", {
+      type,
+      venueId:        "GLOBAL_BROADCAST",
+      timestamp:      Date.now(),
+      authorityLevel: "SUPER_ADMIN_GLOBAL",
+    });
+
+    if (type === "BLACKOUT") {
+      document.body.classList.add("titan-blackout-active");
+    }
+  },
+
+  // ── 3. METABOLIC PULSE ───────────────────────────────────────────────────────
+  /**
+   * Syncs document animation speed, GroupEnergyEngine mood, and sovereign tone.
    */
   pulse(mood: LoungeMood): void {
     document.documentElement.style.setProperty("--hb-mult", String(SPEED[mood]));
@@ -140,53 +242,49 @@ export const TitanNervousSystem = {
     TitanNervousSystem.audio.play("SOVEREIGN_SWEEP");
   },
 
+  // ── 4. TRIFECTA PAIRING BRAIN ────────────────────────────────────────────────
   /**
-   * 2. THE AUTHORITY OVERRIDE
-   * Freeze the room. Heavy haptic + socket broadcast + optional DOM class.
+   * Regional + palate affinity matrix: Craft ↔ Pour ↔ Plate.
+   *
+   * Priority order:
+   *   1. Regional inventory map (DR / US / EU) → sets pour & plate labels
+   *   2. Global affinity matrix → supplies rationale + fallback labels
+   *   3. Upsell flag (ELITE / MASTER or score ≥ 93)
+   *
+   * @param profile  Guest palate profile from enrollment
+   * @param region   Venue region code — defaults to 'DR'
    */
-  override(type: "BLACKOUT" | "API_LOCK" | "PURGE"): void {
-    TitanNervousSystem.haptics.sovereign();
-    socket.emit("SOVEREIGN_COMMAND", {
-      type,
-      timestamp:      Date.now(),
-      authorityLevel: "SUPER_ADMIN",
-    });
-    if (type === "BLACKOUT") {
-      document.body.classList.toggle("titan-blackout-active");
-    }
-  },
-
-  /**
-   * 3. THE TRIFECTA PAIRING BRAIN
-   * Real affinity matrix: Craft ↔ Pour ↔ Plate.
-   * Prioritises Reserve spirits and Chef Specials for ELITE/MASTER guests.
-   */
-  calculateTrifecta(profile: TrifectaProfile): TrifectaResult {
-    const score  = affinityScore(profile);
+  calculateTrifecta(profile: TrifectaProfile, region: Region = "DR"): TrifectaResult {
+    const score  = computeAffinityScore(profile);
     const upsell = score >= 93 ||
       profile.guestTier === "MASTER" ||
       profile.guestTier === "ELITE";
 
-    // For upsell guests, force Reserve/ChefSpecial by boosting boldness read
-    const effectiveBoldness = upsell
-      ? Math.max(profile.boldness, 80)
-      : profile.boldness;
+    const effectiveProfile = upsell
+      ? { ...profile, boldness: Math.max(profile.boldness, 80) }
+      : profile;
 
-    const effectiveProfile = { ...profile, boldness: effectiveBoldness };
+    const regional = REGIONAL_MAP[region] ?? REGIONAL_MAP.DR;
+
+    const pour: TrifectaRecommendation = regional
+      ? { ...regional.pour,  rationale: rationalePour(effectiveProfile)  }
+      : globalPour(effectiveProfile);
+
+    const plate: TrifectaRecommendation = regional
+      ? { ...regional.plate, rationale: rationalePlate(effectiveProfile) }
+      : globalPlate(effectiveProfile);
 
     return {
       affinityScore: score,
-      craft:         craftNote(profile),
-      pour:          scoredPour(effectiveProfile),
-      plate:         scoredPlate(effectiveProfile),
+      region,
+      craft:  craftNote(profile),
+      pour,
+      plate,
       upsell,
     };
   },
 
-  /**
-   * 4. THE SONIC ENGINE
-   * Maps Titan V hook names to existing audioEngine functions.
-   */
+  // ── 5. SONIC ENGINE ──────────────────────────────────────────────────────────
   audio: {
     play(hook: string): void {
       const fn = AUDIO_HOOKS[hook];
@@ -194,16 +292,20 @@ export const TitanNervousSystem = {
     },
   },
 
-  /**
-   * 5. HARDWARE HAPTICS
-   * Named vibration profiles — wraps existing haptics.ts.
-   */
+  // ── 6. HARDWARE HAPTICS ──────────────────────────────────────────────────────
   haptics: {
     /** Dual-pulse "Tactile Confirmed" — action success */
     confirm(): void   { vibrate([20, 30, 20]); },
-    /** Heavy singular "Mechanical Disconnect" — sovereign override */
-    sovereign(): void { vibrate(100); },
-    /** Material weight thud — slider/toggle click */
+    /** Deep "Engage" thud — sovereign command authorized */
+    heavy(): void     { vibrate(150); },
+    /** Material weight thud — slider / toggle engagement */
     thud(): void      { vibrate(40); },
+    /** Aggressive "No" buzz — command rejected / insufficient hold */
+    error(): void     { vibrate([50, 10, 50, 10, 50]); },
+    /**
+     * @deprecated Use heavy() for sovereign overrides.
+     * Kept for backward compatibility — maps to heavy().
+     */
+    sovereign(): void { vibrate(150); },
   },
 };

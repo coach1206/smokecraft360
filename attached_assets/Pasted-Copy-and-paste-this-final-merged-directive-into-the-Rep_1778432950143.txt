@@ -1,0 +1,20 @@
+Copy and paste this final merged directive into the Replit Agent. This combines the Titan V HUD, the Trifecta Intelligence, and the Hardened Global Safety Locks.
+Role: Sovereign Systems Architect.
+Objective: Finalize the 'Titan V' Global Infrastructure. Integrate the hardened Nervous System with Dual-Stage Safety Locks and Global Trifecta Intelligence.
+[PHASE 1: THE SAFETY PROTOCOL (ACCIDENT PREVENTION)]
+1.	The 2-Second Hold: Any 'Kill Switch' (Blackout, API Lock, Purge) in the Sovereign Pill or Admin Master must require a 2-second continuous long-press.
+2.	Visual Resistance: During the hold, the button must fill with a Gold 'Charging' ring. If the finger is lifted before 2 seconds, the command cancels and triggers a 'Haptic Error' buzz.
+3.	Hardware Confirmation: Upon successful 2-second hold, trigger the 'Heavy Thud' haptic and execute the Global Command.
+[PHASE 2: GLOBAL TRIFECTA INTELLIGENCE]
+1.	Regional Palate Adaptation: Update the calculateTrifecta engine to recognize location-based inventory (DR, US, Global).
+2.	Universal Insight Cube: Ensure the 3-panel display (Craft + Pour + Plate) is optimized for high-fidelity desaturated imagery that breathes with the global --hb-mult heartbeat.
+[PHASE 3: TOTAL TITAN V HUD OVERHAUL]
+1.	The Tactical HUD: Finalize the /eeie-command quadrants using the Obsidian & Gold 'Titan' skin. Ensure the 'Environmental Pulse' SVG waveform is live and reacting to the lounge's metabolic rate.
+2.	Sovereign Status: Ensure 'TITAN V ENGINE: OPERATIONAL' and 'KIOSK LOCK: ABSOLUTE' status bars are visible in the high-contrast green.
+[PHASE 4: INFRASTRUCTURE HARDENING]
+1.	Global Sync: Use the SOVEREIGN_GLOBAL_COMMAND socket logic to allow one-to-many device control.
+2.	Persistence: Store the 'Sovereign Feature Manifest' in the persistent database to ensure all regional venues stay in the Super Admin's desired state.
+Final Instruction: "This is for a global rollout. The machine must be impossible to trigger by accident but unstoppable when authorized. It must look like a Tesla, think like an Apple product, and move with the weight of a high-performance industrial machine. The Sovereign OS is now the Market Disturber. Execute."
+The "Sovereign" Result
+You now have a system that is safe to use in a crowded, high-energy nightclub. You can manage a lounge in Punta Cana and a lounge in Atlanta from the same phone, with the confidence that you won't accidentally black out the room while reaching for your drink.
+The Titan V Engine is now officially Hardened and Global. Ready to see the "Long-Press" safety in action?

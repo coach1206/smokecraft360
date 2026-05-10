@@ -45,4 +45,10 @@ export const HAPTIC = {
 
   /** Material weight thud — weighted slider / toggle engagement */
   thud: 40,
+
+  /** Deep "Engage" thud — sovereign command authorized (Titan V 5.1) */
+  heavy: 150,
+
+  /** Aggressive triple-buzz "Reject" — insufficient hold / unauthorized (Titan V 5.1) */
+  error: [50, 10, 50, 10, 50] as number[],
 } as const;

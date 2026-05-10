@@ -1,34 +1,36 @@
 /**
- * useSovereignSocket — listens for SOVEREIGN_COMMAND events emitted by the API
- * server and acts on them instantly on this kiosk.
+ * useSovereignSocket — listens for SOVEREIGN_GLOBAL_COMMAND events broadcast
+ * by the API server and acts on them instantly on this kiosk.
  *
  * Mount once inside SubPageProviders via <SovereignSocketBridge />.
  * The hook is self-cleaning — it removes its listener on unmount.
  *
+ * Socket commands are pre-authenticated server-side, so holdTime is passed
+ * as PREAUTH_HOLD (Infinity) to bypass the dual-stage safety lock.
+ *
  * Handled commands:
- *   BLACKOUT — calls TitanNervousSystem.override('BLACKOUT') → body filter freeze
+ *   BLACKOUT — body filter freeze + titan-blackout-active class
+ *   API_LOCK — reserved for future API suspension overlay
  *   PURGE    — hard-navigates to /portal (clears all in-memory state)
- *   API_LOCK — calls TitanNervousSystem.override('API_LOCK') for future use
  */
 
-import { useEffect } from "react";
-import { socket }              from "@/lib/socket";
-import { TitanNervousSystem }  from "@/lib/titanNervousSystem";
+import { useEffect }            from "react";
+import { socket }               from "@/lib/socket";
+import { TitanNervousSystem, PREAUTH_HOLD } from "@/lib/titanNervousSystem";
 
-interface SovereignCommand {
-  type:           "BLACKOUT" | "API_LOCK" | "PURGE";
-  timestamp?:     number;
+interface SovereignGlobalCommand {
+  type:            "BLACKOUT" | "API_LOCK" | "PURGE";
+  venueId?:        string;
+  timestamp?:      number;
   authorityLevel?: string;
 }
 
 export function useSovereignSocket(): void {
   useEffect(() => {
-    function onCommand(cmd: SovereignCommand): void {
-      if (cmd.type === "BLACKOUT") {
-        TitanNervousSystem.override("BLACKOUT");
-      }
-      if (cmd.type === "API_LOCK") {
-        TitanNervousSystem.override("API_LOCK");
+    function onCommand(cmd: SovereignGlobalCommand): void {
+      if (cmd.type === "BLACKOUT" || cmd.type === "API_LOCK") {
+        // Server-authenticated — bypass the 2 s hold requirement
+        void TitanNervousSystem.override(cmd.type, PREAUTH_HOLD);
       }
       if (cmd.type === "PURGE") {
         // Hard redirect — clears React tree, session state, and in-flight requests
@@ -36,7 +38,7 @@ export function useSovereignSocket(): void {
       }
     }
 
-    socket.on("SOVEREIGN_COMMAND", onCommand);
-    return () => { socket.off("SOVEREIGN_COMMAND", onCommand); };
+    socket.on("SOVEREIGN_GLOBAL_COMMAND", onCommand);
+    return () => { socket.off("SOVEREIGN_GLOBAL_COMMAND", onCommand); };
   }, []);
 }
