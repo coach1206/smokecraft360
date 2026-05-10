@@ -1,0 +1,648 @@
+FINAL
+
+NOVEE OS + EEIE CRITICAL REMEDIATION MASTER PROMPT
+
+FINANCIAL HARDENING + SCALE HARDENING + EEIE REALIZATION + ROUTER RECOVERY
+
+Paste directly into Replit Agent.
+
+⸻
+
+MISSING / REQUIRED
+
+The platform is NO LONGER in feature expansion phase.
+
+The platform is now in:
+
+INFRASTRUCTURE SURVIVAL PHASE
+
+This remediation MUST:
+
+* preserve all existing functionality
+* preserve all visuals
+* preserve all cinematic systems
+* preserve all current APIs
+* preserve all route structures
+* preserve all schemas unless migration-safe
+* preserve all EEIE architecture direction
+
+DO NOT rebuild the platform.
+
+This is:
+
+* surgical hardening
+* orchestration repair
+* financial integrity repair
+* distributed-state conversion
+* real intelligence activation
+* infrastructure stabilization
+
+⸻
+
+CRITICAL ISSUES TO FIX IMMEDIATELY
+
+FINANCIAL BLOCKERS
+
+1. payoutWorker marks payouts paid without Stripe Transfers
+2. recurringBillingWorker tracks subscriptions without Stripe Invoices
+3. aiUsageWorker has no Stripe metered billing implementation
+4. PaymentSuccess + PaymentCancel pages not registered
+5. Swipe order reservation + inventory decrement not transactional
+6. SENDGRID_FROM_EMAIL missing validation
+7. /api/neural/ingest-bulk unauthenticated
+
+⸻
+
+FAKE SYSTEMS REQUIRING REAL IMPLEMENTATION
+
+POS
+
+* Toast adapter fake
+* Square adapter fake
+* Clover adapter fake
+
+Must clearly classify as:
+
+* simulated
+    OR
+* fully wired
+
+No fake live state allowed.
+
+⸻
+
+EEIE INTELLIGENCE
+
+Current systems behaving fake:
+
+* experienceAutomation
+* sound engine
+* operational adaptation
+* environmental intelligence
+* autonomous orchestration
+
+These MUST become functional.
+
+⸻
+
+SCALE RISKS
+
+Current in-memory systems MUST migrate to distributed persistence:
+
+* VenueStateEngine
+* NeuralEventBus
+* venueInventoryStore
+* EnterpriseExecutionEngine
+
+Redis architecture path already exists.
+Implement it fully.
+
+⸻
+
+ROUTER FAILURES
+
+44 dead routes exist.
+
+Must:
+
+* register active routes
+* archive dead routes
+* remove broken navigation
+* eliminate 404 operational paths
+
+⸻
+
+FAILURE PREVENTION CHECKLIST
+
+DO NOT:
+
+* remove visuals
+* remove cinematic systems
+* break transitions
+* remove EEIE concepts
+* change emotional behavior
+* rewrite architecture unnecessarily
+* replace working systems
+* break realtime socket behavior
+* remove mentor systems
+* remove telemetry
+* remove existing APIs
+* remove feature flags
+* downgrade experience quality
+
+DO NOT:
+
+* fake implementation
+* return placeholder logic
+* return mock integrations labeled real
+* leave TODO stubs
+* return hardcoded success states
+* use in-memory persistence for distributed systems
+
+VERIFY:
+
+* real Stripe API calls
+* real transaction safety
+* real Redis persistence
+* real websocket synchronization
+* real adaptation execution
+* real environmental intelligence
+* real billing behavior
+
+⸻
+
+MASTER REMEDIATION PROMPT
+
+Perform a COMPLETE CRITICAL INFRASTRUCTURE REMEDIATION of NOVEE OS + EEIE.
+
+This is NOT a redesign.
+
+This is:
+
+* production hardening
+* orchestration stabilization
+* distributed-state migration
+* financial correctness repair
+* EEIE intelligence realization
+* platform reliability engineering
+
+⸻
+
+PHASE A
+
+FINANCIAL INTEGRITY REPAIR
+
+1. STRIPE TRANSFER IMPLEMENTATION
+
+Fix payoutWorker.
+
+Currently:
+commissions marked “paid” without Stripe Transfers.
+
+Implement:
+
+* stripe.transfers.create()
+* idempotency keys
+* payout verification
+* rollback protection
+* audit logging
+* retry queue
+* failed payout recovery
+* payout state machine
+
+Required states:
+
+* pending
+* processing
+* transferred
+* failed
+* reversed
+
+Persist:
+
+* stripe_transfer_id
+* transfer_status
+* failure_reason
+* retry_count
+
+DO NOT mark payout complete until Stripe confirms success.
+
+⸻
+
+2. STRIPE BILLING IMPLEMENTATION
+
+Fix recurringBillingWorker.
+
+Implement:
+
+* Stripe Invoice creation
+* recurring subscription charging
+* retry logic
+* dunning flow
+* invoice audit logging
+* failed charge recovery
+* customer portal linkage
+
+Persist:
+
+* invoice IDs
+* billing periods
+* retry attempts
+* delinquency state
+
+⸻
+
+3. AI USAGE BILLING
+
+Fix aiUsageWorker.
+
+Implement:
+
+* Stripe metered billing
+* token aggregation
+* usage reporting
+* pricing tiers
+* overage handling
+* invoice synchronization
+
+Persist:
+
+* token usage
+* provider usage
+* cost basis
+* billing windows
+
+⸻
+
+4. TRANSACTIONAL ORDER FLOW
+
+Wrap:
+
+* swipe reservation
+* inventory decrement
+* payment intent
+* order persistence
+
+inside:
+SINGLE DB TRANSACTION.
+
+Implement:
+
+* row locking
+* rollback safety
+* reservation expiry
+* concurrency protection
+* double-sell prevention
+
+⸻
+
+5. PAYMENT ROUTE RECOVERY
+
+Register:
+
+* PaymentSuccess
+* PaymentCancel
+
+in:
+
+* router
+* lazy loaders
+* route guards
+* navigation trees
+
+Verify:
+
+* Stripe redirect flow
+* session validation
+* order reconciliation
+* payment state sync
+
+⸻
+
+6. SENDGRID VALIDATION
+
+Implement:
+hard-fail validation for:
+SENDGRID_FROM_EMAIL.
+
+DO NOT allow:
+
+* silent email failure
+* fake delivery success
+
+Add:
+
+* startup environment validation
+* health endpoint reporting
+* admin alerting
+
+⸻
+
+7. NEURAL INGEST SECURITY
+
+Protect:
+/api/neural/ingest-bulk
+
+Implement:
+
+* JWT auth
+* RBAC
+* rate limiting
+* payload validation
+* batch throttling
+* abuse prevention
+* request auditing
+
+⸻
+
+PHASE B
+
+ROUTER + DEAD SYSTEM RECOVERY
+
+Analyze ALL page files.
+
+For ALL dead routes:
+
+* register if active
+* archive if obsolete
+* remove dangling navigation
+* remove broken links
+
+Priority registration:
+
+* StaffFloorCockpit
+* RewardsModule
+* OrdersModule
+* CampaignsModule
+* BrewCraft
+* PourCraft
+* VapeCraft
+* LaunchReadiness
+* Legal
+* PaymentSuccess
+* PaymentCancel
+* SystemValidation
+
+Create:
+
+* centralized route registry
+* route integrity checker
+* dead-route detector
+
+⸻
+
+PHASE C
+
+DISTRIBUTED SCALE HARDENING
+
+Replace ALL in-memory distributed systems.
+
+⸻
+
+1. VENUE STATE ENGINE
+
+Migrate to:
+Redis persistence.
+
+Implement:
+
+* distributed synchronization
+* state recovery
+* multi-instance coordination
+* reconnect recovery
+* venue snapshot persistence
+
+⸻
+
+2. NEURAL EVENT BUS
+
+Replace local memory event bus with:
+Redis pub/sub.
+
+Implement:
+
+* distributed event propagation
+* replay support
+* event durability
+* cluster-safe broadcasting
+
+⸻
+
+3. INVENTORY STORE
+
+Move inventory state to:
+DB-backed row locking.
+
+Implement:
+
+* pessimistic locking
+* transaction safety
+* reservation queues
+* concurrency protection
+
+Prevent:
+
+* double sells
+* stale inventory
+* split-brain inventory state
+
+⸻
+
+4. ENTERPRISE EXECUTION ENGINE
+
+Persist snapshots to:
+Redis + persistent storage.
+
+Implement:
+
+* crash recovery
+* distributed continuation
+* replay recovery
+* worker failover
+
+⸻
+
+5. SOCKET.IO SCALE HARDENING
+
+Implement:
+Redis adapter for Socket.io.
+
+Verify:
+
+* multi-instance room sync
+* mentor stream continuity
+* venue-wide event consistency
+* EEIE orchestration continuity
+
+⸻
+
+PHASE D
+
+EEIE REAL INTELLIGENCE ACTIVATION
+
+Current EEIE systems are mostly presentation-layer intelligence.
+
+Make them REAL.
+
+⸻
+
+1. EXPERIENCE AUTOMATION
+
+Replace:
+return { ok: true }
+
+with:
+real orchestration logic.
+
+Implement:
+
+* behavior adaptation
+* environmental pacing
+* guest state tracking
+* engagement scoring
+* operational response logic
+* emotional pacing engine
+
+⸻
+
+2. SOUND ENGINE
+
+Implement REAL audio orchestration:
+
+* cigar crackles
+* whiskey pours
+* beer foam ambience
+* vape atmospheric sound
+* adaptive room ambience
+* interaction-triggered audio
+* cinematic transition audio
+
+Build:
+centralized audio engine.
+
+⸻
+
+3. STAFF WHISPER ENGINE
+
+Implement:
+
+* emotional guidance
+* upsell timing intelligence
+* guest hesitation detection
+* recommendation confidence
+* sensitivity prediction
+* pacing suggestions
+
+⸻
+
+4. ENVIRONMENTAL INTELLIGENCE
+
+Implement:
+adaptive venue behavior based on:
+
+* venue occupancy
+* engagement intensity
+* event mode
+* operational load
+* guest pacing
+
+Adapt:
+
+* transitions
+* recommendation depth
+* audio pacing
+* UI complexity
+* animation intensity
+
+⸻
+
+5. EXPERIENCE MEMORY
+
+Expand memoryBrain.
+
+Implement:
+
+* long-term preference memory
+* cross-session evolution
+* mentor relationship memory
+* cross-craft preference fusion
+* emotional progression tracking
+
+⸻
+
+PHASE E
+
+FAKE SYSTEM ELIMINATION
+
+For ALL simulated systems:
+
+Either:
+
+1. fully wire them
+    OR
+2. visibly label them simulated
+
+NO fake production behavior allowed.
+
+Applies to:
+
+* Toast
+* Square
+* Clover
+* revenue stream projections
+* automation layers
+* environmental systems
+
+⸻
+
+PHASE F
+
+OBSERVABILITY + RECOVERY
+
+Implement:
+
+* Sentry
+* distributed logging
+* healthz endpoints
+* worker monitoring
+* queue monitoring
+* EEIE diagnostics
+* websocket diagnostics
+* orchestration tracing
+* payout tracing
+* billing tracing
+* inventory integrity tracing
+
+Create:
+
+* operational cockpit
+* infrastructure health dashboard
+* distributed-state monitor
+
+⸻
+
+FINAL REQUIRED OUTPUT
+
+Return:
+
+1. ALL modified files
+2. ALL created files
+3. ALL migrations
+4. ALL Redis changes
+5. ALL Stripe implementations
+6. ALL router fixes
+7. ALL EEIE upgrades
+8. ALL distributed persistence changes
+9. ALL security upgrades
+10. ALL observability additions
+
+Then provide:
+
+FINAL POST-REMEDIATION REPORT
+
+Including:
+
+* real production readiness %
+* real EEIE intelligence %
+* real distributed readiness %
+* real financial integrity %
+* real scale readiness %
+* real orchestration continuity %
+* real enterprise readiness %
+
+Then classify:
+
+* COMPLETE
+* PARTIAL
+* HIGH RISK
+* NEEDS REBUILD
+* SCALE SAFE
+* PRODUCTION SAFE
+
+DO NOT inflate completion percentages.
+
+DO NOT hide broken systems.
+
+This remediation must behave like:
+
+institutional-grade stabilization of a next-generation adaptive hospitality operating system.

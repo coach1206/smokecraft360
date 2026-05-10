@@ -10,10 +10,12 @@
  * GET  /api/neural/baselines/:venueId — baseline history
  */
 
-import { Router } from "express";
-import { z } from "zod";
+import { Router }             from "express";
+import { z }                  from "zod";
 import { NeuralIngestionEngine } from "../services/neuralIngestionEngine";
 import { ChaosAnalyticsService } from "../services/chaosAnalyticsService";
+import { requireAuth }        from "../middleware/auth";
+import { osLimiter, aiLimiter } from "../middleware/rateLimit";
 
 const router = Router();
 
@@ -38,8 +40,10 @@ const bulkSchema = z.object({
 });
 
 // ── POST /api/neural/ingest ───────────────────────────────────────────────────
+// Rate-limited; intentionally unauthenticated so kiosk devices can ingest
+// individual events without a user session.
 
-router.post("/ingest", async (req, res) => {
+router.post("/ingest", osLimiter, async (req, res) => {
   const parsed = ingestionSchema.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid event", issues: parsed.error.issues }); return; }
   const id = await NeuralIngestionEngine.ingest(parsed.data);
@@ -47,8 +51,10 @@ router.post("/ingest", async (req, res) => {
 });
 
 // ── POST /api/neural/ingest-bulk ──────────────────────────────────────────────
+// Requires JWT authentication — bulk writes can amplify DB load and must be
+// gated to authenticated operators. Rate-limited to 10 req/min per IP.
 
-router.post("/ingest-bulk", async (req, res) => {
+router.post("/ingest-bulk", requireAuth, aiLimiter, async (req, res) => {
   const parsed = bulkSchema.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: "Invalid bulk payload" }); return; }
   const count = await NeuralIngestionEngine.bulkIngest(parsed.data.events);

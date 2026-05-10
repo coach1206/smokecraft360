@@ -5,6 +5,11 @@
  * GET  /api/swipe-orders/session/:sessionId  — get order for session
  * POST /api/swipe-orders/:orderId/confirm    — confirm order
  * POST /api/swipe-orders/:orderId/cancel     — cancel + release reservations
+ *
+ * ATOMICITY: the critical write path (getOrCreateOrder → upsert item →
+ * recalculate subtotal → create reservation) runs inside a single
+ * db.transaction(). All four writes succeed or all roll back together,
+ * preventing partial-reservation ghost state.
  */
 
 import { Router, type IRouter, type Response } from "express";
@@ -16,7 +21,6 @@ import {
   swipeOrderItemsTable,
   inventoryReservationsTable,
   analyticsEventsTable,
-  productsTable,
   venueInventoryTable,
 } from "@workspace/db";
 import { type AuthRequest }     from "../middleware/auth";
@@ -38,31 +42,6 @@ async function releaseExpiredReservations(): Promise<void> {
         eq(inventoryReservationsTable.releasedAt, null as unknown as Date),
       )
     );
-}
-
-async function getOrCreateOrder(sessionId: string, userId: string | null, venueId: string | null) {
-  const [existing] = await db
-    .select()
-    .from(swipeOrdersTable)
-    .where(
-      and(
-        eq(swipeOrdersTable.sessionId, sessionId),
-        eq(swipeOrdersTable.status, "pending"),
-      )
-    );
-  if (existing) return existing;
-
-  const [created] = await db
-    .insert(swipeOrdersTable)
-    .values({
-      userId:   userId ?? undefined,
-      sessionId,
-      venueId:  venueId ?? undefined,
-      status:   "pending",
-      subtotal: 0,
-    })
-    .returning();
-  return created!;
 }
 
 // ── POST /api/swipe-orders ────────────────────────────────────────────────────
@@ -88,10 +67,10 @@ router.post("/", async (req: AuthRequest, res: Response) => {
   const { sessionId, inventoryId, inventoryName, quantity, priceCents, tags, craftType, venueId } = parsed.data;
   const userId = req.user?.id ?? null;
 
-  // Release any expired reservations first
-  await releaseExpiredReservations().catch(() => {});
+  // Release expired reservations — fire-and-forget, non-blocking
+  releaseExpiredReservations().catch(() => {});
 
-  // Validate stock — check venue_inventory first, fallback to products table
+  // ── Stock check (pre-transaction read) ─────────────────────────────────────
   let availableQty = 999;
   try {
     const [inv] = await db
@@ -107,7 +86,7 @@ router.post("/", async (req: AuthRequest, res: Response) => {
       }
       availableQty = inv.quantity;
     }
-  } catch { /* no venue inventory — proceed */ }
+  } catch { /* no venue inventory record — open item, proceed */ }
 
   // Count active reservations for this item
   const activeReservations = await db
@@ -119,95 +98,120 @@ router.post("/", async (req: AuthRequest, res: Response) => {
         eq(inventoryReservationsTable.releasedAt, null as unknown as Date),
       )
     );
-  const reservedQty = activeReservations.reduce((s, r) => s + r.qty, 0);
+  const reservedQty  = activeReservations.reduce((s, r) => s + r.qty, 0);
   const effectiveQty = availableQty - reservedQty;
 
   if (effectiveQty < quantity) {
-    res.status(409).json({
-      error:    "Insufficient stock",
-      available: effectiveQty,
-      requested: quantity,
-    });
+    res.status(409).json({ error: "Insufficient stock", available: effectiveQty, requested: quantity });
     return;
   }
 
-  // Get or create the order
-  const order = await getOrCreateOrder(sessionId, userId, venueId ?? null);
+  // ── Atomic write: order + item + subtotal + reservation ────────────────────
+  let updatedOrder!: typeof swipeOrdersTable.$inferSelect;
+  let orderItem!:    typeof swipeOrderItemsTable.$inferSelect;
+  let reservation!:  typeof inventoryReservationsTable.$inferSelect;
 
-  // Check if item already in order — if so, update quantity
-  const [existingItem] = await db
-    .select()
-    .from(swipeOrderItemsTable)
-    .where(
-      and(
-        eq(swipeOrderItemsTable.orderId, order.id),
-        eq(swipeOrderItemsTable.inventoryId, inventoryId),
-      )
-    );
+  try {
+    await db.transaction(async (tx) => {
+      // 1. Get or create pending order for this session
+      const [existing] = await tx
+        .select()
+        .from(swipeOrdersTable)
+        .where(and(
+          eq(swipeOrdersTable.sessionId, sessionId),
+          eq(swipeOrdersTable.status, "pending"),
+        ));
 
-  let orderItem;
-  if (existingItem) {
-    const newQty   = existingItem.quantity + quantity;
-    const newTotal = priceCents * newQty;
-    [orderItem] = await db
-      .update(swipeOrderItemsTable)
-      .set({ quantity: newQty, totalCents: newTotal })
-      .where(eq(swipeOrderItemsTable.id, existingItem.id))
-      .returning();
-  } else {
-    [orderItem] = await db
-      .insert(swipeOrderItemsTable)
-      .values({
-        orderId:       order.id,
-        inventoryId,
-        inventoryName,
-        quantity,
-        priceCents,
-        totalCents:    priceCents * quantity,
-        tags,
-        craftType,
-      })
-      .returning();
+      let order: typeof swipeOrdersTable.$inferSelect;
+      if (existing) {
+        order = existing;
+      } else {
+        const [created] = await tx
+          .insert(swipeOrdersTable)
+          .values({
+            userId:   userId ?? undefined,
+            sessionId,
+            venueId:  venueId ?? undefined,
+            status:   "pending",
+            subtotal: 0,
+          })
+          .returning();
+        order = created!;
+      }
+
+      // 2. Upsert order item
+      const [existingItem] = await tx
+        .select()
+        .from(swipeOrderItemsTable)
+        .where(and(
+          eq(swipeOrderItemsTable.orderId, order.id),
+          eq(swipeOrderItemsTable.inventoryId, inventoryId),
+        ));
+
+      if (existingItem) {
+        const newQty = existingItem.quantity + quantity;
+        const [updated] = await tx
+          .update(swipeOrderItemsTable)
+          .set({ quantity: newQty, totalCents: priceCents * newQty })
+          .where(eq(swipeOrderItemsTable.id, existingItem.id))
+          .returning();
+        orderItem = updated!;
+      } else {
+        const [inserted] = await tx
+          .insert(swipeOrderItemsTable)
+          .values({
+            orderId:    order.id,
+            inventoryId,
+            inventoryName,
+            quantity,
+            priceCents,
+            totalCents: priceCents * quantity,
+            tags,
+            craftType,
+          })
+          .returning();
+        orderItem = inserted!;
+      }
+
+      // 3. Recalculate order subtotal from all items
+      const allItems = await tx
+        .select({ total: swipeOrderItemsTable.totalCents })
+        .from(swipeOrderItemsTable)
+        .where(eq(swipeOrderItemsTable.orderId, order.id));
+      const newSubtotal = allItems.reduce((s, i) => s + i.total, 0);
+
+      const [uo] = await tx
+        .update(swipeOrdersTable)
+        .set({ subtotal: newSubtotal, updatedAt: new Date() })
+        .where(eq(swipeOrdersTable.id, order.id))
+        .returning();
+      updatedOrder = uo!;
+
+      // 4. Create inventory reservation (expires in TTL minutes)
+      const expiresAt = new Date(Date.now() + RESERVATION_TTL_MINUTES * 60 * 1000);
+      const [res] = await tx
+        .insert(inventoryReservationsTable)
+        .values({ inventoryId, sessionId, orderId: order.id, quantity, expiresAt })
+        .returning();
+      reservation = res!;
+    });
+  } catch (err) {
+    req.log?.error({ err, sessionId, inventoryId }, "swipe order transaction failed");
+    res.status(500).json({ error: "Order processing failed — please try again" });
+    return;
   }
 
-  // Recalculate order subtotal
-  const allItems = await db
-    .select({ total: swipeOrderItemsTable.totalCents })
-    .from(swipeOrderItemsTable)
-    .where(eq(swipeOrderItemsTable.orderId, order.id));
-  const newSubtotal = allItems.reduce((s, i) => s + i.total, 0);
-
-  const [updatedOrder] = await db
-    .update(swipeOrdersTable)
-    .set({ subtotal: newSubtotal, updatedAt: new Date() })
-    .where(eq(swipeOrdersTable.id, order.id))
-    .returning();
-
-  // Create inventory reservation
-  const expiresAt = new Date(Date.now() + RESERVATION_TTL_MINUTES * 60 * 1000);
-  const [reservation] = await db
-    .insert(inventoryReservationsTable)
-    .values({
-      inventoryId,
-      sessionId,
-      orderId:  order.id,
-      quantity,
-      expiresAt,
-    })
-    .returning();
-
-  // Analytics event
+  // ── Post-commit side effects (fire-and-forget) ────────────────────────────
   if (userId) {
-    await db.insert(analyticsEventsTable).values({
+    db.insert(analyticsEventsTable).values({
       userId,
       eventType: "order_created",
-      metadata:  { orderId: order.id, inventoryId, craftType, priceCents, sessionId },
+      metadata:  { orderId: updatedOrder.id, inventoryId, craftType, priceCents, sessionId },
     }).catch(() => {});
   }
 
-  req.log?.info({ orderId: order.id, inventoryId, quantity }, "swipe order item added");
+  req.log?.info({ orderId: updatedOrder.id, inventoryId, quantity }, "swipe order item added");
 
-  // Neural Bridge — fire-and-forget, never blocks response
   dispatchNeuralBridge({
     type:      "swipe_order",
     userId:    userId ?? undefined,
@@ -218,10 +222,10 @@ router.post("/", async (req: AuthRequest, res: Response) => {
   }).catch(() => {});
 
   res.status(201).json({
-    order:       updatedOrder,
-    item:        orderItem,
+    order:    updatedOrder,
+    item:     orderItem,
     reservation,
-    feedback:    `${inventoryName} added to your order`,
+    feedback: `${inventoryName} added to your order`,
   });
 });
 
@@ -258,12 +262,10 @@ router.post("/:orderId/confirm", async (req: AuthRequest, res: Response) => {
   const [order] = await db
     .update(swipeOrdersTable)
     .set({ status: "confirmed", updatedAt: new Date() })
-    .where(
-      and(
-        eq(swipeOrdersTable.id, orderId),
-        eq(swipeOrdersTable.status, "pending"),
-      )
-    )
+    .where(and(
+      eq(swipeOrdersTable.id, orderId),
+      eq(swipeOrdersTable.status, "pending"),
+    ))
     .returning();
 
   if (!order) {
@@ -283,12 +285,10 @@ router.post("/:orderId/cancel", async (req: AuthRequest, res: Response) => {
   const [order] = await db
     .update(swipeOrdersTable)
     .set({ status: "cancelled", updatedAt: new Date() })
-    .where(
-      and(
-        eq(swipeOrdersTable.id, orderId),
-        eq(swipeOrdersTable.status, "pending"),
-      )
-    )
+    .where(and(
+      eq(swipeOrdersTable.id, orderId),
+      eq(swipeOrdersTable.status, "pending"),
+    ))
     .returning();
 
   if (!order) {
@@ -296,7 +296,6 @@ router.post("/:orderId/cancel", async (req: AuthRequest, res: Response) => {
     return;
   }
 
-  // Release all reservations for this order
   await db
     .update(inventoryReservationsTable)
     .set({ releasedAt: new Date() })

@@ -59,7 +59,7 @@ export const aiResponseCache = new TtlCache<string>(10 * 60_000);
 // ── Environment Validation ────────────────────────────────────────────────────
 
 const REQUIRED_ENV    = ["DATABASE_URL", "SESSION_SECRET", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"];
-const RECOMMENDED_ENV = ["CLOUDINARY_URL", "SENDGRID_API_KEY"];
+const RECOMMENDED_ENV = ["CLOUDINARY_URL", "SENDGRID_API_KEY", "SENDGRID_FROM_EMAIL"];
 
 export interface EnvValidationResult {
   ok:       boolean;

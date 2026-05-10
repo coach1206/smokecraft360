@@ -76,6 +76,25 @@ const PourCraft360          = lazy(() => import('@/pages/PourCraft360'));
 const BrewCraft360          = lazy(() => import('@/pages/BrewCraft360'));
 const VapeCraft360          = lazy(() => import('@/pages/VapeCraft360'));
 
+/* ── Lazy-loaded pages previously unregistered in router ───── */
+const PaymentSuccess        = lazy(() => import('@/pages/PaymentSuccess'));
+const PaymentCancel         = lazy(() => import('@/pages/PaymentCancel'));
+const PresenceEngine        = lazy(() => import('@/pages/PresenceEngine'));
+const CampaignsModule       = lazy(() => import('@/pages/CampaignsModule'));
+const RewardsModule         = lazy(() => import('@/pages/RewardsModule'));
+const OrdersModule          = lazy(() => import('@/pages/OrdersModule'));
+const BrewCraft             = lazy(() => import('@/pages/BrewCraft'));
+const PourCraft             = lazy(() => import('@/pages/PourCraft'));
+const VapeCraft             = lazy(() => import('@/pages/VapeCraft'));
+const LaunchReadiness       = lazy(() => import('@/pages/LaunchReadiness'));
+const Legal                 = lazy(() => import('@/pages/Legal'));
+const SystemValidation      = lazy(() => import('@/pages/SystemValidation'));
+const StaffFloorCockpit     = lazy(() => import('@/pages/StaffFloorCockpit'));
+const DevicesModule         = lazy(() => import('@/pages/DevicesModule'));
+const EnvironmentEngine     = lazy(() => import('@/pages/EnvironmentEngine'));
+const EnterpriseIntelligence = lazy(() => import('@/pages/EnterpriseIntelligence'));
+const EnterpriseGovernance  = lazy(() => import('@/pages/EnterpriseGovernance'));
+
 function PageLoader() {
   return (
     <div style={{ position: 'fixed', inset: 0, background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -817,6 +836,65 @@ export default function App() {
           </Route>
           <Route path="/vape-360">
             <SubPageProviders><VapeCraft360 /></SubPageProviders>
+          </Route>
+
+          {/* ── Previously unregistered pages — recovered routes ── */}
+          <Route path="/payment/success">
+            <SubPageProviders><PaymentSuccess /></SubPageProviders>
+          </Route>
+          <Route path="/payment/cancel">
+            <SubPageProviders><PaymentCancel /></SubPageProviders>
+          </Route>
+          <Route path="/presence">
+            <SubPageProviders><PresenceEngine /></SubPageProviders>
+          </Route>
+          <Route path="/campaigns">
+            <SubPageProviders><CampaignsModule /></SubPageProviders>
+          </Route>
+          <Route path="/rewards">
+            <SubPageProviders><RewardsModule /></SubPageProviders>
+          </Route>
+          <Route path="/orders">
+            <SubPageProviders><OrdersModule /></SubPageProviders>
+          </Route>
+          <Route path="/brew">
+            <SubPageProviders><BrewCraft /></SubPageProviders>
+          </Route>
+          <Route path="/pour">
+            <SubPageProviders><PourCraft /></SubPageProviders>
+          </Route>
+          <Route path="/vape">
+            <SubPageProviders><VapeCraft /></SubPageProviders>
+          </Route>
+          <Route path="/launch-readiness">
+            <SubPageProviders><LaunchReadiness /></SubPageProviders>
+          </Route>
+          <Route path="/legal">
+            <SubPageProviders><Legal /></SubPageProviders>
+          </Route>
+          <Route path="/system-validation">
+            <SubPageProviders><SystemValidation /></SubPageProviders>
+          </Route>
+          <Route path="/staff-cockpit">
+            <SubPageProviders><StaffFloorCockpit /></SubPageProviders>
+          </Route>
+          <Route path="/devices">
+            <SubPageProviders><DevicesModule /></SubPageProviders>
+          </Route>
+          <Route path="/environment">
+            <SubPageProviders><EnvironmentEngine /></SubPageProviders>
+          </Route>
+          <Route path="/enterprise-intelligence">
+            <SubPageProviders><EnterpriseIntelligence /></SubPageProviders>
+          </Route>
+          <Route path="/governance">
+            <SubPageProviders><EnterpriseGovernance /></SubPageProviders>
+          </Route>
+          <Route path="/central-command">
+            <SubPageProviders><CentralCommand /></SubPageProviders>
+          </Route>
+          <Route path="/axiom-pay">
+            <SubPageProviders><AxiomPay /></SubPageProviders>
           </Route>
 
           {/* ── Default: LivingPortal — motion home hub ── */}

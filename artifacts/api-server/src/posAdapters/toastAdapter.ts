@@ -1,11 +1,26 @@
+/**
+ * toastAdapter — SIMULATED stub adapter.
+ *
+ * All methods return fixture data. Replace with real Toast API calls
+ * (https://doc.toasttab.com/openapi/orders/) when a Toast API key
+ * is provisioned and stored in the TOAST_API_KEY secret.
+ *
+ * simulated: true — flag consumed by posAdapterFactory to annotate
+ * all responses with a "simulated" warning in logs and API responses.
+ */
 import type { BasePosAdapter, PosAdapterConfig, PosProduct, PosInventoryItem, PosOrder, PosSalesReport } from "./baseAdapter";
+import { logger } from "../lib/logger";
 
-export const toastAdapter: BasePosAdapter = {
+const SIMULATED_WARN = "[ToastAdapter] returning simulated fixture data — not connected to real Toast POS";
+
+export const toastAdapter: BasePosAdapter & { simulated: true } = {
   name: "toast",
-  displayName: "Toast POS",
+  displayName: "Toast POS (Simulated)",
   connected: false,
+  simulated: true,
 
   async syncProducts(_config: PosAdapterConfig): Promise<PosProduct[]> {
+    logger.warn(SIMULATED_WARN);
     return [
       { id: "toast-prod-1", name: "Arturo Fuente Opus X", category: "Cigars", priceCents: 4500, sku: "AF-OPX-001" },
       { id: "toast-prod-2", name: "Macallan 18yr Single Malt", category: "Spirits", priceCents: 2800, sku: "MAC-18-001" },
@@ -15,6 +30,7 @@ export const toastAdapter: BasePosAdapter = {
   },
 
   async syncInventory(_config: PosAdapterConfig): Promise<PosInventoryItem[]> {
+    logger.warn(SIMULATED_WARN);
     return [
       { productId: "toast-prod-1", productName: "Arturo Fuente Opus X", quantity: 24, available: true, lastUpdated: new Date().toISOString() },
       { productId: "toast-prod-2", productName: "Macallan 18yr Single Malt", quantity: 8, available: true, lastUpdated: new Date().toISOString() },
@@ -24,6 +40,7 @@ export const toastAdapter: BasePosAdapter = {
   },
 
   async syncOrders(_config: PosAdapterConfig): Promise<PosOrder[]> {
+    logger.warn(SIMULATED_WARN);
     return [
       {
         id: "toast-ord-1", externalId: "TOAST-78291",
@@ -41,11 +58,13 @@ export const toastAdapter: BasePosAdapter = {
     ];
   },
 
-  async pushOrder(_config: PosAdapterConfig, order: PosOrder): Promise<{ success: boolean; externalId?: string; error?: string }> {
-    return { success: true, externalId: `TOAST-${Date.now()}` };
+  async pushOrder(_config: PosAdapterConfig, _order: PosOrder): Promise<{ success: boolean; externalId?: string; error?: string }> {
+    logger.warn(SIMULATED_WARN);
+    return { success: true, externalId: `TOAST-SIM-${Date.now()}` };
   },
 
   async pullReports(_config: PosAdapterConfig, periodStart: string, periodEnd: string): Promise<PosSalesReport> {
+    logger.warn(SIMULATED_WARN);
     return {
       periodStart, periodEnd,
       totalRevenueCents: 284500,
