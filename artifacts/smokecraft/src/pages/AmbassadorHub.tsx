@@ -108,22 +108,21 @@ function NervousSystemTest({ onComplete }: { onComplete: (ok: boolean) => void }
 
   return (
     <div style={{ position: "relative", textAlign: "center", padding: "32px 0" }}>
-      {/* Ripple rings during test */}
-      <AnimatePresence>
-        {state === "testing" && [0, 1, 2, 3].map(i => (
-          <motion.div key={i}
-            initial={{ scale: 0.1, opacity: 0.7 }} animate={{ scale: 5, opacity: 0 }}
-            transition={{ duration: 2, delay: i * 0.4, repeat: Infinity, ease: "easeOut" }}
-            style={{
-              position: "absolute", top: "50%", left: "50%",
-              transform: "translate(-50%,-50%)",
-              width: 60, height: 60, borderRadius: "50%",
-              border: `1px solid rgba(212,175,55,${0.5 - i * 0.1})`,
-              pointerEvents: "none",
-            }}
-          />
-        ))}
-      </AnimatePresence>
+      {/* Ripple rings — pure CSS sovereignRipple, GPU-composited */}
+      {state === "testing" && [0, 1, 2, 3].map(i => (
+        <div key={i} className="ripple-effect"
+          style={{
+            top: "50%", left: "50%",
+            transform: "translate(-50%,-50%)",
+            width: 60, height: 60,
+            animationDuration: "1.8s",
+            animationTimingFunction: "ease-out",
+            animationIterationCount: "infinite",
+            animationDelay: `${i * 0.45}s`,
+            animationFillMode: "none",
+          }}
+        />
+      ))}
 
       {/* Center icon */}
       <motion.div
@@ -146,7 +145,7 @@ function NervousSystemTest({ onComplete }: { onComplete: (ok: boolean) => void }
             </div>
             <motion.button whileTap={{ scale: 0.94 }} onClick={startTest}
               style={{ padding: "14px 32px", borderRadius: 10, background: C.gold, border: "none", color: "#050505", fontSize: 11, fontWeight: 800, cursor: "pointer", letterSpacing: "0.14em", fontFamily: C.mono }}>
-              TEST NERVOUS SYSTEM
+              FIRE_GOLD_RIPPLE
             </motion.button>
           </motion.div>
         )}
@@ -162,7 +161,7 @@ function NervousSystemTest({ onComplete }: { onComplete: (ok: boolean) => void }
                 </div>
               ))}
             </div>
-            <div style={{ fontSize: 9, color: C.dim, letterSpacing: "0.20em" }}>HIGH-INTENSITY PULSE ACTIVE…</div>
+            <div style={{ fontSize: 9, color: C.dim, letterSpacing: "0.20em" }}>TESTING_SIGNAL_INTEGRITY…</div>
           </motion.div>
         )}
         {state === "verified" && (
