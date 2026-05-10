@@ -172,6 +172,7 @@ import sovereignEventsRouter       from "./routes/sovereignEvents";
 import sovereignDistributionRouter from "./routes/sovereignDistribution";
 import sovereignAuthRouter         from "./routes/sovereignAuth";
 import biometricHardwareRouter     from "./routes/biometricHardware";
+import titanEngineRouter, { startSignalMonitor } from "./routes/titanEngine";
 import cognitiveBuildSheetRouter   from "./routes/cognitiveBuildSheet";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -502,6 +503,7 @@ app.use("/api",                         sovereignEventsRouter);
 app.use("/api",                         sovereignDistributionRouter);
 app.use("/api",                         sovereignAuthRouter);
 app.use("/api",                         biometricHardwareRouter);
+app.use("/api",                         titanEngineRouter);
 app.use("/api",                         cognitiveBuildSheetRouter);
 app.use("/api",                         onboardingRouter);
 app.use("/api",                         aiConfigureRouter);
@@ -546,6 +548,7 @@ if (process.env["NODE_ENV"] !== "test") {
   startTournamentWorker();
   startFailedWebhookWorker();
   startReconciliationWorker();
+  startSignalMonitor();
   RuntimeActivationService.registerWorker("reconciliation");
 
   // Non-blocking DB index hardening + runtime activation

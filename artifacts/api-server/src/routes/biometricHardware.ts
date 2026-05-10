@@ -13,6 +13,7 @@ import { Router }      from "express";
 import { z }           from "zod";
 import { pool }        from "@workspace/db";
 import { logger }      from "../lib/logger";
+import { evaluateAndFireInterventions } from "./titanEngine";
 
 const router = Router();
 
@@ -44,13 +45,14 @@ const AuthSchema = z.object({
 });
 
 const SyncSchema = z.object({
-  node_id:     z.string().min(1).max(80),
-  heart_rate:  z.number().int().min(20).max(220).optional(),
-  temperature: z.number().min(30).max(45).optional(),
-  stress_index:z.number().min(0).max(100).optional(),
-  signal_db:   z.number().optional(),
-  timestamp:   z.string().optional(),
-  meta:        z.record(z.unknown()).optional(),
+  node_id:      z.string().min(1).max(80),
+  heart_rate:   z.number().int().min(20).max(220).optional(),
+  temperature:  z.number().min(30).max(45).optional(),
+  stress_index: z.number().min(0).max(100).optional(),
+  signal_db:    z.number().optional(),
+  vitality:     z.number().int().min(0).max(100).optional(),
+  timestamp:    z.string().optional(),
+  meta:         z.record(z.unknown()).optional(),
 });
 
 const AddNodeSchema = z.object({
@@ -109,6 +111,8 @@ router.post("/biometric/sync", async (req, res) => {
       return;
     }
     logger.info({ node_id, payload }, "SYNCING HUMAN STATE TO TITAN V");
+    // Fire-and-forget: evaluate triggers without blocking the sync response
+    evaluateAndFireInterventions(node_id, payload).catch(() => {});
     res.json({ ok: true, synced_at: new Date().toISOString() });
   } catch (err) {
     logger.error({ err }, "biometric/sync error");

@@ -10,7 +10,7 @@ import { useLocation } from "wouter";
 import {
   Shield, Plus, Trash2, RefreshCw, Loader, Check,
   Radio, Activity, Cpu, Lock,
-  Watch, Fingerprint, X, Zap, Brain,
+  Watch, Fingerprint, X, Zap, Brain, AlertTriangle,
 } from "lucide-react";
 import SovereignWatermark from "@/components/SovereignWatermark";
 
@@ -38,7 +38,7 @@ const C = {
 
 type NodeType   = "RING" | "WATCH" | "BAND" | "PUCK" | "OTHER";
 type Sentiment  = "OPTIMAL" | "CALM" | "FOCUSED" | "STRESSED" | "FATIGUED";
-type ActiveTab  = "registry" | "state-engine";
+type ActiveTab  = "registry" | "state-engine" | "titan-engine";
 type ExecCmd    = "TITAN_EXEC: INITIATE_RECHARGE_PROTOCOL"
                 | "TITAN_EXEC: ENGAGE_SOVEREIGN_DND"
                 | "TITAN_EXEC: MAINTAIN_OPTIMAL_STATE";
@@ -61,6 +61,73 @@ interface Intervention {
   titan_exec: string;
   triggered_at: string;
 }
+
+interface TitanIntervention {
+  id: number;
+  trigger_type: string;
+  node_id: string;
+  commands: string[];
+  payload_snapshot: Record<string, unknown> | null;
+  status: "TRIGGERED" | "ACKNOWLEDGED";
+  severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  triggered_at: string;
+  acked_at: string | null;
+}
+
+// ── Titan trigger configs ──────────────────────────────────────────────────────
+
+const TITAN_RULES: Array<{
+  type: string; condition: string; commands: string[];
+  severity: string; color: string; bg: string; border: string; icon: typeof Zap;
+}> = [
+  {
+    type: "STRESS_TRIGGER", condition: "stress_index > 75",
+    commands: ["SET_LIGHTING_CALM_BLUE", "ENGAGE_SOVEREIGN_DND"],
+    severity: "HIGH", color: "#60a5fa", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.28)", icon: Brain,
+  },
+  {
+    type: "VITALITY_TRIGGER", condition: "vitality < 20",
+    commands: ["INITIATE_RECHARGE_PROTOCOL", "NOTIFY_SOVEREIGN_OPERATOR"],
+    severity: "CRITICAL", color: "#ef4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.28)", icon: AlertTriangle,
+  },
+  {
+    type: "REVENUE_TRIGGER", condition: "HR > 80 + STR < 40",
+    commands: ["TRIGGER_UPSELL_PROMPT"],
+    severity: "MEDIUM", color: "#D4AF37", bg: "rgba(212,175,55,0.08)", border: "rgba(212,175,55,0.28)", icon: Zap,
+  },
+  {
+    type: "SIGNAL_FAILSAFE", condition: "SIG lost > 60s",
+    commands: ["OBSIDIAN_REAUTH_REQUIRED"],
+    severity: "HIGH", color: "#a8a29e", bg: "rgba(168,162,158,0.08)", border: "rgba(168,162,158,0.25)", icon: Radio,
+  },
+];
+
+const SEVERITY_COLOR: Record<string, string> = {
+  LOW: "#22c55e", MEDIUM: "#D4AF37", HIGH: "#f97316", CRITICAL: "#ef4444",
+};
+
+// ── Demo scenarios ─────────────────────────────────────────────────────────────
+
+const DEMO_SCENARIOS = [
+  {
+    label: "STRESS TEST",
+    sub:   "STR=90 → CALM BLUE + DND",
+    color: "#60a5fa",
+    payload: { stress_index: 90, heart_rate: 85, vitality: 65, signal_db: -42 },
+  },
+  {
+    label: "LOW VITALITY",
+    sub:   "VIT=8 → RECHARGE + NOTIFY",
+    color: "#ef4444",
+    payload: { vitality: 8, heart_rate: 58, stress_index: 45, signal_db: -38 },
+  },
+  {
+    label: "ENGAGED PATRON",
+    sub:   "HR=90 + STR=25 → UPSELL",
+    color: "#D4AF37",
+    payload: { heart_rate: 90, stress_index: 25, vitality: 80, signal_db: -35 },
+  },
+];
 
 // ── Exec command config ───────────────────────────────────────────────────────
 
@@ -378,6 +445,208 @@ function StateEngineTab() {
   );
 }
 
+// ── Titan Engine Tab ──────────────────────────────────────────────────────────
+
+function TitanEngineTab({ nodes }: { nodes: HardwareNode[] }) {
+  const [feed, setFeed]         = useState<TitanIntervention[]>([]);
+  const [loadingFeed, setLoad]  = useState(true);
+  const [acking, setAcking]     = useState<number | null>(null);
+  const [demoNode, setDemoNode] = useState("SOV_RING_01");
+  const [firing, setFiring]     = useState<string | null>(null);
+  const [lastFired, setLast]    = useState<string | null>(null);
+
+  const loadFeed = useCallback(async () => {
+    setLoad(true);
+    try {
+      const res  = await fetch("/api/titan/interventions");
+      const data = await res.json() as { interventions?: TitanIntervention[] };
+      setFeed(data.interventions ?? []);
+    } catch { /* graceful */ }
+    finally { setLoad(false); }
+  }, []);
+
+  useEffect(() => {
+    loadFeed();
+    const t = setInterval(loadFeed, 5000);
+    return () => clearInterval(t);
+  }, [loadFeed]);
+
+  const acknowledge = async (id: number) => {
+    setAcking(id);
+    try {
+      await fetch(`/api/titan/interventions/${id}/acknowledge`, { method: "POST" });
+      await loadFeed();
+    } finally { setAcking(null); }
+  };
+
+  const demoFire = async (scenario: typeof DEMO_SCENARIOS[0]) => {
+    setFiring(scenario.label);
+    setLast(null);
+    const nodeId = demoNode.trim() || "SOV_RING_01";
+    try {
+      await fetch("/api/biometric/sync", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ node_id: nodeId, ...scenario.payload }),
+      });
+      setLast(scenario.label);
+      setTimeout(loadFeed, 800);
+    } catch { /* graceful */ }
+    finally { setFiring(null); }
+  };
+
+  const activeCount = feed.filter(i => i.status === "TRIGGERED").length;
+  const authorizedIds = nodes.filter(n => n.authorized).map(n => n.hardware_id);
+
+  return (
+    <div>
+      {/* Active alert banner */}
+      {activeCount > 0 && (
+        <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
+          style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.28)", borderRadius: 10, padding: "12px 18px", marginBottom: 20, display: "flex", alignItems: "center", gap: 12 }}>
+          <div className="sovereign-breath" style={{ width: 8, height: 8, borderRadius: "50%", background: "#ef4444", flexShrink: 0 }} />
+          <div style={{ fontSize: 10, color: "#ef4444", fontWeight: 700, letterSpacing: "0.14em" }}>
+            {activeCount} ACTIVE INTERVENTION{activeCount > 1 ? "S" : ""} REQUIRE ACKNOWLEDGEMENT
+          </div>
+        </motion.div>
+      )}
+
+      {/* 4 Armed Trigger Rules */}
+      <div style={{ fontSize: 9, color: `${C.gold}60`, letterSpacing: "0.24em", marginBottom: 12 }}>4 TRIGGERS ARMED</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 28 }}>
+        {TITAN_RULES.map(rule => (
+          <div key={rule.type} style={{ background: rule.bg, border: `1px solid ${rule.border}`, borderRadius: 12, padding: "16px 18px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+              <rule.icon size={13} color={rule.color} />
+              <span style={{ fontSize: 9, color: rule.color, fontWeight: 800, letterSpacing: "0.12em" }}>{rule.type}</span>
+              <span style={{ marginLeft: "auto", fontSize: 7, color: SEVERITY_COLOR[rule.severity], background: `${SEVERITY_COLOR[rule.severity]}18`, border: `1px solid ${SEVERITY_COLOR[rule.severity]}40`, padding: "2px 6px", borderRadius: 4, letterSpacing: "0.14em", fontWeight: 700 }}>
+                {rule.severity}
+              </span>
+            </div>
+            <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.12em", marginBottom: 8 }}>
+              IF <span style={{ color: C.ink }}>{rule.condition}</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              {rule.commands.map(cmd => (
+                <div key={cmd} style={{ fontSize: 8, color: rule.color, background: `${rule.color}10`, border: `1px solid ${rule.color}20`, borderRadius: 4, padding: "3px 8px", letterSpacing: "0.10em", fontFamily: C.mono }}>
+                  → {cmd}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Demo Fire — The Clark Factor */}
+      <div style={{ background: "rgba(212,175,55,0.05)", border: `1px solid ${C.border}`, borderRadius: 12, padding: "20px 20px", marginBottom: 28 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+          <Zap size={12} color={C.gold} />
+          <div style={{ fontSize: 9, color: C.amber, letterSpacing: "0.22em" }}>DEMO FIRE — CLARK FACTOR</div>
+          <div style={{ flex: 1, height: 1, background: C.border }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 8, color: C.dim, letterSpacing: "0.12em" }}>NODE</span>
+            <select value={demoNode} onChange={e => setDemoNode(e.target.value)}
+              style={{ padding: "5px 10px", borderRadius: 6, background: C.card, border: `1px solid ${C.border}`, color: C.ink, fontSize: 9, fontFamily: C.mono, outline: "none", cursor: "pointer" }}>
+              {authorizedIds.length > 0
+                ? authorizedIds.map(id => <option key={id} value={id}>{id}</option>)
+                : <option value="SOV_RING_01">SOV_RING_01</option>}
+            </select>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          {DEMO_SCENARIOS.map(s => (
+            <motion.button key={s.label} whileTap={{ scale: 0.96 }} onClick={() => demoFire(s)}
+              disabled={firing !== null}
+              style={{ flex: 1, minWidth: 160, padding: "14px 16px", borderRadius: 10, background: firing === s.label ? `${s.color}20` : `${s.color}12`, border: `1px solid ${s.color}40`, color: s.color, fontFamily: C.mono, cursor: firing !== null ? "not-allowed" : "pointer", textAlign: "left" }}>
+              <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.12em", marginBottom: 4, display: "flex", alignItems: "center", gap: 6 }}>
+                {firing === s.label ? <Loader size={10} style={{ animation: "spin 1s linear infinite" }} /> : <Zap size={10} />}
+                {s.label}
+              </div>
+              <div style={{ fontSize: 8, color: `${s.color}80`, letterSpacing: "0.10em" }}>{s.sub}</div>
+            </motion.button>
+          ))}
+        </div>
+        {lastFired && (
+          <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
+            style={{ marginTop: 12, fontSize: 9, color: C.green, letterSpacing: "0.14em" }}>
+            ✓ SYNC FIRED — {lastFired} — engine evaluating…
+          </motion.div>
+        )}
+      </div>
+
+      {/* Live feed */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <div style={{ fontSize: 9, color: `${C.gold}60`, letterSpacing: "0.24em" }}>LIVE INTERVENTION FEED</div>
+        <div style={{ flex: 1, height: 1, background: C.border }} />
+        {loadingFeed && <Loader size={10} color={C.gold} style={{ animation: "spin 1s linear infinite" }} />}
+        <span style={{ fontSize: 8, color: C.dim, letterSpacing: "0.12em" }}>AUTO-REFRESH 5s</span>
+      </div>
+
+      {!loadingFeed && feed.length === 0 && (
+        <div style={{ padding: "28px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, textAlign: "center" }}>
+          <div style={{ fontSize: 10, color: C.dim, letterSpacing: "0.16em" }}>NO INTERVENTIONS FIRED YET</div>
+          <div style={{ fontSize: 9, color: C.dim, marginTop: 6 }}>Use DEMO FIRE above to trigger the engine.</div>
+        </div>
+      )}
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {feed.map((item, i) => {
+          const rule = TITAN_RULES.find(r => r.type === item.trigger_type);
+          const color  = rule?.color  ?? C.muted;
+          const bg     = rule?.bg     ?? C.card;
+          const border = rule?.border ?? C.border;
+          const snap   = item.payload_snapshot ?? {};
+          const isAcked = item.status === "ACKNOWLEDGED";
+          return (
+            <motion.div key={item.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.02 }}
+              style={{ background: isAcked ? C.card : bg, border: `1px solid ${isAcked ? C.border : border}`, borderRadius: 12, padding: "16px 18px", opacity: isAcked ? 0.55 : 1 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+                <div style={{ flexShrink: 0, marginTop: 2 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: isAcked ? C.dim : color }} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 9, color: isAcked ? C.dim : color, fontWeight: 700, letterSpacing: "0.10em" }}>{item.trigger_type}</span>
+                    <span style={{ fontSize: 7, color: SEVERITY_COLOR[item.severity] ?? C.muted, background: `${SEVERITY_COLOR[item.severity] ?? C.muted}18`, border: `1px solid ${SEVERITY_COLOR[item.severity] ?? C.muted}30`, padding: "2px 6px", borderRadius: 4, letterSpacing: "0.12em" }}>{item.severity}</span>
+                    <span style={{ fontSize: 7, color: isAcked ? C.dim : C.green, background: isAcked ? "rgba(245,242,237,0.04)" : "rgba(34,197,94,0.08)", border: `1px solid ${isAcked ? C.border : "rgba(34,197,94,0.25)"}`, padding: "2px 7px", borderRadius: 4, letterSpacing: "0.12em" }}>
+                      {item.status}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}>
+                    {item.commands.map(cmd => (
+                      <span key={cmd} style={{ fontSize: 8, color: isAcked ? C.dim : color, background: `${color}10`, padding: "2px 8px", borderRadius: 4, letterSpacing: "0.08em", fontFamily: C.mono }}>
+                        {cmd}
+                      </span>
+                    ))}
+                  </div>
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 8, color: C.dim, letterSpacing: "0.10em" }}>NODE <span style={{ color: C.ink }}>{item.node_id}</span></span>
+                    {snap.stress_index != null && <span style={{ fontSize: 8, color: C.dim }}>STR <span style={{ color: "#60a5fa" }}>{String(snap.stress_index)}</span></span>}
+                    {snap.vitality     != null && <span style={{ fontSize: 8, color: C.dim }}>VIT <span style={{ color: "#ef4444" }}>{String(snap.vitality)}</span></span>}
+                    {snap.heart_rate   != null && <span style={{ fontSize: 8, color: C.dim }}>HR <span style={{ color: C.gold }}>{String(snap.heart_rate)}</span></span>}
+                  </div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
+                  <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.10em" }}>
+                    {new Date(item.triggered_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                  </div>
+                  {!isAcked && (
+                    <motion.button whileTap={{ scale: 0.93 }} onClick={() => acknowledge(item.id)}
+                      disabled={acking === item.id}
+                      style={{ padding: "5px 12px", borderRadius: 6, background: `${color}14`, border: `1px solid ${color}35`, color, fontSize: 8, fontWeight: 700, cursor: "pointer", letterSpacing: "0.10em", display: "flex", alignItems: "center", gap: 5, fontFamily: C.mono }}>
+                      {acking === item.id ? <Loader size={9} style={{ animation: "spin 1s linear infinite" }} /> : <Check size={9} />}
+                      ACK
+                    </motion.button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export default function SovereignHardwareLab() {
@@ -429,8 +698,9 @@ export default function SovereignHardwareLab() {
   const revokedCount    = nodes.filter(n => !n.authorized).length;
 
   const TABS = [
-    { id: "registry" as ActiveTab,     label: "NODE REGISTRY",  icon: Shield },
-    { id: "state-engine" as ActiveTab, label: "STATE ENGINE",   icon: Brain  },
+    { id: "registry" as ActiveTab,      label: "NODE REGISTRY",  icon: Shield },
+    { id: "state-engine" as ActiveTab,  label: "STATE ENGINE",   icon: Brain  },
+    { id: "titan-engine" as ActiveTab,  label: "TITAN ENGINE",   icon: Zap    },
   ];
 
   return (
@@ -594,6 +864,19 @@ GET  /api/biometric/interventions — last 50 logged commands`
                 <span style={{ fontSize: 8, color: C.dim, letterSpacing: "0.14em" }}>TITAN V KERNEL · check_state_interventions()</span>
               </div>
               <StateEngineTab />
+            </motion.div>
+          )}
+
+          {/* ── TITAN ENGINE ── */}
+          {tab === "titan-engine" && (
+            <motion.div key="titan-engine" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
+                <Zap size={14} color={C.gold} />
+                <div style={{ fontSize: 9, color: C.amber, letterSpacing: "0.22em" }}>TITAN V INTERVENTION ENGINE</div>
+                <div style={{ flex: 1, height: 1, background: C.border }} />
+                <span style={{ fontSize: 8, color: C.dim, letterSpacing: "0.14em" }}>evaluateAndFireInterventions() · 30s signal monitor</span>
+              </div>
+              <TitanEngineTab nodes={nodes} />
             </motion.div>
           )}
 
