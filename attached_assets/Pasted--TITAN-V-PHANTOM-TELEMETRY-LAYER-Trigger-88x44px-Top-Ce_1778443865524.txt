@@ -1,0 +1,129 @@
+/**
+ * TITAN V: PHANTOM TELEMETRY LAYER
+ * Trigger: 88x44px Top-Center Deadzone (3s Hold)
+ * Architecture: Non-unmounting React Overlay
+ */
+
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+export const PhantomHUD = ({ guestData, sessionInfo }) => {
+  const [isHolding, setIsHolding] = useState(false);
+  const [showHUD, setShowHUD] = useState(false);
+  const holdTimer = useRef(null);
+
+  // 1. THE INVISIBLE TRIGGER LOGIC
+  const startHold = () => {
+    setIsHolding(true);
+    holdTimer.current = setTimeout(() => {
+      setShowHUD(true);
+      setIsHolding(false);
+    }, 3000); // 3-Second Sovereign Hold
+  };
+
+  const cancelHold = () => {
+    clearTimeout(holdTimer.current);
+    setIsHolding(false);
+  };
+
+  return (
+    <>
+      {/* THE INVISIBLE HITBOX */}
+      <div 
+        onMouseDown={startHold} onMouseUp={cancelHold}
+        onTouchStart={startHold} onTouchEnd={cancelHold}
+        style={{
+          position: 'fixed', top: 0, left: '50%',
+          transform: 'translateX(-50%)',
+          width: '88px', height: '44px',
+          zIndex: 9999, cursor: 'none'
+        }}
+      />
+
+      {/* AMBER PROGRESS RING (Only visible during hold) */}
+      {isHolding && (
+        <motion.div 
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1.5, opacity: 1 }}
+          style={{
+            position: 'fixed', top: '22px', left: '50%',
+            width: '20px', height: '20px', border: '2px solid #FFBF00',
+            borderRadius: '50%', pointerEvents: 'none', zIndex: 10000
+          }}
+        />
+      )}
+
+      <AnimatePresence>
+        {showHUD && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 10001,
+              backdropFilter: 'blur(4px) brightness(0.4)',
+              display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'
+            }}
+          >
+            {/* THE RIPPLE & TELEMETRY LINES */}
+            <svg style={{ position: 'absolute', top: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+              <motion.circle 
+                initial={{ r: 0 }} animate={{ r: '100%' }}
+                transition={{ duration: 1 }}
+                cx="50%" cy="0" fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.3" 
+              />
+              {/* Corner Brackets */}
+              <path d="M20 60 L20 20 L60 20" fill="none" stroke="#D4AF37" strokeWidth="1" />
+              <path d="Mcalc(100% - 60) 20 Lcalc(100% - 20) 20 Lcalc(100% - 20) 60" fill="none" stroke="#D4AF37" strokeWidth="1" />
+            </svg>
+
+            {/* THE COMMAND SURFACE (Tesla Cockpit Style) */}
+            <motion.div 
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 20 }}
+              style={{
+                background: 'linear-gradient(180deg, #111 0%, #050505 100%)',
+                borderTop: '1px solid #D4AF37',
+                padding: '30px', borderTopLeftRadius: '20px', borderTopRightRadius: '20px'
+              }}
+            >
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                {/* PANEL 1: GUEST STATE */}
+                <div className="telemetry-box">
+                  <h4 style={{ color: '#666', fontSize: '10px' }}>GUEST_STATE</h4>
+                  <p><span style={{ color: '#D4AF37' }}>NAME:</span> {guestData.name}</p>
+                  <p><span style={{ color: '#D4AF37' }}>CRAFT:</span> {guestData.craftType}</p>
+                  <p><span style={{ color: '#00FF41' }}>SESSION:</span> 12:44.02</p>
+                </div>
+
+                {/* PANEL 2: SIGNAL ROUTING */}
+                <div className="telemetry-box">
+                  <h4 style={{ color: '#666', fontSize: '10px' }}>SIGNAL_ROUTING</h4>
+                  <div style={{ display: 'flex', gap: '10px', fontSize: '9px' }}>
+                    <span className="pulse">ENGINE: 22ms</span>
+                    <span className="pulse">ORACLE: 41ms</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* STAFF TOOLS */}
+              <textarea 
+                placeholder="ADD STAFF NOTES..."
+                style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', color: '#fff', marginTop: '20px', padding: '10px' }}
+              />
+
+              <button 
+                onClick={() => setShowHUD(false)}
+                style={{ width: '100%', marginTop: '20px', padding: '15px', background: 'none', border: '1px solid #D4AF37', color: '#D4AF37', letterSpacing: '2px' }}
+              >
+                ↓ RETURN TO GUEST SESSION
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};

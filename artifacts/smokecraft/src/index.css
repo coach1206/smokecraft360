@@ -390,3 +390,113 @@ button, [role="button"] {
 .titan-pulse-gold {
   animation: titan-sovereign-pulse 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   STEALTH HANDOFF — SOVEREIGN PROTOCOL
+   Signal-node heartbeat, telemetry draw, ripple burst, and backdrop dim.
+   These run as CSS animations so they are GPU-composited and never block JS.
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Core heartbeat — signal nodes beat like a live server monitor */
+@keyframes sovereignPulse {
+  0%   { opacity: 1;    transform: scale(1);    }
+  35%  { opacity: 0.28; transform: scale(0.82); }
+  65%  { opacity: 0.28; transform: scale(0.82); }
+  100% { opacity: 1;    transform: scale(1);    }
+}
+
+/* Slower ambient breath for secondary indicators */
+@keyframes sovereignBreath {
+  0%, 100% { opacity: 1;    }
+  50%       { opacity: 0.38; }
+}
+
+/* Telemetry line draw — used with SVG stroke-dashoffset trick */
+@keyframes sovereignLineDraw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Ripple ring expansion */
+@keyframes sovereignRipple {
+  0%   { transform: scale(0);  opacity: 0.55; }
+  100% { transform: scale(18); opacity: 0;    }
+}
+
+/* Backdrop entrance — dim slides in */
+@keyframes sovereignDimIn {
+  from { opacity: 0; backdrop-filter: blur(0px) brightness(1);   }
+  to   { opacity: 1; backdrop-filter: blur(2px) brightness(0.72); }
+}
+
+/* Command Surface spring-rise */
+@keyframes sovereignRise {
+  0%   { transform: translateY(100%); }
+  60%  { transform: translateY(-6px); }
+  80%  { transform: translateY(3px);  }
+  100% { transform: translateY(0);    }
+}
+
+/* Utility classes ─────────────────────────────────── */
+
+/* Signal dot — beats with live-server rhythm */
+.pulse {
+  display:          inline-block;
+  animation:        sovereignPulse 1.6s ease-in-out infinite;
+  will-change:      opacity, transform;
+}
+
+/* Stagger variants so not all nodes beat in sync */
+.pulse-delay-1 { animation-delay: 0.26s; }
+.pulse-delay-2 { animation-delay: 0.52s; }
+.pulse-delay-3 { animation-delay: 0.78s; }
+.pulse-delay-4 { animation-delay: 1.04s; }
+
+/* Ambient breath (slower, for status chips) */
+.sovereign-breath {
+  animation:    sovereignBreath 2.4s ease-in-out infinite;
+  will-change:  opacity;
+}
+
+/* Telemetry box — used by .telemetry-box reference in PhantomHUD */
+.telemetry-box {
+  background:    rgba(245,242,237,0.03);
+  border:        1px solid rgba(212,175,55,0.20);
+  border-radius: 10px;
+  padding:       16px;
+  font-family:   'JetBrains Mono','Courier New',monospace;
+  font-size:     10px;
+  color:         rgba(245,242,237,0.65);
+  line-height:   1.75;
+}
+
+.telemetry-box h4 {
+  margin:          0 0 10px;
+  font-size:       8px;
+  letter-spacing:  0.22em;
+  color:           rgba(245,242,237,0.30);
+  text-transform:  uppercase;
+}
+
+/* Stealth backdrop — separate class for vanilla usage */
+.stealth-backdrop {
+  position:        fixed;
+  inset:           0;
+  background:      rgba(4,4,4,0.72);
+  backdrop-filter: blur(2px) brightness(0.72);
+  -webkit-backdrop-filter: blur(2px) brightness(0.72);
+  animation:       sovereignDimIn 0.55s ease forwards;
+  z-index:         9997;
+}
+
+/* Command surface — spring rise */
+.stealth-command-surface {
+  animation:           sovereignRise 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  will-change:         transform;
+  border-top-left-radius:  20px;
+  border-top-right-radius: 20px;
+}
+
+/* Pressure ring — SVG circle uses stroke-dasharray trick */
+.stealth-ring-track  { stroke: rgba(212,175,55,0.14); }
+.stealth-ring-fill   { stroke: #D4AF37; stroke-linecap: round; transition: stroke-dashoffset 0.05s linear; }
