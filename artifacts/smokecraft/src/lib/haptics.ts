@@ -34,4 +34,15 @@ export const HAPTIC = {
 
   /** Heavy handoff sequence — patron → staff mode transition */
   handoff: [90, 45, 90, 45, 140] as number[],
+
+  // ── Titan V profiles ──────────────────────────────────────────────────────
+
+  /** Dual-pulse "Tactile Confirmed" — action success feedback */
+  confirm: [20, 30, 20] as number[],
+
+  /** Heavy singular "Mechanical Disconnect" — sovereign kill-switch */
+  sovereign: 100,
+
+  /** Material weight thud — weighted slider / toggle engagement */
+  thud: 40,
 } as const;

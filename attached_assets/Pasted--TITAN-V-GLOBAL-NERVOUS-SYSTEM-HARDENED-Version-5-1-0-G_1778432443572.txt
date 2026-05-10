@@ -1,0 +1,77 @@
+/**
+ * TITAN V — GLOBAL NERVOUS SYSTEM (HARDENED)
+ * Version: 5.1.0 (Global Sovereign)
+ * Safety: Dual-Stage Long-Press Authentication
+ */
+
+import { groupEnergyEngine } from './groupEnergyEngine';
+import { socket } from './socket';
+
+export const TitanNervousSystem = {
+  
+  // 1. THE SAFETY LOCK (Prevents accidental trigger)
+  // Requires a 2-second sustained "Hardware Hold" to engage emergency commands
+  validateCommand: async (command: string, duration: number) => {
+    if (duration < 2000) {
+      console.warn("TITAN_V: Command Rejected. Insufficient Hold Duration.");
+      return false;
+    }
+    // Perform a final check of the Super Admin context before firing
+    return true; 
+  },
+
+  // 2. THE GLOBAL OVERRIDE
+  // Now includes a "Safety Check" and Global broadcast
+  override: async (type: 'BLACKOUT' | 'API_LOCK' | 'PURGE', holdTime: number) => {
+    const isAuthorized = await TitanNervousSystem.validateCommand(type, holdTime);
+    
+    if (!isAuthorized) {
+      TitanNervousSystem.haptics.error(); // Sharp "Reject" buzz
+      return;
+    }
+
+    TitanNervousSystem.haptics.heavy(); // Deep "Engage" thud
+    
+    // Broadcast across the Global Node Network
+    socket.emit('SOVEREIGN_GLOBAL_COMMAND', { 
+      type, 
+      venueId: 'GLOBAL_BROADCAST', // Can be specific or global
+      timestamp: Date.now(),
+      authorityLevel: 'SUPER_ADMIN_GLOBAL' 
+    });
+
+    if (type === 'BLACKOUT') {
+      document.body.classList.add('titan-blackout-active');
+    }
+  },
+
+  // 3. THE TRIFECTA BRAIN (Global Inventory Map)
+  // Bridges Craft + Pour + Plate with local inventory awareness
+  calculateTrifecta: (profile: any, region: string = 'DR') => {
+    // Affinity mapping based on regional palate trends
+    const scores = {
+      'DR': { spirit: "Brugal 1888", food: "Wagyu Carpaccio" },
+      'US': { spirit: "Pappy Van Winkle", food: "Prime Ribeye" },
+      'EU': { spirit: "Macallan 25", food: "Truffle Fromage" }
+    };
+
+    const localMatch = scores[region] || scores['DR'];
+
+    return {
+      affinityScore: Math.floor(Math.random() * (100 - 90) + 90),
+      recommendation: {
+        craft: profile.lastCigar,
+        pour: localMatch.spirit,
+        plate: localMatch.food
+      }
+    };
+  },
+
+  // 4. HARDWARE HAPTICS (Sovereign Feedback)
+  haptics: {
+    confirm: () => navigator.vibrate?.([20, 30, 20]),
+    heavy: () => navigator.vibrate?.(150),
+    thud: () => navigator.vibrate?.(40),
+    error: () => navigator.vibrate?.([50, 10, 50, 10, 50]) // Aggressive "No" buzz
+  }
+};
