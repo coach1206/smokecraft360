@@ -36,6 +36,13 @@ export interface UnifiedCognitiveContextValue extends UnifiedCognitiveState {
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
+/** Maps each mood to the motion-speed multiplier used by blob + video animations. */
+const MOOD_SPEED: Record<LoungeMood, number> = {
+  MEDITATIVE:  0.5,
+  FOCUSED:     0.85,
+  HIGH_ENERGY: 1.2,
+};
+
 const MOOD_INDEX: Record<LoungeMood, number> = {
   MEDITATIVE:  0,
   FOCUSED:     1,
@@ -111,6 +118,16 @@ export function UnifiedCognitiveProvider({ children }: { children: ReactNode }) 
       unsubMemory();
     };
   }, []);
+
+  // Broadcast motion speed to the entire DOM as a CSS custom property.
+  // Any animation using calc(Xs / var(--hb-mult, 1)) will automatically
+  // stretch or compress without a React re-render cycle.
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--hb-mult",
+      String(MOOD_SPEED[state.lounge_mood]),
+    );
+  }, [state.lounge_mood]);
 
   const recordInteraction = useCallback((craft?: string) => {
     groupEnergyEngine.recordActivity();

@@ -161,22 +161,26 @@ function CinematicBackground({ craftId }: { craftId: string }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
             style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
           >
             {cfg.blobs.map((b, i) => (
               <div key={i} style={{
-                position:      "absolute",
-                bottom:        b.bottom,
-                left:          b.left,
-                width:         b.w,
-                height:        b.h,
-                borderRadius:  "50%",
-                background:    `radial-gradient(ellipse, ${b.color} 0%, transparent 70%)`,
-                filter:        `blur(${b.blur}px)`,
-                animation:     `${b.anim} ${b.dur} ease-out infinite`,
-                animationDelay: b.delay,
-                pointerEvents: "none",
+                position:               "absolute",
+                bottom:                 b.bottom,
+                left:                   b.left,
+                width:                  b.w,
+                height:                 b.h,
+                borderRadius:           "50%",
+                background:             `radial-gradient(ellipse, ${b.color} 0%, transparent 70%)`,
+                filter:                 `blur(${b.blur}px)`,
+                animationName:          b.anim,
+                animationDuration:      `calc(${b.dur} / var(--hb-mult, 1))`,
+                animationTimingFunction: "ease-out",
+                animationIterationCount: "infinite",
+                animationDelay:         b.delay,
+                animationFillMode:      "both",
+                pointerEvents:          "none",
               }} />
             ))}
           </motion.div>
@@ -194,7 +198,7 @@ function CinematicBackground({ craftId }: { craftId: string }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: videoLoaded ? 0.70 : 0 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.5, ease: "easeInOut" }}
+          transition={{ duration: 1.2, ease: "easeInOut" }}
           onCanPlay={() => setVideoLoaded(true)}
           onError={() => setVideoLoaded(false)}
           style={{
