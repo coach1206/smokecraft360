@@ -231,12 +231,12 @@ function injectSmokeStyles() {
 
 // ── Static CSS smoke blobs — always visible, video-independent ────────────────
 const CSS_SMOKE_BLOBS = [
-  { w: 340, h: 220, l: "8%",  b: 0,   anim: "smokeRise0", dur: "18s", delay: "0s",    color: "rgba(120,80,20,0.28)" },
-  { w: 280, h: 180, l: "35%", b: 0,   anim: "smokeRise1", dur: "22s", delay: "-7s",   color: "rgba(90,60,15,0.22)"  },
-  { w: 400, h: 260, l: "58%", b: 0,   anim: "smokeRise2", dur: "26s", delay: "-14s",  color: "rgba(140,90,25,0.24)" },
-  { w: 220, h: 160, l: "20%", b: 0,   anim: "smokeRise3", dur: "20s", delay: "-3s",   color: "rgba(80,55,10,0.18)"  },
-  { w: 460, h: 300, l: "72%", b: 0,   anim: "smokeRise0", dur: "30s", delay: "-10s",  color: "rgba(110,72,18,0.20)" },
-  { w: 300, h: 200, l: "48%", b: 20,  anim: "smokeRise1", dur: "24s", delay: "-18s",  color: "rgba(95,65,16,0.16)"  },
+  { w: 340, h: 220, l: "8%",  b: 0,   anim: "smokeRise0", dur: "18s", delay: "0s",    color: "rgba(201,168,76,0.28)" },
+  { w: 280, h: 180, l: "35%", b: 0,   anim: "smokeRise1", dur: "22s", delay: "-7s",   color: "rgba(201,168,76,0.22)" },
+  { w: 400, h: 260, l: "58%", b: 0,   anim: "smokeRise2", dur: "26s", delay: "-14s",  color: "rgba(201,168,76,0.24)" },
+  { w: 220, h: 160, l: "20%", b: 0,   anim: "smokeRise3", dur: "20s", delay: "-3s",   color: "rgba(201,168,76,0.18)" },
+  { w: 460, h: 300, l: "72%", b: 0,   anim: "smokeRise0", dur: "30s", delay: "-10s",  color: "rgba(201,168,76,0.20)" },
+  { w: 300, h: 200, l: "48%", b: 20,  anim: "smokeRise1", dur: "24s", delay: "-18s",  color: "rgba(201,168,76,0.16)" },
 ];
 
 export default function MasterArtisan() {

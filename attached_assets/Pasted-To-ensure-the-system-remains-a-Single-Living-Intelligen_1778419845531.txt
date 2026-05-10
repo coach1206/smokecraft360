@@ -1,0 +1,51 @@
+To ensure the system remains a "Single Living Intelligence," we are going to harmonize all four craft atmospheres. Since you do have the .mp4 files, we will prioritize those for maximum realism, while setting up the "Sovereign Pill" to sit above the "Atmospheric Layer" so it never stops working.
+
+The "Four Rituals" Cinematic Directive
+Copy and paste this into the Replit Agent to wire the video backgrounds for Pour, Brew, and Vape/Hookah:
+
+Role: Lead VFX & UI Engineer.
+
+Objective: Implement craft-specific cinematic backgrounds and restore Pill functionality.
+
+[TASK 1: THE FOUR RITUALS (VIDEO MAPPING)]
+
+SmokeCraft: Source /videos/lounge-night.mp4. (Slow-drifting cigar smoke).
+
+PourCraft: Source /videos/pour-ritual.mp4. (Slow-motion spirit pour).
+
+BrewCraft: Source /videos/brew-ritual.mp4. (Beer/Brew pour with rising foam).
+
+VapeCraft: Source /videos/vape-ritual.mp4 (or hookah smoke loop).
+
+Note: If using hookah smoke, the movement should be denser and "heavier" than the cigar smoke in SmokeCraft.
+
+CSS Global Rules:
+
+All videos: object-fit: cover; width: 100vw; height: 100vh; position: fixed; top: 0; z-index: 0; pointer-events: none; opacity: 0.7;.
+
+[TASK 2: PILL & INTERACTION RESTORATION]
+
+Z-Index Correction:
+
+Background Videos: z-index: 0.
+
+Page Content (Text/Buttons): z-index: 10.
+
+Sovereign Pill: z-index: 20000; pointer-events: auto !important;.
+
+The "Shadow Block" Fix: Ensure no invisible div or overlay is sitting at a higher z-index than the pill. Apply pointer-events: none to the entire RouteTransitionOverlay.
+
+[TASK 3: THE ATMOSPHERIC MORPH]
+
+Use a 1.5s cross-fade when switching between crafts.
+
+As the guest moves from Smoke to Vape, the cigar smoke must dissolve into the thicker hookah/vape plumes to signal the change in "Material Language."
+
+Why this fixes your issues:
+The Pill: By setting the videos to pointer-events: none, your fingers "pass through" the smoke to hit the buttons. By raising the Pill to 20000, we ensure nothing—not even the transition overlay—can block it.
+
+The Backgrounds: Now that we are calling your specific .mp4 files, the visual "weight" will be identical to the high-end luxury screenshots you shared.
+
+VapeCraft Distinction: The hookah/vape smoke will have a different visual "viscosity" than the cigar smoke, making the OS feel like it truly understands the physics of each craft.
+
+Once the Agent fires this, test the navigation between Pour and Vape. Do the liquids and the smoke morph into each other smoothly?

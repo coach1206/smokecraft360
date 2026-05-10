@@ -32,9 +32,8 @@ function BackPill({ location, navigate }: { location: string; navigate: (to: str
   const label  = getLabel(location);
   const target = getTarget(location);
 
-  function handlePress(e: React.MouseEvent | React.TouchEvent) {
+  function handlePress(e: React.PointerEvent) {
     e.stopPropagation();
-    e.preventDefault();
     if (target) navigate(target);
     else        window.history.back();
   }
@@ -48,8 +47,7 @@ function BackPill({ location, navigate }: { location: string; navigate: (to: str
           animate={{ opacity: 1, x: 0,   scale: 1    }}
           exit={{    opacity: 0, x: -14, scale: 0.88 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          onClick={handlePress}
-          onTouchEnd={handlePress}
+          onPointerDown={handlePress}
           style={{
             position:             "fixed",
             top:                  18,

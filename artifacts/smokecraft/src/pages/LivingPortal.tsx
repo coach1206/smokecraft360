@@ -84,30 +84,83 @@ const CRAFTS: CraftConfig[] = [
 
 /* ── Time-gated cinematic video background ───────────────────────────────── */
 function CinematicBackground() {
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const hour = new Date().getHours();
   const src  = hour >= 6 && hour < 17  ? "/videos/lounge-day.mp4"
              : hour >= 17 && hour < 22 ? "/videos/lounge-evening.mp4"
              :                           "/videos/lounge-night.mp4";
   return (
-    <video
-      key={src}
-      autoPlay
-      muted
-      loop
-      playsInline
-      style={{
-        position:      "absolute",
-        inset:         0,
-        width:         "100%",
-        height:        "100%",
-        objectFit:     "cover",
-        zIndex:        0,
-        opacity:       0.20,
-        pointerEvents: "none",
-      }}
-    >
-      <source src={src} type="video/mp4" />
-    </video>
+    <>
+      {/* ── Amber smoke blob fallback — always visible, video-independent ── */}
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
+        <style>{`
+          @keyframes cb-rise-0 {
+            0%   { transform: translateY(0)      scale(1.0); opacity: 0.7; }
+            100% { transform: translateY(-100vh) scale(1.4); opacity: 0;   }
+          }
+          @keyframes cb-rise-1 {
+            0%   { transform: translateY(0)      scale(0.9); opacity: 0.5; }
+            100% { transform: translateY(-100vh) scale(1.2); opacity: 0;   }
+          }
+          @keyframes cb-rise-2 {
+            0%   { transform: translateY(0)      scale(1.1); opacity: 0.6; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0;   }
+          }
+        `}</style>
+        <div style={{
+          position: "absolute", bottom: "-5%", left: "12%",
+          width: 440, height: 340, borderRadius: "50%",
+          background: "radial-gradient(ellipse, rgba(201,168,76,0.20) 0%, transparent 70%)",
+          filter: "blur(44px)",
+          animation: "cb-rise-0 20s ease-out infinite",
+          pointerEvents: "none",
+        }} />
+        <div style={{
+          position: "absolute", bottom: "-5%", left: "42%",
+          width: 380, height: 290, borderRadius: "50%",
+          background: "radial-gradient(ellipse, rgba(201,168,76,0.16) 0%, transparent 70%)",
+          filter: "blur(38px)",
+          animation: "cb-rise-1 25s ease-out infinite",
+          animationDelay: "-8s",
+          pointerEvents: "none",
+        }} />
+        <div style={{
+          position: "absolute", bottom: "-5%", left: "66%",
+          width: 500, height: 380, borderRadius: "50%",
+          background: "radial-gradient(ellipse, rgba(201,168,76,0.18) 0%, transparent 70%)",
+          filter: "blur(50px)",
+          animation: "cb-rise-2 30s ease-out infinite",
+          animationDelay: "-15s",
+          pointerEvents: "none",
+        }} />
+      </div>
+
+      {/* ── MP4 cinematic layer — fades in once loaded ── */}
+      <video
+        key={src}
+        autoPlay
+        muted
+        loop
+        playsInline
+        onCanPlay={() => setVideoLoaded(true)}
+        onError={() => setVideoLoaded(false)}
+        style={{
+          position:      "fixed",
+          top:           0,
+          left:          0,
+          width:         "100vw",
+          height:        "100vh",
+          objectFit:     "cover",
+          zIndex:        0,
+          opacity:       videoLoaded ? 0.55 : 0,
+          filter:        "contrast(110%) brightness(80%)",
+          pointerEvents: "none",
+          transition:    "opacity 1.6s ease",
+        }}
+      >
+        <source src={src} type="video/mp4" />
+      </video>
+    </>
   );
 }
 
