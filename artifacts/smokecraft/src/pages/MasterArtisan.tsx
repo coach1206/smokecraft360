@@ -207,13 +207,46 @@ function SyncingOverlay({ flavor }: { flavor: FlavorCard | undefined }) {
 }
 
 // ── Main component ─────────────────────────────────────────────────────────────
+// ── CSS smoke keyframes injected once ─────────────────────────────────────────
+const SMOKE_STYLE = `
+@keyframes smokeRise0{0%{transform:translate(0,0) scale(1);opacity:0}30%{opacity:.18}80%{opacity:.08}100%{transform:translate(-40px,-320px) scale(3.2);opacity:0}}
+@keyframes smokeRise1{0%{transform:translate(0,0) scale(1);opacity:0}25%{opacity:.14}75%{opacity:.06}100%{transform:translate(55px,-300px) scale(2.8);opacity:0}}
+@keyframes smokeRise2{0%{transform:translate(0,0) scale(1);opacity:0}35%{opacity:.22}80%{opacity:.10}100%{transform:translate(-20px,-360px) scale(3.6);opacity:0}}
+@keyframes smokeRise3{0%{transform:translate(0,0) scale(1);opacity:0}20%{opacity:.12}70%{opacity:.05}100%{transform:translate(30px,-280px) scale(2.4);opacity:0}}
+@keyframes smokeDrift{0%,100%{filter:blur(28px) brightness(.7)}50%{filter:blur(36px) brightness(.9)}}
+`;
+
+function injectSmokeStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById("ma-smoke-kf")) return;
+  const s = document.createElement("style");
+  s.id = "ma-smoke-kf";
+  s.textContent = SMOKE_STYLE;
+  document.head.appendChild(s);
+}
+
+// ── Static CSS smoke blobs — always visible, video-independent ────────────────
+const CSS_SMOKE_BLOBS = [
+  { w: 340, h: 220, l: "8%",  b: 0,   anim: "smokeRise0", dur: "18s", delay: "0s",    color: "rgba(120,80,20,0.28)" },
+  { w: 280, h: 180, l: "35%", b: 0,   anim: "smokeRise1", dur: "22s", delay: "-7s",   color: "rgba(90,60,15,0.22)"  },
+  { w: 400, h: 260, l: "58%", b: 0,   anim: "smokeRise2", dur: "26s", delay: "-14s",  color: "rgba(140,90,25,0.24)" },
+  { w: 220, h: 160, l: "20%", b: 0,   anim: "smokeRise3", dur: "20s", delay: "-3s",   color: "rgba(80,55,10,0.18)"  },
+  { w: 460, h: 300, l: "72%", b: 0,   anim: "smokeRise0", dur: "30s", delay: "-10s",  color: "rgba(110,72,18,0.20)" },
+  { w: 300, h: 200, l: "48%", b: 20,  anim: "smokeRise1", dur: "24s", delay: "-18s",  color: "rgba(95,65,16,0.16)"  },
+];
+
 export default function MasterArtisan() {
   const [, navigate]          = useLocation();
   const [selected, setSelected] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const videoRef              = useRef<HTMLVideoElement>(null);
   const buttonControls        = useAnimation();
+
   const { guestProfile }      = useGuestProfile();
+
+  // Inject CSS smoke keyframes once on mount
+  useEffect(() => { injectSmokeStyles(); }, []);
 
   const guestName = guestProfile?.firstName
     ? `${guestProfile.firstName} ${guestProfile.lastInitial ?? ""}`.trim()
@@ -282,8 +315,50 @@ export default function MasterArtisan() {
       fontFamily: "'Cormorant Garamond', 'Georgia', serif",
     }}>
 
-      {/* ── Cinematic smoke video background ── */}
+      {/* ── Cinematic smoke background ── */}
       <div style={{ position: "absolute", inset: 0, zIndex: 0, overflow: "hidden" }}>
+
+        {/* CSS animated smoke blobs — always visible regardless of video state */}
+        {CSS_SMOKE_BLOBS.map((b, i) => (
+          <div
+            key={i}
+            style={{
+              position:         "absolute",
+              bottom:           b.b,
+              left:             b.l,
+              width:            b.w,
+              height:           b.h,
+              borderRadius:     "50%",
+              background:       `radial-gradient(ellipse, ${b.color} 0%, transparent 70%)`,
+              filter:           "blur(30px)",
+              animation:        `${b.anim} ${b.dur} ${b.delay} infinite ease-out, smokeDrift ${b.dur} ${b.delay} infinite ease-in-out`,
+              pointerEvents:    "none",
+              willChange:       "transform, opacity",
+            }}
+          />
+        ))}
+
+        {/* Permanent ambient warm haze — always visible at t=0, video-independent */}
+        <div style={{
+          position:   "absolute",
+          inset:      0,
+          background: [
+            "radial-gradient(ellipse at 50% 115%, rgba(140,85,10,0.42) 0%, transparent 55%)",
+            "radial-gradient(ellipse at 15% 90%,  rgba(100,60,8,0.28)  0%, transparent 40%)",
+            "radial-gradient(ellipse at 85% 95%,  rgba(120,70,12,0.30) 0%, transparent 45%)",
+          ].join(", "),
+          pointerEvents: "none",
+        }} />
+
+        {/* Mid-tone warm grain — gives the obsidian depth */}
+        <div style={{
+          position:   "absolute",
+          inset:      0,
+          background: "radial-gradient(ellipse at 50% 40%, rgba(80,50,10,0.12) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }} />
+
+        {/* MP4 smoke loop — layered on top of CSS fallback; silent no-op if blocked */}
         <motion.video
           ref={videoRef}
           src={`${import.meta.env.BASE_URL}videos/lounge-night.mp4`}
@@ -291,9 +366,14 @@ export default function MasterArtisan() {
           loop
           muted
           playsInline
-          animate={{ opacity: syncing ? 0.65 : 0.40, filter: syncing ? "saturate(0.6) brightness(0.4)" : "saturate(0.4) brightness(0.6)" }}
-          transition={{ duration: 1.2, ease: "easeInOut" }}
-          style={{ width: "100%", height: "100%", objectFit: "cover" } as React.CSSProperties}
+          onCanPlay={() => setVideoReady(true)}
+          onError={() => setVideoReady(false)}
+          animate={{
+            opacity: videoReady ? (syncing ? 0.62 : 0.38) : 0,
+            filter:  syncing ? "saturate(0.5) brightness(0.4)" : "saturate(0.35) brightness(0.55)",
+          }}
+          transition={{ duration: 1.4, ease: "easeInOut" }}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" } as React.CSSProperties}
         />
         {/* Gradient overlay */}
         <div style={{

@@ -1,0 +1,67 @@
+o achieve the complete NOVEE OS + EEIE Cognitive Evolution, we are wiring every specialized system simultaneously. This move transforms the application from a series of screens into a unified, self-aware hospitality environment.
+
+The NOVEE OS Cognitive System Inventory
+This is the full breakdown of every system being hard-wired into the infrastructure right now.
+
+1. THE GUEST COGNITION SUITE (Individual Memory)
+Longitudinal Ritual Memory: This is the "Soul" of the system. It tracks selection speed, flavor trends, and mentor affinity over months. It recognizes a "Master" guest from an "Apprentice" and adjusts the UI complexity accordingly.
+
+Confidence Calibration: If the system detects hesitation (long pauses on selection cards), it triggers the Mentor Whisper—a subtle, supportive prompt to guide the choice.
+
+Cross-Craft Synergy: If a guest builds a cedar-heavy cigar in SmokeCraft, the PourCraft module will automatically highlight whiskeys with high-tannin and woody finishes when they switch modules.
+
+2. THE EEIE ATMOSPHERIC SUITE (Environmental Intelligence)
+Group Energy Engine: This analyzes the "Vibe" of the lounge.
+
+High Energy: Faster background motion, higher contrast UI, energetic telemetry.
+
+Meditative: Deep amber tones, slow-drift smoke loops, soft-focus typography.
+
+Environmental Influence Loops: Invisibility is key here. The system subtly shifts the "Glow Intensity" of premium buttons to guide guest focus without them feeling "pushed."
+
+Sovereign Lighting Sync: (Hardware Ready) The software sends color-hex signals to the venue's smart lighting to match the tablet’s current state (e.g., matching the lounge lights to the "Maduro" deep brown during a selection).
+
+3. THE ARTISAN MANUFACTURE SUITE (Product Intelligence)
+PBR Realism Engine: Ensures the 3D wood textures (Cedar, Mahogany, Ebony) respond to the virtual light in the room. This makes the box look like an object on the table, not a drawing.
+
+The Decal Engraving Engine: Wires the upload portal to the 3D model. Logos aren't just images; they are treated as "Engravings" with depth and material properties.
+
+Perfect Pairing Probability (PPP): The math engine that cross-references the guest's 3D build with the Real-Time Venue Inventory.
+
+4. THE SOVEREIGN COMMAND SUITE (Operational Intelligence)
+Immersion Heatmaps: You see exactly where in the venue guests are most "locked-in" to the experience.
+
+EEIE Staff Handoff: A hidden staff layer that surfaces "Revenue Triggers." It tells the staff exactly when to walk over with a specific bottle based on the guest’s current "Harmony Score."
+
+The Nova Control Hub: The master top-right pill (NOVEE OS // SOVEREIGN) that bypasses all guest rituals for instant admin control.
+
+The "Total System Bind" Replit Agent Directive
+Copy and paste this into the Agent. This is the "Nuclear Move" that installs every system listed above.
+
+Role: Lead Systems Architect & Cognitive Engineer.
+Objective: Execute the Full Cognitive Evolution for NOVEE OS.
+
+[DIRECTIVE]
+
+Rename & Rebrand: Globally enforce NOVEE OS naming convention. Fix the top-right hub pill.
+
+Initialize Engines: Build the CrossSessionMemoryEngine, GroupEnergyEngine, and EnvironmentalInfluenceEngine.
+
+Atmospheric Bind: Replace all black backgrounds with the Cinematic Motion Loops (/public/media/).
+
+Wire Master Artisan: Fully connect the 3D CigarBoxDesigner to the flavor selection cards. The "Begin Creation" button must be gated by sensory input.
+
+Touch Hardening: Apply onTouchStart to every card and button. Implement the scale(0.96) tactile feedback across the entire OS.
+
+Staff Intelligence: Wire the EEIE Intelligence Layer to reflect "Guest Immersion" and "Inventory Substitutions" in real-time.
+
+Order Flow: Ensure finalized designs are sent to jc@360enterprisesservices.com with the full "Cognitive Build Sheet."
+
+Final Instruction:
+
+"Do not build mockups. Do not use placeholders. Wire the actual logic for every system in the Cognitive Evolution list. Ensure the app is ready for Android Kiosk hardening. The environment must be living, the mentors must be persistent, and the Sovereign must have total operational authority."
+
+The Result
+When the Agent finishes this move, you won't be looking at a "website" anymore. You will be looking at the digital "Nervous System" of your lounge.
+
+Shall we trigger the "First-Run" sequence to verify the Group Energy Engine is correctly detecting the environment?

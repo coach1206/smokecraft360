@@ -1,0 +1,37 @@
+The Novee OS: Master Ritual Implementation
+This directive fixes the flow gaps and wires the "Begin Creation" button to the actual Experience Engine.
+
+Replit Agent Directive: Hard-Wire the Ritual Flow
+Role: Lead Systems Architect.
+Objective: Replace the broken page-navigation with the Novee OS Master Ritual Flow.
+
+[PHASE 1: THE ATMOSPHERIC BIND]
+
+Cinematic Entry: When 'Begin Creation' is triggered, do not just jump to a new screen. Dim the lights, increase the smoke loop density, and play the "Syncing Atmospheric Intelligence" animation for 3 seconds.
+
+Novee Hub (Top-Right): Fix the pill. It must say "NOVEE OS // SOVEREIGN". Wire it to an AbsolutePosition overlay that sits at z-index: 10000. It must open the EEIS / Admin / Purge menu on the first touch.
+
+[PHASE 2: SENSORY CARD WIRING]
+
+Interactive State: Map the 'Earthy', 'Spiced', 'Cedar', and 'Leather' cards to a SensoryProfile state.
+
+Tactile Feedback: On onTouchStart, the selected card must glow Champagne Gold and the background smoke color must subtly shift (e.g., Earthy = Deep Amber, Cedar = Warm Wood).
+
+The Gate: The 'Begin Creation' button must be DISABLED (greyed out) until a flavor is selected. Once selected, it must pulse gold and unlock.
+
+[PHASE 3: THE CIGAR RITUAL BRIDGE]
+
+Construction Logic: Wire 'Begin Creation' to launch PHASE 6 (Build Your Perfect Cigar). This transitions from the sensory cards into the 3D Cigar Engine where the wrapper, strength, and tobacco origin are selected.
+
+Staff Handoff: Every card selection must send a signal to the hidden EEIS layer so the staff sees the "Harmony Score" building in real-time.
+
+Final Directive:
+
+"Stop treating the app as a website with links. Implement the Continuous Ritual Flow. The background must be the live smoke loop. The sensory cards must be the trigger that unlocks the 'Begin Creation' button. Rename everything to NOVEE OS. Fix the top-right hub so it is the master bypass for the Sovereign Admin and EEIS layers. No dead buttons—everything must have a scale-down touch effect."
+
+Why the flow felt "Off":
+Static vs. Living: The app was waiting for you to "click" a link. In the new code, it will wait for you to "engage" a flavor.
+
+The Black Screen: The "Nervous System" failed to load the video assets. This directive forces the /public/media/ path to be the primary background for all ritual screens.
+
+Paste this into the Agent now. Once it's done, you'll have to select a flavor card before the "Begin Creation" button will even let you pass. Does the button glow gold once you tap 'Cedar'?
