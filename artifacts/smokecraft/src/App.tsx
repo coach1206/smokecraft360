@@ -27,9 +27,11 @@ import { SovereignOverrideHub }    from '@/components/SovereignOverrideHub';
 import { SuperAdminProvider }       from '@/contexts/SuperAdminContext';
 import { GhostEntryTrigger }        from '@/components/GhostEntryTrigger';
 import SuperAdminOverlay            from '@/components/SuperAdminOverlay';
-import { HapticProvider }           from '@/contexts/HapticContext';
-import { UniversalTouchAnchors }   from '@/components/UniversalTouchAnchors';
-import { UniversalBackButton }     from '@/components/UniversalBackButton';
+import { HapticProvider }              from '@/contexts/HapticContext';
+import { UniversalTouchAnchors }      from '@/components/UniversalTouchAnchors';
+import { UniversalBackButton }        from '@/components/UniversalBackButton';
+import { UnifiedCognitiveProvider }   from '@/contexts/UnifiedCognitiveContext';
+import { RouteTransitionOverlay }     from '@/components/RouteTransitionOverlay';
 
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
@@ -111,6 +113,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
     ? (localStorage.getItem('axiom_venue_id') ?? '00000000-0000-0000-0000-000000000000')
     : '00000000-0000-0000-0000-000000000000';
   return (
+    <UnifiedCognitiveProvider>
     <ExperienceProvider>
     <AudioProvider>
       <AuthProvider>
@@ -135,6 +138,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                           <UniversalTouchAnchors />
                                           <UniversalBackButton />
                                           {children}
+                                          <RouteTransitionOverlay />
                                           <EeisOverlay />
                                           <GhostEntryTrigger />
                                           <SuperAdminOverlay />
@@ -160,6 +164,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
       </AuthProvider>
     </AudioProvider>
     </ExperienceProvider>
+    </UnifiedCognitiveProvider>
   );
 }
 
@@ -903,6 +908,11 @@ export default function App() {
           </Route>
           <Route path="/axiom-pay">
             <SubPageProviders><AxiomPay /></SubPageProviders>
+          </Route>
+
+          {/* ── /portal — Pristine Boot State (System Purge destination) ── */}
+          <Route path="/portal">
+            <SubPageProviders><LivingPortal /></SubPageProviders>
           </Route>
 
           {/* ── Default: LivingPortal — motion home hub ── */}

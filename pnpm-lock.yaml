@@ -455,6 +455,12 @@ importers:
 
   artifacts/smokecraft:
     dependencies:
+      '@fontsource/cormorant-garamond':
+        specifier: ^5.2.11
+        version: 5.2.11
+      '@fontsource/space-mono':
+        specifier: ^5.2.9
+        version: 5.2.9
       '@react-three/drei':
         specifier: ^10.7.7
         version: 10.7.7(@react-three/fiber@9.6.1(@types/react@19.2.14)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.184.0))(@types/react@19.2.14)(@types/three@0.184.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.184.0)
@@ -895,6 +901,12 @@ packages:
 
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
+
+  '@fontsource/cormorant-garamond@5.2.11':
+    resolution: {integrity: sha512-5JjpN023lhA5soijgVT0BdRGzmlijm402ppjccMd6h+vRE0mX2lJnE+41UPfnlidrkV9/rCo1mf58WZlHnB0CA==}
+
+  '@fontsource/space-mono@5.2.9':
+    resolution: {integrity: sha512-b61faFOHEISQ/pD25G+cfGY9o/WW6lRv6hBQQfpWvEJ4y1V+S4gmth95EVyBE2VL3qDYHeVQ8nBzrplzdXTDDg==}
 
   '@gerrit0/mini-shiki@3.23.0':
     resolution: {integrity: sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg==}
@@ -4196,6 +4208,10 @@ snapshots:
       react-dom: 19.1.0(react@19.1.0)
 
   '@floating-ui/utils@0.2.11': {}
+
+  '@fontsource/cormorant-garamond@5.2.11': {}
+
+  '@fontsource/space-mono@5.2.9': {}
 
   '@gerrit0/mini-shiki@3.23.0':
     dependencies:

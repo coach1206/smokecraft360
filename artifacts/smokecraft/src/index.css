@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* ── Kiosk touch discipline — no text selection, no callout menus ── */
+*, *::before, *::after {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body, html, #root { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background: #000; }
 
 /* ── Film grain overlay — covers entire UI at all times ── */

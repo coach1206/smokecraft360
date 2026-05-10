@@ -248,6 +248,17 @@ export function HapticProvider({ children }: { children: ReactNode }) {
   const counter = useRef(0);
 
   const triggerHaptic = useCallback((type: HapticProfile, x = 0.5, y = 0.5) => {
+    // Web Vibrate API — physical resistance pulse on every touch class
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      const pattern: number | number[] =
+        type === "success" ? [20, 30, 20] :
+        type === "ghost"   ? [30, 20, 30] :
+        type === "kill"    ? [50, 30, 50] :
+        type === "error"   ? [20, 20, 20] :
+        type === "swipe"   ? 15           :
+        20;
+      try { navigator.vibrate(pattern); } catch { /* unsupported — ignore */ }
+    }
     const id = `hap-${++counter.current}`;
     setEvents(prev => [...prev.slice(-6), { id, type, x, y, ts: Date.now() }]);
   }, []);

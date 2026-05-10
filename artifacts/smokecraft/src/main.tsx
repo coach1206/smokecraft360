@@ -1,6 +1,15 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
+// ── Local fonts — offline-first kiosk resilience ─────────────────────────────
+// Loaded from /node_modules/@fontsource/ via Vite, bundled at build time.
+// Takes precedence over the Google Fonts CDN fallback in index.html.
+import "@fontsource/cormorant-garamond/400.css";
+import "@fontsource/cormorant-garamond/500.css";
+import "@fontsource/cormorant-garamond/600.css";
+import "@fontsource/cormorant-garamond/700.css";
+import "@fontsource/space-mono/400.css";
+import "@fontsource/space-mono/700.css";
 
 // ── Kiosk pinch-zoom guard ─────────────────────────────────────────────────
 // CSS touch-action:none blocks panning but some browsers still honour

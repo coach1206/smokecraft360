@@ -1,0 +1,25 @@
+The "Novee OS // Sovereign Intelligence" Fusion Directive
+Copy and paste this entire block into the Replit Agent. This instruction forces the integration of the "Soul" (ChatGPT's vision) and the "Nervous System" (the current architecture).
+Role: Master Systems Architect & Cognitive Engineer.
+Objective: Bridge all isolated modules into a single, living intelligence called NOVEE OS.
+[PHASE 1: THE CONTINUITY WRAPPER]
+1.	Unified Orchestrator: Mount the UnifiedCognitiveOrchestrator at the root of App.tsx. Every craft (Smoke, Pour, Brew, Vape) must now share a single global state for lounge_mood, guest_confidence, and ritual_pacing.
+2.	Environmental Morphing: Replace all hard page-cuts. When transitioning between modules, the GroupEnergyEngine must calculate the "Atmospheric Delta" and transition the background smoke/amber layers smoothly (using framer-motion for a 1.2s cross-fade).
+3.	The Portal Fix: Define the /portal route and ensure the SYSTEM PURGE returns the system to a pristine, high-prestige "Boot State" (The Living Portal).
+[PHASE 2: THE SONIC IGNITION]
+1.	Hard-Wire Howler.js: Remove the triggerSound() stubs in lib/audioEngine.ts. Implement a SpatialAudioSystem that layers:
+• Ambient Base: A persistent, low-frequency lounge hum that survives route changes.
+• Transition Swells: A cinematic "Sovereign Sweep" sound when moving between modules.
+• Tactile Material Sounds: A metallic "clink" for the Sovereign Pill and a soft "wood-grain" texture sound for the 3D designer.
+[PHASE 3: THE HARDWARE BOND (KIOSK HARDENING)]
+1.	Touch Discipline: Apply user-select: none and touch-action: none globally to prevent web-like behaviors (scrolling/highlighting).
+2.	Haptic Synthesis: Wire the HapticFeedbackEngine to trigger 20ms vibrations on every onTouchStart (using the Web Vibrate API) to simulate physical hardware resistance.
+3.	Local Asset Priority: Move Cormorant Garamond and Space Mono from CDN to /public/fonts/. Update CSS to call local @font-face for offline kiosk resilience.
+[PHASE 4: REMOTE AUTHORITY]
+1.	Pill-Integrated Kill-Switches: Add 'BLACKOUT' and 'API LOCK' buttons directly into the SovereignOverrideHub (the pill) using the existing remoteActions.ts logic. You must be able to freeze the room from the pill without opening the Admin Master.
+Final Instruction: > "Stop treating this as a website. Every system listed in the Sovereign System Ledger must now be fully cross-wired. The OS must feel aware, persistent, and autonomous. If I touch a card in SmokeCraft, the 'Pulse' of that touch must be felt in the EEIE Command Center instantly."
+What to look for after the Agent finishes:
+1.	The Sound: When you tap a sensory card, do you hear a high-fidelity "thud" or "shimmer"? If not, the Howler.js wiring is still a stub.
+2.	The Flow: Move from the 3D Designer back to the Craft Hub. Does the background smoke stay "alive" during the move, or does it blink to black? We want a smooth evolution.
+3.	The Control: Tap the Sovereign Pill. Can you see the Blackout option?
+Ready to fire this? This move makes the system "Dangerous" in the best way possible.

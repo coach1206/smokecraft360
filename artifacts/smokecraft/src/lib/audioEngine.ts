@@ -184,6 +184,105 @@ export function getAudioEnabled(): boolean {
   return enabled;
 }
 
+/**
+ * Sovereign Sweep — cinematic 1.2s module-transition sound.
+ * Sub-bass thud (38 Hz) → rising harmonic (180→640 Hz) → metallic shimmer.
+ * Fires on every inter-module navigation event via RouteTransitionOverlay.
+ */
+export function playSovereignSweep(): void {
+  const ac = getAudioContext();
+  if (!ac) return;
+  const t = ac.currentTime;
+
+  // Sub-bass impact (38 Hz, 240ms)
+  const sub = ac.createOscillator();
+  sub.type = "sine";
+  sub.frequency.setValueAtTime(38, t);
+  sub.frequency.exponentialRampToValueAtTime(18, t + 0.24);
+  const subG = ac.createGain();
+  subG.gain.setValueAtTime(0.32, t);
+  subG.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+  sub.connect(subG); subG.connect(ac.destination);
+  sub.start(t); sub.stop(t + 0.3);
+
+  // Rising harmonic sweep (180 → 640 Hz over 1.1s)
+  const sweep = ac.createOscillator();
+  sweep.type = "sine";
+  sweep.frequency.setValueAtTime(180, t + 0.05);
+  sweep.frequency.exponentialRampToValueAtTime(640, t + 1.1);
+  const sweepG = ac.createGain();
+  sweepG.gain.setValueAtTime(0.0, t + 0.05);
+  sweepG.gain.linearRampToValueAtTime(0.055, t + 0.3);
+  sweepG.gain.exponentialRampToValueAtTime(0.001, t + 1.15);
+  sweep.connect(sweepG); sweepG.connect(ac.destination);
+  sweep.start(t + 0.05); sweep.stop(t + 1.2);
+
+  // Metallic shimmer at peak (1 600 Hz)
+  const shimmer = ac.createOscillator();
+  shimmer.type = "sine";
+  shimmer.frequency.setValueAtTime(1600, t + 0.9);
+  shimmer.frequency.exponentialRampToValueAtTime(800, t + 1.15);
+  const shimG = ac.createGain();
+  shimG.gain.setValueAtTime(0.0, t + 0.9);
+  shimG.gain.linearRampToValueAtTime(0.045, t + 1.0);
+  shimG.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+  shimmer.connect(shimG); shimG.connect(ac.destination);
+  shimmer.start(t + 0.9); shimmer.stop(t + 1.25);
+}
+
+/**
+ * Wood Grain — warm bandpass noise burst (560 Hz centre, Q 3.2).
+ * 55ms — tactile "wood knock" texture. Use on material selection in 3D designer.
+ */
+export function playWoodGrain(): void {
+  const ac = getAudioContext();
+  if (!ac) return;
+  const t = ac.currentTime;
+
+  const samples = Math.floor(ac.sampleRate * 0.055);
+  const buf  = ac.createBuffer(1, samples, ac.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < samples; i++) {
+    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (samples * 0.18));
+  }
+  const src  = ac.createBufferSource();
+  src.buffer = buf;
+
+  const filt = ac.createBiquadFilter();
+  filt.type  = "bandpass";
+  filt.frequency.value = 560;
+  filt.Q.value         = 3.2;
+
+  const gain = ac.createGain();
+  gain.gain.setValueAtTime(0.30, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+
+  src.connect(filt); filt.connect(gain); gain.connect(ac.destination);
+  src.start(t);
+}
+
+/**
+ * Pill Clink — metallic tap: two stacked sines (1 380 Hz + 2 080 Hz),
+ * fast exponential decay (~280ms). Fires when the Sovereign Pill is opened.
+ */
+export function playPillClink(): void {
+  const ac = getAudioContext();
+  if (!ac) return;
+  const t = ac.currentTime;
+
+  for (const [hz, vol] of [[1380, 0.11], [2080, 0.055]] as const) {
+    const osc = ac.createOscillator();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(hz, t);
+    osc.frequency.exponentialRampToValueAtTime(hz * 0.68, t + 0.28);
+    const g = ac.createGain();
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+    osc.connect(g); g.connect(ac.destination);
+    osc.start(t); osc.stop(t + 0.3);
+  }
+}
+
 // ── Craft-specific ambient layers ─────────────────────────────────────────────
 
 /**

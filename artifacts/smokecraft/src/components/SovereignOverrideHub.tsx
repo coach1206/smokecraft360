@@ -1,31 +1,38 @@
 /**
  * SovereignOverrideHub — master staff bypass pill, fixed top-right.
  *
- * Idle:  Smoked Obsidian pill showing "◈ AXIOM OS" with Champagne Gold border.
- * Touch: Expands into a vertical command menu with three options:
+ * Idle:  Smoked Obsidian pill showing "◈ NOVEE OS // SOVEREIGN" with Champagne Gold border.
+ * Touch: Expands into a vertical command menu with five options:
  *
- *   OPERATIONAL INTELLIGENCE → triggers EEIS handoff overlay (triggerHandoff)
- *   SOVEREIGN CORE           → navigates to /admin-master (Level 0 access)
- *   SYSTEM PURGE             → purgeSessions + clearGuest + navigate("/")
+ *   EEIE INTEL    → triggers EEIS handoff overlay → /eeie-command
+ *   GHOST CORE    → activateGhost() → /admin-master
+ *   ── kill switches ──
+ *   BLACKOUT      → toggleKillSwitch("session_blackout") — freeze the room instantly
+ *   API LOCK      → toggleKillSwitch("api_disconnect")   — suspend AI calls globally
+ *   ── danger ──
+ *   SYSTEM PURGE  → purgeSessions + clearGuest → /portal (pristine Boot State)
  *
- * Mounted globally in SubPageProviders (App.tsx) alongside EeisOverlay so it
- * floats above every route without re-mounting.
+ * Phase 2: playPillClink() fires on every pill open.
+ * Phase 4: BLACKOUT + API LOCK directly in the pill — no Admin Master needed.
  */
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { createPortal }   from "react-dom";
+import { createPortal }      from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLocation }    from "wouter";
-import { useHandoff }     from "@/contexts/HandoffContext";
-import { useGuestProfile } from "@/contexts/GuestProfileContext";
+import { useLocation }       from "wouter";
+import { useHandoff }        from "@/contexts/HandoffContext";
+import { useGuestProfile }   from "@/contexts/GuestProfileContext";
 import { useCraftExperience } from "@/contexts/CraftExperienceContext";
-import { useSuperAdmin }  from "@/contexts/SuperAdminContext";
+import { useSuperAdmin }     from "@/contexts/SuperAdminContext";
+import { playPillClink }     from "@/lib/audioEngine";
 
 // ── Design tokens ──────────────────────────────────────────────────────────
-const OBSIDIAN   = "rgba(10,9,8,0.90)";
+const OBSIDIAN   = "rgba(10,9,8,0.92)";
 const GOLD_PILL  = "#D4AF37";
 const AMBER      = "#D48B00";
 const DANGER     = "#EF4444";
+const KILL_RED   = "#FF2D2D";
+const KILL_AMBER = "#F59E0B";
 const BORDER     = "rgba(212,175,55,0.42)";
 const MUTED      = "rgba(212,175,55,0.46)";
 const FONT       = "'Space Mono', 'Courier New', monospace";
@@ -47,6 +54,28 @@ function IconCore() {
       <rect x="3" y="5" width="8" height="7" rx="1.2" stroke={GOLD_PILL} strokeWidth="1.2"/>
       <path d="M5 5V4a2 2 0 0 1 4 0v1" stroke={GOLD_PILL} strokeWidth="1.2" strokeLinecap="round"/>
       <circle cx="7" cy="8.5" r="1" fill={GOLD_PILL}/>
+    </svg>
+  );
+}
+
+function IconBlackout({ active }: { active: boolean }) {
+  const c = active ? KILL_RED : "rgba(255,45,45,0.70)";
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <circle cx="7" cy="7" r="5.5" stroke={c} strokeWidth="1.2"/>
+      <path d="M7 3v4" stroke={c} strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="7" cy="9.5" r="0.9" fill={c}/>
+    </svg>
+  );
+}
+
+function IconApiLock({ active }: { active: boolean }) {
+  const c = active ? KILL_AMBER : "rgba(245,158,11,0.75)";
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M3.5 6.5V5a3.5 3.5 0 0 1 7 0v1.5" stroke={c} strokeWidth="1.2" strokeLinecap="round"/>
+      <rect x="2.5" y="6.5" width="9" height="6" rx="1.5" stroke={c} strokeWidth="1.2"/>
+      <path d="M7 9v1.5" stroke={c} strokeWidth="1.4" strokeLinecap="round"/>
     </svg>
   );
 }
@@ -78,10 +107,11 @@ interface MenuItemProps {
   sub:       string;
   accent:    string;
   danger?:   boolean;
+  active?:   boolean;
   onClick:   () => void;
 }
 
-function MenuItem({ icon, label, sub, accent, danger, onClick }: MenuItemProps) {
+function MenuItem({ icon, label, sub, accent, danger, active, onClick }: MenuItemProps) {
   const fire = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
     onClick();
@@ -99,15 +129,19 @@ function MenuItem({ icon, label, sub, accent, danger, onClick }: MenuItemProps) 
         gap:        10,
         padding:    "11px 14px",
         borderRadius: 8,
-        border:     "none",
-        background: danger ? "rgba(239,68,68,0.06)" : "transparent",
+        border:     active ? `1px solid ${accent}50` : "none",
+        background: active
+          ? `${accent}10`
+          : danger
+            ? "rgba(239,68,68,0.06)"
+            : "transparent",
         cursor:     "pointer",
         width:      "100%",
         textAlign:  "left",
         minHeight:  52,
         touchAction: "manipulation",
         WebkitTapHighlightColor: "transparent",
-        transition: "background 0.15s",
+        transition: "background 0.15s, border-color 0.18s",
       }}
     >
       {/* Icon circle */}
@@ -115,12 +149,14 @@ function MenuItem({ icon, label, sub, accent, danger, onClick }: MenuItemProps) 
         width:    34,
         height:   34,
         borderRadius: "50%",
-        background: `${accent}12`,
-        border:   `1px solid ${accent}30`,
+        background: `${accent}${active ? "22" : "12"}`,
+        border:   `1px solid ${accent}${active ? "55" : "30"}`,
         display:  "flex",
         alignItems: "center",
         justifyContent: "center",
         flexShrink: 0,
+        boxShadow: active ? `0 0 10px ${accent}40` : "none",
+        transition: "box-shadow 0.18s",
       }}>
         {icon}
       </div>
@@ -130,21 +166,37 @@ function MenuItem({ icon, label, sub, accent, danger, onClick }: MenuItemProps) 
         <div style={{
           fontSize:      10.5,
           fontWeight:    700,
-          color:         accent,
+          color:         active ? accent : accent,
           letterSpacing: "0.1em",
           fontFamily:    FONT,
           lineHeight:    1,
+          display:       "flex",
+          alignItems:    "center",
+          gap:           6,
         }}>
           {label}
+          {active && (
+            <span style={{
+              fontSize:      7,
+              padding:       "2px 5px",
+              borderRadius:  4,
+              background:    `${accent}22`,
+              border:        `1px solid ${accent}55`,
+              color:         accent,
+              letterSpacing: "0.08em",
+            }}>
+              ACTIVE
+            </span>
+          )}
         </div>
         <div style={{
           fontSize:      8.5,
-          color:         "rgba(212,175,55,0.40)",
+          color:         active ? `${accent}80` : "rgba(212,175,55,0.40)",
           marginTop:     4,
           letterSpacing: "0.06em",
           fontFamily:    FONT,
         }}>
-          {sub}
+          {active ? "Tap to disable" : sub}
         </div>
       </div>
 
@@ -156,19 +208,52 @@ function MenuItem({ icon, label, sub, accent, danger, onClick }: MenuItemProps) 
   );
 }
 
+// ── Divider ────────────────────────────────────────────────────────────────
+
+function Divider({ label }: { label?: string }) {
+  return (
+    <div style={{
+      margin:     "4px 14px",
+      height:     1,
+      background: BORDER,
+      position:   "relative",
+      display:    "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}>
+      {label && (
+        <span style={{
+          position:   "absolute",
+          background: OBSIDIAN,
+          padding:    "0 6px",
+          fontSize:   7,
+          color:      MUTED,
+          letterSpacing: "0.14em",
+          fontFamily: FONT,
+        }}>
+          {label}
+        </span>
+      )}
+    </div>
+  );
+}
+
 // ── Main component ─────────────────────────────────────────────────────────
 
 export function SovereignOverrideHub() {
-  const [open, setOpen]       = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const pillRef               = useRef<HTMLButtonElement>(null);
+  const [open, setOpen]         = useState(false);
+  const [mounted, setMounted]   = useState(false);
+  const pillRef                 = useRef<HTMLButtonElement>(null);
   const [pillRect, setPillRect] = useState<DOMRect | null>(null);
 
-  const [, navigate]          = useLocation();
-  const { triggerHandoff }    = useHandoff();
-  const { clearGuest }        = useGuestProfile();
-  const { purgeSessions }     = useCraftExperience();
-  const { activateGhost }     = useSuperAdmin();
+  const [, navigate]            = useLocation();
+  const { triggerHandoff }      = useHandoff();
+  const { clearGuest }          = useGuestProfile();
+  const { purgeSessions }       = useCraftExperience();
+  const { activateGhost, killSwitches, toggleKillSwitch } = useSuperAdmin();
+
+  const isBlackoutActive = killSwitches.find(s => s.name === "session_blackout")?.enabled ?? false;
+  const isApiLockActive  = killSwitches.find(s => s.name === "api_disconnect")?.enabled  ?? false;
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -193,24 +278,32 @@ export function SovereignOverrideHub() {
   const handleOpen = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
     if (pillRef.current) setPillRect(pillRef.current.getBoundingClientRect());
+    const willOpen = !open;
     setOpen(v => !v);
-  }, []);
+    if (willOpen) playPillClink();
+  }, [open]);
 
   // ── Action handlers ──────────────────────────────────────────────────────
 
   const handleEeis = useCallback(() => {
     setOpen(false);
-    // Also arm the EEIS overlay so it can be toggled from within the page
     triggerHandoff(window.innerWidth / 2, window.innerHeight / 2);
     setTimeout(() => navigate("/eeie-command"), 80);
   }, [triggerHandoff, navigate]);
 
   const handleGhostCore = useCallback(() => {
     setOpen(false);
-    // Force sovereign permission state — bypasses all auth guards
     activateGhost();
     setTimeout(() => navigate("/admin-master"), 80);
   }, [activateGhost, navigate]);
+
+  const handleBlackout = useCallback(() => {
+    toggleKillSwitch("session_blackout");
+  }, [toggleKillSwitch]);
+
+  const handleApiLock = useCallback(() => {
+    toggleKillSwitch("api_disconnect");
+  }, [toggleKillSwitch]);
 
   const handlePurge = useCallback(() => {
     setOpen(false);
@@ -241,8 +334,8 @@ export function SovereignOverrideHub() {
         border:               `1px solid ${BORDER}`,
         borderRadius:         14,
         padding:              "8px 6px",
-        minWidth:             240,
-        boxShadow:            `0 12px 48px rgba(0,0,0,0.80), 0 0 0 1px rgba(212,175,55,0.06) inset, 0 0 32px rgba(212,175,55,0.06)`,
+        minWidth:             248,
+        boxShadow:            `0 12px 48px rgba(0,0,0,0.82), 0 0 0 1px rgba(212,175,55,0.06) inset, 0 0 32px rgba(212,175,55,0.06)`,
       }}
     >
       {/* Header */}
@@ -261,11 +354,11 @@ export function SovereignOverrideHub() {
       }}>
         <div style={{
           width:  5, height: 5, borderRadius: "50%",
-          background: "#22c55e",
-          boxShadow: "0 0 6px #22c55e",
-          animation: "hub-pulse 2s ease-in-out infinite",
+          background: (isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e",
+          boxShadow:  `0 0 6px ${(isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e"}`,
+          animation:  "hub-pulse 2s ease-in-out infinite",
         }} />
-        SOVEREIGN PROTOCOL · ACTIVE
+        {(isBlackoutActive || isApiLockActive) ? "⚠ SOVEREIGN OVERRIDE — ENGAGED" : "SOVEREIGN PROTOCOL · ACTIVE"}
       </div>
 
       {/* Inject pulse keyframe once */}
@@ -291,8 +384,26 @@ export function SovereignOverrideHub() {
         onClick={handleGhostCore}
       />
 
-      {/* Divider */}
-      <div style={{ margin: "4px 14px", height: 1, background: BORDER }} />
+      <Divider label="REMOTE AUTHORITY" />
+
+      <MenuItem
+        icon={<IconBlackout active={isBlackoutActive} />}
+        label="BLACKOUT"
+        sub="Purge all active guest sessions instantly"
+        accent={KILL_RED}
+        active={isBlackoutActive}
+        onClick={handleBlackout}
+      />
+      <MenuItem
+        icon={<IconApiLock active={isApiLockActive} />}
+        label="API LOCK"
+        sub="Suspend AI recommendation calls globally"
+        accent={KILL_AMBER}
+        active={isApiLockActive}
+        onClick={handleApiLock}
+      />
+
+      <Divider />
 
       <MenuItem
         icon={<IconPurge />}
@@ -323,7 +434,7 @@ export function SovereignOverrideHub() {
           alignItems:           "center",
           gap:                  7,
           background:           open ? "rgba(212,175,55,0.10)" : OBSIDIAN,
-          border:               `1px solid ${open ? GOLD_PILL : BORDER}`,
+          border:               `1px solid ${open ? GOLD_PILL : (isBlackoutActive || isApiLockActive) ? KILL_RED : BORDER}`,
           borderRadius:         999,
           padding:              "9px 16px",
           backdropFilter:       "blur(20px)",
@@ -333,9 +444,11 @@ export function SovereignOverrideHub() {
           touchAction:          "manipulation",
           WebkitTapHighlightColor: "transparent",
           transition:           "background 0.15s, border-color 0.18s, box-shadow 0.18s",
-          boxShadow:            open
-            ? `0 0 20px rgba(212,175,55,0.20)`
-            : "0 2px 12px rgba(0,0,0,0.55)",
+          boxShadow:            (isBlackoutActive || isApiLockActive)
+            ? `0 0 20px rgba(255,45,45,0.30)`
+            : open
+              ? `0 0 20px rgba(212,175,55,0.20)`
+              : "0 2px 12px rgba(0,0,0,0.55)",
         }}
       >
         {/* Status dot */}
@@ -343,8 +456,8 @@ export function SovereignOverrideHub() {
           width:        6,
           height:       6,
           borderRadius: "50%",
-          background:   "#22c55e",
-          boxShadow:    "0 0 7px #22c55e",
+          background:   (isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e",
+          boxShadow:    `0 0 7px ${(isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e"}`,
           flexShrink:   0,
           animation:    "hub-pulse 2s ease-in-out infinite",
         }} />

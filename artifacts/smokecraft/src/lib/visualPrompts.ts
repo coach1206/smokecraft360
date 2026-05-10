@@ -141,9 +141,21 @@ export const SOUND_HOOKS = {
 
 export type SoundHook = typeof SOUND_HOOKS[CraftType][keyof typeof SOUND_HOOKS[CraftType]];
 
-/** Trigger a sound hook by name — wired to craftAudioEngine Web Audio API synthesis. */
-export function triggerSound(hook: SoundHook, volume = 0.7): void {
-  import("../services/craftAudioEngine")
-    .then(({ craftAudioEngine }) => craftAudioEngine.triggerHook(hook, volume))
-    .catch(() => { /* audio errors must never surface */ });
+/** Trigger a sound hook by name — wired to Web Audio API synthesis in audioEngine. */
+export function triggerSound(hook: SoundHook, _volume = 0.7): void {
+  import("../lib/audioEngine").then((audio) => {
+    const clinkHooks  = ["smoke_glass_clink", "pour_ice_clink", "pour_liquid_pour", "brew_foam_pour"] as const;
+    const switchHooks = ["smoke_lighter_flick", "brew_pint_set_down", "vape_device_click"] as const;
+    const woodHooks   = [] as const;
+
+    if ((clinkHooks as readonly string[]).includes(hook)) {
+      audio.playClink();
+    } else if ((switchHooks as readonly string[]).includes(hook)) {
+      audio.playSwitch();
+    } else if ((woodHooks as readonly string[]).includes(hook)) {
+      audio.playWoodGrain();
+    } else {
+      audio.playClick();
+    }
+  }).catch(() => { /* audio errors must never surface */ });
 }

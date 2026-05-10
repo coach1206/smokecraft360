@@ -1092,7 +1092,7 @@ export default function CigarArtisan360() {
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const }}>
             {(Object.keys(WOOD) as WoodId[]).map(id => (
-              <Pill key={id} label={WOOD[id].label} active={wood === id} accent={GOLD} onClick={() => setWood(id)} />
+              <Pill key={id} label={WOOD[id].label} active={wood === id} accent={GOLD} onClick={() => { setWood(id); import("@/lib/audioEngine").then(a => a.playWoodGrain()).catch(() => {}); }} />
             ))}
           </div>
           <div style={{ fontSize: 7.5, color: "rgba(212,175,55,0.28)", marginTop: 6, letterSpacing: "0.1em" }}>
