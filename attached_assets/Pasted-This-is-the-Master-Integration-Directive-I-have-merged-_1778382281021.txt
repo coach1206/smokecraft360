@@ -1,0 +1,56 @@
+This is the Master Integration Directive. I have merged your sensory ritual requirements with the high-level cognitive evolution architecture. This creates a unified "nervous system" where the 3D Artisan rituals are not just buttons, but data points that feed the venue's collective intelligence.
+
+The NOVEE OS // EEIE Unified Cognitive Command
+Copy the entire block below and paste it directly into the Replit Agent. This handles rebranding, functional wiring, and cognitive integration in one move.
+
+Role: Lead Systems Architect & Cognitive Engineer.
+Objective: Execute the Full Cognitive Evolution for NOVEE OS.
+Constraint: No placeholders. Hard-wire all logic for longitudinal memory, group energy, and the Master Artisan ritual.
+
+[PHASE 1: BRAND & AUTHORITY RECONSTRUCTION]
+Global Rebrand: Rename all instances of "AXIOM" to NOVEE OS.
+
+Sovereign Hub: Fix the top-right pill to read "NOVEE OS // SOVEREIGN". Set z-index: 10000. Wire to expand on onTouchStart to reveal: EEIE Intel, Ghost Core, and System Purge.
+
+Touch Discipline: Apply onTouchStart to all interactive cards. Implement a scale(0.96) tactile compression and a Champagne Gold border glow on active selection.
+
+[PHASE 2: THE COGNITIVE ENGINES (WIRING)]
+CrossSessionMemoryEngine: Initialize a persistent JSON-based memory store. Track guest "Confidence Progression" (selection speed) and "Mentor Affinity."
+
+GroupEnergyEngine: Analyze collective tablet states.
+
+Immersion Mode: If guests are in deep ritual, slow all background .mp4 loops to 0.5x speed and increase contrast.
+
+High Energy Mode: If ritual activity is fast, increase motion loops to 1.2x and brighten ember particles.
+
+EnvironmentalInfluenceEngine: If a guest pauses for >10s on a sensory card, subtly pulse the glow of the most "Harmonious" selection to guide choice invisibly.
+
+[PHASE 3: MASTER ARTISAN RITUAL HARD-WIRING]
+Atmospheric Bind: The Master Artisan background must never be black. Mount the cinematic smoke loop /public/media/smoke_ritual_4k.mp4 at 40% opacity.
+
+The Sensory Gate: In the SmokeCraft sensory screen, the "BEGIN CREATION" button must be disabled and opacity: 0.2. It only unlocks and pulses gold once a sensory card (Earthy, Cedar, etc.) is selected.
+
+3D Artisan Bridge: Wire "Begin Creation" to launch the Three.js CigarBoxDesigner.
+
+Wood Mapping: Cedar, Mahogany, Ebony textures must be PBR-active.
+
+Decal Engine: Wire the upload portal for custom logos to map as physical engravings on the 3D model.
+
+Order Flow: On finalization, email the "Cognitive Build Sheet" to jc@360enterprisesservices.com.
+
+[PHASE 4: EEIE STAFF INTELLIGENCE]
+Operational Heatmap: Update the Super-Admin Core to display live "Immersion Density" across the venue.
+
+Revenue Triggers: When a guest hits a "High Harmony" score in a ritual, send a silent notification to the EEIE staff overlay suggesting a premium spirit pairing.
+
+[FINAL DIRECTIVE]
+"Execute the NOVEE OS Cognitive Evolution. Merge the ritualistic storytelling of SmokeCraft with the longitudinal intelligence of the EEIE. Every touch must be responsive, every transition cinematic, and every selection remembered. This is a living hospitality environment, not a website. Hardware-lock the UI for Android tablet deployment."
+
+How to Verify the Evolution
+Look at the Pill: It should now say NOVEE OS. Tap it to ensure your admin overrides are active.
+
+Test the Gate: Go to the Master Artisan sensory screen. The "Begin Creation" button should be dead until you touch a flavor card.
+
+Check the "Breath": Open the app on two different browser tabs. As you interact with one, observe if the background motion on the other begins to shift speed—that is the Group Energy Engine starting to think.
+
+Shall we initialize the first "Sovereign Purge" to clear the cache and let the new Cognitive Memory Engine start fresh?
