@@ -236,6 +236,20 @@ button, [role="button"] {
   --titan-blur:     20px;
 }
 
+/* ── Global Motion Rule — all UI breathes at lounge tempo ── */
+* {
+  transition-duration:        calc(0.3s / var(--hb-mult, 0.85)) !important;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+/* Preserve explicit animation keyframes — only transitions inherit tempo */
+*[class*="titan-breathing"],
+*[class*="ax-kb-"],
+*[class*="ax-grain"],
+*[class*="ax-scan"],
+*[class*="ax-haptic"] {
+  transition-duration: unset !important;
+}
+
 /* ── Obsidian depth — base surface for all dark panels ── */
 .titan-obsidian {
   background: var(--titan-obsidian) !important;
@@ -299,21 +313,13 @@ button, [role="button"] {
   pointer-events: none;
 }
 
-/* ── Sovereign Blackout — full-room freeze overlay ── */
-.titan-blackout-active::before {
-  content:          '';
-  position:         fixed;
-  inset:            0;
-  z-index:          2147483640;
-  background:       rgba(0, 0, 0, 0.92);
-  backdrop-filter:  blur(4px);
-  pointer-events:   none;
-  animation:        titan-blackout-in 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-@keyframes titan-blackout-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+/* ── Sovereign Blackout — hardware-composited full-room freeze ── */
+/* Applied directly to document.body via TitanNervousSystem.override('BLACKOUT') */
+.titan-blackout-active {
+  filter:         brightness(0) grayscale(1) !important;
+  pointer-events: none !important;
+  cursor:         none !important;
+  transition:     filter 1.2s ease-in-out !important;
 }
 
 /* ── Long-press button — recessed depth on hold ── */

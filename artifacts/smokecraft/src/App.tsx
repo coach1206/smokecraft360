@@ -32,6 +32,9 @@ import { UniversalTouchAnchors }      from '@/components/UniversalTouchAnchors';
 import { UniversalBackButton }        from '@/components/UniversalBackButton';
 import { UnifiedCognitiveProvider }   from '@/contexts/UnifiedCognitiveContext';
 import { RouteTransitionOverlay }     from '@/components/RouteTransitionOverlay';
+import { TrifectaProvider }           from '@/contexts/TrifectaContext';
+import { SovereignInsightCube }       from '@/components/SovereignInsightCube';
+import { useSovereignSocket }         from '@/hooks/useSovereignSocket';
 
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
@@ -108,6 +111,12 @@ function PageLoader() {
   );
 }
 
+/* ── Thin bridge — mounts sovereign socket listener once ────── */
+function SovereignSocketBridge() {
+  useSovereignSocket();
+  return null;
+}
+
 /* ── Full provider stack for all sub-pages ──────────────────── */
 function SubPageProviders({ children }: { children: React.ReactNode }) {
   const venueId = typeof localStorage !== 'undefined'
@@ -135,6 +144,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                   <EnvironmentProvider>
                                     <OrchestratorProvider>
                                       <SuperAdminProvider>
+                                        <TrifectaProvider>
                                         <HapticProvider>
                                           <UniversalTouchAnchors />
                                           <UniversalBackButton />
@@ -144,7 +154,10 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                           <GhostEntryTrigger />
                                           <SuperAdminOverlay />
                                           <SovereignOverrideHub />
+                                          <SovereignInsightCube />
+                                          <SovereignSocketBridge />
                                         </HapticProvider>
+                                        </TrifectaProvider>
                                       </SuperAdminProvider>
                                     </OrchestratorProvider>
                                   </EnvironmentProvider>
