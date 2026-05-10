@@ -105,6 +105,9 @@ const VillaSovereign               = lazy(() => import('@/pages/VillaSovereign')
 const SovereignDistributionVault   = lazy(() => import('@/pages/SovereignDistributionVault'));
 const SovereignGate                = lazy(() => import('@/pages/SovereignGate'));
 const SovereignVerify              = lazy(() => import('@/pages/SovereignVerify'));
+const AmbassadorGate               = lazy(() => import('@/pages/AmbassadorGate'));
+const AmbassadorVerify             = lazy(() => import('@/pages/AmbassadorVerify'));
+const AmbassadorHub                = lazy(() => import('@/pages/AmbassadorHub'));
 
 function PageLoader() {
   return (
@@ -939,6 +942,15 @@ export default function App() {
           </Route>
           <Route path="/sovereign-verify">
             <SovereignVerify />
+          </Route>
+          <Route path="/ambassador-gate">
+            <AmbassadorGate />
+          </Route>
+          <Route path="/ambassador-verify">
+            <AmbassadorVerify />
+          </Route>
+          <Route path="/ambassador-hub">
+            <AmbassadorHub />
           </Route>
 
           {/* ── /portal — Pristine Boot State (System Purge destination) ── */}

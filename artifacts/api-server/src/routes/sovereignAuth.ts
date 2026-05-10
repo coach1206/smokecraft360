@@ -196,4 +196,116 @@ router.post("/sovereign/revoke", (req, res) => {
   }
 });
 
+// ── Ambassador Identity ───────────────────────────────────────────────────────
+
+/** Hardcoded Ambassador email — SOVEREIGN_EMAIL env var does NOT override this. */
+const AMBASSADOR_ROOT_EMAIL = "chrislclark@gmail.com";
+function ambassadorEmail(): string {
+  return (process.env.AMBASSADOR_EMAIL ?? AMBASSADOR_ROOT_EMAIL).toLowerCase().trim();
+}
+
+const AmbassadorMagicLinkSchema = z.object({
+  email: z.string().email().toLowerCase().trim(),
+});
+
+/**
+ * POST /api/ambassador/magic-link
+ * Issues a 15-min signed magic link only for the hardcoded Ambassador email.
+ * Always returns { dispatched: true } (no enumeration).
+ */
+router.post("/ambassador/magic-link", async (req, res) => {
+  const parsed = AmbassadorMagicLinkSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid email" }); return; }
+  const { email } = parsed.data;
+
+  if (email !== ambassadorEmail()) {
+    logger.info({ email }, "Ambassador magic link request — email not authorised (silent)");
+    res.json({ dispatched: true });
+    return;
+  }
+
+  try {
+    const token = await new SignJWT({ email, type: "ambassador-magic", role: "AMBASSADOR", operator: "Clark" })
+      .setProtectedHeader({ alg: "HS256" })
+      .setExpirationTime("15m")
+      .setIssuedAt()
+      .sign(secret());
+
+    const link = `${baseUrl()}/ambassador-verify?token=${token}`;
+
+    await sendEmail({
+      to:      email,
+      subject: "NOVEE OS · Ambassador Access — Magic Link",
+      html:    `
+<div style="background:#050505;color:#F5F2ED;font-family:'Courier New',monospace;padding:44px;max-width:540px;margin:0 auto;border:1px solid rgba(212,175,55,0.28);border-radius:8px;">
+  <div style="font-size:10px;letter-spacing:0.30em;color:rgba(212,175,55,0.40);margin-bottom:28px;">
+    NOVEE OS · AMBASSADOR COMMAND DECK
+  </div>
+  <h1 style="font-size:22px;color:#D4AF37;letter-spacing:0.16em;font-weight:300;margin-bottom:8px;">
+    AMBASSADOR ACCESS
+  </h1>
+  <p style="font-size:11px;color:rgba(245,242,237,0.45);margin-bottom:32px;line-height:1.8;">
+    Hello <strong style="color:#F5F2ED;">Clark</strong>,<br/>
+    Your demo access link is ready. This link expires in
+    <strong style="color:#D4AF37;">15 minutes</strong>.
+  </p>
+  <a href="${link}" style="display:inline-block;padding:14px 32px;background:#D4AF37;color:#050505;text-decoration:none;border-radius:6px;font-size:12px;font-weight:800;letter-spacing:0.14em;margin-bottom:32px;">
+    OPEN AMBASSADOR COMMAND DECK
+  </a>
+  <p style="font-size:9px;color:rgba(245,242,237,0.20);line-height:1.8;margin-top:24px;word-break:break-all;">
+    Or paste: ${link}
+  </p>
+  <div style="margin-top:32px;padding-top:20px;border-top:1px solid rgba(212,175,55,0.12);">
+    <div style="font-size:8px;color:rgba(245,242,237,0.18);letter-spacing:0.18em;">
+      AUTHORIZED AMBASSADOR: CLARK // 360 ENTERPRISES SERVICES LLC<br/>
+      NOVEE OS · DEMO MODE · TITAN V 5.2.0
+    </div>
+  </div>
+</div>`,
+    });
+
+    logger.info({ email }, "Ambassador magic link dispatched");
+  } catch (err) {
+    logger.error({ err }, "Failed to send ambassador magic link");
+  }
+
+  res.json({ dispatched: true });
+});
+
+/**
+ * GET /api/ambassador/verify-magic/:token
+ * Verifies the 15-min Ambassador magic link JWT.
+ * Issues a 7-day Ambassador session JWT flagged ROLE: AMBASSADOR.
+ */
+router.get("/ambassador/verify-magic/:token", async (req, res) => {
+  const { token } = req.params;
+  if (!token) { res.status(400).json({ error: "No token" }); return; }
+
+  try {
+    const { payload } = await jwtVerify(token, secret());
+    if (payload["type"] !== "ambassador-magic") throw new Error("Wrong token type");
+    if (payload["email"] !== ambassadorEmail()) {
+      res.status(403).json({ error: "Email not authorised" });
+      return;
+    }
+
+    const sessionToken = await new SignJWT({
+      email:    payload["email"],
+      type:     "ambassador-session",
+      role:     "AMBASSADOR",
+      operator: "Clark",
+      entity:   "360 Enterprises Services LLC",
+    })
+      .setProtectedHeader({ alg: "HS256" })
+      .setExpirationTime("7d")
+      .setIssuedAt()
+      .sign(secret());
+
+    logger.info({ email: payload["email"] }, "Ambassador session token issued");
+    res.json({ ok: true, sessionToken, role: "AMBASSADOR", operator: "Clark" });
+  } catch {
+    res.status(401).json({ error: "Invalid or expired magic link" });
+  }
+});
+
 export default router;
