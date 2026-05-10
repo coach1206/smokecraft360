@@ -633,6 +633,86 @@ export default function EEIECommandCenter() {
           </div>
         </div>
 
+        {/* ── Titan V Status Band ─────────────────────────────────────── */}
+        <div style={{
+          maxWidth:      1100,
+          margin:        "0 auto",
+          padding:       "6px 20px",
+          display:       "flex",
+          alignItems:    "center",
+          gap:           12,
+          borderTop:     "1px solid rgba(212,175,55,0.14)",
+          background:    "rgba(5,5,5,0.55)",
+        }}>
+          {/* Status: Engine */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+            <div style={{
+              width: 5, height: 5, borderRadius: "50%",
+              background: "#00FF41",
+              boxShadow: "0 0 7px #00FF41",
+              animation: "hub-pulse 2s ease-in-out infinite",
+            }} />
+            <span style={{
+              fontFamily:    "'Space Mono', monospace",
+              fontSize:      8.5,
+              color:         "#00FF41",
+              letterSpacing: "0.16em",
+              textShadow:    "0 0 8px rgba(0,255,65,0.55)",
+              textTransform: "uppercase",
+            }}>
+              TITAN V ENGINE: OPERATIONAL
+            </span>
+          </div>
+
+          {/* Environmental Pulse Waveform */}
+          <div style={{
+            flex:       1,
+            height:     20,
+            overflow:   "hidden",
+            display:    "flex",
+            alignItems: "center",
+            opacity:    0.7,
+          }}>
+            <div style={{
+              display:           "flex",
+              width:             "200%",
+              animation:         "titan-wave-scroll calc(2s / var(--hb-mult, 0.85)) linear infinite",
+            }}>
+              {[0, 1].map(i => (
+                <svg key={i} width="50%" height="20" viewBox="0 0 300 20" preserveAspectRatio="none" style={{ flexShrink: 0 }}>
+                  <path
+                    d="M0,10 Q18.75,0 37.5,10 Q56.25,20 75,10 Q93.75,0 112.5,10 Q131.25,20 150,10 Q168.75,0 187.5,10 Q206.25,20 225,10 Q243.75,0 262.5,10 Q281.25,20 300,10"
+                    stroke="#D4AF37"
+                    strokeWidth="1.2"
+                    fill="none"
+                    strokeOpacity="0.65"
+                  />
+                </svg>
+              ))}
+            </div>
+          </div>
+
+          {/* Status: Kiosk Lock */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+            <div style={{
+              width: 5, height: 5, borderRadius: "50%",
+              background: "#00FF41",
+              boxShadow: "0 0 7px #00FF41",
+              animation: "hub-pulse 1.6s ease-in-out infinite",
+            }} />
+            <span style={{
+              fontFamily:    "'Space Mono', monospace",
+              fontSize:      8.5,
+              color:         "#00FF41",
+              letterSpacing: "0.16em",
+              textShadow:    "0 0 8px rgba(0,255,65,0.55)",
+              textTransform: "uppercase",
+            }}>
+              KIOSK LOCK: ABSOLUTE
+            </span>
+          </div>
+        </div>
+
         {/* Tab bar */}
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 20px", display: "flex", gap: 2, overflowX: "auto", borderTop: `1px solid rgba(255,255,255,0.06)` }}>
           {TABS.map(t => {
@@ -687,6 +767,8 @@ export default function EEIECommandCenter() {
 
       <style>{`
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes hub-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+        @keyframes titan-wave-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
       `}</style>
     </div>
   );
