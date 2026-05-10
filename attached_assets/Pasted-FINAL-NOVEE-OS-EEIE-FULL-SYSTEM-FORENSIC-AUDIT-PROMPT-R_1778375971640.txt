@@ -1,0 +1,458 @@
+FINAL
+
+NOVEE OS + EEIE FULL SYSTEM FORENSIC AUDIT PROMPT
+
+REPLIT MASTER DIAGNOSTIC + STRUCTURAL ANALYSIS PROMPT
+
+Paste this directly into Replit Agent.
+
+⸻
+
+MISSING / REQUIRED
+
+The platform must NOT perform a surface-level code scan.
+
+This audit must expose:
+
+* broken systems
+* partial implementations
+* disconnected orchestration
+* dead routes
+* duplicate logic
+* stale components
+* inconsistent state systems
+* memory leaks
+* route conflicts
+* UI inheritance issues
+* incomplete backend wiring
+* fake AI logic
+* disconnected telemetry
+* environmental inconsistencies
+* EEIE orchestration gaps
+* cinematic inconsistency
+* behavioral intelligence gaps
+* staff/guest desynchronization
+* unfinished craft synchronization
+* unused services
+* abandoned middleware
+* duplicate animations
+* stale database schemas
+* unprotected endpoints
+* performance bottlenecks
+* hydration problems
+* websocket issues
+* broken persistence
+* fragmented recommendation logic
+* old AXIOM naming remnants
+* incomplete NOVEE migration
+* unlinked frontend/backend systems
+* dead admin panels
+* missing failover systems
+* unfinished offline systems
+* state collision risks
+* duplicate providers
+* duplicated hooks
+* unmounted listeners
+* security weaknesses
+* architectural drift
+
+The audit MUST identify:
+
+1. FULLY COMPLETE systems
+2. PARTIAL systems
+3. BROKEN systems
+4. FAKE systems (UI exists but backend not functional)
+5. UNUSED systems
+6. DUPLICATE systems
+7. HIGH RISK systems
+8. SCALE RISK systems
+9. IMMERSION BREAKING systems
+10. EEIE intelligence gaps
+
+DO NOT return a generic checklist.
+
+This must behave like:
+
+a senior enterprise systems architect + cinematic experience auditor + infrastructure engineer + behavioral systems engineer reviewing the platform before institutional deployment.
+
+⸻
+
+FAILURE PREVENTION CHECKLIST
+
+DO NOT:
+
+* summarize vaguely
+* skip route tracing
+* skip dependency analysis
+* skip frontend/backend verification
+* skip database verification
+* skip API verification
+* skip state management analysis
+* skip orchestration analysis
+* skip EEIE systems
+* skip animation systems
+* skip telemetry systems
+* skip environmental logic
+* skip mentor systems
+* skip transition systems
+* skip craft synchronization
+* skip mobile analysis
+* skip memory systems
+* skip websocket analysis
+* skip event flow tracing
+* skip middleware inspection
+* skip worker analysis
+* skip queue analysis
+* skip persistence validation
+* skip runtime dependency review
+* skip naming conflicts
+* skip dead component detection
+* skip duplicate logic detection
+
+DO NOT:
+
+* assume systems are functional because UI exists
+* assume backend works because routes exist
+* assume orchestration works because modules render
+* assume EEIE intelligence exists because recommendations appear
+* assume cinematic consistency because animations exist
+
+VERIFY EVERYTHING.
+
+⸻
+
+MASTER PROMPT
+
+Perform a COMPLETE FULL-STACK FORENSIC SYSTEM AUDIT of the entire NOVEE OS ecosystem.
+
+This is NOT a feature inventory.
+
+This is a REAL architectural, operational, orchestration, intelligence, cinematic, and scalability audit.
+
+The ecosystem includes:
+
+* NOVEE OS
+* EEIE
+* CraftHub
+* SmokeCraft
+* PourCraft
+* BrewCraft
+* VapeCraft
+* Staff systems
+* Guest systems
+* Mentor systems
+* AI recommendation systems
+* Environmental systems
+* Telemetry systems
+* Transition engines
+* Payment systems
+* Admin systems
+* Reward systems
+* Behavioral systems
+* Operational systems
+
+⸻
+
+REQUIRED AUDIT SECTIONS
+
+1. FRONTEND STRUCTURE AUDIT
+
+Analyze:
+
+* route architecture
+* nested routing
+* stale routes
+* duplicate routes
+* abandoned pages
+* unused components
+* hydration issues
+* rendering bottlenecks
+* transition consistency
+* cinematic consistency
+* animation duplication
+* mobile responsiveness
+* gesture systems
+* component inheritance problems
+* stale UI remnants
+* old branding remnants
+* visual inconsistency
+* disconnected flows
+
+Identify:
+
+* fake screens
+* disconnected UI
+* dead navigation
+* incomplete onboarding flows
+* cross-craft routing conflicts
+* animation timing inconsistencies
+* duplicated visual systems
+
+⸻
+
+2. BACKEND ARCHITECTURE AUDIT
+
+Analyze:
+
+* API structure
+* route consistency
+* controller duplication
+* middleware conflicts
+* authentication integrity
+* RBAC consistency
+* websocket architecture
+* queue systems
+* cron systems
+* worker systems
+* orchestration systems
+* recommendation systems
+* telemetry processing
+* AI orchestration
+* environmental systems
+* EEIE intelligence systems
+
+Identify:
+
+* dead endpoints
+* unused middleware
+* incomplete orchestration
+* duplicate business logic
+* broken persistence
+* fake AI systems
+* disconnected recommendation engines
+* stale schemas
+* unsafe endpoints
+* architectural drift
+
+⸻
+
+3. DATABASE + PERSISTENCE AUDIT
+
+Inspect:
+
+* schema integrity
+* duplicate tables
+* orphaned relationships
+* missing indexes
+* stale migrations
+* inconsistent naming
+* telemetry storage
+* session persistence
+* EEIE memory persistence
+* recommendation persistence
+* offline sync systems
+
+Identify:
+
+* dead schemas
+* duplicate data structures
+* scaling bottlenecks
+* unsafe relationships
+* missing constraints
+* weak persistence systems
+
+⸻
+
+4. EEIE INTELLIGENCE AUDIT
+
+Verify whether EEIE ACTUALLY behaves intelligently.
+
+Inspect:
+
+* behavioral adaptation
+* predictive logic
+* emotional systems
+* environmental adaptation
+* venue awareness
+* mentor memory
+* cross-session learning
+* cross-craft intelligence
+* recommendation evolution
+* operational intelligence
+* whisper systems
+* AI conductor systems
+
+Identify:
+
+* scripted behavior pretending to be AI
+* static recommendation systems
+* fake adaptation
+* disconnected intelligence systems
+* missing memory systems
+* fragmented emotional systems
+
+Determine:
+whether EEIE is:
+
+* real intelligence
+* partial intelligence
+* presentation-layer intelligence only
+
+⸻
+
+5. CINEMATIC IMMERSION AUDIT
+
+Analyze:
+
+* transition systems
+* timing systems
+* emotional pacing
+* animation orchestration
+* sound orchestration
+* atmosphere systems
+* environmental blending
+* immersion continuity
+* sensory synchronization
+
+Identify:
+
+* immersion breaks
+* dashboard-like experiences
+* inconsistent cinematic behavior
+* static atmosphere
+* disconnected transitions
+
+⸻
+
+6. MULTI-CRAFT SYNCHRONIZATION AUDIT
+
+Verify:
+
+* SmokeCraft
+* PourCraft
+* BrewCraft
+* VapeCraft
+
+Check:
+
+* routing isolation
+* behavioral consistency
+* shared orchestration
+* shared EEIE systems
+* emotional differentiation
+* mentor specialization
+* sensory identity
+* operational synchronization
+
+Identify:
+
+* route bleed
+* identity conflicts
+* reused SmokeCraft logic
+* disconnected craft systems
+* inconsistent immersion
+
+⸻
+
+7. PERFORMANCE + SCALE AUDIT
+
+Analyze:
+
+* render performance
+* bundle size
+* websocket load
+* memory leaks
+* unmounted listeners
+* animation overhead
+* queue bottlenecks
+* worker overload risks
+* state collision risks
+* scaling weaknesses
+
+Identify:
+
+* institutional deployment risks
+* multi-venue risks
+* concurrency risks
+* performance collapse risks
+
+⸻
+
+8. SECURITY + HARDENING AUDIT
+
+Inspect:
+
+* auth systems
+* session protection
+* websocket security
+* audit logging
+* kiosk lockdown
+* admin escalation
+* endpoint exposure
+* RBAC weaknesses
+* replay attack risks
+* financial integrity
+* failover systems
+* disaster recovery
+
+Identify:
+
+* critical vulnerabilities
+* medium vulnerabilities
+* production blockers
+
+⸻
+
+9. FINAL SYSTEM CLASSIFICATION
+
+Classify ALL systems into:
+
+FULLY COMPLETE
+
+PARTIAL
+
+BROKEN
+
+UNUSED
+
+DUPLICATE
+
+HIGH RISK
+
+SCALE RISK
+
+IMMERSION BREAKING
+
+PRODUCTION READY
+
+NOT PRODUCTION READY
+
+⸻
+
+10. FINAL TRUTH REPORT
+
+Return:
+
+* the REAL system completion %
+* REAL EEIE intelligence %
+* REAL orchestration %
+* REAL production readiness %
+* REAL scalability %
+* REAL immersion continuity %
+* REAL AI sophistication %
+* REAL enterprise readiness %
+
+Then provide:
+
+* TOP 25 CRITICAL ISSUES
+* TOP 25 IMMERSION BREAKERS
+* TOP 25 SCALE RISKS
+* TOP 25 INTELLIGENCE GAPS
+
+Finally provide:
+
+* EXACT next phase priority order
+* EXACT systems that should STOP being expanded
+* EXACT systems requiring total rebuild
+* EXACT systems requiring hardening only
+* EXACT systems closest to enterprise-ready
+
+DO NOT soften findings.
+
+DO NOT inflate completion percentages.
+
+DO NOT assume functionality without verification.
+
+This must behave like:
+
+an institutional-grade pre-deployment forensic systems audit for a next-generation adaptive hospitality operating system.
