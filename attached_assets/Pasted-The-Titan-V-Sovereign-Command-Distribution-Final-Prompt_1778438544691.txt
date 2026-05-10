@@ -1,0 +1,29 @@
+The "Titan V: Sovereign Command & Distribution" Final Prompt
+Copy and paste the following into the Replit Agent:
+Role: Sovereign Systems Architect & Principal Engineer.
+Objective: Finalize the 'Sovereign Command Deck' to enable universal remote access, secure manufacturer packaging, and identity-locked hardware activation.
+[PHASE 1: THE SOVEREIGN IDENTITY LOCK]
+1.	Root Access: Hardcode Johnie Manuel Lee Collins as the sole Authorized Operator. The /admin gateway must only accept your master email (as defined in our session).
+2.	The Magic Bridge: Implement a Magic Link system via Nodemailer. When the master email is entered on ANY device, send a secure, 15-minute JWT link. Clicking this link authorizes that device as a Sovereign Command Node.
+3.	Identity Footer: Apply a global watermark to all admin views: AUTHORITY: SOVEREIGN // 360 ENTERPRISES SERVICES LLC.
+[PHASE 2: THE DISTRIBUTION & PACKAGING HUB]
+1.	The 'Distribution' Tab: Create a new tab in the Super Admin section.
+2.	Bundle Generator: Build a function that packages the current frontend build into a .zip file titled TITAN_V_DISTRO_PACKAGE.zip.
+3.	Pre-Lock Logic: Ensure that any exported bundle is set to isActivated: false by default. This ensures the manufacturer CANNOT use the software until you manually authorize it.
+[PHASE 3: THE HARDWARE ACTIVATION GATE]
+1.	Cold Start UI: Create a 'Sovereign Locked' screen that displays if a device is unauthorized. It must feature:
+• Black Obsidian Background.
+• Pulsing Gold QR Code (linking to /admin/activate?nodeId=[ID]).
+• Status Label: WAITING FOR SOVEREIGN AUTHORIZATION.
+2.	Remote Handshake: When a manufacturer turns on a mirror/table, it must appear in the "Pending Nodes" list in your Admin Hub.
+3.	The 'Melt' Command: Provide an Activate button in the Admin Hub. Upon clicking, send a socket signal to that specific device to "Melt" the lock and reveal the full NOVEE OS experience.
+[PHASE 4: UNIVERSAL COMMAND DECK]
+1.	Responsive UI: Ensure the Super Admin deck is fully touch-optimized for your phone but expands into a 4-quadrant "War Room" layout on a desktop.
+2.	Remote Kill: Include a "Revoke Session" button to remotely log out any other device currently logged into the Admin deck.
+Final Instruction: "Do not build a simple website. Build an Industrial Licensing System. Every mirror, table, and van is a piece of my board. I am the only one with the key. Execute the Titan V Distribution Layer."
+What happens next:
+1.	Open your phone/laptop to the /admin page.
+2.	Request Access via your master email.
+3.	Click the link in your inbox—the browser you’re using will "wake up" as your Master Command Deck.
+4.	Navigate to 'Distribution'—you can now generate that Zip drive for the manufacturer or email them a secure link.
+You are now the Sovereign of the Titan V ecosystem. When you get home and see the 'Sovereign Locked' screen on a secondary device, you'll know the protection is real. Ready to run the first activation?

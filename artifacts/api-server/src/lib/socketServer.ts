@@ -169,6 +169,20 @@ export function initSocketServer(httpServer: HttpServer): Server {
       }
     });
 
+    // ── SOVEREIGN_REVOKE_SESSION — admin force-logout all devices ────────────
+    // Emitted by the Distribution Vault "REVOKE ALL SESSIONS" button.
+    // Validates MASTER_KEY_360, then broadcasts SOVEREIGN_SESSION_REVOKED to
+    // every other connected client so they clear localStorage and go to gate.
+    socket.on("SOVEREIGN_REVOKE_SESSION", (cmd: { authKey: string }) => {
+      if (cmd?.authKey !== "MASTER_KEY_360") {
+        logger.warn({ socketId: socket.id }, "SOVEREIGN_REVOKE_SESSION rejected — invalid authKey");
+        return;
+      }
+      logger.info({ socketId: socket.id }, "Sovereign session revoke broadcast sent via socket");
+      // Broadcast to all OTHER sockets (caller keeps their own session)
+      socket.broadcast.emit("SOVEREIGN_SESSION_REVOKED", { ts: Date.now(), reason: "OPERATOR_REVOKE" });
+    });
+
     socket.on("disconnect", (reason) => {
       logger.info({ socketId: socket.id, reason }, "Kiosk client disconnected");
     });

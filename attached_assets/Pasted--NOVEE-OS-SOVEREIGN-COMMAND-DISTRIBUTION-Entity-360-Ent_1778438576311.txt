@@ -1,0 +1,83 @@
+/**
+ * NOVEE OS: SOVEREIGN COMMAND & DISTRIBUTION
+ * Entity: 360 Enterprises Services LLC
+ * Principal: Johnie Manuel Lee Collins
+ */
+
+import { socket } from './socket';
+
+// 1. THE ROOT IDENTITY CONFIG
+export const SOVEREIGN_ROOT = {
+  email: "johnie@dayone360.com", // Hardcoded master identity
+  authorityLevel: "SOVEREIGN",
+  entity: "360 Enterprises Services LLC"
+};
+
+// 2. THE DISTRIBUTION BUNDLER (Logic for Zip/Email Export)
+export const prepareManufacturerBundle = (orderData: { manufacturer: string, qty: number, type: string }) => {
+  const batchId = `TITAN-V-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+  
+  // This JSON file gets baked into the Zip for the manufacturer
+  const deploymentManifest = {
+    ...orderData,
+    batchId,
+    owner: SOVEREIGN_ROOT.entity,
+    isActivated: false, // LOCKS THE HARDWARE BY DEFAULT
+    timestamp: new Date().toISOString()
+  };
+
+  return {
+    filename: `TITAN_V_DISTRO_${batchId}.zip`,
+    manifest: deploymentManifest
+  };
+};
+
+// 3. THE REMOTE ACTIVATION HANDSHAKE
+// This runs in your Super Admin "Environments" Tab
+export const remoteActivateNode = (nodeId: string) => {
+  console.log(`[SOVEREIGN] Sending Wake Command to Node: ${nodeId}`);
+  
+  // Emit the global melt command via the Nervous System
+  socket.emit('SOVEREIGN_GLOBAL_COMMAND', {
+    targetId: nodeId,
+    action: 'MELT_LOCK',
+    authKey: 'MASTER_AUTHORITY_360'
+  });
+};
+
+/**
+ * 4. THE COLD-START LOCK SCREEN (React Component)
+ * This is the ONLY thing the manufacturer sees until you authorize it.
+ */
+export const SovereignLockScreen = ({ nodeId }: { nodeId: string }) => {
+  return (
+    <div style={{
+      backgroundColor: '#050505',
+      color: '#D4AF37', // Titan Gold
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: 'Space Mono, monospace',
+      textAlign: 'center'
+    }}>
+      <div style={{ border: '1px solid #D4AF37', padding: '40px', borderRadius: '4px' }}>
+        <h1 style={{ letterSpacing: '8px', fontSize: '2rem' }}>TITAN V</h1>
+        <p style={{ color: '#00FF41', fontSize: '0.8rem', marginBottom: '40px' }}>
+          SYSTEM_STATUS: PENDING_AUTHORIZATION
+        </p>
+        
+        {/* The QR code that links to your phone's admin page */}
+        <div style={{ backgroundColor: '#fff', padding: '10px', display: 'inline-block' }}>
+           <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://novee-os.com/admin/activate?id=${nodeId}`} alt="Activation QR" />
+        </div>
+
+        <div style={{ marginTop: '40px', opacity: 0.6, fontSize: '0.7rem' }}>
+          <p>NODE_ID: {nodeId}</p>
+          <p>AUTHORITY: 360 ENTERPRISES SERVICES LLC</p>
+        </div>
+      </div>
+    </div>
+  );
+};

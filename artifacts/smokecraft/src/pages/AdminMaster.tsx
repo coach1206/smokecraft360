@@ -12,6 +12,7 @@ import {
   ChevronRight, Activity, Globe, AlertTriangle, Server, Package,
 } from "lucide-react";
 import AIInfrastructurePanel from "@/components/admin/AIInfrastructurePanel";
+import SovereignWatermark    from "@/components/SovereignWatermark";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 const C = {
@@ -568,6 +569,7 @@ export default function AdminMaster() {
 
       {/* ── 64px Surge Ticker ── */}
       <SurgeTicker />
+      <SovereignWatermark />
     </div>
   );
 }

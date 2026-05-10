@@ -103,6 +103,8 @@ const EEIECommandCenter      = lazy(() => import('@/pages/EEIECommandCenter'));
 const EnterpriseGovernance  = lazy(() => import('@/pages/EnterpriseGovernance'));
 const VillaSovereign               = lazy(() => import('@/pages/VillaSovereign'));
 const SovereignDistributionVault   = lazy(() => import('@/pages/SovereignDistributionVault'));
+const SovereignGate                = lazy(() => import('@/pages/SovereignGate'));
+const SovereignVerify              = lazy(() => import('@/pages/SovereignVerify'));
 
 function PageLoader() {
   return (
@@ -931,6 +933,12 @@ export default function App() {
           </Route>
           <Route path="/distribution">
             <SubPageProviders><SovereignDistributionVault /></SubPageProviders>
+          </Route>
+          <Route path="/sovereign-gate">
+            <SovereignGate />
+          </Route>
+          <Route path="/sovereign-verify">
+            <SovereignVerify />
           </Route>
 
           {/* ── /portal — Pristine Boot State (System Purge destination) ── */}

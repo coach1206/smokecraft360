@@ -10,9 +10,13 @@ import { useLocation } from "wouter";
 import {
   ArrowLeft, Package, Key, Monitor, Truck, Globe, Mail,
   Copy, Check, Lock, Unlock, Download, RefreshCw, Plus,
-  ChevronRight, AlertTriangle, Server, Zap, Shield,
+  ChevronRight, AlertTriangle, Server, Zap, Shield, LogOut, LayoutGrid,
 } from "lucide-react";
 import { SovereignDistro } from "@/lib/sovereignDistro";
+import { socket }          from "@/lib/socket";
+import SovereignWatermark  from "@/components/SovereignWatermark";
+
+export const SOVEREIGN_SESSION_KEY = "SOVEREIGN_SESSION";
 
 // ── Design tokens (Obsidian command skin) ────────────────────────────────────
 
@@ -831,6 +835,30 @@ export default function SovereignDistributionVault() {
     setTab("keys");
   };
 
+  const [warRoom, setWarRoom] = useState(false);
+
+  // Sovereign session gate — redirect to magic-link gate if no session token
+  useEffect(() => {
+    const token = localStorage.getItem(SOVEREIGN_SESSION_KEY);
+    if (!token) navigate("/sovereign-gate");
+  }, [navigate]);
+
+  // Remote-revoke listener — another device was revoked; clear session and go to gate
+  useEffect(() => {
+    const handler = () => {
+      localStorage.removeItem(SOVEREIGN_SESSION_KEY);
+      navigate("/sovereign-gate");
+    };
+    socket.on("SOVEREIGN_SESSION_REVOKED", handler);
+    return () => { socket.off("SOVEREIGN_SESSION_REVOKED", handler); };
+  }, [navigate]);
+
+  const revokeAllSessions = () => {
+    socket.emit("SOVEREIGN_REVOKE_SESSION", { authKey: "MASTER_KEY_360" });
+    localStorage.removeItem(SOVEREIGN_SESSION_KEY);
+    navigate("/sovereign-gate");
+  };
+
   const pendingNodes = batches.reduce((acc, b) => acc + parseInt(b.node_count || "0"), 0);
 
   return (
@@ -872,16 +900,21 @@ export default function SovereignDistributionVault() {
             VAULT ONLINE
           </motion.div>
           <div style={{ fontSize: 9, fontWeight: 700, color: C.dim, fontFamily: C.mono, letterSpacing: "0.12em" }}>TITAN V 5.2.0</div>
+          <div style={{ width: 1, height: 24, background: C.border }} />
+          <motion.button whileTap={{ scale: 0.93 }} onClick={revokeAllSessions}
+            style={{ display: "flex", alignItems: "center", gap: 7, padding: "7px 14px", borderRadius: 8, background: "rgba(239,68,68,0.10)", border: "1px solid rgba(239,68,68,0.28)", color: "#ef4444", fontSize: 10, fontFamily: C.mono, fontWeight: 800, letterSpacing: "0.12em", cursor: "pointer" }}>
+            <LogOut size={12} /> REVOKE ALL
+          </motion.button>
         </div>
       </div>
 
       {/* ── Tab Bar ── */}
-      <div style={{ display: "flex", gap: 0, padding: "0 24px", borderBottom: `1px solid ${C.border}`, background: "rgba(5,5,5,0.92)", flexShrink: 0, position: "relative", zIndex: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 0, padding: "0 24px", borderBottom: `1px solid ${C.border}`, background: "rgba(5,5,5,0.92)", flexShrink: 0, position: "relative", zIndex: 10 }}>
         {TABS.map(t => {
           const Icon = t.icon;
-          const isA  = tab === t.id;
+          const isA  = !warRoom && tab === t.id;
           return (
-            <button key={t.id} onClick={() => setTab(t.id)}
+            <button key={t.id} onClick={() => { setWarRoom(false); setTab(t.id); }}
               style={{
                 display: "flex", alignItems: "center", gap: 8,
                 padding: "13px 20px", background: "none", border: "none",
@@ -896,33 +929,69 @@ export default function SovereignDistributionVault() {
             </button>
           );
         })}
+        <div style={{ marginLeft: "auto" }}>
+          <motion.button whileTap={{ scale: 0.93 }} onClick={() => setWarRoom(w => !w)}
+            style={{
+              display: "flex", alignItems: "center", gap: 7, padding: "7px 14px",
+              borderRadius: 8, background: warRoom ? `${C.gold}18` : "rgba(245,242,237,0.05)",
+              border: `1px solid ${warRoom ? C.gold + "50" : C.border}`,
+              color: warRoom ? C.gold : C.muted,
+              fontSize: 9, fontFamily: C.mono, fontWeight: 800, letterSpacing: "0.14em",
+              cursor: "pointer", transition: "all 0.18s",
+            }}>
+            <LayoutGrid size={12} />
+            {warRoom ? "TAB VIEW" : "WAR ROOM"}
+          </motion.button>
+        </div>
       </div>
 
-      {/* ── Body ── */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "24px 28px", position: "relative", zIndex: 1 }}>
-        <AnimatePresence mode="wait">
-          <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18 }}>
-            {tab === "shipments" && (
-              <ShipmentsTab
-                batches={batches}
-                loading={loadingBatches}
-                onRefresh={loadBatches}
-                onSelectBatch={handleSelectBatch}
-                selectedBatchId={selectedBatch}
-              />
-            )}
-            {tab === "keys" && (
-              <KeysTab
-                batches={batches}
-                selectedBatchId={selectedBatch}
-                onSelectBatch={setSelectedBatch}
-              />
-            )}
-            {tab === "nodes" && <NodesTab />}
-            {tab === "deploy" && <DeployTab batches={batches} />}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+      {/* ── Body — War Room 4-quadrant or single-tab view ── */}
+      {warRoom ? (
+        <div style={{ flex: 1, overflow: "hidden", display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr", gap: 2, background: "#111", position: "relative", zIndex: 1 }}>
+          {([
+            { label: "SHIPMENTS", content: <ShipmentsTab batches={batches} loading={loadingBatches} onRefresh={loadBatches} onSelectBatch={handleSelectBatch} selectedBatchId={selectedBatch} /> },
+            { label: "KEYS",      content: <KeysTab batches={batches} selectedBatchId={selectedBatch} onSelectBatch={setSelectedBatch} /> },
+            { label: "LIVE NODES",content: <NodesTab /> },
+            { label: "DEPLOY",    content: <DeployTab batches={batches} /> },
+          ] as const).map(({ label, content }) => (
+            <div key={label} style={{ background: C.bg, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              <div style={{ padding: "7px 16px", borderBottom: `1px solid ${C.border}`, background: "rgba(5,5,5,0.98)", flexShrink: 0, display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontFamily: C.mono, fontSize: 8, color: C.amber, letterSpacing: "0.22em", fontWeight: 800 }}>{label}</span>
+              </div>
+              <div style={{ padding: "14px 16px", flex: 1, overflowY: "auto" }}>
+                {content}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ flex: 1, overflowY: "auto", padding: "24px 28px", position: "relative", zIndex: 1 }}>
+          <AnimatePresence mode="wait">
+            <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18 }}>
+              {tab === "shipments" && (
+                <ShipmentsTab
+                  batches={batches}
+                  loading={loadingBatches}
+                  onRefresh={loadBatches}
+                  onSelectBatch={handleSelectBatch}
+                  selectedBatchId={selectedBatch}
+                />
+              )}
+              {tab === "keys" && (
+                <KeysTab
+                  batches={batches}
+                  selectedBatchId={selectedBatch}
+                  onSelectBatch={setSelectedBatch}
+                />
+              )}
+              {tab === "nodes" && <NodesTab />}
+              {tab === "deploy" && <DeployTab batches={batches} />}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      )}
+
+      <SovereignWatermark />
 
       {/* ── Footer Brand Bar ── */}
       <div style={{ padding: "8px 24px", borderTop: `1px solid ${C.border}`, background: "rgba(5,5,5,0.96)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
