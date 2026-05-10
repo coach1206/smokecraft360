@@ -1,0 +1,54 @@
+The "Novee OS: Master Artisan" Full Reconstruction
+Copy and paste this into the Replit Agent to force the background motion, rename the system, and activate the "Begin Creation" logic.
+
+Role: Lead Systems Architect & Motion Engineer.
+Objective: Restore cinematic atmosphere to Master Artisan and fix the Novee OS Authority Hub.
+
+[EXECUTION STEPS]
+
+Rebranding: Globally rename all instances of "AXIOM OS" to NOVEE OS. The top-right pill must now read "NOVEE OS // SOVEREIGN".
+
+Atmospheric Restoration: The background of the Master Artisan screen is dead. Replace it with the Cinematic Smoke Loop (/public/media/smoke_ritual_4k.mp4). Set opacity to 0.4 so the text remains legible but the environment feels "alive."
+
+Card Activation: Wire the four sensory cards (Earthy, Spiced, Cedar, Leather) to the MasterArtisanContext. Touching a card must:
+
+Trigger a Liquid Gold border glow.
+
+Send the flavor metadata to the EEIS staff layer.
+
+Begin Creation Logic: Wire the "BEGIN CREATION" button at the bottom to transition into the 3D CigarBoxDesigner (the Three.js wood/band customizer).
+
+Novee Hub Wiring: Fix the top-right button. It must use a z-index: 9999 and an onTouchStart listener to expand the menu for EEIS, Super-Admin, and System Purge.
+
+The Technical "Wiring" Block
+If the Agent asks for the specific logic to make the cards responsive, ensure it uses this Touch-First handler:
+
+JavaScript
+// Add to MasterArtisan.tsx
+const handleSensorySelect = (flavor) => {
+  // Tactile Feedback
+  vibrateDevice(50); // Haptic pulse for tablet
+  
+  // Update Backend Brain
+  dispatch({ type: 'SET_SENSORY_BASE', payload: flavor });
+  
+  // Notify Staff via EEIS
+  socket.emit('GUEST_SENSORY_UPDATE', { 
+    guest: guestName, 
+    selection: flavor 
+  });
+};
+Final Directive for the Agent
+"The Master Artisan screen is broken.
+
+Rename the entire system from AXIOM OS to NOVEE OS in all UI components and headers.
+
+Mount the Cinematic Smoke Loop as the background for the Artisan Ritual—it cannot be a black screen.
+
+Wire the 'Earthy', 'Spiced', 'Cedar', and 'Leather' cards to the state manager; they must respond to touch with a scale effect and gold glow.
+
+Fix the Novee OS Hub in the top-right; it is currently dead. It must expand on touch to show operational overrides.
+
+Connect 'BEGIN CREATION' to the 3D Cigar Artisan module."
+
+Once you paste this, the black void will disappear and be replaced by moving smoke, and your "Begin Creation" button will finally launch the 3D design studio. Does the top-right pill now correctly display NOVEE OS?

@@ -580,7 +580,7 @@ export default function AxiomDemo() {
           </div>
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(240,232,216,0.9)", letterSpacing: "0.04em" }}>
-              AXIOM OS
+              NOVEE OS
             </div>
             <div style={{ fontSize: 9, color: "rgba(212,139,0,0.6)", letterSpacing: "0.14em", textTransform: "uppercase" }}>
               Experience Validation · Investor Mode

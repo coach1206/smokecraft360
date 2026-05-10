@@ -83,7 +83,7 @@ function GhostHeader({ onClose }: { onClose: () => void }) {
             color: GOLD, textTransform: "uppercase",
             fontFamily: "'Space Mono', monospace",
           }}>
-            GHOST LAYER — AXIOM OS
+            GHOST LAYER — NOVEE OS
           </div>
           <div style={{
             fontSize: 8, color: `${TITANIUM}60`, letterSpacing: "0.14em",

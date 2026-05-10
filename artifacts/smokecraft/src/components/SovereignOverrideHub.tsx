@@ -304,11 +304,12 @@ export function SovereignOverrideHub() {
         data-override-hub
         whileTap={{ scale: 0.94 }}
         onClick={handleOpen}
+        onTouchStart={handleOpen}
         style={{
           position:             "fixed",
           top:                  12,
           right:                14,
-          zIndex:               2147483645,
+          zIndex:               9999,
           display:              "flex",
           alignItems:           "center",
           gap:                  7,
@@ -350,7 +351,7 @@ export function SovereignOverrideHub() {
           transition:    "color 0.15s",
           whiteSpace:    "nowrap",
         }}>
-          ◈ AXIOM OS
+          ◈ NOVEE OS // SOVEREIGN
         </span>
 
         <IconChevron open={open} />

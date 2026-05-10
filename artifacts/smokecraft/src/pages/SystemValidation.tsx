@@ -328,7 +328,7 @@ export default function SystemValidation() {
             </div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>System Validation</div>
-              <div style={{ fontSize: 11, color: C.muted, letterSpacing: "0.06em" }}>OPERATIONAL READINESS · AXIOM OS</div>
+              <div style={{ fontSize: 11, color: C.muted, letterSpacing: "0.06em" }}>OPERATIONAL READINESS · NOVEE OS</div>
             </div>
           </div>
 
