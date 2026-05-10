@@ -366,7 +366,8 @@ export default function AxiomReceipt() {
   const [qrToken, setQrToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState<string | null>(null);
-  const [showDelivery, setShowDelivery] = useState(false);
+  const [showDelivery,  setShowDelivery]  = useState(false);
+  const [pdfExporting, setPdfExporting] = useState(false);
   const [generating,   setGenerating]   = useState(false);
   const [mobileQrUrl,  setMobileQrUrl]  = useState<string>("");
   const { rank, xp } = useAxiomStore();
@@ -402,6 +403,148 @@ export default function AxiomReceipt() {
   }, [tabId]);
 
   useEffect(() => { void load(); }, [load]);
+
+  const handleExportPDF = useCallback(() => {
+    if (!payload) return;
+    setPdfExporting(true);
+    const refId        = (qrToken ?? tabId ?? "NOVEE-0000").toUpperCase();
+    const guestDisplay = payload.guest.name || "Sovereign Guest";
+    const venueName    = payload.venue.name;
+    const dateStr      = new Date(payload.session.date).toLocaleDateString("en-US", {
+      weekday: "long", month: "long", day: "numeric", year: "numeric",
+    });
+    const totalStr = `$${(payload.session.totalCents / 100).toFixed(2)}`;
+    const itemRows = payload.items.map((it) =>
+      `<tr>
+        <td style="padding:7px 0;border-bottom:1px solid #e8e4d9;font-size:12px;color:#1a1a1b;">${it.name}</td>
+        <td style="padding:7px 0;border-bottom:1px solid #e8e4d9;font-size:12px;color:#6b5e4e;text-align:center;">${it.quantity}</td>
+        <td style="padding:7px 0;border-bottom:1px solid #e8e4d9;font-size:12px;color:#1a1a1b;text-align:right;">$${(it.totalCents / 100).toFixed(2)}</td>
+      </tr>`,
+    ).join("");
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Sovereign Receipt · ${refId}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Space+Mono&display=swap" rel="stylesheet" />
+<style>
+  @page { size: A4; margin: 28mm 20mm 24mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #F5F2ED; color: #1A1A1B;
+    font-family: 'Space Mono', monospace; font-size: 11px;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  /* Diagonal watermark */
+  body::before {
+    content: 'VILLA SOVEREIGN';
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-38deg);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 82px; font-weight: 700; letter-spacing: 0.12em;
+    color: rgba(212,139,0,0.06);
+    white-space: nowrap; pointer-events: none; z-index: 0;
+  }
+  .page { position: relative; z-index: 1; }
+  .serif { font-family: 'Cormorant Garamond', serif; }
+  .gold  { color: #D48B00; }
+  .muted { color: #6B5E4E; }
+
+  /* Header */
+  .header { text-align: center; padding-bottom: 28px; border-bottom: 1px solid #D48B0033; margin-bottom: 28px; }
+  .logo { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 300; color: #1A1A1B; letter-spacing: 0.14em; }
+  .logo span { color: #D48B00; }
+  .tagline { font-size: 8px; letter-spacing: 0.28em; color: #6B5E4E; margin-top: 4px; text-transform: uppercase; }
+
+  /* Reference ID box */
+  .ref-box {
+    border: 1px solid #D48B0055; border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 28px;
+    background: rgba(212,139,0,0.04);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .ref-label { font-size: 8px; letter-spacing: 0.22em; color: #D48B00; text-transform: uppercase; margin-bottom: 4px; }
+  .ref-id { font-family: 'Space Mono', monospace; font-size: 15px; color: #1A1A1B; letter-spacing: 0.12em; }
+  .ref-meta { font-size: 9px; color: #6B5E4E; text-align: right; line-height: 1.7; }
+
+  /* Guest + venue */
+  .guest-name { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: #1A1A1B; margin-bottom: 2px; }
+  .venue-line { font-size: 9px; color: #6B5E4E; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 24px; }
+
+  /* Items table */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  th { font-size: 8px; letter-spacing: 0.18em; color: #6B5E4E; text-transform: uppercase; padding: 0 0 8px; border-bottom: 1px solid #D48B0033; }
+  th:last-child { text-align: right; }
+  th:nth-child(2) { text-align: center; }
+
+  .total-row { margin-top: 12px; padding-top: 12px; border-top: 1px solid #D48B0033; display: flex; justify-content: space-between; }
+  .total-label { font-size: 10px; letter-spacing: 0.12em; color: #6B5E4E; text-transform: uppercase; }
+  .total-value { font-size: 18px; font-family: 'Cormorant Garamond', serif; font-weight: 700; color: #D48B00; }
+
+  /* Footer */
+  .footer { margin-top: 40px; text-align: center; padding-top: 20px; border-top: 1px solid #D48B0022; }
+  .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 16px; letter-spacing: 0.22em; color: #D48B0066; }
+  .footer-sub { font-size: 7px; letter-spacing: 0.14em; color: #6B5E4E99; margin-top: 4px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="logo">NOVEE <span>OS</span></div>
+    <div class="tagline">Villa Sovereign · Dominican Republic Private Reserve</div>
+  </div>
+
+  <div class="ref-box">
+    <div>
+      <div class="ref-label">Sovereign Reference ID</div>
+      <div class="ref-id">${refId}</div>
+    </div>
+    <div class="ref-meta">
+      ${dateStr}<br />
+      ${venueName}
+    </div>
+  </div>
+
+  <div class="guest-name">${guestDisplay}</div>
+  <div class="venue-line">${venueName} · Sovereign Guest Receipt</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="text-align:left;">Experience</th>
+        <th>Qty</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>${itemRows || '<tr><td colspan="3" style="padding:12px 0;color:#6B5E4E;font-size:11px;">No items recorded</td></tr>'}</tbody>
+  </table>
+
+  <div class="total-row">
+    <span class="total-label">Session Total</span>
+    <span class="total-value">${totalStr}</span>
+  </div>
+
+  <div class="footer">
+    <div class="footer-logo">VILLA SOVEREIGN</div>
+    <div class="footer-sub">A luxury experience, elevated · novee.os</div>
+  </div>
+</div>
+<script>
+  window.onload = function() {
+    setTimeout(function() { window.print(); window.close(); }, 600);
+  };
+</script>
+</body>
+</html>`;
+
+    const win = window.open("", "_blank", "width=820,height=1100");
+    if (win) {
+      win.document.write(html);
+      win.document.close();
+    }
+    setTimeout(() => setPdfExporting(false), 1500);
+  }, [payload, qrToken, tabId]);
 
   useEffect(() => {
     if (!payload) return;
@@ -501,6 +644,27 @@ export default function AxiomReceipt() {
           }}
         >
           <QrCode size={12} /> Share
+        </button>
+        <button
+          onClick={handleExportPDF}
+          disabled={pdfExporting || !payload}
+          style={{
+            background:    pdfExporting ? "rgba(201,168,76,0.08)" : "rgba(201,168,76,0.14)",
+            border:        "1px solid rgba(201,168,76,0.55)",
+            borderRadius:  8,
+            color:         pdfExporting ? "rgba(201,168,76,0.45)" : "#C9A84C",
+            fontSize:      11,
+            fontWeight:    700,
+            letterSpacing: "0.10em",
+            padding:       "7px 14px",
+            cursor:        pdfExporting || !payload ? "default" : "pointer",
+            display:       "flex",
+            alignItems:    "center",
+            gap:           5,
+            transition:    "all 0.2s",
+          }}
+        >
+          {pdfExporting ? "…" : "◈ PDF"}
         </button>
       </div>
 

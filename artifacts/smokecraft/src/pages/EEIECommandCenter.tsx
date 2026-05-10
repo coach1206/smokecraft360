@@ -18,6 +18,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useLocation }  from "wouter";
+import { orderBroadcast, type ArchiveBlendOrder } from "@/lib/orderBroadcast";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, Activity, Zap, Radio, Package, Brain, Network,
@@ -203,12 +204,132 @@ function AdvisoryRow({ a }: { a: Advisory }) {
   );
 }
 
+// ── Live Order Ticker ─────────────────────────────────────────────────────────
+// Self-contained — subscribes to BroadcastChannel, no prop drilling needed.
+
+const CHAMPAGNE = "#C9A84C";
+
+function LiveOrderTicker() {
+  const [orders, setOrders] = useState<ArchiveBlendOrder[]>([]);
+
+  useEffect(() => {
+    return orderBroadcast.subscribe((order) => {
+      setOrders((prev) => [order, ...prev].slice(0, 5));
+    });
+  }, []);
+
+  if (orders.length === 0) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -12 }}
+      animate={{ opacity: 1, y: 0 }}
+      style={{
+        background:   `${CHAMPAGNE}10`,
+        border:       `1px solid ${CHAMPAGNE}44`,
+        borderRadius: 14,
+        padding:      "16px 18px",
+      }}
+    >
+      {/* Header row */}
+      <div style={{
+        display:       "flex",
+        alignItems:    "center",
+        gap:           8,
+        marginBottom:  12,
+        fontSize:      12,
+        fontWeight:    700,
+        color:         CHAMPAGNE,
+        letterSpacing: "0.10em",
+        textTransform: "uppercase",
+      }}>
+        <motion.div
+          animate={{ opacity: [1, 0.3, 1] }}
+          transition={{ duration: 1.4, repeat: Infinity }}
+          style={{ width: 8, height: 8, borderRadius: "50%", background: CHAMPAGNE, flexShrink: 0 }}
+        />
+        Live Archive Blend Orders
+        <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 500, color: C.muted }}>
+          {orders.length} received
+        </span>
+      </div>
+
+      {/* Order rows */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <AnimatePresence initial={false}>
+          {orders.map((o, i) => (
+            <motion.div
+              key={o.orderId}
+              initial={{ opacity: 0, x: 28 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -12, height: 0, marginBottom: 0 }}
+              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                display:    "flex",
+                alignItems: "center",
+                gap:        12,
+                padding:    "10px 14px",
+                borderRadius: 10,
+                background: i === 0 ? `${CHAMPAGNE}18` : "rgba(0,0,0,0.03)",
+                border:     `1px solid ${i === 0 ? CHAMPAGNE + "55" : C.border}`,
+                boxShadow:  i === 0 ? `0 0 22px ${CHAMPAGNE}28` : "none",
+              }}
+            >
+              {/* Icon */}
+              <div style={{
+                width: 34, height: 34, borderRadius: 9, flexShrink: 0,
+                background: `${CHAMPAGNE}18`, border: `1px solid ${CHAMPAGNE}33`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 16, color: CHAMPAGNE,
+              }}>
+                ◈
+              </div>
+
+              {/* Details */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: C.obsidian, marginBottom: 2 }}>
+                  {o.guestName}
+                </div>
+                <div style={{ fontSize: 10, color: C.muted }}>
+                  {o.wood} · {o.band} · Harmony {o.harmonyScore}
+                </div>
+              </div>
+
+              {/* Order ref + time */}
+              <div style={{ textAlign: "right", flexShrink: 0 }}>
+                <div style={{
+                  fontSize:      9,
+                  fontWeight:    700,
+                  letterSpacing: "0.10em",
+                  color:         CHAMPAGNE,
+                  background:    `${CHAMPAGNE}18`,
+                  border:        `1px solid ${CHAMPAGNE}33`,
+                  borderRadius:  6,
+                  padding:       "3px 8px",
+                  marginBottom:  4,
+                  fontFamily:    "monospace",
+                }}>
+                  {o.orderId.slice(0, 10).toUpperCase()}
+                </div>
+                <div style={{ fontSize: 9, color: C.muted }}>
+                  {new Date(o.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Tab Panels ────────────────────────────────────────────────────────────────
 
 function OverviewTab({ status }: { status: EEIEStatus }) {
   const intel = status.intelligence;
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      <LiveOrderTicker />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
         <StatCard icon={Network}    label="Cluster Venues"   value={status.cluster.total}    sub={`${status.cluster.healthy} healthy`} />
         <StatCard icon={Activity}   label="Active Venues"    value={status.energy.venues}    sub="with recent events" />

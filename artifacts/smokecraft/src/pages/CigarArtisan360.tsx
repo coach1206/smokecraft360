@@ -27,6 +27,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { crossSessionMemory } from "@/lib/crossSessionMemory";
 import { usePredictivePreLoader } from "@/lib/predictivePreLoader";
+import { playSovereignSweep } from "@/lib/audioEngine";
+import { orderBroadcast } from "@/lib/orderBroadcast";
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 const GOLD    = "#D4AF37";
@@ -963,6 +965,21 @@ export default function CigarArtisan360() {
         setOrderId(data.orderId);
         setCommState("idle");
         setShowVaultExit(true);
+
+        // ── Haptic Harmony: sweep audio and success vibration fire together ──
+        // Guest feels the archive completing — cinematic and tactile simultaneously.
+        playSovereignSweep();
+        try { navigator.vibrate([20, 30, 20]); } catch { /* not supported */ }
+
+        // ── Broadcast to EEIECommandCenter Live Order Ticker ──
+        orderBroadcast.publish({
+          orderId:      data.orderId,
+          guestName:    guestName.trim() || "Sovereign Guest",
+          wood:         WOOD[wood].label,
+          band:         BAND[band].label,
+          harmonyScore: HARMONY[wood][band],
+          ts:           new Date().toISOString(),
+        });
       } else {
         setCommState("error");
       }
