@@ -339,6 +339,123 @@ function OverviewTab({ status }: { status: EEIEStatus }) {
         <StatCard icon={Radio}      label="Sensory Active"   value={status.sensory.activeVenues} sub="venue layers" />
       </div>
 
+      {/* ── Environmental Pulse — live Titan Green waveform ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1,  y: 0  }}
+        transition={{ duration: 0.45, delay: 0.1 }}
+        style={{
+          background:     "rgba(0,255,65,0.04)",
+          border:         "1px solid rgba(0,255,65,0.18)",
+          borderRadius:   16,
+          padding:        "18px 22px",
+          display:        "flex",
+          flexDirection:  "column",
+          gap:            10,
+        }}
+      >
+        {/* Header row */}
+        <div style={{
+          display:        "flex",
+          alignItems:     "center",
+          gap:            10,
+          marginBottom:   2,
+        }}>
+          <motion.div
+            animate={{ opacity: [1, 0.3, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity }}
+            style={{
+              width: 7, height: 7, borderRadius: "50%",
+              background: "#00FF41",
+              boxShadow:  "0 0 8px #00FF41",
+              flexShrink: 0,
+            }}
+          />
+          <span style={{
+            fontFamily:    "'Space Mono', monospace",
+            fontSize:      10,
+            fontWeight:    700,
+            color:         "#00FF41",
+            letterSpacing: "0.16em",
+            textTransform: "uppercase",
+            textShadow:    "0 0 8px rgba(0,255,65,0.5)",
+          }}>
+            Environmental Pulse
+          </span>
+          <span style={{
+            marginLeft:    "auto",
+            fontFamily:    "'Space Mono', monospace",
+            fontSize:      9,
+            color:         "rgba(0,255,65,0.55)",
+            letterSpacing: "0.10em",
+          }}>
+            QUADRANT II · LIVE
+          </span>
+        </div>
+
+        {/* Waveform — sine path scrolling at --hb-mult speed */}
+        <div style={{ width: "100%", height: 48, overflow: "hidden", position: "relative" }}>
+          <div style={{
+            display:   "flex",
+            width:     "200%",
+            animation: "titan-wave-scroll calc(2s / var(--hb-mult, 0.85)) linear infinite",
+          }}>
+            {[0, 1].map(i => (
+              <svg
+                key={i}
+                width="50%"
+                height="48"
+                viewBox="0 0 600 48"
+                preserveAspectRatio="none"
+                style={{ flexShrink: 0 }}
+              >
+                {/* Glow fill */}
+                <path
+                  d="M0,24 Q37.5,4 75,24 Q112.5,44 150,24 Q187.5,4 225,24 Q262.5,44 300,24 Q337.5,4 375,24 Q412.5,44 450,24 Q487.5,4 525,24 Q562.5,44 600,24"
+                  fill="rgba(0,255,65,0.06)"
+                />
+                {/* Primary stroke */}
+                <path
+                  d="M0,24 Q37.5,4 75,24 Q112.5,44 150,24 Q187.5,4 225,24 Q262.5,44 300,24 Q337.5,4 375,24 Q412.5,44 450,24 Q487.5,4 525,24 Q562.5,44 600,24"
+                  fill="none"
+                  stroke="#00FF41"
+                  strokeWidth="1.8"
+                  strokeOpacity="0.85"
+                />
+                {/* Echo stroke — slightly offset, dimmer */}
+                <path
+                  d="M0,24 Q37.5,8 75,24 Q112.5,40 150,24 Q187.5,8 225,24 Q262.5,40 300,24 Q337.5,8 375,24 Q412.5,40 450,24 Q487.5,8 525,24 Q562.5,40 600,24"
+                  fill="none"
+                  stroke="#00FF41"
+                  strokeWidth="0.7"
+                  strokeOpacity="0.25"
+                />
+              </svg>
+            ))}
+          </div>
+
+          {/* Left + right fade masks */}
+          <div style={{
+            position: "absolute", inset: 0, pointerEvents: "none",
+            background: "linear-gradient(90deg, rgba(0,0,0,0.4) 0%, transparent 12%, transparent 88%, rgba(0,0,0,0.4) 100%)",
+          }} />
+        </div>
+
+        {/* Metric row */}
+        <div style={{ display: "flex", gap: 28, alignItems: "center" }}>
+          {[
+            { label: "PULSE RATE",  value: "1.0×" },
+            { label: "AMPLITUDE",   value: "100%" },
+            { label: "SIGNAL",      value: "NOMINAL" },
+          ].map(m => (
+            <div key={m.label}>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 7.5, color: "rgba(0,255,65,0.45)", letterSpacing: "0.14em" }}>{m.label}</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11,  color: "#00FF41",             letterSpacing: "0.08em", fontWeight: 700, marginTop: 2 }}>{m.value}</div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
         <div style={{ background: C.glass, backdropFilter: "blur(16px)", border: `1px solid ${C.border}`, borderRadius: 16, padding: 20, display: "flex", flexDirection: "column", gap: 14 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: C.graphite, letterSpacing: "0.08em", textTransform: "uppercase" }}>Intelligence Matrix</div>

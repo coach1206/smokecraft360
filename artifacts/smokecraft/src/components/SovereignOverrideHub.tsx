@@ -29,7 +29,7 @@ import { useUnifiedCognitive } from "@/contexts/UnifiedCognitiveContext";
 import { TitanNervousSystem } from "@/lib/titanNervousSystem";
 
 // ── Design tokens ──────────────────────────────────────────────────────────
-const OBSIDIAN   = "rgba(10,9,8,0.92)";
+const OBSIDIAN   = "rgba(5,5,5,0.97)";
 const GOLD_PILL  = "#D4AF37";
 const AMBER      = "#D48B00";
 const DANGER     = "#EF4444";

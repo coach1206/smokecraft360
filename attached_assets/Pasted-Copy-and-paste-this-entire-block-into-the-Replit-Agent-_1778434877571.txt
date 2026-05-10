@@ -1,0 +1,26 @@
+Copy and paste this entire block into the Replit Agent to initialize the system.
+Role: Master Systems Architect & Global Disruption Lead.
+Objective: Finalize the 'Titan V' Global Infrastructure. Integrate the hardened Nervous System, the CSS-driven 2-second Safety Locks, and the Universal Trifecta Intelligence into a single "Fifth System" ecosystem.
+[PHASE 1: THE HARDENED SAFETY PROTOCOL]
+1.	Mechanical 2-Second Hold: Rebuild all critical Sovereign Toggles (Blackout, API Lock, Purge) using the CSS-transition approach. The icon circle must feature a gold div that fills from height: 0% to height: 100% over exactly 2000ms linear.
+2.	Wall-Clock Verification: Use Date.now() - holdStart logic on onPointerUp. If the duration is < 2000ms, snap height back to 0% and trigger haptics.error().
+3.	Hardware Commitment: At the 2000ms mark, trigger a 150ms 'Heavy Thud' haptic and execute the SOVEREIGN_GLOBAL_COMMAND.
+[PHASE 2: THE UNIVERSAL TRIFECTA BRAIN]
+1.	Palate Affinity Engine: Update lib/weightedEngine.ts to map flavor trajectories between CRAFT (Smoke/Vape), POUR (Bourbon/Scotch/Brew), and PLATE (Culinary/Appetizers).
+2.	Global Insight Cube: Implement the 3-panel 'Sovereign Insight' overlay. It must fetch site-specific inventory and display high-fidelity, desaturated images that 'breathe' with the global --hb-mult heartbeat.
+3.	Revenue Upscale: Prioritize 'Reserve' spirits and 'Executive Plates' for guests with HIGH confidence scores, using 'Space Mono' for the flavor science and 'Cormorant Garamond' for the titles.
+[PHASE 3: TITAN V VISUAL DNA & MOTION]
+1.	Obsidian Command Skin: Set global background to #050505 (Pure Obsidian). Use Smoked Glass effects (80% black / 20px blur) to eliminate light-leak for dark lounge environments.
+2.	Metabolic Sync: Wire the --hb-mult variable to all system animations. When the mood is 'MEDITATIVE', ensure the background videos and UI transitions slow to a viscous 0.5x speed.
+3.	Tactile HUD: Overhaul the /eeie-command quadrants. Quadrant 2 must feature the live 'Environmental Pulse' SVG waveform oscillating in Titan Green (#00FF41).
+[PHASE 4: GLOBAL COMMAND & PERSISTENCE]
+1.	Global Sync Node: Ensure the Super Admin's mobile commands broadcast to all regional tablets instantly via Socket.io with a 0.8s cinematic dissolve.
+2.	Sovereign Logging: Store all feature-mask changes and override events in a persistent Sovereign_Database with originDevice and timestamp metadata.
+3.	Status Readiness: Ensure the 'TITAN V ENGINE: OPERATIONAL' and 'KIOSK LOCK: ABSOLUTE' monitors are locked into the HUD header.
+Final Instruction: "Do not build a website. Build a Sovereign Environment. It must move with the weight of a high-performance machine and the elegance of an Apple product. The machine is now thinking, pairing, and protecting globally. Execute the Titan V rollout."
+The "Market Disturber" Status
+Once the Agent processes this:
+• The Brain is calculating pairings across food, drink, and smoke.
+• The Body is protected by a 2-second mechanical safety lock.
+• The Nerve is global, allowing you to "Thud" a command from Georgia to a lounge anywhere in the world.
+The Titan V Engine is now fully integrated. Ready to watch the pulse travel across the global network?

@@ -1,11 +1,19 @@
 /**
  * weightedEngine.ts — Intelligent scene ranking + Universal Sommelier (Trifecta).
  *
- * Two exports:
- *   getWeightedScenes()   — original scene-ranking logic (unchanged)
- *   TRIFECTA_MATRIX       — Craft ↔ Pour ↔ Plate affinity data for the Sovereign Insight Cube
+ * Exports:
+ *   getWeightedScenes()         — original scene-ranking logic (unchanged)
+ *   TRIFECTA_MATRIX             — Craft ↔ Pour ↔ Plate affinity data
+ *   computeFlavorTrajectory()   — Titan V cross-craft palate affinity engine
+ *   rankAffinityOptions()       — convenience wrapper returning top-N results
  *
- * The Trifecta logic is consumed by TitanNervousSystem.calculateTrifecta().
+ * computeFlavorTrajectory maps flavor trajectories between:
+ *   CRAFT (Smoke / Vape / Pour / Brew)
+ *   POUR  (Bourbon / Scotch / Rum / Champagne / Tequila / Cognac)
+ *   PLATE (Beef / Charcuterie / Seafood / Cheese / Vegetable / Dessert)
+ *
+ * Revenue Brain v2 scoring: 40% taste · 25% margin · 15% stock · 10% reliability · 10% premium.
+ * HIGH confidence (≥85) or ELITE/MASTER tier unlocks Reserve + Executive Plate upscale.
  */
 
 // ── Universal Sommelier — Craft × Pour × Plate affinity ──────────────────────
@@ -113,7 +121,171 @@ export const VENUE_THEMES: Record<string, { filter: string[] }> = {
 
 export type ScoredScene = CraftScene & { score: number };
 
-// ── Core ranking function ─────────────────────────────────────────────────────
+// ── Titan V — Cross-Craft Palate Affinity Engine ──────────────────────────────
+
+type FlavorNote =
+  | "earthy" | "woody" | "leathery" | "spicy"
+  | "sweet"  | "floral" | "fruity"  | "nutty"
+  | "smoky"  | "creamy" | "bright"  | "herbal";
+
+type CraftFamily = "smoke" | "vape" | "pour" | "brew";
+type PourFamily  = "bourbon" | "scotch" | "rum" | "champagne" | "tequila" | "cognac";
+type PlateFamily = "beef" | "charcuterie" | "seafood" | "cheese" | "vegetable" | "dessert";
+
+export interface RankedOption {
+  label:          string;
+  family:         string;
+  affinityPct:    number;
+  isReserve?:     boolean;
+  isChefSpecial?: boolean;
+  flavorBridge:   string;
+}
+
+export interface WeightedAffinityResult {
+  pour:              RankedOption[];
+  plate:             RankedOption[];
+  /** Combined cross-craft affinity score 0–100 */
+  trajectoryScore:   number;
+  /** Unlocked when boldness ≥ 70 or confidenceScore ≥ 85 or tier ELITE/MASTER */
+  reserveEligible:   boolean;
+  executiveEligible: boolean;
+}
+
+export interface FlavorTrajectoryInput {
+  craftType:        CraftFamily;
+  boldness:         number;
+  atmosphere:       string;
+  guestTier?:       string;
+  confidenceScore?: number;
+}
+
+const CRAFT_NOTES: Record<CraftFamily, Record<string, FlavorNote[]>> = {
+  smoke: {
+    bold:       ["earthy", "leathery", "smoky", "woody"],
+    reflective: ["woody",  "nutty",    "earthy", "spicy"],
+    social:     ["sweet",  "floral",   "fruity", "creamy"],
+    relaxed:    ["herbal", "sweet",    "floral", "creamy"],
+  },
+  vape: {
+    bold:       ["sweet",  "fruity",   "spicy",  "herbal"],
+    reflective: ["floral", "herbal",   "fruity", "bright"],
+    social:     ["sweet",  "fruity",   "bright", "creamy"],
+    relaxed:    ["floral", "herbal",   "sweet",  "bright"],
+  },
+  pour: {
+    bold:       ["spicy",  "woody",    "earthy", "nutty"],
+    reflective: ["woody",  "smoky",    "nutty",  "leathery"],
+    social:     ["fruity", "sweet",    "floral", "bright"],
+    relaxed:    ["sweet",  "creamy",   "fruity", "herbal"],
+  },
+  brew: {
+    bold:       ["earthy", "nutty",    "smoky",  "woody"],
+    reflective: ["herbal", "earthy",   "nutty",  "spicy"],
+    social:     ["fruity", "bright",   "sweet",  "floral"],
+    relaxed:    ["sweet",  "creamy",   "fruity", "bright"],
+  },
+};
+
+const POUR_CFG: Record<PourFamily, { notes: FlavorNote[]; weight: number; reserve: boolean; highLabel: string; midLabel: string }> = {
+  bourbon:   { notes: ["woody","sweet","spicy","nutty"],      weight: 92, reserve: true,  highLabel: "Pappy Van Winkle 15yr",   midLabel: "Balvenie DoubleWood 12yr" },
+  scotch:    { notes: ["smoky","earthy","leathery","woody"],  weight: 96, reserve: true,  highLabel: "The Macallan Rare Cask",   midLabel: "Glenfarclas 17yr"         },
+  rum:       { notes: ["sweet","fruity","creamy","earthy"],   weight: 80, reserve: true,  highLabel: "Brugal 1888 Reserve",      midLabel: "Diplomático Mantuano"     },
+  champagne: { notes: ["bright","floral","fruity","sweet"],   weight: 74, reserve: false, highLabel: "Moët & Chandon Impérial",  midLabel: "Moët & Chandon Impérial"  },
+  tequila:   { notes: ["earthy","spicy","herbal","bright"],   weight: 72, reserve: false, highLabel: "Casa Dragones Joven",      midLabel: "Casamigos Añejo"          },
+  cognac:    { notes: ["fruity","floral","woody","spicy"],    weight: 88, reserve: true,  highLabel: "Rémy Martin XO",           midLabel: "Hennessy VSOP"            },
+};
+
+const PLATE_CFG: Record<PlateFamily, { notes: FlavorNote[]; weight: number; chef: boolean; highLabel: string; midLabel: string }> = {
+  beef:        { notes: ["earthy","leathery","smoky","woody"],  weight: 95, chef: true,  highLabel: "Wagyu Beef Carpaccio",         midLabel: "Prime Ribeye"                  },
+  charcuterie: { notes: ["spicy","nutty","earthy","smoky"],     weight: 85, chef: false, highLabel: "Charcuterie Reserve Board",    midLabel: "Artisan Charcuterie"           },
+  seafood:     { notes: ["bright","herbal","floral","creamy"],  weight: 75, chef: true,  highLabel: "Butter-Poached Lobster Tail",  midLabel: "Smoked Salmon Blini"           },
+  cheese:      { notes: ["nutty","creamy","earthy","fruity"],   weight: 82, chef: true,  highLabel: "Aged Manchego + Truffle Honey",midLabel: "Burrata with Heirloom Tomato"  },
+  vegetable:   { notes: ["herbal","bright","floral","sweet"],   weight: 68, chef: false, highLabel: "Burrata with Heirloom Tomato", midLabel: "Seasonal Vegetable Board"      },
+  dessert:     { notes: ["sweet","creamy","fruity","floral"],   weight: 65, chef: false, highLabel: "Valrhona Chocolate Soufflé",   midLabel: "Artisan Cheese Plate"          },
+};
+
+function noteOverlap(a: FlavorNote[], b: FlavorNote[]): number {
+  const s = new Set(a);
+  return b.filter(n => s.has(n)).length;
+}
+
+function affinityScore(overlap: number, baseWeight: number, boldness: number): number {
+  const boldBonus = boldness >= 75 ? 8 : boldness >= 50 ? 4 : 0;
+  return Math.min(Math.round(baseWeight * (0.7 + overlap * 0.1) + boldBonus), 100);
+}
+
+/**
+ * computeFlavorTrajectory
+ *
+ * Core Titan V palate affinity engine.  Maps a guest profile onto ranked
+ * Pour and Plate trajectories using shared flavor-note overlap scoring.
+ *
+ * HIGH confidence (≥85) or ELITE / MASTER tier unlocks Reserve and
+ * Executive Plate labels for Revenue Brain v2 upscale routing.
+ */
+export function computeFlavorTrajectory(input: FlavorTrajectoryInput): WeightedAffinityResult {
+  const { craftType, boldness, atmosphere, guestTier, confidenceScore = 70 } = input;
+
+  const atm        = atmosphere in (CRAFT_NOTES[craftType] ?? {}) ? atmosphere : "relaxed";
+  const craftNotes = CRAFT_NOTES[craftType]?.[atm] ?? ["earthy", "woody"] as FlavorNote[];
+
+  const reserve   = boldness >= 70 || confidenceScore >= 85 || guestTier === "ELITE" || guestTier === "MASTER";
+  const executive = confidenceScore >= 85 || guestTier === "ELITE" || guestTier === "MASTER";
+
+  const pourRanked: RankedOption[] = (Object.entries(POUR_CFG) as [PourFamily, typeof POUR_CFG[PourFamily]][])
+    .map(([family, cfg]) => {
+      const overlap = noteOverlap(craftNotes, cfg.notes);
+      const useRes  = cfg.reserve && reserve;
+      return {
+        label:       useRes ? cfg.highLabel : cfg.midLabel,
+        family,
+        affinityPct: affinityScore(overlap, cfg.weight, boldness),
+        isReserve:   useRes,
+        flavorBridge: `${overlap} shared flavor note${overlap !== 1 ? "s" : ""} — ${craftType} × ${family}`,
+      };
+    })
+    .sort((a, b) => b.affinityPct - a.affinityPct);
+
+  const plateRanked: RankedOption[] = (Object.entries(PLATE_CFG) as [PlateFamily, typeof PLATE_CFG[PlateFamily]][])
+    .map(([family, cfg]) => {
+      const overlap = noteOverlap(craftNotes, cfg.notes);
+      const useExec = cfg.chef && executive;
+      return {
+        label:          useExec ? cfg.highLabel : cfg.midLabel,
+        family,
+        affinityPct:    affinityScore(overlap, cfg.weight, boldness),
+        isChefSpecial:  useExec,
+        flavorBridge:   `Palate harmony: ${craftType} × ${family}`,
+      };
+    })
+    .sort((a, b) => b.affinityPct - a.affinityPct);
+
+  const top2Pour  = pourRanked.slice(0, 2).reduce((s, r) => s + r.affinityPct, 0) / 2;
+  const top2Plate = plateRanked.slice(0, 2).reduce((s, r) => s + r.affinityPct, 0) / 2;
+
+  return {
+    pour:              pourRanked,
+    plate:             plateRanked,
+    trajectoryScore:   Math.round(top2Pour * 0.55 + top2Plate * 0.45),
+    reserveEligible:   reserve,
+    executiveEligible: executive,
+  };
+}
+
+/**
+ * rankAffinityOptions
+ *
+ * Convenience wrapper — returns top N ranked pour + plate options.
+ */
+export function rankAffinityOptions(
+  input: FlavorTrajectoryInput,
+  topN = 3,
+): { pour: RankedOption[]; plate: RankedOption[] } {
+  const result = computeFlavorTrajectory(input);
+  return { pour: result.pour.slice(0, topN), plate: result.plate.slice(0, topN) };
+}
+
+// ── Original scene-ranking engine (unchanged) ─────────────────────────────────
 
 export function getWeightedScenes(
   scenes:  CraftScene[],

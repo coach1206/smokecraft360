@@ -233,12 +233,27 @@ export const TitanNervousSystem = {
 
     TitanNervousSystem.haptics.heavy(); // The "Thud" of authority
 
+    const ts = Date.now();
+
     socket.emit("SOVEREIGN_GLOBAL_DISRUPTION", {
       type,
-      timestamp: Date.now(),
+      timestamp: ts,
       origin:    "SUPER_ADMIN_MOBILE",
       mode:      "ABSOLUTE",
     });
+
+    // Persist to sovereign_events for audit + Sovereign Logging (Phase 4.2)
+    fetch("/api/sovereign-events", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({
+        type,
+        originDevice: "SUPER_ADMIN_MOBILE",
+        region:       "GLOBAL",
+        mode:         "ABSOLUTE",
+        timestamp:    ts,
+      }),
+    }).catch(() => {});
 
     if (type === "BLACKOUT") {
       document.body.classList.add("titan-blackout-active");
