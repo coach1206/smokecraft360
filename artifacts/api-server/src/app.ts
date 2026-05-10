@@ -171,6 +171,7 @@ import sovereignOrderRouter        from "./routes/sovereignOrder";
 import sovereignEventsRouter       from "./routes/sovereignEvents";
 import sovereignDistributionRouter from "./routes/sovereignDistribution";
 import sovereignAuthRouter         from "./routes/sovereignAuth";
+import biometricHardwareRouter     from "./routes/biometricHardware";
 import cognitiveBuildSheetRouter   from "./routes/cognitiveBuildSheet";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
@@ -500,6 +501,7 @@ app.use("/api",                         sovereignOrderRouter);
 app.use("/api",                         sovereignEventsRouter);
 app.use("/api",                         sovereignDistributionRouter);
 app.use("/api",                         sovereignAuthRouter);
+app.use("/api",                         biometricHardwareRouter);
 app.use("/api",                         cognitiveBuildSheetRouter);
 app.use("/api",                         onboardingRouter);
 app.use("/api",                         aiConfigureRouter);

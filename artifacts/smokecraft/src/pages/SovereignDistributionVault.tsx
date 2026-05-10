@@ -901,6 +901,10 @@ export default function SovereignDistributionVault() {
           </motion.div>
           <div style={{ fontSize: 9, fontWeight: 700, color: C.dim, fontFamily: C.mono, letterSpacing: "0.12em" }}>TITAN V 5.2.0</div>
           <div style={{ width: 1, height: 24, background: C.border }} />
+          <motion.button whileTap={{ scale: 0.93 }} onClick={() => navigate("/hardware-lab")}
+            style={{ display: "flex", alignItems: "center", gap: 7, padding: "7px 14px", borderRadius: 8, background: `${C.gold}10`, border: `1px solid ${C.border}`, color: C.gold, fontSize: 10, fontFamily: C.mono, fontWeight: 800, letterSpacing: "0.12em", cursor: "pointer" }}>
+            <Shield size={12} /> HARDWARE LABS
+          </motion.button>
           <motion.button whileTap={{ scale: 0.93 }} onClick={revokeAllSessions}
             style={{ display: "flex", alignItems: "center", gap: 7, padding: "7px 14px", borderRadius: 8, background: "rgba(239,68,68,0.10)", border: "1px solid rgba(239,68,68,0.28)", color: "#ef4444", fontSize: 10, fontFamily: C.mono, fontWeight: 800, letterSpacing: "0.12em", cursor: "pointer" }}>
             <LogOut size={12} /> REVOKE ALL
