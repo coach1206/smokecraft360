@@ -309,7 +309,7 @@ export function SovereignOverrideHub() {
           position:             "fixed",
           top:                  12,
           right:                14,
-          zIndex:               9999,
+          zIndex:               10000,
           display:              "flex",
           alignItems:           "center",
           gap:                  7,
