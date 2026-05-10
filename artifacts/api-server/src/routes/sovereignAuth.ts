@@ -24,7 +24,7 @@ function secret() {
 }
 
 /** The sole authorized operator. Env var overrides the hardcoded root identity. */
-const SOVEREIGN_ROOT_EMAIL = "johnie@dayone360.com";
+const SOVEREIGN_ROOT_EMAIL = "jc@dayone360.com";
 function masterEmail(): string {
   return (process.env.SOVEREIGN_EMAIL ?? SOVEREIGN_ROOT_EMAIL).toLowerCase().trim();
 }
@@ -99,8 +99,8 @@ router.post("/sovereign/magic-link", async (req, res) => {
   </p>
   <div style="margin-top:32px;padding-top:20px;border-top:1px solid rgba(212,175,55,0.12);">
     <div style="font-size:8px;color:rgba(245,242,237,0.18);letter-spacing:0.18em;">
-      AUTHORITY: SOVEREIGN // 360 ENTERPRISES SERVICES LLC<br/>
-      JOHNIE MANUEL LEE COLLINS · NOVEE OS · TITAN V 5.2.0
+      AUTHORIZED OPERATOR: JC // 360 ENTERPRISES SERVICES LLC<br/>
+      NOVEE OS · TITAN V 5.2.0
     </div>
   </div>
 </div>`,

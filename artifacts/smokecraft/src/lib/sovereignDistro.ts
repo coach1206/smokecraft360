@@ -17,7 +17,7 @@ import { vibrate } from "./haptics";
 
 /** Single source of truth for the sovereign operator identity. */
 export const SOVEREIGN_ROOT = {
-  email:          "johnie@dayone360.com",   // Hardcoded master identity
+  email:          "jc@dayone360.com",        // Hardcoded master identity
   authorityLevel: "SOVEREIGN",
   entity:         "360 Enterprises Services LLC",
   owner:          "Johnie Manuel Lee Collins",

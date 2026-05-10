@@ -152,7 +152,7 @@ export default function SovereignGate() {
 
       {/* Footer watermark */}
       <div style={{ position: "fixed", bottom: 16, left: 0, right: 0, textAlign: "center", fontSize: 8, color: "rgba(212,175,55,0.18)", letterSpacing: "0.22em", pointerEvents: "none" }}>
-        AUTHORITY: SOVEREIGN // 360 ENTERPRISES SERVICES LLC
+        AUTHORIZED OPERATOR: JC // 360 ENTERPRISES SERVICES LLC
       </div>
 
       <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>

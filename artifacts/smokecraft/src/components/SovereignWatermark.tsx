@@ -26,7 +26,7 @@ export default function SovereignWatermark() {
         color:           "rgba(212,175,55,0.22)",
         textTransform:   "uppercase",
       }}>
-        AUTHORITY: SOVEREIGN // 360 ENTERPRISES SERVICES LLC
+        AUTHORIZED OPERATOR: JC // 360 ENTERPRISES SERVICES LLC
       </div>
     </div>
   );
