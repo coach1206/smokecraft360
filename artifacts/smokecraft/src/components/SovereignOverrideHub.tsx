@@ -121,7 +121,6 @@ function MenuItem({ icon, label, sub, accent, danger, active, onClick }: MenuIte
     <motion.button
       data-override-hub
       whileTap={{ scale: 0.96, backgroundColor: `${accent}14` }}
-      onTouchStart={fire}
       onClick={fire}
       style={{
         display:    "flex",
