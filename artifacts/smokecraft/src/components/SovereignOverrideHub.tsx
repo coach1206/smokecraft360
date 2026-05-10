@@ -210,74 +210,52 @@ function MenuItem({ icon, label, sub, accent, danger, active, onClick }: MenuIte
 }
 
 // ── Kill-switch long-press item — 2-second hold required ──────────────────
-// Shows a gold SVG charging ring during hold. Fires onCommit() at 2 s.
-// Fires TitanNervousSystem.haptics.error() on early release.
-
-const RING_R = 15;
-const RING_CIRC = 2 * Math.PI * RING_R;
+// CSS height transition fills the icon circle over 2 s (linear).
+// Wall-clock duration measured on pointerUp. Early release → haptics.error().
 
 interface KillSwitchItemProps {
-  icon:      React.ReactNode;
-  label:     string;
-  sub:       string;
-  accent:    string;
-  active?:   boolean;
-  onCommit:  () => void;
+  icon:     React.ReactNode;
+  label:    string;
+  sub:      string;
+  accent:   string;
+  active?:  boolean;
+  onCommit: () => void;
 }
 
 function KillSwitchItem({ icon, label, sub, accent, active, onCommit }: KillSwitchItemProps) {
-  const pressStartRef  = useRef(0);
-  const rafRef         = useRef(0);
-  const holdingRef     = useRef(false);
-  const progressRef    = useRef(0);
-  const [progress, setProgress] = useState(0);
+  const [holdStart, setHoldStart] = useState<number | null>(null);
+  const holding = holdStart !== null;
 
-  const startHold = useCallback((e: React.PointerEvent) => {
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    if (holdingRef.current) return;
-    holdingRef.current   = true;
-    pressStartRef.current = Date.now();
-    progressRef.current  = 0;
-    setProgress(0);
-
-    const tick = () => {
-      if (!holdingRef.current) return;
-      const p = Math.min((Date.now() - pressStartRef.current) / 2000, 1);
-      progressRef.current = p;
-      setProgress(p);
-      if (p >= 1) {
-        holdingRef.current = false;
-        setProgress(0);
-        onCommit();
-      } else {
-        rafRef.current = requestAnimationFrame(tick);
-      }
-    };
-    rafRef.current = requestAnimationFrame(tick);
-  }, [onCommit]);
-
-  const cancelHold = useCallback(() => {
-    if (!holdingRef.current) return;
-    cancelAnimationFrame(rafRef.current);
-    holdingRef.current = false;
-    const p = progressRef.current;
-    progressRef.current = 0;
-    setProgress(0);
-    // Only buzz if they actually started pressing meaningfully
-    if (p > 0.04) TitanNervousSystem.haptics.error();
+    setHoldStart(Date.now());
   }, []);
 
-  const dashOffset = RING_CIRC * (1 - progress);
-  const holding    = progress > 0;
+  const handlePointerUp = useCallback(() => {
+    if (holdStart === null) return;
+    const duration = Date.now() - holdStart;
+    setHoldStart(null);
+    if (duration >= 2000) {
+      onCommit();
+    } else {
+      TitanNervousSystem.haptics.error();
+    }
+  }, [holdStart, onCommit]);
+
+  const handleCancel = useCallback(() => {
+    if (holdStart === null) return;
+    setHoldStart(null);
+    TitanNervousSystem.haptics.error();
+  }, [holdStart]);
 
   return (
     <motion.button
       data-override-hub
-      onPointerDown={startHold}
-      onPointerUp={cancelHold}
-      onPointerLeave={cancelHold}
-      onPointerCancel={cancelHold}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handleCancel}
+      onPointerCancel={handleCancel}
       style={{
         display:     "flex",
         alignItems:  "center",
@@ -301,48 +279,48 @@ function KillSwitchItem({ icon, label, sub, accent, active, onCommit }: KillSwit
         touchAction: "none",
         WebkitTapHighlightColor: "transparent",
         userSelect:  "none",
-        position:    "relative",
         boxShadow:   holding ? `0 0 16px ${GOLD_PILL}28` : "none",
       }}
     >
-      {/* Icon + charging ring */}
-      <div style={{ position: "relative", width: 34, height: 34, flexShrink: 0 }}>
+      {/* Icon circle with CSS rising fill */}
+      <div style={{
+        position:     "relative",
+        width:        34,
+        height:       34,
+        borderRadius: "50%",
+        overflow:     "hidden",
+        border:       `1px solid ${accent}${active ? "55" : "30"}`,
+        background:   `${accent}${active ? "22" : "12"}`,
+        flexShrink:   0,
+        boxShadow:    holding
+          ? `0 0 18px ${GOLD_PILL}70`
+          : active
+            ? `0 0 10px ${accent}40`
+            : "none",
+      }}>
+        {/* Rising gold fill — CSS transition drives the 2s charge */}
         <div style={{
-          width:  34, height: 34,
-          borderRadius: "50%",
-          background: `${accent}${active ? "22" : "12"}`,
-          border:     `1px solid ${accent}${active ? "55" : "30"}`,
-          display:    "flex",
-          alignItems: "center",
+          position:   "absolute",
+          bottom:     0,
+          left:       0,
+          width:      "100%",
+          background: GOLD_PILL,
+          opacity:    0.38,
+          height:     holding ? "100%" : "0%",
+          transition: holding ? "height 2000ms linear" : "height 0ms",
+        }} />
+        {/* Icon sits above the fill */}
+        <div style={{
+          position:       "relative",
+          zIndex:         1,
+          display:        "flex",
+          alignItems:     "center",
           justifyContent: "center",
-          boxShadow:  holding
-            ? `0 0 18px ${GOLD_PILL}70`
-            : active
-              ? `0 0 10px ${accent}40`
-              : "none",
+          width:          "100%",
+          height:         "100%",
         }}>
           {icon}
         </div>
-
-        {/* Gold charging ring — only while holding */}
-        {holding && (
-          <svg
-            style={{ position: "absolute", inset: 0, transform: "rotate(-90deg)", pointerEvents: "none" }}
-            width={34} height={34}
-            viewBox="0 0 34 34"
-          >
-            {/* Track */}
-            <circle cx={17} cy={17} r={RING_R} fill="none"
-              stroke={`${GOLD_PILL}22`} strokeWidth={2.5} />
-            {/* Progress arc */}
-            <circle cx={17} cy={17} r={RING_R} fill="none"
-              stroke={GOLD_PILL} strokeWidth={2.5}
-              strokeDasharray={RING_CIRC}
-              strokeDashoffset={dashOffset}
-              strokeLinecap="round"
-            />
-          </svg>
-        )}
       </div>
 
       {/* Text */}
@@ -374,7 +352,7 @@ function KillSwitchItem({ icon, label, sub, accent, active, onCommit }: KillSwit
               background: `${GOLD_PILL}22`, border: `1px solid ${GOLD_PILL}55`,
               color: GOLD_PILL, letterSpacing: "0.08em",
             }}>
-              {Math.ceil((1 - progress) * 2)}s
+              CHARGING
             </span>
           )}
         </div>
@@ -391,25 +369,15 @@ function KillSwitchItem({ icon, label, sub, accent, active, onCommit }: KillSwit
           lineHeight:    1.4,
         }}>
           {holding
-            ? "Release to cancel  ·  Hold to engage"
+            ? "Release to cancel  ·  Hold 2s to engage"
             : active
               ? "Hold 2s to disable"
               : sub}
         </div>
       </div>
 
-      {/* Right: percent while holding, chevron otherwise */}
-      {holding ? (
-        <span style={{
-          fontSize:      10,
-          fontFamily:    FONT,
-          color:         GOLD_PILL,
-          letterSpacing: "0.1em",
-          flexShrink:    0,
-        }}>
-          {Math.round(progress * 100)}%
-        </span>
-      ) : (
+      {/* Chevron — hidden while charging */}
+      {!holding && (
         <svg width="7" height="10" viewBox="0 0 7 10" fill="none" style={{ flexShrink: 0 }}>
           <path d="M1.5 1.5L5.5 5L1.5 8.5" stroke={`${accent}50`} strokeWidth="1.2" strokeLinecap="round"/>
         </svg>
