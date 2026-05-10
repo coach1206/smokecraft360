@@ -176,4 +176,74 @@ router.delete("/biometric/nodes/:id", async (req, res) => {
   }
 });
 
+// ── State Intervention Engine ─────────────────────────────────────────────────
+
+pool.query(`
+  CREATE TABLE IF NOT EXISTS sovereign_state_interventions (
+    id          SERIAL PRIMARY KEY,
+    vitality    INTEGER     NOT NULL,
+    sentiment   TEXT        NOT NULL,
+    titan_exec  TEXT        NOT NULL,
+    triggered_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  );
+`).catch(() => {});
+
+type Sentiment = "OPTIMAL" | "CALM" | "FOCUSED" | "STRESSED" | "FATIGUED";
+
+/** Mirrors the Python check_state_interventions logic exactly. */
+function checkStateIntervention(vitality: number, sentiment: Sentiment): string {
+  if (vitality < 20)          return "TITAN_EXEC: INITIATE_RECHARGE_PROTOCOL";
+  if (sentiment === "STRESSED") return "TITAN_EXEC: ENGAGE_SOVEREIGN_DND";
+  return "TITAN_EXEC: MAINTAIN_OPTIMAL_STATE";
+}
+
+const StateCheckSchema = z.object({
+  vitality:  z.number().int().min(0).max(100),
+  sentiment: z.enum(["OPTIMAL", "CALM", "FOCUSED", "STRESSED", "FATIGUED"]),
+});
+
+/**
+ * POST /api/biometric/state-check
+ * Runs the State Intervention Engine and logs the TITAN_EXEC command.
+ */
+router.post("/biometric/state-check", async (req, res) => {
+  const parsed = StateCheckSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid payload" }); return; }
+
+  const { vitality, sentiment } = parsed.data;
+  const titan_exec = checkStateIntervention(vitality, sentiment as Sentiment);
+
+  try {
+    await pool.query(
+      `INSERT INTO sovereign_state_interventions (vitality, sentiment, titan_exec)
+       VALUES ($1, $2, $3)`,
+      [vitality, sentiment, titan_exec],
+    );
+    logger.info({ vitality, sentiment, titan_exec }, "State intervention evaluated");
+    res.json({ ok: true, titan_exec, vitality, sentiment, evaluated_at: new Date().toISOString() });
+  } catch (err) {
+    logger.error({ err }, "POST /biometric/state-check error");
+    res.status(500).json({ error: "State check failed" });
+  }
+});
+
+/**
+ * GET /api/biometric/interventions
+ * Returns the 50 most recent logged state interventions.
+ */
+router.get("/biometric/interventions", async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, vitality, sentiment, titan_exec, triggered_at
+       FROM sovereign_state_interventions
+       ORDER BY triggered_at DESC
+       LIMIT 50`,
+    );
+    res.json({ interventions: rows });
+  } catch (err) {
+    logger.error({ err }, "GET /biometric/interventions error");
+    res.status(500).json({ error: "Failed to fetch interventions" });
+  }
+});
+
 export default router;

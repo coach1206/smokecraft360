@@ -1,7 +1,7 @@
 /**
  * Sovereign Hardware Labs — /hardware-lab
  * 360 Enterprises Services LLC · Johnie Manuel Lee Collins
- * Biometric node registry: manage authorized rings, watches, bands, pucks.
+ * Tabs: NODE REGISTRY · STATE ENGINE
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -9,12 +9,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import {
   Shield, Plus, Trash2, RefreshCw, Loader, Check,
-  Radio, Activity, Cpu, ChevronRight, Lock, Unlock,
-  Watch, Fingerprint, X,
+  Radio, Activity, Cpu, Lock,
+  Watch, Fingerprint, X, Zap, Brain,
 } from "lucide-react";
 import SovereignWatermark from "@/components/SovereignWatermark";
-
-export const SOVEREIGN_SESSION_KEY = "SOVEREIGN_SESSION";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
@@ -33,12 +31,17 @@ const C = {
   serif:  "'Cormorant Garamond',serif",
   green:  "#22c55e",
   red:    "#ef4444",
-  blue:   "#3b82f6",
+  orange: "#f97316",
 };
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type NodeType = "RING" | "WATCH" | "BAND" | "PUCK" | "OTHER";
+type NodeType   = "RING" | "WATCH" | "BAND" | "PUCK" | "OTHER";
+type Sentiment  = "OPTIMAL" | "CALM" | "FOCUSED" | "STRESSED" | "FATIGUED";
+type ActiveTab  = "registry" | "state-engine";
+type ExecCmd    = "TITAN_EXEC: INITIATE_RECHARGE_PROTOCOL"
+                | "TITAN_EXEC: ENGAGE_SOVEREIGN_DND"
+                | "TITAN_EXEC: MAINTAIN_OPTIMAL_STATE";
 
 interface HardwareNode {
   id: number;
@@ -51,7 +54,55 @@ interface HardwareNode {
   registered_at: string;
 }
 
-// ── Icons per type ─────────────────────────────────────────────────────────────
+interface Intervention {
+  id: number;
+  vitality: number;
+  sentiment: string;
+  titan_exec: string;
+  triggered_at: string;
+}
+
+// ── Exec command config ───────────────────────────────────────────────────────
+
+const EXEC_CONFIG: Record<string, { color: string; bg: string; border: string; label: string }> = {
+  "TITAN_EXEC: INITIATE_RECHARGE_PROTOCOL": {
+    color:  C.red,
+    bg:     "rgba(239,68,68,0.08)",
+    border: "rgba(239,68,68,0.28)",
+    label:  "LOW VITALITY — RECHARGE REQUIRED",
+  },
+  "TITAN_EXEC: ENGAGE_SOVEREIGN_DND": {
+    color:  C.amber,
+    bg:     "rgba(212,175,55,0.08)",
+    border: "rgba(212,175,55,0.30)",
+    label:  "STRESS DETECTED — DND ENGAGED",
+  },
+  "TITAN_EXEC: MAINTAIN_OPTIMAL_STATE": {
+    color:  C.green,
+    bg:     "rgba(34,197,94,0.08)",
+    border: "rgba(34,197,94,0.28)",
+    label:  "ALL SYSTEMS NOMINAL",
+  },
+};
+
+const SENTIMENTS: Sentiment[] = ["OPTIMAL", "CALM", "FOCUSED", "STRESSED", "FATIGUED"];
+
+const SENTIMENT_COLOR: Record<Sentiment, string> = {
+  OPTIMAL:  C.green,
+  CALM:     "#60a5fa",
+  FOCUSED:  C.gold,
+  STRESSED: C.red,
+  FATIGUED: C.orange,
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function vitalityColor(v: number) {
+  if (v < 20) return C.red;
+  if (v < 50) return C.orange;
+  if (v < 75) return C.amber;
+  return C.green;
+}
 
 function NodeIcon({ type, size = 16, color }: { type: NodeType; size?: number; color: string }) {
   if (type === "RING")  return <Fingerprint size={size} color={color} />;
@@ -60,8 +111,6 @@ function NodeIcon({ type, size = 16, color }: { type: NodeType; size?: number; c
   if (type === "PUCK")  return <Radio size={size} color={color} />;
   return <Cpu size={size} color={color} />;
 }
-
-// ── Status badge ──────────────────────────────────────────────────────────────
 
 function AuthBadge({ authorized }: { authorized: boolean }) {
   return authorized ? (
@@ -74,8 +123,6 @@ function AuthBadge({ authorized }: { authorized: boolean }) {
     </span>
   );
 }
-
-// ── Sync payload renderer ─────────────────────────────────────────────────────
 
 function SyncPayload({ payload }: { payload: Record<string, unknown> | null }) {
   if (!payload) return <span style={{ fontSize: 9, color: C.dim, letterSpacing: "0.12em" }}>NO SYNC DATA</span>;
@@ -100,11 +147,12 @@ function SyncPayload({ payload }: { payload: Record<string, unknown> | null }) {
 // ── Add Node Modal ─────────────────────────────────────────────────────────────
 
 function AddNodeModal({ onClose, onAdded }: { onClose: () => void; onAdded: () => void }) {
-  const [hardwareId, setHwId]   = useState("");
-  const [nodeType, setType]     = useState<NodeType>("RING");
-  const [label, setLabel]       = useState("");
-  const [saving, setSaving]     = useState(false);
-  const [err, setErr]           = useState("");
+  const [hardwareId, setHwId] = useState("");
+  const [nodeType, setType]   = useState<NodeType>("RING");
+  const [label, setLabel]     = useState("");
+  const [saving, setSaving]   = useState(false);
+  const [err, setErr]         = useState("");
+  const NODE_TYPES: NodeType[] = ["RING", "WATCH", "BAND", "PUCK", "OTHER"];
 
   const submit = async () => {
     if (!hardwareId.trim()) { setErr("Hardware ID is required"); return; }
@@ -121,27 +169,19 @@ function AddNodeModal({ onClose, onAdded }: { onClose: () => void; onAdded: () =
     finally { setSaving(false); }
   };
 
-  const NODE_TYPES: NodeType[] = ["RING", "WATCH", "BAND", "PUCK", "OTHER"];
-
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 24 }}>
       <motion.div initial={{ scale: 0.93, y: 20 }} animate={{ scale: 1, y: 0 }}
         style={{ background: C.card, border: `1px solid ${C.borderB}`, borderRadius: 14, padding: "32px 28px", width: "100%", maxWidth: 440, position: "relative" }}>
-
-        <button onClick={onClose} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", cursor: "pointer", color: C.dim }}>
-          <X size={16} />
-        </button>
-
+        <button onClick={onClose} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", cursor: "pointer", color: C.dim }}><X size={16} /></button>
         <div style={{ fontSize: 9, color: C.amber, letterSpacing: "0.24em", marginBottom: 6 }}>SOVEREIGN HARDWARE LABS</div>
         <div style={{ fontSize: 18, color: C.gold, fontFamily: C.serif, letterSpacing: "0.14em", marginBottom: 24, fontWeight: 300 }}>Register New Node</div>
-
         <label style={{ display: "block", marginBottom: 16 }}>
           <div style={{ fontSize: 8, color: C.amber, letterSpacing: "0.22em", marginBottom: 7 }}>HARDWARE ID</div>
           <input value={hardwareId} onChange={e => setHwId(e.target.value)} placeholder="e.g. SOV_RING_02"
             style={{ width: "100%", padding: "11px 14px", borderRadius: 7, background: "rgba(245,242,237,0.04)", border: `1px solid ${C.border}`, color: C.ink, fontSize: 12, fontFamily: C.mono, outline: "none", boxSizing: "border-box" }} />
         </label>
-
         <label style={{ display: "block", marginBottom: 16 }}>
           <div style={{ fontSize: 8, color: C.amber, letterSpacing: "0.22em", marginBottom: 7 }}>NODE TYPE</div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -153,15 +193,12 @@ function AddNodeModal({ onClose, onAdded }: { onClose: () => void; onAdded: () =
             ))}
           </div>
         </label>
-
         <label style={{ display: "block", marginBottom: 24 }}>
           <div style={{ fontSize: 8, color: C.amber, letterSpacing: "0.22em", marginBottom: 7 }}>LABEL <span style={{ color: C.dim }}>(optional)</span></div>
           <input value={label} onChange={e => setLabel(e.target.value)} placeholder="e.g. Sovereign Watch — Clark Field Unit"
             style={{ width: "100%", padding: "11px 14px", borderRadius: 7, background: "rgba(245,242,237,0.04)", border: `1px solid ${C.border}`, color: C.ink, fontSize: 12, fontFamily: C.mono, outline: "none", boxSizing: "border-box" }} />
         </label>
-
         {err && <div style={{ fontSize: 9, color: C.red, letterSpacing: "0.12em", marginBottom: 14 }}>{err}</div>}
-
         <motion.button whileTap={{ scale: 0.95 }} onClick={submit} disabled={saving}
           style={{ width: "100%", padding: "13px", borderRadius: 8, background: saving ? "rgba(212,175,55,0.20)" : C.gold, border: "none", color: "#050505", fontSize: 10, fontWeight: 800, cursor: saving ? "not-allowed" : "pointer", letterSpacing: "0.14em", fontFamily: C.mono, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
           {saving ? <><Loader size={12} style={{ animation: "spin 1s linear infinite" }} /> REGISTERING…</> : <><Shield size={12} /> AUTHORIZE NODE</>}
@@ -171,10 +208,181 @@ function AddNodeModal({ onClose, onAdded }: { onClose: () => void; onAdded: () =
   );
 }
 
+// ── State Engine Tab ──────────────────────────────────────────────────────────
+
+function StateEngineTab() {
+  const [vitality, setVitality]   = useState(75);
+  const [sentiment, setSentiment] = useState<Sentiment>("OPTIMAL");
+  const [result, setResult]       = useState<{ titan_exec: string; evaluated_at: string } | null>(null);
+  const [running, setRunning]     = useState(false);
+  const [log, setLog]             = useState<Intervention[]>([]);
+  const [loadingLog, setLoadLog]  = useState(true);
+
+  const loadLog = useCallback(async () => {
+    setLoadLog(true);
+    try {
+      const res  = await fetch("/api/biometric/interventions");
+      const data = await res.json() as { interventions?: Intervention[] };
+      setLog(data.interventions ?? []);
+    } catch { /* graceful */ }
+    finally { setLoadLog(false); }
+  }, []);
+
+  useEffect(() => { loadLog(); }, [loadLog]);
+
+  const execute = async () => {
+    setRunning(true); setResult(null);
+    try {
+      const res  = await fetch("/api/biometric/state-check", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vitality, sentiment }),
+      });
+      const data = await res.json() as { ok?: boolean; titan_exec?: string; evaluated_at?: string };
+      if (data.ok && data.titan_exec) {
+        setResult({ titan_exec: data.titan_exec, evaluated_at: data.evaluated_at ?? "" });
+        await loadLog();
+      }
+    } catch { /* graceful */ }
+    finally { setRunning(false); }
+  };
+
+  const vColor   = vitalityColor(vitality);
+  const execConf = result ? (EXEC_CONFIG[result.titan_exec] ?? EXEC_CONFIG["TITAN_EXEC: MAINTAIN_OPTIMAL_STATE"]) : null;
+
+  return (
+    <div>
+      {/* Input panel */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+
+        {/* Vitality */}
+        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "22px 20px" }}>
+          <div style={{ fontSize: 8, color: C.amber, letterSpacing: "0.22em", marginBottom: 16 }}>VITALITY LEVEL</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 16 }}>
+            <span style={{ fontSize: 48, color: vColor, fontFamily: C.serif, lineHeight: 1, transition: "color 0.3s" }}>{vitality}</span>
+            <span style={{ fontSize: 10, color: C.dim }}>/ 100</span>
+          </div>
+          <input type="range" min={0} max={100} value={vitality} onChange={e => setVitality(Number(e.target.value))}
+            style={{ width: "100%", accentColor: vColor, cursor: "pointer" }} />
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+            <span style={{ fontSize: 8, color: C.red, letterSpacing: "0.14em" }}>0 — CRITICAL</span>
+            <span style={{ fontSize: 8, color: C.green, letterSpacing: "0.14em" }}>100 — PEAK</span>
+          </div>
+          {vitality < 20 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              style={{ marginTop: 12, fontSize: 9, color: C.red, letterSpacing: "0.14em", fontWeight: 700 }}>
+              ⚠ RECHARGE THRESHOLD BREACHED
+            </motion.div>
+          )}
+        </div>
+
+        {/* Sentiment */}
+        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "22px 20px" }}>
+          <div style={{ fontSize: 8, color: C.amber, letterSpacing: "0.22em", marginBottom: 16 }}>SENTIMENT STATE</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {SENTIMENTS.map(s => {
+              const sel = sentiment === s;
+              return (
+                <motion.button key={s} whileTap={{ scale: 0.97 }} onClick={() => setSentiment(s)}
+                  style={{ padding: "10px 14px", borderRadius: 8, background: sel ? `${SENTIMENT_COLOR[s]}14` : "rgba(245,242,237,0.03)", border: `1px solid ${sel ? SENTIMENT_COLOR[s] : C.border}`, color: sel ? SENTIMENT_COLOR[s] : C.muted, fontSize: 10, fontWeight: sel ? 700 : 400, cursor: "pointer", letterSpacing: "0.12em", fontFamily: C.mono, textAlign: "left", display: "flex", alignItems: "center", justifyContent: "space-between", transition: "all 0.15s" }}>
+                  {s}
+                  {sel && <Check size={11} />}
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Execute button */}
+      <motion.button whileTap={{ scale: 0.97 }} onClick={execute} disabled={running}
+        style={{ width: "100%", padding: "16px", borderRadius: 10, background: running ? "rgba(212,175,55,0.18)" : C.gold, border: "none", color: "#050505", fontSize: 11, fontWeight: 800, cursor: running ? "not-allowed" : "pointer", letterSpacing: "0.18em", fontFamily: C.mono, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 20 }}>
+        {running
+          ? <><Loader size={14} style={{ animation: "spin 1s linear infinite" }} /> EVALUATING STATE…</>
+          : <><Zap size={14} /> EXECUTE STATE CHECK</>}
+      </motion.button>
+
+      {/* Result */}
+      <AnimatePresence>
+        {result && execConf && (
+          <motion.div key={result.evaluated_at}
+            initial={{ opacity: 0, scale: 0.97, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0 }}
+            style={{ background: execConf.bg, border: `1px solid ${execConf.border}`, borderRadius: 12, padding: "24px 24px", marginBottom: 28, position: "relative", overflow: "hidden" }}>
+            {/* Ambient glow */}
+            <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: "80%", height: 60, background: `radial-gradient(ellipse,${execConf.color}18,transparent)`, pointerEvents: "none" }} />
+            <div style={{ fontSize: 8, color: execConf.color, letterSpacing: "0.26em", marginBottom: 10, opacity: 0.7 }}>TITAN V KERNEL OUTPUT</div>
+            <div style={{ fontSize: 15, color: execConf.color, fontWeight: 800, letterSpacing: "0.14em", marginBottom: 6, fontFamily: C.mono }}>
+              {result.titan_exec}
+            </div>
+            <div style={{ fontSize: 9, color: execConf.color, opacity: 0.65, letterSpacing: "0.14em", marginBottom: 14 }}>{execConf.label}</div>
+            <div style={{ display: "flex", gap: 20 }}>
+              <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.14em" }}>
+                VITALITY <span style={{ color: vColor, fontWeight: 700 }}>{vitality}</span>
+              </div>
+              <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.14em" }}>
+                SENTIMENT <span style={{ color: SENTIMENT_COLOR[sentiment], fontWeight: 700 }}>{sentiment}</span>
+              </div>
+              <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.14em" }}>
+                {new Date(result.evaluated_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Intervention log */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <div style={{ fontSize: 9, color: `${C.gold}60`, letterSpacing: "0.24em" }}>INTERVENTION LOG</div>
+        <div style={{ flex: 1, height: 1, background: C.border }} />
+        <motion.button whileTap={{ scale: 0.93 }} onClick={loadLog}
+          style={{ background: "none", border: "none", cursor: "pointer", color: C.dim, display: "flex", alignItems: "center", gap: 5, fontSize: 8, letterSpacing: "0.14em" }}>
+          <RefreshCw size={10} /> REFRESH
+        </motion.button>
+      </div>
+
+      {loadingLog && (
+        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "16px", color: C.muted, fontSize: 10 }}>
+          <Loader size={13} color={C.gold} style={{ animation: "spin 1s linear infinite" }} /> LOADING LOG…
+        </div>
+      )}
+
+      {!loadingLog && log.length === 0 && (
+        <div style={{ padding: "28px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, textAlign: "center" }}>
+          <div style={{ fontSize: 10, color: C.dim, letterSpacing: "0.16em" }}>NO INTERVENTIONS LOGGED YET</div>
+          <div style={{ fontSize: 9, color: C.dim, marginTop: 6, lineHeight: 1.7 }}>Execute a state check above to generate the first entry.</div>
+        </div>
+      )}
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {log.map((entry, i) => {
+          const conf = EXEC_CONFIG[entry.titan_exec] ?? EXEC_CONFIG["TITAN_EXEC: MAINTAIN_OPTIMAL_STATE"];
+          return (
+            <motion.div key={entry.id} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.025 }}
+              style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 9, padding: "12px 16px", display: "flex", alignItems: "center", gap: 14 }}>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: conf.color, flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 9, color: conf.color, fontWeight: 700, letterSpacing: "0.10em", marginBottom: 2 }}>{entry.titan_exec}</div>
+                <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.12em" }}>
+                  VIT <span style={{ color: vitalityColor(entry.vitality) }}>{entry.vitality}</span>
+                  {" · "}
+                  SENT <span style={{ color: SENTIMENT_COLOR[entry.sentiment as Sentiment] ?? C.muted }}>{entry.sentiment}</span>
+                </div>
+              </div>
+              <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.10em", flexShrink: 0 }}>
+                {new Date(entry.triggered_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export default function SovereignHardwareLab() {
-  const [, navigate] = useLocation();
+  const [, navigate]  = useLocation();
+  const [tab, setTab] = useState<ActiveTab>("registry");
   const [nodes, setNodes]       = useState<HardwareNode[]>([]);
   const [loading, setLoading]   = useState(true);
   const [revoking, setRevoking] = useState<number | null>(null);
@@ -220,9 +428,13 @@ export default function SovereignHardwareLab() {
   const authorizedCount = nodes.filter(n => n.authorized).length;
   const revokedCount    = nodes.filter(n => !n.authorized).length;
 
+  const TABS = [
+    { id: "registry" as ActiveTab,     label: "NODE REGISTRY",  icon: Shield },
+    { id: "state-engine" as ActiveTab, label: "STATE ENGINE",   icon: Brain  },
+  ];
+
   return (
     <div style={{ minHeight: "100dvh", background: C.bg, color: C.ink, fontFamily: C.mono, display: "flex", flexDirection: "column" }}>
-      {/* Ambient glow */}
       <div style={{ position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", width: 700, height: 160, background: "radial-gradient(ellipse,rgba(212,175,55,0.07) 0%,transparent 70%)", pointerEvents: "none" }} />
 
       {/* Header */}
@@ -239,146 +451,153 @@ export default function SovereignHardwareLab() {
           <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.18em" }}>BIOMETRIC NODE REGISTRY · TITAN V KERNEL · 360 ENTERPRISES</div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
-          <motion.button whileTap={{ scale: 0.93 }} onClick={load}
-            style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 8, background: `${C.gold}10`, border: `1px solid ${C.border}`, color: C.muted, fontSize: 9, cursor: "pointer", letterSpacing: "0.12em" }}>
-            <RefreshCw size={11} /> REFRESH
-          </motion.button>
-          <motion.button whileTap={{ scale: 0.93 }} onClick={() => setShowAdd(true)}
-            style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 16px", borderRadius: 8, background: C.gold, border: "none", color: "#050505", fontSize: 9, fontWeight: 800, cursor: "pointer", letterSpacing: "0.12em" }}>
-            <Plus size={11} /> ADD NODE
-          </motion.button>
+          {tab === "registry" && <>
+            <motion.button whileTap={{ scale: 0.93 }} onClick={load}
+              style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 8, background: `${C.gold}10`, border: `1px solid ${C.border}`, color: C.muted, fontSize: 9, cursor: "pointer", letterSpacing: "0.12em" }}>
+              <RefreshCw size={11} /> REFRESH
+            </motion.button>
+            <motion.button whileTap={{ scale: 0.93 }} onClick={() => setShowAdd(true)}
+              style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 16px", borderRadius: 8, background: C.gold, border: "none", color: "#050505", fontSize: 9, fontWeight: 800, cursor: "pointer", letterSpacing: "0.12em" }}>
+              <Plus size={11} /> ADD NODE
+            </motion.button>
+          </>}
         </div>
+      </div>
+
+      {/* Tab bar */}
+      <div style={{ display: "flex", gap: 0, padding: "0 24px", borderBottom: `1px solid ${C.border}`, background: "rgba(5,5,5,0.92)", flexShrink: 0 }}>
+        {TABS.map(t => {
+          const active = tab === t.id;
+          return (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 20px", background: "none", border: "none", borderBottom: `2px solid ${active ? C.gold : "transparent"}`, color: active ? C.gold : C.muted, fontFamily: C.mono, fontSize: 9, fontWeight: active ? 800 : 400, letterSpacing: "0.14em", cursor: "pointer", transition: "all 0.16s" }}>
+              <t.icon size={12} /> {t.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Body */}
       <div style={{ flex: 1, overflowY: "auto", padding: "32px 28px", maxWidth: 1100, width: "100%", margin: "0 auto", boxSizing: "border-box" }}>
+        <AnimatePresence mode="wait">
 
-        {/* Stats row */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 12, marginBottom: 32 }}>
-          {[
-            { label: "TOTAL NODES",  value: nodes.length,      color: C.gold },
-            { label: "AUTHORIZED",   value: authorizedCount,   color: C.green },
-            { label: "REVOKED",      value: revokedCount,      color: C.red },
-          ].map(s => (
-            <div key={s.label} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "18px 20px" }}>
-              <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.22em", marginBottom: 8 }}>{s.label}</div>
-              <div style={{ fontSize: 28, color: s.color, fontFamily: C.serif, letterSpacing: "0.06em" }}>{s.value}</div>
-            </div>
-          ))}
+          {/* ── NODE REGISTRY ── */}
+          {tab === "registry" && (
+            <motion.div key="registry" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
 
-          {/* Live auth tester */}
-          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "18px 20px", gridColumn: "span 2" }}>
-            <div style={{ fontSize: 8, color: C.amber, letterSpacing: "0.22em", marginBottom: 10 }}>AUTHENTICATE NODE</div>
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <input value={testId} onChange={e => { setTestId(e.target.value); setTestRes(null); }}
-                placeholder="Enter hardware_id…"
-                onKeyDown={e => e.key === "Enter" && testAuth()}
-                style={{ flex: 1, padding: "9px 12px", borderRadius: 7, background: "rgba(245,242,237,0.04)", border: `1px solid ${C.border}`, color: C.ink, fontSize: 11, fontFamily: C.mono, outline: "none" }} />
-              <motion.button whileTap={{ scale: 0.94 }} onClick={testAuth} disabled={testing || !testId.trim()}
-                style={{ padding: "9px 18px", borderRadius: 7, background: testId.trim() ? C.gold : "rgba(212,175,55,0.15)", border: "none", color: "#050505", fontSize: 9, fontWeight: 800, cursor: testId.trim() ? "pointer" : "not-allowed", letterSpacing: "0.12em", fontFamily: C.mono, display: "flex", alignItems: "center", gap: 6 }}>
-                {testing ? <Loader size={11} style={{ animation: "spin 1s linear infinite" }} /> : <Fingerprint size={11} />} AUTH
-              </motion.button>
-            </div>
-            <AnimatePresence>
-              {testResult && (
-                <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  style={{ marginTop: 10, padding: "10px 14px", borderRadius: 7, background: testResult.authenticated ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)", border: `1px solid ${testResult.authenticated ? "rgba(34,197,94,0.25)" : "rgba(239,68,68,0.22)"}`, display: "flex", alignItems: "center", gap: 10 }}>
-                  {testResult.authenticated
-                    ? <Check size={13} color={C.green} />
-                    : <X size={13} color={C.red} />}
-                  <div>
-                    <div style={{ fontSize: 10, color: testResult.authenticated ? C.green : C.red, fontWeight: 700, letterSpacing: "0.12em" }}>
-                      {testResult.authenticated ? "AUTHENTICATED" : `REJECTED — ${testResult.reason}`}
-                    </div>
-                    {testResult.authenticated && (
-                      <div style={{ fontSize: 9, color: C.muted, marginTop: 2 }}>{testResult.node_type} · {testResult.label}</div>
-                    )}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 12, marginBottom: 32 }}>
+                {[
+                  { label: "TOTAL NODES", value: nodes.length,    color: C.gold },
+                  { label: "AUTHORIZED",  value: authorizedCount, color: C.green },
+                  { label: "REVOKED",     value: revokedCount,    color: C.red },
+                ].map(s => (
+                  <div key={s.label} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "18px 20px" }}>
+                    <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.22em", marginBottom: 8 }}>{s.label}</div>
+                    <div style={{ fontSize: 28, color: s.color, fontFamily: C.serif }}>{s.value}</div>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* Node table header */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-          <div style={{ fontSize: 9, color: `${C.gold}60`, letterSpacing: "0.24em" }}>REGISTERED NODES</div>
-          <div style={{ flex: 1, height: 1, background: C.border }} />
-        </div>
-
-        {loading && (
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px", color: C.muted, fontSize: 10 }}>
-            <Loader size={14} color={C.gold} style={{ animation: "spin 1s linear infinite" }} /> LOADING REGISTRY…
-          </div>
-        )}
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {nodes.map((node, i) => (
-            <motion.div key={node.id}
-              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-              style={{ background: C.card, border: `1px solid ${node.authorized ? C.border : "rgba(239,68,68,0.14)"}`, borderRadius: 12, padding: "18px 20px" }}>
-
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-                {/* Icon */}
-                <div style={{ width: 44, height: 44, borderRadius: 11, background: node.authorized ? `${C.gold}12` : "rgba(239,68,68,0.08)", border: `1px solid ${node.authorized ? C.border : "rgba(239,68,68,0.22)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <NodeIcon type={node.node_type} size={18} color={node.authorized ? C.gold : C.red} />
-                </div>
-
-                {/* Info */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" }}>
-                    <span style={{ fontSize: 12, color: C.ink, fontWeight: 600, letterSpacing: "0.08em" }}>{node.hardware_id}</span>
-                    <span style={{ fontSize: 8, color: C.dim, letterSpacing: "0.14em", background: "rgba(245,242,237,0.06)", padding: "2px 7px", borderRadius: 4 }}>{node.node_type}</span>
-                    <AuthBadge authorized={node.authorized} />
-                  </div>
-                  {node.label && (
-                    <div style={{ fontSize: 10, color: C.muted, letterSpacing: "0.08em", marginBottom: 8 }}>{node.label}</div>
-                  )}
-                  <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
-                    <SyncPayload payload={node.last_sync_payload} />
-                    {node.last_sync_at && (
-                      <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.12em" }}>
-                        LAST SYNC {new Date(node.last_sync_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
-                      </div>
-                    )}
-                    <div style={{ fontSize: 8, color: `${C.dim}70`, letterSpacing: "0.12em" }}>
-                      REG {new Date(node.registered_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                  {node.authorized ? (
-                    <motion.button whileTap={{ scale: 0.93 }}
-                      onClick={() => revoke(node.id)}
-                      disabled={revoking === node.id}
-                      style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 12px", borderRadius: 7, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.20)", color: C.red, fontSize: 9, fontWeight: 700, cursor: "pointer", letterSpacing: "0.10em" }}>
-                      {revoking === node.id ? <Loader size={10} style={{ animation: "spin 1s linear infinite" }} /> : <Trash2 size={10} />}
-                      REVOKE
+                ))}
+                {/* Auth tester */}
+                <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "18px 20px", gridColumn: "span 2" }}>
+                  <div style={{ fontSize: 8, color: C.amber, letterSpacing: "0.22em", marginBottom: 10 }}>AUTHENTICATE NODE</div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <input value={testId} onChange={e => { setTestId(e.target.value); setTestRes(null); }}
+                      placeholder="Enter hardware_id…" onKeyDown={e => e.key === "Enter" && testAuth()}
+                      style={{ flex: 1, padding: "9px 12px", borderRadius: 7, background: "rgba(245,242,237,0.04)", border: `1px solid ${C.border}`, color: C.ink, fontSize: 11, fontFamily: C.mono, outline: "none" }} />
+                    <motion.button whileTap={{ scale: 0.94 }} onClick={testAuth} disabled={testing || !testId.trim()}
+                      style={{ padding: "9px 18px", borderRadius: 7, background: testId.trim() ? C.gold : "rgba(212,175,55,0.15)", border: "none", color: "#050505", fontSize: 9, fontWeight: 800, cursor: testId.trim() ? "pointer" : "not-allowed", letterSpacing: "0.12em", fontFamily: C.mono, display: "flex", alignItems: "center", gap: 6 }}>
+                      {testing ? <Loader size={11} style={{ animation: "spin 1s linear infinite" }} /> : <Fingerprint size={11} />} AUTH
                     </motion.button>
-                  ) : (
-                    <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 12px", fontSize: 9, color: C.dim, letterSpacing: "0.10em" }}>
-                      <Lock size={10} /> LOCKED
-                    </div>
-                  )}
+                  </div>
+                  <AnimatePresence>
+                    {testResult && (
+                      <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                        style={{ marginTop: 10, padding: "10px 14px", borderRadius: 7, background: testResult.authenticated ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)", border: `1px solid ${testResult.authenticated ? "rgba(34,197,94,0.25)" : "rgba(239,68,68,0.22)"}`, display: "flex", alignItems: "center", gap: 10 }}>
+                        {testResult.authenticated ? <Check size={13} color={C.green} /> : <X size={13} color={C.red} />}
+                        <div>
+                          <div style={{ fontSize: 10, color: testResult.authenticated ? C.green : C.red, fontWeight: 700, letterSpacing: "0.12em" }}>
+                            {testResult.authenticated ? "AUTHENTICATED" : `REJECTED — ${testResult.reason}`}
+                          </div>
+                          {testResult.authenticated && <div style={{ fontSize: 9, color: C.muted, marginTop: 2 }}>{testResult.node_type} · {testResult.label}</div>}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
 
-        {/* Python interop reference */}
-        <div style={{ marginTop: 36, padding: "18px 20px", background: "rgba(212,175,55,0.04)", border: `1px solid ${C.border}`, borderRadius: 10 }}>
-          <div style={{ fontSize: 8, color: C.amber, letterSpacing: "0.22em", marginBottom: 10 }}>TITAN V KERNEL INTEROP</div>
-          <pre style={{ margin: 0, fontSize: 9, color: C.dim, lineHeight: 1.9, fontFamily: C.mono, whiteSpace: "pre-wrap" }}>{
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                <div style={{ fontSize: 9, color: `${C.gold}60`, letterSpacing: "0.24em" }}>REGISTERED NODES</div>
+                <div style={{ flex: 1, height: 1, background: C.border }} />
+              </div>
+
+              {loading && <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px", color: C.muted, fontSize: 10 }}><Loader size={14} color={C.gold} style={{ animation: "spin 1s linear infinite" }} /> LOADING REGISTRY…</div>}
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {nodes.map((node, i) => (
+                  <motion.div key={node.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                    style={{ background: C.card, border: `1px solid ${node.authorized ? C.border : "rgba(239,68,68,0.14)"}`, borderRadius: 12, padding: "18px 20px" }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 11, background: node.authorized ? `${C.gold}12` : "rgba(239,68,68,0.08)", border: `1px solid ${node.authorized ? C.border : "rgba(239,68,68,0.22)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <NodeIcon type={node.node_type} size={18} color={node.authorized ? C.gold : C.red} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" }}>
+                          <span style={{ fontSize: 12, color: C.ink, fontWeight: 600, letterSpacing: "0.08em" }}>{node.hardware_id}</span>
+                          <span style={{ fontSize: 8, color: C.dim, letterSpacing: "0.14em", background: "rgba(245,242,237,0.06)", padding: "2px 7px", borderRadius: 4 }}>{node.node_type}</span>
+                          <AuthBadge authorized={node.authorized} />
+                        </div>
+                        {node.label && <div style={{ fontSize: 10, color: C.muted, letterSpacing: "0.08em", marginBottom: 8 }}>{node.label}</div>}
+                        <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
+                          <SyncPayload payload={node.last_sync_payload} />
+                          {node.last_sync_at && <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.12em" }}>LAST SYNC {new Date(node.last_sync_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</div>}
+                          <div style={{ fontSize: 8, color: `${C.dim}70`, letterSpacing: "0.12em" }}>REG {new Date(node.registered_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</div>
+                        </div>
+                      </div>
+                      <div style={{ flexShrink: 0 }}>
+                        {node.authorized ? (
+                          <motion.button whileTap={{ scale: 0.93 }} onClick={() => revoke(node.id)} disabled={revoking === node.id}
+                            style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 12px", borderRadius: 7, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.20)", color: C.red, fontSize: 9, fontWeight: 700, cursor: "pointer", letterSpacing: "0.10em" }}>
+                            {revoking === node.id ? <Loader size={10} style={{ animation: "spin 1s linear infinite" }} /> : <Trash2 size={10} />} REVOKE
+                          </motion.button>
+                        ) : (
+                          <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 12px", fontSize: 9, color: C.dim, letterSpacing: "0.10em" }}><Lock size={10} /> LOCKED</div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Interop reference */}
+              <div style={{ marginTop: 36, padding: "18px 20px", background: "rgba(212,175,55,0.04)", border: `1px solid ${C.border}`, borderRadius: 10 }}>
+                <div style={{ fontSize: 8, color: C.amber, letterSpacing: "0.22em", marginBottom: 10 }}>TITAN V KERNEL INTEROP</div>
+                <pre style={{ margin: 0, fontSize: 9, color: C.dim, lineHeight: 1.9, fontFamily: C.mono, whiteSpace: "pre-wrap" }}>{
 `POST /api/biometric/authenticate  { "hardware_id": "SOV_RING_01" }
 POST /api/biometric/sync          { "node_id": "SOV_RING_01", "heart_rate": 72, "stress_index": 31 }
 GET  /api/biometric/nodes
 POST /api/biometric/nodes         { "hardware_id": "SOV_RING_02", "node_type": "RING", "label": "…" }
-DELETE /api/biometric/nodes/:id   — revoke`
-          }</pre>
-        </div>
+DELETE /api/biometric/nodes/:id   — revoke
+POST /api/biometric/state-check   { "vitality": 75, "sentiment": "OPTIMAL" }
+GET  /api/biometric/interventions — last 50 logged commands`
+                }</pre>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── STATE ENGINE ── */}
+          {tab === "state-engine" && (
+            <motion.div key="state-engine" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
+                <Brain size={14} color={C.gold} />
+                <div style={{ fontSize: 9, color: C.amber, letterSpacing: "0.22em" }}>STATE INTERVENTION ENGINE</div>
+                <div style={{ flex: 1, height: 1, background: C.border }} />
+                <span style={{ fontSize: 8, color: C.dim, letterSpacing: "0.14em" }}>TITAN V KERNEL · check_state_interventions()</span>
+              </div>
+              <StateEngineTab />
+            </motion.div>
+          )}
+
+        </AnimatePresence>
       </div>
 
       <SovereignWatermark />
