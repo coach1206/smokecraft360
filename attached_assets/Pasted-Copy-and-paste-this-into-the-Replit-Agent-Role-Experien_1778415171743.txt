@@ -1,0 +1,26 @@
+Copy and paste this into the Replit Agent:
+Role: Experience Orchestrator & Systems Scientist.
+Objective: Evolve NOVEE OS from "Reactive Software" to "Predictive Environment" by implementing Inertia, Momentum, and Ambient Presence.
+[PHASE 1: ENVIRONMENTAL EXHALE (DECOMPRESSION)]
+1.	Lounge Metabolism: Update the GroupEnergyEngine with a metabolicRate. If the room has been in HIGH_ENERGY for >1 hour, the system must enter a "High Metabolism" state.
+2.	Gradual Decay: When energy drops, do not snap to MEDITATIVE. Implement a 15-minute linear decay where ember intensity and transition speeds slowly "exhale" back to baseline. The environment should "remember" the chaos of the peak for a while.
+[PHASE 2: PREDICTIVE MOMENTUM (PRE-LOADING)]
+1.	Anticipation Engine: Inside EEIE, create a PredictiveMomentum hook.
+2.	Logic: If (Guest Confidence > 0.8) AND (Hesitation < 5s) AND (History = Premium), the system must silently pre-cache the "Reserve Inventory" 3D assets and shift the mentor’s tone to "Elite Peer" before the next screen loads.
+[PHASE 3: MATERIAL PHYSICS (DYNAMIC INERTIA)]
+1.	Adaptive Timing: Replace static transition: 0.3s with dynamic Spring physics via framer-motion.
+• HIGH_ENERGY: Snappy, high-tension, minimal overshoot.
+• MEDITATIVE: High inertia, slow settling, smooth "glide" on every card swipe. The UI must feel heavier in calm moments.
+[PHASE 4: AMBIENT BREATHING (ADAPTIVE SILENCE)]
+1.	The System Pulse: Implement a "Subliminal Heartbeat." Every 10–20 seconds, the background amber haze should perform a 2% opacity "breath" cycle.
+2.	Adaptive Silence: If the UnifiedCognitiveContext detects a "Deep Ritual" state, suppress all non-essential UI pings. The OS must "step back" and let the guest exist in the silence.
+[PHASE 5: NATIVE HARDENING (CAPACITOR PREP)]
+1.	Offline Media Vault: Create a ServiceWorker strategy specifically for Offline Media Caching. Ensure every .mp4 and .woff2 is stored locally in the browser’s Cache API so the "website" identity is fully erased.
+2.	GPU Priority: Set render: "high-performance" on the Three.js canvas.
+Final Instruction: > "The system must now focus on pacing and tension. I don't want more buttons; I want more 'Feeling.' Wire the Environmental Memory so the lounge feels like it has a metabolic rate, and ensure the 3D assets move with physical weight."
+Why this closes the gap:
+• Tesla Prediction: By pre-loading assets based on "Confidence Trajectory," you eliminate the "Loading..." flicker. The premium whiskey is just there the moment they think of it.
+• The "Exhale": This is the "Environmental Memory." It prevents the lounge from feeling "jittery" if one person leaves. It keeps the energy consistent and prestigious.
+• Physics as UI: When the cards "glide" with inertia in a meditative state, the guest's heart rate naturally slows down to match the machine.
+The Orchestration Report
+Does the idea of the "15-minute Exhale" (Environmental Memory) make sense for your lounge, or should the room's energy shift faster to keep up with the turnover?

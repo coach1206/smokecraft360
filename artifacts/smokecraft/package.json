@@ -79,6 +79,8 @@
     "zustand": "catalog:"
   },
   "dependencies": {
+    "@capacitor/cli": "^8.3.3",
+    "@capacitor/core": "^8.3.3",
     "@fontsource/cormorant-garamond": "^5.2.11",
     "@fontsource/space-mono": "^5.2.9",
     "@react-three/drei": "^10.7.7",

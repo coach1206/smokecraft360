@@ -98,6 +98,7 @@ const EnvironmentEngine     = lazy(() => import('@/pages/EnvironmentEngine'));
 const EnterpriseIntelligence = lazy(() => import('@/pages/EnterpriseIntelligence'));
 const EEIECommandCenter      = lazy(() => import('@/pages/EEIECommandCenter'));
 const EnterpriseGovernance  = lazy(() => import('@/pages/EnterpriseGovernance'));
+const VillaSovereign        = lazy(() => import('@/pages/VillaSovereign'));
 
 function PageLoader() {
   return (
@@ -908,6 +909,11 @@ export default function App() {
           </Route>
           <Route path="/axiom-pay">
             <SubPageProviders><AxiomPay /></SubPageProviders>
+          </Route>
+
+          {/* ── Villa Sovereign — DR Luxury Market Concierge Ritual ── */}
+          <Route path="/villa-sovereign">
+            <SubPageProviders><VillaSovereign /></SubPageProviders>
           </Route>
 
           {/* ── /portal — Pristine Boot State (System Purge destination) ── */}

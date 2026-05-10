@@ -26,6 +26,7 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { crossSessionMemory } from "@/lib/crossSessionMemory";
+import { usePredictivePreLoader } from "@/lib/predictivePreLoader";
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 const GOLD    = "#D4AF37";
@@ -903,6 +904,10 @@ export default function CigarArtisan360() {
   const [notes,        setNotes]        = useState("");
   const [orderId,      setOrderId]      = useState("");
   const [showVaultExit, setShowVaultExit] = useState(false);
+
+  // Predictive pre-loader — silently warms Reserve Collection assets and
+  // the VillaSovereign chunk when High Confidence (≥0.65, swift pacing) detected.
+  usePredictivePreLoader();
 
   useEffect(() => {
     setHasWebGL(detectWebGL());
