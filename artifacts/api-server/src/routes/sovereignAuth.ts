@@ -23,9 +23,10 @@ function secret() {
   return new TextEncoder().encode(process.env.SESSION_SECRET ?? "sovereign-fallback-360");
 }
 
-/** The sole authorized operator email — set SOVEREIGN_EMAIL in Secrets. */
+/** The sole authorized operator. Env var overrides the hardcoded root identity. */
+const SOVEREIGN_ROOT_EMAIL = "johnie@dayone360.com";
 function masterEmail(): string {
-  return (process.env.SOVEREIGN_EMAIL ?? "").toLowerCase().trim();
+  return (process.env.SOVEREIGN_EMAIL ?? SOVEREIGN_ROOT_EMAIL).toLowerCase().trim();
 }
 
 /** Base URL for magic link emails. */

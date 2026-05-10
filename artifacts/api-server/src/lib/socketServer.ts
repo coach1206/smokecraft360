@@ -169,6 +169,39 @@ export function initSocketServer(httpServer: HttpServer): Server {
       }
     });
 
+    // ── SOVEREIGN_GLOBAL_COMMAND — primary remote activation channel ─────────
+    // Matches the reference spec: authKey "MASTER_AUTHORITY_360", action "MELT_LOCK".
+    // Relays SOVEREIGN_WAKE to the target device's batch room.
+    socket.on("SOVEREIGN_GLOBAL_COMMAND", async (cmd: {
+      targetId: string; action: string; authKey: string; batchId?: string | number; ts?: number;
+    }) => {
+      if (cmd?.authKey !== "MASTER_AUTHORITY_360") {
+        logger.warn({ socketId: socket.id }, "SOVEREIGN_GLOBAL_COMMAND rejected — invalid authKey");
+        return;
+      }
+      logger.info({ targetId: cmd.targetId, action: cmd.action }, "SOVEREIGN_GLOBAL_COMMAND received — relaying SOVEREIGN_WAKE");
+
+      // Relay to specific batch room if provided, else broadcast globally
+      const wakePayload = { action: cmd.action, targetId: cmd.targetId, ts: cmd.ts ?? Date.now() };
+      if (cmd.batchId) {
+        getIO().to(`batch:${cmd.batchId}`).emit("SOVEREIGN_WAKE", wakePayload);
+      } else {
+        socket.broadcast.emit("SOVEREIGN_WAKE", wakePayload);
+      }
+
+      // Persist activation to DB
+      if (cmd.batchId) {
+        try {
+          await pool.query(
+            `UPDATE registered_nodes SET status = 'AUTHORIZED' WHERE batch_id = $1`,
+            [cmd.batchId],
+          );
+        } catch (err) {
+          logger.error({ err }, "SOVEREIGN_GLOBAL_COMMAND: DB update failed");
+        }
+      }
+    });
+
     // ── SOVEREIGN_REVOKE_SESSION — admin force-logout all devices ────────────
     // Emitted by the Distribution Vault "REVOKE ALL SESSIONS" button.
     // Validates MASTER_KEY_360, then broadcasts SOVEREIGN_SESSION_REVOKED to

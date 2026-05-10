@@ -13,6 +13,16 @@
 import { socket } from "./socket";
 import { vibrate } from "./haptics";
 
+// ── Root Identity Config ─────────────────────────────────────────────────────
+
+/** Single source of truth for the sovereign operator identity. */
+export const SOVEREIGN_ROOT = {
+  email:          "johnie@dayone360.com",   // Hardcoded master identity
+  authorityLevel: "SOVEREIGN",
+  entity:         "360 Enterprises Services LLC",
+  owner:          "Johnie Manuel Lee Collins",
+} as const;
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export type NodeType = "MIRROR" | "TABLE" | "VEHICLE";
@@ -20,7 +30,7 @@ export type NodeType = "MIRROR" | "TABLE" | "VEHICLE";
 export interface SovereignManifest {
   owner:            string;
   entity:           string;
-  batchId:          string;       // human-readable "BATCH-<hex>"
+  batchId:          string;       // human-readable "TITAN-V-<XXXXX>"
   _internalBatchId: number;       // DB batch ID for API calls
   manufacturer:     string;
   nodeType:         NodeType;
@@ -38,11 +48,12 @@ export interface NodeRegistrationResult {
 // ── Socket event constants ───────────────────────────────────────────────────
 
 export const SOVEREIGN_EVENTS = {
-  NODE_PENDING:   "NODE_PENDING_AUTHORIZATION",
-  WAKE_COMMAND:   "SOVEREIGN_WAKE_COMMAND",
-  WAKE_SIGNAL:    "SOVEREIGN_WAKE",
-  PENDING_UPDATE: "NODE_PENDING_UPDATE",
-  JOIN_BATCH:     "join_batch",
+  NODE_PENDING:     "NODE_PENDING_AUTHORIZATION",
+  WAKE_COMMAND:     "SOVEREIGN_WAKE_COMMAND",
+  GLOBAL_COMMAND:   "SOVEREIGN_GLOBAL_COMMAND",   // primary activation channel
+  WAKE_SIGNAL:      "SOVEREIGN_WAKE",
+  PENDING_UPDATE:   "NODE_PENDING_UPDATE",
+  JOIN_BATCH:       "join_batch",
 } as const;
 
 // ── The Sovereign Distribution Engine ───────────────────────────────────────
@@ -72,9 +83,9 @@ export const SovereignDistro = {
     const data = await res.json() as { batchId: number; keyCount: number };
 
     const manifest: SovereignManifest = {
-      owner:            "Johnie Manuel Lee Collins",
-      entity:           "360 Enterprises Services LLC",
-      batchId:          `BATCH-${data.batchId.toString(16).toUpperCase().padStart(6, "0")}`,
+      owner:            SOVEREIGN_ROOT.owner,
+      entity:           SOVEREIGN_ROOT.entity,
+      batchId:          `TITAN-V-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
       _internalBatchId: data.batchId,
       manufacturer:     manufacturerName,
       nodeType:         type,
@@ -145,7 +156,16 @@ export const SovereignDistro = {
     // Haptic confirmation on admin device
     try { vibrate([80, 40, 160]); } catch { /* non-mobile fallback */ }
 
-    // Send the "Wake" signal to the hardware node / batch
+    // Primary channel — SOVEREIGN_GLOBAL_COMMAND (matches reference spec)
+    socket.emit(SOVEREIGN_EVENTS.GLOBAL_COMMAND, {
+      targetId: deviceId,
+      action:   "MELT_LOCK",
+      authKey:  "MASTER_AUTHORITY_360",
+      batchId,
+      ts:       Date.now(),
+    });
+
+    // Legacy alias — SOVEREIGN_WAKE_COMMAND (backwards compat for existing nodes)
     socket.emit(SOVEREIGN_EVENTS.WAKE_COMMAND, {
       deviceId,
       batchId,
@@ -155,7 +175,7 @@ export const SovereignDistro = {
     });
 
     console.info(
-      `%cTITAN_V: Node ${deviceId} SOVEREIGN_WAKE_COMMAND dispatched — now LIVE globally.`,
+      `%cTITAN_V: Node ${deviceId} SOVEREIGN_GLOBAL_COMMAND dispatched — now LIVE globally.`,
       "color:#D4AF37;font-weight:bold;font-family:monospace",
     );
   },
