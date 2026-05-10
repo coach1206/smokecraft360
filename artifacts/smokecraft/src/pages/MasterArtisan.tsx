@@ -451,7 +451,7 @@ export default function MasterArtisan() {
         {/* MP4 smoke loop — layered on top of CSS fallback; silent no-op if blocked */}
         <motion.video
           ref={videoRef}
-          src={`${import.meta.env.BASE_URL}videos/lounge-night.mp4`}
+          src="/videos/lounge-night.mp4"
           autoPlay
           loop
           muted

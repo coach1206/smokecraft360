@@ -424,7 +424,6 @@ export function SovereignOverrideHub() {
         data-override-hub
         whileTap={{ scale: 0.94 }}
         onClick={handleOpen}
-        onTouchStart={handleOpen}
         style={{
           position:             "fixed",
           top:                  12,

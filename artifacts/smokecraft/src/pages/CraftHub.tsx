@@ -179,27 +179,27 @@ function IntelStatusBar() {
 const TILE_BG: Record<string, string[]> = {
   smoke: [
     "/images/scenes/smokecraft-card.jpg",
-    "/images/lounge-bg.jpg",
+    "/images/scenes/bold.jpg",
     "/images/scenes/craft-hub.jpg",
-    "/images/lounge-bg.png",
+    "/images/scenes/reflective.jpg",
   ],
   pour: [
-    "/images/pour/pour_bar.png",
-    "/images/pour/pour_whiskey.png",
-    "/images/pour/pour_aged.png",
-    "/images/pour/pour_cocktail.png",
+    "/images/scenes/pourcraft-card.jpg",
+    "/images/scenes/relaxed.jpg",
+    "/images/scenes/social.jpg",
+    "/images/scenes/reflective.jpg",
   ],
   brew: [
-    "/images/brew/brew_taproom.png",
-    "/images/brew/brew_outdoor.png",
-    "/images/brew/brew_barrel.png",
-    "/images/brew/brew_pouring.png",
+    "/images/scenes/brewcraft-card.jpg",
+    "/images/scenes/social.jpg",
+    "/images/scenes/bold.jpg",
+    "/images/scenes/craft-hub.jpg",
   ],
   vape: [
-    "/images/vape/vape_modern.png",
-    "/images/vape/vape_social.png",
-    "/images/vape/vape_hookah.png",
-    "/images/vape/vape_device.png",
+    "/images/scenes/vapecraft-card.jpg",
+    "/images/scenes/reflective.jpg",
+    "/images/scenes/social.jpg",
+    "/images/scenes/bold.jpg",
   ],
 };
 
