@@ -14,6 +14,7 @@ import { z }        from "zod";
 import { sendEmail } from "../services/email";
 import { getIO }    from "../lib/socketServer";
 import { logger }   from "../lib/logger";
+import { pool }     from "@workspace/db";
 
 const router = Router();
 
@@ -305,6 +306,136 @@ router.get("/ambassador/verify-magic/:token", async (req, res) => {
     res.json({ ok: true, sessionToken, role: "AMBASSADOR", operator: "Clark" });
   } catch {
     res.status(401).json({ error: "Invalid or expired magic link" });
+  }
+});
+
+// ── Ambassador Node Management ────────────────────────────────────────────────
+
+/** Extend registered_nodes with ambassador fields (safe — IF NOT EXISTS). */
+pool.query(`
+  ALTER TABLE registered_nodes
+    ADD COLUMN IF NOT EXISTS venue_name   TEXT,
+    ADD COLUMN IF NOT EXISTS location_id  TEXT,
+    ADD COLUMN IF NOT EXISTS node_type    TEXT,
+    ADD COLUMN IF NOT EXISTS created_by   TEXT NOT NULL DEFAULT 'sovereign';
+`).catch(() => {});
+
+/** Verify an AMBASSADOR_SESSION Bearer token — returns the payload or null. */
+async function verifyAmbassadorSession(authHeader?: string) {
+  if (!authHeader?.startsWith("Bearer ")) return null;
+  const token = authHeader.slice(7);
+  try {
+    const { payload } = await jwtVerify(token, secret());
+    if (payload["type"] !== "ambassador-session") return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+const InitNodeSchema = z.object({
+  venueName:  z.string().min(2).max(120),
+  locationId: z.string().min(3).max(40),
+  nodeType:   z.enum(["SMART_MIRROR", "INTERACTIVE_TABLE", "MOBILE_HUD", "STANDARD_KIOSK"]),
+});
+
+/**
+ * POST /api/ambassador/initialize-node
+ * Requires AMBASSADOR_SESSION Bearer.
+ * Creates a registered_node in OBSIDIAN_LOCK state, emails JC the sovereign alert.
+ */
+router.post("/ambassador/initialize-node", async (req, res) => {
+  const payload = await verifyAmbassadorSession(req.headers.authorization);
+  if (!payload) { res.status(401).json({ error: "Invalid ambassador session" }); return; }
+
+  const parsed = InitNodeSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "Invalid parameters", details: parsed.error.flatten() }); return; }
+
+  const { venueName, locationId, nodeType } = parsed.data;
+
+  // Auto-generate serial: AMB-<LOC>-<random>
+  const rnd    = Math.random().toString(36).slice(2, 8).toUpperCase();
+  const serial = `AMB-${locationId}-${rnd}`;
+
+  try {
+    await pool.query(
+      `INSERT INTO registered_nodes
+         (serial_number, status, venue_name, location_id, node_type, created_by)
+       VALUES ($1, 'OBSIDIAN_LOCK', $2, $3, $4, 'clark')`,
+      [serial, venueName, locationId, nodeType],
+    );
+
+    logger.info({ serial, venueName, locationId, nodeType }, "Ambassador node initialized");
+
+    // Sovereign alert — email to JC
+    try {
+      const sovereign = (process.env.SOVEREIGN_EMAIL ?? "jc@dayone360.com").toLowerCase().trim();
+      await sendEmail({
+        to:      sovereign,
+        subject: `NOVEE OS · NEW NODE PENDING: ${venueName}`,
+        html: `
+<div style="background:#050505;color:#F5F2ED;font-family:'Courier New',monospace;padding:40px;max-width:560px;margin:0 auto;border:1px solid rgba(212,175,55,0.28);border-radius:8px;">
+  <div style="font-size:9px;letter-spacing:0.30em;color:rgba(212,175,55,0.40);margin-bottom:20px;">
+    NOVEE OS · SOVEREIGN ALERT · 360 ENTERPRISES SERVICES LLC
+  </div>
+  <h2 style="font-size:18px;color:#D4AF37;letter-spacing:0.16em;font-weight:300;margin-bottom:8px;">
+    NEW NODE PENDING
+  </h2>
+  <p style="font-size:11px;color:rgba(245,242,237,0.45);margin-bottom:28px;line-height:1.8;">
+    Ambassador <strong style="color:#F5F2ED;">CLARK</strong> has initialized a new venue node
+    and is awaiting your Sovereign activation.
+  </p>
+  <table style="width:100%;border-collapse:collapse;margin-bottom:28px;">
+    ${[["VENUE", venueName], ["NODE ID", serial], ["LOCATION", locationId], ["HARDWARE", nodeType.replace(/_/g, " ")], ["STATUS", "OBSIDIAN LOCK"]].map(([k, v]) => `
+    <tr>
+      <td style="padding:8px 0;border-bottom:1px solid rgba(212,175,55,0.10);font-size:9px;color:rgba(245,242,237,0.35);letter-spacing:0.18em;width:40%;">${k}</td>
+      <td style="padding:8px 0;border-bottom:1px solid rgba(212,175,55,0.10);font-size:11px;color:#F5F2ED;letter-spacing:0.08em;">${v}</td>
+    </tr>`).join("")}
+  </table>
+  <p style="font-size:10px;color:rgba(245,242,237,0.35);line-height:1.8;margin-bottom:20px;">
+    Log into your Sovereign Command Center to authorize this node and wake the device.
+  </p>
+  <div style="margin-top:28px;padding-top:18px;border-top:1px solid rgba(212,175,55,0.12);">
+    <div style="font-size:8px;color:rgba(245,242,237,0.18);letter-spacing:0.18em;">
+      AUTHORIZED OPERATOR: JC // 360 ENTERPRISES SERVICES LLC · TITAN V 5.2.0
+    </div>
+  </div>
+</div>`,
+      });
+    } catch (emailErr) {
+      logger.error({ emailErr }, "Sovereign alert email failed (node still created)");
+    }
+
+    res.json({ ok: true, serial, venueName, locationId, nodeType, status: "OBSIDIAN_LOCK" });
+  } catch (err) {
+    logger.error({ err }, "Ambassador initialize-node failed");
+    res.status(500).json({ error: "Failed to create node" });
+  }
+});
+
+/**
+ * GET /api/ambassador/nodes
+ * Requires AMBASSADOR_SESSION Bearer.
+ * Returns all nodes created by Clark (created_by = 'clark'), newest first.
+ */
+router.get("/ambassador/nodes", async (req, res) => {
+  const payload = await verifyAmbassadorSession(req.headers.authorization);
+  if (!payload) { res.status(401).json({ error: "Invalid ambassador session" }); return; }
+
+  try {
+    const { rows } = await pool.query<{
+      id: number; serial_number: string; venue_name: string;
+      location_id: string; node_type: string; status: string; registered_at: string;
+    }>(
+      `SELECT id, serial_number, venue_name, location_id, node_type, status, registered_at AS created_at
+       FROM registered_nodes
+       WHERE created_by = 'clark'
+       ORDER BY registered_at DESC`,
+    );
+    res.json({ nodes: rows });
+  } catch (err) {
+    logger.error({ err }, "GET /ambassador/nodes failed");
+    res.status(500).json({ error: "Failed to fetch nodes" });
   }
 });
 

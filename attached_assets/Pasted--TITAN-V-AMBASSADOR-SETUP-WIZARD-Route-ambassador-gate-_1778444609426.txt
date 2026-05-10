@@ -1,0 +1,115 @@
+/**
+ * TITAN V: AMBASSADOR SETUP WIZARD
+ * Route: /ambassador-gate/setup
+ * Restricted to: chrislclark@gmail.com
+ */
+
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+export const AmbassadorSetupWizard = () => {
+  const [step, setStep] = useState(1);
+  const [isTesting, setIsTesting] = useState(false);
+  const [venueData, setVenueData] = useState({
+    name: '',
+    nodeType: 'Smart Mirror',
+    location: 'Smyrna, GA'
+  });
+
+  // THE "NERVOUS SYSTEM" TEST TRIGGER
+  const runNervousSystemTest = () => {
+    setIsTesting(true);
+    // Fires the Gold Ripple and high-intensity pulses globally for 5s
+    setTimeout(() => setIsTesting(false), 5000);
+  };
+
+  const handleFinalize = () => {
+    // LOGIC: Save to Sovereign_Database as 'isActivated: false'
+    // Send notification to JC via jc@dayone360.com
+    setStep(4);
+  };
+
+  return (
+    <div className="ambassador-hub" style={{ backgroundColor: '#050505', color: '#fff', minHeight: '100vh', padding: '40px' }}>
+      <header style={{ borderBottom: '1px solid #333', paddingBottom: '20px', marginBottom: '40px' }}>
+        <h2 style={{ letterSpacing: '4px', color: '#D4AF37' }}>AMBASSADOR_SETUP_WIZARD</h2>
+        <p style={{ fontSize: '10px', opacity: 0.6 }}>AUTHORIZED_AMBASSADOR: CLARK</p>
+      </header>
+
+      <AnimatePresence mode="wait">
+        {/* STEP 1: IDENTITY */}
+        {step === 1 && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <h3 className="sovereign-breath">01 // VENUE_IDENTITY</h3>
+            <div style={{ marginTop: '20px' }}>
+              <label style={{ display: 'block', fontSize: '10px', color: '#666' }}>VENUE NAME</label>
+              <input 
+                className="telemetry-box"
+                style={{ width: '100%', background: 'transparent', border: '1px solid #D4AF37', color: '#fff', padding: '15px', marginTop: '10px' }}
+                placeholder="e.g. Smyrna Luxury Cigar Lounge"
+                onChange={(e) => setVenueData({...venueData, name: e.target.value})}
+              />
+            </div>
+            <button onClick={() => setStep(2)} className="command-surface" style={{ marginTop: '30px', padding: '15px 40px', background: '#D4AF37', color: '#050505', fontWeight: 'bold', border: 'none' }}>NEXT_STAGE</button>
+          </motion.div>
+        )}
+
+        {/* STEP 2: HARDWARE PROFILE */}
+        {step === 2 && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <h3>02 // HARDWARE_PROFILE</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' }}>
+              {['Smart Mirror', 'Interactive Table', 'Mobile HUD', 'Kiosk'].map(type => (
+                <div 
+                  key={type}
+                  onClick={() => setVenueData({...venueData, nodeType: type})}
+                  style={{ 
+                    padding: '30px', border: venueData.nodeType === type ? '2px solid #D4AF37' : '1px solid #333',
+                    textAlign: 'center', cursor: 'pointer', background: venueData.nodeType === type ? 'rgba(212,175,55,0.1)' : 'transparent'
+                  }}
+                >
+                  {type.toUpperCase()}
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setStep(3)} style={{ marginTop: '30px', padding: '15px 40px', background: '#D4AF37', color: '#050505', border: 'none' }}>PROCEED_TO_SYNC</button>
+          </motion.div>
+        )}
+
+        {/* STEP 3: NERVOUS SYSTEM TEST */}
+        {step === 3 && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <h3>03 // CONNECTIVITY_SYNC</h3>
+            <div style={{ padding: '40px', border: '1px dashed #333', textAlign: 'center', marginTop: '20px' }}>
+              <div className={isTesting ? "pulse" : ""} style={{ color: isTesting ? '#00FF41' : '#D4AF37', fontSize: '12px' }}>
+                {isTesting ? "TESTING_SIGNAL_INTEGRITY..." : "READY_FOR_SYNC_TEST"}
+              </div>
+              <button 
+                onClick={runNervousSystemTest}
+                style={{ marginTop: '20px', padding: '10px 20px', background: 'transparent', border: '1px solid #D4AF37', color: '#D4AF37' }}
+              >
+                FIRE_GOLD_RIPPLE
+              </button>
+            </div>
+            <button onClick={handleFinalize} style={{ marginTop: '30px', width: '100%', padding: '20px', background: '#D4AF37', color: '#050505', border: 'none', fontWeight: 'bold' }}>FINALIZE_DEPLOYMENT</button>
+          </motion.div>
+        )}
+
+        {/* STEP 4: CONFIRMATION */}
+        {step === 4 && (
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+            <div style={{ textAlign: 'center', padding: '60px', border: '1px solid #00FF41' }}>
+              <h2 style={{ color: '#00FF41' }}>NODE_INITIALIZED</h2>
+              <p style={{ opacity: 0.6, marginTop: '20px' }}>Venue: {venueData.name}</p>
+              <p style={{ opacity: 0.6 }}>Hardware: {venueData.nodeType}</p>
+              <div style={{ marginTop: '40px', padding: '20px', background: '#111', fontSize: '12px', borderLeft: '4px solid #D4AF37' }}>
+                STATUS: <span className="sovereign-breath">OBSIDIAN_LOCK_ENGAGED</span>
+                <br/>Awaiting Sovereign Activation from JC.
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
