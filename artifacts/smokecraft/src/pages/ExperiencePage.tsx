@@ -407,6 +407,21 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft, 
   const discoverLift = useTransform(x, [-60, 0, 110], [2, 0, -5]);
   const exiting = useRef(false);
 
+  // ── Liquid ripple on touch — radial pulse from touch point ───────────────
+  const [ripple, setRipple] = useState<{ x: number; y: number; k: number } | null>(null);
+  const rippleTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    if (!isTop) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    setRipple({
+      x: ((e.clientX - rect.left) / rect.width)  * 100,
+      y: ((e.clientY - rect.top)  / rect.height) * 100,
+      k: Date.now(),
+    });
+    clearTimeout(rippleTimer.current);
+    rippleTimer.current = setTimeout(() => setRipple(null), 960);
+  }
+
   // ── Kinetic Feedback: propagate drag x to parent + edge haptics ───────────
   useMotionValueEvent(x, "change", (latest) => {
     if (!isTop) return;
@@ -456,6 +471,7 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft, 
       dragElastic={0.78}
       dragMomentum={false}
       onDragEnd={onDragEnd}
+      onPointerDown={handlePointerDown}
       style={{
         x:        isTop ? x : 0,
         rotate:   isTop ? rotate : 0,
@@ -554,6 +570,30 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft, 
             }}
             animate={{ left: ["-55%", "115%"] }}
             transition={{ duration: 4.8, repeat: Infinity, ease: "linear", repeatDelay: 2.2 }}
+          />
+        )}
+
+        {/* ── Liquid ripple on touch — radial pulse from contact point ── */}
+        {isTop && ripple && (
+          <motion.div
+            key={ripple.k}
+            initial={{ scale: 0, opacity: 0.58 }}
+            animate={{ scale: 5.2, opacity: 0 }}
+            transition={{ duration: 0.88, ease: "easeOut" }}
+            style={{
+              position:      "absolute",
+              left:          `${ripple.x}%`,
+              top:           `${ripple.y}%`,
+              width:         72,
+              height:        72,
+              marginLeft:    -36,
+              marginTop:     -36,
+              borderRadius:  "50%",
+              background:    `radial-gradient(circle, ${theme.accent}50 0%, ${theme.accent}18 45%, transparent 70%)`,
+              pointerEvents: "none",
+              zIndex:        26,
+              mixBlendMode:  "screen",
+            }}
           />
         )}
 

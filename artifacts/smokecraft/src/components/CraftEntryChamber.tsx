@@ -833,10 +833,10 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             const info = INITIATION[type] ?? INITIATION.smoke!;
             const sectionStyle: CSSProperties = {
               width: "100%", maxWidth: 400,
-              background: "rgba(0,0,0,0.70)",
-              backdropFilter: "blur(30px) brightness(0.2)",
-              WebkitBackdropFilter: "blur(30px) brightness(0.2)",
-              border: "1px solid rgba(212,175,55,0.30)",
+              background: "rgba(0,0,0,0.90)",
+              backdropFilter: "blur(60px) brightness(0.15)",
+              WebkitBackdropFilter: "blur(60px) brightness(0.15)",
+              border: `1px solid ${accent}40`,
               borderRadius: 20, padding: "22px 22px",
               marginBottom: 14,
             };
@@ -966,9 +966,9 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             alignItems:     "center",
             justifyContent: "center",
             gap:            24,
-            borderTop:      "1px solid rgba(26,26,27,0.07)",
-            background:     "rgba(245,242,237,0.65)",
-            backdropFilter: "blur(12px)",
+            borderTop:      `1px solid ${accent}14`,
+            background:     "rgba(0,0,0,0.88)",
+            backdropFilter: "blur(20px)",
           }}
         >
           {["Taste Profile", "AI Ranking", "Inventory Sync"].map((label, i) => (

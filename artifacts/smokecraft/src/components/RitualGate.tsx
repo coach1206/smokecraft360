@@ -51,19 +51,43 @@ export default function RitualGate({ craftType, theme, onChamberBegin, onBack }:
   const blackoutX = useMotionValue(0); // propagate-able drag x for ambient components
   const doneRef   = useRef(false);
 
+  // ── Per-craft BLACKOUT audio ──────────────────────────────────────────────
+  const BLACKOUT_AUDIO: Record<string, string[]> = {
+    pour:  ["/audio/ice_crack_resonance.mp3", "/audio/liquid_swirl_01.mp3"],
+    smoke: ["/audio/smoke_exhale_deep.mp3"],
+    brew:  ["/audio/steam_hiss_01.mp3"],
+    vape:  [],   // silent vacuum — the silence IS the luxury
+  };
+
+  // ── Per-craft BLACKOUT background tint ────────────────────────────────────
+  const BLACKOUT_BG: Record<string, string> = {
+    pour:  "radial-gradient(ellipse at 50% 60%, rgba(38,24,2,1) 0%, #000 68%)",
+    smoke: "radial-gradient(ellipse at 50% 60%, rgba(14,10,6,1) 0%, #000 68%)",
+    brew:  "radial-gradient(ellipse at 50% 60%, rgba(28,16,2,1) 0%, #000 68%)",
+    vape:  "radial-gradient(ellipse at 50% 60%, rgba(8,2,22,1)  0%, #000 68%)",
+  };
+
+  // ── Per-craft telemetry label ─────────────────────────────────────────────
+  const TELEMETRY_LABEL: Record<string, string> = {
+    pour:  "RESERVE PROTOCOL ARMED",
+    smoke: "SOVEREIGN LOUNGE ARMED",
+    brew:  "TAPMASTER ENGINE ARMED",
+    vape:  "FREQUENCY ARRAY ARMED",
+  };
+
   // ── BLACKOUT phase: 3-second timer + audio ────────────────────────────────
   useEffect(() => {
     if (phase !== "BLACKOUT") return;
 
-    // BLACKOUT audio ritual — ice crack + liquid swirl for all crafts
-    ["/audio/ice_crack_resonance.mp3", "/audio/liquid_swirl_01.mp3"].forEach(src => {
+    const srcs = BLACKOUT_AUDIO[craftType] ?? BLACKOUT_AUDIO.pour!;
+    srcs.forEach(src => {
       try { const a = new Audio(src); a.volume = 0.42; a.play().catch(() => {}); } catch { /* no audio */ }
     });
 
     // telemetry_status → ARMED after 3 s; advance to CHAMBER
     const t = setTimeout(() => setPhase("CHAMBER"), 3000);
     return () => clearTimeout(t);
-  }, [phase, craftType]);
+  }, [phase, craftType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Already at SWIPE — gate is inert ────────────────────────────────────
   if (phase === "SWIPE") return null;
@@ -100,7 +124,7 @@ export default function RitualGate({ craftType, theme, onChamberBegin, onBack }:
             style={{
               position:       "absolute",
               inset:          0,
-              background:     "#000",
+              background:     BLACKOUT_BG[craftType] ?? "#000",
               cursor:         "none",
               zIndex:         10,
               display:        "flex",
@@ -109,13 +133,13 @@ export default function RitualGate({ craftType, theme, onChamberBegin, onBack }:
               padding:        44,
             }}
           >
-            {/* Ambient presence during blackout */}
+            {/* Craft-specific ambient pulse during blackout */}
             {craftType === "pour"
               ? <AmberCorePulse corner="bottom-left" size={11} />
               : <EmberHeartbeat color={theme.accent} corner="bottom-left" size={11} dragX={blackoutX} />
             }
 
-            {/* telemetry readout — monospace bottom-right */}
+            {/* Per-craft telemetry readout — monospace bottom-right */}
             <div style={{
               position:      "absolute",
               bottom:        48, right: 28,
@@ -130,7 +154,7 @@ export default function RitualGate({ craftType, theme, onChamberBegin, onBack }:
                 animate={{ opacity: [0.3, 0.8, 0.3] }}
                 transition={{ duration: 1.4, repeat: Infinity }}
               >
-                TELEMETRY ARMED
+                {TELEMETRY_LABEL[craftType] ?? "TELEMETRY ARMED"}
               </motion.span>
             </div>
           </motion.div>
