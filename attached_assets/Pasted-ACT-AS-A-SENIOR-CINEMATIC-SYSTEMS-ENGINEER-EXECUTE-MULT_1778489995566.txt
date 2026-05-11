@@ -1,0 +1,288 @@
+ACT AS A SENIOR CINEMATIC SYSTEMS ENGINEER. EXECUTE “MULTI-CRAFT IDENTITY SEPARATION PROTOCOL” IMMEDIATELY.
+
+The platform currently suffers from a CRITICAL IMMERSION FAILURE:
+
+All experiences are inheriting SmokeCraft identity architecture.
+
+Current symptoms:
+
+* PourCraft displays “Smoke Initiate”
+* BrewCraft uses SmokeCraft progression language
+* VapeCraft still feels like a cigar ritual
+* Shared onboarding text leaks between crafts
+* Shared achievement system leaks globally
+* Shared mentor logic leaks globally
+* Shared synchronization copy leaks globally
+* Shared scoring terminology leaks globally
+
+The system currently has:
+MULTI-SKIN UI
+
+BUT NOT:
+MULTI-IDENTITY EXPERIENCE ARCHITECTURE.
+
+THIS MUST BE FULLY SEPARATED NOW.
+
+━━━━━━━━━━━━━━━━━━━
+PHASE 1 — CREATE PER-CRAFT CONFIG SYSTEM
+━━━━━━━━━━━━━━━━━━━
+
+CREATE:
+
+/src/config/crafts/
+
+FILES:
+
+* smokecraft.config.ts
+* pourcraft.config.ts
+* brewcraft.config.ts
+* vapecraft.config.ts
+
+Every craft MUST own its own:
+
+* title
+* subtitle
+* intro copy
+* atmosphere language
+* achievement names
+* level names
+* mentor archetypes
+* scoring terminology
+* synchronization text
+* onboarding narrative
+* Golden reward terminology
+* soundtrack profile
+* environmental palette
+* swipe flavor taxonomy
+* XP labels
+* vault naming
+
+NO GLOBAL SHARED TEXT.
+
+━━━━━━━━━━━━━━━━━━━
+PHASE 2 — HARD ISOLATE ALL IDENTITIES
+━━━━━━━━━━━━━━━━━━━
+
+REPLACE all hardcoded references:
+
+REMOVE:
+
+* “Smoke Initiate”
+* “Master of Smoke”
+* “SmokeCraft journey”
+* “cigar ritual”
+* “ember ritual”
+* “wrapper harmony”
+
+FROM:
+PourCraft
+BrewCraft
+VapeCraft
+
+These should NEVER appear outside SmokeCraft.
+
+━━━━━━━━━━━━━━━━━━━
+PHASE 3 — PER-CRAFT ACHIEVEMENT SYSTEM
+━━━━━━━━━━━━━━━━━━━
+
+SMOKECRAFT:
+
+* Smoke Initiate
+* Ember Explorer
+* Blend Artisan
+* Master of Smoke
+
+POURCRAFT:
+
+* Spirit Initiate
+* Reserve Explorer
+* Barrel Curator
+* Master of Pour
+
+BREWCRAFT:
+
+* Brew Initiate
+* Tap Explorer
+* Foam Architect
+* Master Brewer
+
+VAPECRAFT:
+
+* Cloudwalker
+* Vapor Architect
+* Neon Engineer
+* Master of Atmosphere
+
+Achievements MUST dynamically render from craft config.
+
+NO SHARED STRINGS.
+
+━━━━━━━━━━━━━━━━━━━
+PHASE 4 — PER-CRAFT ATMOSPHERIC IDENTITY
+━━━━━━━━━━━━━━━━━━━
+
+SMOKECRAFT ATMOSPHERE:
+
+* ember glow
+* cigar smoke
+* warm obsidian
+* ritual pacing
+* deep bass
+* cedar/leather palette
+
+POURCRAFT ATMOSPHERE:
+
+* liquid amber reflections
+* jazz lounge
+* whiskey glass distortion
+* warm luxury lighting
+* bottle shimmer
+
+BREWCRAFT ATMOSPHERE:
+
+* brewery warmth
+* foam particle bursts
+* tap reflections
+* social crowd ambiance
+* warm celebration energy
+
+VAPECRAFT ATMOSPHERE:
+
+* neon haze
+* vapor clouds
+* cyber reflections
+* synth atmosphere
+* holographic lighting
+
+ALL environments must feel:
+completely different psychologically.
+
+━━━━━━━━━━━━━━━━━━━
+PHASE 5 — FIX THE ONBOARDING COPY LEAK
+━━━━━━━━━━━━━━━━━━━
+
+Current bug:
+shared onboarding templates.
+
+FIX:
+All onboarding scenes MUST dynamically load from:
+`activeCraftConfig`
+
+Meaning:
+`ExperienceOverviewScene`
+`MentorRevealScene`
+`SynchronizationScene`
+`AchievementRevealScene`
+`VaultScene`
+
+must NEVER contain hardcoded SmokeCraft language.
+
+EVERYTHING must be injected dynamically from craft identity config.
+
+━━━━━━━━━━━━━━━━━━━
+PHASE 6 — FIX THE SYNCHRONIZATION SYSTEM
+━━━━━━━━━━━━━━━━━━━
+
+SmokeCraft:
+“SOVEREIGN RITUAL SYNCHRONIZED”
+
+PourCraft:
+“PALATE RESONANCE SYNCHRONIZED”
+
+BrewCraft:
+“BREW FREQUENCY SYNCHRONIZED”
+
+VapeCraft:
+“ATMOSPHERIC CLOUD SYNCHRONIZED”
+
+NO SHARED SYNCHRONIZATION TEXT.
+
+━━━━━━━━━━━━━━━━━━━
+PHASE 7 — FIX THE GOLDEN REWARD SYSTEM
+━━━━━━━━━━━━━━━━━━━
+
+SmokeCraft:
+THE GOLDEN BOX
+
+PourCraft:
+THE RESERVE SEAL
+
+BrewCraft:
+THE FOUNDER’S CASK
+
+VapeCraft:
+THE NEON CORE
+
+Each reward event:
+
+* unique visuals
+* unique audio
+* unique atmosphere
+* unique mythology
+* unique reveal sequence
+
+━━━━━━━━━━━━━━━━━━━
+PHASE 8 — FORCE ROUTE ISOLATION
+━━━━━━━━━━━━━━━━━━━
+
+Current bug:
+shared routing memory/state contamination.
+
+Implement:
+
+* route-based craft isolation
+* craft session reset on entry
+* dynamic craft namespace
+* isolated onboarding state
+* isolated mentor pools
+* isolated XP progression
+
+Meaning:
+Entering PourCraft MUST fully unload SmokeCraft identity context.
+
+━━━━━━━━━━━━━━━━━━━
+PHASE 9 — REMOVE REMAINING WEBSITE FEEL
+━━━━━━━━━━━━━━━━━━━
+
+REMOVE:
+
+* static overlays
+* dead buttons
+* visible page transitions
+* informational layouts
+* generic cards
+* web-style scrolling
+
+ALL scenes must:
+
+* breathe
+* animate
+* fade
+* pulse
+* drift
+* respond
+
+━━━━━━━━━━━━━━━━━━━
+FINAL DIRECTIVE
+━━━━━━━━━━━━━━━━━━━
+
+Each craft must feel like:
+its own universe.
+
+NOT:
+a reskinned copy.
+
+IF:
+
+* SmokeCraft language appears in other crafts
+* achievements leak between systems
+* mentors feel duplicated
+* onboarding feels reused
+* environments feel identical
+* synchronization text overlaps
+* atmospheres emotionally match
+
+THEN:
+THE MULTI-CRAFT SYSTEM HAS FAILED.
+
+EXECUTE FULL IDENTITY SEPARATION NOW.

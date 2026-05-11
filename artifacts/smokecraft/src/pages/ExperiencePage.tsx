@@ -42,8 +42,7 @@ import SpiritConstruction, { type PalateDNA } from "@/components/SpiritConstruct
 import ReserveVaultExplosion   from "@/components/ReserveVaultExplosion";
 import { dispatchRitualEvent, checkMentorWarning, edgeHaptic } from "@/lib/kineticFeedback";
 import { ExperienceFlowEngine } from "@/lib/experienceFlowEngine";
-import EnrollmentFlow             from "@/components/EnrollmentFlow";
-import MentorRevealComp           from "@/components/MentorReveal";
+import InitiationChamber          from "@/components/InitiationChamber";
 
 // ── Ambient particles — same visual language as CraftHub ──────────────────────
 
@@ -1057,73 +1056,6 @@ function MentorWarningModal({
   );
 }
 
-// ── Main ExperiencePage ───────────────────────────────────────────────────────
-
-// ── Step 5: Challenge Path Selection ─────────────────────────────────────────
-
-const CHALLENGE_OPTIONS = [
-  { id: "guided",      label: "GUIDED RITUAL",         sub: "A Mentor-led journey through instinct and discovery.", icon: "◈" },
-  { id: "competitive", label: "COMPETITIVE CHALLENGE",  sub: "Prove your palate against ranked scoring criteria.",  icon: "⬡" },
-  { id: "free",        label: "FREE BLEND",             sub: "Unconstrained construction. No rules. Pure expression.", icon: "◇" },
-];
-
-function ChallengePathScreen({ theme, onSelect }: { theme: CraftTheme; onSelect: (mode: string) => void }) {
-  return (
-    <motion.div
-      key="challenge-path"
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      transition={{ duration: 0.55 }}
-      style={{
-        position: "fixed", inset: 0, zIndex: 300,
-        background: "#060402",
-        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        padding: "0 28px",
-      }}
-    >
-      {Array.from({ length: 12 }, (_, i) => (
-        <motion.div key={i} style={{ position: "absolute", left: `${8 + i * 8}%`, bottom: 0, width: 2, height: 2, borderRadius: "50%", background: theme.accent, opacity: 0.4 }}
-          animate={{ y: [0, -(180 + i * 30)], opacity: [0.4, 0] }}
-          transition={{ duration: 4 + i * 0.5, delay: i * 0.35, repeat: Infinity, ease: "easeOut" }} />
-      ))}
-
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 0.4 }} transition={{ delay: 0.2 }}
-        style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.36em", color: theme.accent, textTransform: "uppercase", marginBottom: 28 }}>
-        STEP 5 OF 8 · CHALLENGE PATH
-      </motion.div>
-
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "clamp(20px,4vw,36px)", fontWeight: 700, color: "#F5F2ED", letterSpacing: "0.14em", textAlign: "center", marginBottom: 10 }}>
-        SELECT YOUR PATH
-      </motion.div>
-
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 0.38 }} transition={{ delay: 0.45 }}
-        style={{ fontFamily: "monospace", fontSize: 11, letterSpacing: "0.1em", color: "#F5F2ED", textAlign: "center", marginBottom: 44 }}>
-        Your path shapes scoring intensity, mentor behavior, and environmental pacing.
-      </motion.div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%", maxWidth: 480 }}>
-        {CHALLENGE_OPTIONS.map((opt, i) => (
-          <motion.button key={opt.id}
-            initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + i * 0.12, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }}
-            onClick={() => onSelect(opt.id)}
-            style={{ display: "flex", alignItems: "center", gap: 18, padding: "20px 24px", background: "rgba(255,255,255,0.03)", border: `1px solid rgba(255,255,255,0.08)`, borderRadius: 12, cursor: "pointer", textAlign: "left" }}
-          >
-            <span style={{ fontSize: 22, color: theme.accent, opacity: 0.7, flexShrink: 0 }}>{opt.icon}</span>
-            <div>
-              <div style={{ fontFamily: "monospace", fontSize: 12, letterSpacing: "0.22em", color: "#F5F2ED", marginBottom: 4 }}>{opt.label}</div>
-              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 14, color: "rgba(245,242,237,0.45)", letterSpacing: "0.04em" }}>{opt.sub}</div>
-            </div>
-          </motion.button>
-        ))}
-      </div>
-
-      <motion.div animate={{ opacity: [0.15, 0.35, 0.15] }} transition={{ duration: 3.2, repeat: Infinity }}
-        style={{ position: "absolute", bottom: 32, width: 44, height: 44, borderRadius: "50%", border: `1px solid ${theme.accent}40`, background: `${theme.accent}08` }} />
-    </motion.div>
-  );
-}
-
 // ── ExperiencePage ────────────────────────────────────────────────────────────
 
 export default function ExperiencePage() {
@@ -1153,16 +1085,14 @@ export default function ExperiencePage() {
   const [showSpiritConstruction, setShowSpiritConstruction] = useState(
     () => ExperienceFlowEngine.currentStep === "SPIRIT_CONSTRUCTION"
   );
-  // Pre-swipe intermediate phase state (Steps 5→6→7 before Synchronization)
-  const [preSwipePhase, setPreSwipePhase] = useState<"CHALLENGE" | "ENROLLMENT" | "MENTOR" | null>(null);
-  const [challengeMode, setChallengeMode] = useState<string | null>(null);
+  const [initiationActive, setInitiationActive] = useState(false);
   const [showVaultExplosion,     setShowVaultExplosion]     = useState(false);
   const [palateDna,              setPalateDna]              = useState<PalateDNA | null>(null);
   const [showAtmosphereOverlay, setShowAtmosphereOverlay] = useState(false);
   const [localAtmosphere,      setLocalAtmosphere]      = useState<string | null>(null);
 
   // ── Intelligence layer — mentor commentary on ADD swipes ─────────────────
-  const { guestProfile, mentor, enroll, isReturning } = useGuestProfile();
+  const { guestProfile, mentor } = useGuestProfile();
   const [addedTags,   setAddedTags]   = useState<string[]>([]);
   const [addedCount,  setAddedCount]  = useState(0);
   const [sessionScore, setSessionScore] = useState(0);
@@ -1481,106 +1411,30 @@ export default function ExperiencePage() {
 
     {/* ── RitualGate: strict INTRO → BLACKOUT → CHAMBER sequence ── */}
     {/* ── Steps 2–4: INTRO → BLACKOUT → CHAMBER ─────────────────────────── */}
-    {!ritualComplete && preSwipePhase === null && (
+    {!ritualComplete && !initiationActive && (
       <RitualGate
         craftType={type}
         theme={theme}
         onChamberBegin={() => {
           ExperienceFlowEngine.goTo("CHALLENGE_SELECTION");
-          setPreSwipePhase("CHALLENGE");
+          setInitiationActive(true);
         }}
         onBack={() => navigate("/")}
       />
     )}
 
-    {/* ── Step 5: Challenge Path Selection ────────────────────────────────── */}
-    <AnimatePresence>
-      {preSwipePhase === "CHALLENGE" && (
-        <ChallengePathScreen
-          theme={theme}
-          onSelect={(mode) => {
-            setChallengeMode(mode);
-            ExperienceFlowEngine.goTo("IDENTITY_ENROLLMENT");
-            setPreSwipePhase("ENROLLMENT");
-          }}
-        />
-      )}
-    </AnimatePresence>
-
-    {/* ── Step 7: Identity Enrollment ─────────────────────────────────────── */}
-    <AnimatePresence>
-      {preSwipePhase === "ENROLLMENT" && (
-        <motion.div key="enrollment-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          transition={{ duration: 0.45 }}
-          style={{ position: "fixed", inset: 0, zIndex: 300, background: "#060402" }}>
-          <EnrollmentFlow
-            craftType={type}
-            onComplete={async (answers) => {
-              try {
-                await enroll({
-                  firstName:          answers.firstName        ?? "",
-                  lastName:           answers.lastName,
-                  phoneLast4:         answers.phoneLast4,
-                  gender:             answers.gender,
-                  region:             answers.region,
-                  boldnessPreference: answers.boldnessPreference,
-                  experienceLevel:    answers.experienceLevel,
-                  craftType:          (["smoke","pour","brew","vape"].includes(type)
-                                        ? type : "smoke") as "smoke"|"pour"|"brew"|"vape",
-                });
-              } catch { /* enrollment non-fatal — continue ritual */ }
-              ExperienceFlowEngine.goTo("MENTOR_REVEAL");
-              setPreSwipePhase("MENTOR");
-            }}
-            onSkip={() => {
-              ExperienceFlowEngine.goTo("MENTOR_REVEAL");
-              setPreSwipePhase("MENTOR");
-            }}
-          />
-        </motion.div>
-      )}
-    </AnimatePresence>
-
-    {/* ── Step 6: Mentor Reveal ────────────────────────────────────────────── */}
-    <AnimatePresence>
-      {preSwipePhase === "MENTOR" && (
-        <motion.div key="mentor-reveal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          transition={{ duration: 0.55 }}
-          style={{ position: "fixed", inset: 0, zIndex: 300, background: "#060402" }}>
-          {mentor && guestProfile ? (
-            <MentorRevealComp
-              mentor={mentor}
-              guestName={guestProfile.firstName}
-              isReturning={isReturning}
-              onBegin={() => {
-                const syncRoute = ExperienceFlowEngine.enterSynchronization();
-                setRitualComplete(true);
-                setPreSwipePhase(null);
-                navigate(syncRoute);
-              }}
-            />
-          ) : (
-            /* No mentor yet (skipped enrollment) — show calibration then advance */
-            <div style={{ position: "fixed", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#060402" }}>
-              <motion.div animate={{ opacity: [0.3, 0.7, 0.3] }} transition={{ duration: 1.8, repeat: Infinity }}
-                style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.28em", color: theme.accent, textTransform: "uppercase", marginBottom: 28 }}>
-                CALIBRATING MENTOR INTELLIGENCE
-              </motion.div>
-              <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}
-                onClick={() => {
-                  const syncRoute = ExperienceFlowEngine.enterSynchronization();
-                  setRitualComplete(true);
-                  setPreSwipePhase(null);
-                  navigate(syncRoute);
-                }}
-                style={{ padding: "14px 36px", background: `${theme.accent}18`, border: `1px solid ${theme.accent}55`, borderRadius: 8, color: theme.accent, fontFamily: "monospace", fontSize: 11, letterSpacing: "0.22em", cursor: "pointer" }}>
-                ENTER THE RITUAL ›
-              </motion.button>
-            </div>
-          )}
-        </motion.div>
-      )}
-    </AnimatePresence>
+    {/* ── Initiation Chamber: 8-scene cinematic ritual ──────────────────────── */}
+    {initiationActive && (
+      <InitiationChamber
+        craftType={type}
+        theme={theme}
+        onComplete={() => {
+          ExperienceFlowEngine.goTo("SWIPE_RITUAL");
+          setInitiationActive(false);
+          setRitualComplete(true);
+        }}
+      />
+    )}
     <div style={{
       position:   "fixed",
       inset:      0,
