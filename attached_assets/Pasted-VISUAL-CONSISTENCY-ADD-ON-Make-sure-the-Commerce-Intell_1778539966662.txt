@@ -1,0 +1,176 @@
+VISUAL CONSISTENCY ADD-ON
+
+Make sure the Commerce Intelligence Center matches the look and feel of the rest of EEIE and Sovereign.
+
+Do not redesign Commerce Health as a separate style.
+
+It must visually belong to the same system family as:
+
+EEIE Command Center
+Staff Cockpit
+Media Library
+Product Wall
+Back-of-House Sync
+Mood Sensor
+Unified Data Brain
+Sovereign Command Center
+Founder Control
+Master Operations
+
+The look must use the same shared design language:
+
+light luxury background
+white / ice-blue page body
+metallic blue accents
+titanium grey borders
+frosted glass panels
+deep navy headings
+clean readable typography
+large touchscreen buttons
+premium image cards
+soft shadows
+subtle live motion
+blue animated status lines
+same top command rail
+same left navigation treatment
+same bottom system rail
+same status chip style
+same AI assistant style
+same event feed style
+
+Do not make Commerce Intelligence Center look like:
+
+a generic POS settings page
+a Toast/Square admin page
+a dark cyber dashboard
+a separate SaaS module
+a developer-only adapter page
+a basic system status screen
+
+Commerce Intelligence Center should feel like:
+
+the money-flow brain of EEIE
+inside the same Apple/Tesla/Sovereign operating system
+
+SHARED COMPONENT REQUIREMENT
+
+Use the same shared components already used across EEIE:
+
+EEIELightPageShell
+EEIELightSectionCard
+EEIEVisualProductCard
+EEIEPairingCard
+EEIEHeroBand
+EEIEAssetTile
+EEIENavRail
+EEIEStatusChip
+EEIESectionHeader
+EEIEPreviewGallery
+EEIEAssistantPanel
+EEIELiveFeed
+EEIEBottomStatusRail
+
+If these components do not exist yet, create them and use them consistently.
+
+PAGE MATCHING REQUIREMENT
+
+Commerce Intelligence Center must share:
+
+same header height
+same sidebar width
+same button radius
+same card border radius
+same font scale
+same spacing system
+same color tokens
+same active tab style
+same status badge styling
+same animation timing
+same light/dark contrast rules
+
+COLOR RULE
+
+Use this palette:
+
+Background:
+soft white
+ice blue
+light silver
+pale blue-grey
+
+Cards:
+white glass
+frosted blue-white
+titanium border
+soft shadow
+
+Accent:
+metallic blue
+electric cyan
+deep cobalt
+signal green
+controlled red
+soft violet for AI
+
+Do not bring back brown, muddy gold, heavy navy slabs, or washed-out beige.
+
+IMAGE RULE
+
+Commerce Intelligence Center must include the same image-forward approach as Product Wall and Staff Cockpit.
+
+Pairing Bundle Performance must show:
+
+cigar image
+liquor image
+food image
+bundle image
+
+No glyph-only bundle cards.
+
+POS Adapter Health may use clean branded text or neutral adapter cards, but the page must still include visual flow diagrams, bundle images, and commerce graph visuals so it does not feel empty.
+
+TYPOGRAPHY RULE
+
+Use the same premium typography across all EEIE pages.
+
+No tiny technical text as the main readable content.
+
+Use:
+
+large page title
+clear subtitle
+bold section headers
+readable card descriptions
+strong sidebar labels
+large button labels
+
+Commerce page should be easy to read from a tablet while standing.
+
+ANIMATION RULE
+
+Use the same living-machine motion language:
+
+soft card lift
+subtle status pulse
+animated commerce flow line
+live revenue sparkline
+AI assistant breathing glow
+event feed slide-in
+button press feedback
+image shimmer
+
+Keep it refined, not flashy.
+
+FINAL CONSISTENCY CHECK
+
+Before finishing, compare Commerce Intelligence Center visually against:
+
+Staff Cockpit
+Product Wall
+Media Library
+Back-of-House Sync
+Unified Data Brain
+
+If Commerce looks like a different product, refactor it until it matches.
+
+The final result must feel like one unified EEIE operating system, not separate screens stitched together.

@@ -7,6 +7,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain, X, ChevronRight, Send, Zap, CheckCircle, MessageSquare, Star } from "lucide-react";
 import { type Theme, Badge, LiveDot, triggerHaptic } from "./shared";
+import "@/styles/eeie-motion.css";
 
 interface CommentaryItem {
   id: string;
@@ -125,6 +126,7 @@ export function AIPanel({ T, open, onClose }: Props) {
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: 320, opacity: 0 }}
           transition={{ type: "spring", stiffness: 340, damping: 32 }}
+          className="eeie-ai-breathing"
           style={{
             width: 310, flexShrink: 0,
             background: T.dark ? "rgba(5,10,24,0.98)" : "rgba(248,250,255,0.98)",
@@ -139,13 +141,12 @@ export function AIPanel({ T, open, onClose }: Props) {
             background: T.dark ? `${T.purple}08` : `${T.purple}05`,
             display: "flex", alignItems: "center", gap: 10,
           }}>
-            <motion.div
-              animate={{ boxShadow: [`0 0 0px ${T.purple}00`, `0 0 12px ${T.purple}60`, `0 0 0px ${T.purple}00`] }}
-              transition={{ duration: 2.5, repeat: Infinity }}
+            <div
+              className="eeie-sensor-ring"
               style={{ width: 34, height: 34, borderRadius: 10, background: `${T.purple}14`, border: `1px solid ${T.purple}40`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
             >
               <Brain size={16} color={T.purple} />
-            </motion.div>
+            </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 11, fontWeight: 800, color: T.text, letterSpacing: "0.12em", fontFamily: T.mono }}>EEIE ASSISTANT</div>
               <div style={{ fontSize: 8.5, color: T.purple, fontFamily: T.mono }}>Experience AI · Always On</div>

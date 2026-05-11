@@ -9,6 +9,7 @@ import {
   AlertTriangle, RefreshCw, Eye, Trash2, BarChart2,
 } from "lucide-react";
 import { type Theme, Badge, Meter, Panel, LiveDot, triggerHaptic } from "./shared";
+import "@/styles/eeie-motion.css";
 
 interface DataStream {
   id: string; label: string; status: "connected" | "syncing" | "delayed" | "offline" | "attention";
@@ -125,7 +126,10 @@ export function DataBrainTab({ T }: Props) {
               <motion.div key={s.id} whileHover={{ x: 2 }}
                 style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: T.cardAlt, border: `1px solid ${s.status === "offline" ? `${T.red}25` : T.border}` }}
               >
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: `${sc}12`, border: `1px solid ${sc}28`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: sc, flexShrink: 0 }}>
+                <div
+                  className={s.status === "connected" ? "eeie-machine-pulse" : s.status === "syncing" ? "eeie-active-breathe" : s.status === "offline" ? "eeie-warning-pulse" : ""}
+                  style={{ width: 28, height: 28, borderRadius: 8, background: `${sc}12`, border: `1px solid ${sc}28`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: sc, flexShrink: 0 }}
+                >
                   {s.icon}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -215,7 +219,7 @@ export function DataBrainTab({ T }: Props) {
               <motion.div key={m.id} whileHover={{ y: -1 }}
                 style={{ borderRadius: 12, border: `1px solid ${T.border}`, background: T.card, overflow: "hidden", boxShadow: T.shadow }}
               >
-                <div style={{ height: 70, background: `linear-gradient(135deg, ${m.imageColor}14, ${m.imageColor}06)`, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+                <div className="eeie-image-shimmer" style={{ height: 70, background: `linear-gradient(135deg, ${m.imageColor}14, ${m.imageColor}06)`, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: `${m.imageColor}20`, border: `1px solid ${m.imageColor}35`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: m.imageColor }}>◎</div>
                   <div style={{ position: "absolute", top: 6, right: 6 }}>
                     <Badge label={m.status} color={sc} bg={`${sc}14`} />
@@ -257,7 +261,8 @@ export function DataBrainTab({ T }: Props) {
             { label: "CSV / Spreadsheet Import", icon: <Upload size={18} />, desc: "Upload distributor product file", color: T.green, badge: "Ready" },
             { label: "Manual Entry", icon: <Database size={18} />, desc: "Manually add distributor products", color: T.purple, badge: "Ready" },
           ].map(c => (
-            <motion.div key={c.label} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
+            <motion.div key={c.label} whileTap={{ scale: 0.97 }}
+              className="eeie-live-card eeie-hover-lift eeie-machine-pulse"
               style={{ padding: "16px", borderRadius: 14, border: `1px solid ${c.color}28`, background: `${c.color}06`, cursor: "pointer", textAlign: "center" as const }}>
               <div style={{ color: c.color, marginBottom: 10, display: "flex", justifyContent: "center" }}>{c.icon}</div>
               <div style={{ fontSize: 11, fontWeight: 700, color: T.text, marginBottom: 4 }}>{c.label}</div>

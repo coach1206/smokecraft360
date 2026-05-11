@@ -187,4 +187,14 @@ router.get("/bus", (_req, res) => {
   res.json({ ts: new Date().toISOString(), history });
 });
 
+/**
+ * POST /api/eeie/events
+ * Lightweight UI event telemetry — fire-and-forget navigation log.
+ */
+router.post("/events", (req, res) => {
+  const { event, module: mod, route, userId } = (req.body ?? {}) as Record<string, string>;
+  req.log.info({ event, mod, route, userId }, "eeie.ui_event");
+  res.status(202).json({ ok: true, ts: new Date().toISOString() });
+});
+
 export default router;

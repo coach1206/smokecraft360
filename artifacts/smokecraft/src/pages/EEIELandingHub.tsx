@@ -238,6 +238,15 @@ function ImageStrip({ images, accent, previewType }: { images: string[]; accent:
   );
 }
 
+// ── Event logging ─────────────────────────────────────────────
+function logEEIEEvent(module: string, route: string) {
+  void fetch("/api/eeie/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ event: "module_navigate", module, route }),
+  });
+}
+
 // ── EEIEModuleCard ────────────────────────────────────────────
 function EEIEModuleCard({
   tile, index, onNavigate,
@@ -259,7 +268,10 @@ function EEIEModuleCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.030, duration: 0.36 }}
       whileTap={{ scale: 0.97 }}
-      onClick={() => onNavigate(tile.path)}
+      onClick={() => { logEEIEEvent(tile.label, tile.path); onNavigate(tile.path); }}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); logEEIEEvent(tile.label, tile.path); onNavigate(tile.path); } }}
+      role="button"
+      tabIndex={0}
       className={cardClass}
       style={{
         background: C.surface,

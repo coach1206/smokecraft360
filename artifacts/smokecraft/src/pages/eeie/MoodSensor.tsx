@@ -6,6 +6,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Thermometer, Wifi, WifiOff, Activity, MapPin } from "lucide-react";
 import { type Theme, Badge, LiveDot, Meter, Panel, triggerHaptic } from "./shared";
+import "@/styles/eeie-motion.css";
 
 interface MoodState {
   id: string; label: string; color: string; desc: string; icon: string;
@@ -102,14 +103,17 @@ export function MoodSensorTab({ T }: Props) {
       <motion.div
         key={mood}
         initial={{ opacity: 0.6 }} animate={{ opacity: 1 }}
+        className="eeie-active-breathe"
         style={{
           padding: "16px 22px", borderRadius: 16,
           background: `${activeMood.color}12`,
           border: `1px solid ${activeMood.color}35`,
           boxShadow: `0 0 32px ${activeMood.color}12`,
           display: "flex", alignItems: "center", gap: 16,
+          position: "relative", overflow: "hidden",
         }}
       >
+        <div className="eeie-mood-wash" style={{ background: `${activeMood.color}08` }} />
         <div style={{ fontSize: 32, lineHeight: 1, color: activeMood.color }}>{activeMood.icon}</div>
         <div style={{ flex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
@@ -237,6 +241,7 @@ export function MoodSensorTab({ T }: Props) {
             const ac = alertColor(s.alertLevel, T);
             return (
               <motion.div key={s.id} whileHover={{ y: -1 }}
+                className={s.status === "live" ? "eeie-active-breathe" : s.status === "disconnected" ? "eeie-warning-pulse" : "eeie-machine-pulse"}
                 style={{ padding: "13px 14px", borderRadius: 12, background: T.cardAlt, border: `1px solid ${s.alertLevel === "high" ? `${T.red}30` : T.border}`, boxShadow: T.shadow }}
               >
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>

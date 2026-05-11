@@ -6,6 +6,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ImageIcon, ShoppingCart, Eye, Repeat, Package, Leaf, Coffee, Utensils } from "lucide-react";
 import { type Theme, Badge, Meter, Panel, TouchButton, RadarChart, DonutRing, triggerHaptic } from "./shared";
+import "@/styles/eeie-motion.css";
 
 interface Product {
   id: string; name: string; brand: string; category: string;
@@ -121,7 +122,8 @@ export function VisualIntelligenceTab({ T }: Props) {
       <Panel title="Visual Pairing Bundles" subtitle="AI-curated experience bundles" icon={<Package size={14} />} T={T}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
           {BUNDLES.map(b => (
-            <motion.div key={b.id} whileHover={{ y: -2 }}
+            <motion.div key={b.id}
+              className="eeie-live-card eeie-hover-lift eeie-machine-pulse"
               style={{ borderRadius: 14, border: `1px solid ${T.border}`, background: T.cardAlt, overflow: "hidden", boxShadow: T.shadow }}
             >
               {/* Color strip */}
@@ -182,11 +184,13 @@ export function VisualIntelligenceTab({ T }: Props) {
           {filtered.map(p => {
             const sb = stockBadge(p.stock, T);
             return (
-              <motion.div key={p.id} whileHover={{ y: -3, boxShadow: `0 8px 32px ${p.imageColor}18` }}
+              <motion.div key={p.id}
+                whileHover={{ boxShadow: `0 8px 32px ${p.imageColor}18` }}
+                className="eeie-module-card eeie-live-card eeie-hover-lift eeie-machine-pulse"
                 style={{ borderRadius: 14, border: `1px solid ${T.border}`, background: T.card, overflow: "hidden", boxShadow: T.shadow }}
               >
                 {/* Product image area */}
-                <div style={{
+                <div className="eeie-image-shimmer" style={{
                   height: 100, background: `linear-gradient(135deg, ${p.imageColor}18, ${p.imageColor}08)`,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   borderBottom: `1px solid ${T.border}`, position: "relative",
