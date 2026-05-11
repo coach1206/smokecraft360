@@ -6,7 +6,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, ArrowRight, Loader, Check } from "lucide-react";
+import { Star, ArrowRight, Loader, Check, ChevronLeft } from "lucide-react";
 
 const C = {
   bg:     "#050505",
@@ -53,6 +53,26 @@ export default function AmbassadorGate() {
       {/* Scan line */}
       <motion.div animate={{ y: ["0vh","100vh"] }} transition={{ duration: 7, repeat: Infinity, ease: "linear", repeatDelay: 5 }}
         style={{ position: "fixed", left: 0, right: 0, height: 1, background: "linear-gradient(90deg,transparent,rgba(212,175,55,0.12),transparent)", top: 0, pointerEvents: "none" }} />
+
+      {/* Back button */}
+      <motion.button
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+        onClick={() => window.history.back()}
+        style={{
+          position: "fixed", top: 24, left: 24,
+          display: "flex", alignItems: "center", gap: 6,
+          background: "rgba(212,175,55,0.08)", border: `1px solid ${C.border}`,
+          borderRadius: 8, padding: "10px 16px", cursor: "pointer",
+          color: C.gold, fontFamily: C.mono, fontSize: 10,
+          letterSpacing: "0.18em", zIndex: 100,
+          minHeight: 44,
+        }}
+        whileHover={{ background: "rgba(212,175,55,0.14)" }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <ChevronLeft size={14} />
+        BACK
+      </motion.button>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}
         style={{
