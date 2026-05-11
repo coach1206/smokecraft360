@@ -525,3 +525,15 @@ button, [role="button"] {
   stroke-linecap:    round;
   transition:        stroke-dashoffset 0.1s linear;
 }
+
+/* ── Sensory card — ritual look for SwipeRitual / ExperiencePage cards ── */
+.sensory-card {
+  background:      rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border:          1px solid rgba(255, 215, 0, 0.20);
+  box-shadow:      0 0 40px rgba(0, 0, 0, 0.80), inset 0 1px 0 rgba(255,215,0,0.06);
+  position:        absolute;
+  border-radius:   20px;
+  will-change:     transform;
+}

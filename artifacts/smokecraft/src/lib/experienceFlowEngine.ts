@@ -50,9 +50,13 @@ const UNLOCK_STEP: EFEStep = "SYNCHRONIZATION";
 // Matches the spec: smoke density, lighting preset, audio layer
 
 export interface EnvPayload {
-  smoke:    number;
-  lighting: string;
-  audio:    string;
+  smoke:              number;
+  lighting:           string;
+  audio:              string;
+  /** KINETIC_FEEDBACK — silences standard HUDs; activates drag-driven overlays */
+  mode?:              string;
+  /** 0–1 room atmosphere tension — deepens lighting on SWIPE_RITUAL entry */
+  atmosphereTension?: number;
 }
 
 const ENV_MAP: Partial<Record<EFEStep, EnvPayload>> = {
@@ -62,7 +66,7 @@ const ENV_MAP: Partial<Record<EFEStep, EnvPayload>> = {
   MENTOR_REVEAL:       { smoke: 0.5, lighting: "amber_pulse",  audio: "mentor_hum"    },
   IDENTITY_ENROLLMENT: { smoke: 0.3, lighting: "warm_static",  audio: "meditative"    },
   SYNCHRONIZATION:     { smoke: 1.0, lighting: "strobe_slow",  audio: "whisper_layer" },
-  SWIPE_RITUAL:        { smoke: 0.6, lighting: "ember_steady", audio: "ritual_pulse"  },
+  SWIPE_RITUAL:        { smoke: 0.6, lighting: "ember_steady", audio: "ritual_pulse", mode: "KINETIC_FEEDBACK", atmosphereTension: 0.8 },
 };
 
 // ── Route map ─────────────────────────────────────────────────────────────────

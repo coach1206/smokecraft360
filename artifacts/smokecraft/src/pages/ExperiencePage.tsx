@@ -39,6 +39,7 @@ import CraftSensoryCanvas from "@/components/CraftSensoryCanvas";
 import StaffRippleTransition from "@/components/StaffRippleTransition";
 import EmberHeartbeat from "@/components/EmberHeartbeat";
 import { dispatchRitualEvent, checkMentorWarning, edgeHaptic } from "@/lib/kineticFeedback";
+import { ExperienceFlowEngine } from "@/lib/experienceFlowEngine";
 
 // ── Ambient particles — same visual language as CraftHub ──────────────────────
 
@@ -1010,7 +1011,10 @@ export default function ExperiencePage() {
   const [returnBanner, setReturnBanner] = useState(false);
   // Entry chamber: always shows on every new navigation to /experience/:type.
   // CraftEntryChamber handles returning guests internally (skips enrollment, goes to mentor reveal).
-  const [showChamber,          setShowChamber]          = useState(true);
+  // Skip chamber when returning from SYNCHRONIZATION — EFE already at SWIPE_RITUAL
+  const [showChamber,          setShowChamber]          = useState(
+    () => ExperienceFlowEngine.currentStep !== "SWIPE_RITUAL"
+  );
   const [showAtmosphereOverlay, setShowAtmosphereOverlay] = useState(false);
   const [localAtmosphere,      setLocalAtmosphere]      = useState<string | null>(null);
 
@@ -1974,7 +1978,11 @@ export default function ExperiencePage() {
         <CraftEntryChamber
           type={type}
           theme={theme}
-          onBegin={() => { setShowChamber(false); setShowAtmosphereOverlay(true); }}
+          onBegin={() => {
+            // IDENTITY_ENROLLMENT complete — advance EFE and route through SYNCHRONIZATION chamber
+            const syncRoute = ExperienceFlowEngine.enterSynchronization();
+            navigate(syncRoute);
+          }}
           onBack={() => navigate("/")}
         />
       )}

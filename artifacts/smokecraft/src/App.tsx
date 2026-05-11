@@ -79,7 +79,6 @@ const AxiomPay              = lazy(() => import('@/pages/AxiomPay'));
 const Demo                  = lazy(() => import('@/pages/Demo'));
 const AxiomDemo             = lazy(() => import('@/pages/AxiomDemo'));
 const MasterBlender         = lazy(() => import('@/pages/MasterBlender'));
-const MasterArtisan         = lazy(() => import('@/pages/MasterArtisan'));
 const CigarArtisan360       = lazy(() => import('@/pages/CigarArtisan360'));
 const SmokeCraft360         = lazy(() => import('@/pages/SmokeCraft360'));
 const PourCraft360          = lazy(() => import('@/pages/PourCraft360'));
@@ -863,9 +862,6 @@ export default function App() {
           </Route>
           <Route path="/master-blender">
             <SubPageProviders><MasterBlender /></SubPageProviders>
-          </Route>
-          <Route path="/master-artisan">
-            <SubPageProviders><MasterArtisan /></SubPageProviders>
           </Route>
           <Route path="/artisan-360">
             <SubPageProviders><CigarArtisan360 /></SubPageProviders>
