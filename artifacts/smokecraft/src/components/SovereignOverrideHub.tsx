@@ -90,6 +90,15 @@ function IconPurge() {
   );
 }
 
+function IconGate() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <polygon points="7,1.5 12.5,4.5 12.5,9.5 7,12.5 1.5,9.5 1.5,4.5" stroke={GOLD_PILL} strokeWidth="1.2" fill="none"/>
+      <circle cx="7" cy="7" r="1.8" fill={GOLD_PILL} opacity="0.85"/>
+    </svg>
+  );
+}
+
 function IconChevron({ open }: { open: boolean }) {
   return (
     <svg
@@ -557,6 +566,16 @@ export function SovereignOverrideHub() {
           50%       { opacity: 0.35; }
         }
       `}</style>
+
+      <MenuItem
+        icon={<IconGate />}
+        label="SOVEREIGN GATE"
+        sub="PIN authentication · Staff &amp; Sovereign access"
+        accent={GOLD_PILL}
+        onClick={() => { setOpen(false); navigate("/gate"); }}
+      />
+
+      <Divider />
 
       <MenuItem
         icon={<IconEeis />}

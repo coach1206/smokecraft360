@@ -1115,6 +1115,27 @@ function CraftHubInner() {
             OPERATIONAL · {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </div>
           <button
+            onClick={() => navigate("/gate")}
+            style={{
+              background: "linear-gradient(135deg, rgba(212,175,55,0.22) 0%, rgba(212,175,55,0.08) 100%)",
+              border: "1.5px solid rgba(212,175,55,0.7)",
+              borderRadius: 8,
+              cursor: "pointer",
+              fontSize: 11,
+              fontWeight: 800,
+              color: "#D4AF37",
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              padding: "8px 16px",
+              fontFamily: "inherit",
+              minWidth: 80,
+              minHeight: 36,
+              boxShadow: "0 0 12px rgba(212,175,55,0.2)",
+            }}
+          >
+            ⬡ Gate
+          </button>
+          <button
             onClick={() => navigate("/operations")}
             style={{
               background: "rgba(212,139,0,0.12)",
@@ -1141,6 +1162,45 @@ function CraftHubInner() {
       <AnimatePresence>
         {showReturn && <FastReturnModal onClose={() => setShowReturn(false)} />}
       </AnimatePresence>
+
+      {/* ── Fixed Sovereign Gate FAB — always visible on all screen sizes ── */}
+      <motion.button
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 20 }}
+        whileTap={{ scale: 0.93 }}
+        onClick={() => navigate("/gate")}
+        style={{
+          position:     "fixed",
+          bottom:       72,
+          right:        20,
+          zIndex:       120,
+          background:   "linear-gradient(135deg, rgba(212,175,55,0.18) 0%, rgba(212,175,55,0.06) 100%)",
+          border:       "1.5px solid rgba(212,175,55,0.65)",
+          borderRadius: 14,
+          cursor:       "pointer",
+          padding:      "12px 18px",
+          display:      "flex",
+          flexDirection:"column",
+          alignItems:   "center",
+          gap:           3,
+          backdropFilter: "blur(12px)",
+          boxShadow:    "0 0 24px rgba(212,175,55,0.22), 0 2px 8px rgba(0,0,0,0.4)",
+        }}
+      >
+        <span style={{ fontSize: 18, lineHeight: 1 }}>⬡</span>
+        <span style={{
+          fontSize:      9,
+          fontWeight:    800,
+          color:         "#D4AF37",
+          letterSpacing: "0.18em",
+          textTransform: "uppercase",
+          fontFamily:    "inherit",
+          whiteSpace:    "nowrap",
+        }}>
+          Gate
+        </span>
+      </motion.button>
 
       {/* ── Portal opening curtain — expands when a craft card is clicked ── */}
       <AnimatePresence>
