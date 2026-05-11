@@ -369,33 +369,56 @@ function VapeOpening() {
 
 const OPENING_CONFIG = {
   smoke: {
-    bg:        "#050202",
-    accent:    "#e85d26",
-    tagline:   "Every great cigar tells a story.",
-    Opening:   SmokeOpening,
+    bg:      "#040100",
+    accent:  "#e85d26",
+    cta:     "ENTER THE LOUNGE",
+    lines: [
+      "Every great blend begins with instinct.",
+      "SmokeCraft is not simply smoking.",
+      "It is ritual construction.",
+      "Balance.   Pacing.   Harmony.   Legacy.",
+    ],
+    Opening: SmokeOpening,
   },
   pour: {
-    bg:        "#040200",
-    accent:    "#d4af37",
-    tagline:   "Taste is the most honest language.",
-    Opening:   PourOpening,
+    bg:      "#040200",
+    accent:  "#d4af37",
+    cta:     "ENTER THE LOUNGE",
+    lines: [
+      "Every great pour begins with intention.",
+      "PourCraft is not simply drinking.",
+      "It is the art of the pour.",
+      "Time.   Patience.   Complexity.   Memory.",
+    ],
+    Opening: PourOpening,
   },
   brew: {
-    bg:        "#030200",
-    accent:    "#d97706",
-    tagline:   "Craft begins where patience lives.",
-    Opening:   BrewOpening,
+    bg:      "#030200",
+    accent:  "#d97706",
+    cta:     "ENTER THE TAPROOM",
+    lines: [
+      "Every great craft begins with patience.",
+      "BrewCraft is not simply tasting.",
+      "It is the science of the sip.",
+      "Grain.   Water.   Fire.   Time.",
+    ],
+    Opening: BrewOpening,
   },
   vape: {
-    bg:        "#020008",
-    accent:    "#a855f7",
-    tagline:   "The future of sensation is now.",
-    Opening:   VapeOpening,
+    bg:      "#020008",
+    accent:  "#a855f7",
+    cta:     "ENTER THE ATMOSPHERE",
+    lines: [
+      "Every great session begins with presence.",
+      "VapeCraft is not simply vapor.",
+      "It is atmosphere as a language.",
+      "Sensation.   Depth.   Frequency.   Now.",
+    ],
+    Opening: VapeOpening,
   },
 } as const;
 
 const SESSION_KEY = (type: string) => `axiom_cinematic_${type}`;
-const DURATION_MS = 3_200;
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -405,23 +428,17 @@ interface Props {
 }
 
 export function CraftCinematicOpening({ type, onComplete }: Props) {
-  const [visible,  setVisible]  = useState(true);
-  const timerRef                = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [visible, setVisible] = useState(true);
   const cfg = OPENING_CONFIG[type as keyof typeof OPENING_CONFIG] ?? OPENING_CONFIG.smoke;
-  const { Opening } = cfg;
+  const { Opening, lines, cta } = cfg;
 
-  useEffect(() => {
-    timerRef.current = setTimeout(() => {
-      setVisible(false);
-      setTimeout(onComplete, 500);
-    }, DURATION_MS);
-    return () => clearTimeout(timerRef.current);
-  }, [onComplete]);
+  // Each text line appears every LINE_STEP seconds; button appears after all lines
+  const LINE_STEP   = 1.4;
+  const buttonDelay = 0.5 + lines.length * LINE_STEP + 0.8;
 
-  function skip() {
-    clearTimeout(timerRef.current);
+  function handleEnter() {
     setVisible(false);
-    setTimeout(onComplete, 300);
+    setTimeout(onComplete, 500);
   }
 
   return (
@@ -432,22 +449,29 @@ export function CraftCinematicOpening({ type, onComplete }: Props) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.45, ease: "easeOut" }}
-          onClick={skip}
           style={{
-            position:   "fixed",
-            inset:      0,
+            position: "fixed",
+            inset:    0,
             background: cfg.bg,
-            zIndex:     200,
-            cursor:     "pointer",
-            overflow:   "hidden",
+            zIndex:   200,
+            overflow: "hidden",
           }}
         >
           <style>{CINEMATIC_CSS}</style>
 
-          {/* Per-craft animation layer */}
+          {/* Per-craft ambient animation */}
           <Opening />
 
-          {/* Centered text overlay */}
+          {/* Cinematic vignette so text reads cleanly */}
+          <div style={{
+            position:      "absolute",
+            inset:         0,
+            background:    "linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%)",
+            pointerEvents: "none",
+            zIndex:        5,
+          }} />
+
+          {/* Sequential text reveal + CTA button */}
           <div style={{
             position:       "absolute",
             inset:          0,
@@ -455,53 +479,67 @@ export function CraftCinematicOpening({ type, onComplete }: Props) {
             flexDirection:  "column",
             alignItems:     "center",
             justifyContent: "flex-end",
-            paddingBottom:  "22%",
+            paddingBottom:  "16%",
             zIndex:         10,
-            pointerEvents:  "none",
+            gap:            0,
           }}>
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.7, ease: "easeOut" }}
+            {/* Text lines — staggered fade-in */}
+            <div style={{
+              display:       "flex",
+              flexDirection: "column",
+              alignItems:    "center",
+              gap:           16,
+              marginBottom:  36,
+            }}>
+              {lines.map((line, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 + i * LINE_STEP, duration: 0.9, ease: "easeOut" }}
+                  style={{
+                    fontSize:      i === lines.length - 1 ? 10 : 15,
+                    letterSpacing: i === lines.length - 1 ? "0.32em" : "0.10em",
+                    fontStyle:     i === 0 ? "italic" : "normal",
+                    fontWeight:    i === lines.length - 1 ? 700 : 300,
+                    color:         i === lines.length - 1
+                      ? `${cfg.accent}bb`
+                      : "rgba(240,228,208,0.90)",
+                    textAlign:     "center",
+                    maxWidth:      340,
+                    fontFamily:    i === 0
+                      ? "'Cormorant Garamond', Georgia, serif"
+                      : "monospace",
+                  }}
+                >
+                  {line}
+                </motion.div>
+              ))}
+            </div>
+
+            {/* ENTER button — appears after all lines */}
+            <motion.button
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: buttonDelay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleEnter}
               style={{
+                padding:       "18px 56px",
+                background:    `linear-gradient(180deg, ${cfg.accent} 0%, ${cfg.accent}99 100%)`,
+                border:        "none",
+                color:         "#060402",
                 fontSize:      12,
-                letterSpacing: "0.20em",
-                fontStyle:     "italic",
-                color:         `${cfg.accent}cc`,
-                textAlign:     "center",
-                maxWidth:      280,
+                fontWeight:    800,
+                letterSpacing: "0.30em",
+                textTransform: "uppercase",
+                cursor:        "pointer",
+                fontFamily:    "monospace",
+                boxShadow:     `0 0 36px ${cfg.accent}55, 0 4px 24px rgba(0,0,0,0.65)`,
               }}
             >
-              {cfg.tagline}
-            </motion.div>
-          </div>
-
-          {/* Progress bar */}
-          <motion.div
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: DURATION_MS / 1000, ease: "linear" }}
-            style={{
-              position:      "absolute",
-              bottom:        0, left: 0,
-              height:        2,
-              width:         "100%",
-              background:    cfg.accent,
-              transformOrigin: "left center",
-              opacity:       0.6,
-            }}
-          />
-
-          {/* Skip hint */}
-          <div style={{
-            position:      "absolute",
-            bottom:        12, right: 18,
-            fontSize:      8,
-            letterSpacing: "0.30em",
-            textTransform: "uppercase",
-            color:         "rgba(180,165,130,0.28)",
-          }}>
-            Tap to skip
+              {cta}
+            </motion.button>
           </div>
         </motion.div>
       )}

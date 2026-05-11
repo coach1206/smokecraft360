@@ -1015,6 +1015,7 @@ export default function ExperiencePage() {
   const [showChamber,          setShowChamber]          = useState(
     () => ExperienceFlowEngine.currentStep !== "SWIPE_RITUAL"
   );
+  const [showBlackout,         setShowBlackout]         = useState(false);
   const [showAtmosphereOverlay, setShowAtmosphereOverlay] = useState(false);
   const [localAtmosphere,      setLocalAtmosphere]      = useState<string | null>(null);
 
@@ -1338,7 +1339,11 @@ export default function ExperiencePage() {
     {showCinematic && (
       <CraftCinematicOpening
         type={type}
-        onComplete={() => setShowCinematic(false)}
+        onComplete={() => {
+          setShowCinematic(false);
+          setShowBlackout(true);
+          setTimeout(() => setShowBlackout(false), 3000);
+        }}
       />
     )}
 
@@ -1348,6 +1353,26 @@ export default function ExperiencePage() {
       accentColor={theme.accent}
       onDismiss={() => setReturnBanner(false)}
     />
+
+    {/* ── Step 3: Atmospheric Blackout — 3-second pitch-black ritual buffer ── */}
+    <AnimatePresence>
+      {showBlackout && (
+        <motion.div
+          key="blackout"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.9 }}
+          style={{
+            position:  "fixed",
+            inset:     0,
+            background: "#000",
+            zIndex:    190,
+          }}
+        >
+          <EmberHeartbeat color={theme.accent} corner="bottom-left" size={11} dragX={cardDragX} />
+        </motion.div>
+      )}
+    </AnimatePresence>
     <div style={{
       position:   "fixed",
       inset:      0,
@@ -1982,7 +2007,7 @@ export default function ExperiencePage() {
 
     {/* ── Entry chamber — full-screen cinematic intro, dismisses on begin ── */}
     <AnimatePresence>
-      {showChamber && (
+      {showChamber && !showBlackout && !showCinematic && (
         <CraftEntryChamber
           type={type}
           theme={theme}

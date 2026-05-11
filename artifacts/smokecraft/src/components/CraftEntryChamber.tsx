@@ -23,19 +23,15 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Sparkles, Zap, Compass } from "lucide-react";
+import { ArrowLeft, Sparkles, Zap } from "lucide-react";
+import type { CSSProperties } from "react";
 import type { CraftTheme } from "@/lib/craftThemes";
 import { AudioWaveToggle }        from "@/contexts/AudioContext";
 import { useGuestProfile }        from "@/contexts/GuestProfileContext";
 import { SovereignLogoutBadge }   from "@/components/SovereignLogoutBadge";
 import EnrollmentFlow             from "@/components/EnrollmentFlow";
 import MentorReveal               from "@/components/MentorReveal";
-import MasteryPitchScreen         from "@/components/MasteryPitchScreen";
-import MentorSelectionScreen      from "@/components/MentorSelectionScreen";
 import { generateReturnGreeting }  from "@/lib/mentorIntelligence";
-import { ExperienceExplanation }  from "@/components/UniversalExperience/ExperienceExplanation";
-import { LevelSelection }         from "@/components/UniversalExperience/LevelSelection";
-import type { ExperienceLevel }   from "@/components/UniversalExperience/LevelSelection";
 
 // ── Per-craft chamber configuration ──────────────────────────────────────────
 
@@ -341,6 +337,215 @@ function GlassButton({ label, sub, icon, accent, onClick, primary }: GlassButton
   );
 }
 
+// ── Step 4: Initiation Chamber content ───────────────────────────────────────
+
+const INITIATION: Record<string, {
+  headline:  string;
+  levels:    string[];
+  goldenBox: string;
+  rules:     string[];
+}> = {
+  smoke: {
+    headline:  "SmokeCraft is the art of constructing a cigar experience that reflects instinct, pacing, and palate identity.",
+    levels:    ["Curious Guest", "Explorer", "Blender", "Artisan", "Master of Smoke"],
+    goldenBox: "The Golden Box reveals itself only to exceptional blend instinct and rare harmony.",
+    rules:     ["Balance", "Complexity", "Pairing Intelligence", "Flavor Harmony", "Pacing"],
+  },
+  pour: {
+    headline:  "PourCraft is the science of pairing spirits with palate, moment, and memory.",
+    levels:    ["Curious Guest", "Explorer", "Enthusiast", "Mixology Scholar", "Reserve Master"],
+    goldenBox: "The Golden Reserve unlocks only for rare palate intelligence and precision pairing.",
+    rules:     ["Balance", "Complexity", "Regional Knowledge", "Pairing Precision", "Pour Intuition"],
+  },
+  brew: {
+    headline:  "BrewCraft is the ritual of discovering how craft beer expresses time, grain, and intention.",
+    levels:    ["Casual Drinker", "Craft Curious", "Hop Explorer", "Beer Scholar", "Master Taster"],
+    goldenBox: "The Golden Tap flows only when your craft instinct and session harmony align perfectly.",
+    rules:     ["Style Knowledge", "Flavor Balance", "Pairing Logic", "Session Pacing", "Craft Awareness"],
+  },
+  vape: {
+    headline:  "VapeCraft is the art of building atmosphere through flavor, cloud, and sensory intention.",
+    levels:    ["Flavor Curious", "Cloud Explorer", "Atmosphere Builder", "Flavor Architect", "Sensory Master"],
+    goldenBox: "The Neon Vault opens only for guests who demonstrate rare sensory intelligence.",
+    rules:     ["Flavor Harmony", "Cloud Density", "Atmosphere Match", "Layering Logic", "Session Rhythm"],
+  },
+};
+
+// ── Step 5: Challenge Path Selector ──────────────────────────────────────────
+
+const CHALLENGE_PATHS = [
+  {
+    id:    "guided",
+    icon:  "◈",
+    title: "Guided Ritual",
+    desc:  "Your mentor narrates every selection. Ideal for discovery and education.",
+  },
+  {
+    id:    "competitive",
+    icon:  "◉",
+    title: "Competitive Challenge",
+    desc:  "High-stakes scoring. Every swipe is judged. Ranked on the Lounge League.",
+  },
+  {
+    id:    "free",
+    icon:  "◌",
+    title: "Free Blend Experience",
+    desc:  "No guidance. Pure instinct. The rawest expression of your palate.",
+  },
+];
+
+interface ChallengePathSelectorProps {
+  accent:   string;
+  onSelect: (path: string) => void;
+  onBack:   () => void;
+}
+
+function ChallengePathSelector({ accent, onSelect, onBack }: ChallengePathSelectorProps) {
+  const [selected, setSelected] = useState<string | null>(null);
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      style={{
+        position:       "fixed",
+        inset:          0,
+        zIndex:         460,
+        background:     "rgba(4,2,0,0.97)",
+        backdropFilter: "blur(20px)",
+        display:        "flex",
+        flexDirection:  "column",
+        alignItems:     "center",
+        justifyContent: "center",
+        padding:        "40px 24px",
+        overflowY:      "auto",
+      }}
+    >
+      <motion.button
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.15 }}
+        onClick={onBack}
+        style={{
+          position:       "absolute",
+          top: 20, left: 20,
+          background:     "rgba(0,0,0,0.55)",
+          border:         "1px solid rgba(255,255,255,0.22)",
+          borderRadius:   8,
+          padding:        "8px 14px",
+          color:          "rgba(255,255,255,0.72)",
+          fontSize:       11,
+          cursor:         "pointer",
+          letterSpacing:  "0.08em",
+        }}
+      >
+        ← Back
+      </motion.button>
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1 }}
+        style={{ fontSize: 10, letterSpacing: "0.28em", color: accent, textTransform: "uppercase", marginBottom: 10 }}
+      >
+        Step 1 of 2 — Challenge Path
+      </motion.p>
+
+      <motion.h2
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.18 }}
+        style={{
+          fontSize:      "clamp(22px,4vw,32px)",
+          fontWeight:    800,
+          color:         "#F0E8D4",
+          fontFamily:    "'Playfair Display', serif",
+          textAlign:     "center",
+          marginBottom:  8,
+          letterSpacing: "0.04em",
+        }}
+      >
+        Choose Your Path
+      </motion.h2>
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.24 }}
+        style={{ fontSize: 12, color: "rgba(240,232,212,0.40)", textAlign: "center", marginBottom: 36 }}
+      >
+        This shapes how your ritual unfolds tonight.
+      </motion.p>
+
+      <div style={{ width: "100%", maxWidth: 380, display: "flex", flexDirection: "column", gap: 14, marginBottom: 32 }}>
+        {CHALLENGE_PATHS.map((path, i) => {
+          const isSel = selected === path.id;
+          return (
+            <motion.button
+              key={path.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + i * 0.09 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setSelected(path.id)}
+              style={{
+                padding:    "20px 22px",
+                borderRadius: 14,
+                background: isSel ? `${accent}18` : "rgba(255,255,255,0.03)",
+                border:     `1px solid ${isSel ? accent : "rgba(255,255,255,0.08)"}`,
+                cursor:     "pointer",
+                textAlign:  "left",
+                transition: "border-color 0.18s, background 0.18s",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <span style={{ fontSize: 24, color: isSel ? accent : "rgba(255,255,255,0.28)", lineHeight: 1 }}>
+                  {path.icon}
+                </span>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: isSel ? accent : "#F0E8D4", fontFamily: "'Playfair Display', serif", marginBottom: 4 }}>
+                    {path.title}
+                  </div>
+                  <div style={{ fontSize: 11, color: "rgba(240,232,212,0.42)", lineHeight: 1.5 }}>
+                    {path.desc}
+                  </div>
+                </div>
+              </div>
+            </motion.button>
+          );
+        })}
+      </div>
+
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.58 }}
+        whileTap={{ scale: 0.97 }}
+        onClick={() => { if (selected) onSelect(selected); }}
+        style={{
+          width:         "100%",
+          maxWidth:      380,
+          padding:       "16px",
+          borderRadius:  13,
+          background:    selected
+            ? `linear-gradient(135deg, ${accent}, ${accent}99)`
+            : "rgba(255,255,255,0.05)",
+          border:        selected ? "none" : "1px solid rgba(255,255,255,0.08)",
+          color:         selected ? "#060402" : "rgba(240,232,212,0.22)",
+          fontSize:      13,
+          fontWeight:    800,
+          letterSpacing: "0.18em",
+          textTransform: "uppercase",
+          cursor:        selected ? "pointer" : "default",
+          boxShadow:     selected ? `0 6px 28px ${accent}44` : "none",
+          transition:    "all 0.22s ease",
+        }}
+      >
+        Continue
+      </motion.button>
+    </motion.div>
+  );
+}
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
 interface Props {
@@ -369,55 +574,48 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
     return generateReturnGreeting(guestProfile, mentor);
   }, [isReturning, guestProfile, mentor]);
 
-  // Universal Experience Flow: chamber → explanation → level-select → pitch → enrollment → mentor-select → mentor
-  const [scene, setScene] = useState<"chamber" | "explanation" | "level-select" | "pitch" | "enrollment" | "mentor-select" | "mentor">("chamber");
-  // Answers from EnrollmentFlow, held until mentor is selected
-  const [pendingAnswers, setPendingAnswers] = useState<Record<string, string> | null>(null);
-  // Selected experience level (Stage 3), unused by this component but held for future pass-through
-  const [_selectedLevel, _setSelectedLevel] = useState<ExperienceLevel | null>(null);
+  // Ritual flow: chamber (initiation) → challenge (path selection) → enrollment (identity) → mentor (auto-assigned reveal)
+  const [scene, setScene] = useState<"chamber" | "challenge" | "enrollment" | "mentor">("chamber");
 
   function handleBeginClick() {
-    // Only skip enrollment when the stored mentor actually belongs to THIS craft.
-    // If a guest enrolled via SmokeCraft (juan-valez) and then visits BrewCraft,
-    // mentor.craftType !== type → send them through the BrewCraft mentor flow.
     const mentorMatchesCraft = mentor?.craftType === type;
     if (guestProfile && mentor && mentorMatchesCraft) {
-      // Returning user with correct craft mentor — go straight to reveal
       setScene("mentor");
     } else {
-      // New user OR cross-craft session → full flow for this craft
-      setScene("explanation");
+      setScene("challenge");
     }
   }
 
-  function handlePitchContinue() {
+  function handleChallengeSelect(_path: string) {
     setScene("enrollment");
   }
 
-  function handleEnrolled(answers: Record<string, string>) {
-    // Data collected — proceed to mentor selection before submitting
-    setPendingAnswers(answers);
-    setScene("mentor-select");
-  }
-
-  async function handleMentorSelected(mentorId: string) {
+  async function handleEnrolled(answers: Record<string, string>) {
     try {
-      const lastName    = pendingAnswers?.lastName;
-      const lastInitial = pendingAnswers?.lastInitial
-        ?? (lastName ? lastName[0]!.toUpperCase() : "A");
+      const r    = await fetch(`/api/enrollment/mentors?craftType=${type}`);
+      const data = await r.json() as { mentors?: Array<{ id: string }> };
+      const pool = data.mentors ?? [];
+      const boldness = answers.boldnessPreference ?? "medium";
+      let pick: string;
+      if      (boldness === "bold" || boldness === "adventurous") pick = pool[0]?.id ?? "traditionalist";
+      else if (boldness === "mild")                               pick = pool[Math.min(1, pool.length - 1)]?.id ?? "traditionalist";
+      else                                                        pick = pool[Math.min(2, pool.length - 1)]?.id ?? pool[0]?.id ?? "traditionalist";
+
+      const lastName    = answers.lastName;
+      const lastInitial = answers.lastInitial ?? (lastName ? lastName[0]!.toUpperCase() : "A");
       await enroll({
-        firstName:            pendingAnswers?.firstName ?? "",
+        firstName:            answers.firstName ?? "",
         lastInitial,
         lastName,
-        phoneLast4:           pendingAnswers?.phoneLast4 || undefined,
-        email:                pendingAnswers?.email || undefined,
-        gender:               pendingAnswers?.gender || undefined,
-        region:               pendingAnswers?.region || undefined,
-        atmospherePreference: pendingAnswers?.atmospherePreference || undefined,
-        boldnessPreference:   pendingAnswers?.boldnessPreference || undefined,
-        experienceLevel:      pendingAnswers?.experienceLevel || undefined,
+        phoneLast4:           answers.phoneLast4 || undefined,
+        email:                answers.email || undefined,
+        gender:               answers.gender || undefined,
+        region:               answers.region || undefined,
+        atmospherePreference: answers.atmospherePreference || undefined,
+        boldnessPreference:   answers.boldnessPreference || undefined,
+        experienceLevel:      answers.experienceLevel || undefined,
         craftType:            type as "smoke" | "pour" | "brew" | "vape",
-        mentorId,
+        mentorId:             pick,
       });
       setScene("mentor");
     } catch {
@@ -430,7 +628,6 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
   }
 
   function handleMentorBegin() {
-    setScene("chamber");
     onBegin();
   }
 
@@ -504,134 +701,144 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
           )}
         </motion.div>
 
-        {/* ── Central content ── */}
+        {/* ── Initiation Chamber — scrollable 5-section overview ── */}
         <div style={{
-          position:       "absolute",
-          inset:          0,
-          display:        "flex",
-          flexDirection:  "column",
-          alignItems:     "center",
-          justifyContent: "center",
-          padding:        "60px 40px 40px",
-          gap:            0,
+          position:  "absolute",
+          inset:     0,
+          overflowY: "auto",
+          display:   "flex",
+          flexDirection: "column",
+          alignItems:    "center",
+          padding:       "72px 24px 120px",
         }}>
-          {/* Glow ring emblem */}
+          {/* Glow emblem */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.6 }}
+            initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.15, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            style={{ marginBottom: 28, position: "relative" }}
+            transition={{ delay: 0.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            style={{ marginBottom: 20 }}
           >
             <motion.div
-              animate={{
-                boxShadow: [
-                  `0 0 0px ${accent}00`,
-                  `0 0 48px ${accent}55`,
-                  `0 0 0px ${accent}00`,
-                ],
-              }}
+              animate={{ boxShadow: [`0 0 0px ${accent}00`, `0 0 44px ${accent}55`, `0 0 0px ${accent}00`] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
               style={{
-                width:        72, height: 72,
-                borderRadius: "50%",
-                background:   `${accent}10`,
-                border:       `1px solid ${accent}60`,
-                display:      "flex",
-                alignItems:   "center",
-                justifyContent: "center",
+                width: 60, height: 60, borderRadius: "50%",
+                background: `${accent}10`, border: `1px solid ${accent}55`,
+                display: "flex", alignItems: "center", justifyContent: "center",
               }}
             >
-              <Sparkles size={30} color={accent} />
+              <Sparkles size={24} color={accent} />
             </motion.div>
           </motion.div>
 
-          {/* Title */}
+          {/* Craft title */}
           <motion.div
-            initial={{ opacity: 0, y: 18 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ delay: 0.18, duration: 0.6 }}
             style={{
-              fontFamily:    "var(--app-font-serif, Georgia, serif)",
-              fontSize:      "clamp(26px, 5vw, 44px)",
-              fontWeight:    800,
-              color:         "rgba(240,232,212,0.96)",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              textAlign:     "center",
-              lineHeight:    1.05,
-              marginBottom:  10,
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: "clamp(24px,5vw,40px)", fontWeight: 800,
+              color: "rgba(240,232,212,0.96)", letterSpacing: "0.12em",
+              textTransform: "uppercase", textAlign: "center",
+              lineHeight: 1.05, marginBottom: 6,
             }}
           >
             {cfg.title}
           </motion.div>
-
-          {/* Engine label */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.38 }}
-            style={{
-              fontSize:      11,
-              color:         accent,
-              letterSpacing: "0.28em",
-              textTransform: "uppercase",
-              textAlign:     "center",
-              marginBottom:  18,
-              fontWeight:    600,
-            }}
+            transition={{ delay: 0.26 }}
+            style={{ fontSize: 9, color: accent, letterSpacing: "0.30em", textTransform: "uppercase", marginBottom: 28, fontWeight: 600 }}
           >
-            {cfg.engine}
+            The Initiation Chamber
           </motion.div>
 
           {/* Divider */}
           <motion.div
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: 1, opacity: 1 }}
-            transition={{ delay: 0.45, duration: 0.55 }}
-            style={{
-              width:       120,
-              height:      1,
-              background:  `linear-gradient(90deg, transparent, ${accent}80, transparent)`,
-              marginBottom: 18,
-            }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            style={{ width: 100, height: 1, background: `linear-gradient(90deg, transparent, ${accent}80, transparent)`, marginBottom: 36 }}
           />
 
-          {/* Tagline */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            style={{
-              fontSize:      14,
-              color:         "rgba(240,232,212,0.85)",
-              textAlign:     "center",
-              maxWidth:      380,
-              lineHeight:    1.65,
-              letterSpacing: "0.02em",
-              marginBottom:  8,
-            }}
-          >
-            {cfg.tagline}
-          </motion.p>
+          {/* ── 5-section initiation content ── */}
+          {(() => {
+            const info = INITIATION[type] ?? INITIATION.smoke!;
+            const sectionStyle: CSSProperties = {
+              width: "100%", maxWidth: 400,
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.07)",
+              borderRadius: 14, padding: "18px 20px",
+              marginBottom: 14,
+            };
+            const labelStyle: CSSProperties = {
+              fontSize: 9, letterSpacing: "0.28em", color: accent,
+              textTransform: "uppercase", fontWeight: 700, marginBottom: 8,
+            };
+            const bodyStyle: CSSProperties = {
+              fontSize: 12, color: "rgba(240,232,212,0.68)", lineHeight: 1.65,
+            };
+            return (
+              <>
+                {/* WHAT IS IT */}
+                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }} style={sectionStyle}>
+                  <div style={labelStyle}>What is {cfg.title}?</div>
+                  <p style={bodyStyle}>{info.headline}</p>
+                </motion.div>
 
-          {/* Atmosphere tags */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.58 }}
-            style={{
-              fontSize:      10,
-              color:         `${accent}70`,
-              textAlign:     "center",
-              letterSpacing: "0.16em",
-              textTransform: "uppercase",
-              marginBottom:  44,
-            }}
-          >
-            {cfg.atmosphere}
-          </motion.p>
+                {/* THE LEVELS */}
+                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.46 }} style={sectionStyle}>
+                  <div style={labelStyle}>The Levels</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {info.levels.map((lvl, i) => (
+                      <span key={lvl} style={{
+                        fontSize: 10, padding: "5px 12px", borderRadius: 20,
+                        background: i === 0 ? `${accent}20` : "rgba(255,255,255,0.05)",
+                        border: `1px solid ${i === 0 ? accent + "60" : "rgba(255,255,255,0.08)"}`,
+                        color: i === 0 ? accent : "rgba(240,232,212,0.55)",
+                        letterSpacing: "0.06em",
+                      }}>
+                        {lvl}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
 
-          {/* Buttons — gated by 3-second intro lock (ritual pacing) */}
+                {/* THE GOLDEN BOX */}
+                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.54 }} style={{ ...sectionStyle, borderColor: `${accent}30` }}>
+                  <div style={labelStyle}>The Golden Box</div>
+                  <p style={{ ...bodyStyle, color: `${accent}cc`, fontStyle: "italic" }}>{info.goldenBox}</p>
+                </motion.div>
+
+                {/* THE RULES */}
+                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.62 }} style={sectionStyle}>
+                  <div style={labelStyle}>Scoring Pillars</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {info.rules.map((rule, i) => (
+                      <div key={rule} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{ fontSize: 9, color: accent, fontWeight: 700, minWidth: 14 }}>{i + 1}.</span>
+                        <span style={{ fontSize: 12, color: "rgba(240,232,212,0.62)" }}>{rule}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* THE MENTORS */}
+                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.70 }} style={sectionStyle}>
+                  <div style={labelStyle}>Your Mentor</div>
+                  <p style={bodyStyle}>
+                    Every guest is guided by a mentor philosophy. Your mentor will be{" "}
+                    <span style={{ color: accent, fontWeight: 600 }}>assigned</span> based on
+                    your palate preferences — not selected.
+                  </p>
+                </motion.div>
+              </>
+            );
+          })()}
+
+          {/* BEGIN THE RITUAL — gated by intro lock */}
           <AnimatePresence>
             {introReady ? (
               <motion.div
@@ -640,17 +847,11 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                style={{
-                  display:       "flex",
-                  flexDirection: "column",
-                  gap:           10,
-                  width:         "100%",
-                  maxWidth:      340,
-                }}
+                style={{ width: "100%", maxWidth: 400, display: "flex", flexDirection: "column", gap: 10, marginTop: 8 }}
               >
                 <GlassButton
-                  label={guestProfile ? "Continue Session" : "Enter the Lounge"}
-                  sub={guestProfile ? `Welcome back, ${guestProfile.firstName}` : "Guided preference discovery"}
+                  label={guestProfile ? `Continue, ${guestProfile.firstName}` : "Begin the Ritual"}
+                  sub={guestProfile ? "Welcome back — your mentor awaits" : "Choose your path and meet your mentor"}
                   icon={<Sparkles size={18} />}
                   accent={accent}
                   onClick={handleBeginClick}
@@ -658,38 +859,26 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
                 />
                 <GlassButton
                   label="Quick Match"
-                  sub="Skip to top recommendations"
+                  sub="Skip straight to recommendations"
                   icon={<Zap size={16} />}
-                  accent={accent}
-                  onClick={onBegin}
-                />
-                <GlassButton
-                  label="Explore Lounge"
-                  sub="Browse the full experience"
-                  icon={<Compass size={16} />}
                   accent={accent}
                   onClick={onBegin}
                 />
               </motion.div>
             ) : (
-              /* Holding ring — shows while atmosphere loads */
               <motion.div
                 key="loading"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, marginTop: 24 }}
               >
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 2.4, repeat: Infinity, ease: "linear" }}
-                  style={{
-                    width: 36, height: 36, borderRadius: "50%",
-                    border: `1.5px solid ${accent}40`,
-                    borderTopColor: accent,
-                  }}
+                  style={{ width: 32, height: 32, borderRadius: "50%", border: `1.5px solid ${accent}40`, borderTopColor: accent }}
                 />
-                <span style={{ fontSize: 8, color: `${accent}60`, letterSpacing: "0.22em", fontFamily: "'JetBrains Mono','Courier New',monospace" }}>
+                <span style={{ fontSize: 8, color: `${accent}55`, letterSpacing: "0.22em", fontFamily: "monospace" }}>
                   ATMOSPHERE LOADING…
                 </span>
               </motion.div>
@@ -733,45 +922,18 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
         </motion.div>
       </motion.div>
 
-      {/* ── Stage 2: Experience Explanation overlay ── */}
+      {/* ── Step 5: Challenge Path Selection ── */}
       <AnimatePresence>
-        {scene === "explanation" && (
-          <ExperienceExplanation
-            craftType={type as "smoke" | "pour" | "brew" | "vape"}
+        {scene === "challenge" && (
+          <ChallengePathSelector
             accent={accent}
-            onContinue={() => setScene("level-select")}
+            onSelect={handleChallengeSelect}
             onBack={() => setScene("chamber")}
           />
         )}
       </AnimatePresence>
 
-      {/* ── Stage 3: Level Selection overlay ── */}
-      <AnimatePresence>
-        {scene === "level-select" && (
-          <LevelSelection
-            craftType={type as "smoke" | "pour" | "brew" | "vape"}
-            accent={accent}
-            onSelect={(level) => {
-              _setSelectedLevel(level);
-              setScene("pitch");
-            }}
-            onBack={() => setScene("explanation")}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* ── Mastery pitch overlay ── */}
-      <AnimatePresence>
-        {scene === "pitch" && (
-          <MasteryPitchScreen
-            craftType={type}
-            onContinue={handlePitchContinue}
-            onSkip={handleSkipEnrollment}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* ── Enrollment overlay ── */}
+      {/* ── Step 7: Identity Enrollment ── */}
       <AnimatePresence>
         {scene === "enrollment" && (
           <EnrollmentFlow
@@ -782,17 +944,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
         )}
       </AnimatePresence>
 
-      {/* ── Mentor selection overlay ── */}
-      <AnimatePresence>
-        {scene === "mentor-select" && (
-          <MentorSelectionScreen
-            craftType={type}
-            onSelect={handleMentorSelected}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* ── Mentor reveal overlay ── */}
+      {/* ── Step 6: Mentor Reveal (system-assigned, not selectable) ── */}
       <AnimatePresence>
         {scene === "mentor" && mentor && (
           <MentorReveal
