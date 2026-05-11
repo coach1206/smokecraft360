@@ -1,0 +1,667 @@
+FINAL BUILD CORRECTION PROMPT
+
+MISSING / REQUIRED
+
+1. The current EEIE Command Center does not visually match the desired reference.
+Impact: It looks too generic and does not resemble the futuristic Apple/Tesla-inspired command interface we are aiming for.
+
+2. The interface is too dark in previous versions.
+Impact: I do not want a black cyber dashboard. I want a future-luxury command system with metallic blue, silver, white, titanium grey, frosted glass, and premium illuminated cards.
+
+3. The current design does not feel like a Sovereign-grade EEIE interface.
+Impact: EEIE must look like an advanced Experience Enhancement Intelligence Engine, not a basic POS, admin panel, or Clover-style payment screen.
+
+4. The visual system needs to resemble the uploaded/reference concept more closely.
+Impact: The layout, colors, card style, buttons, sidebar, top rail, and command modules must feel closer to the clean futuristic white/metallic command center reference, not the dark version.
+
+5. All EEIE interfaces need color and layout adjustment.
+Impact: Command Center, Staff Cockpit, Guest Experience, Venue Intelligence, Commerce Health, Sensory Engine, AI Predictions, Event Bus, Security, Infrastructure, and Founder Control must all share the same premium visual language.
+
+6. The Staff Cockpit still needs to be functional for wait staff.
+Impact: Even with the future luxury look, the interface still needs large touchscreen controls, guest handoff, cigar matching, liquor pairing, inventory awareness, and Send to POS functionality.
+
+7. The system must remain more than a POS.
+Impact: EEIE is an Experience Enhancement Intelligence Engine. The POS is only one layer inside the full hospitality intelligence system.
+
+FAILURE PREVENTION CHECKLIST
+
+Do not make the interface black or overly dark.
+Do not use brown.
+Do not use cigar lounge colors as the main UI.
+Do not make the system look like Clover, Toast, Square, or a regular POS.
+Do not make it look like a crypto dashboard.
+Do not make it look like a gaming UI.
+Do not use flat plain white with no depth.
+Do not use weak grey text that cannot be read.
+Do not use small buttons.
+Do not hide staff controls behind tiny tabs.
+Do not remove Founder Control.
+Do not remove the back button.
+Do not break existing auth.
+Do not hardcode credentials.
+Do not create dead buttons.
+Do not create visual-only modules with no state or function.
+Do not let SmokeCraft language leak into PourCraft, BrewCraft, or VapeCraft.
+Do not rebuild unrelated systems.
+Use professional icons only, preferably lucide-react if already installed.
+Use realistic product imagery where available.
+Keep everything touchscreen friendly.
+
+MASTER PROMPT
+
+Redesign the current EEIE Command Center into a futuristic luxury Apple-meets-Tesla command interface.
+
+This must not be a dark cyber dashboard.
+
+This must not be a standard POS screen.
+
+This must feel like:
+
+Apple Vision Pro interface design
+Tesla vehicle control system
+premium aerospace command software
+high-end hospitality intelligence platform
+frosted glass enterprise operating system
+future luxury touchscreen control center
+
+EEIE means Experience Enhancement Intelligence Engine.
+
+The system is not just a POS.
+
+The POS is only one embedded commerce layer inside a larger venue intelligence, guest experience, staff assistance, sensory data, inventory, device, and AI orchestration platform.
+
+VISUAL DIRECTION
+
+Use this new color system:
+
+Primary background:
+soft pearl white
+ice white
+cool silver
+titanium grey
+very light blue-grey
+
+Panel surfaces:
+frosted glass white
+semi-transparent ice cards
+metallic silver cards
+soft gradient tiles
+subtle chrome edges
+
+Accent colors:
+metallic electric blue
+Tesla blue
+cyan glow
+silver-blue
+deep navy text
+signal green for healthy systems
+controlled red only for danger
+soft purple only for AI intelligence accents
+
+Do not use:
+brown
+bronze
+muddy gold
+heavy black backgrounds
+cream/yellow backgrounds
+dark cigar lounge colors
+basic SaaS blue with no premium depth
+
+The final look should feel like:
+
+white Tesla cockpit
+Apple hardware dashboard
+futuristic command center
+clean luxury operating system
+premium touchscreen intelligence panel
+
+TYPOGRAPHY
+
+Use clean modern sans-serif typography.
+
+Use:
+Inter
+SF Pro style
+Space Grotesk only for small system labels if needed
+
+Text rules:
+deep navy for main text
+cool grey for secondary text
+blue labels for active states
+wide letter spacing for command labels
+large readable type for staff actions
+
+The interface must be readable on a touchscreen from a standing distance.
+
+TOUCHSCREEN RULES
+
+All primary buttons must be at least 56px tall.
+Critical action buttons must be 72px tall.
+Cards must have generous spacing.
+Sidebar items must be large enough for finger taps.
+Do not use tiny tabs.
+Do not use cramped controls.
+Use rounded premium buttons with glass depth.
+Use clear hover, active, pressed, and disabled states.
+
+REQUIRED PAGE STRUCTURE
+
+1. TOP COMMAND RAIL
+
+Create a futuristic white/silver top rail.
+
+It must include:
+
+EEIE Command Center
+Experience Enhancement Intelligence Engine subtitle
+Live badge
+Titan V Engine: Operational
+System Status: All Systems Operational
+AI Engine: Active
+Kiosk Lock status
+current time
+current user
+Invite
+Republish if existing
+More menu
+Back button
+
+The top rail should resemble a Tesla/Apple system control bar.
+
+It should feel like a live machine, not a website header.
+
+Add a thin animated blue waveform running across the top rail.
+
+2. LEFT SIDEBAR
+
+Create a persistent left sidebar using a frosted silver/blue glass look.
+
+Sidebar must include:
+
+EEIE Command Center badge
+Command Center
+Live Network
+Sensory Engine
+Commerce Health
+AI Predictions
+Event Bus
+
+System section:
+System Integrity
+Security
+Infrastructure
+
+Operational section:
+Staff Cockpit
+Guest Experience
+Inventory & Supply
+Device Ecosystem
+Founder Control
+
+Active item style:
+metallic blue gradient
+white text
+soft blue glow
+rounded rectangular button
+right-facing arrow indicator
+
+Bottom sidebar:
+Sovereign Active status card
+Night Mode toggle button, but do not default to night mode
+
+3. MAIN COMMAND CENTER VIEW
+
+Create the main interface with white/silver luxury tiles.
+
+Top KPI strip must include:
+
+Total Transactions
+Gross Volume
+Average Ticket
+Events / Min
+Sync Status
+Live Health
+
+Each KPI card must have:
+large number
+small trend arrow
+mini blue sparkline
+soft shadow
+chrome border
+rounded white glass tile
+
+4. COMMAND MODULE TABS
+
+Create a tab row with:
+
+Command Center
+Live Network
+Sensory Engine
+Commerce Health
+AI Predictions
+Event Bus
+
+Tabs must look like polished white segmented controls with blue active underline.
+
+5. INTELLIGENCE TILE GRID
+
+Create premium white/blue cards for:
+
+Cluster Nodes
+Active Venues
+Predictions
+Advisories
+Commerce Online
+Sensory Layers
+
+Each card must include:
+large metric
+small system label
+blue holographic icon or diagram
+soft frosted background
+metallic border
+subtle animated glow
+
+Use language like:
+
+Cluster Nodes
+Active Venues
+Predictions
+Advisories
+Commerce Online
+Sensory Layers
+
+Avoid basic POS wording.
+
+6. ENVIRONMENTAL PULSE PANEL
+
+Create a wide Environmental Pulse panel.
+
+It must show:
+animated blue waveform
+pulse rate
+amplitude
+signal status
+venue state
+Titan V status
+
+This should look like a Tesla energy graph mixed with Apple Health data visualization.
+
+7. INTELLIGENCE MATRIX PANEL
+
+Create an Intelligence Matrix card.
+
+It must show:
+world map or dotted grid
+center AI radar point
+EEIE Real Intelligence score
+progress bar
+AI interpretation summary
+
+Use light frosted glass with blue highlights.
+
+8. RECENT ADVISORIES PANEL
+
+Create Recent Advisories panel.
+
+It must show:
+system status
+risk advisories
+inventory advisories
+guest experience advisories
+staff assistance advisories
+
+If no issues:
+“No advisories. System is nominal.”
+
+Use clean white cards with small status icons.
+
+9. STAFF COCKPIT VIEW
+
+Add a Staff Cockpit interface using the same white/silver/blue visual system.
+
+This is critical.
+
+Staff Cockpit must include:
+
+Active Tables
+Table number
+Guest name
+Session status
+Time active
+Needs attention indicator
+Review pairing indicator
+Completed indicator
+
+Selected guest session must show:
+
+Guest name
+Guest initials
+Returning guest badge
+Loyalty level
+XP score
+previous favorite cigar
+previous favorite liquor
+flavor preference chips
+strength preference
+current SmokeCraft blend profile
+AI match score
+confidence score
+
+Make all staff controls touchscreen friendly.
+
+10. SMOKECRAFT BLEND INTELLIGENCE
+
+Inside Staff Cockpit, include a blend intelligence panel.
+
+Show radar profile for:
+
+Creamy
+Sweet
+Nutty
+Earthy
+Spicy
+Woody
+Pepper
+Citrus
+
+Show:
+
+Wrapper selected
+Binder selected
+Filler selected
+Size selected
+Cut selected
+Strength preference
+Flavor profile completed
+
+Use blue/purple data visualization on a white glass card.
+
+11. AI CIGAR MATCH
+
+Create an AI Cigar Match card.
+
+It must show:
+
+cigar image
+cigar name
+country
+size
+wrapper
+price
+inventory status
+match reason
+Add to Cart button
+
+Logic requirement:
+
+If the guest profile is creamy, sweet, nutty, medium-full, recommend a matching cigar from inventory.
+If the exact cigar is unavailable, show closest substitute.
+If inventory is low, show low-stock warning.
+
+Card style:
+white glass card
+metallic blue button
+soft shadow
+premium product tile
+
+12. LIQUOR PAIRING INTELLIGENCE
+
+Create Best Liquor Pairing card.
+
+It must show:
+
+bottle image
+liquor name
+category
+pour size
+price
+availability
+flavor bridge
+pairing explanation
+Add Pairing button
+
+Example language:
+
+“Woodford Reserve Double Oaked supports creamy, toasted, vanilla, and nutty notes while lifting the cigar’s rich finish.”
+
+13. STAFF NUDGE SYSTEM
+
+Create a Staff Nudge card.
+
+It must show:
+
+Suggested Script
+Opportunity
+Upgrade suggestion
+Risk warning
+Guest mood indicator
+Best next action
+
+Example:
+
+“Say: This pairing brings out the cream, oak, and cocoa notes in your cigar. Would you like to add a 2 oz pour?”
+
+Include buttons:
+
+Apply Reward
+Add Note
+Send to POS
+Return to Guest
+
+These buttons must be large, glossy, and touchscreen ready.
+
+14. GUEST EXPERIENCE PREVIEW
+
+Add a guest preview panel.
+
+This must show what the guest sees.
+
+Use a lighter luxury interface, not a dark preview.
+
+It should include:
+
+SmokeCraft by Sovereign
+step progress bar
+current step
+flavor radar
+guest profile
+AI match score
+next button
+experience paused status when staff is assisting
+
+The staff cockpit must be able to pause and resume the guest experience without losing progress.
+
+15. BOTTOM FOUNDER CONTROL CENTER
+
+Founder Control must stay powerful and visible.
+
+Use a premium white/silver control section with danger-aware cards.
+
+Include:
+
+System Override
+Kill Switch
+Maintenance Mode
+Global Announcement
+System Power
+
+Design style:
+white metallic control cards
+blue chrome edges
+red only for Kill Switch
+green only for System Power
+large icons
+large tap targets
+serious premium control styling
+
+Founder Control must require existing auth/session validation.
+Do not hardcode credentials.
+
+16. SYSTEM INTEGRITY FOOTER
+
+Add a slim footer rail showing:
+
+System Integrity 100%
+Security: Secure
+Compliance: Compliant
+Backup: Live
+Uptime: 99.99%
+EEIE Command Center version number
+
+Use white/silver footer styling with thin blue progress line.
+
+FUNCTIONAL WIRING REQUIRED
+
+Wire the page with real functional UI behavior using local state if backend endpoints are not available yet.
+
+Required functions:
+
+selectTable(tableId)
+pauseGuestExperience(tableId)
+returnToGuest(tableId)
+addCigarToCart(item)
+addLiquorPairing(item)
+applyReward(tableId)
+addStaffNote(tableId, note)
+sendToPOS(tableId, cart)
+markEvent(type, payload)
+updateInventoryWarning(itemId)
+toggleFounderPanel()
+triggerMaintenanceMode()
+triggerGlobalAnnouncement()
+triggerSystemPowerConfirm()
+switchCommandTab(tabName)
+switchSidebarView(viewName)
+toggleNightMode()
+openAdvisory(advisoryId)
+openInventoryItem(itemId)
+openDeviceStatus(deviceId)
+
+If real API routes exist, use them.
+
+If routes do not exist, create safe frontend service wrappers prepared for:
+
+/api/eeie/tables
+/api/eeie/sessions/:id
+/api/eeie/recommendations/cigar
+/api/eeie/recommendations/liquor
+/api/eeie/cart/send-to-pos
+/api/eeie/events
+/api/eeie/inventory
+/api/eeie/system-health
+/api/eeie/founder-control
+/api/eeie/commerce-health
+/api/eeie/sensory-engine
+/api/eeie/advisories
+
+Do not leave buttons dead.
+
+ANIMATION REQUIREMENTS
+
+Use refined Apple/Tesla-style motion.
+
+Add:
+
+soft blue glow on active nav
+animated waveform in top rail
+sparkline movement on KPI cards
+subtle hover lift on cards
+button press feedback
+thin blue scanning line on command cards
+soft pulse on Live badge
+health ring animation
+guest session pause glow
+Founder Control confirmation animation
+
+Do not use heavy cyberpunk animation.
+Do not use game-like neon overload.
+Keep motion premium, restrained, and expensive.
+
+CONTENT LANGUAGE REQUIREMENTS
+
+Use this language:
+
+EEIE Command Center
+Experience Enhancement Intelligence Engine
+Sovereign Command Layer
+Titan V Engine
+Live Network
+Sensory Engine
+Commerce Health
+AI Predictions
+Event Bus
+System Integrity
+Staff Cockpit
+Guest Experience Preview
+Inventory & Supply
+Device Ecosystem
+Founder Control
+Environmental Pulse
+Intelligence Matrix
+Recent Advisories
+Commerce Infrastructure
+Live Commerce Stream
+Venue Intelligence
+
+Avoid overusing:
+
+POS
+cash register
+checkout
+basic dashboard
+sales dashboard
+
+POS should appear only as:
+
+Send to POS
+POS Adapter
+Commerce Infrastructure
+Commerce Health
+
+FINAL DELIVERABLE
+
+Replace the current interface with a futuristic luxury Apple/Tesla-style EEIE Command Center.
+
+The final design must resemble the provided light futuristic command center reference.
+
+It must use:
+
+metallic blue
+silver
+white
+titanium grey
+frosted glass
+premium cards
+large touchscreen buttons
+clean luxury spacing
+live telemetry
+functional staff workflow
+Founder Control
+guest handoff
+cigar match
+liquor pairing
+inventory intelligence
+commerce infrastructure
+system health
+event bus
+AI predictions
+
+Keep existing routes working.
+Keep the back button.
+Keep auth working.
+Keep Founder Control protected.
+Keep all buttons functional.
+Make it responsive for tablet and desktop.
+Make it feel premium, futuristic, clean, and operational.
+
+The goal:
+
+Not dark.
+Not brown.
+Not basic.
+Not Clover.
+Not Toast.
+Not Square.
+
+Make it feel like Apple built a Tesla-style command system for intelligent hospitality venues.

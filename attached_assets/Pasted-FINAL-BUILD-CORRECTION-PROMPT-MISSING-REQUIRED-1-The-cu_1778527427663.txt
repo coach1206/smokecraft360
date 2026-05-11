@@ -1,0 +1,425 @@
+FINAL BUILD CORRECTION PROMPT
+
+MISSING / REQUIRED
+
+1. The current screen is not a command center.
+Impact: It feels like a generic light admin dashboard, not an advanced EEIE operational intelligence cockpit.
+
+2. Restore dark-room visibility.
+Impact: Venue staff will use this in dim lounges, bars, cigar rooms, restaurants, and event spaces. White backgrounds are too bright and destroy the premium command feel.
+
+3. Restore EEIE identity as an Experience Enhancement Intelligence Engine, not a POS dashboard.
+Impact: The interface must show venue intelligence, staff assistance, guest experience continuity, sensory data, device ecosystem, live commerce, inventory, AI pairing, and system orchestration.
+
+4. Build the Staff Cockpit as the main operational view.
+Impact: Wait staff need to use this touchscreen while standing, moving, and assisting guests. Every button must be large, readable, and functional.
+
+5. Add the guest handoff flow.
+Impact: Staff must be able to pause the guest experience, enter operator mode, view the guest’s blend profile, recommend a cigar and liquor pairing, send to POS, then return the guest to the experience.
+
+6. Add command-center visuals.
+Impact: The current page has cards and tabs. It needs live telemetry, glowing status rails, event streams, active table panels, system health rings, prediction panels, device status, inventory warnings, and a founder control layer.
+
+7. Remove the light cream/white interface.
+Impact: The system must not look like Clover, Toast, Square, a medical admin panel, or a standard SaaS tool.
+
+FAILURE PREVENTION CHECKLIST
+
+Do not use brown.
+Do not use cream as the main background.
+Do not use white dashboards except tiny highlight cards if absolutely needed.
+Do not make this look like a typical POS.
+Do not make the main screen executive-only.
+Do not hide staff actions behind small tabs.
+Do not use small buttons.
+Do not use thin low-contrast text.
+Do not let SmokeCraft language leak into PourCraft, BrewCraft, or VapeCraft.
+Do not remove Founder Control.
+Do not remove back buttons.
+Do not create dead buttons.
+Do not create visual-only cards without connected logic.
+Do not rebuild unrelated systems.
+Do not break existing auth.
+Do not hardcode credentials.
+Do not use emojis or clipart.
+Use professional icons only if already available through lucide-react.
+
+MASTER PROMPT
+
+Redesign the current EEIE Command Center into a true dark touchscreen command cockpit for NOVEE OS / Sovereign / EEIE.
+
+This is not a POS dashboard. EEIE means Experience Enhancement Intelligence Engine. The POS is only one embedded commerce layer inside a larger venue intelligence system.
+
+The new page must feel like:
+
+Tesla operations cockpit
+Apple-level hardware UI
+Palantir-style operational intelligence
+Formula 1 telemetry
+SpaceX mission control
+high-end hospitality command software
+
+The main visual direction:
+
+Background:
+deep obsidian black
+dark navy-black
+graphite panels
+soft glass depth
+no brown
+no cream page background
+no bright admin dashboard look
+
+Accent colors:
+electric blue
+cyan
+neural purple
+signal green
+controlled red for danger only
+small titanium/silver highlights
+
+Typography:
+clean sans-serif
+wide spacing for headings
+large readable staff text
+high contrast
+touchscreen friendly
+
+Touchscreen rules:
+all primary buttons minimum 56px height
+critical buttons 72px height
+large tap zones
+clear spacing
+no tiny tab controls
+no cramped UI
+designed for a waiter using a tablet in a dark lounge
+
+Required page layout:
+
+1. Top Command Rail
+
+Create a dark top bar with:
+
+EEIE Command Center
+Sovereign Active status
+Venue online count
+Active guest sessions
+Event flow per minute
+System health percentage
+AI engine active
+Kiosk lock status
+Current user
+Sign out
+Emergency founder access indicator
+
+The top rail must look like a live machine status bar, not a website header.
+
+2. Left Navigation Rail
+
+Keep a persistent left sidebar with:
+
+Command Center
+Staff Cockpit
+Guest Experience
+Venue Intelligence
+Commerce Intelligence
+Inventory & Supply
+Device Ecosystem
+AI Predictions
+Event Bus
+Security & Access
+Founder Control
+
+The active item must glow with electric blue. Use dark cards and clear icons. No pale backgrounds.
+
+3. Main Staff Cockpit
+
+Make Staff Cockpit the main visible center panel.
+
+It must include:
+
+Active Tables panel
+Table number
+Guest name
+Session status
+Time active
+Needs attention indicator
+Review pairing indicator
+Completed indicator
+
+The selected table must open a Guest Session Intelligence panel showing:
+
+guest initials
+guest name
+returning guest badge
+loyalty level
+XP score
+previous favorite cigar
+previous favorite liquor
+flavor preference chips
+strength preference
+current SmokeCraft blend profile
+AI match score
+confidence score
+
+4. SmokeCraft Blend Intelligence
+
+Add a central radar/spider chart style profile with:
+
+Creamy
+Sweet
+Nutty
+Earthy
+Spicy
+Woody
+Pepper
+Citrus
+
+Show strength preference:
+Mild
+Medium
+Medium-Full
+Full
+
+Show the blend state:
+wrapper selected
+binder selected
+filler selected
+size selected
+cut selected
+flavor profile completed
+
+5. AI Cigar Match
+
+Create a large dark glass recommendation card:
+
+AI Cigar Match
+cigar image placeholder using realistic cigar image if available, otherwise use a dark product tile
+cigar name
+country
+size
+wrapper
+price
+inventory status
+match reason
+Add to Cart button
+
+Example logic:
+If guest profile is creamy, sweet, nutty, medium-full, recommend a cigar with matching tags from inventory.
+If exact cigar is unavailable, show closest substitute.
+If inventory is low, show low-stock warning.
+
+6. Liquor Pairing Intelligence
+
+Create a second recommendation card:
+
+Best Liquor Pairing
+bottle image placeholder
+liquor name
+category
+pour size
+price
+availability
+flavor bridge
+pairing explanation
+Add Pairing button
+
+Example:
+“Woodford Reserve Double Oaked supports creamy, toasted, vanilla, and nutty notes while lifting the cigar’s rich finish.”
+
+7. Staff Nudge System
+
+Add a staff guidance panel:
+
+Staff Nudge
+Suggested Script
+Opportunity
+Upgrade suggestion
+Risk warning
+Guest mood indicator
+Best next action
+
+Example:
+“Say: This pairing brings out the cream, oak, and cocoa notes in your cigar. Would you like to add a 2 oz pour?”
+
+Include:
+Apply Reward
+Add Note
+Send to POS
+Return to Guest
+
+8. Guest Experience Preview
+
+On the right side, show what the guest sees.
+
+This must look like a phone/tablet preview in dark mode.
+
+It should show:
+
+SmokeCraft by Sovereign
+step progress bar
+current step
+flavor radar
+guest profile
+AI match score
+next button
+experience paused status when staff is assisting
+
+Important:
+The staff cockpit must be able to pause and resume the guest experience without losing progress.
+
+9. Bottom Intelligence Row
+
+Add large dark cards for:
+
+Venue Overview
+small glowing map/network graphic
+active locations
+venue state
+
+Inventory Alerts
+low cigar stock
+low liquor stock
+substitute available
+restock needed
+
+Sales Today
+live commerce stream
+revenue
+transaction count
+average ticket
+
+Event Stream
+payment authorized
+inventory sync
+new guest session
+device online/offline
+pairing accepted
+
+System Status
+network
+devices
+cloud
+database
+POS adapter
+
+10. Founder Control Center
+
+At the bottom or as a separate locked command section, keep Founder Control powerful and visible.
+
+Include large danger-aware buttons:
+
+System Override
+Kill Switch
+Maintenance Mode
+Global Announcement
+System Power
+
+These buttons must look serious and premium, not playful.
+
+Founder Control must require existing auth/session validation. Do not hardcode credentials.
+
+11. Functional Wiring Required
+
+Wire the page with local state and real functional UI behavior if backend endpoints are not available yet.
+
+Required functions:
+
+selectTable(tableId)
+pauseGuestExperience(tableId)
+returnToGuest(tableId)
+addCigarToCart(item)
+addLiquorPairing(item)
+applyReward(tableId)
+addStaffNote(tableId, note)
+sendToPOS(tableId, cart)
+markEvent(type, payload)
+updateInventoryWarning(itemId)
+toggleFounderPanel()
+triggerMaintenanceMode()
+triggerGlobalAnnouncement()
+triggerSystemPowerConfirm()
+
+If real API routes exist, use them.
+If they do not exist, create safe frontend service wrappers that can later connect to:
+
+/api/eeie/tables
+/api/eeie/sessions/:id
+/api/eeie/recommendations/cigar
+/api/eeie/recommendations/liquor
+/api/eeie/cart/send-to-pos
+/api/eeie/events
+/api/eeie/inventory
+/api/eeie/system-health
+/api/eeie/founder-control
+
+Do not leave buttons dead.
+
+12. Visual Quality Requirement
+
+The final interface must visually match this direction:
+
+dark command cockpit
+electric blue and purple accents
+glowing active states
+large touchscreen controls
+live event movement
+clear staff workflow
+premium operational intelligence
+dark-room readable
+not a normal POS
+not a normal admin dashboard
+not a white SaaS page
+
+Use CSS animations:
+
+soft pulse on live statuses
+subtle glow on active selected table
+animated telemetry line
+event stream slide-in
+system health ring pulse
+button press feedback
+guest preview pause glow
+founder control red warning pulse
+
+13. Content Accuracy
+
+Use the correct system language:
+
+Say:
+Commerce Intelligence
+Live Commerce Stream
+Venue Intelligence
+Device Ecosystem
+Node Integrity
+Event Bus
+AI Prediction Engine
+Staff Cockpit
+Guest Experience Preview
+Founder Control Center
+Inventory & Supply
+Experience Enhancement Intelligence Engine
+
+Do not overuse:
+POS
+sales dashboard
+checkout
+cash register
+basic analytics
+
+POS should appear only as:
+Send to POS
+POS Adapter
+Commerce Infrastructure
+
+14. Final Deliverable
+
+Replace the current light EEIE screen with the full dark touchscreen command cockpit.
+
+Keep existing routes working.
+Keep the back button.
+Keep auth working.
+Keep Founder Control protected.
+Make the page responsive for tablet and desktop.
+Make it usable in dark venues.
+Make it look like a category-defining hospitality intelligence system.

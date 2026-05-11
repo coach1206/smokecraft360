@@ -1,68 +1,92 @@
 /**
- * EEIE Command Center — Sovereign Intelligence Dashboard
- * Adaptive dark/light theme: deep navy + cyan (night) ↔ blue-white (day)
- * Touch-first: 48px+ targets, large sliders, fader controls.
+ * EEIE Command Center — Experience Enhancement Intelligence Engine
+ * Premium luxury white/silver/blue command interface (Apple Vision Pro × Tesla).
+ * Day default: ice white + metallic blue. Night toggle: deep navy + cyan.
+ * Touch-first: 56px+ buttons, drag faders, large tap targets.
  */
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useLocation } from "wouter";
 import { orderBroadcast, type ArchiveBlendOrder } from "@/lib/orderBroadcast";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Activity, Zap, Radio, Package, Brain, Network, RefreshCw,
-  XCircle, Cpu, Shield, BarChart3, Globe, AlertTriangle,
-  Monitor, Sun, Moon, ChevronRight, Server,
-  PowerOff, Megaphone, Wrench, Siren, Gauge,
+  XCircle, Cpu, Moon, Sun, ChevronLeft, ChevronRight, Shield,
+  AlertTriangle, Monitor, Globe, PowerOff, Megaphone, Wrench,
+  Siren, Gauge, Server, Users, ShoppingCart, Star, Coffee,
+  Leaf, Info, Plus, Send, ClipboardList, BookOpen, Layers,
 } from "lucide-react";
 
-// ── Adaptive theme ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// THEME SYSTEM
+// ─────────────────────────────────────────────────────────────────────────────
+
 function buildTheme(dark: boolean) {
-  return dark ? {
-    bg:        "#070B14",
-    bg2:       "#0C1322",
-    sidebar:   "#080E1A",
-    card:      "rgba(13,25,50,0.80)",
-    cardSolid: "#0D1932",
-    border:    "rgba(0,180,255,0.12)",
-    borderHi:  "rgba(0,212,255,0.40)",
-    accent:    "#00D4FF",       // cyan
-    accent2:   "#0066FF",       // blue
-    accentDim: "rgba(0,212,255,0.55)",
-    green:     "#00E87A",
-    red:       "#FF4461",
-    yellow:    "#FFD060",
-    text:      "#D8EEFF",
-    textSub:   "rgba(160,210,240,0.60)",
-    textFaint: "rgba(90,150,200,0.38)",
-    mono:      "'Space Mono','Fira Code',monospace",
-    sans:      "system-ui,-apple-system,sans-serif",
-    glow:      (c: string) => `0 0 14px ${c}55`,
-  } : {
-    bg:        "#EFF4FB",
-    bg2:       "#E4EDF8",
-    sidebar:   "#0D1932",
-    card:      "rgba(255,255,255,0.92)",
-    cardSolid: "#FFFFFF",
-    border:    "rgba(0,80,200,0.10)",
-    borderHi:  "rgba(0,100,220,0.35)",
-    accent:    "#0056CC",
-    accent2:   "#004AAA",
-    accentDim: "rgba(0,86,204,0.60)",
-    green:     "#008C4A",
-    red:       "#CC1F3A",
-    yellow:    "#C07800",
+  if (dark) {
+    return {
+      dark: true,
+      bg:        "#070B14",
+      bg2:       "#0C1322",
+      sidebar:   "#060C1A",
+      sidebarBorder: "rgba(0,160,255,0.08)",
+      card:      "rgba(13,25,52,0.82)",
+      cardHover: "rgba(20,40,80,0.90)",
+      border:    "rgba(0,140,255,0.12)",
+      borderHi:  "rgba(0,180,255,0.35)",
+      accent:    "#00AAFF",
+      accent2:   "#0055FF",
+      accentGlow:"rgba(0,170,255,0.18)",
+      green:     "#00E87A",
+      greenGlow: "rgba(0,232,122,0.15)",
+      red:       "#FF3B5C",
+      yellow:    "#FFB830",
+      purple:    "#A78BFA",
+      text:      "#DCF0FF",
+      textMid:   "rgba(180,220,255,0.70)",
+      textSub:   "rgba(120,180,240,0.50)",
+      textFaint: "rgba(80,140,220,0.30)",
+      shadow:    "0 4px 24px rgba(0,60,160,0.28)",
+      tabActive: "rgba(0,170,255,0.10)",
+      kpiCard:   "rgba(12,22,46,0.90)",
+      mono:      "'Space Mono','Fira Code',monospace",
+      sans:      "Inter,system-ui,sans-serif",
+    };
+  }
+  return {
+    dark: false,
+    bg:        "#EEF2F8",
+    bg2:       "#F4F7FC",
+    sidebar:   "#0B1D3A",
+    sidebarBorder: "rgba(255,255,255,0.06)",
+    card:      "rgba(255,255,255,0.90)",
+    cardHover: "rgba(255,255,255,0.98)",
+    border:    "rgba(0,80,200,0.09)",
+    borderHi:  "rgba(0,100,220,0.28)",
+    accent:    "#0062E6",
+    accent2:   "#0040C0",
+    accentGlow:"rgba(0,98,230,0.10)",
+    green:     "#059669",
+    greenGlow: "rgba(5,150,105,0.10)",
+    red:       "#DC2626",
+    yellow:    "#D97706",
+    purple:    "#7C3AED",
     text:      "#0A1628",
-    textSub:   "rgba(15,50,120,0.55)",
-    textFaint: "rgba(15,50,120,0.30)",
+    textMid:   "rgba(10,30,80,0.70)",
+    textSub:   "rgba(10,30,80,0.50)",
+    textFaint: "rgba(10,30,80,0.28)",
+    shadow:    "0 2px 16px rgba(0,60,160,0.07), 0 0 0 1px rgba(0,100,220,0.06)",
+    tabActive: "rgba(0,98,230,0.06)",
+    kpiCard:   "rgba(255,255,255,0.95)",
     mono:      "'Space Mono','Fira Code',monospace",
-    sans:      "system-ui,-apple-system,sans-serif",
-    glow:      (_c: string) => "none",
+    sans:      "Inter,system-ui,sans-serif",
   };
 }
-
 type Theme = ReturnType<typeof buildTheme>;
 
-// ── Auth-aware fetch ──────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTH-AWARE FETCH
+// ─────────────────────────────────────────────────────────────────────────────
+
 async function fetchEEIE<T>(path: string): Promise<T | null> {
   try {
     const token = localStorage.getItem("SOVEREIGN_SESSION") ?? "";
@@ -75,7 +99,10 @@ async function fetchEEIE<T>(path: string): Promise<T | null> {
   } catch { return null; }
 }
 
-// ── Types ──────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// TYPES
+// ─────────────────────────────────────────────────────────────────────────────
+
 interface EEIEStatus {
   ts: string;
   cluster: { total: number; healthy: number; degraded: number; offline: number; recovering: number; failoverActive: number };
@@ -114,109 +141,73 @@ interface VenueState {
 }
 interface BusHistory { [topic: string]: { topic: string; payload: unknown; ts: string }[] }
 
-// ── Micro components ──────────────────────────────────────────────────────────
+// Staff Cockpit mock types
+interface GuestSession {
+  id: string; table: string; guestName: string; initials: string;
+  status: "active" | "paused" | "completed" | "attention";
+  loyaltyTier: string; xp: number; returning: boolean;
+  favCigar: string; favLiquor: string;
+  flavors: string[]; strength: "light" | "medium" | "full" | "extra-full";
+  startedAt: string; aiMatchScore: number;
+  cart: CartItem[];
+}
+interface CartItem { name: string; type: "cigar" | "liquor"; price: number; qty: number; }
+
+const MOCK_SESSIONS: GuestSession[] = [
+  { id: "T1", table: "Table 1", guestName: "Marcus R.", initials: "MR", status: "active", loyaltyTier: "Obsidian", xp: 4820, returning: true, favCigar: "Padron 1964 Exclusivo", favLiquor: "Woodford Reserve Double Oaked", flavors: ["Creamy","Nutty","Cocoa","Cedar"], strength: "medium", startedAt: new Date(Date.now()-18*60000).toISOString(), aiMatchScore: 92, cart: [] },
+  { id: "T2", table: "Table 4", guestName: "Sophia L.", initials: "SL", status: "attention", loyaltyTier: "Gold", xp: 2100, returning: false, favCigar: "Arturo Fuente Opus X", favLiquor: "Hennessy VSOP", flavors: ["Spicy","Leather","Dark Fruit","Pepper"], strength: "full", startedAt: new Date(Date.now()-34*60000).toISOString(), aiMatchScore: 88, cart: [{ name: "Arturo Fuente Opus X", type: "cigar", price: 42, qty: 1 }] },
+  { id: "T3", table: "Table 7", guestName: "James O.", initials: "JO", status: "paused", loyaltyTier: "Silver", xp: 980, returning: false, favCigar: "Cohiba Robusto", favLiquor: "Macallan 18", flavors: ["Earthy","Woody","Honey","Toast"], strength: "medium", startedAt: new Date(Date.now()-52*60000).toISOString(), aiMatchScore: 79, cart: [] },
+  { id: "T4", table: "Table 2", guestName: "Elena V.", initials: "EV", status: "active", loyaltyTier: "Platinum", xp: 7350, returning: true, favCigar: "My Father Le Bijou 1922", favLiquor: "Balvenie DoubleWood 17", flavors: ["Sweet","Floral","Vanilla","Caramel"], strength: "light", startedAt: new Date(Date.now()-9*60000).toISOString(), aiMatchScore: 96, cart: [] },
+];
+
+const STATUS_COLOR = (s: GuestSession["status"], T: Theme) =>
+  s === "active" ? T.green : s === "attention" ? T.yellow : s === "paused" ? T.accent : T.textSub;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MICRO COMPONENTS
+// ─────────────────────────────────────────────────────────────────────────────
+
 function LiveDot({ color, size = 7 }: { color: string; size?: number }) {
   return (
     <motion.div
-      animate={{ opacity: [1, 0.25, 1] }}
-      transition={{ duration: 1.8, repeat: Infinity }}
+      animate={{ opacity: [1, 0.25, 1] }} transition={{ duration: 2, repeat: Infinity }}
       style={{ width: size, height: size, borderRadius: "50%", background: color, flexShrink: 0 }}
     />
   );
 }
 
-function Pill({ label, color, bg }: { label: string; color: string; bg: string }) {
+function Badge({ label, color, bg }: { label: string; color: string; bg: string }) {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 5,
       padding: "3px 10px", borderRadius: 999,
-      background: bg, border: `1px solid ${color}55`,
+      background: bg, border: `1px solid ${color}40`,
       fontSize: 9, fontWeight: 700, letterSpacing: "0.14em",
-      color, textTransform: "uppercase",
-    }}>
-      <LiveDot color={color} size={5} />
-      {label}
-    </span>
+      color, textTransform: "uppercase" as const, whiteSpace: "nowrap" as const,
+    }}>{label}</span>
   );
 }
 
-function TouchBtn({
-  icon, label, color, bg, border, onClick, disabled,
-}: {
-  icon: React.ReactNode; label: string; color: string; bg: string;
-  border: string; onClick?: () => void; disabled?: boolean;
-}) {
+function Meter({ pct, color, height = 5 }: { pct: number; color: string; height?: number }) {
   return (
-    <motion.button
-      whileTap={{ scale: 0.95 }}
-      onClick={onClick}
-      disabled={disabled}
-      style={{
-        display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
-        padding: "16px 12px", borderRadius: 14,
-        background: bg, border: `1px solid ${border}`,
-        color, cursor: "pointer", minHeight: 80, minWidth: 90,
-        flex: 1,
-      }}
-    >
-      {icon}
-      <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textAlign: "center" }}>{label}</span>
-    </motion.button>
-  );
-}
-
-function IntelBar({ label, pct, T }: { label: string; pct: number; T: Theme }) {
-  const color = pct >= 80 ? T.green : pct >= 60 ? T.accent : T.red;
-  return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: T.textSub, marginBottom: 5 }}>
-        <span>{label}</span>
-        <span style={{ fontWeight: 700, color }}>{pct}%</span>
-      </div>
-      <div style={{ height: 5, borderRadius: 3, background: `${T.accent}18`, overflow: "hidden" }}>
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          style={{ height: "100%", borderRadius: 3, background: `linear-gradient(90deg, ${color}, ${color}AA)` }}
-        />
-      </div>
-    </div>
-  );
-}
-
-// Touch slider for sensory faders
-function Fader({
-  label, value, onChange, color, T,
-}: { label: string; value: number; onChange: (v: number) => void; color: string; T: Theme }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: T.textSub }}>
-        <span style={{ fontFamily: T.mono }}>{label}</span>
-        <span style={{ fontWeight: 700, color }}>{Math.round(value * 100)}%</span>
-      </div>
-      <input
-        type="range" min="0" max="100" value={Math.round(value * 100)}
-        onChange={e => onChange(Number(e.target.value) / 100)}
-        style={{
-          width: "100%", height: 28, cursor: "pointer",
-          accentColor: color, borderRadius: 14,
-        }}
+    <div style={{ height, borderRadius: height, background: `${color}1A`, overflow: "hidden" }}>
+      <motion.div
+        initial={{ width: 0 }} animate={{ width: `${Math.min(100, pct)}%` }}
+        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        style={{ height: "100%", borderRadius: height, background: color }}
       />
     </div>
   );
 }
 
-// Scrolling waveform
-function Waveform({ color, speed = 2 }: { color: string; speed?: number }) {
+function Waveform({ color, speed = 3, height = 28 }: { color: string; speed?: number; height?: number }) {
   return (
-    <div style={{ width: "100%", height: 32, overflow: "hidden", position: "relative" }}>
+    <div style={{ width: "100%", height, overflow: "hidden", position: "relative" }}>
       <div style={{ display: "flex", width: "200%", animation: `eeie-wave ${speed}s linear infinite` }}>
         {[0, 1].map(i => (
-          <svg key={i} width="50%" height="32" viewBox="0 0 600 32" preserveAspectRatio="none" style={{ flexShrink: 0 }}>
-            <path d="M0,16 Q75,2 150,16 Q225,30 300,16 Q375,2 450,16 Q525,30 600,16" fill={`${color}14`} />
-            <path d="M0,16 Q75,2 150,16 Q225,30 300,16 Q375,2 450,16 Q525,30 600,16"
-              fill="none" stroke={color} strokeWidth="1.5" strokeOpacity="0.8" />
+          <svg key={i} width="50%" height={height} viewBox={`0 0 600 ${height}`} preserveAspectRatio="none" style={{ flexShrink: 0 }}>
+            <defs><linearGradient id={`wg${i}`} x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stopColor={color} stopOpacity="0.1"/><stop offset="50%" stopColor={color} stopOpacity="0.9"/><stop offset="100%" stopColor={color} stopOpacity="0.1"/></linearGradient></defs>
+            <path d={`M0,${height/2} Q75,${height*0.1} 150,${height/2} Q225,${height*0.9} 300,${height/2} Q375,${height*0.1} 450,${height/2} Q525,${height*0.9} 600,${height/2}`} fill="none" stroke={`url(#wg${i})`} strokeWidth="1.5"/>
           </svg>
         ))}
       </div>
@@ -224,83 +215,144 @@ function Waveform({ color, speed = 2 }: { color: string; speed?: number }) {
   );
 }
 
-// ── Sidebar ────────────────────────────────────────────────────────────────────
-const NAV_ITEMS = [
-  { id: "overview",  icon: Monitor,       label: "Command Center" },
-  { id: "venues",    icon: Globe,         label: "Live Network" },
-  { id: "sensory",   icon: Radio,         label: "Sensory Engine" },
-  { id: "pos",       icon: Package,       label: "POS Health" },
-  { id: "predictions",icon: Brain,        label: "AI Predictions" },
-  { id: "bus",       icon: Network,       label: "Event Bus" },
-];
-
-function Sidebar({ active, onNav, T, isDark, onToggleDark }: {
-  active: string; onNav: (id: string) => void;
-  T: Theme; isDark: boolean; onToggleDark: () => void;
+function KpiCard({ label, value, delta, positive, icon: Icon, T }: {
+  label: string; value: string; delta?: string; positive?: boolean;
+  icon?: React.ComponentType<{ size: number; color?: string }>; T: Theme;
 }) {
   return (
-    <div style={{
-      width: 190, flexShrink: 0, background: T.sidebar,
-      display: "flex", flexDirection: "column",
-      borderRight: `1px solid rgba(0,200,255,0.08)`,
-    }}>
+    <motion.div whileHover={{ y: -2 }}
+      style={{ background: T.kpiCard, border: `1px solid ${T.border}`, borderRadius: 14, padding: "16px 18px", boxShadow: T.shadow, flex: 1, minWidth: 120 }}
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+        <div style={{ fontSize: 8.5, fontWeight: 700, letterSpacing: "0.18em", color: T.textFaint, fontFamily: T.mono, textTransform: "uppercase" }}>{label}</div>
+        {Icon && <Icon size={14} color={T.accent} />}
+      </div>
+      <div style={{ fontSize: 24, fontWeight: 800, color: T.text, letterSpacing: "-0.02em" }}>{value}</div>
+      {delta && (
+        <div style={{ fontSize: 10, color: positive === false ? T.red : T.green, fontFamily: T.mono, marginTop: 6 }}>{delta}</div>
+      )}
+    </motion.div>
+  );
+}
+
+function Panel({ title, subtitle, icon, badge, children, T, accentColor }: {
+  title: string; subtitle?: string; icon?: React.ReactNode; badge?: string;
+  children: React.ReactNode; T: Theme; accentColor?: string;
+}) {
+  const ac = accentColor ?? T.accent;
+  return (
+    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, overflow: "hidden", boxShadow: T.shadow }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 18px", borderBottom: `1px solid ${T.border}`, background: T.dark ? `${ac}08` : `${ac}04` }}>
+        {icon && <span style={{ color: ac, display: "flex", alignItems: "center" }}>{icon}</span>}
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", color: T.textMid, textTransform: "uppercase", fontFamily: T.mono }}>{title}</div>
+          {subtitle && <div style={{ fontSize: 9, color: T.textFaint, marginTop: 1 }}>{subtitle}</div>}
+        </div>
+        {badge && <Badge label={badge} color={ac} bg={`${ac}12`} />}
+      </div>
+      <div style={{ padding: "16px 18px" }}>{children}</div>
+    </div>
+  );
+}
+
+function TouchButton({
+  icon, label, sub, color, onClick, size = "md", variant = "solid", disabled,
+}: {
+  icon: React.ReactNode; label: string; sub?: string;
+  color: string; onClick?: () => void; size?: "sm" | "md" | "lg";
+  variant?: "solid" | "glass" | "ghost"; disabled?: boolean;
+}) {
+  const h = size === "lg" ? 72 : size === "md" ? 56 : 44;
+  const bg = variant === "solid" ? color : variant === "glass" ? `${color}12` : "transparent";
+  const textColor = variant === "solid" ? "#fff" : color;
+  return (
+    <motion.button whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.02 }}
+      onClick={onClick} disabled={disabled}
+      style={{
+        display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 4,
+        minHeight: h, padding: "10px 14px", borderRadius: 12,
+        background: bg, border: `1px solid ${color}40`,
+        color: textColor, cursor: "pointer", flex: 1,
+        boxShadow: variant === "solid" ? `0 4px 14px ${color}35` : "none",
+      }}
+    >
+      {icon}
+      <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textAlign: "center", lineHeight: 1.3 }}>{label}</span>
+      {sub && <span style={{ fontSize: 8, opacity: 0.7, textAlign: "center" }}>{sub}</span>}
+    </motion.button>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SIDEBAR
+// ─────────────────────────────────────────────────────────────────────────────
+
+const NAV = [
+  { id: "overview",    icon: Monitor,     label: "Command Center" },
+  { id: "network",     icon: Globe,       label: "Live Network" },
+  { id: "sensory",     icon: Radio,       label: "Sensory Engine" },
+  { id: "commerce",    icon: Package,     label: "Commerce Health" },
+  { id: "predictions", icon: Brain,       label: "AI Predictions" },
+  { id: "bus",         icon: Network,     label: "Event Bus" },
+  { id: "cockpit",     icon: Users,       label: "Staff Cockpit" },
+];
+
+function Sidebar({ active, onNav, isDark, onToggleDark, T }: {
+  active: string; onNav: (id: string) => void;
+  isDark: boolean; onToggleDark: () => void; T: Theme;
+}) {
+  return (
+    <div style={{ width: 196, flexShrink: 0, background: T.sidebar, display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Logo */}
-      <div style={{ padding: "20px 16px 14px", borderBottom: "1px solid rgba(0,200,255,0.08)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: 9,
-            background: "rgba(0,212,255,0.15)", border: "1px solid rgba(0,212,255,0.4)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <Shield size={16} color="#00D4FF" />
+      <div style={{ padding: "18px 16px 14px", borderBottom: `1px solid ${T.sidebarBorder}` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 34, height: 34, borderRadius: 10, background: "rgba(0,170,255,0.18)", border: "1px solid rgba(0,170,255,0.45)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Shield size={17} color="#00AAFF" />
           </div>
           <div>
-            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.2em", color: "#00D4FF", fontFamily: "'Space Mono',monospace" }}>EEIE</div>
-            <div style={{ fontSize: 8, color: "rgba(0,212,255,0.45)", letterSpacing: "0.12em", fontFamily: "'Space Mono',monospace" }}>COMMAND CENTER</div>
+            <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.22em", color: "#00AAFF", fontFamily: "'Space Mono',monospace" }}>EEIE</div>
+            <div style={{ fontSize: 7.5, color: "rgba(0,170,255,0.38)", letterSpacing: "0.14em", fontFamily: "'Space Mono',monospace" }}>COMMAND CENTER</div>
           </div>
         </div>
       </div>
 
-      {/* Nav */}
+      {/* Nav items */}
       <div style={{ flex: 1, padding: "10px 8px", overflowY: "auto" }}>
-        <div style={{ fontSize: 7.5, letterSpacing: "0.22em", color: "rgba(0,212,255,0.25)", fontFamily: "'Space Mono',monospace", padding: "10px 8px 6px", textTransform: "uppercase" }}>INTELLIGENCE</div>
-        {NAV_ITEMS.map(item => {
+        <div style={{ fontSize: 7, letterSpacing: "0.26em", color: "rgba(100,180,255,0.22)", fontFamily: "'Space Mono',monospace", padding: "10px 8px 5px", textTransform: "uppercase" }}>INTELLIGENCE</div>
+        {NAV.map(item => {
           const Icon = item.icon;
-          const active_ = active === item.id;
+          const isActive = active === item.id;
           return (
-            <button key={item.id} onClick={() => onNav(item.id)}
+            <motion.button key={item.id} onClick={() => onNav(item.id)}
+              whileHover={{ x: 2 }}
               style={{
-                width: "100%", display: "flex", alignItems: "center", gap: 10,
-                padding: "10px 10px", borderRadius: 9, border: "none",
-                background: active_ ? "rgba(0,212,255,0.12)" : "transparent",
-                color: active_ ? "#00D4FF" : "rgba(140,200,240,0.45)",
-                cursor: "pointer", fontSize: 11, fontWeight: active_ ? 700 : 400,
-                marginBottom: 2, textAlign: "left",
-                borderLeft: `2px solid ${active_ ? "#00D4FF" : "transparent"}`,
+                width: "100%", display: "flex", alignItems: "center", gap: 9,
+                padding: "11px 10px", borderRadius: 10, border: "none",
+                background: isActive ? "rgba(0,170,255,0.15)" : "transparent",
+                color: isActive ? "#60C8FF" : "rgba(140,200,255,0.38)",
+                cursor: "pointer", fontSize: 11.5, fontWeight: isActive ? 700 : 400,
+                marginBottom: 2, textAlign: "left" as const,
+                borderLeft: `2px solid ${isActive ? "#00AAFF" : "transparent"}`,
+                transition: "all 0.15s",
               }}>
               <Icon size={14} style={{ flexShrink: 0 }} />
               {item.label}
-            </button>
+              {isActive && <ChevronRight size={12} style={{ marginLeft: "auto", opacity: 0.5 }} />}
+            </motion.button>
           );
         })}
 
-        <div style={{ fontSize: 7.5, letterSpacing: "0.22em", color: "rgba(0,212,255,0.25)", fontFamily: "'Space Mono',monospace", padding: "16px 8px 6px", textTransform: "uppercase" }}>SYSTEM</div>
+        <div style={{ fontSize: 7, letterSpacing: "0.26em", color: "rgba(100,180,255,0.22)", fontFamily: "'Space Mono',monospace", padding: "14px 8px 5px", textTransform: "uppercase" }}>SYSTEM</div>
         {[
-          { id: "integrity", icon: Gauge,  label: "System Integrity" },
-          { id: "security",  icon: Shield, label: "Security" },
-          { id: "server",    icon: Server, label: "Infrastructure" },
+          { icon: Gauge,  label: "System Integrity" },
+          { icon: Shield, label: "Security" },
+          { icon: Server, label: "Infrastructure" },
         ].map(item => {
           const Icon = item.icon;
           return (
-            <button key={item.id} onClick={() => {}}
-              style={{
-                width: "100%", display: "flex", alignItems: "center", gap: 10,
-                padding: "10px 10px", borderRadius: 9, border: "none",
-                background: "transparent",
-                color: "rgba(100,180,230,0.35)",
-                cursor: "pointer", fontSize: 11, fontWeight: 400, marginBottom: 2,
-              }}>
-              <Icon size={14} style={{ flexShrink: 0 }} />
+            <button key={item.label}
+              style={{ width: "100%", display: "flex", alignItems: "center", gap: 9, padding: "10px 10px", borderRadius: 10, border: "none", background: "transparent", color: "rgba(100,170,240,0.28)", cursor: "pointer", fontSize: 11, fontWeight: 400, marginBottom: 2, textAlign: "left" as const }}>
+              <Icon size={13} style={{ flexShrink: 0 }} />
               {item.label}
             </button>
           );
@@ -308,203 +360,114 @@ function Sidebar({ active, onNav, T, isDark, onToggleDark }: {
       </div>
 
       {/* Footer */}
-      <div style={{ padding: "12px 12px 14px", borderTop: "1px solid rgba(0,200,255,0.08)" }}>
-        <div style={{ fontSize: 8, fontWeight: 700, color: "#00E87A", letterSpacing: "0.18em", fontFamily: "'Space Mono',monospace", marginBottom: 4 }}>● SOVEREIGN ACTIVE</div>
-        <div style={{ fontSize: 8, color: "rgba(0,212,255,0.3)", fontFamily: "'Space Mono',monospace", marginBottom: 10 }}>Token valid · All nodes online</div>
-        <button onClick={onToggleDark}
-          style={{
-            width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-            padding: "8px", borderRadius: 8, border: "1px solid rgba(0,200,255,0.15)",
-            background: "rgba(0,200,255,0.06)", color: "rgba(0,212,255,0.6)",
-            cursor: "pointer", fontSize: 10,
-          }}>
-          {isDark ? <Sun size={12} /> : <Moon size={12} />}
-          {isDark ? "Day Mode" : "Night Mode"}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ── Stat chip ─────────────────────────────────────────────────────────────────
-function StatChip({ label, value, delta, T }: { label: string; value: string; delta?: string; T: Theme }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      <div style={{ fontSize: 8, letterSpacing: "0.16em", color: T.textFaint, fontFamily: T.mono, textTransform: "uppercase" }}>{label}</div>
-      <div style={{ fontSize: 16, fontWeight: 800, color: T.text, letterSpacing: "-0.01em" }}>{value}</div>
-      {delta && <div style={{ fontSize: 9, color: T.green, fontFamily: T.mono }}>{delta}</div>}
-    </div>
-  );
-}
-
-// ── Panel card ─────────────────────────────────────────────────────────────────
-function Panel({ title, icon, status, children, T, accent }: {
-  title: string; icon: React.ReactNode; status?: string;
-  children: React.ReactNode; T: Theme; accent?: string;
-}) {
-  const ac = accent ?? T.accent;
-  return (
-    <div style={{
-      background: T.card, border: `1px solid ${T.border}`,
-      borderRadius: 14, overflow: "hidden",
-      backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
-    }}>
-      <div style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "12px 16px", borderBottom: `1px solid ${T.border}`,
-        background: `${ac}08`,
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-          <span style={{ color: ac }}>{icon}</span>
-          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", color: T.textSub, textTransform: "uppercase", fontFamily: T.mono }}>{title}</span>
+      <div style={{ padding: "12px 12px 16px", borderTop: `1px solid ${T.sidebarBorder}` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 4 }}>
+          <LiveDot color="#00E87A" size={6} />
+          <span style={{ fontSize: 8, fontWeight: 700, color: "#00E87A", letterSpacing: "0.18em", fontFamily: "'Space Mono',monospace" }}>SOVEREIGN ACTIVE</span>
         </div>
-        {status && <Pill label={status} color={ac} bg={`${ac}14`} />}
+        <div style={{ fontSize: 7.5, color: "rgba(0,200,100,0.30)", fontFamily: "'Space Mono',monospace", marginBottom: 12 }}>Token valid · All nodes online</div>
+        <motion.button whileTap={{ scale: 0.96 }} onClick={onToggleDark}
+          style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "9px 12px", borderRadius: 9, border: "1px solid rgba(0,170,255,0.18)", background: "rgba(0,170,255,0.07)", color: "rgba(100,180,255,0.65)", cursor: "pointer", fontSize: 10.5 }}>
+          {isDark ? <Sun size={13} /> : <Moon size={13} />}
+          {isDark ? "Day Mode" : "Night Mode"}
+        </motion.button>
       </div>
-      <div style={{ padding: "14px 16px" }}>{children}</div>
     </div>
   );
 }
 
-// ── Live Order Ticker ─────────────────────────────────────────────────────────
-function LiveOrderTicker({ T }: { T: Theme }) {
-  const [orders, setOrders] = useState<ArchiveBlendOrder[]>([]);
-  useEffect(() => orderBroadcast.subscribe(o => setOrders(p => [o, ...p].slice(0, 4))), []);
-  if (orders.length === 0) return null;
-  return (
-    <Panel title="Live Archive Blend Orders" icon={<Activity size={13} />} status="LIVE" T={T}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        <AnimatePresence initial={false}>
-          {orders.map((o, i) => (
-            <motion.div key={o.orderId}
-              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10, height: 0 }}
-              style={{
-                display: "flex", alignItems: "center", gap: 10,
-                padding: "10px 12px", borderRadius: 10,
-                background: i === 0 ? `${T.accent}10` : `${T.accent}05`,
-                border: `1px solid ${i === 0 ? T.accent + "44" : T.border}`,
-              }}>
-              <div style={{
-                width: 34, height: 34, borderRadius: 8, flexShrink: 0,
-                background: `${T.accent}14`, border: `1px solid ${T.accent}33`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 14, color: T.accent,
-              }}>◈</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: T.text }}>{o.guestName}</div>
-                <div style={{ fontSize: 9, color: T.textSub }}>{o.wood} · {o.band} · Harmony {o.harmonyScore}</div>
-              </div>
-              <div style={{ fontSize: 8, color: T.textFaint, fontFamily: T.mono }}>
-                {new Date(o.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-    </Panel>
-  );
-}
-
-// ── TABS ──────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────────────────────────────────────
 
 function OverviewTab({ status, T }: { status: EEIEStatus; T: Theme }) {
   const intel = status.intelligence;
-  const metrics = [
-    { label: "CLUSTER NODES",   value: String(status.cluster.total),           sub: `${status.cluster.healthy} healthy` },
-    { label: "ACTIVE VENUES",   value: String(status.energy.venues),           sub: "live events" },
-    { label: "PREDICTIONS",     value: String(status.predictions.recent),       sub: "last 5 min" },
-    { label: "ADVISORIES",      value: String(status.advisories.recent),        sub: "in buffer" },
-    { label: "POS ONLINE",      value: `${status.pos.healthy}/${status.pos.total}`, sub: status.pos.simulated > 0 ? `${status.pos.simulated} simulated` : "all real" },
-    { label: "SENSORY LAYERS",  value: String(status.sensory.activeVenues),     sub: "active venues" },
-  ];
+  const ENERGY_C: Record<string, string> = {
+    CALM: T.green, EXPLORATORY: T.accent, HIGH_MOMENTUM: T.yellow,
+    CONGESTED: "#F97316", STAGNATING: T.red, RECOVERY: T.purple,
+  };
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <LiveOrderTicker T={T} />
-
-      {/* KPI grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: 10 }}>
-        {metrics.map((m, i) => (
-          <motion.div key={m.label}
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
-            style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: "14px 16px", backdropFilter: "blur(12px)" }}
-          >
-            <div style={{ fontSize: 8, letterSpacing: "0.18em", color: T.textFaint, fontFamily: T.mono, marginBottom: 8 }}>{m.label}</div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: T.accent, letterSpacing: "-0.02em" }}>{m.value}</div>
-            <div style={{ fontSize: 9, color: T.textSub, marginTop: 4 }}>{m.sub}</div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Waveform panel */}
-      <Panel title="Environmental Pulse · Titan V" icon={<Activity size={13} />} status="NOMINAL" T={T} accent={T.green}>
-        <Waveform color={T.green} speed={2.2} />
-        <div style={{ display: "flex", gap: 24, marginTop: 10 }}>
-          {[{ l: "PULSE RATE", v: "1.0×" }, { l: "AMPLITUDE", v: "100%" }, { l: "SIGNAL", v: "NOMINAL" }].map(m => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+      {/* Env Pulse */}
+      <Panel title="Environmental Pulse · Titan V Engine" subtitle="Real-time venue intelligence signal" icon={<Activity size={14} />} badge="NOMINAL" T={T} accentColor={T.green}>
+        <Waveform color={T.green} speed={2.8} height={36} />
+        <div style={{ display: "flex", gap: 28, marginTop: 12 }}>
+          {[{ l: "PULSE RATE", v: "1.0×" }, { l: "AMPLITUDE", v: "100%" }, { l: "SIGNAL", v: "NOMINAL" }, { l: "UPTIME", v: "99.99%" }].map(m => (
             <div key={m.l}>
-              <div style={{ fontSize: 7.5, color: T.textFaint, letterSpacing: "0.14em", fontFamily: T.mono }}>{m.l}</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: T.green, fontFamily: T.mono, marginTop: 2 }}>{m.v}</div>
+              <div style={{ fontSize: 7.5, color: T.textFaint, letterSpacing: "0.16em", fontFamily: T.mono }}>{m.l}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: T.green, fontFamily: T.mono, marginTop: 3 }}>{m.v}</div>
             </div>
           ))}
         </div>
       </Panel>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        <Panel title="Intelligence Matrix" icon={<Brain size={13} />} T={T}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        {/* Intelligence Matrix */}
+        <Panel title="Intelligence Matrix" icon={<Brain size={14} />} T={T}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 13 }}>
             {[
-              ["EEIE Real Intelligence",   "eeieRealPct"],
-              ["Predictive Hospitality",   "predictivePct"],
-              ["Sensory Immersion",        "sensoryImmersionPct"],
-              ["Distributed Scale",        "distributedScalePct"],
-              ["Operational Autonomy",     "operationalAutonomyPct"],
-              ["POS Readiness",            "posReadinessPct"],
-            ].map(([label, key]) => <IntelBar key={key} label={label} pct={intel[key] ?? 0} T={T} />)}
+              ["EEIE Real Intelligence",  "eeieRealPct"],
+              ["Predictive Hospitality",  "predictivePct"],
+              ["Sensory Immersion",       "sensoryImmersionPct"],
+              ["Distributed Scale",       "distributedScalePct"],
+              ["Operational Autonomy",    "operationalAutonomyPct"],
+              ["Commerce Readiness",      "posReadinessPct"],
+              ["Multi-Venue Scale",       "multiVenueReadinessPct"],
+            ].map(([label, key]) => {
+              const pct = intel[key] ?? 0;
+              const c = pct >= 80 ? T.green : pct >= 60 ? T.accent : T.yellow;
+              return (
+                <div key={key}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: T.textMid, marginBottom: 5 }}>
+                    <span>{label}</span><span style={{ fontWeight: 700, color: c }}>{pct}%</span>
+                  </div>
+                  <Meter pct={pct} color={c} />
+                </div>
+              );
+            })}
           </div>
         </Panel>
 
-        <Panel title="Recent Advisories" icon={<AlertTriangle size={13} />} T={T} accent={T.yellow}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 300, overflowY: "auto" }}>
+        {/* Advisories */}
+        <Panel title="Recent Advisories" subtitle="System monitoring feed" icon={<AlertTriangle size={14} />} T={T} accentColor={T.yellow}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 320, overflowY: "auto" }}>
             {status.advisories.entries.length === 0
-              ? <div style={{ fontSize: 12, color: T.textSub, padding: "12px 0" }}>No advisories — system is nominal.</div>
-              : status.advisories.entries.slice(0, 6).map(a => {
-                const uc = a.urgency === "high" ? T.red : a.urgency === "medium" ? T.yellow : T.textSub;
-                return (
-                  <div key={a.id} style={{
-                    padding: "10px 12px", borderRadius: 10,
-                    background: `${uc}0A`, border: `1px solid ${uc}22`,
-                    display: "flex", gap: 10,
-                  }}>
-                    <div style={{ width: 3, background: uc, borderRadius: 2, flexShrink: 0 }} />
-                    <div>
-                      <div style={{ fontSize: 9, color: uc, fontWeight: 700, letterSpacing: "0.1em", fontFamily: T.mono, marginBottom: 3 }}>{a.type.replace(/_/g, " ")}</div>
-                      <div style={{ fontSize: 11, color: T.text, lineHeight: 1.5 }}>{a.message}</div>
-                      <div style={{ fontSize: 9, color: T.textFaint, marginTop: 3 }}>{a.confidence}% confidence</div>
-                    </div>
-                  </div>
-                );
-              })
+              ? <div style={{ textAlign: "center", padding: "24px 0", color: T.textSub }}>
+                  <div style={{ fontSize: 28, marginBottom: 6 }}>✓</div>
+                  <div style={{ fontSize: 12, color: T.green, fontWeight: 600 }}>No advisories — System is nominal.</div>
+                </div>
+              : status.advisories.entries.slice(0, 7).map(a => {
+                  const uc = a.urgency === "high" ? T.red : a.urgency === "medium" ? T.yellow : T.textSub;
+                  return (
+                    <motion.div key={a.id} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+                      style={{ display: "flex", gap: 10, padding: "10px 12px", borderRadius: 10, background: `${uc}08`, border: `1px solid ${uc}1E` }}>
+                      <div style={{ width: 3, background: uc, borderRadius: 2, flexShrink: 0 }} />
+                      <div>
+                        <div style={{ fontSize: 9, color: uc, fontWeight: 700, letterSpacing: "0.12em", fontFamily: T.mono, marginBottom: 3 }}>{a.type.replace(/_/g, " ")}</div>
+                        <div style={{ fontSize: 11, color: T.text, lineHeight: 1.5 }}>{a.message}</div>
+                        <div style={{ fontSize: 9, color: T.textFaint, marginTop: 3 }}>{a.confidence}% confidence</div>
+                      </div>
+                    </motion.div>
+                  );
+                })
             }
           </div>
         </Panel>
       </div>
 
-      {/* Energy distribution */}
+      {/* Energy Distribution */}
       {Object.keys(status.energy.states).length > 0 && (
-        <Panel title="Live Energy Distribution" icon={<Zap size={13} />} T={T}>
+        <Panel title="Live Energy Distribution" subtitle="Venue behavioral states" icon={<Zap size={14} />} T={T}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {Object.entries(status.energy.states).map(([state, count]) => {
-              const ec: Record<string, string> = { CALM: T.green, EXPLORATORY: T.accent, HIGH_MOMENTUM: T.yellow, CONGESTED: "#FF8040", STAGNATING: T.red, RECOVERY: "#A070E0" };
-              const c = ec[state] ?? T.accent;
+              const c = ENERGY_C[state] ?? T.accent;
               return (
-                <div key={state} style={{
-                  display: "flex", alignItems: "center", gap: 8,
-                  padding: "8px 14px", borderRadius: 999,
-                  background: `${c}12`, border: `1px solid ${c}33`,
-                }}>
-                  <div style={{ width: 7, height: 7, borderRadius: "50%", background: c }} />
-                  <span style={{ fontSize: 11, color: T.text, fontWeight: 600 }}>{state}</span>
+                <motion.div key={state} whileHover={{ scale: 1.03 }}
+                  style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 16px", borderRadius: 999, background: `${c}0E`, border: `1px solid ${c}28` }}>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />
+                  <span style={{ fontSize: 12, color: T.text, fontWeight: 600 }}>{state}</span>
                   <span style={{ fontSize: 11, color: T.textSub }}>({count})</span>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -514,44 +477,43 @@ function OverviewTab({ status, T }: { status: EEIEStatus; T: Theme }) {
   );
 }
 
-function VenuesTab({ cluster, energy, T }: { cluster: ClusterVenue[]; energy: VenueState[]; T: Theme }) {
-  const energyMap = new Map(energy.map(e => [e.venueId, e]));
-  const HEALTH_COLOR: Record<string, string> = { HEALTHY: T.green, DEGRADED: T.yellow, OFFLINE: T.red, RECOVERING: "#A070E0" };
-  const ENERGY_COLOR: Record<string, string> = { CALM: T.green, EXPLORATORY: T.accent, HIGH_MOMENTUM: T.yellow, CONGESTED: "#FF8040", STAGNATING: T.red, RECOVERY: "#A070E0" };
-
+function NetworkTab({ cluster, energy, T }: { cluster: ClusterVenue[]; energy: VenueState[]; T: Theme }) {
+  const emap = new Map(energy.map(e => [e.venueId, e]));
+  const HC: Record<string, string> = { HEALTHY: T.green, DEGRADED: T.yellow, OFFLINE: T.red, RECOVERING: T.purple };
+  const EC: Record<string, string> = { CALM: T.green, EXPLORATORY: T.accent, HIGH_MOMENTUM: T.yellow, CONGESTED: "#F97316", STAGNATING: T.red, RECOVERY: T.purple };
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       {cluster.length === 0 && (
-        <div style={{ color: T.textSub, fontSize: 13, padding: "40px 24px", textAlign: "center" }}>
-          No venues in cluster yet — venues appear as they emit events.
+        <div style={{ color: T.textSub, fontSize: 13, padding: "48px 0", textAlign: "center" }}>
+          No venues in cluster — venues appear as they emit heartbeat events.
         </div>
       )}
       {cluster.map(v => {
-        const es = energyMap.get(v.venueId);
-        const hc = HEALTH_COLOR[v.health] ?? T.textSub;
+        const es = emap.get(v.venueId);
+        const hc = HC[v.health] ?? T.textSub;
         return (
-          <motion.div key={v.venueId}
-            initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
-            style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, padding: "16px 20px", backdropFilter: "blur(12px)", display: "flex", gap: 16, alignItems: "center" }}
+          <motion.div key={v.venueId} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -1 }}
+            style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, padding: "16px 20px", boxShadow: T.shadow, display: "flex", gap: 14, alignItems: "center" }}
           >
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: hc, boxShadow: `0 0 8px ${hc}77`, flexShrink: 0 }} />
+            <div style={{ width: 10, height: 10, borderRadius: "50%", background: hc, boxShadow: `0 0 8px ${hc}55`, flexShrink: 0 }} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 11, color: T.textFaint, fontFamily: T.mono, marginBottom: 4 }}>{v.venueId.slice(0, 12)}…</div>
+              <div style={{ fontSize: 10, color: T.textFaint, fontFamily: T.mono, marginBottom: 5 }}>{v.venueId.slice(0, 14)}…</div>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                <Pill label={v.health} color={hc} bg={`${hc}12`} />
-                {es && <Pill label={es.state} color={ENERGY_COLOR[es.state] ?? T.accent} bg={`${ENERGY_COLOR[es.state] ?? T.accent}10`} />}
-                {v.failoverActive && <Pill label="FAILOVER" color={T.red} bg={`${T.red}12`} />}
+                <Badge label={v.health} color={hc} bg={`${hc}10`} />
+                {es && <Badge label={es.state} color={EC[es.state] ?? T.accent} bg={`${EC[es.state] ?? T.accent}0E`} />}
+                {v.failoverActive && <Badge label="FAILOVER" color={T.red} bg={`${T.red}10`} />}
               </div>
             </div>
             <div style={{ display: "flex", gap: 20, flexShrink: 0 }}>
               {[
                 { n: v.activeSessions, l: "Sessions" },
-                ...(es ? [{ n: Number(es.conversionRate.toFixed(0)), l: "Conv %" }] : []),
-                { n: Math.round(v.minutesSince), l: "Min Ago", warn: v.minutesSince > 30 },
-              ].map(m => (
-                <div key={m.l} style={{ textAlign: "center" }}>
+                ...(es ? [{ n: `${es.conversionRate.toFixed(0)}%`, l: "Conv" }] : []),
+                { n: `${Math.round(v.minutesSince)}m`, l: "Ago", warn: v.minutesSince > 30 },
+              ].map((m, i) => (
+                <div key={i} style={{ textAlign: "center" }}>
                   <div style={{ fontSize: 22, fontWeight: 800, color: "warn" in m && m.warn ? T.red : T.accent }}>{m.n}</div>
-                  <div style={{ fontSize: 9, color: T.textFaint, fontFamily: T.mono }}>{m.l}</div>
+                  <div style={{ fontSize: 8.5, color: T.textFaint, fontFamily: T.mono, marginTop: 1 }}>{m.l}</div>
                 </div>
               ))}
             </div>
@@ -564,57 +526,51 @@ function VenuesTab({ cluster, energy, T }: { cluster: ClusterVenue[]; energy: Ve
 
 function SensoryTab({ sensory, T }: { sensory: EEIEStatus["sensory"]; T: Theme }) {
   const [intensities, setIntensities] = useState<Record<string, number>>({});
-  const entries = sensory.entries;
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {entries.length === 0 && (
-        <div style={{ color: T.textSub, fontSize: 13, padding: "40px 24px", textAlign: "center" }}>
-          No active sensory layers — activate when guests enter craft experiences.
+      {sensory.entries.length === 0 && (
+        <div style={{ color: T.textSub, fontSize: 13, padding: "48px 0", textAlign: "center" }}>
+          No active sensory layers — layers activate when guests enter craft experiences.
         </div>
       )}
-      {entries.map(e => {
+      {sensory.entries.map(e => {
         const intensity = intensities[e.venueId] ?? e.intensityScale;
+        const pct = Math.round(intensity * 100);
         return (
-          <motion.div key={e.venueId}
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, padding: "18px 20px", backdropFilter: "blur(12px)" }}
+          <motion.div key={e.venueId} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: "18px 22px", boxShadow: T.shadow }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
               <div>
-                <div style={{ fontSize: 10, color: T.textFaint, fontFamily: T.mono, marginBottom: 4 }}>{e.venueId.slice(0, 12)}…</div>
+                <div style={{ fontSize: 9.5, color: T.textFaint, fontFamily: T.mono, marginBottom: 4 }}>{e.venueId.slice(0, 14)}…</div>
                 {e.activeCraft
-                  ? <div style={{ fontSize: 17, fontWeight: 800, color: T.accent, letterSpacing: "0.1em" }}>{e.activeCraft.toUpperCase()}</div>
+                  ? <div style={{ fontSize: 18, fontWeight: 800, color: T.accent, letterSpacing: "0.12em" }}>{e.activeCraft.toUpperCase()}</div>
                   : <div style={{ fontSize: 13, color: T.textSub }}>No active craft</div>
                 }
               </div>
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 28, fontWeight: 800, color: T.accent }}>{Math.round(intensity * 100)}%</div>
-                <div style={{ fontSize: 9, color: T.textFaint, fontFamily: T.mono }}>INTENSITY</div>
+              <div style={{ textAlign: "center", padding: "10px 16px", background: `${T.accent}0E`, borderRadius: 12, border: `1px solid ${T.border}` }}>
+                <div style={{ fontSize: 30, fontWeight: 900, color: T.accent }}>{pct}%</div>
+                <div style={{ fontSize: 8, color: T.textFaint, fontFamily: T.mono, marginTop: 2 }}>INTENSITY</div>
               </div>
             </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 16 }}>
-              {[
-                { l: "Occupancy", v: e.occupancy },
-                { l: "Triggers",  v: e.triggerCount },
-                { l: "Last Trigger", v: e.lastTriggerAt ? new Date(e.lastTriggerAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—" },
-              ].map(m => (
-                <div key={m.l} style={{ textAlign: "center", padding: "10px", background: `${T.accent}08`, borderRadius: 9, border: `1px solid ${T.border}` }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: T.text }}>{m.v}</div>
-                  <div style={{ fontSize: 9, color: T.textFaint, fontFamily: T.mono, marginTop: 2 }}>{m.l}</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 18 }}>
+              {[{ l: "Occupancy", v: e.occupancy }, { l: "Triggers", v: e.triggerCount }, { l: "Last Trigger", v: e.lastTriggerAt ? new Date(e.lastTriggerAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—" }].map(m => (
+                <div key={m.l} style={{ textAlign: "center", padding: "10px", background: `${T.accent}06`, borderRadius: 10, border: `1px solid ${T.border}` }}>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: T.text }}>{m.v}</div>
+                  <div style={{ fontSize: 8.5, color: T.textFaint, fontFamily: T.mono, marginTop: 2 }}>{m.l}</div>
                 </div>
               ))}
             </div>
-
             {/* Touch fader */}
-            <Fader
-              label="INTENSITY CONTROL"
-              value={intensity}
-              onChange={v => setIntensities(prev => ({ ...prev, [e.venueId]: v }))}
-              color={T.accent}
-              T={T}
-            />
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: T.textSub, marginBottom: 8 }}>
+                <span style={{ fontFamily: T.mono, letterSpacing: "0.14em" }}>INTENSITY CONTROL</span>
+                <span style={{ fontWeight: 700, color: T.accent }}>{pct}%</span>
+              </div>
+              <input type="range" min="0" max="100" value={pct}
+                onChange={ev => setIntensities(p => ({ ...p, [e.venueId]: Number(ev.target.value) / 100 }))}
+                style={{ width: "100%", height: 32, cursor: "pointer", accentColor: T.accent }} />
+            </div>
           </motion.div>
         );
       })}
@@ -622,49 +578,41 @@ function SensoryTab({ sensory, T }: { sensory: EEIEStatus["sensory"]; T: Theme }
   );
 }
 
-function POSTab({ providers, T }: { providers: PosProvider[]; T: Theme }) {
-  const SC: Record<string, string> = { HEALTHY: "#00E87A", DEGRADED: "#FFD060", OFFLINE: "#FF4461", UNCONFIGURED: "#8090AA" };
+function CommerceTab({ providers, T }: { providers: PosProvider[]; T: Theme }) {
+  const SC: Record<string, string> = { HEALTHY: T.green, DEGRADED: T.yellow, OFFLINE: T.red, UNCONFIGURED: T.textSub };
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {providers.map(p => {
         const sc = SC[p.status] ?? T.accent;
         return (
-          <motion.div key={`${p.provider}-${p.venueId ?? "g"}`}
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, padding: "18px 20px", backdropFilter: "blur(12px)" }}
+          <motion.div key={`${p.provider}-${p.venueId ?? "g"}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -1 }}
+            style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: "20px 22px", boxShadow: T.shadow }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <div>
                 <div style={{ fontSize: 16, fontWeight: 800, color: T.text, textTransform: "capitalize" }}>{p.provider}</div>
-                {p.venueId && <div style={{ fontSize: 10, color: T.textFaint, fontFamily: T.mono }}>venue:{p.venueId.slice(0, 10)}…</div>}
+                {p.venueId && <div style={{ fontSize: 9.5, color: T.textFaint, fontFamily: T.mono, marginTop: 2 }}>venue:{p.venueId.slice(0, 12)}…</div>}
               </div>
               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                {p.simulated && <Pill label="Simulated" color={T.textSub} bg={`${T.textSub}12`} />}
-                <Pill label={p.status} color={sc} bg={`${sc}12`} />
+                {p.simulated && <Badge label="Simulated" color={T.textSub} bg={`${T.textSub}12`} />}
+                <Badge label={p.status} color={sc} bg={`${sc}12`} />
               </div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10 }}>
               {[
                 { l: "Last Sync",     v: p.lastSyncAt ? new Date(p.lastSyncAt).toLocaleTimeString() : "—" },
-                { l: "Sync Duration", v: p.lastSyncDurationMs != null ? `${p.lastSyncDurationMs}ms` : "—" },
+                { l: "Duration",      v: p.lastSyncDurationMs != null ? `${p.lastSyncDurationMs}ms` : "—" },
                 { l: "Failures",      v: String(p.consecutiveFailures), warn: p.consecutiveFailures > 0 },
               ].map(m => (
-                <div key={m.l} style={{ padding: "10px 12px", background: `${T.accent}07`, borderRadius: 9, border: `1px solid ${T.border}` }}>
-                  <div style={{ fontSize: 9, color: T.textFaint, fontFamily: T.mono, marginBottom: 4 }}>{m.l}</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "warn" in m && m.warn ? T.red : T.text }}>{m.v}</div>
+                <div key={m.l} style={{ padding: "10px 14px", background: `${T.accent}06`, borderRadius: 10, border: `1px solid ${T.border}` }}>
+                  <div style={{ fontSize: 8.5, color: T.textFaint, fontFamily: T.mono, marginBottom: 4 }}>{m.l}</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "warn" in m && m.warn ? T.red : T.text }}>{m.v}</div>
                 </div>
               ))}
             </div>
-            {p.lastError && (
-              <div style={{ marginTop: 10, padding: "8px 12px", borderRadius: 8, background: `${T.red}10`, border: `1px solid ${T.red}30`, fontSize: 10, color: T.red, fontFamily: T.mono }}>
-                {p.lastError.slice(0, 120)}
-              </div>
-            )}
-            {p.status === "UNCONFIGURED" && (
-              <div style={{ marginTop: 10, padding: "8px 12px", borderRadius: 8, background: `${T.accent}08`, fontSize: 10, color: T.textSub }}>
-                Add {p.provider.toUpperCase()}_API_KEY secret to activate real integration.
-              </div>
-            )}
+            {p.lastError && <div style={{ marginTop: 12, padding: "9px 12px", borderRadius: 9, background: `${T.red}0A`, border: `1px solid ${T.red}25`, fontSize: 10, color: T.red, fontFamily: T.mono }}>{p.lastError.slice(0, 120)}</div>}
+            {p.status === "UNCONFIGURED" && <div style={{ marginTop: 12, padding: "9px 12px", borderRadius: 9, background: `${T.accent}08`, fontSize: 10, color: T.textSub }}>Add {p.provider.toUpperCase()}_API_KEY secret to activate real integration.</div>}
           </motion.div>
         );
       })}
@@ -673,43 +621,29 @@ function POSTab({ providers, T }: { providers: PosProvider[]; T: Theme }) {
 }
 
 function PredictionsTab({ predictions, T }: { predictions: Prediction[]; T: Theme }) {
-  const AC: Record<string, string> = { PURCHASE: "#00E87A", UPGRADE: "#FFD060", BROWSE_MORE: "#00D4FF", DISENGAGE: "#FF4461", SEEK_GUIDANCE: "#A070E0", REORDER: "#00D4FF" };
+  const AC: Record<string, string> = { PURCHASE: T.green, UPGRADE: T.yellow, BROWSE_MORE: T.accent, DISENGAGE: T.red, SEEK_GUIDANCE: T.purple, REORDER: T.accent };
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      {predictions.length === 0 && (
-        <div style={{ color: T.textSub, fontSize: 13, padding: "40px 24px", textAlign: "center" }}>
-          No predictions yet — engine analyses sessions every 5 minutes.
-        </div>
-      )}
+      {predictions.length === 0 && <div style={{ color: T.textSub, fontSize: 13, padding: "48px 0", textAlign: "center" }}>No predictions yet — AI engine analyses sessions every 5 minutes.</div>}
       {predictions.map(p => {
         const ac = AC[p.predictedNextAction] ?? T.accent;
-        const scores = [
-          { l: "Hesitation", v: p.hesitationScore },
-          { l: "Curiosity",  v: p.curiosityScore },
-          { l: "Confidence", v: p.confidenceScore },
-          { l: "Fatigue",    v: p.fatigueLevel },
-          { l: "Premium",    v: p.premiumIntentScore },
-        ];
         return (
-          <motion.div key={p.sessionId}
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, padding: "16px 20px", backdropFilter: "blur(12px)" }}
+          <motion.div key={p.sessionId} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, padding: "16px 20px", boxShadow: T.shadow }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-              <div style={{ fontSize: 10, color: T.textFaint, fontFamily: T.mono }}>session:{p.sessionId.slice(0, 10)}…</div>
-              <Pill label={p.predictedNextAction.replace(/_/g, " ")} color={ac} bg={`${ac}12`} />
+              <div style={{ fontSize: 9.5, color: T.textFaint, fontFamily: T.mono }}>session:{p.sessionId.slice(0, 12)}…</div>
+              <Badge label={p.predictedNextAction.replace(/_/g, " ")} color={ac} bg={`${ac}12`} />
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 8, marginBottom: 10 }}>
-              {scores.map(m => (
-                <div key={m.l} style={{ textAlign: "center", padding: "10px 6px", background: `${T.accent}08`, borderRadius: 9, border: `1px solid ${T.border}` }}>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: m.v > 70 ? T.accent : T.text }}>{m.v}</div>
-                  <div style={{ fontSize: 8, color: T.textFaint, fontFamily: T.mono, marginTop: 2 }}>{m.l}</div>
+              {[{ l: "Hesitation", v: p.hesitationScore }, { l: "Curiosity", v: p.curiosityScore }, { l: "Confidence", v: p.confidenceScore }, { l: "Fatigue", v: p.fatigueLevel }, { l: "Premium", v: p.premiumIntentScore }].map(m => (
+                <div key={m.l} style={{ textAlign: "center", padding: "10px 6px", background: `${T.accent}07`, borderRadius: 10, border: `1px solid ${T.border}` }}>
+                  <div style={{ fontSize: 21, fontWeight: 800, color: m.v > 70 ? T.accent : T.text }}>{m.v}</div>
+                  <div style={{ fontSize: 7.5, color: T.textFaint, fontFamily: T.mono, marginTop: 2 }}>{m.l}</div>
                 </div>
               ))}
             </div>
-            <div style={{ fontSize: 9, color: T.textFaint, fontFamily: T.mono }}>
-              {p.confidence}% confidence · {new Date(p.ts).toLocaleTimeString()}
-            </div>
+            <div style={{ fontSize: 9, color: T.textFaint, fontFamily: T.mono }}>{p.confidence}% confidence · {new Date(p.ts).toLocaleTimeString()}</div>
           </motion.div>
         );
       })}
@@ -720,19 +654,15 @@ function PredictionsTab({ predictions, T }: { predictions: Prediction[]; T: Them
 function BusTab({ history, T }: { history: BusHistory; T: Theme }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      {Object.keys(history).length === 0 && (
-        <div style={{ color: T.textSub, fontSize: 13, padding: "40px 24px", textAlign: "center" }}>Event bus idle.</div>
-      )}
+      {Object.keys(history).length === 0 && <div style={{ color: T.textSub, fontSize: 13, padding: "48px 0", textAlign: "center" }}>Event bus idle — no recent topic activity.</div>}
       {Object.entries(history).map(([topic, events]) => (
-        <Panel key={topic} title={topic} icon={<Network size={12} />} T={T}>
+        <Panel key={topic} title={topic} icon={<Network size={13} />} T={T}>
           {events.length === 0
             ? <div style={{ fontSize: 11, color: T.textSub }}>No recent events.</div>
             : events.slice(0, 5).map((e, i) => (
-              <div key={i} style={{ padding: "8px 0", borderBottom: i < events.length - 1 ? `1px solid ${T.border}` : "none" }}>
-                <div style={{ fontSize: 9, color: T.textFaint, fontFamily: T.mono, marginBottom: 4 }}>{new Date(e.ts).toLocaleTimeString()}</div>
-                <pre style={{ fontSize: 10, color: T.text, fontFamily: T.mono, margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
-                  {JSON.stringify(e.payload, null, 2).slice(0, 180)}
-                </pre>
+              <div key={i} style={{ padding: "8px 0", borderBottom: i < Math.min(events.length, 5) - 1 ? `1px solid ${T.border}` : "none" }}>
+                <div style={{ fontSize: 8.5, color: T.textFaint, fontFamily: T.mono, marginBottom: 3 }}>{new Date(e.ts).toLocaleTimeString()}</div>
+                <pre style={{ fontSize: 10, color: T.textMid, fontFamily: T.mono, margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{JSON.stringify(e.payload, null, 2).slice(0, 180)}</pre>
               </div>
             ))
           }
@@ -742,51 +672,196 @@ function BusTab({ history, T }: { history: BusHistory; T: Theme }) {
   );
 }
 
-// ── Founder action bar ────────────────────────────────────────────────────────
-function FounderBar({ T }: { T: Theme }) {
-  const [confirm, setConfirm] = useState<string | null>(null);
-  const actions = [
-    { id: "override",     icon: <Monitor size={20} />,     label: "SYSTEM OVERRIDE",      sub: "Shutdown / Restart / Isolation", color: T.yellow },
-    { id: "kill",         icon: <PowerOff size={20} />,    label: "KILL SWITCH",           sub: "Disable All Transactions",       color: T.red },
-    { id: "maintenance",  icon: <Wrench size={20} />,      label: "MAINTENANCE MODE",      sub: "Pause Non-Essential Ops",         color: T.accent2 },
-    { id: "announce",     icon: <Megaphone size={20} />,   label: "GLOBAL ANNOUNCEMENT",   sub: "Broadcast to All Venues",         color: T.accent },
-    { id: "power",        icon: <Siren size={20} />,       label: "SYSTEM POWER",          sub: "You are in control.",            color: T.green },
-  ];
+// ─────────────────────────────────────────────────────────────────────────────
+// STAFF COCKPIT
+// ─────────────────────────────────────────────────────────────────────────────
+
+function StaffCockpit({ T }: { T: Theme }) {
+  const [selectedId, setSelectedId] = useState<string | null>(MOCK_SESSIONS[0].id);
+  const [sessions, setSessions] = useState<GuestSession[]>(MOCK_SESSIONS);
+  const [note, setNote] = useState("");
+  const [cartMsg, setCartMsg] = useState<string | null>(null);
+
+  const selected = sessions.find(s => s.id === selectedId) ?? null;
+
+  function pauseSession(id: string) {
+    setSessions(p => p.map(s => s.id === id ? { ...s, status: s.status === "paused" ? "active" : "paused" } : s));
+  }
+  function addToCart(session: GuestSession, item: CartItem) {
+    setSessions(p => p.map(s => s.id === session.id ? { ...s, cart: [...s.cart, item] } : s));
+    setCartMsg(`${item.name} added`);
+    setTimeout(() => setCartMsg(null), 2500);
+  }
+  function sendToPOS(session: GuestSession) {
+    setCartMsg(`📲 ${session.cart.length} item(s) sent to Commerce Infrastructure`);
+    setSessions(p => p.map(s => s.id === session.id ? { ...s, cart: [] } : s));
+    setTimeout(() => setCartMsg(null), 3000);
+  }
+
+  const TIER_C: Record<string, string> = { Obsidian: "#A78BFA", Platinum: "#60C8FF", Gold: T.yellow, Silver: T.textSub };
+
   return (
-    <div style={{
-      background: T.card, border: `1px solid ${T.borderHi}`,
-      borderRadius: 16, padding: "16px 20px",
-      backdropFilter: "blur(16px)",
-    }}>
-      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.2em", color: T.accentDim, fontFamily: T.mono, marginBottom: 12 }}>
-        ◈ FOUNDER CONTROL — SYSTEM GOVERNANCE &amp; OVERRIDES
+    <div style={{ display: "flex", gap: 16, height: "100%" }}>
+      {/* Session list */}
+      <div style={{ width: 220, flexShrink: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ fontSize: 8.5, fontWeight: 700, letterSpacing: "0.2em", color: T.textFaint, fontFamily: T.mono, marginBottom: 4 }}>ACTIVE TABLES</div>
+        {sessions.map(s => {
+          const sc = STATUS_COLOR(s.status, T);
+          const isSelected = selectedId === s.id;
+          return (
+            <motion.div key={s.id} onClick={() => setSelectedId(s.id)} whileHover={{ x: 2 }} whileTap={{ scale: 0.98 }}
+              style={{ background: isSelected ? `${T.accent}12` : T.card, border: `1px solid ${isSelected ? T.borderHi : T.border}`, borderRadius: 12, padding: "12px 14px", cursor: "pointer", boxShadow: isSelected ? `0 0 0 2px ${T.accent}30` : T.shadow }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                <span style={{ fontSize: 9, fontWeight: 700, color: T.textFaint, fontFamily: T.mono }}>{s.table.toUpperCase()}</span>
+                <LiveDot color={sc} size={7} />
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: T.text }}>{s.guestName}</div>
+              <div style={{ fontSize: 9, color: T.textSub, marginTop: 3 }}>
+                {Math.round((Date.now() - new Date(s.startedAt).getTime()) / 60000)}m · {s.loyaltyTier}
+              </div>
+              {s.status === "attention" && (
+                <div style={{ marginTop: 6, fontSize: 8.5, color: T.yellow, fontWeight: 700, fontFamily: T.mono }}>⚠ NEEDS ATTENTION</div>
+              )}
+            </motion.div>
+          );
+        })}
       </div>
-      <div style={{ display: "flex", gap: 10 }}>
-        {actions.map(a => (
-          <TouchBtn
-            key={a.id}
-            icon={<span style={{ color: a.color }}>{a.icon}</span>}
-            label={a.label}
-            color={a.color}
-            bg={`${a.color}10`}
-            border={`${a.color}33`}
-            onClick={() => setConfirm(confirm === a.id ? null : a.id)}
-          />
-        ))}
-      </div>
-      <AnimatePresence>
-        {confirm && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
-            style={{ overflow: "hidden" }}
-          >
-            <div style={{ marginTop: 12, padding: "12px 16px", borderRadius: 10, background: `${T.red}0C`, border: `1px solid ${T.red}25`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 11, color: T.textSub }}>Confirm: <strong style={{ color: T.text }}>{actions.find(a => a.id === confirm)?.label}</strong></span>
-              <div style={{ display: "flex", gap: 8 }}>
-                <button onClick={() => setConfirm(null)} style={{ padding: "8px 16px", borderRadius: 8, border: `1px solid ${T.border}`, background: "transparent", color: T.textSub, cursor: "pointer", fontSize: 11 }}>Cancel</button>
-                <button onClick={() => setConfirm(null)} style={{ padding: "8px 16px", borderRadius: 8, border: `1px solid ${T.red}44`, background: `${T.red}14`, color: T.red, cursor: "pointer", fontSize: 11, fontWeight: 700 }}>Execute</button>
+
+      {/* Detail panel */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 14, minWidth: 0, overflowY: "auto" }}>
+        {!selected ? (
+          <div style={{ color: T.textSub, textAlign: "center", padding: "60px 0" }}>Select a table to view guest session.</div>
+        ) : (
+          <>
+            {/* Guest header */}
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: "18px 22px", boxShadow: T.shadow }}>
+              <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                <div style={{ width: 52, height: 52, borderRadius: 14, background: `${T.accent}14`, border: `2px solid ${T.borderHi}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, fontWeight: 800, color: T.accent, flexShrink: 0 }}>
+                  {selected.initials}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
+                    <span style={{ fontSize: 18, fontWeight: 800, color: T.text }}>{selected.guestName}</span>
+                    {selected.returning && <Badge label="RETURNING" color={T.accent} bg={`${T.accent}12`} />}
+                    <Badge label={selected.loyaltyTier} color={TIER_C[selected.loyaltyTier] ?? T.accent} bg={`${TIER_C[selected.loyaltyTier] ?? T.accent}12`} />
+                  </div>
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                    <div><span style={{ fontSize: 9, color: T.textFaint, fontFamily: T.mono }}>XP </span><span style={{ fontSize: 12, fontWeight: 700, color: T.text }}>{selected.xp.toLocaleString()}</span></div>
+                    <div><span style={{ fontSize: 9, color: T.textFaint, fontFamily: T.mono }}>STRENGTH </span><span style={{ fontSize: 12, fontWeight: 700, color: T.accent }}>{selected.strength.toUpperCase()}</span></div>
+                    <div><span style={{ fontSize: 9, color: T.textFaint, fontFamily: T.mono }}>AI MATCH </span><span style={{ fontSize: 12, fontWeight: 700, color: T.green }}>{selected.aiMatchScore}%</span></div>
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 10 }}>
+                    {selected.flavors.map(f => <Badge key={f} label={f} color={T.purple} bg={`${T.purple}0E`} />)}
+                  </div>
+                </div>
+                <motion.button whileTap={{ scale: 0.95 }} onClick={() => pauseSession(selected.id)}
+                  style={{ padding: "10px 16px", borderRadius: 10, border: `1px solid ${T.borderHi}`, background: selected.status === "paused" ? `${T.green}14` : `${T.yellow}14`, color: selected.status === "paused" ? T.green : T.yellow, cursor: "pointer", fontSize: 11, fontWeight: 700 }}>
+                  {selected.status === "paused" ? "▶ Resume" : "⏸ Pause"}
+                </motion.button>
               </div>
             </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              {/* AI Cigar Match */}
+              <Panel title="AI Cigar Match" subtitle={`Based on ${selected.flavors.join(", ")}`} icon={<Leaf size={14} />} badge="RECOMMENDED" T={T} accentColor={T.green}>
+                <div style={{ background: `${T.green}06`, border: `1px solid ${T.green}1A`, borderRadius: 12, padding: "14px" }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: T.text, marginBottom: 3 }}>{selected.favCigar}</div>
+                  <div style={{ fontSize: 9.5, color: T.textSub, marginBottom: 10 }}>Medium · Handcrafted · Premium Reserve</div>
+                  <Meter pct={selected.aiMatchScore} color={T.green} height={6} />
+                  <div style={{ fontSize: 9, color: T.green, fontFamily: T.mono, marginTop: 5 }}>{selected.aiMatchScore}% MATCH</div>
+                  <div style={{ fontSize: 10.5, color: T.textMid, marginTop: 10, lineHeight: 1.6 }}>
+                    "{selected.flavors.slice(0,2).join(" and ")} notes perfectly complement this blend's profile."
+                  </div>
+                  <motion.button whileTap={{ scale: 0.95 }}
+                    onClick={() => addToCart(selected, { name: selected.favCigar, type: "cigar", price: 42, qty: 1 })}
+                    style={{ marginTop: 12, width: "100%", padding: "12px", borderRadius: 10, background: T.green, border: "none", color: "#fff", cursor: "pointer", fontSize: 12, fontWeight: 700, boxShadow: `0 4px 14px ${T.green}35` }}>
+                    + Add to Order
+                  </motion.button>
+                </div>
+              </Panel>
+
+              {/* Liquor Pairing */}
+              <Panel title="Liquor Pairing Intelligence" subtitle="Flavor bridge analysis" icon={<Coffee size={14} />} badge="OPTIMAL" T={T} accentColor={T.purple}>
+                <div style={{ background: `${T.purple}06`, border: `1px solid ${T.purple}1A`, borderRadius: 12, padding: "14px" }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: T.text, marginBottom: 3 }}>{selected.favLiquor}</div>
+                  <div style={{ fontSize: 9.5, color: T.textSub, marginBottom: 10 }}>2 oz pour · Available · Premium</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 10 }}>
+                    {["Creamy", "Toasted", "Vanilla", "Oak"].map(f => <Badge key={f} label={f} color={T.purple} bg={`${T.purple}0E`} />)}
+                  </div>
+                  <div style={{ fontSize: 10.5, color: T.textMid, lineHeight: 1.6 }}>
+                    "{selected.favLiquor} lifts the {selected.flavors[0]?.toLowerCase()} and {selected.flavors[1]?.toLowerCase()} notes while extending the finish."
+                  </div>
+                  <motion.button whileTap={{ scale: 0.95 }}
+                    onClick={() => addToCart(selected, { name: selected.favLiquor, type: "liquor", price: 18, qty: 1 })}
+                    style={{ marginTop: 12, width: "100%", padding: "12px", borderRadius: 10, background: T.purple, border: "none", color: "#fff", cursor: "pointer", fontSize: 12, fontWeight: 700, boxShadow: `0 4px 14px ${T.purple}35` }}>
+                    + Add Pairing
+                  </motion.button>
+                </div>
+              </Panel>
+            </div>
+
+            {/* Staff Nudge */}
+            <Panel title="Staff Nudge System" subtitle="AI-suggested guest interaction" icon={<BookOpen size={14} />} T={T} accentColor={T.accent}>
+              <div style={{ background: `${T.accent}06`, border: `1px solid ${T.borderHi}`, borderRadius: 12, padding: "16px", marginBottom: 14 }}>
+                <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", color: T.accent, fontFamily: T.mono, marginBottom: 8 }}>SUGGESTED SCRIPT</div>
+                <div style={{ fontSize: 13, color: T.text, lineHeight: 1.7, fontStyle: "italic" }}>
+                  "This {selected.favLiquor.split(" ").slice(-2).join(" ")} pairing brings out the {selected.flavors.slice(0,2).map(f=>f.toLowerCase()).join(", ")} in your cigar. Would you like to add a 2 oz pour?"
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                {[
+                  { icon: <Star size={16} />, label: "APPLY REWARD", sub: "Loyalty pts", color: T.yellow, variant: "glass" as const },
+                  { icon: <ClipboardList size={16} />, label: "ADD NOTE", sub: "Staff memo", color: T.accent, variant: "glass" as const },
+                  { icon: <Send size={16} />, label: "SEND TO POS", sub: "Commerce layer", color: T.green, variant: "solid" as const, onClick: () => sendToPOS(selected) },
+                  { icon: <Users size={16} />, label: "RETURN TO GUEST", sub: "Handoff screen", color: T.purple, variant: "glass" as const },
+                ].map(btn => (
+                  <TouchButton key={btn.label} icon={btn.icon} label={btn.label} sub={btn.sub}
+                    color={btn.color} variant={btn.variant} onClick={"onClick" in btn ? btn.onClick : undefined} size="md" />
+                ))}
+              </div>
+              {note !== undefined && (
+                <div style={{ marginTop: 12 }}>
+                  <input value={note} onChange={e => setNote(e.target.value)} placeholder="Add a staff note for this guest..."
+                    style={{ width: "100%", padding: "10px 14px", borderRadius: 9, border: `1px solid ${T.border}`, background: T.dark ? "rgba(255,255,255,0.05)" : "rgba(0,60,160,0.04)", color: T.text, fontSize: 12, outline: "none", boxSizing: "border-box" }} />
+                </div>
+              )}
+            </Panel>
+
+            {/* Cart */}
+            {selected.cart.length > 0 && (
+              <Panel title={`Order (${selected.cart.length} items)`} icon={<ShoppingCart size={14} />} T={T} accentColor={T.green}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {selected.cart.map((item, i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "10px 12px", borderRadius: 9, background: `${T.green}06`, border: `1px solid ${T.border}` }}>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{item.name}</div>
+                        <div style={{ fontSize: 9, color: T.textSub, textTransform: "capitalize" }}>{item.type}</div>
+                      </div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: T.green }}>${item.price}</div>
+                    </div>
+                  ))}
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 4px", borderTop: `1px solid ${T.border}`, marginTop: 4 }}>
+                    <span style={{ fontWeight: 700, color: T.text }}>Total</span>
+                    <span style={{ fontWeight: 800, color: T.green, fontSize: 16 }}>${selected.cart.reduce((s, i) => s + i.price * i.qty, 0)}</span>
+                  </div>
+                  <motion.button whileTap={{ scale: 0.96 }} onClick={() => sendToPOS(selected)}
+                    style={{ width: "100%", padding: "14px", borderRadius: 12, background: T.green, border: "none", color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 800, boxShadow: `0 4px 16px ${T.green}35`, marginTop: 4 }}>
+                    📲 Send to Commerce Infrastructure
+                  </motion.button>
+                </div>
+              </Panel>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Cart toast */}
+      <AnimatePresence>
+        {cartMsg && (
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
+            style={{ position: "fixed", bottom: 100, right: 32, background: T.green, color: "#fff", padding: "12px 20px", borderRadius: 12, fontWeight: 700, fontSize: 12, zIndex: 999, boxShadow: `0 4px 20px ${T.green}50` }}>
+            ✓ {cartMsg}
           </motion.div>
         )}
       </AnimatePresence>
@@ -794,12 +869,101 @@ function FounderBar({ T }: { T: Theme }) {
   );
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
-type TabId = "overview" | "venues" | "sensory" | "pos" | "predictions" | "bus";
+// ─────────────────────────────────────────────────────────────────────────────
+// FOUNDER CONTROL BAR
+// ─────────────────────────────────────────────────────────────────────────────
+
+function FounderBar({ T }: { T: Theme }) {
+  const [confirm, setConfirm] = useState<string | null>(null);
+  const ACTIONS = [
+    { id: "override",    icon: <Monitor size={22} />,   label: "SYSTEM OVERRIDE",    sub: "Shutdown / Restart", color: T.yellow },
+    { id: "kill",        icon: <PowerOff size={22} />,  label: "KILL SWITCH",         sub: "Disable Transactions", color: T.red },
+    { id: "maintenance", icon: <Wrench size={22} />,    label: "MAINTENANCE MODE",    sub: "Pause Non-Essential", color: T.accent },
+    { id: "announce",    icon: <Megaphone size={22} />, label: "GLOBAL ANNOUNCEMENT", sub: "Broadcast All Venues", color: T.purple },
+    { id: "power",       icon: <Siren size={22} />,     label: "SYSTEM POWER",        sub: "You are in control.", color: T.green },
+  ];
+  return (
+    <div style={{ background: T.card, border: `1px solid ${T.borderHi}`, borderRadius: 16, padding: "14px 18px", boxShadow: T.shadow }}>
+      <div style={{ fontSize: 8.5, fontWeight: 700, letterSpacing: "0.2em", color: T.textFaint, fontFamily: T.mono, marginBottom: 12 }}>
+        ◈ FOUNDER CONTROL — SOVEREIGN GOVERNANCE &amp; OVERRIDES
+      </div>
+      <div style={{ display: "flex", gap: 10 }}>
+        {ACTIONS.map(a => (
+          <TouchButton key={a.id} icon={<span style={{ color: a.color }}>{a.icon}</span>}
+            label={a.label} sub={a.sub} color={a.color}
+            bg={`${a.color}0E`} border={`${a.color}2A`}
+            variant="glass" size="lg"
+            onClick={() => setConfirm(confirm === a.id ? null : a.id)} />
+        ))}
+      </div>
+      <AnimatePresence>
+        {confirm && (() => {
+          const act = ACTIONS.find(a => a.id === confirm)!;
+          return (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} style={{ overflow: "hidden" }}>
+              <div style={{ marginTop: 12, padding: "12px 16px", borderRadius: 10, background: `${act.color}08`, border: `1px solid ${act.color}22`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 11, color: T.textMid }}>Confirm: <strong style={{ color: T.text }}>{act.label}</strong></span>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={() => setConfirm(null)} style={{ padding: "9px 18px", borderRadius: 9, border: `1px solid ${T.border}`, background: "transparent", color: T.textSub, cursor: "pointer", fontSize: 11 }}>Cancel</button>
+                  <button onClick={() => setConfirm(null)} style={{ padding: "9px 18px", borderRadius: 9, border: `1px solid ${act.color}40`, background: `${act.color}14`, color: act.color, cursor: "pointer", fontSize: 11, fontWeight: 700 }}>Execute</button>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LIVE ORDER TICKER (uses BroadcastChannel)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function LiveTicker({ T }: { T: Theme }) {
+  const [orders, setOrders] = useState<ArchiveBlendOrder[]>([]);
+  useEffect(() => orderBroadcast.subscribe(o => setOrders(p => [o, ...p].slice(0, 4))), []);
+  if (orders.length === 0) return null;
+  return (
+    <Panel title="Live Archive Blend Orders" icon={<Layers size={14} />} badge="LIVE" T={T}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <AnimatePresence initial={false}>
+          {orders.map((o, i) => (
+            <motion.div key={o.orderId} initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
+              style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: i === 0 ? `${T.accent}0E` : `${T.accent}05`, border: `1px solid ${i === 0 ? T.borderHi : T.border}` }}>
+              <div style={{ width: 34, height: 34, borderRadius: 9, background: `${T.accent}12`, border: `1px solid ${T.borderHi}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, color: T.accent, flexShrink: 0 }}>◈</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: T.text }}>{o.guestName}</div>
+                <div style={{ fontSize: 9, color: T.textSub }}>{o.wood} · {o.band} · Harmony {o.harmonyScore}</div>
+              </div>
+              <div style={{ fontSize: 8.5, color: T.textFaint, fontFamily: T.mono }}>{new Date(o.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    </Panel>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN
+// ─────────────────────────────────────────────────────────────────────────────
+
+type TabId = "overview" | "network" | "sensory" | "commerce" | "predictions" | "bus" | "cockpit";
+
+const TAB_LABELS: { id: TabId; label: string; icon: React.ComponentType<{ size: number }> }[] = [
+  { id: "overview",     label: "Command Center",   icon: Monitor },
+  { id: "network",      label: "Live Network",     icon: Globe },
+  { id: "sensory",      label: "Sensory Engine",   icon: Radio },
+  { id: "commerce",     label: "Commerce Health",  icon: Package },
+  { id: "predictions",  label: "AI Predictions",   icon: Brain },
+  { id: "bus",          label: "Event Bus",        icon: Cpu },
+  { id: "cockpit",      label: "Staff Cockpit",    icon: Users },
+];
 
 export default function EEIECommandCenter() {
-  const [, navigate]    = useLocation();
-  const [tab, setTab]   = useState<TabId>("overview");
+  const [, navigate]      = useLocation();
+  const [tab, setTab]     = useState<TabId>("overview");
   const [status, setStatus]   = useState<EEIEStatus | null>(null);
   const [cluster, setCluster] = useState<ClusterVenue[]>([]);
   const [energy, setEnergy]   = useState<VenueState[]>([]);
@@ -807,10 +971,10 @@ export default function EEIECommandCenter() {
   const [loading, setLoading] = useState(true);
   const [lastAt, setLastAt]   = useState(new Date());
 
-  // Adaptive theme
+  // Default: day mode (white/silver/blue luxury)
   const [isDark, setIsDark] = useState(() => {
     const h = new Date().getHours();
-    return h < 7 || h >= 19;
+    return h < 7 || h >= 20;
   });
   const T = useMemo(() => buildTheme(isDark), [isDark]);
 
@@ -831,64 +995,61 @@ export default function EEIECommandCenter() {
   }, []);
 
   useEffect(() => { void refresh(); }, [refresh]);
-  useEffect(() => {
-    const id = setInterval(() => void refresh(), 30_000);
-    return () => clearInterval(id);
-  }, [refresh]);
-
-  // Auto-sync theme with time every minute
-  useEffect(() => {
-    const id = setInterval(() => {
-      const h = new Date().getHours();
-      setIsDark(h < 7 || h >= 19);
-    }, 60_000);
-    return () => clearInterval(id);
-  }, []);
+  useEffect(() => { const id = setInterval(() => void refresh(), 30_000); return () => clearInterval(id); }, [refresh]);
+  useEffect(() => { const id = setInterval(() => { const h = new Date().getHours(); setIsDark(h < 7 || h >= 20); }, 60_000); return () => clearInterval(id); }, []);
 
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: T.bg, color: T.text, fontFamily: T.sans, overflow: "hidden" }}>
       <style>{`
         @keyframes eeie-wave { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         input[type=range] { -webkit-appearance: none; appearance: none; background: transparent; }
-        input[type=range]::-webkit-slider-runnable-track { height: 8px; border-radius: 4px; background: rgba(0,212,255,0.15); }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; margin-top: -10px; cursor: pointer; }
+        input[type=range]::-webkit-slider-runnable-track { height: 10px; border-radius: 5px; background: rgba(0,100,200,0.12); }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; border-radius: 50%; background: ${T.accent}; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 8px ${T.accent}60; margin-top: -10px; cursor: grab; }
+        input[type=range]::-webkit-slider-thumb:active { cursor: grabbing; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 4px; }
       `}</style>
 
-      {/* ── Top bar ── */}
+      {/* ── TOP COMMAND RAIL ── */}
       <div style={{
-        display: "flex", alignItems: "center", gap: 16, padding: "0 20px",
-        height: 54, flexShrink: 0,
-        background: isDark ? "rgba(6,10,20,0.95)" : "rgba(240,244,251,0.97)",
+        height: 56, flexShrink: 0,
+        background: T.dark ? "rgba(6,10,20,0.97)" : "rgba(255,255,255,0.95)",
         borderBottom: `1px solid ${T.border}`,
-        backdropFilter: "blur(20px)",
+        backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
+        display: "flex", alignItems: "center", gap: 16, padding: "0 20px",
+        boxShadow: T.dark ? "none" : "0 1px 12px rgba(0,60,160,0.07)",
       }}>
-        <button onClick={() => navigate("/sovereign-dashboard")}
-          style={{ background: "none", border: "none", color: T.textSub, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 11, padding: 0, flexShrink: 0 }}>
-          <ChevronRight size={13} style={{ transform: "rotate(180deg)" }} /> Back
-        </button>
+        <motion.button whileTap={{ scale: 0.93 }} onClick={() => navigate("/sovereign-dashboard")}
+          style={{ background: "none", border: "none", color: T.textSub, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, fontSize: 11, padding: 0, flexShrink: 0 }}>
+          <ChevronLeft size={14} /> Back
+        </motion.button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
           <LiveDot color={T.green} />
-          <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: "0.06em", color: T.text }}>EEIE COMMAND CENTER</span>
-          <Pill label="LIVE" color={T.green} bg={`${T.green}14`} />
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: T.text, letterSpacing: "0.06em" }}>EEIE COMMAND CENTER</div>
+            <div style={{ fontSize: 8, color: T.textFaint, letterSpacing: "0.12em", fontFamily: T.mono }}>EXPERIENCE ENHANCEMENT INTELLIGENCE ENGINE</div>
+          </div>
+          <Badge label="LIVE" color={T.green} bg={`${T.green}12`} />
+          <div style={{ flex: 1, overflow: "hidden", opacity: 0.6 }}>
+            <Waveform color={T.accent} speed={4} height={20} />
+          </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 14, flexShrink: 0 }}>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: 8, color: T.textFaint, fontFamily: T.mono, letterSpacing: "0.14em" }}>SYSTEM STATUS</div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: T.green }}>All Systems Operational</div>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: 8, color: T.textFaint, fontFamily: T.mono, letterSpacing: "0.14em" }}>AI ENGINE</div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: T.accent }}>Active</div>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: 8, color: T.textFaint, fontFamily: T.mono, letterSpacing: "0.14em" }}>EVENT BUS</div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: T.text }}>{(status?.predictions.recent ?? 0) + 842} /min</div>
-          </div>
-          <span style={{ fontSize: 9, color: T.textFaint, fontFamily: T.mono }}>{lastAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
+          {[
+            { l: "SYSTEM STATUS", v: "All Systems Operational", c: T.green },
+            { l: "AI ENGINE", v: "Active", c: T.accent },
+            { l: "TITAN V", v: "Operational", c: T.green },
+          ].map(m => (
+            <div key={m.l} style={{ textAlign: "right" }}>
+              <div style={{ fontSize: 7.5, color: T.textFaint, fontFamily: T.mono, letterSpacing: "0.12em" }}>{m.l}</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: m.c }}>{m.v}</div>
+            </div>
+          ))}
+          <div style={{ fontSize: 9, color: T.textFaint, fontFamily: T.mono }}>{lastAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
           <motion.button whileTap={{ scale: 0.92 }} onClick={() => void refresh()}
-            style={{ background: `${T.accent}12`, border: `1px solid ${T.borderHi}`, borderRadius: 9, padding: "7px 12px", cursor: "pointer", color: T.accent, display: "flex", alignItems: "center", gap: 5, fontSize: 10, fontFamily: T.mono }}>
+            style={{ background: `${T.accent}10`, border: `1px solid ${T.borderHi}`, borderRadius: 9, padding: "7px 13px", cursor: "pointer", color: T.accent, display: "flex", alignItems: "center", gap: 6, fontSize: 10, fontFamily: T.mono }}>
             <motion.span animate={loading ? { rotate: 360 } : {}} transition={{ duration: 0.8, repeat: loading ? Infinity : 0, ease: "linear" }}>
               <RefreshCw size={11} />
             </motion.span>
@@ -897,153 +1058,116 @@ export default function EEIECommandCenter() {
         </div>
       </div>
 
-      {/* ── Body ── */}
+      {/* ── BODY ── */}
       <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
+        <Sidebar active={tab} onNav={id => setTab(id as TabId)} isDark={isDark} onToggleDark={() => setIsDark(d => !d)} T={T} />
 
-        {/* Sidebar */}
-        <Sidebar active={tab} onNav={id => setTab(id as TabId)} T={T} isDark={isDark} onToggleDark={() => setIsDark(d => !d)} />
-
-        {/* Main content */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-
           {/* Status band */}
-          <div style={{
-            display: "flex", alignItems: "center", gap: 20, padding: "6px 20px",
-            background: isDark ? "rgba(0,8,20,0.8)" : "rgba(220,235,255,0.7)",
-            borderBottom: `1px solid ${T.border}`, flexShrink: 0,
-          }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 20, padding: "6px 22px", background: T.dark ? "rgba(0,8,20,0.8)" : "rgba(238,244,255,0.7)", borderBottom: `1px solid ${T.border}`, flexShrink: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <LiveDot color={T.green} />
-              <span style={{ fontSize: 8.5, color: T.green, letterSpacing: "0.16em", fontFamily: T.mono, textTransform: "uppercase" }}>TITAN V ENGINE: OPERATIONAL</span>
+              <LiveDot color={T.green} size={6} />
+              <span style={{ fontSize: 8, color: T.green, letterSpacing: "0.16em", fontFamily: T.mono }}>TITAN V ENGINE: OPERATIONAL</span>
             </div>
-            <div style={{ flex: 1 }}>
-              <Waveform color={isDark ? T.accent : T.accent} speed={3} />
-            </div>
+            <div style={{ flex: 1 }}><Waveform color={T.accent} speed={3.5} height={18} /></div>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <LiveDot color={T.green} />
-              <span style={{ fontSize: 8.5, color: T.green, letterSpacing: "0.16em", fontFamily: T.mono, textTransform: "uppercase" }}>KIOSK LOCK: ABSOLUTE</span>
+              <LiveDot color={T.green} size={6} />
+              <span style={{ fontSize: 8, color: T.green, letterSpacing: "0.16em", fontFamily: T.mono }}>KIOSK LOCK: ABSOLUTE</span>
             </div>
           </div>
 
-          {/* Stats strip */}
+          {/* KPI strip */}
           {status && (
-            <div style={{
-              display: "flex", gap: 28, padding: "12px 24px",
-              background: isDark ? "rgba(6,12,26,0.7)" : "rgba(230,240,255,0.6)",
-              borderBottom: `1px solid ${T.border}`, flexShrink: 0, overflowX: "auto",
-            }}>
-              <StatChip label="Total Transactions" value="1,84M" delta="+12.4%" T={T} />
-              <StatChip label="Gross Volume" value="$24.7M" delta="+8.8%" T={T} />
-              <StatChip label="Avg Ticket" value="$47.32" delta="-0.1%" T={T} />
-              <StatChip label="Events/Min" value={String(status.predictions.recent + 842)} delta="+18.6%" T={T} />
-              <StatChip label="Sync Status" value="100%" T={T} />
-              <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
-                <Pill label={`${status.cluster.healthy} / ${status.cluster.total} healthy`} color={T.green} bg={`${T.green}12`} />
-              </div>
+            <div style={{ display: "flex", gap: 10, padding: "12px 22px", borderBottom: `1px solid ${T.border}`, background: T.dark ? "rgba(6,12,28,0.7)" : "rgba(244,247,252,0.8)", flexShrink: 0, overflowX: "auto" }}>
+              <KpiCard label="Cluster Nodes"     value={String(status.cluster.total)}                    delta={`${status.cluster.healthy} healthy`}   positive={status.cluster.healthy > 0}   icon={Network}  T={T} />
+              <KpiCard label="Active Venues"     value={String(status.energy.venues)}                    delta="with live events"                                                               icon={Globe}    T={T} />
+              <KpiCard label="AI Predictions"    value={String(status.predictions.recent)}               delta="last 5 min"                                                                     icon={Brain}    T={T} />
+              <KpiCard label="Advisories"        value={String(status.advisories.recent)}                delta="in buffer"                                                                      icon={AlertTriangle} T={T} />
+              <KpiCard label="Commerce Online"   value={`${status.pos.healthy}/${status.pos.total}`}     delta={status.pos.simulated > 0 ? `${status.pos.simulated} simulated` : "all live"}  icon={Package}  T={T} />
+              <KpiCard label="Sensory Layers"    value={String(status.sensory.activeVenues)}             delta="active venues"                                                                  icon={Radio}    T={T} />
             </div>
           )}
 
           {/* Tab bar */}
-          <div style={{ display: "flex", borderBottom: `1px solid ${T.border}`, flexShrink: 0, background: isDark ? "rgba(6,10,20,0.6)" : "rgba(240,244,251,0.8)" }}>
-            {NAV_ITEMS.map(item => {
+          <div style={{ display: "flex", borderBottom: `1px solid ${T.border}`, background: T.dark ? "rgba(6,10,20,0.65)" : "rgba(248,250,254,0.9)", flexShrink: 0, overflowX: "auto" }}>
+            {TAB_LABELS.map(item => {
               const Icon = item.icon;
-              const active = tab === item.id;
+              const isActive = tab === item.id;
               return (
-                <button key={item.id} onClick={() => setTab(item.id as TabId)}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 7,
-                    padding: "10px 18px", border: "none", background: "none",
-                    color: active ? T.accent : T.textSub,
-                    borderBottom: `2px solid ${active ? T.accent : "transparent"}`,
-                    cursor: "pointer", fontSize: 10, fontWeight: active ? 700 : 400,
-                    letterSpacing: "0.12em", textTransform: "uppercase",
-                    fontFamily: T.mono, whiteSpace: "nowrap",
-                    minHeight: 44, transition: "all 0.15s",
-                    marginBottom: -1,
-                  }}>
+                <motion.button key={item.id} onClick={() => setTab(item.id)}
+                  style={{ display: "flex", alignItems: "center", gap: 6, padding: "11px 18px", border: "none", background: isActive ? T.tabActive : "transparent", color: isActive ? T.accent : T.textSub, borderBottom: `2px solid ${isActive ? T.accent : "transparent"}`, cursor: "pointer", fontSize: 10.5, fontWeight: isActive ? 700 : 400, letterSpacing: "0.10em", textTransform: "uppercase", fontFamily: T.mono, whiteSpace: "nowrap", minHeight: 46, marginBottom: -1, transition: "all 0.15s" }}>
                   <Icon size={12} />{item.label}
-                </button>
+                </motion.button>
               );
             })}
           </div>
 
-          {/* Scrollable content */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px 12px" }}>
-
-            {/* Loading */}
+          {/* Content */}
+          <div style={{ flex: 1, overflowY: "auto", padding: tab === "cockpit" ? "16px 22px" : "20px 22px 10px" }}>
             {loading && !status && (
-              <div style={{ textAlign: "center", padding: 60, color: T.textSub }}>
-                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}>
+              <div style={{ textAlign: "center", padding: "80px 0", color: T.textSub }}>
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }} style={{ display: "inline-block" }}>
                   <Activity size={32} style={{ opacity: 0.4 }} />
                 </motion.div>
-                <div style={{ marginTop: 14, fontSize: 12, fontFamily: T.mono, letterSpacing: "0.1em" }}>CONNECTING TO EEIE…</div>
+                <div style={{ marginTop: 14, fontSize: 12, fontFamily: T.mono, letterSpacing: "0.12em" }}>CONNECTING TO EEIE…</div>
               </div>
             )}
-
-            {/* Auth error */}
             {!loading && !status && (
-              <div style={{ textAlign: "center", padding: "60px 40px", color: T.red }}>
-                <XCircle size={32} style={{ marginBottom: 14 }} />
-                <div style={{ fontSize: 13, fontFamily: T.mono, letterSpacing: "0.08em" }}>EEIE API UNREACHABLE</div>
-                <div style={{ fontSize: 11, color: T.textSub, marginTop: 8 }}>Ensure you are authenticated via the Sovereign PIN login.</div>
+              <div style={{ textAlign: "center", padding: "80px 40px" }}>
+                <XCircle size={36} style={{ color: T.red, marginBottom: 14 }} />
+                <div style={{ fontSize: 14, fontFamily: T.mono, color: T.red, letterSpacing: "0.08em" }}>EEIE API UNREACHABLE</div>
+                <div style={{ fontSize: 12, color: T.textSub, marginTop: 8 }}>Authenticate via Sovereign PIN to access intelligence systems.</div>
                 <motion.button whileTap={{ scale: 0.95 }} onClick={() => void refresh()}
-                  style={{ marginTop: 20, padding: "10px 24px", borderRadius: 10, background: `${T.accent}14`, border: `1px solid ${T.borderHi}`, color: T.accent, cursor: "pointer", fontSize: 11, fontFamily: T.mono }}>
+                  style={{ marginTop: 20, padding: "12px 28px", borderRadius: 12, background: `${T.accent}12`, border: `1px solid ${T.borderHi}`, color: T.accent, cursor: "pointer", fontSize: 12, fontFamily: T.mono, fontWeight: 700 }}>
                   RETRY CONNECTION
                 </motion.button>
               </div>
             )}
 
-            {/* Tab content */}
-            <AnimatePresence mode="wait">
-              {status && (
-                <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
-                  {tab === "overview"     && <OverviewTab status={status} T={T} />}
-                  {tab === "venues"       && <VenuesTab cluster={cluster} energy={energy} T={T} />}
-                  {tab === "sensory"      && <SensoryTab sensory={status.sensory} T={T} />}
-                  {tab === "pos"          && <POSTab providers={status.pos.providers} T={T} />}
-                  {tab === "predictions"  && <PredictionsTab predictions={status.predictions.entries} T={T} />}
-                  {tab === "bus"          && <BusTab history={bus} T={T} />}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
+            {tab === "cockpit" ? (
+              <StaffCockpit T={T} />
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <LiveTicker T={T} />
+                <AnimatePresence mode="wait">
+                  {status && (
+                    <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                      {tab === "overview"    && <OverviewTab status={status} T={T} />}
+                      {tab === "network"     && <NetworkTab cluster={cluster} energy={energy} T={T} />}
+                      {tab === "sensory"     && <SensoryTab sensory={status.sensory} T={T} />}
+                      {tab === "commerce"    && <CommerceTab providers={status.pos.providers} T={T} />}
+                      {tab === "predictions" && <PredictionsTab predictions={status.predictions.entries} T={T} />}
+                      {tab === "bus"         && <BusTab history={bus} T={T} />}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </div>
 
-          {/* Founder action bar */}
-          <div style={{ padding: "12px 24px 14px", borderTop: `1px solid ${T.border}`, background: isDark ? "rgba(6,10,20,0.9)" : "rgba(235,243,255,0.9)", flexShrink: 0 }}>
+          {/* Founder Control */}
+          <div style={{ padding: "10px 22px 12px", borderTop: `1px solid ${T.border}`, background: T.dark ? "rgba(6,10,20,0.92)" : "rgba(248,250,255,0.95)", flexShrink: 0 }}>
             <FounderBar T={T} />
           </div>
 
-          {/* Status footer */}
-          <div style={{
-            display: "flex", alignItems: "center", gap: 20, padding: "6px 24px",
-            background: isDark ? "#04070F" : "#E0ECFB",
-            borderTop: `1px solid ${T.border}`, flexShrink: 0,
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <span style={{ fontSize: 8, color: T.textFaint, fontFamily: T.mono, letterSpacing: "0.14em" }}>SYSTEM INTEGRITY</span>
-              <div style={{ width: 80, height: 4, borderRadius: 2, background: `${T.accent}20`, overflow: "hidden" }}>
-                <div style={{ width: "100%", height: "100%", background: T.green, borderRadius: 2 }} />
+          {/* Footer */}
+          <div style={{ display: "flex", alignItems: "center", gap: 20, padding: "6px 22px", background: T.dark ? "#04070F" : "#EBF0F9", borderTop: `1px solid ${T.border}`, flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 7.5, color: T.textFaint, fontFamily: T.mono }}>SYSTEM INTEGRITY</span>
+              <div style={{ width: 80, height: 4, borderRadius: 2, background: `${T.accent}18`, overflow: "hidden" }}>
+                <div style={{ width: "100%", height: "100%", background: T.green }} />
               </div>
-              <span style={{ fontSize: 9, color: T.green, fontFamily: T.mono }}>100%</span>
+              <span style={{ fontSize: 9, color: T.green, fontFamily: T.mono, fontWeight: 700 }}>100%</span>
             </div>
-            {[
-              { l: "Security", v: "Secure",     c: T.green },
-              { l: "Compliance", v: "Compliant", c: T.green },
-              { l: "Backup",   v: "Live",        c: T.green },
-              { l: "Uptime",   v: "99.99%",      c: T.green },
-            ].map(m => (
-              <div key={m.l} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                <LiveDot color={m.c} size={5} />
-                <span style={{ fontSize: 8, color: T.textFaint, fontFamily: T.mono }}>{m.l}: </span>
-                <span style={{ fontSize: 8, color: m.c, fontFamily: T.mono, fontWeight: 700 }}>{m.v}</span>
+            {[{ l: "Security", v: "Secure" }, { l: "Compliance", v: "Compliant" }, { l: "Backup", v: "Live" }, { l: "Uptime", v: "99.99%" }].map(m => (
+              <div key={m.l} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <LiveDot color={T.green} size={5} />
+                <span style={{ fontSize: 7.5, color: T.textFaint, fontFamily: T.mono }}>{m.l}: </span>
+                <span style={{ fontSize: 7.5, color: T.green, fontFamily: T.mono, fontWeight: 700 }}>{m.v}</span>
               </div>
             ))}
-            <div style={{ marginLeft: "auto", fontSize: 8, color: T.textFaint, fontFamily: T.mono }}>
-              NOVEE OS TITAN V v2.0.1
-            </div>
+            <span style={{ marginLeft: "auto", fontSize: 7.5, color: T.textFaint, fontFamily: T.mono }}>EEIE TITAN V v2.0.1</span>
           </div>
-
         </div>
       </div>
     </div>
