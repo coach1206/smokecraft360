@@ -8,7 +8,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-body, html, #root { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden !important; background: #000; cursor: none !important; touch-action: none !important; }
+body, html, #root { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden !important; background: #000; }
 nav, footer.site-footer, .static-header, .living-room, .grid-legacy { display: none !important; }
 ::-webkit-scrollbar { display: none !important; }
 * { scrollbar-width: none; }

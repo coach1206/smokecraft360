@@ -545,6 +545,164 @@ function BladePanel({
   );
 }
 
+/* ── Detail / confirmation overlay — cinematic portal transition ─────────── */
+
+function CraftDetail({
+  craft,
+  onBack,
+}: {
+  craft:  CraftConfig;
+  onBack: () => void;
+}) {
+  const [, navigate] = useLocation();
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => setIdx(i => (i + 1) % craft.images.length), 3500);
+    return () => clearInterval(t);
+  }, [craft.images.length]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      style={{ position: "fixed", inset: 0, zIndex: 400 }}
+    >
+      {/* Ken Burns rotating background */}
+      <AnimatePresence mode="sync">
+        <motion.img
+          key={`detail-${idx}`}
+          src={craft.images[idx]}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.55 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.4 }}
+          style={{
+            position: "absolute", inset: 0,
+            width: "100%", height: "100%",
+            objectFit: "cover",
+            animation: "lp-kb-1 10s ease-in-out forwards",
+          }}
+          alt=""
+        />
+      </AnimatePresence>
+
+      {/* Cinematic dark overlay */}
+      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.68)" }} />
+
+      {/* Craft accent glow — top edge */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 2,
+        background: `linear-gradient(90deg, transparent, ${craft.color}88, transparent)`,
+      }} />
+
+      {/* Back button */}
+      <motion.button
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.2 }}
+        onClick={onBack}
+        style={{
+          position: "absolute", top: 36, left: 36, zIndex: 10,
+          padding: "10px 20px",
+          background: "rgba(0,0,0,0.80)",
+          border: `1px solid ${craft.color}55`,
+          color: `${craft.color}cc`,
+          cursor: "pointer",
+          fontFamily: "monospace",
+          fontSize: 11,
+          letterSpacing: "0.18em",
+          borderRadius: 6,
+        }}
+      >
+        ‹ PORTAL
+      </motion.button>
+
+      {/* Content block */}
+      <div style={{
+        position: "absolute", bottom: "12%",
+        width: "100%", textAlign: "center",
+        padding: "0 40px",
+      }}>
+        {/* Craft name */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            fontSize: "clamp(28px, 6vw, 72px)",
+            fontWeight: 900,
+            letterSpacing: "0.5em",
+            fontFamily: "monospace",
+            color: craft.color,
+            textShadow: `0 0 40px ${craft.color}88, 0 0 80px ${craft.color}44`,
+          }}
+        >
+          {craft.name}
+        </motion.div>
+
+        {/* Tagline */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.5 }}
+          transition={{ delay: 0.35 }}
+          style={{
+            fontSize: "clamp(9px, 1.2vw, 13px)",
+            letterSpacing: "0.4em",
+            color: "#fff",
+            fontFamily: "monospace",
+            marginTop: 12,
+          }}
+        >
+          {craft.tagline}
+        </motion.div>
+
+        {/* Enter button */}
+        <motion.button
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.55, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          whileTap={{ scale: 0.96 }}
+          onClick={() => navigate(`/experience/${craft.id}`)}
+          style={{
+            marginTop: 28,
+            padding: "20px 52px",
+            background: `linear-gradient(180deg, ${craft.color} 0%, ${craft.color}aa 100%)`,
+            color: "#060402",
+            border: "none",
+            fontWeight: "bold",
+            fontSize: 14,
+            cursor: "pointer",
+            letterSpacing: "0.24em",
+            fontFamily: "monospace",
+            boxShadow: `0 0 36px ${craft.color}55, 0 4px 24px rgba(0,0,0,0.65)`,
+          } as React.CSSProperties}
+        >
+          ENTER EXPERIENCE ›
+        </motion.button>
+
+        {/* Sovereign tag */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.28 }}
+          transition={{ delay: 0.85 }}
+          style={{
+            letterSpacing: "0.5em",
+            marginTop: 18,
+            fontSize: "clamp(7px, 1vw, 10px)",
+            fontFamily: "monospace",
+            color: "#fff",
+          }}
+        >
+          INITIALIZE SOVEREIGN PROTOCOL
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
 /* ── Root component ───────────────────────────────────────────────────────── */
 const CRAFT_MOOD: Record<string, LoungeMood> = {
   smoke: "MEDITATIVE",
@@ -554,10 +712,10 @@ const CRAFT_MOOD: Record<string, LoungeMood> = {
 };
 
 export default function LivingPortal() {
+  const [selected,         setSelected]         = useState<CraftConfig | null>(null);
   const [activeAtmosphere, setActiveAtmosphere] = useState<string>("smoke");
   const [activeBlade,      setActiveBlade]      = useState<string | null>(null);
   const { updateLoungeMood }                    = useUnifiedCognitive();
-  const [, navigate]                            = useLocation();
 
   // Inject Ken Burns keyframes once
   useEffect(() => {
@@ -568,6 +726,8 @@ export default function LivingPortal() {
     document.head.appendChild(el);
     return () => { el.remove(); };
   }, []);
+
+  const handleBack = useCallback(() => setSelected(null), []);
 
   const handleCraftActivate = useCallback((craftId: string) => {
     setActiveAtmosphere(craftId);
@@ -612,11 +772,22 @@ export default function LivingPortal() {
             onDeactivate={() => setActiveBlade(null)}
             onTrigger={() => {
               handleCraftActivate(craft.id);
-              navigate(`/experience/${craft.id}`);
+              setSelected(craft);
             }}
           />
         ))}
       </div>
+
+      {/* Cinematic detail overlay — portal transition before experience */}
+      <AnimatePresence>
+        {selected && (
+          <CraftDetail
+            key={selected.id}
+            craft={selected}
+            onBack={handleBack}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
