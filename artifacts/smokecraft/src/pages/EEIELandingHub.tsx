@@ -11,6 +11,7 @@ import {
   Activity, Users, Star, Image, Grid3x3, Truck,
   Server, Building2, Radio, Package, Brain,
   Thermometer, Zap, Shield, ChevronLeft, ChevronRight,
+  ArrowRight,
 } from "lucide-react";
 import "@/styles/Sovereign.css";
 
@@ -41,6 +42,7 @@ const STATUS_COLORS: Record<string, string> = {
   SENSING: C.cyan, SECURED: C.red, CALIBRATING: C.purple,
 };
 
+// ── Tile data model ──────────────────────────────────────────
 interface Tile {
   icon: React.ElementType;
   label: string;
@@ -48,6 +50,8 @@ interface Tile {
   path: string;
   accent: string;
   status: string;
+  images: string[];
+  previewType: "grid" | "single" | "strip";
 }
 
 const MODULE_TILES: Tile[] = [
@@ -55,71 +59,85 @@ const MODULE_TILES: Tile[] = [
     icon: Users, label: "STAFF COCKPIT",
     desc: "Wait-staff command layer: active tables, guest profiles, cigar matching, drink pairing, food pairing, visual selling, and POS handoff.",
     path: "/eeie/staff-cockpit", accent: C.blue, status: "ACTIVE",
+    images: [], previewType: "grid",
   },
   {
     icon: Star, label: "GUEST EXPERIENCE",
     desc: "Guest session management, taste profiling, mood intelligence, and personalized experience delivery.",
     path: "/eeie/guest-experience", accent: C.cyan, status: "ACTIVE",
+    images: [], previewType: "single",
   },
   {
     icon: Image, label: "MEDIA LIBRARY",
     desc: "Upload, link, approve, and manage images for cigars, drinks, food, desserts, specials, and pairing bundles.",
     path: "/eeie/media-library", accent: "#60A5FA", status: "READY",
+    images: [], previewType: "grid",
   },
   {
     icon: Grid3x3, label: "PRODUCT WALL",
     desc: "Luxury visual selling wall with cigar, liquor, cocktail, food, dessert, and bundle images.",
     path: "/eeie/product-wall", accent: C.blueHi, status: "LIVE",
+    images: [], previewType: "grid",
   },
   {
     icon: Truck, label: "DISTRIBUTOR LIBRARY",
     desc: "Connect distributor catalogs, import CSVs, map cigar and liquor products, and generate restock intelligence.",
     path: "/eeie/distributors", accent: "#38BDF8", status: "SYNCING",
+    images: [], previewType: "strip",
   },
   {
     icon: Server, label: "BACK-OF-HOUSE SYNC",
     desc: "Connect bar, kitchen, cigar inventory, manager controls, event bus, and commerce infrastructure.",
     path: "/eeie/back-of-house", accent: C.cyan, status: "CONNECTED",
+    images: [], previewType: "strip",
   },
   {
     icon: Building2, label: "VENUE INTELLIGENCE",
     desc: "Real-time venue analytics: occupancy, revenue, staff performance, and ambient intelligence systems.",
     path: "/eeie/venue-intelligence", accent: C.blue, status: "LIVE",
+    images: [], previewType: "grid",
   },
   {
     icon: Radio, label: "SENSORY ENGINE",
     desc: "Venue mood, service pressure, color-state intelligence, haptics, and sensor-aware recommendations.",
     path: "/eeie/sensory-engine", accent: C.purple, status: "SENSING",
+    images: [], previewType: "single",
   },
   {
     icon: Package, label: "COMMERCE HEALTH",
     desc: "POS integration, payment health, revenue forecasting, margin tracking, and inventory integrity.",
     path: "/eeie/commerce-health", accent: "#34D399", status: "NOMINAL",
+    images: [], previewType: "strip",
   },
   {
     icon: Brain, label: "AI ASSISTANT",
     desc: "Real-time staff guidance, pairing explanations, inventory warnings, mood interpretation, and next-best actions.",
     path: "/eeie/ai-assistant", accent: C.purple, status: "ONLINE",
+    images: [], previewType: "single",
   },
   {
     icon: Thermometer, label: "MOOD SENSOR",
     desc: "Live venue mood, service pressure, color-state intelligence, haptics, and sensor-aware recommendations.",
     path: "/eeie/mood-sensor", accent: C.cyan, status: "SENSING",
+    images: [], previewType: "single",
   },
   {
     icon: Activity, label: "EVENT BUS",
     desc: "Live event stream: order events, mood changes, inventory alerts, staff actions, and system signals.",
     path: "/eeie/event-bus", accent: C.amber, status: "LIVE",
+    images: [], previewType: "strip",
   },
   {
     icon: Shield, label: "FOUNDER CONTROL",
     desc: "Founder-level overrides: feature flags, kill switches, revenue levers, and system governance.",
     path: "/eeie/founder-control", accent: C.red, status: "SECURED",
+    images: [], previewType: "single",
   },
   {
     icon: Zap, label: "MASTER OPERATIONS",
     desc: "Operational layer: staff management, venue oversight, inventory, reconciliation, and analytics.",
-    path: "/eeie/master-operations", accent: "#D4AF37", status: "ACTIVE",
+    path: "/eeie/master-operations", accent: C.blueHi, status: "ACTIVE",
+    images: [], previewType: "grid",
   },
 ];
 
@@ -127,85 +145,201 @@ const STATUS_RAIL = [
   { label: "SESSION",    value: "ACTIVE",     color: C.green  },
   { label: "TOKEN",      value: "VALID",       color: C.green  },
   { label: "NODES",      value: "ALL ONLINE",  color: C.green  },
-  { label: "INTEGRITY",  value: "100%",         color: C.blue   },
-  { label: "EVENT BUS",  value: "LIVE",         color: C.green  },
-  { label: "DIST SYNC",  value: "SYNCING",      color: C.amber  },
-  { label: "MEDIA LIB",  value: "READY",        color: C.blue   },
-  { label: "BOH",        value: "CONNECTED",    color: C.green  },
-  { label: "KIOSK LOCK", value: "ABSOLUTE",     color: C.red    },
+  { label: "INTEGRITY",  value: "100%",        color: C.blue   },
+  { label: "EVENT BUS",  value: "LIVE",        color: C.green  },
+  { label: "DIST SYNC",  value: "SYNCING",     color: C.amber  },
+  { label: "MEDIA LIB",  value: "READY",       color: C.blue   },
+  { label: "BOH",        value: "CONNECTED",   color: C.green  },
+  { label: "KIOSK LOCK", value: "ABSOLUTE",    color: C.red    },
 ];
 
-// ── Module Card ───────────────────────────────────────────────
-function ModuleCard({
+// ── Fallback image tile ───────────────────────────────────────
+function FallbackImageTile({ tile }: { tile: Tile }) {
+  const Icon = tile.icon;
+  return (
+    <div style={{
+      height: 118,
+      background: `linear-gradient(135deg,${tile.accent}10 0%,${tile.accent}04 100%)`,
+      borderBottom: `1px solid ${tile.accent}18`,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      position: "relative", overflow: "hidden",
+      flexShrink: 0,
+    }}>
+      {/* Grid pattern overlay */}
+      <svg
+        width="100%" height="100%"
+        style={{ position: "absolute", inset: 0, opacity: 0.10 }}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <pattern id={`grid-${tile.label}`} width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke={tile.accent} strokeWidth="0.5" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill={`url(#grid-${tile.label})`} />
+      </svg>
+      {/* Corner radial glow */}
+      <div style={{
+        position: "absolute", inset: 0,
+        background: `radial-gradient(ellipse at center,${tile.accent}18 0%,transparent 70%)`,
+        pointerEvents: "none",
+      }} />
+      {/* Icon silhouette */}
+      <div style={{
+        width: 54, height: 54, borderRadius: 16,
+        background: `${tile.accent}16`, border: `1px solid ${tile.accent}30`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        boxShadow: `0 0 28px ${tile.accent}20`,
+        position: "relative",
+      }}>
+        <Icon size={24} color={tile.accent} />
+      </div>
+      {/* previewType label */}
+      <div style={{
+        position: "absolute", bottom: 8, right: 10,
+        fontSize: 7, color: `${tile.accent}60`,
+        fontFamily: C.mono, letterSpacing: "0.16em",
+      }}>
+        {tile.previewType.toUpperCase()} VIEW
+      </div>
+    </div>
+  );
+}
+
+// ── Image strip (when images exist) ──────────────────────────
+function ImageStrip({ images, accent, previewType }: { images: string[]; accent: string; previewType: Tile["previewType"] }) {
+  if (previewType === "grid") {
+    return (
+      <div style={{
+        height: 118,
+        display: "grid",
+        gridTemplateColumns: `repeat(${Math.min(images.length, 3)},1fr)`,
+        gap: 2, borderBottom: `1px solid ${accent}18`, flexShrink: 0,
+      }}>
+        {images.slice(0, 3).map((src, i) => (
+          <img
+            key={i} src={src} alt=""
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+          />
+        ))}
+      </div>
+    );
+  }
+  return (
+    <div style={{
+      height: 118, borderBottom: `1px solid ${accent}18`, flexShrink: 0, overflow: "hidden",
+    }}>
+      <img
+        src={images[0]} alt=""
+        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+      />
+    </div>
+  );
+}
+
+// ── EEIEModuleCard ────────────────────────────────────────────
+function EEIEModuleCard({
   tile, index, onNavigate,
 }: { tile: Tile; index: number; onNavigate: (p: string) => void }) {
   const sc = STATUS_COLORS[tile.status] ?? C.silver;
+  const hasImages = tile.images.length > 0;
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 14 }}
+      initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.030, duration: 0.36 }}
-      whileHover={{ scale: 1.022 }}
+      whileHover={{ scale: 1.018 }}
       whileTap={{ scale: 0.97 }}
       onClick={() => onNavigate(tile.path)}
       style={{
         background: C.surface,
         border: `1px solid ${C.border}`,
-        borderRadius: 14, padding: "22px 20px",
+        borderRadius: 14,
         cursor: "pointer", position: "relative", overflow: "hidden",
+        display: "flex", flexDirection: "column",
         transition: "border-color 0.2s",
       }}
       onMouseEnter={e => (e.currentTarget.style.borderColor = `${tile.accent}40`)}
       onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
     >
-      {/* Corner radial */}
-      <div style={{
-        position: "absolute", top: 0, right: 0, width: 90, height: 90,
-        background: `radial-gradient(circle,${tile.accent}09,transparent)`,
-        borderRadius: "0 14px 0 100%", pointerEvents: "none",
-      }} />
-      {/* Top metallic edge */}
+      {/* Top metallic edge shimmer */}
       <div style={{
         position: "absolute", top: 0, left: 0, right: 0, height: 1,
-        background: `linear-gradient(90deg,transparent,${tile.accent}30,transparent)`,
+        background: `linear-gradient(90deg,transparent,${tile.accent}35,transparent)`,
+        zIndex: 2,
       }} />
 
-      {/* Icon + status */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
-        <div style={{
-          width: 44, height: 44, borderRadius: 12,
-          background: `${tile.accent}14`, border: `1px solid ${tile.accent}24`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-        }}>
-          <tile.icon size={20} color={tile.accent} />
+      {/* ── Image area ── */}
+      {hasImages
+        ? <ImageStrip images={tile.images} accent={tile.accent} previewType={tile.previewType} />
+        : <FallbackImageTile tile={tile} />
+      }
+
+      {/* ── Card body ── */}
+      <div style={{ padding: "16px 18px 18px", display: "flex", flexDirection: "column", flex: 1 }}>
+        {/* Icon + status row */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 10,
+            background: `${tile.accent}14`, border: `1px solid ${tile.accent}22`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <tile.icon size={17} color={tile.accent} />
+          </div>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 4,
+            padding: "3px 8px", borderRadius: 20,
+            background: `${sc}12`, border: `1px solid ${sc}28`,
+          }}>
+            <div style={{ width: 4, height: 4, borderRadius: "50%", background: sc }} />
+            <span style={{ fontSize: 6, color: sc, fontWeight: 700, letterSpacing: "0.18em" }}>{tile.status}</span>
+          </div>
         </div>
+
+        {/* Label */}
         <div style={{
-          display: "flex", alignItems: "center", gap: 4,
-          padding: "3px 8px", borderRadius: 20,
-          background: `${sc}12`, border: `1px solid ${sc}28`,
+          fontSize: 12, color: tile.accent, fontFamily: C.serif,
+          letterSpacing: "0.12em", marginBottom: 7, fontWeight: 500,
         }}>
-          <div style={{ width: 4, height: 4, borderRadius: "50%", background: sc }} />
-          <span style={{ fontSize: 6, color: sc, fontWeight: 700, letterSpacing: "0.18em" }}>{tile.status}</span>
+          {tile.label}
         </div>
-      </div>
 
-      {/* Label */}
-      <div style={{ fontSize: 13, color: tile.accent, fontFamily: C.serif, letterSpacing: "0.12em", marginBottom: 8 }}>
-        {tile.label}
-      </div>
+        {/* Description */}
+        <div style={{
+          fontSize: 10, color: C.muted, lineHeight: 1.65, marginBottom: 16, flex: 1,
+          display: "-webkit-box", WebkitLineClamp: 3,
+          WebkitBoxOrient: "vertical", overflow: "hidden",
+        }}>
+          {tile.desc}
+        </div>
 
-      {/* Desc */}
-      <div style={{
-        fontSize: 10, color: C.muted, lineHeight: 1.65, marginBottom: 20,
-        display: "-webkit-box", WebkitLineClamp: 3,
-        WebkitBoxOrient: "vertical", overflow: "hidden",
-      }}>
-        {tile.desc}
-      </div>
-
-      {/* Enter CTA */}
-      <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 8, color: tile.accent, fontWeight: 700, letterSpacing: "0.16em" }}>
-        ENTER <ChevronRight size={10} />
+        {/* ── Large CTA button ── */}
+        <motion.button
+          whileTap={{ scale: 0.96 }}
+          onClick={e => { e.stopPropagation(); onNavigate(tile.path); }}
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
+            width: "100%", padding: "11px 0",
+            borderRadius: 9,
+            background: `${tile.accent}16`,
+            border: `1px solid ${tile.accent}38`,
+            color: tile.accent,
+            fontSize: 10, fontWeight: 700, letterSpacing: "0.16em",
+            cursor: "pointer", fontFamily: C.mono,
+            transition: "background 0.18s, border-color 0.18s",
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = `${tile.accent}28`;
+            (e.currentTarget as HTMLButtonElement).style.borderColor = `${tile.accent}60`;
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = `${tile.accent}16`;
+            (e.currentTarget as HTMLButtonElement).style.borderColor = `${tile.accent}38`;
+          }}
+        >
+          ENTER MODULE <ArrowRight size={12} />
+        </motion.button>
       </div>
     </motion.div>
   );
@@ -370,9 +504,9 @@ export default function EEIELandingHub() {
         </motion.div>
 
         {/* ── MODULE GRID ── */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 14, maxWidth: 960 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(270px,1fr))", gap: 16, maxWidth: 960 }}>
           {MODULE_TILES.map((tile, i) => (
-            <ModuleCard key={tile.label} tile={tile} index={i} onNavigate={navigate} />
+            <EEIEModuleCard key={tile.label} tile={tile} index={i} onNavigate={navigate} />
           ))}
         </div>
 
