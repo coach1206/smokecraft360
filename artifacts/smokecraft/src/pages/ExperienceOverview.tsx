@@ -7,10 +7,10 @@
  * "ENTER THE EXPERIENCE" advances via ExperienceFlowEngine.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useLocation } from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
-import { Flame, Brain, Zap, ArrowRight, Check, Wind, Beer, Cigarette, Sparkles } from "lucide-react";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
+import { Flame, Brain, Zap, ArrowRight, Check, Wind, Beer, Cigarette, Sparkles, Activity } from "lucide-react";
 import { getCraftTheme } from "@/lib/craftThemes";
 import { ExperienceFlowEngine } from "@/lib/experienceFlowEngine";
 import EmberHeartbeat from "@/components/EmberHeartbeat";
@@ -161,11 +161,42 @@ export default function ExperienceOverview() {
   const [confirmed, setConfirmed] = useState([false, false, false, false]);
   const allConfirmed = confirmed.every(Boolean);
 
+  // Ember-bridge transition state
+  const [transitioning, setTransitioning] = useState(false);
+  const ctaControls = useAnimation();
+
+  // Biometric heartbeat sync — reacts to scroll + hover
+  const [bioPulse, setBioPulse] = useState(false);
+  const scrollRef = useRef(0);
+  const bioTimer  = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
   // Wire EFE on mount
   useEffect(() => {
     ExperienceFlowEngine.goTo("EXPERIENCE_OVERVIEW");
     ExperienceFlowEngine.setCraft(type);
   }, [type]);
+
+  // Scroll → trigger biometric heartbeat flash
+  useEffect(() => {
+    function onScroll() {
+      scrollRef.current += 1;
+      setBioPulse(true);
+      if (bioTimer.current) clearTimeout(bioTimer.current);
+      bioTimer.current = setTimeout(() => setBioPulse(false), 900);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (bioTimer.current) clearTimeout(bioTimer.current);
+    };
+  }, []);
+
+  // Listen for EFE env_update events and flash bioPulse
+  useEffect(() => {
+    function onEnvUpdate() { setBioPulse(true); setTimeout(() => setBioPulse(false), 900); }
+    window.addEventListener("efe:env_update", onEnvUpdate);
+    return () => window.removeEventListener("efe:env_update", onEnvUpdate);
+  }, []);
 
   // Time-of-day atmosphere
   const hour = new Date().getHours();
@@ -176,9 +207,28 @@ export default function ExperienceOverview() {
     setConfirmed(prev => { const n = [...prev]; n[i] = true; return n; });
   }
 
+  /**
+   * Ember-bridge: On Click → ember flare animation → 400ms fade out →
+   * SmokeCraftFlow.next() (CHALLENGE_SELECTION) → enter Synchronization path.
+   */
   function handleEnter() {
-    ExperienceFlowEngine.goTo("MENTOR_REVEAL");
-    navigate(`/experience/${type}`);
+    if (transitioning) return;
+    setTransitioning(true);
+    // 1. Ember flare — scale burst
+    ctaControls.start({
+      scale: [1, 1.06, 1],
+      boxShadow: [
+        `0 0 20px ${accent}40`,
+        `0 0 60px ${accent}90`,
+        `0 0 20px ${accent}40`,
+      ],
+      transition: { duration: 0.4 },
+    }).catch(() => { /* ignore */ });
+    // 2. After 400ms — fade out and navigate to Synchronization
+    setTimeout(() => {
+      ExperienceFlowEngine.enterSynchronization();
+      navigate(`/synchronization/${type}`);
+    }, 400);
   }
 
   return (
@@ -196,7 +246,7 @@ export default function ExperienceOverview() {
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
           style={{ paddingTop: 36, paddingBottom: 28, textAlign: "center" }}>
           <div style={{ fontSize: 8, color: `${accent}80`, letterSpacing: "0.32em", marginBottom: 10, textTransform: "uppercase" }}>
-            STEP 3 OF 7 · EXPERIENCE OVERVIEW
+            STEP 3 OF 8 · EXPERIENCE OVERVIEW
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 10 }}>
             {cfg.icon}
@@ -212,10 +262,10 @@ export default function ExperienceOverview() {
           </p>
         </motion.div>
 
-        {/* Step progress bar */}
+        {/* Step progress bar — 8 steps */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
           style={{ display: "flex", gap: 4, marginBottom: 28, justifyContent: "center" }}>
-          {Array.from({ length: 7 }, (_, i) => (
+          {Array.from({ length: 8 }, (_, i) => (
             <div key={i} style={{ width: i === 2 ? 20 : 6, height: 3, borderRadius: 2, background: i <= 2 ? accent : "rgba(240,232,212,0.12)", transition: "width 0.3s" }} />
           ))}
         </motion.div>
@@ -294,12 +344,30 @@ export default function ExperienceOverview() {
         {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.5 }}
-          style={{ marginTop: 28 }}
+          animate={{ opacity: transitioning ? 0 : 1, y: 0 }}
+          transition={{ delay: transitioning ? 0 : 0.7, duration: 0.4 }}
+          style={{ marginTop: 28, position: "relative" }}
         >
+          {/* Ember flare burst — fires on CTA click */}
+          {transitioning && (
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0.9 }}
+              animate={{ scale: 3.2, opacity: 0 }}
+              transition={{ duration: 0.45, ease: "easeOut" }}
+              style={{
+                position:      "absolute",
+                inset:         0,
+                borderRadius:  14,
+                background:    `radial-gradient(ellipse, ${accent}60 0%, transparent 70%)`,
+                pointerEvents: "none",
+                zIndex:        5,
+              }}
+            />
+          )}
+
           <motion.button
-            whileTap={allConfirmed ? { scale: 0.97 } : {}}
+            animate={ctaControls}
+            whileTap={allConfirmed && !transitioning ? { scale: 0.97 } : {}}
             onClick={allConfirmed ? handleEnter : undefined}
             style={{
               width:         "100%",
@@ -315,12 +383,12 @@ export default function ExperienceOverview() {
               letterSpacing: "0.20em",
               textTransform: "uppercase",
               fontFamily:    C.mono,
-              cursor:        allConfirmed ? "pointer" : "not-allowed",
+              cursor:        allConfirmed && !transitioning ? "pointer" : "not-allowed",
               boxShadow:     allConfirmed ? `0 0 32px ${accent}30` : "none",
               transition:    "all 0.35s ease",
               display:       "flex",
               alignItems:    "center",
-              justifyContent: "center",
+              justifyContent:"center",
               gap:           10,
             } as React.CSSProperties}
           >
@@ -342,6 +410,40 @@ export default function ExperienceOverview() {
           </motion.button>
         </motion.div>
       </div>
+
+      {/* ── Biometric Heartbeat Sync indicator — reacts to scroll + EFE events ── */}
+      <motion.div
+        animate={bioPulse ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.88 }}
+        transition={{ duration: 0.25 }}
+        style={{
+          position:      "fixed",
+          top:           22,
+          right:         22,
+          zIndex:        9600,
+          display:       "flex",
+          alignItems:    "center",
+          gap:           6,
+          background:    "rgba(6,4,2,0.82)",
+          border:        `1px solid ${accent}35`,
+          borderRadius:  8,
+          padding:       "6px 10px",
+          backdropFilter:"blur(10px)",
+          pointerEvents: "none",
+        }}
+      >
+        <motion.div
+          animate={bioPulse ? {
+            scale:     [1, 1.5, 1],
+            opacity:   [1, 0.5, 1],
+          } : {}}
+          transition={{ duration: 0.5 }}
+          style={{ width: 5, height: 5, borderRadius: "50%", background: accent }}
+        />
+        <Activity size={10} color={accent} />
+        <span style={{ fontSize: 7, color: accent, fontFamily: C.mono, letterSpacing: "0.18em" }}>
+          BIOMETRIC SYNC
+        </span>
+      </motion.div>
     </div>
   );
 }

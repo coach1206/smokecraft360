@@ -10,6 +10,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Activity } from "lucide-react";
+import { ExperienceFlowEngine } from "@/lib/experienceFlowEngine";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -146,6 +147,8 @@ export default function PhantomHUD() {
 
   // ── Hold detection — rAF loop ─────────────────────────────────────────────
   const startHold = useCallback((e: PointerEvent) => {
+    // Suppress during Steps 1–7 — HUD only activates in SWIPE_RITUAL
+    if (!ExperienceFlowEngine.isHudAllowed()) return;
     // Ignore if tapping inside the already-visible HUD
     if (visible) return;
     if ((e.target as HTMLElement).closest("[data-phantom-hud]")) return;

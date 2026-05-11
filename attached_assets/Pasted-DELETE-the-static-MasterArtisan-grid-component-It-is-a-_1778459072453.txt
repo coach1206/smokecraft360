@@ -1,0 +1,76 @@
+DELETE the static MasterArtisan grid component. It is a dead-end.
+
+2. UPDATE src/lib/experienceFlowEngine.ts
+Add the telemetry bridge directly into the state advancement.
+
+TypeScript
+// Add this to your orchestrate() function
+if (stepName === 'SWIPE_RITUAL') {
+  Infrastructure.setMode('KINETIC_FEEDBACK'); // Silences standard HUDs
+  SSE.emit('ATMOSPHERE_TENSION', 0.8);        // Deepens room lighting
+}
+3. CREATE src/components/SwipeRitual.tsx
+This replaces your irrelevant page. It uses framer-motion for the "Tinder" feel and talks to the EmberHeartbeat.
+
+TypeScript
+import { motion, useMotionValue, useTransform } from 'framer-motion';
+import { useEFE } from '../hooks/useEFE';
+
+const cards = [
+  { id: 'earthy', label: 'EARTHY', color: '#4A5D23' },
+  { id: 'spiced', label: 'SPICED', color: '#D35400' },
+  { id: 'cedar',  label: 'CEDAR',  color: '#A0522D' },
+  { id: 'leather',label: 'LEATHER',color: '#4B3621' }
+];
+
+export const SwipeRitual = () => {
+  const { advance } = useEFE();
+  const x = useMotionValue(0);
+  
+  // Bridge UI to the EmberHeartbeat scale
+  const emberScale = useTransform(x, [-200, 0, 200], [0.5, 1, 2]);
+
+  const handleSwipe = (profile) => {
+    // Send to Infrastructure Bridge
+    fetch('/api/telemetry/ritual', { method: 'POST', body: JSON.stringify({ profile }) });
+    // Advance logic
+    if (isLastCard) advance();
+  };
+
+  return (
+    <div className="ritual-container">
+      <motion.div style={{ scale: emberScale }}>
+        <EmberHeartbeat />
+      </motion.div>
+      
+      {cards.map(card => (
+        <motion.div 
+          drag="x"
+          onDragEnd={(e, info) => info.offset.x > 100 && handleSwipe(card.id)}
+          className="sensory-card"
+        >
+          {card.label}
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+4. CSS OVERRIDE
+Force the "Ritual Look" by killing the browser feel.
+
+CSS
+.sensory-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 40px rgba(0,0,0,0.8);
+  /* Remove the grid layout: cards must stack on Z-axis */
+  position: absolute; 
+}
+5. EXECUTION
+
+Route your IDENTITY_ENROLLMENT "Next" button directly to the SYNCHRONIZATION chamber.
+
+Once sync is 100%, mount the SwipeRitual component.
+
+The irrelevant page is now bypassed entirely.
