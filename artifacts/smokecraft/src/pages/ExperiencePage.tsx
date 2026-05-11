@@ -24,12 +24,11 @@ import { CraftRealism } from "@/components/CraftRealism";
 import { useEnvironmentSafe } from "@/contexts/EnvironmentContext";
 import { useOrchestratorSafe } from "@/contexts/OrchestratorContext";
 import { SessionReturnBanner } from "@/components/CinematicTransition";
-import { CraftEntryChamber } from "@/components/CraftEntryChamber";
+import RitualGate             from "@/components/RitualGate";
 import InsightBubble from "@/components/InsightBubble";
 import MasteryScoreHUD from "@/components/MasteryScoreHUD";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { generateMentorLine, generateWhyThisWorks } from "@/lib/mentorIntelligence";
-import { CraftCinematicOpening } from "@/components/CraftCinematicOpening";
 import MentorChatBubble from "@/components/MentorChatBubble";
 import AchievementUnlock, { type Achievement } from "@/components/AchievementUnlock";
 import ProgressionHUD from "@/components/ProgressionHUD";
@@ -1035,12 +1034,10 @@ export default function ExperiencePage() {
   // Entry chamber: always shows on every new navigation to /experience/:type.
   // CraftEntryChamber handles returning guests internally (skips enrollment, goes to mentor reveal).
   // Skip chamber when returning from SYNCHRONIZATION — EFE already at SWIPE_RITUAL
-  const [showChamber,          setShowChamber]          = useState(() => {
+  const [ritualComplete,       setRitualComplete]       = useState(() => {
     const step = ExperienceFlowEngine.currentStep;
-    return step !== "SWIPE_RITUAL" && step !== "SPIRIT_CONSTRUCTION";
+    return step === "SWIPE_RITUAL" || step === "SPIRIT_CONSTRUCTION" || step === "LEGACY_HANDOFF";
   });
-  const [showBlackout,           setShowBlackout]           = useState(false);
-  const [telemetryArmed,         setTelemetryArmed]         = useState(false);
   const [showSpiritConstruction, setShowSpiritConstruction] = useState(
     () => ExperienceFlowEngine.currentStep === "SPIRIT_CONSTRUCTION"
   );
@@ -1059,17 +1056,6 @@ export default function ExperiencePage() {
   const [xpFlash,    setXpFlash]    = useState<{ amount: number; positive: boolean } | null>(null);
   const xpFlashTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  // Cinematic opening — shows once per craft per session (sessionStorage flag)
-  const [showCinematic, setShowCinematic] = useState(() => {
-    try {
-      const key = `axiom_cinematic_${type}`;
-      if (!sessionStorage.getItem(key)) {
-        sessionStorage.setItem(key, "1");
-        return true;
-      }
-      return false;
-    } catch { return false; }
-  });
   const [commentary,  setCommentary]  = useState<{ line: string; whyNote: string | null } | null>(null);
   const commentaryTimer               = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -1371,27 +1357,6 @@ export default function ExperiencePage() {
       <style>{`@keyframes axiom-ticker-scroll { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
     </div>
 
-    {/* ── Cinematic craft opening — first visit per craft per session ── */}
-    {showCinematic && (
-      <CraftCinematicOpening
-        type={type}
-        onComplete={() => {
-          setShowCinematic(false);
-          setShowBlackout(true);
-          // Pour-specific audio ritual (silent fail if files absent)
-          if (type === "pour") {
-            ["/audio/ice_crack_resonance.mp3", "/audio/liquid_swirl_01.mp3"].forEach(src => {
-              try { const a = new Audio(src); a.volume = 0.5; a.play().catch(() => {}); } catch { /* no audio */ }
-            });
-          }
-          setTimeout(() => {
-            setShowBlackout(false);
-            setTelemetryArmed(true);   // telemetry_status → ARMED: chamber may now mount
-          }, 3000);
-        }}
-      />
-    )}
-
     <SessionReturnBanner
       visible={returnBanner}
       craftType={type}
@@ -1399,29 +1364,19 @@ export default function ExperiencePage() {
       onDismiss={() => setReturnBanner(false)}
     />
 
-    {/* ── Step 3: Atmospheric Blackout — 3-second pitch-black ritual buffer ── */}
-    <AnimatePresence>
-      {showBlackout && (
-        <motion.div
-          key="blackout"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.9 }}
-          style={{
-            position:  "fixed",
-            inset:     0,
-            background: "#000",
-            cursor:    "none",
-            zIndex:    190,
-          }}
-        >
-          {type === "pour"
-            ? <AmberCorePulse corner="bottom-left" size={11} />
-            : <EmberHeartbeat color={theme.accent} corner="bottom-left" size={11} dragX={cardDragX} />
-          }
-        </motion.div>
-      )}
-    </AnimatePresence>
+    {/* ── RitualGate: strict INTRO → BLACKOUT → CHAMBER sequence ── */}
+    {!ritualComplete && (
+      <RitualGate
+        craftType={type}
+        theme={theme}
+        onChamberBegin={() => {
+          setRitualComplete(true);
+          const syncRoute = ExperienceFlowEngine.enterSynchronization();
+          navigate(syncRoute);
+        }}
+        onBack={() => navigate("/")}
+      />
+    )}
     <div style={{
       position:   "fixed",
       inset:      0,
@@ -1891,7 +1846,7 @@ export default function ExperiencePage() {
     </div>
 
     {/* Mastery Score HUD — live session score + Golden Box, right-edge panel */}
-    {guestProfile && !showChamber && (
+    {guestProfile && ritualComplete && (
       <MasteryScoreHUD
         sessionScore={sessionScore}
         totalMastery={guestProfile.totalMastery}
@@ -1902,7 +1857,7 @@ export default function ExperiencePage() {
     )}
 
     {/* Progression HUD — persistent XP bar + tier at top */}
-    {guestProfile && !showChamber && (
+    {guestProfile && ritualComplete && (
       <ProgressionHUD
         guestProfileId={guestProfile.id}
         craftType={type as "smoke" | "pour" | "brew" | "vape"}
@@ -2052,21 +2007,6 @@ export default function ExperiencePage() {
       )}
     </AnimatePresence>
 
-    {/* ── Entry chamber — full-screen cinematic intro, dismisses on begin ── */}
-    <AnimatePresence>
-      {showChamber && !showBlackout && !showCinematic && (type !== "pour" || telemetryArmed) && (
-        <CraftEntryChamber
-          type={type}
-          theme={theme}
-          onBegin={() => {
-            // IDENTITY_ENROLLMENT complete — advance EFE and route through SYNCHRONIZATION chamber
-            const syncRoute = ExperienceFlowEngine.enterSynchronization();
-            navigate(syncRoute);
-          }}
-          onBack={() => navigate("/")}
-        />
-      )}
-    </AnimatePresence>
 
     {/* ── PourCraft 360: SPIRIT_CONSTRUCTION overlay (Steps 10–12) ── */}
     <AnimatePresence>

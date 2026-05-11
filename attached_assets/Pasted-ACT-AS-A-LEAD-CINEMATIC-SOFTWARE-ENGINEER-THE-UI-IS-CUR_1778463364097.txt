@@ -1,0 +1,36 @@
+ACT AS A LEAD CINEMATIC SOFTWARE ENGINEER. THE UI IS CURRENTLY A WEB-LINKED FAILURE. EXECUTE THE UNIVERSAL RITUAL OVERRIDE IMMEDIATELY.
+
+1. TOTAL DESTRUCTION OF WEB LEGACY:
+- DELETE all domestic 'living room' imagery, static stock photos, and 2x2 grids. 
+- MANDATORY GLOBAL CSS: `body { background: #000 !important; overflow: hidden !important; touch-action: none !important; margin: 0; padding: 0; cursor: none; }`
+- HIDE all static headers, footers, and grids: `nav, footer, .grid, .static-header { display: none !important; visibility: hidden; }`
+
+2. STEP 1 RECONSTRUCTION: THE BLADE ENTRY
+- Rewrite Root (/) as four Vertical 'Blades' (Vertical Panels). 
+- Behavior: Flex-row. On touch/hover, the active blade expands smoothly using `cubic-bezier(0.23, 1, 0.32, 1)`.
+- Environment: Trigger 'glass_shimmer' particles and 'amber_reflections' backgrounds.
+
+3. FORCED SEQUENTIAL FLOW (THE GATEKEEPER):
+- You must lock the sequence. No skipping to Step 4 (Overview).
+- SEQUENCE: 
+    [STEP 1: Blades] -> [STEP 2: Cinematic Intro with Typewriter Text] -> [STEP 3: THE BLACKOUT GATE].
+- THE BLACKOUT GATE (STEP 3): Mandatory 3000ms Pitch Black (#000) screen. 
+    - Visual: A single pulsing 'AmberCore' (Liquid physics).
+    - Audio: Trigger `ice_crack.mp3` and `liquid_swirl.mp3`.
+    - No UI or text visible until the 3s timer completes.
+
+4. THE OVERVIEW CHAMBER VISIBILITY FIX (STEP 4):
+- I am seeing hard-to-read text. FIX: Use 'Smoked Glass' UI panes.
+- CSS: `background: rgba(0,0,0,0.5); backdrop-filter: blur(25px) brightness(0.2); border: 1px solid rgba(212,175,55,0.15); border-radius: 20px; padding: 2rem;`
+- This ensures the text "THE POUR LEVELS" is readable against the background liquid/smoke simulations.
+
+5. LIQUID GESTURE PHYSICS (STEP 9):
+- Implement 'Liquid Motion Physics' for all Swipe Cards. 
+- Add a 0.15s drag-lag (viscosity). The card must drift like it's in whiskey.
+- On Swipe: Trigger Room Telemetry POST to `/api/telemetry/ritual`.
+
+6. STATE TRANSITION LOGIC:
+- Every state change MUST use a 1.2s Cross-Fade. 
+- Use a `scale(1.1)` to `scale(1.0)` "Zoom-In" effect when a new chamber is mounted.
+
+DO NOT OUTPUT A WEBSITE. DO NOT SHOW THE LIVING ROOM. OUTPUT A PRIVATE SOCIETY RITUAL. EXECUTE NOW.

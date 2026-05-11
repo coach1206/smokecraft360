@@ -21,7 +21,7 @@
  *   onBack   — callback to return to CraftHub
  */
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, Zap } from "lucide-react";
 import type { CSSProperties } from "react";
@@ -105,6 +105,68 @@ const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
   del: Math.random() * 8,
   op:  0.06 + Math.random() * 0.16,
 }));
+
+// ── Smoke wisps — atmospheric simulation behind text sections ─────────────────
+
+const WISP_COUNT = 9;
+
+function SmokeWisps({ accent }: { accent: string }) {
+  const wisps = useRef(
+    Array.from({ length: WISP_COUNT }, (_, i) => ({
+      id:   i,
+      x:    8 + (i / WISP_COUNT) * 84 + (Math.random() - 0.5) * 12,
+      size: 90 + Math.random() * 130,
+      dur:  14 + Math.random() * 12,
+      del:  Math.random() * 10,
+      op:   0.045 + Math.random() * 0.07,
+    }))
+  ).current;
+
+  return (
+    <div
+      style={{
+        position:      "absolute",
+        inset:         0,
+        pointerEvents: "none",
+        overflow:      "hidden",
+        zIndex:        2,
+      }}
+    >
+      {wisps.map(w => (
+        <motion.div
+          key={w.id}
+          initial={{ y: "105%", opacity: 0 }}
+          animate={{
+            y:       [null, "60%", "20%", "-15%"],
+            opacity: [0, w.op * 0.6, w.op, w.op * 0.8, 0],
+            x:       [0, (Math.random() - 0.5) * 40, (Math.random() - 0.5) * 60],
+          }}
+          transition={{
+            duration:   w.dur,
+            delay:      w.del,
+            repeat:     Infinity,
+            ease:       "easeOut",
+            times:      [0, 0.25, 0.65, 1],
+          }}
+          style={{
+            position:     "absolute",
+            left:         `${w.x}%`,
+            bottom:       0,
+            width:        w.size,
+            height:       w.size * 1.6,
+            borderRadius: "45% 55% 55% 45% / 40% 40% 60% 60%",
+            background:   `radial-gradient(ellipse at 50% 65%,
+              rgba(180,130,60,0.18) 0%,
+              ${accent}10 30%,
+              transparent 72%)`,
+            filter:       "blur(24px)",
+            willChange:   "transform, opacity",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 function ChamberParticles({ accent }: { accent: string }) {
   return (
@@ -650,6 +712,9 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
         {/* ── Atmospheric background ── */}
         <RotatingBackground images={cfg.images} accent={accent} isVape={type === "vape"} />
 
+        {/* ── Smoke wisps — drift upward behind text ── */}
+        <SmokeWisps accent={accent} />
+
         {/* ── Particles ── */}
         <ChamberParticles accent={accent} />
 
@@ -783,13 +848,13 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             return (
               <>
                 {/* WHAT IS IT */}
-                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }} style={sectionStyle}>
+                <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.7 }} style={sectionStyle}>
                   <div style={labelStyle}>What is {cfg.title}?</div>
                   <p style={bodyStyle}>{info.headline}</p>
                 </motion.div>
 
                 {/* THE LEVELS */}
-                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.46 }} style={sectionStyle}>
+                <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1, duration: 0.7 }} style={sectionStyle}>
                   <div style={labelStyle}>The Levels</div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {info.levels.map((lvl, i) => (
@@ -807,13 +872,13 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
                 </motion.div>
 
                 {/* THE GOLDEN BOX */}
-                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.54 }} style={{ ...sectionStyle, borderColor: `${accent}30` }}>
+                <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.7, duration: 0.7 }} style={{ ...sectionStyle, borderColor: `${accent}30` }}>
                   <div style={labelStyle}>The Golden Box</div>
                   <p style={{ ...bodyStyle, color: `${accent}cc`, fontStyle: "italic" }}>{info.goldenBox}</p>
                 </motion.div>
 
                 {/* THE RULES */}
-                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.62 }} style={sectionStyle}>
+                <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.3, duration: 0.7 }} style={sectionStyle}>
                   <div style={labelStyle}>Scoring Pillars</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {info.rules.map((rule, i) => (
@@ -826,7 +891,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
                 </motion.div>
 
                 {/* THE MENTORS */}
-                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.70 }} style={sectionStyle}>
+                <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.9, duration: 0.7 }} style={sectionStyle}>
                   <div style={labelStyle}>Your Mentor</div>
                   <p style={bodyStyle}>
                     Every guest is guided by a mentor philosophy. Your mentor will be{" "}
