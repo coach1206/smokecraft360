@@ -104,6 +104,7 @@ const SovereignDistributionVault   = lazy(() => import('@/pages/SovereignDistrib
 const SovereignHardwareLab         = lazy(() => import('@/pages/SovereignHardwareLab'));
 const SovereignGate                = lazy(() => import('@/pages/SovereignGate'));
 const SovereignVerify              = lazy(() => import('@/pages/SovereignVerify'));
+const SovereignDashboard           = lazy(() => import('@/pages/SovereignDashboard'));
 const AmbassadorGate               = lazy(() => import('@/pages/AmbassadorGate'));
 const AmbassadorVerify             = lazy(() => import('@/pages/AmbassadorVerify'));
 const AmbassadorHub                = lazy(() => import('@/pages/AmbassadorHub'));
@@ -927,12 +928,26 @@ export default function App() {
           <Route path="/hardware-lab">
             <SubPageProviders><SovereignHardwareLab /></SubPageProviders>
           </Route>
+          {/* ── Sovereign routes ── */}
           <Route path="/sovereign-gate">
+            <SovereignGate />
+          </Route>
+          <Route path="/gate">
             <SovereignGate />
           </Route>
           <Route path="/sovereign-verify">
             <SovereignVerify />
           </Route>
+          <Route path="/sovereign-dashboard">
+            <SovereignDashboard />
+          </Route>
+
+          {/* ── EEIE alias ── */}
+          <Route path="/eeie">
+            <SubPageProviders><EEIECommandCenter /></SubPageProviders>
+          </Route>
+
+          {/* ── Ambassador routes ── */}
           <Route path="/ambassador-gate">
             <AmbassadorGate />
           </Route>
