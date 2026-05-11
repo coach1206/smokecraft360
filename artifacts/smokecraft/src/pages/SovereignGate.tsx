@@ -86,28 +86,33 @@ function useParticles(n = 18): Particle[] {
 }
 
 // ── PIN dot row ───────────────────────────────────────────────
-function PinDots({ filled, max, error, success }: {
-  filled: number; max: number; error: boolean; success: boolean;
+// Always renders 6 positions: dots 0-3 = staff tier, dots 4-5 = sovereign extension.
+function PinDots({ filled, error, success }: {
+  filled: number; error: boolean; success: boolean;
 }) {
   const color = error ? C.red : success ? C.green : C.gold;
   return (
     <motion.div
       animate={error ? { x: [0, -10, 10, -7, 7, -4, 4, 0] } : {}}
       transition={{ duration: 0.42, ease: "easeOut" }}
-      style={{ display: "flex", gap: 14, justifyContent: "center", marginBottom: 28 }}
+      style={{ display: "flex", gap: 11, justifyContent: "center", marginBottom: 10 }}
     >
-      {Array.from({ length: max }).map((_, i) => {
-        const on = filled > i;
+      {Array.from({ length: 6 }).map((_, i) => {
+        const on         = filled > i;
+        const isSovExt   = i >= 4; // dots 5 & 6 are sovereign-only positions
         return (
           <motion.div
             key={i}
             animate={on ? { scale: [1, 1.5, 1], boxShadow: [`0 0 0 ${color}00`, `0 0 14px ${color}bb`, `0 0 9px ${color}66`] } : {}}
             transition={{ duration: 0.18 }}
             style={{
-              width: 13, height: 13, borderRadius: "50%",
-              background:  on ? color : "rgba(245,242,237,0.08)",
-              border:      `1.5px solid ${on ? color : "rgba(212,175,55,0.22)"}`,
-              transition:  "background 0.14s, border-color 0.14s",
+              width:        on ? 13 : isSovExt ? 9 : 13,
+              height:       on ? 13 : isSovExt ? 9 : 13,
+              borderRadius: "50%",
+              background:   on ? color : "rgba(245,242,237,0.05)",
+              border:       `1.5px solid ${on ? color : isSovExt ? "rgba(212,175,55,0.10)" : "rgba(212,175,55,0.22)"}`,
+              transition:   "background 0.14s, border-color 0.14s, width 0.12s, height 0.12s",
+              alignSelf:    "center",
             }}
           />
         );
@@ -309,8 +314,6 @@ export default function SovereignGate() {
     return () => window.removeEventListener("keydown", onKey);
   }, [handleKey]);
 
-  // Dynamic dot count: show 4 until user types 5th digit, then expand to 6
-  const dotMax = pin.length >= 5 ? 6 : 4;
   const goReady = pin.length >= 4 && !success && !submitting;
 
   return (
@@ -405,8 +408,27 @@ export default function SovereignGate() {
           {pin.length > 0 && <TierBadge len={pin.length} />}
         </AnimatePresence>
 
-        {/* PIN dots */}
-        <PinDots filled={pin.length} max={dotMax} error={error} success={success} />
+        {/* PIN dots — always 6 positions; last 2 are sovereign-only */}
+        <PinDots filled={pin.length} error={error} success={success} />
+
+        {/* Sovereign nudge — shown only when exactly 4 digits are entered */}
+        <AnimatePresence>
+          {pin.length === 4 && !error && !success && (
+            <motion.div
+              key="sov-nudge"
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                fontSize: 8, letterSpacing: "0.16em", color: "rgba(212,175,55,0.45)",
+                marginBottom: 14, textAlign: "center",
+              }}
+            >
+              STAFF READY · OR CONTINUE FOR ◈ SOVEREIGN
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Status messages */}
         <AnimatePresence mode="wait">
