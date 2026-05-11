@@ -833,9 +833,11 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             const info = INITIATION[type] ?? INITIATION.smoke!;
             const sectionStyle: CSSProperties = {
               width: "100%", maxWidth: 400,
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.07)",
-              borderRadius: 14, padding: "18px 20px",
+              background: "rgba(0,0,0,0.52)",
+              backdropFilter: "blur(26px) brightness(0.82)",
+              WebkitBackdropFilter: "blur(26px) brightness(0.82)",
+              border: "1px solid rgba(212,175,55,0.15)",
+              borderRadius: 20, padding: "22px 22px",
               marginBottom: 14,
             };
             const labelStyle: CSSProperties = {

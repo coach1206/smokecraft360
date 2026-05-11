@@ -242,22 +242,30 @@ const KB_STYLE = `
 
 const KB_CLASSES = ["lp-kb-1", "lp-kb-2", "lp-kb-3", "lp-kb-4"];
 
-/* ── Single animated tile ─────────────────────────────────────────────────── */
-function CraftTile({
+/* ── Single vertical blade panel ─────────────────────────────────────────── */
+function BladePanel({
   craft,
   initialOffset,
-  onClick,
-  onHover,
+  active,
+  index,
+  total,
+  onActivate,
+  onDeactivate,
+  onTrigger,
 }: {
   craft:         CraftConfig;
   initialOffset: number;
-  onClick:       () => void;
-  onHover:       () => void;
+  active:        boolean;
+  index:         number;
+  total:         number;
+  onActivate:    () => void;
+  onDeactivate:  () => void;
+  onTrigger:     () => void;
 }) {
-  const [idx, setIdx] = useState(initialOffset % craft.images.length);
-  const [kbIdx, setKbIdx] = useState(initialOffset % KB_CLASSES.length);
+  const [idx,     setIdx]    = useState(initialOffset % craft.images.length);
+  const [kbIdx,   setKbIdx]  = useState(initialOffset % KB_CLASSES.length);
+  const [pressed, setPressed] = useState(false);
 
-  // Advance to next image every 4 s
   useEffect(() => {
     const t = setInterval(() => {
       setIdx(i => (i + 1) % craft.images.length);
@@ -269,118 +277,208 @@ function CraftTile({
   const kbAnim = KB_CLASSES[kbIdx];
 
   return (
-    <motion.div
-      onClick={onClick}
-      onPointerEnter={onHover}
-      whileTap={{ scale: 0.978, filter: "brightness(1.25)" }}
-      transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+    <div
       style={{
-        position:   "relative",
-        overflow:   "hidden",
-        cursor:     "pointer",
-        background: "#050505",
-        touchAction:"manipulation",
-        WebkitTapHighlightColor: "transparent",
+        position:    "relative",
+        flex:         active ? 3.5 : 1,
+        minWidth:     active ? 0 : 44,
+        transition:   "flex 0.55s cubic-bezier(0.23, 1, 0.32, 1), min-width 0.55s cubic-bezier(0.23, 1, 0.32, 1)",
+        overflow:    "hidden",
+        cursor:      "pointer",
+        background:  "#050505",
+        borderRight: index < total - 1 ? "1px solid rgba(212,139,0,0.09)" : "none",
       }}
+      onPointerEnter={() => onActivate()}
+      onPointerLeave={() => { onDeactivate(); setPressed(false); }}
+      onPointerDown={() => setPressed(true)}
+      onPointerUp={() => { if (pressed) { setPressed(false); onTrigger(); } }}
+      onPointerCancel={() => setPressed(false)}
     >
-      {/* ── Rotating image layer ── */}
+      {/* Ken-burns rotating image */}
       <AnimatePresence mode="sync">
         <motion.img
           key={`${craft.id}-${idx}`}
           src={craft.images[idx]}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.62 }}
+          animate={{ opacity: 0.66 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.4, ease: "easeInOut" }}
           style={{
-            position:         "absolute",
-            inset:            0,
-            width:            "100%",
-            height:           "100%",
-            objectFit:        "cover",
-            objectPosition:   "center",
-            transformOrigin:  "center",
-            animation:        `${kbAnim} 8s ease-in-out forwards`,
+            position:        "absolute",
+            inset:           0,
+            width:           "100%",
+            height:          "100%",
+            objectFit:       "cover",
+            objectPosition:  "center",
+            transformOrigin: "center",
+            animation:       `${kbAnim} 8s ease-in-out forwards`,
           }}
           alt={craft.name}
         />
       </AnimatePresence>
 
-      {/* ── Vignette gradient ── */}
+      {/* Amber reflection — fades in when active */}
+      <motion.div
+        animate={{ opacity: active ? 1 : 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        style={{
+          position:   "absolute", inset: 0, zIndex: 2,
+          background: `radial-gradient(ellipse 80% 60% at 50% 80%, ${craft.color}14 0%, transparent 70%)`,
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Bottom vignette */}
       <div style={{
-        position:   "absolute",
-        inset:      0,
-        background: `linear-gradient(
-          to top,
-          rgba(5,5,5,0.85) 0%,
-          rgba(5,5,5,0.28) 45%,
-          rgba(5,5,5,0.08) 100%
-        )`,
+        position:   "absolute", inset: 0, zIndex: 3,
+        background: `linear-gradient(0deg,
+          rgba(0,0,0,0.92) 0%,
+          rgba(0,0,0,0.52) 35%,
+          rgba(0,0,0,0.10) 65%,
+          transparent 100%)`,
         pointerEvents: "none",
       }} />
 
-      {/* ── Craft accent top line ── */}
+      {/* Craft accent top edge */}
       <div style={{
-        position:   "absolute",
-        top:        0, left: 0, right: 0,
-        height:     2,
+        position:   "absolute", top: 0, left: 0, right: 0,
+        height:     2, zIndex: 4,
         background: `linear-gradient(90deg, transparent, ${craft.color}88, transparent)`,
         pointerEvents: "none",
       }} />
 
-      {/* ── Label ── */}
-      <div style={{
-        position:   "absolute",
-        bottom:     28,
-        left:       28,
-        zIndex:     10,
-      }}>
-        <div style={{
-          fontSize:      "clamp(12px, 1.8vw, 20px)",
-          fontWeight:    900,
-          letterSpacing: "0.35em",
-          textTransform: "uppercase",
-          color:         craft.color,
-          fontFamily:    "monospace",
-          textShadow:    `0 0 24px ${craft.color}88`,
-          marginBottom:  5,
-        }}>
-          {craft.name}
-        </div>
-        <div style={{
-          fontSize:      "clamp(8px, 1vw, 11px)",
-          letterSpacing: "0.18em",
-          color:         "rgba(255,249,230,0.42)",
-          fontFamily:    "monospace",
-        }}>
-          {craft.tagline}
-        </div>
-      </div>
-
-      {/* ── Image index pip row ── */}
-      <div style={{
-        position:       "absolute",
-        bottom:         10,
-        right:          14,
-        display:        "flex",
-        gap:            4,
-        pointerEvents:  "none",
-        alignItems:     "center",
-      }}>
-        {craft.images.map((_, i) => (
-          <div
-            key={i}
+      {/* Glass shimmer sweep — active only */}
+      {active && (
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden", zIndex: 5 }}>
+          <motion.div
+            initial={{ x: "-120%", opacity: 0 }}
+            animate={{ x: "130%", opacity: [0, 0.22, 0] }}
+            transition={{ duration: 1.6, ease: "easeInOut" }}
             style={{
+              position:   "absolute", top: 0, bottom: 0, width: "45%",
+              background: `linear-gradient(105deg, transparent 0%, ${craft.color}18 50%, transparent 100%)`,
+              transform:  "skewX(-14deg)",
+            }}
+          />
+        </div>
+      )}
+
+      {/* Vertical craft ID — collapsed label */}
+      <AnimatePresence>
+        {!active && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.65 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            style={{
+              position: "absolute", inset: 0, zIndex: 6,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              pointerEvents: "none",
+            }}
+          >
+            <div style={{
+              writingMode:    "vertical-rl",
+              textOrientation: "mixed",
+              transform:      "rotate(180deg)",
+              fontSize:       8,
+              letterSpacing:  "0.28em",
+              color:          `${craft.color}cc`,
+              textTransform:  "uppercase",
+              fontFamily:     "monospace",
+              fontWeight:     700,
+            }}>
+              {craft.id}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Expanded content — name, tagline, CTA */}
+      <AnimatePresence>
+        {active && (
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              position: "absolute",
+              bottom: 0, left: 0, right: 0,
+              zIndex:   7,
+              padding:  "0 22px 32px",
+            }}
+          >
+            <div style={{
+              fontSize:      "clamp(13px, 1.9vw, 21px)",
+              fontWeight:    900,
+              letterSpacing: "0.32em",
+              textTransform: "uppercase",
+              color:         craft.color,
+              fontFamily:    "monospace",
+              textShadow:    `0 0 24px ${craft.color}88`,
+              marginBottom:  6,
+            }}>
+              {craft.name}
+            </div>
+
+            <div style={{
+              fontSize:      10,
+              letterSpacing: "0.14em",
+              color:         "rgba(255,249,230,0.42)",
+              fontFamily:    "monospace",
+              marginBottom:  18,
+            }}>
+              {craft.tagline}
+            </div>
+
+            <motion.div
+              animate={{
+                opacity:   [0.6, 1, 0.6],
+                boxShadow: [`0 0 0px ${craft.color}00`, `0 0 18px ${craft.color}44`, `0 0 0px ${craft.color}00`],
+              }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+              style={{
+                display:       "inline-flex",
+                alignItems:    "center",
+                gap:           7,
+                padding:       "7px 14px",
+                background:    `${craft.color}12`,
+                border:        `1px solid ${craft.color}50`,
+                borderRadius:  8,
+                fontSize:      8,
+                fontWeight:    700,
+                color:         craft.color,
+                letterSpacing: "0.20em",
+                textTransform: "uppercase",
+                fontFamily:    "monospace",
+              }}
+            >
+              ◈ INITIALIZE RITUAL
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Image index pips — shown when active */}
+      {active && (
+        <div style={{
+          position:  "absolute", bottom: 10, right: 14,
+          display:   "flex", gap: 4,
+          pointerEvents: "none", alignItems: "center", zIndex: 8,
+        }}>
+          {craft.images.map((_, i) => (
+            <div key={i} style={{
               width:        i === idx ? 14 : 5,
               height:       2,
               borderRadius: 2,
               background:   i === idx ? craft.color : "rgba(255,255,255,0.2)",
               transition:   "width 0.4s ease, background 0.4s ease",
-            }}
-          />
-        ))}
-      </div>
-    </motion.div>
+            }} />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -522,9 +620,10 @@ const CRAFT_MOOD: Record<string, LoungeMood> = {
 };
 
 export default function LivingPortal() {
-  const [selected, setSelected]               = useState<CraftConfig | null>(null);
+  const [selected,         setSelected]         = useState<CraftConfig | null>(null);
   const [activeAtmosphere, setActiveAtmosphere] = useState<string>("smoke");
-  const { updateLoungeMood }                  = useUnifiedCognitive();
+  const [activeBlade,      setActiveBlade]      = useState<string | null>(null);
+  const { updateLoungeMood }                    = useUnifiedCognitive();
 
   // Inject Ken Burns keyframes once
   useEffect(() => {
@@ -556,22 +655,32 @@ export default function LivingPortal() {
       {/* Cinematic lounge atmosphere — craft-aware .mp4 + blobs */}
       <CinematicBackground craftId={activeAtmosphere} />
 
-      {/* 2×2 grid */}
+      {/* ── 4 vertical blade portals ── */}
       <div style={{
-        display:             "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gridTemplateRows:    "1fr 1fr",
-        height:              "100%",
-        width:               "100%",
-        gap:                 4,
+        display:       "flex",
+        flexDirection: "row",
+        height:        "100%",
+        width:         "100%",
+        position:      "relative",
+        zIndex:        1,
       }}>
         {CRAFTS.map((craft, i) => (
-          <CraftTile
+          <BladePanel
             key={craft.id}
             craft={craft}
             initialOffset={i}
-            onHover={() => handleCraftActivate(craft.id)}
-            onClick={() => { handleCraftActivate(craft.id); setSelected(craft); }}
+            active={activeBlade === craft.id}
+            index={i}
+            total={CRAFTS.length}
+            onActivate={() => {
+              setActiveBlade(craft.id);
+              handleCraftActivate(craft.id);
+            }}
+            onDeactivate={() => setActiveBlade(null)}
+            onTrigger={() => {
+              handleCraftActivate(craft.id);
+              setSelected(craft);
+            }}
           />
         ))}
       </div>

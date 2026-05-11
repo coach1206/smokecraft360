@@ -366,6 +366,228 @@ function TactileCard({
   );
 }
 
+// ── Glass shimmer — activates on the focused blade ───────────────────────────
+
+function GlassShimmer({ active, color }: { active: boolean; color: string }) {
+  if (!active) return null;
+  return (
+    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden", zIndex: 3 }}>
+      <motion.div
+        initial={{ x: "-120%", opacity: 0 }}
+        animate={{ x: "130%", opacity: [0, 0.28, 0] }}
+        transition={{ duration: 1.6, ease: "easeInOut" }}
+        style={{
+          position: "absolute",
+          top: 0, bottom: 0,
+          width: "45%",
+          background: `linear-gradient(105deg, transparent 0%, ${color}1a 50%, transparent 100%)`,
+          transform: "skewX(-14deg)",
+        }}
+      />
+      {Array.from({ length: 10 }, (_, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: [0, 0.65, 0], y: -90 }}
+          transition={{ duration: 1.6 + i * 0.25, delay: i * 0.08, ease: "easeOut" }}
+          style={{
+            position: "absolute",
+            left: `${12 + i * 8}%`,
+            bottom: `${18 + (i % 4) * 12}%`,
+            width: 1.5 + (i % 3),
+            height: 1.5 + (i % 3),
+            borderRadius: "50%",
+            background: color,
+            filter: "blur(0.5px)",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ── Amber reflection overlay ──────────────────────────────────────────────────
+
+function AmberReflection({ active, color }: { active: boolean; color: string }) {
+  return (
+    <motion.div
+      animate={{ opacity: active ? 1 : 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      style={{
+        position:      "absolute",
+        inset:         0,
+        zIndex:        2,
+        background:    `radial-gradient(ellipse 80% 60% at 50% 80%, ${color}14 0%, transparent 70%)`,
+        pointerEvents: "none",
+      }}
+    />
+  );
+}
+
+// ── Single vertical blade portal ─────────────────────────────────────────────
+
+interface BladePortalProps {
+  mod:          { id: string; title: string; tagline: string; badge: string; route: string; color: string };
+  active:       boolean;
+  index:        number;
+  total:        number;
+  onActivate:   () => void;
+  onDeactivate: () => void;
+  onTrigger:    () => void;
+}
+
+function BladePortal({ mod, active, index, total, onActivate, onDeactivate, onTrigger }: BladePortalProps) {
+  const [pressed, setPressed] = useState(false);
+
+  return (
+    <div
+      style={{
+        position:   "relative",
+        flex:        active ? 3.5 : 1,
+        minWidth:    active ? 0 : 44,
+        transition:  "flex 0.55s cubic-bezier(0.23, 1, 0.32, 1), min-width 0.55s cubic-bezier(0.23, 1, 0.32, 1)",
+        overflow:    "hidden",
+        cursor:      "pointer",
+        borderRight: index < total - 1 ? "1px solid rgba(212,139,0,0.10)" : "none",
+        background:  pressed ? `${mod.color}09` : "transparent",
+      }}
+      onPointerEnter={() => onActivate()}
+      onPointerLeave={() => { onDeactivate(); setPressed(false); }}
+      onPointerDown={() => setPressed(true)}
+      onPointerUp={() => { if (pressed) { setPressed(false); onTrigger(); } }}
+      onPointerCancel={() => setPressed(false)}
+    >
+      <LiquidTileBg craftId={mod.id} color={mod.color} />
+      <AmberReflection active={active} color={mod.color} />
+      <GlassShimmer active={active} color={mod.color} />
+
+      {/* Bottom gradient vignette */}
+      <div style={{
+        position: "absolute", inset: 0, zIndex: 4,
+        background: `linear-gradient(0deg,
+          rgba(0,0,0,0.92) 0%,
+          rgba(0,0,0,0.55) 35%,
+          rgba(0,0,0,0.12) 60%,
+          transparent 100%)`,
+        pointerEvents: "none",
+      }} />
+
+      {/* ── Collapsed label — vertical craft ID ── */}
+      <AnimatePresence>
+        {!active && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.7 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            style={{
+              position:       "absolute",
+              inset:          0,
+              zIndex:         6,
+              display:        "flex",
+              alignItems:     "center",
+              justifyContent: "center",
+              pointerEvents:  "none",
+            }}
+          >
+            <div style={{
+              writingMode:    "vertical-rl",
+              textOrientation: "mixed",
+              transform:      "rotate(180deg)",
+              fontSize:       8,
+              letterSpacing:  "0.28em",
+              color:          `${mod.color}cc`,
+              textTransform:  "uppercase",
+              fontFamily:     "'Space Mono', monospace",
+              fontWeight:     700,
+            }}>
+              {mod.id}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Expanded content — visible when blade is active ── */}
+      <AnimatePresence>
+        {active && (
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              position:  "absolute",
+              bottom: 0, left: 0, right: 0,
+              zIndex:    7,
+              padding:   "0 20px 30px",
+            }}
+          >
+            <div style={{
+              fontSize:      8,
+              color:         mod.color,
+              letterSpacing: "0.26em",
+              textTransform: "uppercase",
+              fontFamily:    "'Space Mono', monospace",
+              marginBottom:  8,
+            }}>
+              {mod.badge}
+            </div>
+            <h2 style={{
+              margin:        0,
+              fontFamily:    "var(--app-font-serif, 'Cormorant Garamond', Georgia, serif)",
+              fontSize:      "clamp(16px, 2.2vw, 26px)",
+              fontWeight:    800,
+              color:         C.gold,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              lineHeight:    1.1,
+              marginBottom:  6,
+            }}>
+              {mod.title}
+            </h2>
+            <p style={{
+              margin:        0,
+              fontSize:      9.5,
+              color:         C.muted,
+              letterSpacing: "0.04em",
+              lineHeight:    1.55,
+              marginBottom:  18,
+            }}>
+              {mod.tagline}
+            </p>
+
+            {/* Ritual CTA badge */}
+            <motion.div
+              animate={{ opacity: [0.6, 1, 0.6], boxShadow: [`0 0 0px ${mod.color}00`, `0 0 18px ${mod.color}44`, `0 0 0px ${mod.color}00`] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+              style={{
+                display:       "inline-flex",
+                alignItems:    "center",
+                gap:           7,
+                padding:       "7px 14px",
+                background:    `${mod.color}12`,
+                border:        `1px solid ${mod.color}50`,
+                borderRadius:  8,
+                fontSize:      8,
+                fontWeight:    700,
+                color:         mod.color,
+                letterSpacing: "0.20em",
+                textTransform: "uppercase",
+                fontFamily:    "'Space Mono', monospace",
+              }}
+            >
+              ◈ INITIALIZE RITUAL
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Breathing glow ring on border */}
+      <GlowRing color={mod.color} />
+    </div>
+  );
+}
+
 // ── Craft portal glow ring ────────────────────────────────────────────────────
 
 function GlowRing({ color }: { color: string }) {
@@ -584,8 +806,9 @@ function CraftHubInner() {
   const [, navigate]   = useLocation();
   const glowCtrl       = useAnimation();
   const { guestProfile } = useGuestProfile();
-  const [showReturn, setShowReturn] = useState(false);
-  const [portal, setPortal] = useState<{ route: string; color: string } | null>(null);
+  const [showReturn,   setShowReturn]  = useState(false);
+  const [portal,       setPortal]      = useState<{ route: string; color: string } | null>(null);
+  const [activeBlade,  setActiveBlade] = useState<string | null>(null);
 
   // ── Kiosk Lock — disables context menu, F-keys, Ctrl shortcuts, back-nav ────
   useKioskLock(true);
@@ -794,118 +1017,37 @@ function CraftHubInner() {
         <IntelStatusBar />
       </div>
 
-      {/* ── Hero tagline ── */}
-      <div style={{
-        position:  "relative",
-        zIndex:    10,
-        padding:   "20px 28px 12px",
-        flexShrink: 0,
-        display:   "flex",
-        alignItems: "flex-end",
-        justifyContent: "space-between",
-        gap:       16,
-        flexWrap:  "wrap",
-      }}>
-        <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, ease: "easeOut" }}
-            style={{
-              fontFamily:  "var(--app-font-serif, Georgia, serif)",
-              fontSize:    "clamp(18px, 2.8vw, 30px)",
-              fontWeight:  700,
-              color:       C.text,
-              margin:      0,
-              lineHeight:  1.15,
-              letterSpacing: "0.01em",
-            }}
-          >
-            Adaptive Hospitality{" "}
-            <span style={{ color: C.gold }}>Intelligence.</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.25 }}
-            style={{ fontSize: 11, color: C.muted, marginTop: 7, letterSpacing: "0.04em" }}
-          >
-            Select an experience below — the AI engine refines in real time.
-          </motion.p>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <MoodControls />
-        </motion.div>
-      </div>
-
-      {/* ── 4 Craft Portals ── */}
-      <div style={{
-        flex:    1,
-        padding: "0 24px 20px",
-        display: "grid",
-        gridTemplateColumns: "repeat(2, 1fr)",
-        gridTemplateRows:    "repeat(2, 1fr)",
-        gap:     14,
-        minHeight: 0,
-        position: "relative",
-        zIndex:   10,
-      }}>
+      {/* ── 4 Vertical Blades ── */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.7, delay: 0.15 }}
+        style={{
+          flex:          1,
+          display:       "flex",
+          flexDirection: "row",
+          position:      "relative",
+          zIndex:        10,
+          overflow:      "hidden",
+          minHeight:     0,
+        }}
+      >
         {CRAFT_MODULES.map((mod, i) => (
-          <motion.div
+          <BladePortal
             key={mod.id}
-            initial={{ opacity: 0, y: 22, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 0.12 + i * 0.1, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              position:     "relative",
-              borderRadius: 22,
-              overflow:     "hidden",
-              minHeight:    0,
-              boxShadow:    `0 4px 32px rgba(26,26,27,0.26), 0 0 0 1px ${mod.color}18`,
+            mod={mod}
+            active={activeBlade === mod.id}
+            index={i}
+            total={CRAFT_MODULES.length}
+            onActivate={() => setActiveBlade(mod.id)}
+            onDeactivate={() => setActiveBlade(null)}
+            onTrigger={() => {
+              ExperienceFlowEngine.startCraft(mod.id);
+              setPortal({ route: mod.route, color: mod.color });
             }}
-          >
-            {/* Liquid Ken Burns background — cycles through craft imagery */}
-            <LiquidTileBg craftId={mod.id} color={mod.color} />
-
-            {/* Breathing glow ring */}
-            <GlowRing color={mod.color} />
-
-            {/* Bottom ambient glow beneath card */}
-            <motion.div
-              style={{
-                position:   "absolute",
-                bottom:     -12,
-                left:       "15%",
-                right:      "15%",
-                height:     24,
-                borderRadius: "50%",
-                background: mod.color,
-                filter:     "blur(18px)",
-                opacity:    0.18,
-                pointerEvents: "none",
-                zIndex:     0,
-              }}
-              animate={{ opacity: [0.12, 0.32, 0.12] }}
-              transition={{ duration: 3.5 + i * 0.7, repeat: Infinity, ease: "easeInOut" }}
-            />
-
-            <TactileCard
-              title={mod.title}
-              tagline={mod.tagline}
-              badge={mod.badge}
-              onTrigger={() => {
-                ExperienceFlowEngine.startCraft(mod.id);
-                setPortal({ route: mod.route, color: mod.color });
-              }}
-            />
-          </motion.div>
+          />
         ))}
-      </div>
+      </motion.div>
 
       {/* ── Partner LogoAnchors — DayOne360 & WifeX ── */}
       <div style={{ position: "relative", zIndex: 10, flexShrink: 0 }}>
