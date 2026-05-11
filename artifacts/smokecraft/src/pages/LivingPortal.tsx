@@ -385,12 +385,6 @@ function CraftTile({
 }
 
 /* ── Detail / confirmation overlay ────────────────────────────────────────── */
-const CRAFT_360_ROUTES: Record<string, string> = {
-  smoke: "/smoke-360",
-  pour:  "/pour-360",
-  brew:  "/brew-360",
-  vape:  "/vape-360",
-};
 
 function CraftDetail({
   craft,
@@ -485,7 +479,7 @@ function CraftDetail({
 
         <motion.button
           whileTap={{ scale: 0.95 }}
-          onClick={() => navigate(CRAFT_360_ROUTES[craft.id] ?? `/experience/${craft.id}`)}
+          onClick={() => navigate(`/experience/${craft.id}`)}
           style={{
             marginTop: 28,
             padding: "20px 48px",
