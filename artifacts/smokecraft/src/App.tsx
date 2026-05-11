@@ -99,6 +99,8 @@ const DevicesModule         = lazy(() => import('@/pages/DevicesModule'));
 const EnvironmentEngine     = lazy(() => import('@/pages/EnvironmentEngine'));
 const EnterpriseIntelligence = lazy(() => import('@/pages/EnterpriseIntelligence'));
 const EEIECommandCenter      = lazy(() => import('@/pages/EEIECommandCenter'));
+const EEIELandingHub         = lazy(() => import('@/pages/EEIELandingHub'));
+const EEIEModulePage         = lazy(() => import('@/pages/EEIEModulePage'));
 const EnterpriseGovernance  = lazy(() => import('@/pages/EnterpriseGovernance'));
 const SovereignDistributionVault   = lazy(() => import('@/pages/SovereignDistributionVault'));
 const SovereignHardwareLab         = lazy(() => import('@/pages/SovereignHardwareLab'));
@@ -764,7 +766,13 @@ export default function App() {
             <SubPageProviders><CentralCommand /></SubPageProviders>
           </Route>
           <Route path="/eeie-command">
+            <SubPageProviders><EEIELandingHub /></SubPageProviders>
+          </Route>
+          <Route path="/eeie/command-center">
             <SubPageProviders><EEIECommandCenter /></SubPageProviders>
+          </Route>
+          <Route path="/eeie/:module">
+            <SubPageProviders><EEIEModulePage /></SubPageProviders>
           </Route>
           <Route path="/operations">
             <SubPageProviders><MasterOperations /></SubPageProviders>
@@ -944,7 +952,7 @@ export default function App() {
 
           {/* ── EEIE alias ── */}
           <Route path="/eeie">
-            <SubPageProviders><EEIECommandCenter /></SubPageProviders>
+            <SubPageProviders><EEIELandingHub /></SubPageProviders>
           </Route>
 
           {/* ── Ambassador routes ── */}

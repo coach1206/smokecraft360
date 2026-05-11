@@ -1,0 +1,747 @@
+FINAL FULL INTERIOR TILE + MODULE REDESIGN PROMPT
+
+MISSING / REQUIRED
+
+1. The redesign cannot stop at the tile covers.
+Impact: The front dashboard tiles may look better, but the inside interfaces still look old, brown, faded, washed out, generic, or disconnected.
+
+2. Every tile must open into a fully redesigned interior command page.
+Impact: Distribution Vault, Hardware Lab, Ambassador Deck, Founder Control, Master Operations, EEIE Command Center, and every related submodule need the same Apple-meets-Tesla luxury redesign inside, not just on the homepage.
+
+3. Every internal panel inside each module must be redesigned.
+Impact: Graphs, cards, settings panels, action sections, live feed panels, training controls, engine health panels, lists, tables, and detail areas still need full conversion.
+
+4. The whole system needs one shared visual language.
+Impact: Sovereign Command Center, EEIE, Revenue Engine, Operations, Founder Control, Distribution Vault, Hardware Lab, Ambassador Deck, and Master Operations must feel like the same operating system, not separate dashboards.
+
+5. Tile interiors must feel premium and futuristic.
+Impact: The inside interfaces must feel like Apple hardware UI meets Tesla control software, not a typical admin panel, POS back office, or old SaaS dashboard.
+
+6. All internal sections must remain functional.
+Impact: Do not just redesign the visuals. Keep routing, actions, state, data, controls, and status panels functional.
+
+FAILURE PREVENTION CHECKLIST
+
+Do not only redesign the homepage tiles.
+Do not only redesign the tile cover card.
+Do not leave the inside pages using the old UI.
+Do not leave sub-tabs or nested sections with old styling.
+Do not leave Revenue Engine with the washed-out look.
+Do not leave Master Operations with old brown/gold styling.
+Do not leave Operations panels faded and low contrast.
+Do not make any page look like Clover, Toast, Square, Shopify POS, or a generic admin template.
+Do not make it flat plain white.
+Do not make it dark cyberpunk.
+Do not use brown or muddy gold as the dominant color.
+Do not use washed-out beige or yellow panels.
+Do not use weak low-contrast text.
+Do not use tiny buttons.
+Do not use tiny touch targets.
+Do not remove working functionality.
+Do not break routing.
+Do not remove back buttons.
+Do not remove Founder Control.
+Do not create dead sub-pages.
+Do not create dead tabs.
+Do not hardcode credentials.
+Do not visually redesign one page while leaving connected pages behind.
+Do not half-convert the interface.
+Do not redesign only the shell and ignore the content area.
+
+MASTER PROMPT
+
+Perform a full interior redesign across all Sovereign command tiles and their inside interfaces.
+
+This is not just a homepage tile redesign.
+
+This is a complete redesign of:
+
+1. the tile cover
+2. the destination interior page
+3. every panel inside that page
+4. every nested section inside that page
+5. every tab or subsection connected to that page
+
+The design direction is:
+
+Apple hardware UI
+Tesla control system
+future-luxury enterprise cockpit
+frosted-glass command software
+premium hospitality intelligence operating system
+
+The system must feel unified.
+
+Sovereign is the parent operating system.
+Each tile is a command module.
+Each module opens into a fully redesigned interior interface.
+Every interior interface must keep the same design DNA.
+
+GLOBAL VISUAL LANGUAGE
+
+Use the following color and material system:
+
+Primary backgrounds:
+soft pearl white
+ice white
+cool silver
+titanium grey
+very light blue-grey
+
+Outer shell accents where needed:
+deep navy
+graphite
+soft black-blue
+tinted chrome dark shell
+
+Panel surfaces:
+frosted glass white
+semi-transparent ice cards
+metallic silver cards
+blue-tinted glass panels
+chrome-edged tiles
+premium white/silver command panels
+
+Accent colors:
+metallic electric blue
+Tesla blue
+cyan glow
+silver-blue
+deep navy text
+signal green for healthy states
+controlled red for danger states
+soft purple for AI states
+platinum highlight for premium status
+
+Remove as dominant colors:
+brown
+muddy gold
+bronze
+washed-out beige
+cream/yellow panels
+faded pink overlays
+heavy dark backgrounds
+
+TYPOGRAPHY
+
+Use clean modern sans-serif typography.
+
+Preferred style:
+SF Pro style
+Inter
+clean Apple-like hierarchy
+
+Text styling:
+deep navy for headings
+slate grey for body text
+metallic blue for active labels
+strong contrast throughout
+wide letter spacing for command labels
+large, readable touchscreen typography
+
+GLOBAL INTERFACE SYSTEM
+
+Create a shared reusable design system and apply it to all module interiors.
+
+Create or update these shared components:
+
+SovereignCommandShell
+SovereignTopRail
+SovereignSidebar
+SovereignBottomStatusRail
+SovereignHeroPanel
+SovereignMetricCard
+SovereignCommandCard
+SovereignGlassPanel
+SovereignSectionHeader
+SovereignSegmentedTabs
+SovereignActionButton
+SovereignDangerButton
+SovereignStatusChip
+SovereignGraphPanel
+SovereignLiveFeedPanel
+SovereignControlGrid
+SovereignInspectorPanel
+SovereignDetailDrawer
+SovereignEmptyState
+SovereignLoadingState
+
+Every interior page must use these shared components instead of one-off old styling.
+
+GLOBAL PAGE STRUCTURE FOR ALL TILE INTERIORS
+
+Every tile destination page must follow this structure:
+
+1. Top Command Rail
+Include:
+Back button
+page title
+module subtitle
+status chips
+system activity badge
+right-side action buttons
+optional search / utility actions
+live status line
+
+2. Left Navigation Rail or Local Module Rail
+Include:
+module sections
+sub-tabs
+active indicator
+clear touch targets
+same premium glass styling
+
+3. Hero / Overview Panel
+Include:
+overview title
+what this module controls
+summary metrics
+mini visual graph or waveform
+quick actions
+
+4. Main Content Grid
+Include:
+primary intelligence panels
+detail cards
+visual charts
+action cards
+tool panels
+status areas
+data previews
+
+5. Right Rail or Auxiliary Rail
+Include:
+live feed
+alerts
+recommendations
+system notes
+quick toggles
+AI commentary where relevant
+
+6. Bottom Status Rail
+Include:
+session state
+system integrity
+sync state
+security state
+compliance state
+backup/live state
+module-specific health
+
+INTERIOR TILE REQUIREMENTS BY MODULE
+
+A. EEIE COMMAND CENTER
+
+Redesign the EEIE tile interior and every related subpage.
+
+The inside EEIE interface must include:
+Staff Cockpit
+Guest Experience
+Media Library
+Product Wall
+Distributor Library
+Back-of-House Sync
+AI Assistant
+Mood Sensor
+Venue Heatmap
+Unified Data Brain
+Event Bus
+Founder Control link
+
+Inside page requirements:
+large visual cards
+product imagery
+AI commentary
+graph panels
+guest session panels
+table/venue views
+touchscreen actions
+blue/silver/white command styling
+frosted glass data panels
+clear back navigation
+
+B. DISTRIBUTION VAULT
+
+Redesign Distribution Vault tile interior.
+
+This module should feel like:
+premium logistics intelligence
+catalog orchestration
+product distribution brain
+
+Interior panels:
+Distributor Overview
+Connected Vendors
+Catalog Imports
+Sync Status
+Inventory Mapping
+Availability Feed
+Pending Approvals
+Restock Intelligence
+Wholesale Visibility
+Distributor Contacts
+Import History
+Error Warnings
+Sync Logs
+
+Visual requirements:
+clean metric cards
+import activity timeline
+sync health graph
+vendor cards
+inventory status chips
+restock recommendation panel
+large approval buttons
+product preview cards
+
+C. HARDWARE LAB
+
+Redesign Hardware Lab tile interior.
+
+This module should feel like:
+device command layer
+hardware diagnostics center
+premium systems engineering panel
+
+Interior panels:
+Device Health
+Biometric Hardware Status
+Node Activation
+Node Diagnostics
+Sensor Layer
+Device Connectivity
+Firmware / OTA Status
+Kiosk Devices
+Tablet Health
+Signal Quality
+Error Logs
+Maintenance Controls
+
+Visual requirements:
+hardware status cards
+signal graphs
+device cards
+sensor charts
+activation controls
+diagnostic feed
+premium control toggles
+system warnings with refined styling
+
+D. AMBASSADOR DECK
+
+Redesign Ambassador Deck tile interior.
+
+This module should feel like:
+executive relationship layer
+premium field operations deck
+brand/partner intelligence space
+
+Interior panels:
+Ambassador Overview
+Pending Activations
+Campaign Assignments
+Partner Status
+Field Reports
+Territory Activity
+Live Touchpoints
+Notes / Follow-ups
+Communication Feed
+Event Presence
+Performance Summary
+
+Visual requirements:
+profile-based cards
+territory tiles
+performance graphs
+communication timeline
+quick action buttons
+contact cards
+luxury executive UI styling
+
+E. FOUNDER CONTROL
+
+Redesign Founder Control tile interior.
+
+This module should feel like:
+high-trust system governance
+institutional control center
+secure executive override deck
+
+Interior panels:
+System Override
+Kill Switch
+Maintenance Mode
+Global Announcement
+Kiosk Lock
+Force Sync
+Security State
+Audit Snapshot
+Emergency Controls
+Permission Overrides
+Compliance Alerts
+Critical Event Feed
+
+Visual requirements:
+danger-aware premium cards
+clear separation between safe actions and critical actions
+strong confirmation styling
+large protected buttons
+system integrity strip
+security status ring
+controlled red only where truly needed
+
+F. MASTER OPERATIONS
+
+Redesign Master Operations tile interior and every sub-page inside it.
+
+This is one of the biggest modules and must be fully redesigned.
+
+Master Operations must include:
+Operations Overview
+Engine Health
+Device Health
+Venue Status
+Revenue Health
+Inventory Status
+Remote Commands
+Training Controls
+Live Feed
+Governance
+Compliance
+Roles
+Audit
+OTA & Device Control
+System Intelligence
+
+Every one of those sections must be visually converted.
+
+G. OPERATIONS
+
+Redesign Operations tile interior.
+
+Interior sections:
+Engine Health
+Device Health
+OTA Status
+Campaign Activity
+Training Controls
+Live Feed
+Environment Status
+System Mode
+Remote Controls
+
+Requirements:
+control-room feel
+clean dashboard metrics
+health cards
+frosted glass sections
+blue/silver charts
+touchscreen action cards
+right-side live feed
+
+H. REVENUE ENGINE
+
+Redesign Revenue Engine tile interior and every inside section.
+
+This page must no longer look faded, pink-washed, or unfinished.
+
+It must include:
+Revenue Overview
+Venue Occupancy
+Dynamic Pricing
+Member Rate
+Attraction Engine
+Campaign Intelligence
+Supply Intelligence
+Loyalty Flow
+Slow-Hour Detect
+Event Pipeline
+Margin Intelligence
+Conversion Metrics
+AI Commentary
+Revenue Actions
+
+Visual requirements:
+premium chart panels
+clean metric tiles
+Apple/Tesla line graphs
+blue/silver graph language
+campaign cards
+pricing controls
+occupancy slider
+conversion highlights
+AI recommendation strip
+
+Do not let the graph area feel empty or faded.
+Make it crisp, premium, and clearly readable.
+
+I. PRESENCE ENGINE
+
+Redesign Presence Engine tile interior.
+
+Interior sections:
+VIP Arrival & Recognition
+Presence Activity
+Guest Recognition Signals
+Priority Flags
+Check-in Signals
+VIP Routing
+Session Awareness
+Attention Queue
+
+Visual requirements:
+identity cards
+priority flags
+queue panels
+signal graphs
+premium live guest presence intelligence
+
+J. MARKETING ENGINE
+
+Redesign Marketing tile interior.
+
+Interior sections:
+Campaigns
+Promotions
+Featured Pushes
+Brand Spotlights
+Audience Segments
+Performance Metrics
+Creative Queue
+Upcoming Events
+Offer Activation
+
+Visual requirements:
+campaign cards
+creative tiles
+performance charts
+promotion status chips
+visual content panels
+
+K. ENVIRONMENT ENGINE
+
+Redesign Environment tile interior.
+
+Interior sections:
+Atmosphere State
+Energy Mode
+Mood State
+Lighting Suggestions
+Service Pressure
+Ambient Profile
+Sensor Summary
+Venue State
+
+Visual requirements:
+mood color indicators
+ambient status cards
+sensor panels
+energy graphs
+premium environment controls
+
+L. GOVERNANCE / COMPLIANCE / AUDIT
+
+Redesign these tile interiors too.
+
+Interior sections:
+Roles
+Permissions
+Audit Trail
+Compliance Status
+Governance Alerts
+Activity Logs
+System Policies
+Risk Flags
+
+Visual requirements:
+clean tables
+status cards
+audit timeline
+permission chips
+alert cards
+high-trust enterprise styling
+
+INNER PANEL REDESIGN REQUIREMENTS
+
+Every inside page must redesign all of these panel types:
+
+1. Metric Cards
+large number
+small trend
+clear label
+premium border
+glass effect
+high contrast
+
+2. Chart Panels
+clean line charts
+occupancy graphs
+status waveforms
+bar charts
+radar charts
+rings/donuts
+Apple/Tesla style chart surfaces
+
+3. Live Feed Panels
+event source
+timestamp
+status chip
+severity color
+action buttons
+acknowledge controls
+
+4. Action Panels
+large touch-friendly buttons
+clear hierarchy
+premium color treatment
+active, hover, disabled, loading states
+
+5. Tables / Lists
+high readability
+clear row separation
+soft borders
+premium chip styling
+clean sorting/filter appearance
+
+6. Detail Drawers / Side Panels
+clean slide-out inspector panels
+product details
+device details
+campaign details
+guest details
+sync details
+
+7. Empty States
+beautiful and intentional
+not blank
+show module meaning
+show next action
+show CTA button
+
+8. Loading States
+polished skeletons
+premium shimmer
+not broken-looking blank panels
+
+TILE CLICK REQUIREMENT
+
+When any homepage tile is clicked, it must open a fully redesigned interior page.
+
+Do not leave the homepage tile redesigned while the inside page still looks old.
+
+This applies to:
+EEIE Command Center
+Distribution Vault
+Hardware Lab
+Ambassador Deck
+Founder Control
+Master Operations
+
+Every one of those tiles must have:
+redesigned cover tile
+redesigned inside page
+redesigned internal content sections
+redesigned nested tabs
+redesigned bottom rails
+redesigned live feed / status area
+
+ROUTING REQUIREMENT
+
+Make sure all tile routes are real and functional.
+
+If any page is missing, create it.
+If any existing page is outdated, refactor it into the new shell.
+If any sub-tab is missing, create a functional shell for it.
+Do not leave dead links.
+
+Suggested route family:
+
+/sovereign-dashboard
+/eeie
+/eeie/command-center
+/distribution-vault
+/hardware-lab
+/ambassador-deck
+/founder-control
+/master-operations
+/master-operations/operations
+/master-operations/revenue-engine
+/master-operations/presence-engine
+/master-operations/marketing
+/master-operations/environment
+/master-operations/governance
+/master-operations/ota
+/master-operations/training
+/master-operations/live-feed
+
+TOUCHSCREEN / USABILITY REQUIREMENTS
+
+All internal pages must be touch-friendly.
+
+Requirements:
+minimum 56px major buttons
+72px critical actions
+clear spacing
+large cards
+high readability
+easy tap targets
+tablet-friendly layout
+desktop-friendly layout
+no cramped controls
+
+ANIMATION REQUIREMENTS
+
+Use premium restrained motion.
+
+Add:
+soft hover lift
+card glow
+live pulse for active status
+graph animation
+feed slide-in
+panel fade-in
+button press feedback
+status ring pulse
+soft shimmer for loading
+
+Do not use over-the-top neon cyberpunk animation.
+Do not use cheap gimmicky effects.
+
+FINAL DELIVERABLE
+
+Redesign every homepage tile and every interior interface behind those tiles.
+
+Do not stop at the cover.
+Do not stop at the shell.
+Do not stop at one page.
+
+Apply the Apple-meets-Tesla future-luxury redesign to:
+
+EEIE Command Center
+Distribution Vault
+Hardware Lab
+Ambassador Deck
+Founder Control
+Master Operations
+Operations
+Revenue Engine
+Presence Engine
+Marketing
+Environment
+Governance
+Compliance
+Audit
+Training Controls
+Live Feed
+OTA / device control
+all nested sub-interfaces connected to those modules
+
+The end result must feel like one unified luxury command operating system.
+
+No half redesign.
+No old interior pages left behind.
+No disconnected styling.
+
+Everything must match.
+Everything must be upgraded.
+Everything must feel premium.
