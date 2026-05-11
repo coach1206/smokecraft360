@@ -169,8 +169,15 @@ router.get("/sovereign/verify-session", async (req, res) => {
 
   try {
     const { payload } = await jwtVerify(token, secret());
-    if (payload["type"] !== "sovereign-session") throw new Error();
-    res.json({ valid: true, owner: payload["owner"], entity: payload["entity"] });
+    // Accept magic-link session tokens OR PIN-auth super_admin tokens
+    const isSessionToken = payload["type"] === "sovereign-session";
+    const isPinToken     = payload["role"] === "super_admin";
+    if (!isSessionToken && !isPinToken) throw new Error("Not a sovereign token");
+    res.json({
+      valid:  true,
+      owner:  (payload["owner"] as string)  ?? (payload["name"] as string)  ?? "JC Collins",
+      entity: (payload["entity"] as string) ?? "360 Enterprises Services LLC",
+    });
   } catch {
     res.status(401).json({ valid: false });
   }
