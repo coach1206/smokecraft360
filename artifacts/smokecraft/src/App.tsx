@@ -36,6 +36,7 @@ import { RouteTransitionOverlay }     from '@/components/RouteTransitionOverlay'
 import { TrifectaProvider }           from '@/contexts/TrifectaContext';
 import { SovereignInsightCube }       from '@/components/SovereignInsightCube';
 import { useSovereignSocket }         from '@/hooks/useSovereignSocket';
+import PhantomHUD                     from '@/components/PhantomHUD';
 
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
@@ -970,6 +971,8 @@ export default function App() {
           </Route>
         </Switch>
       </Suspense>
+      {/* Phantom HUD — additive fixed overlay, zero interruption */}
+      <PhantomHUD />
     </Router>
   );
 }

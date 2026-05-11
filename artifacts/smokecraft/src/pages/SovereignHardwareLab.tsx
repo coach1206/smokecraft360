@@ -886,7 +886,7 @@ export default function SovereignHardwareLab() {
                   <motion.div key={node.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
                     style={{ background: C.card, border: `1px solid ${node.authorized ? C.border : "rgba(239,68,68,0.14)"}`, borderRadius: 12, padding: "18px 20px" }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-                      <div style={{ width: 44, height: 44, borderRadius: 11, background: node.authorized ? `${C.gold}12` : "rgba(239,68,68,0.08)", border: `1px solid ${node.authorized ? C.border : "rgba(239,68,68,0.22)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, position: "relative" }}>
+                      <div className={`pulse pulse-delay-${(i % 4) + 1}`} style={{ width: 44, height: 44, borderRadius: 11, background: node.authorized ? `${C.gold}12` : "rgba(239,68,68,0.08)", border: `1px solid ${node.authorized ? C.border : "rgba(239,68,68,0.22)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, position: "relative" }}>
                         <NodeIcon type={node.node_type} size={18} color={node.authorized ? C.gold : C.red} />
                         <AnimatePresence>
                           {pulsing.has(node.hardware_id) && (
