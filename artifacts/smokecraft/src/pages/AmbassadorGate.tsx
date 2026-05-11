@@ -5,6 +5,7 @@
  */
 
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, ArrowRight, Loader, Check, ChevronLeft } from "lucide-react";
 
@@ -25,6 +26,7 @@ type Stage = "idle" | "sending" | "sent" | "error";
 export default function AmbassadorGate() {
   const [email, setEmail] = useState("");
   const [stage, setStage] = useState<Stage>("idle");
+  const [, navigate] = useLocation();
 
   const request = async () => {
     if (!email.includes("@")) return;
@@ -57,7 +59,7 @@ export default function AmbassadorGate() {
       {/* Back button */}
       <motion.button
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-        onClick={() => window.history.back()}
+        onClick={() => navigate("/sovereign-dashboard")}
         style={{
           position: "fixed", top: 24, left: 24,
           display: "flex", alignItems: "center", gap: 6,
