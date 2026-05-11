@@ -712,7 +712,7 @@ export default function FounderControlCenter() {
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                           <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.gold, flexShrink: 0 }} />
                           <div>
-                            <div style={{ fontSize: 12, color: T.fore, fontWeight: 500 }}>{ev.eventType.replace(/_/g, " ")}</div>
+                            <div style={{ fontSize: 12, color: T.fore, fontWeight: 500 }}>{(ev.eventType ?? "").replace(/_/g, " ")}</div>
                             <div style={{ fontSize: 9, color: T.faint, marginTop: 2, fontFamily: T.mono }}>{ev.venueId ? `venue ${ev.venueId.slice(0, 8)}` : "platform"}</div>
                           </div>
                         </div>
