@@ -37,7 +37,10 @@ import AssistedDiscoveryOverlay from "@/components/AssistedDiscoveryOverlay";
 import ChallengeModal, { type ChallengeQuestion } from "@/components/ChallengeModal";
 import CraftSensoryCanvas from "@/components/CraftSensoryCanvas";
 import StaffRippleTransition from "@/components/StaffRippleTransition";
-import EmberHeartbeat from "@/components/EmberHeartbeat";
+import EmberHeartbeat          from "@/components/EmberHeartbeat";
+import AmberCorePulse          from "@/components/AmberCorePulse";
+import SpiritConstruction, { type PalateDNA } from "@/components/SpiritConstruction";
+import ReserveVaultExplosion   from "@/components/ReserveVaultExplosion";
 import { dispatchRitualEvent, checkMentorWarning, edgeHaptic } from "@/lib/kineticFeedback";
 import { ExperienceFlowEngine } from "@/lib/experienceFlowEngine";
 
@@ -449,7 +452,7 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft, 
     <motion.div
       drag={isTop ? "x" : false}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      dragElastic={0.65}
+      dragElastic={theme.type === "pour" ? 1.35 : 0.65}
       onDragEnd={onDragEnd}
       style={{
         x:        isTop ? x : 0,
@@ -549,6 +552,26 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft, 
             }}
             animate={{ left: ["-55%", "115%"] }}
             transition={{ duration: 4.8, repeat: Infinity, ease: "linear", repeatDelay: 2.2 }}
+          />
+        )}
+
+        {/* ── Spirit Sensory Blade: color-dodge glass light refraction (pour only) ── */}
+        {theme.type === "pour" && (
+          <motion.div
+            animate={{
+              x:       ["-60%", "120%"],
+              opacity: [0, 0.55, 0.55, 0],
+            }}
+            transition={{ duration: 3.6, repeat: Infinity, ease: "linear", repeatDelay: 2.8 }}
+            style={{
+              position:     "absolute",
+              top: 0, bottom: 0,
+              width:        "38%",
+              background:   "linear-gradient(105deg, transparent 0%, rgba(255,220,80,0.22) 48%, rgba(255,255,255,0.18) 52%, transparent 100%)",
+              mixBlendMode: "color-dodge",
+              pointerEvents:"none",
+              zIndex:       18,
+            }}
           />
         )}
 
@@ -1012,10 +1035,17 @@ export default function ExperiencePage() {
   // Entry chamber: always shows on every new navigation to /experience/:type.
   // CraftEntryChamber handles returning guests internally (skips enrollment, goes to mentor reveal).
   // Skip chamber when returning from SYNCHRONIZATION — EFE already at SWIPE_RITUAL
-  const [showChamber,          setShowChamber]          = useState(
-    () => ExperienceFlowEngine.currentStep !== "SWIPE_RITUAL"
+  const [showChamber,          setShowChamber]          = useState(() => {
+    const step = ExperienceFlowEngine.currentStep;
+    return step !== "SWIPE_RITUAL" && step !== "SPIRIT_CONSTRUCTION";
+  });
+  const [showBlackout,           setShowBlackout]           = useState(false);
+  const [telemetryArmed,         setTelemetryArmed]         = useState(false);
+  const [showSpiritConstruction, setShowSpiritConstruction] = useState(
+    () => ExperienceFlowEngine.currentStep === "SPIRIT_CONSTRUCTION"
   );
-  const [showBlackout,         setShowBlackout]         = useState(false);
+  const [showVaultExplosion,     setShowVaultExplosion]     = useState(false);
+  const [palateDna,              setPalateDna]              = useState<PalateDNA | null>(null);
   const [showAtmosphereOverlay, setShowAtmosphereOverlay] = useState(false);
   const [localAtmosphere,      setLocalAtmosphere]      = useState<string | null>(null);
 
@@ -1275,7 +1305,7 @@ export default function ExperiencePage() {
   async function handleFinish() {
     if (!sessionId) { navigate("/"); return; }
     apiPost(`/api/swipe-experience/session/${sessionId}/complete`, {}).catch(() => {});
-    // Write full sensory profile — consumed by LegacyHandoff (Step 9)
+    // Write full sensory profile — consumed by LegacyHandoff
     try {
       sessionStorage.setItem("nb_handoff", JSON.stringify({
         sessionId,
@@ -1288,7 +1318,13 @@ export default function ExperiencePage() {
         masteryTier:    guestProfile?.masteryTier ?? "explorer",
       }));
     } catch { /* sessionStorage unavailable */ }
-    // Advance EFE to LEGACY_HANDOFF, then navigate
+    // Pour: intercept → SPIRIT_CONSTRUCTION ritual before legacy handoff
+    if (type === "pour") {
+      ExperienceFlowEngine.enterSpiritConstruction();
+      setShowSpiritConstruction(true);
+      return;
+    }
+    // All other crafts: advance directly to LEGACY_HANDOFF
     ExperienceFlowEngine.completeLegacy();
     navigate(`/legacy-handoff/${sessionId}/${type}`);
   }
@@ -1342,7 +1378,16 @@ export default function ExperiencePage() {
         onComplete={() => {
           setShowCinematic(false);
           setShowBlackout(true);
-          setTimeout(() => setShowBlackout(false), 3000);
+          // Pour-specific audio ritual (silent fail if files absent)
+          if (type === "pour") {
+            ["/audio/ice_crack_resonance.mp3", "/audio/liquid_swirl_01.mp3"].forEach(src => {
+              try { const a = new Audio(src); a.volume = 0.5; a.play().catch(() => {}); } catch { /* no audio */ }
+            });
+          }
+          setTimeout(() => {
+            setShowBlackout(false);
+            setTelemetryArmed(true);   // telemetry_status → ARMED: chamber may now mount
+          }, 3000);
         }}
       />
     )}
@@ -1366,10 +1411,14 @@ export default function ExperiencePage() {
             position:  "fixed",
             inset:     0,
             background: "#000",
+            cursor:    "none",
             zIndex:    190,
           }}
         >
-          <EmberHeartbeat color={theme.accent} corner="bottom-left" size={11} dragX={cardDragX} />
+          {type === "pour"
+            ? <AmberCorePulse corner="bottom-left" size={11} />
+            : <EmberHeartbeat color={theme.accent} corner="bottom-left" size={11} dragX={cardDragX} />
+          }
         </motion.div>
       )}
     </AnimatePresence>
@@ -1632,13 +1681,11 @@ export default function ExperiencePage() {
 
       {/* ── Kinetic Feedback Renders ── */}
 
-      {/* EmberHeartbeat — reacts live to card drag (right = hot, left = cold grey) */}
-      <EmberHeartbeat
-        color={theme.accent}
-        corner="bottom-left"
-        size={9}
-        dragX={cardDragX}
-      />
+      {/* Ambient pulse — pour: liquid AmberCorePulse · other crafts: EmberHeartbeat */}
+      {type === "pour"
+        ? <AmberCorePulse corner="bottom-left" size={9} dragX={cardDragX} />
+        : <EmberHeartbeat color={theme.accent} corner="bottom-left" size={9} dragX={cardDragX} />
+      }
 
       {/* RitualSceneOverlay — brief room color wash per flavor profile on ADD */}
       <RitualSceneOverlay />
@@ -2007,7 +2054,7 @@ export default function ExperiencePage() {
 
     {/* ── Entry chamber — full-screen cinematic intro, dismisses on begin ── */}
     <AnimatePresence>
-      {showChamber && !showBlackout && !showCinematic && (
+      {showChamber && !showBlackout && !showCinematic && (type !== "pour" || telemetryArmed) && (
         <CraftEntryChamber
           type={type}
           theme={theme}
@@ -2020,6 +2067,42 @@ export default function ExperiencePage() {
         />
       )}
     </AnimatePresence>
+
+    {/* ── PourCraft 360: SPIRIT_CONSTRUCTION overlay (Steps 10–12) ── */}
+    <AnimatePresence>
+      {showSpiritConstruction && (
+        <SpiritConstruction
+          craftType={type}
+          accent={theme.accent}
+          guestName={guestProfile?.firstName ?? undefined}
+          addedTags={addedTags}
+          onConfirm={dna => {
+            setPalateDna(dna);
+            setShowSpiritConstruction(false);
+            setShowVaultExplosion(true);
+          }}
+          onSkip={() => {
+            setShowSpiritConstruction(false);
+            ExperienceFlowEngine.completeLegacy();
+            navigate(`/legacy-handoff/${sessionId}/${type}`);
+          }}
+        />
+      )}
+    </AnimatePresence>
+
+    {/* ── Reserve Vault: gold particle explosion → then legacy handoff ── */}
+    <AnimatePresence>
+      {showVaultExplosion && (
+        <ReserveVaultExplosion
+          onComplete={() => {
+            setShowVaultExplosion(false);
+            ExperienceFlowEngine.completeLegacy();
+            navigate(`/legacy-handoff/${sessionId}/${type}`);
+          }}
+        />
+      )}
+    </AnimatePresence>
+
     </>
     </StaffRippleTransition>
   );

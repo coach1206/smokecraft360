@@ -30,6 +30,7 @@ export type EFEStep =
   | "IDENTITY_ENROLLMENT"
   | "SYNCHRONIZATION"
   | "SWIPE_RITUAL"
+  | "SPIRIT_CONSTRUCTION"
   | "LEGACY_HANDOFF";
 
 export const EFE_SEQUENCE: EFEStep[] = [
@@ -41,6 +42,7 @@ export const EFE_SEQUENCE: EFEStep[] = [
   "IDENTITY_ENROLLMENT",
   "SYNCHRONIZATION",
   "SWIPE_RITUAL",
+  "SPIRIT_CONSTRUCTION",
   "LEGACY_HANDOFF",
 ];
 
@@ -77,17 +79,18 @@ const ENV_MAP: Partial<Record<EFEStep, EnvPayload>> = {
 // ── Route map ─────────────────────────────────────────────────────────────────
 
 const ROUTES: Record<EFEStep, (craft?: string) => string> = {
-  CRAFTHUB_SELECTION:  ()            => "/craft-hub",
-  CINEMATIC_INTRO:     (c = "smoke") => `/experience/${c}`,
-  EXPERIENCE_OVERVIEW: (c = "smoke") => `/experience-overview/${c}`,
-  CHALLENGE_SELECTION: (c = "smoke") => `/experience/${c}`,
-  MENTOR_REVEAL:       (c = "smoke") => `/experience/${c}`,
-  IDENTITY_ENROLLMENT: (c = "smoke") => `/experience/${c}`,
-  SYNCHRONIZATION:     (c = "smoke") => `/synchronization/${c}`,
-  SWIPE_RITUAL:        (c = "smoke") => `/experience/${c}`,
+  CRAFTHUB_SELECTION:   ()            => "/craft-hub",
+  CINEMATIC_INTRO:      (c = "smoke") => `/experience/${c}`,
+  EXPERIENCE_OVERVIEW:  (c = "smoke") => `/experience-overview/${c}`,
+  CHALLENGE_SELECTION:  (c = "smoke") => `/experience/${c}`,
+  MENTOR_REVEAL:        (c = "smoke") => `/experience/${c}`,
+  IDENTITY_ENROLLMENT:  (c = "smoke") => `/experience/${c}`,
+  SYNCHRONIZATION:      (c = "smoke") => `/synchronization/${c}`,
+  SWIPE_RITUAL:         (c = "smoke") => `/experience/${c}`,
+  // SPIRIT_CONSTRUCTION is an in-page overlay — stays on /experience/:type.
+  SPIRIT_CONSTRUCTION:  (c = "smoke") => `/experience/${c}`,
   // LEGACY_HANDOFF route includes sessionId — built externally by handleFinish.
-  // This stub is present to satisfy the Record type.
-  LEGACY_HANDOFF:      (c = "smoke") => `/legacy-handoff/unknown/${c}`,
+  LEGACY_HANDOFF:       (c = "smoke") => `/legacy-handoff/unknown/${c}`,
 };
 
 // ── Persistent state — sessionStorage ────────────────────────────────────────
@@ -237,7 +240,18 @@ export const ExperienceFlowEngine = {
   },
 
   /**
-   * Mark SWIPE_RITUAL complete — advances to LEGACY_HANDOFF (Step 9).
+   * Advance from SWIPE_RITUAL to SPIRIT_CONSTRUCTION (pour-craft Step 10).
+   * Only called for pour; other crafts skip directly to LEGACY_HANDOFF.
+   */
+  enterSpiritConstruction(): void {
+    const s = load();
+    save({ ...s, currentStep: "SPIRIT_CONSTRUCTION" });
+    syncEnvironment("SPIRIT_CONSTRUCTION");
+    triggerHaptics();
+  },
+
+  /**
+   * Mark SWIPE_RITUAL (or SPIRIT_CONSTRUCTION) complete — advances to LEGACY_HANDOFF.
    * Route is NOT returned here because it includes sessionId — ExperiencePage
    * builds the URL as `/legacy-handoff/:sessionId/:craftType` directly.
    */
