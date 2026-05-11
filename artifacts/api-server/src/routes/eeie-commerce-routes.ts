@@ -21,7 +21,7 @@
  */
 
 import { Router, Request, Response, NextFunction } from "express";
-import { requireAuth } from "../middleware/auth";
+import { requireAuth, optionalAuth } from "../middleware/auth";
 import {
   acknowledgeCommerceAlert,
   connectAdapter,
@@ -42,10 +42,10 @@ import {
 
 const router = Router();
 
-// All commerce routes require auth (session or bearer)
-router.use(requireAuth);
+// GET routes use optionalAuth — attaches req.user when a valid JWT is present,
+// but never blocks. The EEIE frontend route guard already controls page access.
+// POST (write) routes require a valid session + elevated role.
 
-// Elevated guard: founder / super_admin / admin_owner / manager — or any bearer (dev)
 function requireManager(req: Request, res: Response, next: NextFunction) {
   const reqAny = req as unknown as Record<string, unknown>;
   const user = reqAny.user as Record<string, unknown> | undefined
@@ -53,7 +53,7 @@ function requireManager(req: Request, res: Response, next: NextFunction) {
     ?? {};
   const role = (user.role as string | undefined) ?? "";
   const allowed = ["founder", "super_admin", "admin_owner", "manager"];
-  if (allowed.includes(role) || req.headers.authorization) return next();
+  if (allowed.includes(role)) return next();
   return res.status(403).json({
     ok: false,
     mode: "blocked",
@@ -64,69 +64,25 @@ function requireManager(req: Request, res: Response, next: NextFunction) {
   });
 }
 
-// ── Read endpoints ────────────────────────────────────────────
+// ── Read endpoints (open — optionalAuth enriches req.user) ───
 
-router.get("/commerce-health", (_req: Request, res: Response) => {
-  res.json(getCommerceHealth());
-});
+router.get("/commerce-health",         optionalAuth, (_req: Request, res: Response) => { res.json(getCommerceHealth());    });
+router.get("/commerce/adapters",       optionalAuth, (_req: Request, res: Response) => { res.json(getCommerceAdapters());  });
+router.get("/commerce/order-handoffs", optionalAuth, (_req: Request, res: Response) => { res.json(getOrderHandoffs());     });
+router.get("/commerce/revenue-lift",   optionalAuth, (_req: Request, res: Response) => { res.json(getRevenueLift());       });
+router.get("/commerce/bundle-performance", optionalAuth, (_req: Request, res: Response) => { res.json(getBundlePerformance()); });
+router.get("/commerce/staff-conversion",   optionalAuth, (_req: Request, res: Response) => { res.json(getStaffConversion());    });
+router.get("/commerce/alerts",         optionalAuth, (_req: Request, res: Response) => { res.json(getCommerceAlerts());    });
+router.get("/commerce/logs",           optionalAuth, (_req: Request, res: Response) => { res.json(getCommerceLogs());      });
 
-router.get("/commerce/adapters", (_req: Request, res: Response) => {
-  res.json(getCommerceAdapters());
-});
+// ── Write endpoints (valid JWT + manager role required) ───────
 
-router.get("/commerce/order-handoffs", (_req: Request, res: Response) => {
-  res.json(getOrderHandoffs());
-});
-
-router.get("/commerce/revenue-lift", (_req: Request, res: Response) => {
-  res.json(getRevenueLift());
-});
-
-router.get("/commerce/bundle-performance", (_req: Request, res: Response) => {
-  res.json(getBundlePerformance());
-});
-
-router.get("/commerce/staff-conversion", (_req: Request, res: Response) => {
-  res.json(getStaffConversion());
-});
-
-router.get("/commerce/alerts", (_req: Request, res: Response) => {
-  res.json(getCommerceAlerts());
-});
-
-router.get("/commerce/logs", (_req: Request, res: Response) => {
-  res.json(getCommerceLogs());
-});
-
-// ── Write endpoints (manager+ required) ──────────────────────
-
-router.post("/commerce/adapters/:adapter/test", requireManager, (req: Request, res: Response) => {
-  res.json(testAdapter(String(req.params.adapter)));
-});
-
-router.post("/commerce/adapters/:adapter/connect", requireManager, (req: Request, res: Response) => {
-  res.json(connectAdapter(String(req.params.adapter), req.body as Record<string, unknown>));
-});
-
-router.post("/commerce/manual-mode", requireManager, (_req: Request, res: Response) => {
-  res.json(enableManualMode());
-});
-
-router.post("/commerce/order-handoffs/demo", requireManager, (_req: Request, res: Response) => {
-  res.json(createDemoHandoff());
-});
-
-router.post("/commerce/order-handoffs/:id/retry", requireManager, (req: Request, res: Response) => {
-  res.json(retryOrderHandoff(String(req.params.id)));
-});
-
-router.post("/commerce/occupancy/update", requireManager, (req: Request, res: Response) => {
-  const body = req.body as Record<string, unknown>;
-  res.json(updateOccupancy(body?.occupancy as number));
-});
-
-router.post("/commerce/alerts/:id/acknowledge", requireManager, (req: Request, res: Response) => {
-  res.json(acknowledgeCommerceAlert(String(req.params.id)));
-});
+router.post("/commerce/adapters/:adapter/test",    requireAuth, requireManager, (req: Request, res: Response) => { res.json(testAdapter(String(req.params.adapter)));                                              });
+router.post("/commerce/adapters/:adapter/connect", requireAuth, requireManager, (req: Request, res: Response) => { res.json(connectAdapter(String(req.params.adapter), req.body as Record<string, unknown>));      });
+router.post("/commerce/manual-mode",               requireAuth, requireManager, (_req: Request, res: Response) => { res.json(enableManualMode());                                                                   });
+router.post("/commerce/order-handoffs/demo",       requireAuth, requireManager, (_req: Request, res: Response) => { res.json(createDemoHandoff());                                                                 });
+router.post("/commerce/order-handoffs/:id/retry",  requireAuth, requireManager, (req: Request, res: Response) => { res.json(retryOrderHandoff(String(req.params.id)));                                            });
+router.post("/commerce/occupancy/update",          requireAuth, requireManager, (req: Request, res: Response) => { res.json(updateOccupancy((req.body as Record<string, unknown>)?.occupancy as number));          });
+router.post("/commerce/alerts/:id/acknowledge",    requireAuth, requireManager, (req: Request, res: Response) => { res.json(acknowledgeCommerceAlert(String(req.params.id)));                                      });
 
 export default router;
