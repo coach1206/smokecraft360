@@ -13,7 +13,8 @@ import { useEffect, useState, useRef } from "react";
 import { useLocation, useParams } from "wouter";
 import {
   motion, AnimatePresence,
-  useMotionValue, useTransform, animate,
+  useMotionValue, useTransform, useMotionValueEvent, animate,
+  type MotionValue,
 } from "framer-motion";
 import { ArrowLeft, Sparkles, Check, X, Volume2, VolumeX } from "lucide-react";
 import { playClick, playAmbientHum } from "@/lib/audioEngine";
@@ -36,6 +37,8 @@ import AssistedDiscoveryOverlay from "@/components/AssistedDiscoveryOverlay";
 import ChallengeModal, { type ChallengeQuestion } from "@/components/ChallengeModal";
 import CraftSensoryCanvas from "@/components/CraftSensoryCanvas";
 import StaffRippleTransition from "@/components/StaffRippleTransition";
+import EmberHeartbeat from "@/components/EmberHeartbeat";
+import { dispatchRitualEvent, checkMentorWarning, edgeHaptic } from "@/lib/kineticFeedback";
 
 // ── Ambient particles — same visual language as CraftHub ──────────────────────
 
@@ -159,6 +162,8 @@ interface SwipeCardProps {
   stackIndex:   number;
   onSwipeRight: () => void;
   onSwipeLeft:  () => void;
+  /** Shared MotionValue — propagates live drag x to parent for EmberHeartbeat */
+  dragXRef?:    MotionValue<number>;
 }
 
 // Micro-particles that breathe inside the card (embers / smoke wisps)
@@ -345,7 +350,7 @@ function VoiceIcon({ item, isTop, accent }: { item: ExperienceItem; isTop: boole
   );
 }
 
-function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }: SwipeCardProps) {
+function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft, dragXRef }: SwipeCardProps) {
   // Always resolve a real image via the flavor mapping engine
   const resolvedImage = getFlavorThemedAsset(item);
 
@@ -397,11 +402,19 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
   const discoverLift = useTransform(x, [-60, 0, 110], [2, 0, -5]);
   const exiting = useRef(false);
 
+  // ── Kinetic Feedback: propagate drag x to parent + edge haptics ───────────
+  useMotionValueEvent(x, "change", (latest) => {
+    if (!isTop) return;
+    dragXRef?.set(latest);
+    edgeHaptic(latest);
+  });
+
   useEffect(() => {
     if (isTop) {
       animate(x, 0, { duration: 0.44, ease: [0.22, 1, 0.36, 1] });
     }
-  }, [isTop, x]);
+    if (!isTop) dragXRef?.set(0);
+  }, [isTop, x]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function triggerRight() {
     if (exiting.current || !isTop) return;
@@ -800,6 +813,182 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft }
   );
 }
 
+// ── RitualSceneOverlay — brief physical room color wash on ADD swipe ─────────
+
+function RitualSceneOverlay() {
+  const [scene, setScene] = useState<{ hex: string; label: string } | null>(null);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const d = (e as CustomEvent<{ scene?: { hex: string; label: string } | null }>).detail;
+      if (!d?.scene) return;
+      setScene(d.scene);
+      setTimeout(() => setScene(null), 1500);
+    };
+    window.addEventListener("efe:ritual_event", handler as EventListener);
+    return () => window.removeEventListener("efe:ritual_event", handler as EventListener);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {scene && (
+        <motion.div
+          key={scene.hex + scene.label}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.38, ease: "easeOut" }}
+          style={{
+            position:      "fixed",
+            inset:         0,
+            zIndex:        9200,
+            background:    `radial-gradient(ellipse at 50% 38%, ${scene.hex}72 0%, ${scene.hex}28 52%, transparent 82%)`,
+            pointerEvents: "none",
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0,  scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ delay: 0.1, duration: 0.28 }}
+            style={{
+              position:      "absolute",
+              top:           "50%",
+              left:          "50%",
+              transform:     "translate(-50%, -50%)",
+              fontFamily:    "'Courier New', monospace",
+              fontSize:      8,
+              fontWeight:    800,
+              letterSpacing: "0.40em",
+              color:         scene.hex,
+              textTransform: "uppercase" as const,
+              textShadow:    `0 0 20px ${scene.hex}`,
+              pointerEvents: "none",
+              whiteSpace:    "nowrap",
+            }}
+          >
+            {scene.label} · LIGHTING SCENE ACTIVE
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ── MentorWarningModal — cinematic pause on 3-archetype flavor conflict ────────
+
+function MentorWarningModal({
+  visible,
+  accent,
+  onDismiss,
+}: {
+  visible:   boolean;
+  accent:    string;
+  onDismiss: () => void;
+}) {
+  const QUOTE   = "A conflicted palate leads to a fractured legacy.";
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    if (!visible) { setIdx(0); return; }
+    const t = setInterval(() => {
+      setIdx(prev => {
+        if (prev >= QUOTE.length) { clearInterval(t); return prev; }
+        return prev + 1;
+      });
+    }, 40);
+    return () => clearInterval(t);
+  }, [visible]);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          key="mentor-warning"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.45 }}
+          onClick={onDismiss}
+          style={{
+            position:       "fixed",
+            inset:          0,
+            zIndex:         9800,
+            background:     "rgba(6,4,2,0.90)",
+            backdropFilter: "blur(20px)",
+            display:        "flex",
+            alignItems:     "center",
+            justifyContent: "center",
+            flexDirection:  "column",
+            gap:            24,
+            padding:        "0 44px",
+            cursor:         "pointer",
+          }}
+        >
+          {/* Pulsing orb */}
+          <motion.div
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1,   opacity: 1 }}
+            transition={{ delay: 0.15, type: "spring", stiffness: 240, damping: 22 }}
+            style={{
+              width: 56, height: 56, borderRadius: "50%",
+              border: `1.5px solid ${accent}44`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            <motion.div
+              animate={{ scale: [1, 1.35, 1], opacity: [0.65, 1, 0.65] }}
+              transition={{ duration: 2.4, repeat: Infinity }}
+              style={{
+                width: 14, height: 14, borderRadius: "50%",
+                background: accent,
+                boxShadow:  `0 0 20px 5px ${accent}55`,
+              }}
+            />
+          </motion.div>
+
+          {/* Label */}
+          <div style={{
+            fontSize:      9,
+            color:         `${accent}80`,
+            letterSpacing: "0.36em",
+            fontFamily:    "'Courier New', monospace",
+            textTransform: "uppercase" as const,
+          }}>
+            MENTOR INTERJECTION
+          </div>
+
+          {/* Typewriter quote */}
+          <p style={{
+            fontSize:   "clamp(17px,3.8vw,24px)",
+            fontFamily: "'Cormorant Garamond', 'Georgia', serif",
+            fontStyle:  "italic",
+            fontWeight: 500,
+            color:      "#F0E8D0",
+            textAlign:  "center",
+            lineHeight: 1.55,
+            margin:     0,
+            minHeight:  "2.8em",
+          }}>
+            &ldquo;{QUOTE.slice(0, idx)}{idx < QUOTE.length ? "▌" : ""}&rdquo;
+          </p>
+
+          {/* Attribution */}
+          <div style={{
+            fontSize:      9,
+            color:         "rgba(240,232,208,0.26)",
+            letterSpacing: "0.22em",
+            fontFamily:    "'Courier New', monospace",
+            textTransform: "uppercase" as const,
+          }}>
+            — YOUR MENTOR · TAP TO CONTINUE
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 // ── Main ExperiencePage ───────────────────────────────────────────────────────
 
 export default function ExperiencePage() {
@@ -857,6 +1046,11 @@ export default function ExperiencePage() {
   const [localXp,            setLocalXp]            = useState(0);
   const [activeChallenge,    setActiveChallenge]    = useState<ChallengeQuestion | null>(null);
   const addSwipeRef = useRef(0);
+
+  // ── Kinetic Feedback Loop — drag-reactive ember + ritual event state ──────
+  const cardDragX         = useMotionValue(0);
+  const [mentorWarning,   setMentorWarning]   = useState(false);
+  const mentorWarningSeen = useRef(false);
 
   async function triggerChallenge() {
     if (!guestProfile) return;
@@ -1015,6 +1209,19 @@ export default function ExperiencePage() {
         // Fallback if no mentor (anonymous)
         setFeedback({ text: "Added to your taste profile", type: "add" });
         setTimeout(() => setFeedback(null), 1600);
+      }
+    }
+
+    // ── Kinetic Feedback Loop ────────────────────────────────────────────────
+    if (action === "add") {
+      // Fire SSE telemetry + in-process ritual event (drives scene overlay)
+      dispatchRitualEvent(card.tags, type);
+
+      // Mentor Warning: 3-archetype conflict detection
+      const allTags = [...addedTags, ...(card.tags ?? [])];
+      if (!mentorWarningSeen.current && checkMentorWarning(allTags)) {
+        mentorWarningSeen.current = true;
+        setTimeout(() => setMentorWarning(true), 400);
       }
     }
 
@@ -1378,12 +1585,33 @@ export default function ExperiencePage() {
                 stackIndex={i}
                 onSwipeRight={() => handleSwipe("add")}
                 onSwipeLeft={()  => handleSwipe("skip")}
+                dragXRef={i === 0 ? cardDragX : undefined}
               />
             ))
           )}
         </AnimatePresence>
         </div>{/* /fixed-size inner box */}
       </div>
+
+      {/* ── Kinetic Feedback Renders ── */}
+
+      {/* EmberHeartbeat — reacts live to card drag (right = hot, left = cold grey) */}
+      <EmberHeartbeat
+        color={theme.accent}
+        corner="bottom-left"
+        size={9}
+        dragX={cardDragX}
+      />
+
+      {/* RitualSceneOverlay — brief room color wash per flavor profile on ADD */}
+      <RitualSceneOverlay />
+
+      {/* MentorWarningModal — cinematic pause on 3-archetype conflict */}
+      <MentorWarningModal
+        visible={mentorWarning}
+        accent={theme.accent}
+        onDismiss={() => setMentorWarning(false)}
+      />
 
       {/* AI Mentor Chat — streaming OpenAI response after each ADD swipe */}
       <MentorChatBubble
