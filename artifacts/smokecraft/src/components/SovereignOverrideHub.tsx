@@ -425,6 +425,234 @@ function Divider({ label }: { label?: string }) {
   );
 }
 
+// ── Inline PIN pad ─────────────────────────────────────────────────────────
+
+const PAD_KEYS = ["1","2","3","4","5","6","7","8","9","CLR","0","GO"] as const;
+const MAX_PIN  = 6;
+
+interface InlinePinPadProps {
+  onSuccess: (role: string) => void;
+  onCancel:  () => void;
+  pulseDur:  string;
+  isBlackoutActive: boolean;
+  isApiLockActive:  boolean;
+}
+
+function InlinePinPad({ onSuccess, onCancel, pulseDur, isBlackoutActive, isApiLockActive }: InlinePinPadProps) {
+  const [pin,     setPin]     = useState("");
+  const [error,   setError]   = useState("");
+  const [loading, setLoading] = useState(false);
+  const [shake,   setShake]   = useState(false);
+
+  const tier = pin.length >= 5 ? "sovereign" : "staff";
+
+  const submit = useCallback(async (digits: string) => {
+    if (digits.length < 4) return;
+    setLoading(true);
+    setError("");
+    try {
+      const res  = await fetch("/api/auth/pin-login", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ pin: digits }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        if (data.token) {
+          localStorage.setItem("auth_token", data.token);
+        }
+        onSuccess(data.role ?? data.tier ?? "staff");
+      } else {
+        setPin("");
+        setError(data.message ?? "Invalid PIN");
+        setShake(true);
+        setTimeout(() => setShake(false), 600);
+      }
+    } catch {
+      setPin("");
+      setError("Connection error");
+      setShake(true);
+      setTimeout(() => setShake(false), 600);
+    } finally {
+      setLoading(false);
+    }
+  }, [onSuccess]);
+
+  const handleKey = useCallback((key: string) => {
+    if (loading) return;
+    if (key === "CLR") { setPin(""); setError(""); return; }
+    if (key === "GO")  { submit(pin); return; }
+    if (pin.length >= MAX_PIN) return;
+    const next = pin + key;
+    setPin(next);
+    if (next.length === MAX_PIN) submit(next);
+  }, [pin, loading, submit]);
+
+  return (
+    <motion.div
+      data-override-hub
+      animate={shake ? { x: [-6, 6, -4, 4, -2, 2, 0] } : { x: 0 }}
+      transition={{ duration: 0.5 }}
+      style={{ padding: "4px 6px 8px" }}
+    >
+      {/* Header row */}
+      <div style={{
+        padding:       "6px 14px 10px",
+        borderBottom:  `1px solid ${BORDER}`,
+        marginBottom:  12,
+        fontSize:      8,
+        color:         MUTED,
+        letterSpacing: "0.22em",
+        textTransform: "uppercase",
+        fontFamily:    FONT,
+        display:       "flex",
+        alignItems:    "center",
+        gap:           6,
+      }}>
+        <div style={{
+          width:  5, height: 5, borderRadius: "50%",
+          background: (isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e",
+          boxShadow:  `0 0 6px ${(isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e"}`,
+          animation:  `hub-pulse ${pulseDur} ease-in-out infinite`,
+        }} />
+        SOVEREIGN GATE · AUTHENTICATE
+      </div>
+
+      <style>{`
+        @keyframes hub-pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+      `}</style>
+
+      {/* Tier badge */}
+      <div style={{
+        textAlign:     "center",
+        fontSize:       7,
+        letterSpacing: "0.20em",
+        color:          pin.length >= 5 ? GOLD_PILL : MUTED,
+        fontFamily:     FONT,
+        marginBottom:   10,
+        transition:     "color 0.2s",
+      }}>
+        {pin.length >= 5 ? "◈ SOVEREIGN — 6-DIGIT" : "4-DIGIT STAFF  ·  6-DIGIT SOVEREIGN"}
+      </div>
+
+      {/* PIN dots */}
+      <div style={{
+        display:        "flex",
+        justifyContent: "center",
+        gap:            8,
+        marginBottom:   14,
+      }}>
+        {Array.from({ length: Math.max(4, pin.length >= 5 ? 6 : 4) }).map((_, i) => (
+          <motion.div
+            key={i}
+            animate={{
+              scale:      i < pin.length ? 1.15 : 1,
+              background: i < pin.length
+                ? (pin.length >= 5 ? GOLD_PILL : AMBER)
+                : "rgba(212,175,55,0.15)",
+            }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            style={{
+              width:        10,
+              height:       10,
+              borderRadius: "50%",
+              border:       `1px solid ${i < pin.length ? "transparent" : BORDER}`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Numpad */}
+      <div style={{
+        display:               "grid",
+        gridTemplateColumns:   "repeat(3, 1fr)",
+        gap:                   6,
+        padding:               "0 4px",
+      }}>
+        {PAD_KEYS.map(k => {
+          const isClear   = k === "CLR";
+          const isGo      = k === "GO";
+          const disabled  = loading || (isGo && pin.length < 4);
+          return (
+            <motion.button
+              key={k}
+              data-override-hub
+              whileTap={{ scale: 0.92 }}
+              onClick={() => handleKey(k)}
+              disabled={disabled}
+              style={{
+                background:   isClear ? "rgba(239,68,68,0.12)"
+                            : isGo    ? `${tier === "sovereign" ? GOLD_PILL : AMBER}22`
+                            : "rgba(212,175,55,0.06)",
+                border:       isClear ? "1px solid rgba(239,68,68,0.35)"
+                            : isGo    ? `1px solid ${tier === "sovereign" ? GOLD_PILL : AMBER}66`
+                            : `1px solid ${BORDER}`,
+                borderRadius: 8,
+                color:        isClear ? DANGER
+                            : isGo    ? (tier === "sovereign" ? GOLD_PILL : AMBER)
+                            : MUTED,
+                fontSize:     isGo || isClear ? 9 : 14,
+                fontWeight:   700,
+                fontFamily:   FONT,
+                padding:      "10px 4px",
+                cursor:       disabled ? "not-allowed" : "pointer",
+                opacity:      disabled ? 0.4 : 1,
+                letterSpacing: "0.05em",
+                touchAction:  "manipulation",
+                WebkitTapHighlightColor: "transparent",
+                transition:   "opacity 0.15s",
+              }}
+            >
+              {loading && isGo ? "…" : k}
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* Error */}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            style={{
+              textAlign:     "center",
+              fontSize:      8,
+              color:         DANGER,
+              fontFamily:    FONT,
+              letterSpacing: "0.12em",
+              marginTop:     10,
+            }}
+          >
+            {error}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Cancel */}
+      <button
+        data-override-hub
+        onClick={onCancel}
+        style={{
+          display:       "block",
+          margin:        "10px auto 0",
+          background:    "none",
+          border:        "none",
+          color:         "rgba(212,175,55,0.30)",
+          fontSize:      8,
+          fontFamily:    FONT,
+          letterSpacing: "0.14em",
+          cursor:        "pointer",
+          textTransform: "uppercase",
+        }}
+      >
+        dismiss
+      </button>
+    </motion.div>
+  );
+}
+
 // ── Main component ─────────────────────────────────────────────────────────
 
 const PULSE_DUR: Record<string, string> = {
@@ -435,6 +663,8 @@ const PULSE_DUR: Record<string, string> = {
 
 export function SovereignOverrideHub() {
   const [open, setOpen]         = useState(false);
+  const [mode, setMode]         = useState<"pin" | "commands">("pin");
+  const [authedRole, setAuthedRole] = useState<string | null>(null);
   const [mounted, setMounted]   = useState(false);
   const pillRef                 = useRef<HTMLButtonElement>(null);
   const [pillRect, setPillRect] = useState<DOMRect | null>(null);
@@ -453,20 +683,23 @@ export function SovereignOverrideHub() {
 
   useEffect(() => { setMounted(true); }, []);
 
-  // Close on outside tap — pointerdown fires once for both mouse and touch
+  // Reset to PIN mode whenever the dropdown closes
+  useEffect(() => {
+    if (!open) {
+      setMode("pin");
+      setAuthedRole(null);
+    }
+  }, [open]);
+
+  // Close on outside tap
   useEffect(() => {
     if (!open) return;
     const handler = (e: PointerEvent) => {
       const target = e.target as Element;
       if (!target.closest("[data-override-hub]")) setOpen(false);
     };
-    const t = setTimeout(() => {
-      window.addEventListener("pointerdown", handler);
-    }, 60);
-    return () => {
-      clearTimeout(t);
-      window.removeEventListener("pointerdown", handler);
-    };
+    const t = setTimeout(() => window.addEventListener("pointerdown", handler), 60);
+    return () => { clearTimeout(t); window.removeEventListener("pointerdown", handler); };
   }, [open]);
 
   const handleOpen = useCallback((e: React.PointerEvent) => {
@@ -477,7 +710,21 @@ export function SovereignOverrideHub() {
     if (willOpen) playPillClink();
   }, [open]);
 
-  // ── Action handlers ──────────────────────────────────────────────────────
+  // ── PIN success handler ──────────────────────────────────────────────────
+
+  const handlePinSuccess = useCallback((role: string) => {
+    setAuthedRole(role);
+    const isSovereign = role === "super_admin" || role === "sovereign";
+    if (isSovereign) {
+      setMode("commands");
+    } else {
+      setOpen(false);
+      triggerHandoff(window.innerWidth / 2, window.innerHeight / 2);
+      setTimeout(() => navigate("/eeie-command"), 80);
+    }
+  }, [triggerHandoff, navigate]);
+
+  // ── Command action handlers ──────────────────────────────────────────────
 
   const handleEeis = useCallback(() => {
     setOpen(false);
@@ -493,7 +740,6 @@ export function SovereignOverrideHub() {
 
   const handleBlackout = useCallback(() => {
     toggleKillSwitch("session_blackout");
-    // executeGlobalCommand fires haptics.heavy() + SOVEREIGN_GLOBAL_DISRUPTION broadcast
     void TitanNervousSystem.executeGlobalCommand("BLACKOUT", 2001);
   }, [toggleKillSwitch]);
 
@@ -512,7 +758,7 @@ export function SovereignOverrideHub() {
     }, 120);
   }, [purgeSessions, clearGuest, navigate]);
 
-  // ── Menu portal ──────────────────────────────────────────────────────────
+  // ── Dropdown content ─────────────────────────────────────────────────────
   const menuContent = pillRect && (
     <motion.div
       data-override-hub
@@ -529,97 +775,89 @@ export function SovereignOverrideHub() {
         background:           OBSIDIAN,
         backdropFilter:       "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
-        border:               `1px solid ${BORDER}`,
+        border:               `1px solid ${mode === "commands" ? GOLD_PILL : BORDER}`,
         borderRadius:         14,
-        padding:              "8px 6px",
-        minWidth:             248,
+        padding:              "0",
+        minWidth:             268,
         boxShadow:            `0 12px 48px rgba(0,0,0,0.82), 0 0 0 1px rgba(212,175,55,0.06) inset, 0 0 32px rgba(212,175,55,0.06)`,
+        overflow:             "hidden",
       }}
     >
-      {/* Header */}
-      <div style={{
-        padding:       "6px 14px 10px",
-        borderBottom:  `1px solid ${BORDER}`,
-        marginBottom:  4,
-        fontSize:      8,
-        color:         MUTED,
-        letterSpacing: "0.22em",
-        textTransform: "uppercase",
-        fontFamily:    FONT,
-        display:       "flex",
-        alignItems:    "center",
-        gap:           6,
-      }}>
-        <div style={{
-          width:  5, height: 5, borderRadius: "50%",
-          background: (isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e",
-          boxShadow:  `0 0 6px ${(isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e"}`,
-          animation:  `hub-pulse ${pulseDur} ease-in-out infinite`,
-        }} />
-        {(isBlackoutActive || isApiLockActive) ? "⚠ SOVEREIGN OVERRIDE — ENGAGED" : "SOVEREIGN PROTOCOL · ACTIVE"}
-      </div>
+      <AnimatePresence mode="wait">
+        {mode === "pin" ? (
+          <motion.div
+            key="pin"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            <InlinePinPad
+              onSuccess={handlePinSuccess}
+              onCancel={() => setOpen(false)}
+              pulseDur={pulseDur}
+              isBlackoutActive={isBlackoutActive}
+              isApiLockActive={isApiLockActive}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="commands"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Sovereign confirmed header */}
+            <div style={{
+              padding:       "8px 14px 10px",
+              borderBottom:  `1px solid ${BORDER}`,
+              marginBottom:  4,
+              fontSize:      8,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              fontFamily:    FONT,
+              display:       "flex",
+              alignItems:    "center",
+              gap:           6,
+            }}>
+              <div style={{
+                width: 5, height: 5, borderRadius: "50%",
+                background: (isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e",
+                boxShadow:  `0 0 6px ${(isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e"}`,
+              }} />
+              <span style={{ color: GOLD_PILL }}>◈ SOVEREIGN AUTHENTICATED</span>
+              <button
+                data-override-hub
+                onClick={() => setMode("pin")}
+                style={{
+                  marginLeft: "auto", background: "none", border: "none",
+                  color: "rgba(212,175,55,0.35)", fontSize: 8, fontFamily: FONT,
+                  cursor: "pointer", letterSpacing: "0.1em", textTransform: "uppercase",
+                }}
+              >
+                lock
+              </button>
+            </div>
 
-      {/* Inject pulse keyframe once */}
-      <style>{`
-        @keyframes hub-pulse {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.35; }
-        }
-      `}</style>
+            <style>{`@keyframes hub-pulse{0%,100%{opacity:1}50%{opacity:0.35}}`}</style>
 
-      <MenuItem
-        icon={<IconGate />}
-        label="SOVEREIGN GATE"
-        sub="PIN authentication · Staff &amp; Sovereign access"
-        accent={GOLD_PILL}
-        onClick={() => { setOpen(false); navigate("/gate"); }}
-      />
+            <div style={{ padding: "0 6px 8px" }}>
+              <MenuItem icon={<IconEeis />}  label="EEIE INTEL"  sub="EEIE Command Center · Staff Telemetry" accent={AMBER}    onClick={handleEeis} />
+              <MenuItem icon={<IconCore />}  label="GHOST CORE"  sub="Sovereign Access · Kill-Switches · Provisioning" accent={GOLD_PILL} onClick={handleGhostCore} />
 
-      <Divider />
+              <Divider label="REMOTE AUTHORITY — HOLD 2s" />
 
-      <MenuItem
-        icon={<IconEeis />}
-        label="EEIE INTEL"
-        sub="EEIE Command Center · Staff Telemetry"
-        accent={AMBER}
-        onClick={handleEeis}
-      />
-      <MenuItem
-        icon={<IconCore />}
-        label="GHOST CORE"
-        sub="Sovereign Access · Kill-Switches · Provisioning"
-        accent={GOLD_PILL}
-        onClick={handleGhostCore}
-      />
+              <KillSwitchItem icon={<IconBlackout active={isBlackoutActive} />} label="BLACKOUT" sub="Hold 2s · Freeze all active guest sessions" accent={KILL_RED}   active={isBlackoutActive} onCommit={handleBlackout} />
+              <KillSwitchItem icon={<IconApiLock  active={isApiLockActive} />}  label="API LOCK"  sub="Hold 2s · Suspend AI calls globally"       accent={KILL_AMBER} active={isApiLockActive}  onCommit={handleApiLock}  />
 
-      <Divider label="REMOTE AUTHORITY — HOLD 2s" />
+              <Divider />
 
-      <KillSwitchItem
-        icon={<IconBlackout active={isBlackoutActive} />}
-        label="BLACKOUT"
-        sub="Hold 2s · Freeze all active guest sessions"
-        accent={KILL_RED}
-        active={isBlackoutActive}
-        onCommit={handleBlackout}
-      />
-      <KillSwitchItem
-        icon={<IconApiLock active={isApiLockActive} />}
-        label="API LOCK"
-        sub="Hold 2s · Suspend AI calls globally"
-        accent={KILL_AMBER}
-        active={isApiLockActive}
-        onCommit={handleApiLock}
-      />
-
-      <Divider />
-
-      <KillSwitchItem
-        icon={<IconPurge />}
-        label="SYSTEM PURGE"
-        sub="Hold 2s · Clear session · Return to portal"
-        accent={DANGER}
-        onCommit={handlePurge}
-      />
+              <KillSwitchItem icon={<IconPurge />} label="SYSTEM PURGE" sub="Hold 2s · Clear session · Return to portal" accent={DANGER} onCommit={handlePurge} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 
@@ -639,8 +877,13 @@ export function SovereignOverrideHub() {
           display:              "flex",
           alignItems:           "center",
           gap:                  7,
-          background:           open ? "rgba(212,175,55,0.10)" : OBSIDIAN,
-          border:               `1px solid ${open ? GOLD_PILL : (isBlackoutActive || isApiLockActive) ? KILL_RED : BORDER}`,
+          background:           mode === "commands" && open ? "rgba(212,175,55,0.14)"
+                              : open ? "rgba(212,175,55,0.08)" : OBSIDIAN,
+          border:               `1px solid ${
+            mode === "commands" && open ? GOLD_PILL
+            : open ? BORDER
+            : (isBlackoutActive || isApiLockActive) ? KILL_RED : BORDER
+          }`,
           borderRadius:         999,
           padding:              "9px 16px",
           backdropFilter:       "blur(20px)",
@@ -652,40 +895,40 @@ export function SovereignOverrideHub() {
           transition:           "background 0.15s, border-color 0.18s, box-shadow 0.18s",
           boxShadow:            (isBlackoutActive || isApiLockActive)
             ? `0 0 20px rgba(255,45,45,0.30)`
-            : open
-              ? `0 0 20px rgba(212,175,55,0.20)`
-              : "0 2px 12px rgba(0,0,0,0.55)",
+            : mode === "commands" && open
+              ? `0 0 24px rgba(212,175,55,0.30)`
+              : open
+                ? `0 0 20px rgba(212,175,55,0.12)`
+                : "0 2px 12px rgba(0,0,0,0.55)",
         }}
       >
-        {/* Status dot */}
         <div style={{
           width:        6,
           height:       6,
           borderRadius: "50%",
-          background:   (isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e",
+          background:   (isBlackoutActive || isApiLockActive) ? KILL_RED
+                      : mode === "commands" && open ? GOLD_PILL : "#22c55e",
           boxShadow:    `0 0 7px ${(isBlackoutActive || isApiLockActive) ? KILL_RED : "#22c55e"}`,
           flexShrink:   0,
           animation:    `hub-pulse ${pulseDur} ease-in-out infinite`,
         }} />
 
-        {/* Label */}
         <span style={{
           fontSize:      9,
           fontWeight:    700,
-          color:         open ? GOLD_PILL : MUTED,
+          color:         mode === "commands" && open ? GOLD_PILL : open ? MUTED : MUTED,
           letterSpacing: "0.18em",
           textTransform: "uppercase",
           fontFamily:    FONT,
           transition:    "color 0.15s",
           whiteSpace:    "nowrap",
         }}>
-          ◈ NOVEE OS // SOVEREIGN
+          {mode === "commands" && open ? "◈ SOVEREIGN ACTIVE" : "◈ NOVEE OS // SOVEREIGN"}
         </span>
 
         <IconChevron open={open} />
       </motion.button>
 
-      {/* Dropdown portal */}
       {mounted && (
         <AnimatePresence>
           {open && pillRect && createPortal(menuContent, document.body)}
