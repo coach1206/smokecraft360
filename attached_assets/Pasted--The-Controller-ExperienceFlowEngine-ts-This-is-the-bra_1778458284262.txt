@@ -1,0 +1,89 @@
+. The Controller: ExperienceFlowEngine.ts
+This is the "brain" that stops the navigation from breaking. It ensures the UI, the Audio, and the SSE Environmental streams move in a single, locked-step formation.
+
+TypeScript
+// ExperienceFlowEngine.ts
+export const SmokeCraftFlow = {
+  currentStep: 0,
+  steps: [
+    'CRAFTHUB_SELECTION',      // Step 1
+    'CINEMATIC_INTRO',         // Step 2
+    'EXPERIENCE_OVERVIEW',     // Step 3 (The Missing Page)
+    'CHALLENGE_SELECTION',     // Step 4
+    'MENTOR_REVEAL',           // Step 5
+    'IDENTITY_ENROLLMENT',     // Step 6
+    'SYNCHRONIZATION',         // Step 7
+    'SWIPE_RITUAL'             // Step 8 (Flavor Cards Live Here)
+  ],
+
+  next() {
+    this.currentStep++;
+    const stepName = this.steps[this.currentStep];
+    
+    // BRIDGE TO INFRASTRUCTURE
+    this.syncEnvironment(stepName);
+    this.triggerHaptics();
+    
+    // UI TRANSITION
+    return stepName;
+  },
+
+  syncEnvironment(step) {
+    // This hooks into your existing SSE streams
+    const telemetryPayload = {
+      'CINEMATIC_INTRO': { smoke: 0.8, lighting: 'amber_pulse', audio: 'deep_drone' },
+      'EXPERIENCE_OVERVIEW': { smoke: 0.2, lighting: 'warm_static', audio: 'meditative' },
+      'SYNCHRONIZATION': { smoke: 1.0, lighting: 'strobe_slow', audio: 'whisper_layer' }
+    };
+    SSE_Stream.send('ENV_UPDATE', telemetryPayload[step]);
+  }
+};
+2. Fixing the "Next" Button (The Bridge)
+The reason it’s "broken" is likely because the route is trying to load before the assets are ready. We change the button logic to a State Trigger.
+
+Logic: The button doesn't just "Go to Page 4." It executes a transition sequence.
+
+Action: 1.  On Click: Play "ember flare" animation.
+2.  Wait 400ms: Fade out current text.
+3.  Execute SmokeCraftFlow.next().
+4.  Fade in next chamber.
+
+3. The Visual "Look" Execution
+Step 2: The Cinematic Intro
+The Ember: Use a central <canvas> element. Use a radial gradient for the "heat" and a particle emitter for the sparks.
+
+The Text: No walls of text. Use a typewriter effect with a 1.5s delay between phrases to force the "Ritual Pacing."
+
+Step 3: Experience Overview (The PNG Layout)
+The Icons: Each of the 4 blocks (Levels, Golden Box, Rules, Mentors) should be a "glassmorphism" card.
+
+The Interaction: As the user hovers or scrolls, the Biometric Hook should react—show a "Heartbeat" sync in the corner to prove the system is watching.
+
+Step 8: The Swipe Ritual
+The Physics: Do not use buttons. Implement Tinder-style card stacks.
+
+The Feedback:
+
+Swipe Right (Earthy): Visual flash of deep green; low frequency bass.
+
+Swipe Left (Discard): Visual flash of grey; high-pass filter on audio.
+
+4. Immediate Removal List
+To get the flow working now, delete these legacy files/sections:
+
+DELETE: MasterArtisanPage.jsx (or equivalent).
+
+DELETE: Static "Next" links in the onboarding components.
+
+DISABLE: All biometric HUD overlays during Steps 1–7. They are "noise" until the Guest is actually in the ritual.
+
+5. The "Synchronization" Sequence (Step 7)
+This is the bridge between the "Menu" and the "Ritual."
+
+Visual: Full-screen smoke simulation overlay (Opacity 0.9).
+
+Audio: 3D Spatial audio of a cigar being cut and lit.
+
+System Check: Backend confirms SSE connection is active and telemetry is receiving heart-rate/presence data.
+
+Trigger: Text appears: "RITUAL CALIBRATED. ENTER THE SMOKE."

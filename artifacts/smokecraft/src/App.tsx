@@ -61,6 +61,7 @@ const StaffTraining         = lazy(() => import('@/pages/StaffTraining'));
 const InvestorSimulator     = lazy(() => import('@/pages/InvestorSimulator'));
 const SalesValidation       = lazy(() => import('@/pages/SalesValidation'));
 const ExperiencePage        = lazy(() => import('@/pages/ExperiencePage'));
+const ExperienceOverview    = lazy(() => import('@/pages/ExperienceOverview'));
 const RevealPage            = lazy(() => import('@/pages/RevealPage'));
 const FounderControlCenter  = lazy(() => import('@/pages/FounderControlCenter'));
 const FinanceReconciliation = lazy(() => import('@/pages/FinanceReconciliation'));
@@ -825,6 +826,9 @@ export default function App() {
           </Route>
           <Route path="/training/sales">
             <SubPageProviders><SalesValidation /></SubPageProviders>
+          </Route>
+          <Route path="/experience-overview/:type">
+            <SubPageProviders><ExperienceOverview /></SubPageProviders>
           </Route>
           <Route path="/experience/:type">
             <SubPageProviders><ExperiencePage /></SubPageProviders>

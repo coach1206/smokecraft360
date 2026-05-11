@@ -13,7 +13,9 @@
  *  • Scale-down whileTap on every interactive element
  */
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import { ExperienceFlowEngine } from "@/lib/experienceFlowEngine";
+import EmberHeartbeat from "@/components/EmberHeartbeat";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { socket } from "@/lib/socket";
@@ -400,6 +402,9 @@ export default function MasterArtisan() {
       fontFamily: "'Cormorant Garamond', 'Georgia', serif",
     }}>
 
+      {/* Ember heartbeat — persists from cinematic intro through enrollment */}
+      <EmberHeartbeat color="#D48B00" corner="bottom-left" size={7} />
+
       {/* ── Cinematic smoke background ── */}
       <div style={{ position: "absolute", inset: 0, zIndex: 0, overflow: "hidden" }}>
 
@@ -573,8 +578,40 @@ export default function MasterArtisan() {
           </p>
         </motion.div>
 
-        {/* Flavor cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14, width: "100%", maxWidth: 600 }}>
+        {/* isRitualUnlocked gate — cards lock until SYNCHRONIZATION step complete */}
+        {(() => {
+          const locked = !ExperienceFlowEngine.isRitualUnlocked();
+          return locked ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              style={{
+                width: "100%", maxWidth: 600,
+                padding: "28px 24px",
+                border: "1px solid rgba(212,175,55,0.16)",
+                borderRadius: 16,
+                background: "rgba(10,9,8,0.70)",
+                display: "flex", flexDirection: "column", alignItems: "center", gap: 14,
+                backdropFilter: "blur(12px)",
+              }}
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 3.6, repeat: Infinity, ease: "linear" }}
+                style={{ width: 32, height: 32, borderRadius: "50%", border: "1.5px solid rgba(212,175,55,0.25)", borderTopColor: "#D4AF37" }}
+              />
+              <div style={{ fontSize: 9, color: "rgba(212,139,0,0.70)", letterSpacing: "0.24em", textTransform: "uppercase", fontFamily: "'Space Mono',monospace", textAlign: "center" }}>
+                SYNCHRONIZATION REQUIRED
+              </div>
+              <p style={{ fontSize: 11, color: "rgba(240,232,212,0.40)", textAlign: "center", lineHeight: 1.65, margin: 0, maxWidth: 300 }}>
+                Complete the ritual pathway to unlock your Sensory Foundation cards.
+              </p>
+            </motion.div>
+          ) : null;
+        })()}
+
+        {/* Flavor cards — only rendered when ritual is unlocked */}
+        <div style={{ display: ExperienceFlowEngine.isRitualUnlocked() ? "grid" : "none", gridTemplateColumns: "repeat(2, 1fr)", gap: 14, width: "100%", maxWidth: 600 }}>
           {FLAVORS.map((flavor, i) => {
             const isSelected  = selected === flavor.id;
             const isSuggested = !selected && suggestedCard === flavor.id;

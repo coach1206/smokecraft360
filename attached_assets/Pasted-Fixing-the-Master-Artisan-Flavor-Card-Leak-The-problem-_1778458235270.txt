@@ -1,0 +1,35 @@
+Fixing the "Master Artisan" & Flavor Card Leak
+The problem is early exposure. You are showing the "destination" (Flavor Cards) before the "journey" (The Rules).
+
+The Fix: Wrap the Flavor Cards in a isRitualUnlocked conditional.
+
+The Logic: Even if the component mounts, it stays in a hidden or locked state until the SYNCHRONIZATION step (Step 7) returns a success status from the backend.
+
+3. Implementing the "Swipe Ritual" (The Visual Core)
+To get the look in your PNG, you need a Card Stack Controller. Instead of a static gallery, use a physics-based library (like Framer Motion) to bridge the UI to the user's touch.
+
+The "Working" Interaction Logic:
+
+On Drag Start: Dim the background audio; increase the "Ember Glow" intensity.
+
+On Drag (Swipe): Use the x-offset to drive the lighting.
+
+Swipe Left (Discard): CSS Filter grayscale(1) on the card.
+
+Swipe Right (Select): CSS Filter sepia(0.5) saturate(2) for a warm, earthy glow.
+
+On Release: Send the flavorID to your backend telemetry. This is where your XP progression and Mentor scoring finally sync.
+
+4. Checklist to Restore the Flow
+To move from your "Broken Flow" to the "Correct Experience Flow":
+
+[ ] Centralize Navigation: Remove all href links from buttons. Replace them with onClick={EFE.handleNext}.
+
+[ ] The Intro Lock: Ensure the "Enter the Lounge" button in Step 2 only appears after the smoke animation has played for at least 3 seconds. This forces the "Ritual Pacing."
+
+[ ] The Overview Chamber: Build the Step 3 page as a single-column layout with 4 distinct interactive blocks (as per your image).
+
+[ ] Visual Continuity: Ensure the "Ember" from the Intro Sequence stays as a small, pulsing glow in the corner of the UI during the Overview and Enrollment steps. This acts as the "Heartbeat" of the ritual.
+
+The Result
+By moving the logic into the ExperienceFlowEngine, your infrastructure (Biometrics, SSE, Telemetry) now has a narrative purpose. The system isn't just "collecting data"; it is "measuring the Guest's readiness" to enter the ritual.

@@ -354,6 +354,13 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
   const cfg    = CHAMBER[type] ?? CHAMBER.smoke;
   const accent = theme.accent;
 
+  // ── INTRO LOCK — ritual pacing: CTA only appears after 3 seconds ─────────
+  const [introReady, setIntroReady] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setIntroReady(true), 3000);
+    return () => clearTimeout(t);
+  }, []);
+
   const { guestProfile, mentor, isReturning, enroll } = useGuestProfile();
 
   // Memory-aware return greeting — computed once when profile + mentor are known
@@ -624,42 +631,70 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             {cfg.atmosphere}
           </motion.p>
 
-          {/* Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.62, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              display:       "flex",
-              flexDirection: "column",
-              gap:           10,
-              width:         "100%",
-              maxWidth:      340,
-            }}
-          >
-            <GlassButton
-              label={guestProfile ? "Continue Session" : "Begin Experience"}
-              sub={guestProfile ? `Welcome back, ${guestProfile.firstName}` : "Guided preference discovery"}
-              icon={<Sparkles size={18} />}
-              accent={accent}
-              onClick={handleBeginClick}
-              primary
-            />
-            <GlassButton
-              label="Quick Match"
-              sub="Skip to top recommendations"
-              icon={<Zap size={16} />}
-              accent={accent}
-              onClick={onBegin}
-            />
-            <GlassButton
-              label="Explore Lounge"
-              sub="Browse the full experience"
-              icon={<Compass size={16} />}
-              accent={accent}
-              onClick={onBegin}
-            />
-          </motion.div>
+          {/* Buttons — gated by 3-second intro lock (ritual pacing) */}
+          <AnimatePresence>
+            {introReady ? (
+              <motion.div
+                key="cta"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  display:       "flex",
+                  flexDirection: "column",
+                  gap:           10,
+                  width:         "100%",
+                  maxWidth:      340,
+                }}
+              >
+                <GlassButton
+                  label={guestProfile ? "Continue Session" : "Enter the Lounge"}
+                  sub={guestProfile ? `Welcome back, ${guestProfile.firstName}` : "Guided preference discovery"}
+                  icon={<Sparkles size={18} />}
+                  accent={accent}
+                  onClick={handleBeginClick}
+                  primary
+                />
+                <GlassButton
+                  label="Quick Match"
+                  sub="Skip to top recommendations"
+                  icon={<Zap size={16} />}
+                  accent={accent}
+                  onClick={onBegin}
+                />
+                <GlassButton
+                  label="Explore Lounge"
+                  sub="Browse the full experience"
+                  icon={<Compass size={16} />}
+                  accent={accent}
+                  onClick={onBegin}
+                />
+              </motion.div>
+            ) : (
+              /* Holding ring — shows while atmosphere loads */
+              <motion.div
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}
+              >
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2.4, repeat: Infinity, ease: "linear" }}
+                  style={{
+                    width: 36, height: 36, borderRadius: "50%",
+                    border: `1.5px solid ${accent}40`,
+                    borderTopColor: accent,
+                  }}
+                />
+                <span style={{ fontSize: 8, color: `${accent}60`, letterSpacing: "0.22em", fontFamily: "'JetBrains Mono','Courier New',monospace" }}>
+                  ATMOSPHERE LOADING…
+                </span>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* ── Bottom ambient status bar ── */}

@@ -13,6 +13,7 @@
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useLocation } from "wouter";
+import { ExperienceFlowEngine } from "@/lib/experienceFlowEngine";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { Sparkles, Cpu, Activity, RotateCcw, X } from "lucide-react";
 import { AudioWaveToggle } from "@/contexts/AudioContext";
@@ -897,7 +898,10 @@ function CraftHubInner() {
               title={mod.title}
               tagline={mod.tagline}
               badge={mod.badge}
-              onTrigger={() => setPortal({ route: mod.route, color: mod.color })}
+              onTrigger={() => {
+                ExperienceFlowEngine.startCraft(mod.id);
+                setPortal({ route: mod.route, color: mod.color });
+              }}
             />
           </motion.div>
         ))}
