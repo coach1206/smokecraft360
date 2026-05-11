@@ -118,12 +118,13 @@ router.post("/", async (req: Request, res: Response) => {
   // FOUNDER_PIN_HASH must be a bcrypt hash of the 6-digit sovereign PIN,
   // stored as a Replit Secret. Generate with: bcrypt.hashSync("YOUR_PIN", 12)
   if (pin.length === 6) {
-    const hash = process.env["FOUNDER_PIN_HASH"];
+    const hash      = process.env["FOUNDER_PIN_HASH"];
+    const plainPin  = process.env["FOUNDER_PIN"];
 
-    if (!hash) {
-      logger.warn({ ip }, "Sovereign PIN attempt — FOUNDER_PIN_HASH not set");
+    if (!hash && !plainPin) {
+      logger.warn({ ip }, "Sovereign PIN attempt — neither FOUNDER_PIN_HASH nor FOUNDER_PIN set");
       const fail = recordFailure(ip);
-      await auditPin(ip, "sovereign", "failure", "FOUNDER_PIN_HASH not configured");
+      await auditPin(ip, "sovereign", "failure", "Sovereign PIN not configured");
       res.status(401).json({
         error:             "invalid_pin",
         message:           "Incorrect PIN.",
@@ -132,7 +133,11 @@ router.post("/", async (req: Request, res: Response) => {
       return;
     }
 
-    const valid = await bcrypt.compare(pin, hash);
+    // Prefer bcrypt hash (must start with $2b$ / $2a$); fall back to plain-text secret
+    const hashIsValid = hash && (hash.startsWith("$2b$") || hash.startsWith("$2a$"));
+    const valid = hashIsValid
+      ? await bcrypt.compare(pin, hash!)
+      : pin === plainPin;
 
     if (!valid) {
       const fail = recordFailure(ip);
