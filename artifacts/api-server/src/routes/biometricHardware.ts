@@ -14,6 +14,7 @@ import { z }           from "zod";
 import { pool }        from "@workspace/db";
 import { logger }      from "../lib/logger";
 import { evaluateAndFireInterventions } from "./titanEngine";
+import { addBiometricClient, broadcastBiometricUpdate } from "../lib/biometricBroadcast";
 
 const router = Router();
 
@@ -114,11 +115,36 @@ router.post("/biometric/sync", async (req, res) => {
     logger.info({ node_id, payload }, "SYNCING HUMAN STATE TO TITAN V");
     // Fire-and-forget: evaluate triggers without blocking the sync response
     evaluateAndFireInterventions(node_id, payload).catch(() => {});
-    res.json({ ok: true, synced_at: new Date().toISOString() });
+    // Push live biometric_update to all open SSE clients
+    const synced_at = new Date().toISOString();
+    broadcastBiometricUpdate({
+      node_id,
+      hr:  payload.heart_rate,
+      str: payload.stress_index,
+      sig: payload.signal_db,
+      vit: payload.vitality,
+      eng: payload.engagement_score,
+      synced_at,
+    });
+    res.json({ ok: true, synced_at });
   } catch (err) {
     logger.error({ err }, "biometric/sync error");
     res.status(500).json({ error: "Sync failed" });
   }
+});
+
+// ── GET /api/biometric/live — SSE stream for Live Pulse Sync ─────────────────
+
+router.get("/biometric/live", (req, res) => {
+  res.setHeader("Content-Type",  "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection",    "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.flushHeaders();
+  addBiometricClient(res);
+  // Heartbeat every 25s to keep proxy alive
+  const hb = setInterval(() => { try { res.write(": heartbeat\n\n"); } catch { clearInterval(hb); } }, 25_000);
+  req.on("close", () => clearInterval(hb));
 });
 
 // ── GET /api/biometric/nodes ─────────────────────────────────────────────────

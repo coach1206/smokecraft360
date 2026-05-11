@@ -54,6 +54,16 @@ interface HardwareNode {
   registered_at: string;
 }
 
+interface LiveData {
+  node_id: string;
+  hr?:  number;
+  str?: number;
+  sig?: number;
+  vit?: number;
+  eng?: number;
+  synced_at?: string;
+}
+
 interface Intervention {
   id: number;
   vitality: number;
@@ -197,22 +207,64 @@ function AuthBadge({ authorized }: { authorized: boolean }) {
   );
 }
 
-function SyncPayload({ payload }: { payload: Record<string, unknown> | null }) {
-  if (!payload) return <span style={{ fontSize: 9, color: C.dim, letterSpacing: "0.12em" }}>NO SYNC DATA</span>;
-  const fields: Array<[string, string]> = [
-    ["HR",   payload.heart_rate   != null ? `${payload.heart_rate} BPM` : "—"],
-    ["TEMP", payload.temperature  != null ? `${payload.temperature}°C` : "—"],
-    ["STR",  payload.stress_index != null ? `${payload.stress_index}/100` : "—"],
-    ["SIG",  payload.signal_db    != null ? `${payload.signal_db} dB` : "—"],
-  ];
+function MeterBar({ val, max, color }: { val: number | undefined; max: number; color: string }) {
+  const pct = val != null ? Math.min(100, Math.max(0, (Math.abs(val) / max) * 100)) : 0;
   return (
-    <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-      {fields.map(([k, v]) => (
-        <div key={k} style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 7, color: C.dim, letterSpacing: "0.16em" }}>{k}</div>
-          <div style={{ fontSize: 10, color: C.gold, fontWeight: 600 }}>{v}</div>
+    <div style={{ height: 2, background: "rgba(245,242,237,0.07)", borderRadius: 1, overflow: "hidden", marginTop: 3 }}>
+      <motion.div animate={{ width: `${pct}%` }} transition={{ duration: 0.35, ease: "easeOut" }}
+        style={{ height: "100%", background: color, borderRadius: 1 }} />
+    </div>
+  );
+}
+
+function LiveMeters({ payload, live }: { payload: Record<string, unknown> | null; live?: LiveData }) {
+  const hr  = live?.hr  ?? (payload?.heart_rate        as number | undefined);
+  const str = live?.str ?? (payload?.stress_index      as number | undefined);
+  const sig = live?.sig ?? (payload?.signal_db         as number | undefined);
+  const vit = live?.vit ?? (payload?.vitality          as number | undefined);
+  const eng = live?.eng ?? (payload?.engagement_score  as number | undefined);
+
+  if (!payload && !live) {
+    return <span style={{ fontSize: 9, color: C.dim, letterSpacing: "0.12em" }}>NO SYNC DATA</span>;
+  }
+
+  const hrColor  = (hr ?? 0) > 100 ? C.orange : C.gold;
+  const strColor = (str ?? 0) >= 75 ? C.red : (str ?? 0) >= 40 ? C.amber : "#60a5fa";
+  const sigCrit  = sig != null && sig >= 0 && sig < 10;
+  const sigColor = sigCrit ? C.red : sig != null && sig > -60 ? C.green : C.orange;
+
+  const meters = [
+    { label: "HR",  val: hr,  unit: "",    color: hrColor,  max: 180 },
+    { label: "STR", val: str, unit: "",    color: strColor, max: 100 },
+    { label: "SIG", val: sig, unit: " dB", color: sigColor, max: 100 },
+    ...(vit != null ? [{ label: "VIT", val: vit, unit: "", color: vitalityColor(vit), max: 100 }] : []),
+    ...(eng != null ? [{ label: "ENG", val: eng, unit: "", color: C.gold, max: 100 }] : []),
+  ];
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      {live && (
+        <div style={{ fontSize: 7, color: C.green, letterSpacing: "0.18em", marginBottom: 1, display: "flex", alignItems: "center", gap: 5 }}>
+          <span className="sovereign-breath">●</span> LIVE
         </div>
-      ))}
+      )}
+      <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+        {meters.map(m => (
+          <div key={m.label} style={{ minWidth: 44 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 4 }}>
+              <span style={{ fontSize: 7, color: C.dim, letterSpacing: "0.16em" }}>{m.label}</span>
+              <motion.span
+                key={`${m.label}-${m.val}`}
+                initial={{ opacity: 0.5, y: -2 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                style={{ fontSize: 10, color: m.val != null ? m.color : C.dim, fontWeight: 600, fontFamily: C.mono }}>
+                {m.val != null ? `${m.val}${m.unit}` : "—"}
+              </motion.span>
+            </div>
+            <MeterBar val={m.val} max={m.max} color={m.color} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -665,6 +717,27 @@ export default function SovereignHardwareLab() {
   const [testId, setTestId]     = useState("");
   const [testResult, setTestRes]= useState<{ authenticated: boolean; node_type?: string; label?: string; reason?: string } | null>(null);
   const [testing, setTesting]   = useState(false);
+  const [liveData, setLiveData] = useState<Record<string, LiveData>>({});
+  const [pulsing, setPulsing]   = useState<Set<string>>(new Set());
+
+  // Live Pulse Sync — SSE subscription
+  useEffect(() => {
+    const es = new EventSource("/api/biometric/live");
+    es.onmessage = (e: MessageEvent) => {
+      try {
+        const d = JSON.parse(e.data as string) as LiveData;
+        if (!d.node_id) return;
+        setLiveData(prev => ({ ...prev, [d.node_id]: d }));
+        setPulsing(prev => new Set(prev).add(d.node_id));
+        setTimeout(() => setPulsing(prev => {
+          const next = new Set(prev);
+          next.delete(d.node_id);
+          return next;
+        }), 500);
+      } catch { /* ignore parse errors */ }
+    };
+    return () => es.close();
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -813,8 +886,18 @@ export default function SovereignHardwareLab() {
                   <motion.div key={node.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
                     style={{ background: C.card, border: `1px solid ${node.authorized ? C.border : "rgba(239,68,68,0.14)"}`, borderRadius: 12, padding: "18px 20px" }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-                      <div style={{ width: 44, height: 44, borderRadius: 11, background: node.authorized ? `${C.gold}12` : "rgba(239,68,68,0.08)", border: `1px solid ${node.authorized ? C.border : "rgba(239,68,68,0.22)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 11, background: node.authorized ? `${C.gold}12` : "rgba(239,68,68,0.08)", border: `1px solid ${node.authorized ? C.border : "rgba(239,68,68,0.22)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, position: "relative" }}>
                         <NodeIcon type={node.node_type} size={18} color={node.authorized ? C.gold : C.red} />
+                        <AnimatePresence>
+                          {pulsing.has(node.hardware_id) && (
+                            <motion.div key="pulse"
+                              initial={{ scale: 1, opacity: 0.7 }}
+                              animate={{ scale: 1.9, opacity: 0 }}
+                              exit={{}}
+                              transition={{ duration: 0.5, ease: "easeOut" }}
+                              style={{ position: "absolute", inset: 0, borderRadius: 11, border: `2px solid ${C.gold}`, pointerEvents: "none" }} />
+                          )}
+                        </AnimatePresence>
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" }}>
@@ -824,7 +907,7 @@ export default function SovereignHardwareLab() {
                         </div>
                         {node.label && <div style={{ fontSize: 10, color: C.muted, letterSpacing: "0.08em", marginBottom: 8 }}>{node.label}</div>}
                         <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
-                          <SyncPayload payload={node.last_sync_payload} />
+                          <LiveMeters payload={node.last_sync_payload} live={liveData[node.hardware_id]} />
                           {node.last_sync_at && <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.12em" }}>LAST SYNC {new Date(node.last_sync_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</div>}
                           <div style={{ fontSize: 8, color: `${C.dim}70`, letterSpacing: "0.12em" }}>REG {new Date(node.registered_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</div>
                         </div>
@@ -850,6 +933,7 @@ export default function SovereignHardwareLab() {
                 <pre style={{ margin: 0, fontSize: 9, color: C.dim, lineHeight: 1.9, fontFamily: C.mono, whiteSpace: "pre-wrap" }}>{
 `POST /api/biometric/authenticate  { "hardware_id": "SOV_RING_01" }
 POST /api/biometric/sync          { "node_id": "SOV_RING_01", "heart_rate": 72, "stress_index": 31 }
+GET  /api/biometric/live          — SSE stream  →  biometric_update events (Live Pulse Sync)
 GET  /api/biometric/nodes
 POST /api/biometric/nodes         { "hardware_id": "SOV_RING_02", "node_type": "RING", "label": "…" }
 DELETE /api/biometric/nodes/:id   — revoke
