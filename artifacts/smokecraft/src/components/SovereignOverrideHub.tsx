@@ -702,12 +702,12 @@ export function SovereignOverrideHub() {
     return () => { clearTimeout(t); window.removeEventListener("pointerdown", handler); };
   }, [open]);
 
-  const handleOpen = useCallback((e: React.PointerEvent) => {
+  const handleOpen = useCallback((e: React.MouseEvent | React.PointerEvent) => {
     e.stopPropagation();
     if (pillRef.current) setPillRect(pillRef.current.getBoundingClientRect());
     const willOpen = !open;
     setOpen(v => !v);
-    if (willOpen) playPillClink();
+    if (willOpen) { try { playPillClink(); } catch { /* audio optional */ } }
   }, [open]);
 
   // ── PIN success handler ──────────────────────────────────────────────────
@@ -868,7 +868,7 @@ export function SovereignOverrideHub() {
         ref={pillRef}
         data-override-hub
         whileTap={{ scale: 0.94 }}
-        onPointerDown={handleOpen}
+        onClick={handleOpen}
         style={{
           position:             "fixed",
           top:                  12,
