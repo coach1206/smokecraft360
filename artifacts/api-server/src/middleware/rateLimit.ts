@@ -38,6 +38,20 @@ export const loginLimiter = rateLimit({
   skipSuccessfulRequests: true, // only count failures
 });
 
+/* PIN-specific brute-force guard — tightest limiter in the system.
+ * Physical kiosk PINs are a high-value target: a 4-digit space has only 10,000
+ * combinations. 5 attempts / 15-min window / IP makes exhaustion take ~125 days
+ * even at maximum allowed request rate. skipSuccessfulRequests ensures a fast
+ * but deliberate operator doesn't accidentally accumulate count. */
+export const pinLimiter = rateLimit({
+  windowMs:        15 * 60 * 1_000, // 15 minutes
+  limit:           5,
+  standardHeaders: "draft-7" as const,
+  legacyHeaders:   false,
+  message:         { error: "too_many_attempts", message: "Too many PIN attempts — please wait 15 minutes and try again" },
+  skipSuccessfulRequests: true,
+});
+
 /* Financial endpoint limiter — tabs + stripe-connect.
  * Payment operations are naturally low-frequency human actions.
  * 30/min/IP prevents script abuse while never impeding real guests. */

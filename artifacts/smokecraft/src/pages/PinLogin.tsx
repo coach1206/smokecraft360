@@ -16,14 +16,38 @@ const INK_FAINT  = "rgba(42,31,14,0.28)";
 const GOLD_MID   = "rgba(212,139,0,0.55)";
 const GOLD_FAINT = "rgba(212,139,0,0.22)";
 
-// ── Auth data ─────────────────────────────────────────────────────────────────
+// ── PIN validation — server-side only ────────────────────────────────────────
+// All credential validation happens via POST /api/auth/pin-login.
+// No PINs or user data live in this file.
 
-const MOCK_USERS = [
-  { pin: "1206", name: "JC Collins",      role: "owner",   email: "jccollins1206@yahoo.com" },
-  { pin: "1111", name: "Jordan Mitchell", role: "owner"   },
-  { pin: "2222", name: "Alex Rivera",     role: "manager" },
-  { pin: "3333", name: "Casey Thompson",  role: "staff"   },
-];
+interface PinLoginResponse {
+  ok?:               boolean;
+  tier?:             "sovereign" | "staff";
+  token?:            string;
+  redirectTo?:       string;
+  name?:             string;
+  role?:             string;
+  venueId?:          string | null;
+  error?:            string;
+  message?:          string;
+  attemptsRemaining?: number;
+  retryAfterSeconds?: number;
+}
+
+async function validatePin(pin: string, venueId?: string): Promise<PinLoginResponse> {
+  const res = await fetch("/api/auth/pin-login", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ pin, ...(venueId ? { venueId } : {}) }),
+  });
+  const data = await res.json() as PinLoginResponse;
+  if (res.status === 429 && !data.retryAfterSeconds) {
+    const hdr = res.headers.get("Retry-After");
+    if (hdr) data.retryAfterSeconds = parseInt(hdr, 10);
+    data.error = data.error ?? "too_many_attempts";
+  }
+  return data;
+}
 
 const KEYS            = ["1","2","3","4","5","6","7","8","9","CLR","0","GO"];
 const MAX_PIN         = 4;
@@ -304,38 +328,55 @@ export default function PinLogin() {
     setTimeout(() => setEdgeFlash(false), 280);
   };
 
+  const [submitting, setSubmitting] = useState(false);
+
   const handleKey = useCallback((key: string) => {
-    if (success || isLocked) return;
+    if (success || isLocked || submitting) return;
     setError(false);
     if (key === "CLR") { setPin(""); return; }
     if (key === "GO") {
-      const user = MOCK_USERS.find(u => u.pin === pin);
-      if (!user) {
-        const next = failedAttempts + 1;
-        setFailedAttempts(next);
-        cc.addAuditEntry("auth.pin_failed", `Failed PIN (${next}/${MAX_ATTEMPTS})`);
-        if (next >= MAX_ATTEMPTS) {
-          const until = Date.now() + LOCKOUT_SECONDS * 1000;
-          setLockedUntil(until);
-          saveLockout(next, until);
-          cc.addAuditEntry("auth.lockout", `Lockout — ${LOCKOUT_SECONDS}s`);
-        } else {
-          saveLockout(next, null);
-        }
-        setError(true);
-        setTimeout(() => { setError(false); setPin(""); }, 850);
-        return;
-      }
-      saveLockout(0, null);
-      setFailedAttempts(0);
-      setCurrentUser(user);
-      setSuccess(user.role);
-      cc.addAuditEntry("auth.pin_login", `${user.name} authenticated (${user.role})`, user.name);
-      setTimeout(() => navigate(user.role === "staff" ? "/pos" : "/dashboard"), 950);
+      if (pin.length !== MAX_PIN) return;
+      setSubmitting(true);
+      validatePin(pin)
+        .then(data => {
+          if (data.ok && data.token) {
+            // Store JWT for downstream auth
+            localStorage.setItem("axiom_token", data.token);
+            if (data.role) localStorage.setItem("axiom_role", data.role);
+            if (data.venueId) localStorage.setItem("axiom_venue_id", data.venueId);
+            setCurrentUser({ name: data.name ?? "Staff", role: data.role ?? "staff", pin: "" });
+            saveLockout(0, null);
+            setFailedAttempts(0);
+            setSuccess(data.role ?? "staff");
+            cc.addAuditEntry("auth.pin_login", `${data.name ?? "Staff"} authenticated (${data.role ?? "staff"})`, data.name ?? "Staff");
+            const dest = data.redirectTo ?? (data.role === "staff" ? "/pos" : "/dashboard");
+            setTimeout(() => navigate(dest), 950);
+          } else if (data.error === "too_many_attempts") {
+            const until = Date.now() + (data.retryAfterSeconds ?? LOCKOUT_SECONDS) * 1000;
+            setLockedUntil(until);
+            saveLockout(MAX_ATTEMPTS, until);
+            cc.addAuditEntry("auth.lockout", "Lockout — too many attempts");
+            setSubmitting(false);
+            setPin("");
+          } else {
+            const next = MAX_ATTEMPTS - (data.attemptsRemaining ?? (MAX_ATTEMPTS - failedAttempts - 1));
+            setFailedAttempts(next);
+            saveLockout(next, null);
+            cc.addAuditEntry("auth.pin_failed", `Failed PIN (${next}/${MAX_ATTEMPTS})`);
+            setError(true);
+            setSubmitting(false);
+            setTimeout(() => { setError(false); setPin(""); }, 850);
+          }
+        })
+        .catch(() => {
+          setError(true);
+          setSubmitting(false);
+          setTimeout(() => { setError(false); setPin(""); }, 850);
+        });
       return;
     }
     if (pin.length < MAX_PIN) setPin(p => p + key);
-  }, [pin, success, isLocked, failedAttempts, setCurrentUser, navigate, cc]);
+  }, [pin, success, isLocked, submitting, failedAttempts, setCurrentUser, navigate, cc]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {

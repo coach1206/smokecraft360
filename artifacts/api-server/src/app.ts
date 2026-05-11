@@ -4,7 +4,7 @@ import helmet  from "helmet";
 import pinoHttp from "pino-http";
 import { logger } from "./lib/logger";
 import { rejectDeepPayloads }             from "./middleware/sanitize";
-import { authLimiter, recommendLimiter, osLimiter, voiceLimiter, loginLimiter, financialLimiter } from "./middleware/rateLimit";
+import { authLimiter, recommendLimiter, osLimiter, voiceLimiter, loginLimiter, financialLimiter, pinLimiter } from "./middleware/rateLimit";
 import { localeMiddleware }                 from "./middleware/locale";
 
 import healthRouter        from "./routes/health";
@@ -172,6 +172,7 @@ import sovereignOrderRouter        from "./routes/sovereignOrder";
 import sovereignEventsRouter       from "./routes/sovereignEvents";
 import sovereignDistributionRouter from "./routes/sovereignDistribution";
 import sovereignAuthRouter         from "./routes/sovereignAuth";
+import pinAuthRouter               from "./routes/pinAuth";
 import biometricHardwareRouter     from "./routes/biometricHardware";
 import titanEngineRouter, { startSignalMonitor } from "./routes/titanEngine";
 import cognitiveBuildSheetRouter   from "./routes/cognitiveBuildSheet";
@@ -277,8 +278,11 @@ app.use(localeMiddleware);
 app.use("/api",                             healthRouter);
 // loginLimiter is tighter (10/15-min, skip successes) and layered BEFORE
 // authLimiter on the specific login path to enforce brute-force protection.
-app.use("/api/auth/login",  loginLimiter);
-app.use("/api/auth",        authLimiter,   authRouter);
+app.use("/api/auth/login",     loginLimiter);
+// pinLimiter is the tightest brute-force guard (5/15-min, skip successes).
+// Must be applied BEFORE authLimiter so the PIN path gets both layers.
+app.use("/api/auth/pin-login", pinLimiter, pinAuthRouter);
+app.use("/api/auth",           authLimiter, authRouter);
 app.use("/api/recommend", recommendLimiter, recommendRouter);
 app.use("/api/products",                    productsRouter);
 app.use("/api/analytics",                   venueAnalyticsRouter);
