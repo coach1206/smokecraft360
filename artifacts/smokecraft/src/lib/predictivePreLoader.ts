@@ -61,12 +61,6 @@ function preloadReserveCollection(): void {
     }
   }
 
-  // 3. Pre-warm the CigarArtisan360 lazy React chunk so it renders instantly
-  //    when the user navigates. Dynamic import is idempotent — bundler dedupes.
-  import("@/pages/CigarArtisan360").catch(() => {});
-
-  // 4. Pre-warm Villa Sovereign chunk (same High Confidence guest will likely visit)
-  import("@/pages/VillaSovereign").catch(() => {});
 }
 
 // ── Hook ──────────────────────────────────────────────────────────────────────

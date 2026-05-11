@@ -80,11 +80,6 @@ const AxiomPay              = lazy(() => import('@/pages/AxiomPay'));
 const Demo                  = lazy(() => import('@/pages/Demo'));
 const AxiomDemo             = lazy(() => import('@/pages/AxiomDemo'));
 const MasterBlender         = lazy(() => import('@/pages/MasterBlender'));
-const CigarArtisan360       = lazy(() => import('@/pages/CigarArtisan360'));
-const SmokeCraft360         = lazy(() => import('@/pages/SmokeCraft360'));
-const PourCraft360          = lazy(() => import('@/pages/PourCraft360'));
-const BrewCraft360          = lazy(() => import('@/pages/BrewCraft360'));
-const VapeCraft360          = lazy(() => import('@/pages/VapeCraft360'));
 
 /* ── Lazy-loaded pages previously unregistered in router ───── */
 const PaymentSuccess        = lazy(() => import('@/pages/PaymentSuccess'));
@@ -105,7 +100,6 @@ const EnvironmentEngine     = lazy(() => import('@/pages/EnvironmentEngine'));
 const EnterpriseIntelligence = lazy(() => import('@/pages/EnterpriseIntelligence'));
 const EEIECommandCenter      = lazy(() => import('@/pages/EEIECommandCenter'));
 const EnterpriseGovernance  = lazy(() => import('@/pages/EnterpriseGovernance'));
-const VillaSovereign               = lazy(() => import('@/pages/VillaSovereign'));
 const SovereignDistributionVault   = lazy(() => import('@/pages/SovereignDistributionVault'));
 const SovereignHardwareLab         = lazy(() => import('@/pages/SovereignHardwareLab'));
 const SovereignGate                = lazy(() => import('@/pages/SovereignGate'));
@@ -867,21 +861,6 @@ export default function App() {
           <Route path="/master-blender">
             <SubPageProviders><MasterBlender /></SubPageProviders>
           </Route>
-          <Route path="/artisan-360">
-            <SubPageProviders><CigarArtisan360 /></SubPageProviders>
-          </Route>
-          <Route path="/smoke-360">
-            <SubPageProviders><SmokeCraft360 /></SubPageProviders>
-          </Route>
-          <Route path="/pour-360">
-            <SubPageProviders><PourCraft360 /></SubPageProviders>
-          </Route>
-          <Route path="/brew-360">
-            <SubPageProviders><BrewCraft360 /></SubPageProviders>
-          </Route>
-          <Route path="/vape-360">
-            <SubPageProviders><VapeCraft360 /></SubPageProviders>
-          </Route>
 
           {/* ── Previously unregistered pages — recovered routes ── */}
           <Route path="/payment/success">
@@ -942,10 +921,6 @@ export default function App() {
             <SubPageProviders><AxiomPay /></SubPageProviders>
           </Route>
 
-          {/* ── Villa Sovereign — DR Luxury Market Concierge Ritual ── */}
-          <Route path="/villa-sovereign">
-            <SubPageProviders><VillaSovereign /></SubPageProviders>
-          </Route>
           <Route path="/distribution">
             <SubPageProviders><SovereignDistributionVault /></SubPageProviders>
           </Route>
