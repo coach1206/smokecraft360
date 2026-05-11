@@ -1,0 +1,296 @@
+FINAL VISUAL ALIGNMENT FIX
+
+MISSING / REQUIRED
+
+1. EEIE must visually belong to the Sovereign Command Center.
+Impact: The current EEIE redesign feels disconnected. It should feel like it lives inside the same Sovereign operating environment shown on the Ambassador Hub screen.
+
+2. Keep the Sovereign layout language.
+Impact: The screen must keep the same structure, spacing, premium command cards, top rail, module grid, status bar, and cinematic system feel.
+
+3. Upgrade the colors without losing the identity.
+Impact: Do not make it plain white SaaS. Do not make it dark cyberpunk. It needs the same Sovereign feel, but upgraded into future-luxury Apple/Tesla colors.
+
+4. EEIE must look like a command module, not a separate admin page.
+Impact: EEIE should feel like a live operating node inside the Sovereign Command Center.
+
+5. All module cards need visual consistency.
+Impact: Distribution Vault, Hardware Lab, Ambassador Deck, Founder Control, Master Operations, and EEIE Command Center need to share the same premium design language.
+
+FAILURE PREVENTION CHECKLIST
+
+Do not make EEIE look like Clover, Toast, Square, Shopify POS, or a standard dashboard.
+Do not make it flat white.
+Do not make it plain SaaS.
+Do not remove the Sovereign Command Center feel.
+Do not remove the cinematic module-card layout.
+Do not remove the top command rail.
+Do not remove the bottom session/status strip.
+Do not remove Founder Control.
+Do not create dead cards.
+Do not break existing routing.
+Do not hardcode credentials.
+Do not remove the back button.
+Do not use brown as the dominant color.
+Do not use cream/yellow as the main page background.
+Do not make the page overly dark unless Night Mode is toggled.
+Do not use tiny buttons.
+Do not use weak text contrast.
+Do not use emojis or clipart.
+
+MASTER PROMPT
+
+Redesign EEIE so it has the same premium Sovereign Command Center feel as the Ambassador Hub screen, while upgrading the visual language into Apple/Tesla future luxury.
+
+The layout should resemble the existing Sovereign command module page:
+
+Top command rail
+Sovereign Command Center brand
+status indicators
+module grid
+large featured EEIE card
+secondary command cards
+bottom session/status rail
+premium spacing
+cinematic command environment
+clean system labels
+luxury operating-system feel
+
+EEIE must feel like it belongs inside Sovereign.
+
+Do not redesign it as a disconnected generic dashboard.
+
+VISUAL STYLE
+
+Use a hybrid style:
+
+Sovereign Command Center structure
+Apple/Tesla color discipline
+metallic blue accents
+silver and titanium card edges
+soft white/silver inner card surfaces
+deep navy text
+graphite shadows
+frosted glass panels
+subtle blue glow
+premium command tiles
+
+Color direction:
+
+Primary surfaces:
+soft graphite
+deep navy-black for outer shell
+frosted titanium cards
+white-silver inner panels
+metallic blue highlights
+
+Accent colors:
+Tesla blue
+electric cyan
+titanium silver
+platinum white
+signal green for active
+controlled red for danger
+soft purple for AI
+
+Do not use heavy brown.
+Do not use muddy gold.
+Do not use flat white.
+Do not use generic blue SaaS styling.
+
+The page should feel like:
+
+Sovereign Command Center
+Apple hardware UI
+Tesla operations panel
+premium hospitality intelligence system
+future luxury command module
+
+STRUCTURE TO MATCH
+
+Keep the same command center composition from the screenshot:
+
+1. Top Header
+
+Include:
+
+Sovereign Command Center
+JC Collins / 360 Enterprises Services LLC / NOVEE OS / Titan V
+Sovereign Active status
+Revoke All
+Sign Out
+system status pulse
+Back button
+
+Style:
+premium black/navy outer shell with metallic blue and silver glow accents.
+
+2. Main Featured EEIE Card
+
+Large card at the top:
+
+EEIE Command Center
+Experience Enhancement Intelligence Engine
+Live intelligence dashboard: venue health, sensory layers, commerce health, predictions, event bus, staff cockpit, guest experience, media library, distributor sync, and back-of-house operations.
+
+The featured card should feel like the current gold/brown EEIE card but upgraded:
+
+no brown dominance
+metallic blue icon
+silver-blue glass background
+soft white inner glow
+right arrow action
+large tap target
+
+3. Module Grid
+
+Create command cards below the featured EEIE card.
+
+Cards should include:
+
+Staff Cockpit
+Guest Experience
+Media Library
+Product Wall
+Distributor Library
+Back-of-House Sync
+Venue Intelligence
+Sensory Engine
+Commerce Health
+AI Assistant
+Mood Sensor
+Event Bus
+Founder Control
+Master Operations
+
+Each card must have:
+
+large icon
+short description
+Enter button
+subtle hover lift
+metallic blue active edge
+status chip if applicable
+
+4. EEIE Staff Cockpit Card
+
+This card must preview:
+
+active tables
+guest sessions
+AI pairing status
+Send to POS readiness
+staff handoff mode
+
+Description:
+“Wait-staff command layer: active tables, guest profiles, cigar matching, drink pairing, food pairing, visual selling, and POS handoff.”
+
+5. Media Library Card
+
+Description:
+“Upload, link, approve, and manage images for cigars, drinks, food, desserts, specials, and pairing bundles.”
+
+6. Distributor Library Card
+
+Description:
+“Connect distributor catalogs, import CSVs, map cigar and liquor products, and generate restock intelligence.”
+
+7. Back-of-House Sync Card
+
+Description:
+“Connect bar, kitchen, cigar inventory, manager controls, event bus, and commerce infrastructure.”
+
+8. AI Assistant Card
+
+Description:
+“Real-time staff guidance, pairing explanations, inventory warnings, mood interpretation, and next-best actions.”
+
+9. Mood Sensor Card
+
+Description:
+“Venue mood, service pressure, color-state intelligence, haptics, and sensor-aware recommendations.”
+
+10. Product Wall Card
+
+Description:
+“Luxury visual selling wall with cigar, liquor, cocktail, food, dessert, and bundle images.”
+
+BOTTOM STATUS RAIL
+
+Add a bottom status strip matching the Sovereign screen style.
+
+Include:
+
+Session Active
+Token Valid
+All Nodes Online
+System Integrity
+Event Bus Live
+Distributor Sync
+Media Library Ready
+Back-of-House Connected
+Kiosk Lock
+
+FUNCTIONAL ROUTING
+
+Every card must route somewhere.
+
+Wire these routes:
+
+EEIE Command Center -> /eeie/command-center
+Staff Cockpit -> /eeie/staff-cockpit
+Guest Experience -> /eeie/guest-experience
+Media Library -> /eeie/media-library
+Product Wall -> /eeie/product-wall
+Distributor Library -> /eeie/distributors
+Back-of-House Sync -> /eeie/back-of-house
+Venue Intelligence -> /eeie/venue-intelligence
+Sensory Engine -> /eeie/sensory-engine
+Commerce Health -> /eeie/commerce-health
+AI Assistant -> /eeie/ai-assistant
+Mood Sensor -> /eeie/mood-sensor
+Event Bus -> /eeie/event-bus
+Founder Control -> /eeie/founder-control
+Master Operations -> /eeie/master-operations
+
+If any route does not exist, create a safe placeholder route with a functional page shell, not a dead card.
+
+VISUAL CONSISTENCY REQUIREMENT
+
+The entire EEIE interface must look like the same system family as:
+
+Sovereign Command Center
+Ambassador Hub
+Founder Control
+Master Operations
+Distribution Vault
+Hardware Lab
+
+But with EEIE’s new Apple/Tesla luxury command style.
+
+Do not make it look like a separate product.
+
+It should feel like:
+
+Sovereign is the operating system.
+EEIE is the venue intelligence engine inside it.
+
+FINAL DELIVERABLE
+
+Update the EEIE interface so it keeps the Sovereign command-center feel shown in the current Ambassador Hub screenshot.
+
+Upgrade it with:
+
+metallic blue
+silver
+titanium
+white-glass card highlights
+premium frosted cards
+large touchscreen command tiles
+same cinematic Sovereign structure
+clear routing
+status indicators
+bottom system rail
+AI, media, distributor, staff, mood, sensor, and back-of-house modules
+
+The final result should feel like a futuristic Sovereign command module, not a normal dashboard.

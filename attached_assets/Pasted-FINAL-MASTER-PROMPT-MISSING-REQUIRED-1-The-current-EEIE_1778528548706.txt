@@ -1,0 +1,2206 @@
+FINAL MASTER PROMPT
+
+MISSING / REQUIRED
+
+1. The current EEIE interface is not visually powerful enough.
+Impact: It does not yet feel like a future-luxury Apple/Tesla hospitality intelligence system.
+
+2. The interface must not be dark cyberpunk.
+Impact: The correct direction is metallic blue, silver, white, titanium grey, pearl glass, chrome edges, frosted cards, premium images, and clean luxury spacing.
+
+3. EEIE must not look like a normal POS.
+Impact: EEIE means Experience Enhancement Intelligence Engine. The POS is only one embedded commerce layer inside a larger venue intelligence, staff assistance, guest experience, inventory, distributor, media, sensor, AI, and back-of-house system.
+
+4. The system must be highly visual.
+Impact: Staff need images, graphs, product visuals, AI commentary, pairing visuals, guest previews, heatmaps, sensor colors, mood states, and live visual guidance, not plain cards and text.
+
+5. Staff need a real touchscreen workflow.
+Impact: Wait staff must be able to select a table, pause the guest experience, see the guest’s preferences, show cigar/drink/food images, add items to cart, send to POS, and return the guest to the experience without losing progress.
+
+6. Managers need a visual media control system.
+Impact: Cigars, liquor bottles, cocktails, food, desserts, specials, merch, and pairing bundles must be uploaded or linked, approved, categorized, connected to inventory, and shown visually.
+
+7. Back-of-house must connect to EEIE.
+Impact: The system must connect to bar inventory, kitchen menu, cigar inventory, manager dashboard, staff cockpit, guest preview, commerce cart, POS adapter, event bus, and system health.
+
+8. Distributor inventory libraries must be supported.
+Impact: Cigar and liquor distributors may provide APIs, CSV files, spreadsheets, product links, PDFs, or manual lists. EEIE must support flexible import and mapping.
+
+9. Distributor inventory must stay separate from venue inventory.
+Impact: A distributor product is not automatically available at the venue. The system must separate distributor catalog, local stock, manager-only items, staff-visible items, guest-visible items, wholesale pricing, local pricing, restock suggestions, and special-order products.
+
+10. AI assistant and AI commentary must be built into the interface.
+Impact: EEIE must guide staff and managers in real time with recommendations, warnings, scripts, explanations, and next-best actions.
+
+11. Mood and sensor intelligence must be included.
+Impact: The system should show venue mood, service pressure, energy state, sensor readiness, haptics, vibration feedback, heatmaps, device signals, and live venue awareness.
+
+12. All buttons must be functional.
+Impact: Do not create dead UI. If backend routes exist, use them. If not, create frontend service wrappers that are ready for backend integration.
+
+FAILURE PREVENTION CHECKLIST
+
+Do not make the system dark cyberpunk.
+Do not use brown.
+Do not use cigar lounge colors as the main UI.
+Do not use cream or yellow backgrounds.
+Do not make it look like Clover, Toast, Square, Shopify POS, or a regular restaurant POS.
+Do not make it look like a crypto dashboard.
+Do not make it look like a gaming interface.
+Do not make it flat plain white with no depth.
+Do not use weak grey text that is hard to read.
+Do not use tiny buttons.
+Do not hide staff controls behind tiny tabs.
+Do not remove Founder Control.
+Do not remove the back button.
+Do not break existing auth.
+Do not hardcode credentials.
+Do not store API keys in frontend code.
+Do not create dead buttons.
+Do not create visual-only cards with no state or function.
+Do not show distributor inventory as venue inventory.
+Do not expose wholesale pricing to wait staff or guests.
+Do not automatically publish distributor-imported products to staff or guests.
+Do not allow unsafe file types.
+Do not allow broken image links to destroy the layout.
+Do not show unavailable products as active recommendations.
+Do not fake live sensor data if hardware is not connected.
+Do not pretend simulated sensor data is live.
+Do not use emotion detection language without consent.
+Frame mood as venue mood, service pressure, ambience state, or guest-selected vibe.
+Do not let SmokeCraft language leak into PourCraft, BrewCraft, or VapeCraft.
+Do not rebuild unrelated systems.
+Use professional icons only, preferably lucide-react if installed.
+Use realistic product imagery where available.
+Keep everything touchscreen friendly.
+
+MASTER PROMPT
+
+Redesign and extend the current EEIE Command Center into a complete Apple/Tesla future-luxury Experience Enhancement Intelligence Engine.
+
+EEIE means Experience Enhancement Intelligence Engine.
+
+This is not just a POS.
+
+The POS is only one embedded commerce layer inside a larger hospitality intelligence system.
+
+The system must include:
+
+Apple/Tesla future-luxury EEIE Command Center
+Staff Cockpit
+Guest Experience Preview
+Media Asset Library
+Product Wall
+Back-of-House Connection Layer
+Bar System Connection
+Kitchen System Connection
+Cigar Inventory Media Layer
+Distributor Inventory Library Connection
+AI Assistant
+AI Commentary Feed
+Mood Sensor System
+Venue Heatmap
+Sensor Layer
+Haptic Feedback
+Unified Data Brain
+AI Pairing Engine
+Inventory-Aware Recommendations
+Visual Pairing Bundles
+Manager Visual Control Center
+Distributor Product Mapping
+Restock Intelligence
+Event Bus Logging
+Founder Control Center
+Device Ecosystem
+System Integrity Layer
+Compliance and Permission Layer
+
+VISUAL DIRECTION
+
+Use this color system:
+
+Primary background:
+soft pearl white
+ice white
+cool silver
+titanium grey
+very light blue-grey
+polished white-metal gradients
+
+Panel surfaces:
+frosted glass white
+semi-transparent ice cards
+metallic silver cards
+soft gradient tiles
+chrome-edge cards
+premium white/silver product tiles
+blue-tinted glass panels
+
+Accent colors:
+metallic electric blue
+Tesla blue
+cyan glow
+silver-blue
+deep navy text
+signal green for healthy systems
+controlled red only for danger
+soft purple only for AI intelligence accents
+platinum highlight for premium status
+cool lavender for low-pressure mood states
+
+Do not use:
+brown
+bronze
+muddy gold
+heavy black backgrounds
+cream/yellow backgrounds
+dark cigar lounge colors
+basic SaaS blue with no premium depth
+
+The interface must feel like:
+
+Apple Vision Pro control surface
+Tesla command system
+premium aerospace operations panel
+future luxury hospitality OS
+frosted glass enterprise control center
+high-end touchscreen intelligence platform
+visual selling command system
+luxury guest experience cockpit
+
+TYPOGRAPHY
+
+Use clean modern sans-serif typography.
+
+Use:
+Inter
+SF Pro style
+Space Grotesk only for small system labels if needed
+
+Text rules:
+deep navy for main text
+cool grey for secondary text
+metallic blue labels for active states
+wide letter spacing for command labels
+large readable type for staff actions
+strong contrast for touchscreen visibility
+
+TOUCHSCREEN RULES
+
+All primary buttons must be at least 56px tall.
+Critical action buttons must be at least 72px tall.
+Cards must have generous spacing.
+Sidebar items must be large enough for finger taps.
+Do not use tiny tabs.
+Do not use cramped controls.
+Use rounded premium buttons with glass depth.
+Use clear hover, active, pressed, disabled, and confirmed states.
+Design for wait staff using tablets while standing, moving, and serving guests.
+
+CORE PAGE STRUCTURE
+
+1. TOP COMMAND RAIL
+
+Create a futuristic white/silver top rail.
+
+Include:
+
+EEIE Command Center
+Experience Enhancement Intelligence Engine subtitle
+Live badge
+Sovereign Command Layer status
+Titan V Engine: Operational
+System Status: All Systems Operational
+AI Engine: Active
+Kiosk Lock status
+Sensor Layer status
+Mood state
+current time
+current user
+Invite
+Republish if existing
+More menu
+Back button
+
+The top rail should resemble a Tesla/Apple system control bar.
+
+Add a thin animated metallic-blue waveform running across the top rail.
+
+2. LEFT SIDEBAR
+
+Create a persistent left sidebar using a frosted silver/blue glass look.
+
+Sidebar must include:
+
+EEIE Command Center badge
+
+Command:
+Command Center
+Live Network
+Sensory Engine
+Commerce Health
+AI Predictions
+Event Bus
+Visual Intelligence
+Unified Data Brain
+
+Operations:
+Staff Cockpit
+Guest Experience
+Inventory & Supply
+Media Library
+Product Wall
+Distributor Library
+Back-of-House Sync
+Device Ecosystem
+Venue Heatmap
+
+Control:
+Mood Sensor
+Sensor Layer
+Security
+Infrastructure
+Founder Control
+
+Active item style:
+metallic blue gradient
+white text
+soft blue glow
+rounded rectangular button
+right-facing arrow indicator
+
+Bottom sidebar:
+Sovereign Active status card
+Night Mode toggle button, but do not default to night mode
+Kiosk Lock indicator
+Device heartbeat indicator
+
+3. MAIN COMMAND CENTER VIEW
+
+Create the main interface with white/silver luxury tiles.
+
+Top KPI strip must include:
+
+Total Transactions
+Gross Volume
+Average Ticket
+Events / Min
+Sync Status
+Live Health
+Active Guest Sessions
+AI Advisories
+Mood State
+Sensor Signals
+
+Each KPI card must include:
+large number
+small trend arrow
+mini blue sparkline
+soft shadow
+chrome border
+rounded white glass tile
+small AI commentary line where useful
+
+4. COMMAND MODULE TABS
+
+Create a tab row with:
+
+Command Center
+Live Network
+Sensory Engine
+Commerce Health
+AI Predictions
+Event Bus
+Visual Intelligence
+Mood Sensor
+Unified Data Brain
+
+Tabs must look like polished white segmented controls with metallic-blue active underline.
+
+5. INTELLIGENCE TILE GRID
+
+Create premium white/blue cards for:
+
+Cluster Nodes
+Active Venues
+Predictions
+Advisories
+Commerce Online
+Sensory Layers
+Media Assets
+Distributor Sync
+Back-of-House Sync
+Inventory Health
+Mood Engine
+Sensor Layer
+AI Assistant
+Venue Heatmap
+
+Each card must include:
+large metric
+small system label
+blue holographic icon or diagram
+soft frosted background
+metallic border
+subtle animated glow
+status chip
+tap-to-expand behavior
+
+Avoid basic POS wording.
+
+6. ENVIRONMENTAL PULSE PANEL
+
+Create a wide Environmental Pulse panel.
+
+It must show:
+
+animated blue waveform
+pulse rate
+amplitude
+signal status
+venue state
+Titan V status
+sensory layer health
+mood state
+service pressure
+
+This should look like Tesla energy graph meets Apple Health visualization.
+
+7. INTELLIGENCE MATRIX PANEL
+
+Create an Intelligence Matrix card.
+
+It must show:
+
+world map or dotted grid
+center AI radar point
+EEIE Real Intelligence score
+progress bar
+AI interpretation summary
+venue network state
+distribution intelligence status
+bar/kitchen sync status
+sensor confidence score
+
+Use light frosted glass with metallic-blue highlights.
+
+8. RECENT ADVISORIES PANEL
+
+Create Recent Advisories panel.
+
+It must show:
+
+system status
+risk advisories
+inventory advisories
+guest experience advisories
+staff assistance advisories
+media warnings
+distributor sync warnings
+bar/kitchen availability warnings
+mood state advisories
+sensor advisories
+haptic alerts
+
+If no issues:
+“No advisories. System is nominal.”
+
+Use clean white cards with small status icons.
+
+AI ASSISTANT LAYER
+
+Add an always-available AI assistant panel named:
+
+EEIE Assistant
+
+It must appear as a floating premium assistant card or side panel.
+
+The EEIE Assistant must provide:
+
+real-time staff suggestions
+pairing explanations
+guest preference summaries
+inventory warnings
+upsell opportunities
+service timing recommendations
+manager alerts
+bar coordination notes
+kitchen coordination notes
+event bus summaries
+system health commentary
+mood state interpretation
+sensor layer interpretation
+restock guidance
+product visual suggestions
+
+Example AI commentary:
+
+“Guest at Table 4 is leaning toward creamy and sweet flavor notes. Recommend a medium-full cigar with a bourbon pairing. Inventory shows 3 remaining units. Offer the pairing now before the table moves to dessert.”
+
+The AI assistant must have:
+
+Ask EEIE input box
+voice-ready button placeholder
+quick action chips
+recommendation confidence score
+explain recommendation button
+show product visuals button
+send note to manager button
+send note to bar button
+send note to kitchen button
+acknowledge recommendation button
+
+AI COMMENTARY FEED
+
+Add an AI Commentary Feed.
+
+This feed must show short intelligent updates like:
+
+“Table 2 has a strong pairing opportunity.”
+“Bar delay detected. Recommend food-first pacing.”
+“Inventory pressure rising on medium-full cigars.”
+“VIP guest profile matched to premium bourbon pairing.”
+“Distributor stock available for low local item.”
+“Kitchen wait time increased by 8 minutes.”
+“Venue mood shifted to High Energy.”
+“Guest session needs staff attention.”
+“Sensor layer reports low humidor confidence.”
+“Product image missing for top-selling bourbon.”
+
+Each commentary item should include:
+
+timestamp
+source
+confidence score
+recommended action
+acknowledge button
+send action button
+expand explanation button
+
+STAFF COCKPIT VIEW
+
+Create Staff Cockpit using the same white/silver/metallic-blue visual system.
+
+This is critical.
+
+Staff Cockpit must include:
+
+Active Tables
+Table number
+Guest name
+Session status
+Time active
+Needs attention indicator
+Review pairing indicator
+Completed indicator
+Guest paused indicator
+Cart status
+Send to POS status
+Mood state
+Service pressure
+Guest visual preview status
+
+Selected guest session must show:
+
+Guest name
+Guest initials
+Returning guest badge
+Loyalty level
+XP score
+previous favorite cigar
+previous favorite liquor
+previous favorite food pairing
+flavor preference chips
+strength preference
+current SmokeCraft blend profile
+AI match score
+confidence score
+mood/vibe tag if guest-selected or venue-derived
+service pacing suggestion
+
+Make all staff controls touchscreen friendly.
+
+SMOKECRAFT BLEND INTELLIGENCE
+
+Inside Staff Cockpit, include a blend intelligence panel.
+
+Show radar profile for:
+
+Creamy
+Sweet
+Nutty
+Earthy
+Spicy
+Woody
+Pepper
+Citrus
+
+Show:
+
+Wrapper selected
+Binder selected
+Filler selected
+Size selected
+Cut selected
+Strength preference
+Flavor profile completed
+
+Use blue/purple data visualization on a white glass card.
+
+AI CIGAR MATCH
+
+Create an AI Cigar Match card.
+
+It must show:
+
+large cigar image
+cigar name
+country
+size
+wrapper
+price
+inventory status
+match reason
+match score
+flavor bridge
+Add to Cart button
+Show to Guest button
+View Alternatives button
+Request Manager Approval button if needed
+
+Logic requirement:
+
+If the guest profile is creamy, sweet, nutty, medium-full, recommend a matching cigar from local inventory.
+If exact cigar is unavailable, show closest local substitute.
+If local substitute is not available, show approved distributor-available option as special order or manager restock suggestion.
+If inventory is low, show low-stock warning.
+
+Card style:
+white glass card
+metallic blue button
+soft shadow
+premium product tile
+large image area
+
+LIQUOR PAIRING INTELLIGENCE
+
+Create Best Liquor Pairing card.
+
+It must show:
+
+large bottle image
+liquor name
+category
+pour size
+price
+availability
+flavor bridge
+pairing explanation
+pairing score
+Add Pairing button
+Show to Guest button
+View Alternatives button
+
+Example language:
+
+“Woodford Reserve Double Oaked supports creamy, toasted, vanilla, and nutty notes while lifting the cigar’s rich finish.”
+
+FOOD PAIRING INTELLIGENCE
+
+Create Food Pairing card.
+
+It must show:
+
+large food image
+food name
+category
+price
+kitchen availability
+prep time
+allergy warning if available
+pairing explanation
+pairing score
+Add Food Pairing button
+Show to Guest button
+
+Example language:
+
+“Smoked short rib sliders deepen the oak, cocoa, and charred-sweet finish in the guest’s selected blend.”
+
+STAFF NUDGE SYSTEM
+
+Create a Staff Nudge card.
+
+It must show:
+
+Suggested Script
+Opportunity
+Upgrade suggestion
+Risk warning
+Guest mood indicator
+Best next action
+Best timing window
+Confidence score
+Recommended pace
+
+Example:
+
+“Say: This pairing brings out the cream, oak, and cocoa notes in your cigar. Would you like to add a 2 oz pour?”
+
+Include large buttons:
+
+Apply Reward
+Add Note
+Show Visuals to Guest
+Add Cigar to Cart
+Add Drink Pairing
+Add Food Pairing
+Send to POS
+Return to Guest
+Notify Manager
+Notify Bar
+Notify Kitchen
+
+GUEST EXPERIENCE PREVIEW
+
+Add a guest preview panel.
+
+This must show what the guest sees.
+
+Use a lighter luxury interface, not a dark preview.
+
+It should include:
+
+SmokeCraft by Sovereign
+step progress bar
+current step
+flavor radar
+guest profile
+AI match score
+recommended cigar image
+recommended liquor image
+recommended food image
+pairing bundle image
+next button
+experience paused status when staff is assisting
+venue mood color accent
+guest-safe AI explanation
+
+The staff cockpit must be able to pause and resume the guest experience without losing progress.
+
+PRODUCT WALL
+
+Add a highly visual Product Wall inside Staff Cockpit and Media Library.
+
+It must show:
+
+cigar images
+liquor bottle images
+cocktail images
+food images
+dessert images
+pairing bundle images
+featured specials
+venue promotions
+premium upsells
+manager picks
+AI recommended items
+
+Product cards must include:
+
+large image
+product name
+category
+price
+availability
+match score
+pairing tags
+stock badge
+Show to Guest button
+Add to Cart button
+Swap Recommendation button
+View Story button
+View Pairing Logic button
+
+This must feel like a luxury visual selling wall, not a POS product grid.
+
+AI PAIRING GRAPHS
+
+Add animated graphs for:
+
+flavor compatibility
+pairing confidence
+guest preference match
+inventory strength
+sales velocity
+restock urgency
+venue mood state
+service pressure
+bar delay pressure
+kitchen delay pressure
+distributor sync health
+media completeness
+
+Graph types:
+
+radar chart for flavor profile
+line chart for live commerce stream
+donut ring for system health
+bar graph for inventory pressure
+heatmap for venue activity
+timeline for event bus
+node map for distributor and inventory sync
+mood color ring for venue state
+AI confidence ring
+
+If chart libraries exist, use them.
+If not, create clean CSS/SVG visualizations.
+
+MOOD SENSOR SYSTEM
+
+Add a Mood Sensor panel.
+
+The system should support venue mood states such as:
+
+Calm
+Social
+Premium
+High Energy
+Crowded
+Slow
+VIP Active
+Service Pressure
+Recovery Needed
+After-Hours Mode
+
+Mood state should affect:
+
+interface accent color
+staff recommendations
+AI assistant tone
+upsell aggressiveness
+lighting suggestion
+service priority
+guest pacing suggestions
+haptic alert intensity
+manager advisory priority
+
+Mood colors:
+
+Calm: ice blue
+Social: silver-blue
+Premium: royal metallic blue
+High Energy: cyan
+Crowded: amber warning
+Slow: soft lavender
+VIP Active: platinum purple
+Service Pressure: controlled red
+Recovery Needed: cool green
+After-Hours Mode: graphite-blue
+
+Do not use overwhelming colors.
+Use restrained Apple/Tesla-style color signals.
+
+Frame this as venue mood and service pressure unless there is explicit guest consent and real hardware.
+
+SENSOR + HAPTIC FEEDBACK
+
+Add haptic/vibration support where browser/device allows it.
+
+Use navigator.vibrate safely.
+
+Vibration should trigger for:
+
+critical system warning
+manager approval needed
+order successfully sent
+guest assistance requested
+low inventory alert
+bar delay warning
+kitchen delay warning
+Founder Control confirmation
+distributor sync failure
+sensor warning
+
+Use safe frontend helper:
+
+triggerHaptic(type)
+
+Supported types:
+
+success
+warning
+critical
+softTap
+managerAlert
+guestRequest
+syncAlert
+founderConfirm
+
+Do not overuse vibration.
+Do not trigger vibration without user interaction where browsers block it.
+If vibration is unsupported, fallback to visual pulse.
+
+LIVE VENUE HEATMAP
+
+Add a Live Venue Heatmap panel.
+
+It must show:
+
+active tables
+guest sessions
+staff attention needed
+bar queue pressure
+kitchen queue pressure
+high-value guests
+VIP tables
+slow tables
+pairing opportunity tables
+completed tables
+low service attention zones
+high energy zones
+
+Use light Apple/Tesla color design.
+
+The heatmap should look like a futuristic venue floor intelligence map, not a basic table chart.
+
+GESTURE + TOUCH INTERACTION
+
+Add touchscreen interactions:
+
+tap
+long press
+swipe between guest sessions
+drag product into cart
+press-and-hold Founder Control confirmation
+slide to send to POS
+swipe to show guest
+tap to expand AI explanation
+tap to switch mood state
+tap to show pairing graph
+tap to preview product bundle
+
+Do not make gesture controls mandatory.
+Always include normal buttons too for accessibility.
+
+SMART KIOSK / SELF-SERVICE READINESS
+
+Add UI preparation for kiosk and self-service flows.
+
+Support:
+
+guest browsing mode
+staff assist mode
+manager mode
+locked kiosk mode
+guest opt-in mode
+pairing reveal mode
+visual menu mode
+training/demo mode
+
+Add visible mode switcher:
+
+Guest View
+Staff Assist
+Manager Control
+Kiosk Lock
+Training Demo
+
+COMPUTER VISION / RFID / SMART SENSOR READINESS
+
+Do not fake real sensors unless hardware exists.
+
+Prepare the interface and backend wrappers for:
+
+computer vision event feed
+RFID inventory scan
+smart shelf status
+bottle stock sensor
+humidor sensor
+temperature sensor
+humidity sensor
+occupancy sensor
+motion sensor
+guest request beacon
+device heartbeat
+kiosk camera permission status
+barcode/QR scan support
+NFC guest handoff readiness
+
+Create sensor status cards:
+
+Sensor Name
+Signal Strength
+Last Reading
+Status
+Alert Level
+Linked Area
+Linked Inventory Item
+Source Type
+
+Use source labels:
+
+Live
+Simulated
+Manual
+Disconnected
+
+Never pretend simulated data is live.
+
+UNIFIED DATA BRAIN
+
+Add a Unified Data Brain panel.
+
+It must show connected data streams:
+
+POS Adapter
+Inventory
+Media Library
+Distributor Library
+Bar System
+Kitchen System
+Guest Profiles
+Staff Actions
+Event Bus
+Sensor Layer
+AI Predictions
+Founder Control
+Device Ecosystem
+Mood Sensor
+Venue Heatmap
+Haptic Layer
+
+Each stream should show:
+
+connected
+syncing
+delayed
+offline
+needs attention
+
+MEDIA ASSET + BACK-OF-HOUSE CONNECTION LAYER
+
+Add a full Media Asset + Back-of-House Connection Layer to EEIE.
+
+EEIE cannot only show text recommendations. Staff need rich visuals for cigars, drinks, food, specials, inventory, and upsell items.
+
+The system must allow managers, bar staff, kitchen staff, and venue operators to upload or link product images so the staff cockpit can show real visuals during guest service.
+
+MEDIA LIBRARY ROUTE
+
+Create:
+
+/eeie/media-library
+
+The Media Library must include:
+
+Upload image button
+Paste image URL option
+Image preview
+Category selector
+Product name
+Product type
+Brand
+Description
+Flavor notes
+Pairing tags
+Price
+Inventory item link
+Availability status
+Approval status
+Visibility controls
+Replace image button
+Delete image button
+Search
+Filter by category
+Filter by status
+Filter by venue
+Filter by in-stock only
+Filter by missing image
+Filter by broken image
+Filter by distributor import
+Filter by guest-visible
+Filter by staff-visible
+
+Supported media categories:
+
+Cigars
+Cigar Boxes
+Whiskey
+Bourbon
+Scotch
+Rum
+Tequila
+Vodka
+Gin
+Cognac
+Cocktails
+Beer
+Wine
+Food
+Desserts
+Specials
+Merch
+Pairing Bundles
+Venue Promos
+
+IMAGE UPLOAD REQUIREMENTS
+
+Support local file upload for:
+
+.jpg
+.jpeg
+.png
+.webp
+
+Block unsafe file types.
+
+Validate:
+
+file size
+file type
+image dimensions
+broken image uploads
+duplicate filenames
+missing product category
+missing product name
+
+Recommended max size:
+
+5MB per image
+
+Fallback image behavior:
+
+If image is missing, show premium frosted product tile.
+If image link is broken, show “Image unavailable” and alert manager.
+If product is out of stock, dim image and show “Unavailable.”
+If low stock, show “Low Stock” badge.
+
+IMAGE URL SUPPORT
+
+Managers must be able to paste an external image URL.
+
+The system must:
+
+validate the URL
+preview the image
+check for broken links
+save the link
+allow replacement
+allow unlinking
+show fallback if the link fails
+
+MEDIA DATABASE REQUIREMENTS
+
+Create or update database schema for media assets.
+
+Table: eeie_media_assets
+
+Fields:
+
+id
+venueId
+uploadedByUserId
+approvedByUserId
+title
+description
+category
+productType
+brand
+imageUrl
+storageKey
+sourceType
+linkedInventoryItemId
+linkedMenuItemId
+linkedDrinkItemId
+linkedCigarItemId
+price
+flavorTags
+pairingTags
+availabilityStatus
+approvalStatus
+isVisibleToStaff
+isVisibleToGuest
+isFeatured
+sortOrder
+createdAt
+updatedAt
+
+sourceType values:
+
+upload
+external_url
+system_import
+distributor_import
+
+approvalStatus values:
+
+pending
+approved
+rejected
+archived
+
+availabilityStatus values:
+
+in_stock
+low_stock
+out_of_stock
+seasonal
+hidden
+
+MEDIA BACKEND ROUTES REQUIRED
+
+Create these API routes:
+
+GET /api/eeie/media
+POST /api/eeie/media/upload
+POST /api/eeie/media/link
+GET /api/eeie/media/:id
+PATCH /api/eeie/media/:id
+DELETE /api/eeie/media/:id
+POST /api/eeie/media/:id/approve
+POST /api/eeie/media/:id/reject
+POST /api/eeie/media/:id/archive
+GET /api/eeie/media/category/:category
+GET /api/eeie/media/inventory/:inventoryItemId
+
+All routes must require auth.
+
+BACK-OF-HOUSE CONNECTION REQUIREMENTS
+
+EEIE must connect the media system to:
+
+bar inventory
+kitchen menu
+cigar inventory
+specials menu
+manager dashboard
+staff cockpit
+guest experience preview
+commerce cart
+POS adapter
+event bus
+
+Create these logical connections:
+
+Cigar media links to cigar inventory.
+Drink media links to bar inventory.
+Food media links to kitchen menu.
+Pairing bundle media links to cigar + drink + food combo.
+Staff cockpit pulls approved media for recommendations.
+Guest preview shows guest-safe media.
+Manager dashboard controls what is visible.
+Event bus logs uploads, approvals, replacements, and broken links.
+Inventory status controls whether media appears active, low stock, or unavailable.
+
+MANAGER VISUAL CONTROL CENTER
+
+Create:
+
+/eeie/manager/media-control
+
+This screen must show:
+
+pending uploads
+broken image links
+out-of-stock visual items
+featured product images
+staff-visible images
+guest-visible images
+category organization
+recent media activity
+approval queue
+image quality warnings
+items needing inventory links
+items needing distributor mapping
+AI recommended missing images
+top products without visuals
+highest upsell products
+visual performance metrics
+
+Manager actions:
+
+approve image
+reject image
+replace image
+link to inventory
+unlink from inventory
+feature item
+hide from staff
+hide from guest
+mark seasonal
+mark unavailable
+assign to pairing engine
+request new image
+push to product wall
+
+BAR SYSTEM CONNECTION
+
+Add Bar Connection Layer.
+
+The bar system must support:
+
+bottle inventory
+cocktail menu
+pour sizes
+available / unavailable status
+low stock status
+premium upsells
+pairing tags
+bottle image
+cocktail image
+bar prep notes
+staff serving notes
+
+EEIE must pull:
+
+drink name
+category
+price
+pour size
+image
+stock status
+pairing notes
+availability
+
+KITCHEN SYSTEM CONNECTION
+
+Add Kitchen Connection Layer.
+
+The kitchen system must support:
+
+food menu
+plate images
+prep status
+availability
+sold out status
+specials
+allergy notes
+pairing tags
+kitchen wait time
+upsell items
+
+EEIE must pull:
+
+food name
+category
+price
+image
+availability
+prep time
+pairing notes
+allergy warning
+guest-facing description
+
+CIGAR INVENTORY MEDIA LAYER
+
+Add Cigar Inventory Media Layer.
+
+The cigar system must support:
+
+cigar image
+box image
+brand
+country
+wrapper
+binder
+filler
+strength
+size
+cut suggestion
+flavor tags
+price
+stock count
+low-stock threshold
+pairing tags
+substitute options
+
+EEIE must pull:
+
+cigar name
+image
+inventory status
+match reason
+substitute cigar
+pairing compatibility
+
+DISTRIBUTOR INVENTORY LIBRARY CONNECTION LAYER
+
+Build a Distributor Inventory Library Connection Layer inside EEIE.
+
+EEIE must connect cigar, liquor, wine, beer, cocktail, and premium product recommendations to external distributor inventory sources when available.
+
+The system must support:
+
+API connection
+CSV upload
+spreadsheet import
+manual catalog entry
+external product URL linking
+manager-approved product mapping
+
+The purpose is to make EEIE understand what products are:
+
+currently in the venue
+available through distributor
+low stock
+out of stock
+substitutable
+recommended for pairing
+ready for restock
+hidden from staff
+visible to staff
+visible to guests
+
+DISTRIBUTOR CONNECTION TYPES
+
+1. API Connection
+
+For distributors with modern systems.
+
+Required fields:
+
+distributor name
+API base URL
+API key stored in environment secrets
+sync frequency
+catalog categories
+inventory endpoint
+product detail endpoint
+image endpoint if available
+pricing endpoint if available
+ordering endpoint if available
+
+Never store API keys in frontend code.
+
+2. CSV / Spreadsheet Import
+
+For distributors who provide product lists.
+
+Support:
+
+.csv
+.xlsx if existing parser is available
+manual column mapping
+preview before import
+duplicate detection
+category mapping
+image URL mapping
+SKU mapping
+price mapping
+
+Required import columns:
+
+distributorSku
+productName
+brand
+category
+subcategory
+description
+imageUrl
+caseSize
+unitSize
+wholesalePrice
+suggestedRetailPrice
+availabilityStatus
+flavorTags
+pairingTags
+
+3. Manual Distributor Entry
+
+For smaller distributors.
+
+Managers can manually add:
+
+distributor name
+product name
+brand
+category
+SKU
+image
+price
+availability
+notes
+ordering contact
+sales rep name
+sales rep email
+sales rep phone
+
+4. External Product Link
+
+Managers can paste a distributor product URL.
+
+The system stores:
+
+product URL
+image URL
+product title
+distributor name
+manager notes
+approval status
+
+Do not scrape protected pages without permission.
+
+DISTRIBUTOR DATABASE REQUIREMENTS
+
+Create these tables or equivalent models.
+
+Table: eeie_distributors
+
+Fields:
+
+id
+venueId
+name
+type
+contactName
+contactEmail
+contactPhone
+websiteUrl
+connectionType
+apiBaseUrl
+apiStatus
+syncEnabled
+lastSyncAt
+createdByUserId
+createdAt
+updatedAt
+
+connectionType values:
+
+api
+csv
+spreadsheet
+manual
+external_url
+
+Table: eeie_distributor_products
+
+Fields:
+
+id
+venueId
+distributorId
+distributorSku
+productName
+brand
+category
+subcategory
+description
+imageUrl
+caseSize
+unitSize
+proof
+country
+region
+wrapper
+binder
+filler
+strength
+size
+flavorTags
+pairingTags
+wholesalePrice
+suggestedRetailPrice
+availabilityStatus
+stockStatus
+lastSyncedAt
+approvalStatus
+isMappedToLocalInventory
+localInventoryItemId
+isVisibleToManager
+isVisibleToStaff
+isVisibleToGuest
+createdAt
+updatedAt
+
+category values:
+
+cigar
+whiskey
+bourbon
+scotch
+rum
+tequila
+vodka
+gin
+cognac
+wine
+beer
+cocktail_supply
+food_supply
+merch
+other
+
+approvalStatus values:
+
+pending
+approved
+rejected
+archived
+
+availabilityStatus values:
+
+available
+limited
+out_of_stock
+seasonal
+discontinued
+unknown
+
+Table: eeie_inventory_mappings
+
+Fields:
+
+id
+venueId
+localInventoryItemId
+distributorProductId
+matchConfidence
+mappingStatus
+approvedByUserId
+createdAt
+updatedAt
+
+mappingStatus values:
+
+suggested
+approved
+rejected
+needs_review
+
+DISTRIBUTOR BACKEND ROUTES REQUIRED
+
+Create these API routes:
+
+GET /api/eeie/distributors
+POST /api/eeie/distributors
+GET /api/eeie/distributors/:id
+PATCH /api/eeie/distributors/:id
+DELETE /api/eeie/distributors/:id
+
+POST /api/eeie/distributors/:id/sync
+POST /api/eeie/distributors/:id/import-csv
+POST /api/eeie/distributors/:id/import-spreadsheet
+POST /api/eeie/distributors/:id/link-product
+GET /api/eeie/distributors/:id/products
+
+GET /api/eeie/distributor-products
+GET /api/eeie/distributor-products/:id
+PATCH /api/eeie/distributor-products/:id
+POST /api/eeie/distributor-products/:id/approve
+POST /api/eeie/distributor-products/:id/reject
+POST /api/eeie/distributor-products/:id/map-to-inventory
+POST /api/eeie/distributor-products/:id/create-local-item
+
+GET /api/eeie/inventory/restock-suggestions
+POST /api/eeie/inventory/restock-draft
+POST /api/eeie/inventory/substitute-suggestions
+
+All routes must require auth.
+
+ROLE PERMISSIONS
+
+Founder:
+full access
+approve
+reject
+delete
+archive
+assign to venues
+connect distributor APIs
+approve imports
+view wholesale pricing
+map inventory
+create restock drafts
+override visibility
+use Founder Control
+view all event logs
+
+Manager:
+upload media
+link image URLs
+add distributors
+upload CSV
+approve products
+view wholesale pricing
+map local inventory
+create restock drafts
+control staff visibility
+control guest visibility
+view manager analytics
+
+Bar Lead:
+upload drink images
+link bottle/cocktail images
+suggest pairing images
+view liquor distributor products
+suggest mapping
+upload drink-related distributor files
+view approval status
+
+Kitchen Lead:
+upload food images
+link menu images
+update food availability
+view approval status
+cannot approve wholesale pricing unless allowed
+
+Cigar Lead:
+upload cigar images
+view cigar distributor products
+suggest mapping
+upload cigar-related distributor files
+view approved distributor products
+
+Wait Staff:
+view approved staff-visible products only
+show images to guests
+use images in recommendations
+add approved items to cart
+send to POS
+cannot delete
+cannot approve
+cannot see wholesale pricing
+cannot sync distributor data
+
+Guest:
+only sees guest-visible approved local products
+should not see distributor-only products unless marked as preorder, special-order, or manager-approved
+
+DISTRIBUTOR LIBRARY INTERFACE
+
+Create:
+
+/eeie/distributors
+
+The screen must include:
+
+Add Distributor
+Connection Type
+Upload CSV
+Connect API
+Manual Product Entry
+Product Import Preview
+Pending Product Queue
+Duplicate Review
+Inventory Mapping
+Image Preview
+Wholesale Price Visibility
+Suggested Retail Price
+Local Price
+Approval Status
+Sync Status
+Last Sync Date
+Restock Suggestions
+Sync Error Warnings
+Import History
+Vendor Contact Info
+
+Create Distributor Product Detail screen.
+
+It must show:
+
+product image
+product name
+brand
+category
+distributor SKU
+wholesale price
+suggested retail
+venue price
+availability
+flavor tags
+pairing tags
+local inventory match
+match confidence
+approve
+reject
+map to existing inventory
+create new inventory item
+hide from staff
+hide from guests
+
+PAIRING BUNDLE SYSTEM
+
+Create a pairing bundle logic layer.
+
+A pairing bundle can include:
+
+one cigar
+one drink
+one food item
+one dessert
+one merch item
+one experience reward
+
+The system should create visual bundles like:
+
+Cream & Oak Experience
+Smoke & Spice Flight
+Bold Barrel Pairing
+Sweet Finish Session
+Founder’s Premium Pairing
+VIP Barrel Room Flight
+After-Hours Signature Pairing
+Chef + Cigar Pairing
+
+Each bundle must show:
+
+bundle image layout
+included items
+combined price
+savings or premium value
+AI match score
+staff script
+Show to Guest button
+Send to POS button
+
+PAIRING ENGINE REQUIREMENTS
+
+Update the AI pairing engine so it can use:
+
+local cigar inventory
+local liquor inventory
+local food inventory
+approved distributor cigar products
+approved distributor liquor products
+approved media assets
+flavor tags
+pairing tags
+availability
+price rules
+manager visibility settings
+mood state
+service pressure
+kitchen delay
+bar delay
+guest loyalty level
+
+Priority order:
+
+1. Recommend local in-stock item.
+2. Recommend local low-stock item with warning.
+3. Recommend local substitute.
+4. Recommend approved distributor-available item as special order or restock suggestion.
+5. Do not recommend hidden, rejected, or unavailable products.
+
+RESTOCK INTELLIGENCE REQUIREMENTS
+
+Create restock suggestion logic.
+
+If local stock is below threshold and distributor product is available, show:
+
+product name
+current local stock
+recommended restock quantity
+distributor availability
+estimated wholesale cost
+projected margin
+last 30-day usage
+pairing demand
+priority level
+
+Priority levels:
+
+urgent
+recommended
+watch
+optional
+
+BOTTOM FOUNDER CONTROL CENTER
+
+Founder Control must stay powerful and visible.
+
+Use a premium white/silver control section with danger-aware cards.
+
+Include:
+
+System Override
+Kill Switch
+Maintenance Mode
+Global Announcement
+System Power
+Lock Kiosks
+Force Sync
+Emergency Staff Broadcast
+
+Design style:
+
+white metallic control cards
+blue chrome edges
+red only for Kill Switch
+green only for System Power
+large icons
+large tap targets
+serious premium control styling
+
+Founder Control must require existing auth/session validation.
+Do not hardcode credentials.
+
+SYSTEM INTEGRITY FOOTER
+
+Add a slim footer rail showing:
+
+System Integrity 100%
+Security: Secure
+Compliance: Compliant
+Backup: Live
+Uptime: 99.99%
+EEIE Command Center version number
+Sensor Layer status
+Event Bus status
+Distributor Sync status
+
+Use white/silver footer styling with a thin blue progress line.
+
+REQUIRED NEW ROUTES
+
+Add or prepare these routes:
+
+/eeie/command-center
+/eeie/staff-cockpit
+/eeie/guest-experience
+/eeie/media-library
+/eeie/product-wall
+/eeie/manager/media-control
+/eeie/distributors
+/eeie/visual-intelligence
+/eeie/mood-sensor
+/eeie/sensor-layer
+/eeie/ai-assistant
+/eeie/venue-heatmap
+/eeie/unified-data-brain
+/eeie/founder-control
+
+FUNCTIONAL WIRING REQUIRED
+
+Wire the page with real functional UI behavior using local state if backend endpoints are not available yet.
+
+Required functions:
+
+selectTable(tableId)
+pauseGuestExperience(tableId)
+returnToGuest(tableId)
+addCigarToCart(item)
+addLiquorPairing(item)
+addFoodPairing(item)
+applyReward(tableId)
+addStaffNote(tableId, note)
+sendToPOS(tableId, cart)
+markEvent(type, payload)
+updateInventoryWarning(itemId)
+toggleFounderPanel()
+triggerMaintenanceMode()
+triggerGlobalAnnouncement()
+triggerSystemPowerConfirm()
+switchCommandTab(tabName)
+switchSidebarView(viewName)
+toggleNightMode()
+openAdvisory(advisoryId)
+openInventoryItem(itemId)
+openDeviceStatus(deviceId)
+uploadMediaAsset(file)
+linkMediaUrl(url)
+approveMediaAsset(assetId)
+rejectMediaAsset(assetId)
+archiveMediaAsset(assetId)
+connectDistributor(distributorId)
+syncDistributor(distributorId)
+importDistributorCsv(file)
+mapDistributorProduct(productId, inventoryItemId)
+approveDistributorProduct(productId)
+rejectDistributorProduct(productId)
+createLocalItemFromDistributorProduct(productId)
+generateRestockSuggestions()
+createRestockDraft()
+generateSubstituteSuggestions(itemId)
+askEEIEAssistant(prompt)
+generateAICommentary(context)
+acknowledgeCommentary(commentaryId)
+sendCommentaryAction(commentaryId)
+setMoodState(moodState)
+calculateMoodColor(moodState)
+triggerHaptic(type)
+loadVenueHeatmap()
+selectHeatmapZone(zoneId)
+loadProductWall()
+showProductToGuest(productId)
+dragProductToCart(productId)
+slideToSendToPOS(cartId)
+loadSensorStatus()
+recordSensorEvent(event)
+switchExperienceMode(mode)
+loadUnifiedDataBrain()
+refreshDataStreamStatus()
+openVisualIntelligencePanel()
+expandPairingGraph(graphId)
+
+If real API routes exist, use them.
+
+If routes do not exist, create safe frontend service wrappers prepared for:
+
+/api/eeie/tables
+/api/eeie/sessions/:id
+/api/eeie/recommendations/cigar
+/api/eeie/recommendations/liquor
+/api/eeie/recommendations/food
+/api/eeie/cart/send-to-pos
+/api/eeie/events
+/api/eeie/inventory
+/api/eeie/system-health
+/api/eeie/founder-control
+/api/eeie/commerce-health
+/api/eeie/sensory-engine
+/api/eeie/advisories
+/api/eeie/media
+/api/eeie/media/upload
+/api/eeie/media/link
+/api/eeie/media/:id/approve
+/api/eeie/bar/items
+/api/eeie/kitchen/items
+/api/eeie/cigars/items
+/api/eeie/pairing-bundles
+/api/eeie/distributors
+/api/eeie/distributor-products
+/api/eeie/inventory/restock-suggestions
+/api/eeie/inventory/substitute-suggestions
+/api/eeie/ai-assistant/context
+/api/eeie/ai-assistant/ask
+/api/eeie/mood
+/api/eeie/mood/update
+/api/eeie/sensors
+/api/eeie/sensors/event
+/api/eeie/venue-heatmap
+/api/eeie/product-wall
+/api/eeie/visual-intelligence
+/api/eeie/unified-data-brain
+/api/eeie/haptic/log
+/api/eeie/commentary/acknowledge
+/api/eeie/commentary/send-action
+
+Do not leave buttons dead.
+
+EVENT BUS LOGGING
+
+Every media, distributor, back-of-house, inventory, AI, mood, sensor, haptic, and staff action must log to Event Bus.
+
+Log these events:
+
+media_uploaded
+media_linked
+media_approved
+media_rejected
+media_replaced
+media_deleted
+media_broken_link_detected
+inventory_media_linked
+bar_item_synced
+kitchen_item_synced
+cigar_item_synced
+pairing_bundle_created
+staff_showed_media_to_guest
+staff_added_visual_item_to_cart
+staff_sent_bundle_to_pos
+distributor_created
+distributor_updated
+distributor_deleted
+distributor_api_connected
+distributor_sync_started
+distributor_sync_completed
+distributor_sync_failed
+distributor_csv_imported
+distributor_product_imported
+distributor_product_approved
+distributor_product_rejected
+distributor_product_mapped
+local_inventory_created_from_distributor
+restock_suggestion_created
+restock_draft_created
+substitute_suggestion_generated
+ai_assistant_opened
+ai_assistant_prompt_submitted
+ai_commentary_generated
+ai_commentary_acknowledged
+ai_commentary_action_sent
+mood_state_changed
+mood_sensor_updated
+haptic_feedback_triggered
+venue_heatmap_loaded
+heatmap_zone_selected
+product_wall_opened
+product_shown_to_guest
+product_dragged_to_cart
+slide_to_pos_completed
+sensor_event_received
+sensor_status_changed
+data_stream_connected
+data_stream_delayed
+data_stream_offline
+mode_switched
+
+ANIMATION REQUIREMENTS
+
+Use refined Apple/Tesla-style motion.
+
+Add:
+
+soft blue glow on active nav
+animated waveform in top rail
+sparkline movement on KPI cards
+subtle hover lift on cards
+button press feedback
+thin blue scanning line on command cards
+soft pulse on Live badge
+health ring animation
+guest session pause glow
+media image fade-in
+product card hover lift
+AI assistant breathing glow
+mood state color wash
+sensor pulse rings
+event feed slide-in
+product card magnetic hover
+slide-to-send animation
+haptic feedback visual pulse
+Founder Control confirmation animation
+
+Do not use heavy cyberpunk animation.
+Do not use game-like neon overload.
+Keep motion premium, restrained, and expensive.
+
+CONTENT LANGUAGE REQUIREMENTS
+
+Use this language:
+
+EEIE Command Center
+Experience Enhancement Intelligence Engine
+Sovereign Command Layer
+Titan V Engine
+Live Network
+Sensory Engine
+Commerce Health
+AI Predictions
+Event Bus
+System Integrity
+Staff Cockpit
+Guest Experience Preview
+Inventory & Supply
+Media Library
+Distributor Library
+Back-of-House Sync
+Device Ecosystem
+Founder Control
+Environmental Pulse
+Intelligence Matrix
+Recent Advisories
+Commerce Infrastructure
+Live Commerce Stream
+Venue Intelligence
+Visual Pairing Engine
+Restock Intelligence
+Distributor Sync
+AI Assistant
+AI Commentary Feed
+Mood Sensor
+Venue Heatmap
+Sensor Layer
+Unified Data Brain
+Product Wall
+Service Pressure
+Guest Journey
+Pairing Confidence
+Visual Selling Layer
+
+Avoid overusing:
+
+POS
+cash register
+checkout
+basic dashboard
+sales dashboard
+
+POS should appear only as:
+
+Send to POS
+POS Adapter
+Commerce Infrastructure
+Commerce Health
+
+FINAL DELIVERABLE
+
+Replace the current interface with a complete futuristic luxury Apple/Tesla-style EEIE Command Center.
+
+The final system must include:
+
+metallic blue
+silver
+white
+titanium grey
+frosted glass
+premium cards
+large touchscreen buttons
+visual product image cards
+staff cockpit
+guest preview
+media upload
+external image linking
+manager media control
+bar connection
+kitchen connection
+cigar inventory media
+distributor inventory library
+CSV import
+API distributor connection support
+manual distributor entry
+inventory mapping
+restock intelligence
+AI cigar matching
+AI liquor pairing
+AI food pairing
+visual pairing bundles
+event bus logging
+commerce infrastructure
+system health
+Founder Control
+AI assistant
+AI commentary feed
+mood sensor
+venue mood colors
+haptic feedback
+vibration support
+venue heatmap
+sensor readiness
+computer vision readiness
+RFID readiness
+smart shelf readiness
+humidor sensor readiness
+occupancy sensor readiness
+unified data brain
+product wall
+gesture controls
+smart kiosk readiness
+training/demo mode
+manager broadcast
+device heartbeat
+system integrity footer
+
+Keep existing routes working.
+Keep the back button.
+Keep auth working.
+Keep Founder Control protected.
+Keep all buttons functional.
+Make it responsive for tablet and desktop.
+Make it premium, futuristic, clean, operational, visual, sensory, intelligent, and luxury.
+
+The goal:
+
+Not dark.
+Not brown.
+Not basic.
+Not Clover.
+Not Toast.
+Not Square.
+Not a regular POS.
+
+Make it feel like Apple built a Tesla-style command system for intelligent hospitality venues, with visual selling, back-of-house intelligence, distributor awareness, mood intelligence, sensor readiness, AI commentary, haptic feedback, and real staff workflow.
