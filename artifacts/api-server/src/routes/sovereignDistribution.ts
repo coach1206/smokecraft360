@@ -25,6 +25,45 @@ const router = Router();
 // ── Bootstrap tables ────────────────────────────────────────────────────────
 
 pool.query(`
+  CREATE TABLE IF NOT EXISTS distribution_deployments (
+    id            SERIAL PRIMARY KEY,
+    batch_id      INTEGER,
+    target        TEXT        NOT NULL DEFAULT 'ALL',
+    package       TEXT        NOT NULL DEFAULT 'titan-v-5.2.0',
+    status        TEXT        NOT NULL DEFAULT 'PENDING',
+    created_by    TEXT        NOT NULL DEFAULT 'sovereign',
+    notes         TEXT,
+    started_at    TIMESTAMPTZ,
+    completed_at  TIMESTAMPTZ,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  );
+  CREATE TABLE IF NOT EXISTS distribution_war_room_events (
+    id            SERIAL PRIMARY KEY,
+    severity      TEXT        NOT NULL DEFAULT 'INFO',
+    category      TEXT        NOT NULL DEFAULT 'SYSTEM',
+    title         TEXT        NOT NULL,
+    description   TEXT,
+    source        TEXT,
+    acknowledged  BOOLEAN     NOT NULL DEFAULT FALSE,
+    ack_by        TEXT,
+    ack_at        TIMESTAMPTZ,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  );
+  CREATE TABLE IF NOT EXISTS sovereign_hardware_devices (
+    id            SERIAL PRIMARY KEY,
+    device_label  TEXT        NOT NULL,
+    device_type   TEXT        NOT NULL DEFAULT 'kiosk',
+    firmware      TEXT        NOT NULL DEFAULT 'titan-v-5.2.0',
+    signal_state  TEXT        NOT NULL DEFAULT 'NOMINAL',
+    sensor_state  TEXT        NOT NULL DEFAULT 'ONLINE',
+    last_seen     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    ip_address    TEXT,
+    notes         TEXT,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  );
+`).catch(() => {});
+
+pool.query(`
   CREATE TABLE IF NOT EXISTS sovereign_batches (
     id               SERIAL PRIMARY KEY,
     manufacturer_name TEXT        NOT NULL,
@@ -551,6 +590,212 @@ router.get("/distribution/nodes", async (_req, res) => {
     `);
     res.json({ nodes: result.rows });
   } catch { res.json({ nodes: [] }); }
+});
+
+// ── Node control actions ─────────────────────────────────────────────────────
+
+router.post("/nodes/:id/authorize", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid node id" }); return; }
+  try {
+    await pool.query(`UPDATE registered_nodes SET status = 'AUTHORIZED' WHERE id = $1`, [id]);
+    res.json({ ok: true, status: "AUTHORIZED" });
+  } catch { res.status(500).json({ error: "Failed" }); }
+});
+
+router.post("/nodes/:id/lock", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid node id" }); return; }
+  try {
+    await pool.query(`UPDATE registered_nodes SET status = 'LOCKED' WHERE id = $1`, [id]);
+    res.json({ ok: true, status: "LOCKED" });
+  } catch { res.status(500).json({ error: "Failed" }); }
+});
+
+router.post("/nodes/:id/revoke", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid node id" }); return; }
+  try {
+    await pool.query(`UPDATE registered_nodes SET status = 'REVOKED' WHERE id = $1`, [id]);
+    res.json({ ok: true, status: "REVOKED" });
+  } catch { res.status(500).json({ error: "Failed" }); }
+});
+
+router.post("/nodes/:id/heartbeat", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid node id" }); return; }
+  try {
+    const ip = (req.body as { ip?: string }).ip ?? req.ip ?? "unknown";
+    await pool.query(
+      `UPDATE registered_nodes SET ip_address = $1 WHERE id = $2`,
+      [ip, id],
+    );
+    res.json({ ok: true, ts: new Date().toISOString() });
+  } catch { res.status(500).json({ error: "Failed" }); }
+});
+
+// ── Distribution status ──────────────────────────────────────────────────────
+
+router.get("/distribution/status", async (_req, res) => {
+  try {
+    const [batches, nodes, deployments] = await Promise.all([
+      pool.query<{ total: string; authorized: string }>(
+        `SELECT COUNT(*) AS total,
+                SUM(CASE WHEN authorized THEN 1 ELSE 0 END) AS authorized
+         FROM sovereign_batches`
+      ),
+      pool.query<{ total: string; authorized: string; pending: string }>(
+        `SELECT COUNT(*) AS total,
+                SUM(CASE WHEN status = 'AUTHORIZED' THEN 1 ELSE 0 END) AS authorized,
+                SUM(CASE WHEN status = 'PENDING'    THEN 1 ELSE 0 END) AS pending
+         FROM registered_nodes`
+      ),
+      pool.query<{ total: string }>(
+        `SELECT COUNT(*) AS total FROM distribution_deployments`
+      ),
+    ]);
+    res.json({
+      online:      true,
+      mode:        "local",
+      version:     "5.2.0",
+      batches:     { total: parseInt(batches.rows[0]?.total ?? "0"), authorized: parseInt(batches.rows[0]?.authorized ?? "0") },
+      nodes:       { total: parseInt(nodes.rows[0]?.total ?? "0"), authorized: parseInt(nodes.rows[0]?.authorized ?? "0"), pending: parseInt(nodes.rows[0]?.pending ?? "0") },
+      deployments: parseInt(deployments.rows[0]?.total ?? "0"),
+      lastSync:    new Date().toISOString(),
+    });
+  } catch { res.json({ online: false, mode: "local", version: "5.2.0", batches: { total: 0, authorized: 0 }, nodes: { total: 0, authorized: 0, pending: 0 }, deployments: 0, lastSync: null }); }
+});
+
+// ── War Room ─────────────────────────────────────────────────────────────────
+
+router.get("/distribution/war-room", async (_req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT * FROM distribution_war_room_events
+      ORDER BY created_at DESC LIMIT 100
+    `);
+    res.json({ events: result.rows });
+  } catch { res.json({ events: [] }); }
+});
+
+router.post("/distribution/war-room/acknowledge", async (req, res) => {
+  const { eventId, ackBy } = req.body as { eventId: number; ackBy?: string };
+  if (!eventId) { res.status(400).json({ error: "eventId required" }); return; }
+  try {
+    await pool.query(
+      `UPDATE distribution_war_room_events
+       SET acknowledged = TRUE, ack_by = $1, ack_at = NOW()
+       WHERE id = $2`,
+      [ackBy ?? "sovereign", eventId],
+    );
+    res.json({ ok: true });
+  } catch { res.status(500).json({ error: "Failed" }); }
+});
+
+// Auto-seed a startup war-room event (once) so the panel isn't blank
+pool.query(`
+  INSERT INTO distribution_war_room_events (severity, category, title, description, source)
+  SELECT 'INFO','SYSTEM','Vault System Online','Sovereign Distribution Vault initialized. All systems nominal.','vault-boot'
+  WHERE NOT EXISTS (SELECT 1 FROM distribution_war_room_events LIMIT 1)
+`).catch(() => {});
+
+// ── Deployments ──────────────────────────────────────────────────────────────
+
+router.get("/distribution/deployments", async (_req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT d.*, b.manufacturer_name, b.device_type
+      FROM distribution_deployments d
+      LEFT JOIN sovereign_batches b ON b.id = d.batch_id
+      ORDER BY d.created_at DESC LIMIT 50
+    `);
+    res.json({ deployments: result.rows });
+  } catch { res.json({ deployments: [] }); }
+});
+
+const DeploySchema = z.object({
+  batchId:  z.number().int().positive().optional(),
+  target:   z.string().min(1).max(120).default("ALL"),
+  package:  z.string().min(1).max(120).default("titan-v-5.2.0"),
+  notes:    z.string().max(500).optional(),
+});
+
+router.post("/distribution/deploy", async (req, res) => {
+  const parsed = DeploySchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: parsed.error.flatten() }); return; }
+  const { batchId, target, package: pkg, notes } = parsed.data;
+  try {
+    const result = await pool.query<{ id: number }>(
+      `INSERT INTO distribution_deployments (batch_id, target, package, status, notes, started_at)
+       VALUES ($1, $2, $3, 'IN_PROGRESS', $4, NOW())
+       RETURNING id`,
+      [batchId ?? null, target, pkg, notes ?? null],
+    );
+    const deployId = result.rows[0]!.id;
+
+    // Simulate completion after 3 seconds
+    setTimeout(async () => {
+      await pool.query(
+        `UPDATE distribution_deployments SET status = 'COMPLETED', completed_at = NOW() WHERE id = $1`,
+        [deployId],
+      ).catch(() => {});
+      await pool.query(
+        `INSERT INTO distribution_war_room_events (severity, category, title, description, source)
+         VALUES ('INFO','DEPLOY','Deployment Completed','Package ${pkg} deployed to ${target}.','deploy-worker')`,
+      ).catch(() => {});
+    }, 3000);
+
+    res.status(201).json({ deploymentId: deployId, status: "IN_PROGRESS" });
+  } catch (err) {
+    logger.error({ err }, "Deploy failed");
+    res.status(500).json({ error: "Deploy failed" });
+  }
+});
+
+// ── Hardware devices ─────────────────────────────────────────────────────────
+
+router.get("/hardware/devices", async (_req, res) => {
+  try {
+    const result = await pool.query(`SELECT * FROM sovereign_hardware_devices ORDER BY created_at DESC`);
+    res.json({ devices: result.rows });
+  } catch { res.json({ devices: [] }); }
+});
+
+const HardwareDeviceSchema = z.object({
+  deviceLabel: z.string().min(1).max(200),
+  deviceType:  z.string().min(1).max(60).default("kiosk"),
+  firmware:    z.string().min(1).max(120).default("titan-v-5.2.0"),
+  ipAddress:   z.string().max(100).optional(),
+  notes:       z.string().max(500).optional(),
+});
+
+router.post("/hardware/devices", async (req, res) => {
+  const parsed = HardwareDeviceSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: parsed.error.flatten() }); return; }
+  const { deviceLabel, deviceType, firmware, ipAddress, notes } = parsed.data;
+  try {
+    const result = await pool.query<{ id: number }>(
+      `INSERT INTO sovereign_hardware_devices (device_label, device_type, firmware, ip_address, notes)
+       VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+      [deviceLabel, deviceType, firmware, ipAddress ?? null, notes ?? null],
+    );
+    res.status(201).json({ id: result.rows[0]!.id });
+  } catch (err) {
+    logger.error({ err }, "Failed to register hardware device");
+    res.status(500).json({ error: "Failed to register device" });
+  }
+});
+
+router.post("/hardware/devices/:id/refresh", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid device id" }); return; }
+  try {
+    await pool.query(
+      `UPDATE sovereign_hardware_devices SET last_seen = NOW(), signal_state = 'NOMINAL', sensor_state = 'ONLINE' WHERE id = $1`,
+      [id],
+    );
+    res.json({ ok: true, ts: new Date().toISOString() });
+  } catch { res.status(500).json({ error: "Failed" }); }
 });
 
 export default router;

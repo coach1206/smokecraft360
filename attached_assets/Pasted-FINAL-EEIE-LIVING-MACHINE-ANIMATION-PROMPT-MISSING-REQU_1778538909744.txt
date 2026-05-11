@@ -1,0 +1,451 @@
+FINAL EEIE LIVING MACHINE ANIMATION PROMPT
+
+MISSING / REQUIRED
+
+1. EEIE cards are too static.
+Impact: The interface still feels like a menu, not a living intelligence system.
+
+2. The whole EEIE experience needs live motion.
+Impact: EEIE is supposed to feel like an active machine brain, not a frozen dashboard.
+
+3. Cards need motion, feedback, and live-state behavior.
+Impact: Staff should feel that the system is awake, monitoring, thinking, and responding.
+
+4. Animations must stay premium.
+Impact: Do not make it gaming, cyberpunk, childish, or overdone. This must feel like Apple/Tesla luxury motion.
+
+5. Motion must support usability.
+Impact: Movement should guide attention, not distract the staff.
+
+FAILURE PREVENTION CHECKLIST
+
+Do not make animations loud or chaotic.
+Do not use cheap neon overload.
+Do not make the page feel like a game.
+Do not animate everything at the same speed.
+Do not use flashing effects that hurt readability.
+Do not make text harder to read.
+Do not make cards bounce like cartoons.
+Do not slow down the page.
+Do not remove accessibility support.
+Do not ignore reduced-motion settings.
+Do not leave cards static.
+Do not leave status chips dead.
+Do not leave image tiles flat.
+Do not leave event feeds frozen.
+
+MASTER PROMPT
+
+Upgrade the entire EEIE interface with a premium “living machine” animation system.
+
+The goal:
+
+EEIE should feel alive.
+
+It should feel like an intelligent hospitality operating system that is watching the venue, reading system signals, updating recommendations, tracking inventory, monitoring mood, and guiding staff in real time.
+
+This must feel like:
+
+Apple Vision Pro motion language
+Tesla vehicle control screen
+premium aerospace telemetry
+living venue intelligence machine
+high-end hospitality command system
+
+Not gaming.
+Not cyberpunk.
+Not cartoon.
+Not cheap neon.
+
+GLOBAL MOTION SYSTEM
+
+Create a shared animation system for the EEIE interface.
+
+Use CSS variables and reusable classes for:
+
+machine pulse
+soft glow
+card hover lift
+active card breathing
+image shimmer
+status chip pulse
+live data scan
+waveform movement
+radar sweep
+sensor pulse
+AI assistant breathing glow
+event feed slide-in
+button press feedback
+product card magnetic hover
+mood color wash
+haptic visual pulse
+loading shimmer
+
+Create or update:
+
+client/src/styles/eeie-motion.css
+
+Import it globally into the EEIE pages.
+
+Add motion classes:
+
+.eeie-live-card
+.eeie-machine-pulse
+.eeie-scanline
+.eeie-soft-glow
+.eeie-hover-lift
+.eeie-active-breathe
+.eeie-image-shimmer
+.eeie-status-pulse
+.eeie-radar-sweep
+.eeie-sensor-ring
+.eeie-ai-breathing
+.eeie-feed-slide
+.eeie-button-press
+.eeie-mood-wash
+.eeie-haptic-pulse
+.eeie-loading-shimmer
+
+CARD ANIMATION REQUIREMENTS
+
+Every EEIE module card must have:
+
+1. Soft idle motion
+A very subtle breathing glow around the border.
+
+2. Hover lift
+On hover or focus, the card lifts slightly and the metallic blue edge brightens.
+
+3. Active scanline
+A thin blue scanning line should pass across active cards every few seconds.
+
+4. Image shimmer
+Image preview strips should have a soft light pass across them.
+
+5. Status pulse
+Live, Active, Ready, Connected, Syncing, and Warning chips should pulse gently.
+
+6. Press feedback
+On tap/click, the card should compress slightly, glow brighter, then route.
+
+7. Data flicker
+Small status numbers should softly update or flicker like live telemetry, but not so much that it feels fake.
+
+8. Route transition
+When opening a module, fade the current hub out and slide the module in smoothly.
+
+LIVING MACHINE PAGE EFFECTS
+
+Add these global effects to the EEIE hub and EEIE pages:
+
+1. Ambient machine glow
+A subtle blue/cyan radial glow in the background that moves slowly.
+
+2. Animated top waveform
+The top rail waveform must move continuously.
+
+3. Live telemetry dots
+Small system dots should pulse at different intervals.
+
+4. Event feed motion
+New event items should slide in from the right or bottom.
+
+5. Status rail movement
+Bottom status rail should have a thin animated blue progress line.
+
+6. Mood color wash
+When mood changes, the page accent should softly shift color.
+
+7. AI assistant breathing glow
+The AI Assistant panel should gently glow as if it is thinking.
+
+8. Sensor rings
+Sensor cards should have circular pulse rings to show signal strength.
+
+9. Product wall motion
+Product cards should slightly lift, image brighten, and show a soft “ready” shimmer.
+
+10. Founder Control tension
+Founder Control cards should stay mostly still, but danger cards should have a slow serious warning pulse.
+
+SPECIFIC MODULE MOTION
+
+Staff Cockpit:
+Active table cards pulse softly based on status.
+Needs Attention table has a controlled amber pulse.
+Service Pressure state has a controlled red edge pulse.
+Selected table has a blue breathing outline.
+Send to POS button uses slide-to-send animation.
+
+Guest Experience:
+Flavor radar animates in.
+Step progress bar fills smoothly.
+Recommended product images fade in.
+Experience paused state uses a soft blue pause glow.
+
+Media Library:
+Image uploads fade into the grid.
+Pending items have soft amber status pulse.
+Approved items have green confirmation pulse.
+Broken image cards show a subtle red warning border.
+
+Product Wall:
+Product cards use magnetic hover.
+Image previews have subtle light sweep.
+Show to Guest button produces a visual pulse.
+Add to Cart produces a success ripple.
+
+Distributor Library:
+Syncing cards show rotating progress ring.
+Catalog import cards show animated progress bar.
+Mapped products get a blue connection line animation.
+Restock suggestions pulse based on urgency.
+
+Back-of-House Sync:
+Bar, kitchen, cigar inventory, and manager systems show connection pulse.
+Delayed systems show amber pulse.
+Disconnected systems show red static edge.
+
+AI Assistant:
+Assistant panel glows softly.
+New recommendations slide in.
+Confidence ring animates from 0 to score.
+“Explain recommendation” opens with smooth expansion.
+
+Mood Sensor:
+Mood ring breathes in the active mood color.
+Changing mood triggers full-panel soft color wash.
+Service Pressure creates controlled red pulse.
+Calm creates slow ice-blue pulse.
+
+Venue Heatmap:
+Active tables pulse.
+VIP zones shimmer platinum.
+High-pressure zones glow amber/red.
+Completed zones fade down.
+
+Unified Data Brain:
+Data streams animate as moving lines.
+Connected streams pulse green.
+Syncing streams show blue movement.
+Delayed streams show amber shimmer.
+Offline streams show muted red outline.
+
+MOTION TIMING RULES
+
+Use premium timing:
+
+Fast tap response:
+120ms to 180ms
+
+Card hover:
+180ms to 260ms
+
+Panel transition:
+320ms to 480ms
+
+Ambient background:
+8s to 18s
+
+Breathing glow:
+3s to 6s
+
+Radar sweep:
+4s to 8s
+
+Status pulse:
+2s to 4s
+
+Do not make all animations the same speed.
+
+ACCESSIBILITY REQUIREMENT
+
+Respect reduced motion.
+
+Add:
+
+@media (prefers-reduced-motion: reduce)
+
+When reduced motion is active:
+
+turn off ambient movement
+turn off scanlines
+turn off shimmer
+keep simple hover/focus states
+keep status changes visible without motion
+
+Do not remove usability for users who prefer reduced motion.
+
+PERFORMANCE REQUIREMENT
+
+Animations must be CSS-first.
+
+Use transform and opacity when possible.
+
+Avoid expensive layout animations.
+
+Avoid animating width/height repeatedly.
+
+Use will-change carefully only on cards that need it.
+
+Do not create heavy animation loops in JavaScript.
+
+Use requestAnimationFrame only if absolutely needed.
+
+CSS IMPLEMENTATION REQUIREMENT
+
+Add this motion foundation:
+
+:root {
+  --eeie-motion-fast: 160ms;
+  --eeie-motion-medium: 320ms;
+  --eeie-motion-slow: 520ms;
+  --eeie-breathe-speed: 4.8s;
+  --eeie-scan-speed: 5.5s;
+  --eeie-ambient-speed: 14s;
+}
+
+Create keyframes:
+
+eeieAmbientDrift
+eeieCardBreathe
+eeieScanline
+eeieStatusPulse
+eeieImageSweep
+eeieRadarSweep
+eeieSensorPulse
+eeieAiBreath
+eeieFeedSlide
+eeieSuccessRipple
+eeieWarningPulse
+eeieMoodWash
+eeieLoadingShimmer
+
+CARD CLASS REQUIREMENT
+
+Apply these classes to EEIE module cards:
+
+className="eeie-module-card eeie-live-card eeie-hover-lift eeie-machine-pulse"
+
+For cards with images:
+
+add class:
+eeie-has-images
+
+For active modules:
+
+add class:
+eeie-active-breathe
+
+For warning modules:
+
+add class:
+eeie-warning-pulse
+
+For connected modules:
+
+add class:
+eeie-connected-pulse
+
+STATUS CHIP REQUIREMENT
+
+Status chips must animate based on status.
+
+Live:
+green pulse
+
+Active:
+blue pulse
+
+Ready:
+blue soft glow
+
+Syncing:
+animated blue scan
+
+Warning:
+amber pulse
+
+Critical:
+controlled red pulse
+
+Connected:
+green shimmer
+
+Not Connected:
+muted grey, no fake live animation
+
+IMAGE TILE REQUIREMENT
+
+Image tiles must use:
+
+fade in on load
+soft hover zoom
+light sweep overlay
+fallback tile if broken
+
+Do not let image animation distort the image.
+
+EVENT FEED REQUIREMENT
+
+When a new event appears:
+
+slide in
+fade in
+briefly highlight
+then settle
+
+Do not keep it blinking forever.
+
+BUTTON MOTION REQUIREMENT
+
+Buttons must have:
+
+press scale 0.98
+soft glow on hover
+success ripple after action
+disabled state with no glow
+loading state with shimmer
+
+Critical buttons:
+require press-and-hold or confirmation modal
+use slow warning pulse
+never fire instantly without confirmation
+
+ROUTE TRANSITION REQUIREMENT
+
+When moving from hub to module:
+
+hub fades down
+module panel slides up slightly
+top rail stays stable
+bottom rail stays stable
+
+Do not create page jump.
+
+FINAL DELIVERABLE
+
+Make EEIE feel like a living machine.
+
+The final interface must include:
+
+animated module cards
+moving top waveform
+live status pulses
+image shimmer
+card scanlines
+AI assistant breathing glow
+mood color wash
+sensor pulse rings
+event feed slide-in
+product wall hover motion
+button press feedback
+success ripple
+warning pulse
+route transitions
+reduced-motion support
+performance-safe CSS animations
+
+The interface should feel alive, but still premium.
+
+It should feel like Apple and Tesla built a hospitality intelligence machine that is awake, aware, and assisting the staff in real time.

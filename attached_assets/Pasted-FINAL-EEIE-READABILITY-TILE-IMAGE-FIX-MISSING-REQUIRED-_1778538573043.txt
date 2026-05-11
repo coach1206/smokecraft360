@@ -1,0 +1,420 @@
+FINAL EEIE READABILITY + TILE IMAGE FIX
+
+MISSING / REQUIRED
+
+1. Fonts are too small across the EEIE Intelligence Hub.
+Impact: The interface is not touchscreen-friendly. Staff, managers, and venue operators should be able to read the screen while standing, moving, or using a tablet.
+
+2. Tile content is too text-heavy.
+Impact: The module cards look like static system cards instead of visual intelligence modules.
+
+3. The tiles need images.
+Impact: EEIE is supposed to be a visual hospitality intelligence engine. Staff Cockpit, Guest Experience, Media Library, Product Wall, Distributor Library, and Back-of-House Sync must show visible image previews.
+
+4. Tile actions are too small.
+Impact: “Enter” links are not strong enough. Each tile needs a large button or full-card click area.
+
+5. The hub needs stronger visual hierarchy.
+Impact: The user should immediately see what each module does without reading tiny paragraphs.
+
+FAILURE PREVENTION CHECKLIST
+
+Do not keep the current tiny font sizes.
+Do not keep text-heavy cards with no images.
+Do not use only icons as visuals.
+Do not make Enter a tiny link.
+Do not make the cards feel like placeholders.
+Do not hide images inside the next page only.
+Do not let broken images collapse the card.
+Do not use blurry low-quality image tiles.
+Do not remove the Apple/Tesla/Sovereign blue command style.
+Do not make the page brown/gold again.
+Do not make it flat white.
+Do not make it dark cyberpunk.
+Do not create dead image upload buttons.
+Do not leave any card without a real route.
+
+MASTER PROMPT
+
+Update the EEIE Intelligence Hub for touchscreen readability and visual image-based module cards.
+
+The current interface has the right blue Sovereign direction, but the fonts are too small and the cards do not show enough visuals.
+
+This must be fixed across the entire EEIE hub.
+
+READABILITY REQUIREMENTS
+
+Increase font sizes globally for this page:
+
+Top rail title:
+28px minimum
+
+Hero title:
+34px minimum
+
+Hero description:
+18px minimum
+
+Tile title:
+24px minimum
+
+Tile description:
+16px to 18px minimum
+
+Tile status chips:
+13px minimum
+
+Button text:
+16px minimum
+
+Small metadata:
+14px minimum
+
+Do not use tiny letter-spaced text for main readable content.
+
+Letter spacing is okay for labels, but not for body copy.
+
+TILE SIZE REQUIREMENTS
+
+Increase card size.
+
+Each module tile must be at least:
+
+minimum height: 280px
+minimum padding: 28px
+border radius: 28px
+button height: 56px minimum
+
+Cards must feel like premium touchscreen panels, not small desktop widgets.
+
+IMAGE REQUIREMENTS
+
+Every major tile must include visible image content.
+
+Staff Cockpit tile:
+Show a mini staff session visual with:
+guest profile image or avatar
+cigar image
+drink image
+table status preview
+
+Guest Experience tile:
+Show a guest-facing preview with:
+flavor radar mini visual
+cigar image
+drink image
+food image
+
+Media Library tile:
+Show three image thumbnails:
+cigar
+liquor bottle
+food plate
+
+Product Wall tile:
+Show four image thumbnails:
+featured cigar
+featured whiskey/bourbon
+cocktail
+food or bundle
+
+Distributor Library tile:
+Show distributor catalog product previews:
+cigar box image
+liquor bottle image
+catalog card preview
+
+Back-of-House Sync tile:
+Show three image thumbnails:
+bar
+kitchen/food
+cigar inventory
+
+AI Assistant tile:
+Show AI commentary preview panel:
+assistant orb/icon
+recommendation text
+confidence ring
+
+Mood Sensor tile:
+Show mood color ring:
+current venue mood
+service pressure color
+ambient signal
+
+Venue Heatmap tile:
+Show mini venue floor map:
+active tables
+service pressure zones
+VIP marker
+
+Unified Data Brain tile:
+Show connected stream visual:
+POS adapter
+inventory
+media
+distributor
+bar
+kitchen
+sensor layer
+
+IMAGE FALLBACK REQUIREMENT
+
+If real uploaded images do not exist yet, seed demo image data in the frontend.
+
+Use safe demo image URLs for:
+cigar
+liquor bottle
+cocktail
+food plate
+dessert
+bundle
+bar
+kitchen
+venue floor
+cigar box
+
+If any image fails to load:
+show a premium fallback tile with:
+category label
+“Image Needed”
+Upload Image button
+
+Do not leave the image area blank.
+
+REUSABLE COMPONENTS REQUIRED
+
+Create or update these components:
+
+EEIEModuleCard
+EEIEImagePreviewStrip
+EEIEProductThumbnail
+EEIEMiniRadar
+EEIEStatusChip
+EEIEEnterButton
+EEIEFallbackImageTile
+
+EEIEModuleCard props:
+
+title
+description
+status
+route
+icon
+images
+previewType
+onOpen
+
+EEIEImagePreviewStrip props:
+
+images
+maxVisible
+fallbackLabel
+onImageClick
+
+EEIEFallbackImageTile props:
+
+label
+category
+onUpload
+
+CARD LAYOUT REQUIREMENT
+
+Each tile should follow this structure:
+
+Top:
+icon
+status chip
+
+Middle:
+large module title
+short readable description
+
+Visual area:
+image strip, mini graph, mini preview, or mood ring
+
+Bottom:
+large “Open Module” button
+route status
+last updated / mode label
+
+Do not use tiny “Enter” text links anymore.
+
+Replace “Enter” with a large button:
+
+Open Module
+
+or module-specific wording:
+
+Open Staff Cockpit
+Open Media Library
+Open Product Wall
+Open Distributor Library
+Open Back-of-House Sync
+
+FULL-CARD CLICK REQUIREMENT
+
+Each card must be clickable.
+
+Add:
+
+onClick
+onKeyDown for Enter and Space
+role="button"
+tabIndex={0}
+
+Clicking the card should navigate to the route.
+
+The button should also navigate to the same route.
+
+Required function:
+
+openEEIEModule(route, moduleName)
+
+Function behavior:
+
+log event eeie_module_opened
+navigate to route
+preserve session
+show loading if needed
+
+STYLE REQUIREMENTS
+
+Update the CSS for EEIE hub:
+
+.eeie-module-card {
+  min-height: 280px;
+  padding: 28px;
+  border-radius: 28px;
+}
+
+.eeie-module-card h3 {
+  font-size: 24px;
+  line-height: 1.15;
+}
+
+.eeie-module-card p {
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.eeie-module-button {
+  min-height: 56px;
+  font-size: 16px;
+  border-radius: 18px;
+}
+
+.eeie-image-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.eeie-image-strip img {
+  width: 100%;
+  height: 86px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+For larger cards, use:
+
+.eeie-image-strip.large img {
+  height: 118px;
+}
+
+Do not keep the current tiny text sizing.
+
+HUB HERO REQUIREMENT
+
+The main hero card should also be more readable.
+
+Hero title:
+EEIE Intelligence Hub
+
+Hero subtitle:
+Full intelligence dashboard: venue health, sensory layers, commerce health, AI predictions, event bus, staff cockpit, guest experience, media library, distributor sync, and back-of-house operations.
+
+Hero must include:
+large blue icon
+live chip
+animated blue waveform
+large action button:
+Open Command Center
+
+Hero description must be readable without zooming.
+
+VISUAL PREVIEW DATA
+
+Seed these demo visuals if real media is empty:
+
+const demoVisuals = {
+  cigarImage: "safe cigar product image URL",
+  cigarBoxImage: "safe cigar box image URL",
+  liquorImage: "safe whiskey or bourbon bottle image URL",
+  cocktailImage: "safe cocktail image URL",
+  foodImage: "safe plated food image URL",
+  dessertImage: "safe dessert image URL",
+  bundleImage: "safe premium pairing image URL",
+  barImage: "safe bar image URL",
+  kitchenImage: "safe kitchen/chef/plate image URL",
+  venueMapImage: "safe venue/lounge image URL"
+}
+
+Label seeded visuals as:
+
+Demo Visuals
+
+Do not pretend they are uploaded venue assets.
+
+MEDIA CONNECTION REQUIREMENT
+
+Try to load uploaded media first:
+
+GET /api/eeie/media
+GET /api/eeie/product-wall
+GET /api/eeie/featured-products
+
+If empty:
+use demo visuals
+
+If error:
+show fallback visuals and error chip:
+Media API not connected
+
+EVENT BUS LOGGING
+
+Log:
+
+eeie_hub_loaded
+eeie_module_card_clicked
+eeie_module_opened
+eeie_images_loaded
+eeie_demo_images_loaded
+eeie_image_failed
+eeie_fallback_image_rendered
+eeie_media_api_failed
+
+FINAL DELIVERABLE
+
+Make the EEIE Intelligence Hub readable and visual.
+
+The final page must have:
+
+large readable fonts
+larger touchscreen cards
+visible images on module tiles
+real card click routing
+large Open Module buttons
+image fallback behavior
+demo visuals when no uploads exist
+media API loading
+event logging
+Apple/Tesla/Sovereign blue luxury styling
+
+The user should not have to zoom in.
+
+The cards should not look like placeholders.
+
+The page should immediately show that EEIE is a visual intelligence system, not a text menu.
