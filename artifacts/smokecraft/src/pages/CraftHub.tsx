@@ -984,6 +984,27 @@ function CraftHubInner() {
         >
           <AudioWaveToggle />
           <button
+            onClick={() => navigate("/gate")}
+            style={{
+              background: "rgba(212,175,55,0.08)",
+              border: "1px solid rgba(212,175,55,0.55)",
+              borderRadius: 8,
+              cursor: "pointer",
+              fontSize: 11,
+              fontWeight: 700,
+              color: "#D4AF37",
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              padding: "8px 18px",
+              fontFamily: "inherit",
+              minHeight: 36,
+              whiteSpace: "nowrap",
+              boxShadow: "0 0 12px rgba(212,175,55,0.15)",
+            }}
+          >
+            ⬡ Sovereign Gate
+          </button>
+          <button
             onClick={() => navigate("/operations")}
             style={{
               background: "rgba(212,139,0,0.12)",
