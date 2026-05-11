@@ -64,6 +64,7 @@ const ExperiencePage        = lazy(() => import('@/pages/ExperiencePage'));
 const ExperienceOverview    = lazy(() => import('@/pages/ExperienceOverview'));
 const SynchronizationChamber = lazy(() => import('@/pages/SynchronizationChamber'));
 const RevealPage            = lazy(() => import('@/pages/RevealPage'));
+const LegacyHandoff         = lazy(() => import('@/pages/LegacyHandoff'));
 const FounderControlCenter  = lazy(() => import('@/pages/FounderControlCenter'));
 const FinanceReconciliation = lazy(() => import('@/pages/FinanceReconciliation'));
 const AxiomReceipt          = lazy(() => import('@/pages/AxiomReceipt'));
@@ -838,6 +839,9 @@ export default function App() {
           </Route>
           <Route path="/reveal/:type">
             <SubPageProviders><RevealPage /></SubPageProviders>
+          </Route>
+          <Route path="/legacy-handoff/:sessionId/:craftType">
+            <SubPageProviders><LegacyHandoff /></SubPageProviders>
           </Route>
           <Route path="/enrollment">
             <SubPageProviders><Entry /></SubPageProviders>

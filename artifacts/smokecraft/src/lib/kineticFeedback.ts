@@ -104,3 +104,44 @@ export function edgeHaptic(x: number): void {
     navigator.vibrate([intensity]);
   } catch { /* ignore */ }
 }
+
+// ── Mentor alignment scoring — Golden Box threshold ───────────────────────────
+
+const MENTOR_PHILOSOPHY: Record<string, string[]> = {
+  bold:     ["bold", "spicy", "heavy", "robust", "earthy", "peat", "smoky", "complex", "rich", "dark"],
+  smooth:   ["smooth", "creamy", "mild", "delicate", "light", "sweet", "floral", "vanilla", "soft", "gentle"],
+  aromatic: ["aromatic", "cedar", "vanilla", "caramel", "floral", "earthy", "nutty", "woody", "spiced", "oaky"],
+  balanced: ["smooth", "complex", "warm", "rich", "oaky", "cedar", "aromatic", "medium", "balanced", "harmonious"],
+};
+
+/**
+ * assessMentorAlignment — 0–100 score: how closely the guest's swipe tag
+ * history aligns with the mentor's primary philosophy.
+ * Golden Box fires at >= 85.
+ */
+export function assessMentorAlignment(addedTags: string[], mentorStyle: string): number {
+  const philosophy = MENTOR_PHILOSOPHY[mentorStyle.toLowerCase()] ?? MENTOR_PHILOSOPHY.balanced;
+  const lower      = addedTags.map(t => t.toLowerCase());
+  if (lower.length === 0) return 0;
+  const matches = lower.filter(t => philosophy.includes(t)).length;
+  return Math.min(100, Math.round((matches / Math.min(lower.length, 10)) * 100));
+}
+
+/**
+ * dispatchGoldenReward — fires ENV_GOLDEN_REWARD to the SSE bridge.
+ * Physical room: white light flash + audio silence.
+ * In-process: efe:golden_reward CustomEvent for any listener.
+ */
+export function dispatchGoldenReward(): void {
+  try {
+    window.dispatchEvent(new CustomEvent("efe:golden_reward", {
+      detail: { event: "ENV_GOLDEN_REWARD", lighting: "white_flash", audio: "silence", timestamp: Date.now() },
+    }));
+  } catch { /* ignore */ }
+  const token = (() => { try { return localStorage.getItem("auth_token"); } catch { return null; } })();
+  fetch(`${BASE}/api/telemetry/ritual-event`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body:    JSON.stringify({ event: "ENV_GOLDEN_REWARD", lighting: "white_flash", audio: "silence" }),
+  }).catch(() => {});
+}

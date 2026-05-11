@@ -2,7 +2,7 @@
  * ExperienceFlowEngine — SmokeCraftFlow · The Global Bridge
  * Titan V · 360 Enterprises Services LLC · Johnie Manuel Lee Collins
  *
- * 8-step cinematic guest ritual. Single locked-step formation for UI,
+ * 9-step cinematic guest ritual. Single locked-step formation for UI,
  * Audio, and SSE Environmental streams.
  *
  *   Step 1  CRAFTHUB_SELECTION   /craft-hub
@@ -13,8 +13,10 @@
  *   Step 6  IDENTITY_ENROLLMENT  /experience/:type
  *   Step 7  SYNCHRONIZATION      /synchronization/:type
  *   Step 8  SWIPE_RITUAL         /experience/:type
+ *   Step 9  LEGACY_HANDOFF       /legacy-handoff/:sessionId/:craftType
  *
- * PhantomHUD is suppressed during Steps 1–7. It only activates in SWIPE_RITUAL.
+ * PhantomHUD suppressed Steps 1–7 and 9. Activates in SWIPE_RITUAL only.
+ * LEGACY_HANDOFF is LOCKDOWN mode — all swipe gestures disabled.
  */
 
 // ── Step sequence ──────────────────────────────────────────────────────────────
@@ -27,7 +29,8 @@ export type EFEStep =
   | "MENTOR_REVEAL"
   | "IDENTITY_ENROLLMENT"
   | "SYNCHRONIZATION"
-  | "SWIPE_RITUAL";
+  | "SWIPE_RITUAL"
+  | "LEGACY_HANDOFF";
 
 export const EFE_SEQUENCE: EFEStep[] = [
   "CRAFTHUB_SELECTION",
@@ -38,6 +41,7 @@ export const EFE_SEQUENCE: EFEStep[] = [
   "IDENTITY_ENROLLMENT",
   "SYNCHRONIZATION",
   "SWIPE_RITUAL",
+  "LEGACY_HANDOFF",
 ];
 
 // PhantomHUD only activates at this step and beyond
@@ -66,13 +70,14 @@ const ENV_MAP: Partial<Record<EFEStep, EnvPayload>> = {
   MENTOR_REVEAL:       { smoke: 0.5, lighting: "amber_pulse",  audio: "mentor_hum"    },
   IDENTITY_ENROLLMENT: { smoke: 0.3, lighting: "warm_static",  audio: "meditative"    },
   SYNCHRONIZATION:     { smoke: 1.0, lighting: "strobe_slow",  audio: "whisper_layer" },
-  SWIPE_RITUAL:        { smoke: 0.6, lighting: "ember_steady", audio: "ritual_pulse", mode: "KINETIC_FEEDBACK", atmosphereTension: 0.8 },
+  SWIPE_RITUAL:        { smoke: 0.6, lighting: "ember_steady", audio: "ritual_pulse",    mode: "KINETIC_FEEDBACK", atmosphereTension: 0.8  },
+  LEGACY_HANDOFF:      { smoke: 1.0, lighting: "white_peak",   audio: "silence_break",   mode: "LOCKDOWN",         atmosphereTension: 1.0  },
 };
 
 // ── Route map ─────────────────────────────────────────────────────────────────
 
 const ROUTES: Record<EFEStep, (craft?: string) => string> = {
-  CRAFTHUB_SELECTION:  ()           => "/craft-hub",
+  CRAFTHUB_SELECTION:  ()            => "/craft-hub",
   CINEMATIC_INTRO:     (c = "smoke") => `/experience/${c}`,
   EXPERIENCE_OVERVIEW: (c = "smoke") => `/experience-overview/${c}`,
   CHALLENGE_SELECTION: (c = "smoke") => `/experience/${c}`,
@@ -80,6 +85,9 @@ const ROUTES: Record<EFEStep, (craft?: string) => string> = {
   IDENTITY_ENROLLMENT: (c = "smoke") => `/experience/${c}`,
   SYNCHRONIZATION:     (c = "smoke") => `/synchronization/${c}`,
   SWIPE_RITUAL:        (c = "smoke") => `/experience/${c}`,
+  // LEGACY_HANDOFF route includes sessionId — built externally by handleFinish.
+  // This stub is present to satisfy the Record type.
+  LEGACY_HANDOFF:      (c = "smoke") => `/legacy-handoff/unknown/${c}`,
 };
 
 // ── Persistent state — sessionStorage ────────────────────────────────────────
@@ -226,6 +234,18 @@ export const ExperienceFlowEngine = {
     syncEnvironment("SWIPE_RITUAL");
     triggerHaptics();
     return ROUTES["SWIPE_RITUAL"](s.craftType);
+  },
+
+  /**
+   * Mark SWIPE_RITUAL complete — advances to LEGACY_HANDOFF (Step 9).
+   * Route is NOT returned here because it includes sessionId — ExperiencePage
+   * builds the URL as `/legacy-handoff/:sessionId/:craftType` directly.
+   */
+  completeLegacy(): void {
+    const s = load();
+    save({ ...s, currentStep: "LEGACY_HANDOFF" });
+    syncEnvironment("LEGACY_HANDOFF");
+    triggerHaptics();
   },
 
   reset(): void {

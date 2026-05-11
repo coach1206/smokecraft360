@@ -1274,14 +1274,22 @@ export default function ExperiencePage() {
   async function handleFinish() {
     if (!sessionId) { navigate("/"); return; }
     apiPost(`/api/swipe-experience/session/${sessionId}/complete`, {}).catch(() => {});
+    // Write full sensory profile — consumed by LegacyHandoff (Step 9)
     try {
-      sessionStorage.setItem("nb_session", JSON.stringify({
+      sessionStorage.setItem("nb_handoff", JSON.stringify({
+        sessionId,
+        craftType:      type,
         sessionScore,
-        topTags: addedTags.slice(0, 8),
+        addedTags:      addedTags.slice(0, 20),
+        mentorId:       mentor?.id      ?? null,
+        mentorStyle:    mentor?.style   ?? "balanced",
+        guestFirstName: guestProfile?.firstName ?? null,
+        masteryTier:    guestProfile?.masteryTier ?? "explorer",
       }));
     } catch { /* sessionStorage unavailable */ }
-    envCtx?.onRevealStart();
-    navigate(`/reveal/${sessionId}`);
+    // Advance EFE to LEGACY_HANDOFF, then navigate
+    ExperienceFlowEngine.completeLegacy();
+    navigate(`/legacy-handoff/${sessionId}/${type}`);
   }
 
   // ── Render: Entry chamber sits above everything, hides until dismissed ───────

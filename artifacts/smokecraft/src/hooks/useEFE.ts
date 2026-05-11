@@ -12,13 +12,15 @@ export interface EFEHook {
   craftType:        string;
   isRitualUnlocked: boolean;
   isHudAllowed:     boolean;
+  isLockdown:       boolean;
   advance:          () => void;
   back:             () => void;
   startCraft:       (craftType: string) => void;
   goTo:             (step: EFEStep) => void;
   enterChallenge:   () => void;
-  enterSynchronization: () => void;
+  enterSynchronization:    () => void;
   completeSynchronization: () => void;
+  completeLegacyHandoff:   () => void;
 }
 
 export function useEFE(): EFEHook {
@@ -67,11 +69,19 @@ export function useEFE(): EFEHook {
     navigate(route);
   }, [navigate]);
 
+  // completeLegacyHandoff — navigation is handled by ExperiencePage
+  // (route includes sessionId which EFE does not own)
+  const completeLegacyHandoff = useCallback(() => {
+    ExperienceFlowEngine.completeLegacy();
+    setStep("LEGACY_HANDOFF");
+  }, []);
+
   return {
     step,
-    craftType:            ExperienceFlowEngine.craftType,
-    isRitualUnlocked:     ExperienceFlowEngine.isRitualUnlocked(),
-    isHudAllowed:         ExperienceFlowEngine.isHudAllowed(),
+    craftType:               ExperienceFlowEngine.craftType,
+    isRitualUnlocked:        ExperienceFlowEngine.isRitualUnlocked(),
+    isHudAllowed:            ExperienceFlowEngine.isHudAllowed(),
+    isLockdown:              ExperienceFlowEngine.currentStep === "LEGACY_HANDOFF",
     advance,
     back,
     startCraft,
@@ -79,5 +89,6 @@ export function useEFE(): EFEHook {
     enterChallenge,
     enterSynchronization,
     completeSynchronization,
+    completeLegacyHandoff,
   };
 }
