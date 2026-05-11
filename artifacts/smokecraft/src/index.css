@@ -8,8 +8,10 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-body, html, #root { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background: #000; cursor: none; touch-action: none; }
+body, html, #root { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden !important; background: #000; cursor: none !important; touch-action: none !important; }
 nav, footer.site-footer, .static-header, .living-room, .grid-legacy { display: none !important; }
+::-webkit-scrollbar { display: none !important; }
+* { scrollbar-width: none; }
 
 /* ── Film grain overlay — covers entire UI at all times ── */
 body::after {

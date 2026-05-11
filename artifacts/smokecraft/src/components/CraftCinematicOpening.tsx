@@ -385,7 +385,7 @@ const OPENING_CONFIG = {
     accent:  "#d4af37",
     cta:     "ENTER THE LOUNGE",
     lines: [
-      "Every great pour begins with intention.",
+      "Every pour carries a story.",
       "PourCraft is not simply drinking.",
       "It is the art of the pour.",
       "Time.   Patience.   Complexity.   Memory.",

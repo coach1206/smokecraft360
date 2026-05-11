@@ -55,12 +55,10 @@ export default function RitualGate({ craftType, theme, onChamberBegin, onBack }:
   useEffect(() => {
     if (phase !== "BLACKOUT") return;
 
-    // Pour-specific audio ritual triggers (silent fail if files absent)
-    if (craftType === "pour") {
-      ["/audio/ice_crack_resonance.mp3", "/audio/liquid_swirl_01.mp3"].forEach(src => {
-        try { const a = new Audio(src); a.volume = 0.5; a.play().catch(() => {}); } catch { /* no audio */ }
-      });
-    }
+    // BLACKOUT audio ritual — ice crack + liquid swirl for all crafts
+    ["/audio/ice_crack_resonance.mp3", "/audio/liquid_swirl_01.mp3"].forEach(src => {
+      try { const a = new Audio(src); a.volume = 0.42; a.play().catch(() => {}); } catch { /* no audio */ }
+    });
 
     // telemetry_status → ARMED after 3 s; advance to CHAMBER
     const t = setTimeout(() => setPhase("CHAMBER"), 3000);

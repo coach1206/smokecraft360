@@ -13,7 +13,7 @@
  * TitanCraftDeck.tsx is NEVER touched — this file is a standalone sibling.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { useUnifiedCognitive } from "@/contexts/UnifiedCognitiveContext";
@@ -139,22 +139,115 @@ const CB_KEYFRAMES = `
   @keyframes cb-rise-3 { 0% { transform:translateY(0) scale(0.85); opacity:.55; } 100% { transform:translateY(-100vh) scale(1.3); opacity:0; } }
 `;
 
-/* ── Craft-aware cinematic background with 1.5s cross-fade ──────────────── */
-function CinematicBackground({ craftId }: { craftId: string }) {
-  const [videoLoaded, setVideoLoaded] = useState(false);
-  const cfg      = ATMOSPHERE[craftId] ?? ATMOSPHERE.smoke;
-  const videoKey = `${cfg.video}::${craftId}`;
+/* ── Real-time Liquid / Amber Pulse Canvas ───────────────────────────────── */
+const AMBER_PALETTE: [number, number, number][] = [
+  [200, 134,  10],   // amber
+  [212, 175,  55],   // gold
+  [180, 100,   5],   // dark amber
+  [160,  80,   0],   // deep amber
+  [228, 155,  30],   // bright amber
+  [255, 180,  40],   // light gold
+];
 
-  // Reset loaded flag whenever the target video changes
-  useEffect(() => { setVideoLoaded(false); }, [videoKey]);
+interface AmbOrb {
+  x: number; y: number; r: number;
+  vx: number; vy: number;
+  baseOp: number; phase: number; speed: number;
+  ci: number;
+}
+
+function LiquidAmberCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const resize = () => {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const orbs: AmbOrb[] = Array.from({ length: 30 }, () => ({
+      x:      Math.random() * window.innerWidth,
+      y:      Math.random() * window.innerHeight,
+      r:      35 + Math.random() * 95,
+      vx:     (Math.random() - 0.5) * 0.28,
+      vy:     (Math.random() - 0.5) * 0.20,
+      baseOp: 0.05 + Math.random() * 0.12,
+      phase:  Math.random() * Math.PI * 2,
+      speed:  0.0035 + Math.random() * 0.0065,
+      ci:     Math.floor(Math.random() * AMBER_PALETTE.length),
+    }));
+
+    let raf: number;
+    let tick = 0;
+
+    const draw = () => {
+      tick++;
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      // Base: near-black obsidian
+      ctx.fillStyle = "#030201";
+      ctx.fillRect(0, 0, W, H);
+
+      for (const o of orbs) {
+        const op  = o.baseOp * (0.5 + 0.5 * Math.sin(tick * o.speed + o.phase));
+        const [r, g, b] = AMBER_PALETTE[o.ci];
+        const grd = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
+        grd.addColorStop(0,   `rgba(${r},${g},${b},${op.toFixed(3)})`);
+        grd.addColorStop(0.45,`rgba(${r},${g},${b},${(op * 0.35).toFixed(3)})`);
+        grd.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+        ctx.beginPath();
+        ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+        ctx.fillStyle = grd;
+        ctx.fill();
+
+        o.x += o.vx;
+        o.y += o.vy;
+        if (o.x < -o.r)  o.x = W + o.r;
+        if (o.x > W + o.r) o.x = -o.r;
+        if (o.y < -o.r)  o.y = H + o.r;
+        if (o.y > H + o.r) o.y = -o.r;
+      }
+
+      raf = requestAnimationFrame(draw);
+    };
+
+    draw();
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
 
   return (
-    <>
-      {/* Inject keyframes once */}
-      <style>{CB_KEYFRAMES}</style>
+    <canvas
+      ref={canvasRef}
+      style={{
+        position:      "fixed",
+        inset:         0,
+        width:         "100vw",
+        height:        "100vh",
+        zIndex:        0,
+        pointerEvents: "none",
+      }}
+    />
+  );
+}
 
-      {/* ── Blob layer — craft-specific, morphs with 1.5s AnimatePresence ── */}
-      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
+/* ── Craft-specific blob layer (CSS-only, no video assets) ───────────────── */
+function CraftBlobLayer({ craftId }: { craftId: string }) {
+  const cfg = ATMOSPHERE[craftId] ?? ATMOSPHERE.smoke;
+  return (
+    <>
+      <style>{CB_KEYFRAMES}</style>
+      <div style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none", overflow: "hidden" }}>
         <AnimatePresence mode="sync">
           <motion.div
             key={`blobs-${craftId}`}
@@ -186,36 +279,6 @@ function CinematicBackground({ craftId }: { craftId: string }) {
           </motion.div>
         </AnimatePresence>
       </div>
-
-      {/* ── Video layer — cross-fades on craft switch ── */}
-      <AnimatePresence mode="sync">
-        <motion.video
-          key={videoKey}
-          autoPlay
-          muted
-          loop
-          playsInline
-          initial={{ opacity: 0 }}
-          animate={{ opacity: videoLoaded ? 0.70 : 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: "easeInOut" }}
-          onCanPlay={() => setVideoLoaded(true)}
-          onError={() => setVideoLoaded(false)}
-          style={{
-            position:      "fixed",
-            top:           0,
-            left:          0,
-            width:         "100vw",
-            height:        "100vh",
-            objectFit:     "cover",
-            zIndex:        0,
-            filter:        cfg.filter,
-            pointerEvents: "none",
-          }}
-        >
-          <source src={cfg.video} type="video/mp4" />
-        </motion.video>
-      </AnimatePresence>
     </>
   );
 }
@@ -652,8 +715,9 @@ export default function LivingPortal() {
       color:           "#fff",
       fontFamily:      "monospace",
     }}>
-      {/* Cinematic lounge atmosphere — craft-aware .mp4 + blobs */}
-      <CinematicBackground craftId={activeAtmosphere} />
+      {/* Real-time liquid amber pulse canvas + craft-aware blob layer */}
+      <LiquidAmberCanvas />
+      <CraftBlobLayer craftId={activeAtmosphere} />
 
       {/* ── 4 vertical blade portals ── */}
       <div style={{

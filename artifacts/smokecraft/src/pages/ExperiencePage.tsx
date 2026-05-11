@@ -13,7 +13,7 @@ import { useEffect, useState, useRef } from "react";
 import { useLocation, useParams } from "wouter";
 import {
   motion, AnimatePresence,
-  useMotionValue, useTransform, useMotionValueEvent, animate,
+  useMotionValue, useTransform, useMotionValueEvent, animate, useSpring,
   type MotionValue,
 } from "framer-motion";
 import { ArrowLeft, Sparkles, Check, X, Volume2, VolumeX } from "lucide-react";
@@ -357,8 +357,10 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft, 
   // Always resolve a real image via the flavor mapping engine
   const resolvedImage = getFlavorThemedAsset(item);
 
-  const x       = useMotionValue(isTop ? 280 : 0);
-  const rotate  = useTransform(x, [-300, 300], [-16, 16]);
+  const x          = useMotionValue(isTop ? 280 : 0);
+  // Viscosity lag — spring follows raw rotate so cards drag like through whiskey
+  const rotateRaw  = useTransform(x, [-300, 300], [-16, 16]);
+  const rotate     = useSpring(rotateRaw, { stiffness: 110, damping: 20, mass: 1.6 });
   const addOp   = useTransform(x, [30, 110], [0, 1]);
   const skipOp  = useTransform(x, [-110, -30], [1, 0]);
 
@@ -451,7 +453,8 @@ function SwipeCard({ item, theme, isTop, stackIndex, onSwipeRight, onSwipeLeft, 
     <motion.div
       drag={isTop ? "x" : false}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      dragElastic={theme.type === "pour" ? 1.35 : 0.65}
+      dragElastic={0.78}
+      dragMomentum={false}
       onDragEnd={onDragEnd}
       style={{
         x:        isTop ? x : 0,
