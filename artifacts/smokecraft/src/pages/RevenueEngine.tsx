@@ -36,17 +36,17 @@ import {
 // ── Design tokens ──────────────────────────────────────────────────────────────
 
 const C = {
-  bg:        "#06040200",
-  glass:     "rgba(26,26,27,0.04)",
-  glassMid:  "rgba(26,26,27,0.06)",
-  border:    "rgba(26,26,27,0.09)",
-  borderMid: "rgba(26,26,27,0.13)",
-  gold:      "#D48B00",
-  goldDim:   "rgba(212,139,0,0.50)",
-  goldGlow:  "rgba(212,139,0,0.10)",
-  text:      "#1A1A1B",
-  muted:     "rgba(240,232,212,0.48)",
-  dim:       "rgba(240,232,212,0.26)",
+  bg:        "#050A14",               // deep navy (was transparent cream)
+  glass:     "rgba(6,12,28,0.96)",    // dark surface (was light glass)
+  glassMid:  "rgba(8,18,40,0.96)",    // deeper surface (was light glass mid)
+  border:    "rgba(0,128,255,0.14)",  // metallic blue border (was dark cream border)
+  borderMid: "rgba(0,128,255,0.28)",  // stronger blue border (was mid border)
+  gold:      "#0080FF",               // metallic blue (was warm amber)
+  goldDim:   "rgba(0,128,255,0.50)",  // dimmed blue (was dim amber)
+  goldGlow:  "rgba(0,128,255,0.10)",  // blue glow (was gold glow)
+  text:      "#D8EEFF",               // platinum white (was near-black)
+  muted:     "rgba(180,210,250,0.50)",// muted blue-white (was warm cream opacity)
+  dim:       "rgba(140,175,220,0.28)",// dim blue-white (was dim cream opacity)
 };
 
 // ── Ambient particles ──────────────────────────────────────────────────────────
@@ -186,10 +186,10 @@ function ModuleCard({ accent, image, label, sublabel, statusNode, children, dela
         borderRadius:   22,
         overflow:       "hidden",
         border:         `1px solid ${C.border}`,
-        background:     "rgba(245,242,237,0.82)",
+        background:     "rgba(6,12,28,0.97)",
         backdropFilter: "blur(18px)",
         WebkitBackdropFilter: "blur(18px)",
-        boxShadow:      `0 16px 56px rgba(26,26,27,0.26), 0 0 0 1px ${accent}10 inset`,
+        boxShadow:      `0 16px 56px rgba(0,0,0,0.50), 0 0 0 1px ${accent}10 inset`,
         gridColumn:     span2 ? "span 2" : undefined,
       }}
     >
@@ -206,8 +206,8 @@ function ModuleCard({ accent, image, label, sublabel, statusNode, children, dela
         }} />
         <div style={{
           position: "absolute", inset: 0,
-          background: `linear-gradient(180deg, transparent 0%, rgba(245,242,237,0.92) 100%),
-                       linear-gradient(135deg, ${accent}12 0%, transparent 60%)`,
+          background: `linear-gradient(180deg, transparent 0%, rgba(5,10,20,0.92) 100%),
+                       linear-gradient(135deg, ${accent}18 0%, transparent 60%)`,
         }} />
         {/* OLED glow edge */}
         <div style={{
@@ -1259,7 +1259,7 @@ export default function RevenueEngine() {
     <div style={{
       position:   "relative",
       minHeight:  "100dvh",
-      background: "#F5F2ED",
+      background: C.bg,
       display:    "flex",
       flexDirection: "column",
       overflow:   "hidden",
@@ -1279,8 +1279,8 @@ export default function RevenueEngine() {
         <div style={{
           position: "absolute", inset: 0,
           background:
-            "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212,139,0,0.06) 0%, transparent 70%)," +
-            "linear-gradient(180deg, rgba(6,4,10,0.0) 0%, rgba(6,4,10,0.85) 100%)",
+            "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0,128,255,0.09) 0%, transparent 70%)," +
+            "linear-gradient(180deg, rgba(5,10,20,0.0) 0%, rgba(5,10,20,0.92) 100%)",
         }} />
         {/* OLED edge glows */}
         <div style={{
@@ -1297,7 +1297,7 @@ export default function RevenueEngine() {
         justifyContent: "space-between",
         padding:        "12px 20px",
         borderBottom:   `1px solid ${C.border}`,
-        background:     "rgba(6,4,10,0.85)",
+        background:     "rgba(5,10,20,0.97)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
         flexShrink:     0,
@@ -1310,10 +1310,10 @@ export default function RevenueEngine() {
             style={{
               display:        "flex", alignItems: "center", justifyContent: "center",
               width:          44, height: 44, borderRadius: 12,
-              background:     "rgba(26,26,27,0.06)",
+              background:     "rgba(0,128,255,0.07)",
               border:         `1px solid ${C.border}`,
               color:          C.muted, cursor: "pointer",
-              boxShadow:      "0 2px 10px rgba(26,26,27,0.08)",
+              boxShadow:      "0 2px 10px rgba(0,0,0,0.20)",
             }}
           >
             <ArrowLeft size={19} />
@@ -1338,7 +1338,7 @@ export default function RevenueEngine() {
         <div style={{
           display:    "flex", alignItems: "center", gap: 16,
           padding:    "10px 18px", borderRadius: 14,
-          background: "rgba(212,139,0,0.07)",
+          background: "rgba(0,128,255,0.07)",
           border:     `1px solid ${C.gold}22`,
           boxShadow:  `0 4px 20px ${C.gold}0c, inset 0 1px 0 ${C.gold}14`,
         }}>
@@ -1399,7 +1399,7 @@ export default function RevenueEngine() {
         alignItems:     "center",
         fontSize:       9, color: C.dim,
         textTransform:  "uppercase", letterSpacing: "0.16em",
-        background:     "rgba(6,4,10,0.80)",
+        background:     "rgba(5,10,20,0.97)",
         backdropFilter: "blur(14px)",
         flexShrink:     0,
       }}>

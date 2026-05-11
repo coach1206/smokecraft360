@@ -18,14 +18,14 @@ import AmbassadorWatermark from "@/components/AmbassadorWatermark";
 export const AMBASSADOR_SESSION_KEY = "AMBASSADOR_SESSION";
 
 const C = {
-  bg:     "#050505",
-  surface:"rgba(18,15,12,0.98)",
-  gold:   "#D4AF37",
-  amber:  "#B89030",
-  ink:    "#F5F2ED",
-  muted:  "rgba(245,242,237,0.45)",
-  dim:    "rgba(245,242,237,0.22)",
-  border: "rgba(212,175,55,0.20)",
+  bg:     "#050A14",
+  surface:"rgba(6,12,28,0.98)",
+  gold:   "#0080FF",   // metallic blue — all C.gold refs now Sovereign blue
+  amber:  "#22AAFF",   // bright blue
+  ink:    "#D8EEFF",   // platinum white
+  muted:  "rgba(180,210,250,0.50)",
+  dim:    "rgba(140,175,220,0.28)",
+  border: "rgba(0,128,255,0.14)",
   mono:   "'JetBrains Mono','Courier New',monospace",
   serif:  "'Cormorant Garamond',serif",
   green:  "#22c55e",
@@ -301,10 +301,11 @@ export default function AmbassadorHub() {
 
   return (
     <div style={{ minHeight: "100dvh", background: C.bg, color: C.ink, fontFamily: C.mono, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-      <div style={{ position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", width: 800, height: 180, background: "radial-gradient(ellipse,rgba(212,175,55,0.06) 0%,transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", width: 900, height: 180, background: "radial-gradient(ellipse,rgba(0,128,255,0.09) 0%,transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
+      <div className="scan-line" style={{ pointerEvents: "none", zIndex: 0 }} />
 
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 24px", borderBottom: `1px solid ${C.border}`, background: "rgba(5,5,5,0.96)", flexShrink: 0, position: "relative", zIndex: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 24px", borderBottom: `1px solid ${C.border}`, background: "rgba(5,10,20,0.97)", flexShrink: 0, position: "relative", zIndex: 10 }}>
         <div style={{ width: 36, height: 36, borderRadius: 10, background: `${C.gold}14`, border: `1px solid ${C.gold}30`, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <Star size={16} color={C.gold} />
         </div>
@@ -334,8 +335,8 @@ export default function AmbassadorHub() {
               {/* INITIALIZE NEW NODE — Gold hero tile */}
               <motion.div whileHover={{ scale: 1.008 }} whileTap={{ scale: 0.98 }}
                 onClick={() => { resetWizard(); setPanel("wizard"); }}
-                style={{ background: `linear-gradient(135deg,rgba(212,175,55,0.14) 0%,rgba(212,175,55,0.06) 100%)`, border: `1px solid rgba(212,175,55,0.45)`, borderRadius: 14, padding: "28px 28px", cursor: "pointer", display: "flex", alignItems: "center", gap: 22, marginBottom: 16, position: "relative", overflow: "hidden", maxWidth: 900 }}>
-                <div style={{ position: "absolute", top: 0, right: 0, width: 140, height: 140, background: "radial-gradient(circle,rgba(212,175,55,0.12),transparent)", borderRadius: "0 14px 0 100%", pointerEvents: "none" }} />
+                style={{ background: `linear-gradient(135deg,rgba(0,128,255,0.14) 0%,rgba(0,128,255,0.06) 100%)`, border: `1px solid rgba(0,128,255,0.45)`, borderRadius: 14, padding: "28px 28px", cursor: "pointer", display: "flex", alignItems: "center", gap: 22, marginBottom: 16, position: "relative", overflow: "hidden", maxWidth: 900 }}>
+                <div style={{ position: "absolute", top: 0, right: 0, width: 140, height: 140, background: "radial-gradient(circle,rgba(0,128,255,0.12),transparent)", borderRadius: "0 14px 0 100%", pointerEvents: "none" }} />
                 <div style={{ width: 56, height: 56, borderRadius: 14, background: C.gold, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <Plus size={26} color="#050505" strokeWidth={2.5} />
                 </div>
@@ -677,7 +678,7 @@ export default function AmbassadorHub() {
 
       <AmbassadorWatermark />
 
-      <div style={{ padding: "8px 24px", borderTop: `1px solid ${C.border}`, background: "rgba(5,5,5,0.96)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+      <div style={{ padding: "8px 24px", borderTop: `1px solid ${C.border}`, background: "rgba(5,10,20,0.97)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
         <span style={{ fontSize: 8, color: C.dim, letterSpacing: "0.16em" }}>AUTHORIZED AMBASSADOR: CLARK · 360 ENTERPRISES SERVICES LLC</span>
         <span style={{ fontSize: 8, color: `${C.gold}45`, letterSpacing: "0.14em" }}>NOVEE OS · DEMO MODE · TITAN V 5.2.0</span>
       </div>

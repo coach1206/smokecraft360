@@ -21,24 +21,24 @@ export const SOVEREIGN_SESSION_KEY = "SOVEREIGN_SESSION";
 // ── Design tokens (Obsidian command skin) ────────────────────────────────────
 
 const C = {
-  bg:       "#050505",
-  surface:  "#0D0C0B",
-  card:     "#141210",
-  press:    "#1C1A17",
-  border:   "rgba(212,175,55,0.18)",
-  borderB:  "rgba(212,175,55,0.32)",
-  gold:     "#D4AF37",
-  amber:    "#B89030",
-  ink:      "#F5F2ED",
-  muted:    "rgba(245,242,237,0.45)",
-  dim:      "rgba(245,242,237,0.25)",
+  bg:       "#050A14",
+  surface:  "rgba(6,12,28,0.98)",
+  card:     "rgba(8,18,40,0.96)",
+  press:    "rgba(10,24,52,0.92)",
+  border:   "rgba(0,128,255,0.14)",
+  borderB:  "rgba(0,170,255,0.38)",
+  gold:     "#0080FF",   // metallic blue replaces gold — all C.gold refs now Sovereign blue
+  amber:    "#22AAFF",   // bright blue replaces amber
+  ink:      "#D8EEFF",   // platinum white
+  muted:    "rgba(180,210,250,0.50)",
+  dim:      "rgba(140,175,220,0.28)",
   mono:     "'JetBrains Mono','Courier New',monospace",
   serif:    "'Cormorant Garamond',serif",
   sans:     "'Inter',sans-serif",
   green:    "#22c55e",
   red:      "#ef4444",
   orange:   "#f97316",
-  blue:     "#3b82f6",
+  blue:     "#0080FF",
 };
 
 const DEVICE_TYPES = ["Mirror", "Table", "Vehicle"] as const;
@@ -864,13 +864,14 @@ export default function SovereignDistributionVault() {
   return (
     <div style={{ height: "100dvh", display: "flex", flexDirection: "column", background: C.bg, color: C.ink, fontFamily: C.sans, overflow: "hidden" }}>
 
-      {/* ── Ambient gold glow ── */}
-      <div style={{ position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", width: 800, height: 160, background: "radial-gradient(ellipse,rgba(212,175,55,0.07) 0%,transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
+      {/* ── Ambient blue glow ── */}
+      <div style={{ position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", width: 900, height: 180, background: "radial-gradient(ellipse,rgba(0,128,255,0.09) 0%,transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
+      <div className="scan-line" style={{ pointerEvents: "none", zIndex: 0 }} />
 
       {/* ── Header ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 24px", borderBottom: `1px solid ${C.borderB}`, background: "rgba(5,5,5,0.96)", flexShrink: 0, position: "relative", zIndex: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 24px", borderBottom: `1px solid ${C.borderB}`, background: "rgba(5,10,20,0.97)", flexShrink: 0, position: "relative", zIndex: 10 }}>
         <motion.button whileTap={{ scale: 0.93 }} onClick={() => navigate("/admin-master")}
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 9, background: "rgba(245,242,237,0.06)", border: `1px solid ${C.border}`, color: C.muted, fontSize: 11, cursor: "pointer" }}>
+          style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 9, background: "rgba(0,128,255,0.07)", border: `1px solid ${C.border}`, color: C.muted, fontSize: 11, cursor: "pointer" }}>
           <ArrowLeft size={13} /> Admin Master
         </motion.button>
 
@@ -913,7 +914,7 @@ export default function SovereignDistributionVault() {
       </div>
 
       {/* ── Tab Bar ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 0, padding: "0 24px", borderBottom: `1px solid ${C.border}`, background: "rgba(5,5,5,0.92)", flexShrink: 0, position: "relative", zIndex: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 0, padding: "0 24px", borderBottom: `1px solid ${C.border}`, background: "rgba(5,10,20,0.94)", flexShrink: 0, position: "relative", zIndex: 10 }}>
         {TABS.map(t => {
           const Icon = t.icon;
           const isA  = !warRoom && tab === t.id;
@@ -998,7 +999,7 @@ export default function SovereignDistributionVault() {
       <SovereignWatermark />
 
       {/* ── Footer Brand Bar ── */}
-      <div style={{ padding: "8px 24px", borderTop: `1px solid ${C.border}`, background: "rgba(5,5,5,0.96)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+      <div style={{ padding: "8px 24px", borderTop: `1px solid ${C.border}`, background: "rgba(5,10,20,0.97)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
         <span style={{ fontFamily: C.mono, fontSize: 8, color: C.dim, letterSpacing: "0.16em" }}>
           360 ENTERPRISES SERVICES LLC · JOHNIE MANUEL LEE COLLINS · ALL RIGHTS RESERVED
         </span>

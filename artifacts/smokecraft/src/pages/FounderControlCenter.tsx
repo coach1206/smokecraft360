@@ -20,28 +20,28 @@ import {
 } from "@/services/revenueEngineApi";
 import { useAuth } from "@/contexts/AuthContext";
 
-// ── Design tokens (cream / light mode — ref image palette) ───────────────────
+// ── Design tokens (Sovereign Blue — Apple/Tesla luxury dark) ─────────────────
 const T = {
-  body:      "#F5F2EC",          // warm cream body
-  card:      "#FFFFFF",          // pure white cards
-  cardAlt:   "#F9F7F3",          // very faint cream alt surface
-  sidebar:   "#1A1A1B",          // near-black sidebar
-  sideText:  "#F0EDE8",          // sidebar text
-  sideMuted: "rgba(240,237,232,0.45)",
-  sideBorder:"rgba(255,255,255,0.07)",
-  gold:      "#C8960C",          // warm amber — primary action
-  goldLight: "#D4AF37",          // lighter gold for highlights
-  goldBg:    "rgba(200,150,12,0.10)",
-  goldBorder:"rgba(200,150,12,0.30)",
-  fore:      "#1A1A1B",          // primary text
-  sub:       "#6B6460",          // secondary text
-  faint:     "#B0A89E",          // tertiary / placeholders
-  border:    "#E8E3DC",          // card borders
-  borderDark:"#D4CFC8",
-  green:     "#2D7A5F",
-  greenBg:   "rgba(45,122,95,0.10)",
-  red:       "#B94040",
-  redBg:     "rgba(185,64,64,0.09)",
+  body:      "#050A14",               // deep navy (was cream)
+  card:      "rgba(6,12,28,0.98)",    // dark surface (was white)
+  cardAlt:   "rgba(8,18,40,0.95)",    // deeper surface (was faint cream)
+  sidebar:   "rgba(3,6,16,0.99)",     // near-black navy sidebar
+  sideText:  "#D8EEFF",               // platinum white (was cream)
+  sideMuted: "rgba(180,210,250,0.45)",
+  sideBorder:"rgba(0,128,255,0.10)",
+  gold:      "#0080FF",               // metallic blue (was warm amber)
+  goldLight: "#22AAFF",               // bright blue (was light gold)
+  goldBg:    "rgba(0,128,255,0.10)",
+  goldBorder:"rgba(0,128,255,0.30)",
+  fore:      "#D8EEFF",               // platinum white (was near-black)
+  sub:       "rgba(180,210,250,0.70)",
+  faint:     "rgba(140,175,220,0.45)",
+  border:    "rgba(0,128,255,0.14)",
+  borderDark:"rgba(0,170,255,0.22)",
+  green:     "#22c55e",
+  greenBg:   "rgba(34,197,94,0.10)",
+  red:       "#ef4444",
+  redBg:     "rgba(239,68,68,0.09)",
   mono:      "'SF Mono','Fira Code',monospace",
   serif:     "'Cormorant Garamond',Georgia,serif",
   sans:      "system-ui,-apple-system,sans-serif",
@@ -394,7 +394,7 @@ export default function FounderControlCenter() {
       <div style={{
         width: 230, flexShrink: 0, background: T.sidebar,
         display: "flex", flexDirection: "column",
-        borderRight: `1px solid rgba(255,255,255,0.06)`,
+        borderRight: `1px solid ${T.sideBorder}`,
         overflowY: "auto",
       }}>
         {/* Logo area */}
@@ -437,7 +437,7 @@ export default function FounderControlCenter() {
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
             style={{
               width: "100%", padding: "10px 0", borderRadius: 10,
-              background: T.goldBg, border: `1px solid rgba(200,150,12,0.4)`,
+              background: T.goldBg, border: `1px solid ${T.goldBorder}`,
               color: T.goldLight, fontSize: 10, fontWeight: 700,
               cursor: "pointer", letterSpacing: "0.14em", fontFamily: T.mono,
               display: "flex", alignItems: "center", justifyContent: "center", gap: 7,

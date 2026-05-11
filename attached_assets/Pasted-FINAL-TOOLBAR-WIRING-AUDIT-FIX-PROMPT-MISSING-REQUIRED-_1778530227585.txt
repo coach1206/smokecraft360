@@ -1,0 +1,251 @@
+FINAL TOOLBAR WIRING AUDIT + FIX PROMPT
+
+MISSING / REQUIRED
+
+1. Audit every top toolbar item in the Sovereign Distribution Vault.
+Impact: Toolbar items like Shipments, Keys, Live Nodes, Deploy, Hardware, and War Room must not be decorative labels. Each must route to a real section or page with working data, state, and actions.
+
+2. Verify whether each toolbar button is active.
+Impact: If a toolbar item only changes appearance but does not route, fetch data, update state, or display a real module, it is not wired.
+
+3. Wire every toolbar item to a functional route or panel.
+Impact: Every toolbar item must open a real interior interface, not a dead tab.
+
+4. Connect toolbar status badges to real data.
+Impact: “Vault Online,” “Titan v5.2.0,” “Hardware,” and system status labels must reflect real state or clearly marked local/demo state.
+
+5. Add empty states that explain what is missing.
+Impact: If no nodes, shipments, keys, or deployments exist, the screen must show what endpoint or action creates them.
+
+FAILURE PREVENTION CHECKLIST
+
+Do not leave toolbar items as static text.
+Do not leave tabs with no click behavior.
+Do not leave pages with blank interiors.
+Do not fake live data as real.
+Do not show “online” unless connected to real state or clearly marked demo/local.
+Do not break existing back button.
+Do not remove existing Distribution Vault layout.
+Do not hardcode credentials.
+Do not create dead buttons.
+Do not leave Live Nodes dependent on an endpoint that does not exist.
+Do not leave Deploy without a real action flow.
+Do not leave Keys without create/revoke/assign logic.
+Do not leave Shipments without shipment status data.
+Do not leave War Room without event/incident feed.
+
+MASTER PROMPT
+
+Perform a full toolbar wiring audit and repair for the Sovereign Distribution Vault interface.
+
+Toolbar items to audit and wire:
+
+Shipments
+Keys
+Live Nodes
+Deploy
+Hardware
+War Room
+Refresh
+Vault Online
+Titan Version Status
+Hardware Status
+
+For each toolbar item, do the following:
+
+1. Confirm whether it has an onClick handler.
+2. Confirm whether it routes to a real page or changes to a real panel.
+3. Confirm whether it fetches or displays data.
+4. Confirm whether the backend endpoint exists.
+5. If missing, create the route, frontend panel, API wrapper, and safe backend stub.
+6. Add a clear empty state if no data exists.
+7. Add loading, error, and success states.
+8. Add Event Bus logging for major actions.
+
+REQUIRED FRONTEND ROUTES
+
+Create or confirm these routes:
+
+/distribution-vault
+/distribution-vault/shipments
+/distribution-vault/keys
+/distribution-vault/live-nodes
+/distribution-vault/deploy
+/distribution-vault/hardware
+/distribution-vault/war-room
+
+REQUIRED BACKEND ROUTES
+
+Create or confirm these API routes:
+
+GET /api/distribution/shipments
+POST /api/distribution/shipments
+PATCH /api/distribution/shipments/:id
+
+GET /api/distribution/keys
+POST /api/distribution/keys
+POST /api/distribution/keys/:id/revoke
+POST /api/distribution/keys/:id/assign
+
+GET /api/nodes
+POST /api/nodes/register
+POST /api/nodes/:id/heartbeat
+POST /api/nodes/:id/authorize
+POST /api/nodes/:id/lock
+POST /api/nodes/:id/revoke
+
+POST /api/distribution/deploy
+GET /api/distribution/deployments
+GET /api/distribution/deployments/:id
+
+GET /api/hardware/devices
+GET /api/hardware/diagnostics
+POST /api/hardware/devices/:id/refresh
+
+GET /api/distribution/war-room
+POST /api/distribution/war-room/acknowledge
+
+GET /api/distribution/status
+
+REQUIRED FRONTEND FUNCTIONS
+
+Add or confirm these functions:
+
+switchDistributionTab(tabName)
+loadShipments()
+createShipment(payload)
+loadKeys()
+createActivationKey(payload)
+revokeActivationKey(keyId)
+assignActivationKey(keyId, nodeId)
+loadLiveNodes()
+registerNode(payload)
+sendNodeHeartbeat(nodeId)
+authorizeNode(nodeId)
+lockNode(nodeId)
+revokeNode(nodeId)
+createDeployment(payload)
+loadDeployments()
+loadHardwareDevices()
+loadHardwareDiagnostics()
+refreshHardwareDevice(deviceId)
+loadWarRoomFeed()
+acknowledgeWarRoomEvent(eventId)
+refreshDistributionStatus()
+
+TOOLBAR BEHAVIOR
+
+Shipments:
+Click opens shipment dashboard.
+Shows shipment count, pending shipments, deployed shipments, failed shipments, and shipment timeline.
+
+Keys:
+Click opens activation key manager.
+Shows active keys, assigned keys, revoked keys, expired keys, create key button, revoke key button.
+
+Live Nodes:
+Click opens node monitor.
+Shows total nodes, authorized nodes, pending lock nodes, offline nodes, heartbeat state, authorize/lock/revoke controls.
+
+Deploy:
+Click opens deployment panel.
+Shows deployment packages, target nodes, deployment status, deploy button, rollback option if available.
+
+Hardware:
+Click opens hardware diagnostics panel.
+Shows devices, firmware, signal state, sensor state, kiosk/tablet health, refresh controls.
+
+War Room:
+Click opens incident command panel.
+Shows critical events, warnings, failed syncs, security notices, node failures, acknowledge buttons.
+
+Refresh:
+Must reload current toolbar section and update status cards.
+
+STATUS BADGES
+
+Vault Online:
+Must come from GET /api/distribution/status.
+If backend unavailable, show “Local Mode” instead of pretending live.
+
+Titan Version:
+Show actual version from config if available.
+Otherwise show local static version with label “local.”
+
+Hardware:
+Must show hardware status from /api/hardware/diagnostics.
+If unavailable, show “not connected.”
+
+EMPTY STATES
+
+If no nodes:
+Show:
+“No nodes registered yet. Nodes appear when a device calls POST /api/nodes/register.”
+
+If no shipments:
+Show:
+“No shipments created yet. Create a deployment shipment to begin.”
+
+If no keys:
+Show:
+“No activation keys created yet. Create a key to authorize a device.”
+
+If no deployments:
+Show:
+“No deployments have been launched yet.”
+
+If no hardware:
+Show:
+“No hardware devices connected yet.”
+
+If no war room events:
+Show:
+“No active incidents. System nominal.”
+
+EVENT BUS LOGGING
+
+Log:
+
+distribution_tab_opened
+shipments_loaded
+shipment_created
+keys_loaded
+activation_key_created
+activation_key_revoked
+activation_key_assigned
+nodes_loaded
+node_registered
+node_heartbeat_received
+node_authorized
+node_locked
+node_revoked
+deployment_created
+deployment_loaded
+hardware_diagnostics_loaded
+hardware_refresh_sent
+war_room_opened
+war_room_event_acknowledged
+distribution_status_refreshed
+
+VISUAL REQUIREMENT
+
+Keep the Apple/Tesla/Sovereign future-luxury style.
+
+Do not leave old brown/gold styling.
+Do not leave dark empty blank space.
+Do not leave toolbar tabs as decorative.
+Do not leave interior panels unfinished.
+
+FINAL DELIVERABLE
+
+Every toolbar item must be functional.
+
+If it is live, show live data.
+If it is local/demo, label it clearly.
+If it has no data, show a meaningful empty state.
+If an API route is missing, create a safe backend stub.
+If a button exists, it must do something useful.
+
+No words-only toolbar.
+No fake tabs.
+No dead controls.

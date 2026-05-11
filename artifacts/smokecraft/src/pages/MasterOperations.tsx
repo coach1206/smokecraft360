@@ -29,13 +29,13 @@ import {
 // ── design tokens ─────────────────────────────────────────────────────────────
 
 const T = {
-  bg:        "#F5F2ED",
-  surface:   "rgba(26,26,27,0.06)",
-  border:    "rgba(212,139,0,0.14)",
-  gold:      "#D48B00",
-  goldBright:"#D48B00",
-  text:      "#1A1A1B",
-  textMuted: "#6B5E4E",
+  bg:        "#050A14",               // deep navy (was cream)
+  surface:   "rgba(6,12,28,0.97)",    // dark surface (was light glass)
+  border:    "rgba(0,128,255,0.14)",  // metallic blue border (was gold border)
+  gold:      "#0080FF",               // metallic blue (was warm amber)
+  goldBright:"#22AAFF",               // bright blue (was same amber)
+  text:      "#D8EEFF",               // platinum white (was near-black)
+  textMuted: "rgba(180,210,250,0.60)",// muted blue-white (was warm brown)
   green:     "#34D399",
   amber:     "#F59E0B",
   red:       "#F87171",
@@ -139,13 +139,13 @@ function GlassCard({
   return (
     <div
       style={{
-        background: "linear-gradient(145deg, rgba(26,26,27,0.09) 0%, rgba(26,26,27,0.04) 100%)",
-        border:     `1px solid rgba(212,139,0,0.16)`,
+        background: "linear-gradient(145deg, rgba(6,12,28,0.97) 0%, rgba(8,18,40,0.93) 100%)",
+        border:     `1px solid ${T.border}`,
         borderRadius: 14,
         backdropFilter: "blur(20px)",
         boxShadow: glow
-          ? `0 0 28px ${glow}22, 0 8px 32px rgba(26,26,27,0.20), 0 2px 6px rgba(26,26,27,0.08), inset 0 1px 0 rgba(26,26,27,0.12), inset 0 -1px 0 rgba(26,26,27,0.05)`
-          : `0 8px 32px rgba(26,26,27,0.20), 0 2px 6px rgba(26,26,27,0.08), inset 0 1px 0 rgba(26,26,27,0.12), inset 0 -1px 0 rgba(26,26,27,0.05)`,
+          ? `0 0 28px ${glow}22, 0 8px 32px rgba(0,0,0,0.40), 0 2px 6px rgba(0,0,0,0.20), inset 0 1px 0 rgba(0,128,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.10)`
+          : `0 8px 32px rgba(0,0,0,0.40), 0 2px 6px rgba(0,0,0,0.20), inset 0 1px 0 rgba(0,128,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.10)`,
         ...style,
       }}
     >
@@ -202,8 +202,8 @@ function KpiTile({ kpi }: { kpi: any }) {
       style={{
         minWidth: 136,
         padding: "12px 16px",
-        background: "linear-gradient(145deg, rgba(212,139,0,0.11) 0%, rgba(212,139,0,0.04) 100%)",
-        border:     `1px solid rgba(212,139,0,0.22)`,
+        background: "linear-gradient(145deg, rgba(0,128,255,0.11) 0%, rgba(0,128,255,0.04) 100%)",
+        border:     `1px solid rgba(0,128,255,0.22)`,
         borderRadius: 12,
         display: "flex",
         flexDirection: "column",
@@ -211,7 +211,7 @@ function KpiTile({ kpi }: { kpi: any }) {
         position: "relative",
         overflow: "hidden",
         flexShrink: 0,
-        boxShadow: "0 4px 16px rgba(26,26,27,0.14), 0 1px 3px rgba(26,26,27,0.06), inset 0 1px 0 rgba(26,26,27,0.11)",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.30), 0 1px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(0,128,255,0.10)",
       }}
     >
       <motion.div
@@ -296,7 +296,7 @@ function FeedEvent({ event, index }: { event: any; index: number }) {
       transition={{ delay: index * 0.04 }}
       style={{
         padding: "10px 12px",
-        borderBottom: `1px solid rgba(26,26,27,0.06)`,
+        borderBottom: `1px solid rgba(0,128,255,0.08)`,
         display: "flex",
         gap: 10,
         alignItems: "flex-start",
@@ -472,7 +472,7 @@ export default function MasterOperations() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: `radial-gradient(ellipse 140% 70% at 25% 0%, #1C1710 0%, #EFEBE0 55%, #060402 100%)`,
+      background: "#050A14",
       display: "flex",
       flexDirection: "column",
       fontFamily: "'Inter', 'SF Pro Display', sans-serif",
@@ -480,21 +480,21 @@ export default function MasterOperations() {
       position: "relative",
     }}>
       {/* Ambient page glow */}
-      <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212,139,0,0.07) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
+      <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0,128,255,0.09) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
       <OpsParticles />
       {/* ── TOP KPI STRIP ── */}
       <div style={{
         position: "sticky",
         top: 0,
         zIndex: 50,
-        background: `linear-gradient(180deg, #E8E4D9 0%, #12100Ef4 100%)`,
+        background: `linear-gradient(180deg, rgba(5,10,20,0.99) 0%, rgba(5,10,20,0.96) 100%)`,
         backdropFilter: "blur(24px)",
-        borderBottom: `1px solid rgba(212,139,0,0.12)`,
+        borderBottom: `1px solid ${T.border}`,
         padding: "12px 20px",
         display: "flex",
         alignItems: "center",
         gap: 14,
-        boxShadow: "inset 0 1px 0 rgba(26,26,27,0.08), 0 1px 0 rgba(212,139,0,0.10), 0 8px 32px rgba(26,26,27,0.22)",
+        boxShadow: "inset 0 1px 0 rgba(0,128,255,0.08), 0 1px 0 rgba(0,128,255,0.12), 0 8px 32px rgba(0,0,0,0.40)",
       }}>
         {/* Brand mark */}
         <div style={{ flexShrink: 0, marginRight: 8 }}>
@@ -535,8 +535,8 @@ export default function MasterOperations() {
         <div style={{
           width: 240,
           flexShrink: 0,
-          borderRight: `1px solid rgba(212,139,0,0.10)`,
-          background: "linear-gradient(180deg, #2A2A2A 0%, #0C0A07 100%)",
+          borderRight: `1px solid rgba(0,128,255,0.14)`,
+          background: "linear-gradient(180deg, #070F20 0%, #050A14 100%)",
           overflowY: "auto",
           padding: "16px 0",
         }}>
@@ -546,7 +546,7 @@ export default function MasterOperations() {
             return (
               <div key={group} style={{ marginBottom: 12 }}>
                 <div style={{
-                  fontSize: 11, fontWeight: 700, color: "rgba(179,155,119,0.5)",
+                  fontSize: 11, fontWeight: 700, color: "rgba(100,150,220,0.55)",
                   textTransform: "uppercase", letterSpacing: "0.18em",
                   padding: "8px 20px 4px",
                 }}>
@@ -568,7 +568,7 @@ export default function MasterOperations() {
                         alignItems: "center",
                         gap: 12,
                         padding: "11px 20px",
-                        background: isActive ? `rgba(212,139,0,0.10)` : "transparent",
+                        background: isActive ? `rgba(0,128,255,0.12)` : "transparent",
                         borderLeft: isActive ? `3px solid ${T.gold}` : "3px solid transparent",
                         border: "none",
                         cursor: "pointer",
@@ -663,7 +663,7 @@ export default function MasterOperations() {
                       </div>
                     ))}
                   </div>
-                  <div style={{ height: 4, background: "rgba(26,26,27,0.08)", borderRadius: 2, overflow: "hidden" }}>
+                  <div style={{ height: 4, background: "rgba(0,128,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
                     <motion.div
                       animate={{ width: `${kpis.deviceHealth?.value ?? 95}%` }}
                       transition={{ duration: 1, ease: "easeOut" }}

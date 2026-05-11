@@ -114,7 +114,7 @@ const AmbassadorHub                = lazy(() => import('@/pages/AmbassadorHub'))
 function PageLoader() {
   return (
     <div style={{ position: 'fixed', inset: 0, background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid rgba(212,175,55,0.2)', borderTopColor: '#d4af37', animation: 'axiom-ring-spin 0.8s linear infinite' }} />
+      <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid rgba(0,128,255,0.18)', borderTopColor: '#0080FF', animation: 'axiom-ring-spin 0.8s linear infinite' }} />
     </div>
   );
 }

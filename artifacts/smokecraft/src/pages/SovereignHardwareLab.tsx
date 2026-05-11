@@ -17,16 +17,16 @@ import SovereignWatermark from "@/components/SovereignWatermark";
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
 const C = {
-  bg:     "#050505",
-  surface:"rgba(18,15,12,0.98)",
-  card:   "#141210",
-  border: "rgba(212,175,55,0.18)",
-  borderB:"rgba(212,175,55,0.35)",
-  gold:   "#D4AF37",
-  amber:  "#B89030",
-  ink:    "#F5F2ED",
-  muted:  "rgba(245,242,237,0.45)",
-  dim:    "rgba(245,242,237,0.22)",
+  bg:     "#050A14",
+  surface:"rgba(6,12,28,0.98)",
+  card:   "rgba(8,18,40,0.96)",
+  border: "rgba(0,128,255,0.14)",
+  borderB:"rgba(0,170,255,0.38)",
+  gold:   "#0080FF",   // metallic blue — all C.gold refs now Sovereign blue
+  amber:  "#22AAFF",   // bright blue
+  ink:    "#D8EEFF",   // platinum white
+  muted:  "rgba(180,210,250,0.50)",
+  dim:    "rgba(140,175,220,0.28)",
   mono:   "'JetBrains Mono','Courier New',monospace",
   serif:  "'Cormorant Garamond',serif",
   green:  "#22c55e",
@@ -784,12 +784,13 @@ export default function SovereignHardwareLab() {
 
   return (
     <div style={{ minHeight: "100dvh", background: C.bg, color: C.ink, fontFamily: C.mono, display: "flex", flexDirection: "column" }}>
-      <div style={{ position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", width: 700, height: 160, background: "radial-gradient(ellipse,rgba(212,175,55,0.07) 0%,transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", width: 900, height: 180, background: "radial-gradient(ellipse,rgba(0,128,255,0.09) 0%,transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
+      <div className="scan-line" style={{ pointerEvents: "none", zIndex: 0 }} />
 
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 24px", borderBottom: `1px solid ${C.border}`, background: "rgba(5,5,5,0.96)", flexShrink: 0, position: "relative", zIndex: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 24px", borderBottom: `1px solid ${C.border}`, background: "rgba(5,10,20,0.97)", flexShrink: 0, position: "relative", zIndex: 10 }}>
         <motion.button whileTap={{ scale: 0.93 }} onClick={() => navigate("/distribution")}
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 8, background: "rgba(245,242,237,0.06)", border: `1px solid ${C.border}`, color: C.muted, fontSize: 10, cursor: "pointer" }}>
+          style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 8, background: "rgba(0,128,255,0.07)", border: `1px solid ${C.border}`, color: C.muted, fontSize: 10, cursor: "pointer" }}>
           ← VAULT
         </motion.button>
         <div style={{ width: 36, height: 36, borderRadius: 10, background: `${C.gold}14`, border: `1px solid ${C.gold}30`, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -814,7 +815,7 @@ export default function SovereignHardwareLab() {
       </div>
 
       {/* Tab bar */}
-      <div style={{ display: "flex", gap: 0, padding: "0 24px", borderBottom: `1px solid ${C.border}`, background: "rgba(5,5,5,0.92)", flexShrink: 0 }}>
+      <div style={{ display: "flex", gap: 0, padding: "0 24px", borderBottom: `1px solid ${C.border}`, background: "rgba(5,10,20,0.94)", flexShrink: 0 }}>
         {TABS.map(t => {
           const active = tab === t.id;
           return (
@@ -975,7 +976,7 @@ GET  /api/biometric/interventions — last 50 logged commands`
 
       <SovereignWatermark />
 
-      <div style={{ padding: "8px 24px", borderTop: `1px solid ${C.border}`, background: "rgba(5,5,5,0.96)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+      <div style={{ padding: "8px 24px", borderTop: `1px solid ${C.border}`, background: "rgba(5,10,20,0.97)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
         <span style={{ fontSize: 8, color: C.dim, letterSpacing: "0.16em" }}>SOVEREIGN OPERATOR: JC · 360 ENTERPRISES SERVICES LLC</span>
         <span style={{ fontSize: 8, color: `${C.gold}45`, letterSpacing: "0.14em" }}>NOVEE OS · TITAN V HARDWARE LABS · 5.2.0</span>
       </div>
