@@ -1,0 +1,41 @@
+server/index.ts
+or
+server/app.ts
+or
+server/routes.ts
+Add this import:
+import eeieCommerceRoutes from "./routes/eeie-commerce-routes";
+Then add this after middleware setup and before the server starts:
+app.use("/api/eeie", eeieCommerceRoutes);
+So your route URLs become:
+GET  /api/eeie/commerce-healthGET  /api/eeie/commerce/adaptersPOST /api/eeie/commerce/adapters/toast/testPOST /api/eeie/commerce/manual-modeGET  /api/eeie/commerce/order-handoffsGET  /api/eeie/commerce/revenue-liftGET  /api/eeie/commerce/bundle-performanceGET  /api/eeie/commerce/staff-conversionGET  /api/eeie/commerce/alertsGET  /api/eeie/commerce/logs
+
+4. Add frontend API wrapper
+client/src/lib/eeie-commerce-api.ts
+const BASE = "/api/eeie";async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {  const response = await fetch(`${BASE}${path}`, {    credentials: "include",    headers: {      "Content-Type": "application/json",      ...(options.headers || {}),    },    ...options,  });  if (!response.ok) {    const text = await response.text();    throw new Error(text || `Commerce API error: ${response.status}`);  }  return response.json() as Promise<T>;}export const eeieCommerceApi = {  getCommerceHealth() {    return apiFetch("/commerce-health");  },  getAdapters() {    return apiFetch("/commerce/adapters");  },  testAdapter(adapter: string) {    return apiFetch(`/commerce/adapters/${adapter}/test`, {      method: "POST",      body: JSON.stringify({}),    });  },  connectAdapter(adapter: string, allowLocalConnect = false) {    return apiFetch(`/commerce/adapters/${adapter}/connect`, {      method: "POST",      body: JSON.stringify({ allowLocalConnect }),    });  },  enableManualMode() {    return apiFetch("/commerce/manual-mode", {      method: "POST",      body: JSON.stringify({}),    });  },  getOrderHandoffs() {    return apiFetch("/commerce/order-handoffs");  },  createDemoHandoff() {    return apiFetch("/commerce/order-handoffs/demo", {      method: "POST",      body: JSON.stringify({}),    });  },  retryOrderHandoff(id: string) {    return apiFetch(`/commerce/order-handoffs/${id}/retry`, {      method: "POST",      body: JSON.stringify({}),    });  },  getRevenueLift() {    return apiFetch("/commerce/revenue-lift");  },  updateOccupancy(occupancy: number) {    return apiFetch("/commerce/occupancy/update", {      method: "POST",      body: JSON.stringify({ occupancy }),    });  },  getBundlePerformance() {    return apiFetch("/commerce/bundle-performance");  },  getStaffConversion() {    return apiFetch("/commerce/staff-conversion");  },  getAlerts() {    return apiFetch("/commerce/alerts");  },  acknowledgeAlert(id: string) {    return apiFetch(`/commerce/alerts/${id}/acknowledge`, {      method: "POST",      body: JSON.stringify({}),    });  },  getLogs() {    return apiFetch("/commerce/logs");  },};
+
+5. Optional test commands
+Use these in Replit Shell after the server starts:
+curl -H "Authorization: Bearer dev" http://localhost:5000/api/eeie/commerce-health
+curl -H "Authorization: Bearer dev" http://localhost:5000/api/eeie/commerce/adapters
+curl -X POST -H "Authorization: Bearer dev" -H "Content-Type: application/json" http://localhost:5000/api/eeie/commerce/manual-mode
+curl -H "Authorization: Bearer dev" http://localhost:5000/api/eeie/commerce/bundle-performance
+
+What this backend gives you
+This makes the Commerce page useful because the frontend can now show:
+Commerce flow status
+Toast / Square / Clover / Stripe / Manual Mode
+Adapter connection state
+Setup-needed state
+Order handoffs
+Failed handoffs
+Retry handoff button
+Revenue lift
+Bundle performance with image URLs
+Staff conversion
+Commerce alerts
+Alert acknowledgment
+Commerce logs
+Manual Mode fallback
+Local/demo/live labeling
+This is the part that stops the page from being “just words.”

@@ -20,7 +20,8 @@ import { buildTheme }            from "./eeie/shared";
 import { StaffCockpit }          from "./eeie/StaffCockpit";
 import { MoodSensorTab }         from "./eeie/MoodSensor";
 import { VisualIntelligenceTab } from "./eeie/VisualIntelligence";
-import { DataBrainTab }          from "./eeie/DataBrain";
+import { DataBrainTab }              from "./eeie/DataBrain";
+import { CommerceIntelligenceTab }  from "./eeie/CommerceIntelligence";
 import { AIPanel }               from "./eeie/AIPanel";
 
 // ── Sovereign blue color system (outer shell only) ────────────
@@ -159,8 +160,17 @@ function ModuleContent({ module, meta }: { module: string; meta: typeof MODULE_M
   if (module === "product-wall" || module === "guest-experience" || module === "venue-intelligence") {
     return <div style={{ flex: 1, overflowY: "auto", background: T.bg }}><VisualIntelligenceTab T={T} /></div>;
   }
+  if (module === "commerce-health") {
+    return (
+      <div style={{ flex: 1, overflowY: "auto", background: T.bg }}>
+        <div style={{ padding: "20px 24px" }}>
+          <CommerceIntelligenceTab T={T} />
+        </div>
+      </div>
+    );
+  }
   if (module === "media-library" || module === "distributors" || module === "back-of-house"
-    || module === "commerce-health" || module === "event-bus" || module === "sensory-engine") {
+    || module === "event-bus" || module === "sensory-engine") {
     return <div style={{ flex: 1, overflowY: "auto", background: T.bg }}><DataBrainTab T={T} /></div>;
   }
   if (module === "ai-assistant") {

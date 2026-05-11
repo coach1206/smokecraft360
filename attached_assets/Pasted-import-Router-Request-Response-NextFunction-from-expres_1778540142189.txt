@@ -1,0 +1,150 @@
+import { Router, Request, Response, NextFunction } from "express";
+import {
+  acknowledgeCommerceAlert,
+  connectAdapter,
+  createDemoHandoff,
+  enableManualMode,
+  getBundlePerformance,
+  getCommerceAdapters,
+  getCommerceAlerts,
+  getCommerceHealth,
+  getCommerceLogs,
+  getOrderHandoffs,
+  getRevenueLift,
+  getStaffConversion,
+  retryOrderHandoff,
+  testAdapter,
+  updateOccupancy,
+} from "../services/eeie-commerce-service";
+
+const router = Router();
+
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  const hasSessionUser = Boolean((req as any).user || (req as any).session?.user);
+  const hasBearer = Boolean(req.headers.authorization);
+
+  if (hasSessionUser || hasBearer) {
+    return next();
+  }
+
+  return res.status(401).json({
+    ok: false,
+    mode: "blocked",
+    modeLabel: "Auth Required",
+    isLive: false,
+    error: "Unauthorized",
+    message: "EEIE Commerce routes require an authenticated session or bearer token.",
+  });
+}
+
+function requireFounderManagerOrAdmin(req: Request, res: Response, next: NextFunction) {
+  const user = (req as any).user || (req as any).session?.user || {};
+  const role = user.role || "founder";
+
+  const allowed = ["founder", "super_admin", "admin_owner", "manager"];
+
+  if (allowed.includes(role) || req.headers.authorization) {
+    return next();
+  }
+
+  return res.status(403).json({
+    ok: false,
+    mode: "blocked",
+    modeLabel: "Access Denied",
+    isLive: false,
+    error: "Forbidden",
+    message: "This EEIE Commerce action requires founder, super admin, admin owner, or manager access.",
+  });
+}
+
+router.use(requireAuth);
+
+router.get("/commerce-health", (_req: Request, res: Response) => {
+  res.json(getCommerceHealth());
+});
+
+router.get("/commerce/adapters", (_req: Request, res: Response) => {
+  res.json(getCommerceAdapters());
+});
+
+router.post(
+  "/commerce/adapters/:adapter/test",
+  requireFounderManagerOrAdmin,
+  (req: Request, res: Response) => {
+    res.json(testAdapter(req.params.adapter));
+  }
+);
+
+router.post(
+  "/commerce/adapters/:adapter/connect",
+  requireFounderManagerOrAdmin,
+  (req: Request, res: Response) => {
+    res.json(connectAdapter(req.params.adapter, req.body));
+  }
+);
+
+router.post(
+  "/commerce/manual-mode",
+  requireFounderManagerOrAdmin,
+  (_req: Request, res: Response) => {
+    res.json(enableManualMode());
+  }
+);
+
+router.get("/commerce/order-handoffs", (_req: Request, res: Response) => {
+  res.json(getOrderHandoffs());
+});
+
+router.post(
+  "/commerce/order-handoffs/demo",
+  requireFounderManagerOrAdmin,
+  (_req: Request, res: Response) => {
+    res.json(createDemoHandoff());
+  }
+);
+
+router.post(
+  "/commerce/order-handoffs/:id/retry",
+  requireFounderManagerOrAdmin,
+  (req: Request, res: Response) => {
+    res.json(retryOrderHandoff(req.params.id));
+  }
+);
+
+router.get("/commerce/revenue-lift", (_req: Request, res: Response) => {
+  res.json(getRevenueLift());
+});
+
+router.post(
+  "/commerce/occupancy/update",
+  requireFounderManagerOrAdmin,
+  (req: Request, res: Response) => {
+    res.json(updateOccupancy(req.body?.occupancy));
+  }
+);
+
+router.get("/commerce/bundle-performance", (_req: Request, res: Response) => {
+  res.json(getBundlePerformance());
+});
+
+router.get("/commerce/staff-conversion", (_req: Request, res: Response) => {
+  res.json(getStaffConversion());
+});
+
+router.get("/commerce/alerts", (_req: Request, res: Response) => {
+  res.json(getCommerceAlerts());
+});
+
+router.post(
+  "/commerce/alerts/:id/acknowledge",
+  requireFounderManagerOrAdmin,
+  (req: Request, res: Response) => {
+    res.json(acknowledgeCommerceAlert(req.params.id));
+  }
+);
+
+router.get("/commerce/logs", (_req: Request, res: Response) => {
+  res.json(getCommerceLogs());
+});
+
+export default router;
