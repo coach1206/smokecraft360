@@ -1,0 +1,593 @@
+/**
+ * eeie-motion.css — EEIE Living Machine Animation System
+ * NOVEE OS · 360 Enterprises Services LLC · Titan V 5.2.0
+ *
+ * Premium Apple Vision Pro × Tesla cockpit motion language.
+ * CSS-first: all animations use transform/opacity (compositor thread only).
+ * No width/height/top/left animated — zero layout cost.
+ *
+ * Import: import '@/styles/eeie-motion.css'
+ */
+
+/* ── Motion design tokens ───────────────────────────────────── */
+:root {
+  --eeie-motion-fast:     160ms;
+  --eeie-motion-medium:   320ms;
+  --eeie-motion-slow:     520ms;
+  --eeie-breathe-speed:   4.8s;
+  --eeie-scan-speed:      5.5s;
+  --eeie-ambient-speed:   14s;
+  --eeie-blue:            #0080FF;
+  --eeie-blueHi:          #22AAFF;
+  --eeie-cyan:            #00C8FF;
+  --eeie-green:           #22c55e;
+  --eeie-amber:           #F59E0B;
+  --eeie-red:             #ef4444;
+  --eeie-purple:          #A78BFA;
+}
+
+/* ── Keyframes ──────────────────────────────────────────────── */
+
+/* Ambient background glow drift — very slow, barely perceptible */
+@keyframes eeieAmbientDrift {
+  0%,100% { transform: translateX(-50%) scale(1);    opacity: 0.70; }
+  33%      { transform: translateX(-48%) scale(1.07); opacity: 0.90; }
+  66%      { transform: translateX(-52%) scale(0.96); opacity: 0.74; }
+}
+
+/* Card border glow breathe */
+@keyframes eeieCardBreathe {
+  0%,100% { box-shadow: 0 0 0 0 transparent,          0 4px 18px rgba(0,128,255,0.00); }
+  50%      { box-shadow: 0 0 0 1px rgba(0,128,255,0.13), 0 4px 28px rgba(0,128,255,0.09); }
+}
+
+/* Scanline that sweeps top-to-bottom across a card */
+@keyframes eeieScanline {
+  0%   { transform: translateY(-8px); opacity: 0; }
+  6%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { transform: translateY(400px); opacity: 0; }
+}
+
+/* Status chip dot pulse */
+@keyframes eeieStatusPulse {
+  0%,100% { opacity: 1;    transform: scale(1);    }
+  50%      { opacity: 0.42; transform: scale(0.78); }
+}
+
+/* Image/surface light sweep */
+@keyframes eeieImageSweep {
+  0%   { transform: translateX(-120%); opacity: 0; }
+  8%   { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translateX(220%);  opacity: 0; }
+}
+
+/* Sensor / radar expand-and-fade ring */
+@keyframes eeieSensorPulse {
+  0%   { transform: scale(1);   opacity: 0.65; }
+  100% { transform: scale(2.0); opacity: 0;    }
+}
+
+/* AI assistant panel breathing glow */
+@keyframes eeieAiBreath {
+  0%,100% {
+    box-shadow: 0 0 18px rgba(167,139,250,0.13),
+                0 0 44px rgba(167,139,250,0.05);
+    opacity: 0.90;
+  }
+  50% {
+    box-shadow: 0 0 34px rgba(167,139,250,0.30),
+                0 0 64px rgba(167,139,250,0.13);
+    opacity: 1;
+  }
+}
+
+/* Event feed item slide-in */
+@keyframes eeieFeedSlide {
+  0%   { transform: translateX(16px); opacity: 0; }
+  100% { transform: translateX(0);    opacity: 1; }
+}
+
+/* Success ripple expanding ring */
+@keyframes eeieSuccessRipple {
+  0%   { transform: scale(0.5); opacity: 0.85; }
+  100% { transform: scale(2.8); opacity: 0;    }
+}
+
+/* Warning pulse — controlled amber, not chaotic */
+@keyframes eeieWarningPulse {
+  0%,100% { box-shadow: 0 0 0 0   rgba(245,158,11,0.00); }
+  50%      { box-shadow: 0 0 0 3px rgba(245,158,11,0.18); }
+}
+
+/* Critical — slow red edge pulse */
+@keyframes eeieCriticalPulse {
+  0%,100% { box-shadow: 0 0 0 0   rgba(239,68,68,0.00); }
+  50%      { box-shadow: 0 0 0 4px rgba(239,68,68,0.18); }
+}
+
+/* Mood color wash overlay */
+@keyframes eeieMoodWash {
+  0%   { opacity: 0; }
+  28%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Loading shimmer sweep */
+@keyframes eeieLoadingShimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%);  }
+}
+
+/* Bottom status-rail animated progress sweep */
+@keyframes eeieRailSweep {
+  0%   { transform: scaleX(0);    opacity: 0.0; }
+  12%  { opacity: 0.9; }
+  80%  { transform: scaleX(1);    opacity: 0.7; }
+  100% { transform: scaleX(1);    opacity: 0.0; }
+}
+
+/* Waveform continuous scroll */
+@keyframes eeieWaveformScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Haptic micro-bounce */
+@keyframes eeieHapticPulse {
+  0%   { transform: scale(1);    }
+  22%  { transform: scale(1.04); }
+  50%  { transform: scale(0.97); }
+  78%  { transform: scale(1.02); }
+  100% { transform: scale(1);    }
+}
+
+/* ── Ambient glow ────────────────────────────────────────────── */
+
+.eeie-ambient-glow {
+  animation: eeieAmbientDrift var(--eeie-ambient-speed) ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* ── Scanline overlay ────────────────────────────────────────── */
+
+.eeie-scanline {
+  pointer-events: none;
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0,180,255,0.28),
+    transparent
+  );
+  animation: eeieScanline var(--eeie-scan-speed) ease-in-out infinite;
+  will-change: transform, opacity;
+  z-index: 4;
+}
+
+/* ── Bottom rail progress ────────────────────────────────────── */
+
+.eeie-rail-progress {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--eeie-blue) 30%,
+    var(--eeie-blueHi) 50%,
+    var(--eeie-blue) 70%,
+    transparent 100%
+  );
+  transform-origin: left center;
+  animation: eeieRailSweep 9s ease-in-out infinite;
+  will-change: transform, opacity;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ── Card system ─────────────────────────────────────────────── */
+
+/* Base class for every EEIE module card */
+.eeie-module-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Scanline that sweeps down the card every ~5.5 s */
+.eeie-module-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,190,255,0.30), transparent);
+  animation: eeieScanline var(--eeie-scan-speed) ease-in-out infinite;
+  will-change: transform, opacity;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Breathing border glow — all live cards */
+.eeie-live-card {
+  animation: eeieCardBreathe var(--eeie-breathe-speed) ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+/* Hover lift — smooth rise on cursor entry */
+.eeie-hover-lift {
+  transition:
+    transform    var(--eeie-motion-medium) cubic-bezier(0.34, 1.3, 0.64, 1),
+    box-shadow   var(--eeie-motion-medium) ease,
+    border-color var(--eeie-motion-fast)   ease;
+}
+
+.eeie-hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 36px rgba(0,128,255,0.13), 0 2px 8px rgba(0,0,0,0.20);
+}
+
+/* Active breathe — stronger, faster breathe for LIVE/ACTIVE modules */
+.eeie-active-breathe {
+  animation: eeieCardBreathe 2.8s ease-in-out infinite;
+}
+
+/* Machine pulse — slightly varied timing for neutral cards */
+.eeie-machine-pulse {
+  animation: eeieCardBreathe 3.6s ease-in-out infinite;
+}
+
+/* Warning pulse — controlled amber edge for warning modules */
+.eeie-warning-pulse {
+  animation: eeieWarningPulse 2.8s ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+/* Critical pulse — slow serious red edge */
+.eeie-critical-pulse {
+  animation: eeieCriticalPulse 2.2s ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+/* Connected pulse — slow green shimmer */
+.eeie-connected-pulse {
+  animation: eeieCardBreathe 4.2s ease-in-out infinite;
+}
+
+/* ── AI assistant breathing ──────────────────────────────────── */
+
+.eeie-ai-breathing {
+  animation: eeieAiBreath var(--eeie-breathe-speed) ease-in-out infinite;
+  will-change: box-shadow, opacity;
+}
+
+/* ── Soft glow (featured card, key elements) ─────────────────── */
+
+.eeie-soft-glow {
+  box-shadow: 0 0 32px rgba(0,128,255,0.07), 0 0 8px rgba(0,170,255,0.03);
+  transition: box-shadow var(--eeie-motion-medium) ease;
+}
+
+.eeie-soft-glow:hover {
+  box-shadow: 0 0 48px rgba(0,128,255,0.14), 0 0 16px rgba(0,170,255,0.07);
+}
+
+/* ── Image shimmer ───────────────────────────────────────────── */
+
+.eeie-image-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Sweeping light reflection */
+.eeie-image-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 38%;
+  background: linear-gradient(
+    108deg,
+    transparent 0%,
+    rgba(255,255,255,0.06) 38%,
+    rgba(0,190,255,0.08)  50%,
+    rgba(255,255,255,0.06) 62%,
+    transparent 100%
+  );
+  animation: eeieImageSweep 7.2s ease-in-out infinite;
+  will-change: transform, opacity;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Subtle zoom on image hover — no distortion */
+.eeie-image-shimmer img {
+  transition: transform var(--eeie-motion-slow) cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+.eeie-image-shimmer:hover img {
+  transform: scale(1.035);
+}
+
+/* ── Status chip dot pulses ──────────────────────────────────── */
+
+.eeie-status-pulse {
+  will-change: opacity, transform;
+  animation: eeieStatusPulse 2.4s ease-in-out infinite;
+}
+
+/* LIVE / ACTIVE / ONLINE — green, faster */
+.eeie-chip-live      .eeie-status-pulse,
+.eeie-chip-active    .eeie-status-pulse,
+.eeie-chip-online    .eeie-status-pulse {
+  animation-duration: 1.7s;
+}
+
+/* SYNCING — fast blue-ish rhythm */
+.eeie-chip-syncing   .eeie-status-pulse {
+  animation-duration: 0.85s;
+}
+
+/* SENSING / CALIBRATING — medium purple rhythm */
+.eeie-chip-sensing      .eeie-status-pulse,
+.eeie-chip-calibrating  .eeie-status-pulse {
+  animation-duration: 2.1s;
+}
+
+/* WARNING — faster amber */
+.eeie-chip-warning   .eeie-status-pulse {
+  animation-duration: 1.3s;
+}
+
+/* CRITICAL / SECURED — controlled slow red */
+.eeie-chip-critical  .eeie-status-pulse,
+.eeie-chip-secured   .eeie-status-pulse {
+  animation-duration: 1.1s;
+}
+
+/* NOMINAL / CONNECTED / READY — slow steady */
+.eeie-chip-nominal   .eeie-status-pulse,
+.eeie-chip-connected .eeie-status-pulse,
+.eeie-chip-ready     .eeie-status-pulse {
+  animation-duration: 3.0s;
+}
+
+/* OFFLINE / NOT-CONNECTED — no fake animation */
+.eeie-chip-offline   .eeie-status-pulse { animation: none; opacity: 0.30; }
+
+/* ── Sensor rings ────────────────────────────────────────────── */
+
+.eeie-sensor-ring {
+  position: relative;
+}
+
+.eeie-sensor-ring::before,
+.eeie-sensor-ring::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,200,255,0.22);
+  animation: eeieSensorPulse 3.8s ease-out infinite;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+.eeie-sensor-ring::after {
+  animation-delay: 1.9s;
+}
+
+/* ── Radar sweep ─────────────────────────────────────────────── */
+
+.eeie-radar-sweep {
+  position: relative;
+}
+.eeie-radar-sweep::before {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,200,255,0.18);
+  animation: eenieSensorPulse 5s ease-out infinite;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* ── Event feed slide-in ─────────────────────────────────────── */
+
+.eeie-feed-slide {
+  animation: eeieFeedSlide var(--eeie-motion-medium) cubic-bezier(0.34, 1.2, 0.64, 1) both;
+  will-change: transform, opacity;
+}
+.eeie-feed-slide:nth-child(1) { animation-delay:   0ms; }
+.eeie-feed-slide:nth-child(2) { animation-delay:  55ms; }
+.eeie-feed-slide:nth-child(3) { animation-delay: 110ms; }
+.eeie-feed-slide:nth-child(4) { animation-delay: 165ms; }
+.eeie-feed-slide:nth-child(5) { animation-delay: 220ms; }
+.eeie-feed-slide:nth-child(n+6) { animation-delay: 275ms; }
+
+/* ── Button press ────────────────────────────────────────────── */
+
+.eeie-button-press {
+  transition:
+    transform  var(--eeie-motion-fast) ease,
+    box-shadow var(--eeie-motion-fast) ease,
+    background var(--eeie-motion-fast) ease;
+}
+.eeie-button-press:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.eeie-button-press:hover:not(:disabled) {
+  box-shadow: 0 0 18px rgba(0,128,255,0.18);
+}
+.eeie-button-press:disabled {
+  opacity: 0.36;
+  cursor: not-allowed;
+}
+
+/* ── Success ripple ──────────────────────────────────────────── */
+
+.eeie-success-ripple {
+  position: absolute;
+  border: 1px solid rgba(34,197,94,0.60);
+  border-radius: 50%;
+  animation: eeieSuccessRipple 0.7s ease-out forwards;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* ── Loading shimmer ─────────────────────────────────────────── */
+
+.eeie-loading-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: rgba(0,128,255,0.04);
+}
+.eeie-loading-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent  0%,
+    rgba(0,170,255,0.10) 38%,
+    rgba(0,200,255,0.17) 50%,
+    rgba(0,170,255,0.10) 62%,
+    transparent 100%
+  );
+  animation: eeieLoadingShimmer 1.9s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ── Mood wash overlay ───────────────────────────────────────── */
+
+.eeie-mood-wash {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  animation: eeieMoodWash 2.0s ease-in-out both;
+  will-change: opacity;
+}
+
+/* ── Haptic pulse ────────────────────────────────────────────── */
+
+.eeie-haptic-pulse {
+  animation: eeieHapticPulse 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  will-change: transform;
+}
+
+/* ── Telemetry dot stagger (status rail) ─────────────────────── */
+
+.eeie-tel-dot   { animation: eeieStatusPulse 2.6s ease-in-out infinite; }
+.eeie-tel-dot-1 { animation-delay: 0.00s; }
+.eeie-tel-dot-2 { animation-delay: 0.65s; }
+.eeie-tel-dot-3 { animation-delay: 1.30s; }
+.eeie-tel-dot-4 { animation-delay: 0.40s; }
+.eeie-tel-dot-5 { animation-delay: 1.05s; }
+.eeie-tel-dot-6 { animation-delay: 1.70s; }
+.eeie-tel-dot-7 { animation-delay: 0.85s; }
+.eeie-tel-dot-8 { animation-delay: 0.25s; }
+.eeie-tel-dot-9 { animation-delay: 1.50s; }
+
+/* ── Waveform motion track ───────────────────────────────────── */
+
+.eeie-waveform-track {
+  overflow: hidden;
+  position: relative;
+}
+.eeie-waveform-inner {
+  display: flex;
+  animation: eeieWaveformScroll 14s linear infinite;
+  will-change: transform;
+}
+
+/* ── Featured hero shimmer ───────────────────────────────────── */
+
+/* Used for the animated top-edge line on the EEIE hero card */
+.eeie-hero-shimmer {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+.eeie-hero-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 45%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0,200,255,0.70),
+    transparent
+  );
+  animation: eeieImageSweep 4.0s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* ── Reduced motion — full accessibility support ─────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Kill all ambient / decorative animations */
+  .eeie-ambient-glow       { animation: none; }
+  .eeie-scanline           { animation: none; opacity: 0; }
+  .eeie-rail-progress      { animation: none; opacity: 0; }
+  .eeie-waveform-inner     { animation: none; }
+
+  /* Kill card animations — keep border transitions for usability */
+  .eeie-live-card,
+  .eeie-machine-pulse,
+  .eeie-active-breathe,
+  .eeie-warning-pulse,
+  .eeie-critical-pulse,
+  .eeie-connected-pulse    { animation: none; box-shadow: none; }
+
+  .eeie-module-card::after { animation: none; opacity: 0; }
+
+  /* Kill image shimmer */
+  .eeie-image-shimmer::before { animation: none; opacity: 0; }
+  .eeie-image-shimmer img     { transition: none; }
+
+  /* Kill status pulses — keep them visible and static */
+  .eeie-status-pulse,
+  .eeie-tel-dot,
+  .eeie-tel-dot-1, .eeie-tel-dot-2, .eeie-tel-dot-3,
+  .eeie-tel-dot-4, .eeie-tel-dot-5, .eeie-tel-dot-6,
+  .eeie-tel-dot-7, .eeie-tel-dot-8, .eeie-tel-dot-9 {
+    animation: none;
+    opacity: 0.65;
+  }
+
+  /* Kill sensor/radar rings */
+  .eeie-sensor-ring::before,
+  .eeie-sensor-ring::after,
+  .eeie-radar-sweep::before { animation: none; opacity: 0; }
+
+  /* Kill AI breathing */
+  .eeie-ai-breathing        { animation: none; }
+
+  /* Kill feed slide */
+  .eeie-feed-slide          { animation: none; opacity: 1; transform: none; }
+
+  /* Kill shimmer/ripple */
+  .eeie-loading-shimmer::after { animation: none; opacity: 0; }
+  .eeie-haptic-pulse           { animation: none; }
+
+  /* Kill hero shimmer */
+  .eeie-hero-shimmer::before   { animation: none; opacity: 0; }
+
+  /* Keep hover/focus states — critical for usability */
+  .eeie-hover-lift:hover {
+    transform: none;
+    box-shadow: 0 0 0 1px rgba(0,128,255,0.28);
+  }
+  .eeie-soft-glow:hover {
+    box-shadow: 0 0 0 1px rgba(0,128,255,0.28);
+  }
+  .eeie-button-press:hover:not(:disabled) {
+    box-shadow: 0 0 0 1px rgba(0,128,255,0.28);
+  }
+}

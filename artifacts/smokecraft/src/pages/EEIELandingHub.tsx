@@ -14,6 +14,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import "@/styles/Sovereign.css";
+import "@/styles/eeie-motion.css";
 
 // ── Color System ──────────────────────────────────────────────
 const C = {
@@ -157,7 +158,7 @@ const STATUS_RAIL = [
 function FallbackImageTile({ tile }: { tile: Tile }) {
   const Icon = tile.icon;
   return (
-    <div style={{
+    <div className="eeie-image-shimmer" style={{
       height: 118,
       background: `linear-gradient(135deg,${tile.accent}10 0%,${tile.accent}04 100%)`,
       borderBottom: `1px solid ${tile.accent}18`,
@@ -210,7 +211,7 @@ function FallbackImageTile({ tile }: { tile: Tile }) {
 function ImageStrip({ images, accent, previewType }: { images: string[]; accent: string; previewType: Tile["previewType"] }) {
   if (previewType === "grid") {
     return (
-      <div style={{
+      <div className="eeie-image-shimmer" style={{
         height: 118,
         display: "grid",
         gridTemplateColumns: `repeat(${Math.min(images.length, 3)},1fr)`,
@@ -226,7 +227,7 @@ function ImageStrip({ images, accent, previewType }: { images: string[]; accent:
     );
   }
   return (
-    <div style={{
+    <div className="eeie-image-shimmer" style={{
       height: 118, borderBottom: `1px solid ${accent}18`, flexShrink: 0, overflow: "hidden",
     }}>
       <img
@@ -244,21 +245,28 @@ function EEIEModuleCard({
   const sc = STATUS_COLORS[tile.status] ?? C.silver;
   const hasImages = tile.images.length > 0;
 
+  const cardClass = [
+    "eeie-module-card eeie-live-card eeie-hover-lift",
+    (tile.status === "ACTIVE" || tile.status === "LIVE" || tile.status === "ONLINE")
+      ? "eeie-active-breathe" : "eeie-machine-pulse",
+    (tile.status === "SECURED") ? "eeie-warning-pulse" : "",
+    (tile.label === "AI ASSISTANT") ? "eeie-ai-breathing" : "",
+  ].filter(Boolean).join(" ");
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.030, duration: 0.36 }}
-      whileHover={{ scale: 1.018 }}
       whileTap={{ scale: 0.97 }}
       onClick={() => onNavigate(tile.path)}
+      className={cardClass}
       style={{
         background: C.surface,
         border: `1px solid ${C.border}`,
         borderRadius: 14,
-        cursor: "pointer", position: "relative", overflow: "hidden",
+        cursor: "pointer",
         display: "flex", flexDirection: "column",
-        transition: "border-color 0.2s",
       }}
       onMouseEnter={e => (e.currentTarget.style.borderColor = `${tile.accent}40`)}
       onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
@@ -287,12 +295,12 @@ function EEIEModuleCard({
           }}>
             <tile.icon size={17} color={tile.accent} />
           </div>
-          <div style={{
+          <div className={`eeie-chip-${tile.status.toLowerCase()}`} style={{
             display: "flex", alignItems: "center", gap: 4,
             padding: "3px 8px", borderRadius: 20,
             background: `${sc}12`, border: `1px solid ${sc}28`,
           }}>
-            <div style={{ width: 4, height: 4, borderRadius: "50%", background: sc }} />
+            <div className="eeie-status-pulse" style={{ width: 4, height: 4, borderRadius: "50%", background: sc }} />
             <span style={{ fontSize: 6, color: sc, fontWeight: 700, letterSpacing: "0.18em" }}>{tile.status}</span>
           </div>
         </div>
@@ -355,8 +363,8 @@ export default function EEIELandingHub() {
       fontFamily: C.mono, display: "flex", flexDirection: "column",
       overflow: "hidden", position: "relative",
     }}>
-      {/* Ambient blue glow */}
-      <div style={{
+      {/* Ambient blue glow — living drift animation */}
+      <div className="eeie-ambient-glow" style={{
         position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
         width: 1000, height: 260,
         background: "radial-gradient(ellipse,rgba(0,128,255,0.09) 0%,transparent 70%)",
@@ -450,6 +458,7 @@ export default function EEIELandingHub() {
           whileHover={{ scale: 1.005 }}
           whileTap={{ scale: 0.986 }}
           onClick={() => navigate("/eeie/command-center")}
+          className="eeie-live-card eeie-soft-glow"
           style={{
             background: "linear-gradient(135deg,rgba(0,128,255,0.16) 0%,rgba(0,80,200,0.08) 100%)",
             border: `1px solid ${C.borderHi}`,
@@ -464,11 +473,8 @@ export default function EEIELandingHub() {
             background: "radial-gradient(circle,rgba(0,170,255,0.14),transparent)",
             borderRadius: "0 18px 0 100%", pointerEvents: "none",
           }} />
-          {/* Top edge shimmer */}
-          <div style={{
-            position: "absolute", top: 0, left: 0, right: 0, height: 1,
-            background: `linear-gradient(90deg,transparent,${C.blueHi}60,transparent)`,
-          }} />
+          {/* Animated top edge hero shimmer */}
+          <div className="eeie-hero-shimmer" />
 
           {/* Icon */}
           <div style={{
@@ -531,13 +537,14 @@ export default function EEIELandingHub() {
         display: "flex", alignItems: "center",
         flexShrink: 0, overflowX: "auto", position: "relative", zIndex: 10,
       }}>
+        <div className="eeie-rail-progress" />
         {STATUS_RAIL.map((item, i) => (
           <div key={item.label} style={{
             display: "flex", alignItems: "center", gap: 6, padding: "0 16px",
             borderRight: i < STATUS_RAIL.length - 1 ? `1px solid ${C.border}` : "none",
             flexShrink: 0,
           }}>
-            <div style={{ width: 5, height: 5, borderRadius: "50%", background: item.color }} />
+            <div className={`eeie-tel-dot eeie-tel-dot-${i + 1}`} style={{ width: 5, height: 5, borderRadius: "50%", background: item.color }} />
             <span style={{ fontSize: 7, color: C.dim, letterSpacing: "0.14em" }}>{item.label}</span>
             <span style={{ fontSize: 7, color: item.color, fontWeight: 700, letterSpacing: "0.12em" }}>{item.value}</span>
           </div>

@@ -15,6 +15,7 @@ import {
   CheckCircle2, Cpu,
 } from "lucide-react";
 import "@/styles/Sovereign.css";
+import "@/styles/eeie-motion.css";
 import { buildTheme }            from "./eeie/shared";
 import { StaffCockpit }          from "./eeie/StaffCockpit";
 import { MoodSensorTab }         from "./eeie/MoodSensor";
@@ -85,6 +86,7 @@ function ModulePlaceholder({ meta }: { meta: typeof MODULE_META[string] }) {
         initial={{ scale: 0.7, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5, type: "spring" }}
+        className="eeie-sensor-ring eeie-active-breathe"
         style={{
           width: 96, height: 96, borderRadius: 26,
           background: `${meta.accent}18`, border: `1px solid ${meta.accent}35`,
@@ -95,12 +97,12 @@ function ModulePlaceholder({ meta }: { meta: typeof MODULE_META[string] }) {
         <Icon size={42} color={meta.accent} />
       </motion.div>
 
-      <div style={{
+      <div className={`eeie-chip-${meta.status.toLowerCase()}`} style={{
         display: "inline-flex", alignItems: "center", gap: 6,
         padding: "5px 14px", borderRadius: 20,
         background: `${sc}14`, border: `1px solid ${sc}30`, marginBottom: 20,
       }}>
-        <div style={{ width: 6, height: 6, borderRadius: "50%", background: sc }} />
+        <div className="eeie-status-pulse" style={{ width: 6, height: 6, borderRadius: "50%", background: sc }} />
         <span style={{ fontSize: 8, color: sc, fontWeight: 700, letterSpacing: "0.20em" }}>MODULE {meta.status}</span>
       </div>
 
@@ -247,6 +249,7 @@ export default function EEIEModulePage() {
         display: "flex", alignItems: "center",
         flexShrink: 0, position: "relative", zIndex: 10,
       }}>
+        <div className="eeie-rail-progress" />
         {[
           { label: "MODULE",   value: meta.status, color: sc },
           { label: "SESSION",  value: "ACTIVE",     color: S.green },
@@ -256,7 +259,7 @@ export default function EEIEModulePage() {
             display: "flex", alignItems: "center", gap: 6, padding: "0 16px",
             borderRight: i < arr.length - 1 ? `1px solid ${S.border}` : "none", flexShrink: 0,
           }}>
-            <div style={{ width: 5, height: 5, borderRadius: "50%", background: item.color }} />
+            <div className={`eeie-tel-dot eeie-tel-dot-${i + 1}`} style={{ width: 5, height: 5, borderRadius: "50%", background: item.color }} />
             <span style={{ fontSize: 7, color: S.dim, letterSpacing: "0.14em" }}>{item.label}</span>
             <span style={{ fontSize: 7, color: item.color, fontWeight: 700, letterSpacing: "0.12em" }}>{item.value}</span>
           </div>
