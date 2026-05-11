@@ -3,7 +3,7 @@
  * Touch-first design. 56px+ button targets throughout.
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Leaf, Coffee, Utensils, ShoppingCart, Users, Eye, Star,
@@ -17,12 +17,12 @@ import {
 
 const FLAVOR_LABELS = ["Creamy","Sweet","Nutty","Earthy","Spicy","Woody","Pepper","Citrus"];
 
-interface FoodItem { name: string; category: string; price: number; pairing: string; prepTime: string; }
+interface FoodItem { name: string; category: string; price: number; pairing: string; prepTime: string; image: string; }
 const FOOD_ITEMS: Record<string, FoodItem> = {
-  Creamy:  { name: "Smoked Short Rib Sliders",  category: "Small Plates", price: 18, pairing: "Deepens oak, cocoa, and charred-sweet finish in the blend.", prepTime: "12 min" },
-  Sweet:   { name: "Vanilla Crème Brûlée",       category: "Dessert",      price: 14, pairing: "Amplifies the vanilla and caramel notes, softens the finish.", prepTime: "5 min" },
-  Spicy:   { name: "Truffle Charcuterie Board",  category: "Boards",       price: 28, pairing: "Earthy umami grounds the spice and leather notes beautifully.", prepTime: "8 min" },
-  default: { name: "Aged Cheese Flight",          category: "Boards",       price: 22, pairing: "Neutral creamy base bridges any flavor profile gracefully.", prepTime: "6 min" },
+  Creamy:  { name: "Smoked Short Rib Sliders",  category: "Small Plates", price: 18, pairing: "Deepens oak, cocoa, and charred-sweet finish in the blend.", prepTime: "12 min", image: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=600&q=80" },
+  Sweet:   { name: "Vanilla Crème Brûlée",       category: "Dessert",      price: 14, pairing: "Amplifies the vanilla and caramel notes, softens the finish.", prepTime: "5 min",  image: "https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?auto=format&fit=crop&w=600&q=80" },
+  Spicy:   { name: "Truffle Charcuterie Board",  category: "Boards",       price: 28, pairing: "Earthy umami grounds the spice and leather notes beautifully.", prepTime: "8 min",  image: "https://images.unsplash.com/photo-1546039907-7fa05f864c02?auto=format&fit=crop&w=600&q=80" },
+  default: { name: "Aged Cheese Flight",          category: "Boards",       price: 22, pairing: "Neutral creamy base bridges any flavor profile gracefully.", prepTime: "6 min",  image: "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=600&q=80" },
 };
 
 function getFoodRec(flavors: string[]): FoodItem {
@@ -43,6 +43,19 @@ export function StaffCockpit({ T }: Props) {
   const [note, setNote] = useState("");
   const [toast, setToast] = useState<string | null>(null);
   const [showGuestPreview, setShowGuestPreview] = useState(false);
+  const [productImages, setProductImages] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    fetch("/api/eeie/products", { credentials: "include" })
+      .then(r => r.ok ? r.json() : null)
+      .then((data: { products: Array<{ name: string; image: string }> } | null) => {
+        if (!data) return;
+        const map: Record<string, string> = {};
+        data.products.forEach(p => { map[p.name] = p.image; });
+        setProductImages(map);
+      })
+      .catch(() => {});
+  }, []);
 
   const selected = sessions.find(s => s.id === selectedId) ?? null;
   const foodRec = selected ? getFoodRec(selected.flavors) : FOOD_ITEMS.default;
@@ -235,8 +248,15 @@ export function StaffCockpit({ T }: Props) {
               {/* Cigar Match */}
               <Panel title="AI Cigar Match" icon={<Leaf size={13} />} badge="RECOMMENDED" T={T} accentColor={T.green}>
                 <div style={{ padding: "12px", borderRadius: 12, background: `${T.green}06`, border: `1px solid ${T.green}18` }}>
-                  <div style={{ height: 70, borderRadius: 10, background: `${T.green}10`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
-                    <Leaf size={28} color={`${T.green}80`} />
+                  <div style={{ height: 110, borderRadius: 10, overflow: "hidden", marginBottom: 10, position: "relative", background: `${T.green}10`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {productImages[selected.favCigar] ? (
+                      <img src={productImages[selected.favCigar]} alt={selected.favCigar}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    ) : (
+                      <Leaf size={28} color={`${T.green}80`} />
+                    )}
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.42) 0%, transparent 55%)", pointerEvents: "none" }} />
                   </div>
                   <div style={{ fontSize: 12.5, fontWeight: 800, color: T.text, marginBottom: 2, lineHeight: 1.3 }}>{selected.favCigar}</div>
                   <div style={{ fontSize: 9, color: T.textSub, marginBottom: 8 }}>Medium · Handcrafted · Premium Reserve</div>
@@ -264,8 +284,15 @@ export function StaffCockpit({ T }: Props) {
               {/* Liquor Pairing */}
               <Panel title="Liquor Pairing" icon={<Coffee size={13} />} badge="OPTIMAL" T={T} accentColor={T.purple}>
                 <div style={{ padding: "12px", borderRadius: 12, background: `${T.purple}06`, border: `1px solid ${T.purple}18` }}>
-                  <div style={{ height: 70, borderRadius: 10, background: `${T.purple}10`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
-                    <Coffee size={28} color={`${T.purple}80`} />
+                  <div style={{ height: 110, borderRadius: 10, overflow: "hidden", marginBottom: 10, position: "relative", background: `${T.purple}10`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {productImages[selected.favLiquor] ? (
+                      <img src={productImages[selected.favLiquor]} alt={selected.favLiquor}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    ) : (
+                      <Coffee size={28} color={`${T.purple}80`} />
+                    )}
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.42) 0%, transparent 55%)", pointerEvents: "none" }} />
                   </div>
                   <div style={{ fontSize: 12.5, fontWeight: 800, color: T.text, marginBottom: 2, lineHeight: 1.3 }}>{selected.favLiquor}</div>
                   <div style={{ fontSize: 9, color: T.textSub, marginBottom: 8 }}>2 oz pour · Available · Premium</div>
@@ -291,8 +318,11 @@ export function StaffCockpit({ T }: Props) {
               {/* Food Pairing */}
               <Panel title="Food Pairing" icon={<Utensils size={13} />} badge="SUGGESTED" T={T} accentColor={T.yellow}>
                 <div style={{ padding: "12px", borderRadius: 12, background: `${T.yellow}06`, border: `1px solid ${T.yellow}18` }}>
-                  <div style={{ height: 70, borderRadius: 10, background: `${T.yellow}10`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
-                    <Utensils size={28} color={`${T.yellow}80`} />
+                  <div style={{ height: 110, borderRadius: 10, overflow: "hidden", marginBottom: 10, position: "relative", background: `${T.yellow}10`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <img src={foodRec.image} alt={foodRec.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.42) 0%, transparent 55%)", pointerEvents: "none" }} />
                   </div>
                   <div style={{ fontSize: 12.5, fontWeight: 800, color: T.text, marginBottom: 2, lineHeight: 1.3 }}>{foodRec.name}</div>
                   <div style={{ fontSize: 9, color: T.textSub, marginBottom: 4 }}>{foodRec.category} · ${foodRec.price} · {foodRec.prepTime}</div>

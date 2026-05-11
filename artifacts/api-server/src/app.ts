@@ -135,6 +135,7 @@ import { startVenueClusterManager }            from "./services/venueClusterMana
 import { startUnifiedPOSBridge }               from "./services/unifiedPosBridge";
 import eeieCommandRouter                       from "./routes/eeieCommand";
 import eeieCommerceRouter                      from "./routes/eeie-commerce-routes";
+import eeieStaffRouter                         from "./routes/eeie-staff-routes";
 import { startSessionCleanupWorker } from "./lib/sessionCleanupWorker";
 import { startPayoutWorker }         from "./lib/payoutWorker";
 import { startRewardOptimizationWorker } from "./lib/rewardOptimizationWorker";
@@ -423,6 +424,7 @@ app.use("/api/training",                   trainingRouter);
 app.use("/api/demo",                       demoEngineRouter);
 app.use("/api/admin/workers",             adminWorkersRouter);
 app.use("/api/eeie",                      eeieCommerceRouter);
+app.use("/api/eeie",                      eeieStaffRouter);
 app.use("/api/eeie",                      eeieCommandRouter);
 app.use("/api/system",                   systemVersionRouter);
 app.use("/api/admin/system",             systemVersionRouter);
