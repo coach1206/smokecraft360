@@ -213,7 +213,8 @@ export default function FounderControlCenter() {
     return () => clearInterval(id);
   }, [loadAll]);
 
-  if (user?.role !== "super_admin") {
+  const hasSovereignSession = !!localStorage.getItem("SOVEREIGN_SESSION");
+  if (user?.role !== "super_admin" && !hasSovereignSession) {
     return (
       <div style={{ minHeight: "100vh", background: BG, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center", color: "rgba(245,242,237,0.3)", fontSize: 13, letterSpacing: "0.1em" }}>
