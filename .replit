@@ -49,4 +49,4 @@ channel = "stable-25_05"
 [userenv]
 
 [userenv.shared]
-FOUNDER_PIN = "568444"
+FOUNDER_PIN = "250100"
