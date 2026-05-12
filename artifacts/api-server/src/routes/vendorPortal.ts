@@ -348,9 +348,139 @@ router.get("/approvals", ...guard, async (req: AuthRequest, res: Response) => {
   res.json({ pending, rejected, approved });
 });
 
+// ── GET /api/vendor/me ────────────────────────────────────────────────────────
+router.get("/me", ...guard, async (req: AuthRequest, res: Response) => {
+  const [profile] = await db
+    .select()
+    .from(vendorProfilesTable)
+    .where(eq(vendorProfilesTable.userId, req.user!.id))
+    .limit(1);
+
+  res.json({
+    id:        req.user!.id,
+    email:     req.user!.email,
+    role:      req.user!.role,
+    profile:   profile ?? null,
+    setupComplete: !!profile,
+  });
+});
+
 // ── GET /api/vendor/messages ──────────────────────────────────────────────────
 router.get("/messages", ...guard, (_req: AuthRequest, res: Response) => {
   res.json({ messages: [] });
 });
+
+// ── POST /api/vendor/messages ─────────────────────────────────────────────────
+router.post("/messages", ...guard, async (req: AuthRequest, res: Response) => {
+  const { subject, body } = req.body ?? {};
+  if (!subject || !body) {
+    res.status(400).json({ error: "subject and body are required" });
+    return;
+  }
+  req.log.info({ vendorId: req.user!.id, subject }, "Vendor message submitted");
+  res.status(201).json({ ok: true, message: "Message received. Admin will respond within 48 hours." });
+});
+
+// ── PATCH /api/vendor/inventory/:id ──────────────────────────────────────────
+// :id = venueInventory row id; vendor may only update rows for their own products
+router.patch("/inventory/:id", ...guard, async (req: AuthRequest, res: Response) => {
+  const rowId = req.params.id as string;
+  const { quantity } = req.body ?? {};
+  if (quantity === undefined || typeof quantity !== "number") {
+    res.status(400).json({ error: "quantity must be a number" });
+    return;
+  }
+
+  // Confirm the venueInventory row belongs to one of the vendor's products
+  const [row] = await db
+    .select({ id: venueInventoryTable.id, productId: venueInventoryTable.productId })
+    .from(venueInventoryTable)
+    .where(eq(venueInventoryTable.id, rowId))
+    .limit(1);
+
+  if (!row) { res.status(404).json({ error: "Inventory row not found" }); return; }
+
+  const [ownsProduct] = await db
+    .select({ id: productsTable.id })
+    .from(productsTable)
+    .where(
+      and(
+        eq(productsTable.id, row.productId),
+        eq(productsTable.submittedBy, req.user!.id),
+      ),
+    )
+    .limit(1);
+
+  if (!ownsProduct) { res.status(403).json({ error: "Access denied" }); return; }
+
+  const [updated] = await db
+    .update(venueInventoryTable)
+    .set({ quantity, updatedAt: new Date() })
+    .where(eq(venueInventoryTable.id, rowId))
+    .returning();
+
+  res.json(updated);
+});
+
+// ── Admin approval routes ─────────────────────────────────────────────────────
+// Mounted at /api/vendor but guarded by admin role — accessible to super_admin/venue_admin
+
+const adminGuard = requireRole("super_admin", "venue_admin");
+
+router.get(
+  "/admin/approvals",
+  adminGuard,
+  async (_req: AuthRequest, res: Response) => {
+    const pending = await db
+      .select()
+      .from(productsTable)
+      .where(eq(productsTable.submissionStatus, "pending"))
+      .orderBy(desc(productsTable.createdAt));
+    res.json({ pending });
+  },
+);
+
+router.post(
+  "/admin/approvals/:id/approve",
+  adminGuard,
+  async (req: AuthRequest, res: Response) => {
+    const [updated] = await db
+      .update(productsTable)
+      .set({
+        submissionStatus: "approved",
+        active:           true,
+        reviewedAt:       new Date(),
+        reviewedBy:       req.user!.id,
+        rejectionReason:  null,
+      })
+      .where(eq(productsTable.id, req.params.id as string))
+      .returning();
+    if (!updated) { res.status(404).json({ error: "Not found" }); return; }
+    req.log.info({ productId: updated.id, by: req.user!.id }, "Vendor product approved via vendor route");
+    res.json(updated);
+  },
+);
+
+router.post(
+  "/admin/approvals/:id/reject",
+  adminGuard,
+  async (req: AuthRequest, res: Response) => {
+    const { reason } = req.body ?? {};
+    const [updated] = await db
+      .update(productsTable)
+      .set({
+        submissionStatus: "rejected",
+        active:           false,
+        reviewedAt:       new Date(),
+        reviewedBy:       req.user!.id,
+        rejectionReason:  reason ?? "No reason provided",
+      })
+      .where(eq(productsTable.id, req.params.id as string))
+      .returning();
+    if (!updated) { res.status(404).json({ error: "Not found" }); return; }
+    req.log.info({ productId: updated.id, by: req.user!.id, reason }, "Vendor product rejected via vendor route");
+    res.json(updated);
+  },
+);
 
 export default router;

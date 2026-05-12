@@ -105,6 +105,8 @@ export default function VendorDashboard() {
       .finally(() => setLoading(false));
   }, [navigate]);
 
+  const isFounderPreview = (localStorage.getItem("axiom_role") === "super_admin");
+
   if (loading) {
     return (
       <div style={{ minHeight: "100dvh", background: VT.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -120,6 +122,25 @@ export default function VendorDashboard() {
       title={profile?.companyName ?? "Vendor Dashboard"}
       subtitle="Brand Partner Command Center"
     >
+      {/* Founder Preview Banner */}
+      {isFounderPreview && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: 10, padding: "10px 18px",
+          background: "rgba(8,123,255,0.10)", border: "1px solid rgba(8,123,255,0.35)",
+          borderRadius: 8, marginBottom: 20,
+        }}>
+          <div style={{
+            padding: "3px 10px", borderRadius: 20, fontSize: 8, fontWeight: 800,
+            letterSpacing: "0.18em", textTransform: "uppercase",
+            background: "#087BFF", color: "#fff",
+          }}>
+            FOUNDER PREVIEW MODE
+          </div>
+          <span style={{ fontSize: 11, color: VT.sub, letterSpacing: "0.05em" }}>
+            Viewing vendor portal as founder — this is a demo vendor view. Live vendor data loads on brand_partner login.
+          </span>
+        </div>
+      )}
       {/* Status bar */}
       <div style={{
         display: "flex", alignItems: "center", gap: 14, padding: "14px 18px",

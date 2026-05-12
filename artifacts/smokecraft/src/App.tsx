@@ -727,6 +727,29 @@ function SovereignBootFlow() {
   );
 }
 
+/* ── Brand partner firewall — redirects vendors away from protected routes ── */
+const VENDOR_BLOCKED_PREFIXES = [
+  '/sovereign-dashboard', '/sovereign-gate', '/sovereign-verify',
+  '/founder', '/eeie-command', '/eeie/command-center',
+  '/operations', '/distribution', '/hardware-lab', '/ambassador-hub',
+  '/admin-master', '/admin-panel', '/central-command',
+  '/finance-reconciliation', '/governance', '/enterprise-intelligence',
+  '/analytics', '/war-room', '/intelligence', '/revenue',
+  '/competition', '/inventory', '/training', '/staff',
+];
+
+function BrandPartnerFirewall() {
+  const [loc, navigate] = useLocation();
+  useEffect(() => {
+    const role = typeof localStorage !== 'undefined' ? localStorage.getItem('axiom_role') : null;
+    if (role !== 'brand_partner') return;
+    if (VENDOR_BLOCKED_PREFIXES.some((prefix) => loc === prefix || loc.startsWith(prefix + '/'))) {
+      navigate('/vendor/dashboard');
+    }
+  }, [loc, navigate]);
+  return null;
+}
+
 /* ══════════════════════════════════════════════════════════════
    ROOT APP — wouter router
    All sub-pages lazy-loaded; / → Sovereign Boot Flow
@@ -736,6 +759,7 @@ export default function App() {
   const userRole = typeof localStorage !== 'undefined' ? (localStorage.getItem('axiom_role')       ?? 'venue_owner') : 'venue_owner';
   return (
     <Router>
+      <BrandPartnerFirewall />
       <Suspense fallback={<PageLoader />}>
         <Switch>
           {/* ── Enterprise / AI (standalone — no full provider stack needed) ── */}

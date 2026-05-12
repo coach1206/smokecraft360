@@ -19,7 +19,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Shield, Activity, Database, Cpu, Radio,
   LogOut, ChevronRight, AlertTriangle, Loader,
-  Zap, Star,
+  Zap, Star, Package,
 } from "lucide-react";
 import { socket } from "@/lib/socket";
 import SovereignWatermark from "@/components/SovereignWatermark";
@@ -99,6 +99,14 @@ const COMMAND_TILES = [
     desc:  "Operational layer: staff, venues, inventory, reconciliation.",
     path:  "/operations",
     accent: "#D4AF37",
+    primary: false,
+  },
+  {
+    icon:  Package,
+    label: "VENDOR PORTAL",
+    desc:  "Brand partner self-service: product submissions, media, inventory, placement purchases, and approval pipeline.",
+    path:  "/vendor/dashboard",
+    accent: "#087BFF",
     primary: false,
   },
 ] as const;

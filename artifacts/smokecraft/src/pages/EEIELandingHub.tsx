@@ -160,6 +160,13 @@ const MODULE_TILES: Tile[] = [
     images: [U("1565608087341-404b25492fee"), U("1527281400683-1aae777175f8"), U("1603575448878-868a20723f5d")],
     previewType: "grid",
   },
+  {
+    icon: Package, label: "VENDOR PORTAL",
+    desc: "Brand partner handoff portal: product submissions, media uploads, inventory status, venue assignments, placement purchases, and admin approval pipeline.",
+    path: "/vendor/dashboard", accent: "#087BFF", status: "ACTIVE",
+    images: [U("1527281400683-1aae777175f8"), U("1603575448878-868a20723f5d")],
+    previewType: "grid",
+  },
 ];
 
 const STATUS_RAIL = [
