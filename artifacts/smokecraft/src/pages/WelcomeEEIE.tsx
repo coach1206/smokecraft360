@@ -37,6 +37,14 @@ export default function WelcomeEEIE() {
   const [ripple, setRipple] = useState(false);
   const savedPath = SovereignMemory.restore();
 
+  const enterSession = (dest: string) => {
+    setRipple(true);
+    setTimeout(() => {
+      navigate(dest);
+      SovereignMemory.clear();
+    }, 780);
+  };
+
   const handleKey = (k: PadKey) => {
     if (k === null) return;
     if (k === "⌫") { setPin(p => p.slice(0, -1)); return; }
@@ -44,13 +52,7 @@ export default function WelcomeEEIE() {
     const next = pin + String(k);
     setPin(next);
     if (next.length === 4) {
-      setTimeout(() => {
-        setRipple(true);
-        setTimeout(() => {
-          navigate(savedPath ?? "/eeie-command");
-          SovereignMemory.clear();
-        }, 750);
-      }, 180);
+      setTimeout(() => enterSession(savedPath ?? "/eeie-command"), 180);
     }
   };
 
@@ -77,18 +79,18 @@ export default function WelcomeEEIE() {
         pointerEvents: "none",
       }} />
 
-      {/* Electric Cyan Ripple — inverse contract on enter */}
+      {/* Electric Cyan Ripple — inverse contract (shrinks inward to reveal page) */}
       <AnimatePresence>
         {ripple && (
           <motion.div
             key="ripple-enter"
-            initial={{ clipPath: "circle(0% at 50% 50%)" }}
-            animate={{ clipPath: "circle(160% at 50% 50%)" }}
-            transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ clipPath: "circle(160% at 50% 50%)", opacity: 1 }}
+            animate={{ clipPath: "circle(0% at 50% 50%)", opacity: 0.85 }}
+            transition={{ duration: 0.75, ease: [0.64, 0, 0.78, 0] }}
             style={{
               position: "fixed", inset: 0,
-              background: "linear-gradient(145deg, rgba(0,212,255,0.22) 0%, rgba(0,100,180,0.18) 100%)",
-              backdropFilter: "blur(30px)",
+              background: "linear-gradient(145deg, rgba(0,212,255,0.28) 0%, rgba(0,80,160,0.22) 100%)",
+              backdropFilter: "blur(36px)",
               zIndex: 50,
             }}
           />
@@ -141,9 +143,8 @@ export default function WelcomeEEIE() {
           fontSize: 13, color: "rgba(200,215,235,0.50)", fontFamily: "'Inter',sans-serif",
           fontWeight: 400, lineHeight: 1.85, maxWidth: 310, margin: "0 auto 28px",
         }}>
-          Experience Enhancement Intelligence Engine — venue command infrastructure
-          for elite operators. Real-time guest intelligence, spatial telemetry,
-          and commerce orchestration.
+          Predictive Venue Command &amp; Infrastructure Control for elite operators.
+          Real-time guest intelligence, spatial telemetry, and commerce orchestration.
         </p>
 
         {/* Session memory notice */}
@@ -214,7 +215,7 @@ export default function WelcomeEEIE() {
         {/* Enter without restoring */}
         <motion.button
           whileTap={{ scale: 0.97 }}
-          onClick={() => navigate("/eeie-command")}
+          onClick={() => enterSession("/eeie-command")}
           style={{
             width: "100%", padding: "14px 0", borderRadius: 11,
             background: "rgba(0,212,255,0.09)", border: "1px solid rgba(0,212,255,0.20)",

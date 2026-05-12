@@ -18,7 +18,7 @@
   --sv-green:   #00FF41;
   --sv-red:     #ef4444;
   --sv-border:  rgba(212, 175, 55, 0.24);
-  --sv-mono:    'JetBrains Mono', 'Courier New', monospace;
+  --sv-mono:    'Inter', sans-serif;
 }
 
 /* ── Keyframes ───────────────────────────────────────────────── */

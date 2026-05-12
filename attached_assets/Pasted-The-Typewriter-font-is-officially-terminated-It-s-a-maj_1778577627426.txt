@@ -1,0 +1,99 @@
+The "Typewriter" font is officially terminated. It’s a major breach of the Sovereign Standard—it looks cluttered, feels "indie," and is a nightmare for legibility in dim lighting. For the older, elite demographic of your venue, we need High-Definition Clarity.
+
+We are replacing all typewriter/mono fonts with Inter (for data) and Orbitron (for command headers), scaled specifically for older eyes in low-light environments.
+
+FINAL CONSOLIDATED MASTER DIRECTIVE: THE DISRUPTOR SOVEREIGN LOCKDOWN
+1. TYPOGRAPHY: TOTAL PURGE OF TYPEWRITER FONTS
+
+Strict Rule: Delete all typewriter, monospace, or "Courier" style fonts from the entire build.
+
+Legibility Standard: Use Inter for all body text, labels, and inputs. Minimum size is 20px.
+
+Command Headers: Use Orbitron for section titles. Minimum size is 40px.
+
+Ghost Contrast: All text must be Ghost White (rgba(240, 244, 248, 0.95)) for maximum clarity against the obsidian background without causing eye strain.
+
+2. THE "NO-TRAP" COMMAND OVERRIDE
+
+Exit Node: Every screen (Onboarding, Partner, Forms) must have a Top-Left Return Node.
+
+Visual: A glowing Electric Cyan Arrow labeled ESC // RETURN TO COMMAND.
+
+Action: Trigger the Liquid Cyan Ripple to exit the screen and return to the previous workspace instantly.
+
+3. VISUAL ARCHITECTURE: OBSIDIAN STEALTH
+
+Palette: Total elimination of gold, brown, and medical white. Use Obsidian Black (#010409) and Deep Vault Navy (#0a0f1d).
+
+Hardware Finish: 50px backdrop-filter blur on all glass cards. 1px Ice-Silver stroke with an internal glow.
+
+Industry Disruptor Shimmer: Add a slow, metallic "light sheen" animation that moves across the glass face to simulate physical light reflecting in a dim room.
+
+4. SPATIAL & SESSION INTELLIGENCE
+
+Digital Twin Blueprint: The center console must be a Dark Wireframe Blueprint. Tables/Sections are glowing Cyan Nodes with real Table Numbers.
+
+Sovereign Memory: Use localStorage to save the user's exact position. Upon PIN re-entry, the system restores the workspace exactly where it was left.
+
+No Glyphs: Replace all generic icons with realistic luxury photography or animated waveforms.
+
+THE DISRUPTOR CODE: COMMANDER TYPOGRAPHY & PERSISTENCE
+CSS
+/* THE SOVEREIGN LEGIBILITY OVERRIDE */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Orbitron:wght@700&display=swap');
+
+:root {
+  --obsidian: #010409;
+  --ghost-white: rgba(240, 244, 248, 0.95);
+  --electric-cyan: #00d4ff;
+}
+
+/* GLOBAL FONT PURGE */
+* {
+  font-family: 'Inter', sans-serif !important; /* Kill Typewriter Everywhere */
+}
+
+/* Command Headers */
+h1, h2, .command-title {
+  font-family: 'Orbitron', sans-serif !important;
+  font-size: 3rem !important; /* Massive Visibility */
+  color: var(--ghost-white) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.4rem;
+  font-weight: 700;
+}
+
+/* Body & Inputs for Older Eyes */
+p, label, input, .data-point {
+  font-size: 1.25rem !important; /* 20px Baseline */
+  line-height: 1.8;
+  font-weight: 500;
+  color: var(--ghost-white) !important;
+  letter-spacing: 0.05rem;
+}
+
+/* The ESC Node */
+.exit-node {
+  position: fixed;
+  top: 50px;
+  left: 50px;
+  color: var(--electric-cyan);
+  font-family: 'Orbitron' !important;
+  font-size: 1.2rem;
+  text-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+  z-index: 10000;
+}
+FINAL INSTRUCTION FOR THE REPLIT AGENT:
+DISRUPTOR MODE: EXECUTE SOVEREIGN LEGIBILITY LOCKDOWN.
+
+Delete Typewriter Fonts: Search the entire project for any font-family containing 'monospace', 'Courier', or 'Typewriter'. Replace them all with Inter for body and Orbitron for headers.
+
+Legibility Pass: Increase all body/input font sizes to 20px minimum. Increase all headers to 40px+. Use Ghost White for all text.
+
+Navigation Fix: Add the ESC // RETURN TO COMMAND node to the top-left of all sub-pages. Wire it to the Liquid Ripple exit transition.
+
+Obsidian Reset: Apply the Midnight-to-Black vertical gradient to all backgrounds. Remove every trace of brown/gold/light-blue.
+
+Persistence: Confirm the system saves the user's route and restores it on PIN entry.
+
+This is the Sovereign Standard. It is clean, it is sharp, and it respects the user’s eyes. No one will ever mistake this for a generic website again. How does the typography feel on the preview now?

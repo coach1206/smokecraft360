@@ -45,8 +45,8 @@ const C = {
   red:      "#E94B5A",
   amber:    "#F6A623",
   purple:   "#A78BFA",
-  mono:     "'JetBrains Mono','Courier New',monospace",
-  serif:    "'Cormorant Garamond',serif",
+  mono:     "'Inter',sans-serif",
+  serif:    "'Orbitron',sans-serif",
 };
 // keep SovereignTheme accessible for explicit overrides
 void SovereignTheme;
@@ -284,7 +284,7 @@ function TitanPreviewZone({ tile }: { tile: Tile }) {
       {/* Pattern type badge — bottom right */}
       <div style={{
         position: "absolute", bottom: 7, right: 10,
-        fontSize: 7, color: `${accent}55`, fontFamily: C.mono, letterSpacing: "0.16em",
+        fontSize: 9, color: `${accent}55`, fontFamily: "'Inter',sans-serif", letterSpacing: "0.10em",
       }}>
         {previewType.toUpperCase()} SIGNAL
       </div>
@@ -356,7 +356,7 @@ function VenueNode({ x, y, status, tableNumber, delay = 0 }: { x: number; y: num
       <span style={{
         position: "absolute", top: -22, left: "50%", transform: "translateX(-50%)",
         fontSize: 7, fontWeight: 700, color: "rgba(0,212,255,0.45)",
-        letterSpacing: "0.14em", whiteSpace: "nowrap", fontFamily: "'JetBrains Mono','Courier New',monospace",
+        letterSpacing: "0.10em", whiteSpace: "nowrap", fontFamily: "'Inter',sans-serif",
       }}>NODE-{tableNumber}</span>
       {status !== "empty" && (
         <motion.div
@@ -678,7 +678,7 @@ function EEIEModuleCard({
       <TitanPreviewZone tile={tile} />
 
       {/* ── Card body ── */}
-      <div style={{ padding: "20px 22px 22px", display: "flex", flexDirection: "column", flex: 1 }}>
+      <div style={{ padding: "28px 28px 26px", display: "flex", flexDirection: "column", flex: 1 }}>
         {/* Icon + status row */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
           <div style={{
@@ -701,22 +701,22 @@ function EEIEModuleCard({
 
         {/* Label — Orbitron, neon cyan */}
         <div style={{
-          fontSize: 13, color: "#00f2ff", fontFamily: "'Orbitron',sans-serif",
-          letterSpacing: "0.18em", marginBottom: 6, fontWeight: 700,
+          fontSize: 16, color: "#00f2ff", fontFamily: "'Orbitron',sans-serif",
+          letterSpacing: "0.16em", marginBottom: 8, fontWeight: 700,
           textShadow: "0 0 20px rgba(0,242,255,0.45)",
           lineHeight: 1.3,
         }}>
           {tile.label}
         </div>
         {/* Accent divider */}
-        <div style={{ width: 32, height: 1, background: `${tile.accent}65`, marginBottom: 10, borderRadius: 1 }} />
+        <div style={{ width: 36, height: 1, background: `${tile.accent}65`, marginBottom: 12, borderRadius: 1 }} />
 
-        {/* Description — Inter, readable size */}
+        {/* Description — Inter 500, generous size */}
         <div style={{
-          fontSize: 12, color: C.cardText,
-          fontFamily: "'Inter',sans-serif", fontWeight: 300,
-          lineHeight: 1.75, letterSpacing: "0.02em",
-          marginBottom: 18, flex: 1,
+          fontSize: 14, color: C.cardText,
+          fontFamily: "'Inter',sans-serif", fontWeight: 500,
+          lineHeight: 1.80, letterSpacing: "0.02em",
+          marginBottom: 22, flex: 1,
           display: "-webkit-box", WebkitLineClamp: 3,
           WebkitBoxOrient: "vertical", overflow: "hidden",
         }}>
@@ -770,7 +770,7 @@ export default function EEIELandingHub() {
       minHeight: "100dvh",
       background: "radial-gradient(circle at top, #0f172a 0%, #010409 100%)",
       color: C.ice,
-      fontFamily: C.mono, display: "flex", flexDirection: "column",
+      fontFamily: "'Inter',sans-serif", display: "flex", flexDirection: "column",
       overflow: "hidden", position: "relative",
     }}>
       {/* Atmospheric overhead glass sheen — ghost white horizontal gradient */}
@@ -824,14 +824,18 @@ export default function EEIELandingHub() {
           whileTap={{ scale: 0.93 }}
           onClick={() => navigate("/sovereign-dashboard")}
           style={{
-            display: "flex", alignItems: "center", gap: 6,
-            padding: "8px 13px", borderRadius: 8,
-            background: `${C.blue}0C`, border: `1px solid ${C.border}`,
-            color: C.silver, fontSize: 9, cursor: "pointer",
-            letterSpacing: "0.16em", flexShrink: 0, fontFamily: C.mono,
+            display: "flex", alignItems: "center", gap: 7,
+            padding: "9px 16px", borderRadius: 8,
+            background: "rgba(0,212,255,0.06)", border: "1px solid rgba(0,212,255,0.18)",
+            color: "rgba(0,212,255,0.80)", fontSize: 11, cursor: "pointer",
+            letterSpacing: "0.13em", flexShrink: 0, fontFamily: "'Orbitron',sans-serif",
+            fontWeight: 700,
+            textShadow: "0 0 12px rgba(0,212,255,0.45)",
           }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,212,255,0.13)"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,212,255,0.06)"; }}
         >
-          <ChevronLeft size={12} /> BACK
+          <ChevronLeft size={14} /> ESC // RETURN
         </motion.button>
 
         {/* Icon badge */}
@@ -845,10 +849,10 @@ export default function EEIELandingHub() {
 
         {/* Brand */}
         <div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: C.blueHi, fontFamily: C.serif, letterSpacing: "0.13em" }}>
+          <div style={{ fontSize: 22, fontWeight: 700, color: C.blueHi, fontFamily: "'Orbitron',sans-serif", letterSpacing: "0.18em" }}>
             EEIE COMMAND CENTER
           </div>
-          <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.20em" }}>
+          <div style={{ fontSize: 11, color: C.dim, letterSpacing: "0.16em", fontFamily: "'Inter',sans-serif", fontWeight: 500 }}>
             EXPERIENCE ENHANCEMENT INTELLIGENCE ENGINE · NOVEE OS · TITAN V
           </div>
         </div>
@@ -856,11 +860,11 @@ export default function EEIELandingHub() {
         {/* Right cluster */}
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 16 }}>
           <div className="pulse pulse-delay-1" style={{ width: 6, height: 6, borderRadius: "50%", background: C.green }} />
-          <span style={{ fontSize: 9, color: C.green, fontWeight: 700, letterSpacing: "0.12em" }}>SOVEREIGN ACTIVE</span>
+          <span style={{ fontSize: 12, color: C.green, fontWeight: 700, letterSpacing: "0.12em", fontFamily: "'Inter',sans-serif" }}>SOVEREIGN ACTIVE</span>
 
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.blueHi }} />
-            <span style={{ fontSize: 8, color: C.silver, letterSpacing: "0.12em" }}>EEIE ENGINE OPERATIONAL</span>
+            <span style={{ fontSize: 11, color: C.silver, letterSpacing: "0.10em", fontFamily: "'Inter',sans-serif", fontWeight: 500 }}>EEIE ENGINE OPERATIONAL</span>
           </div>
 
           <motion.button
@@ -868,11 +872,13 @@ export default function EEIELandingHub() {
             onClick={() => navigate("/sovereign-dashboard")}
             style={{
               display: "flex", alignItems: "center", gap: 6,
-              padding: "7px 13px", borderRadius: 8,
+              padding: "8px 16px", borderRadius: 8,
               background: `${C.blue}0C`, border: `1px solid ${C.border}`,
-              color: C.muted, fontSize: 8, fontWeight: 700,
-              letterSpacing: "0.12em", cursor: "pointer", fontFamily: C.mono,
+              color: C.silver, fontSize: 11, fontWeight: 600,
+              letterSpacing: "0.10em", cursor: "pointer", fontFamily: "'Inter',sans-serif",
             }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = `${C.blue}1A`; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = `${C.blue}0C`; }}
           >
             SOVEREIGN HUB
           </motion.button>

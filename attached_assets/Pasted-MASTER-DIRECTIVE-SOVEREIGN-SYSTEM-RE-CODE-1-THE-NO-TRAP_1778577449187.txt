@@ -1,0 +1,75 @@
+MASTER DIRECTIVE: SOVEREIGN SYSTEM RE-CODE
+1. THE "NO-TRAP" COMMAND OVERRIDE
+
+Exit Logic: Every "Onboarding" or "Partner" screen must have a Top-Left Return Node.
+
+Visual: A glowing Electric Cyan Arrow labeled "ESC // RETURN TO COMMAND."
+
+Logic: Clicking this must trigger the Liquid Ripple Transition and return the user to the HubCraft or the previous workspace instantly.
+
+2. VISUAL DNA: OBSIDIAN GLASS (NOT MEDICAL WHITE)
+
+Palette: Total purge of bright whites. Use Obsidian Black (#010409) backgrounds.
+
+Panels: Form cards must be Deep Vault Navy (#0a0f1d) with a 145-degree gradient. Apply a 40px backdrop-filter blur.
+
+The "Shimmer": Add a slow, metallic "sheen" animation across the glass surface of the card.
+
+3. TYPOGRAPHY: THE COMMANDER’S SCALE
+
+Headers: Orbitron (Ghost White). Size: 2.5rem (40px) minimum. Tracking: 0.3rem.
+
+Input & Body: Inter (Weight 500+). STRICT MINIMUM SIZE: 20px. * Contrast: Use Ice Silver for labels and Electric Cyan for active input borders. NO SMALL OR TIGHT FONTS.
+
+4. NO GLYPHS / NO EMOJIS
+
+Delete the generic icons. Use realistic, dark-toned luxury photography or animated telemetry waves to represent sections.
+
+THE "DISRUPTOR" FIX: CSS & NAV LOGIC
+CSS
+/* THE OBSIDIAN VAULT OVERRIDE */
+.onboarding-container {
+  background: radial-gradient(circle at top, #0f172a 0%, #010409 100%) !important;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* THE COMMAND OVERRIDE BUTTON */
+.exit-node {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  color: #00d4ff;
+  letter-spacing: 0.2rem;
+  cursor: pointer;
+  z-index: 1000;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+/* THE THICK GLASS SLAB */
+.form-card-sovereign {
+  background: rgba(10, 15, 28, 0.9) !important;
+  backdrop-filter: blur(50px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 80px !important; /* Massive breathing room */
+  border-radius: 0px !important; /* Sharp hardware edges */
+}
+MASTER INSTRUCTION FOR THE REPLIT AGENT
+CRITICAL RE-DESIGN: THE LAST BUILD WAS GENERIC AND BROKEN.
+
+Immediate Fix: Add an 'ESC' / 'Back' button to the top-left of the onboarding screen. It must trigger the Liquid Ripple and return to HubCraft.
+
+Visual Reset: Delete the bright white backgrounds. Apply the Obsidian Stealth theme (Black background, Deep Navy Glass cards).
+
+Typography Mandate: >    - Set all header text to Orbitron, 40px+.
+
+Set all body and input text to Inter, 20px+.
+
+Letter spacing must be wide and clean. No cramped text.
+
+Interaction: Wire the 'Continue' button to have a physical 'press' animation and a cyan glow.
+
+Atmosphere: Ensure the realistic luxury product images are used as muted backdrops for the modules.
