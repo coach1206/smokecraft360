@@ -609,3 +609,26 @@
     box-shadow: 0 0 0 1px rgba(0,128,255,0.28);
   }
 }
+
+/* ── Live Activity Ticker ──────────────────────────────────── */
+@keyframes eeieTickerScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.eeie-ticker-scroll {
+  animation: eeieTickerScroll 48s linear infinite;
+  will-change: transform;
+}
+.eeie-ticker-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* ── Financial ticker (bottom) ─────────────────────────────── */
+@keyframes eeieFinancialScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.eeie-financial-scroll {
+  animation: eeieFinancialScroll 38s linear infinite;
+  will-change: transform;
+}

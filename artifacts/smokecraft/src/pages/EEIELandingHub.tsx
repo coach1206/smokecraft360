@@ -289,6 +289,169 @@ function logEEIEEvent(module: string, route: string) {
   });
 }
 
+// ── Live Activity Rail data ──────────────────────────────────
+const LIVE_EVENTS = [
+  { time: "10:42", msg: "Order fulfilled — Macallan 25 delivered to Table 7",              color: "#18C98B" },
+  { time: "10:41", msg: "New guest: Michael R. checked in at Cigar Lounge",                color: "#00D4FF" },
+  { time: "10:40", msg: "Environmental adjusted: Humidity increased in Wine Cellar",        color: "#4DAAFF" },
+  { time: "10:39", msg: "VIP arrival: John D. — Private Room reserved",                    color: "#A78BFA" },
+  { time: "10:38", msg: "Pairing created: Golden Old Fashioned × AS Wagyu",               color: "#F6A623" },
+  { time: "10:37", msg: "Inventory alert: Cohiba Behike 56 — Only 3 left in stock",        color: "#F6A623" },
+  { time: "10:35", msg: "Feedback received: Guest rated experience 5/5",                   color: "#18C98B" },
+  { time: "10:32", msg: "New pairing — Dom Perignon P2 × Cohiba Behike 56",               color: "#18C98B" },
+];
+
+function LiveActivityRail() {
+  const doubled = [...LIVE_EVENTS, ...LIVE_EVENTS];
+  return (
+    <div style={{
+      background: "rgba(4,8,20,0.97)",
+      borderBottom: "1px solid rgba(0,212,255,0.14)",
+      height: 36, display: "flex", alignItems: "center",
+      flexShrink: 0, position: "relative", zIndex: 9, overflow: "hidden",
+    }}>
+      {/* LIVE badge — anchored left */}
+      <div style={{
+        padding: "0 16px 0 28px", flexShrink: 0, display: "flex", alignItems: "center", gap: 7,
+        borderRight: "1px solid rgba(0,212,255,0.14)",
+      }}>
+        <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#00D4FF", boxShadow: "0 0 7px #00D4FF" }} />
+        <span style={{ fontSize: 8, color: "#00D4FF", fontFamily: "'Orbitron',sans-serif", fontWeight: 700, letterSpacing: "0.18em" }}>LIVE ACTIVITY</span>
+      </div>
+      {/* Scrolling events */}
+      <div style={{ flex: 1, overflow: "hidden" }}>
+        <div className="eeie-ticker-scroll" style={{ display: "flex", gap: 48, alignItems: "center", whiteSpace: "nowrap" }}>
+          {doubled.map((ev, i) => (
+            <div key={i} style={{ display: "inline-flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+              <span style={{ fontSize: 7, color: "rgba(120,160,220,0.55)", fontFamily: "'Inter',sans-serif", fontWeight: 600 }}>{ev.time}</span>
+              <div style={{ width: 3, height: 3, borderRadius: "50%", background: ev.color, boxShadow: `0 0 5px ${ev.color}`, flexShrink: 0 }} />
+              <span style={{ fontSize: 8, color: "rgba(210,230,255,0.82)", fontFamily: "'Inter',sans-serif" }}>{ev.msg}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Venue Blueprint Heatmap ──────────────────────────────────
+const BP_ZONES = [
+  { id: "cigar",   label: "CIGAR LOUNGE", x: 28,  y: 28,  w: 162, h: 118, pct: 78, color: "#F6A623" },
+  { id: "whiskey", label: "WHISKEY BAR",  x: 208, y: 28,  w: 138, h: 78,  pct: 88, color: "#00D4FF" },
+  { id: "vip",     label: "VIP ROOM",     x: 364, y: 28,  w: 106, h: 118, pct: 42, color: "#A78BFA" },
+  { id: "kitchen", label: "KITCHEN",      x: 208, y: 124, w: 138, h: 80,  pct: 95, color: "#E94B5A" },
+  { id: "dining",  label: "DINING",       x: 28,  y: 164, w: 162, h: 80,  pct: 65, color: "#4DAAFF" },
+];
+const BP_TABLES = [
+  { x: 68,  y: 72,  s: "active" }, { x: 108, y: 66,  s: "peak"   }, { x: 68,  y: 112, s: "active" },
+  { x: 108, y: 112, s: "active" }, { x: 155, y: 88,  s: "empty"  },
+  { x: 240, y: 60,  s: "peak"   }, { x: 278, y: 60,  s: "active" }, { x: 318, y: 75,  s: "active" },
+  { x: 398, y: 68,  s: "active" }, { x: 440, y: 110, s: "empty"  },
+  { x: 244, y: 168, s: "peak"   }, { x: 284, y: 168, s: "peak"   },
+  { x: 66,  y: 202, s: "active" }, { x: 106, y: 208, s: "empty"  }, { x: 146, y: 200, s: "active" },
+];
+const tColor = (s: string) => s === "peak" ? "#E94B5A" : s === "active" ? "#18C98B" : "rgba(80,110,170,0.30)";
+
+function VenueBlueprint() {
+  const circ = 2 * Math.PI * 36;
+  return (
+    <div style={{
+      background: "linear-gradient(165deg,rgba(15,26,53,0.98) 0%,rgba(6,11,25,0.98) 100%)",
+      border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, overflow: "hidden",
+      marginBottom: 22, maxWidth: 960,
+      boxShadow: "inset 0 1px 2px rgba(255,255,255,0.05), 0 20px 40px rgba(0,0,0,0.50)",
+    }}>
+      {/* Header */}
+      <div style={{
+        background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.06)",
+        padding: "13px 24px", display: "flex", alignItems: "center", justifyContent: "space-between",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: "#f8fafc", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>Venue Heat Map</div>
+          <div style={{ padding: "2px 9px", borderRadius: 12, background: "rgba(0,212,255,0.14)", border: "1px solid rgba(0,212,255,0.28)" }}>
+            <span style={{ fontSize: 8, color: "#00D4FF", fontWeight: 700, letterSpacing: "0.12em", fontFamily: "'Orbitron',sans-serif" }}>LIVE</span>
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          {[{ l: "PEAK", c: "#E94B5A" }, { l: "ACTIVE", c: "#18C98B" }, { l: "EMPTY", c: "rgba(100,140,200,0.45)" }].map(({ l, c }) => (
+            <div key={l} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 7, height: 7, borderRadius: "50%", background: c }} />
+              <span style={{ fontSize: 7, color: "rgba(120,160,220,0.55)", letterSpacing: "0.12em", fontFamily: "'Inter',sans-serif" }}>{l}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Blueprint + zone stats */}
+      <div style={{ padding: "20px 24px", display: "flex", gap: 24, alignItems: "flex-start" }}>
+        {/* SVG floor plan */}
+        <div style={{ flex: 1 }}>
+          <svg viewBox="0 0 490 265" style={{ width: "100%", display: "block" }}>
+            <defs>
+              <pattern id="bpGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M20 0L0 0 0 20" fill="none" stroke="rgba(0,200,255,0.055)" strokeWidth="0.5" />
+              </pattern>
+            </defs>
+            <rect width="490" height="265" fill="url(#bpGrid)" />
+            {BP_ZONES.map(z => (
+              <g key={z.id}>
+                <motion.rect x={z.x} y={z.y} width={z.w} height={z.h} rx={4}
+                  fill={`${z.color}09`} stroke={z.color} strokeWidth="1.2"
+                  animate={{ opacity: [0.65, 1, 0.65] }}
+                  transition={{ repeat: Infinity, duration: 2.5 + BP_ZONES.indexOf(z) * 0.4, ease: "easeInOut" }}
+                  style={{ filter: `drop-shadow(0 0 8px ${z.color}50)` }}
+                />
+                <text x={z.x + z.w / 2} y={z.y + 14} textAnchor="middle" fill={z.color} fontSize="6.5" fontFamily="'Orbitron',sans-serif" letterSpacing="1" opacity="0.85">{z.label}</text>
+                <text x={z.x + z.w / 2} y={z.y + 26} textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize="9" fontFamily="'Orbitron',sans-serif" fontWeight="700">{z.pct}%</text>
+              </g>
+            ))}
+            {BP_TABLES.map((t, i) => (
+              <motion.circle key={i} cx={t.x} cy={t.y} r={7}
+                fill={tColor(t.s)} stroke="rgba(255,255,255,0.12)" strokeWidth="1"
+                animate={t.s === "peak" ? { r: [6, 8.5, 6], opacity: [0.7, 1, 0.7] } : {}}
+                transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                style={{ filter: t.s !== "empty" ? `drop-shadow(0 0 5px ${tColor(t.s)})` : "none" }}
+              />
+            ))}
+          </svg>
+        </div>
+
+        {/* Zone stat cards */}
+        <div style={{ width: 155, display: "flex", flexDirection: "column", gap: 9, flexShrink: 0 }}>
+          {BP_ZONES.map(z => (
+            <div key={z.id} style={{ background: `${z.color}0C`, border: `1px solid ${z.color}28`, borderRadius: 9, padding: "10px 12px" }}>
+              <div style={{ fontSize: 7, color: z.color, fontFamily: "'Orbitron',sans-serif", letterSpacing: "0.10em", marginBottom: 3 }}>{z.label}</div>
+              <div style={{ fontSize: 20, color: "#ffffff", fontFamily: "'Orbitron',sans-serif", fontWeight: 700, lineHeight: 1 }}>{z.pct}%</div>
+              <div style={{ height: 3, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginTop: 7, overflow: "hidden" }}>
+                <motion.div
+                  animate={{ width: `${z.pct}%` }} initial={{ width: 0 }}
+                  transition={{ duration: 1.4, ease: "easeOut", delay: 0.3 + BP_ZONES.indexOf(z) * 0.12 }}
+                  style={{ height: "100%", background: z.color, borderRadius: 2, boxShadow: `0 0 6px ${z.color}` }}
+                />
+              </div>
+              <div style={{ fontSize: 7, color: "rgba(150,180,220,0.55)", marginTop: 5, fontFamily: "'Inter',sans-serif" }}>
+                {z.pct >= 90 ? "At capacity" : z.pct > 70 ? "High activity" : z.pct > 50 ? "Moderate" : "Light activity"}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Sovereign Index financial ticker data ────────────────────
+const SOVEREIGN_INDEX = [
+  { label: "SOVEREIGN INDEX", value: "1,243.7", change: "+2.34%", up: true },
+  { label: "MACALLAN 25",     value: "$2,450",  change: "+1.8%",  up: true },
+  { label: "LOUIS XIII",      value: "$4,850",  change: "+0.7%",  up: true },
+  { label: "DOM PERIGNON P2", value: "$1,250",  change: "+0.9%",  up: true },
+  { label: "COHIBA BEHIKE 56",value: "$850",    change: "+3.2%",  up: true },
+  { label: "WAGYU A5",        value: "$220",    change: "-0.4%",  up: false },
+  { label: "BALVENIE 21",     value: "$380",    change: "+1.1%",  up: true },
+  { label: "SESSION REVENUE", value: "$12,840", change: "+4.2%",  up: true },
+];
+
 // ── EEIEModuleCard ────────────────────────────────────────────
 function EEIEModuleCard({
   tile, index, onNavigate,
@@ -505,6 +668,9 @@ export default function EEIELandingHub() {
         </div>
       </div>
 
+      {/* ── LIVE ACTIVITY RAIL ── */}
+      <LiveActivityRail />
+
       {/* ── BODY ── */}
       <div style={{ flex: 1, overflowY: "auto", padding: "36px 32px 24px", position: "relative", zIndex: 1 }}>
 
@@ -589,6 +755,9 @@ export default function EEIELandingHub() {
           </div>
         </div>
 
+        {/* ── VENUE BLUEPRINT ── */}
+        <VenueBlueprint />
+
         {/* ── MODULE GRID SECTION HEADER ── */}
         <div style={{
           background: "linear-gradient(165deg,rgba(15,26,53,0.95) 0%,rgba(6,11,25,0.95) 100%)",
@@ -642,28 +811,51 @@ export default function EEIELandingHub() {
         </div>
       </div>
 
-      {/* ── BOTTOM STATUS RAIL ── */}
+      {/* ── SOVEREIGN INDEX FINANCIAL TICKER ── */}
       <div style={{
-        borderTop: `1px solid ${C.border}`,
-        background: "rgba(5,10,20,0.97)",
-        padding: "10px 32px",
-        display: "flex", alignItems: "center",
-        flexShrink: 0, overflowX: "auto", position: "relative", zIndex: 10,
+        borderTop: "1px solid rgba(0,212,255,0.14)",
+        background: "rgba(3,6,16,0.99)",
+        height: 40, display: "flex", alignItems: "center",
+        flexShrink: 0, position: "relative", zIndex: 10, overflow: "hidden",
       }}>
-        <div className="eeie-rail-progress" />
-        {STATUS_RAIL.map((item, i) => (
-          <div key={item.label} style={{
-            display: "flex", alignItems: "center", gap: 6, padding: "0 16px",
-            borderRight: i < STATUS_RAIL.length - 1 ? `1px solid ${C.border}` : "none",
-            flexShrink: 0,
-          }}>
-            <div className={`eeie-tel-dot eeie-tel-dot-${i + 1}`} style={{ width: 5, height: 5, borderRadius: "50%", background: item.color }} />
-            <span style={{ fontSize: 7, color: C.dim, letterSpacing: "0.14em" }}>{item.label}</span>
-            <span style={{ fontSize: 7, color: item.color, fontWeight: 700, letterSpacing: "0.12em" }}>{item.value}</span>
+        {/* Fixed left badge */}
+        <div style={{
+          padding: "0 16px 0 28px", flexShrink: 0,
+          borderRight: "1px solid rgba(0,212,255,0.14)",
+          display: "flex", alignItems: "center", gap: 7, height: "100%",
+        }}>
+          <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#F6A623", boxShadow: "0 0 7px #F6A623" }} />
+          <span style={{ fontSize: 8, color: "#F6A623", fontFamily: "'Orbitron',sans-serif", fontWeight: 700, letterSpacing: "0.16em" }}>SOVEREIGN INDEX</span>
+        </div>
+        {/* Scrolling financial strip */}
+        <div style={{ flex: 1, overflow: "hidden" }}>
+          <div className="eeie-financial-scroll" style={{ display: "flex", gap: 0, alignItems: "center", whiteSpace: "nowrap" }}>
+            {[...SOVEREIGN_INDEX, ...SOVEREIGN_INDEX].map((item, i) => (
+              <div key={i} style={{
+                display: "inline-flex", alignItems: "center", gap: 10, flexShrink: 0,
+                padding: "0 24px", borderRight: "1px solid rgba(255,255,255,0.06)", height: 40,
+              }}>
+                <span style={{ fontSize: 8, color: "rgba(160,190,240,0.55)", fontFamily: "'Orbitron',sans-serif", letterSpacing: "0.10em" }}>{item.label}</span>
+                <span style={{ fontSize: 13, color: "#f0f4ff", fontFamily: "'Orbitron',sans-serif", fontWeight: 700, letterSpacing: "0.03em" }}>{item.value}</span>
+                <span style={{
+                  fontSize: 9, fontWeight: 700, fontFamily: "'Inter',sans-serif",
+                  color: item.up ? "#18C98B" : "#E94B5A",
+                  padding: "2px 7px", borderRadius: 5,
+                  background: item.up ? "rgba(24,201,139,0.10)" : "rgba(233,75,90,0.10)",
+                  border: `1px solid ${item.up ? "rgba(24,201,139,0.22)" : "rgba(233,75,90,0.22)"}`,
+                }}>{item.change}</span>
+              </div>
+            ))}
           </div>
-        ))}
-        <div style={{ marginLeft: "auto", fontSize: 7, color: C.dim, letterSpacing: "0.18em", flexShrink: 0, paddingLeft: 16 }}>
-          EEIE TITAN V · v3.0.0 · 360 ENTERPRISES SERVICES LLC
+        </div>
+        {/* Fixed right: timestamp */}
+        <div style={{
+          padding: "0 22px", flexShrink: 0,
+          borderLeft: "1px solid rgba(0,212,255,0.10)",
+          fontSize: 7, color: "rgba(100,140,200,0.45)", letterSpacing: "0.16em",
+          fontFamily: "'Inter',sans-serif",
+        }}>
+          EEIE TITAN V · v3.0.0
         </div>
       </div>
     </div>
