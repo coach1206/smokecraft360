@@ -132,7 +132,7 @@
   inset: 0;
   border-radius: inherit;
   border: 1px solid transparent;
-  background: linear-gradient(160deg, rgba(220,230,255,0.20) 0%, rgba(46,91,255,0.40) 100%) border-box;
+  background: linear-gradient(160deg, rgba(220,230,255,0.06) 0%, rgba(46,91,255,0.15) 100%) border-box;
   -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: destination-out;
   mask-composite: exclude;
