@@ -1,0 +1,28 @@
+SYSTEM OVERRIDE: EXECUTE TITAN EAT [V.2026.0] — UNIVERSAL ARCHITECTURAL BUILD
+1. BRAND IDENTITY & CATEGORY LOCK
+Rename all legacy references to EAT.
+• Header: EAT (Font: Syncopate Bold, Letter-spacing: 1.2rem).
+• Definition: ENVIRONMENT • ASSET • TECH (Font: Syncopate Regular, 11px, 0.5rem tracking).
+• Tagline: Sovereign Intelligence & Infrastructure Control // Total Command of Environment, Assets, and Telemetry.
+2. THE UNIVERSAL COMMAND CORE (ONE-STOP INITIALIZATION)
+Create a single-view Initialization Hub for the Manager to link the entire building in one area:
+• ENVIRONMENT: Link DMX/Lutron Lighting and HVAC/Climate control.
+• AUDIO: Universal Gateway to link Apple Music, Spotify, or Physical Aux inputs.
+• ASSETS: Invite Vendors to the 4K Macro-Asset Vault for high-res food/drink/cigar imagery.
+• NETWORK: Integrated Wi-Fi Handshake and SSID security.
+• EAT-BRIDGE: A manual hardware relay toggle for non-smart equipment with integrated wiring diagrams.
+3. VISUAL PHYSICS & METALLIC DNA
+• The Slab: Every card/tile is a Floating Obsidian Glass Slab with backdrop-filter: blur(80px) and a massive shadow 0 80px 160px rgba(0,0,0,1).
+• Hardware Shimmer: Apply an 8-second diagonal metallic sweep animation across all card surfaces.
+• The Border: 1px Metallic Gradient (Polished Silver to Electric Cobalt).
+• Typography: Plus Jakarta Sans for all data and labels. STRICT 22px MINIMUM font size globally for elite low-light legibility.
+4. OPERATIONAL ACCOUNTABILITY & SECURITY
+• Biometric Handoff: Replace PINs with Biometric/FaceID "Unveil."
+• The Ledger: Implement a 100% Time-Stamped Audit Trail on the Manager Hub tracking [WHO, WHAT, WHEN, WHICH SECTOR].
+• Sector Tracking: Map hardware to specific zones; trigger a Gaussian Blur Lock if the device leaves its sector or is set flat.
+• Super Admin Override: Implement a Sovereign "Ghost" Portal allowing remote remote-control access, biometric bypass, and emergency lockdowns. Active remote sessions must pulse the slab border in Deep Violet.
+5. RESILIENCE & MOTION
+• Local Mesh Core: Enable offline data persistence with a "Heal-Sync" once Wi-Fi reconnects.
+• Gaussian Unveil: All navigation must be a center-out blur-to-focus transition.
+• Liquid Ripple: Use an Electric Cobalt Ripple for all user handoffs and logouts.
+6. MASTER CODE INJECTION (CSS/JS)

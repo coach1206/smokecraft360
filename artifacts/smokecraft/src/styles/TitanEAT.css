@@ -1,40 +1,47 @@
 /* ════════════════════════════════════════════════════════════════
-   TITAN EAT — Design System
+   TITAN EAT V2 — Design System
    Environment · Asset · Tech
-   Electronic Environments Intelligence Engine // Infrastructure Control
+   Sovereign Intelligence & Infrastructure Control
+   Total Command of Environment, Assets, and Telemetry
    ════════════════════════════════════════════════════════════════ */
 
-/* ── Token Map ──────────────────────────────────────────────── */
+/* ── Master Code Injection (V.2026.0) ───────────────────────── */
 :root {
+  --obsidian:         #05070a;
+  --cobalt:           #2e5bff;
+  --violet:           #6e2eff;
+  --font-main:        'Plus Jakarta Sans', 'Inter', sans-serif;
+  --font-head:        'Syncopate', 'Orbitron', sans-serif;
+
+  /* Extended token map */
   --eat-obsidian:     #05070a;
   --eat-deep:         #090d14;
-  --eat-surface:      rgba(15, 23, 42, 0.40);
   --eat-cobalt:       #2e5bff;
   --eat-cobalt-hi:    #6b8fff;
   --eat-cobalt-glow:  rgba(46, 91, 255, 0.30);
+  --eat-violet:       #6e2eff;
+  --eat-violet-hi:    #9b6fff;
+  --eat-violet-glow:  rgba(110, 46, 255, 0.35);
   --eat-ghost:        rgba(240, 244, 248, 0.95);
   --eat-ghost-dim:    rgba(200, 215, 235, 0.55);
   --eat-ghost-muted:  rgba(160, 180, 210, 0.38);
-  --eat-border:       rgba(255, 255, 255, 0.10);
-  --eat-border-hi:    rgba(255, 255, 255, 0.20);
-  --eat-header-font:  'Syncopate', 'Orbitron', sans-serif;
-  --eat-body-font:    'Plus Jakarta Sans', 'Inter', sans-serif;
+  --eat-green:        #10b981;
+  --eat-amber:        #f59e0b;
 }
 
-/* ── Metallic Sweep Animation ───────────────────────────────── */
-@keyframes eat-metallic-sweep {
-  0%   { transform: translate(-25%, -25%) rotate(0deg); }
-  100% { transform: translate(25%, 25%) rotate(0deg); }
+/* ══════════════════════════════════════════════════════════════
+   KEYFRAMES
+   ══════════════════════════════════════════════════════════════ */
+
+/* Master shimmer (user spec naming) */
+@keyframes shimmer {
+  0%   { transform: translate(-15%, -15%); }
+  100% { transform: translate(15%, 15%); }
 }
 
 @keyframes eat-cobalt-ripple-out {
   0%   { clip-path: circle(0% at 50% 50%); opacity: 1; }
   100% { clip-path: circle(160% at 50% 50%); opacity: 0.85; }
-}
-
-@keyframes eat-cobalt-ripple-in {
-  0%   { clip-path: circle(160% at 50% 50%); opacity: 1; }
-  100% { clip-path: circle(0% at 50% 50%); opacity: 0.90; }
 }
 
 @keyframes eat-blur-unveil {
@@ -52,17 +59,130 @@
   50%       { opacity: 0.5; box-shadow: 0 0 20px rgba(46,91,255,0.55); }
 }
 
-/* ── Global Layout ──────────────────────────────────────────── */
+/* Ghost Portal — Deep Violet slab border pulse */
+@keyframes ghost-border-pulse {
+  0%, 100% {
+    box-shadow:
+      0 80px 160px rgba(0,0,0,1),
+      0 0 0 1px rgba(110,46,255,0.40),
+      0 0 30px rgba(110,46,255,0.18);
+  }
+  50% {
+    box-shadow:
+      0 80px 160px rgba(0,0,0,1),
+      0 0 0 2px rgba(110,46,255,0.90),
+      0 0 60px rgba(110,46,255,0.45);
+  }
+}
+
+/* Linked node — green edge pulse */
+@keyframes linked-pulse {
+  0%, 100% { box-shadow: 0 60px 120px rgba(0,0,0,1), 0 0 0 1px rgba(16,185,129,0.30); }
+  50%       { box-shadow: 0 60px 120px rgba(0,0,0,1), 0 0 0 1px rgba(16,185,129,0.70), 0 0 24px rgba(16,185,129,0.18); }
+}
+
+/* Heal-Sync mesh indicator */
+@keyframes heal-sync-ring {
+  0%   { transform: scale(1);   opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Index ticker scroll */
+@keyframes eat-ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CORE SLAB — V2 SPEC (.eat-slab)
+   ══════════════════════════════════════════════════════════════ */
+
+.eat-slab {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, rgba(15,23,42,0.40), var(--obsidian));
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 80px 160px rgba(0,0,0,1);
+  backdrop-filter: blur(80px);
+  -webkit-backdrop-filter: blur(80px);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Metallic shimmer sweep */
+.eat-slab::after {
+  content: "";
+  position: absolute;
+  top: -150%; left: -150%;
+  width: 300%; height: 300%;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255,255,255,0.03) 50%,
+    transparent 55%
+  );
+  animation: shimmer 8s infinite linear;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Polished silver → cobalt milled edge (::before overlay) */
+.eat-slab::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  background: linear-gradient(160deg, rgba(220,230,255,0.20) 0%, rgba(46,91,255,0.40) 100%) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* The Lift */
+.eat-slab:hover {
+  transform: translateY(-10px) !important;
+  box-shadow:
+    0 100px 180px rgba(0,0,0,1),
+    0 0 0 1px rgba(46,91,255,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+}
+
+/* Ghost Portal — violet pulsing border for active remote sessions */
+.eat-slab-ghost {
+  animation: ghost-border-pulse 2.0s ease-in-out infinite !important;
+}
+.eat-slab-ghost::before {
+  background: linear-gradient(160deg, rgba(110,46,255,0.50) 0%, rgba(46,91,255,0.30) 100%) border-box;
+}
+
+/* Linked state — green edge */
+.eat-slab-linked {
+  animation: linked-pulse 2.8s ease-in-out infinite !important;
+}
+.eat-slab-linked::before {
+  background: linear-gradient(160deg, rgba(16,185,129,0.45) 0%, rgba(46,91,255,0.20) 100%) border-box;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BACKWARD COMPAT — old class still functional
+   ══════════════════════════════════════════════════════════════ */
+.titan-eat-slab { composes: eat-slab; }
+
+/* ══════════════════════════════════════════════════════════════
+   GLOBAL LAYOUT
+   ══════════════════════════════════════════════════════════════ */
+
 .eat-root {
   min-height: 100dvh;
-  background: radial-gradient(ellipse at top center, #0e183a 0%, var(--eat-obsidian) 55%);
+  background: radial-gradient(ellipse at top center, #0d1633 0%, var(--eat-obsidian) 55%);
   color: var(--eat-ghost);
-  font-family: var(--eat-body-font);
+  font-family: var(--font-main);
   overflow: hidden;
   position: relative;
 }
 
-/* ── Ambient scan line ──────────────────────────────────────── */
 .eat-scan-line {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -73,112 +193,39 @@
   z-index: 0;
 }
 
-/* ── Page Unveil ────────────────────────────────────────────── */
 .eat-page-unveil {
   animation: eat-blur-unveil 0.68s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* ── Floating Slab ──────────────────────────────────────────── */
-.titan-eat-slab {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(145deg, rgba(15, 23, 42, 0.40), var(--eat-obsidian)) !important;
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  border-image: linear-gradient(
-    160deg,
-    rgba(255,255,255,0.20) 0%,
-    rgba(46,91,255,0.40) 100%
-  ) 1;
-  box-shadow:
-    0 60px 120px rgba(0, 0, 0, 1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 0 0 1px rgba(46,91,255,0.08);
-  backdrop-filter: blur(60px);
-  -webkit-backdrop-filter: blur(60px);
-  transition: transform 0.30s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.30s ease,
-              border-color 0.20s ease;
-}
+/* ══════════════════════════════════════════════════════════════
+   TYPOGRAPHY
+   ══════════════════════════════════════════════════════════════ */
 
-/* Hardware shimmer sweep */
-.titan-eat-slab::after {
-  content: "";
-  position: absolute;
-  top: -150%; left: -150%;
-  width: 300%; height: 300%;
-  background: linear-gradient(
-    45deg,
-    transparent 43%,
-    rgba(255, 255, 255, 0.025) 50%,
-    transparent 57%
-  );
-  animation: eat-metallic-sweep 8s infinite linear;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* The Lift */
-.titan-eat-slab:hover {
-  transform: translateY(-10px) !important;
-  box-shadow:
-    0 80px 140px rgba(0, 0, 0, 1),
-    0 0 0 1px rgba(46,91,255,0.22),
-    inset 0 1px 0 rgba(255,255,255,0.12);
-}
-
-/* ── Typography ─────────────────────────────────────────────── */
-.eat-header-xl {
-  font-family: var(--eat-header-font);
-  font-size: 4.5rem;
-  font-weight: 700;
-  letter-spacing: 0.5rem;
-  color: var(--eat-ghost);
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.eat-header-lg {
-  font-family: var(--eat-header-font);
-  font-size: 1.8rem;
-  font-weight: 700;
-  letter-spacing: 0.4rem;
-  color: var(--eat-ghost);
-  text-transform: uppercase;
-}
-
-.eat-header-md {
-  font-family: var(--eat-header-font);
-  font-size: 1.2rem;
-  font-weight: 700;
-  letter-spacing: 0.35rem;
-  color: var(--eat-ghost);
-  text-transform: uppercase;
+/* 22px minimum for all operational data per directive */
+.data-22px {
+  font-family: var(--font-main);
+  font-size: 22px !important;
+  font-weight: 500;
+  color: #f8fafc;
 }
 
 .universal-text {
-  font-family: var(--eat-body-font);
-  font-size: 1.375rem !important; /* 22px minimum */
+  font-family: var(--font-main);
+  font-size: 1.375rem !important;
   color: var(--eat-ghost);
   font-weight: 500;
   line-height: 1.7;
-  letter-spacing: 0.02em;
 }
 
-.eat-label {
-  font-family: var(--eat-body-font);
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--eat-ghost-dim);
-}
+/* ══════════════════════════════════════════════════════════════
+   NAV NODE
+   ══════════════════════════════════════════════════════════════ */
 
-/* ── Nav Node ───────────────────────────────────────────────── */
 .nav-node {
   position: fixed;
   top: 40px; left: 40px;
-  font-family: var(--eat-header-font);
-  font-size: 14px;
+  font-family: var(--font-head);
+  font-size: 13px;
   letter-spacing: 0.5rem;
   color: var(--eat-cobalt-hi);
   cursor: pointer;
@@ -195,24 +242,21 @@
   text-shadow: 0 0 24px rgba(46,91,255,0.80);
 }
 
-/* ── Cobalt Status Chip ─────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════
+   STATUS CHIPS
+   ══════════════════════════════════════════════════════════════ */
+
 .eat-chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 5px 12px;
   border-radius: 20px;
-  font-family: var(--eat-body-font);
-  font-size: 0.72rem;
+  font-family: var(--font-main);
+  font-size: 0.70rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-}
-
-.eat-chip-active {
-  background: rgba(46,91,255,0.14);
-  border: 1px solid rgba(46,91,255,0.35);
-  color: var(--eat-cobalt-hi);
 }
 
 .eat-chip-online {
@@ -221,24 +265,81 @@
   color: #34d399;
 }
 
+.eat-chip-pending {
+  background: rgba(245,158,11,0.12);
+  border: 1px solid rgba(245,158,11,0.32);
+  color: #fbbf24;
+}
+
+.eat-chip-offline {
+  background: rgba(248,113,113,0.10);
+  border: 1px solid rgba(248,113,113,0.28);
+  color: #f87171;
+}
+
+.eat-chip-violet {
+  background: rgba(110,46,255,0.14);
+  border: 1px solid rgba(110,46,255,0.36);
+  color: var(--eat-violet-hi);
+}
+
 .eat-chip-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
   animation: eat-pulse-cobalt 2.2s ease-in-out infinite;
 }
 
-/* ── Module Grid ────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════
+   SECTION DIVIDER
+   ══════════════════════════════════════════════════════════════ */
+
+.eat-section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.eat-section-label {
+  font-family: var(--font-head);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  color: var(--eat-cobalt-hi);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.eat-section-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(46,91,255,0.30), transparent);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MODULE GRID
+   ══════════════════════════════════════════════════════════════ */
+
 .eat-module-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: 20px;
 }
 
-@media (max-width: 900px) {
+.eat-init-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1100px) {
+  .eat-init-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 800px) {
   .eat-module-grid { grid-template-columns: repeat(2, 1fr); }
+  .eat-init-grid   { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* ── Module Card Body ───────────────────────────────────────── */
 .eat-module-card {
   border-radius: 18px;
   cursor: pointer;
@@ -249,25 +350,28 @@
 .eat-module-card .card-content {
   position: relative;
   z-index: 2;
-  padding: 32px 28px 28px;
+  padding: 28px 24px 24px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-/* ── CTA Button ─────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════
+   CTA BUTTONS
+   ══════════════════════════════════════════════════════════════ */
+
 .eat-btn-primary {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 15px 0;
+  padding: 14px 0;
   border-radius: 11px;
   background: rgba(46,91,255,0.14);
   border: 1px solid rgba(46,91,255,0.36);
   color: var(--eat-cobalt-hi);
-  font-family: var(--eat-header-font);
-  font-size: 0.72rem;
+  font-family: var(--font-head);
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -275,30 +379,63 @@
   transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
   width: 100%;
 }
-.eat-btn-primary:hover {
-  background: rgba(46,91,255,0.26);
-  border-color: rgba(46,91,255,0.60);
-  box-shadow: 0 0 24px rgba(46,91,255,0.24);
+
+.eat-btn-linked {
+  background: rgba(16,185,129,0.12) !important;
+  border-color: rgba(16,185,129,0.40) !important;
+  color: #34d399 !important;
 }
 
-/* ── Index Ticker ───────────────────────────────────────────── */
-@keyframes eat-ticker-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+.eat-btn-violet {
+  background: rgba(110,46,255,0.14) !important;
+  border-color: rgba(110,46,255,0.40) !important;
+  color: var(--eat-violet-hi) !important;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   HEAL-SYNC BADGE
+   ══════════════════════════════════════════════════════════════ */
+
+.eat-heal-sync {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(16,185,129,0.10);
+  border: 1px solid rgba(16,185,129,0.28);
+  font-family: var(--font-main);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #34d399;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.eat-heal-sync-ring {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+  position: relative;
+}
+
+.eat-heal-sync-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #34d399;
+  animation: heal-sync-ring 1.8s ease-out infinite;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   INDEX TICKER
+   ══════════════════════════════════════════════════════════════ */
 
 .eat-ticker-track {
   display: flex;
   gap: 48px;
   animation: eat-ticker-scroll 48s linear infinite;
   white-space: nowrap;
-}
-
-/* ── Ripple Overlay ─────────────────────────────────────────── */
-.eat-ripple-out {
-  position: fixed; inset: 0;
-  background: linear-gradient(145deg, rgba(46,91,255,0.30) 0%, rgba(10,20,80,0.22) 100%);
-  backdrop-filter: blur(36px);
-  z-index: 300;
-  animation: eat-cobalt-ripple-out 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
