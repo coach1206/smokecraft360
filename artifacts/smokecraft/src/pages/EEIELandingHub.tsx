@@ -75,6 +75,32 @@ const MODULE_TILES: Tile[] = [
   { icon: Heart,       label: "PULSE INTELLIGENCE",  desc: "Real-time telemetry hub: live mood equalizer, hardware telemetry, AI predictive forecast, and revenue funnel. Heartbeat view of the entire venue.",   path: "/novee/pulse",             accent: "#00C4E8", status: "LIVE",      previewType: "wave"   },
 ];
 
+// ── StatusRing — animated SVG gauge ─────────────────────────
+function StatusRing({ value, label, color = "#00D4FF", delay = 0 }: { value: number; label: string; color?: string; delay?: number }) {
+  const r = 32;
+  const circ = 2 * Math.PI * r; // ≈201
+  return (
+    <div style={{ position: "relative", width: 80, height: 80, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+      <svg width="80" height="80" style={{ transform: "rotate(-90deg)", position: "absolute", top: 0, left: 0 }}>
+        <circle cx="40" cy="40" r={r} stroke="rgba(255,255,255,0.07)" strokeWidth="5" fill="transparent" />
+        <motion.circle
+          cx="40" cy="40" r={r} stroke={color} strokeWidth="5" fill="transparent"
+          strokeLinecap="round"
+          strokeDasharray={circ}
+          initial={{ strokeDashoffset: circ }}
+          animate={{ strokeDashoffset: circ - (circ * value) / 100 }}
+          transition={{ duration: 1.6, ease: "easeOut", delay }}
+          style={{ filter: `drop-shadow(0 0 6px ${color})` }}
+        />
+      </svg>
+      <div style={{ position: "absolute", textAlign: "center" }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#ffffff", fontFamily: "'Orbitron',sans-serif", lineHeight: 1 }}>{value}%</div>
+        <div style={{ fontSize: 7, color: "rgba(200,220,255,0.45)", letterSpacing: "0.10em", marginTop: 3, fontFamily: "'Inter',sans-serif" }}>{label}</div>
+      </div>
+    </div>
+  );
+}
+
 const STATUS_RAIL = [
   { label: "SESSION",    value: "ACTIVE",     color: C.green  },
   { label: "TOKEN",      value: "VALID",       color: C.green  },
@@ -482,69 +508,122 @@ export default function EEIELandingHub() {
       {/* ── BODY ── */}
       <div style={{ flex: 1, overflowY: "auto", padding: "36px 32px 24px", position: "relative", zIndex: 1 }}>
 
-        {/* Section label */}
-        <div style={{ fontSize: 8, color: `${C.blue}70`, letterSpacing: "0.28em", marginBottom: 26, textTransform: "uppercase" }}>
-          EEIE INTELLIGENCE MODULES · SELECT DESTINATION
+        {/* ── SOVEREIGN OPERATIONS BLOCK — featured section ── */}
+        <div style={{
+          background: "linear-gradient(165deg,rgba(15,26,53,0.98) 0%,rgba(6,11,25,0.98) 100%)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: 14, overflow: "hidden", marginBottom: 22, maxWidth: 960,
+          boxShadow: "inset 0 1px 2px rgba(255,255,255,0.05), 0 24px 48px rgba(0,0,0,0.55)",
+        }}>
+          {/* Header bar */}
+          <div style={{
+            background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.06)",
+            padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{
+                width: 34, height: 34, borderRadius: 9,
+                background: `${C.blue}22`, border: `1px solid ${C.blue}38`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: `0 0 14px ${C.blue}25`,
+              }}>
+                <Activity size={16} color={C.blueHi} />
+              </div>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: "#f8fafc", fontFamily: "'Inter',sans-serif", letterSpacing: "-0.01em", textTransform: "uppercase" }}>
+                  EEIE Intelligence Hub
+                </div>
+                <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.20em", marginTop: 1 }}>
+                  INTELLIGENCE › COMMAND › LIVE NODES
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 20, background: `${C.green}14`, border: `1px solid ${C.green}32` }}>
+                <div className="pulse" style={{ width: 5, height: 5, borderRadius: "50%", background: C.green }} />
+                <span style={{ fontSize: 7, color: C.green, fontWeight: 700, letterSpacing: "0.16em", fontFamily: "'Orbitron',sans-serif" }}>LIVE</span>
+              </div>
+              <motion.button
+                whileHover={{ boxShadow: `0 0 20px ${C.blue}50` }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate("/eeie/command-center")}
+                style={{
+                  display: "flex", alignItems: "center", gap: 7,
+                  padding: "8px 16px", borderRadius: 8,
+                  background: `${C.blue}20`, border: `1px solid ${C.blue}40`,
+                  color: C.blueHi, fontSize: 9, fontWeight: 700, letterSpacing: "0.14em",
+                  cursor: "pointer", fontFamily: "'Orbitron',sans-serif",
+                  transition: "background 0.18s",
+                }}
+              >
+                ENTER HUB <ChevronRight size={12} />
+              </motion.button>
+            </div>
+          </div>
+
+          {/* Content: description + status rings */}
+          <div style={{ padding: "24px 28px", display: "flex", alignItems: "center", gap: 36 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.85, fontFamily: "'Inter',sans-serif", fontWeight: 300 }}>
+                Full intelligence dashboard: venue health, sensory layers, commerce health, AI predictions,
+                event bus, staff cockpit, guest experience, media library, distributor sync, and back-of-house operations.
+              </div>
+              <div style={{ display: "flex", gap: 18, marginTop: 18 }}>
+                {[
+                  { label: "ALL NODES ONLINE", color: C.green },
+                  { label: "TOKEN VALID", color: C.blueHi },
+                  { label: "ENGINE OPERATIONAL", color: C.cyan },
+                ].map(item => (
+                  <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: item.color, boxShadow: `0 0 6px ${item.color}` }} />
+                    <span style={{ fontSize: 8, color: item.color, letterSpacing: "0.12em", fontFamily: "'Orbitron',sans-serif", fontWeight: 700 }}>{item.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 20, flexShrink: 0 }}>
+              <StatusRing value={98} label="UPTIME" color={C.green} delay={0.2} />
+              <StatusRing value={100} label="NODES" color={C.cyan} delay={0.4} />
+              <StatusRing value={99} label="INTEGRITY" color={C.blueHi} delay={0.6} />
+            </div>
+          </div>
         </div>
 
-        {/* ── FEATURED CARD ── */}
-        <motion.div
-          whileHover={{ scale: 1.005 }}
-          whileTap={{ scale: 0.986 }}
-          onClick={() => navigate("/eeie/command-center")}
-          className="eeie-live-card eeie-soft-glow"
-          style={{
-            background: "linear-gradient(135deg,rgba(0,128,255,0.16) 0%,rgba(0,80,200,0.08) 100%)",
-            border: `1px solid ${C.borderHi}`,
-            borderRadius: 18, padding: "30px 28px",
-            cursor: "pointer", display: "flex", alignItems: "center", gap: 26,
-            marginBottom: 20, position: "relative", overflow: "hidden", maxWidth: 960,
-          }}
-        >
-          {/* Corner radial */}
+        {/* ── MODULE GRID SECTION HEADER ── */}
+        <div style={{
+          background: "linear-gradient(165deg,rgba(15,26,53,0.95) 0%,rgba(6,11,25,0.95) 100%)",
+          border: "1px solid rgba(255,255,255,0.07)",
+          borderRadius: "12px 12px 0 0", borderBottom: "none",
+          maxWidth: 960,
+        }}>
           <div style={{
-            position: "absolute", top: 0, right: 0, width: 220, height: 220,
-            background: "radial-gradient(circle,rgba(0,170,255,0.14),transparent)",
-            borderRadius: "0 18px 0 100%", pointerEvents: "none",
-          }} />
-          {/* Animated top edge hero shimmer */}
-          <div className="eeie-hero-shimmer" />
-
-          {/* Icon */}
-          <div style={{
-            width: 64, height: 64, borderRadius: 17,
-            background: C.blue, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-            boxShadow: `0 0 30px ${C.blue}50`,
+            background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.06)",
+            padding: "13px 22px", display: "flex", alignItems: "center", justifyContent: "space-between",
+            borderRadius: "12px 12px 0 0",
           }}>
-            <Activity size={28} color="#fff" />
-          </div>
-
-          {/* Text */}
-          <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-              <div style={{ fontSize: 22, color: C.blueHi, fontFamily: C.serif, letterSpacing: "0.14em", fontWeight: 300 }}>
-                EEIE INTELLIGENCE HUB
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#f8fafc", fontFamily: "'Inter',sans-serif", letterSpacing: "-0.01em", textTransform: "uppercase" }}>
+                Intelligence Modules
               </div>
-              <div style={{
-                display: "inline-flex", alignItems: "center", gap: 5,
-                padding: "3px 9px", borderRadius: 20,
-                background: `${C.green}14`, border: `1px solid ${C.green}30`,
-              }}>
-                <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.green }} />
-                <span style={{ fontSize: 7, color: C.green, fontWeight: 700, letterSpacing: "0.18em" }}>LIVE</span>
+              <div style={{ padding: "2px 9px", borderRadius: 12, background: `${C.blue}18`, border: `1px solid ${C.blue}32` }}>
+                <span style={{ fontSize: 8, color: C.blueHi, fontWeight: 700, letterSpacing: "0.12em", fontFamily: "'Orbitron',sans-serif" }}>{MODULE_TILES.length} ACTIVE</span>
               </div>
             </div>
-            <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.8 }}>
-              Full intelligence dashboard: venue health, sensory layers, commerce health, AI predictions, event bus,
-              staff cockpit, guest experience, media library, distributor sync, and back-of-house operations.
+            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+              <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.green }} />
+              <span style={{ fontSize: 8, color: C.dim, letterSpacing: "0.16em", fontFamily: "'Inter',sans-serif" }}>SELECT DESTINATION</span>
             </div>
           </div>
-
-          <ChevronRight size={24} color={C.blueHi} style={{ flexShrink: 0 }} />
-        </motion.div>
+        </div>
 
         {/* ── MODULE GRID ── */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(270px,1fr))", gap: 16, maxWidth: 960 }}>
+        <div style={{
+          display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(270px,1fr))",
+          gap: 16, maxWidth: 960,
+          background: "linear-gradient(165deg,rgba(10,18,40,0.60) 0%,rgba(5,9,20,0.60) 100%)",
+          border: "1px solid rgba(255,255,255,0.07)", borderTop: "none",
+          borderRadius: "0 0 12px 12px", padding: 16,
+        }}>
           {MODULE_TILES.map((tile, i) => (
             <EEIEModuleCard key={tile.label} tile={tile} index={i} onNavigate={navigate} />
           ))}
