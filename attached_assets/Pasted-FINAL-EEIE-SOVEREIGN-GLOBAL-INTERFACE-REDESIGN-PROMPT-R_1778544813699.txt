@@ -1,0 +1,455 @@
+FINAL EEIE / SOVEREIGN GLOBAL INTERFACE REDESIGN PROMPT
+
+Redesign the entire EEIE / Sovereign interface family so every page uses the same premium visual language as the lighter blue-and-white command reference.
+
+This is the new global standard for ALL EEIE / Sovereign interfaces.
+
+GOAL
+
+The system should feel like:
+
+Apple meets Tesla  
+premium predictive intelligence  
+3D visual command software  
+a living and breathing machine  
+futuristic, instinctive, clean, and executive  
+not a generic POS system  
+not a flat admin dashboard  
+not too dark  
+not too light  
+high-end, visual, and operational
+
+GLOBAL VISUAL DIRECTION
+
+Use the light blue / white contrast style across all interfaces.
+
+Design language:
+
+deep navy top rail and selective deep navy side rail
+soft white and light ice-blue content surfaces
+metallic blue accents
+titanium borders
+electric cyan highlights
+signal green for healthy/active
+soft amber for attention
+controlled red for alerts only
+glow, glass depth, layered panels, soft shadowing
+clean luxury whitespace
+high legibility
+premium motion
+visual hierarchy
+
+Do NOT use:
+
+brown dominance
+gold dominance
+muddy backgrounds
+flat blocks
+solid dark blue everywhere
+glyph-only tiles
+emoji-like symbols
+cheap generic fonts
+plain developer tables with no productization
+
+GLOBAL SYSTEM RULES
+
+1. Every page must feel like part of the same interface family.
+2. Every page must use the same color system, spacing system, and panel language.
+3. Every page must have clear sections.
+4. Every page must include useful visuals, not just data.
+5. Every page must include subtle animation and living movement.
+6. Every page must have strong readability.
+7. Every major feature card must feel dimensional, not flat.
+
+TYPOGRAPHY
+
+Use clean premium modern typography.
+
+Requirements:
+page titles large and readable
+section headers clearly distinct
+body text clean and easy to scan
+no tiny sci-fi microtext for important content
+strong hierarchy
+avoid cheap-looking condensed text
+use crisp, refined, executive-style interface typography
+
+GLOBAL LAYOUT SYSTEM
+
+Every interface should use a structured layout with:
+
+1. Top status/navigation bar
+2. Left system rail or module rail
+3. Main hero/overview band
+4. Section-based content grid
+5. Visual intelligence panels
+6. Lower utility / ticker / live activity strip where appropriate
+
+Use consistent rounded corners, premium panel depth, metallic borders, and subtle glow edges.
+
+MASTER SECTION STYLING
+
+Every section/card must feel like a purposeful operational module.
+
+Cards should include:
+clear header
+subtext
+visual content
+operational stats
+action buttons
+status state
+subtle motion
+
+Do not use empty dead cards.
+
+GLOBAL ANIMATION / LIVING MACHINE RULES
+
+This is a living, breathing, learning system.
+
+Add restrained premium animation across the full interface system:
+
+top rail signal sweep
+active tab glow pulse
+card hover rise
+soft glass shimmer
+background signal waves
+sensor pulse indicators
+activity feed slide-ins
+graph line animations
+status ring pulses
+heartbeat / breathing motion on active panels
+live dots with subtle energy
+ambient telemetry movement
+module hover reveals
+ticker movement where appropriate
+
+Important:
+Animations must feel intelligent and premium, not childish or gimmicky.
+
+Add reduced-motion support:
+If prefers-reduced-motion is enabled, simplify all motion.
+
+NO GLYPHS / NO FLAT PLACEHOLDERS
+
+Do not use generic glyphs as the main visual identity of tiles.
+Do not rely on flat line icons as the main focus.
+Use actual imagery, visual renderings, and dimensional visual elements.
+
+IMAGERY REQUIREMENTS
+
+Use real visual content throughout the system.
+
+Hardware pages:
+show a 3D-rendered or highly realistic image of the actual tablet/device
+show device number / unit ID
+show battery percentage
+show battery graphic
+show connection type
+show uptime
+show health score
+show sync status
+show temperature if relevant
+show storage/memory if relevant
+show signal strength
+
+Staff / pairing / hospitality pages:
+use real cigar imagery
+use real liquor imagery
+use real cocktail imagery
+use real food imagery
+use real dessert imagery
+use real venue/hospitality imagery
+use real product bundle imagery
+
+Mood / sensor / vibe pages:
+use visual heatmaps
+zone maps
+sensor rings
+ambient condition panels
+guest vibe indicators
+zone energy indicators
+presence charts
+mood indicators
+environmental intelligence panels
+
+Media / product pages:
+use real preview thumbnails
+hero media cards
+large product visuals
+category image strips
+luxury merchandising cards
+featured campaign imagery
+
+PAGE FAMILY CONSISTENCY
+
+All pages must share the same feel and color logic, but each page still needs its own purpose-specific visual identity.
+
+Apply this redesign language to ALL of the following pages/modules:
+
+EEIE Command Hub
+Command Center
+Live Network
+Sensory Engine
+Commerce Health
+AI Predictions
+Event Bus
+Staff Cockpit
+Guest Experience
+Media Library
+Product Wall
+Visual Intelligence
+Mood Sensor
+Unified Data Brain
+Back-of-House Sync
+Distributor Library
+Distribution Vault
+Shipments
+Keys
+Live Nodes
+Deploy
+Hardware
+War Room
+Founder Control
+Master Operations
+Ambassador Deck
+Hardware Lab
+Operations pages
+Revenue/Commerce pages
+Reports/Audit pages
+
+PAGE-SPECIFIC REQUIREMENTS
+
+EEIE COMMAND HUB / DASHBOARD
+Use the lighter reference style as the master template.
+Must include:
+hardware/device hero section
+pairing recommendation section with cigar, liquor, food images
+mood/sensors overview
+commerce/operations analytics
+product/media wall
+activity feed / alerts
+system insight rail
+live activity bar
+executive status summary
+clean white/ice-blue content panels with dark blue framing
+
+HARDWARE / DEVICE STATUS
+Show a large realistic hardware image of a tablet or device.
+Show:
+device name
+unit number
+battery life
+time remaining
+status
+connection
+health score
+uptime
+last sync
+firmware
+storage / memory
+temperature
+run diagnostics button
+device details button
+
+STAFF / PAIRING
+Use real cigars, real alcohol, and real food visuals.
+Each recommendation card must include:
+large premium image
+product names
+pairing explanation
+confidence score
+staff pick / recommended tag
+add / view / compare actions
+
+MOOD / SENSORS
+Show the vibe of each venue section and users.
+Include:
+venue heat map
+zone activity
+ambient conditions
+temperature
+humidity
+air quality
+guest mood matrix
+presence levels
+sensor readings
+“calm / busy / elevated / relaxed / focused” style zone intelligence
+animated subtle signal motion
+
+COMMERCE / OPERATIONS
+Show revenue and fulfillment in a clean premium way.
+Include:
+revenue charts
+order flow
+bundle conversion
+inventory highlights
+predictive insight
+top performing categories
+POS / commerce health
+but still use the same light blue/white master system
+
+PRODUCT WALL / MEDIA
+Use real imagery, not placeholders.
+Include:
+featured collections
+luxury merchandising cards
+cigar and spirit bundles
+venue experience campaigns
+event imagery
+new arrival cards
+curated-for-you panels
+large thumbnail previews
+
+ACTIVITY / ALERTS
+Show polished alert cards with status colors.
+Use:
+VIP arrival
+inventory low
+system optimal
+new guest
+pairing created
+environment adjusted
+feedback received
+Make this area elegant and readable.
+
+DISTRIBUTION VAULT / OPERATIONS HUB
+Match the same design family.
+Do not make it much darker than the command hub.
+Use the same white / ice-blue primary content zone with dark navy framing.
+Include:
+workflow strip
+predictive intelligence
+node topology map
+hardware overview
+key lifecycle
+deployment timeline
+war room lane
+quick actions
+left status rail
+operational summary
+
+SHIPMENTS
+Visual rollout cards, not flat rows.
+Include:
+shipment state
+progress
+node count
+keys assigned
+readiness
+timeline
+recommended action
+
+KEYS
+Show lifecycle visually.
+Use secure-looking cards and structured rows with good contrast.
+Include:
+generated
+assigned
+active
+unused
+expired
+copy / revoke / assign actions
+
+LIVE NODES
+Use network map visuals and live node cards.
+Show:
+node health
+authorization
+heartbeat
+location
+signal
+status
+firmware
+last seen
+
+DEPLOY
+Use a deployment command look.
+Show:
+deployment stage timeline
+preflight status
+target nodes
+version comparison
+deployment progress
+rollback option
+
+HARDWARE PAGE
+Must use real tablet/device visuals.
+Must show device number and battery life clearly.
+Must feel like a diagnostics lab, not a row in a table.
+
+WAR ROOM
+Must feel serious and alive.
+Show:
+incident lanes
+severity
+timeline
+affected module
+recommended action
+acknowledge actions
+operational status
+
+SECTIONING REQUIREMENTS
+
+Every page must have strong sections.
+The system should never feel like one giant slab of color.
+
+Use alternating contrast through the page:
+deep navy shell
+light white-blue main surface
+slightly tinted blue panels
+clear spacing between modules
+visual breaks between sections
+subtle gradients only where needed
+
+The user likes the blue-and-white contrast through the pages, not one solid blue block. Preserve that.
+
+BUTTON AND TILE BEHAVIOR
+
+Buttons and tiles must animate subtly.
+
+Examples:
+hover elevation
+soft glow
+border illumination
+micro movement
+status shimmer
+active focus pulse
+
+Important:
+no dead-looking tiles
+no flat-looking button areas
+no cheap hover states
+
+SAME COLOR SYSTEM ACROSS ALL INTERFACES
+
+Use the same visual family everywhere.
+
+That means:
+same blues
+same whites
+same border tone
+same green health indicators
+same alert treatment
+same glass depth
+same typographic system
+same motion language
+
+Do not let some pages drift darker or feel like another product.
+
+FINAL RESULT
+
+After this redesign pass:
+
+all interfaces must feel unified
+all interfaces must feel premium
+all interfaces must feel alive
+all interfaces must have visual hierarchy
+all interfaces must use the lighter blue/white contrast style
+all interfaces must include meaningful imagery
+all interfaces must show dimensionality
+all interfaces must feel predictive, innovative, and instinctive
+
+This is not a regular admin dashboard.
+This is a premium visual command system.
+
+Use the attached light blue / white reference feel as the master art direction for the full EEIE / Sovereign platform.
