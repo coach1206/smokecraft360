@@ -1,0 +1,162 @@
+To wire the Pulse Intelligence Center correctly, you need a robust React structure that handles real-time state updates without sacrificing performance. Below is the "Titan" architecture: a centralized Telemetry Provider and the Dashboard Core using framer-motion for that fluid, heartbeat-like movement.
+
+1. The Telemetry Provider (PulseContext.tsx)
+This handles the "Live" data stream, ensuring every component stays in sync with the venue's rhythm.
+
+TypeScript
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+// Define the shape of our live venue data
+interface PulseData {
+  moodLanes: Array<{ id: string; name: string; score: number; pressure: 'low' | 'med' | 'high' }>;
+  hardware: Array<{ id: string; battery: number; status: string; health: number }>;
+  predictions: Array<{ id: string; title: string; confidence: number; reason: string }>;
+  funnel: { views: number; shown: number; added: number; sold: number };
+}
+
+const PulseContext = createContext<{ data: PulseData | null; isLive: boolean }>({
+  data: null,
+  isLive: false,
+});
+
+export const PulseProvider = ({ children }: { children: React.ReactNode }) => {
+  const [data, setData] = useState<PulseData | null>(null);
+  const [isLive, setIsLive] = useState(false);
+
+  useEffect(() => {
+    // Simulated WebSocket/Polling for the "Live Heartbeat"
+    const interval = setInterval(() => {
+      setData({
+        moodLanes: [
+          { id: '1', name: 'Cigar Lounge', score: Math.random() * 40 + 20, pressure: 'low' },
+          { id: '2', name: 'Whiskey Bar', score: Math.random() * 60 + 40, pressure: 'med' },
+          { id: '3', name: 'VIP Section', score: Math.random() * 30 + 70, pressure: 'high' },
+        ],
+        hardware: [
+          { id: 'TTX-004', battery: 87, status: 'Guest Session', health: 98 },
+          { id: 'TTX-009', battery: 12, status: 'Idle', health: 95 },
+        ],
+        predictions: [
+          { id: 'p1', title: 'Likely Next Sale', confidence: 88, reason: '3 guests match vanilla profile' },
+        ],
+        funnel: { views: 120, shown: 48, added: 22, sold: 14 }
+      });
+      setIsLive(true);
+    }, 2500); // 2.5s pulse rate
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <PulseContext.Provider value={{ data, isLive }}>
+      {children}
+    </PulseContext.Provider>
+  );
+};
+
+export const usePulse = () => useContext(PulseContext);
+2. The Equalizer Component (MoodEqualizer.tsx)
+This renders the fluid lanes. We use framer-motion to ensure the bars "flow" rather than jump.
+
+TypeScript
+import { motion } from 'framer-motion';
+import { usePulse } from './PulseContext';
+
+export const MoodEqualizer = () => {
+  const { data } = usePulse();
+
+  return (
+    <div className="bg-glass-panel p-6 rounded-xl border border-titanium/20">
+      <h3 className="text-ice-blue uppercase tracking-widest text-xs mb-6">Live Mood Equalizer</h3>
+      <div className="flex items-end justify-between h-40 gap-2">
+        {data?.moodLanes.map((lane) => (
+          <div key={lane.id} className="flex flex-col items-center flex-1">
+            <motion.div
+              animate={{ height: `${lane.score}%` }}
+              transition={{ type: 'spring', stiffness: 50 }}
+              className={`w-full rounded-t-sm ${
+                lane.pressure === 'high' ? 'bg-platinum-pulse' : 'bg-electric-blue'
+              }`}
+              style={{ boxShadow: '0 0 15px rgba(0, 200, 255, 0.3)' }}
+            />
+            <span className="text-[10px] mt-2 text-white/50 whitespace-nowrap">{lane.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+3. The Predictive Card Engine (PredictionForecast.tsx)
+This displays the AI insights with a "Sovereign" administrative feel.
+
+TypeScript
+import { motion, AnimatePresence } from 'framer-motion';
+import { usePulse } from './PulseContext';
+
+export const PredictionForecast = () => {
+  const { data } = usePulse();
+
+  return (
+    <div className="space-y-4">
+      <AnimatePresence>
+        {data?.predictions.map((predict) => (
+          <motion.div
+            key={predict.id}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="p-4 bg-white/5 border-l-4 border-electric-blue rounded-r-lg"
+          >
+            <div className="flex justify-between items-start">
+              <span className="text-xs font-bold text-ice-blue uppercase">{predict.title}</span>
+              <span className="text-xs text-white/40">{predict.confidence}% Conf.</span>
+            </div>
+            <p className="text-sm text-white/90 mt-1">{predict.reason}</p>
+            <button className="mt-3 text-[10px] text-electric-blue underline uppercase tracking-tighter">
+              Execute Recommended Action
+            </button>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+};
+4. Integration Logic
+To make this run on your Replit environment, wrap your main dashboard view in the PulseProvider.
+
+TypeScript
+// Main Display Page
+export default function PulseIntelligenceCenter() {
+  return (
+    <PulseProvider>
+      <div className="min-h-screen bg-black p-8 font-sans text-white">
+        {/* Sovereign Header */}
+        <header className="flex justify-between items-center mb-12">
+          <div>
+            <h1 className="text-2xl font-light tracking-tighter">NOVEE <span className="font-bold">OS</span></h1>
+            <p className="text-xs text-white/30">PULSE INTELLIGENCE SYSTEM v2.0</p>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] text-electric-blue font-mono tracking-widest">
+              AUTHORIZED OPERATOR: JC // 360 ENTERPRISES SERVICES LLC
+            </p>
+          </div>
+        </header>
+
+        {/* The Live Grid */}
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-8">
+            <MoodEqualizer />
+            <div className="mt-6 grid grid-cols-2 gap-6">
+              {/* Add Hardware and Funnel components here */}
+            </div>
+          </div>
+          <div className="col-span-4 bg-white/5 p-6 rounded-xl border border-white/10">
+            <h3 className="text-xs text-white/40 uppercase mb-4">AI Forecast</h3>
+            <PredictionForecast />
+          </div>
+        </div>
+      </div>
+    </PulseProvider>
+  );
+}

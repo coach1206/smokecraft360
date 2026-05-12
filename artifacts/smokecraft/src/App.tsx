@@ -105,6 +105,7 @@ const EnterpriseGovernance  = lazy(() => import('@/pages/EnterpriseGovernance'))
 const SovereignDistributionVault   = lazy(() => import('@/pages/SovereignDistributionVault'));
 const SovereignHardwareLab         = lazy(() => import('@/pages/SovereignHardwareLab'));
 const SovereignGate                = lazy(() => import('@/pages/SovereignGate'));
+const PulseIntelligenceCenter      = lazy(() => import('@/pages/pulse/PulseIntelligenceCenter'));
 const VendorOnboarding             = lazy(() => import('@/pages/vendor/VendorOnboarding'));
 const VendorDashboard              = lazy(() => import('@/pages/vendor/VendorDashboard'));
 const VendorProducts               = lazy(() => import('@/pages/vendor/VendorProducts'));
@@ -970,6 +971,9 @@ export default function App() {
             <SubPageProviders><SovereignHardwareLab /></SubPageProviders>
           </Route>
           {/* ── Vendor Portal — brand_partner role ── */}
+          <Route path="/novee/pulse">
+            <PulseIntelligenceCenter />
+          </Route>
           <Route path="/vendor/onboarding">
             <VendorOnboarding />
           </Route>

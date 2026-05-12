@@ -9,7 +9,7 @@ import { useLocation }       from "wouter";
 import { motion }            from "framer-motion";
 import {
   Activity, Users, Star, Image, Grid3x3, Truck,
-  Server, Building2, Radio, Package, Brain,
+  Server, Building2, Radio, Package, Brain, Heart,
   Thermometer, Zap, Shield, ChevronLeft, ChevronRight,
   ArrowRight,
 } from "lucide-react";
@@ -166,6 +166,13 @@ const MODULE_TILES: Tile[] = [
     path: "/vendor/dashboard", accent: "#087BFF", status: "ACTIVE",
     images: [U("1527281400683-1aae777175f8"), U("1603575448878-868a20723f5d")],
     previewType: "grid",
+  },
+  {
+    icon: Heart, label: "PULSE INTELLIGENCE",
+    desc: "Real-time telemetry hub: live mood equalizer, hardware telemetry, AI predictive forecast, and revenue funnel. Heartbeat view of the entire venue.",
+    path: "/novee/pulse", accent: "#00C4E8", status: "LIVE",
+    images: [U("1529543544282-ea669407fca3"), U("1603575448878-868a20723f5d")],
+    previewType: "single",
   },
 ];
 
