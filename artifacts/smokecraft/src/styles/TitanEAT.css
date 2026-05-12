@@ -100,7 +100,7 @@
 .eat-slab {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(145deg, rgba(15,23,42,0.40), var(--obsidian));
+  background: linear-gradient(145deg, rgba(22,22,26,0.55), var(--obsidian));
   border: 1px solid rgba(255,255,255,0.12);
   box-shadow: 0 80px 160px rgba(0,0,0,1);
   backdrop-filter: blur(80px);
@@ -176,7 +176,7 @@
 
 .eat-root {
   min-height: 100dvh;
-  background: radial-gradient(ellipse at top center, #0d1633 0%, var(--eat-obsidian) 55%);
+  background: radial-gradient(ellipse at top center, #111115 0%, var(--eat-obsidian) 55%);
   color: var(--eat-ghost);
   font-family: var(--font-main);
   overflow: hidden;
