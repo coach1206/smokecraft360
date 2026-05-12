@@ -1,0 +1,88 @@
+This is the Master Sovereign Directive. It merges every refined detail we’ve established: the Obsidian Stealth aesthetic, the Spatial Intelligence blueprint, the realistic luxury imagery, and the persistent "Ripple" session memory.
+
+Copy and paste this entire block into your Replit Agent to finalize the EEIE Command Core.
+
+MASTER DIRECTIVE: SOVEREIGN COMMAND CORE (FINAL MERGE)
+1. VISUAL DNA: OBSIDIAN STEALTH & LIQUID GLASS
+
+Palette: Replace all gold, brown, and medical blue with Obsidian Black (#010409) and Deep Vault Navy (#0a0f1d).
+
+Atmospheric Shading: Apply a muted Ice-White to Transparent horizontal gradient across the top header. Panels must use a 145-degree vertical gradient with backdrop-filter: blur(30px).
+
+Hardware Edges: Every module needs a 1px Ice-Silver stroke (rgba(255,255,255,0.08)) and internal glow to look like milled hardware.
+
+2. SPATIAL INTELLIGENCE: VENUE DIGITAL TWIN
+
+Blueprint Map: The center console must be a Dark Wireframe Blueprint of the venue.
+
+Node Plotting: Implement a "Spatial Studio" where managers assign Table/Section numbers. Tables must appear as glowing Electric Cyan (#00d4ff) nodes.
+
+Thermal Pulse: Nodes must pulse and expand their radius based on live spend and activity.
+
+Zero Glyphs: No emojis or icons. Use realistic high-res photography (Whiskey, Cigars, Lounges) or data waveforms only.
+
+3. TYPOGRAPHY: SOVEREIGN LEGIBILITY
+
+Fonts: Orbitron for Command Headers (Tracking: 0.2rem). Inter (Weight 500+) for all data.
+
+Size Rule: NO TEXT SMALLER THAN 18px. Spacing must be wide, breathable, and professional. Use Ghost White (rgba 240, 244, 248, 0.85) to prevent "white-wash" glare.
+
+4. SESSION PERSISTENCE & THE "RIPPLE" RESET
+
+Memory Restoration: Use localStorage to save the exact currentPath and state (Cart items, active views).
+
+The Welcome Gate: Logout must navigate to /welcome-eeie. This screen must explain: "EEIE: Sovereign Intelligence Engine for Venue Command."
+
+Ripple Transition: Every logout/return must trigger an Electric Cyan Liquid Ripple starting from the touch-point, clearing the screen.
+
+PIN Re-Entry: When the next user enters their PIN on the Welcome Gate, the ripple must Inverse (Contract) and restore the exact page the previous user left off on.
+
+5. COMMERCE & INTERACTION
+
+Add to Cart: Must trigger a physical "Hardware Press" animation and a glowing cyan confirmation.
+
+Upload Flow: Hide the "Upload Successful" screen immediately. Replace with a glowing "Asset Authorizing" progress ring until the file appears in the library.
+
+SOVEREIGN PERSISTENCE & RIPPLE CODE
+TypeScript
+/* 1. SESSION MEMORY HANDLER */
+const SovereignMemory = {
+  save: () => {
+    const data = { path: window.location.pathname, time: Date.now() };
+    localStorage.setItem('eeie_memory_core', JSON.stringify(data));
+  },
+  restore: (navigate) => {
+    const saved = JSON.parse(localStorage.getItem('eeie_memory_core'));
+    if (saved) navigate(saved.path);
+  }
+};
+
+/* 2. THE RIPPLE & WELCOME GATE LOGIC */
+export const LogoutHandler = ({ onTrigger }) => {
+  const [activeRipple, setRippling] = useState(false);
+
+  const executeReturn = () => {
+    setRippling(true); // Trigger Electric Cyan Ripple
+    SovereignMemory.save(); // Lock current workspace in memory
+    setTimeout(() => {
+      onTrigger(); // Redirect to Welcome Gate
+    }, 1000);
+  };
+
+  return (
+    <button onClick={executeReturn} className="sovereign-exit-btn">
+      {activeRipple && <div className="ripple-overlay" />}
+      <span className="relative z-10">Return to Command</span>
+    </button>
+  );
+};
+FINAL CHECKLIST FOR AGENT:
+Kill the Gold: Verify all brown/gold hex codes are replaced with Midnight/Cyan/Silver.
+
+Fix Font Size: Inspect every component; ensure descriptions and labels are 18px+.
+
+Map Layout: Ensure the venue wireframe nodes show real Table/Section numbers.
+
+The Explain Text: Ensure the /welcome-eeie page clearly states the mission of the Sovereign Intelligence Engine.
+
+The system is now a "Vault." It remembers everything, reacts with liquid physics, and looks like the elite hardware you demanded.

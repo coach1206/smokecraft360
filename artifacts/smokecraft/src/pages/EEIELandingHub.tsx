@@ -17,21 +17,29 @@ import {
 import "@/styles/Sovereign.css";
 import "@/styles/eeie-motion.css";
 
-// ── Titan V Engine — Navy Glass + White contrast system ─────────
+// ── Sovereign Stealth Theme — Obsidian + Ghost White + Electric Cyan ──
+const SovereignTheme = {
+  background: "radial-gradient(circle at top, #0f172a 0%, #010409 100%)",
+  panel:      "linear-gradient(145deg, rgba(15,23,42,0.92) 0%, rgba(2,6,23,1) 100%)",
+  textPrimary:"rgba(240,244,248,0.85)",   // Ghost White
+  accent:     "#00d4ff",                  // Electric Cyan
+  border:     "rgba(255,255,255,0.05)",   // Ice-Silver ghost stroke
+};
+
 const C = {
-  bg:       "#071828",              // deep navy blue
-  surface:  "rgba(14,48,115,0.90)", // medium navy glass — clearly lighter than bg
-  cardAlt:  "rgba(16,55,128,0.85)", // slightly lifted navy glass
+  bg:       "#010409",                        // Obsidian Black
+  surface:  "rgba(15,23,42,0.92)",            // Deep Vault Navy glass
+  cardAlt:  "rgba(10,15,29,0.95)",
   blue:     "#1E8FFF",
   blueHi:   "#4DAAFF",
   cyan:     "#00D4FF",
-  ice:      "rgba(240,248,255,0.97)",  // near-white
-  silver:   "rgba(190,220,255,0.80)",  // light blue-white secondary
-  muted:    "rgba(145,190,245,0.60)",  // mid-tone labels
-  cardText: "rgba(220,238,255,0.92)",  // bright readable body text
-  dim:      "rgba(120,170,225,0.48)",  // dim labels
-  border:   "rgba(50,150,255,0.40)",   // vivid electric blue border
-  borderHi: "rgba(80,190,255,0.70)",
+  ice:      "rgba(240,244,248,0.97)",          // Ghost White bright
+  silver:   "rgba(240,244,248,0.75)",          // Ghost White secondary
+  muted:    "rgba(200,215,235,0.55)",          // Ghost White muted
+  cardText: "rgba(240,244,248,0.85)",          // Ghost White body
+  dim:      "rgba(180,200,230,0.38)",          // Ghost White dim
+  border:   "rgba(255,255,255,0.05)",          // Ice-Silver ghost stroke
+  borderHi: "rgba(255,255,255,0.12)",
   green:    "#18C98B",
   red:      "#E94B5A",
   amber:    "#F6A623",
@@ -39,6 +47,8 @@ const C = {
   mono:     "'JetBrains Mono','Courier New',monospace",
   serif:    "'Cormorant Garamond',serif",
 };
+// keep SovereignTheme accessible for explicit overrides
+void SovereignTheme;
 
 const STATUS_COLORS: Record<string, string> = {
   ACTIVE: C.green, LIVE: C.green, ONLINE: C.green, READY: C.blue,
@@ -343,13 +353,13 @@ function VenueNode({ x, y, status, tableNumber, delay = 0 }: { x: number; y: num
   return (
     <div style={{ position: "absolute", left: `${x}%`, top: `${y}%`, transform: "translate(-50%,-50%)" }}>
       <span style={{
-        position: "absolute", top: -20, left: "50%", transform: "translateX(-50%)",
-        fontSize: 8, fontWeight: 700, color: "rgba(255,255,255,0.30)",
-        letterSpacing: "0.12em", whiteSpace: "nowrap", fontFamily: "'Inter',sans-serif",
-      }}>T-{tableNumber}</span>
+        position: "absolute", top: -22, left: "50%", transform: "translateX(-50%)",
+        fontSize: 7, fontWeight: 700, color: "rgba(0,212,255,0.45)",
+        letterSpacing: "0.14em", whiteSpace: "nowrap", fontFamily: "'JetBrains Mono','Courier New',monospace",
+      }}>NODE-{tableNumber}</span>
       {status !== "empty" && (
         <motion.div
-          animate={{ scale: [1, 1.65, 1], opacity: [0.28, 0.65, 0.28] }}
+          animate={{ scale: [1, 2.0, 1], opacity: [0.20, 0.55, 0.20] }}
           transition={{ duration: dur, repeat: Infinity, ease: "easeInOut", delay }}
           style={{
             width: 32, height: 32, borderRadius: "50%",
@@ -749,21 +759,29 @@ export default function EEIELandingHub() {
 
   return (
     <div style={{
-      minHeight: "100dvh", background: C.bg, color: C.ice,
+      minHeight: "100dvh",
+      background: "radial-gradient(circle at top, #0f172a 0%, #010409 100%)",
+      color: C.ice,
       fontFamily: C.mono, display: "flex", flexDirection: "column",
       overflow: "hidden", position: "relative",
     }}>
-      {/* Ambient blue glow — living drift animation */}
-      <div className="eeie-ambient-glow" style={{
-        position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
-        width: 1000, height: 260,
-        background: "radial-gradient(ellipse,rgba(14,100,255,0.18) 0%,rgba(0,60,180,0.08) 50%,transparent 75%)",
+      {/* Atmospheric overhead glass sheen — ghost white horizontal gradient */}
+      <div style={{
+        position: "fixed", top: 0, left: 0, right: 0, height: 120,
+        background: "linear-gradient(180deg, rgba(240,244,248,0.04) 0%, transparent 100%)",
         pointerEvents: "none", zIndex: 0,
       }} />
-      {/* Corner accent glow */}
+      {/* Ambient deep cyan — barely visible ambient node in center */}
+      <div className="eeie-ambient-glow" style={{
+        position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
+        width: 900, height: 220,
+        background: "radial-gradient(ellipse, rgba(0,212,255,0.07) 0%, rgba(0,80,180,0.04) 50%, transparent 75%)",
+        pointerEvents: "none", zIndex: 0,
+      }} />
+      {/* Corner obsidian depth shadow */}
       <div style={{
-        position: "fixed", top: -80, right: -80, width: 400, height: 400,
-        background: "radial-gradient(circle,rgba(0,150,255,0.10) 0%,transparent 65%)",
+        position: "fixed", top: -60, right: -60, width: 340, height: 340,
+        background: "radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 65%)",
         pointerEvents: "none", zIndex: 0,
       }} />
       {/* Scan line */}
