@@ -26,7 +26,6 @@ import {
   EATMeshResilience,
   SovereignOverride,
   type LedgerPacket,
-  type AudioProvider,
 } from "@/lib/EATBridge";
 import "@/styles/TitanEAT.css";
 
@@ -68,9 +67,9 @@ const TICKER_ITEMS = [
 const INITIAL_LEDGER: LedgerPacket[] = [
   { id: "h1", timestamp: "10:42:18", user: "MGR. HARRIS",   event: "Linked HVAC — Zone 3",              zone: "VIP LOUNGE",  status: "SECURE" },
   { id: "h2", timestamp: "10:39:05", user: "MGR. HARRIS",   event: "Vendor invite: Boisset Collection", zone: "ASSET VAULT", status: "SECURE" },
-  { id: "h3", timestamp: "10:31:44", user: "ADMIN SANTOS",  event: "SSID security updated",             zone: "NETWORK",     status: "SECURE" },
+  { id: "h3", timestamp: "10:31:44", user: "ADMIN SANTOS",  event: "SSID security updated",             zone: "NETWORK",     status: "REMOTE" },
   { id: "h4", timestamp: "10:28:12", user: "MGR. HARRIS",   event: "Spotify linked to Audio Gateway",   zone: "AUDIO",       status: "SECURE" },
-  { id: "h5", timestamp: "10:15:00", user: "SYSTEM",        event: "Heal-Sync — 11 packets restored",   zone: "MESH CORE",   status: "SECURE" },
+  { id: "h5", timestamp: "10:15:00", user: "SYSTEM",        event: "Heal-Sync — 11 packets restored",   zone: "MESH CORE",   status: "LOCAL"  },
   { id: "h6", timestamp: "09:58:33", user: "ADMIN SANTOS",  event: "DMX Scene: Cigar Lounge Evening",   zone: "ENVIRONMENT", status: "SECURE" },
 ];
 
@@ -357,11 +356,11 @@ export default function TitanEATHub() {
   useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
-      const healed = EATMeshResilience.healSync();
-      if (healed.length > 0) {
+      const count = EATMeshResilience.healSync();
+      if (count > 0) {
         setQueueCount(0);
         pushLedger(EATSovereignLedger.recordEvent(
-          "SYSTEM", `Heal-Sync — ${healed.length} packets restored`, "MESH CORE"
+          "SYSTEM", `Heal-Sync — ${count} packets restored`, "MESH CORE"
         ));
       }
     };
@@ -384,14 +383,14 @@ export default function TitanEATHub() {
       icon: Thermometer, accent: "#34d399", sector: "ENVIRONMENT",
       desc: "Link DMX lighting and HVAC climate control",
       subs: ["DMX / LUTRON", "HVAC CLIMATE", "ZONE SENSORS"],
-      bridgeFn: () => EATBridge.updateEnvironment("lighting", 80),
+      bridgeFn: () => EATBridge.updateEnvironment("lighting", 80).then(() => void 0),
     },
     {
       id: "audio", label: "AUDIO GATEWAY",
       icon: Music, accent: C.cobaltHi, sector: "AUDIO",
       desc: "Universal gateway for music and aux input",
       subs: ["APPLE MUSIC", "SPOTIFY", "PHYSICAL AUX"],
-      bridgeFn: () => EATBridge.syncAudio("Spotify" as AudioProvider).then(() => void 0),
+      bridgeFn: () => EATBridge.syncAudio("Spotify").then(() => void 0),
     },
     {
       id: "assets", label: "ASSET VAULT",
@@ -434,7 +433,7 @@ export default function TitanEATHub() {
       try {
         if (!isOnline) {
           EATMeshResilience.localPersistence({
-            category: id, value: 1, ts: new Date().toISOString(),
+            category: id, value: 1, type: 'ENV_ADJUST',
           });
           setQueueCount(EATMeshResilience.getQueueLength());
         } else {
@@ -458,7 +457,6 @@ export default function TitanEATHub() {
   const handleGhostMode = useCallback(() => {
     const next = !ghostActive;
     setGhostActive(next);
-    SovereignOverride.activateGhostMode("EAT-MASTER-HUB");
     pushLedger(EATSovereignLedger.recordEvent(
       "SUPER ADMIN",
       next ? "Ghost Mode activated — Remote session open" : "Ghost Mode deactivated",
@@ -474,7 +472,6 @@ export default function TitanEATHub() {
   }, [pushLedger]);
 
   const handleReleaseLockdown = useCallback(() => {
-    SovereignOverride.releaseLockdown();
     pushLedger(EATSovereignLedger.recordEvent("SOVEREIGN", "Lockdown released — Systems restored", "ALL SECTORS"));
     setIsLockedDown(false);
   }, [pushLedger]);
@@ -681,31 +678,46 @@ export default function TitanEATHub() {
 
             <div className="eat-slab" style={{ borderRadius: 16, overflow: "hidden" }}>
               {/* Header */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr 90px 110px", padding: "12px 20px", borderBottom: "1px solid rgba(46,91,255,0.10)", background: "rgba(46,91,255,0.04)" }}>
-                {["WHO", "WHAT", "WHEN", "SECTOR"].map(h => (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr 86px 100px 76px", padding: "12px 20px", borderBottom: "1px solid rgba(46,91,255,0.10)", background: "rgba(46,91,255,0.04)" }}>
+                {["WHO", "WHAT", "WHEN", "SECTOR", "STATUS"].map(h => (
                   <div key={h} style={{ fontFamily: C.header, fontSize: 9, color: C.cobaltHi, letterSpacing: "0.20em", fontWeight: 700 }}>{h}</div>
                 ))}
               </div>
               <AnimatePresence initial={false}>
-                {ledgerEntries.map((e, i) => (
-                  <motion.div
-                    key={e.id}
-                    initial={{ opacity: 0, y: -8, backgroundColor: "rgba(46,91,255,0.08)" }}
-                    animate={{ opacity: 1, y: 0, backgroundColor: "rgba(0,0,0,0)" }}
-                    transition={{ duration: 0.35 }}
-                    style={{
-                      display: "grid", gridTemplateColumns: "1fr 1.6fr 90px 110px",
-                      padding: "12px 20px",
-                      borderBottom: i < ledgerEntries.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
-                      position: "relative", zIndex: 2,
-                    }}
-                  >
-                    <div style={{ fontFamily: C.body, fontSize: 12, color: C.ghost, fontWeight: 600 }}>{e.user}</div>
-                    <div style={{ fontFamily: C.body, fontSize: 12, color: C.ghostDim, paddingRight: 8 }}>{e.event}</div>
-                    <div style={{ fontFamily: C.header, fontSize: 11, color: C.cobaltHi, letterSpacing: "0.06em" }}>{e.timestamp}</div>
-                    <div style={{ fontFamily: C.body, fontSize: 10, color: C.ghostMuted, letterSpacing: "0.10em", fontWeight: 700, textTransform: "uppercase" }}>{e.zone}</div>
-                  </motion.div>
-                ))}
+                {ledgerEntries.map((e, i) => {
+                  const statusColor =
+                    e.status === "SECURE" ? C.greenHi :
+                    e.status === "LOCAL"  ? C.amberHi : C.violetHi;
+                  const statusBg =
+                    e.status === "SECURE" ? "rgba(52,211,153,0.10)" :
+                    e.status === "LOCAL"  ? "rgba(245,158,11,0.10)" : "rgba(110,46,255,0.12)";
+                  return (
+                    <motion.div
+                      key={e.id}
+                      initial={{ opacity: 0, y: -8, backgroundColor: "rgba(46,91,255,0.08)" }}
+                      animate={{ opacity: 1, y: 0, backgroundColor: "rgba(0,0,0,0)" }}
+                      transition={{ duration: 0.35 }}
+                      style={{
+                        display: "grid", gridTemplateColumns: "1fr 1.6fr 86px 100px 76px",
+                        padding: "12px 20px",
+                        borderBottom: i < ledgerEntries.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
+                        position: "relative", zIndex: 2, alignItems: "center",
+                      }}
+                    >
+                      <div style={{ fontFamily: C.body, fontSize: 12, color: C.ghost, fontWeight: 600 }}>{e.user}</div>
+                      <div style={{ fontFamily: C.body, fontSize: 12, color: C.ghostDim, paddingRight: 8 }}>{e.event}</div>
+                      <div style={{ fontFamily: C.header, fontSize: 11, color: C.cobaltHi, letterSpacing: "0.06em" }}>{e.timestamp}</div>
+                      <div style={{ fontFamily: C.body, fontSize: 10, color: C.ghostMuted, letterSpacing: "0.10em", fontWeight: 700, textTransform: "uppercase" }}>{e.zone}</div>
+                      <div style={{
+                        display: "inline-flex", alignItems: "center",
+                        padding: "3px 8px", borderRadius: 20,
+                        background: statusBg, border: `1px solid ${statusColor}40`,
+                        fontFamily: C.header, fontSize: 8, fontWeight: 700,
+                        letterSpacing: "0.14em", color: statusColor,
+                      }}>{e.status}</div>
+                    </motion.div>
+                  );
+                })}
               </AnimatePresence>
             </div>
           </div>
