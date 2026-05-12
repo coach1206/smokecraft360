@@ -466,13 +466,15 @@ export default function TitanEATHub() {
 
   /* ── Emergency Lockdown ── */
   const handleLockdown = useCallback(() => {
-    SovereignOverride.emergencyLockdown();
-    pushLedger(EATSovereignLedger.recordEvent("SOVEREIGN", "EMERGENCY LOCKDOWN triggered", "ALL SECTORS"));
-    setIsLockedDown(true);
+    const state = SovereignOverride.emergencyLockdown();
+    if (state === "GAUSSIAN_BLUR_LOCK_ACTIVE") {
+      pushLedger(EATSovereignLedger.recordEvent("SUPER_ADMIN", "EMERGENCY LOCKDOWN ACTIVATED", "GLOBAL"));
+      setIsLockedDown(true);
+    }
   }, [pushLedger]);
 
   const handleReleaseLockdown = useCallback(() => {
-    pushLedger(EATSovereignLedger.recordEvent("SOVEREIGN", "Lockdown released — Systems restored", "ALL SECTORS"));
+    pushLedger(EATSovereignLedger.recordEvent("SUPER_ADMIN", "Lockdown released — Systems restored", "GLOBAL"));
     setIsLockedDown(false);
   }, [pushLedger]);
 
@@ -534,10 +536,10 @@ export default function TitanEATHub() {
             </motion.div>
 
             <div style={{ fontFamily: C.header, fontSize: 28, color: C.redHi, letterSpacing: "0.5rem", textAlign: "center" }}>
-              GAUSSIAN BLUR LOCK ACTIVE
+              SYSTEM LOCKDOWN
             </div>
             <div className="data-22px" style={{ color: C.ghostDim, letterSpacing: "0.10em", textAlign: "center" }}>
-              SOVEREIGN LOCKDOWN IN EFFECT
+              GAUSSIAN BLUR LOCK ACTIVE
             </div>
             <div style={{ fontFamily: C.body, fontSize: 14, color: C.ghostMuted, letterSpacing: "0.10em", textAlign: "center", lineHeight: 1.8 }}>
               All environment and asset controls suspended.<br />
@@ -557,7 +559,7 @@ export default function TitanEATHub() {
               onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.18)"; }}
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.08)"; }}
             >
-              RELEASE LOCKDOWN
+              RELEASE HUB
             </motion.button>
           </motion.div>
         )}

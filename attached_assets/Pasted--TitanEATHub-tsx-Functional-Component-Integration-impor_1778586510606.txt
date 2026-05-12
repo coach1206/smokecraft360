@@ -1,0 +1,74 @@
+// TitanEATHub.tsx - Functional Component Integration
+import React, { useState, useEffect } from 'react';
+import { EATBridge, EATSovereignLedger, SovereignOverride, EATMeshResilience, LedgerPacket } from './EATBridge';
+
+export const TitanEATHub = () => {
+  const [ledger, setLedger] = useState<LedgerPacket[]>([]);
+  const [isLocked, setIsLocked] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [queueCount, setQueueCount] = useState(0);
+
+  // Connectivity Listener: Automatic Heal-Sync
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      const restored = EATMeshResilience.healSync();
+      if (restored > 0) {
+        const entry = EATSovereignLedger.recordEvent("SYSTEM", `HEAL-SYNC: ${restored} packets restored`, "NETWORK");
+        setLedger(prev => [entry, ...prev]);
+      }
+    };
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  const handleLockdown = () => {
+    const state = SovereignOverride.emergencyLockdown();
+    if (state === "GAUSSIAN_BLUR_LOCK_ACTIVE") {
+      setIsLocked(true);
+      const entry = EATSovereignLedger.recordEvent("SUPER_ADMIN", "EMERGENCY LOCKDOWN ACTIVATED", "GLOBAL");
+      setLedger(prev => [entry, ...prev]);
+    }
+  };
+
+  return (
+    <div className={`eat-root ${isLocked ? 'blur-active' : ''}`}>
+      {/* 1. INITIALIZATION HUB: 22px Data Standard */}
+      <section className="universal-command-core">
+        <button onClick={handleLockdown} className="emergency-btn">EMERGENCY LOCKDOWN</button>
+        {/* ... Other Init Nodes ... */}
+      </section>
+
+      {/* 2. THE LEDGER: WHO / WHAT / WHEN / SECTOR */}
+      <div className="eat-slab ledger-container">
+        <h2 className="font-head">SOVEREIGN LEDGER</h2>
+        <table>
+          <tbody>
+            {ledger.map((entry, i) => (
+              <tr key={i} className="data-22px">
+                <td>{entry.timestamp}</td>
+                <td>{entry.user}</td>
+                <td>{entry.event}</td>
+                <td>{entry.zone}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* 3. LOCKDOWN OVERLAY: Syncopate Lockdown Text */}
+      {isLocked && (
+        <div className="lockdown-overlay">
+          <h1 className="font-head pulse-violet">SYSTEM LOCKDOWN</h1>
+          <button onClick={() => setIsLocked(false)} className="release-btn">RELEASE HUB</button>
+        </div>
+      )}
+    </div>
+  );
+};
