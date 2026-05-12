@@ -16,21 +16,21 @@ import {
 import "@/styles/Sovereign.css";
 import "@/styles/eeie-motion.css";
 
-// ── Approved EEIE color system: navy shell + white glass cards ─
+// ── Titan V Engine color system: OLED navy shell + dark glass cards ─
 const C = {
-  bg:       "#061426",
-  surface:  "#FFFFFF",
-  cardAlt:  "#EEF7FF",
+  bg:       "#050a14",
+  surface:  "rgba(6,12,28,0.96)",
+  cardAlt:  "rgba(8,18,40,0.92)",
   blue:     "#087BFF",
-  blueHi:   "#17A8FF",
-  cyan:     "#41D9FF",
-  ice:      "#D8EEFF",
-  silver:   "#7BA8CC",
-  muted:    "rgba(180,210,250,0.55)",
-  cardText: "rgba(11,30,52,0.62)",
-  dim:      "rgba(140,175,220,0.30)",
-  border:   "rgba(34,126,255,0.20)",
-  borderHi: "rgba(0,136,255,0.55)",
+  blueHi:   "#00d4ff",
+  cyan:     "#00d4ff",
+  ice:      "rgba(200,225,255,0.90)",
+  silver:   "rgba(160,200,240,0.65)",
+  muted:    "rgba(100,160,220,0.45)",
+  cardText: "rgba(180,210,250,0.72)",
+  dim:      "rgba(100,150,200,0.35)",
+  border:   "rgba(0,212,255,0.18)",
+  borderHi: "rgba(0,212,255,0.45)",
   green:    "#18C98B",
   red:      "#E94B5A",
   amber:    "#F6A623",
@@ -53,127 +53,26 @@ interface Tile {
   path: string;
   accent: string;
   status: string;
-  images: string[];
-  previewType: "grid" | "single" | "strip";
+  previewType: "bars" | "wave" | "grid" | "flow" | "neural" | "scan";
 }
 
-// Verified Unsplash IDs — all confirmed 200 OK
-const U = (id: string, w = 400) =>
-  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=75`;
-
 const MODULE_TILES: Tile[] = [
-  {
-    icon: Users, label: "STAFF COCKPIT",
-    desc: "Wait-staff command: active tables, guest taste profiles, AI cigar & drink matching, pairing showcase, script generator, and POS handoff.",
-    path: "/eeie/staff-cockpit", accent: C.blue, status: "ACTIVE",
-    images: [U("1603575448878-868a20723f5d"), U("1585494156145-1c60a4fe952b"), U("1604079628040-94301bb21b91")],
-    previewType: "grid",
-  },
-  {
-    icon: Star, label: "GUEST EXPERIENCE",
-    desc: "Guest session management, taste profiling, mood intelligence, and personalized experience delivery.",
-    path: "/eeie/guest-experience", accent: C.cyan, status: "ACTIVE",
-    images: [U("1582562124811-c09040d0a901", 600)],
-    previewType: "single",
-  },
-  {
-    icon: Image, label: "MEDIA LIBRARY",
-    desc: "Upload, approve, and manage visuals for cigars, spirits, food, desserts, specials, hardware, and bundles.",
-    path: "/eeie/media-library", accent: "#60A5FA", status: "READY",
-    images: [U("1527281400683-1aae777175f8"), U("1488459716781-31db52582fe9"), U("1565608087341-404b25492fee")],
-    previewType: "grid",
-  },
-  {
-    icon: Grid3x3, label: "PRODUCT WALL",
-    desc: "Luxury visual selling wall — featured cigars, whiskey, cocktails, food, desserts, bundles, and VIP recommendations.",
-    path: "/eeie/product-wall", accent: C.blueHi, status: "LIVE",
-    images: [U("1604079628040-94301bb21b91"), U("1569529465841-dfecdab7503b"), U("1488459716781-31db52582fe9")],
-    previewType: "grid",
-  },
-  {
-    icon: Truck, label: "DISTRIBUTOR LIBRARY",
-    desc: "Connect distributor catalogs, import CSVs, map cigar and liquor products, and generate restock intelligence.",
-    path: "/eeie/distributors", accent: "#38BDF8", status: "SYNCING",
-    images: [U("1572116469696-31de0f17cc34", 600)],
-    previewType: "single",
-  },
-  {
-    icon: Server, label: "BACK-OF-HOUSE SYNC",
-    desc: "Visual system relationships: bar, kitchen, humidor, cigar inventory, manager controls, event bus, and sensor health.",
-    path: "/eeie/back-of-house", accent: C.cyan, status: "CONNECTED",
-    images: [U("1514362545857-3bc16c4c7d1b", 600)],
-    previewType: "single",
-  },
-  {
-    icon: Building2, label: "VENUE INTELLIGENCE",
-    desc: "Real-time venue analytics: occupancy, revenue, staff performance, ambient intelligence, and learning loop.",
-    path: "/eeie/venue-intelligence", accent: C.blue, status: "LIVE",
-    images: [U("1565608087341-404b25492fee"), U("1529543544282-ea669407fca3"), U("1501594907352-04cda38ebc29")],
-    previewType: "grid",
-  },
-  {
-    icon: Radio, label: "SENSORY ENGINE",
-    desc: "Venue mood, zone energy, heatmap, temperature, humidity, air quality, occupancy, and service pressure.",
-    path: "/eeie/sensory-engine", accent: C.purple, status: "SENSING",
-    images: [U("1529543544282-ea669407fca3", 600)],
-    previewType: "single",
-  },
-  {
-    icon: Package, label: "COMMERCE HEALTH",
-    desc: "POS adapters, Toast / Square / Clover / Stripe, order handoffs, revenue lift, bundle conversion, and manual mode.",
-    path: "/eeie/commerce-health", accent: "#34D399", status: "NOMINAL",
-    images: [U("1488459716781-31db52582fe9", 600)],
-    previewType: "single",
-  },
-  {
-    icon: Brain, label: "AI ASSISTANT",
-    desc: "Real-time staff guidance, pairing explanations, inventory warnings, mood interpretation, and next-best actions.",
-    path: "/eeie/ai-assistant", accent: C.purple, status: "ONLINE",
-    images: [U("1501594907352-04cda38ebc29", 600)],
-    previewType: "single",
-  },
-  {
-    icon: Thermometer, label: "MOOD SENSOR",
-    desc: "Live venue mood, guest mood, zone energy, recommendation sensitivity, and color-state intelligence.",
-    path: "/eeie/mood-sensor", accent: C.cyan, status: "SENSING",
-    images: [U("1582562124811-c09040d0a901", 600)],
-    previewType: "single",
-  },
-  {
-    icon: Activity, label: "EVENT BUS",
-    desc: "Live event stream: order events, mood changes, inventory alerts, staff actions, and system signals.",
-    path: "/eeie/event-bus", accent: C.amber, status: "LIVE",
-    images: [U("1569529465841-dfecdab7503b", 600)],
-    previewType: "single",
-  },
-  {
-    icon: Shield, label: "FOUNDER CONTROL",
-    desc: "Founder-level overrides: feature flags, kill switches, revenue levers, dual theme system, and system governance.",
-    path: "/eeie/founder-control", accent: C.red, status: "SECURED",
-    images: [U("1603575448878-868a20723f5d", 600)],
-    previewType: "single",
-  },
-  {
-    icon: Zap, label: "MASTER OPERATIONS",
-    desc: "Operational layer: staff management, venue oversight, inventory, reconciliation, analytics, and hardware status.",
-    path: "/eeie/master-operations", accent: C.blueHi, status: "ACTIVE",
-    images: [U("1565608087341-404b25492fee"), U("1527281400683-1aae777175f8"), U("1603575448878-868a20723f5d")],
-    previewType: "grid",
-  },
-  {
-    icon: Package, label: "VENDOR PORTAL",
-    desc: "Brand partner handoff portal: product submissions, media uploads, inventory status, venue assignments, placement purchases, and admin approval pipeline.",
-    path: "/vendor/dashboard", accent: "#087BFF", status: "ACTIVE",
-    images: [U("1527281400683-1aae777175f8"), U("1603575448878-868a20723f5d")],
-    previewType: "grid",
-  },
-  {
-    icon: Heart, label: "PULSE INTELLIGENCE",
-    desc: "Real-time telemetry hub: live mood equalizer, hardware telemetry, AI predictive forecast, and revenue funnel. Heartbeat view of the entire venue.",
-    path: "/novee/pulse", accent: "#00C4E8", status: "LIVE",
-    images: [U("1529543544282-ea669407fca3"), U("1603575448878-868a20723f5d")],
-    previewType: "single",
-  },
+  { icon: Users,       label: "STAFF COCKPIT",       desc: "Wait-staff command: active tables, guest taste profiles, AI cigar & drink matching, pairing showcase, script generator, and POS handoff.",          path: "/eeie/staff-cockpit",      accent: C.blue,    status: "ACTIVE",    previewType: "bars"   },
+  { icon: Star,        label: "GUEST EXPERIENCE",    desc: "Guest session management, taste profiling, mood intelligence, and personalized experience delivery.",                                                  path: "/eeie/guest-experience",   accent: C.cyan,    status: "ACTIVE",    previewType: "wave"   },
+  { icon: Image,       label: "MEDIA LIBRARY",       desc: "Upload, approve, and manage visuals for cigars, spirits, food, desserts, specials, hardware, and bundles.",                                           path: "/eeie/media-library",      accent: "#60A5FA", status: "READY",     previewType: "grid"   },
+  { icon: Grid3x3,     label: "PRODUCT WALL",        desc: "Luxury visual selling wall — featured cigars, whiskey, cocktails, food, desserts, bundles, and VIP recommendations.",                                 path: "/eeie/product-wall",       accent: C.blueHi,  status: "LIVE",      previewType: "grid"   },
+  { icon: Truck,       label: "DISTRIBUTOR LIBRARY", desc: "Connect distributor catalogs, import CSVs, map cigar and liquor products, and generate restock intelligence.",                                        path: "/eeie/distributors",       accent: "#38BDF8", status: "SYNCING",   previewType: "flow"   },
+  { icon: Server,      label: "BACK-OF-HOUSE SYNC",  desc: "Visual system relationships: bar, kitchen, humidor, cigar inventory, manager controls, event bus, and sensor health.",                                path: "/eeie/back-of-house",      accent: C.cyan,    status: "CONNECTED", previewType: "grid"   },
+  { icon: Building2,   label: "VENUE INTELLIGENCE",  desc: "Real-time venue analytics: occupancy, revenue, staff performance, ambient intelligence, and learning loop.",                                          path: "/eeie/venue-intelligence", accent: C.blue,    status: "LIVE",      previewType: "bars"   },
+  { icon: Radio,       label: "SENSORY ENGINE",      desc: "Venue mood, zone energy, heatmap, temperature, humidity, air quality, occupancy, and service pressure.",                                              path: "/eeie/sensory-engine",     accent: C.purple,  status: "SENSING",   previewType: "wave"   },
+  { icon: Package,     label: "COMMERCE HEALTH",     desc: "POS adapters, Toast / Square / Clover / Stripe, order handoffs, revenue lift, bundle conversion, and manual mode.",                                   path: "/eeie/commerce-health",    accent: "#34D399", status: "NOMINAL",   previewType: "flow"   },
+  { icon: Brain,       label: "AI ASSISTANT",        desc: "Real-time staff guidance, pairing explanations, inventory warnings, mood interpretation, and next-best actions.",                                     path: "/eeie/ai-assistant",       accent: C.purple,  status: "ONLINE",    previewType: "neural" },
+  { icon: Thermometer, label: "MOOD SENSOR",         desc: "Live venue mood, guest mood, zone energy, recommendation sensitivity, and color-state intelligence.",                                                 path: "/eeie/mood-sensor",        accent: C.cyan,    status: "SENSING",   previewType: "wave"   },
+  { icon: Activity,    label: "EVENT BUS",           desc: "Live event stream: order events, mood changes, inventory alerts, staff actions, and system signals.",                                                  path: "/eeie/event-bus",          accent: C.amber,   status: "LIVE",      previewType: "flow"   },
+  { icon: Shield,      label: "FOUNDER CONTROL",     desc: "Founder-level overrides: feature flags, kill switches, revenue levers, dual theme system, and system governance.",                                    path: "/eeie/founder-control",    accent: C.red,     status: "SECURED",   previewType: "scan"   },
+  { icon: Zap,         label: "MASTER OPERATIONS",   desc: "Operational layer: staff management, venue oversight, inventory, reconciliation, analytics, and hardware status.",                                     path: "/eeie/master-operations",  accent: C.blueHi,  status: "ACTIVE",    previewType: "bars"   },
+  { icon: Package,     label: "VENDOR PORTAL",       desc: "Brand partner handoff portal: product submissions, media uploads, inventory status, venue assignments, placement purchases, and approval pipeline.",   path: "/vendor/dashboard",        accent: "#087BFF", status: "ACTIVE",    previewType: "flow"   },
+  { icon: Heart,       label: "PULSE INTELLIGENCE",  desc: "Real-time telemetry hub: live mood equalizer, hardware telemetry, AI predictive forecast, and revenue funnel. Heartbeat view of the entire venue.",   path: "/novee/pulse",             accent: "#00C4E8", status: "LIVE",      previewType: "wave"   },
 ];
 
 const STATUS_RAIL = [
@@ -188,86 +87,169 @@ const STATUS_RAIL = [
   { label: "KIOSK LOCK", value: "ABSOLUTE",    color: C.red    },
 ];
 
-// ── Fallback image tile ───────────────────────────────────────
-function FallbackImageTile({ tile }: { tile: Tile }) {
-  const Icon = tile.icon;
-  return (
-    <div className="eeie-image-shimmer" style={{
-      height: 118,
-      background: `linear-gradient(135deg,${tile.accent}10 0%,${tile.accent}04 100%)`,
-      borderBottom: `1px solid ${tile.accent}18`,
-      display: "flex", alignItems: "center", justifyContent: "center",
-      position: "relative", overflow: "hidden",
-      flexShrink: 0,
-    }}>
-      {/* Grid pattern overlay */}
-      <svg
-        width="100%" height="100%"
-        style={{ position: "absolute", inset: 0, opacity: 0.10 }}
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <pattern id={`grid-${tile.label}`} width="20" height="20" patternUnits="userSpaceOnUse">
-            <path d="M 20 0 L 0 0 0 20" fill="none" stroke={tile.accent} strokeWidth="0.5" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill={`url(#grid-${tile.label})`} />
-      </svg>
-      {/* Corner radial glow */}
-      <div style={{
-        position: "absolute", inset: 0,
-        background: `radial-gradient(ellipse at center,${tile.accent}18 0%,transparent 70%)`,
-        pointerEvents: "none",
-      }} />
-      {/* Icon silhouette */}
-      <div style={{
-        width: 54, height: 54, borderRadius: 16,
-        background: `${tile.accent}16`, border: `1px solid ${tile.accent}30`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        boxShadow: `0 0 28px ${tile.accent}20`,
-        position: "relative",
-      }}>
-        <Icon size={24} color={tile.accent} />
-      </div>
-      {/* previewType label */}
-      <div style={{
-        position: "absolute", bottom: 8, right: 10,
-        fontSize: 7, color: `${tile.accent}60`,
-        fontFamily: C.mono, letterSpacing: "0.16em",
-      }}>
-        {tile.previewType.toUpperCase()} VIEW
-      </div>
-    </div>
-  );
-}
+// ── TitanPreviewZone — animated dark glass preview, no external images ────────
+const WAVE_HEIGHTS = [35, 55, 70, 45, 80, 60, 40, 75, 50, 65, 38, 72];
 
-// ── Image strip (when images exist) ──────────────────────────
-function ImageStrip({ images, accent, previewType }: { images: string[]; accent: string; previewType: Tile["previewType"] }) {
-  if (previewType === "grid") {
-    return (
-      <div className="eeie-image-shimmer" style={{
-        height: 118,
-        display: "grid",
-        gridTemplateColumns: `repeat(${Math.min(images.length, 3)},1fr)`,
-        gap: 2, borderBottom: `1px solid ${accent}18`, flexShrink: 0,
-      }}>
-        {images.slice(0, 3).map((src, i) => (
-          <img
-            key={i} src={src} alt=""
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-          />
-        ))}
-      </div>
-    );
-  }
+function TitanPreviewZone({ tile }: { tile: Tile }) {
+  const { previewType, accent, label } = tile;
+  const Icon = tile.icon;
+  const slug  = label.replace(/\s+/g, "-").toLowerCase();
+
   return (
-    <div className="eeie-image-shimmer" style={{
-      height: 118, borderBottom: `1px solid ${accent}18`, flexShrink: 0, overflow: "hidden",
+    <div style={{
+      height: 112, flexShrink: 0, position: "relative", overflow: "hidden",
+      background: `linear-gradient(160deg, ${accent}08 0%, rgba(3,6,14,0.95) 100%)`,
+      borderBottom: `1px solid ${accent}20`,
     }}>
-      <img
-        src={images[0]} alt=""
-        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-      />
+      {/* ── BARS pattern ── */}
+      {previewType === "bars" && (
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "flex-end", justifyContent: "center", gap: 4, padding: "12px 16px 16px" }}>
+          {WAVE_HEIGHTS.map((h, i) => (
+            <motion.div
+              key={i}
+              animate={{ height: [`${h}%`, `${Math.max(15, h - 22)}%`, `${h}%`] }}
+              transition={{ repeat: Infinity, duration: 1.4 + i * 0.12, ease: "easeInOut", delay: i * 0.08 }}
+              style={{ flex: 1, borderRadius: "2px 2px 0 0", background: `${accent}`, opacity: 0.55 + (i % 3) * 0.15 }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* ── WAVE pattern ── */}
+      {previewType === "wave" && (
+        <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} preserveAspectRatio="none">
+          <defs>
+            <linearGradient id={`wg-${slug}`} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor={accent} stopOpacity="0" />
+              <stop offset="30%" stopColor={accent} stopOpacity="0.7" />
+              <stop offset="70%" stopColor={accent} stopOpacity="0.7" />
+              <stop offset="100%" stopColor={accent} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <motion.path
+            d="M0,56 C40,30 80,80 120,56 C160,32 200,78 240,56 C280,34 320,76 360,56"
+            stroke={`url(#wg-${slug})`} strokeWidth="2" fill="none"
+            animate={{ d: ["M0,56 C40,30 80,80 120,56 C160,32 200,78 240,56 C280,34 320,76 360,56", "M0,64 C40,44 80,68 120,48 C160,28 200,72 240,50 C280,38 320,62 360,48", "M0,56 C40,30 80,80 120,56 C160,32 200,78 240,56 C280,34 320,76 360,56"] }}
+            transition={{ repeat: Infinity, duration: 2.4, ease: "easeInOut" }}
+          />
+          <motion.path
+            d="M0,72 C50,50 90,88 140,68 C190,48 230,82 280,64 C320,48 340,78 360,66"
+            stroke={accent} strokeWidth="1" fill="none" opacity={0.25}
+            animate={{ d: ["M0,72 C50,50 90,88 140,68 C190,48 230,82 280,64 C320,48 340,78 360,66", "M0,62 C50,42 90,78 140,58 C190,38 230,72 280,54 C320,38 340,68 360,56", "M0,72 C50,50 90,88 140,68 C190,48 230,82 280,64 C320,48 340,78 360,66"] }}
+            transition={{ repeat: Infinity, duration: 3.0, ease: "easeInOut", delay: 0.5 }}
+          />
+          {/* Glow dot */}
+          <motion.circle r="3" fill={accent}
+            animate={{ cx: [0, 360], opacity: [0, 1, 0] }}
+            transition={{ repeat: Infinity, duration: 2.4, ease: "linear" }}
+            cy={56}
+          />
+        </svg>
+      )}
+
+      {/* ── GRID pattern ── */}
+      {previewType === "grid" && (
+        <>
+          <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.18 }}>
+            <defs>
+              <pattern id={`gp-${slug}`} width="22" height="22" patternUnits="userSpaceOnUse">
+                <path d="M 22 0 L 0 0 0 22" fill="none" stroke={accent} strokeWidth="0.6" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill={`url(#gp-${slug})`} />
+          </svg>
+          <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at center, ${accent}14 0%, transparent 70%)` }} />
+          {[...Array(4)].map((_, i) => (
+            <motion.div key={i}
+              animate={{ opacity: [0.15, 0.55, 0.15] }}
+              transition={{ repeat: Infinity, duration: 2.0, delay: i * 0.5 }}
+              style={{
+                position: "absolute",
+                left: `${20 + i * 22}%`, top: `${25 + (i % 2) * 28}%`,
+                width: 6, height: 6, borderRadius: 1,
+                background: accent,
+              }}
+            />
+          ))}
+        </>
+      )}
+
+      {/* ── FLOW pattern ── */}
+      {previewType === "flow" && (
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", gap: 8, padding: "14px 18px" }}>
+          {[70, 48, 85, 32].map((w, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <motion.div
+                animate={{ width: [`${w * 0.6}%`, `${w}%`, `${w * 0.6}%`] }}
+                transition={{ repeat: Infinity, duration: 1.8 + i * 0.3, ease: "easeInOut", delay: i * 0.2 }}
+                style={{ height: 3, borderRadius: 2, background: `${accent}`, opacity: 0.5 + i * 0.1, flexShrink: 0 }}
+              />
+              <motion.div
+                animate={{ opacity: [0, 1, 0] }}
+                transition={{ repeat: Infinity, duration: 1.8 + i * 0.3, ease: "easeInOut", delay: i * 0.2 + 0.8 }}
+                style={{ width: 4, height: 4, borderRadius: "50%", background: accent, flexShrink: 0 }}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── NEURAL pattern ── */}
+      {previewType === "neural" && (
+        <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
+          {[[60,30],[160,55],[260,35],[60,85],[160,105],[260,80]].map(([cx, cy], i) => (
+            <motion.circle key={i} cx={cx} cy={cy} r="4" fill={accent}
+              animate={{ opacity: [0.2, 0.9, 0.2], r: [3, 5, 3] }}
+              transition={{ repeat: Infinity, duration: 1.6 + i * 0.2, delay: i * 0.25 }}
+            />
+          ))}
+          {[[60,30,160,55],[160,55,260,35],[60,85,160,105],[160,105,260,80],[60,30,60,85],[160,55,160,105],[260,35,260,80]].map(([x1,y1,x2,y2], i) => (
+            <motion.line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+              stroke={accent} strokeWidth="0.8"
+              animate={{ opacity: [0.08, 0.4, 0.08] }}
+              transition={{ repeat: Infinity, duration: 2.0, delay: i * 0.15 }}
+            />
+          ))}
+        </svg>
+      )}
+
+      {/* ── SCAN pattern (secured/high-risk) ── */}
+      {previewType === "scan" && (
+        <>
+          <div style={{ position: "absolute", inset: 0, background: `repeating-linear-gradient(0deg, transparent, transparent 10px, ${accent}06 11px)` }} />
+          <motion.div
+            animate={{ top: ["0%", "100%", "0%"] }}
+            transition={{ repeat: Infinity, duration: 2.2, ease: "linear" }}
+            style={{
+              position: "absolute", left: 0, right: 0, height: 2,
+              background: `linear-gradient(90deg, transparent, ${accent}80, transparent)`,
+              boxShadow: `0 0 12px ${accent}`,
+            }}
+          />
+          <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at center, ${accent}10 0%, transparent 70%)` }} />
+        </>
+      )}
+
+      {/* Icon + label — always rendered on top */}
+      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 6, pointerEvents: "none" }}>
+        <div style={{
+          width: 38, height: 38, borderRadius: 10,
+          background: "rgba(3,6,14,0.75)", border: `1px solid ${accent}35`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: `0 0 20px ${accent}22`,
+          backdropFilter: "blur(8px)",
+        }}>
+          <Icon size={18} color={accent} />
+        </div>
+      </div>
+
+      {/* Pattern type badge — bottom right */}
+      <div style={{
+        position: "absolute", bottom: 7, right: 10,
+        fontSize: 7, color: `${accent}55`, fontFamily: C.mono, letterSpacing: "0.16em",
+      }}>
+        {previewType.toUpperCase()} SIGNAL
+      </div>
     </div>
   );
 }
@@ -286,7 +268,6 @@ function EEIEModuleCard({
   tile, index, onNavigate,
 }: { tile: Tile; index: number; onNavigate: (p: string) => void }) {
   const sc = STATUS_COLORS[tile.status] ?? C.silver;
-  const hasImages = tile.images.length > 0;
 
   const cardClass = [
     "eeie-module-card eeie-live-card eeie-hover-lift",
@@ -313,23 +294,21 @@ function EEIEModuleCard({
         borderRadius: 14,
         cursor: "pointer",
         display: "flex", flexDirection: "column",
-        boxShadow: "0 4px 24px rgba(8,35,74,0.10), 0 0 0 1px rgba(34,126,255,0.06)",
+        boxShadow: `0 4px 32px rgba(0,0,0,0.45), 0 0 0 1px ${tile.accent}10`,
+        backdropFilter: "blur(12px)",
       }}
-      onMouseEnter={e => (e.currentTarget.style.borderColor = `${tile.accent}40`)}
+      onMouseEnter={e => (e.currentTarget.style.borderColor = `${tile.accent}45`)}
       onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
     >
-      {/* Top metallic edge shimmer */}
+      {/* Top edge shimmer */}
       <div style={{
         position: "absolute", top: 0, left: 0, right: 0, height: 1,
-        background: `linear-gradient(90deg,transparent,${tile.accent}35,transparent)`,
+        background: `linear-gradient(90deg,transparent,${tile.accent}40,transparent)`,
         zIndex: 2,
       }} />
 
-      {/* ── Image area ── */}
-      {hasImages
-        ? <ImageStrip images={tile.images} accent={tile.accent} previewType={tile.previewType} />
-        : <FallbackImageTile tile={tile} />
-      }
+      {/* ── Animated preview zone — no external images ── */}
+      <TitanPreviewZone tile={tile} />
 
       {/* ── Card body ── */}
       <div style={{ padding: "16px 18px 18px", display: "flex", flexDirection: "column", flex: 1 }}>
