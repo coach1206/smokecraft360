@@ -1,0 +1,74 @@
+Optimized Replit Prompt: NOVEE OS "Pulse" Telemetry Center
+Role: Lead UI/UX Engineer & Data Architect
+Objective: Replace the static center dashboard of the NOVEE OS (EEIE) with a high-fidelity, real-time telemetry hub called the "Pulse Intelligence Center."
+
+1. Visual DNA & Motion Physics
+The "Heartbeat" Aesthetic: The center must feel like a living organism. Utilize Glassmorphism (frosted backgrounds), OLED Blacks, and Electric Blue/Platinum accents.
+
+Physics-Based Motion: No static panels. Use framer-motion or GSAP for:
+
+Equalizer Lanes: Smooth, fluid wave movements (not jerky).
+
+Pulse Lines: Hardware status should use a "scanning" glow effect.
+
+Shimmer States: Trending products should have a subtle "metallic" glint.
+
+Typography: Large, high-contrast sans-serif. Labels must be legible from a distance of 5 feet (tablet-on-stand distance).
+
+2. Core Functional Modules
+A. Live Mood Equalizer (The "Emotion" Layer)
+Interface: Vertical frequency bars for 8 zones (Cigar Lounge, Whiskey Bar, VIP, etc.).
+
+Logic: Bars oscillate based on a composite score of occupancy, sensor pressure, and POS activity.
+
+Color States:
+
+Chill (0-30%): Deep Sapphire pulse.
+
+Active (31-70%): Cyan/Ice-Blue.
+
+Peak (71-100%): Platinum-White pulse with "Aura" glow.
+
+B. Hardware Telemetry (The "Titan" Layer)
+Visual: A grid of miniature "Device Identity Cards."
+
+Metrics: Real-time Battery %, Heartbeat (ping), and Session State (Idle vs. Guest Active).
+
+Action: Low battery (<15%) triggers a soft Red "Neon Flicker" effect to alert staff.
+
+C. AI Predictive Forecast (The "Future" Layer)
+Concept: "Anticipatory Commerce."
+
+Layout: Horizontal scrolling cards with "Confidence Scores."
+
+Content: Don't just show a product; show the link.
+
+Example: "88% Match: Table 4 duration (45m) + Low Mood = Recommend 'Sweet Finish' Pairing."
+
+D. The Sales Funnel (The "Revenue" Layer)
+Visual: A horizontal flow-graph: Discovery → Engagement → Selection → Conversion.
+
+Impact: Real-time numbers moving through the pipe. If "Selection" is high but "Conversion" is low, the segment glows Amber to signal a staff bottleneck.
+
+3. Technical Implementation & Data Wiring
+State Management: Use a centralized usePulse hook to simulate/fetch data every 2-3 seconds to maintain the "Live" feel.
+
+API Structure: Implement the following mock/live endpoints:
+
+GET /api/novee/pulse/mood (Telemetry data for the equalizer)
+
+GET /api/novee/pulse/predictions (AI logic payload)
+
+GET /api/novee/pulse/hardware (IoT device status)
+
+Error Handling: If a stream drops, the panel shouldn't "break"—it should transition to a "Reacquiring Signal" animation to keep the premium feel.
+
+4. Constraints & Failure Prevention
+NO static SVG icons; use animated Lottie files or CSS-transitioned glyphs.
+
+NO "Lorem Ipsum." All data must be contextually relevant (e.g., Padron 1964, Macallan 12, etc.).
+
+NO generic dashboard widgets. Every element must look proprietary to 360 Enterprises Services LLC.
+
+The "Sovereign" Final Polish
+Command: Ensure the header of this view displays the "AUTHORIZED OPERATOR: JC" credentials in a subtle, glowing OLED font at the top right of the center console. This is the master view—it must look like the most expensive piece of software in the room.
