@@ -1,0 +1,78 @@
+
+I see exactly what happened. The Replit Agent defaulted to a generic "Dashboard" template, which is why you're seeing those flat, white cards and—completely out of place—kitten placeholders. This looks like a standard retail UI, not a High-Fidelity Telemetry Hub.
+
+The kittens and random food shots are just "un-optimized" placeholders. We need to strip that out and replace it with the Titan V Engine aesthetic: dark, glowing, and data-dense.
+
+Here is the "Correction Code" to force the Replit Agent to pivot from "Boring Tiles" to the "Pulse Intelligence Center."
+
+The Fix: CSS & Component Overhaul
+Drop this into your global styles or the specific component file to kill the white cards and the "kitten" logic.
+
+CSS
+/* FORCE NOVEE TITAN AESTHETIC */
+:root {
+  --titan-deep-navy: #050a14;
+  --electric-blue: #00d4ff;
+  --platinum-ice: #e0e6ed;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+}
+
+.intelligence-card {
+  background: var(--glass-bg) !important;
+  border: 1px solid rgba(0, 212, 255, 0.2) !important;
+  backdrop-filter: blur(12px);
+  border-radius: 4px; /* Harder, professional edges */
+  color: white !important;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Kill the generic placeholder images */
+.card-image-container {
+  display: none !important; /* Temporarily hide until real venue assets are mapped */
+}
+
+/* Add the 'Pulse' glow to active zones */
+.active-pulse {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+  border-color: var(--electric-blue) !important;
+}
+The "Venue Logic" Component
+Replace the "Guest Experience" or "Media Library" generic cards with this Live Mood Equalizer structure. This replaces the kittens with the "Live Heartbeat" you described.
+
+TypeScript
+import { motion } from 'framer-motion';
+
+const VenueHeartbeat = () => {
+  const zones = [
+    { name: 'CIGAR LOUNGE', level: 65, status: 'CALM' },
+    { name: 'WHISKEY BAR', level: 88, status: 'PEAK' },
+    { name: 'VIP ROOM', level: 40, status: 'ACTIVE' },
+    { name: 'KITCHEN', level: 95, status: 'PRESSURE' }
+  ];
+
+  return (
+    <div className="grid grid-cols-4 gap-4 p-6 bg-[#050a14] border border-blue-900/30">
+      {zones.map((zone) => (
+        <div key={zone.name} className="flex flex-col items-center">
+          <div className="h-32 w-full bg-blue-900/10 flex items-end justify-center overflow-hidden rounded-t-lg">
+            <motion.div 
+              animate={{ height: `${zone.level}%` }}
+              transition={{ repeat: Infinity, duration: 1.5, repeatType: 'reverse' }}
+              className={`w-full ${zone.level > 80 ? 'bg-cyan-400' : 'bg-blue-600'} opacity-60`}
+            />
+          </div>
+          <span className="text-[10px] mt-2 tracking-tighter text-blue-300">{zone.name}</span>
+          <span className="text-[12px] font-bold text-white">{zone.level}%</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+How to fix the "Image Mapping"
+The system is currently pulling from a random image API (like Unsplash or a local mock folder). To make it look like a venue:
+
+Stop the Randomizer: Tell the Replit Agent: "Delete all references to lorempicsum or placekitten in the code."
+
+Explicit Mapping: Tell it: "If a product is 'Whiskey,' use a dark-mood glass asset. If a product is 'Cigar,' use a humidor-style asset. If no asset exists, show a glowing blue waveform instead of a placeholder image."
+
