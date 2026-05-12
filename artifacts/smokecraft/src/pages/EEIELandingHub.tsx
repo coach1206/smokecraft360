@@ -16,25 +16,25 @@ import {
 import "@/styles/Sovereign.css";
 import "@/styles/eeie-motion.css";
 
-// ── Titan V Engine color system: OLED navy shell + dark glass cards ─
+// ── Titan V Engine — Navy Glass + White contrast system ─────────
 const C = {
-  bg:       "#050a14",
-  surface:  "rgba(6,12,28,0.96)",
-  cardAlt:  "rgba(8,18,40,0.92)",
-  blue:     "#087BFF",
-  blueHi:   "#00d4ff",
-  cyan:     "#00d4ff",
-  ice:      "rgba(200,225,255,0.90)",
-  silver:   "rgba(160,200,240,0.65)",
-  muted:    "rgba(100,160,220,0.45)",
-  cardText: "rgba(180,210,250,0.72)",
-  dim:      "rgba(100,150,200,0.35)",
-  border:   "rgba(0,212,255,0.18)",
-  borderHi: "rgba(0,212,255,0.45)",
+  bg:       "#071828",              // deep navy blue
+  surface:  "rgba(14,48,115,0.90)", // medium navy glass — clearly lighter than bg
+  cardAlt:  "rgba(16,55,128,0.85)", // slightly lifted navy glass
+  blue:     "#1E8FFF",
+  blueHi:   "#4DAAFF",
+  cyan:     "#00D4FF",
+  ice:      "rgba(240,248,255,0.97)",  // near-white
+  silver:   "rgba(190,220,255,0.80)",  // light blue-white secondary
+  muted:    "rgba(145,190,245,0.60)",  // mid-tone labels
+  cardText: "rgba(220,238,255,0.92)",  // bright readable body text
+  dim:      "rgba(120,170,225,0.48)",  // dim labels
+  border:   "rgba(50,150,255,0.40)",   // vivid electric blue border
+  borderHi: "rgba(80,190,255,0.70)",
   green:    "#18C98B",
   red:      "#E94B5A",
   amber:    "#F6A623",
-  purple:   "#8B5CF6",
+  purple:   "#A78BFA",
   mono:     "'JetBrains Mono','Courier New',monospace",
   serif:    "'Cormorant Garamond',serif",
 };
@@ -98,8 +98,8 @@ function TitanPreviewZone({ tile }: { tile: Tile }) {
   return (
     <div style={{
       height: 112, flexShrink: 0, position: "relative", overflow: "hidden",
-      background: `linear-gradient(160deg, ${accent}08 0%, rgba(3,6,14,0.95) 100%)`,
-      borderBottom: `1px solid ${accent}20`,
+      background: `linear-gradient(160deg, ${accent}18 0%, rgba(4,14,38,0.92) 100%)`,
+      borderBottom: `1px solid ${accent}35`,
     }}>
       {/* ── BARS pattern ── */}
       {previewType === "bars" && (
@@ -109,7 +109,7 @@ function TitanPreviewZone({ tile }: { tile: Tile }) {
               key={i}
               animate={{ height: [`${h}%`, `${Math.max(15, h - 22)}%`, `${h}%`] }}
               transition={{ repeat: Infinity, duration: 1.4 + i * 0.12, ease: "easeInOut", delay: i * 0.08 }}
-              style={{ flex: 1, borderRadius: "2px 2px 0 0", background: `${accent}`, opacity: 0.55 + (i % 3) * 0.15 }}
+              style={{ flex: 1, borderRadius: "2px 2px 0 0", background: accent, opacity: 0.65 + (i % 3) * 0.15 }}
             />
           ))}
         </div>
@@ -289,13 +289,13 @@ function EEIEModuleCard({
       tabIndex={0}
       className={cardClass}
       style={{
-        background: C.surface,
+        background: `linear-gradient(160deg, rgba(255,255,255,0.06) 0%, ${C.surface} 30%)`,
         border: `1.5px solid ${C.border}`,
         borderRadius: 14,
         cursor: "pointer",
         display: "flex", flexDirection: "column",
-        boxShadow: `0 4px 32px rgba(0,0,0,0.45), 0 0 0 1px ${tile.accent}10`,
-        backdropFilter: "blur(12px)",
+        boxShadow: `0 4px 32px rgba(0,0,0,0.50), 0 0 0 1px ${tile.accent}18, inset 0 1px 0 rgba(255,255,255,0.08)`,
+        backdropFilter: "blur(14px)",
       }}
       onMouseEnter={e => (e.currentTarget.style.borderColor = `${tile.accent}45`)}
       onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
@@ -316,15 +316,16 @@ function EEIEModuleCard({
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
           <div style={{
             width: 36, height: 36, borderRadius: 10,
-            background: `${tile.accent}14`, border: `1px solid ${tile.accent}22`,
+            background: `${tile.accent}22`, border: `1px solid ${tile.accent}40`,
             display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: `0 0 14px ${tile.accent}28`,
           }}>
             <tile.icon size={17} color={tile.accent} />
           </div>
           <div className={`eeie-chip-${tile.status.toLowerCase()}`} style={{
             display: "flex", alignItems: "center", gap: 4,
-            padding: "3px 8px", borderRadius: 20,
-            background: `${sc}12`, border: `1px solid ${sc}28`,
+            padding: "3px 9px", borderRadius: 20,
+            background: `${sc}18`, border: `1px solid ${sc}45`,
           }}>
             <div className="eeie-status-pulse" style={{ width: 4, height: 4, borderRadius: "50%", background: sc }} />
             <span style={{ fontSize: 6, color: sc, fontWeight: 700, letterSpacing: "0.18em" }}>{tile.status}</span>
@@ -333,15 +334,18 @@ function EEIEModuleCard({
 
         {/* Label */}
         <div style={{
-          fontSize: 12, color: tile.accent, fontFamily: C.serif,
-          letterSpacing: "0.12em", marginBottom: 7, fontWeight: 500,
+          fontSize: 12, color: "#FFFFFF", fontFamily: C.serif,
+          letterSpacing: "0.12em", marginBottom: 5, fontWeight: 600,
+          textShadow: `0 0 18px ${tile.accent}55`,
         }}>
           {tile.label}
         </div>
+        {/* Accent divider */}
+        <div style={{ width: 28, height: 1, background: `${tile.accent}70`, marginBottom: 9, borderRadius: 1 }} />
 
         {/* Description */}
         <div style={{
-          fontSize: 10, color: C.cardText, lineHeight: 1.65, marginBottom: 16, flex: 1,
+          fontSize: 10, color: C.cardText, lineHeight: 1.68, marginBottom: 16, flex: 1,
           display: "-webkit-box", WebkitLineClamp: 3,
           WebkitBoxOrient: "vertical", overflow: "hidden",
         }}>
@@ -393,13 +397,13 @@ export default function EEIELandingHub() {
       <div className="eeie-ambient-glow" style={{
         position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
         width: 1000, height: 260,
-        background: "radial-gradient(ellipse,rgba(0,128,255,0.09) 0%,transparent 70%)",
+        background: "radial-gradient(ellipse,rgba(14,100,255,0.18) 0%,rgba(0,60,180,0.08) 50%,transparent 75%)",
         pointerEvents: "none", zIndex: 0,
       }} />
       {/* Corner accent glow */}
       <div style={{
         position: "fixed", top: -80, right: -80, width: 400, height: 400,
-        background: "radial-gradient(circle,rgba(0,200,255,0.04) 0%,transparent 70%)",
+        background: "radial-gradient(circle,rgba(0,150,255,0.10) 0%,transparent 65%)",
         pointerEvents: "none", zIndex: 0,
       }} />
       {/* Scan line */}
