@@ -17,7 +17,7 @@ import {
   ChevronLeft, ArrowRight, Shield, Activity, Zap, Cpu,
   Package, Users, Radio, Wifi, Music, Database, ToggleRight,
   Eye, CloudOff, Link2, CheckCircle2, Circle,
-  Thermometer, AlertTriangle, RefreshCw, WifiOff,
+  Thermometer, AlertTriangle, RefreshCw, WifiOff, MapPin, Lock,
 } from "lucide-react";
 import { SovereignMemory } from "@/pages/WelcomeEEIE";
 import {
@@ -25,6 +25,7 @@ import {
   EATSovereignLedger,
   EATMeshResilience,
   SovereignOverride,
+  SectorControl,
   type LedgerPacket,
 } from "@/lib/EATBridge";
 import "@/styles/TitanEAT.css";
@@ -329,7 +330,13 @@ export default function TitanEATHub() {
   /* ── Page state ── */
   const [rippling,   setRippling]   = useState(false);
   const [isLockedDown, setIsLockedDown] = useState(false);
+  const [lockReason,  setLockReason]   = useState<string>("GAUSSIAN BLUR LOCK ACTIVE");
   const [ghostActive, setGhostActive]  = useState(true); // remote session active
+
+  /* ── Sector Control state ── */
+  const [sectorDeviceId,      setSectorDeviceId]      = useState("");
+  const [sectorCurrentSector, setSectorCurrentSector] = useState("");
+  const [sectorResult,        setSectorResult]        = useState<string | null>(null);
 
   /* ── Mesh resilience ── */
   const [isOnline,    setIsOnline]    = useState(navigator.onLine);
@@ -469,9 +476,36 @@ export default function TitanEATHub() {
     const state = SovereignOverride.emergencyLockdown();
     if (state === "GAUSSIAN_BLUR_LOCK_ACTIVE") {
       pushLedger(EATSovereignLedger.recordEvent("SUPER_ADMIN", "EMERGENCY LOCKDOWN ACTIVATED", "GLOBAL"));
+      setLockReason("GAUSSIAN BLUR LOCK ACTIVE");
       setIsLockedDown(true);
     }
   }, [pushLedger]);
+
+  /* ── Sector Control — The Leash ── */
+  const handleSectorCheck = useCallback(() => {
+    const id     = sectorDeviceId.trim().toUpperCase();
+    const sector = sectorCurrentSector.trim().toUpperCase();
+    if (!id || !sector) return;
+
+    const result = SectorControl.verifyProximity(id, sector);
+    setSectorResult(result);
+
+    if (result === "SECTOR_LOCK_TRIGGERED") {
+      pushLedger(EATSovereignLedger.recordEvent(
+        "SECTOR CONTROL",
+        `SECTOR MISMATCH — Device [${id}] detected outside assigned zone`,
+        sector
+      ));
+      setLockReason(`SECTOR MISMATCH — DEVICE [${id}]`);
+      setIsLockedDown(true);
+    } else {
+      pushLedger(EATSovereignLedger.recordEvent(
+        "SECTOR CONTROL",
+        `Device [${id}] verified in sector [${sector}]`,
+        sector
+      ));
+    }
+  }, [sectorDeviceId, sectorCurrentSector, pushLedger]);
 
   const handleReleaseLockdown = useCallback(() => {
     pushLedger(EATSovereignLedger.recordEvent("SUPER_ADMIN", "Lockdown released — Systems restored", "GLOBAL"));
@@ -539,7 +573,7 @@ export default function TitanEATHub() {
               SYSTEM LOCKDOWN
             </div>
             <div className="data-22px" style={{ color: C.ghostDim, letterSpacing: "0.10em", textAlign: "center" }}>
-              GAUSSIAN BLUR LOCK ACTIVE
+              {lockReason}
             </div>
             <div style={{ fontFamily: C.body, fontSize: 14, color: C.ghostMuted, letterSpacing: "0.10em", textAlign: "center", lineHeight: 1.8 }}>
               All environment and asset controls suspended.<br />
@@ -783,6 +817,129 @@ export default function TitanEATHub() {
                     <AlertTriangle size={12} /> EMERGENCY LOCKDOWN
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ════ SECTOR CONTROL — THE LEASH ════ */}
+        <div style={{ marginBottom: 44 }}>
+          <div className="eat-section-header" style={{ marginBottom: 16 }}>
+            <div className="eat-section-label" style={{ color: C.redHi }}>SECTOR CONTROL</div>
+            <div className="eat-section-line" style={{ background: "linear-gradient(90deg, rgba(239,68,68,0.30), transparent)" }} />
+            <div style={{ padding: "4px 12px", borderRadius: 12, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.28)", fontFamily: C.body, fontSize: 10, color: C.redHi, fontWeight: 700, letterSpacing: "0.12em", whiteSpace: "nowrap" }}>THE LEASH</div>
+          </div>
+
+          <div className="eat-slab" style={{ borderRadius: 16, padding: "28px 28px 24px" }}>
+            {/* Top bar */}
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(239,68,68,0.55), transparent)", zIndex: 3 }} />
+            <div style={{ position: "relative", zIndex: 2, display: "grid", gridTemplateColumns: "1fr 340px", gap: 36, alignItems: "start" }}>
+
+              {/* Left — description */}
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 18 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: 13, background: "rgba(239,68,68,0.10)", border: "1px solid rgba(239,68,68,0.30)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 22px rgba(239,68,68,0.18)" }}>
+                    <MapPin size={22} color={C.redHi} />
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: C.header, fontSize: 13, fontWeight: 700, color: C.redHi, letterSpacing: "0.22em" }}>HARDWARE-TO-SECTOR BINDING</div>
+                    <div style={{ fontFamily: C.body, fontSize: 11, color: C.ghostDim, marginTop: 2 }}>Device identity locked to physical zone</div>
+                  </div>
+                </div>
+                <div style={{ fontFamily: C.body, fontSize: 13, color: C.ghostDim, lineHeight: 1.78, maxWidth: 420, marginBottom: 22 }}>
+                  Prevents staff from roaming between zones with unauthorized hardware.
+                  If a device assigned to its sector is detected elsewhere, a Sovereign Lock is triggered immediately.
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {[
+                    { label: "Device detected outside assigned zone  →  SECTOR_LOCK_TRIGGERED",  color: C.redHi },
+                    { label: "Device confirmed in assigned zone       →  SECTOR_VERIFIED",        color: C.greenHi },
+                    { label: "Universal Expansion Port                →  EXPANSION_ACTIVE",       color: C.cobaltHi },
+                  ].map(item => (
+                    <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                      <div style={{ width: 5, height: 5, borderRadius: "50%", background: item.color, flexShrink: 0 }} />
+                      <span style={{ fontFamily: C.body, fontSize: 11, color: C.ghostDim, letterSpacing: "0.04em" }}>{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right — verify panel */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div>
+                  <div style={{ fontFamily: C.header, fontSize: 9, color: C.ghostMuted, letterSpacing: "0.18em", fontWeight: 700, marginBottom: 6, textTransform: "uppercase" }}>Device ID</div>
+                  <input
+                    value={sectorDeviceId}
+                    onChange={e => { setSectorDeviceId(e.target.value); setSectorResult(null); }}
+                    placeholder="e.g. POS-04 / KIOSK-A1"
+                    style={{
+                      width: "100%", boxSizing: "border-box",
+                      padding: "11px 14px", borderRadius: 10,
+                      background: "rgba(10,12,18,0.70)", border: "1px solid rgba(46,91,255,0.22)",
+                      fontFamily: C.body, fontSize: 13, color: C.ghost,
+                      outline: "none", letterSpacing: "0.04em",
+                    }}
+                  />
+                </div>
+                <div>
+                  <div style={{ fontFamily: C.header, fontSize: 9, color: C.ghostMuted, letterSpacing: "0.18em", fontWeight: 700, marginBottom: 6, textTransform: "uppercase" }}>Current Sector (detected location)</div>
+                  <input
+                    value={sectorCurrentSector}
+                    onChange={e => { setSectorCurrentSector(e.target.value); setSectorResult(null); }}
+                    placeholder="e.g. Golf Suite / Bar"
+                    style={{
+                      width: "100%", boxSizing: "border-box",
+                      padding: "11px 14px", borderRadius: 10,
+                      background: "rgba(10,12,18,0.70)", border: "1px solid rgba(46,91,255,0.22)",
+                      fontFamily: C.body, fontSize: 13, color: C.ghost,
+                      outline: "none", letterSpacing: "0.04em",
+                    }}
+                  />
+                </div>
+
+                {/* Result chip */}
+                <AnimatePresence>
+                  {sectorResult && (
+                    <motion.div
+                      key={sectorResult}
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 9,
+                        padding: "10px 14px", borderRadius: 10,
+                        background: sectorResult === "SECTOR_VERIFIED"
+                          ? "rgba(52,211,153,0.10)" : "rgba(239,68,68,0.12)",
+                        border: `1px solid ${sectorResult === "SECTOR_VERIFIED" ? "rgba(52,211,153,0.35)" : "rgba(239,68,68,0.45)"}`,
+                      }}
+                    >
+                      {sectorResult === "SECTOR_VERIFIED"
+                        ? <CheckCircle2 size={14} color={C.greenHi} />
+                        : <Lock size={14} color={C.redHi} />}
+                      <span style={{ fontFamily: C.header, fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", color: sectorResult === "SECTOR_VERIFIED" ? C.greenHi : C.redHi }}>
+                        {sectorResult}
+                      </span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <button
+                  onClick={handleSectorCheck}
+                  disabled={!sectorDeviceId.trim() || !sectorCurrentSector.trim()}
+                  style={{
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                    padding: "13px 0", borderRadius: 10, width: "100%",
+                    background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.35)",
+                    fontFamily: C.header, fontSize: "0.62rem", fontWeight: 700,
+                    letterSpacing: "0.22em", color: C.redHi, cursor: "pointer",
+                    transition: "background 0.18s", textTransform: "uppercase",
+                    opacity: (!sectorDeviceId.trim() || !sectorCurrentSector.trim()) ? 0.45 : 1,
+                  }}
+                  onMouseEnter={e => { if (sectorDeviceId.trim() && sectorCurrentSector.trim()) (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.18)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.08)"; }}
+                >
+                  <MapPin size={12} /> VERIFY PROXIMITY
+                </button>
               </div>
             </div>
           </div>

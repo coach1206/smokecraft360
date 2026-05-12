@@ -84,6 +84,45 @@ export const SovereignOverride = {
   },
 };
 
+/* ── Sector Control — Hardware-to-Sector Binding ("The Leash") ── */
+
+export const SectorControl = {
+  // Binds a specific Device ID to a physical Sector.
+  // If device is detected outside its assigned sector, triggers Sovereign Lock.
+  verifyProximity: (deviceId: string, currentSector: string): string => {
+    const registry: Record<string, string> = JSON.parse(
+      localStorage.getItem('EAT_Device_Registry') ?? '{}'
+    );
+    const assignedSector = registry[deviceId];
+
+    if (assignedSector && assignedSector !== currentSector) {
+      console.error("SECURITY ALERT: Device Sector Mismatch.", {
+        deviceId,
+        assignedSector,
+        currentSector,
+      });
+      return "SECTOR_LOCK_TRIGGERED";
+    }
+    return "SECTOR_VERIFIED";
+  },
+
+  // Open Port Logic: Allows one "Wildcard" expansion port for custom hardware handshake
+  universalPort: (portId: string, configuration: unknown): string => {
+    console.log(`EAT PORT [${portId}]: Custom Hardware Handshake Initialized.`, configuration);
+    return "EXPANSION_ACTIVE";
+  },
+
+  // Registers a device→sector binding in the local registry
+  registerDevice: (deviceId: string, sector: string): void => {
+    const registry: Record<string, string> = JSON.parse(
+      localStorage.getItem('EAT_Device_Registry') ?? '{}'
+    );
+    registry[deviceId] = sector;
+    localStorage.setItem('EAT_Device_Registry', JSON.stringify(registry));
+    console.log(`SECTOR BIND: Device [${deviceId}] locked to sector [${sector}].`);
+  },
+};
+
 /* ── EAT Mesh Resilience ──────────────────────────────────── */
 
 export const EATMeshResilience = {
