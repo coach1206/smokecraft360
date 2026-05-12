@@ -26,16 +26,16 @@ import { MediaLibraryTab }        from "./eeie/MediaLibrary";
 import { ProductWallTab }         from "./eeie/ProductWall";
 import { AIPanel }                from "./eeie/AIPanel";
 
-// ── Sovereign blue color system (outer shell only) ────────────
+// ── Deep navy command shell (outer frame only) ────────────────
 const S = {
-  bg:       "#050A14",
-  border:   "rgba(0,128,255,0.14)",
+  bg:       "#061426",
+  border:   "rgba(8,123,255,0.18)",
   silver:   "#7BA8CC",
-  muted:    "rgba(180,210,250,0.50)",
-  dim:      "rgba(140,175,220,0.24)",
-  blue:     "#0080FF",
-  blueHi:   "#22AAFF",
-  green:    "#22c55e",
+  muted:    "rgba(180,210,250,0.55)",
+  dim:      "rgba(140,175,220,0.30)",
+  blue:     "#087BFF",
+  blueHi:   "#17A8FF",
+  green:    "#18C98B",
   mono:     "'JetBrains Mono','Courier New',monospace",
   serif:    "'Cormorant Garamond',serif",
 };
@@ -154,7 +154,7 @@ function AIAssistantPage() {
 // ── Module content router ─────────────────────────────────────
 function ModuleContent({ module, meta }: { module: string; meta: typeof MODULE_META[string] }) {
   if (module === "staff-cockpit") {
-    return <div style={{ flex: 1, overflowY: "auto", background: T.bg }}><StaffCockpit T={T} /></div>;
+    return <div style={{ flex: 1, overflow: "hidden", display: "flex", background: T.bg }}><StaffCockpit T={T} /></div>;
   }
   if (module === "mood-sensor") {
     return <div style={{ flex: 1, overflowY: "auto", background: T.bg }}><MoodSensorTab T={T} /></div>;
