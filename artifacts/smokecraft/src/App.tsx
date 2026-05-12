@@ -971,9 +971,9 @@ export default function App() {
             <SubPageProviders><LivingPortal /></SubPageProviders>
           </Route>
 
-          {/* ── Default: LivingPortal — motion home hub ── */}
+          {/* ── Default: Sovereign Gate — all entry flows begin here ── */}
           <Route>
-            <SubPageProviders><LivingPortal /></SubPageProviders>
+            <SovereignGate />
           </Route>
         </Switch>
       </Suspense>

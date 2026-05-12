@@ -1,0 +1,228 @@
+For a vendor handoff, they should land on a Vendor Portal, not the Sovereign Command Center.
+
+The vendor should see something like:
+
+Vendor Handoff Page
+
+Route:
+/vendor/onboarding for first-time setup
+then
+/vendor/dashboard after approval/login
+
+What the vendor sees first
+1. Welcome / Vendor Setup
+
+Page title:
+
+Welcome to the EEIE Vendor Portal
+
+Simple message:
+
+“You’ve been invited to connect your products, inventory, and media to the EEIE experience system. This portal lets you manage only your approved products, images, availability, and performance.”
+
+Buttons:
+
+Start Vendor Setup
+Upload Product Catalog
+Add Product Images
+View Approval Status
+
+After they complete setup, they see the Vendor Dashboard
+Vendor Dashboard Sections
+
+1. Vendor Overview
+Their company name, approval status, active products, assigned venues, pending items.
+
+2. Product Catalog
+Their cigars, liquor, food, desserts, accessories, or other assigned product types.
+
+They can:
+
+Add product
+Edit product
+Upload image
+Set availability
+Mark low stock
+Submit for approval
+
+3. Media Uploads
+This is where they upload clean product images.
+
+They can upload:
+
+Cigar images
+Cigar box images
+Liquor bottle images
+Cocktail images
+Food images
+Dessert images
+Bundle images
+Brand logos
+
+But those images should go into pending approval before going live.
+
+4. Inventory Status
+They see only their inventory.
+
+Example:
+
+Cohiba Behike 56
+12 available
+3 assigned to venue
+Low stock alert: no
+
+Woodford Reserve Double Oaked
+8 bottles available
+2 featured in pairings
+Status: active
+
+5. Assigned Venues
+They see where their products are approved to appear.
+
+Example:
+
+SmokeCraft Lounge Atlanta
+Approved products: 12
+Pending media: 3
+Active pairings: 4
+
+They should not see other venues unless assigned.
+
+6. Pairing Performance
+They can see how their products are performing, but only their products.
+
+Example:
+
+Cohiba Behike 56
+Shown to guests: 42
+Added to cart: 18
+Conversion: 43%
+Revenue influenced: $850
+
+7. Approval Status
+They see what is waiting on admin approval.
+
+Pending:
+
+3 product images
+2 new products
+1 price update
+1 bundle request
+
+8. Messages / Requests
+Managers or admin can request:
+
+new product images
+updated pricing
+restock confirmation
+new catalog upload
+promotional placement
+
+What the vendor should NOT see
+
+They should never see:
+
+Sovereign Command Center
+Founder Control
+Master Operations
+Revoke All
+Distribution Vault controls
+Hardware Lab
+Keys
+Live Nodes
+Deploy
+War Room
+global revenue
+other vendors
+other venues
+system security
+staff cockpit
+guest profiles
+POS controls
+
+Clean handoff flow
+
+The flow should be:
+
+Admin invites vendor
+↓
+Vendor gets link
+↓
+Vendor lands on /vendor/onboarding
+↓
+Vendor fills company profile
+↓
+Vendor uploads catalog and images
+↓
+Admin approves products/media
+↓
+Products become available inside EEIE Product Wall, Staff Cockpit, and Pairing Engine
+↓
+Vendor tracks only their own product performance inside /vendor/dashboard
+
+Prompt for Replit
+VENDOR HANDOFF PORTAL PROMPT
+
+Create a vendor-safe handoff flow for EEIE / Sovereign.
+
+Vendors must never see the Sovereign Command Center, Founder Control, Master Operations, Distribution Vault, Hardware Lab, War Room, Keys, Live Nodes, Deploy, or any global admin controls.
+
+Create these vendor routes:
+
+/vendor/onboarding
+/vendor/dashboard
+/vendor/products
+/vendor/media
+/vendor/inventory
+/vendor/venues
+/vendor/performance
+/vendor/approvals
+/vendor/messages
+
+Vendor onboarding page must show:
+
+Welcome to the EEIE Vendor Portal
+company setup
+contact information
+product category selection
+catalog upload
+media upload
+agreement checkbox
+submit for approval
+
+Vendor dashboard must show only vendor-safe data:
+
+Vendor Overview
+Product Catalog
+Inventory Status
+Media Uploads
+Assigned Venues
+Approval Status
+Messages
+Product Performance
+
+Vendor users can only view and manage their own products, images, inventory, approvals, and performance.
+
+Create role guard:
+
+vendor users may access only /vendor/* routes.
+
+If vendor attempts to access /sovereign-dashboard, /founder-control, /master-operations, /distribution-vault, /hardware-lab, /war-room, /keys, /live-nodes, or /deploy, redirect them to /vendor/dashboard.
+
+Show message:
+
+Vendor access is limited to your approved vendor portal.
+
+Vendor product images must go into pending approval before appearing in Staff Cockpit, Product Wall, Media Library, or Pairing Engine.
+
+Vendor performance must only show their own products.
+
+No global revenue.
+No guest profiles.
+No staff controls.
+No hardware controls.
+No founder controls.
+No deployment controls.
+No cross-vendor data.
+
+So the vendor handoff page should be a clean Vendor Portal, focused on product catalog, images, inventory, approvals, and performance. It should feel premium, but locked down.
