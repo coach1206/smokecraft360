@@ -117,3 +117,4 @@ export * from "./personalityTraits";
 export * from "./behaviorPatterns";
 export * from "./biometricPulseMaps";
 export * from "./enterpriseAi";
+export * from "./vendorProfiles";

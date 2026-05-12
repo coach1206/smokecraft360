@@ -1,0 +1,281 @@
+FINAL VENDOR PORTAL ROUTE + NAVIGATION FIX
+
+The Vendor Portal is not visible on the site.
+
+Audit the app routes, sidebar navigation, and landing/admin navigation to confirm whether these vendor routes exist:
+
+/vendor/onboarding
+/vendor/dashboard
+/vendor/products
+/vendor/media
+/vendor/inventory
+/vendor/venues
+/vendor/performance
+/vendor/approvals
+/vendor/messages
+
+If they do not exist, create them.
+
+MISSING / REQUIRED
+
+1. Vendor Portal route is missing or not visible.
+Impact: Vendors have no safe handoff page and may accidentally be directed toward founder/admin areas.
+
+2. Vendor navigation entry is missing.
+Impact: Admin/founder cannot find or test the Vendor Portal from the interface.
+
+3. Vendor-safe role guard is missing or incomplete.
+Impact: Vendors might be blocked completely or accidentally see protected admin pages.
+
+4. Vendor onboarding flow is missing.
+Impact: Vendors need a clean place to set up company info, upload catalog, upload images, and submit for approval.
+
+5. Vendor dashboard is missing.
+Impact: Vendors need a dedicated portal to manage only their products, media, inventory, assigned venues, approvals, messages, and performance.
+
+FAILURE PREVENTION CHECKLIST
+
+Do not put vendors inside Sovereign Command Center.
+Do not expose Founder Control to vendors.
+Do not expose Master Operations to vendors.
+Do not expose Distribution Vault to vendors.
+Do not expose Hardware Lab to vendors.
+Do not expose War Room to vendors.
+Do not expose Keys, Nodes, Deploy, or Revoke controls to vendors.
+Do not create dead vendor buttons.
+Do not create vendor routes without adding them to navigation.
+Do not let vendors see other vendors’ data.
+Do not let vendors publish images directly without approval.
+Do not break existing EEIE or Sovereign routes.
+
+MASTER PROMPT
+
+Create the full Vendor Portal route system and make it visible for founder/admin testing.
+
+Create these frontend routes:
+
+/vendor/onboarding
+/vendor/dashboard
+/vendor/products
+/vendor/media
+/vendor/inventory
+/vendor/venues
+/vendor/performance
+/vendor/approvals
+/vendor/messages
+
+Create a visible navigation entry for founder/super_admin users:
+
+Vendor Portal
+
+Place it in one of these areas:
+
+Sovereign Dashboard module tile
+Master Operations sidebar
+Founder Control quick links
+Admin navigation under “Portals”
+
+The founder/admin should be able to click “Vendor Portal Preview” and open:
+
+/vendor/dashboard
+
+Vendor users should land at:
+
+/vendor/onboarding
+
+if setup is incomplete.
+
+Vendor users should land at:
+
+/vendor/dashboard
+
+if setup is complete and approved.
+
+VENDOR ONBOARDING PAGE
+
+Build /vendor/onboarding with:
+
+Welcome to the EEIE Vendor Portal
+company profile setup
+contact person
+email
+phone
+product category selection
+catalog upload
+media upload
+agreement checkbox
+submit for approval button
+
+Product categories:
+
+Cigars
+Liquor
+Cocktails
+Food
+Desserts
+Bundles
+Venue Products
+Accessories
+
+VENDOR DASHBOARD PAGE
+
+Build /vendor/dashboard with:
+
+Vendor Overview
+Product Catalog
+Media Uploads
+Inventory Status
+Assigned Venues
+Approval Status
+Messages
+Product Performance
+
+The page must use the approved EEIE/Sovereign blue-white-titanium visual system.
+
+Use:
+
+deep navy shell
+ice-blue content surface
+white glass cards
+metallic blue borders
+electric blue active states
+real product image cards
+clear readable text
+
+VENDOR PRODUCT PAGE
+
+Build /vendor/products with:
+
+Add Product
+Edit Product
+Product Name
+Product Category
+Brand
+Description
+Price
+Availability
+Inventory Count
+Upload Image
+Submit for Approval
+
+VENDOR MEDIA PAGE
+
+Build /vendor/media with:
+
+Upload Product Image
+Link Image URL
+Replace Image
+Image Category
+Assign to Product
+Pending Approval
+Approved
+Rejected
+Broken Image Warning
+
+Images must not go live until approved.
+
+VENDOR INVENTORY PAGE
+
+Build /vendor/inventory with:
+
+Inventory count
+Low stock warning
+Restock needed
+Assigned venue quantity
+Featured in pairing yes/no
+Update inventory button
+
+VENDOR PERFORMANCE PAGE
+
+Build /vendor/performance with:
+
+Product views
+Shown to guests
+Added to cart
+Conversion rate
+Revenue influenced
+Top performing product
+Low performing product
+
+Only show the vendor’s own products.
+
+ROLE GUARD REQUIREMENT
+
+Create or confirm role guard:
+
+vendor users can only access /vendor/*
+
+If vendor attempts to access:
+
+/sovereign-dashboard
+/founder-control
+/master-operations
+/distribution-vault
+/hardware-lab
+/war-room
+/keys
+/live-nodes
+/deploy
+/eeie-command
+/eeie/staff-cockpit
+
+Redirect to:
+
+/vendor/dashboard
+
+Show message:
+
+Vendor access is limited to your approved vendor portal.
+
+FOUNDER PREVIEW REQUIREMENT
+
+Founder and super_admin can preview the vendor portal.
+
+Add a badge:
+
+Founder Preview Mode
+
+When founder previews vendor dashboard, show demo vendor data clearly labeled:
+
+Demo Vendor View
+
+Do not confuse this with live vendor login.
+
+BACKEND ROUTES
+
+Create or confirm:
+
+GET /api/vendor/me
+GET /api/vendor/profile
+POST /api/vendor/profile
+GET /api/vendor/products
+POST /api/vendor/products
+PATCH /api/vendor/products/:id
+GET /api/vendor/media
+POST /api/vendor/media
+PATCH /api/vendor/media/:id
+GET /api/vendor/inventory
+PATCH /api/vendor/inventory/:id
+GET /api/vendor/venues
+GET /api/vendor/performance
+GET /api/vendor/approvals
+GET /api/vendor/messages
+POST /api/vendor/messages
+
+Admin approval routes:
+
+GET /api/admin/vendor-approvals
+POST /api/admin/vendor-approvals/:id/approve
+POST /api/admin/vendor-approvals/:id/reject
+
+FINAL DELIVERABLE
+
+After this pass:
+
+Vendor Portal must be visible to founder/admin as a preview link.
+Vendor users must have their own safe route.
+Vendor onboarding must exist.
+Vendor dashboard must exist.
+Vendor product/media/inventory/performance pages must exist.
+Vendor role guard must prevent access to founder/admin systems.
+No vendor should ever see Sovereign Command Center or Founder Control.

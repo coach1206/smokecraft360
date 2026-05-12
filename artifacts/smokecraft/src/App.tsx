@@ -105,6 +105,15 @@ const EnterpriseGovernance  = lazy(() => import('@/pages/EnterpriseGovernance'))
 const SovereignDistributionVault   = lazy(() => import('@/pages/SovereignDistributionVault'));
 const SovereignHardwareLab         = lazy(() => import('@/pages/SovereignHardwareLab'));
 const SovereignGate                = lazy(() => import('@/pages/SovereignGate'));
+const VendorOnboarding             = lazy(() => import('@/pages/vendor/VendorOnboarding'));
+const VendorDashboard              = lazy(() => import('@/pages/vendor/VendorDashboard'));
+const VendorProducts               = lazy(() => import('@/pages/vendor/VendorProducts'));
+const VendorMedia                  = lazy(() => import('@/pages/vendor/VendorMedia'));
+const VendorInventory              = lazy(() => import('@/pages/vendor/VendorInventory'));
+const VendorVenues                 = lazy(() => import('@/pages/vendor/VendorVenues'));
+const VendorPerformance            = lazy(() => import('@/pages/vendor/VendorPerformance'));
+const VendorApprovals              = lazy(() => import('@/pages/vendor/VendorApprovals'));
+const VendorMessages               = lazy(() => import('@/pages/vendor/VendorMessages'));
 const SovereignVerify              = lazy(() => import('@/pages/SovereignVerify'));
 const SovereignDashboard           = lazy(() => import('@/pages/SovereignDashboard'));
 const AmbassadorGate               = lazy(() => import('@/pages/AmbassadorGate'));
@@ -936,6 +945,35 @@ export default function App() {
           <Route path="/hardware-lab">
             <SubPageProviders><SovereignHardwareLab /></SubPageProviders>
           </Route>
+          {/* ── Vendor Portal — brand_partner role ── */}
+          <Route path="/vendor/onboarding">
+            <VendorOnboarding />
+          </Route>
+          <Route path="/vendor/dashboard">
+            <VendorDashboard />
+          </Route>
+          <Route path="/vendor/products">
+            <VendorProducts />
+          </Route>
+          <Route path="/vendor/media">
+            <VendorMedia />
+          </Route>
+          <Route path="/vendor/inventory">
+            <VendorInventory />
+          </Route>
+          <Route path="/vendor/venues">
+            <VendorVenues />
+          </Route>
+          <Route path="/vendor/performance">
+            <VendorPerformance />
+          </Route>
+          <Route path="/vendor/approvals">
+            <VendorApprovals />
+          </Route>
+          <Route path="/vendor/messages">
+            <VendorMessages />
+          </Route>
+
           {/* ── Sovereign routes ── */}
           <Route path="/sovereign-gate">
             <SovereignGate />
