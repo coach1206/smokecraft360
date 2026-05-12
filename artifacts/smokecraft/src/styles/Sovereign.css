@@ -189,6 +189,86 @@
   color:          rgba(245, 242, 237, 0.30);
 }
 
+/* ── Vault Design System (Sovereign Directive) ───────────────── */
+:root {
+  --vault-black:   #020617;
+  --vault-navy:    #0f1a35;
+  --electric-cyan: #00d4ff;
+  --ice-silver:    #f0f4f8;
+  --glass-stroke:  rgba(255, 255, 255, 0.08);
+}
+
+.sovereign-card {
+  background: linear-gradient(145deg, #0f172a 0%, #020617 100%) !important;
+  border: 1px solid var(--glass-stroke) !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.05), 0 20px 40px rgba(0,0,0,0.6);
+  backdrop-filter: blur(25px);
+  border-radius: 12px;
+  color: var(--ice-silver);
+}
+
+.header-main {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: 0.3rem;
+  color: var(--ice-silver);
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.data-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--electric-cyan);
+}
+
+/* Hardware shimmer — single sweep on hover */
+@keyframes hardwareShimmer {
+  0%   { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(350%) skewX(-15deg); }
+}
+.hardware-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.hardware-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.035) 45%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(255,255,255,0.035) 55%,
+    transparent 100%
+  );
+  transform: translateX(-100%) skewX(-15deg);
+  pointer-events: none;
+}
+.hardware-shimmer:hover::after {
+  animation: hardwareShimmer 0.65s ease-out forwards;
+}
+
+/* Button press physical effect */
+.btn-press {
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.btn-press:active {
+  transform: translateY(2px) scale(0.97);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.6) !important;
+}
+
+/* Add-to-Vault glow confirm flash */
+@keyframes vaultConfirm {
+  0%   { box-shadow: 0 0 0 0 rgba(0,212,255,0.8); }
+  50%  { box-shadow: 0 0 0 12px rgba(0,212,255,0.0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,212,255,0); }
+}
+.vault-confirm-flash {
+  animation: vaultConfirm 0.6s ease-out forwards;
+}
+
 /* ── Sovereign dim overlay ───────────────────────────────────── */
 .sovereign-dim-overlay {
   backdrop-filter:         blur(2px) brightness(0.6);

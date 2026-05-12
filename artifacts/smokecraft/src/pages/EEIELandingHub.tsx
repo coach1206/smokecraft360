@@ -5,6 +5,7 @@
  * No tabs. No sidebar. Pure command-center navigation hub.
  */
 
+import { useState }          from "react";
 import { useLocation }       from "wouter";
 import { motion }            from "framer-motion";
 import {
@@ -334,103 +335,141 @@ function LiveActivityRail() {
   );
 }
 
+// ── VenueNode — table node with radial pulse + table number label ─
+type NodeStatus = "platinum" | "pressure" | "active" | "empty";
+function VenueNode({ x, y, status, tableNumber, delay = 0 }: { x: number; y: number; status: NodeStatus; tableNumber: number; delay?: number }) {
+  const glowColor = status === "platinum" ? "#ffffff" : status === "pressure" ? "#ffaa00" : status === "active" ? "#00d4ff" : "rgba(80,110,170,0.28)";
+  const dur = status === "platinum" ? 1.3 : status === "pressure" ? 1.7 : 2.2;
+  return (
+    <div style={{ position: "absolute", left: `${x}%`, top: `${y}%`, transform: "translate(-50%,-50%)" }}>
+      <span style={{
+        position: "absolute", top: -20, left: "50%", transform: "translateX(-50%)",
+        fontSize: 8, fontWeight: 700, color: "rgba(255,255,255,0.30)",
+        letterSpacing: "0.12em", whiteSpace: "nowrap", fontFamily: "'Inter',sans-serif",
+      }}>T-{tableNumber}</span>
+      {status !== "empty" && (
+        <motion.div
+          animate={{ scale: [1, 1.65, 1], opacity: [0.28, 0.65, 0.28] }}
+          transition={{ duration: dur, repeat: Infinity, ease: "easeInOut", delay }}
+          style={{
+            width: 32, height: 32, borderRadius: "50%",
+            background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,
+            position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)",
+          }}
+        />
+      )}
+      <div style={{
+        width: 8, height: 8, borderRadius: "50%", position: "relative", zIndex: 1,
+        background: status === "empty" ? "rgba(80,110,170,0.30)" : "#ffffff",
+        boxShadow: status !== "empty" ? `0 0 10px ${glowColor}, 0 0 22px ${glowColor}55` : "none",
+      }} />
+    </div>
+  );
+}
+
 // ── Venue Blueprint Heatmap ──────────────────────────────────
 const BP_ZONES = [
-  { id: "cigar",   label: "CIGAR LOUNGE", x: 28,  y: 28,  w: 162, h: 118, pct: 78, color: "#F6A623" },
-  { id: "whiskey", label: "WHISKEY BAR",  x: 208, y: 28,  w: 138, h: 78,  pct: 88, color: "#00D4FF" },
-  { id: "vip",     label: "VIP ROOM",     x: 364, y: 28,  w: 106, h: 118, pct: 42, color: "#A78BFA" },
-  { id: "kitchen", label: "KITCHEN",      x: 208, y: 124, w: 138, h: 80,  pct: 95, color: "#E94B5A" },
-  { id: "dining",  label: "DINING",       x: 28,  y: 164, w: 162, h: 80,  pct: 65, color: "#4DAAFF" },
+  { id: "cigar",   label: "CIGAR LOUNGE", lx: 17, ly: 22, w: "28%", h: "44%", pct: 78, color: "#F6A623" },
+  { id: "whiskey", label: "WHISKEY BAR",  lx: 48, ly: 22, w: "22%", h: "29%", pct: 88, color: "#00D4FF" },
+  { id: "vip",     label: "VIP ROOM",     lx: 73, ly: 22, w: "14%", h: "44%", pct: 42, color: "#A78BFA" },
+  { id: "kitchen", label: "KITCHEN",      lx: 48, ly: 55, w: "22%", h: "30%", pct: 95, color: "#E94B5A" },
+  { id: "dining",  label: "DINING ROOM",  lx: 17, ly: 70, w: "28%", h: "23%", pct: 65, color: "#4DAAFF" },
 ];
-const BP_TABLES = [
-  { x: 68,  y: 72,  s: "active" }, { x: 108, y: 66,  s: "peak"   }, { x: 68,  y: 112, s: "active" },
-  { x: 108, y: 112, s: "active" }, { x: 155, y: 88,  s: "empty"  },
-  { x: 240, y: 60,  s: "peak"   }, { x: 278, y: 60,  s: "active" }, { x: 318, y: 75,  s: "active" },
-  { x: 398, y: 68,  s: "active" }, { x: 440, y: 110, s: "empty"  },
-  { x: 244, y: 168, s: "peak"   }, { x: 284, y: 168, s: "peak"   },
-  { x: 66,  y: 202, s: "active" }, { x: 106, y: 208, s: "empty"  }, { x: 146, y: 200, s: "active" },
+const BP_NODES: { x: number; y: number; status: NodeStatus; t: number; delay?: number }[] = [
+  { x: 22, y: 35, status: "active",   t: 1,  delay: 0    },
+  { x: 30, y: 35, status: "platinum", t: 2,  delay: 0.3  },
+  { x: 22, y: 50, status: "active",   t: 3,  delay: 0.6  },
+  { x: 30, y: 50, status: "active",   t: 4,  delay: 0.1  },
+  { x: 38, y: 42, status: "empty",    t: 5,  delay: 0    },
+  { x: 54, y: 30, status: "pressure", t: 6,  delay: 0.4  },
+  { x: 62, y: 30, status: "active",   t: 7,  delay: 0.2  },
+  { x: 58, y: 42, status: "active",   t: 8,  delay: 0.5  },
+  { x: 78, y: 35, status: "active",   t: 9,  delay: 0.2  },
+  { x: 82, y: 50, status: "empty",    t: 10, delay: 0    },
+  { x: 54, y: 65, status: "pressure", t: 11, delay: 0.3  },
+  { x: 62, y: 65, status: "pressure", t: 12, delay: 0.6  },
+  { x: 22, y: 79, status: "active",   t: 13, delay: 0.1  },
+  { x: 30, y: 79, status: "empty",    t: 14, delay: 0    },
+  { x: 38, y: 79, status: "active",   t: 15, delay: 0.4  },
 ];
-const tColor = (s: string) => s === "peak" ? "#E94B5A" : s === "active" ? "#18C98B" : "rgba(80,110,170,0.30)";
 
 function VenueBlueprint() {
-  const circ = 2 * Math.PI * 36;
   return (
-    <div style={{
-      background: "linear-gradient(165deg,rgba(15,26,53,0.98) 0%,rgba(6,11,25,0.98) 100%)",
-      border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, overflow: "hidden",
-      marginBottom: 22, maxWidth: 960,
-      boxShadow: "inset 0 1px 2px rgba(255,255,255,0.05), 0 20px 40px rgba(0,0,0,0.50)",
+    <div className="sovereign-card hardware-shimmer" style={{
+      marginBottom: 22, maxWidth: 960, padding: 0, overflow: "hidden",
     }}>
       {/* Header */}
       <div style={{
-        background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.06)",
+        background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--glass-stroke)",
         padding: "13px 24px", display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: "#f8fafc", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>Venue Heat Map</div>
-          <div style={{ padding: "2px 9px", borderRadius: 12, background: "rgba(0,212,255,0.14)", border: "1px solid rgba(0,212,255,0.28)" }}>
-            <span style={{ fontSize: 8, color: "#00D4FF", fontWeight: 700, letterSpacing: "0.12em", fontFamily: "'Orbitron',sans-serif" }}>LIVE</span>
+          <div style={{ fontSize: 14, fontWeight: 800, color: "var(--ice-silver)", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>Spatial Intelligence Studio</div>
+          <div style={{ padding: "2px 9px", borderRadius: 12, background: "rgba(0,212,255,0.13)", border: "1px solid rgba(0,212,255,0.28)" }}>
+            <span style={{ fontSize: 8, color: "var(--electric-cyan)", fontWeight: 700, letterSpacing: "0.12em", fontFamily: "'Orbitron',sans-serif" }}>LIVE</span>
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          {[{ l: "PEAK", c: "#E94B5A" }, { l: "ACTIVE", c: "#18C98B" }, { l: "EMPTY", c: "rgba(100,140,200,0.45)" }].map(({ l, c }) => (
+          {[{ l: "PLATINUM", c: "#ffffff" }, { l: "PRESSURE", c: "#ffaa00" }, { l: "ACTIVE", c: "#00d4ff" }, { l: "EMPTY", c: "rgba(100,140,200,0.45)" }].map(({ l, c }) => (
             <div key={l} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <div style={{ width: 7, height: 7, borderRadius: "50%", background: c }} />
-              <span style={{ fontSize: 7, color: "rgba(120,160,220,0.55)", letterSpacing: "0.12em", fontFamily: "'Inter',sans-serif" }}>{l}</span>
+              <div style={{ width: 7, height: 7, borderRadius: "50%", background: c, boxShadow: c !== "rgba(100,140,200,0.45)" ? `0 0 6px ${c}` : "none" }} />
+              <span style={{ fontSize: 7, color: "rgba(120,160,220,0.55)", letterSpacing: "0.10em", fontFamily: "'Inter',sans-serif" }}>{l}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Blueprint + zone stats */}
       <div style={{ padding: "20px 24px", display: "flex", gap: 24, alignItems: "flex-start" }}>
-        {/* SVG floor plan */}
-        <div style={{ flex: 1 }}>
-          <svg viewBox="0 0 490 265" style={{ width: "100%", display: "block" }}>
-            <defs>
-              <pattern id="bpGrid" width="20" height="20" patternUnits="userSpaceOnUse">
-                <path d="M20 0L0 0 0 20" fill="none" stroke="rgba(0,200,255,0.055)" strokeWidth="0.5" />
-              </pattern>
-            </defs>
-            <rect width="490" height="265" fill="url(#bpGrid)" />
-            {BP_ZONES.map(z => (
-              <g key={z.id}>
-                <motion.rect x={z.x} y={z.y} width={z.w} height={z.h} rx={4}
-                  fill={`${z.color}09`} stroke={z.color} strokeWidth="1.2"
-                  animate={{ opacity: [0.65, 1, 0.65] }}
-                  transition={{ repeat: Infinity, duration: 2.5 + BP_ZONES.indexOf(z) * 0.4, ease: "easeInOut" }}
-                  style={{ filter: `drop-shadow(0 0 8px ${z.color}50)` }}
-                />
-                <text x={z.x + z.w / 2} y={z.y + 14} textAnchor="middle" fill={z.color} fontSize="6.5" fontFamily="'Orbitron',sans-serif" letterSpacing="1" opacity="0.85">{z.label}</text>
-                <text x={z.x + z.w / 2} y={z.y + 26} textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize="9" fontFamily="'Orbitron',sans-serif" fontWeight="700">{z.pct}%</text>
-              </g>
-            ))}
-            {BP_TABLES.map((t, i) => (
-              <motion.circle key={i} cx={t.x} cy={t.y} r={7}
-                fill={tColor(t.s)} stroke="rgba(255,255,255,0.12)" strokeWidth="1"
-                animate={t.s === "peak" ? { r: [6, 8.5, 6], opacity: [0.7, 1, 0.7] } : {}}
-                transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
-                style={{ filter: t.s !== "empty" ? `drop-shadow(0 0 5px ${tColor(t.s)})` : "none" }}
-              />
-            ))}
-          </svg>
+        {/* Blueprint canvas */}
+        <div style={{
+          flex: 1, position: "relative", height: 280,
+          background: `radial-gradient(ellipse at 50% 50%, rgba(0,80,150,0.12) 0%, transparent 70%),
+                       repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(0,200,255,0.05) 20px),
+                       repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(0,200,255,0.05) 20px)`,
+          borderRadius: 10, border: "1px solid rgba(0,200,255,0.10)",
+        }}>
+          {/* Zone outlines */}
+          {BP_ZONES.map(z => (
+            <motion.div key={z.id}
+              animate={{ borderColor: [`${z.color}40`, `${z.color}90`, `${z.color}40`] }}
+              transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+              style={{
+                position: "absolute", left: `${z.lx}%`, top: `${z.ly}%`, width: z.w, height: z.h,
+                border: `1px solid ${z.color}60`, borderRadius: 6,
+                background: `${z.color}07`,
+                boxShadow: `inset 0 0 20px ${z.color}06, 0 0 12px ${z.color}18`,
+              }}
+            >
+              <div style={{
+                position: "absolute", top: 6, left: "50%", transform: "translateX(-50%)",
+                textAlign: "center", whiteSpace: "nowrap",
+              }}>
+                <div style={{ fontSize: 6.5, color: z.color, fontFamily: "'Orbitron',sans-serif", letterSpacing: "0.12em", opacity: 0.85 }}>{z.label}</div>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.60)", fontFamily: "'Orbitron',sans-serif", fontWeight: 700, marginTop: 1 }}>{z.pct}%</div>
+              </div>
+            </motion.div>
+          ))}
+          {/* Table nodes */}
+          {BP_NODES.map(n => (
+            <VenueNode key={n.t} x={n.x} y={n.y} status={n.status} tableNumber={n.t} delay={n.delay} />
+          ))}
         </div>
 
         {/* Zone stat cards */}
-        <div style={{ width: 155, display: "flex", flexDirection: "column", gap: 9, flexShrink: 0 }}>
-          {BP_ZONES.map(z => (
-            <div key={z.id} style={{ background: `${z.color}0C`, border: `1px solid ${z.color}28`, borderRadius: 9, padding: "10px 12px" }}>
+        <div style={{ width: 158, display: "flex", flexDirection: "column", gap: 9, flexShrink: 0 }}>
+          {BP_ZONES.map((z, i) => (
+            <div key={z.id} style={{ background: `${z.color}0B`, border: `1px solid ${z.color}25`, borderRadius: 9, padding: "10px 12px" }}>
               <div style={{ fontSize: 7, color: z.color, fontFamily: "'Orbitron',sans-serif", letterSpacing: "0.10em", marginBottom: 3 }}>{z.label}</div>
-              <div style={{ fontSize: 20, color: "#ffffff", fontFamily: "'Orbitron',sans-serif", fontWeight: 700, lineHeight: 1 }}>{z.pct}%</div>
+              <div className="data-value" style={{ fontSize: 20, lineHeight: 1 }}>{z.pct}%</div>
               <div style={{ height: 3, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginTop: 7, overflow: "hidden" }}>
                 <motion.div
                   animate={{ width: `${z.pct}%` }} initial={{ width: 0 }}
-                  transition={{ duration: 1.4, ease: "easeOut", delay: 0.3 + BP_ZONES.indexOf(z) * 0.12 }}
+                  transition={{ duration: 1.4, ease: "easeOut", delay: 0.25 + i * 0.10 }}
                   style={{ height: "100%", background: z.color, borderRadius: 2, boxShadow: `0 0 6px ${z.color}` }}
                 />
               </div>
-              <div style={{ fontSize: 7, color: "rgba(150,180,220,0.55)", marginTop: 5, fontFamily: "'Inter',sans-serif" }}>
-                {z.pct >= 90 ? "At capacity" : z.pct > 70 ? "High activity" : z.pct > 50 ? "Moderate" : "Light activity"}
+              <div style={{ fontSize: 7, color: "rgba(150,180,220,0.50)", marginTop: 5, fontFamily: "'Inter',sans-serif" }}>
+                {z.pct >= 90 ? "At capacity" : z.pct > 70 ? "High activity" : z.pct > 50 ? "Moderate" : "Light traffic"}
               </div>
             </div>
           ))}
@@ -451,6 +490,134 @@ const SOVEREIGN_INDEX = [
   { label: "BALVENIE 21",     value: "$380",    change: "+1.1%",  up: true },
   { label: "SESSION REVENUE", value: "$12,840", change: "+4.2%",  up: true },
 ];
+
+// ── Pairing Intelligence data ────────────────────────────────
+const PAIRINGS = [
+  {
+    id: "p1",
+    name: "Macallan 25",
+    pairedWith: "Cohiba Behike 56",
+    confidence: 94,
+    price: 2450,
+    category: "WHISKY + CIGAR",
+    accent: "#F6A623",
+    waveColor: "#F6A623",
+  },
+  {
+    id: "p2",
+    name: "Dom Perignon P2",
+    pairedWith: "A5 Wagyu Tartare",
+    confidence: 91,
+    price: 1250,
+    category: "CHAMPAGNE + CUISINE",
+    accent: "#00D4FF",
+    waveColor: "#00D4FF",
+  },
+  {
+    id: "p3",
+    name: "Louis XIII",
+    pairedWith: "Arturo Fuente OpusX",
+    confidence: 88,
+    price: 4850,
+    category: "COGNAC + CIGAR",
+    accent: "#A78BFA",
+    waveColor: "#A78BFA",
+  },
+];
+
+function ProductWaveform({ color }: { color: string }) {
+  const points = [4,12,7,18,11,5,15,20,19,8,23,16,27,6,31,14,35,9,39,17,43,4,47,13,51,7];
+  const pairs: [number,number][] = [];
+  for (let i = 0; i < points.length; i += 2) pairs.push([points[i], points[i+1]]);
+  return (
+    <svg viewBox="0 0 55 24" style={{ width: "100%", height: 60, display: "block", opacity: 0.8 }}>
+      <motion.polyline
+        points={pairs.map(([x,y]) => `${x},${y}`).join(" ")}
+        fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+        style={{ filter: `drop-shadow(0 0 5px ${color})` }}
+        animate={{ opacity: [0.6, 1, 0.6] }}
+        transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+      />
+    </svg>
+  );
+}
+
+function ProductIntelligenceCard({ p }: { p: typeof PAIRINGS[number] }) {
+  const [confirmed, setConfirmed] = useState(false);
+  const handleAdd = () => {
+    setConfirmed(true);
+    setTimeout(() => setConfirmed(false), 1200);
+  };
+  return (
+    <div className="sovereign-card hardware-shimmer" style={{
+      padding: 0, overflow: "hidden", display: "flex", flexDirection: "column",
+      flex: "1 1 260px", minWidth: 0,
+    }}>
+      {/* Waveform zone */}
+      <div style={{
+        background: `linear-gradient(160deg, ${p.accent}12 0%, rgba(2,6,23,0.85) 100%)`,
+        borderBottom: `1px solid ${p.accent}22`, padding: "18px 20px 14px",
+        position: "relative", overflow: "hidden",
+      }}>
+        <div style={{ position: "absolute", top: 0, right: 0, width: "60%", opacity: 0.18,
+          background: `radial-gradient(circle at right top, ${p.accent}, transparent)`, height: "100%" }} />
+        <div style={{ fontSize: 7, color: p.accent, fontFamily: "'Orbitron',sans-serif", letterSpacing: "0.16em", marginBottom: 6 }}>
+          {p.category}
+        </div>
+        <ProductWaveform color={p.waveColor} />
+      </div>
+
+      {/* Card body */}
+      <div style={{ padding: "16px 20px 18px", display: "flex", flexDirection: "column", flex: 1 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: "#f0f4f8", fontFamily: "'Inter',sans-serif", letterSpacing: "-0.01em", lineHeight: 1.2, marginBottom: 4 }}>
+          {p.name}
+        </div>
+        <div style={{ fontSize: 11, color: "rgba(180,210,255,0.55)", fontFamily: "'Inter',sans-serif", marginBottom: 12, fontStyle: "italic" }}>
+          paired with {p.pairedWith}
+        </div>
+
+        {/* Confidence bar */}
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+            <span style={{ fontSize: 8, color: "rgba(150,180,220,0.55)", fontFamily: "'Orbitron',sans-serif", letterSpacing: "0.10em" }}>CONFIDENCE</span>
+            <span style={{ fontSize: 11, color: "var(--electric-cyan)", fontFamily: "'Orbitron',sans-serif", fontWeight: 700 }}>{p.confidence}%</span>
+          </div>
+          <div style={{ height: 3, background: "rgba(255,255,255,0.07)", borderRadius: 2, overflow: "hidden" }}>
+            <motion.div
+              animate={{ width: `${p.confidence}%` }} initial={{ width: 0 }}
+              transition={{ duration: 1.3, ease: "easeOut", delay: 0.4 }}
+              style={{ height: "100%", background: `linear-gradient(90deg, ${p.accent}, var(--electric-cyan))`, borderRadius: 2, boxShadow: `0 0 8px ${p.accent}` }}
+            />
+          </div>
+        </div>
+
+        {/* Price + CTA */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 14, marginTop: "auto" }}>
+          <span style={{ fontSize: 22, fontWeight: 900, color: "#f0f4f8", fontFamily: "'Inter',sans-serif", letterSpacing: "-0.02em" }}>
+            ${p.price.toLocaleString()}
+          </span>
+          <motion.button
+            whileTap={{ scale: 0.90, y: 2 }}
+            onClick={handleAdd}
+            className="btn-press"
+            style={{
+              padding: "9px 18px", borderRadius: 7,
+              background: confirmed ? "rgba(0,212,255,0.28)" : "rgba(255,255,255,0.94)",
+              color: confirmed ? "#00d4ff" : "#020617",
+              fontSize: 9, fontWeight: 800, fontFamily: "'Orbitron',sans-serif",
+              letterSpacing: "0.14em", cursor: "pointer",
+              border: confirmed ? "1px solid rgba(0,212,255,0.60)" : "none",
+              boxShadow: confirmed ? "0 0 20px rgba(0,212,255,0.45)" : "0 2px 8px rgba(0,0,0,0.35)",
+              transition: "background 0.2s, color 0.2s, box-shadow 0.2s, border 0.2s",
+            }}
+          >
+            {confirmed ? "SECURED" : "ADD TO VAULT"}
+          </motion.button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ── EEIEModuleCard ────────────────────────────────────────────
 function EEIEModuleCard({
@@ -476,7 +643,7 @@ function EEIEModuleCard({
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); logEEIEEvent(tile.label, tile.path); onNavigate(tile.path); } }}
       role="button"
       tabIndex={0}
-      className={cardClass}
+      className={`${cardClass} hardware-shimmer`}
       style={{
         background: `linear-gradient(160deg, rgba(255,255,255,0.06) 0%, ${C.surface} 30%)`,
         border: `1.5px solid ${C.border}`,
@@ -798,15 +965,30 @@ export default function EEIELandingHub() {
           ))}
         </div>
 
-        {/* Session footer strip */}
-        <div style={{
-          marginTop: 36, padding: "14px 20px", borderRadius: 10,
-          background: `${C.blue}06`, border: `1px solid ${C.border}`,
-          maxWidth: 580, display: "flex", alignItems: "center", gap: 12,
-        }}>
-          <div className="sovereign-breath" style={{ width: 6, height: 6, borderRadius: "50%", background: C.green, flexShrink: 0 }} />
-          <div style={{ fontSize: 9, color: C.dim, lineHeight: 1.8 }}>
-            SESSION ACTIVE · TOKEN VALID · ALL NODES ONLINE · EEIE TITAN V ENGINE OPERATIONAL
+        {/* ── PAIRING INTELLIGENCE SECTION ── */}
+        <div style={{ marginTop: 28, maxWidth: 960 }}>
+          <div style={{
+            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)",
+            borderRadius: "12px 12px 0 0", borderBottom: "none",
+            padding: "13px 22px", display: "flex", alignItems: "center", justifyContent: "space-between",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#f8fafc", fontFamily: "'Inter',sans-serif", textTransform: "uppercase" }}>
+                Pairing Intelligence
+              </div>
+              <div style={{ padding: "2px 9px", borderRadius: 12, background: "rgba(246,166,35,0.13)", border: "1px solid rgba(246,166,35,0.28)" }}>
+                <span style={{ fontSize: 8, color: "#F6A623", fontWeight: 700, letterSpacing: "0.12em", fontFamily: "'Orbitron',sans-serif" }}>AI CURATED</span>
+              </div>
+            </div>
+            <span style={{ fontSize: 8, color: "rgba(120,160,220,0.50)", letterSpacing: "0.14em", fontFamily: "'Inter',sans-serif" }}>TOP CONFIDENCE PAIRINGS · TONIGHT</span>
+          </div>
+          <div style={{
+            background: "linear-gradient(165deg,rgba(10,18,40,0.60) 0%,rgba(5,9,20,0.60) 100%)",
+            border: "1px solid rgba(255,255,255,0.07)", borderTop: "none",
+            borderRadius: "0 0 12px 12px", padding: 16,
+            display: "flex", gap: 14, flexWrap: "wrap",
+          }}>
+            {PAIRINGS.map(p => <ProductIntelligenceCard key={p.id} p={p} />)}
           </div>
         </div>
       </div>

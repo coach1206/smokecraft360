@@ -1,0 +1,80 @@
+This is the unified Sovereign Stealth Master Directive. It merges the "Spatial Intelligence" of the venue map with the "Obsidian Glass" visual standard.
+
+Copy and paste this entire block into your Replit Agent. It is designed to overwrite the "medical" and "gold/brown" leftovers and force the exact atmosphere of the Sovereign Operations Hub.
+
+MASTER DIRECTIVE: SOVEREIGN COMMAND CORE & SPATIAL INTELLIGENCE
+1. VISUAL DNA: OBSIDIAN STEALTH
+
+Palette Shift: Eliminate all gold, brown, and medical white. Use Obsidian Black (#010409) and Deep Vault Navy (#0a0f1d).
+
+Glass Physics: Every module must be a 145-degree gradient panel with backdrop-filter: blur(30px). Add a 1px Ice-Silver stroke (rgba(255,255,255,0.05)) around all cards.
+
+Atmospheric Shading: Apply a subtle, ghost-white-to-transparent horizontal gradient across the top of the main interface to simulate overhead light reflecting on glass.
+
+2. TYPOGRAPHY: COMMAND LEGIBILITY
+
+Headers: Use Orbitron in Ghost White (rgba 240, 244, 248, 0.85). Increase letter-spacing to 0.15rem.
+
+Data & Body: Use Inter (Weight 500+). STRICT RULE: No text smaller than 18px. Ensure spacing is wide and professional, never "tight."
+
+Data Highlights: Use Electric Cyan (#00d4ff) for values and active status nodes.
+
+3. THE SPATIAL HEAT MAP (CENTER CONSOLE)
+
+Digital Twin Logic: Replace the middle grid with an Isometric Blueprint Wireframe of the venue.
+
+Node Plotting: Implement glowing Cyan Nodes for every mapped table or section number.
+
+Live Thermal Pulse: Nodes must expand into a soft glow radius based on real-time spend and guest activity.
+
+No Glyphs: Represent activity using pulses, waveforms, or realistic product images—ZERO EMOJIS.
+
+4. REAL-TIME TELEMETRY & COMMERCE
+
+Realistic Imagery: All product/staff cards must use high-resolution, rich-color lifestyle photography (Whiskey, Cigars, Lounges). Mute the image saturation by 10% to keep the "Stealth" vibe.
+
+Sovereign Index: Add a live-scrolling ticker at the very bottom of the screen showing live revenue trends and product "Sovereign Scores."
+
+Functional Wiring: * Add to Cart: Must trigger a physical "Press" animation and a glowing cyan confirmation.
+
+Upload Flow: Once a file is dropped, hide the upload prompt instantly and replace it with a glowing "Asset Authorizing" progress ring.
+
+5. MOTION PHYSICS
+
+Equalizer Lanes: Add smooth, liquid-motion equalizer bars to the "Venue Mood" section.
+
+Hardware Shimmer: Apply a slow-moving "light sheen" animation to the border of the Titan Tablet X1 diagnostic card.
+
+Code Implementation for Wiring
+TypeScript
+/* THE SOVEREIGN CORE THEME */
+export const SovereignTheme = {
+  background: 'radial-gradient(circle at top, #0f172a 0%, #010409 100%)',
+  panel: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(2, 6, 23, 1) 100%)',
+  textPrimary: 'rgba(240, 244, 248, 0.85)', // Ghost White
+  accent: '#00d4ff', // Electric Cyan
+  border: 'rgba(255, 255, 255, 0.05)'
+};
+
+/* THE HEATMAP NODE LOGIC */
+const TableNode = ({ tableId, x, y, intensity }) => (
+  <div className="absolute" style={{ left: `${x}%`, top: `${y}%` }}>
+    <div className="relative">
+      <div className="text-[10px] text-white/30 font-mono mb-1 uppercase text-center">
+        NODE-{tableId}
+      </div>
+      <div className="w-3 h-3 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.8)]" />
+      <motion.div 
+        animate={{ scale: [1, 2 * intensity, 1], opacity: [0.2, 0.4, 0.2] }}
+        transition={{ duration: 3, repeat: Infinity }}
+        className="absolute inset-[-10px] rounded-full bg-cyan-500 blur-xl"
+      />
+    </div>
+  </div>
+);
+Why this fixes everything:
+Ghost White Text: This solves the "white wash" problem. It's legible but has a 15% transparency so it sits in the UI rather than screaming on top of it.
+
+Obsidian Gradient: This removes the "medical blue" and the "old gold." It looks like a stealth-fighter cockpit.
+
+Spatial Layout: By putting the map in the center, you've moved from a "Check-out system" to a Venue Infrastructure Controller.
