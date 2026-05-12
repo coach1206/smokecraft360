@@ -311,72 +311,76 @@ function EEIEModuleCard({
       <TitanPreviewZone tile={tile} />
 
       {/* ── Card body ── */}
-      <div style={{ padding: "16px 18px 18px", display: "flex", flexDirection: "column", flex: 1 }}>
+      <div style={{ padding: "20px 22px 22px", display: "flex", flexDirection: "column", flex: 1 }}>
         {/* Icon + status row */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
           <div style={{
-            width: 36, height: 36, borderRadius: 10,
+            width: 40, height: 40, borderRadius: 11,
             background: `${tile.accent}22`, border: `1px solid ${tile.accent}40`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: `0 0 14px ${tile.accent}28`,
+            boxShadow: `0 0 16px ${tile.accent}30`,
           }}>
-            <tile.icon size={17} color={tile.accent} />
+            <tile.icon size={19} color={tile.accent} />
           </div>
           <div className={`eeie-chip-${tile.status.toLowerCase()}`} style={{
-            display: "flex", alignItems: "center", gap: 4,
-            padding: "3px 9px", borderRadius: 20,
+            display: "flex", alignItems: "center", gap: 5,
+            padding: "4px 10px", borderRadius: 20,
             background: `${sc}18`, border: `1px solid ${sc}45`,
           }}>
-            <div className="eeie-status-pulse" style={{ width: 4, height: 4, borderRadius: "50%", background: sc }} />
-            <span style={{ fontSize: 6, color: sc, fontWeight: 700, letterSpacing: "0.18em" }}>{tile.status}</span>
+            <div className="eeie-status-pulse" style={{ width: 5, height: 5, borderRadius: "50%", background: sc }} />
+            <span style={{ fontSize: 8, color: sc, fontWeight: 700, letterSpacing: "0.16em", fontFamily: "'Orbitron',sans-serif" }}>{tile.status}</span>
           </div>
         </div>
 
-        {/* Label */}
+        {/* Label — Orbitron, neon cyan */}
         <div style={{
-          fontSize: 12, color: "#FFFFFF", fontFamily: C.serif,
-          letterSpacing: "0.12em", marginBottom: 5, fontWeight: 600,
-          textShadow: `0 0 18px ${tile.accent}55`,
+          fontSize: 13, color: "#00f2ff", fontFamily: "'Orbitron',sans-serif",
+          letterSpacing: "0.18em", marginBottom: 6, fontWeight: 700,
+          textShadow: "0 0 20px rgba(0,242,255,0.45)",
+          lineHeight: 1.3,
         }}>
           {tile.label}
         </div>
         {/* Accent divider */}
-        <div style={{ width: 28, height: 1, background: `${tile.accent}70`, marginBottom: 9, borderRadius: 1 }} />
+        <div style={{ width: 32, height: 1, background: `${tile.accent}65`, marginBottom: 10, borderRadius: 1 }} />
 
-        {/* Description */}
+        {/* Description — Inter, readable size */}
         <div style={{
-          fontSize: 10, color: C.cardText, lineHeight: 1.68, marginBottom: 16, flex: 1,
+          fontSize: 12, color: C.cardText,
+          fontFamily: "'Inter',sans-serif", fontWeight: 300,
+          lineHeight: 1.75, letterSpacing: "0.02em",
+          marginBottom: 18, flex: 1,
           display: "-webkit-box", WebkitLineClamp: 3,
           WebkitBoxOrient: "vertical", overflow: "hidden",
         }}>
           {tile.desc}
         </div>
 
-        {/* ── Large CTA button ── */}
+        {/* ── CTA button ── */}
         <motion.button
           whileTap={{ scale: 0.96 }}
           onClick={e => { e.stopPropagation(); onNavigate(tile.path); }}
           style={{
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-            width: "100%", padding: "11px 0",
-            borderRadius: 9,
-            background: `${tile.accent}16`,
-            border: `1px solid ${tile.accent}38`,
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            width: "100%", padding: "13px 0",
+            borderRadius: 10,
+            background: `${tile.accent}18`,
+            border: `1px solid ${tile.accent}42`,
             color: tile.accent,
-            fontSize: 10, fontWeight: 700, letterSpacing: "0.16em",
-            cursor: "pointer", fontFamily: C.mono,
+            fontSize: 10, fontWeight: 700, letterSpacing: "0.18em",
+            cursor: "pointer", fontFamily: "'Orbitron',sans-serif",
             transition: "background 0.18s, border-color 0.18s",
           }}
           onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.background = `${tile.accent}28`;
-            (e.currentTarget as HTMLButtonElement).style.borderColor = `${tile.accent}60`;
+            (e.currentTarget as HTMLButtonElement).style.background = `${tile.accent}30`;
+            (e.currentTarget as HTMLButtonElement).style.borderColor = `${tile.accent}70`;
           }}
           onMouseLeave={e => {
-            (e.currentTarget as HTMLButtonElement).style.background = `${tile.accent}16`;
-            (e.currentTarget as HTMLButtonElement).style.borderColor = `${tile.accent}38`;
+            (e.currentTarget as HTMLButtonElement).style.background = `${tile.accent}18`;
+            (e.currentTarget as HTMLButtonElement).style.borderColor = `${tile.accent}42`;
           }}
         >
-          ENTER MODULE <ArrowRight size={12} />
+          ENTER MODULE <ArrowRight size={13} />
         </motion.button>
       </div>
     </motion.div>
