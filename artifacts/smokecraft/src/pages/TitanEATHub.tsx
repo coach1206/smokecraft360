@@ -18,6 +18,7 @@ import {
   Package, Users, Radio, Wifi, Music, Database, ToggleRight,
   Eye, CloudOff, Link2, CheckCircle2, Circle,
   Thermometer, AlertTriangle, RefreshCw, WifiOff, MapPin, Lock,
+  Smartphone, Signal,
 } from "lucide-react";
 import { SovereignMemory } from "@/pages/WelcomeEEIE";
 import {
@@ -26,6 +27,12 @@ import {
   EATMeshResilience,
   SovereignOverride,
   SectorControl,
+  DeviceRegistry,
+  DeviceHeartbeat,
+  AccelerometerGuard,
+  SovereignXPort,
+  HOME_ZONES,
+  type HomeZone,
   type LedgerPacket,
 } from "@/lib/EATBridge";
 import "@/styles/TitanEAT.css";
@@ -322,6 +329,114 @@ function EATIndexTicker() {
 }
 
 /* ════════════════════════════════════════════════════════════
+   SOVEREIGN X-PORT NODE CARD
+   ════════════════════════════════════════════════════════════ */
+function XPortNodeCard({ index, onConfigured, onStream }: {
+  index: number;
+  onConfigured: (portId: string, relayUrl: string) => void;
+  onStream: () => void;
+}) {
+  const [portId,    setPortId]    = useState("XPORT-01");
+  const [relayUrl,  setRelayUrl]  = useState("");
+  const [status,    setStatus]    = useState<"OFFLINE" | "EXPANSION_ACTIVE">("OFFLINE");
+  const [streaming, setStreaming] = useState(false);
+
+  const handleConfigure = () => {
+    if (!portId.trim() || !relayUrl.trim()) return;
+    const result = SovereignXPort.configure(portId.trim(), relayUrl.trim());
+    if (result === "EXPANSION_ACTIVE") {
+      setStatus("EXPANSION_ACTIVE");
+      onConfigured(portId.trim(), relayUrl.trim());
+    }
+  };
+
+  const handleStream = async () => {
+    if (status !== "EXPANSION_ACTIVE" || streaming) return;
+    setStreaming(true);
+    await new Promise(r => setTimeout(r, 800));
+    onStream();
+    setStreaming(false);
+  };
+
+  return (
+    <motion.div
+      className={`eat-slab ${status === "EXPANSION_ACTIVE" ? "eat-slab-linked" : ""}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05, duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+      style={{ borderRadius: 16 }}
+    >
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${C.amberHi}66, transparent)`, zIndex: 3 }} />
+      <div style={{ position: "relative", zIndex: 2, padding: "22px 18px 18px" }}>
+
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 12 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: `${C.amberHi}1A`, border: `1px solid ${C.amberHi}35`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: `0 0 18px ${C.amberHi}20` }}>
+            <Smartphone size={20} color={C.amberHi} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontFamily: C.header, fontSize: 11, fontWeight: 700, letterSpacing: "0.22em", color: C.amberHi, marginBottom: 3, textTransform: "uppercase" }}>SOVEREIGN X-PORT</div>
+            <div style={{ fontFamily: C.body, fontSize: 11, color: C.ghostDim, lineHeight: 1.5 }}>Custom API / Hardware Relay. Streams to Asset Vault + Ledger.</div>
+          </div>
+        </div>
+
+        {/* Status chip */}
+        <div style={{ marginBottom: 12 }}>
+          <div className={`eat-chip ${status === "EXPANSION_ACTIVE" ? "eat-chip-online" : "eat-chip-offline"}`}>
+            <div className="eat-chip-dot" style={{ background: status === "EXPANSION_ACTIVE" ? C.greenHi : "#f87171" }} />
+            {status}
+          </div>
+        </div>
+
+        {/* Inputs — 22px Plus Jakarta Sans */}
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ fontFamily: C.header, fontSize: 9, color: C.ghostMuted, letterSpacing: "0.18em", fontWeight: 700, marginBottom: 5, textTransform: "uppercase" }}>Port ID</div>
+          <input
+            className="xport-input"
+            value={portId}
+            onChange={e => setPortId(e.target.value)}
+            placeholder="XPORT-01"
+            style={{ fontSize: 14 }}
+          />
+        </div>
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontFamily: C.header, fontSize: 9, color: C.ghostMuted, letterSpacing: "0.18em", fontWeight: 700, marginBottom: 5, textTransform: "uppercase" }}>Relay URL / API Endpoint</div>
+          <input
+            className="xport-input"
+            value={relayUrl}
+            onChange={e => setRelayUrl(e.target.value)}
+            placeholder="https://api.device.io/relay"
+            style={{ fontSize: 14 }}
+          />
+        </div>
+
+        {/* Buttons */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <button
+            onClick={handleConfigure}
+            disabled={!portId.trim() || !relayUrl.trim()}
+            className="eat-btn-primary"
+            style={{ fontFamily: C.header, fontSize: "0.62rem", letterSpacing: "0.20em", padding: "11px 0", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, color: C.amberHi, borderColor: `${C.amberHi}50`, background: `${C.amberHi}12`, opacity: (!portId.trim() || !relayUrl.trim()) ? 0.45 : 1 }}
+            onMouseEnter={e => { if (portId.trim() && relayUrl.trim()) (e.currentTarget as HTMLButtonElement).style.background = `${C.amberHi}22`; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = `${C.amberHi}12`; }}
+          >
+            <Zap size={11} /> CONFIGURE PORT
+          </button>
+          <button
+            onClick={handleStream}
+            disabled={status !== "EXPANSION_ACTIVE" || streaming}
+            className="eat-btn-primary"
+            style={{ fontFamily: C.header, fontSize: "0.62rem", letterSpacing: "0.20em", padding: "11px 0", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, opacity: (status !== "EXPANSION_ACTIVE" || streaming) ? 0.45 : 1 }}
+          >
+            {streaming ? <><RefreshCw size={11} style={{ animation: "spin 1s linear infinite" }} /> STREAMING…</> : <><ArrowRight size={11} /> STREAM TO VAULT</>}
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════
    MAIN PAGE
    ════════════════════════════════════════════════════════════ */
 export default function TitanEATHub() {
@@ -337,6 +452,21 @@ export default function TitanEATHub() {
   const [sectorDeviceId,      setSectorDeviceId]      = useState("");
   const [sectorCurrentSector, setSectorCurrentSector] = useState("");
   const [sectorResult,        setSectorResult]        = useState<string | null>(null);
+
+  /* ── Lockdown border phase: null=violet(emergency), RED=sector mismatch, VIOLET=override release ── */
+  const [lockBorderPhase, setLockBorderPhase] = useState<null | 'RED' | 'VIOLET'>(null);
+
+  /* ── Accelerometer guard ── */
+  const [accelActive, setAccelActive] = useState(false);
+
+  /* ── Home Zone Registry ── */
+  const [hzDeviceId,  setHzDeviceId]  = useState("");
+  const [hzZone,      setHzZone]      = useState<HomeZone>("CIGAR LOUNGE");
+  const [hzRegistry,  setHzRegistry]  = useState(() => DeviceRegistry.getAll());
+
+  /* ── Heartbeat monitor ── */
+  const [hbDeviceId,  setHbDeviceId]  = useState("");
+  const [hbActive,    setHbActive]    = useState(false);
 
   /* ── Mesh resilience ── */
   const [isOnline,    setIsOnline]    = useState(navigator.onLine);
@@ -356,6 +486,7 @@ export default function TitanEATHub() {
     assets:      "OFFLINE",
     network:     "LINKED",
     bridge:      "OFFLINE",
+    xport:       "OFFLINE",
   });
   const [syncingNodes, setSyncingNodes] = useState<Set<string>>(new Set());
 
@@ -382,6 +513,35 @@ export default function TitanEATHub() {
       window.removeEventListener("offline", handleOffline);
     };
   }, [pushLedger]);
+
+  /* ── Accelerometer Guard — auto-attach on mount ── */
+  useEffect(() => {
+    const triggerAccelLock = () => {
+      setLockBorderPhase('RED');
+      setLockReason("ABRUPT DEVICE MOTION — ACCELEROMETER LOCKOUT");
+      setIsLockedDown(true);
+      pushLedger(EATSovereignLedger.recordEvent(
+        "ACCEL GUARD", "Abrupt motion detected — auto-lock triggered", "PHYSICAL SECURITY"
+      ));
+    };
+    const triggerPerimeterLock = () => {
+      setLockBorderPhase('RED');
+      setLockReason("DEVICE LEFT SECTOR PERIMETER — VISIBILITY LOSS");
+      setIsLockedDown(true);
+      pushLedger(EATSovereignLedger.recordEvent(
+        "ACCEL GUARD", "Perimeter exit detected — auto-lock triggered", "PHYSICAL SECURITY"
+      ));
+    };
+    const attached = AccelerometerGuard.attach(triggerAccelLock, triggerPerimeterLock);
+    setAccelActive(attached);
+    return () => { AccelerometerGuard.detach(); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /* ── Heartbeat cleanup on unmount ── */
+  useEffect(() => {
+    return () => { DeviceHeartbeat.stopAll(); };
+  }, []);
 
   /* ── Build init nodes with bridge functions ── */
   const INIT_NODES: InitNode[] = [
@@ -497,6 +657,7 @@ export default function TitanEATHub() {
         sector
       ));
       setLockReason(`SECTOR MISMATCH — DEVICE [${id}]`);
+      setLockBorderPhase('RED');
       setIsLockedDown(true);
     } else {
       pushLedger(EATSovereignLedger.recordEvent(
@@ -508,8 +669,64 @@ export default function TitanEATHub() {
   }, [sectorDeviceId, sectorCurrentSector, pushLedger]);
 
   const handleReleaseLockdown = useCallback(() => {
-    pushLedger(EATSovereignLedger.recordEvent("SUPER_ADMIN", "Lockdown released — Systems restored", "GLOBAL"));
-    setIsLockedDown(false);
+    // Shift border to violet (remote override phase) before clearing
+    setLockBorderPhase('VIOLET');
+    pushLedger(EATSovereignLedger.recordEvent("SUPER_ADMIN", "Remote override — Lockdown released", "GLOBAL"));
+    setTimeout(() => {
+      setIsLockedDown(false);
+      setLockBorderPhase(null);
+    }, 650);
+  }, [pushLedger]);
+
+  /* ── Home Zone Bind ── */
+  const handleHomeZoneBind = useCallback(() => {
+    const id = hzDeviceId.trim().toUpperCase();
+    if (!id) return;
+    DeviceRegistry.bind(id, hzZone);
+    setHzRegistry(DeviceRegistry.getAll());
+    pushLedger(EATSovereignLedger.recordEvent(
+      "DEVICE REGISTRY", `Device [${id}] bound to home zone [${hzZone}]`, hzZone
+    ));
+    setHzDeviceId("");
+  }, [hzDeviceId, hzZone, pushLedger]);
+
+  /* ── Heartbeat Toggle ── */
+  const handleHeartbeatToggle = useCallback(() => {
+    const id = hbDeviceId.trim().toUpperCase();
+    if (!id) return;
+    if (hbActive) {
+      DeviceHeartbeat.stop(id);
+      setHbActive(false);
+      pushLedger(EATSovereignLedger.recordEvent("HEARTBEAT", `Monitor stopped — Device [${id}]`, "PHYSICAL SECURITY"));
+    } else {
+      DeviceHeartbeat.start(
+        id,
+        () => sectorCurrentSector || "UNKNOWN",
+        (deviceId, detected, home) => {
+          setLockBorderPhase('RED');
+          setLockReason(`HEARTBEAT: DEVICE [${deviceId}] IN [${detected}] — HOME ZONE [${home}]`);
+          setIsLockedDown(true);
+          pushLedger(EATSovereignLedger.recordEvent(
+            "HEARTBEAT ALERT", `Unauthorized sector movement — Device [${deviceId}]`, detected
+          ));
+        }
+      );
+      setHbActive(true);
+      pushLedger(EATSovereignLedger.recordEvent("HEARTBEAT", `Monitor started — Device [${id}]`, "PHYSICAL SECURITY"));
+    }
+  }, [hbDeviceId, hbActive, sectorCurrentSector, pushLedger]);
+
+  /* ── X-Port handlers ── */
+  const handleXPortConfigured = useCallback((portId: string, relayUrl: string) => {
+    pushLedger(EATSovereignLedger.recordEvent(
+      "SOVEREIGN X-PORT", `Port [${portId}] configured — relay: ${relayUrl.slice(0, 28)}…`, "ASSET VAULT"
+    ));
+  }, [pushLedger]);
+
+  const handleXPortStream = useCallback(() => {
+    pushLedger(EATSovereignLedger.recordEvent(
+      "SOVEREIGN X-PORT", "Hardware data stream → Asset Vault + Ledger", "ASSET VAULT"
+    ));
   }, [pushLedger]);
 
   /* ── Navigation ── */
@@ -562,8 +779,11 @@ export default function TitanEATHub() {
               alignItems: "center", justifyContent: "center", gap: 28,
             }}
           >
-            {/* Pulsing violet perimeter */}
-            <div style={{ position: "absolute", inset: 0, border: "2px solid rgba(110,46,255,0.70)", pointerEvents: "none", animation: "ghost-border-pulse 0.9s ease-in-out infinite" }} />
+            {/* Perimeter border — RED on sector mismatch, VIOLET on override release */}
+            <div
+              className={lockBorderPhase === 'RED' ? "lockdown-border-red" : "lockdown-border-violet"}
+              style={{ position: "absolute", inset: 0, pointerEvents: "none", borderRadius: 0 }}
+            />
 
             <motion.div animate={{ scale: [1, 1.08, 1] }} transition={{ duration: 1.6, repeat: Infinity }}>
               <AlertTriangle size={52} color={C.redHi} />
@@ -631,8 +851,16 @@ export default function TitanEATHub() {
               ? <div className="eat-heal-sync-ring" />
               : <WifiOff size={10} color={C.amberHi} />}
             {isOnline
-              ? `LOCAL MESH · ${linkedCount}/5 LINKED`
+              ? `LOCAL MESH · ${linkedCount}/6 LINKED`
               : `OFFLINE · ${queueCount} QUEUED`}
+          </div>
+
+          {/* Accel Guard status chip */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 20, background: accelActive ? "rgba(16,185,129,0.10)" : "rgba(245,158,11,0.10)", border: `1px solid ${accelActive ? "rgba(16,185,129,0.28)" : "rgba(245,158,11,0.28)"}` }}>
+            <Signal size={9} color={accelActive ? C.greenHi : C.amberHi} />
+            <span style={{ fontFamily: C.body, fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: accelActive ? C.greenHi : C.amberHi, textTransform: "uppercase" }}>
+              ACCEL {accelActive ? "ARMED" : "STANDBY"}
+            </span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -668,7 +896,7 @@ export default function TitanEATHub() {
           </div>
           <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
             {[
-              { k: "INIT NODES",   v: `${linkedCount}/5` },
+              { k: "INIT NODES",   v: `${linkedCount}/6` },
               { k: "SENSOR NODES", v: "84"       },
               { k: "ASSET INDEX",  v: "94/100"   },
               { k: "UPTIME",       v: "99.97%"   },
@@ -699,6 +927,11 @@ export default function TitanEATHub() {
               syncing={syncingNodes.has(node.id)}
             />
           ))}
+          <XPortNodeCard
+            index={INIT_NODES.length}
+            onConfigured={handleXPortConfigured}
+            onStream={handleXPortStream}
+          />
         </div>
 
         {/* ════ LEDGER + GHOST PORTAL ════ */}
@@ -940,6 +1173,138 @@ export default function TitanEATHub() {
                 >
                   <MapPin size={12} /> VERIFY PROXIMITY
                 </button>
+              </div>
+            </div>
+          </div>
+
+          {/* ── DEVICE HOME ZONE REGISTRY ── */}
+          <div style={{ marginTop: 20, padding: "22px 24px", borderRadius: 14, background: "rgba(10,12,18,0.55)", border: "1px solid rgba(46,91,255,0.14)" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28, alignItems: "start" }}>
+
+              {/* Left — bind form */}
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <Signal size={14} color={C.cobaltHi} />
+                  <div style={{ fontFamily: C.header, fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", color: C.cobaltHi, textTransform: "uppercase" }}>DEVICE HOME ZONE REGISTRY</div>
+                </div>
+                <div style={{ fontFamily: C.body, fontSize: 12, color: C.ghostDim, lineHeight: 1.65, marginBottom: 16 }}>
+                  Assign each device serial to its permanent Home Zone. The heartbeat monitor will trigger a Sovereign Lock on any zone deviation.
+                </div>
+
+                {/* Device ID input — 22px */}
+                <div style={{ marginBottom: 10 }}>
+                  <div style={{ fontFamily: C.header, fontSize: 9, color: C.ghostMuted, letterSpacing: "0.18em", fontWeight: 700, marginBottom: 5, textTransform: "uppercase" }}>Device Serial / ID</div>
+                  <input
+                    className="xport-input"
+                    value={hzDeviceId}
+                    onChange={e => setHzDeviceId(e.target.value)}
+                    placeholder="e.g. POS-04 / KIOSK-A1"
+                    style={{ fontSize: 14 }}
+                  />
+                </div>
+
+                {/* Zone selector */}
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontFamily: C.header, fontSize: 9, color: C.ghostMuted, letterSpacing: "0.18em", fontWeight: 700, marginBottom: 8, textTransform: "uppercase" }}>Assign Home Zone</div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {HOME_ZONES.map(zone => (
+                      <button
+                        key={zone}
+                        onClick={() => setHzZone(zone)}
+                        style={{
+                          flex: 1, padding: "9px 6px", borderRadius: 9,
+                          background: hzZone === zone ? "rgba(46,91,255,0.18)" : "rgba(46,91,255,0.06)",
+                          border: `1px solid ${hzZone === zone ? "rgba(46,91,255,0.55)" : "rgba(46,91,255,0.18)"}`,
+                          fontFamily: C.header, fontSize: 8, fontWeight: 700,
+                          letterSpacing: "0.14em", color: hzZone === zone ? C.cobaltHi : C.ghostMuted,
+                          cursor: "pointer", textTransform: "uppercase",
+                          transition: "all 0.16s",
+                        }}
+                      >{zone}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleHomeZoneBind}
+                  disabled={!hzDeviceId.trim()}
+                  style={{
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
+                    padding: "11px 0", borderRadius: 10, width: "100%",
+                    background: "rgba(46,91,255,0.10)", border: "1px solid rgba(46,91,255,0.35)",
+                    fontFamily: C.header, fontSize: "0.62rem", fontWeight: 700,
+                    letterSpacing: "0.20em", color: C.cobaltHi, cursor: "pointer",
+                    opacity: !hzDeviceId.trim() ? 0.45 : 1, textTransform: "uppercase",
+                  }}
+                  onMouseEnter={e => { if (hzDeviceId.trim()) (e.currentTarget as HTMLButtonElement).style.background = "rgba(46,91,255,0.20)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(46,91,255,0.10)"; }}
+                >
+                  <Link2 size={11} /> BIND DEVICE TO ZONE
+                </button>
+              </div>
+
+              {/* Right — zone roster */}
+              <div>
+                <div style={{ fontFamily: C.header, fontSize: 9, color: C.ghostMuted, letterSpacing: "0.18em", fontWeight: 700, marginBottom: 12, textTransform: "uppercase" }}>Registered Devices</div>
+                {HOME_ZONES.map(zone => {
+                  const devices = Object.entries(hzRegistry).filter(([, v]) => v.homeZone === zone);
+                  return (
+                    <div key={zone} style={{ marginBottom: 12 }}>
+                      <div style={{ fontFamily: C.header, fontSize: 9, color: C.cobaltHi, letterSpacing: "0.16em", fontWeight: 700, marginBottom: 5, textTransform: "uppercase" }}>{zone}</div>
+                      {devices.length === 0
+                        ? <div style={{ fontFamily: C.body, fontSize: 11, color: C.ghostMuted, fontStyle: "italic" }}>— no devices registered</div>
+                        : devices.map(([id]) => (
+                          <div key={id} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                            <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.greenHi, flexShrink: 0 }} />
+                            <span style={{ fontFamily: C.body, fontSize: 12, color: C.ghost, fontWeight: 600, letterSpacing: "0.04em" }}>{id}</span>
+                          </div>
+                        ))
+                      }
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* ── DEVICE HEARTBEAT MONITOR ── */}
+          <div style={{ marginTop: 14, padding: "20px 24px", borderRadius: 14, background: "rgba(10,12,18,0.55)", border: `1px solid ${hbActive ? "rgba(52,211,153,0.22)" : "rgba(46,91,255,0.14)"}`, transition: "border-color 0.3s" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+                <Activity size={14} color={hbActive ? C.greenHi : C.cobaltHi} />
+                <div style={{ fontFamily: C.header, fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", color: hbActive ? C.greenHi : C.cobaltHi, textTransform: "uppercase" }}>
+                  HEARTBEAT MONITOR {hbActive ? "— ACTIVE" : ""}
+                </div>
+              </div>
+              <div style={{ flex: 1, minWidth: 180 }}>
+                <input
+                  className="xport-input"
+                  value={hbDeviceId}
+                  onChange={e => setHbDeviceId(e.target.value)}
+                  placeholder="Device ID to monitor"
+                  style={{ fontSize: 14 }}
+                />
+              </div>
+              <button
+                onClick={handleHeartbeatToggle}
+                disabled={!hbDeviceId.trim()}
+                style={{
+                  display: "flex", alignItems: "center", gap: 7,
+                  padding: "11px 22px", borderRadius: 10,
+                  background: hbActive ? "rgba(239,68,68,0.10)" : "rgba(52,211,153,0.08)",
+                  border: `1px solid ${hbActive ? "rgba(239,68,68,0.38)" : "rgba(52,211,153,0.30)"}`,
+                  fontFamily: C.header, fontSize: "0.62rem", fontWeight: 700,
+                  letterSpacing: "0.20em", color: hbActive ? C.redHi : C.greenHi,
+                  cursor: "pointer", opacity: !hbDeviceId.trim() ? 0.45 : 1,
+                  flexShrink: 0, textTransform: "uppercase",
+                }}
+                onMouseEnter={e => { if (hbDeviceId.trim()) (e.currentTarget as HTMLButtonElement).style.opacity = "0.80"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = hbDeviceId.trim() ? "1" : "0.45"; }}
+              >
+                {hbActive ? <><RefreshCw size={11} style={{ animation: "spin 2s linear infinite" }} /> STOP MONITOR</> : <><Activity size={11} /> START MONITOR</>}
+              </button>
+              <div style={{ fontFamily: C.body, fontSize: 11, color: C.ghostDim, flexShrink: 0 }}>
+                Polls every 8s · locks on sector drift
               </div>
             </div>
           </div>
