@@ -16,23 +16,25 @@ import {
 import "@/styles/Sovereign.css";
 import "@/styles/eeie-motion.css";
 
-// ── Color System ──────────────────────────────────────────────
+// ── Approved EEIE color system: navy shell + white glass cards ─
 const C = {
-  bg:       "#050A14",
-  surface:  "rgba(6,12,28,0.98)",
-  blue:     "#0080FF",
-  blueHi:   "#22AAFF",
-  cyan:     "#00C8FF",
+  bg:       "#061426",
+  surface:  "#FFFFFF",
+  cardAlt:  "#EEF7FF",
+  blue:     "#087BFF",
+  blueHi:   "#17A8FF",
+  cyan:     "#41D9FF",
   ice:      "#D8EEFF",
   silver:   "#7BA8CC",
-  muted:    "rgba(180,210,250,0.50)",
-  dim:      "rgba(140,175,220,0.24)",
-  border:   "rgba(0,128,255,0.14)",
-  borderHi: "rgba(0,170,255,0.38)",
-  green:    "#22c55e",
-  red:      "#ef4444",
-  amber:    "#F59E0B",
-  purple:   "#A78BFA",
+  muted:    "rgba(180,210,250,0.55)",
+  cardText: "rgba(11,30,52,0.62)",
+  dim:      "rgba(140,175,220,0.30)",
+  border:   "rgba(34,126,255,0.20)",
+  borderHi: "rgba(0,136,255,0.55)",
+  green:    "#18C98B",
+  red:      "#E94B5A",
+  amber:    "#F6A623",
+  purple:   "#8B5CF6",
   mono:     "'JetBrains Mono','Courier New',monospace",
   serif:    "'Cormorant Garamond',serif",
 };
@@ -55,90 +57,108 @@ interface Tile {
   previewType: "grid" | "single" | "strip";
 }
 
+// Verified Unsplash IDs — all confirmed 200 OK
+const U = (id: string, w = 400) =>
+  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=75`;
+
 const MODULE_TILES: Tile[] = [
   {
     icon: Users, label: "STAFF COCKPIT",
-    desc: "Wait-staff command layer: active tables, guest profiles, cigar matching, drink pairing, food pairing, visual selling, and POS handoff.",
+    desc: "Wait-staff command: active tables, guest taste profiles, AI cigar & drink matching, pairing showcase, script generator, and POS handoff.",
     path: "/eeie/staff-cockpit", accent: C.blue, status: "ACTIVE",
-    images: [], previewType: "grid",
+    images: [U("1603575448878-868a20723f5d"), U("1585494156145-1c60a4fe952b"), U("1604079628040-94301bb21b91")],
+    previewType: "grid",
   },
   {
     icon: Star, label: "GUEST EXPERIENCE",
     desc: "Guest session management, taste profiling, mood intelligence, and personalized experience delivery.",
     path: "/eeie/guest-experience", accent: C.cyan, status: "ACTIVE",
-    images: [], previewType: "single",
+    images: [U("1582562124811-c09040d0a901", 600)],
+    previewType: "single",
   },
   {
     icon: Image, label: "MEDIA LIBRARY",
-    desc: "Upload, link, approve, and manage images for cigars, drinks, food, desserts, specials, and pairing bundles.",
+    desc: "Upload, approve, and manage visuals for cigars, spirits, food, desserts, specials, hardware, and bundles.",
     path: "/eeie/media-library", accent: "#60A5FA", status: "READY",
-    images: [], previewType: "grid",
+    images: [U("1527281400683-1aae777175f8"), U("1488459716781-31db52582fe9"), U("1565608087341-404b25492fee")],
+    previewType: "grid",
   },
   {
     icon: Grid3x3, label: "PRODUCT WALL",
-    desc: "Luxury visual selling wall with cigar, liquor, cocktail, food, dessert, and bundle images.",
+    desc: "Luxury visual selling wall — featured cigars, whiskey, cocktails, food, desserts, bundles, and VIP recommendations.",
     path: "/eeie/product-wall", accent: C.blueHi, status: "LIVE",
-    images: [], previewType: "grid",
+    images: [U("1604079628040-94301bb21b91"), U("1569529465841-dfecdab7503b"), U("1488459716781-31db52582fe9")],
+    previewType: "grid",
   },
   {
     icon: Truck, label: "DISTRIBUTOR LIBRARY",
     desc: "Connect distributor catalogs, import CSVs, map cigar and liquor products, and generate restock intelligence.",
     path: "/eeie/distributors", accent: "#38BDF8", status: "SYNCING",
-    images: [], previewType: "strip",
+    images: [U("1572116469696-31de0f17cc34", 600)],
+    previewType: "single",
   },
   {
     icon: Server, label: "BACK-OF-HOUSE SYNC",
-    desc: "Connect bar, kitchen, cigar inventory, manager controls, event bus, and commerce infrastructure.",
+    desc: "Visual system relationships: bar, kitchen, humidor, cigar inventory, manager controls, event bus, and sensor health.",
     path: "/eeie/back-of-house", accent: C.cyan, status: "CONNECTED",
-    images: [], previewType: "strip",
+    images: [U("1514362545857-3bc16c4c7d1b", 600)],
+    previewType: "single",
   },
   {
     icon: Building2, label: "VENUE INTELLIGENCE",
-    desc: "Real-time venue analytics: occupancy, revenue, staff performance, and ambient intelligence systems.",
+    desc: "Real-time venue analytics: occupancy, revenue, staff performance, ambient intelligence, and learning loop.",
     path: "/eeie/venue-intelligence", accent: C.blue, status: "LIVE",
-    images: [], previewType: "grid",
+    images: [U("1565608087341-404b25492fee"), U("1529543544282-ea669407fca3"), U("1501594907352-04cda38ebc29")],
+    previewType: "grid",
   },
   {
     icon: Radio, label: "SENSORY ENGINE",
-    desc: "Venue mood, service pressure, color-state intelligence, haptics, and sensor-aware recommendations.",
+    desc: "Venue mood, zone energy, heatmap, temperature, humidity, air quality, occupancy, and service pressure.",
     path: "/eeie/sensory-engine", accent: C.purple, status: "SENSING",
-    images: [], previewType: "single",
+    images: [U("1529543544282-ea669407fca3", 600)],
+    previewType: "single",
   },
   {
     icon: Package, label: "COMMERCE HEALTH",
-    desc: "POS integration, payment health, revenue forecasting, margin tracking, and inventory integrity.",
+    desc: "POS adapters, Toast / Square / Clover / Stripe, order handoffs, revenue lift, bundle conversion, and manual mode.",
     path: "/eeie/commerce-health", accent: "#34D399", status: "NOMINAL",
-    images: [], previewType: "strip",
+    images: [U("1488459716781-31db52582fe9", 600)],
+    previewType: "single",
   },
   {
     icon: Brain, label: "AI ASSISTANT",
     desc: "Real-time staff guidance, pairing explanations, inventory warnings, mood interpretation, and next-best actions.",
     path: "/eeie/ai-assistant", accent: C.purple, status: "ONLINE",
-    images: [], previewType: "single",
+    images: [U("1501594907352-04cda38ebc29", 600)],
+    previewType: "single",
   },
   {
     icon: Thermometer, label: "MOOD SENSOR",
-    desc: "Live venue mood, service pressure, color-state intelligence, haptics, and sensor-aware recommendations.",
+    desc: "Live venue mood, guest mood, zone energy, recommendation sensitivity, and color-state intelligence.",
     path: "/eeie/mood-sensor", accent: C.cyan, status: "SENSING",
-    images: [], previewType: "single",
+    images: [U("1582562124811-c09040d0a901", 600)],
+    previewType: "single",
   },
   {
     icon: Activity, label: "EVENT BUS",
     desc: "Live event stream: order events, mood changes, inventory alerts, staff actions, and system signals.",
     path: "/eeie/event-bus", accent: C.amber, status: "LIVE",
-    images: [], previewType: "strip",
+    images: [U("1569529465841-dfecdab7503b", 600)],
+    previewType: "single",
   },
   {
     icon: Shield, label: "FOUNDER CONTROL",
-    desc: "Founder-level overrides: feature flags, kill switches, revenue levers, and system governance.",
+    desc: "Founder-level overrides: feature flags, kill switches, revenue levers, dual theme system, and system governance.",
     path: "/eeie/founder-control", accent: C.red, status: "SECURED",
-    images: [], previewType: "single",
+    images: [U("1603575448878-868a20723f5d", 600)],
+    previewType: "single",
   },
   {
     icon: Zap, label: "MASTER OPERATIONS",
-    desc: "Operational layer: staff management, venue oversight, inventory, reconciliation, and analytics.",
+    desc: "Operational layer: staff management, venue oversight, inventory, reconciliation, analytics, and hardware status.",
     path: "/eeie/master-operations", accent: C.blueHi, status: "ACTIVE",
-    images: [], previewType: "grid",
+    images: [U("1565608087341-404b25492fee"), U("1527281400683-1aae777175f8"), U("1603575448878-868a20723f5d")],
+    previewType: "grid",
   },
 ];
 
@@ -275,10 +295,11 @@ function EEIEModuleCard({
       className={cardClass}
       style={{
         background: C.surface,
-        border: `1px solid ${C.border}`,
+        border: `1.5px solid ${C.border}`,
         borderRadius: 14,
         cursor: "pointer",
         display: "flex", flexDirection: "column",
+        boxShadow: "0 4px 24px rgba(8,35,74,0.10), 0 0 0 1px rgba(34,126,255,0.06)",
       }}
       onMouseEnter={e => (e.currentTarget.style.borderColor = `${tile.accent}40`)}
       onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
@@ -327,7 +348,7 @@ function EEIEModuleCard({
 
         {/* Description */}
         <div style={{
-          fontSize: 10, color: C.muted, lineHeight: 1.65, marginBottom: 16, flex: 1,
+          fontSize: 10, color: C.cardText, lineHeight: 1.65, marginBottom: 16, flex: 1,
           display: "-webkit-box", WebkitLineClamp: 3,
           WebkitBoxOrient: "vertical", overflow: "hidden",
         }}>

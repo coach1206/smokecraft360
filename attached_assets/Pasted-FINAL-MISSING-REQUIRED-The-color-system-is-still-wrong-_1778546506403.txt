@@ -1,0 +1,956 @@
+FINAL
+
+MISSING / REQUIRED
+The color system is still wrong
+Impact: The last version became too pale, washed out, and white. It lost the approved blue command frame, titanium depth, and premium EEIE contrast.
+The full EEIE feature set is not fully surfaced
+Impact: EEIE cannot only show a Staff Cockpit page. The interface must visibly include the full feature ecosystem: pairing, media, product wall, commerce, sensors, heatmap, learning, assistant, cart, POS handoff, hardware, alerts, and manager controls.
+Real imagery is mandatory
+Impact: Cigar, whiskey, liquor, cocktails, food, dessert, bundle, hardware, bar, kitchen, humidor, and venue visuals must be real images, not glyphs, emojis, or abstract placeholders.
+The interface must be easy like a familiar POS
+Impact: Staff need to understand the movement quickly: select table, view guest, show pairing, add to cart, send to POS.
+The interface must still feel like EEIE, not Clover, Toast, or Square
+Impact: Familiar movement is good. Generic POS design is not. EEIE needs the twist: predictive intelligence, visual pairing, guest taste, mood, sensors, learning, and living motion.
+The backend wiring must stay intact
+Impact: Do not break the routes, cart logic, commerce handoff, event logging, image loading, or auth while fixing the look.
+All pages need one unified visual family
+Impact: Staff Cockpit, Product Wall, Media Library, Commerce Intelligence, Back-of-House, Mood Sensor, Distribution Vault, Hardware, War Room, and Master Operations must all look like one operating system.
+FAILURE PREVENTION CHECKLIST
+
+Do not make the whole interface white.
+Do not make the whole interface dark blue.
+Do not use brown or muddy gold.
+Do not use glyphs or emojis for product visuals.
+Do not use flat placeholder cards.
+Do not make it look like a hospital dashboard.
+Do not make it look like a generic SaaS admin page.
+Do not make the staff guess what to do.
+Do not hide Show to Guest, Add to Cart, or Send to POS.
+Do not leave cigar, whiskey, or food pairings without real images.
+Do not break existing backend routes.
+Do not create duplicate EEIE routes.
+Do not fake live POS states.
+Do not use tiny unreadable text.
+Do not leave any buttons dead.
+Do not remove living motion.
+Do not hide the full EEIE feature set behind backend logic only.
+
+MASTER PROMPT
+FINAL MERGED EEIE GLOBAL VISUAL + FEATURE + WIRING PROMPT
+BLUE / WHITE / TITANIUM SYSTEM
+FULL EEIE FEATURE SURFACING
+NO PLACEHOLDERS
+NO GLYPH-ONLY PRODUCT SECTIONS
+
+This is the final merged correction prompt.
+
+The current EEIE interface went too pale and washed out. It also still does not fully surface the whole EEIE feature set in a clear, visual, easy-to-use way.
+
+Fix the entire EEIE / Sovereign interface system so it matches the approved blue / white / titanium command reference.
+
+The goal is:
+
+familiar POS movement
+plus
+premium EEIE predictive intelligence
+
+The system should feel like:
+
+Apple meets Tesla
+premium hospitality intelligence
+visual command software
+living and breathing machine
+easy for staff to understand
+powerful enough for managers and founders
+not a normal POS
+not generic SaaS
+not flat
+not too dark
+not too white
+
+CORE VISUAL DIRECTION
+
+Use this exact visual balance:
+
+deep navy command shell
+deep navy top rail
+deep navy left rail
+ice-blue and white content panels
+white glass cards
+pale blue section surfaces
+metallic blue borders
+titanium grey depth
+electric blue active states
+clear dark navy text
+real product images
+subtle living motion
+
+The correct look is not solid dark blue and not flat white.
+
+The correct look is:
+
+blue command frame
+light premium operating surface
+dimensional glass cards
+real image-driven modules
+clear visual hierarchy
+
+APPROVED COLOR TOKEN SYSTEM
+
+Replace the current pale-white theme and any remaining brown/gold colors with this token system:
+
+:root {
+  --eeie-shell: #061426;
+  --eeie-shell-deep: #020914;
+  --eeie-navy: #0B1E34;
+  --eeie-panel: #F4F9FF;
+  --eeie-panel-blue: #EAF4FF;
+  --eeie-panel-glass: rgba(244, 249, 255, 0.88);
+  --eeie-card: #FFFFFF;
+  --eeie-card-blue: #EEF7FF;
+  --eeie-border: rgba(34, 126, 255, 0.28);
+  --eeie-border-strong: rgba(0, 136, 255, 0.58);
+  --eeie-blue: #087BFF;
+  --eeie-blue-bright: #17A8FF;
+  --eeie-cyan: #41D9FF;
+  --eeie-text: #0B1E34;
+  --eeie-muted: #54708F;
+  --eeie-soft: #7F97B3;
+  --eeie-green: #18C98B;
+  --eeie-amber: #F6A623;
+  --eeie-red: #E94B5A;
+  --eeie-violet: #8B5CF6;
+  --eeie-shadow: 0 24px 70px rgba(8, 35, 74, 0.18);
+  --eeie-glow: 0 0 28px rgba(23, 168, 255, 0.35);
+}
+
+PAGE STRUCTURE REQUIREMENT
+
+All EEIE / Sovereign pages must use this structure:
+
+1. Deep navy top command rail
+2. Deep navy left module rail
+3. Ice-blue / white main content surface
+4. White glass section cards
+5. Metallic blue active states
+6. Titanium borders and soft depth
+7. Real product or system visuals
+8. Living motion and status pulses
+9. Clear primary action
+10. Bottom system rail where appropriate
+
+Do not let any page become one solid color block.
+
+Use contrast throughout:
+
+dark frame
+light content
+image-rich cards
+blue accents
+clear action states
+
+MANDATORY EEIE FEATURE SET TO SURFACE IN THE INTERFACE
+
+The interface must visibly expose these EEIE features in a cool, clear, premium way:
+
+1. Staff Cockpit Guided Flow
+2. Guest Taste Intelligence
+3. AI Cigar Match
+4. Liquor Pairing Intelligence
+5. Food Pairing Intelligence
+6. Visual Pairing Engine
+7. Guest Preview Mode
+8. Staff Script Generator
+9. Persistent Cart / Ticket Panel
+10. Commerce Intelligence Center
+11. Manual Mode Fallback
+12. Product Wall
+13. Media Library
+14. Distributor Library
+15. Back-of-House Sync
+16. Mood Sensor
+17. Venue Heatmap
+18. Sensor Layer
+19. Unified Data Brain
+20. EEIE Assistant
+21. Predictive Recommendations
+22. Living Machine Animation System
+23. Learning Loop
+24. Staff Performance Intelligence
+25. Bundle Builder
+26. Inventory-Aware Recommendations
+27. Guest Accept / Decline / Swap Flow
+28. POS Handoff States
+29. Founder / Manager Control Layer
+30. Kiosk / Guest Tablet Mode
+31. Reward / Points System
+32. Event Bus
+33. Smart Alerts
+34. Hardware / Device Status
+35. Dual Theme System
+36. Training / Walkthrough Mode
+37. Recommended Next Action Panel
+38. Continuity Rail
+39. Visual Differentiation Per Module
+40. No-Placeholder Rule
+
+Do not hide these features in code only. They must be visible in the interface.
+
+MANDATORY REAL IMAGE RULE
+
+Real imagery is mandatory.
+
+No glyph-only product cards.
+No emoji.
+No abstract placeholder blocks where product images belong.
+
+The following must use real images:
+
+cigar brand image
+whiskey / bourbon / liquor bottle image
+cocktail image
+food image
+dessert image
+bundle image
+tablet / hardware image
+bar image
+kitchen image
+humidor image
+venue image
+product wall imagery
+media library thumbnails
+
+If the exact product image is missing, show a premium fallback card labeled:
+
+Image Needed
+
+Include a button:
+
+Upload / Replace Image
+
+MANDATORY PAIRING SHOWCASE
+
+Staff Cockpit and Guest Preview must include a large visual Pairing Showcase.
+
+The Pairing Showcase must show three connected visual cards:
+
+Cigar
+Whiskey / Liquor
+Food
+
+Each card must include:
+
+large real image
+product name
+brand/type
+price
+inventory status
+match score
+short reason
+Add button
+Show to Guest button
+Swap button
+View Alternatives button
+
+The pairing must visually connect:
+
+cigar → whiskey → food
+
+Use subtle animated blue connector lines or glow rails.
+
+Add a “Why This Works” explanation.
+
+Example:
+“This cigar’s cocoa and cedar profile is lifted by the bourbon’s vanilla and oak, while the food adds smoke and savory depth.”
+
+This is mandatory.
+
+Do not show pairing as text-only.
+Do not use glyphs.
+Do not use fake image blocks.
+
+STAFF COCKPIT REQUIREMENTS
+
+Staff Cockpit must move like a familiar POS, but look and think like EEIE.
+
+Use this flow:
+
+1. Select table / guest
+2. Load guest profile
+3. Review taste profile
+4. Show AI cigar match
+5. Show liquor pairing
+6. Show food pairing
+7. Show guest preview
+8. Add items to cart
+9. Send to POS
+10. Return guest to experience
+
+Layout zones:
+
+LEFT TABLE RAIL
+Deep navy rail.
+Show:
+table number
+guest name
+time active
+attention state
+cart badge
+mood state
+progress state
+
+CENTER WORKFLOW
+Ice-blue / white working surface.
+Show:
+selected guest card
+guest taste profile
+pairing showcase
+AI explanation
+staff script
+recommendation alternatives
+
+RIGHT CART / TICKET PANEL
+Persistent cart.
+Show:
+selected cigar
+selected whiskey/liquor
+selected food
+bundle name
+subtotal
+bundle savings
+total
+match score
+POS status
+manual mode state
+
+Buttons:
+Review Ticket
+Send to POS
+Use Manual Mode
+Clear Cart
+Return Guest
+
+TOP CONTINUITY RAIL
+Show:
+Table → Taste → Match → Pair → Preview → Cart → POS
+
+Each step must show complete, active, next, blocked, or optional.
+
+NEXT BEST ACTION PANEL
+Always show the next move.
+
+Examples:
+Select a Table
+Review Taste Profile
+Show Pairing to Guest
+Add Bundle to Cart
+Send to POS
+Return Guest to Experience
+
+STAFF SCRIPT GENERATOR
+Show a staff-friendly script.
+
+Example:
+“Marcus, this pairing brings out the cocoa and cedar in your cigar. The bourbon adds vanilla and oak, and the short rib slider deepens the smoky finish.”
+
+Buttons:
+Show to Guest
+Copy Script
+Shorter Version
+Premium Version
+
+GUEST PREVIEW MODE
+When staff taps Show to Guest, show a clean guest-facing preview:
+
+cigar image
+whiskey image
+food image
+bundle price
+why it matches
+Accept
+Decline
+Swap
+
+MEDIA LIBRARY REQUIREMENTS
+
+Media Library must become a visual asset control center.
+
+Show:
+large image grid
+upload image
+link image URL
+replace image
+approve image
+reject image
+archive image
+broken image warning
+missing image warning
+guest-visible toggle
+staff-visible toggle
+filters by category
+
+Categories:
+cigar
+whiskey
+bourbon
+cognac
+rum
+cocktail
+food
+dessert
+bundle
+hardware
+venue
+bar
+kitchen
+humidor
+
+No glyph-based media rows.
+
+PRODUCT WALL REQUIREMENTS
+
+Product Wall must feel like luxury visual merchandising.
+
+Show:
+featured cigars
+featured whiskey
+featured cocktails
+featured foods
+desserts
+bundles
+event specials
+VIP recommendations
+seasonal pairings
+low stock alternatives
+high-conversion pairings
+
+Every product card must show:
+real image
+name
+category
+price
+availability
+match score where relevant
+View
+Add
+Show to Guest
+
+COMMERCE INTELLIGENCE REQUIREMENTS
+
+Commerce Intelligence must keep its backend wiring.
+
+Show:
+POS adapter status
+Toast / Square / Clover / Stripe / Manual Mode
+order handoffs
+failed sends
+revenue lift
+bundle conversion
+staff conversion
+commerce alerts
+logs
+manual mode fallback
+POS handoff states
+
+Use the same blue / white / titanium design system.
+
+Do not break existing commerce routes.
+
+BACK-OF-HOUSE SYNC REQUIREMENTS
+
+Back-of-House Sync must show visual system relationships.
+
+Show:
+bar system
+kitchen system
+cigar inventory
+humidor
+manager controls
+inventory pressure
+event bus
+staff actions
+sensor health
+sync state
+delayed systems
+offline systems
+
+Use visual connection flows, not plain rows.
+
+MOOD SENSOR + SENSOR LAYER REQUIREMENTS
+
+Mood and sensor pages must feel alive.
+
+Show:
+venue mood
+guest mood
+zone energy
+heatmap
+temperature
+humidity
+air quality
+occupancy
+service pressure
+VIP activity
+room tone
+recommendation sensitivity
+
+Color-state logic:
+calm = cooler blue
+busy = brighter blue/cyan
+premium = clean luminous tone
+warning = amber
+critical = red
+
+Use subtle motion:
+sensor rings
+ambient glow
+heatmap pulse
+zone activity movement
+
+UNIFIED DATA BRAIN REQUIREMENTS
+
+Unified Data Brain must show all connected streams:
+
+POS
+inventory
+media library
+distributor library
+bar
+kitchen
+guest profiles
+staff actions
+event bus
+sensor layer
+mood sensor
+commerce engine
+
+Show:
+connected
+syncing
+delayed
+attention
+offline
+
+Do not make this a text list only.
+
+HARDWARE REQUIREMENTS
+
+Hardware pages must show a real device visual.
+
+Show:
+tablet / hardware image
+device name
+unit number
+battery percentage
+battery graphic
+time remaining
+signal strength
+firmware version
+connection type
+last sync
+status
+health score
+device location
+storage / memory
+temperature if available
+
+This must not be a plain row table.
+
+DISTRIBUTION VAULT REQUIREMENTS
+
+Distribution Vault must match the same visual family but can use a deeper command emphasis.
+
+Show:
+workflow strip
+Shipment → Keys → Nodes → Hardware → Deploy → War Room
+predictive intelligence
+node topology map
+hardware overview
+key lifecycle
+deployment timeline
+war room incident lanes
+quick actions
+system status
+recommendations
+
+Use light content zones inside the deep navy command frame.
+
+Do not make it too dark.
+
+LIVING MACHINE MOTION SYSTEM
+
+The interface must feel alive.
+
+Add:
+breathing glows on active cards
+live status pulses
+subtle shimmer on featured product cards
+soft sensor wave motion
+animated heatmap movement
+AI assistant idle pulse
+cart update ripple
+success pulse when item is added
+soft color shift on active recommendation sets
+small telemetry motion on top rails
+journey rail progress sweep
+pairing connector glow
+activity feed slide-in
+alert pulse
+card hover lift
+button press feedback
+
+Motion must be premium and controlled.
+
+No cartoon bounce.
+No chaotic flashing.
+No cheap neon overload.
+
+Add reduced-motion support.
+
+If prefers-reduced-motion is enabled, simplify all motion.
+
+DUAL THEME SYSTEM
+
+Use two approved modes:
+
+1. Blue Command Mode
+For:
+War Room
+Security
+Hardware diagnostics
+Deployment
+Distribution Vault
+System monitoring
+
+2. Blue / White Luxury Mode
+For:
+Staff Cockpit
+Product Wall
+Media Library
+Commerce
+Guest Experience
+Mood/Sensors
+Daily operations
+
+Both modes must share the same tokens and brand family.
+
+BACKEND WIRING RULE
+
+Do not just restyle.
+
+Keep and extend real backend wiring.
+
+All action buttons must connect to real backend logic or honest local/manual/demo fallback.
+
+Mandatory wired actions:
+
+select table
+load guest profile
+load recommendations
+show to guest
+accept
+decline
+swap
+add to cart
+remove from cart
+clear cart
+send to POS
+manual mode
+view alternatives
+copy staff script
+log event
+load media assets
+upload media
+replace media
+approve media
+reject media
+assign media
+sync distributor products
+sync back-of-house status
+load heatmap
+load mood sensor
+load hardware status
+load commerce status
+load product wall
+load event bus
+
+Do not create dead buttons.
+
+Do not fake live states.
+
+Do not create duplicate cart systems.
+
+Do not create duplicate EEIE routes.
+
+DATA RESPONSE REQUIREMENT
+
+Backend responses for recommendations must include:
+
+imageUrl
+category
+name
+brand
+type
+price
+inventoryStatus
+matchScore
+reason
+tags
+availability
+source
+mode
+modeLabel
+isLive
+
+If images are demo:
+modeLabel must say Demo Visuals.
+
+If data is local:
+modeLabel must say Local Mode.
+
+If POS is offline:
+modeLabel must say Manual Mode or Not Connected.
+
+Do not pretend demo/local data is live.
+
+EVENT BUS + LEARNING LOOP
+
+Every meaningful action must log:
+
+staff_table_selected
+guest_profile_loaded
+recommendations_loaded
+pairing_preview_shown
+cigar_added_to_cart
+liquor_added_to_cart
+food_added_to_cart
+bundle_added_to_cart
+cart_item_removed
+cart_cleared
+cart_sent_to_pos
+manual_mode_used
+guest_accepted_recommendation
+guest_declined_recommendation
+guest_swapped_recommendation
+guest_returned_to_experience
+staff_script_opened
+staff_script_copied
+media_uploaded
+media_replaced
+media_approved
+media_rejected
+product_shown_to_guest
+sensor_state_changed
+mood_state_changed
+hardware_status_loaded
+commerce_status_loaded
+
+Learning loop must track:
+
+accepted
+declined
+swapped
+added to cart
+sent to POS
+manual mode used
+staff script opened
+guest preview shown
+
+NO-PLACEHOLDER RULE
+
+Every module must show one of these valid states:
+
+Live
+Local Mode
+Demo Visuals
+Manual Mode
+Not Connected
+Blocked
+
+If live data is unavailable:
+show realistic visuals
+show clear mode label
+show useful next action
+show real empty state
+show setup action
+
+Do not show blank panels.
+Do not show dead cards.
+Do not show fake live.
+
+READABILITY REQUIREMENTS
+
+Page title:
+28px minimum
+
+Guest name:
+24px minimum
+
+Section titles:
+18px to 22px
+
+Product card names:
+18px minimum
+
+Body copy:
+15px to 16px
+
+Buttons:
+16px minimum
+
+Sidebar labels:
+15px minimum with stronger weight
+
+No tiny technical microtext for main actions.
+
+BUTTON SYSTEM
+
+Primary buttons:
+electric blue background
+white text
+soft glow
+
+Secondary buttons:
+white / pale blue background
+blue border
+deep navy text
+
+Warning buttons:
+soft amber
+
+Danger buttons:
+controlled red with confirmation
+
+Major buttons:
+56px minimum height
+
+Critical buttons:
+confirmation required
+
+FINAL DELIVERABLE
+
+Correct the current wrong pale-white Staff Cockpit theme.
+
+Apply the full EEIE feature system and approved blue / white / titanium visual language across all interfaces.
+
+The final system must:
+
+look like the approved blue command frame + light premium surface reference
+show real cigar, whiskey, and food images
+make pairing visually obvious
+move like a familiar POS
+feel like a predictive EEIE intelligence system
+show all new EEIE features in the UI
+keep backend wiring intact
+use live/local/demo/manual labels honestly
+include living motion
+be easy for staff to understand
+feel premium, visual, and instinctive
+
+This is mandatory:
+
+The pairing engine must display a real image of the cigar brand, whiskey/liquor type, and food item together in one visual pairing showcase.
+
+No glyph substitute.
+No emoji substitute.
+No abstract placeholder block.
+CODE PATCH INSTRUCTION
+CODE PATCH INSTRUCTION
+
+Do not rebuild the whole app from scratch.
+
+Audit the existing EEIE files and patch the current system.
+
+1. Update the shared theme tokens and CSS:
+deep navy shell
+ice-blue main surface
+white glass cards
+metallic blue borders
+electric blue active states
+titanium shadows
+strong dark navy text
+
+2. Build or update reusable visual components:
+
+EEIEProductCard
+EEIEPairingCard
+EEIEHeroPairingPanel
+EEIEMediaThumb
+EEIEHardwareCard
+EEIESensorCard
+EEIEStatusPulseCard
+EEIEContinuityRail
+EEIENextBestActionPanel
+EEIECartPanel
+EEIEGuestPreviewPanel
+EEIEStaffScriptPanel
+EEIEVisualProductWall
+EEIEMediaLibraryGrid
+
+3. Build or update motion utility classes:
+
+pulse-live
+eeie-breathe
+eeie-glow-shift
+eeie-card-lift
+eeie-signal-wave
+eeie-data-shimmer
+eeie-cart-ripple
+eeie-alert-pulse
+eeie-pairing-link
+eeie-tactile-press
+eeie-heatmap-pulse
+eeie-status-sweep
+
+4. Staff Cockpit must use:
+
+EEIEContinuityRail
+EEIENextBestActionPanel
+EEIEHeroPairingPanel
+EEIECartPanel
+EEIEGuestPreviewPanel
+EEIEStaffScriptPanel
+
+5. The pairing panel must render:
+
+large cigar image
+large whiskey/liquor image
+large food image
+match explanation
+price
+match score
+availability
+Show to Guest
+Add to Cart
+Swap
+View Alternatives
+
+6. Keep existing Staff Cockpit wiring:
+
+table selection
+guest profile
+taste chart
+recommendations
+cart flow
+POS handoff
+event logging
+backend API calls
+
+7. Keep existing Commerce Intelligence backend routes and frontend wiring.
+
+8. Ensure backend recommendation responses include imageUrl, name, price, inventoryStatus, matchScore, reason, tags, mode, modeLabel, and isLive.
+
+9. If image is missing, render Image Needed card with Upload / Replace Image action.
+
+10. Do not create duplicate EEIE routes.
+
+11. Do not break auth.
+
+12. Do not leave dead buttons.
+
+13. Final visual check:
+If the page looks flat white, it is wrong.
+If the page looks solid dark blue, it is wrong.
+If the page has brown/gold dominance, it is wrong.
+If product sections use glyphs instead of real images, it is wrong.
+If staff cannot understand the flow in 10 seconds, it is wrong.
