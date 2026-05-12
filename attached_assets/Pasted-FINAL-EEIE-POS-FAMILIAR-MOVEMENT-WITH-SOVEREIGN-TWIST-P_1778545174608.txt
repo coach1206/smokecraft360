@@ -1,0 +1,386 @@
+FINAL EEIE POS-FAMILIAR MOVEMENT WITH SOVEREIGN TWIST PROMPT
+
+MISSING / REQUIRED
+
+1. The Staff Cockpit needs familiar POS movement.
+Impact: Staff should understand the flow quickly because it uses familiar point-of-sale behavior.
+
+2. EEIE needs a twist beyond normal POS systems.
+Impact: It should not copy Clover, Toast, or Square. It should use their familiar movement patterns, then upgrade them with AI pairing, guest intelligence, product visuals, predictive guidance, and living motion.
+
+3. The current screen looks powerful but not instinctive enough.
+Impact: Staff need to immediately understand where to tap, what happens next, and how the guest recommendation becomes an order.
+
+4. The flow needs to move like service staff already expect.
+Impact: Table select → guest profile → item recommendation → add to cart → review ticket → send to POS is familiar and should be obvious.
+
+5. The system needs one clear primary action at every stage.
+Impact: Staff should not be surrounded by equal-looking buttons.
+
+FAILURE PREVENTION CHECKLIST
+
+Do not make the system confusing just to look futuristic.
+Do not copy Clover, Toast, Square, or any POS exactly.
+Do not make the screen feel like a basic POS.
+Do not make every panel equally important.
+Do not hide the cart.
+Do not hide the Send to POS action.
+Do not make “Show to Guest” hard to find.
+Do not use glyphs, emojis, or fake icons where images should be used.
+Do not remove the premium EEIE/Sovereign look.
+Do not remove AI commentary, learning, or predictive behavior.
+Do not make staff read too much text.
+Do not make the flow feel like a developer dashboard.
+Do not make the actions unfamiliar without guidance.
+
+MASTER PROMPT
+
+Update Staff Cockpit so it moves like a familiar modern POS, but with the EEIE/Sovereign twist.
+
+The goal:
+
+A waiter, bartender, cigar lounge staff member, or manager should understand the flow in seconds because it follows familiar POS movement:
+
+1. Pick the table or guest
+2. See the guest profile
+3. Review recommendations
+4. Tap the product card
+5. Add item to cart
+6. Review cart/ticket
+7. Send to POS
+8. Return guest to experience
+
+But EEIE must elevate this with:
+
+AI cigar matching
+liquor pairing intelligence
+food pairing intelligence
+real images
+guest taste profile
+visual guest preview
+predictive next-best action
+mood/sensor awareness
+inventory-aware recommendations
+learning from accepted, swapped, and declined recommendations
+living animated interface behavior
+
+CORE POS-FAMILIAR LAYOUT
+
+Restructure Staff Cockpit into four clear zones:
+
+1. LEFT TABLE RAIL
+
+This works like familiar POS table selection.
+
+Show:
+active tables
+guest name
+table number
+time active
+status
+attention badge
+cart badge
+guest mood/state
+small progress marker
+
+Make it obvious:
+Tap a table to begin.
+
+Selected table should clearly glow or highlight.
+
+2. CENTER GUEST + RECOMMENDATION WORKFLOW
+
+This is the main service workspace.
+
+Show in order:
+
+Guest Card
+Guest Taste Profile
+AI Cigar Match
+Liquor Pairing
+Food Pairing
+Bundle Recommendation
+
+Each card should include:
+real image
+name
+match score
+short reason
+price
+inventory status
+large Add button
+large Show to Guest button
+
+This should feel like a POS product selection flow, but smarter.
+
+3. RIGHT CART / TICKET PANEL
+
+Add a persistent cart/ticket panel on the right side.
+
+This is critical.
+
+The staff should always see what has been added.
+
+Cart panel should show:
+
+guest/table
+selected cigar
+selected liquor
+selected food
+bundle name
+subtotal
+discount or bundle savings
+match score
+POS status
+send status
+
+Buttons:
+
+Review Ticket
+Send to POS
+Clear Cart
+Return Guest
+
+If empty:
+“No items added yet. Tap Add on a recommended cigar, drink, or food pairing.”
+
+This makes the system familiar like POS behavior.
+
+4. TOP GUIDED JOURNEY RAIL
+
+Show the journey:
+
+Table → Taste → Match → Pair → Preview → Cart → POS
+
+Use completion states.
+
+This gives the futuristic twist without making the flow confusing.
+
+PRIMARY ACTION LOGIC
+
+At every stage, show one clear primary action.
+
+If no guest selected:
+Primary action: Select a Table
+
+If guest selected but no recommendation shown:
+Primary action: Review Taste Profile
+
+If recommendations loaded:
+Primary action: Show Pairing to Guest
+
+If guest preview shown:
+Primary action: Add Bundle to Cart
+
+If cart has items:
+Primary action: Send to POS
+
+If sent to POS:
+Primary action: Return Guest to Experience
+
+Do not make all actions equal.
+
+FAMILIAR POS MOVEMENTS TO USE
+
+Use familiar interaction patterns from modern POS systems:
+
+large table buttons
+product cards
+category-style sections
+cart/ticket panel
+tap to add
+quantity adjust
+remove item
+review ticket
+send order
+payment/handoff status
+clear confirmation
+success state after send
+
+But style them in EEIE language.
+
+Do not call everything “checkout.”
+Use:
+Cart
+Ticket
+POS Handoff
+Send to POS
+Order Ready
+Guest Experience
+
+EEIE TWIST
+
+Add the advanced twist to familiar POS movement:
+
+Instead of manually browsing products, EEIE recommends the best cigar, drink, and food.
+
+Instead of a plain product grid, EEIE shows visual pairing cards.
+
+Instead of only cart total, EEIE shows match score and guest fit.
+
+Instead of generic modifiers, EEIE shows flavor logic.
+
+Instead of dead categories, EEIE adapts to guest taste, mood, inventory, and venue state.
+
+Instead of a normal send button, EEIE shows POS handoff status and learning log.
+
+Instead of basic staff notes, EEIE gives a suggested script.
+
+STAFF SCRIPT PANEL
+
+Add a small “Say This” panel.
+
+Example:
+
+“Marcus, this pairing brings out the cocoa, cedar, and cream in your cigar. The bourbon adds vanilla and oak, and the short rib slider deepens the smoky finish.”
+
+Buttons:
+Show to Guest
+Copy Script
+Shorter Version
+Premium Version
+
+This makes the staff confident.
+
+VISUAL GUEST PREVIEW
+
+When staff taps Show to Guest, open a clean preview panel.
+
+Show:
+cigar image
+drink image
+food image
+bundle name
+short guest-friendly explanation
+price
+Accept / Decline / Swap buttons
+
+This should feel like the staff turning the tablet toward the guest.
+
+POS HANDOFF STATES
+
+The Send to POS button must show states:
+
+Ready
+Sending
+Sent
+Failed
+Manual Mode
+Retry Needed
+
+If POS adapter is offline:
+show:
+“POS adapter offline. Manual Mode available.”
+
+Buttons:
+Use Manual Mode
+Retry
+Open Commerce Intelligence
+
+LEARNING LOOP
+
+After each guest decision, log:
+
+accepted
+declined
+swapped
+added to cart
+sent to POS
+manual mode used
+staff script opened
+guest preview shown
+
+Show small learning note:
+
+“EEIE learns from this guest response.”
+
+This reinforces the living system.
+
+MOTION REQUIREMENTS
+
+Use familiar POS motion but upgraded.
+
+Tap table:
+selected card expands slightly
+
+Tap product:
+card lifts and pulses
+
+Add item:
+item flies or slides into cart panel
+
+Show to Guest:
+preview slides in smoothly
+
+Send to POS:
+button changes to Sending → Sent
+
+Failed POS:
+controlled amber/red pulse
+
+Accepted pairing:
+green success ripple
+
+Cart update:
+soft pulse on total
+
+Keep movement smooth and premium.
+
+No cartoon bounce.
+No chaotic neon.
+
+TYPOGRAPHY AND READABILITY
+
+Make it easy for staff.
+
+Table names:
+large
+
+Guest name:
+large
+
+Recommendation card titles:
+large
+
+Prices:
+clear
+
+Buttons:
+large and plain
+
+Technical details:
+secondary
+
+Use plain language:
+Best Cigar Match
+Best Drink Pairing
+Best Food Pairing
+Show to Guest
+Add to Cart
+Send to POS
+
+Avoid overly technical labels in the main flow.
+
+FINAL DELIVERABLE
+
+Staff Cockpit should feel familiar like a modern POS flow:
+
+select table
+tap recommendation
+add to cart
+send to POS
+
+But it must also feel like EEIE:
+
+AI-guided
+visual
+predictive
+taste-aware
+inventory-aware
+guest-aware
+mood-aware
+learning
+premium
+alive
+
+The final screen should be easy enough for staff to understand without training, but impressive enough to feel like a POS disruptor.

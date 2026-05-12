@@ -134,6 +134,24 @@
   100% { transform: translateX(-50%); }
 }
 
+/* eeie-wave — used by Waveform component in shared.tsx */
+@keyframes eeie-wave {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Image crossfade enter */
+@keyframes eeieImgIn {
+  0%   { opacity: 0; transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Image crossfade exit */
+@keyframes eeieImgOut {
+  0%   { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.97); }
+}
+
 /* Haptic micro-bounce */
 @keyframes eeieHapticPulse {
   0%   { transform: scale(1);    }

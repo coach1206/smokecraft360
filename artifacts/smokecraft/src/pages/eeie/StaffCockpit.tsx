@@ -1,6 +1,8 @@
 /**
- * EEIE Staff Cockpit — Full guest management, AI recommendations, Product Wall.
- * Touch-first design. 56px+ button targets throughout.
+ * EEIE Staff Cockpit — Guest management, AI recommendations, rotating brand carousel.
+ * Cigar brands rotate every 5 s · Liquor brands rotate every 6.5 s.
+ * AnimatePresence crossfade on every image transition.
+ * Touch-first: 56 px+ button targets throughout.
  */
 
 import { useState, useEffect } from "react";
@@ -9,6 +11,7 @@ import {
   Leaf, Coffee, Utensils, ShoppingCart, Users, Eye, Star,
   Send, ClipboardList, Bell, BookOpen, ChevronRight, Pause, Play,
 } from "lucide-react";
+import "@/styles/eeie-motion.css";
 import {
   type Theme, type GuestSession, type CartItem,
   Badge, Meter, Panel, TouchButton, RadarChart, DonutRing, LiveDot,
@@ -17,22 +20,147 @@ import {
 
 const FLAVOR_LABELS = ["Creamy","Sweet","Nutty","Earthy","Spicy","Woody","Pepper","Citrus"];
 
-interface FoodItem { name: string; category: string; price: number; pairing: string; prepTime: string; image: string; }
+interface FoodItem {
+  name: string; category: string; price: number;
+  pairing: string; prepTime: string; image: string;
+}
 const FOOD_ITEMS: Record<string, FoodItem> = {
   Creamy:  { name: "Smoked Short Rib Sliders",  category: "Small Plates", price: 18, pairing: "Deepens oak, cocoa, and charred-sweet finish in the blend.", prepTime: "12 min", image: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=600&q=80" },
   Sweet:   { name: "Vanilla Crème Brûlée",       category: "Dessert",      price: 14, pairing: "Amplifies the vanilla and caramel notes, softens the finish.", prepTime: "5 min",  image: "https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?auto=format&fit=crop&w=600&q=80" },
   Spicy:   { name: "Truffle Charcuterie Board",  category: "Boards",       price: 28, pairing: "Earthy umami grounds the spice and leather notes beautifully.", prepTime: "8 min",  image: "https://images.unsplash.com/photo-1546039907-7fa05f864c02?auto=format&fit=crop&w=600&q=80" },
   default: { name: "Aged Cheese Flight",          category: "Boards",       price: 22, pairing: "Neutral creamy base bridges any flavor profile gracefully.", prepTime: "6 min",  image: "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=600&q=80" },
 };
-
 function getFoodRec(flavors: string[]): FoodItem {
   for (const f of flavors) if (FOOD_ITEMS[f]) return FOOD_ITEMS[f];
   return FOOD_ITEMS.default;
 }
 
+interface CatalogProduct {
+  id: string; name: string; brand: string; category: string;
+  price: number; matchScore: number; flavorTags: string[];
+  description: string; strength: string; image: string;
+}
+
 function timeSince(iso: string) {
   const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
   return m < 1 ? "just now" : `${m}m`;
+}
+
+function RotDots({ count, current, color }: { count: number; current: number; color: string }) {
+  if (count < 2) return null;
+  return (
+    <div style={{ display: "flex", gap: 4, justifyContent: "center", marginTop: 8 }}>
+      {Array.from({ length: count }, (_, i) => (
+        <div key={i} style={{
+          width: i === current ? 14 : 5, height: 5, borderRadius: 3,
+          background: i === current ? color : `${color}35`,
+          transition: "width 0.35s ease, background 0.35s ease",
+        }} />
+      ))}
+    </div>
+  );
+}
+
+interface ProductCardProps {
+  title: string;
+  icon: React.ReactNode;
+  badge: string;
+  accentColor: string;
+  T: Theme;
+  product: CatalogProduct | null;
+  rotIdx: number;
+  totalCount: number;
+  onAdd: () => void;
+  onShow: () => void;
+  fallbackIcon: React.ReactNode;
+  priceLabel?: string;
+}
+
+function RotatingProductCard({
+  title, icon, badge, accentColor, T,
+  product, rotIdx, totalCount,
+  onAdd, onShow, fallbackIcon, priceLabel,
+}: ProductCardProps) {
+  const c = accentColor;
+  return (
+    <Panel title={title} icon={icon} badge={badge} T={T} accentColor={c}>
+      <div style={{ padding: "10px", borderRadius: 12, background: `${c}06`, border: `1px solid ${c}18` }}>
+        <div
+          className="eeie-image-shimmer"
+          style={{ height: 168, borderRadius: 10, overflow: "hidden", marginBottom: 10, position: "relative", background: `${c}12` }}
+        >
+          <AnimatePresence mode="wait">
+            {product ? (
+              <motion.img
+                key={product.name}
+                src={product.image}
+                alt={product.name}
+                initial={{ opacity: 0, scale: 1.04 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.97 }}
+                transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", position: "absolute", inset: 0 }}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+              />
+            ) : (
+              <motion.div
+                key="fallback"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
+              >
+                {fallbackIcon}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.62) 0%, transparent 52%)", pointerEvents: "none", zIndex: 2 }} />
+
+          {product && (
+            <div style={{ position: "absolute", bottom: 10, left: 12, right: 12, zIndex: 3 }}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: "#fff", lineHeight: 1.3, textShadow: "0 1px 6px rgba(0,0,0,0.7)" }}>{product.name}</div>
+              <div style={{ fontSize: 8.5, color: "rgba(255,255,255,0.78)", marginTop: 2 }}>{product.brand} · {priceLabel ?? product.strength}</div>
+            </div>
+          )}
+
+          <div style={{ position: "absolute", top: 8, right: 8, zIndex: 3, display: "flex", alignItems: "center", gap: 4, background: "rgba(0,0,0,0.48)", borderRadius: 20, padding: "3px 8px", backdropFilter: "blur(6px)" }}>
+            <div className="eeie-status-pulse" style={{ width: 5, height: 5, borderRadius: "50%", background: c }} />
+            <span style={{ fontSize: 7, color: c, fontWeight: 700, letterSpacing: "0.14em" }}>LIVE</span>
+          </div>
+        </div>
+
+        <RotDots count={totalCount} current={rotIdx} color={c} />
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10, marginBottom: 8 }}>
+          {product && <DonutRing pct={product.matchScore} color={c} size={46} label={`${product.matchScore}%`} />}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 3, marginBottom: 5 }}>
+              {(product?.flavorTags ?? []).map(f => <Badge key={f} label={f} color={c} bg={`${c}0E`} />)}
+            </div>
+            <div style={{ fontSize: 9, color: T.textSub, lineHeight: 1.55 }}>
+              {product?.description ? `${product.description.slice(0, 70)}…` : ""}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 6 }}>
+          <motion.button
+            whileTap={{ scale: 0.94 }} className="eeie-button-press"
+            onClick={onAdd} disabled={!product}
+            style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "none", background: c, color: "#fff", cursor: product ? "pointer" : "not-allowed", fontSize: 10, fontWeight: 700, boxShadow: `0 4px 14px ${c}38`, opacity: product ? 1 : 0.4 }}
+          >
+            + Add {product ? `$${product.price}` : ""}
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.94 }}
+            onClick={onShow}
+            style={{ padding: "11px 13px", borderRadius: 10, border: `1px solid ${c}30`, background: `${c}0C`, color: c, cursor: "pointer" }}
+          >
+            <Eye size={13} />
+          </motion.button>
+        </div>
+      </div>
+    </Panel>
+  );
 }
 
 interface Props { T: Theme; }
@@ -43,62 +171,77 @@ export function StaffCockpit({ T }: Props) {
   const [note, setNote] = useState("");
   const [toast, setToast] = useState<string | null>(null);
   const [showGuestPreview, setShowGuestPreview] = useState(false);
-  const [productImages, setProductImages] = useState<Record<string, string>>({});
+
+  const [cigarProducts, setCigarProducts] = useState<CatalogProduct[]>([]);
+  const [liquorProducts, setLiquorProducts] = useState<CatalogProduct[]>([]);
+  const [cigarIdx, setCigarIdx] = useState(0);
+  const [liquorIdx, setLiquorIdx] = useState(0);
 
   useEffect(() => {
     fetch("/api/eeie/products", { credentials: "include" })
       .then(r => r.ok ? r.json() : null)
-      .then((data: { products: Array<{ name: string; image: string }> } | null) => {
-        if (!data) return;
-        const map: Record<string, string> = {};
-        data.products.forEach(p => { map[p.name] = p.image; });
-        setProductImages(map);
+      .then((data: { products: CatalogProduct[] } | null) => {
+        if (!data?.products) return;
+        setCigarProducts(data.products.filter(p => p.category === "Cigar"));
+        setLiquorProducts(data.products.filter(p =>
+          ["Bourbon","Scotch","Cognac","Spirit","Whiskey"].includes(p.category)
+        ));
       })
       .catch(() => {});
   }, []);
 
-  const selected = sessions.find(s => s.id === selectedId) ?? null;
-  const foodRec = selected ? getFoodRec(selected.flavors) : FOOD_ITEMS.default;
+  useEffect(() => {
+    if (cigarProducts.length < 2) return;
+    const t = setInterval(() => setCigarIdx(i => (i + 1) % cigarProducts.length), 5000);
+    return () => clearInterval(t);
+  }, [cigarProducts.length]);
+
+  useEffect(() => {
+    if (liquorProducts.length < 2) return;
+    const t = setInterval(() => setLiquorIdx(i => (i + 1) % liquorProducts.length), 6500);
+    return () => clearInterval(t);
+  }, [liquorProducts.length]);
+
+  const rotCigar  = cigarProducts.length  > 0 ? cigarProducts[cigarIdx   % cigarProducts.length]  : null;
+  const rotLiquor = liquorProducts.length > 0 ? liquorProducts[liquorIdx  % liquorProducts.length] : null;
+
+  const selected  = sessions.find(s => s.id === selectedId) ?? null;
+  const foodRec   = selected ? getFoodRec(selected.flavors) : FOOD_ITEMS.default;
 
   function showToast(msg: string) {
     triggerHaptic("success");
     setToast(msg);
     setTimeout(() => setToast(null), 2800);
   }
-
   function togglePause(id: string) {
     triggerHaptic("softTap");
     setSessions(p => p.map(s => s.id === id ? { ...s, status: s.status === "paused" ? "active" : "paused" } : s));
   }
-
   function addToCart(session: GuestSession, item: CartItem) {
     setSessions(p => p.map(s => s.id === session.id ? { ...s, cart: [...s.cart, item] } : s));
     showToast(`${item.name} added to order`);
   }
-
   function removeFromCart(sessionId: string, idx: number) {
     setSessions(p => p.map(s => s.id === sessionId ? { ...s, cart: s.cart.filter((_, i) => i !== idx) } : s));
   }
-
   function sendToPOS(session: GuestSession) {
     if (session.cart.length === 0) return;
     showToast(`${session.cart.length} item(s) sent to Commerce Infrastructure`);
     setSessions(p => p.map(s => s.id === session.id ? { ...s, cart: [] } : s));
     triggerHaptic("managerAlert");
   }
-
   function applyReward(session: GuestSession) {
     showToast(`Loyalty reward applied for ${session.guestName}`);
     triggerHaptic("success");
   }
 
   const moodTagColor = (tag: string) => ({
-    Premium: T.accent, "High Energy": T.cyan, Social: T.green, "VIP Active": T.purple,
-    Calm: "#38BDF8", Slow: "#C084FC",
+    Premium: T.accent, "High Energy": T.cyan, Social: T.green,
+    "VIP Active": T.purple, Calm: "#38BDF8", Slow: "#C084FC",
   }[tag] ?? T.accent);
 
   return (
-    <div style={{ display: "flex", gap: 16, height: "100%" }}>
+    <div style={{ display: "flex", gap: 16, height: "100%", padding: "16px 20px" }}>
 
       {/* ── LEFT: Table List ── */}
       <div style={{ width: 210, flexShrink: 0, display: "flex", flexDirection: "column", gap: 6 }}>
@@ -107,15 +250,19 @@ export function StaffCockpit({ T }: Props) {
         </div>
         {sessions.map(s => {
           const sc = STATUS_COLOR(s.status, T);
-          const isSelected = selectedId === s.id;
+          const isSel = selectedId === s.id;
           return (
-            <motion.div key={s.id} onClick={() => setSelectedId(s.id)} whileHover={{ x: 2 }} whileTap={{ scale: 0.97 }}
+            <motion.div
+              key={s.id}
+              onClick={() => setSelectedId(s.id)}
+              whileHover={{ x: 2 }} whileTap={{ scale: 0.97 }}
+              className={`eeie-hover-lift${isSel ? " eeie-live-card" : ""}`}
               style={{
-                background: isSelected ? `${T.accent}10` : T.card,
-                border: `1px solid ${isSelected ? T.borderHi : T.border}`,
+                background: isSel ? `${T.accent}0E` : T.card,
+                border: `1px solid ${isSel ? T.borderHi : T.border}`,
                 borderLeft: `3px solid ${sc}`,
                 borderRadius: 12, padding: "11px 13px", cursor: "pointer",
-                boxShadow: isSelected ? `0 0 0 2px ${T.accent}28` : T.shadow,
+                boxShadow: isSel ? `0 0 0 2px ${T.accent}22` : T.shadow,
               }}
             >
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
@@ -142,7 +289,6 @@ export function StaffCockpit({ T }: Props) {
           );
         })}
 
-        {/* Mode switcher */}
         <div style={{ marginTop: 12 }}>
           <div style={{ fontSize: 8.5, fontWeight: 700, letterSpacing: "0.16em", color: T.textFaint, fontFamily: T.mono, marginBottom: 6 }}>KIOSK MODE</div>
           {["Staff Assist","Guest View","Manager Control","Kiosk Lock"].map(mode => (
@@ -165,7 +311,7 @@ export function StaffCockpit({ T }: Props) {
         ) : (
           <>
             {/* Guest header */}
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: "18px 20px", boxShadow: T.shadow }}>
+            <div className="eeie-live-card" style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: "18px 20px", boxShadow: T.shadow }}>
               <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
                 <div style={{ width: 52, height: 52, borderRadius: 14, background: `${T.accent}14`, border: `2px solid ${T.borderHi}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 19, fontWeight: 800, color: T.accent, flexShrink: 0 }}>
                   {selected.initials}
@@ -179,10 +325,10 @@ export function StaffCockpit({ T }: Props) {
                   </div>
                   <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
                     {[
-                      { l: "XP", v: selected.xp.toLocaleString() },
+                      { l: "XP",       v: selected.xp.toLocaleString() },
                       { l: "STRENGTH", v: selected.strength.toUpperCase(), c: T.accent },
-                      { l: "AI MATCH", v: `${selected.aiMatchScore}%`, c: T.green },
-                      { l: "ACTIVE", v: timeSince(selected.startedAt) },
+                      { l: "AI MATCH", v: `${selected.aiMatchScore}%`,     c: T.green },
+                      { l: "ACTIVE",   v: timeSince(selected.startedAt) },
                     ].map(m => (
                       <div key={m.l}>
                         <span style={{ fontSize: 8.5, color: T.textFaint, fontFamily: T.mono }}>{m.l} </span>
@@ -195,15 +341,19 @@ export function StaffCockpit({ T }: Props) {
                   </div>
                 </div>
 
-                {/* Pause / Resume */}
                 <motion.button whileTap={{ scale: 0.93 }} onClick={() => togglePause(selected.id)}
                   style={{
-                    padding: "10px 16px", borderRadius: 10, border: `1px solid ${selected.status === "paused" ? `${T.green}40` : `${T.yellow}40`}`,
+                    padding: "10px 16px", borderRadius: 10,
+                    border: `1px solid ${selected.status === "paused" ? `${T.green}40` : `${T.yellow}40`}`,
                     background: selected.status === "paused" ? `${T.green}12` : `${T.yellow}10`,
                     color: selected.status === "paused" ? T.green : T.yellow,
-                    cursor: "pointer", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", gap: 6, flexShrink: 0,
+                    cursor: "pointer", fontSize: 11, fontWeight: 700,
+                    display: "flex", alignItems: "center", gap: 6, flexShrink: 0,
                   }}>
-                  {selected.status === "paused" ? <><Play size={12} /> Resume</> : <><Pause size={12} /> Pause</>}
+                  {selected.status === "paused"
+                    ? <><Play size={12} /> Resume</>
+                    : <><Pause size={12} /> Pause</>
+                  }
                 </motion.button>
               </div>
             </div>
@@ -227,11 +377,11 @@ export function StaffCockpit({ T }: Props) {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0 }}>
                   {[
-                    { l: "Wrapper", v: "Connecticut Shade" },
-                    { l: "Binder", v: "Honduran" },
-                    { l: "Filler", v: "Nicaraguan" },
-                    { l: "Size", v: "Robusto" },
-                    { l: "Cut", v: "Straight" },
+                    { l: "Wrapper",  v: "Connecticut Shade" },
+                    { l: "Binder",   v: "Honduran" },
+                    { l: "Filler",   v: "Nicaraguan" },
+                    { l: "Size",     v: "Robusto" },
+                    { l: "Cut",      v: "Straight" },
                     { l: "Strength", v: selected.strength },
                   ].map(m => (
                     <div key={m.l}>
@@ -243,99 +393,64 @@ export function StaffCockpit({ T }: Props) {
               </div>
             </Panel>
 
-            {/* AI Recommendations grid */}
+            {/* ── AI Recommendations — rotating carousel ── */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
-              {/* Cigar Match */}
-              <Panel title="AI Cigar Match" icon={<Leaf size={13} />} badge="RECOMMENDED" T={T} accentColor={T.green}>
-                <div style={{ padding: "12px", borderRadius: 12, background: `${T.green}06`, border: `1px solid ${T.green}18` }}>
-                  <div style={{ height: 110, borderRadius: 10, overflow: "hidden", marginBottom: 10, position: "relative", background: `${T.green}10`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {productImages[selected.favCigar] ? (
-                      <img src={productImages[selected.favCigar]} alt={selected.favCigar}
-                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                    ) : (
-                      <Leaf size={28} color={`${T.green}80`} />
-                    )}
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.42) 0%, transparent 55%)", pointerEvents: "none" }} />
-                  </div>
-                  <div style={{ fontSize: 12.5, fontWeight: 800, color: T.text, marginBottom: 2, lineHeight: 1.3 }}>{selected.favCigar}</div>
-                  <div style={{ fontSize: 9, color: T.textSub, marginBottom: 8 }}>Medium · Handcrafted · Premium Reserve</div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                    <DonutRing pct={selected.aiMatchScore} color={T.green} size={52} label={`${selected.aiMatchScore}%`} />
-                    <div style={{ flex: 1, paddingLeft: 10 }}>
-                      <div style={{ fontSize: 9, color: T.textSub, lineHeight: 1.6 }}>"{selected.flavors.slice(0,2).join(" and ")} notes complement this blend perfectly."</div>
+
+              <RotatingProductCard
+                title="AI Cigar Match"
+                icon={<Leaf size={13} />}
+                badge="LIVE ROTATION"
+                accentColor={T.green}
+                T={T}
+                product={rotCigar}
+                rotIdx={cigarIdx}
+                totalCount={cigarProducts.length}
+                onAdd={() => rotCigar && addToCart(selected, { name: rotCigar.name, type: "cigar",  price: rotCigar.price,  qty: 1 })}
+                onShow={() => rotCigar && showToast(`${rotCigar.name} shown to ${selected.guestName}`)}
+                fallbackIcon={<Leaf size={36} color={`${T.green}60`} />}
+              />
+
+              <RotatingProductCard
+                title="Liquor Pairing"
+                icon={<Coffee size={13} />}
+                badge="LIVE ROTATION"
+                accentColor={T.purple}
+                T={T}
+                product={rotLiquor}
+                rotIdx={liquorIdx}
+                totalCount={liquorProducts.length}
+                onAdd={() => rotLiquor && addToCart(selected, { name: rotLiquor.name, type: "liquor", price: rotLiquor.price, qty: 1 })}
+                onShow={() => rotLiquor && showToast(`${rotLiquor.name} shown to ${selected.guestName}`)}
+                fallbackIcon={<Coffee size={36} color={`${T.purple}60`} />}
+                priceLabel="2 oz pour"
+              />
+
+              {/* Food Pairing — static (flavor-matched) */}
+              <Panel title="Food Pairing" icon={<Utensils size={13} />} badge="SUGGESTED" T={T} accentColor={T.yellow}>
+                <div style={{ padding: "10px", borderRadius: 12, background: `${T.yellow}06`, border: `1px solid ${T.yellow}18` }}>
+                  <div className="eeie-image-shimmer" style={{ height: 168, borderRadius: 10, overflow: "hidden", marginBottom: 10, position: "relative", background: `${T.yellow}12` }}>
+                    <img
+                      src={foodRec.image}
+                      alt={foodRec.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                    />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.62) 0%, transparent 52%)", pointerEvents: "none" }} />
+                    <div style={{ position: "absolute", bottom: 10, left: 12, right: 12 }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: "#fff", lineHeight: 1.3, textShadow: "0 1px 6px rgba(0,0,0,0.7)" }}>{foodRec.name}</div>
+                      <div style={{ fontSize: 8.5, color: "rgba(255,255,255,0.78)", marginTop: 2 }}>{foodRec.category} · ${foodRec.price} · {foodRec.prepTime}</div>
                     </div>
                   </div>
+                  <div style={{ fontSize: 9, color: T.textSub, lineHeight: 1.6, marginBottom: 10, fontStyle: "italic" }}>"{foodRec.pairing}"</div>
                   <div style={{ display: "flex", gap: 6 }}>
-                    <motion.button whileTap={{ scale: 0.94 }}
-                      onClick={() => addToCart(selected, { name: selected.favCigar, type: "cigar", price: 42, qty: 1 })}
-                      style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "none", background: T.green, color: "#fff", cursor: "pointer", fontSize: 10, fontWeight: 700, boxShadow: `0 4px 12px ${T.green}35` }}>
-                      + Add
-                    </motion.button>
-                    <motion.button whileTap={{ scale: 0.94 }}
-                      onClick={() => showToast(`${selected.favCigar} shown to ${selected.guestName}`)}
-                      style={{ padding: "11px 12px", borderRadius: 10, border: `1px solid ${T.green}30`, background: `${T.green}0A`, color: T.green, cursor: "pointer" }}>
-                      <Eye size={13} />
-                    </motion.button>
-                  </div>
-                </div>
-              </Panel>
-
-              {/* Liquor Pairing */}
-              <Panel title="Liquor Pairing" icon={<Coffee size={13} />} badge="OPTIMAL" T={T} accentColor={T.purple}>
-                <div style={{ padding: "12px", borderRadius: 12, background: `${T.purple}06`, border: `1px solid ${T.purple}18` }}>
-                  <div style={{ height: 110, borderRadius: 10, overflow: "hidden", marginBottom: 10, position: "relative", background: `${T.purple}10`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {productImages[selected.favLiquor] ? (
-                      <img src={productImages[selected.favLiquor]} alt={selected.favLiquor}
-                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                    ) : (
-                      <Coffee size={28} color={`${T.purple}80`} />
-                    )}
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.42) 0%, transparent 55%)", pointerEvents: "none" }} />
-                  </div>
-                  <div style={{ fontSize: 12.5, fontWeight: 800, color: T.text, marginBottom: 2, lineHeight: 1.3 }}>{selected.favLiquor}</div>
-                  <div style={{ fontSize: 9, color: T.textSub, marginBottom: 8 }}>2 oz pour · Available · Premium</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 8 }}>
-                    {["Creamy","Toasted","Vanilla","Oak"].map(f => <Badge key={f} label={f} color={T.purple} bg={`${T.purple}0C`} />)}
-                  </div>
-                  <div style={{ fontSize: 9, color: T.textSub, lineHeight: 1.6, marginBottom: 10 }}>"{selected.favLiquor} supports {selected.flavors[0]?.toLowerCase() ?? "the"} and {selected.flavors[1]?.toLowerCase() ?? "rich"} notes while lifting the cigar's finish."</div>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <motion.button whileTap={{ scale: 0.94 }}
-                      onClick={() => addToCart(selected, { name: selected.favLiquor, type: "liquor", price: 22, qty: 1 })}
-                      style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "none", background: T.purple, color: "#fff", cursor: "pointer", fontSize: 10, fontWeight: 700, boxShadow: `0 4px 12px ${T.purple}35` }}>
-                      + Add
-                    </motion.button>
-                    <motion.button whileTap={{ scale: 0.94 }}
-                      onClick={() => showToast(`Pairing shown to ${selected.guestName}`)}
-                      style={{ padding: "11px 12px", borderRadius: 10, border: `1px solid ${T.purple}30`, background: `${T.purple}0A`, color: T.purple, cursor: "pointer" }}>
-                      <Eye size={13} />
-                    </motion.button>
-                  </div>
-                </div>
-              </Panel>
-
-              {/* Food Pairing */}
-              <Panel title="Food Pairing" icon={<Utensils size={13} />} badge="SUGGESTED" T={T} accentColor={T.yellow}>
-                <div style={{ padding: "12px", borderRadius: 12, background: `${T.yellow}06`, border: `1px solid ${T.yellow}18` }}>
-                  <div style={{ height: 110, borderRadius: 10, overflow: "hidden", marginBottom: 10, position: "relative", background: `${T.yellow}10`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <img src={foodRec.image} alt={foodRec.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.42) 0%, transparent 55%)", pointerEvents: "none" }} />
-                  </div>
-                  <div style={{ fontSize: 12.5, fontWeight: 800, color: T.text, marginBottom: 2, lineHeight: 1.3 }}>{foodRec.name}</div>
-                  <div style={{ fontSize: 9, color: T.textSub, marginBottom: 4 }}>{foodRec.category} · ${foodRec.price} · {foodRec.prepTime}</div>
-                  <div style={{ fontSize: 9, color: T.textSub, lineHeight: 1.6, marginBottom: 10 }}>"{foodRec.pairing}"</div>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <motion.button whileTap={{ scale: 0.94 }}
+                    <motion.button whileTap={{ scale: 0.94 }} className="eeie-button-press"
                       onClick={() => addToCart(selected, { name: foodRec.name, type: "food", price: foodRec.price, qty: 1 })}
-                      style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "none", background: T.yellow, color: "#fff", cursor: "pointer", fontSize: 10, fontWeight: 700, boxShadow: `0 4px 12px ${T.yellow}35` }}>
-                      + Add
+                      style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "none", background: T.yellow, color: "#fff", cursor: "pointer", fontSize: 10, fontWeight: 700, boxShadow: `0 4px 14px ${T.yellow}38` }}>
+                      + Add ${foodRec.price}
                     </motion.button>
                     <motion.button whileTap={{ scale: 0.94 }}
-                      onClick={() => showToast(`Food shown to ${selected.guestName}`)}
-                      style={{ padding: "11px 12px", borderRadius: 10, border: `1px solid ${T.yellow}30`, background: `${T.yellow}0A`, color: T.yellow, cursor: "pointer" }}>
+                      onClick={() => showToast(`Food recommendation shown to ${selected.guestName}`)}
+                      style={{ padding: "11px 13px", borderRadius: 10, border: `1px solid ${T.yellow}30`, background: `${T.yellow}0C`, color: T.yellow, cursor: "pointer" }}>
                       <Eye size={13} />
                     </motion.button>
                   </div>
@@ -349,15 +464,15 @@ export function StaffCockpit({ T }: Props) {
                 <div style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 10 }}>
                   <Star size={13} color={T.accent} style={{ flexShrink: 0, marginTop: 2 }} />
                   <div style={{ fontSize: 11, color: T.text, lineHeight: 1.7, fontStyle: "italic" }}>
-                    "Say: <strong>This pairing brings out the {selected.flavors[0]?.toLowerCase() ?? "creamy"} and {selected.flavors[1]?.toLowerCase() ?? "nutty"} notes in your blend. The {selected.favLiquor.split(" ")[0]} lifts the finish beautifully. Would you like to add a 2 oz pour tonight?</strong>"
+                    "Say: <strong>This pairing brings out the {selected.flavors[0]?.toLowerCase() ?? "creamy"} and {selected.flavors[1]?.toLowerCase() ?? "nutty"} notes in your blend. The {(rotLiquor?.brand ?? "spirit").split(" ")[0]} lifts the finish beautifully — would you like a pour tonight?</strong>"
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                   {[
                     { l: "Opportunity", v: "Premium Pairing Upsell" },
-                    { l: "Timing", v: "Now — guest at mid-session" },
-                    { l: "Confidence", v: `${selected.aiMatchScore}%` },
-                    { l: "Pace", v: "Curated · Unhurried" },
+                    { l: "Timing",      v: "Now — guest at mid-session" },
+                    { l: "Confidence",  v: `${selected.aiMatchScore}%` },
+                    { l: "Pace",        v: "Curated · Unhurried" },
                   ].map(m => (
                     <div key={m.l}>
                       <div style={{ fontSize: 8, color: T.textFaint, fontFamily: T.mono }}>{m.l}</div>
@@ -367,25 +482,26 @@ export function StaffCockpit({ T }: Props) {
                 </div>
               </div>
 
-              {/* Action grid — 56px min height touch buttons */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 10 }}>
-                <TouchButton icon={<Star size={16} />}         label="APPLY REWARD"    color={T.green}  variant="glass" onClick={() => applyReward(selected)} />
-                <TouchButton icon={<ClipboardList size={16} />} label="ADD NOTE"        color={T.accent} variant="glass" />
-                <TouchButton icon={<Eye size={16} />}          label="SHOW VISUALS"    color={T.purple} variant="glass" onClick={() => showToast(`Visuals shown to ${selected.guestName}`)} />
-                <TouchButton icon={<Leaf size={16} />}         label="ADD CIGAR"       color={T.green}  variant="glass" onClick={() => addToCart(selected, { name: selected.favCigar, type: "cigar", price: 42, qty: 1 })} />
-                <TouchButton icon={<Coffee size={16} />}       label="ADD DRINK"       color={T.purple} variant="glass" onClick={() => addToCart(selected, { name: selected.favLiquor, type: "liquor", price: 22, qty: 1 })} />
-                <TouchButton icon={<Utensils size={16} />}     label="ADD FOOD"        color={T.yellow} variant="glass" onClick={() => addToCart(selected, { name: foodRec.name, type: "food", price: foodRec.price, qty: 1 })} />
-                <TouchButton icon={<Bell size={16} />}         label="NOTIFY MGR"      color={T.yellow} variant="glass" onClick={() => showToast("Manager notified")} />
-                <TouchButton icon={<Send size={16} />}         label="NOTIFY BAR"      color={T.cyan}   variant="glass" onClick={() => showToast("Bar notified")} />
-                <TouchButton icon={<BookOpen size={16} />}     label="NOTIFY KITCHEN"  color={T.accent} variant="glass" onClick={() => showToast("Kitchen notified")} />
-                <TouchButton icon={<ShoppingCart size={16} />} label="SEND TO POS"     color={T.green}  variant="solid" size="md" onClick={() => sendToPOS(selected)} />
-                <TouchButton icon={<Play size={16} />}         label="RETURN TO GUEST" color={T.accent} variant="solid" size="md" onClick={() => togglePause(selected.id)} />
+                <TouchButton icon={<Star size={16} />}          label="APPLY REWARD"    color={T.green}  variant="glass" onClick={() => applyReward(selected)} />
+                <TouchButton icon={<ClipboardList size={16} />}  label="ADD NOTE"        color={T.accent} variant="glass" />
+                <TouchButton icon={<Eye size={16} />}            label="SHOW VISUALS"    color={T.purple} variant="glass" onClick={() => showToast(`Visuals shown to ${selected.guestName}`)} />
+                <TouchButton icon={<Leaf size={16} />}           label="ADD CIGAR"       color={T.green}  variant="glass" onClick={() => rotCigar  && addToCart(selected, { name: rotCigar.name,  type: "cigar",  price: rotCigar.price,  qty: 1 })} />
+                <TouchButton icon={<Coffee size={16} />}         label="ADD DRINK"       color={T.purple} variant="glass" onClick={() => rotLiquor && addToCart(selected, { name: rotLiquor.name, type: "liquor", price: rotLiquor.price, qty: 1 })} />
+                <TouchButton icon={<Utensils size={16} />}       label="ADD FOOD"        color={T.yellow} variant="glass" onClick={() => addToCart(selected, { name: foodRec.name, type: "food", price: foodRec.price, qty: 1 })} />
+                <TouchButton icon={<Bell size={16} />}           label="NOTIFY MGR"      color={T.yellow} variant="glass" onClick={() => showToast("Manager notified")} />
+                <TouchButton icon={<Send size={16} />}           label="NOTIFY BAR"      color={T.cyan}   variant="glass" onClick={() => showToast("Bar notified")} />
+                <TouchButton icon={<BookOpen size={16} />}       label="NOTIFY KITCHEN"  color={T.accent} variant="glass" onClick={() => showToast("Kitchen notified")} />
+                <TouchButton icon={<ShoppingCart size={16} />}   label="SEND TO POS"     color={T.green}  variant="solid" size="md" onClick={() => sendToPOS(selected)} />
+                <TouchButton icon={<Play size={16} />}           label="RETURN TO GUEST" color={T.accent} variant="solid" size="md" onClick={() => togglePause(selected.id)} />
               </div>
 
-              {/* Note input */}
-              <input value={note} onChange={e => setNote(e.target.value)}
+              <input
+                value={note}
+                onChange={e => setNote(e.target.value)}
                 placeholder="Add a staff note for this table..."
-                style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${T.border}`, background: T.dark ? "rgba(255,255,255,0.04)" : "rgba(0,60,180,0.03)", color: T.text, fontSize: 12, outline: "none", boxSizing: "border-box" as const }} />
+                style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${T.border}`, background: T.dark ? "rgba(255,255,255,0.04)" : "rgba(0,60,180,0.03)", color: T.text, fontSize: 12, outline: "none", boxSizing: "border-box" as const }}
+              />
             </Panel>
 
             {/* Cart */}
@@ -401,7 +517,8 @@ export function StaffCockpit({ T }: Props) {
                       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                         <div style={{ fontSize: 15, fontWeight: 700, color: T.green }}>${item.price}</div>
                         <motion.button whileTap={{ scale: 0.9 }} onClick={() => removeFromCart(selected.id, i)}
-                          style={{ background: "none", border: "none", color: T.textSub, cursor: "pointer", fontSize: 14, padding: "2px 6px" }}>✕</motion.button>
+                          style={{ background: "none", border: "none", color: T.textSub, cursor: "pointer", fontSize: 14, padding: "2px 6px" }}>✕
+                        </motion.button>
                       </div>
                     </div>
                   ))}
@@ -411,7 +528,7 @@ export function StaffCockpit({ T }: Props) {
                   </div>
                   <motion.button whileTap={{ scale: 0.96 }} onClick={() => sendToPOS(selected)}
                     style={{ width: "100%", padding: "16px", borderRadius: 12, background: T.green, border: "none", color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 800, boxShadow: `0 4px 18px ${T.green}40`, marginTop: 4 }}>
-                    📲 Send to Commerce Infrastructure
+                    Send to Commerce Infrastructure
                   </motion.button>
                 </div>
               </Panel>
@@ -429,10 +546,9 @@ export function StaffCockpit({ T }: Props) {
                     <div style={{ padding: "16px", borderRadius: 14, background: T.dark ? "#0A1428" : "#F8FAFF", border: `1px solid ${T.cyan}25` }}>
                       <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.22em", color: T.cyan, fontFamily: T.mono, marginBottom: 2 }}>SMOKECRAFT BY SOVEREIGN</div>
                       <div style={{ fontSize: 9, color: T.textFaint, marginBottom: 12 }}>Step 3 of 5 · Flavor Discovery</div>
-                      {/* Step progress */}
                       <div style={{ display: "flex", gap: 4, marginBottom: 14 }}>
                         {[1,2,3,4,5].map(s => (
-                          <div key={s} style={{ flex: 1, height: 3, borderRadius: 2, background: s <= 3 ? T.cyan : `${T.border}` }} />
+                          <div key={s} style={{ flex: 1, height: 3, borderRadius: 2, background: s <= 3 ? T.cyan : T.border }} />
                         ))}
                       </div>
                       <div style={{ textAlign: "center" as const, padding: "20px", borderRadius: 12, background: T.dark ? "rgba(0,200,255,0.06)" : "rgba(0,130,180,0.05)", border: `1px solid ${T.cyan}18` }}>
@@ -443,7 +559,7 @@ export function StaffCockpit({ T }: Props) {
                         </div>
                         {selected.status === "paused" && (
                           <div style={{ marginTop: 12, padding: "8px 14px", borderRadius: 9, background: `${T.yellow}0E`, border: `1px solid ${T.yellow}25`, fontSize: 10, color: T.yellow, fontWeight: 700 }}>
-                            ⏸ Your experience is paused — your concierge will return shortly
+                            Your experience is paused — your concierge will return shortly
                           </div>
                         )}
                       </div>
@@ -459,9 +575,11 @@ export function StaffCockpit({ T }: Props) {
       {/* Toast */}
       <AnimatePresence>
         {toast && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
-            style={{ position: "fixed", bottom: 100, right: 32, background: T.green, color: "#fff", padding: "12px 20px", borderRadius: 12, fontWeight: 700, fontSize: 12, zIndex: 999, boxShadow: `0 4px 20px ${T.green}50` }}>
-            ✓ {toast}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
+            style={{ position: "fixed", bottom: 100, right: 32, background: T.green, color: "#fff", padding: "12px 20px", borderRadius: 12, fontWeight: 700, fontSize: 12, zIndex: 999, boxShadow: `0 4px 20px ${T.green}50` }}
+          >
+            {toast}
           </motion.div>
         )}
       </AnimatePresence>

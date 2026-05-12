@@ -96,7 +96,7 @@ function Sidebar({ active, onNav, isDark, onToggleDark, showAI, onToggleAI, T }:
                     borderLeft: `2px solid ${isActive ? "#00AAFF" : "transparent"}`,
                     transition: "all 0.15s",
                   }}>
-                  <Icon size={13} style={{ flexShrink: 0 }} />
+                  <span style={{ flexShrink: 0, display: "flex" }}><Icon size={13} /></span>
                   <span style={{ flex: 1 }}>{item.label}</span>
                   {isActive && <ChevronRight size={11} style={{ opacity: 0.45 }} />}
                 </motion.button>

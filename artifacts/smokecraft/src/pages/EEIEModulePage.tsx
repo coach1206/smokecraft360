@@ -40,8 +40,8 @@ const S = {
   serif:    "'Cormorant Garamond',serif",
 };
 
-// Use the EEIE dark theme for all sub-module components
-const T = buildTheme(true);
+// Use the EEIE light command theme — ice-blue/white content surfaces
+const T = buildTheme(false);
 
 // ── Module registry ───────────────────────────────────────────
 const MODULE_META: Record<string, {

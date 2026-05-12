@@ -9,9 +9,10 @@ const nowIso = () => new Date().toISOString();
 // ── Image catalog (Unsplash) ──────────────────────────────────
 
 export const PRODUCT_IMAGES = {
-  padron1964:    "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=600&q=80",
+  padron1964:    "https://images.unsplash.com/photo-1603575448878-868a20723f5d?auto=format&fit=crop&w=600&q=80",
   arturoFuente:  "https://images.unsplash.com/photo-1565608087341-404b25492fee?auto=format&fit=crop&w=600&q=80",
   myFather:      "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=600&q=80",
+  padron1926:    "https://images.unsplash.com/photo-1604079628040-94301bb21b91?auto=format&fit=crop&w=600&q=80",
   woodford:      "https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=600&q=80",
   balvenie:      "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=600&q=80",
   hennessy:      "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=600&q=80",
@@ -20,7 +21,9 @@ export const PRODUCT_IMAGES = {
   charcuterie:   "https://images.unsplash.com/photo-1546039907-7fa05f864c02?auto=format&fit=crop&w=600&q=80",
   cremeBrulee:   "https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?auto=format&fit=crop&w=600&q=80",
   cheeseFlight:  "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=600&q=80",
-  whiskeyglass:  "https://images.unsplash.com/photo-1506368249639-73a05d6f6488?auto=format&fit=crop&w=600&q=80",
+  whiskeyglass:  "https://images.unsplash.com/photo-1585494156145-1c60a4fe952b?auto=format&fit=crop&w=600&q=80",
+  luxuryBar:     "https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&w=600&q=80",
+  loungeVibes:   "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=600&q=80",
 };
 
 // ── Product catalog ───────────────────────────────────────────
@@ -141,7 +144,7 @@ let products: Product[] = [
     category: "Cigar", price: 52, matchScore: 98, stock: "in_stock",
     flavorTags: ["Cocoa","Leather","Earth"], pairingTags: ["Aged Bourbon","Cognac"],
     isAIRec: true, isManagerPick: true,
-    image: PRODUCT_IMAGES.whiskeyglass, imageColor: "#78350F",
+    image: PRODUCT_IMAGES.padron1926, imageColor: "#78350F",
     description: "The crown jewel of the Padron line. 80-year-old legacy in every draw.",
     strength: "full",
   },
