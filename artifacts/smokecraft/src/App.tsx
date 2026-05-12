@@ -102,6 +102,7 @@ const EEIECommandCenter      = lazy(() => import('@/pages/EEIECommandCenter'));
 const EEIELandingHub         = lazy(() => import('@/pages/EEIELandingHub'));
 const WelcomeEEIE            = lazy(() => import('@/pages/WelcomeEEIE'));
 const EEIEModulePage         = lazy(() => import('@/pages/EEIEModulePage'));
+const TitanEATHub            = lazy(() => import('@/pages/TitanEATHub'));
 const EnterpriseGovernance  = lazy(() => import('@/pages/EnterpriseGovernance'));
 const SovereignDistributionVault   = lazy(() => import('@/pages/SovereignDistributionVault'));
 const SovereignHardwareLab         = lazy(() => import('@/pages/SovereignHardwareLab'));
@@ -732,7 +733,7 @@ function SovereignBootFlow() {
 /* ── Brand partner firewall — redirects vendors away from protected routes ── */
 const VENDOR_BLOCKED_PREFIXES = [
   '/sovereign-dashboard', '/sovereign-gate', '/sovereign-verify',
-  '/founder', '/eeie-command', '/eeie/command-center',
+  '/founder', '/eeie-command', '/titan-eat', '/eeie/command-center',
   '/operations', '/distribution', '/hardware-lab', '/ambassador-hub',
   '/admin-master', '/admin-panel', '/central-command',
   '/finance-reconciliation', '/governance', '/enterprise-intelligence',
@@ -802,6 +803,9 @@ export default function App() {
           </Route>
           <Route path="/welcome-eeie">
             <WelcomeEEIE />
+          </Route>
+          <Route path="/titan-eat">
+            <SubPageProviders><TitanEATHub /></SubPageProviders>
           </Route>
           <Route path="/eeie-command">
             <SubPageProviders><EEIELandingHub /></SubPageProviders>

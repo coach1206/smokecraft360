@@ -1,0 +1,304 @@
+/* ════════════════════════════════════════════════════════════════
+   TITAN EAT — Design System
+   Environment · Asset · Tech
+   Electronic Environments Intelligence Engine // Infrastructure Control
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Token Map ──────────────────────────────────────────────── */
+:root {
+  --eat-obsidian:     #05070a;
+  --eat-deep:         #090d14;
+  --eat-surface:      rgba(15, 23, 42, 0.40);
+  --eat-cobalt:       #2e5bff;
+  --eat-cobalt-hi:    #6b8fff;
+  --eat-cobalt-glow:  rgba(46, 91, 255, 0.30);
+  --eat-ghost:        rgba(240, 244, 248, 0.95);
+  --eat-ghost-dim:    rgba(200, 215, 235, 0.55);
+  --eat-ghost-muted:  rgba(160, 180, 210, 0.38);
+  --eat-border:       rgba(255, 255, 255, 0.10);
+  --eat-border-hi:    rgba(255, 255, 255, 0.20);
+  --eat-header-font:  'Syncopate', 'Orbitron', sans-serif;
+  --eat-body-font:    'Plus Jakarta Sans', 'Inter', sans-serif;
+}
+
+/* ── Metallic Sweep Animation ───────────────────────────────── */
+@keyframes eat-metallic-sweep {
+  0%   { transform: translate(-25%, -25%) rotate(0deg); }
+  100% { transform: translate(25%, 25%) rotate(0deg); }
+}
+
+@keyframes eat-cobalt-ripple-out {
+  0%   { clip-path: circle(0% at 50% 50%); opacity: 1; }
+  100% { clip-path: circle(160% at 50% 50%); opacity: 0.85; }
+}
+
+@keyframes eat-cobalt-ripple-in {
+  0%   { clip-path: circle(160% at 50% 50%); opacity: 1; }
+  100% { clip-path: circle(0% at 50% 50%); opacity: 0.90; }
+}
+
+@keyframes eat-blur-unveil {
+  0%   { filter: blur(28px) brightness(0.4); opacity: 0; transform: scale(1.04); }
+  100% { filter: blur(0px)  brightness(1.0); opacity: 1; transform: scale(1); }
+}
+
+@keyframes eat-scan-h {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes eat-pulse-cobalt {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 8px var(--eat-cobalt-glow); }
+  50%       { opacity: 0.5; box-shadow: 0 0 20px rgba(46,91,255,0.55); }
+}
+
+/* ── Global Layout ──────────────────────────────────────────── */
+.eat-root {
+  min-height: 100dvh;
+  background: radial-gradient(ellipse at top center, #0e183a 0%, var(--eat-obsidian) 55%);
+  color: var(--eat-ghost);
+  font-family: var(--eat-body-font);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Ambient scan line ──────────────────────────────────────── */
+.eat-scan-line {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(46,91,255,0.25), transparent);
+  animation: eat-scan-h 10s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Page Unveil ────────────────────────────────────────────── */
+.eat-page-unveil {
+  animation: eat-blur-unveil 0.68s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Floating Slab ──────────────────────────────────────────── */
+.titan-eat-slab {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.40), var(--eat-obsidian)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-image: linear-gradient(
+    160deg,
+    rgba(255,255,255,0.20) 0%,
+    rgba(46,91,255,0.40) 100%
+  ) 1;
+  box-shadow:
+    0 60px 120px rgba(0, 0, 0, 1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(46,91,255,0.08);
+  backdrop-filter: blur(60px);
+  -webkit-backdrop-filter: blur(60px);
+  transition: transform 0.30s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.30s ease,
+              border-color 0.20s ease;
+}
+
+/* Hardware shimmer sweep */
+.titan-eat-slab::after {
+  content: "";
+  position: absolute;
+  top: -150%; left: -150%;
+  width: 300%; height: 300%;
+  background: linear-gradient(
+    45deg,
+    transparent 43%,
+    rgba(255, 255, 255, 0.025) 50%,
+    transparent 57%
+  );
+  animation: eat-metallic-sweep 8s infinite linear;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* The Lift */
+.titan-eat-slab:hover {
+  transform: translateY(-10px) !important;
+  box-shadow:
+    0 80px 140px rgba(0, 0, 0, 1),
+    0 0 0 1px rgba(46,91,255,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+}
+
+/* ── Typography ─────────────────────────────────────────────── */
+.eat-header-xl {
+  font-family: var(--eat-header-font);
+  font-size: 4.5rem;
+  font-weight: 700;
+  letter-spacing: 0.5rem;
+  color: var(--eat-ghost);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.eat-header-lg {
+  font-family: var(--eat-header-font);
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.4rem;
+  color: var(--eat-ghost);
+  text-transform: uppercase;
+}
+
+.eat-header-md {
+  font-family: var(--eat-header-font);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.35rem;
+  color: var(--eat-ghost);
+  text-transform: uppercase;
+}
+
+.universal-text {
+  font-family: var(--eat-body-font);
+  font-size: 1.375rem !important; /* 22px minimum */
+  color: var(--eat-ghost);
+  font-weight: 500;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+
+.eat-label {
+  font-family: var(--eat-body-font);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--eat-ghost-dim);
+}
+
+/* ── Nav Node ───────────────────────────────────────────────── */
+.nav-node {
+  position: fixed;
+  top: 40px; left: 40px;
+  font-family: var(--eat-header-font);
+  font-size: 14px;
+  letter-spacing: 0.5rem;
+  color: var(--eat-cobalt-hi);
+  cursor: pointer;
+  z-index: 100;
+  text-shadow: 0 0 18px rgba(46,91,255,0.55);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  transition: color 0.15s, text-shadow 0.15s;
+}
+.nav-node:hover {
+  color: var(--eat-ghost);
+  text-shadow: 0 0 24px rgba(46,91,255,0.80);
+}
+
+/* ── Cobalt Status Chip ─────────────────────────────────────── */
+.eat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-family: var(--eat-body-font);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eat-chip-active {
+  background: rgba(46,91,255,0.14);
+  border: 1px solid rgba(46,91,255,0.35);
+  color: var(--eat-cobalt-hi);
+}
+
+.eat-chip-online {
+  background: rgba(16,185,129,0.12);
+  border: 1px solid rgba(16,185,129,0.32);
+  color: #34d399;
+}
+
+.eat-chip-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  animation: eat-pulse-cobalt 2.2s ease-in-out infinite;
+}
+
+/* ── Module Grid ────────────────────────────────────────────── */
+.eat-module-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .eat-module-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Module Card Body ───────────────────────────────────────── */
+.eat-module-card {
+  border-radius: 18px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.eat-module-card .card-content {
+  position: relative;
+  z-index: 2;
+  padding: 32px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* ── CTA Button ─────────────────────────────────────────────── */
+.eat-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 15px 0;
+  border-radius: 11px;
+  background: rgba(46,91,255,0.14);
+  border: 1px solid rgba(46,91,255,0.36);
+  color: var(--eat-cobalt-hi);
+  font-family: var(--eat-header-font);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
+  width: 100%;
+}
+.eat-btn-primary:hover {
+  background: rgba(46,91,255,0.26);
+  border-color: rgba(46,91,255,0.60);
+  box-shadow: 0 0 24px rgba(46,91,255,0.24);
+}
+
+/* ── Index Ticker ───────────────────────────────────────────── */
+@keyframes eat-ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.eat-ticker-track {
+  display: flex;
+  gap: 48px;
+  animation: eat-ticker-scroll 48s linear infinite;
+  white-space: nowrap;
+}
+
+/* ── Ripple Overlay ─────────────────────────────────────────── */
+.eat-ripple-out {
+  position: fixed; inset: 0;
+  background: linear-gradient(145deg, rgba(46,91,255,0.30) 0%, rgba(10,20,80,0.22) 100%);
+  backdrop-filter: blur(36px);
+  z-index: 300;
+  animation: eat-cobalt-ripple-out 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
