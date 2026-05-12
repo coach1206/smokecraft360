@@ -7,7 +7,8 @@
 
 import { useState }          from "react";
 import { useLocation }       from "wouter";
-import { motion }            from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { SovereignMemory }   from "@/pages/WelcomeEEIE";
 import {
   Activity, Users, Star, Image, Grid3x3, Truck,
   Server, Building2, Radio, Package, Brain, Heart,
@@ -756,6 +757,13 @@ function EEIEModuleCard({
 // ── Main ──────────────────────────────────────────────────────
 export default function EEIELandingHub() {
   const [, navigate] = useLocation();
+  const [rippling, setRippling] = useState(false);
+
+  const secureExit = () => {
+    SovereignMemory.save(window.location.pathname);
+    setRippling(true);
+    setTimeout(() => navigate("/welcome-eeie"), 700);
+  };
 
   return (
     <div style={{
@@ -786,6 +794,24 @@ export default function EEIELandingHub() {
       }} />
       {/* Scan line */}
       <div className="scan-line" />
+
+      {/* ── SECURE EXIT RIPPLE OVERLAY ── */}
+      <AnimatePresence>
+        {rippling && (
+          <motion.div
+            key="exit-ripple"
+            initial={{ clipPath: "circle(0% at 50% 50%)" }}
+            animate={{ clipPath: "circle(160% at 50% 50%)" }}
+            transition={{ duration: 0.68, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              position: "fixed", inset: 0,
+              background: "linear-gradient(145deg, rgba(0,212,255,0.20) 0%, rgba(0,80,160,0.16) 100%)",
+              backdropFilter: "blur(28px)",
+              zIndex: 200,
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ── TOP COMMAND RAIL ── */}
       <div style={{
@@ -849,6 +875,32 @@ export default function EEIELandingHub() {
             }}
           >
             SOVEREIGN HUB
+          </motion.button>
+
+          {/* SECURE EXIT — saves session → ripple → welcome gate */}
+          <motion.button
+            whileTap={{ scale: 0.91 }}
+            onClick={secureExit}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "7px 14px", borderRadius: 8,
+              background: "rgba(0,212,255,0.08)",
+              border: "1px solid rgba(0,212,255,0.22)",
+              color: "rgba(0,212,255,0.75)", fontSize: 8, fontWeight: 700,
+              letterSpacing: "0.14em", cursor: "pointer",
+              fontFamily: "'Orbitron',sans-serif",
+              transition: "background 0.14s, border-color 0.14s",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,212,255,0.15)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,212,255,0.40)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,212,255,0.08)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,212,255,0.22)";
+            }}
+          >
+            SECURE EXIT
           </motion.button>
         </div>
       </div>

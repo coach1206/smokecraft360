@@ -100,6 +100,7 @@ const EnvironmentEngine     = lazy(() => import('@/pages/EnvironmentEngine'));
 const EnterpriseIntelligence = lazy(() => import('@/pages/EnterpriseIntelligence'));
 const EEIECommandCenter      = lazy(() => import('@/pages/EEIECommandCenter'));
 const EEIELandingHub         = lazy(() => import('@/pages/EEIELandingHub'));
+const WelcomeEEIE            = lazy(() => import('@/pages/WelcomeEEIE'));
 const EEIEModulePage         = lazy(() => import('@/pages/EEIEModulePage'));
 const EnterpriseGovernance  = lazy(() => import('@/pages/EnterpriseGovernance'));
 const SovereignDistributionVault   = lazy(() => import('@/pages/SovereignDistributionVault'));
@@ -798,6 +799,9 @@ export default function App() {
           </Route>
           <Route path="/command-center">
             <SubPageProviders><CentralCommand /></SubPageProviders>
+          </Route>
+          <Route path="/welcome-eeie">
+            <WelcomeEEIE />
           </Route>
           <Route path="/eeie-command">
             <SubPageProviders><EEIELandingHub /></SubPageProviders>

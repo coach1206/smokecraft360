@@ -1,0 +1,115 @@
+his is the final, heavy-hitter directive. We are going to strip the "brown/antique" look out of the Replit project once and for all and replace it with the Obsidian Glass & Electric Cyan aesthetic.
+
+When a user lands on this page, it needs to look like they are entering a high-security digital vault for an elite venue. We will use the Sovereign Stealth palette to make it look expensive, tech-forward, and vivid.
+
+FINAL CONSOLIDATED MASTER PROMPT: THE SOVEREIGN COMMAND HUB
+1. VISUAL DNA: ELIMINATE THE "BROWN/HEAVY" LOOK
+
+Palette Overhaul: Strictly remove all browns, golds, and flat greys. Use Obsidian Black (#010409) backgrounds and Deep Vault Navy (#0a0f1d) panels.
+
+Atmospheric Shading: Apply a muted Ice-White to Transparent horizontal gradient across the top header.
+
+Hardware Glass: All module cards must have a 145-degree midnight gradient with a 1px Ice-Silver border (rgba(255,255,255,0.08)). Add a subtle Hardware Shimmer (a slow-moving light sheen) across the glass face.
+
+2. SPATIAL INTELLIGENCE: THE CENTERPIECE
+
+Digital Twin Heatmap: The centerpiece of the landing page must be a Glowing Isometric Wireframe Blueprint of the venue floor.
+
+Table Nodes: Plot real Table/Section numbers as glowing Electric Cyan (#00d4ff) nodes.
+
+No Glyphs: Replace every icon with realistic high-resolution imagery (Whiskey, Cigars, Elite Staff) or animated data waveforms.
+
+3. TYPOGRAPHY: BOLD & EXPENSIVE
+
+Command Headers: Use Orbitron in Ghost White (rgba 240, 244, 248, 0.85). Increase letter-spacing to 0.2rem for an elite "Period" look.
+
+Data Labels: Use Inter (Weight 500+). STRICT RULE: Minimum font size 18px. Spacing must be wide and professional.
+
+4. SESSION PERSISTENCE & RIPPLE TRANSITION
+
+Memory Core: Use localStorage to save the exact currentPath. When a user logs out, the system must trigger a Liquid Electric Cyan Ripple that clears the screen.
+
+The Welcome Gate: Redirect to a /welcome-eeie page with the statement: "EEIE: THE SOVEREIGN INTELLIGENCE ENGINE. Predictive Venue Command & Infrastructure Control."
+
+State Restoration: When the next PIN is entered, the ripple must Contract (Inverse) and restore the exact page and state (cart, map view, telemetry) that the previous user left.
+
+5. COMMERCE & ACTION
+
+Add to Cart: Must trigger a physical "Hardware Press" animation and a glowing cyan pulse.
+
+The Index Ticker: Add a live-scrolling "Sovereign Index" at the very bottom of the interface showing revenue, stock trends, and system health.
+
+THE "SOVEREIGN CORE" CODE BLOCK (REPLIT CSS/JS)
+CSS
+/* KILL THE BROWN - FORCE THE OBSIDIAN VAULT */
+:root {
+  --obsidian: #010409;
+  --vault-navy: #0a0f1d;
+  --ghost-white: rgba(240, 244, 248, 0.85);
+  --electric-cyan: #00d4ff;
+  --glass-stroke: rgba(255, 255, 255, 0.08);
+}
+
+.landing-container {
+  background: radial-gradient(circle at top, #0f172a 0%, var(--obsidian) 100%) !important;
+}
+
+.module-card {
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, var(--obsidian) 100%) !important;
+  border: 1px solid var(--glass-stroke) !important;
+  backdrop-filter: blur(30px);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05), 0 30px 60px rgba(0,0,0,0.6);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.module-card:hover {
+  border-color: var(--electric-cyan);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+}
+
+/* TYPOGRAPHY OVERHAUL */
+.header-main {
+  font-family: 'Orbitron', sans-serif !important;
+  font-size: 2.2rem !important;
+  color: var(--ghost-white) !important;
+  letter-spacing: 0.3rem !important;
+}
+
+.body-data {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem !important; /* 18px */
+  color: #94a3b8; /* Muted Silver */
+}
+JavaScript
+/* SESSION PERSISTENCE LOGIC */
+const SovereignEngine = {
+  saveSession: () => {
+    localStorage.setItem('eeie_last_state', JSON.stringify({
+      path: window.location.pathname,
+      cart: currentCart,
+      timestamp: Date.now()
+    }));
+  },
+  restoreSession: (navigate) => {
+    const saved = JSON.parse(localStorage.getItem('eeie_last_state'));
+    if (saved && (Date.now() - saved.timestamp < 3600000)) {
+      navigate(saved.path);
+    }
+  }
+};
+
+/* RIPPLE LOGOUT HANDLER */
+const handleSovereignLogout = () => {
+  SovereignEngine.saveSession();
+  triggerRippleAnimation(() => {
+    window.location.href = '/welcome-eeie';
+  });
+};
+Final Checklist for Replit Agent:
+Remove all Gold/Brown: Search and replace any #B8860B, #8B4513, or #D4AF37 with Midnight/Cyan/Silver.
+
+Increase Padding: Double the padding in the module tiles so they don't look "tight."
+
+Vivid Images: Replace the blue icons with the realistic, high-color luxury photos we discussed.
+
+Confirm Font: Ensure Orbitron is set as the primary header font in the tailwind.config.js or main CSS.
