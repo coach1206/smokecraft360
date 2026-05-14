@@ -10,6 +10,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useKernelMode } from "@/contexts/KernelModeContext";
 import {
   Leaf, Coffee, Utensils, ShoppingCart, Users, Eye, Star,
   Send, ClipboardList, Bell, BookOpen, ChevronRight,
@@ -436,6 +437,7 @@ function TableRail({
 interface Props { T: Theme; }
 
 export function StaffCockpit({ T }: Props) {
+  const { mode } = useKernelMode();
   const [sessions, setSessions]       = useState<GuestSession[]>(MOCK_SESSIONS);
   const [selectedId, setSelectedId]   = useState<string | null>(MOCK_SESSIONS[0].id);
   const [note, setNote]               = useState("");
@@ -629,7 +631,8 @@ export function StaffCockpit({ T }: Props) {
                 </div>
               </div>
 
-              {/* Blend Intelligence */}
+              {/* Blend Intelligence — Sovereign only */}
+              {mode === "sovereign" && (
               <div style={{ background: CARD, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: "16px 18px", boxShadow: T.shadow }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                   <RefreshCw size={13} color={T.purple} />
@@ -653,6 +656,7 @@ export function StaffCockpit({ T }: Props) {
                   </div>
                 </div>
               </div>
+              )}
 
               {/* Staff Script Generator */}
               <div style={{ background: CARD, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: "16px 18px", boxShadow: T.shadow }}>

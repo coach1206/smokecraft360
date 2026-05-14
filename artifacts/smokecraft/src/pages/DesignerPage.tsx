@@ -13,8 +13,9 @@
 import { useState, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Download, Save, Sparkles, Check } from "lucide-react";
+import { ArrowLeft, Download, Save, Sparkles, Check, Lock } from "lucide-react";
 import { playSound } from "@/utils/sounds";
+import { useKernelMode } from "@/contexts/KernelModeContext";
 
 // ── Configuration palettes ────────────────────────────────────────────────────
 
@@ -373,6 +374,7 @@ function PickerButton({
 
 export default function DesignerPage() {
   const [, navigate]    = useLocation();
+  const { mode }        = useKernelMode();
   const [craft,    setCraft   ] = useState<CraftKey>("smoke");
   const [wood,     setWood    ] = useState<WoodKey>("cedar");
   const [trim,     setTrim    ] = useState<TrimKey>("gold");
@@ -389,6 +391,81 @@ export default function DesignerPage() {
     setIsOpen(true);
     playSound("success");
   }, []);
+
+  if (mode === "essential") {
+    return (
+      <div style={{
+        minHeight: "100dvh",
+        background: "linear-gradient(160deg, #1a1a1b 0%, #0d0d0e 100%)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 20,
+        padding: "40px 24px",
+      }}>
+        <button
+          onClick={() => navigate("/command-center")}
+          style={{
+            position: "absolute",
+            top: 20,
+            left: 20,
+            background: "none",
+            border: "none",
+            color: "rgba(245,242,237,0.55)",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            fontSize: 13,
+          }}
+        >
+          <ArrowLeft size={16} /> Back
+        </button>
+        <div style={{
+          width: 64,
+          height: 64,
+          borderRadius: "50%",
+          background: "rgba(212,139,0,0.12)",
+          border: "1.5px solid rgba(212,139,0,0.35)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+          <Lock size={28} color="rgba(212,139,0,0.7)" />
+        </div>
+        <div style={{ textAlign: "center", maxWidth: 320 }}>
+          <div style={{
+            fontSize: 11,
+            letterSpacing: "0.2em",
+            color: "rgba(212,139,0,0.7)",
+            fontFamily: "monospace",
+            fontWeight: 700,
+            marginBottom: 10,
+          }}>
+            ESSENTIAL MODE ACTIVE
+          </div>
+          <div style={{
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontSize: 26,
+            fontWeight: 600,
+            color: "#F5F2ED",
+            marginBottom: 12,
+            lineHeight: 1.25,
+          }}>
+            Design Playground
+          </div>
+          <div style={{
+            fontSize: 14,
+            color: "rgba(245,242,237,0.55)",
+            lineHeight: 1.7,
+          }}>
+            The Design Playground is a Sovereign-tier feature. Upgrade your venue plan to unlock custom craft visualization.
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleReset = useCallback(() => {
     setIsOpen(false);

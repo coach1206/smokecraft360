@@ -37,6 +37,7 @@ import { TrifectaProvider }           from '@/contexts/TrifectaContext';
 import { SovereignInsightCube }       from '@/components/SovereignInsightCube';
 import { useSovereignSocket }         from '@/hooks/useSovereignSocket';
 import PhantomHUD                     from '@/components/PhantomHUD';
+import { KernelModeProvider }         from '@/contexts/KernelModeContext';
 
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
@@ -80,6 +81,7 @@ const AxiomPay              = lazy(() => import('@/pages/AxiomPay'));
 const Demo                  = lazy(() => import('@/pages/Demo'));
 const AxiomDemo             = lazy(() => import('@/pages/AxiomDemo'));
 const MasterBlender         = lazy(() => import('@/pages/MasterBlender'));
+const DesignerPage          = lazy(() => import('@/pages/DesignerPage'));
 
 /* ── Lazy-loaded pages previously unregistered in router ───── */
 const PaymentSuccess        = lazy(() => import('@/pages/PaymentSuccess'));
@@ -149,6 +151,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
       <AuthProvider>
         <LicenseProvider>
           <VenueProvider>
+            <KernelModeProvider>
             <ThemeProvider venueId={venueId}>
               <KioskModeProvider>
                 <CommandCenterProvider>
@@ -194,6 +197,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                 </CommandCenterProvider>
               </KioskModeProvider>
             </ThemeProvider>
+            </KernelModeProvider>
           </VenueProvider>
         </LicenseProvider>
       </AuthProvider>
@@ -911,6 +915,9 @@ export default function App() {
           </Route>
           <Route path="/master-blender">
             <SubPageProviders><MasterBlender /></SubPageProviders>
+          </Route>
+          <Route path="/designer">
+            <SubPageProviders><DesignerPage /></SubPageProviders>
           </Route>
 
           {/* ── Previously unregistered pages — recovered routes ── */}

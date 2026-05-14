@@ -15,6 +15,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence }                   from "framer-motion";
 import { X, Download, Save, Send, Clock, RotateCcw, Check, Sparkles } from "lucide-react";
+import { useKernelMode } from "@/contexts/KernelModeContext";
 import html2canvas                                   from "html2canvas";
 import {
   fetchDesignDrafts,
@@ -149,6 +150,7 @@ export default function SignatureStudio({
   initialMoodId:   _initialMoodId,
   initialSmokeDesign,
 }: SignatureStudioProps) {
+  const { mode } = useKernelMode();
   const [activeTab,    setActiveTab]    = useState<StudioTab>("design");
   const [designState,  setDesignState]  = useState<AllDesignState>({
     smoke: buildInitialSmokeState(DEFAULT_SMOKE_STATE, featuredName, initialSmokeDesign),
@@ -381,6 +383,8 @@ export default function SignatureStudio({
     { id: "design",  label: "Design"  },
     { id: "history", label: "History" },
   ];
+
+  if (mode === "essential") return null;
 
   return (
     <AnimatePresence>
