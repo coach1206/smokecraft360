@@ -62,11 +62,17 @@ const PRESET_OPTIONS = [
   { label: "90D", days: 90 },
 ];
 
+const EAT_LS_KEY = "eat_dashboard_days";
+
 function parseDaysFromSearch(search: string): number {
   try {
     const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
     const raw = parseInt(params.get("days") ?? "", 10);
     if (Number.isFinite(raw) && raw > 0) return Math.min(raw, 365);
+  } catch { /* ignore */ }
+  try {
+    const stored = parseInt(localStorage.getItem(EAT_LS_KEY) ?? "", 10);
+    if (Number.isFinite(stored) && stored > 0) return Math.min(stored, 365);
   } catch { /* ignore */ }
   return 30;
 }
@@ -105,6 +111,7 @@ export default function EATDashboard() {
 
   const setDays = useCallback((n: number) => {
     setDaysState(n);
+    try { localStorage.setItem(EAT_LS_KEY, String(n)); } catch { /* ignore */ }
     const url = new URL(window.location.href);
     url.searchParams.set("days", String(n));
     window.history.replaceState({}, "", url.toString());
