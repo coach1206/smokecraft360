@@ -45,16 +45,33 @@ const TelemetryIngestSchema = z.object({
 });
 
 // ── GET /api/kernel/modules ────────────────────────────────────────────────────
+// Optional query param: ?slug=<value>  — returns { available: boolean } only
 
-router.get("/modules", async (_req: Request, res: Response) => {
+router.get("/modules", async (req: Request, res: Response) => {
+  const { slug } = req.query as Record<string, string | undefined>;
+
+  if (slug !== undefined) {
+    // Slug availability check — no auth required
+    try {
+      const rows = await db
+        .select({ id: kernelModulesTable.id })
+        .from(kernelModulesTable)
+        .where(eq(kernelModulesTable.slug, slug.trim()))
+        .limit(1);
+      return res.json({ available: rows.length === 0 });
+    } catch {
+      return res.status(500).json({ error: "Failed to check slug availability" });
+    }
+  }
+
   try {
     const modules = await db
       .select()
       .from(kernelModulesTable)
       .orderBy(desc(kernelModulesTable.registeredAt));
-    res.json({ modules });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to list kernel modules" });
+    return res.json({ modules });
+  } catch {
+    return res.status(500).json({ error: "Failed to list kernel modules" });
   }
 });
 
@@ -78,6 +95,15 @@ router.post("/modules", requireAuth, async (req: AuthRequest, res: Response) => 
       .returning();
     return res.status(201).json({ module: mod });
   } catch (err: unknown) {
+    // PostgreSQL unique-constraint violation
+    if (
+      err &&
+      typeof err === "object" &&
+      "code" in err &&
+      (err as { code: string }).code === "23505"
+    ) {
+      return res.status(409).json({ error: "Slug already in use", field: "slug" });
+    }
     const msg = err instanceof Error ? err.message : "Unknown error";
     return res.status(500).json({ error: msg });
   }

@@ -8,7 +8,7 @@
  *  - Quick nav to E.A.T. Engine dashboard
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { apiFetch } from "@/lib/api";
 
@@ -604,25 +604,64 @@ function RegisterModuleModal({
   onSuccess: (mod: KernelModule) => void;
   onClose: () => void;
 }) {
-  const [name,        setName]        = useState("");
-  const [slug,        setSlug]        = useState("");
-  const [craftType,   setCraftType]   = useState<KernelModule["craftType"]>("none");
-  const [status,      setStatus]      = useState<KernelModule["status"]>("active");
-  const [description, setDescription] = useState("");
-  const [launchUrl,   setLaunchUrl]   = useState("");
-  const [submitting,  setSubmitting]  = useState(false);
-  const [error,       setError]       = useState<string | null>(null);
+  const [name,          setName]          = useState("");
+  const [slug,          setSlug]          = useState("");
+  const [craftType,     setCraftType]     = useState<KernelModule["craftType"]>("none");
+  const [status,        setStatus]        = useState<KernelModule["status"]>("active");
+  const [description,   setDescription]   = useState("");
+  const [launchUrl,     setLaunchUrl]     = useState("");
+  const [submitting,    setSubmitting]    = useState(false);
+  const [error,         setError]         = useState<string | null>(null);
+  const [slugConflict,  setSlugConflict]  = useState<string | null>(null);
+  const [slugChecking,  setSlugChecking]  = useState(false);
+  const debounceRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const checkIdRef   = useRef(0);
 
-  const slugError = slug && !SLUG_RE.test(slug)
+  const slugFormatError = slug && !SLUG_RE.test(slug)
     ? "Slug must be lowercase letters, numbers, hyphens, or underscores"
     : null;
 
-  const canSubmit = name.trim() && slug.trim() && !slugError && !submitting;
+  const slugFieldError = slugFormatError ?? slugConflict;
+
+  const canSubmit =
+    name.trim() && slug.trim() && !slugFormatError && !slugConflict && !slugChecking && !submitting;
+
+  // Debounced slug availability check
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    setSlugConflict(null);
+
+    const trimmed = slug.trim();
+    if (!trimmed || !SLUG_RE.test(trimmed)) {
+      setSlugChecking(false);
+      return;
+    }
+
+    setSlugChecking(true);
+    const myId = ++checkIdRef.current;
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const result = await apiFetch<{ available: boolean }>(`/modules?slug=${encodeURIComponent(trimmed)}`);
+        // Discard result if a newer check has already been issued
+        if (checkIdRef.current !== myId) return;
+        if (!result.available) setSlugConflict("Slug already in use");
+      } catch {
+        // Silent — submission will surface the real error
+      } finally {
+        if (checkIdRef.current === myId) setSlugChecking(false);
+      }
+    }, 400);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [slug]);
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
     setError(null);
+    setSlugConflict(null);
     try {
       const result = await apiFetch<{ module: KernelModule }>("/modules", {
         method: "POST",
@@ -638,7 +677,12 @@ function RegisterModuleModal({
       });
       onSuccess(result.module);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to register module");
+      const status = (err as { status?: number }).status;
+      if (status === 409) {
+        setSlugConflict("Slug already in use");
+      } else {
+        setError(err instanceof Error ? err.message : "Failed to register module");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -691,16 +735,23 @@ function RegisterModuleModal({
         </div>
 
         <div>
-          <label style={labelStyle}>SLUG *</label>
+          <label style={labelStyle}>
+            SLUG *
+            {slugChecking && (
+              <span style={{ marginLeft: 6, fontSize: 9, color: "rgba(196,97,10,0.5)", letterSpacing: "0.1em" }}>
+                CHECKING…
+              </span>
+            )}
+          </label>
           <input
             type="text"
             value={slug}
             onChange={(e) => setSlug(e.target.value.toLowerCase())}
             placeholder="e.g. smoke-experience"
-            style={{ ...inputStyle, borderColor: slugError ? "rgba(248,113,113,0.5)" : "rgba(196,97,10,0.25)" }}
+            style={{ ...inputStyle, borderColor: slugFieldError ? "rgba(248,113,113,0.5)" : "rgba(196,97,10,0.25)" }}
           />
-          {slugError && (
-            <div style={{ fontSize: 10, color: "#f87171", marginTop: -8, marginBottom: 12 }}>{slugError}</div>
+          {slugFieldError && (
+            <div style={{ fontSize: 10, color: "#f87171", marginTop: -8, marginBottom: 12 }}>{slugFieldError}</div>
           )}
         </div>
 
