@@ -18,6 +18,8 @@ tags:
     description: Craft session timer and streak state
   - name: ai
     description: AI image generation with Cloudinary caching
+  - name: kernel
+    description: NOVEE OS Titan Kernel — module registry, mode config, and telemetry
 
 paths:
   /ai/generate-image:
@@ -355,6 +357,132 @@ paths:
                     format: uuid
                 required: [message, id]
 
+  /kernel/modules:
+    get:
+      operationId: listKernelModules
+      tags: [kernel]
+      summary: List all registered kernel modules
+      responses:
+        "200":
+          description: Module list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  modules:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/KernelModule"
+                required: [modules]
+    post:
+      operationId: registerKernelModule
+      tags: [kernel]
+      summary: Register a new kernel module (super_admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KernelModuleInput"
+      responses:
+        "201":
+          description: Registered module
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  module:
+                    $ref: "#/components/schemas/KernelModule"
+                required: [module]
+        "403":
+          description: Forbidden
+
+  /kernel/mode/{venueId}:
+    get:
+      operationId: getKernelMode
+      tags: [kernel]
+      summary: Get current Sovereign/Essential mode for a venue
+      parameters:
+        - in: path
+          name: venueId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Current mode config
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KernelModeResponse"
+    patch:
+      operationId: setKernelMode
+      tags: [kernel]
+      summary: Set Sovereign/Essential mode (admin/super_admin only)
+      parameters:
+        - in: path
+          name: venueId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KernelModeInput"
+      responses:
+        "200":
+          description: Updated mode
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KernelModeResponse"
+        "403":
+          description: Forbidden
+
+  /kernel/telemetry:
+    post:
+      operationId: ingestTelemetryEvent
+      tags: [kernel]
+      summary: Ingest a telemetry event from a module
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TelemetryEventInput"
+      responses:
+        "202":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required: [ok]
+        "400":
+          description: Invalid payload
+
+  /kernel/telemetry/summary:
+    get:
+      operationId: getKernelTelemetrySummary
+      tags: [kernel]
+      summary: Aggregated E.A.T. Engine telemetry summary
+      responses:
+        "200":
+          description: Telemetry summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelemetrySummary"
+
 components:
   schemas:
     HealthStatus:
@@ -619,3 +747,142 @@ components:
           type: boolean
           description: Whether the image was served from the cache
       required: [url, cached]
+
+    KernelModule:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        craftType:
+          type: string
+          enum: [smoke, pour, brew, vape, none]
+        slug:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+        description:
+          type: ["string", "null"]
+        launchUrl:
+          type: ["string", "null"]
+        registeredAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, name, craftType, slug, status, registeredAt, updatedAt]
+
+    KernelModuleInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        craftType:
+          type: string
+          enum: [smoke, pour, brew, vape, none]
+        slug:
+          type: string
+          minLength: 1
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+        description:
+          type: string
+        launchUrl:
+          type: string
+      required: [name, slug]
+
+    KernelModeResponse:
+      type: object
+      properties:
+        venueId:
+          type: string
+          format: uuid
+        mode:
+          type: string
+          enum: [sovereign, essential]
+        updatedAt:
+          type: ["string", "null"]
+          format: date-time
+      required: [venueId, mode]
+
+    KernelModeInput:
+      type: object
+      properties:
+        mode:
+          type: string
+          enum: [sovereign, essential]
+      required: [mode]
+
+    TelemetryEventInput:
+      type: object
+      properties:
+        moduleId:
+          type: string
+          format: uuid
+        venueId:
+          type: string
+          format: uuid
+        eventType:
+          type: string
+          minLength: 1
+        payload:
+          type: object
+          additionalProperties: true
+      required: [eventType]
+
+    TelemetryDayCount:
+      type: object
+      properties:
+        day:
+          type: string
+        cnt:
+          type: integer
+      required: [day, cnt]
+
+    TelemetryEventTypeStat:
+      type: object
+      properties:
+        event_type:
+          type: string
+        cnt:
+          type: integer
+      required: [event_type, cnt]
+
+    TelemetryModuleUsage:
+      type: object
+      properties:
+        module_name:
+          type: string
+        module_slug:
+          type: string
+        event_count:
+          type: integer
+      required: [module_name, module_slug, event_count]
+
+    TelemetrySummary:
+      type: object
+      properties:
+        total:
+          type: integer
+        dailyCounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/TelemetryDayCount"
+        topEventTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/TelemetryEventTypeStat"
+        moduleUsage:
+          type: array
+          items:
+            $ref: "#/components/schemas/TelemetryModuleUsage"
+        ritualEngagement:
+          type: integer
+          description: "Ratio of build-completions to swipe-starts expressed as 0-100"
+      required: [total, dailyCounts, topEventTypes, moduleUsage, ritualEngagement]

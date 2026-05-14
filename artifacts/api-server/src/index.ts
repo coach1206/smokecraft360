@@ -70,6 +70,82 @@ try {
   logger.warn({ err }, "Initial trend score load failed — will retry on schedule");
 }
 
+// ── Kernel bootstrap — create tables if missing + seed built-in modules ───────
+// Runs the 0006_kernel_foundation migration inline so the tables self-provision
+// on any fresh environment. All statements are IF NOT EXISTS / ON CONFLICT safe.
+try {
+  const { db }              = await import("@workspace/db");
+  const { sql: drizzleSql } = await import("drizzle-orm");
+
+  // 1. Ensure enums exist (DO $$ … END $$ is idempotent)
+  await db.execute(drizzleSql`
+    DO $$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'kernel_module_status') THEN
+        CREATE TYPE kernel_module_status AS ENUM ('active', 'inactive', 'suspended');
+      END IF;
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'kernel_craft_type') THEN
+        CREATE TYPE kernel_craft_type AS ENUM ('smoke', 'pour', 'brew', 'vape', 'none');
+      END IF;
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'kernel_mode') THEN
+        CREATE TYPE kernel_mode AS ENUM ('sovereign', 'essential');
+      END IF;
+    END $$
+  `);
+
+  // 2. Ensure tables exist
+  await db.execute(drizzleSql`
+    CREATE TABLE IF NOT EXISTS kernel_modules (
+      id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name          TEXT NOT NULL,
+      craft_type    kernel_craft_type NOT NULL DEFAULT 'none',
+      slug          TEXT NOT NULL UNIQUE,
+      status        kernel_module_status NOT NULL DEFAULT 'active',
+      description   TEXT,
+      launch_url    TEXT,
+      registered_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await db.execute(drizzleSql`
+    CREATE TABLE IF NOT EXISTS kernel_mode_config (
+      id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id   UUID NOT NULL UNIQUE,
+      mode       kernel_mode NOT NULL DEFAULT 'sovereign',
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_by UUID
+    )
+  `);
+  await db.execute(drizzleSql`
+    CREATE TABLE IF NOT EXISTS telemetry_events (
+      id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      module_id   UUID,
+      venue_id    UUID,
+      event_type  TEXT NOT NULL,
+      payload     JSONB DEFAULT '{}',
+      occurred_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await db.execute(drizzleSql`
+    CREATE INDEX IF NOT EXISTS telemetry_events_type_idx     ON telemetry_events (event_type)
+  `);
+  await db.execute(drizzleSql`
+    CREATE INDEX IF NOT EXISTS telemetry_events_occurred_idx ON telemetry_events (occurred_at)
+  `);
+
+  // 3. Seed SmokeCraft module (idempotent)
+  await db.execute(drizzleSql`
+    INSERT INTO kernel_modules (name, craft_type, slug, status, description, launch_url)
+    VALUES (
+      'Craft: Smoke', 'smoke', 'craft-smoke', 'active',
+      'SmokeCraft — luxury cigar recommendation and experience engine', '/'
+    )
+    ON CONFLICT (slug) DO NOTHING
+  `);
+  logger.info("Kernel bootstrap complete (tables + seed)");
+} catch (err) {
+  logger.warn({ err }, "Kernel bootstrap failed — /api/kernel may be unavailable");
+}
+
 // Reconcile active tournament scores on startup (non-fatal).
 // Recovers any scores lost due to in-flight syncs interrupted by the restart.
 // Runs synchronously before the HTTP server binds so the first request sees

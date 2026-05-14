@@ -265,3 +265,106 @@ export const DeleteCraftSessionResponse = zod.object({
 })
 
 
+/**
+ * @summary List all registered kernel modules
+ */
+export const ListKernelModulesResponse = zod.object({
+  "modules": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "craftType": zod.enum(['smoke', 'pour', 'brew', 'vape', 'none']),
+  "slug": zod.string(),
+  "status": zod.enum(['active', 'inactive', 'suspended']),
+  "description": zod.string().nullish(),
+  "launchUrl": zod.string().nullish(),
+  "registeredAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary Register a new kernel module (super_admin only)
+ */
+
+
+
+
+export const RegisterKernelModuleBody = zod.object({
+  "name": zod.string().min(1),
+  "craftType": zod.enum(['smoke', 'pour', 'brew', 'vape', 'none']).optional(),
+  "slug": zod.string().min(1),
+  "status": zod.enum(['active', 'inactive', 'suspended']).optional(),
+  "description": zod.string().optional(),
+  "launchUrl": zod.string().optional()
+})
+
+
+/**
+ * @summary Get current Sovereign/Essential mode for a venue
+ */
+export const GetKernelModeParams = zod.object({
+  "venueId": zod.coerce.string().uuid()
+})
+
+export const GetKernelModeResponse = zod.object({
+  "venueId": zod.string().uuid(),
+  "mode": zod.enum(['sovereign', 'essential']),
+  "updatedAt": zod.coerce.date().nullish()
+})
+
+
+/**
+ * @summary Set Sovereign/Essential mode (admin/super_admin only)
+ */
+export const SetKernelModeParams = zod.object({
+  "venueId": zod.coerce.string().uuid()
+})
+
+export const SetKernelModeBody = zod.object({
+  "mode": zod.enum(['sovereign', 'essential'])
+})
+
+export const SetKernelModeResponse = zod.object({
+  "venueId": zod.string().uuid(),
+  "mode": zod.enum(['sovereign', 'essential']),
+  "updatedAt": zod.coerce.date().nullish()
+})
+
+
+/**
+ * @summary Ingest a telemetry event from a module
+ */
+
+
+
+export const IngestTelemetryEventBody = zod.object({
+  "moduleId": zod.string().uuid().optional(),
+  "venueId": zod.string().uuid().optional(),
+  "eventType": zod.string().min(1),
+  "payload": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+
+/**
+ * @summary Aggregated E.A.T. Engine telemetry summary
+ */
+export const GetKernelTelemetrySummaryResponse = zod.object({
+  "total": zod.number(),
+  "dailyCounts": zod.array(zod.object({
+  "day": zod.string(),
+  "cnt": zod.number()
+})),
+  "topEventTypes": zod.array(zod.object({
+  "event_type": zod.string(),
+  "cnt": zod.number()
+})),
+  "moduleUsage": zod.array(zod.object({
+  "module_name": zod.string(),
+  "module_slug": zod.string(),
+  "event_count": zod.number()
+})),
+  "ritualEngagement": zod.number().describe('Ratio of build-completions to swipe-starts expressed as 0-100')
+})
+
+

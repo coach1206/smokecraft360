@@ -118,3 +118,6 @@ export * from "./behaviorPatterns";
 export * from "./biometricPulseMaps";
 export * from "./enterpriseAi";
 export * from "./vendorProfiles";
+export * from "./kernelModules";
+export * from "./kernelModeConfig";
+export * from "./telemetryEvents";

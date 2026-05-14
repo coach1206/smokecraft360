@@ -11,6 +11,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence }           from "framer-motion";
+import { emitKernelEvent } from "@/lib/kernelTelemetry";
 import {
   X, MapPin, Loader2, CheckCircle, XCircle,
   UtensilsCrossed, Wine, Cigarette, ShoppingBag, Hash,
@@ -144,6 +145,13 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
           venueId:     orderVenueId,
         });
       }
+
+      // Kernel telemetry — add_to_order
+      emitKernelEvent("add_to_order", {
+        orderId:  order.id,
+        type:     selectedType,
+        items:    [cigar, drink].filter(Boolean).map((i) => (i as { id: string; name: string }).name),
+      });
 
       // Step 2 — table orders go straight to confirmation (no payment required)
       if (selectedType === "table") {

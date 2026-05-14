@@ -10,6 +10,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useParams, useLocation } from "wouter";
+import { emitKernelEvent } from "@/lib/kernelTelemetry";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, ShoppingBag, Star, Check, Package, AlertTriangle } from "lucide-react";
 import { getCraftTheme } from "@/lib/craftThemes";
@@ -127,9 +128,10 @@ export default function RevealPage() {
 
   const theme = getCraftTheme(craftType);
 
-  // Signal reveal climax to environment engine on mount
+  // Signal reveal climax to environment engine on mount + emit reveal_view telemetry
   useEffect(() => {
     envCtx?.onRevealStart();
+    emitKernelEvent("reveal_view", { sessionId });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Neural Bridge: socket listener for neural:identity_evolved ───────────
@@ -167,6 +169,7 @@ export default function RevealPage() {
         const data = await apiGet(`/api/swipe-experience/session/${sessionId}/recommendations`);
         const loaded: Recommendation[] = data.recommendations ?? [];
         setRecs(loaded);
+        emitKernelEvent("build_complete", { sessionId, count: loaded.length });
         const cat = data.recommendations?.[0]?.item?.category;
         const ct = cat === "cigar" ? "smoke"
                  : cat === "alcohol" ? "pour"

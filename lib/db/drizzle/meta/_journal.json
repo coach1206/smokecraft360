@@ -43,6 +43,13 @@
       "when": 1746547200000,
       "tag": "0005_saved_build_cards",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1747267200000,
+      "tag": "0006_kernel_foundation",
+      "breakpoints": true
     }
   ]
 }

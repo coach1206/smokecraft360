@@ -154,6 +154,133 @@ export interface AiImageResult {
   cached: boolean;
 }
 
+export type KernelModuleCraftType = typeof KernelModuleCraftType[keyof typeof KernelModuleCraftType];
+
+
+export const KernelModuleCraftType = {
+  smoke: 'smoke',
+  pour: 'pour',
+  brew: 'brew',
+  vape: 'vape',
+  none: 'none',
+} as const;
+
+export type KernelModuleStatus = typeof KernelModuleStatus[keyof typeof KernelModuleStatus];
+
+
+export const KernelModuleStatus = {
+  active: 'active',
+  inactive: 'inactive',
+  suspended: 'suspended',
+} as const;
+
+export interface KernelModule {
+  id: string;
+  name: string;
+  craftType: KernelModuleCraftType;
+  slug: string;
+  status: KernelModuleStatus;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  launchUrl?: string | null;
+  registeredAt: string;
+  updatedAt: string;
+}
+
+export type KernelModuleInputCraftType = typeof KernelModuleInputCraftType[keyof typeof KernelModuleInputCraftType];
+
+
+export const KernelModuleInputCraftType = {
+  smoke: 'smoke',
+  pour: 'pour',
+  brew: 'brew',
+  vape: 'vape',
+  none: 'none',
+} as const;
+
+export type KernelModuleInputStatus = typeof KernelModuleInputStatus[keyof typeof KernelModuleInputStatus];
+
+
+export const KernelModuleInputStatus = {
+  active: 'active',
+  inactive: 'inactive',
+  suspended: 'suspended',
+} as const;
+
+export interface KernelModuleInput {
+  /** @minLength 1 */
+  name: string;
+  craftType?: KernelModuleInputCraftType;
+  /** @minLength 1 */
+  slug: string;
+  status?: KernelModuleInputStatus;
+  description?: string;
+  launchUrl?: string;
+}
+
+export type KernelModeResponseMode = typeof KernelModeResponseMode[keyof typeof KernelModeResponseMode];
+
+
+export const KernelModeResponseMode = {
+  sovereign: 'sovereign',
+  essential: 'essential',
+} as const;
+
+export interface KernelModeResponse {
+  venueId: string;
+  mode: KernelModeResponseMode;
+  /** @nullable */
+  updatedAt?: string | null;
+}
+
+export type KernelModeInputMode = typeof KernelModeInputMode[keyof typeof KernelModeInputMode];
+
+
+export const KernelModeInputMode = {
+  sovereign: 'sovereign',
+  essential: 'essential',
+} as const;
+
+export interface KernelModeInput {
+  mode: KernelModeInputMode;
+}
+
+export type TelemetryEventInputPayload = { [key: string]: unknown };
+
+export interface TelemetryEventInput {
+  moduleId?: string;
+  venueId?: string;
+  /** @minLength 1 */
+  eventType: string;
+  payload?: TelemetryEventInputPayload;
+}
+
+export interface TelemetryDayCount {
+  day: string;
+  cnt: number;
+}
+
+export interface TelemetryEventTypeStat {
+  event_type: string;
+  cnt: number;
+}
+
+export interface TelemetryModuleUsage {
+  module_name: string;
+  module_slug: string;
+  event_count: number;
+}
+
+export interface TelemetrySummary {
+  total: number;
+  dailyCounts: TelemetryDayCount[];
+  topEventTypes: TelemetryEventTypeStat[];
+  moduleUsage: TelemetryModuleUsage[];
+  /** Ratio of build-completions to swipe-starts expressed as 0-100 */
+  ritualEngagement: number;
+}
+
 export type GetCraftBuildParams = {
 craft: CraftType;
 };
@@ -228,5 +355,17 @@ export type UpsertCraftSession201 = {
 export type DeleteCraftSession200 = {
   message: string;
   id: string;
+};
+
+export type ListKernelModules200 = {
+  modules: KernelModule[];
+};
+
+export type RegisterKernelModule201 = {
+  module: KernelModule;
+};
+
+export type IngestTelemetryEvent202 = {
+  ok: boolean;
 };
 

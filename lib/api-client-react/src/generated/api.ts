@@ -37,6 +37,14 @@ import type {
   GetDesignDrafts200,
   GetDesignDraftsParams,
   HealthStatus,
+  IngestTelemetryEvent202,
+  KernelModeInput,
+  KernelModeResponse,
+  KernelModuleInput,
+  ListKernelModules200,
+  RegisterKernelModule201,
+  TelemetryEventInput,
+  TelemetrySummary,
   UpsertCraftBuild200,
   UpsertCraftBuild201,
   UpsertCraftBuildRequest,
@@ -1027,4 +1035,449 @@ export const useDeleteCraftSession = <TError = ErrorType<unknown>,
       > => {
       return useMutation(getDeleteCraftSessionMutationOptions(options));
     }
+
+/**
+ * @summary List all registered kernel modules
+ */
+export const getListKernelModulesUrl = () => {
+
+
+
+
+  return `/api/kernel/modules`
+}
+
+export const listKernelModules = async ( options?: RequestInit): Promise<ListKernelModules200> => {
+
+  return customFetch<ListKernelModules200>(getListKernelModulesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListKernelModulesQueryKey = () => {
+    return [
+    `/api/kernel/modules`
+    ] as const;
+    }
+
+
+export const getListKernelModulesQueryOptions = <TData = Awaited<ReturnType<typeof listKernelModules>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listKernelModules>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListKernelModulesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listKernelModules>>> = ({ signal }) => listKernelModules({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listKernelModules>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListKernelModulesQueryResult = NonNullable<Awaited<ReturnType<typeof listKernelModules>>>
+export type ListKernelModulesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List all registered kernel modules
+ */
+
+export function useListKernelModules<TData = Awaited<ReturnType<typeof listKernelModules>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listKernelModules>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListKernelModulesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+/**
+ * @summary Register a new kernel module (super_admin only)
+ */
+export const getRegisterKernelModuleUrl = () => {
+
+
+
+
+  return `/api/kernel/modules`
+}
+
+export const registerKernelModule = async (kernelModuleInput: KernelModuleInput, options?: RequestInit): Promise<RegisterKernelModule201> => {
+
+  return customFetch<RegisterKernelModule201>(getRegisterKernelModuleUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      kernelModuleInput,)
+  }
+);}
+
+
+
+
+export const getRegisterKernelModuleMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerKernelModule>>, TError,{data: BodyType<KernelModuleInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof registerKernelModule>>, TError,{data: BodyType<KernelModuleInput>}, TContext> => {
+
+const mutationKey = ['registerKernelModule'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof registerKernelModule>>, {data: BodyType<KernelModuleInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  registerKernelModule(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RegisterKernelModuleMutationResult = NonNullable<Awaited<ReturnType<typeof registerKernelModule>>>
+    export type RegisterKernelModuleMutationBody = BodyType<KernelModuleInput>
+    export type RegisterKernelModuleMutationError = ErrorType<void>
+
+    /**
+ * @summary Register a new kernel module (super_admin only)
+ */
+export const useRegisterKernelModule = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerKernelModule>>, TError,{data: BodyType<KernelModuleInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof registerKernelModule>>,
+        TError,
+        {data: BodyType<KernelModuleInput>},
+        TContext
+      > => {
+      return useMutation(getRegisterKernelModuleMutationOptions(options));
+    }
+
+/**
+ * @summary Get current Sovereign/Essential mode for a venue
+ */
+export const getGetKernelModeUrl = (venueId: string,) => {
+
+
+
+
+  return `/api/kernel/mode/${venueId}`
+}
+
+export const getKernelMode = async (venueId: string, options?: RequestInit): Promise<KernelModeResponse> => {
+
+  return customFetch<KernelModeResponse>(getGetKernelModeUrl(venueId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetKernelModeQueryKey = (venueId: string,) => {
+    return [
+    `/api/kernel/mode/${venueId}`
+    ] as const;
+    }
+
+
+export const getGetKernelModeQueryOptions = <TData = Awaited<ReturnType<typeof getKernelMode>>, TError = ErrorType<unknown>>(venueId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getKernelMode>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetKernelModeQueryKey(venueId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getKernelMode>>> = ({ signal }) => getKernelMode(venueId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(venueId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getKernelMode>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetKernelModeQueryResult = NonNullable<Awaited<ReturnType<typeof getKernelMode>>>
+export type GetKernelModeQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get current Sovereign/Essential mode for a venue
+ */
+
+export function useGetKernelMode<TData = Awaited<ReturnType<typeof getKernelMode>>, TError = ErrorType<unknown>>(
+ venueId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getKernelMode>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetKernelModeQueryOptions(venueId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+/**
+ * @summary Set Sovereign/Essential mode (admin/super_admin only)
+ */
+export const getSetKernelModeUrl = (venueId: string,) => {
+
+
+
+
+  return `/api/kernel/mode/${venueId}`
+}
+
+export const setKernelMode = async (venueId: string,
+    kernelModeInput: KernelModeInput, options?: RequestInit): Promise<KernelModeResponse> => {
+
+  return customFetch<KernelModeResponse>(getSetKernelModeUrl(venueId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      kernelModeInput,)
+  }
+);}
+
+
+
+
+export const getSetKernelModeMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setKernelMode>>, TError,{venueId: string;data: BodyType<KernelModeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof setKernelMode>>, TError,{venueId: string;data: BodyType<KernelModeInput>}, TContext> => {
+
+const mutationKey = ['setKernelMode'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof setKernelMode>>, {venueId: string;data: BodyType<KernelModeInput>}> = (props) => {
+          const {venueId,data} = props ?? {};
+
+          return  setKernelMode(venueId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SetKernelModeMutationResult = NonNullable<Awaited<ReturnType<typeof setKernelMode>>>
+    export type SetKernelModeMutationBody = BodyType<KernelModeInput>
+    export type SetKernelModeMutationError = ErrorType<void>
+
+    /**
+ * @summary Set Sovereign/Essential mode (admin/super_admin only)
+ */
+export const useSetKernelMode = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setKernelMode>>, TError,{venueId: string;data: BodyType<KernelModeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof setKernelMode>>,
+        TError,
+        {venueId: string;data: BodyType<KernelModeInput>},
+        TContext
+      > => {
+      return useMutation(getSetKernelModeMutationOptions(options));
+    }
+
+/**
+ * @summary Ingest a telemetry event from a module
+ */
+export const getIngestTelemetryEventUrl = () => {
+
+
+
+
+  return `/api/kernel/telemetry`
+}
+
+export const ingestTelemetryEvent = async (telemetryEventInput: TelemetryEventInput, options?: RequestInit): Promise<IngestTelemetryEvent202> => {
+
+  return customFetch<IngestTelemetryEvent202>(getIngestTelemetryEventUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      telemetryEventInput,)
+  }
+);}
+
+
+
+
+export const getIngestTelemetryEventMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ingestTelemetryEvent>>, TError,{data: BodyType<TelemetryEventInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof ingestTelemetryEvent>>, TError,{data: BodyType<TelemetryEventInput>}, TContext> => {
+
+const mutationKey = ['ingestTelemetryEvent'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof ingestTelemetryEvent>>, {data: BodyType<TelemetryEventInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  ingestTelemetryEvent(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type IngestTelemetryEventMutationResult = NonNullable<Awaited<ReturnType<typeof ingestTelemetryEvent>>>
+    export type IngestTelemetryEventMutationBody = BodyType<TelemetryEventInput>
+    export type IngestTelemetryEventMutationError = ErrorType<void>
+
+    /**
+ * @summary Ingest a telemetry event from a module
+ */
+export const useIngestTelemetryEvent = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ingestTelemetryEvent>>, TError,{data: BodyType<TelemetryEventInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof ingestTelemetryEvent>>,
+        TError,
+        {data: BodyType<TelemetryEventInput>},
+        TContext
+      > => {
+      return useMutation(getIngestTelemetryEventMutationOptions(options));
+    }
+
+/**
+ * @summary Aggregated E.A.T. Engine telemetry summary
+ */
+export const getGetKernelTelemetrySummaryUrl = () => {
+
+
+
+
+  return `/api/kernel/telemetry/summary`
+}
+
+export const getKernelTelemetrySummary = async ( options?: RequestInit): Promise<TelemetrySummary> => {
+
+  return customFetch<TelemetrySummary>(getGetKernelTelemetrySummaryUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetKernelTelemetrySummaryQueryKey = () => {
+    return [
+    `/api/kernel/telemetry/summary`
+    ] as const;
+    }
+
+
+export const getGetKernelTelemetrySummaryQueryOptions = <TData = Awaited<ReturnType<typeof getKernelTelemetrySummary>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getKernelTelemetrySummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetKernelTelemetrySummaryQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getKernelTelemetrySummary>>> = ({ signal }) => getKernelTelemetrySummary({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getKernelTelemetrySummary>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetKernelTelemetrySummaryQueryResult = NonNullable<Awaited<ReturnType<typeof getKernelTelemetrySummary>>>
+export type GetKernelTelemetrySummaryQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Aggregated E.A.T. Engine telemetry summary
+ */
+
+export function useGetKernelTelemetrySummary<TData = Awaited<ReturnType<typeof getKernelTelemetrySummary>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getKernelTelemetrySummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetKernelTelemetrySummaryQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
 

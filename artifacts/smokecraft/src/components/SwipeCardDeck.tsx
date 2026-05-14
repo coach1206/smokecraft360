@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, animate, useMotionValue, useTransform } from "framer-motion";
 import { playClick, playSwipe, playSelect } from "../services/sound";
 import { haptic } from "../utils/haptics";
+import { emitKernelEvent } from "@/lib/kernelTelemetry";
 
 export interface SwipeCardItem {
   id:       string;
@@ -56,16 +57,20 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
   const skipOp   = useTransform(x, [-120, -50, 0], [1, 0.6, 0]);
   const exiting  = useRef(false);
 
-  /* Slide in on mount */
+  /* Slide in on mount — also fires swipe_start telemetry */
   useEffect(() => {
     animate(x, 0, { duration: 0.38, ease: [0.22, 1, 0.36, 1] });
-  }, [x]);
+    if (index === 0) {
+      emitKernelEvent("swipe_start", { cardId: item.id });
+    }
+  }, [x]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function swipeRight() {
     if (exiting.current) return;
     exiting.current = true;
     playSelect();                                                  // accept chime
     haptic.select();                                               // tactile commit
+    emitKernelEvent("swipe_add", { cardId: item.id, title: item.title });
     animate(x, 680, { duration: 0.32, ease: [0.4, 0, 1, 1] }).then(onSwipeRight);
   }
 
@@ -74,6 +79,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
     exiting.current = true;
     playSwipe();                                                   // skip whoosh
     haptic.swipe();                                                // tactile skip
+    emitKernelEvent("swipe_skip", { cardId: item.id, title: item.title });
     animate(x, -680, { duration: 0.32, ease: [0.4, 0, 1, 1] }).then(onSwipeLeft);
   }
 

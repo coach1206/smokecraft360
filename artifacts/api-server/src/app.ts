@@ -180,6 +180,7 @@ import pinAuthRouter               from "./routes/pinAuth";
 import biometricHardwareRouter     from "./routes/biometricHardware";
 import titanEngineRouter, { startSignalMonitor } from "./routes/titanEngine";
 import cognitiveBuildSheetRouter   from "./routes/cognitiveBuildSheet";
+import kernelRouter                from "./routes/kernel";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -522,6 +523,7 @@ app.use("/api",                         cognitiveBuildSheetRouter);
 app.use("/api",                         onboardingRouter);
 app.use("/api",                         aiConfigureRouter);
 app.use("/api",                         demoSimulateRouter);
+app.use("/api/kernel",                  kernelRouter);
 
 // ── Deep health endpoint ───────────────────────────────────────────────────────
 

@@ -1,0 +1,258 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+  --font-mono: var(--app-font-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* ── NOVEE OS — Obsidian Glass / Ember Lighting design system ──────────────── */
+:root {
+  /* Obsidian Glass palette — always dark */
+  --background:      0 0% 5%;        /* #0D0D0E deep obsidian */
+  --foreground:      40 60% 92%;     /* #F5EDD8 smoked cream text */
+
+  --card:            0 0% 9%;        /* #181819 smoked chrome */
+  --card-foreground: 40 60% 92%;
+
+  --popover:            0 0% 9%;
+  --popover-foreground: 40 60% 92%;
+
+  --primary:            28 90% 40%;  /* #C4610A ember amber */
+  --primary-foreground: 0 0% 5%;
+
+  --secondary:       0 0% 13%;       /* #212122 */
+  --secondary-foreground: 40 40% 80%;
+
+  --muted:           0 0% 13%;
+  --muted-foreground: 30 20% 55%;
+
+  --accent:          28 90% 40%;     /* ember amber */
+  --accent-foreground: 0 0% 5%;
+
+  --destructive:     0 72% 51%;
+  --destructive-foreground: 40 60% 92%;
+
+  --border:          0 0% 18%;
+  --input:           0 0% 18%;
+  --ring:            28 90% 40%;
+
+  --app-font-sans: 'Inter', 'Helvetica Neue', sans-serif;
+  --app-font-serif: 'Cormorant Garamond', 'Georgia', serif;
+  --app-font-mono: 'JetBrains Mono', 'Menlo', monospace;
+  --radius: 0.5rem;
+}
+
+/* No light mode for NOVEE OS — always obsidian */
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-color: #0D0D0E;
+    color: #F5EDD8;
+  }
+}
+
+/* ── Utility classes ──────────────────────────────────────────────────────── */
+@layer utilities {
+
+  /* Obsidian glass surface */
+  .novee-glass {
+    background: rgba(24, 24, 25, 0.85);
+    border: 1px solid rgba(196, 97, 10, 0.15);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  /* Ember gold gradient surface */
+  .novee-glass-ember {
+    background: linear-gradient(135deg, rgba(196, 97, 10, 0.12) 0%, rgba(24, 24, 25, 0.9) 100%);
+    border: 1px solid rgba(196, 97, 10, 0.28);
+    backdrop-filter: blur(16px);
+  }
+
+  /* Chrome bezel */
+  .novee-bezel {
+    background: linear-gradient(180deg, #1E1E1F 0%, #141415 100%);
+    border-bottom: 1px solid rgba(196, 97, 10, 0.2);
+  }
+
+  /* Amber glow effect */
+  .novee-glow {
+    box-shadow: 0 0 24px rgba(196, 97, 10, 0.25), 0 0 60px rgba(196, 97, 10, 0.08);
+  }
+
+  /* Top ambient glow stripe */
+  .novee-glow-top::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(196, 97, 10, 0.6), transparent);
+  }
+
+  /* Mode badge */
+  .novee-sovereign {
+    background: linear-gradient(135deg, rgba(196, 97, 10, 0.2), rgba(212, 175, 55, 0.1));
+    border: 1px solid rgba(196, 97, 10, 0.4);
+    color: #C4610A;
+  }
+  .novee-essential {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #9ca3af;
+  }
+
+  /* Module card */
+  .novee-module-card {
+    background: rgba(24, 24, 25, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .novee-module-card:hover {
+    border-color: rgba(196, 97, 10, 0.35);
+    box-shadow: 0 4px 24px rgba(196, 97, 10, 0.12);
+  }
+  .novee-module-card.active {
+    border-color: rgba(196, 97, 10, 0.55);
+    box-shadow: 0 0 32px rgba(196, 97, 10, 0.18);
+  }
+
+  /* Scan line animation */
+  @keyframes novee-scan {
+    0%   { transform: translateY(-100%); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+  }
+
+  @keyframes novee-pulse {
+    0%, 100% { opacity: 0.6; }
+    50%       { opacity: 1; }
+  }
+
+  @keyframes novee-flicker {
+    0%, 98%, 100% { opacity: 1; }
+    99% { opacity: 0.7; }
+  }
+
+  @keyframes novee-ember-breathe {
+    0%, 100% { box-shadow: 0 0 16px rgba(196,97,10,0.2); }
+    50%       { box-shadow: 0 0 32px rgba(196,97,10,0.45); }
+  }
+
+  @keyframes novee-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .animate-novee-spin    { animation: novee-spin 3s linear infinite; }
+  .animate-novee-pulse   { animation: novee-pulse 2s ease-in-out infinite; }
+  .animate-novee-flicker { animation: novee-flicker 8s ease-in-out infinite; }
+  .animate-novee-ember   { animation: novee-ember-breathe 3s ease-in-out infinite; }
+
+  /* EAT tab bar */
+  .novee-tab {
+    background: transparent;
+    border-bottom: 2px solid transparent;
+    color: rgba(196, 97, 10, 0.5);
+    transition: all 0.2s ease;
+    min-height: 40px;
+    padding: 0 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+  .novee-tab.active,
+  .novee-tab:hover {
+    color: #C4610A;
+    border-bottom-color: #C4610A;
+  }
+
+  /* Primary button */
+  .novee-btn-primary {
+    background: linear-gradient(135deg, #C4610A, #A0500D);
+    color: #0D0D0E;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+    min-height: 40px;
+  }
+  .novee-btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .novee-btn-primary:active { transform: translateY(0); }
+
+  /* Ghost button */
+  .novee-btn-ghost {
+    background: transparent;
+    border: 1px solid rgba(196, 97, 10, 0.3);
+    color: #C4610A;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    min-height: 40px;
+  }
+  .novee-btn-ghost:hover {
+    background: rgba(196, 97, 10, 0.08);
+    border-color: rgba(196, 97, 10, 0.6);
+  }
+
+  /* Status badge */
+  .novee-badge-active   { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); border-radius: 100px; padding: 2px 10px; font-size: 11px; }
+  .novee-badge-inactive { background: rgba(156,163,175,0.1); color: #9ca3af; border: 1px solid rgba(156,163,175,0.2); border-radius: 100px; padding: 2px 10px; font-size: 11px; }
+
+  /* Thin scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(196, 97, 10, 0.3); border-radius: 2px; }
+}
