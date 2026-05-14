@@ -2,7 +2,7 @@
  * Kernel routes — NOVEE OS Titan Kernel
  *
  * GET  /api/kernel/modules              — list registered modules
- * POST /api/kernel/modules              — register a module (super_admin)
+ * POST /api/kernel/modules              — register a module (admin/super_admin)
  * GET  /api/kernel/mode/:venueId        — get Sovereign/Essential mode for a venue
  * PATCH /api/kernel/mode/:venueId       — set mode (admin/super_admin only)
  * POST /api/kernel/telemetry            — ingest a telemetry event
@@ -62,8 +62,8 @@ router.get("/modules", async (_req: Request, res: Response) => {
 
 router.post("/modules", requireAuth, async (req: AuthRequest, res: Response) => {
   const role = (req as AuthRequest).user?.role;
-  if (role !== "super_admin") {
-    return res.status(403).json({ error: "super_admin only" });
+  if (role !== "admin" && role !== "super_admin") {
+    return res.status(403).json({ error: "admin or super_admin only" });
   }
 
   const parsed = RegisterModuleSchema.safeParse(req.body);

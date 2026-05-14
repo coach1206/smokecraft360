@@ -74,6 +74,7 @@ export default function OSShell() {
   const [loadingModules, setLoadingModules] = useState(true);
   const [modeChanging, setModeChanging] = useState(false);
   const [showModuleDock, setShowModuleDock] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [bootPhase, setBootPhase] = useState<"boot" | "ready">("boot");
   const [bootProgress, setBootProgress] = useState(0);
 
@@ -307,6 +308,15 @@ export default function OSShell() {
                 Registered Modules
               </h2>
             </div>
+            {adminToken && (
+              <button
+                onClick={() => setShowRegisterModal(true)}
+                className="novee-btn-primary"
+                style={{ padding: "8px 18px", fontSize: 11, letterSpacing: "0.15em" }}
+              >
+                + REGISTER MODULE
+              </button>
+            )}
           </div>
 
           {loadingModules ? (
@@ -335,6 +345,18 @@ export default function OSShell() {
           modules={modules}
           onClose={() => setShowModuleDock(false)}
           onLaunch={launchModule}
+        />
+      )}
+
+      {/* Register Module modal */}
+      {showRegisterModal && (
+        <RegisterModuleModal
+          adminToken={adminToken}
+          onSuccess={(newMod) => {
+            setModules((prev) => [newMod, ...prev]);
+            setShowRegisterModal(false);
+          }}
+          onClose={() => setShowRegisterModal(false)}
         />
       )}
 
@@ -561,6 +583,194 @@ function AdminTokenModal({
             disabled={!token.trim()}
           >
             AUTHORIZE
+          </button>
+          <button onClick={onClose} className="novee-btn-ghost" style={{ flex: 1 }}>
+            CANCEL
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const SLUG_RE = /^[a-z0-9][a-z0-9_-]*$/;
+
+function RegisterModuleModal({
+  adminToken,
+  onSuccess,
+  onClose,
+}: {
+  adminToken: string;
+  onSuccess: (mod: KernelModule) => void;
+  onClose: () => void;
+}) {
+  const [name,        setName]        = useState("");
+  const [slug,        setSlug]        = useState("");
+  const [craftType,   setCraftType]   = useState<KernelModule["craftType"]>("none");
+  const [status,      setStatus]      = useState<KernelModule["status"]>("active");
+  const [description, setDescription] = useState("");
+  const [launchUrl,   setLaunchUrl]   = useState("");
+  const [submitting,  setSubmitting]  = useState(false);
+  const [error,       setError]       = useState<string | null>(null);
+
+  const slugError = slug && !SLUG_RE.test(slug)
+    ? "Slug must be lowercase letters, numbers, hyphens, or underscores"
+    : null;
+
+  const canSubmit = name.trim() && slug.trim() && !slugError && !submitting;
+
+  const handleSubmit = async () => {
+    if (!canSubmit) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      const result = await apiFetch<{ module: KernelModule }>("/modules", {
+        method: "POST",
+        body: JSON.stringify({
+          name: name.trim(),
+          slug: slug.trim(),
+          craftType,
+          status,
+          description: description.trim() || undefined,
+          launchUrl: launchUrl.trim() || undefined,
+        }),
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+      onSuccess(result.module);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to register module");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%", boxSizing: "border-box",
+    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(196,97,10,0.25)",
+    borderRadius: 8, padding: "10px 14px", color: "#F5EDD8",
+    fontSize: 12, outline: "none", fontFamily: "inherit",
+    marginBottom: 12,
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 9, letterSpacing: "0.2em", color: "rgba(196,97,10,0.6)",
+    display: "block", marginBottom: 4,
+  };
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", backdropFilter: "blur(8px)",
+        zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="novee-glass"
+        style={{ borderRadius: 16, padding: "32px 28px", width: "min(480px, 94vw)", maxHeight: "90vh", overflowY: "auto" }}
+      >
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(196,97,10,0.5)", marginBottom: 6 }}>KERNEL REGISTRY</div>
+          <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: "0.08em" }}>Register New Module</div>
+          <div style={{ fontSize: 12, color: "rgba(245,237,216,0.4)", marginTop: 6, lineHeight: 1.5 }}>
+            Add a new craft module to the kernel registry.
+          </div>
+        </div>
+
+        <div>
+          <label style={labelStyle}>NAME *</label>
+          <input
+            autoFocus
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Smoke Experience"
+            style={inputStyle}
+          />
+        </div>
+
+        <div>
+          <label style={labelStyle}>SLUG *</label>
+          <input
+            type="text"
+            value={slug}
+            onChange={(e) => setSlug(e.target.value.toLowerCase())}
+            placeholder="e.g. smoke-experience"
+            style={{ ...inputStyle, borderColor: slugError ? "rgba(248,113,113,0.5)" : "rgba(196,97,10,0.25)" }}
+          />
+          {slugError && (
+            <div style={{ fontSize: 10, color: "#f87171", marginTop: -8, marginBottom: 12 }}>{slugError}</div>
+          )}
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div>
+            <label style={labelStyle}>CRAFT TYPE</label>
+            <select
+              value={craftType}
+              onChange={(e) => setCraftType(e.target.value as KernelModule["craftType"])}
+              style={{ ...inputStyle, appearance: "none", cursor: "pointer" }}
+            >
+              <option value="none">None</option>
+              <option value="smoke">Smoke</option>
+              <option value="pour">Pour</option>
+              <option value="brew">Brew</option>
+              <option value="vape">Vape</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={labelStyle}>STATUS</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as KernelModule["status"])}
+              style={{ ...inputStyle, appearance: "none", cursor: "pointer" }}
+            >
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="suspended">Suspended</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label style={labelStyle}>DESCRIPTION</label>
+          <input
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Brief module description (optional)"
+            style={inputStyle}
+          />
+        </div>
+
+        <div>
+          <label style={labelStyle}>LAUNCH URL</label>
+          <input
+            type="text"
+            value={launchUrl}
+            onChange={(e) => setLaunchUrl(e.target.value)}
+            placeholder="https://… or /path (optional)"
+            style={inputStyle}
+            onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }}
+          />
+        </div>
+
+        {error && (
+          <div style={{ fontSize: 11, color: "#f87171", marginBottom: 12, padding: "8px 12px", background: "rgba(248,113,113,0.08)", borderRadius: 6 }}>
+            {error}
+          </div>
+        )}
+
+        <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+          <button
+            onClick={handleSubmit}
+            className="novee-btn-primary"
+            style={{ flex: 1, opacity: canSubmit ? 1 : 0.5 }}
+            disabled={!canSubmit}
+          >
+            {submitting ? "REGISTERING…" : "REGISTER MODULE"}
           </button>
           <button onClick={onClose} className="novee-btn-ghost" style={{ flex: 1 }}>
             CANCEL
