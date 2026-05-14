@@ -1,5 +1,5 @@
 /**
- * SuperAdminOverlay — Axiom OS Sovereign Ghost Layer
+ * SuperAdminOverlay — NOVEE OS Sovereign Ghost Layer
  *
  * 4-tab command surface: Kill Switches · Inventory Override · Feature Masking · Authority
  * Activated via GhostEntryTrigger (4-finger hold + directional swipe pattern).
@@ -452,7 +452,7 @@ function PulseTab() {
     return () => clearInterval(t);
   }, []);
 
-  const mailtoHref = `mailto:${EMAIL_GATEWAY}?subject=Axiom%20OS%20Design%20Orders%20(${orders}%20pending)&body=Design%20order%20summary%20from%20Axiom%20OS%20Ghost%20Layer.%0A%0AActive%20Sessions%3A%20${sessions}%0ARevenue%20This%20Hour%3A%20%24${revenue}%0APending%20Design%20Orders%3A%20${orders}`;
+  const mailtoHref = `mailto:${EMAIL_GATEWAY}?subject=NOVEE%20OS%20Design%20Orders%20(${orders}%20pending)&body=Design%20order%20summary%20from%20NOVEE%20OS%20Ghost%20Layer.%0A%0AActive%20Sessions%3A%20${sessions}%0ARevenue%20This%20Hour%3A%20%24${revenue}%0APending%20Design%20Orders%3A%20${orders}`;
 
   return (
     <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 18 }}>

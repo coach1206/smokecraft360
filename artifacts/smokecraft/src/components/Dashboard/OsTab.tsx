@@ -1,5 +1,5 @@
 /**
- * OsTab — Axiom OS control surface (super_admin only).
+ * OsTab — NOVEE OS control surface (super_admin only).
  *
  * Live event feed (polled every 8s) over /api/os/events plus a command
  * console for /api/os/command (theme switch, venue lock, flag toggle,

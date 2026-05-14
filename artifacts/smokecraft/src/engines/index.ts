@@ -1,5 +1,5 @@
 /**
- * Axiom OS Runtime Engine Registry
+ * NOVEE OS Runtime Engine Registry
  *
  * Central barrel export for all singleton engine instances.
  * Import from here rather than individual files.

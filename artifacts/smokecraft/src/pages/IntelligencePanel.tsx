@@ -1,5 +1,5 @@
 /**
- * IntelligencePanel — Axiom Automated Intelligence Engine UI
+ * IntelligencePanel — NOVEE OS Intelligence Engine UI
  * Route: /intelligence
  *
  * Tabs:
@@ -817,7 +817,7 @@ export default function IntelligencePanel() {
               display: "flex", alignItems: "center", gap: 8,
             }}>
               <Brain size={16} color={C.gold} />
-              Axiom Intelligence Engine
+              NOVEE OS Intelligence Engine
             </div>
             <div style={{ fontSize: 10, color: C.dim, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 1 }}>
               Automated triggers · IF/THEN rules · venue monitoring

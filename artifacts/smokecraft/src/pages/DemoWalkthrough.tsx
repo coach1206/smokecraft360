@@ -498,7 +498,7 @@ function DashboardMetricsStep() {
     const p = ev.payload;
     if (ev.type === "ai_recommendation") {
       const items = p.recommendedItems as Array<{ name: string }> | undefined;
-      return `Axiom AI matched ${String(p.guest ?? "a guest")} with ${items?.[0]?.name ?? "a premium selection"}.`;
+      return `NOVEE OS AI matched ${String(p.guest ?? "a guest")} with ${items?.[0]?.name ?? "a premium selection"}.`;
     }
     if (ev.type === "order_placed") {
       return `${String(p.guest ?? "A guest")} ordered ${String(p.product ?? "an item")} — revenue up $${Number(p.total ?? 0).toFixed(0)}.`;

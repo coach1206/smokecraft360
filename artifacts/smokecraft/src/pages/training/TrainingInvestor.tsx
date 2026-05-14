@@ -157,7 +157,7 @@ const SLIDES = [
       { label: "Swipe IQ Dashboard",   detail: "Taste Clusters, Revenue Funnel, Craft Compare with animated live counters" },
       { label: "Financial Reconciliation", detail: "5-tab enterprise dashboard — orphan tabs, payout pipeline, alerts, AI insights" },
       { label: "Distributor Reports",  detail: "Per-campaign ROI reports auto-generated at close — zero manual work" },
-      { label: "Network Intelligence", detail: "Cross-venue data digests — see what's trending across the entire Axiom network" },
+      { label: "Network Intelligence", detail: "Cross-venue data digests — see what's trending across the entire NOVEE OS network" },
     ],
   },
   {

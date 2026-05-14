@@ -1,7 +1,7 @@
 /**
  * CraftOrbSelector — "Choose Your World"
  *
- * Phase 2 of the AXIOM OS experience flow.
+ * Phase 2 of the NOVEE OS experience flow.
  * Four orbiting craft worlds in a 2×2 grid — each breathing, glowing,
  * and reacting to hover before routing to the craft entry chamber.
  *

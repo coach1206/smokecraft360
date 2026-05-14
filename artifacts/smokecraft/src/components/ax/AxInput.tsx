@@ -1,5 +1,5 @@
 /**
- * AxInput — universal form input for Axiom OS.
+ * AxInput — universal form input for NOVEE OS.
  * Validation states, error handling, accessibility support.
  * Step 1 of 10 — Universal Component Library (AppInput)
  */

@@ -1,5 +1,5 @@
 /**
- * affiliateLink — Axiom Revenue Bridge utilities
+ * affiliateLink — NOVEE Revenue Bridge utilities
  *
  * Builds affiliate URLs and fires click-log before every outbound redirect.
  * Pure functions (no React) — safe to call from any component or handler.

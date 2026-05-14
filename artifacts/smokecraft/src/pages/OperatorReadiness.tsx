@@ -438,7 +438,7 @@ export default function OperatorReadiness() {
             }}>
               <strong style={{ color: C.text }}>Pre-shift checklist:</strong> Run this page at the start of every shift.
               All "Action Needed" items should be resolved before opening. "Warning" items indicate degraded but functional states.
-              For any system failures, contact your Axiom support contact with the smoke test output from{" "}
+              For any system failures, contact your NOVEE OS support contact with the smoke test output from{" "}
               <a href="/admin/system-validation" style={{ color: C.gold }}>System Validation</a>.
             </div>
           </>

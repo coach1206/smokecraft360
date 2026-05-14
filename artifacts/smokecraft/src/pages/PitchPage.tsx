@@ -644,7 +644,7 @@ export default function PitchPage() {
               { icon: "📡", label: "Offline Queue",           body: "POSTs (orders, NDAs) buffered in localStorage with idempotency keys. Atomic deduplication on drain.", file: "offlineQueue.ts · L59" },
               { icon: "🧾", label: "Append-Only Audit Log",   body: "PosAuditBridge logs every lifecycle event: order.created, payment.confirmed, refund.issued, auth transitions.", file: "PosAuditBridge.tsx · L14" },
               { icon: "🔒", label: "CSS Selection Armor",     body: "Kiosk lockdown injects user-select: none on html/body; user-drag: none on img/a. Inputs retain user-select: text.", file: "KioskModeContext.tsx · L268" },
-              { icon: "🕐",  label: "5-Second Logo Secret",   body: "Holding the Axiom logo for 5 seconds reveals the Founder Dashboard — a hidden operator panel at z-index 200.", file: "HandoffContainer.tsx" },
+              { icon: "🕐",  label: "5-Second Logo Secret",   body: "Holding the NOVEE OS logo for 5 seconds reveals the Founder Dashboard — a hidden operator panel at z-index 200.", file: "HandoffContainer.tsx" },
             ].map((s, i) => (
               <FadeIn key={s.label} delay={i * 0.05}>
                 <Card style={{ height: "100%", boxSizing: "border-box" }}>

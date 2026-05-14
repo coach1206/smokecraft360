@@ -230,7 +230,7 @@ export function PosShell({ children }: { children: ReactNode }) {
         </button>
         <div style={{ width: 1, height: 18, background: "rgba(26,26,27,0.10)", flexShrink: 0 }} />
         <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(212,139,0,0.7)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
-          Axiom Commerce
+          NOVEE Commerce
         </span>
         <div style={{ flex: 1 }} />
         <span style={{ fontSize: 10, color: "rgba(26,26,27,0.25)", letterSpacing: "0.1em", textTransform: "uppercase" }}>

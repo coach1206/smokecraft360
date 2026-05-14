@@ -610,7 +610,7 @@ export default function LaunchReadiness() {
               fontSize: 10, color: T.gold, textDecoration: "none",
               display: "flex", alignItems: "center", gap: 4,
             }}>
-              View Axiom Pay <ExternalLink size={10} />
+              View NOVEE Pay <ExternalLink size={10} />
             </a>
           </div>
           <FailedWebhooksPanel />

@@ -1,5 +1,5 @@
 /**
- * SalesTiersTab — Axiom OS Commercial Pricing Control (super_admin only).
+ * SalesTiersTab — NOVEE OS Commercial Pricing Control (super_admin only).
  *
  * Surfaces:
  *   1. Tier comparison grid (CORE / PRO / XEI / BLACK)

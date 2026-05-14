@@ -1,5 +1,5 @@
 /**
- * axiom360Store — Handoff orchestration for the AXIOM 360 Experience OS.
+ * axiom360Store — Handoff orchestration for the NOVEE OS Experience OS.
  *
  * Owns ONLY the patron ↔ staff mode state machine and session context.
  * Revenue / member / prestige state lives in useAxiomStore (axiomStore.ts).

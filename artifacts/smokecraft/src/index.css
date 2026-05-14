@@ -46,6 +46,7 @@
                         0 0 0 1px rgba(212,175,55,0.08);
 
   --novee-data-sz:      22px;
+  --novee-build:        "v2026.0514";
 }
 
 /* Platform identity marker */
@@ -156,21 +157,24 @@ nav, footer.site-footer, .static-header, .living-room, .grid-legacy { display: n
    Apply .novee-glass to any panel that needs the layered look.
    ══════════════════════════════════════════════════════════════ */
 
-/* Primary glass slab — Obsidian surface, 25px blur, machined edge */
+/* Primary glass slab — Obsidian surface, 25px blur, machined edge
+   Gradient border via padding-box / border-box trick (works with border-radius) */
 .novee-glass {
-  background:       var(--novee-surface, rgba(4,4,6,0.97));
-  backdrop-filter:  blur(25px);
+  background:
+    linear-gradient(rgba(4,4,6,0.97), rgba(4,4,6,0.97)) padding-box,
+    linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #d4af37 65%, #bf953f 100%) border-box;
+  border:              1px solid transparent;
+  border-radius:       14px;
+  backdrop-filter:     blur(25px);
   -webkit-backdrop-filter: blur(25px);
-  border:           1px solid rgba(212,175,55,0.12);
-  border-radius:    14px;
   box-shadow:
-    inset 0 1px 0 rgba(212,175,55,0.10),
-    inset 0 -1px 0 rgba(0,0,0,0.50),
-    inset 1px 0 0 rgba(255,255,255,0.03),
-    inset -1px 0 0 rgba(0,0,0,0.25),
+    inset 0 0 20px rgba(212,175,55,0.15),
+    inset 0 1px 0  rgba(212,175,55,0.18),
+    inset 0 -1px 0 rgba(0,0,0,0.55),
+    inset 1px 0 0  rgba(255,255,255,0.04),
+    inset -1px 0 0 rgba(0,0,0,0.28),
     0 8px 40px rgba(0,0,0,0.65),
-    0 2px 8px rgba(0,0,0,0.45),
-    0 0 0 1px rgba(212,175,55,0.06);
+    0 2px 8px  rgba(0,0,0,0.45);
 }
 
 /* Heavy glass — modals, overlays */
@@ -198,7 +202,17 @@ nav, footer.site-footer, .static-header, .living-room, .grid-legacy { display: n
   -webkit-text-fill-color: transparent;
   font-family:      'Syncopate', sans-serif;
   font-weight:      700;
-  letter-spacing:   0.18em;
+  letter-spacing:   0.2em;
+}
+
+/* Silver data node — Apple aesthetic: thin, spaced, legible */
+.novee-data-silver {
+  font-family:    'Plus Jakarta Sans', sans-serif;
+  font-weight:    200;
+  letter-spacing: 0.2em;
+  color:          rgba(220,228,240,0.72);
+  font-size:      var(--novee-data-sz, 22px);
+  line-height:    1.5;
 }
 
 /* Obsidian slab header bar — used on management hub top bars */
@@ -280,7 +294,7 @@ body::after {
   animation: ax-scan 0.22s ease-out forwards;
 }
 
-/* ── Axiom OS ticker — smooth infinite scroll, never stops ── */
+/* ── NOVEE OS ticker — smooth infinite scroll, never stops ── */
 @keyframes axiom-ticker-scroll {
   from { transform: translateX(0) }
   to   { transform: translateX(-50%) }
@@ -297,7 +311,7 @@ body::after {
   animation: ax-mentor-drift 8s ease-in-out infinite;
 }
 
-/* ── Axiom OS Tablet-First Touch Engine ──────────────────────────────────── */
+/* ── NOVEE OS Tablet-First Touch Engine ──────────────────────────────────── */
 /* ── Android / Chrome hardening ─────────────────────────────────────────── */
 /* Prevent font-size auto-scaling on orientation change (Android + iOS).     */
 html {

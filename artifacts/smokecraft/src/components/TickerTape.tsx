@@ -12,7 +12,7 @@
  *   - Left/right fade masks so content appears to emerge from nothing
  *   - Logo → branded initials avatar when no URL provided
  *   - Auto-logs scroll-past impression on mount for each item displayed
- *   - Falls back to default Axiom brand messages when no live sponsors
+ *   - Falls back to default NOVEE OS brand messages when no live sponsors
  *
  * Usage:
  *   <TickerTape craftType="smoke" venueId={venueId} region="US-GA" />

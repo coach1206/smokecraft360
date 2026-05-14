@@ -1,5 +1,5 @@
 /**
- * Axiom OS — Breakpoint Token System
+ * NOVEE OS — Breakpoint Token System
  * Targets: kiosk (touch), tablet, desktop.
  */
 

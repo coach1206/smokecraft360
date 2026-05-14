@@ -1,5 +1,5 @@
 /**
- * Axiom OS — Motion Token System
+ * NOVEE OS — Motion Token System
  * Standardized animation timing, easing, and durations.
  * Rule: smooth and subtle. No excessive animation.
  */

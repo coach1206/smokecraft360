@@ -5,7 +5,7 @@
  * Subscribes to BOH_PULSE Socket.io events and shows a toast-style feed
  * in the bottom-left corner of the screen.
  *
- * REVENUE_OPPORTUNITY pulses (AxiomBridge spec) render with a distinct
+ * REVENUE_OPPORTUNITY pulses (NOVEE Bridge spec) render with a distinct
  * green revenue badge and the full recommendation string from the server.
  */
 

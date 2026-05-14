@@ -1,6 +1,6 @@
 /**
  * AxSectionHeader — labeled section header with optional subtitle + divider.
- * Used as a consistent section delineator across all Axiom OS dashboards.
+ * Used as a consistent section delineator across all NOVEE OS dashboards.
  */
 
 import { ReactNode } from "react";

@@ -1,5 +1,5 @@
 /**
- * PromoDashboard — Revenue Control Center for Axiom OS Ad Engine.
+ * PromoDashboard — Revenue Control Center for NOVEE OS Ad Engine.
  *
  * Three tabs:
  *   1. Asset Manager     — create / edit / deactivate sponsor ticker campaigns.

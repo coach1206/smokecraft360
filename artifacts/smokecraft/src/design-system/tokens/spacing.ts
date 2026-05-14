@@ -1,5 +1,5 @@
 /**
- * Axiom OS — Spacing Token System
+ * NOVEE OS — Spacing Token System
  * 8px base scale. All spacing values must come from here.
  * Use sp() for pixel values, or the named tokens directly.
  */

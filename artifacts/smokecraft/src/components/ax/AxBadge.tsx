@@ -1,5 +1,5 @@
 /**
- * AxBadge — unified status chip for Axiom OS.
+ * AxBadge — unified status chip for NOVEE OS.
  * Variant-based; no custom colours needed at call sites.
  */
 

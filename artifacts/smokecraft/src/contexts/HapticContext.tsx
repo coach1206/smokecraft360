@@ -1,5 +1,5 @@
 /**
- * HapticContext — Axiom OS Haptic Pulse System
+ * HapticContext — NOVEE OS Haptic Pulse System
  *
  * Visual feedback profiles for every touch interaction class.
  * Renders as a fixed overlay that never interferes with layout.

@@ -1,7 +1,7 @@
 /**
  * AIProviderSetup — Enterprise AI Provider Ownership + Responsibility System
  *
- * Premium enterprise configuration experience for AXIOM OS venues.
+ * Premium enterprise configuration experience for NOVEE OS venues.
  * Surfaces AI billing mode, BYOK connections, usage metering, and
  * the full API responsibility language for each package tier.
  */
@@ -289,7 +289,7 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
 
               {/* Mode cards */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
-                {/* AXIOM MANAGED */}
+                {/* NOVEE MANAGED */}
                 <div
                   onClick={() => config?.byokPermitted !== false || config.mode === 'axiom_managed' ? setMode('axiom_managed') : undefined}
                   style={{

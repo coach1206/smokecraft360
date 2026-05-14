@@ -93,7 +93,7 @@ export default function AssistedDiscoveryOverlay({ guestProfileId, craftType }: 
             WebkitBackdropFilter: "blur(8px) saturate(0.7)",
           }} />
 
-          {/* Axiom rings */}
+          {/* NOVEE rings */}
           {[0, 1, 2].map(i => (
             <motion.div
               key={i}
@@ -126,7 +126,7 @@ export default function AssistedDiscoveryOverlay({ guestProfileId, craftType }: 
             textAlign:      "center",
             width:          "min(86vw, 360px)",
           }}>
-            {/* Axiom hexagon icon */}
+            {/* NOVEE hexagon icon */}
             <motion.div
               animate={{ opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 2.4, repeat: Infinity }}

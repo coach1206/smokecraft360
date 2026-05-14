@@ -447,7 +447,7 @@ export default function EnterpriseGovernance() {
                     { id: "mu1", name: "Marcus Rivera",  email: "marcus@thevault.co",  role: "manager",     venueId: "v1", createdAt: new Date(Date.now() - 90 * 86400000).toISOString() },
                     { id: "mu2", name: "Sofia Reyes",    email: "sofia@thevault.co",   role: "venue_owner", venueId: "v1", createdAt: new Date(Date.now() - 180 * 86400000).toISOString() },
                     { id: "mu3", name: "Omar Chen",      email: "omar@thevault.co",    role: "staff",       venueId: "v1", createdAt: new Date(Date.now() - 45 * 86400000).toISOString() },
-                    { id: "mu4", name: "Axiom Admin",    email: "admin@axiom-os.com",  role: "super_admin", venueId: null, createdAt: new Date(Date.now() - 365 * 86400000).toISOString() },
+                    { id: "mu4", name: "NOVEE Admin", email: "admin@novee-os.com",  role: "super_admin", venueId: null, createdAt: new Date(Date.now() - 365 * 86400000).toISOString() },
                   ].map(u => (
                     <motion.div key={u.id} whileHover={{ x: 2 }}
                       onClick={() => setSelectedUser(u)}

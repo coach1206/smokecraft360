@@ -1,5 +1,5 @@
 /**
- * axiomPresenceEngine.ts — Axiom Presence Engine
+ * axiomPresenceEngine.ts — NOVEE OS Presence Engine
  *
  * Deterministic data layer for the Presence Engine.
  * Handles: guest profiles, geofence state, arrival triggers,

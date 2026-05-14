@@ -1,6 +1,6 @@
 /**
  * AdminMaster — /admin-master
- * Axiom OS · Operator's Bible · Total Command Center
+ * NOVEE OS · Operator's Bible · Total Command Center
  * Smoked Cream Technical Dashboard style.
  * Hidden route — no nav tile.
  */
@@ -479,14 +479,14 @@ export default function AdminMaster() {
               {
                 badge:"ROI",
                 title:"Revenue Brain Pays for Itself in One Surge Event",
-                body:"At 90% occupancy with dynamic pricing active: projected lift of $57.60/hr. A Friday night surge (4 hours at 85% occupancy) generates $184 in additional margin over static pricing. Axiom's SaaS fee: $299/month. Full ROI in 2 surge events. Average venues trigger 6–10 surge events per month.",
+                body:"At 90% occupancy with dynamic pricing active: projected lift of $57.60/hr. A Friday night surge (4 hours at 85% occupancy) generates $184 in additional margin over static pricing. NOVEE OS SaaS fee: $299/month. Full ROI in 2 surge events. Average venues trigger 6–10 surge events per month.",
                 kpis:[["Break-Even","2 surge events"],["Per-Event Lift","$184"],["Monthly Surplus","$1,500+"]],
                 color:C.green,
               },
               {
                 badge:"BEHAVIORAL LOCK-IN",
                 title:"The System Creates Physiological Retention — Not Feature Retention",
-                body:"The 58Hz hum, mechanical click, and XP prestige system are behavioral conditioning architecture. After 3+ sessions, patrons have a physiological association between the Axiom interface and the lounge pleasure state. Removing the system creates withdrawal-level dissonance. Churn is not a pricing conversation.",
+                body:"The 58Hz hum, mechanical click, and XP prestige system are behavioral conditioning architecture. After 3+ sessions, patrons have a physiological association between the NOVEE OS interface and the lounge pleasure state. Removing the system creates withdrawal-level dissonance. Churn is not a pricing conversation.",
                 kpis:[["Retention Driver","Physiological anchor"],["Churn Risk","Near-zero after 3 sessions"],["Competitor Switch","Sensory withdrawal"]],
                 color:C.purple,
               },
@@ -501,7 +501,7 @@ export default function AdminMaster() {
               {
                 badge:"ZERO-LATENCY AI MOAT",
                 title:"No Inference Cost — Deterministic AI That Never Bills Per Call",
-                body:"The entire recommendation engine, pairing chemistry, and Revenue Brain are deterministic and run locally. Competitors using GPT-4 API pay $0.01–$0.06 per recommendation. Axiom cost per recommendation: $0.00. At 10,000 daily recommendations, that's $365,000/yr in avoided AI infrastructure per deployment.",
+                body:"The entire recommendation engine, pairing chemistry, and Revenue Brain are deterministic and run locally. Competitors using GPT-4 API pay $0.01–$0.06 per recommendation. NOVEE OS cost per recommendation: $0.00. At 10,000 daily recommendations, that's $365,000/yr in avoided AI infrastructure per deployment.",
                 kpis:[["Cost Per Rec","$0.00"],["Competitor Cost","+$365K/yr"],["Offline Capable","100%"]],
                 color:C.gold,
               },

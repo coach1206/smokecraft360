@@ -5,7 +5,7 @@
  * Requires venue_id query param or defaults to first available venue.
  *
  * Panels:
- *   1. Live Floor Summary (active/VIP/handoff/Axiom lift)
+ *   1. Live Floor Summary (active/VIP/handoff/NOVEE OS lift)
  *   2. Emotional Heatmap (cinematic zone grid with temperature overlays)
  *   3. Opportunity Zones (ranked actions with severity)
  *   4. What-If Simulator (energy delta slider → projected lift)
@@ -192,7 +192,7 @@ export default function FounderIntelligenceDashboard() {
             </div>
           )}
 
-          {/* ── Axiom Lift ───────────────────────────────────────────────── */}
+          {/* ── NOVEE OS Lift ───────────────────────────────────────────────── */}
           {overview?.axiomLift && (overview.axiomLift.conversionLift != null || overview.axiomLift.engagementLift != null) && (
             <div style={{
               background: "linear-gradient(135deg, rgba(212,139,0,0.08), rgba(212,175,55,0.04))",
@@ -201,7 +201,7 @@ export default function FounderIntelligenceDashboard() {
               display: "flex", gap: "32px", alignItems: "center",
             }}>
               <div style={{ fontSize: "10px", letterSpacing: "0.2em", color: "#D48B00", textTransform: "uppercase" }}>
-                Axiom Lift vs. Unmanaged Baseline
+                NOVEE OS Lift vs. Unmanaged Baseline
               </div>
               {[
                 { label: "Conversion", value: overview.axiomLift.conversionLift },

@@ -1,6 +1,6 @@
 /**
  * TrainingManual — /training/manual
- * Axiom OS Master Operator's Manual.
+ * NOVEE OS Master Operator's Manual.
  * Classified — Elite Operator Access Only.
  */
 import { useState, useEffect, useRef } from "react";
@@ -306,7 +306,7 @@ export default function TrainingManual() {
 
           <p style={{ fontSize: 13, color: C.light, lineHeight: 1.75, marginBottom: 20 }}>
             The Revenue Brain is a real-time dynamic pricing engine embedded in the Founder Dashboard
-            and Axiom Store. It monitors venue occupancy and automatically shifts drink/smoke pricing
+            and NOVEE Store. It monitors venue occupancy and automatically shifts drink/smoke pricing
             between base and surge tiers.
           </p>
 
@@ -436,7 +436,7 @@ export default function TrainingManual() {
               <div style={{ fontSize: 11, color: C.light, lineHeight: 1.7 }}>
                 Tapping the card fires <strong>onTap → setTravelOpen(true)</strong>, opening the full Travel Concierge modal.
                 Inside, guests browse curated travel packages. Each package link carries a UTM-style affiliate tag back to DayOne360.
-                Clicks are logged in the Axiom audit trail under <code style={{ background: "rgba(212,139,0,0.1)", padding: "1px 5px", borderRadius: 4, fontSize: 10 }}>campaign.affiliate_click</code>.
+                Clicks are logged in the NOVEE OS audit trail under <code style={{ background: "rgba(212,139,0,0.1)", padding: "1px 5px", borderRadius: 4, fontSize: 10 }}>campaign.affiliate_click</code>.
               </div>
             </div>
           </div>
@@ -517,10 +517,10 @@ export default function TrainingManual() {
             <div style={{ fontSize: 11, fontWeight: 700, color: C.obsidian, marginBottom: 12 }}>Volume Calibration Procedure</div>
             {[
               "Set room music (if any) to ≤ 55 dB at the listening position — this is your baseline.",
-              "Open the Axiom kiosk and navigate to any experience page. The 58Hz hum activates automatically.",
+              "Open the NOVEE OS kiosk and navigate to any experience page. The 58Hz hum activates automatically.",
               "Using a free SPL meter app (iPhone: Decibel X), measure at the tablet surface. Target: 62–65 dB.",
               "If the hum is audible as a distinct tone, reduce tablet system volume by 10% and re-test. The hum should feel like the room has a heartbeat — not a speaker.",
-              "If the room has an HVAC hum near 60Hz, the Axiom hum will blend into it. This is intentional and desirable.",
+              "If the room has an HVAC hum near 60Hz, the NOVEE OS hum will blend into it. This is intentional and desirable.",
               "Re-calibrate any time the venue changes audio setup or room configuration.",
             ].map((step, i) => (
               <div key={i} style={{ display: "flex", gap: 10, marginBottom: 10, alignItems: "flex-start" }}>
@@ -539,7 +539,7 @@ export default function TrainingManual() {
           {/* Footer stamp */}
           <div style={{ marginTop: 40, padding: "18px 20px", borderRadius: 10, border: `1px dashed ${C.border}`, textAlign: "center" }}>
             <div style={{ fontSize: 9, color: C.muted, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>End of Document · NOVEE OS Master Operator's Manual</div>
-            <div style={{ fontSize: 8, color: C.muted }}>TS-ELITE-OPS · Rev 2.6.0 · For authorised operators only · Axiom Intelligence Corp.</div>
+            <div style={{ fontSize: 8, color: C.muted }}>TS-ELITE-OPS · Rev 2.6.0 · For authorised operators only · 360 Enterprise Services LLC</div>
             <div style={{ marginTop: 10, display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
               {["Confidential", "Not for distribution", "Print access: Elite only"].map((badge) => (
                 <span key={badge} style={{ padding: "2px 10px", borderRadius: 4, border: `1px solid ${C.border}`, fontSize: 8, color: C.muted, letterSpacing: "0.1em" }}>

@@ -5,7 +5,7 @@
  * Import this wherever brand-consistent text, colors, or metadata is needed.
  * Venue-specific overrides live in VenueContext.
  *
- * Legacy alias: previously "SmokeCraft 360" / "Axiom OS" — compatibility
+ * Legacy alias: previously "SmokeCraft 360" / "NOVEE OS (v1)" — compatibility
  * mappings for localStorage keys, analytics events, and telemetry labels
  * are maintained in legacyMappings.ts.
  */
@@ -48,7 +48,7 @@ export const BRAND = {
  */
 export const LEGACY = {
   /** Original platform name retained for localStorage key compatibility. */
-  platformLegacy: "Axiom OS",
+  platformLegacy: "NOVEE OS",
   /** Legacy analytics prefix still emitted by older event paths. */
   analyticsPrefix: "axiom",
   /** LocalStorage key written by the EEIE journey tracker. */

@@ -137,7 +137,7 @@ const CARDS = [
       { step: 2, text: "Review the Live System Health grid — 8 system cards showing healthy/warning/failed status." },
       { step: 3, text: "Click the Run Smoke Test button. The system runs 13 automated checks across every platform component." },
       { step: 4, text: "Wait 5–10 seconds for results. Each check shows pass/fail with millisecond response time." },
-      { step: 5, text: "If any check shows FAILED, note the system name and error detail. Contact your Axiom support contact with this info." },
+      { step: 5, text: "If any check shows FAILED, note the system name and error detail. Contact your NOVEE OS support contact with this info." },
     ],
     keyPoint: "Run the smoke test at the start of every shift and after any system changes or software updates.",
     mistake:  "Ignoring WARNING status. Warnings indicate degraded but working systems — address them before they become failures.",

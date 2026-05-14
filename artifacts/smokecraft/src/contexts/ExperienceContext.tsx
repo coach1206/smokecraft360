@@ -1,7 +1,7 @@
 /**
  * ExperienceContext — Central Intelligence State
  *
- * Typed implementation of the Axiom OS Master Blueprint experience schema.
+ * Typed implementation of the NOVEE OS Master Blueprint experience schema.
  * Manages active craft module, guest profile, session data, inventory status,
  * and the EEIS per-craft hidden intelligence mode.
  *

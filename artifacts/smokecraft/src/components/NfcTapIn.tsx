@@ -2,7 +2,7 @@
  * NfcTapIn — NFC Identity Handshake (Web NFC API).
  *
  * Works on Android Chrome 89+ and Chromium-based browsers.
- * On iOS / Safari, gracefully shows a "Tap your Axiom Coin" instruction
+ * On iOS / Safari, gracefully shows a "Tap your NOVEE Coin" instruction
  * and falls back to manual entry.
  *
  * NFC payload expected format (NDEF Text record):
@@ -90,7 +90,7 @@ export default function NfcTapIn({ onIdentified, onError, autoStart = true }: Pr
     }
     setScanning(true);
     setStatus("scanning");
-    setMessage("Hold your Axiom Member Coin or NFC-enabled phone to the pad…");
+    setMessage("Hold your NOVEE Member Coin or NFC-enabled phone to the pad…");
     abortRef.current = new AbortController();
     try {
       const reader = new NDEFReader();
@@ -202,7 +202,7 @@ export default function NfcTapIn({ onIdentified, onError, autoStart = true }: Pr
           ) : (
             <>
               <div style={{ fontSize: 13, fontWeight: 600, color: status === "error" ? "#f87171" : "rgba(26,26,27,0.75)", marginBottom: 4 }}>
-                {message || (supported === false ? "NFC not supported in this browser" : "Tap your Axiom Coin or phone")}
+                {message || (supported === false ? "NFC not supported in this browser" : "Tap your NOVEE Coin or phone")}
               </div>
               {supported === false && (
                 <div style={{ fontSize: 10, color: "rgba(26,26,27,0.40)" }}>

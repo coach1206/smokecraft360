@@ -1,5 +1,5 @@
 /**
- * DemographicIntelligence — Axiom OS rotating audience profiler.
+ * DemographicIntelligence — NOVEE OS rotating audience profiler.
  * Route: /titan-demo
  *
  * Auto-cycles through 4 craft × demographic pairings every 5s.
@@ -243,7 +243,7 @@ export default function DemographicIntelligence() {
       {/* Header */}
       <header className="flex justify-between items-center gold-trim pb-4">
         <h1 className="text-xs tracking-[0.4em] font-bold uppercase" style={{ color: "var(--gold)" }}>
-          Axiom OS // Titan Active
+          NOVEE OS // Titan Active
         </h1>
         <div className="flex gap-4 text-[10px] uppercase">
           <span className="flex items-center gap-1.5 opacity-60">

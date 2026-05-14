@@ -1,5 +1,5 @@
 /**
- * Axiom OS Design System — barrel export.
+ * NOVEE OS Design System — barrel export.
  * Import all design tokens from here.
  *
  * Usage:

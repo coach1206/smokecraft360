@@ -1,5 +1,5 @@
 /**
- * Axiom OS — Haptics Engine
+ * NOVEE OS — Haptics Engine
  *
  * Thin wrapper around the Web Vibration API.
  * Silent no-op on browsers / desktop environments that don't support it.

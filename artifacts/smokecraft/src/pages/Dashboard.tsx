@@ -651,7 +651,7 @@ export default function Dashboard() {
                   </motion.div>
                 )}
 
-                {/* ── Axiom OS tab (super_admin only) ───────────────── */}
+                {/* ── NOVEE OS tab (super_admin only) ───────────────── */}
                 {activeTab === "os" && user?.role === "super_admin" && (
                   <motion.div key="os"
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}

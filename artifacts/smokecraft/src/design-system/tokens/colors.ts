@@ -1,5 +1,5 @@
 /**
- * Axiom OS — Color Token System
+ * NOVEE OS — Color Token System
  * Single source of truth for all colors used across the platform.
  * All pages MUST import from here — no hardcoded hex strings.
  */

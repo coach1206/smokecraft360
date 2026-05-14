@@ -1,5 +1,5 @@
 /**
- * AxiomStartup — "The Machine Awakens"
+ * NoveeStartup — "The Machine Awakens"
  *
  * Cinematic OS boot sequence. Renders as a fixed overlay above all routes.
  * Shows exactly once per browser session (sessionStorage flag "axiom_booted").
@@ -8,7 +8,7 @@
  * Sequence:
  *   Phase 0 [0-700ms]    — Obsidian black
  *   Phase 1 [700-2600ms] — "PROFOUND INNOVATIONS" letter-by-letter reveal
- *   Phase 2 [2600-4000ms]— "Powered by AXIOM OS" + concentric rings
+ *   Phase 2 [2600-4000ms]— "Powered by NOVEE OS" + concentric rings + concentric rings
  *   Phase 3 [4000-6200ms]— Neural Bridge telemetry lines appear sequentially
  *   Phase 4 [6200-7000ms]— "SYSTEM READY" pulse
  *   Phase 5 [7000-7600ms]— Fade to black → unmount
@@ -297,7 +297,7 @@ export default function AxiomStartup({ onComplete }: { onComplete: () => void })
                   />
                 </div>
 
-                {/* Phase 2+: Powered by AXIOM OS */}
+                {/* Phase 2+: Powered by NOVEE OS */}
                 <AnimatePresence>
                   {phase >= 2 && (
                     <motion.div

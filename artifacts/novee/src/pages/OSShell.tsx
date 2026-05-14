@@ -109,7 +109,7 @@ export default function OSShell() {
   }, []);
 
   const [modeError, setModeError]     = useState<string | null>(null);
-  /** Read auth JWT from the shared keys written by SmokeCraft / Axiom OS auth flows.
+  /** Read auth JWT from the shared keys written by SmokeCraft / NOVEE OS auth flows.
    *  Falls back to any NOVEE-specific override stored during this session. */
   const [adminToken, setAdminToken]   = useState<string>(() => {
     try {

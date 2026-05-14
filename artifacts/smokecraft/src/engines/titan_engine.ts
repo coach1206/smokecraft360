@@ -1,5 +1,5 @@
 /**
- * TitanEngine — Axiom OS frontend sovereign data engine.
+ * TitanEngine — NOVEE OS frontend sovereign data engine.
  *
  * Singleton object mirroring the backend TitanEngine spec:
  *   handleNFCTap(serialNumber)        — hardware coin/tag → identity lookup
@@ -112,7 +112,7 @@ const TitanEngine = {
   },
 
   /**
-   * Spend Axiom Credits and receive a Secret Passage URL.
+   * Spend NOVEE Credits and receive a Secret Passage URL.
    * Returns { token, url, expiresAt } on success, null on insufficient balance.
    */
   async spendPrestige(

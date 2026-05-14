@@ -204,13 +204,13 @@ export const TRAINING_SCENARIOS = [
   {
     id: "first_time_pairing",
     title: "First-Time Guest Pairing",
-    subtitle: "Guide a new guest through their first Axiom pairing experience",
+    subtitle: "Guide a new guest through their first NOVEE OS pairing experience",
     difficulty: "beginner",
     category: "customer",
     estimatedMin: 8,
     steps: [
-      { id: "s1", title: "Welcome the guest", description: "Greet the guest and initiate the Axiom enrollment flow from CraftHub.", maxwell: "A warm welcome sets the experience. Tap CraftHub → Enroll to begin the guest flow. The system will guide you through collecting their preferences." },
-      { id: "s2", title: "Collect palate preferences", description: "Guide the guest through atmosphere, boldness, and experience preference questions.", maxwell: "Notice how Axiom asks three simple questions — these build the guest's taste profile. Every answer improves future recommendations." },
+      { id: "s1", title: "Welcome the guest", description: "Greet the guest and initiate the NOVEE OS enrollment flow from CraftHub.", maxwell: "A warm welcome sets the experience. Tap CraftHub → Enroll to begin the guest flow. The system will guide you through collecting their preferences." },
+      { id: "s2", title: "Collect palate preferences", description: "Guide the guest through atmosphere, boldness, and experience preference questions.", maxwell: "Notice how NOVEE OS asks three simple questions — these build the guest's taste profile. Every answer improves future recommendations." },
       { id: "s3", title: "Assign mentor", description: "Review the AI-assigned mentor and confirm with the guest.", maxwell: "The mentor assignment is deterministic — based on palate vectors. Share the mentor's name and style with the guest to personalize the moment." },
       { id: "s4", title: "Launch swipe experience", description: "Start the Universal Swipe Engine for the guest's craft type.", maxwell: "Watch the swipe data feed back into the recommendation engine in real-time. Each swipe refines the guest's profile." },
       { id: "s5", title: "Confirm add-to-order", description: "Help the guest add their top choice to their tab.", maxwell: "The Add-to-Order pipeline auto-reserves inventory for 15 minutes. The stock counter updates in real-time across all devices." },

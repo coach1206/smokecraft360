@@ -1,6 +1,6 @@
 /**
  * Legal — /legal
- * Terms of Service + Privacy Policy + acceptable-use for Axiom OS.
+ * Terms of Service + Privacy Policy + acceptable-use for NOVEE OS.
  *
  * Accessible without authentication (public).
  * Tab switcher: Terms of Service | Privacy Policy | Acceptable Use
@@ -78,13 +78,13 @@ function TermsContent() {
       <P>
         Venue operators must register an account and provide accurate, complete information.
         You are responsible for all activity that occurs under your credentials. Accounts are
-        non-transferable. Axiom reserves the right to suspend accounts that violate these Terms.
+        non-transferable. NOVEE OS reserves the right to suspend accounts that violate these Terms.
       </P>
 
       <H2>4. Subscription & Billing</H2>
       <P>
         Access to paid features requires an active subscription. By subscribing, you authorize
-        Axiom to charge the payment method on file at the beginning of each billing cycle.
+        NOVEE OS to charge the payment method on file at the beginning of each billing cycle.
         Subscriptions automatically renew unless cancelled before the renewal date. All fees
         are non-refundable except as required by applicable law.
       </P>
@@ -92,7 +92,7 @@ function TermsContent() {
       <H2>5. Payment Processing (Stripe Connect)</H2>
       <P>
         Payment processing for guest transactions is facilitated through Stripe Connect. Venue
-        operators are required to complete Stripe's Express onboarding to accept payments. Axiom
+        operators are required to complete Stripe's Express onboarding to accept payments. NOVEE OS
         collects a platform fee (default 5.00%) on each processed transaction. Dispute resolution
         for guest charges is handled per Stripe's policies.
       </P>
@@ -100,7 +100,7 @@ function TermsContent() {
       <H2>6. Data Ownership</H2>
       <P>
         Venues retain ownership of their operational data (guest profiles, orders, inventory).
-        Axiom retains a license to use anonymized, aggregated data for platform improvement and
+        NOVEE OS retains a license to use anonymized, aggregated data for platform improvement and
         analytics. Personal data handling is described in the Privacy Policy.
       </P>
 
@@ -115,28 +115,28 @@ function TermsContent() {
 
       <H2>8. Intellectual Property</H2>
       <P>
-        All Platform software, UI designs, AI models, and NOVEE OS branding are owned by Axiom.
+        All Platform software, UI designs, AI models, and NOVEE OS branding are owned by 360 Enterprise Services LLC.
         Venues are granted a limited, non-exclusive license to use the Platform during an active
         subscription. No ownership rights are transferred.
       </P>
 
       <H2>9. Service Availability</H2>
       <P>
-        Axiom targets 99.5% uptime but does not guarantee uninterrupted service. Scheduled
-        maintenance will be communicated in advance. Axiom is not liable for losses resulting
+        NOVEE OS targets 99.5% uptime but does not guarantee uninterrupted service. Scheduled
+        maintenance will be communicated in advance. NOVEE OS is not liable for losses resulting
         from service interruptions.
       </P>
 
       <H2>10. Limitation of Liability</H2>
       <P>
-        To the maximum extent permitted by law, Axiom's liability for any claim arising out of
+        To the maximum extent permitted by law, NOVEE OS's liability for any claim arising out of
         these Terms shall not exceed the fees paid by the venue in the three months preceding
-        the claim. Axiom is not liable for indirect, incidental, or consequential damages.
+        the claim. NOVEE OS is not liable for indirect, incidental, or consequential damages.
       </P>
 
       <H2>11. Termination</H2>
       <P>
-        Either party may terminate the agreement with 30 days' written notice. Axiom may
+        Either party may terminate the agreement with 30 days' written notice. NOVEE OS may
         terminate immediately for material breach, non-payment, or illegal activity. Upon
         termination, venue data export will be made available for 30 days.
       </P>
@@ -150,7 +150,7 @@ function TermsContent() {
 
       <H2>13. Changes to Terms</H2>
       <P>
-        Axiom may update these Terms with 14 days' notice. Continued use after the effective
+        NOVEE OS may update these Terms with 14 days' notice. Continued use after the effective
         date constitutes acceptance. Material changes will be communicated via email and
         in-platform notification.
       </P>
@@ -186,8 +186,8 @@ function PrivacyContent() {
 
       <H2>3. Payment Data</H2>
       <P>
-        Axiom does not store raw card numbers. Payment processing is handled by Stripe, Inc.
-        Axiom stores Stripe customer IDs, payment intent IDs, and transaction metadata. Guest
+        NOVEE OS does not store raw card numbers. Payment processing is handled by Stripe, Inc.
+        NOVEE OS stores Stripe customer IDs, payment intent IDs, and transaction metadata. Guest
         payment data is subject to Stripe's Privacy Policy (stripe.com/privacy).
       </P>
 
@@ -218,7 +218,7 @@ function PrivacyContent() {
 
       <H2>7. Security</H2>
       <P>
-        Axiom uses AES-256-GCM field-level encryption for sensitive data, TLS 1.2+ for all
+        NOVEE OS uses AES-256-GCM field-level encryption for sensitive data, TLS 1.2+ for all
         communications, JWT-based authentication with role-based access control, and append-only
         audit logs for all financial and administrative actions.
       </P>
@@ -277,23 +277,23 @@ function AupContent() {
 
       <H2>4. AI & Automation Authorization</H2>
       <P>
-        By using Axiom's AI recommendation, environment automation, and campaign trigger systems,
-        venue operators authorize Axiom to process guest and operational data using automated
+        By using NOVEE OS's AI recommendation, environment automation, and campaign trigger systems,
+        venue operators authorize NOVEE OS to process guest and operational data using automated
         decision-making for the purpose of enhancing hospitality outcomes. Operators may disable
         specific AI features via Platform feature flags at any time.
       </P>
 
       <H2>5. Marketing Consent</H2>
       <P>
-        Venue operators are responsible for obtaining appropriate consent before using Axiom's
-        communication features (SMS, email) for marketing purposes. Axiom provides tooling;
+        Venue operators are responsible for obtaining appropriate consent before using NOVEE OS's
+        communication features (SMS, email) for marketing purposes. NOVEE OS provides tooling;
         compliance with CAN-SPAM, TCPA, GDPR, and applicable laws is the venue operator's
         responsibility.
       </P>
 
       <H2>6. Recurring Billing Authorization</H2>
       <P>
-        By activating a subscription, venue operators expressly authorize Axiom to charge their
+        By activating a subscription, venue operators expressly authorize NOVEE OS to charge their
         payment method on a recurring basis per the selected plan. This authorization remains in
         effect until cancelled in accordance with these Terms.
       </P>
@@ -301,7 +301,7 @@ function AupContent() {
       <H2>7. Enforcement</H2>
       <P>
         Violations of this AUP may result in immediate suspension, termination of service,
-        and/or legal action. Axiom reserves the right to investigate suspected violations and
+        and/or legal action. NOVEE OS reserves the right to investigate suspected violations and
         cooperate with law enforcement as required.
       </P>
 

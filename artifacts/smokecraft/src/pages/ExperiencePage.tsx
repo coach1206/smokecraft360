@@ -101,7 +101,7 @@ interface ExperienceItem {
   boostLevel?: number;   // > 0 = distributor shadow product → +10 Mastery bonus
 }
 
-// ── Conflict detection — AxiomBridge spec ─────────────────────────────────────
+// ── Conflict detection — NOVEE Bridge spec ─────────────────────────────────────
 // Pairs of tags that create a flavor conflict (e.g. Spicy Maduro + delicate gin)
 
 const CONFLICT_PAIRS: [string, string][] = [
@@ -277,7 +277,7 @@ function getFlavorThemedAsset(item: ExperienceItem): string {
   return pool[seed % pool.length];
 }
 
-// ── Voice of Axiom — card-level TTS narrator, respects global mute ───────────
+// ── Voice of NOVEE OS — card-level TTS narrator, respects global mute ───────────
 function VoiceIcon({ item, isTop, accent }: { item: ExperienceItem; isTop: boolean; accent: string }) {
   const { isMuted, speak, stopSpeak } = useAudio();
   const [speaking,  setSpeaking]      = useState(false);
@@ -1395,7 +1395,7 @@ export default function ExperiencePage() {
       }}>
         {Array.from({ length: 4 }).map((_, i) => (
           <span key={i} style={{ marginRight: "6rem" }}>
-            AXIOM OS /// {theme.label.toUpperCase()} ENGINE: ACTIVE /// DISCOVERY MODE /// SOVEREIGN PROTOCOL: RUNNING /// MENTOR INTELLIGENCE: ONLINE /// TASTE PROFILE: BUILDING ///
+            NOVEE OS /// {theme.label.toUpperCase()} ENGINE: ACTIVE /// DISCOVERY MODE /// SOVEREIGN PROTOCOL: RUNNING /// MENTOR INTELLIGENCE: ONLINE /// TASTE PROFILE: BUILDING ///
           </span>
         ))}
       </div>

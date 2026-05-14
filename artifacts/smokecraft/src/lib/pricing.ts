@@ -1,5 +1,5 @@
 /**
- * Axiom OS — Dynamic Pricing Engine
+ * NOVEE OS — Dynamic Pricing Engine
  *
  * Single source of truth for all craft price calculations.
  * Called by PatronView (card display + sale recording) and any

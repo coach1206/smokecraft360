@@ -1,5 +1,5 @@
 /**
- * AxKpi — animated KPI counter tile used across all Axiom OS dashboards.
+ * AxKpi — animated KPI counter tile used across all NOVEE OS dashboards.
  * Animates numeric values from 0 → target over 900ms on mount/update.
  */
 

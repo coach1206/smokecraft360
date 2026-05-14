@@ -1,5 +1,5 @@
 /**
- * AxCard — universal Axiom OS dark glass card.
+ * AxCard — universal NOVEE OS dark glass card.
  * Replaces the inline GlassCard defined in AxiomPay, FinanceReconciliation,
  * PresenceEngine, etc. Single source of truth for material depth surfaces.
  */

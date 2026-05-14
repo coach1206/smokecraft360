@@ -1,5 +1,5 @@
 /**
- * PermissionGate — Axiom OS Feature Masking
+ * PermissionGate — NOVEE OS Feature Masking
  *
  * Renders children only when the current authority profile grants access.
  * When mask=true (default), unauthorized content is invisible.

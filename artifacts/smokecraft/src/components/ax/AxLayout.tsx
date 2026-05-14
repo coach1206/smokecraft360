@@ -1,5 +1,5 @@
 /**
- * AxLayout — master dashboard shell for Axiom OS.
+ * AxLayout — master dashboard shell for NOVEE OS.
  * Provides standardized:
  *   - Sticky dark header with back button + title + right slot
  *   - Horizontal scrollable tab bar
@@ -10,7 +10,7 @@
  *
  * Usage:
  *   <AxLayout
- *     title="Axiom Pay"
+ *     title="NOVEE Pay"
  *     subtitle="Payments · Tabs · Fulfillment"
  *     onBack={() => navigate("/operations")}
  *     rightSlot={<LiveIndicator />}

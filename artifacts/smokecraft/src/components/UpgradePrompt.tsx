@@ -66,7 +66,7 @@ export function UpgradePrompt({ featureName, description, compact = false }: Pro
           color:      `${GOLD}0.75)`,
         }}>
         <ArrowUpRight size={13} />
-        Contact Axiom to Upgrade
+        Contact NOVEE OS to Upgrade
       </div>
     </motion.div>
   );

@@ -7,7 +7,7 @@
  *
  * Layout (landscape-first):
  *   ┌─────────────────────────────────────────────────────┐
- *   │  AXIOM OS · OPERATIONAL MODE                 [EXIT] │  ← Brushed Graphite header
+ *   │  NOVEE OS · OPERATIONAL MODE                 [EXIT] │  ← Brushed Graphite header
  *   ├──────────────┬───────────────┬───────────────────────┤
  *   │ GUEST JOURNEY│ XEI INTEL     │  SIGNAL VISUALIZATION │
  *   │ STATE        │ LAYER         │                       │

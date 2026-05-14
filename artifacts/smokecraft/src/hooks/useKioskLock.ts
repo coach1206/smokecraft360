@@ -1,7 +1,7 @@
 /**
  * useKioskLock — Zero-Exit Kiosk Mode browser hardening.
  *
- * Disables all standard browser escape mechanisms so the Axiom OS
+ * Disables all standard browser escape mechanisms so the NOVEE OS
  * terminal cannot be accidentally (or intentionally) exited by a patron.
  *
  * Locks applied:

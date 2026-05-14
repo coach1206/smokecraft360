@@ -1,5 +1,5 @@
 /**
- * Axiom OS — Typography Token System
+ * NOVEE OS — Typography Token System
  * Locked scale for high readability in dim lounge environments.
  *
  * Minimums per Step 1 directive:

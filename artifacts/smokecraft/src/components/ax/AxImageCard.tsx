@@ -1,5 +1,5 @@
 /**
- * AxImageCard — universal lazy-loading image card for Axiom OS.
+ * AxImageCard — universal lazy-loading image card for NOVEE OS.
  * Supports all inventory/product/tile images with:
  *   - Lazy loading via IntersectionObserver
  *   - Skeleton loader while loading

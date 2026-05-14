@@ -485,7 +485,7 @@ export default function SettingsModule() {
           </div>
           <div style={{ fontSize: 12, color: "rgba(26,26,27,0.42)", lineHeight: 1.55, marginBottom: 14 }}>
             Configure how AI is owned, hosted, and billed across your venue deployment.
-            Choose between Axiom-managed AI or connecting your own provider keys (BYOK).
+            Choose between NOVEE OS-managed AI or connecting your own provider keys (BYOK).
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 14 }}>
             {[

@@ -1,5 +1,5 @@
 /**
- * HandoffContainer — AXIOM 360 dual-mode OS shell.
+ * HandoffContainer — NOVEE OS dual-mode OS shell.
  *
  * Manages the full Patron ↔ Staff mode state machine and renders
  * both UI layers with the cinematic Handoff transition.
@@ -830,7 +830,7 @@ function TravelConciergeModal({ onClose }: { onClose: () => void }) {
               DayOne360
             </div>
             <div style={{ fontSize: 9, color: "rgba(167,139,250,0.48)", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: 3 }}>
-              Elite Travel · Curated for Axiom Members
+              Elite Travel · Curated for NOVEE Members
             </div>
           </div>
           <button

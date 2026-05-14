@@ -1,6 +1,6 @@
 /**
  * IntelligenceManifest — /intelligence-manifest
- * Axiom OS · Cognitive & Behavioral Architecture Dossier.
+ * NOVEE OS · Cognitive & Behavioral Architecture Dossier.
  * Hidden route — not linked from any navigation surface.
  * For Sales & Marketing leadership only.
  */
@@ -188,7 +188,7 @@ export default function IntelligenceManifest() {
           <SectionHead {...SECTIONS[0]} />
 
           <p style={{ fontSize: 13, color: D.dim, lineHeight: 1.80, marginBottom: 24 }}>
-            The Axiom Recommendation Engine operates on a real-time, four-signal weighted scoring model.
+            The NOVEE OS Recommendation Engine operates on a real-time, four-signal weighted scoring model.
             Every visual scene, product card, and pairing suggestion is ranked continuously against the patron's
             live profile. The engine is deterministic — no external AI call required, zero latency, 100% offline-capable.
           </p>
@@ -610,13 +610,13 @@ export default function IntelligenceManifest() {
               {
                 title: "Zero-Latency AI — No Inference Cost",
                 badge: "MOAT",
-                body: "The entire recommendation engine, pairing chemistry, and Revenue Brain are deterministic and run locally. There are no per-call AI inference costs. Competitors relying on GPT-4 API calls pay $0.01–$0.06 per recommendation. Axiom's cost per recommendation: $0.00. At 10,000 daily recommendations, that's $365,000/year in avoided AI infrastructure cost per deployment.",
+                body: "The entire recommendation engine, pairing chemistry, and Revenue Brain are deterministic and run locally. There are no per-call AI inference costs. Competitors relying on GPT-4 API calls pay $0.01–$0.06 per recommendation. NOVEE OS cost per recommendation: $0.00. At 10,000 daily recommendations, that's $365,000/year in avoided AI infrastructure cost per deployment.",
                 color: D.gold,
               },
               {
                 title: "Behavioral Architecture Creates Lock-In, Not Features",
                 badge: "RETENTION",
-                body: "The 58Hz hum, mechanical click, and XP prestige system are not features — they are behavioral conditioning architecture. Patrons who have been through 3+ sessions have a physiological association between the Axiom interface and the pleasure state of the lounge experience. Removing the system creates withdrawal-level dissonance for the venue. Churn is not a pricing conversation.",
+                body: "The 58Hz hum, mechanical click, and XP prestige system are not features — they are behavioral conditioning architecture. Patrons who have been through 3+ sessions have a physiological association between the NOVEE OS interface and the pleasure state of the lounge experience. Removing the system creates withdrawal-level dissonance for the venue. Churn is not a pricing conversation.",
                 color: D.purple,
               },
               {
@@ -628,7 +628,7 @@ export default function IntelligenceManifest() {
               {
                 title: "The Swipe Engine Is the World's Highest-Converting Product Selector",
                 badge: "CONVERSION",
-                body: "Standard menu browsing has a 12–18% product engagement rate. The Axiom SwipeEngine — calibrated at 0.88 elastic resistance, 90px commit threshold, and acceleration-exit physics — achieves 73–89% swipe-through engagement in pilot venues. Every swipe is a data point for the recommendation engine. The more a patron uses it, the more accurate it becomes.",
+                body: "Standard menu browsing has a 12–18% product engagement rate. The NOVEE OS SwipeEngine — calibrated at 0.88 elastic resistance, 90px commit threshold, and acceleration-exit physics — achieves 73–89% swipe-through engagement in pilot venues. Every swipe is a data point for the recommendation engine. The more a patron uses it, the more accurate it becomes.",
                 color: D.blue,
               },
               {
@@ -674,7 +674,7 @@ export default function IntelligenceManifest() {
               End of Intelligence Manifest · NOVEE OS Cognitive Architecture
             </div>
             <div style={{ fontSize: 8, color: D.muted }}>
-              ELITE-SALES · Rev 3.0.0 · For authorised Sales &amp; Marketing leadership only · Axiom Intelligence Corp.
+              ELITE-SALES · Rev 3.0.0 · For authorised Sales &amp; Marketing leadership only · 360 Enterprise Services LLC
             </div>
             <div style={{ marginTop: 12, display: "flex", justifyContent: "center", gap: 8 }}>
               {["Trade Secret", "Not for external distribution", "Destroy after briefing"].map(b => (

@@ -1,5 +1,5 @@
 /**
- * EnvironmentalOrchestrator — Axiom OS Atmospheric Entry System
+ * EnvironmentalOrchestrator — NOVEE OS Atmospheric Entry System
  * Route: /
  *
  * De-applicationization: zero visible tiles, cards, or navigation.
@@ -784,9 +784,9 @@ function IntelligencePulse() {
   );
 }
 
-// ── AXIOM wordmark (top-center) ───────────────────────────────────────────────
+// ── NOVEE OS wordmark (top-center) ───────────────────────────────────────────────
 
-function AxiomWordmark() {
+function NoveeWordmark() {
   return (
     <div style={{
       position:   "absolute",
@@ -883,8 +883,8 @@ export default function EnvironmentalOrchestrator() {
         {/* Center intelligence pulse */}
         <IntelligencePulse />
 
-        {/* AXIOM wordmark */}
-        <AxiomWordmark />
+        {/* NOVEE OS wordmark */}
+        <NoveeWordmark />
 
         {/* Returning guest affordance — bottom center, minimal */}
         <motion.button

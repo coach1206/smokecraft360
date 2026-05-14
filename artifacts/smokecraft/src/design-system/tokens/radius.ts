@@ -1,5 +1,5 @@
 /**
- * Axiom OS — Border Radius Token System
+ * NOVEE OS — Border Radius Token System
  */
 
 export const radius = {

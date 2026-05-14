@@ -1,5 +1,5 @@
 /**
- * PresenceEngine — Axiom Presence Engine UI
+ * PresenceEngine — NOVEE OS Presence Engine UI
  * Route: /presence
  *
  * Tabs:
@@ -1110,7 +1110,7 @@ function PresenceIntelTab() {
           }}>Fallback Active</span>
         </div>
         <div style={{ fontSize: 12, color: C.muted, lineHeight: 1.6 }}>
-          When opted-in guests reconnect to the venue WiFi, Axiom restores their session profile,
+          When opted-in guests reconnect to the venue WiFi, NOVEE OS restores their session profile,
           activates loyalty systems, loads their atmosphere preference, and triggers mentor recognition —
           without requiring geolocation permission.
         </div>
@@ -1220,7 +1220,7 @@ export default function PresenceEngine() {
               color: C.gold, display: "flex", alignItems: "center", gap: 8,
             }}>
               <Sparkles size={16} color={C.gold} />
-              Axiom Presence Engine
+              NOVEE OS Presence Engine
             </div>
             <div style={{ fontSize: 10, color: C.dim, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 1 }}>
               VIP arrival · guest recognition · hospitality intelligence

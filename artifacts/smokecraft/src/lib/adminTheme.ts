@@ -1,5 +1,5 @@
 /**
- * Axiom OS — Admin Design System
+ * NOVEE OS — Admin Design System
  *
  * One source of truth for ALL admin / operations / analytics / governance pages.
  * Experience / kiosk pages (CraftHub, ExperiencePage, etc.) keep their own tokens.

@@ -1,5 +1,5 @@
 /**
- * authorityEngine.ts — Axiom OS Authority Engine
+ * authorityEngine.ts — NOVEE OS Authority Engine
  *
  * Maps JWT roles to a four-tier sovereign access model.
  * Tier 0 (Sovereign) has unrestricted access; higher numbers = less access.

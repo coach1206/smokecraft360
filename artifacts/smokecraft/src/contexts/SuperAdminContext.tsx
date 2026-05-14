@@ -1,5 +1,5 @@
 /**
- * SuperAdminContext — Axiom OS Ghost Layer State
+ * SuperAdminContext — NOVEE OS Ghost Layer State
  *
  * Controls the sovereign command surface:
  *   - Ghost mode active/inactive

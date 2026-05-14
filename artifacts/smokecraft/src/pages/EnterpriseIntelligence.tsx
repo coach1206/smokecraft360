@@ -1,6 +1,6 @@
 /**
  * EnterpriseIntelligence — /enterprise-intelligence
- * Axiom Enterprise Intelligence Dashboard — Phase 4.
+ * NOVEE OS Enterprise Intelligence Dashboard — Phase 4.
  *
  * 9 tabs: Venue · Flavor · Emotional · Campaign · VIP · Social ·
  *         Manufacturer · Predictive · Multi-Venue

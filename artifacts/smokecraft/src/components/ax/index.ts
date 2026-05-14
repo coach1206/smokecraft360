@@ -1,5 +1,5 @@
 /**
- * Axiom OS shared component library.
+ * NOVEE OS shared component library.
  * Import all shared primitives from here — never from individual files.
  *
  * Phase 1 / Step 1 of 10 — Universal Design System + Component Library
@@ -32,6 +32,6 @@ export { AxImageCard }     from "./AxImageCard";
 export { AxLayout }        from "./AxLayout";
 export type { AxLayoutTab } from "./AxLayout";
 
-// ── AXIOM 360 Core OS components ──────────────────────────────────────────────
+// ── NOVEE OS Core components ──────────────────────────────────────────────
 export { Pulse }            from "./Pulse";
 export { HandoffContainer } from "./HandoffContainer";

@@ -1,5 +1,5 @@
 /**
- * axiomIntelligence.ts — Axiom Automated Intelligence Engine
+ * axiomIntelligence.ts — NOVEE OS Automated Intelligence Engine
  *
  * Deterministic rule engine that monitors venue signals and produces
  * typed TriggerEvent objects. No LLM calls. No network calls.

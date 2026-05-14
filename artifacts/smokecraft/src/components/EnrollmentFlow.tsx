@@ -55,7 +55,7 @@ const QUESTIONS: Question[] = [
     type:        "text",
     id:          "lastName",
     prompt:      "And your last name?",
-    sub:         "Your Universal Identity Key — reconnects you to your Mentor and Mastery Score at any Axiom venue.",
+    sub:         "Your Universal Identity Key — reconnects you to your Mentor and Mastery Score at any NOVEE OS venue.",
     placeholder: "e.g. Rivera",
     maxLength:   80,
     validate:    (v) => v.trim().length > 0,
@@ -327,7 +327,7 @@ export default function EnrollmentFlow({ craftType: _craftType, onComplete, onSk
                     textTransform: "uppercase",
                     margin:        0,
                   }}>
-                    Used to reconnect you at any Axiom venue
+                    Used to reconnect you at any NOVEE OS venue
                   </p>
                 )}
                 <input

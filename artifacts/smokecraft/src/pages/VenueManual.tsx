@@ -48,7 +48,7 @@ const SECTIONS: ManualSection[] = [
     whenToUse: "Once only — during initial deployment. Revisit if you change hardware, reset the venue, or onboard a second location.",
     steps: [
       { heading: "Log in as Venue Owner", text: "Navigate to your venue URL. Use the credentials provided during onboarding. You must be logged in as venue_owner or super_admin to access admin pages." },
-      { heading: "Run the Smoke Test", text: "Go to /admin/system-validation. Click 'Run Smoke Test'. All 13 checks should show PASSED (green). If any check fails, contact Axiom support before continuing setup." },
+      { heading: "Run the Smoke Test", text: "Go to /admin/system-validation. Click 'Run Smoke Test'. All 13 checks should show PASSED (green). If any check fails, contact NOVEE OS support before continuing setup." },
       { heading: "Configure Experience Control", text: "Go to /admin/experience-control. Set your preferred Venue Mode (start with 'Standard' or 'Lounge'). Set atmosphere intensity to 70%, motion calmness to 55%. Save settings." },
       { heading: "Load Experience Items", text: "Go to /inventory. Add or import your product catalog as experience items. Assign each item a craft type (smoke/pour/brew/vape), flavor tags, base score, and price. Upload product images for best conversion." },
       { heading: "Verify the Experience Flow", text: "Navigate to /experience/smoke. Run through 6–8 swipes. Check that the Reveal page shows 3+ ranked recommendations. Tap ADD on one — confirm a reservation appears. Then cancel the order." },
@@ -62,7 +62,7 @@ const SECTIONS: ManualSection[] = [
       "Skipping the test order flow — always verify add-to-order and reservation release before opening.",
     ],
     troubleshoot: [
-      { problem: "Smoke test shows 'DB unreachable'", solution: "Contact Axiom support immediately — this indicates a database connection failure that cannot be self-resolved." },
+      { problem: "Smoke test shows 'DB unreachable'", solution: "Contact NOVEE OS support immediately — this indicates a database connection failure that cannot be self-resolved." },
       { problem: "No items appear on the swipe experience", solution: "Verify items are set to active=true and assigned the correct craft type. Check /inventory to confirm." },
       { problem: "Reveal page shows 0 recommendations", solution: "Confirm experience items exist and are active. Also verify the session completed enough swipes (minimum 3–4 items)." },
     ],
@@ -97,7 +97,7 @@ const SECTIONS: ManualSection[] = [
     id:        "running-experience",
     number:    3,
     title:     "Running the Swipe Experience",
-    purpose:   "Guide guests through the Axiom swipe experience from craft selection to recommendation. This is the primary guest-facing flow and the core value of the platform.",
+    purpose:   "Guide guests through the NOVEE OS swipe experience from craft selection to recommendation. This is the primary guest-facing flow and the core value of the platform.",
     whenToUse: "Whenever a guest wants a personalized recommendation. This replaces or supplements a staff member's verbal suggestion process.",
     steps: [
       { heading: "Navigate to the Craft Hub", text: "Go to the home screen (/) or /craft-hub. The guest sees four craft tiles: SmokeCraft, PourCraft, BrewCraft, VapeCraft. Hand the device to the guest or tap the appropriate craft." },
@@ -116,14 +116,14 @@ const SECTIONS: ManualSection[] = [
     troubleshoot: [
       { problem: "Reveal shows 0 recommendations", solution: "The guest may have skipped all items. Ask them to run the session again with at least 2–3 adds. Also verify active items exist for this craft type." },
       { problem: "'Add' button disabled on reveal", solution: "Item is likely out of stock or an active reservation already exists. Check /inventory for that item's stock level." },
-      { problem: "Session won't load", solution: "Check internet connection. Run the smoke test at /admin/system-validation. If swipe engine shows FAILED, contact Axiom support." },
+      { problem: "Session won't load", solution: "Check internet connection. Run the smoke test at /admin/system-validation. If swipe engine shows FAILED, contact NOVEE OS support." },
     ],
   },
   {
     id:        "revenue-brain",
     number:    4,
     title:     "Understanding the Revenue Brain",
-    purpose:   "Understand how Axiom ranks recommendations so you can configure your inventory for maximum revenue impact.",
+    purpose:   "Understand how NOVEE OS ranks recommendations so you can configure your inventory for maximum revenue impact.",
     whenToUse: "When reviewing recommendation quality, when configuring item scores, or when explaining the system to your manager or investor.",
     steps: [
       { heading: "The Scoring Formula", text: "Revenue Brain ranks every in-stock item using: 40% Taste Match (how well the item's tags align with the guest's swipe pattern), 25% Venue Margin (set via base_score — higher base score = better margin signal), 15% Stock Level (low stock = -25 score penalty, zero stock = hard block), 20% Reliability (items rarely confirmed get a soft penalty over time)." },
@@ -199,14 +199,14 @@ const SECTIONS: ManualSection[] = [
     number:    7,
     title:     "Troubleshooting Common Issues",
     purpose:   "Quickly diagnose and resolve the most common operational problems without calling support.",
-    whenToUse: "Any time something isn't working as expected. Start here before escalating to Axiom support.",
+    whenToUse: "Any time something isn't working as expected. Start here before escalating to NOVEE OS support.",
     steps: [
       { heading: "Step 1: Check the Smoke Test", text: "Always start here. Go to /admin/system-validation, click Run Smoke Test, and wait for results. This identifies which system is failing in under 10 seconds." },
       { heading: "Step 2: Check the Error Detail", text: "Click the expand arrow on any FAILED check. The error detail shows the exact database error or system message. Capture a screenshot of this detail before calling support." },
       { heading: "Step 3: Check the Operator Readiness Checklist", text: "Go to /admin/operator-readiness. Any 'Action Needed' (red) item has a direct 'How to fix' link. Work through all red items before checking warning items." },
       { heading: "Step 4: Refresh and Retry", text: "For transient issues (slow API responses, stale UI), force-refresh the browser (Ctrl+Shift+R or Cmd+Shift+R). If on a kiosk, use the kiosk restart procedure." },
       { heading: "Step 5: Check Recent Changes", text: "Did anything change in the last 24 hours? New inventory items added? Experience control settings changed? A software update deployed? These are the most common causes of unexpected behavior." },
-      { heading: "Step 6: Escalate with Evidence", text: "If the issue persists, contact Axiom support with: (1) Screenshot of smoke test results, (2) The URL where the issue occurs, (3) What you expected vs. what happened, (4) Time the issue started." },
+      { heading: "Step 6: Escalate with Evidence", text: "If the issue persists, contact NOVEE OS support with: (1) Screenshot of smoke test results, (2) The URL where the issue occurs, (3) What you expected vs. what happened, (4) Time the issue started." },
     ],
     successLooks: "You resolve the issue in under 5 minutes without calling support. If escalation is needed, the support team can reproduce and resolve within 30 minutes because you've provided the right diagnostic information.",
     mistakes: [
@@ -216,7 +216,7 @@ const SECTIONS: ManualSection[] = [
     ],
     troubleshoot: [
       { problem: "White screen or app crash", solution: "Hard-refresh the browser. If on kiosk, trigger a device restart from /devices. Check the smoke test for any infrastructure failures." },
-      { problem: "Login isn't working", solution: "Verify you're using the correct email and password. Auth tokens expire — log out and log back in. If a venue_owner account is locked, contact Axiom support for a reset." },
+      { problem: "Login isn't working", solution: "Verify you're using the correct email and password. Auth tokens expire — log out and log back in. If a venue_owner account is locked, contact NOVEE OS support for a reset." },
       { problem: "Everything is slow", solution: "Check the performance mode setting in /admin/experience-control — switch to 'low-power' mode for slower hardware. Also check internet connection speed." },
     ],
   },
@@ -227,22 +227,22 @@ const SECTIONS: ManualSection[] = [
     purpose:   "Handle critical system failures or service incidents quickly and safely to protect guest experience and revenue.",
     whenToUse: "Only when a critical failure occurs: complete system outage, data corruption suspicion, security incident, or persistent smoke test failures.",
     steps: [
-      { heading: "Declare an Incident", text: "If the system is completely unresponsive or any smoke test check shows FAILED for more than 15 minutes after a retry, declare a service incident. Notify your venue manager and contact Axiom support immediately." },
+      { heading: "Declare an Incident", text: "If the system is completely unresponsive or any smoke test check shows FAILED for more than 15 minutes after a retry, declare a service incident. Notify your venue manager and contact NOVEE OS support immediately." },
       { heading: "Preserve Guest Experience", text: "Switch to manual recommendations temporarily. Have staff use verbal knowledge to recommend items. Do not tell guests 'the system is broken' — say 'we're running a brief system update, let me help you personally.'" },
-      { heading: "Do Not Modify the Database Manually", text: "Never attempt to directly edit database records during an incident. This can cause data corruption and make debugging much harder. Only Axiom-provided admin tools should be used." },
+      { heading: "Do Not Modify the Database Manually", text: "Never attempt to directly edit database records during an incident. This can cause data corruption and make debugging much harder. Only NOVEE OS-provided admin tools should be used." },
       { heading: "Release Active Reservations", text: "If the order pipeline is down, navigate to /orders and manually cancel any pending reservations older than 10 minutes. This prevents guests from being misled about stock holds." },
-      { heading: "Contact Axiom Support", text: "Emergency contact details are provided in your onboarding documentation. Have ready: venue name, what the smoke test shows, when the issue started, and recent system changes." },
-      { heading: "Post-Incident Review", text: "After resolution, run a full smoke test and check the Operator Readiness checklist. Document what happened, what the impact was, and what was changed to fix it. Share with Axiom support for their incident log." },
+      { heading: "Contact NOVEE OS Support", text: "Emergency contact details are provided in your onboarding documentation. Have ready: venue name, what the smoke test shows, when the issue started, and recent system changes." },
+      { heading: "Post-Incident Review", text: "After resolution, run a full smoke test and check the Operator Readiness checklist. Document what happened, what the impact was, and what was changed to fix it. Share with NOVEE OS support for their incident log." },
     ],
     successLooks: "Guest impact is minimal (manual service continues). Incident is resolved within 30–60 minutes. Post-incident smoke test shows all 13 checks PASSED. Incident is documented.",
     mistakes: [
-      "Waiting too long to contact support — contact Axiom at the 15-minute mark, not after 2 hours of attempting self-resolution.",
+      "Waiting too long to contact support — contact NOVEE OS at the 15-minute mark, not after 2 hours of attempting self-resolution.",
       "Continuing to attempt fixes that don't work — after 3 failed attempts, stop and escalate.",
       "Not documenting the incident — this is essential for preventing recurrence.",
     ],
     troubleshoot: [
-      { problem: "Complete API outage (all requests fail)", solution: "This is a server-side issue. Contact Axiom support immediately. Do not attempt to restart backend services yourself unless explicitly instructed." },
-      { problem: "Data appears corrupted (wrong orders, wrong stock counts)", solution: "Immediately suspend Add-to-Order operations and contact Axiom support. Do not process any more reservations or orders until the issue is investigated." },
+      { problem: "Complete API outage (all requests fail)", solution: "This is a server-side issue. Contact NOVEE OS support immediately. Do not attempt to restart backend services yourself unless explicitly instructed." },
+      { problem: "Data appears corrupted (wrong orders, wrong stock counts)", solution: "Immediately suspend Add-to-Order operations and contact NOVEE OS support. Do not process any more reservations or orders until the issue is investigated." },
     ],
   },
 ];

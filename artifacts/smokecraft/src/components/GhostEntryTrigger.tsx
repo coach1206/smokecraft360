@@ -1,5 +1,5 @@
 /**
- * GhostEntryTrigger — Axiom OS Ghost Layer Entry
+ * GhostEntryTrigger — NOVEE OS Ghost Layer Entry
  *
  * Invisible fixed-position layer. Detects the sovereign access gesture:
  *   Phase 1: 4-finger simultaneous touch held for 1400ms → pattern challenge appears

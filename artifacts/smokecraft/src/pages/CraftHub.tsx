@@ -1,5 +1,5 @@
 /**
- * CraftHub — Axiom OS cinematic command portal.
+ * CraftHub — NOVEE OS cinematic command portal.
  * Route: / and /craft-hub
  *
  * Visual target: luxury hospitality operating system entrance.
@@ -813,7 +813,7 @@ function CraftHubInner() {
   // ── Kiosk Lock — disables context menu, F-keys, Ctrl shortcuts, back-nav ────
   useKioskLock(true);
 
-  // ── Hardware NFC listener — fires on Axiom Coin tap ─────────────────────────
+  // ── Hardware NFC listener — fires on NOVEE Coin tap ─────────────────────────
   useEffect(() => {
     if (!("NDEFReader" in window)) return;
     const controller = new AbortController();

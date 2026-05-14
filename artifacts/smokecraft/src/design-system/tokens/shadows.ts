@@ -1,5 +1,5 @@
 /**
- * Axiom OS — Shadow + Elevation Token System
+ * NOVEE OS — Shadow + Elevation Token System
  * Material depth levels for the dark espresso design language.
  *
  * Levels:

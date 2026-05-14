@@ -1,7 +1,7 @@
 /**
  * SensoryWeightEngine — Physical emotional weight and tactile illusion layer.
  *
- * Controls the motion physics properties that make AXIOM OS feel cinematic,
+ * Controls the motion physics properties that make NOVEE OS feel cinematic,
  * heavy, intentional — not like software.
  *
  * Outputs CSS custom property values and motion configs that components apply

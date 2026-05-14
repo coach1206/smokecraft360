@@ -168,7 +168,7 @@ export default function MobileHub() {
     const perm = await Notification.requestPermission();
     if (perm === "granted") {
       setNotifState("granted");
-      new Notification("🥃 Axiom Daily Streak", {
+      new Notification("🥃 NOVEE OS Daily Streak", {
         body: `Good morning, ${name}! Your ${rank} prestige awaits — book a session or explore today's specials.`,
         icon: "/favicon.ico",
       });
@@ -486,7 +486,7 @@ export default function MobileHub() {
                 {/* Body */}
                 <div style={{ padding: "16px 18px" }}>
                   <div style={{ fontSize: 13, color: C.text, lineHeight: 1.65, marginBottom: 14 }}>
-                    Exclusive getaways paired with premium lounge access. Flights, hotels, and private transfers — all curated for the Axiom lifestyle.
+                    Exclusive getaways paired with premium lounge access. Flights, hotels, and private transfers — all curated for the NOVEE OS lifestyle.
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
                     {[

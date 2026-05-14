@@ -1,7 +1,7 @@
 /**
  * /designer — Craft Visual Engine
  *
- * Real-time luxury product configurator for Axiom OS.
+ * Real-time luxury product configurator for NOVEE OS.
  * Renders a CSS 3D layered cigar box (+ drink / beer / vape alternatives)
  * that updates instantly as the user configures wood, trim, interior, and brand.
  *

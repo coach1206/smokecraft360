@@ -1,5 +1,5 @@
 /**
- * EntitlementsTab — Axiom OS Feature Control Center (super_admin only).
+ * EntitlementsTab — NOVEE OS Feature Control Center (super_admin only).
  *
  * Panels:
  *   1. Venue list with current package badge

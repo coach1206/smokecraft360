@@ -1,5 +1,5 @@
 /**
- * Axiom OS — Audio Engine
+ * NOVEE OS — Audio Engine
  *
  * Tiny Web Audio API sound layer — zero external dependencies.
  * All sounds are synthesised procedurally so the bundle stays lean.

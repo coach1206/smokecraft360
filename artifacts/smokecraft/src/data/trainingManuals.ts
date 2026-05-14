@@ -216,11 +216,11 @@ const MANUALS: RoleManual[] = [
     role: "vape_specialist",
     roleTitle: "Vape Specialist",
     overview:
-      "The Vape Specialist manages the VapeCraft segment of the NOVEE OS platform — from device knowledge and flavor consultation to compliance-mandatory age verification. The role sits at the intersection of regulatory compliance and guest personalization, requiring both technical product knowledge and the ability to translate Axiom's flavor profiling system into accessible language for guests who may be new to the category.",
+      "The Vape Specialist manages the VapeCraft segment of the NOVEE OS platform — from device knowledge and flavor consultation to compliance-mandatory age verification. The role sits at the intersection of regulatory compliance and guest personalization, requiring both technical product knowledge and the ability to translate NOVEE OS's flavor profiling system into accessible language for guests who may be new to the category.",
     responsibilities: [
       "Conduct age verification before every vape transaction — mandatory, no exceptions",
       "Guide guests through device selection based on usage preference and flavor profile",
-      "Use the VapeCraft recommendation engine to suggest flavors aligned with the guest's Axiom palate profile",
+      "Use the VapeCraft recommendation engine to suggest flavors aligned with the guest's NOVEE OS palate profile",
       "Maintain awareness of stock levels across disposable and rechargeable categories",
       "Educate guests on nicotine levels, device operation, and session duration",
       "Report compliance incidents (failed age verification, underage access attempts) immediately",
@@ -240,7 +240,7 @@ const MANUALS: RoleManual[] = [
       {
         step: "3",
         title: "Flavor Profile Consultation",
-        detail: "Pull the guest's Axiom profile. VapeCraft flavor preferences map to the same boldness/atmosphere matrix as cigars and spirits. A guest with a 'mellow, intimate' profile will typically prefer light fruit or floral profiles. A 'bold, social' guest typically prefers menthol, tobacco, or intense dessert profiles. The recommendation engine uses this mapping automatically.",
+        detail: "Pull the guest's NOVEE OS profile. VapeCraft flavor preferences map to the same boldness/atmosphere matrix as cigars and spirits. A guest with a 'mellow, intimate' profile will typically prefer light fruit or floral profiles. A 'bold, social' guest typically prefers menthol, tobacco, or intense dessert profiles. The recommendation engine uses this mapping automatically.",
       },
       {
         step: "4",
@@ -266,7 +266,7 @@ const MANUALS: RoleManual[] = [
     managerChecklist: [
       "Staff member correctly completed age verification on every demo transaction",
       "Staff member can navigate device categories and explain specs to a guest",
-      "Staff member demonstrated flavor profile consultation using Axiom guest data",
+      "Staff member demonstrated flavor profile consultation using guest's NOVEE OS profile",
       "Staff member knows the compliance incident reporting flow end-to-end",
     ],
     completionRequirements:
@@ -289,7 +289,7 @@ const MANUALS: RoleManual[] = [
     systemInstructions: [
       {
         step: "1",
-        title: "Introducing the Axiom Experience",
+        title: "Introducing the NOVEE OS Experience",
         detail: "For first-time or returning guests without a profile, introduce the swipe experience within the first 2 minutes of seating. Script: 'We have a system that learns your personal taste and makes suggestions just for you — it takes about 90 seconds and guests love it. Want to give it a try?' Navigate them to the kiosk or use the table QR code to start the enrollment flow.",
       },
       {
@@ -457,7 +457,7 @@ const MANUALS: RoleManual[] = [
       },
       {
         step: "6", title: "Lounge League Strategy",
-        detail: "The Lounge League ranks venues across the Axiom network on revenue performance, guest engagement, and AI accuracy metrics. View your ranking in Analytics → Lounge League. Competitive positioning improves through: campaign activation, loyalty tier growth, and swipe session volume. The network average is your baseline — target the 75th percentile within 90 days.",
+        detail: "The Lounge League ranks venues across the NOVEE OS network on revenue performance, guest engagement, and AI accuracy metrics. View your ranking in Analytics → Lounge League. Competitive positioning improves through: campaign activation, loyalty tier growth, and swipe session volume. The network average is your baseline — target the 75th percentile within 90 days.",
       },
       {
         step: "7", title: "Multi-Venue Management",

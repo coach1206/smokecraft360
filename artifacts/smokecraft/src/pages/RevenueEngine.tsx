@@ -1,5 +1,5 @@
 /**
- * RevenueEngine — Axiom Revenue Engine
+ * RevenueEngine — NOVEE OS Revenue Engine
  * Route: /revenue
  *
  * Five live sub-modules rendered as cinematic depth tiles:
@@ -1326,7 +1326,7 @@ export default function RevenueEngine() {
               display:       "flex", alignItems: "center", gap: 8,
             }}>
               <Zap size={16} color={C.gold} />
-              Axiom Revenue Engine
+              NOVEE OS Revenue Engine
             </div>
             <div style={{ fontSize: 10, color: C.dim, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 1 }}>
               Growth automation · campaign intelligence · supply control

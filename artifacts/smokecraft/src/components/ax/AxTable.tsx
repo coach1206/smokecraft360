@@ -1,5 +1,5 @@
 /**
- * AxTable — universal operational table for Axiom OS.
+ * AxTable — universal operational table for NOVEE OS.
  * Supports pagination, loading state, empty state, responsive collapse.
  * Step 1 of 10 — Universal Component Library (AppTable)
  */

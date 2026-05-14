@@ -216,7 +216,7 @@ export function DataIntelligenceTab() {
       setHourly(hr.hourly ?? []);
       setFunnel(fn.funnel ?? null);
     } catch (e) {
-      setError("Some panels require the ANALYTICS feature — contact Axiom to upgrade.");
+      setError("Some panels require the ANALYTICS feature — contact NOVEE OS support to upgrade.");
     } finally {
       setLoading(false);
     }
