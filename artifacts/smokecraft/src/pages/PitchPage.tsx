@@ -241,7 +241,7 @@ export default function PitchPage() {
             fontFamily: "'Cormorant Garamond', serif", fontWeight: 400,
           }}
         >
-          Axiom OS turns a cigar lounge, whiskey bar, or artisan craft venue into a precision revenue
+          NOVEE OS turns a cigar lounge, whiskey bar, or artisan craft venue into a precision revenue
           machine — with an AI recommendation engine, discreet dynamic pricing, a five-tier guest
           loyalty ladder, and kiosk-grade security hardened for 24/7 operation.
         </motion.p>

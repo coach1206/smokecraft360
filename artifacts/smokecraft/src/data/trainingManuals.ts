@@ -1,7 +1,7 @@
 /**
- * trainingManuals.ts — Role-based onboarding manuals for Axiom OS Training Mode.
+ * trainingManuals.ts — Role-based onboarding manuals for NOVEE OS Training Mode.
  *
- * All content is specific to the Axiom OS platform and the Vault Cigar Lounge demo venue.
+ * All content is specific to the NOVEE OS platform and the Vault Cigar Lounge demo venue.
  * No placeholder text. No lorem ipsum. Real operational content only.
  */
 
@@ -34,7 +34,7 @@ const MANUALS: RoleManual[] = [
     role: "bartender",
     roleTitle: "Bartender",
     overview:
-      "The Bartender is the primary operator of the POS pour grid and the guest's first point of contact for spirits, cocktails, and pour-based pairings. Within Axiom OS, the Bartender manages active tabs, processes pour recommendations from the AI engine, handles checkout, and monitors real-time inventory for their station.",
+      "The Bartender is the primary operator of the POS pour grid and the guest's first point of contact for spirits, cocktails, and pour-based pairings. Within NOVEE OS, the Bartender manages active tabs, processes pour recommendations from the AI engine, handles checkout, and monitors real-time inventory for their station.",
     responsibilities: [
       "Open and manage guest tabs from the Craft Command Center — POS mode",
       "Process pour recommendations surfaced by the Revenue Brain for each active guest",
@@ -121,9 +121,9 @@ const MANUALS: RoleManual[] = [
     role: "cigar_specialist",
     roleTitle: "Cigar Specialist",
     overview:
-      "The Cigar Specialist is Axiom OS's most AI-integrated front-line role. You operate as both a human host and the physical extension of the recommendation engine — reading guest signals, consulting the AI profile, and translating algorithmic suggestions into genuine hospitality. Your conversations directly inform the taste model, which improves every future recommendation you will ever give.",
+      "The Cigar Specialist is NOVEE OS's most AI-integrated front-line role. You operate as both a human host and the physical extension of the recommendation engine — reading guest signals, consulting the AI profile, and translating algorithmic suggestions into genuine hospitality. Your conversations directly inform the taste model, which improves every future recommendation you will ever give.",
     responsibilities: [
-      "Conduct palate consultations using Axiom OS guest profiles and swipe history",
+      "Conduct palate consultations using NOVEE OS guest profiles and swipe history",
       "Guide first-time guests through the enrollment and mentor assignment flow",
       "Execute expert pairings that combine AI recommendations with personal knowledge of current inventory",
       "Update guest preference weights in the profile system after any mismatch or correction",
@@ -216,7 +216,7 @@ const MANUALS: RoleManual[] = [
     role: "vape_specialist",
     roleTitle: "Vape Specialist",
     overview:
-      "The Vape Specialist manages the VapeCraft segment of the Axiom OS platform — from device knowledge and flavor consultation to compliance-mandatory age verification. The role sits at the intersection of regulatory compliance and guest personalization, requiring both technical product knowledge and the ability to translate Axiom's flavor profiling system into accessible language for guests who may be new to the category.",
+      "The Vape Specialist manages the VapeCraft segment of the NOVEE OS platform — from device knowledge and flavor consultation to compliance-mandatory age verification. The role sits at the intersection of regulatory compliance and guest personalization, requiring both technical product knowledge and the ability to translate Axiom's flavor profiling system into accessible language for guests who may be new to the category.",
     responsibilities: [
       "Conduct age verification before every vape transaction — mandatory, no exceptions",
       "Guide guests through device selection based on usage preference and flavor profile",
@@ -277,9 +277,9 @@ const MANUALS: RoleManual[] = [
     role: "server",
     roleTitle: "Server",
     overview:
-      "The Server is the guest's primary human touchpoint throughout a full Axiom OS venue experience. Unlike bartenders who manage the POS, Servers focus on guest interaction quality, order routing, upsell timing, and loyalty communication. The Server role is the highest-leverage position for driving guest satisfaction scores — every positive interaction compounds into return visit probability.",
+      "The Server is the guest's primary human touchpoint throughout a full NOVEE OS venue experience. Unlike bartenders who manage the POS, Servers focus on guest interaction quality, order routing, upsell timing, and loyalty communication. The Server role is the highest-leverage position for driving guest satisfaction scores — every positive interaction compounds into return visit probability.",
     responsibilities: [
-      "Introduce the Axiom OS swipe experience to new guests as a natural part of the welcome",
+      "Introduce the NOVEE OS swipe experience to new guests as a natural part of the welcome",
       "Route orders correctly to the appropriate tab and confirm with the guest before submission",
       "Monitor behavioral intelligence flags on active tables and act on upsell suggestions at the right moment",
       "Communicate loyalty point balances and rewards at checkout to reinforce return visit motivation",
@@ -344,7 +344,7 @@ const MANUALS: RoleManual[] = [
     role: "floor_manager",
     roleTitle: "Floor Manager",
     overview:
-      "The Floor Manager operates as the real-time command layer between the Axiom OS platform and the guest experience on the floor. The role requires simultaneous awareness of revenue performance, staff deployment, inventory health, guest satisfaction signals, and escalation queues. A skilled Floor Manager uses the Operations dashboard as their second sense — monitoring everything without being consumed by any single issue.",
+      "The Floor Manager operates as the real-time command layer between the NOVEE OS platform and the guest experience on the floor. The role requires simultaneous awareness of revenue performance, staff deployment, inventory health, guest satisfaction signals, and escalation queues. A skilled Floor Manager uses the Operations dashboard as their second sense — monitoring everything without being consumed by any single issue.",
     responsibilities: [
       "Monitor the Floor Manager dashboard for active tabs, staff status, reservations, and inventory alerts",
       "Deploy staff optimally based on the smart deployment system's real-time recommendations",
@@ -424,7 +424,7 @@ const MANUALS: RoleManual[] = [
     role: "venue_owner",
     roleTitle: "Venue Owner",
     overview:
-      "The Venue Owner holds full system access across all Axiom OS modules. This training program covers the strategic operation layer — analytics interpretation, campaign strategy, multi-venue management, revenue optimization, and platform configuration. The goal is to transition from daily operational awareness to systemic platform intelligence: using the data the system generates to make decisions that compound venue performance over time.",
+      "The Venue Owner holds full system access across all NOVEE OS modules. This training program covers the strategic operation layer — analytics interpretation, campaign strategy, multi-venue management, revenue optimization, and platform configuration. The goal is to transition from daily operational awareness to systemic platform intelligence: using the data the system generates to make decisions that compound venue performance over time.",
     responsibilities: [
       "Review and act on the MasterOperations dashboard daily — revenue, AI performance, staff metrics, and inventory health",
       "Configure and monitor distributor campaigns for ROI performance and budget adherence",
@@ -508,9 +508,9 @@ const MANUALS: RoleManual[] = [
     role: "inventory_manager",
     roleTitle: "Inventory Manager",
     overview:
-      "The Inventory Manager ensures that Axiom OS's recommendation engine always has accurate stock data to work with. An incorrect inventory count doesn't just cause a stockout — it damages guest trust when the AI recommends an unavailable item. The inventory role is the data quality foundation the entire platform depends on.",
+      "The Inventory Manager ensures that NOVEE OS's recommendation engine always has accurate stock data to work with. An incorrect inventory count doesn't just cause a stockout — it damages guest trust when the AI recommends an unavailable item. The inventory role is the data quality foundation the entire platform depends on.",
     responsibilities: [
-      "Maintain accurate stock levels across all product categories in the Axiom OS inventory grid",
+      "Maintain accurate stock levels across all product categories in the NOVEE OS inventory grid",
       "Respond to low-stock alerts within 60 seconds by toggling suppression flags",
       "Submit reorder requests via the distributor portal when stock reaches threshold",
       "Receive and log incoming inventory accurately — any discrepancy is logged in the audit trail",
@@ -570,7 +570,7 @@ const MANUALS: RoleManual[] = [
     role: "cashier",
     roleTitle: "Cashier",
     overview:
-      "The Cashier role is the financial endpoint of every Axiom OS guest interaction. Accuracy, speed, and a clear handoff to the loyalty communication system are the three pillars of the role. A well-executed checkout turns a transaction into a return visit — the loyalty points communication and receipt delivery are the moments that make the difference.",
+      "The Cashier role is the financial endpoint of every NOVEE OS guest interaction. Accuracy, speed, and a clear handoff to the loyalty communication system are the three pillars of the role. A well-executed checkout turns a transaction into a return visit — the loyalty points communication and receipt delivery are the moments that make the difference.",
     responsibilities: [
       "Process payments accurately and efficiently — verify tab totals before confirming every transaction",
       "Handle all payment methods: card (Stripe), cash, loyalty credits, and split payment",

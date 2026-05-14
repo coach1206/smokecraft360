@@ -1,7 +1,7 @@
 /**
  * SovereignDashboard — /sovereign-dashboard
- * Post-authentication Sovereign command landing page.
- * 360 Enterprises Services LLC · Johnie Manuel Lee Collins
+ * NOVEE OS: SOVEREIGN COMMAND CENTER
+ * 360 Enterprise Services LLC · Operated by Profound Innovations
  *
  * Access flow:
  *   /sovereign-gate → [magic link email] → /sovereign-verify → /sovereign-dashboard
@@ -224,7 +224,7 @@ export default function SovereignDashboard() {
       .then(r => r.json())
       .then((data: { valid?: boolean; owner?: string; entity?: string }) => {
         if (data.valid) {
-          setSession({ owner: data.owner ?? "JC", entity: data.entity ?? "360 Enterprises Services LLC" });
+          setSession({ owner: data.owner ?? "SOVEREIGN OPERATOR", entity: data.entity ?? "360 Enterprise Services LLC" });
           setVerify("authorized");
         } else {
           localStorage.removeItem(SOVEREIGN_SESSION_KEY);
@@ -317,10 +317,10 @@ export default function SovereignDashboard() {
         </div>
         <div>
           <div style={{ fontSize: 16, fontWeight: 700, color: C.gold, fontFamily: C.serif, letterSpacing: "0.12em" }}>
-            SOVEREIGN COMMAND CENTER
+            NOVEE OS: SOVEREIGN COMMAND CENTER
           </div>
           <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.18em" }}>
-            {session?.owner?.toUpperCase()} · {session?.entity?.toUpperCase()} · NOVEE OS TITAN V
+            {(session?.entity ?? "360 Enterprise Services LLC").toUpperCase()} · THE TITAN ENGINE
           </div>
         </div>
 
@@ -466,6 +466,12 @@ export default function SovereignDashboard() {
             SESSION ACTIVE · TOKEN VALID FOR 7 DAYS · ALL NODES ONLINE
           </div>
         </div>
+      </div>
+
+      {/* NOVEE OS Corporate Signature Footer */}
+      <div className="novee-footer">
+        <div className="novee-footer-line1">AUTHORIZED OPERATOR // 360 ENTERPRISE SERVICES LLC</div>
+        <div className="novee-footer-line2">POWERED BY PROFOUND INNOVATIONS</div>
       </div>
 
       {/* Watermark */}

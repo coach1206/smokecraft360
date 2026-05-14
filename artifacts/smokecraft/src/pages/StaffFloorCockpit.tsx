@@ -214,7 +214,7 @@ export default function StaffFloorCockpit() {
               textTransform: "uppercase",
               marginBottom:  "4px",
             }}>
-              Axiom OS — Operational Layer
+              NOVEE OS — SECTOR INTERFACE
             </div>
             <h1 style={{ fontSize: "28px", fontWeight: 600, color: "#F5F2ED", margin: 0 }}>
               Live Floor Overview

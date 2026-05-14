@@ -1,5 +1,112 @@
 @import "tailwindcss";
 
+/* ════════════════════════════════════════════════════════════════
+   NOVEE OS — SOVEREIGN ALIGNMENT v2026.0
+   Platform : NOVEE OS
+   Owner    : 360 Enterprise Services LLC
+   Operator : Profound Innovations
+   Engine   : The Titan Engine
+   Module   : EAT — Environment · Asset · Tech
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --platform-name: "NOVEE OS";
+  --owner:         "360 Enterprise Services LLC";
+  --operator:      "Profound Innovations";
+  --engine:        "The Titan Engine";
+  --novee-obsidian:#05070a;
+  --novee-gold:    #D4AF37;
+  --novee-data-sz: 22px;
+}
+
+/* Platform identity marker */
+.hub-header::before {
+  content: var(--platform-name);
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1.5rem;
+}
+
+/* Corporate signature */
+.authorized-signature::after {
+  content: "AUTHORIZED OPERATOR // 360 ENTERPRISE SERVICES LLC";
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+}
+
+/* ── NOVEE OS Footer (fixed, pointer-events:none — sits on every page) ── */
+.novee-footer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 8900;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 0 9px;
+  background: linear-gradient(0deg, rgba(5,7,10,0.92) 0%, transparent 100%);
+  gap: 2px;
+}
+.novee-footer-line1 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: rgba(212,175,55,0.50);
+  text-transform: uppercase;
+}
+.novee-footer-line2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: rgba(212,175,55,0.28);
+  text-transform: uppercase;
+}
+
+/* ── 8-second Hardware Shimmer Sweep (Metallic Obsidian Slabs standard) ── */
+@keyframes novee-hardware-shimmer {
+  0%   { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { transform: translateX(320%)  skewX(-18deg); opacity: 0; }
+}
+.novee-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.novee-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255,255,255,0.055) 50%,
+    transparent 65%
+  );
+  animation: novee-hardware-shimmer 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 9;
+}
+
+/* ── 22px minimum — all operational data nodes (Plus Jakarta Sans) ── */
+.novee-data-node {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 22px !important;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* ── NOVEE Sentry label ── */
+.novee-sentry-label {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: rgba(212,175,55,0.65);
+  text-transform: uppercase;
+}
+
 /* ── Kiosk touch discipline — no text selection, no callout menus ── */
 *, *::before, *::after {
   user-select: none;

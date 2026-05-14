@@ -489,7 +489,7 @@ export default function SovereignGate() {
         textAlign: "center", fontSize: 7.5, color: "rgba(0,128,255,0.22)",
         letterSpacing: "0.22em", pointerEvents: "none",
       }}>
-        AUTHORIZED OPERATOR: JC // 360 ENTERPRISES SERVICES LLC
+        AUTHORIZED OPERATOR // 360 ENTERPRISE SERVICES LLC
       </div>
 
       <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>

@@ -709,7 +709,7 @@ export default function PinLogin() {
           fontWeight: 600,
         }}
       >
-        Powered by Axiom OS · EEIS Infrastructure
+        Powered by NOVEE OS · EEIS Infrastructure
       </motion.div>
     </div>
   );

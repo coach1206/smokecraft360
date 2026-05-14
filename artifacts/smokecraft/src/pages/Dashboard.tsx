@@ -661,7 +661,7 @@ export default function Dashboard() {
                 )}
                 {activeTab === "os" && user?.role !== "super_admin" && (
                   <div className="p-8 text-center text-zinc-400">
-                    Axiom OS is restricted to <span className="text-emerald-300">super_admin</span> accounts.
+                    NOVEE OS is restricted to <span className="text-emerald-300">super_admin</span> accounts.
                   </div>
                 )}
 
@@ -720,7 +720,7 @@ export default function Dashboard() {
                 )}
                 {activeTab === "entitlements" && user?.role !== "super_admin" && (
                   <div className="p-8 text-center text-zinc-400">
-                    Feature Control Center is restricted to <span className="text-yellow-400">super_admin</span> accounts.
+                    Feature Control Center is restricted to <span className="text-emerald-300">super_admin</span> accounts.
                   </div>
                 )}
 

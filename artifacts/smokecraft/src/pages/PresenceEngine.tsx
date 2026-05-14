@@ -725,7 +725,7 @@ function WalletPassCard({ pass }: { pass: NonNullable<ReturnType<typeof useAxiom
               fontSize: 9, fontWeight: 800, letterSpacing: "0.28em", textTransform: "uppercase",
               color: `${pass.accentColor}80`, marginBottom: 10,
             }}>
-              Axiom OS · SmokeCraft Reserve Pass
+              NOVEE OS · SmokeCraft Reserve Pass
             </div>
             <div style={{
               fontSize: 24, fontWeight: 700, color: pass.accentColor,
@@ -1344,7 +1344,7 @@ export default function PresenceEngine() {
       }}>
         <span>
           <Sparkles size={9} style={{ marginRight: 5, verticalAlign: "middle" }} />
-          Axiom OS · Presence Engine · Opt-in hospitality intelligence
+          NOVEE OS · Presence Engine · Opt-in hospitality intelligence
         </span>
         <span>Permission-based · VIP-first · No surveillance</span>
       </div>

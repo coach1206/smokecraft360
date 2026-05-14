@@ -553,7 +553,7 @@ export default function AdminMaster() {
           {/* Footer */}
           <div style={{ marginTop:44, padding:"18px 20px", borderRadius:10, border:`1px dashed ${C.border}`, textAlign:"center", background:C.surface }}>
             <div style={{ fontSize:9, color:C.muted, letterSpacing:"0.16em", textTransform:"uppercase", marginBottom:4 }}>
-              Admin Master · Axiom OS Operator's Bible · Rev 3.0.0
+              Admin Master · NOVEE OS Operator's Bible · Rev 3.0.0
             </div>
             <div style={{ fontSize:8, color:C.dim, marginBottom:10 }}>
               Total Command Center — Sales · Marketing · Training leadership only

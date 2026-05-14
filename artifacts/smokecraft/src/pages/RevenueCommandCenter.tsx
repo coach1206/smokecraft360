@@ -578,7 +578,7 @@ export default function RevenueCommandCenter() {
       {/* Header */}
       <div style={{ marginBottom: "28px" }}>
         <div style={{ fontSize: "9px", letterSpacing: "0.3em", color: "#D48B00", textTransform: "uppercase", marginBottom: "4px" }}>
-          Axiom OS — Super Admin
+          NOVEE OS: REMOTE OVERRIDE
         </div>
         <h1 style={{ fontSize: "28px", fontWeight: 600, margin: 0 }}>Revenue Command Center</h1>
         <div style={{ fontSize: "11px", color: "#6B5E4E", marginTop: "4px" }}>

@@ -1030,7 +1030,7 @@ export default function SovereignDistributionVault() {
         <div>
           <div style={{ fontSize: 17, fontWeight: 700, color: C.gold, fontFamily: C.serif, letterSpacing: "0.12em" }}>SOVEREIGN DISTRIBUTION VAULT</div>
           <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.18em", textTransform: "uppercase" }}>
-            360 Enterprises Services LLC · Johnie Manuel Lee Collins · NOVEE OS Titan V
+            360 Enterprise Services LLC · NOVEE OS · The Titan Engine
           </div>
         </div>
 

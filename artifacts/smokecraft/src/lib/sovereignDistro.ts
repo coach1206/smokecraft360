@@ -20,7 +20,7 @@ export const SOVEREIGN_ROOT = {
   email:          "jc@dayone360.com",        // Hardcoded master identity
   authorityLevel: "SOVEREIGN",
   entity:         "360 Enterprises Services LLC",
-  owner:          "Johnie Manuel Lee Collins",
+  owner: "SOVEREIGN OPERATOR",
 } as const;
 
 // ── Types ────────────────────────────────────────────────────────────────────

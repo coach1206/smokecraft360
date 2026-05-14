@@ -321,7 +321,7 @@ export default function CraftOrbSelector() {
           color:         "rgba(180,165,130,0.38)",
           marginBottom:  12,
         }}>
-          Axiom OS · Craft Hub
+          NOVEE OS · Craft Hub
         </div>
         <div style={{
           background:           "linear-gradient(180deg, #fff9e6 0%, #d4af37 48%, #8a6d3b 100%)",

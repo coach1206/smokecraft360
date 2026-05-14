@@ -977,7 +977,7 @@ GET  /api/biometric/interventions — last 50 logged commands`
       <SovereignWatermark />
 
       <div style={{ padding: "8px 24px", borderTop: `1px solid ${C.border}`, background: "rgba(5,10,20,0.97)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
-        <span style={{ fontSize: 8, color: C.dim, letterSpacing: "0.16em" }}>SOVEREIGN OPERATOR: JC · 360 ENTERPRISES SERVICES LLC</span>
+        <span style={{ fontSize: 8, color: C.dim, letterSpacing: "0.16em" }}>AUTHORIZED OPERATOR // 360 ENTERPRISE SERVICES LLC</span>
         <span style={{ fontSize: 8, color: `${C.gold}45`, letterSpacing: "0.14em" }}>NOVEE OS · TITAN V HARDWARE LABS · 5.2.0</span>
       </div>
 

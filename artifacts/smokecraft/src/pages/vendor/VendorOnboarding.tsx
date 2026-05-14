@@ -136,7 +136,7 @@ export default function VendorOnboarding() {
               Vendor Agreement
             </div>
             <div style={{ fontSize: 10, color: VT.sub, lineHeight: 1.7, marginBottom: 16 }}>
-              By submitting this form, you agree to the Axiom OS Vendor Terms of Service.
+              By submitting this form, you agree to the NOVEE OS Vendor Terms of Service.
               Your account will be reviewed by an administrator before products are listed.
               All product submissions are subject to platform approval.
             </div>

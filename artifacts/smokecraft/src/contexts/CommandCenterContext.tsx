@@ -47,7 +47,7 @@ export type PosOperatingMode = "overlay" | "hybrid" | "full_pos";
 export const POS_MODE_INFO: Record<PosOperatingMode, { label: string; description: string; color: string }> = {
   overlay: {
     label: "Overlay",
-    description: "Works alongside your existing commerce system. Axiom OS handles recommendations, loyalty, and analytics while your current system processes transactions.",
+    description: "Works alongside your existing commerce system. NOVEE OS handles recommendations, loyalty, and analytics while your current system processes transactions.",
     color: "#5b8def",
   },
   hybrid: {

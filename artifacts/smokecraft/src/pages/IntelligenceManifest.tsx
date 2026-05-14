@@ -319,7 +319,7 @@ export default function IntelligenceManifest() {
           <SectionHead {...SECTIONS[1]} />
 
           <p style={{ fontSize: 13, color: D.dim, lineHeight: 1.80, marginBottom: 24 }}>
-            Axiom OS is engineered to operate below conscious awareness. Every audio cue, motion pattern, and
+            NOVEE OS is engineered to operate below conscious awareness. Every audio cue, motion pattern, and
             visual texture is calibrated to reduce cognitive friction, extend session duration, and accelerate
             the patron's time-to-purchase decision.
           </p>
@@ -600,7 +600,7 @@ export default function IntelligenceManifest() {
           <SectionHead {...SECTIONS[4]} />
 
           <p style={{ fontSize: 13, color: D.dim, lineHeight: 1.80, marginBottom: 24 }}>
-            Axiom OS is not a point-of-sale system. It is a <strong style={{ color: D.pink }}>behavioral revenue engine</strong> disguised
+            NOVEE OS is not a point-of-sale system. It is a <strong style={{ color: D.pink }}>behavioral revenue engine</strong> disguised
             as a luxury kiosk. The following translates the technical architecture into investor-grade selling points for pitch decks,
             term sheets, and venue sales conversations.
           </p>
@@ -671,7 +671,7 @@ export default function IntelligenceManifest() {
           {/* Footer */}
           <div style={{ marginTop: 48, padding: "20px 22px", borderRadius: 10, border: `1px dashed ${D.border}`, textAlign: "center" }}>
             <div style={{ fontSize: 9, color: D.muted, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>
-              End of Intelligence Manifest · Axiom OS Cognitive Architecture
+              End of Intelligence Manifest · NOVEE OS Cognitive Architecture
             </div>
             <div style={{ fontSize: 8, color: D.muted }}>
               ELITE-SALES · Rev 3.0.0 · For authorised Sales &amp; Marketing leadership only · Axiom Intelligence Corp.

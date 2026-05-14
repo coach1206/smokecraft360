@@ -258,7 +258,7 @@ export default function CommandCenter() {
         position: "relative", zIndex: 10,
       }}>
         <span><Activity size={11} style={{ marginRight: 5, verticalAlign: "middle" }} />Experience Commerce OS · Command Hub</span>
-        <span>Powered by Axiom OS</span>
+        <span>Powered by NOVEE OS</span>
       </div>
 
       <SystemStatusPanel open={statusOpen} onClose={() => setStatusOpen(false)} />

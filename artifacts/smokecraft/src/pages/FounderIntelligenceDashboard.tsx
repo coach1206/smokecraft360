@@ -130,7 +130,7 @@ export default function FounderIntelligenceDashboard() {
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "32px" }}>
         <div>
           <div style={{ fontSize: "9px", letterSpacing: "0.3em", color: "#D48B00", textTransform: "uppercase", marginBottom: "4px" }}>
-            Axiom OS — Founder Intelligence Layer
+            NOVEE OS — Founder Intelligence Layer
           </div>
           <h1 style={{ fontSize: "30px", fontWeight: 600, margin: 0, color: "#F5F2ED" }}>
             God-View

@@ -95,7 +95,7 @@ const PITCH_SLIDES = [
       "The AI detects disengagement signals before you lose a guest",
       "Return invitations and menu previews are sent via the receipt delivery system",
     ],
-    maxwell: "Retention without discounts is only possible when the experience itself is the reward. Axiom OS makes your venue genuinely irreplaceable — not just the most affordable option.",
+    maxwell: "Retention without discounts is only possible when the experience itself is the reward. NOVEE OS makes your venue genuinely irreplaceable — not just the most affordable option.",
   },
   {
     id: "operations",

@@ -180,7 +180,7 @@ export default function TrainingManual() {
         </motion.button>
         <div>
           <div style={{ fontSize: 17, fontWeight: 700, color: C.gold, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.08em" }}>
-            Axiom OS · Master Operator's Manual
+            NOVEE OS · Master Operator's Manual
           </div>
           <div style={{ fontSize: 9, color: "rgba(245,235,220,0.38)", letterSpacing: "0.16em", textTransform: "uppercase" }}>
             Classified · Elite Operator Access · Rev 2.6.0
@@ -239,7 +239,7 @@ export default function TrainingManual() {
           <SectionHead {...SECTIONS[0]} />
 
           <p style={{ fontSize: 13, color: C.light, lineHeight: 1.75, marginBottom: 20 }}>
-            Axiom OS embeds two concealed access portals into the patron-facing kiosk surface.
+            NOVEE OS embeds two concealed access portals into the patron-facing kiosk surface.
             These gates are invisible to patrons and require a deliberate multi-second press to activate.
             No UI affordance is displayed until the hold threshold is crossed.
           </p>
@@ -472,7 +472,7 @@ export default function TrainingManual() {
           <SectionHead {...SECTIONS[4]} />
 
           <p style={{ fontSize: 13, color: C.light, lineHeight: 1.75, marginBottom: 20 }}>
-            Axiom OS is a multi-sensory platform. Visual and audio signals are synchronised to
+            NOVEE OS is a multi-sensory platform. Visual and audio signals are synchronised to
             reinforce the "lounge" atmosphere. The acoustic branding layer is generated in-browser
             using the Web Audio API — no external audio files are required.
           </p>
@@ -538,7 +538,7 @@ export default function TrainingManual() {
 
           {/* Footer stamp */}
           <div style={{ marginTop: 40, padding: "18px 20px", borderRadius: 10, border: `1px dashed ${C.border}`, textAlign: "center" }}>
-            <div style={{ fontSize: 9, color: C.muted, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>End of Document · Axiom OS Master Operator's Manual</div>
+            <div style={{ fontSize: 9, color: C.muted, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>End of Document · NOVEE OS Master Operator's Manual</div>
             <div style={{ fontSize: 8, color: C.muted }}>TS-ELITE-OPS · Rev 2.6.0 · For authorised operators only · Axiom Intelligence Corp.</div>
             <div style={{ marginTop: 10, display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
               {["Confidential", "Not for distribution", "Print access: Elite only"].map((badge) => (

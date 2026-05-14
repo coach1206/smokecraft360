@@ -577,7 +577,7 @@ export default function PromoDashboard() {
       }}>
         <div style={{ maxWidth: 960, margin: "0 auto" }}>
           <div style={{ fontSize: "0.58rem", letterSpacing: "0.16em", color: "rgba(212,139,0,0.70)", fontWeight: 700, textTransform: "uppercase", marginBottom: 6 }}>
-            Axiom OS · Revenue Control Center
+            NOVEE OS · Revenue Control Center
           </div>
           <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.6rem", fontWeight: 600, color: "#F0E8D4" }}>
             Promotion Manager

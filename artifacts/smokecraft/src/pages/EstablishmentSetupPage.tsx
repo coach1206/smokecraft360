@@ -199,7 +199,7 @@ export default function EstablishmentSetupPage() {
             Establishment Setup
           </div>
           <div style={{ fontSize: "0.62rem", color: "rgba(212,139,0,0.6)", letterSpacing: "0.10em", textTransform: "uppercase" }}>
-            Axiom OS · Owner Portal
+            NOVEE OS · Owner Portal
           </div>
         </div>
       </div>

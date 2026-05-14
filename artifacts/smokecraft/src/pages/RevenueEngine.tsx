@@ -1405,7 +1405,7 @@ export default function RevenueEngine() {
       }}>
         <span>
           <Activity size={9} style={{ marginRight: 5, verticalAlign: "middle" }} />
-          Axiom OS · Revenue Engine · 5 systems live
+          NOVEE OS · Revenue Engine · 5 systems live
         </span>
         <span>Real-time venue growth intelligence</span>
       </div>

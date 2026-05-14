@@ -372,7 +372,7 @@ export default function StaffTraining() {
             Staff Training Guide
           </h1>
           <p style={{ fontSize: 14, color: C.muted, margin: 0 }}>
-            8 modules covering everything staff need to run Axiom OS with confidence.
+            8 modules covering everything staff need to run NOVEE OS with confidence.
             {viewMode === "list" ? " Click any card to expand." : " Navigate through each module step-by-step."}
           </p>
         </div>

@@ -1,6 +1,6 @@
 /**
  * TrainingHub — /training
- * Main entry for Axiom OS Training Mode.
+ * Main entry for NOVEE OS Training Mode.
  *
  * KPIs and live event feed are sourced from real backend APIs.
  * useTrainingData hook provides write-through localStorage cache + offline fallback.
@@ -274,7 +274,7 @@ export default function TrainingHub() {
         </button>
         <div>
           <div style={{ fontSize: 18, fontWeight: 700, color: T.gold, fontFamily: "'Cormorant Garamond',serif", letterSpacing: "0.06em" }}>
-            Axiom OS Training Mode
+            NOVEE OS Training Mode
           </div>
           <div style={{ fontSize: 10, color: T.muted, letterSpacing: "0.12em", textTransform: "uppercase" }}>
             Powered by CraftHub · {DEMO_VENUE.name}

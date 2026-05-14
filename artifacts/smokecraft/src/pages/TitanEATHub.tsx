@@ -940,7 +940,7 @@ export default function TitanEATHub() {
           {/* THE LEDGER */}
           <div>
             <div className="eat-section-header" style={{ marginBottom: 16 }}>
-              <div className="eat-section-label">THE LEDGER</div>
+              <div className="eat-section-label">NOVEE OS: SYSTEM-WIDE AUDIT LEDGER</div>
               <div className="eat-section-line" />
               <div style={{ fontFamily: C.body, fontSize: 10, color: C.ghostMuted, letterSpacing: "0.12em", fontWeight: 600, whiteSpace: "nowrap" }}>AUDIT TRAIL · 100% TIME-STAMPED</div>
             </div>
@@ -994,7 +994,7 @@ export default function TitanEATHub() {
           {/* GHOST PORTAL */}
           <div>
             <div className="eat-section-header" style={{ marginBottom: 16 }}>
-              <div className="eat-section-label" style={{ color: C.violetHi }}>GHOST PORTAL</div>
+              <div className="eat-section-label" style={{ color: C.violetHi }}>NOVEE OS: REMOTE OVERRIDE</div>
               <div className="eat-section-line" style={{ background: "linear-gradient(90deg, rgba(110,46,255,0.30), transparent)" }} />
             </div>
 
@@ -1353,6 +1353,12 @@ export default function TitanEATHub() {
       </div>
 
       <EATIndexTicker />
+
+      {/* NOVEE OS Corporate Signature Footer */}
+      <div className="novee-footer">
+        <div className="novee-footer-line1">AUTHORIZED OPERATOR // 360 ENTERPRISE SERVICES LLC</div>
+        <div className="novee-footer-line2">POWERED BY PROFOUND INNOVATIONS</div>
+      </div>
     </div>
   );
 }

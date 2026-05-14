@@ -126,7 +126,7 @@ function PulseHeader() {
             fontWeight: 700,
           }}
         >
-          AUTHORIZED OPERATOR: JC
+          AUTHORIZED OPERATOR // 360 ENTERPRISE SERVICES LLC
         </motion.div>
         <div style={{ fontSize: 8, color: P.faint, fontFamily: P.mono, letterSpacing: "0.10em", marginTop: 3 }}>
           360 ENTERPRISES SERVICES LLC

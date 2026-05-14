@@ -589,7 +589,7 @@ function StepGoLive({ data, launching }: { data: WizardData; launching: boolean 
           transition={{ delay: 0.3 }}
           style={{ marginTop: 20, fontSize: 12, color: C.dim }}
         >
-          {phase === "go" ? "Applying your configuration…" : "Preparing Axiom OS…"}
+          {phase === "go" ? "Applying your configuration…" : "Initializing NOVEE OS…"}
         </motion.div>
       </div>
     );
@@ -610,7 +610,7 @@ function StepGoLive({ data, launching }: { data: WizardData; launching: boolean 
   return (
     <div>
       <div style={{ fontSize: 13, color: C.muted, marginBottom: 20, lineHeight: 1.6 }}>
-        Review your setup. Click <strong style={{ color: C.gold }}>Launch Axiom OS</strong> to apply your configuration and go live.
+        Review your setup. Click <strong style={{ color: C.gold }}>Launch NOVEE OS</strong> to apply your configuration and go live.
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {summary.map(row => (
@@ -774,7 +774,7 @@ export default function OnboardWizard() {
           </motion.button>
           <div>
             <div style={{ fontSize: 22, fontWeight: 700, color: C.gold, fontFamily: "'Playfair Display', serif" }}>
-              Axiom OS Setup
+              NOVEE OS Setup
             </div>
             <div style={{ fontSize: 12, color: C.dim }}>Experience Commerce OS</div>
           </div>
@@ -856,7 +856,7 @@ export default function OnboardWizard() {
             }}
           >
             {loading ? "Launching…" : isLast
-              ? <><Rocket size={16} /> Launch Axiom OS</>
+              ? <><Rocket size={16} /> Launch NOVEE OS</>
               : <>{STEPS[step + 1]?.label} <ChevronRight size={16} /></>
             }
           </motion.button>

@@ -39,7 +39,7 @@ export default function SovereignVerify() {
       .then((data: { ok?: boolean; sessionToken?: string; owner?: string; error?: string }) => {
         if (data.ok && data.sessionToken) {
           localStorage.setItem(SOVEREIGN_SESSION_KEY, data.sessionToken);
-          setOwner(data.owner ?? "Johnie Manuel Lee Collins");
+          setOwner(data.owner ?? "SOVEREIGN OPERATOR");
           setStage("success");
           setTimeout(() => navigate("/distribution"), 2800);
         } else {
@@ -149,7 +149,7 @@ export default function SovereignVerify() {
       </motion.div>
 
       <div style={{ position: "fixed", bottom: 16, left: 0, right: 0, textAlign: "center", fontSize: 8, color: "rgba(212,175,55,0.18)", letterSpacing: "0.22em", pointerEvents: "none" }}>
-        AUTHORIZED OPERATOR: JC // 360 ENTERPRISES SERVICES LLC
+        AUTHORIZED OPERATOR // 360 ENTERPRISE SERVICES LLC
       </div>
     </div>
   );

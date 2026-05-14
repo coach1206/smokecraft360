@@ -1,5 +1,5 @@
 /**
- * MasterOperations — Axiom OS Master Operations Dashboard.
+ * MasterOperations — NOVEE OS: SOVEREIGN COMMAND CENTER.
  *
  * Route: /operations
  * Role: manager, venue_owner, super_admin
@@ -499,10 +499,10 @@ export default function MasterOperations() {
         {/* Brand mark */}
         <div style={{ flexShrink: 0, marginRight: 8 }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: T.gold, letterSpacing: "0.18em", textTransform: "uppercase" }}>
-            Axiom OS
+            NOVEE OS
           </div>
           <div style={{ fontSize: 12, color: T.textMuted, letterSpacing: "0.12em", textTransform: "uppercase" }}>
-            Master Ops
+            SOVEREIGN COMMAND CENTER
           </div>
         </div>
 
@@ -865,6 +865,12 @@ export default function MasterOperations() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* NOVEE OS Corporate Signature Footer */}
+      <div className="novee-footer">
+        <div className="novee-footer-line1">AUTHORIZED OPERATOR // 360 ENTERPRISE SERVICES LLC</div>
+        <div className="novee-footer-line2">POWERED BY PROFOUND INNOVATIONS</div>
       </div>
     </div>
   );

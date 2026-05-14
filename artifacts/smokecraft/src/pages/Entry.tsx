@@ -184,7 +184,7 @@ export default function Entry() {
           letterSpacing: "0.2em", color: "rgba(26,26,27,0.20)",
           position: "relative", zIndex: 1,
         }}
-      >Powered by Axiom OS</motion.div>
+      >Powered by NOVEE OS</motion.div>
     </BackgroundLayer>
   );
 }

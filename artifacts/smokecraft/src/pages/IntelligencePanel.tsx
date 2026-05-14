@@ -954,7 +954,7 @@ export default function IntelligencePanel() {
       }}>
         <span>
           <Brain size={9} style={{ marginRight: 5, verticalAlign: "middle" }} />
-          Axiom OS · Intelligence Engine · {INTELLIGENCE_RULES.length} rules active
+          NOVEE OS · Intelligence Engine · {INTELLIGENCE_RULES.length} rules active
         </span>
         <span>Hybrid firing · 90s evaluation cycle</span>
       </div>

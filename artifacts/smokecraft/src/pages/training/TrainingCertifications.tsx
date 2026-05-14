@@ -32,7 +32,7 @@ interface Cert {
 
 const ROLE_CERTS = TRAINING_ROLES_CONFIG.map((r) => ({
   id:     `cert-role-${r.id}`,
-  title:  `${r.title} — Axiom OS Certified`,
+  title:  `${r.title} — NOVEE OS Certified`,
   mode:   "employee",
   role:   r.id,
   color:  r.color,
@@ -48,7 +48,7 @@ const SCENARIO_CERT = {
   role:  null,
   color: T.amber,
   icon:  BookOpen,
-  desc:  "Completed all 8 Axiom OS training scenarios",
+  desc:  "Completed all 8 NOVEE OS training scenarios",
   points: 1600,
 };
 
@@ -70,7 +70,7 @@ const INVESTOR_CERT = {
   role:  null,
   color: T.green,
   icon:  BarChart3,
-  desc:  "Completed the full Axiom OS investor demonstration",
+  desc:  "Completed the full NOVEE OS investor demonstration",
   points: 100,
 };
 

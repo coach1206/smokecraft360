@@ -320,10 +320,10 @@ export const TRAINING_SCENARIOS = [
 // ── Maxwell AI Messages ───────────────────────────────────────────────────────
 
 export const MAXWELL_INTROS: Record<string, string> = {
-  hub:           "Welcome to Axiom OS Training Mode. I'm Maxwell — your intelligent guide through this platform. Select a mode to begin.",
+  hub:           "Welcome to NOVEE OS Training Mode. I'm Maxwell — your intelligent guide through this platform. Select a mode to begin.",
   employee:      "Select your role to begin a personalized onboarding experience. Each path is tailored to your specific responsibilities.",
-  investor:      "Welcome. I'll guide you through the Axiom OS platform — from guest intelligence to revenue automation. This is a fully simulated live venue.",
-  sales:         "This is Vault Cigar Lounge — a premier venue powered by Axiom OS. Let me show you what the platform does for venue revenue.",
+  investor:      "Welcome. I'll guide you through the NOVEE OS platform — from guest intelligence to revenue automation. This is a fully simulated live venue.",
+  sales:         "This is Vault Cigar Lounge — a premier venue powered by NOVEE OS. Let me show you what the platform does for venue revenue.",
   walkthrough:   "We'll walk through a complete venue setup from scratch. Follow each step and I'll explain what happens behind the scenes.",
   scenarios:     "Training scenarios simulate real situations you'll encounter on the floor. Choose one to begin — I'll guide you through every step.",
   certifications:"Your training certifications are stored here. Complete a role module or scenario set to earn a certification.",

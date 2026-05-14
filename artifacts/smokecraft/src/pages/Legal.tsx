@@ -63,13 +63,13 @@ function TermsContent() {
     <div>
       <H2>1. Agreement to Terms</H2>
       <P>
-        By accessing or using the Axiom OS platform ("Platform"), you agree to be bound by
+        By accessing or using the NOVEE OS platform ("Platform"), you agree to be bound by
         these Terms of Service ("Terms"). If you do not agree, do not access or use the Platform.
       </P>
 
       <H2>2. Description of Service</H2>
       <P>
-        Axiom OS is a luxury hospitality operating platform providing AI-powered recommendations,
+        NOVEE OS is a luxury hospitality operating platform providing AI-powered recommendations,
         inventory management, loyalty systems, kiosk management, payment processing via Stripe
         Connect, and related services ("Services") to licensed venues.
       </P>
@@ -115,7 +115,7 @@ function TermsContent() {
 
       <H2>8. Intellectual Property</H2>
       <P>
-        All Platform software, UI designs, AI models, and Axiom OS branding are owned by Axiom.
+        All Platform software, UI designs, AI models, and NOVEE OS branding are owned by Axiom.
         Venues are granted a limited, non-exclusive license to use the Platform during an active
         subscription. No ownership rights are transferred.
       </P>
@@ -237,7 +237,7 @@ function PrivacyContent() {
 
       <H2>10. Contact</H2>
       <P>
-        Privacy inquiries: privacy@axiom.os · Axiom OS, Inc., 251 Little Falls Drive,
+        Privacy inquiries: privacy@novee.os · 360 Enterprise Services LLC, 251 Little Falls Drive,
         Wilmington, DE 19808, United States.
       </P>
     </div>
@@ -252,12 +252,12 @@ function AupContent() {
       <H2>1. Purpose</H2>
       <P>
         This Acceptable Use Policy ("AUP") defines the boundaries of permitted use of the
-        Axiom OS Platform. All venue operators, staff, and guests must comply with this AUP.
+        NOVEE OS Platform. All venue operators, staff, and guests must comply with this AUP.
       </P>
 
       <H2>2. Permitted Use</H2>
       <ul style={{ paddingLeft: 20, marginBottom: 10 }}>
-        <Li>Operating a licensed hospitality venue using Axiom OS features</Li>
+        <Li>Operating a licensed hospitality venue using NOVEE OS features</Li>
         <Li>Processing lawful guest transactions and loyalty interactions</Li>
         <Li>Managing inventory, staff, and operational workflows</Li>
         <Li>Accessing AI recommendations for personal service enhancement</Li>
@@ -388,7 +388,7 @@ export default function Legal() {
           marginTop: 40, paddingTop: 20, borderTop: `1px solid ${T.border}`,
           fontSize: 10, color: T.textMuted,
         }}>
-          Axiom OS, Inc. · Effective {EFFECTIVE_DATE} · Questions: legal@axiom.os
+          360 Enterprise Services LLC · Effective {EFFECTIVE_DATE} · Questions: legal@novee.os
         </div>
       </div>
     </div>

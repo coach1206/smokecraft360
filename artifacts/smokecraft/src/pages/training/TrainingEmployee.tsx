@@ -201,7 +201,7 @@ export default function TrainingEmployee() {
                 <Eye size={11} color="#60a5fa" style={{ flexShrink: 0, marginTop: 2 }} />
                 <span style={{ fontSize: 10.5, color: "#60a5fa", lineHeight: 1.6 }}>
                   <strong>On screen: </strong>
-                  {stepIdx === 0 ? `Look for the ${role.title} section in your Axiom OS staff view — it will be your primary work surface.`
+                  {stepIdx === 0 ? `Look for the ${role.title} section in your NOVEE OS staff view — it will be your primary work surface.`
                     : stepIdx === 1 ? "The system highlights the relevant action area with a subtle gold indicator when guidance is active."
                     : stepIdx === 2 ? "Guest profiles appear as cards with taste indicators shown as small colored bars below the guest name."
                     : stepIdx === 3 ? "Confirmation dialogs always show a summary of what will happen before you commit to any action."
