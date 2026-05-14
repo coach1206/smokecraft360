@@ -208,7 +208,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   AXIOM OS — 7-PHASE SOVEREIGN BOOT FLOW
+   NOVEE OS — 7-PHASE SOVEREIGN BOOT FLOW
    Master State Engine · No menus · No buttons · No dashboards
 ═══════════════════════════════════════════════════════════════ */
 
@@ -295,7 +295,7 @@ function PhaseMaterialize({ progress }: { progress: number }) {
           color: `rgba(212,175,55,${Math.max(0, p - 0.6) * 2.5})`,
           marginTop: 8,
         }}>
-          POWERED BY AXIOM OS
+          POWERED BY NOVEE OS
         </div>
       </div>
     </div>

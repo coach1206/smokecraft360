@@ -51,10 +51,10 @@ const PROVIDER_META: Record<ProviderName | string, { label: string; color: strin
 };
 
 const PACKAGE_LABELS: Record<string, { label: string; badge: string; color: string }> = {
-  axiom_core:  { label: 'AXIOM CORE',  badge: 'INCLUDED',         color: '#888' },
-  axiom_pro:   { label: 'AXIOM PRO',   badge: 'INCLUDED',         color: '#d4af37' },
-  axiom_xei:   { label: 'AXIOM XEI',   badge: 'FLEXIBLE',         color: '#c084fc' },
-  axiom_black: { label: 'AXIOM BLACK', badge: 'ENTERPRISE OWNED', color: '#e2e8f0' },
+  axiom_core:  { label: 'NOVEE CORE',  badge: 'INCLUDED',         color: '#888' },
+  axiom_pro:   { label: 'NOVEE PRO',   badge: 'INCLUDED',         color: '#d4af37' },
+  axiom_xei:   { label: 'NOVEE XEI',   badge: 'FLEXIBLE',         color: '#c084fc' },
+  axiom_black: { label: 'NOVEE BLACK', badge: 'ENTERPRISE OWNED', color: '#e2e8f0' },
 };
 
 /* ── Helpers ─────────────────────────────────────────────────────────────────── */
@@ -238,7 +238,7 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
       }}>
         <div>
           <div style={{ fontSize: 14, letterSpacing: '0.4em', color: '#d4af37', fontWeight: 900 }}>
-            AXIOM OS · AI INTELLIGENCE CONFIGURATION
+            NOVEE OS · AI INTELLIGENCE CONFIGURATION
           </div>
           <div style={{ fontSize: 9, letterSpacing: '0.25em', color: '#475569', marginTop: 3 }}>
             AI PROVIDER OWNERSHIP + API RESPONSIBILITY SYSTEM
@@ -285,7 +285,7 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
           {tab === 'overview' && (
             <div>
               <SectionHead title="AI INTELLIGENCE CONFIGURATION"
-                sub="Determine who owns, manages, and pays for AI within your AXIOM OS deployment." />
+                sub="Determine who owns, manages, and pays for AI within your NOVEE OS deployment." />
 
               {/* Mode cards */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
@@ -301,14 +301,14 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
                     <StatusDot status={config?.mode === 'axiom_managed' ? 'active' : 'disconnected'} />
                     <span style={{ fontSize: 11, letterSpacing: '0.3em', color: '#d4af37', fontWeight: 700 }}>
-                      INCLUDED WITH AXIOM
+                      INCLUDED WITH NOVEE
                     </span>
                   </div>
                   <div style={{ fontSize: 13, color: '#e2e8f0', marginBottom: 10, letterSpacing: '0.05em' }}>
-                    AI services managed by AXIOM OS
+                    AI services managed by NOVEE OS
                   </div>
                   <div style={{ fontSize: 10, color: '#64748b', lineHeight: 1.7, letterSpacing: '0.05em' }}>
-                    AXIOM handles AI hosting, API management, routing, usage metering,
+                    NOVEE handles AI hosting, API management, routing, usage metering,
                     and infrastructure. No provider account required.
                   </div>
                   <div style={{
@@ -316,7 +316,7 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
                     background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)',
                     fontSize: 9, color: '#22c55e', letterSpacing: '0.2em', borderRadius: 2,
                   }}>
-                    AI infrastructure, orchestration, and API usage are included within your AXIOM subscription.
+                    AI infrastructure, orchestration, and API usage are included within your NOVEE subscription.
                   </div>
                 </div>
 
@@ -349,7 +349,7 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
                     Use your own OpenAI or supported provider account
                   </div>
                   <div style={{ fontSize: 10, color: '#64748b', lineHeight: 1.7, letterSpacing: '0.05em' }}>
-                    AXIOM routes AI requests through your venue-owned provider account.
+                    NOVEE routes AI requests through your venue-owned provider account.
                     You manage API billing, usage charges, and account limits directly.
                   </div>
                   <div style={{
@@ -366,14 +366,14 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
               <SectionHead title="RESPONSIBILITY MATRIX" sub="Who owns what — at a glance." />
               <div style={{ border: '1px solid rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden', marginBottom: 32 }}>
                 {[
-                  { item: 'AI Infrastructure',        axiom: '✓ AXIOM',    byok: '✓ AXIOM'   },
-                  { item: 'AI Routing + Orchestration',axiom: '✓ AXIOM',    byok: '✓ AXIOM'   },
-                  { item: 'API Key Management',        axiom: '✓ AXIOM',    byok: 'VENUE'      },
-                  { item: 'Provider Billing',          axiom: '✓ AXIOM',    byok: 'VENUE'      },
-                  { item: 'Usage Charges',             axiom: '✓ AXIOM',    byok: 'VENUE'      },
+                  { item: 'AI Infrastructure',        axiom: '✓ NOVEE',    byok: '✓ NOVEE'   },
+                  { item: 'AI Routing + Orchestration',axiom: '✓ NOVEE',    byok: '✓ NOVEE'   },
+                  { item: 'API Key Management',        axiom: '✓ NOVEE',    byok: 'VENUE'      },
+                  { item: 'Provider Billing',          axiom: '✓ NOVEE',    byok: 'VENUE'      },
+                  { item: 'Usage Charges',             axiom: '✓ NOVEE',    byok: 'VENUE'      },
                   { item: 'OpenAI Account',            axiom: 'NOT NEEDED', byok: 'VENUE'      },
-                  { item: 'Provider Limits',           axiom: 'AXIOM CAPS', byok: 'VENUE CAPS' },
-                  { item: 'Failover Routing',          axiom: 'AXIOM',      byok: 'CONFIGURABLE' },
+                  { item: 'Provider Limits',           axiom: 'NOVEE CAPS', byok: 'VENUE CAPS' },
+                  { item: 'Failover Routing',          axiom: 'NOVEE',      byok: 'CONFIGURABLE' },
                 ].map((row, i) => (
                   <div key={i} style={{
                     display: 'grid', gridTemplateColumns: '2fr 1fr 1fr',
@@ -628,7 +628,7 @@ export default function AIProviderSetup({ venueId, userRole = 'venue_owner' }: A
                     letterSpacing: '0.15em', lineHeight: 1.7,
                   }}>
                     {config?.mode === 'axiom_managed'
-                      ? 'AI infrastructure, orchestration, and API usage are included within your AXIOM subscription. Cost estimates above are for transparency only.'
+                      ? 'AI infrastructure, orchestration, and API usage are included within your NOVEE subscription. Cost estimates above are for transparency only.'
                       : 'You are responsible for your own provider billing, API usage, and account management. The figures above reflect actual consumption charges on your provider account.'}
                   </div>
                 </div>
@@ -690,7 +690,7 @@ function FailoverPanel({ venueId, config, onSaved, showToast }: {
   return (
     <div>
       <SectionHead title="AUTO-FAILOVER CONFIGURATION"
-        sub="When the primary provider is degraded, AXIOM automatically routes to backup providers." />
+        sub="When the primary provider is degraded, NOVEE automatically routes to backup providers." />
       <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 14 }}>
         <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
           <input type="checkbox" checked={enabled} onChange={e => setEnabled(e.target.checked)} />
@@ -725,7 +725,7 @@ function FailoverPanel({ venueId, config, onSaved, showToast }: {
         </div>
       )}
       <div style={{ padding: '10px 14px', background: 'rgba(59,130,246,0.05)', border: '1px solid rgba(59,130,246,0.15)', borderRadius: 3, fontSize: 9, color: '#3b82f6', letterSpacing: '0.12em', lineHeight: 1.7, marginBottom: 24 }}>
-        When OpenAI fails, AXIOM can automatically route to Anthropic, Gemini, or any configured backup provider.
+        When OpenAI fails, NOVEE can automatically route to Anthropic, Gemini, or any configured backup provider.
         Failover is transparent to the venue — the guest experience is never interrupted.
       </div>
       <button onClick={save} disabled={saving} style={{
@@ -762,7 +762,7 @@ function AdminOverviewPanel({ showToast }: { showToast: (msg: string, ok?: boole
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 24 }}>
         {[
           { label: 'TOTAL VENUES',      value: data.venueCount,          color: '#d4af37' },
-          { label: 'AXIOM MANAGED',     value: data.axiomManagedCount,   color: '#22c55e' },
+          { label: 'NOVEE MANAGED',     value: data.axiomManagedCount,   color: '#22c55e' },
           { label: 'BYOK DEPLOYMENTS',  value: data.byokCount,           color: '#c084fc' },
         ].map(c => (
           <div key={c.label} style={{ border: '1px solid rgba(255,255,255,0.07)', borderRadius: 3, padding: '18px', background: 'rgba(255,255,255,0.02)' }}>
@@ -772,7 +772,7 @@ function AdminOverviewPanel({ showToast }: { showToast: (msg: string, ok?: boole
         ))}
       </div>
       <div style={{ fontSize: 9, letterSpacing: '0.2em', color: '#475569', padding: '12px 16px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 3 }}>
-        Full venue routing control, throttling, and AI traffic rerouting available via the AXIOM Master Operations console.
+        Full venue routing control, throttling, and AI traffic rerouting available via the NOVEE OS Sovereign Command Center.
       </div>
     </div>
   );

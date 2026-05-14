@@ -821,7 +821,7 @@ export default function PitchPage() {
         <section style={{ textAlign: "center", padding: "72px 0 112px" }}>
           <FadeIn>
             <div style={{ fontFamily: "'Courier New', monospace", fontSize: 8, fontWeight: 700, letterSpacing: "0.32em", color: C.amber, marginBottom: 26 }}>
-              AXIOM OS · BUILT ON REPLIT · MAY 2026
+              NOVEE OS · BUILT ON REPLIT · MAY 2026
             </div>
             <h2 style={{
               fontFamily: "'Cormorant Garamond', serif", fontWeight: 700,

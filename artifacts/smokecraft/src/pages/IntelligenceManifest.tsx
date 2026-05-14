@@ -135,7 +135,7 @@ export default function IntelligenceManifest() {
         </motion.button>
         <div>
           <div style={{ fontSize: 18, fontWeight: 700, color: D.gold, fontFamily: D.serif, letterSpacing: "0.10em" }}>
-            AXIOM OS · Intelligence Manifest
+            NOVEE OS · Intelligence Manifest
           </div>
           <div style={{ fontSize: 9, color: D.muted, letterSpacing: "0.18em", textTransform: "uppercase" }}>
             Cognitive & Behavioral Architecture · Sales & Marketing Clearance

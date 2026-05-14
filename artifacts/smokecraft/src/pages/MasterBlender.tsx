@@ -911,7 +911,7 @@ export default function MasterBlender() {
           <svg width={14} height={14} viewBox="0 0 14 14" fill="none">
             <path d="M9 2L4 7l5 5" stroke={`${GOLD}70`} strokeWidth={1.5} strokeLinecap="round"/>
           </svg>
-          AXIOM OS
+          NOVEE OS
         </button>
 
         <div className="flex items-center gap-2">

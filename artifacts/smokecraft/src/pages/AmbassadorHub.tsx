@@ -343,7 +343,7 @@ export default function AmbassadorHub() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 18, color: C.gold, fontFamily: C.serif, letterSpacing: "0.14em", marginBottom: 6, fontWeight: 300 }}>INITIALIZE NEW NODE</div>
                   <div style={{ fontSize: 10, color: C.muted, lineHeight: 1.7 }}>
-                    Register a new venue, select hardware, verify connectivity, and transmit a Sovereign activation request — all without calling JC.
+                    Register a new venue, select hardware, verify connectivity, and transmit a Sovereign activation request — all without manual escalation.
                   </div>
                 </div>
                 <ChevronRight size={20} color={C.gold} style={{ flexShrink: 0 }} />
@@ -546,7 +546,7 @@ export default function AmbassadorHub() {
                           <div style={{ fontSize: 9, color: C.gold, fontWeight: 700, letterSpacing: "0.18em", marginBottom: 6 }}>OBSIDIAN LOCK ENGAGED</div>
                           <div style={{ fontSize: 10, color: C.muted, lineHeight: 1.8 }}>
                             The node is tagged to <strong style={{ color: C.ink }}>{createdNode.venue}</strong> and awaiting Sovereign activation.
-                            Once JC authorizes the license from the Command Center, this device will wake up fully operational.
+                            Once the Sovereign Admin authorizes the license from the Command Center, this device will wake up fully operational.
                           </div>
                         </div>
                       </div>

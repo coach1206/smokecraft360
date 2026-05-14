@@ -9,13 +9,43 @@
    Module   : EAT — Environment · Asset · Tech
    ════════════════════════════════════════════════════════════════ */
 :root {
-  --platform-name: "NOVEE OS";
-  --owner:         "360 Enterprise Services LLC";
-  --operator:      "Profound Innovations";
-  --engine:        "The Titan Engine";
-  --novee-obsidian:#05070a;
-  --novee-gold:    #D4AF37;
-  --novee-data-sz: 22px;
+  --platform-name:      "NOVEE OS";
+  --owner:              "360 Enterprise Services LLC";
+  --operator:           "Profound Innovations";
+  --engine:             "The Titan Engine";
+
+  /* ── True Obsidian palette (Pillar 2) ── */
+  --novee-black:        #010101;
+  --novee-obsidian:     #010101;
+  --novee-surface:      rgba(4,4,6,0.97);
+  --novee-surface-mid:  rgba(8,8,12,0.92);
+  --novee-border:       rgba(212,175,55,0.14);
+
+  /* ── Metallic Gold Gradient (Pillar 2) ── */
+  --novee-gold:         #D4AF37;
+  --novee-gold-start:   #bf953f;
+  --novee-gold-mid:     #fcf6ba;
+  --novee-gold-end:     #bf953f;
+  --novee-gold-gradient: linear-gradient(
+    135deg,
+    #bf953f 0%,
+    #fcf6ba 45%,
+    #d4af37 65%,
+    #bf953f 100%
+  );
+
+  /* ── Tesla-grade glass standard (Pillar 5) ── */
+  --novee-blur:         blur(25px);
+  --novee-blur-heavy:   blur(40px);
+  --novee-inset-shadow: inset 0 1px 0 rgba(212,175,55,0.10),
+                        inset 0 -1px 0 rgba(0,0,0,0.40),
+                        inset 1px 0 0 rgba(255,255,255,0.03),
+                        inset -1px 0 0 rgba(0,0,0,0.20);
+  --novee-outer-shadow: 0 8px 40px rgba(0,0,0,0.60),
+                        0 2px 8px rgba(0,0,0,0.40),
+                        0 0 0 1px rgba(212,175,55,0.08);
+
+  --novee-data-sz:      22px;
 }
 
 /* Platform identity marker */
@@ -115,10 +145,73 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-body, html, #root { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden !important; background: #000; }
+body, html, #root { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden !important; background: #010101; }
+
 nav, footer.site-footer, .static-header, .living-room, .grid-legacy { display: none !important; }
 ::-webkit-scrollbar { display: none !important; }
 * { scrollbar-width: none; }
+
+/* ══════════════════════════════════════════════════════════════
+   NOVEE OS — MACHINED GLASS SYSTEM (Pillar 5 / Tesla-grade)
+   Apply .novee-glass to any panel that needs the layered look.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Primary glass slab — Obsidian surface, 25px blur, machined edge */
+.novee-glass {
+  background:       var(--novee-surface, rgba(4,4,6,0.97));
+  backdrop-filter:  blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border:           1px solid rgba(212,175,55,0.12);
+  border-radius:    14px;
+  box-shadow:
+    inset 0 1px 0 rgba(212,175,55,0.10),
+    inset 0 -1px 0 rgba(0,0,0,0.50),
+    inset 1px 0 0 rgba(255,255,255,0.03),
+    inset -1px 0 0 rgba(0,0,0,0.25),
+    0 8px 40px rgba(0,0,0,0.65),
+    0 2px 8px rgba(0,0,0,0.45),
+    0 0 0 1px rgba(212,175,55,0.06);
+}
+
+/* Heavy glass — modals, overlays */
+.novee-glass-heavy {
+  background:       rgba(2,2,4,0.98);
+  backdrop-filter:  blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border:           1px solid rgba(212,175,55,0.18);
+  border-radius:    18px;
+  box-shadow:
+    inset 0 1px 0 rgba(212,175,55,0.14),
+    inset 0 -1px 0 rgba(0,0,0,0.60),
+    inset 1px 0 0 rgba(255,255,255,0.04),
+    inset -1px 0 0 rgba(0,0,0,0.30),
+    0 24px 80px rgba(0,0,0,0.75),
+    0 4px 16px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(212,175,55,0.08);
+}
+
+/* Metallic Gold header gradient — apply to heading text containers */
+.novee-gold-heading {
+  background:       linear-gradient(135deg, #bf953f 0%, #fcf6ba 45%, #d4af37 65%, #bf953f 100%);
+  -webkit-background-clip: text;
+  background-clip:  text;
+  -webkit-text-fill-color: transparent;
+  font-family:      'Syncopate', sans-serif;
+  font-weight:      700;
+  letter-spacing:   0.18em;
+}
+
+/* Obsidian slab header bar — used on management hub top bars */
+.novee-slab-header {
+  background:       linear-gradient(180deg, rgba(6,6,8,0.99) 0%, rgba(4,4,6,0.96) 100%);
+  backdrop-filter:  blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-bottom:    1px solid rgba(212,175,55,0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(212,175,55,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.40),
+    0 4px 24px rgba(0,0,0,0.50);
+}
 
 /* ── Film grain overlay — covers entire UI at all times ── */
 body::after {

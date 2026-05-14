@@ -289,7 +289,7 @@ function LegacyCertificate(p: CertProps) {
         <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
           style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
           <div style={{ fontSize: 6.5, color: `${p.accent}55`, letterSpacing: "0.42em", fontFamily: MONO, textTransform: "uppercase" }}>
-            NOVEE OS · AXIOM CERTIFICATION
+            NOVEE OS · NOVEE CERTIFICATION
           </div>
           <div style={{ fontSize: 6, color: `${p.accent}38`, letterSpacing: "0.22em", marginTop: 3, fontFamily: MONO, textTransform: "uppercase" }}>
             {today}

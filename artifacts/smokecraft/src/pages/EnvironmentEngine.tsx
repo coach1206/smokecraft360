@@ -236,7 +236,7 @@ export default function EnvironmentEnginePage() {
               Environmental Reaction Engine
             </h1>
             <div style={{ fontSize: 12, color: "rgba(26,26,27,0.40)", marginTop: 2, letterSpacing: "0.1em" }}>
-              AXIOM OS · ATMOSPHERE INTELLIGENCE
+              NOVEE OS · ATMOSPHERE INTELLIGENCE
             </div>
           </div>
         </div>

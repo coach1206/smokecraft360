@@ -808,7 +808,7 @@ function AxiomWordmark() {
           textTransform: "uppercase",
         }}
       >
-        AXIOM OS · EXPERIENCE ENGINE
+        NOVEE OS · EXPERIENCE ENGINE
       </motion.div>
     </div>
   );

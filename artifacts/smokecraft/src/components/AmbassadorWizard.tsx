@@ -554,7 +554,7 @@ export default function AmbassadorWizard({ ambassadorToken, onComplete, onCancel
                 NODE INITIALIZED
               </div>
               <div style={{ fontSize: 9, color: C.muted, letterSpacing: "0.14em", marginBottom: 24 }}>
-                AWAITING SOVEREIGN ACTIVATION · JC HAS BEEN NOTIFIED
+                AWAITING SOVEREIGN ACTIVATION · SOVEREIGN ADMIN HAS BEEN NOTIFIED
               </div>
 
               {/* Node details */}
@@ -579,7 +579,7 @@ export default function AmbassadorWizard({ ambassadorToken, onComplete, onCancel
               <div style={{ marginTop: 20, padding: "12px 16px", borderRadius: 10, background: "rgba(212,175,55,0.06)", border: `1px solid ${C.border}` }}>
                 <div style={{ fontSize: 9, color: C.muted, lineHeight: 1.8 }}>
                   This node is locked in <strong style={{ color: C.gold }}>OBSIDIAN LOCK</strong> state.<br />
-                  JC must authorize it from the Sovereign Command Center before it goes live.
+                  SOVEREIGN ADMIN must authorize it from the Command Center before it goes live.
                 </div>
               </div>
             </motion.div>

@@ -131,7 +131,7 @@ export function VendorLayout({ children, title, subtitle, breadcrumb }: Props) {
         {/* Footer */}
         <div style={{ padding: "16px 16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <div style={{ fontSize: 8, color: "rgba(255,255,255,0.20)", marginBottom: 10, letterSpacing: "0.12em" }}>
-            AXIOM OS — VENDOR LAYER
+            NOVEE OS — VENDOR LAYER
           </div>
           <button
             onClick={() => {

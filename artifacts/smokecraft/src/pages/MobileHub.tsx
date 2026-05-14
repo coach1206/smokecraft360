@@ -190,7 +190,7 @@ export default function MobileHub() {
         {/* ── Top bar ── */}
         <div style={{ padding: "16px 20px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ fontSize: 13, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: C.goldDim, letterSpacing: "0.18em" }}>
-            AXIOM OS
+            NOVEE OS
           </div>
           <div style={{ fontSize: 10, color: C.dim }}>{today}</div>
         </div>
@@ -520,7 +520,7 @@ export default function MobileHub() {
         {/* ── Footer ── */}
         <div style={{ padding: "0 16px", textAlign: "center" }}>
           <div style={{ fontSize: 14, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: C.goldDim, letterSpacing: "0.2em" }}>
-            AXIOM OS
+            NOVEE OS
           </div>
           <div style={{ fontSize: 9, color: C.dim, marginTop: 4, letterSpacing: "0.12em", textTransform: "uppercase" }}>
             A luxury experience, elevated

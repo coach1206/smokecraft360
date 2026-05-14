@@ -243,7 +243,7 @@ function HardwareTab() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginTop: "10px" }}>
           {[
             { ph: "Venue ID", key: "venueId" },
-            { ph: "Device Type (e.g. AXIOM Tablet)", key: "deviceType" },
+            { ph: "Device Type (e.g. NOVEE Tablet)", key: "deviceType" },
             { ph: "Monthly ($cents)", key: "monthlyCents" },
             { ph: "Setup fee ($cents)", key: "setupFeeCents" },
           ].map(f => (

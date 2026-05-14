@@ -539,7 +539,7 @@ export default function PinLogin() {
           fontSize: 7.5, letterSpacing: "0.34em", textTransform: "uppercase",
           color: GOLD_MID, marginBottom: 5, fontWeight: 700,
         }}>
-          AXIOM OS · EEIS
+          NOVEE OS · EEIS
         </div>
 
         {/* Title */}

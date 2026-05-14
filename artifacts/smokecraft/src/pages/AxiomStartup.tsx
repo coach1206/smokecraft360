@@ -21,7 +21,7 @@ import { useLocation }                 from "wouter";
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const BRAND_TEXT  = "PROFOUND INNOVATIONS";
-const POWERED_SUB = "POWERED BY AXIOM OS";
+const POWERED_SUB = "POWERED BY NOVEE OS";
 
 const TELEMETRY_LINES = [
   "Neural Bridge Connected",
@@ -319,10 +319,10 @@ export default function AxiomStartup({ onComplete }: { onComplete: () => void })
                         textTransform: "uppercase",
                         marginBottom:  6,
                       }}>
-                        {POWERED_SUB.split("AXIOM OS").map((part, i) => (
+                        {POWERED_SUB.split("NOVEE OS").map((part, i) => (
                           i === 0
                             ? <span key={i} style={{ color: "rgba(180,170,150,0.55)", WebkitTextFillColor: "rgba(180,170,150,0.55)" }}>{part}</span>
-                            : <span key={i} style={GOLD}>AXIOM OS</span>
+                            : <span key={i} style={GOLD}>NOVEE OS</span>
                         ))}
                       </div>
                       <div style={{

@@ -258,7 +258,7 @@ export function SovereignInsightCube() {
                   Sovereign Insight
                 </div>
                 <div className="titan-telemetry" style={{ fontSize: 9, color: "rgba(212,175,55,0.55)" }}>
-                  TRIFECTA PAIRING MATRIX · AXIOM OS
+                  TRIFECTA PAIRING MATRIX · NOVEE OS
                 </div>
               </motion.div>
 

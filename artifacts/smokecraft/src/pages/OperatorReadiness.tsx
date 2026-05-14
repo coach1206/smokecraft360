@@ -287,7 +287,7 @@ export default function OperatorReadiness() {
             </div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, color: C.text }}>Operator Readiness</div>
-              <div style={{ fontSize: 11, color: C.muted, letterSpacing: "0.06em" }}>LAUNCH CHECKLIST · AXIOM OS</div>
+              <div style={{ fontSize: 11, color: C.muted, letterSpacing: "0.06em" }}>LAUNCH CHECKLIST · NOVEE OS</div>
             </div>
           </div>
 
