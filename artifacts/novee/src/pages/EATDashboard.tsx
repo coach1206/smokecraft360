@@ -39,21 +39,32 @@ const SURFACE = "rgba(24,24,25,0.85)";
 
 type DashTab = "overview" | "events" | "modules" | "ritual";
 
+const POLL_INTERVAL_MS = 15_000;
+
 export default function EATDashboard() {
   const [, navigate] = useLocation();
-  const [tab, setTab]         = useState<DashTab>("overview");
-  const [data, setData]       = useState<TelemetrySummary>(EMPTY_SUMMARY);
-  const [loading, setLoading] = useState(true);
+  const [tab, setTab]             = useState<DashTab>("overview");
+  const [data, setData]           = useState<TelemetrySummary>(EMPTY_SUMMARY);
+  const [loading, setLoading]     = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [stale, setStale]         = useState(false);
   const [displayTotal, setDisplayTotal] = useState(0);
   const counterRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollRef    = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Load summary
-  useEffect(() => {
-    setLoading(true);
+  const fetchSummary = (isInitial = false) => {
+    if (isInitial) setLoading(true);
     apiFetch<TelemetrySummary>("/telemetry/summary")
-      .then((d) => setData(d))
-      .catch(() => setData(EMPTY_SUMMARY))
-      .finally(() => setLoading(false));
+      .then((d) => { setData(d); setLastUpdated(new Date()); setStale(false); })
+      .catch(() => { if (!isInitial) setStale(true); else setData(EMPTY_SUMMARY); })
+      .finally(() => { if (isInitial) setLoading(false); });
+  };
+
+  // Initial load + 15-second polling
+  useEffect(() => {
+    fetchSummary(true);
+    pollRef.current = setInterval(() => fetchSummary(false), POLL_INTERVAL_MS);
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
   }, []);
 
   // Animated counter
@@ -108,8 +119,15 @@ export default function EATDashboard() {
             <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(196,97,10,0.5)", marginTop: -1 }}>ENGAGEMENT · ANALYTICS · TELEMETRY</div>
           </div>
         </div>
-        <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.25)" }}>
-          INTERNAL · NO EXPORT
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
+          <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.25)" }}>
+            INTERNAL · NO EXPORT
+          </div>
+          {lastUpdated && (
+            <div style={{ fontSize: 9, letterSpacing: "0.1em", color: stale ? "rgba(180,60,60,0.7)" : "rgba(196,97,10,0.5)" }}>
+              {stale ? "⚠ STALE — " : ""}UPDATED {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+            </div>
+          )}
         </div>
       </header>
 

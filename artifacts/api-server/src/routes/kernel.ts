@@ -169,21 +169,25 @@ router.post("/telemetry", async (req: Request, res: Response) => {
 
 // ── GET /api/kernel/telemetry/summary ─────────────────────────────────────────
 // Public read — aggregated counts only, no PII.
+// Optional query param: ?days=N  (default 30, max 365)
 
-router.get("/telemetry/summary", async (_req: Request, res: Response) => {
+router.get("/telemetry/summary", async (req: Request, res: Response) => {
+  const rawDays = parseInt((req.query as Record<string, string>).days ?? "30", 10);
+  const days = Number.isFinite(rawDays) && rawDays > 0 ? Math.min(rawDays, 365) : 30;
+
   try {
     // Total event count
     const [{ total }] = await db
       .select({ total: count() })
       .from(telemetryEventsTable);
 
-    // Events per day (last 30 days)
+    // Events per day (last N days)
     const dailyResult = await db.execute(sql`
       SELECT
         DATE_TRUNC('day', occurred_at)::date::text AS day,
         COUNT(*)::int AS cnt
       FROM telemetry_events
-      WHERE occurred_at >= NOW() - INTERVAL '30 days'
+      WHERE occurred_at >= NOW() - (${days} || ' days')::interval
       GROUP BY 1
       ORDER BY 1 ASC
     `);
