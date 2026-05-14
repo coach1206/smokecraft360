@@ -18,6 +18,78 @@ import {
 } from "recharts";
 import { apiFetch } from "@/lib/api";
 
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const raw = token.split(".")[1] ?? "";
+    const padded = raw.replace(/-/g, "+").replace(/_/g, "/").padEnd(
+      raw.length + ((4 - (raw.length % 4)) % 4),
+      "=",
+    );
+    return JSON.parse(atob(padded)) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+function parseJwtRole(): string | null {
+  const token =
+    localStorage.getItem("axiom_jwt") ??
+    localStorage.getItem("novee_admin_token") ??
+    "";
+  if (!token) return null;
+  const payload = decodeJwtPayload(token);
+  return typeof payload?.role === "string" ? payload.role : null;
+}
+
+function buildCsvContent(data: TelemetrySummary, days: number): string {
+  const rows: string[] = [];
+
+  rows.push("# E.A.T. Engine Telemetry Export");
+  rows.push(`# Date range: last ${days} day(s)`);
+  rows.push(`# Generated: ${new Date().toISOString()}`);
+  rows.push("");
+
+  rows.push("## Daily Counts");
+  rows.push("date,events");
+  for (const d of data.dailyCounts) {
+    rows.push(`${d.day},${d.cnt}`);
+  }
+  rows.push("");
+
+  rows.push("## Top Event Types");
+  rows.push("event_type,count");
+  for (const e of data.topEventTypes) {
+    rows.push(`"${e.event_type.replace(/"/g, '""')}",${e.cnt}`);
+  }
+  rows.push("");
+
+  rows.push("## Module Usage");
+  rows.push("module_name,module_slug,event_count");
+  for (const m of data.moduleUsage) {
+    rows.push(`"${m.module_name.replace(/"/g, '""')}","${m.module_slug}",${m.event_count}`);
+  }
+  rows.push("");
+
+  rows.push("## Summary");
+  rows.push("metric,value");
+  rows.push(`total_events,${data.total}`);
+  rows.push(`ritual_engagement_pct,${data.ritualEngagement}`);
+
+  return rows.join("\r\n");
+}
+
+function triggerCsvDownload(content: string, days: number): void {
+  const today = new Date().toISOString().slice(0, 10);
+  const filename = `eat-telemetry-${days}d-${today}.csv`;
+  const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
 interface TelemetryWindowSummary {
   total: number;
   dailyCounts: { day: string; cnt: number }[];
@@ -84,6 +156,8 @@ function deltaPercent(current: number, prior: number): number | null {
 
 export default function EATDashboard() {
   const [, navigate] = useLocation();
+
+  const [userRole] = useState<string | null>(() => parseJwtRole());
 
   const [days, setDaysState] = useState<number>(() => parseDaysFromSearch(window.location.search));
   const [customInput, setCustomInput]   = useState<string>("");
@@ -422,10 +496,41 @@ export default function EATDashboard() {
           )}
         </div>
 
-        {/* Right: meta */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
-          <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.25)" }}>
-            INTERNAL · NO EXPORT
+        {/* Right: meta + export */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {(userRole === "admin" || userRole === "super_admin") && !loading && (
+              <button
+                onClick={() => {
+                  const csv = buildCsvContent(data, days);
+                  triggerCsvDownload(csv, days);
+                }}
+                title={`Export last ${days} day(s) as CSV`}
+                style={{
+                  display: "flex", alignItems: "center", gap: 5,
+                  background: "rgba(196,97,10,0.12)",
+                  border: "1px solid rgba(196,97,10,0.35)",
+                  borderRadius: 5, padding: "4px 11px",
+                  fontSize: 10, fontWeight: 700, letterSpacing: "0.12em",
+                  color: "#C4610A", cursor: "pointer",
+                  transition: "background 0.15s, border-color 0.15s",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = "rgba(196,97,10,0.22)";
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(196,97,10,0.6)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = "rgba(196,97,10,0.12)";
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(196,97,10,0.35)";
+                }}
+              >
+                <span style={{ fontSize: 11 }}>↓</span>
+                EXPORT CSV
+              </button>
+            )}
+            <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.25)" }}>
+              INTERNAL
+            </div>
           </div>
           {lastUpdated && (
             <div style={{ fontSize: 9, letterSpacing: "0.1em", color: stale ? "rgba(180,60,60,0.7)" : "rgba(196,97,10,0.5)" }}>
