@@ -3,13 +3,13 @@
  *
  * Shows internal telemetry from the NOVEE OS kernel:
  *  - Total events counter (animated)
- *  - Events over time (line chart — last 30 days)
+ *  - Events over time (line chart — configurable date range)
  *  - Top event types (bar chart)
  *  - Per-module usage (horizontal bars)
  *  - Ritual Engagement metric (ratio of build-completions to swipe-starts)
  */
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import {
   LineChart, Line, BarChart, Bar,
@@ -41,8 +41,29 @@ type DashTab = "overview" | "events" | "modules" | "ritual";
 
 const POLL_INTERVAL_MS = 15_000;
 
+const PRESET_OPTIONS = [
+  { label: "7D",  days: 7 },
+  { label: "30D", days: 30 },
+  { label: "90D", days: 90 },
+];
+
+function parseDaysFromSearch(search: string): number {
+  try {
+    const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+    const raw = parseInt(params.get("days") ?? "", 10);
+    if (Number.isFinite(raw) && raw > 0) return Math.min(raw, 365);
+  } catch { /* ignore */ }
+  return 30;
+}
+
 export default function EATDashboard() {
   const [, navigate] = useLocation();
+
+  // Initialise days from URL on mount
+  const [days, setDaysState] = useState<number>(() => parseDaysFromSearch(window.location.search));
+  const [customInput, setCustomInput] = useState<string>("");
+  const [showCustom, setShowCustom]   = useState(false);
+
   const [tab, setTab]             = useState<DashTab>("overview");
   const [data, setData]           = useState<TelemetrySummary>(EMPTY_SUMMARY);
   const [loading, setLoading]     = useState(true);
@@ -52,20 +73,39 @@ export default function EATDashboard() {
   const counterRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollRef    = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const fetchSummary = (isInitial = false) => {
+  // Sync days → URL
+  const setDays = useCallback((n: number) => {
+    setDaysState(n);
+    const url = new URL(window.location.href);
+    url.searchParams.set("days", String(n));
+    window.history.replaceState({}, "", url.toString());
+  }, []);
+
+  // Keep state in sync when the user navigates back/forward
+  useEffect(() => {
+    const onPopState = () => {
+      const next = parseDaysFromSearch(window.location.search);
+      setDaysState(next);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  const fetchSummary = useCallback((isInitial = false, d = days) => {
     if (isInitial) setLoading(true);
-    apiFetch<TelemetrySummary>("/telemetry/summary")
-      .then((d) => { setData(d); setLastUpdated(new Date()); setStale(false); })
+    apiFetch<TelemetrySummary>(`/telemetry/summary?days=${d}`)
+      .then((res) => { setData(res); setLastUpdated(new Date()); setStale(false); })
       .catch(() => { if (!isInitial) setStale(true); else setData(EMPTY_SUMMARY); })
       .finally(() => { if (isInitial) setLoading(false); });
-  };
+  }, [days]);
 
-  // Initial load + 15-second polling
+  // Re-fetch + restart polling when days changes
   useEffect(() => {
-    fetchSummary(true);
-    pollRef.current = setInterval(() => fetchSummary(false), POLL_INTERVAL_MS);
+    if (pollRef.current) clearInterval(pollRef.current);
+    fetchSummary(true, days);
+    pollRef.current = setInterval(() => fetchSummary(false, days), POLL_INTERVAL_MS);
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
-  }, []);
+  }, [days]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Animated counter
   useEffect(() => {
@@ -80,6 +120,17 @@ export default function EATDashboard() {
     }, 25);
     return () => { if (counterRef.current) clearInterval(counterRef.current); };
   }, [data.total]);
+
+  const handleCustomSubmit = () => {
+    const n = parseInt(customInput, 10);
+    if (Number.isFinite(n) && n > 0) {
+      setDays(Math.min(n, 365));
+      setShowCustom(false);
+      setCustomInput("");
+    }
+  };
+
+  const isCustomActive = !PRESET_OPTIONS.some((p) => p.days === days);
 
   const TABS: { id: DashTab; label: string }[] = [
     { id: "overview", label: "OVERVIEW" },
@@ -103,10 +154,12 @@ export default function EATDashboard() {
       <header style={{
         background: "linear-gradient(180deg, #1A1A1B 0%, #111112 100%)",
         borderBottom: "1px solid rgba(196,97,10,0.15)",
-        padding: "0 28px", height: 56,
+        padding: "0 28px", minHeight: 56,
         display: "flex", alignItems: "center", justifyContent: "space-between",
+        flexWrap: "wrap", gap: "8px 16px",
         position: "sticky", top: 0, zIndex: 100,
       }}>
+        {/* Left: back + title */}
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <button
             onClick={() => navigate("/")}
@@ -119,6 +172,74 @@ export default function EATDashboard() {
             <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(196,97,10,0.5)", marginTop: -1 }}>ENGAGEMENT · ANALYTICS · TELEMETRY</div>
           </div>
         </div>
+
+        {/* Center: date-range picker */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.3)", marginRight: 4 }}>RANGE</span>
+          {PRESET_OPTIONS.map((opt) => (
+            <button
+              key={opt.days}
+              onClick={() => { setDays(opt.days); setShowCustom(false); }}
+              style={{
+                background: days === opt.days ? "rgba(196,97,10,0.2)" : "rgba(255,255,255,0.04)",
+                border: `1px solid ${days === opt.days ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
+                borderRadius: 5, padding: "4px 10px",
+                fontSize: 10, fontWeight: 700, letterSpacing: "0.1em",
+                color: days === opt.days ? "#C4610A" : "rgba(245,237,216,0.45)",
+                cursor: "pointer", transition: "all 0.15s",
+              }}
+            >
+              {opt.label}
+            </button>
+          ))}
+          {/* Custom button */}
+          <button
+            onClick={() => setShowCustom((v) => !v)}
+            style={{
+              background: isCustomActive ? "rgba(196,97,10,0.2)" : "rgba(255,255,255,0.04)",
+              border: `1px solid ${isCustomActive ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
+              borderRadius: 5, padding: "4px 10px",
+              fontSize: 10, fontWeight: 700, letterSpacing: "0.1em",
+              color: isCustomActive ? "#C4610A" : "rgba(245,237,216,0.45)",
+              cursor: "pointer", transition: "all 0.15s",
+            }}
+          >
+            {isCustomActive ? `${days}D` : "CUSTOM"}
+          </button>
+          {showCustom && (
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <input
+                type="number"
+                min={1}
+                max={365}
+                value={customInput}
+                onChange={(e) => setCustomInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleCustomSubmit()}
+                placeholder="days"
+                autoFocus
+                style={{
+                  width: 58, padding: "4px 8px",
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(196,97,10,0.35)",
+                  borderRadius: 5, color: "#F5EDD8",
+                  fontSize: 11, outline: "none",
+                }}
+              />
+              <button
+                onClick={handleCustomSubmit}
+                style={{
+                  background: "rgba(196,97,10,0.25)", border: "1px solid rgba(196,97,10,0.5)",
+                  borderRadius: 5, padding: "4px 8px",
+                  fontSize: 10, color: "#C4610A", cursor: "pointer",
+                }}
+              >
+                GO
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Right: meta */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
           <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.25)" }}>
             INTERNAL · NO EXPORT
@@ -155,8 +276,8 @@ export default function EATDashboard() {
           <LoadingState />
         ) : (
           <>
-            {tab === "overview" && <OverviewTab data={data} displayTotal={displayTotal} />}
-            {tab === "events"   && <EventsTab data={data} />}
+            {tab === "overview" && <OverviewTab data={data} displayTotal={displayTotal} days={days} />}
+            {tab === "events"   && <EventsTab data={data} days={days} />}
             {tab === "modules"  && <ModulesTab data={data} />}
             {tab === "ritual"   && <RitualTab data={data} />}
           </>
@@ -168,7 +289,7 @@ export default function EATDashboard() {
 
 /* ── Tab Views ──────────────────────────────────────────────────────────────── */
 
-function OverviewTab({ data, displayTotal }: { data: TelemetrySummary; displayTotal: number }) {
+function OverviewTab({ data, displayTotal, days }: { data: TelemetrySummary; displayTotal: number; days: number }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
 
@@ -199,7 +320,7 @@ function OverviewTab({ data, displayTotal }: { data: TelemetrySummary; displayTo
       {data.dailyCounts.length > 0 ? (
         <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "20px" }}>
           <div style={{ fontSize: 9, letterSpacing: "0.22em", color: "rgba(245,237,216,0.35)", marginBottom: 16 }}>
-            EVENTS OVER TIME (30 DAYS)
+            EVENTS OVER TIME ({days} DAYS)
           </div>
           <ResponsiveContainer width="100%" height={160}>
             <LineChart data={data.dailyCounts} margin={{ top: 4, right: 8, bottom: 4, left: -20 }}>
@@ -232,7 +353,7 @@ function OverviewTab({ data, displayTotal }: { data: TelemetrySummary; displayTo
   );
 }
 
-function EventsTab({ data }: { data: TelemetrySummary }) {
+function EventsTab({ data, days }: { data: TelemetrySummary; days: number }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       <SectionHeader label="EVENT TYPE BREAKDOWN" sub="Count distribution across all ingested event types" />
@@ -260,7 +381,7 @@ function EventsTab({ data }: { data: TelemetrySummary }) {
       {/* Daily trend */}
       {data.dailyCounts.length > 0 && (
         <>
-          <SectionHeader label="DAILY TREND" sub="Event volume per day over the last 30 days" />
+          <SectionHeader label="DAILY TREND" sub={`Event volume per day over the last ${days} days`} />
           <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "20px" }}>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={data.dailyCounts} margin={{ top: 4, right: 8, bottom: 4, left: -20 }}>
