@@ -167,6 +167,33 @@ router.post("/telemetry", async (req: Request, res: Response) => {
   }
 });
 
+// ── GET /api/kernel/telemetry/recent ──────────────────────────────────────────
+// Returns the most recent telemetry events in reverse-chronological order.
+// Optional query param: ?limit=N  (default 20, max 100)
+
+router.get("/telemetry/recent", async (req: Request, res: Response) => {
+  const rawLimit = parseInt((req.query as Record<string, string>).limit ?? "20", 10);
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(rawLimit, 100) : 20;
+
+  try {
+    const rows = await db
+      .select({
+        id:         telemetryEventsTable.id,
+        eventType:  telemetryEventsTable.eventType,
+        moduleId:   telemetryEventsTable.moduleId,
+        venueId:    telemetryEventsTable.venueId,
+        occurredAt: telemetryEventsTable.occurredAt,
+      })
+      .from(telemetryEventsTable)
+      .orderBy(desc(telemetryEventsTable.occurredAt))
+      .limit(limit);
+
+    return res.json({ events: rows });
+  } catch {
+    return res.status(500).json({ error: "Failed to load recent telemetry events" });
+  }
+});
+
 // ── GET /api/kernel/telemetry/summary ─────────────────────────────────────────
 // Public read — aggregated counts only, no PII.
 // Optional query param: ?days=N  (default 30, max 365)

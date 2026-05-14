@@ -25,6 +25,14 @@ interface TelemetrySummary {
   ritualEngagement: number;
 }
 
+interface RecentEvent {
+  id: string;
+  eventType: string;
+  moduleId: string | null;
+  venueId: string | null;
+  occurredAt: string;
+}
+
 const EMPTY_SUMMARY: TelemetrySummary = {
   total: 0,
   dailyCounts: [],
@@ -37,7 +45,7 @@ const ACCENT = "#C4610A";
 const ACCENT_DIM = "rgba(196,97,10,0.35)";
 const SURFACE = "rgba(24,24,25,0.85)";
 
-type DashTab = "overview" | "events" | "modules" | "ritual";
+type DashTab = "overview" | "events" | "modules" | "ritual" | "live";
 
 const POLL_INTERVAL_MS = 15_000;
 
@@ -73,6 +81,12 @@ export default function EATDashboard() {
   const counterRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollRef    = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const [recentEvents, setRecentEvents]     = useState<RecentEvent[]>([]);
+  const [newEventIds, setNewEventIds]       = useState<Set<string>>(new Set());
+  const prevEventIdsRef                     = useRef<Set<string>>(new Set());
+  const hasBaselineRef                      = useRef(false);
+  const flashTimerRef                       = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Sync days → URL
   const setDays = useCallback((n: number) => {
     setDaysState(n);
@@ -99,12 +113,44 @@ export default function EATDashboard() {
       .finally(() => { if (isInitial) setLoading(false); });
   }, [days]);
 
+  const fetchRecentEvents = useCallback(() => {
+    apiFetch<{ events: RecentEvent[] }>("/telemetry/recent?limit=20")
+      .then(({ events }) => {
+        const incomingIds = new Set(events.map((e) => e.id));
+        const isFirstLoad = !hasBaselineRef.current;
+        hasBaselineRef.current = true;
+
+        if (!isFirstLoad) {
+          const freshIds = new Set<string>();
+          for (const id of incomingIds) {
+            if (!prevEventIdsRef.current.has(id)) freshIds.add(id);
+          }
+          if (freshIds.size > 0) {
+            if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+            setNewEventIds(freshIds);
+            flashTimerRef.current = setTimeout(() => setNewEventIds(new Set()), 1800);
+          }
+        }
+
+        prevEventIdsRef.current = incomingIds;
+        setRecentEvents(events);
+      })
+      .catch(() => { /* silent — feed is additive UI */ });
+  }, []);
+
   // Re-fetch + restart polling when days changes
   useEffect(() => {
     if (pollRef.current) clearInterval(pollRef.current);
     fetchSummary(true, days);
-    pollRef.current = setInterval(() => fetchSummary(false, days), POLL_INTERVAL_MS);
-    return () => { if (pollRef.current) clearInterval(pollRef.current); };
+    fetchRecentEvents();
+    pollRef.current = setInterval(() => {
+      fetchSummary(false, days);
+      fetchRecentEvents();
+    }, POLL_INTERVAL_MS);
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+      if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+    };
   }, [days]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Animated counter
@@ -137,6 +183,7 @@ export default function EATDashboard() {
     { id: "events",   label: "EVENTS" },
     { id: "modules",  label: "MODULES" },
     { id: "ritual",   label: "RITUAL" },
+    { id: "live",     label: "● LIVE FEED" },
   ];
 
   return (
@@ -280,6 +327,7 @@ export default function EATDashboard() {
             {tab === "events"   && <EventsTab data={data} days={days} />}
             {tab === "modules"  && <ModulesTab data={data} />}
             {tab === "ritual"   && <RitualTab data={data} />}
+            {tab === "live"     && <LiveFeedTab events={recentEvents} newEventIds={newEventIds} />}
           </>
         )}
       </main>
@@ -499,6 +547,142 @@ function RitualTab({ data }: { data: TelemetrySummary }) {
           <span>70 — EXCELLENT</span>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── Live Feed Tab ──────────────────────────────────────────────────────────── */
+
+const FLASH_KEYFRAMES = `
+@keyframes feedFlash {
+  0%   { background: rgba(196,97,10,0.22); }
+  60%  { background: rgba(196,97,10,0.10); }
+  100% { background: transparent; }
+}
+@keyframes feedSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+`;
+
+function formatRelative(iso: string): string {
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diff < 5)  return "just now";
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  return `${Math.floor(diff / 3600)}h ago`;
+}
+
+function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventIds: Set<string> }) {
+  const [, forceRender] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => forceRender((n) => n + 1), 10_000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <style>{FLASH_KEYFRAMES}</style>
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div>
+          <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(196,97,10,0.5)", marginBottom: 3 }}>
+            LIVE EVENT FEED
+          </div>
+          <div style={{ fontSize: 12, color: "rgba(245,237,216,0.4)" }}>
+            Most recent 20 telemetry events · auto-refreshes every 15 s
+          </div>
+        </div>
+        <div style={{
+          display: "flex", alignItems: "center", gap: 6,
+          background: "rgba(196,97,10,0.08)", border: "1px solid rgba(196,97,10,0.2)",
+          borderRadius: 20, padding: "4px 12px",
+        }}>
+          <div style={{
+            width: 7, height: 7, borderRadius: "50%", background: "#C4610A",
+            boxShadow: "0 0 6px #C4610A",
+            animation: "feedPulse 2s ease-in-out infinite",
+          }} />
+          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: "#C4610A" }}>LIVE</span>
+        </div>
+        <style>{`@keyframes feedPulse{0%,100%{opacity:1}50%{opacity:0.35}}`}</style>
+      </div>
+
+      {events.length === 0 ? (
+        <EmptyState label="No telemetry events recorded yet. Emit events from SmokeCraft to see them here." />
+      ) : (
+        <div style={{
+          background: SURFACE,
+          border: "1px solid rgba(255,255,255,0.06)",
+          borderRadius: 10, overflow: "hidden",
+        }}>
+          {/* Table header */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 90px 90px 110px",
+            gap: "0 12px",
+            padding: "10px 16px",
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
+            fontSize: 9, fontWeight: 700, letterSpacing: "0.18em",
+            color: "rgba(245,237,216,0.25)",
+          }}>
+            <span>EVENT TYPE</span>
+            <span>MODULE</span>
+            <span>VENUE</span>
+            <span style={{ textAlign: "right" }}>TIME</span>
+          </div>
+
+          {events.map((ev) => {
+            const isNew = newEventIds.has(ev.id);
+            return (
+              <div
+                key={ev.id}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 90px 90px 110px",
+                  gap: "0 12px",
+                  padding: "11px 16px",
+                  borderBottom: "1px solid rgba(255,255,255,0.04)",
+                  alignItems: "center",
+                  animation: isNew
+                    ? "feedFlash 1.8s ease-out forwards, feedSlideIn 0.25s ease-out"
+                    : undefined,
+                }}
+              >
+                <span style={{
+                  fontSize: 12, fontFamily: "monospace",
+                  color: isNew ? "#D48B00" : "#F5EDD8",
+                  fontWeight: isNew ? 600 : 400,
+                  transition: "color 0.4s",
+                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                }}>
+                  {ev.eventType}
+                </span>
+                <span style={{
+                  fontSize: 10, color: "rgba(245,237,216,0.35)",
+                  fontFamily: "monospace",
+                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                }}>
+                  {ev.moduleId ? ev.moduleId.slice(0, 8) + "…" : "—"}
+                </span>
+                <span style={{
+                  fontSize: 10, color: "rgba(245,237,216,0.35)",
+                  fontFamily: "monospace",
+                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                }}>
+                  {ev.venueId ? ev.venueId.slice(0, 8) + "…" : "—"}
+                </span>
+                <span style={{
+                  fontSize: 10, color: "rgba(245,237,216,0.3)",
+                  textAlign: "right", whiteSpace: "nowrap",
+                }}>
+                  {formatRelative(ev.occurredAt)}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
