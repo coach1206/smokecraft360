@@ -7,22 +7,27 @@
  *  - Top event types (bar chart)
  *  - Per-module usage (horizontal bars)
  *  - Ritual Engagement metric (ratio of build-completions to swipe-starts)
+ *  - Compare mode: overlay two date ranges with delta % badges
  */
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import {
   LineChart, Line, BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell,
 } from "recharts";
 import { apiFetch } from "@/lib/api";
 
-interface TelemetrySummary {
+interface TelemetryWindowSummary {
   total: number;
   dailyCounts: { day: string; cnt: number }[];
   topEventTypes: { event_type: string; cnt: number }[];
   moduleUsage: { module_name: string; module_slug: string; event_count: number }[];
   ritualEngagement: number;
+}
+
+interface TelemetrySummary extends TelemetryWindowSummary {
+  comparison: TelemetryWindowSummary | null;
 }
 
 interface RecentEvent {
@@ -39,11 +44,13 @@ const EMPTY_SUMMARY: TelemetrySummary = {
   topEventTypes: [],
   moduleUsage: [],
   ritualEngagement: 0,
+  comparison: null,
 };
 
-const ACCENT = "#C4610A";
-const ACCENT_DIM = "rgba(196,97,10,0.35)";
-const SURFACE = "rgba(24,24,25,0.85)";
+const ACCENT      = "#C4610A";
+const ACCENT_DIM  = "rgba(196,97,10,0.35)";
+const COMPARE_COLOR = "#4A90D9";
+const SURFACE     = "rgba(24,24,25,0.85)";
 
 type DashTab = "overview" | "events" | "modules" | "ritual" | "live";
 
@@ -64,13 +71,22 @@ function parseDaysFromSearch(search: string): number {
   return 30;
 }
 
+function deltaPercent(current: number, prior: number): number | null {
+  if (prior === 0) return null;
+  return Math.round(((current - prior) / prior) * 100);
+}
+
 export default function EATDashboard() {
   const [, navigate] = useLocation();
 
-  // Initialise days from URL on mount
   const [days, setDaysState] = useState<number>(() => parseDaysFromSearch(window.location.search));
-  const [customInput, setCustomInput] = useState<string>("");
-  const [showCustom, setShowCustom]   = useState(false);
+  const [customInput, setCustomInput]   = useState<string>("");
+  const [showCustom, setShowCustom]     = useState(false);
+
+  const [compareEnabled, setCompareEnabled]     = useState(false);
+  const [compareDays, setCompareDaysState]       = useState<number>(30);
+  const [compareCustomInput, setCompareCustomInput] = useState<string>("");
+  const [showCompareCustom, setShowCompareCustom]   = useState(false);
 
   const [tab, setTab]             = useState<DashTab>("overview");
   const [data, setData]           = useState<TelemetrySummary>(EMPTY_SUMMARY);
@@ -87,7 +103,6 @@ export default function EATDashboard() {
   const hasBaselineRef                      = useRef(false);
   const flashTimerRef                       = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sync days → URL
   const setDays = useCallback((n: number) => {
     setDaysState(n);
     const url = new URL(window.location.href);
@@ -95,7 +110,10 @@ export default function EATDashboard() {
     window.history.replaceState({}, "", url.toString());
   }, []);
 
-  // Keep state in sync when the user navigates back/forward
+  const setCompareDays = useCallback((n: number) => {
+    setCompareDaysState(n);
+  }, []);
+
   useEffect(() => {
     const onPopState = () => {
       const next = parseDaysFromSearch(window.location.search);
@@ -105,13 +123,19 @@ export default function EATDashboard() {
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
-  const fetchSummary = useCallback((isInitial = false, d = days) => {
+  // When days changes, default compareDays to match
+  useEffect(() => {
+    setCompareDaysState(days);
+  }, [days]);
+
+  const fetchSummary = useCallback((isInitial = false, d = days, cd = compareDays, ce = compareEnabled) => {
     if (isInitial) setLoading(true);
-    apiFetch<TelemetrySummary>(`/telemetry/summary?days=${d}`)
+    const compareParam = ce ? `&compareDays=${cd}` : "";
+    apiFetch<TelemetrySummary>(`/telemetry/summary?days=${d}${compareParam}`)
       .then((res) => { setData(res); setLastUpdated(new Date()); setStale(false); })
       .catch(() => { if (!isInitial) setStale(true); else setData(EMPTY_SUMMARY); })
       .finally(() => { if (isInitial) setLoading(false); });
-  }, [days]);
+  }, [days, compareDays, compareEnabled]);
 
   const fetchRecentEvents = useCallback(() => {
     apiFetch<{ events: RecentEvent[] }>("/telemetry/recent?limit=20")
@@ -135,25 +159,23 @@ export default function EATDashboard() {
         prevEventIdsRef.current = incomingIds;
         setRecentEvents(events);
       })
-      .catch(() => { /* silent — feed is additive UI */ });
+      .catch(() => { /* silent */ });
   }, []);
 
-  // Re-fetch + restart polling when days changes
   useEffect(() => {
     if (pollRef.current) clearInterval(pollRef.current);
-    fetchSummary(true, days);
+    fetchSummary(true, days, compareDays, compareEnabled);
     fetchRecentEvents();
     pollRef.current = setInterval(() => {
-      fetchSummary(false, days);
+      fetchSummary(false, days, compareDays, compareEnabled);
       fetchRecentEvents();
     }, POLL_INTERVAL_MS);
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
       if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
     };
-  }, [days]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [days, compareDays, compareEnabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Animated counter
   useEffect(() => {
     if (counterRef.current) clearInterval(counterRef.current);
     if (data.total === 0) { setDisplayTotal(0); return; }
@@ -176,7 +198,17 @@ export default function EATDashboard() {
     }
   };
 
-  const isCustomActive = !PRESET_OPTIONS.some((p) => p.days === days);
+  const handleCompareCustomSubmit = () => {
+    const n = parseInt(compareCustomInput, 10);
+    if (Number.isFinite(n) && n > 0) {
+      setCompareDays(Math.min(n, 365));
+      setShowCompareCustom(false);
+      setCompareCustomInput("");
+    }
+  };
+
+  const isCustomActive        = !PRESET_OPTIONS.some((p) => p.days === days);
+  const isCompareCustomActive = !PRESET_OPTIONS.some((p) => p.days === compareDays);
 
   const TABS: { id: DashTab; label: string }[] = [
     { id: "overview", label: "OVERVIEW" },
@@ -220,68 +252,165 @@ export default function EATDashboard() {
           </div>
         </div>
 
-        {/* Center: date-range picker */}
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.3)", marginRight: 4 }}>RANGE</span>
-          {PRESET_OPTIONS.map((opt) => (
+        {/* Center: primary range + compare controls */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          {/* Primary range */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.3)", marginRight: 2 }}>RANGE</span>
+            {PRESET_OPTIONS.map((opt) => (
+              <button
+                key={opt.days}
+                onClick={() => { setDays(opt.days); setShowCustom(false); }}
+                style={{
+                  background: days === opt.days ? "rgba(196,97,10,0.2)" : "rgba(255,255,255,0.04)",
+                  border: `1px solid ${days === opt.days ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
+                  borderRadius: 5, padding: "4px 10px",
+                  fontSize: 10, fontWeight: 700, letterSpacing: "0.1em",
+                  color: days === opt.days ? "#C4610A" : "rgba(245,237,216,0.45)",
+                  cursor: "pointer", transition: "all 0.15s",
+                }}
+              >
+                {opt.label}
+              </button>
+            ))}
             <button
-              key={opt.days}
-              onClick={() => { setDays(opt.days); setShowCustom(false); }}
+              onClick={() => setShowCustom((v) => !v)}
               style={{
-                background: days === opt.days ? "rgba(196,97,10,0.2)" : "rgba(255,255,255,0.04)",
-                border: `1px solid ${days === opt.days ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
+                background: isCustomActive ? "rgba(196,97,10,0.2)" : "rgba(255,255,255,0.04)",
+                border: `1px solid ${isCustomActive ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
                 borderRadius: 5, padding: "4px 10px",
                 fontSize: 10, fontWeight: 700, letterSpacing: "0.1em",
-                color: days === opt.days ? "#C4610A" : "rgba(245,237,216,0.45)",
+                color: isCustomActive ? "#C4610A" : "rgba(245,237,216,0.45)",
                 cursor: "pointer", transition: "all 0.15s",
               }}
             >
-              {opt.label}
+              {isCustomActive ? `${days}D` : "CUSTOM"}
             </button>
-          ))}
-          {/* Custom button */}
+            {showCustom && (
+              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <input
+                  type="number"
+                  min={1}
+                  max={365}
+                  value={customInput}
+                  onChange={(e) => setCustomInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleCustomSubmit()}
+                  placeholder="days"
+                  autoFocus
+                  style={{
+                    width: 58, padding: "4px 8px",
+                    background: "rgba(255,255,255,0.06)",
+                    border: "1px solid rgba(196,97,10,0.35)",
+                    borderRadius: 5, color: "#F5EDD8",
+                    fontSize: 11, outline: "none",
+                  }}
+                />
+                <button
+                  onClick={handleCustomSubmit}
+                  style={{
+                    background: "rgba(196,97,10,0.25)", border: "1px solid rgba(196,97,10,0.5)",
+                    borderRadius: 5, padding: "4px 8px",
+                    fontSize: 10, color: "#C4610A", cursor: "pointer",
+                  }}
+                >
+                  GO
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Divider */}
+          <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)" }} />
+
+          {/* Compare toggle */}
           <button
-            onClick={() => setShowCustom((v) => !v)}
+            onClick={() => setCompareEnabled((v) => !v)}
             style={{
-              background: isCustomActive ? "rgba(196,97,10,0.2)" : "rgba(255,255,255,0.04)",
-              border: `1px solid ${isCustomActive ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
-              borderRadius: 5, padding: "4px 10px",
-              fontSize: 10, fontWeight: 700, letterSpacing: "0.1em",
-              color: isCustomActive ? "#C4610A" : "rgba(245,237,216,0.45)",
+              background: compareEnabled ? "rgba(74,144,217,0.18)" : "rgba(255,255,255,0.04)",
+              border: `1px solid ${compareEnabled ? "rgba(74,144,217,0.5)" : "rgba(255,255,255,0.08)"}`,
+              borderRadius: 5, padding: "4px 11px",
+              fontSize: 10, fontWeight: 700, letterSpacing: "0.12em",
+              color: compareEnabled ? "#4A90D9" : "rgba(245,237,216,0.4)",
               cursor: "pointer", transition: "all 0.15s",
+              display: "flex", alignItems: "center", gap: 5,
             }}
           >
-            {isCustomActive ? `${days}D` : "CUSTOM"}
+            <span style={{ fontSize: 8 }}>⇄</span>
+            COMPARE
           </button>
-          {showCustom && (
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <input
-                type="number"
-                min={1}
-                max={365}
-                value={customInput}
-                onChange={(e) => setCustomInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCustomSubmit()}
-                placeholder="days"
-                autoFocus
-                style={{
-                  width: 58, padding: "4px 8px",
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(196,97,10,0.35)",
-                  borderRadius: 5, color: "#F5EDD8",
-                  fontSize: 11, outline: "none",
-                }}
-              />
+
+          {/* Comparison range picker */}
+          {compareEnabled && (
+            <div style={{
+              display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap",
+              background: "rgba(74,144,217,0.06)",
+              border: "1px solid rgba(74,144,217,0.15)",
+              borderRadius: 7, padding: "4px 10px",
+            }}>
+              <span style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(74,144,217,0.6)", marginRight: 2 }}>VS</span>
+              {PRESET_OPTIONS.map((opt) => (
+                <button
+                  key={opt.days}
+                  onClick={() => { setCompareDays(opt.days); setShowCompareCustom(false); }}
+                  style={{
+                    background: compareDays === opt.days ? "rgba(74,144,217,0.2)" : "rgba(255,255,255,0.04)",
+                    border: `1px solid ${compareDays === opt.days ? "rgba(74,144,217,0.5)" : "rgba(255,255,255,0.08)"}`,
+                    borderRadius: 5, padding: "3px 9px",
+                    fontSize: 10, fontWeight: 700, letterSpacing: "0.1em",
+                    color: compareDays === opt.days ? "#4A90D9" : "rgba(245,237,216,0.4)",
+                    cursor: "pointer", transition: "all 0.15s",
+                  }}
+                >
+                  {opt.label}
+                </button>
+              ))}
               <button
-                onClick={handleCustomSubmit}
+                onClick={() => setShowCompareCustom((v) => !v)}
                 style={{
-                  background: "rgba(196,97,10,0.25)", border: "1px solid rgba(196,97,10,0.5)",
-                  borderRadius: 5, padding: "4px 8px",
-                  fontSize: 10, color: "#C4610A", cursor: "pointer",
+                  background: isCompareCustomActive ? "rgba(74,144,217,0.2)" : "rgba(255,255,255,0.04)",
+                  border: `1px solid ${isCompareCustomActive ? "rgba(74,144,217,0.5)" : "rgba(255,255,255,0.08)"}`,
+                  borderRadius: 5, padding: "3px 9px",
+                  fontSize: 10, fontWeight: 700, letterSpacing: "0.1em",
+                  color: isCompareCustomActive ? "#4A90D9" : "rgba(245,237,216,0.4)",
+                  cursor: "pointer", transition: "all 0.15s",
                 }}
               >
-                GO
+                {isCompareCustomActive ? `${compareDays}D` : "CUSTOM"}
               </button>
+              {showCompareCustom && (
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <input
+                    type="number"
+                    min={1}
+                    max={365}
+                    value={compareCustomInput}
+                    onChange={(e) => setCompareCustomInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleCompareCustomSubmit()}
+                    placeholder="days"
+                    autoFocus
+                    style={{
+                      width: 58, padding: "4px 8px",
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(74,144,217,0.35)",
+                      borderRadius: 5, color: "#F5EDD8",
+                      fontSize: 11, outline: "none",
+                    }}
+                  />
+                  <button
+                    onClick={handleCompareCustomSubmit}
+                    style={{
+                      background: "rgba(74,144,217,0.2)", border: "1px solid rgba(74,144,217,0.45)",
+                      borderRadius: 5, padding: "4px 8px",
+                      fontSize: 10, color: "#4A90D9", cursor: "pointer",
+                    }}
+                  >
+                    GO
+                  </button>
+                </div>
+              )}
+              <span style={{ fontSize: 9, color: "rgba(74,144,217,0.45)", letterSpacing: "0.1em" }}>
+                PRIOR WINDOW
+              </span>
             </div>
           )}
         </div>
@@ -323,10 +452,25 @@ export default function EATDashboard() {
           <LoadingState />
         ) : (
           <>
-            {tab === "overview" && <OverviewTab data={data} displayTotal={displayTotal} days={days} />}
-            {tab === "events"   && <EventsTab data={data} days={days} />}
+            {tab === "overview" && (
+              <OverviewTab
+                data={data}
+                displayTotal={displayTotal}
+                days={days}
+                compareEnabled={compareEnabled}
+                compareDays={compareDays}
+              />
+            )}
+            {tab === "events"   && (
+              <EventsTab
+                data={data}
+                days={days}
+                compareEnabled={compareEnabled}
+                compareDays={compareDays}
+              />
+            )}
             {tab === "modules"  && <ModulesTab data={data} />}
-            {tab === "ritual"   && <RitualTab data={data} />}
+            {tab === "ritual"   && <RitualTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
             {tab === "live"     && <LiveFeedTab events={recentEvents} newEventIds={newEventIds} />}
           </>
         )}
@@ -335,20 +479,130 @@ export default function EATDashboard() {
   );
 }
 
+/* ── Delta badge ─────────────────────────────────────────────────────────────── */
+
+function DeltaBadge({ current, prior }: { current: number; prior: number }) {
+  if (prior === 0) {
+    return (
+      <div style={{
+        display: "inline-flex", alignItems: "center",
+        background: "rgba(255,255,255,0.05)",
+        border: "1px solid rgba(255,255,255,0.1)",
+        borderRadius: 4, padding: "2px 6px",
+        fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
+        color: "rgba(245,237,216,0.3)",
+      }}>
+        —
+      </div>
+    );
+  }
+  const pct = deltaPercent(current, prior)!;
+  const up = pct >= 0;
+  return (
+    <div style={{
+      display: "inline-flex", alignItems: "center", gap: 3,
+      background: up ? "rgba(74,222,128,0.1)" : "rgba(248,113,113,0.1)",
+      border: `1px solid ${up ? "rgba(74,222,128,0.25)" : "rgba(248,113,113,0.25)"}`,
+      borderRadius: 4, padding: "2px 6px",
+      fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
+      color: up ? "#4ade80" : "#f87171",
+    }}>
+      {up ? "▲" : "▼"} {Math.abs(pct)}%
+    </div>
+  );
+}
+
+/* ── Merged daily chart data ─────────────────────────────────────────────────── */
+// The backend zero-fills every window with generate_series, so each daily
+// array has exactly `windowDays` entries in ascending calendar order.
+// We align the two series from their trailing (most-recent) end so that
+// position 0 on the chart corresponds to the latest day of each window and
+// position N-1 corresponds to the earliest — making "this period vs prior
+// period" visually intuitive regardless of window lengths.
+
+function mergeChartData(
+  primary: { day: string; cnt: number }[],
+  comparison: { day: string; cnt: number }[] | undefined,
+): { label: string; primary: number; comparison?: number }[] {
+  if (!comparison || comparison.length === 0) {
+    // No comparison: show primary oldest→newest, label by MM-DD date
+    return primary.map((p) => ({ label: p.day.slice(5), primary: p.cnt }));
+  }
+
+  // Both arrays are zero-filled oldest→newest.
+  // Reverse and pair from the trailing (most-recent) end.
+  const p = [...primary].reverse();
+  const c = [...comparison].reverse();
+  const len = Math.max(p.length, c.length);
+
+  const result: { label: string; primary: number; comparison?: number }[] = [];
+  for (let i = 0; i < len; i++) {
+    result.push({
+      label: `D-${i}`,
+      primary: p[i]?.cnt ?? 0,
+      comparison: c[i]?.cnt ?? 0,
+    });
+  }
+  // Reverse back so oldest is on the left of the chart
+  return result.reverse();
+}
+
 /* ── Tab Views ──────────────────────────────────────────────────────────────── */
 
-function OverviewTab({ data, displayTotal, days }: { data: TelemetrySummary; displayTotal: number; days: number }) {
+function OverviewTab({
+  data,
+  displayTotal,
+  days,
+  compareEnabled,
+  compareDays,
+}: {
+  data: TelemetrySummary;
+  displayTotal: number;
+  days: number;
+  compareEnabled: boolean;
+  compareDays: number;
+}) {
+  const cmp = compareEnabled ? data.comparison : null;
+
+  const kpis = [
+    {
+      label: "TOTAL EVENTS",
+      value: displayTotal.toLocaleString(),
+      raw: data.total,
+      cmpRaw: cmp?.total,
+      accent: true,
+    },
+    {
+      label: "RITUAL ENGAGEMENT",
+      value: `${data.ritualEngagement}%`,
+      raw: data.ritualEngagement,
+      cmpRaw: cmp?.ritualEngagement,
+      accent: false,
+    },
+    {
+      label: "ACTIVE MODULES",
+      value: String(data.moduleUsage.length),
+      raw: data.moduleUsage.length,
+      cmpRaw: cmp?.moduleUsage.length,
+      accent: false,
+    },
+    {
+      label: "EVENT TYPES",
+      value: String(data.topEventTypes.length),
+      raw: data.topEventTypes.length,
+      cmpRaw: cmp?.topEventTypes.length,
+      accent: false,
+    },
+  ];
+
+  const chartData = mergeChartData(data.dailyCounts, cmp?.dailyCounts);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
 
       {/* KPI row */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12 }}>
-        {[
-          { label: "TOTAL EVENTS", value: displayTotal.toLocaleString(), accent: true },
-          { label: "RITUAL ENGAGEMENT", value: `${data.ritualEngagement}%`, accent: false },
-          { label: "ACTIVE MODULES", value: String(data.moduleUsage.length), accent: false },
-          { label: "EVENT TYPES", value: String(data.topEventTypes.length), accent: false },
-        ].map((kpi) => (
+        {kpis.map((kpi) => (
           <div key={kpi.label} style={{
             background: kpi.accent ? "rgba(196,97,10,0.08)" : SURFACE,
             border: `1px solid ${kpi.accent ? "rgba(196,97,10,0.25)" : "rgba(255,255,255,0.06)"}`,
@@ -360,23 +614,50 @@ function OverviewTab({ data, displayTotal, days }: { data: TelemetrySummary; dis
             <div style={{ fontSize: 28, fontWeight: 200, letterSpacing: "0.04em", color: kpi.accent ? "#C4610A" : "#F5EDD8" }}>
               {kpi.value}
             </div>
+            {cmp && kpi.cmpRaw !== undefined && (
+              <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                <DeltaBadge current={kpi.raw} prior={kpi.cmpRaw} />
+                <span style={{ fontSize: 9, color: "rgba(245,237,216,0.25)", letterSpacing: "0.1em" }}>
+                  vs {kpi.cmpRaw.toLocaleString()}
+                </span>
+              </div>
+            )}
           </div>
         ))}
       </div>
 
-      {/* Mini line chart */}
+      {/* Line chart */}
       {data.dailyCounts.length > 0 ? (
         <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "20px" }}>
           <div style={{ fontSize: 9, letterSpacing: "0.22em", color: "rgba(245,237,216,0.35)", marginBottom: 16 }}>
-            EVENTS OVER TIME ({days} DAYS)
+            EVENTS OVER TIME ({days} DAYS{cmp ? ` vs PRIOR ${compareDays}D` : ""})
           </div>
           <ResponsiveContainer width="100%" height={160}>
-            <LineChart data={data.dailyCounts} margin={{ top: 4, right: 8, bottom: 4, left: -20 }}>
+            <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: -20 }}>
               <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
-              <XAxis dataKey="day" tick={{ fill: "rgba(245,237,216,0.25)", fontSize: 9 }} tickFormatter={(v) => v.slice(5)} />
+              <XAxis dataKey="label" tick={{ fill: "rgba(245,237,216,0.25)", fontSize: 9 }} />
               <YAxis tick={{ fill: "rgba(245,237,216,0.25)", fontSize: 9 }} />
               <Tooltip contentStyle={{ background: "#1A1A1B", border: "1px solid rgba(196,97,10,0.3)", borderRadius: 6, fontSize: 11 }} />
-              <Line type="monotone" dataKey="cnt" stroke={ACCENT} strokeWidth={1.5} dot={false} />
+              {cmp && <Legend wrapperStyle={{ fontSize: 9, color: "rgba(245,237,216,0.4)" }} />}
+              <Line
+                type="monotone"
+                dataKey="primary"
+                name={`Primary (${days}D)`}
+                stroke={ACCENT}
+                strokeWidth={1.5}
+                dot={false}
+              />
+              {cmp && (
+                <Line
+                  type="monotone"
+                  dataKey="comparison"
+                  name={`Compare (${compareDays}D prior)`}
+                  stroke={COMPARE_COLOR}
+                  strokeWidth={1.5}
+                  strokeDasharray="4 3"
+                  dot={false}
+                />
+              )}
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -401,7 +682,20 @@ function OverviewTab({ data, displayTotal, days }: { data: TelemetrySummary; dis
   );
 }
 
-function EventsTab({ data, days }: { data: TelemetrySummary; days: number }) {
+function EventsTab({
+  data,
+  days,
+  compareEnabled,
+  compareDays,
+}: {
+  data: TelemetrySummary;
+  days: number;
+  compareEnabled: boolean;
+  compareDays: number;
+}) {
+  const cmp = compareEnabled ? data.comparison : null;
+  const chartData = mergeChartData(data.dailyCounts, cmp?.dailyCounts);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       <SectionHeader label="EVENT TYPE BREAKDOWN" sub="Count distribution across all ingested event types" />
@@ -426,21 +720,91 @@ function EventsTab({ data, days }: { data: TelemetrySummary; days: number }) {
         </div>
       )}
 
-      {/* Daily trend */}
+      {/* Daily trend with optional comparison series */}
       {data.dailyCounts.length > 0 && (
         <>
-          <SectionHeader label="DAILY TREND" sub={`Event volume per day over the last ${days} days`} />
+          <SectionHeader
+            label="DAILY TREND"
+            sub={`Event volume per day over the last ${days} days${cmp ? ` vs prior ${compareDays}D window` : ""}`}
+          />
           <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "20px" }}>
             <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={data.dailyCounts} margin={{ top: 4, right: 8, bottom: 4, left: -20 }}>
+              <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: -20 }}>
                 <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
-                <XAxis dataKey="day" tick={{ fill: "rgba(245,237,216,0.25)", fontSize: 9 }} tickFormatter={(v) => v.slice(5)} />
+                <XAxis dataKey="label" tick={{ fill: "rgba(245,237,216,0.25)", fontSize: 9 }} />
                 <YAxis tick={{ fill: "rgba(245,237,216,0.25)", fontSize: 9 }} />
                 <Tooltip contentStyle={{ background: "#1A1A1B", border: "1px solid rgba(196,97,10,0.3)", borderRadius: 6, fontSize: 11 }} />
-                <Line type="monotone" dataKey="cnt" stroke={ACCENT} strokeWidth={2} dot={{ fill: ACCENT, r: 2 }} />
+                {cmp && <Legend wrapperStyle={{ fontSize: 9, color: "rgba(245,237,216,0.4)" }} />}
+                <Line
+                  type="monotone"
+                  dataKey="primary"
+                  name={`Primary (${days}D)`}
+                  stroke={ACCENT}
+                  strokeWidth={2}
+                  dot={{ fill: ACCENT, r: 2 }}
+                />
+                {cmp && (
+                  <Line
+                    type="monotone"
+                    dataKey="comparison"
+                    name={`Compare (${compareDays}D prior)`}
+                    stroke={COMPARE_COLOR}
+                    strokeWidth={2}
+                    strokeDasharray="5 3"
+                    dot={{ fill: COMPARE_COLOR, r: 2 }}
+                  />
+                )}
               </LineChart>
             </ResponsiveContainer>
           </div>
+
+          {/* Per-type delta table when compare is on */}
+          {cmp && cmp.topEventTypes.length > 0 && (
+            <>
+              <SectionHeader label="EVENT TYPE DELTA" sub="Change in event counts between primary and comparison windows" />
+              <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, overflow: "hidden" }}>
+                <div style={{
+                  display: "grid", gridTemplateColumns: "1fr 80px 80px 80px",
+                  gap: "0 12px", padding: "10px 16px",
+                  borderBottom: "1px solid rgba(255,255,255,0.06)",
+                  fontSize: 9, fontWeight: 700, letterSpacing: "0.18em",
+                  color: "rgba(245,237,216,0.25)",
+                }}>
+                  <span>EVENT TYPE</span>
+                  <span style={{ textAlign: "right" }}>PRIMARY</span>
+                  <span style={{ textAlign: "right" }}>PRIOR</span>
+                  <span style={{ textAlign: "right" }}>DELTA</span>
+                </div>
+                {data.topEventTypes.map((et) => {
+                  const prior = cmp.topEventTypes.find((c) => c.event_type === et.event_type)?.cnt ?? 0;
+                  return (
+                    <div
+                      key={et.event_type}
+                      style={{
+                        display: "grid", gridTemplateColumns: "1fr 80px 80px 80px",
+                        gap: "0 12px", padding: "10px 16px",
+                        borderBottom: "1px solid rgba(255,255,255,0.04)",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span style={{ fontSize: 11, fontFamily: "monospace", color: "#F5EDD8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {et.event_type}
+                      </span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: ACCENT, textAlign: "right" }}>
+                        {et.cnt.toLocaleString()}
+                      </span>
+                      <span style={{ fontSize: 12, color: "rgba(74,144,217,0.8)", textAlign: "right" }}>
+                        {prior.toLocaleString()}
+                      </span>
+                      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                        <DeltaBadge current={et.cnt} prior={prior} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </>
       )}
     </div>
@@ -480,8 +844,17 @@ function ModulesTab({ data }: { data: TelemetrySummary }) {
   );
 }
 
-function RitualTab({ data }: { data: TelemetrySummary }) {
-  const r = data.ritualEngagement;
+function RitualTab({
+  data,
+  compareEnabled,
+  compareDays,
+}: {
+  data: TelemetrySummary;
+  compareEnabled: boolean;
+  compareDays: number;
+}) {
+  const r    = data.ritualEngagement;
+  const cmp  = compareEnabled ? data.comparison : null;
   const rating = r >= 70 ? "EXCELLENT" : r >= 40 ? "GOOD" : r >= 20 ? "DEVELOPING" : "EARLY";
   const ratingColor = r >= 70 ? "#4ade80" : r >= 40 ? "#C4610A" : r >= 20 ? "#D4AF37" : "#6b7280";
 
@@ -489,7 +862,6 @@ function RitualTab({ data }: { data: TelemetrySummary }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
       <SectionHeader label="RITUAL ENGAGEMENT" sub="Ratio of craft build completions to swipe-starts — measures how often guests complete a full ritual cycle" />
 
-      {/* Big score */}
       <div style={{ display: "flex", gap: 20, alignItems: "stretch", flexWrap: "wrap" }}>
         <div style={{
           background: "rgba(196,97,10,0.07)", border: "1px solid rgba(196,97,10,0.2)",
@@ -502,20 +874,30 @@ function RitualTab({ data }: { data: TelemetrySummary }) {
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", color: ratingColor, marginTop: 4 }}>
             {rating}
           </div>
+          {cmp && (
+            <div style={{ marginTop: 4, display: "flex", alignItems: "center", gap: 6 }}>
+              <DeltaBadge current={r} prior={cmp.ritualEngagement} />
+              <span style={{ fontSize: 9, color: "rgba(245,237,216,0.3)" }}>vs {cmp.ritualEngagement}% ({compareDays}D)</span>
+            </div>
+          )}
         </div>
 
         <div style={{ flex: 1, minWidth: 220, background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "24px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ fontSize: 9, letterSpacing: "0.22em", color: "rgba(245,237,216,0.35)" }}>HOW IT'S CALCULATED</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
-              { label: "Swipe Starts", type: "swipe_start", color: "#C4610A" },
+              { label: "Swipe Starts",      type: "swipe_start",    color: "#C4610A" },
               { label: "Build Completions", type: "build_complete", color: "#4ade80" },
             ].map((row) => {
-              const match = data.topEventTypes.find(e => e.event_type === row.type);
+              const match    = data.topEventTypes.find((e) => e.event_type === row.type);
+              const cmpMatch = cmp?.topEventTypes.find((e) => e.event_type === row.type);
               return (
-                <div key={row.type} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div key={row.type} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
                   <div style={{ fontSize: 12, color: "rgba(245,237,216,0.6)" }}>{row.label}</div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: row.color }}>{(match?.cnt ?? 0).toLocaleString()}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: row.color }}>{(match?.cnt ?? 0).toLocaleString()}</div>
+                    {cmp && <DeltaBadge current={match?.cnt ?? 0} prior={cmpMatch?.cnt ?? 0} />}
+                  </div>
                 </div>
               );
             })}
@@ -531,10 +913,29 @@ function RitualTab({ data }: { data: TelemetrySummary }) {
       <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "20px 20px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
           <div style={{ fontSize: 11, color: "rgba(245,237,216,0.5)" }}>Engagement meter</div>
-          <div style={{ fontSize: 11, color: "#C4610A" }}>{r}%</div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {cmp && (
+              <span style={{ fontSize: 9, color: COMPARE_COLOR, letterSpacing: "0.08em" }}>
+                PRIOR {cmp.ritualEngagement}%
+              </span>
+            )}
+            <div style={{ fontSize: 11, color: "#C4610A" }}>{r}%</div>
+          </div>
         </div>
-        <div style={{ height: 8, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
+        <div style={{ position: "relative", height: 8, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
+          {/* Comparison bar (behind) */}
+          {cmp && (
+            <div style={{
+              position: "absolute", top: 0, left: 0,
+              height: "100%", borderRadius: 4,
+              width: `${cmp.ritualEngagement}%`,
+              background: `rgba(74,144,217,0.35)`,
+              transition: "width 1s cubic-bezier(0.4,0,0.2,1)",
+            }} />
+          )}
+          {/* Primary bar */}
           <div style={{
+            position: "absolute", top: 0, left: 0,
             height: "100%", borderRadius: 4,
             width: `${r}%`,
             background: `linear-gradient(90deg, #8b3a00, ${ACCENT}, #D4AF37)`,
@@ -616,7 +1017,6 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
           border: "1px solid rgba(255,255,255,0.06)",
           borderRadius: 10, overflow: "hidden",
         }}>
-          {/* Table header */}
           <div style={{
             display: "grid",
             gridTemplateColumns: "1fr 90px 90px 110px",
@@ -728,14 +1128,19 @@ function EmptyState({ label }: { label: string }) {
 
 function LoadingState() {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "48px 0" }}>
-      <div style={{
-        width: 20, height: 20, border: "1.5px solid rgba(196,97,10,0.2)",
-        borderTopColor: "#C4610A", borderRadius: "50%",
-        animation: "spin 0.8s linear infinite",
-      }} />
-      <span style={{ fontSize: 12, color: "rgba(245,237,216,0.4)" }}>Loading telemetry…</span>
-      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      {[180, 120, 200].map((h, i) => (
+        <div
+          key={i}
+          style={{
+            height: h, background: "rgba(24,24,25,0.6)",
+            border: "1px solid rgba(255,255,255,0.04)",
+            borderRadius: 10,
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
+      ))}
+      <style>{`@keyframes pulse{0%,100%{opacity:0.4}50%{opacity:0.7}}`}</style>
     </div>
   );
 }

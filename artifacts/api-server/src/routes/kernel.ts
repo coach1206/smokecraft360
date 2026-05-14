@@ -222,76 +222,104 @@ router.get("/telemetry/recent", async (req: Request, res: Response) => {
 
 // ── GET /api/kernel/telemetry/summary ─────────────────────────────────────────
 // Public read — aggregated counts only, no PII.
-// Optional query param: ?days=N  (default 30, max 365)
+// Query params:
+//   ?days=N          — primary window length in days (default 30, max 365)
+//   ?compareDays=N   — when set, also return a comparison block for the
+//                      preceding equivalent window of that length
+
+async function buildSummary(windowDays: number, offsetDays = 0) {
+  const windowEnd   = sql`NOW() - (${offsetDays} || ' days')::interval`;
+  const windowStart = sql`NOW() - (${offsetDays + windowDays} || ' days')::interval`;
+
+  // Total events in window
+  const totalResult = await db.execute(sql`
+    SELECT COUNT(*)::int AS total
+    FROM telemetry_events
+    WHERE occurred_at >= ${windowStart} AND occurred_at < ${windowEnd}
+  `);
+  const total = (totalResult.rows[0] as { total: number }).total;
+
+  // Events per day — generate_series zero-fills days with no events so every
+  // window always returns exactly windowDays rows in ascending order.
+  const dailyResult = await db.execute(sql`
+    SELECT
+      gs.day::date::text AS day,
+      COALESCE(c.cnt, 0)::int AS cnt
+    FROM (
+      SELECT generate_series(
+        (${windowStart})::date,
+        (${windowEnd})::date - INTERVAL '1 day',
+        '1 day'::interval
+      )::date AS day
+    ) gs
+    LEFT JOIN (
+      SELECT DATE_TRUNC('day', occurred_at)::date AS day, COUNT(*)::int AS cnt
+      FROM telemetry_events
+      WHERE occurred_at >= ${windowStart} AND occurred_at < ${windowEnd}
+      GROUP BY 1
+    ) c USING (day)
+    ORDER BY gs.day ASC
+  `);
+  const dailyCounts = dailyResult.rows as { day: string; cnt: number }[];
+
+  // Top event types in window
+  const topResult = await db.execute(sql`
+    SELECT event_type, COUNT(*)::int AS cnt
+    FROM telemetry_events
+    WHERE occurred_at >= ${windowStart} AND occurred_at < ${windowEnd}
+    GROUP BY event_type
+    ORDER BY cnt DESC
+    LIMIT 10
+  `);
+  const topEventTypes = topResult.rows as { event_type: string; cnt: number }[];
+
+  // Per-module usage in window
+  const moduleResult = await db.execute(sql`
+    SELECT
+      km.name AS module_name,
+      km.slug AS module_slug,
+      COUNT(te.id)::int AS event_count
+    FROM kernel_modules km
+    LEFT JOIN telemetry_events te
+      ON te.module_id = km.id
+      AND te.occurred_at >= ${windowStart}
+      AND te.occurred_at < ${windowEnd}
+    GROUP BY km.id, km.name, km.slug
+    ORDER BY event_count DESC
+  `);
+  const moduleUsage = moduleResult.rows as { module_name: string; module_slug: string; event_count: number }[];
+
+  // Ritual engagement in window
+  const ritualResult = await db.execute(sql`
+    SELECT
+      SUM(CASE WHEN event_type = 'swipe_start'    THEN 1 ELSE 0 END)::int AS starts,
+      SUM(CASE WHEN event_type = 'build_complete' THEN 1 ELSE 0 END)::int AS completions
+    FROM telemetry_events
+    WHERE occurred_at >= ${windowStart} AND occurred_at < ${windowEnd}
+  `);
+  const { starts, completions } = ritualResult.rows[0] as { starts: number; completions: number };
+  const ritualEngagement = starts > 0 ? Math.round((completions / starts) * 100) : 0;
+
+  return { total, dailyCounts, topEventTypes, moduleUsage, ritualEngagement };
+}
 
 router.get("/telemetry/summary", async (req: Request, res: Response) => {
-  const rawDays = parseInt((req.query as Record<string, string>).days ?? "30", 10);
+  const q = req.query as Record<string, string | undefined>;
+  const rawDays = parseInt(q.days ?? "30", 10);
   const days = Number.isFinite(rawDays) && rawDays > 0 ? Math.min(rawDays, 365) : 30;
 
+  const rawCompare = parseInt(q.compareDays ?? "", 10);
+  const compareDays = Number.isFinite(rawCompare) && rawCompare > 0 ? Math.min(rawCompare, 365) : null;
+
   try {
-    // Total event count
-    const [{ total }] = await db
-      .select({ total: count() })
-      .from(telemetryEventsTable);
+    const primary = await buildSummary(days, 0);
 
-    // Events per day (last N days)
-    const dailyResult = await db.execute(sql`
-      SELECT
-        DATE_TRUNC('day', occurred_at)::date::text AS day,
-        COUNT(*)::int AS cnt
-      FROM telemetry_events
-      WHERE occurred_at >= NOW() - (${days} || ' days')::interval
-      GROUP BY 1
-      ORDER BY 1 ASC
-    `);
-    const dailyCounts = dailyResult.rows as { day: string; cnt: number }[];
+    let comparison = null;
+    if (compareDays !== null) {
+      comparison = await buildSummary(compareDays, days);
+    }
 
-    // Top event types
-    const topResult = await db.execute(sql`
-      SELECT event_type, COUNT(*)::int AS cnt
-      FROM telemetry_events
-      GROUP BY event_type
-      ORDER BY cnt DESC
-      LIMIT 10
-    `);
-    const topEventTypes = topResult.rows as { event_type: string; cnt: number }[];
-
-    // Per-module usage
-    const moduleResult = await db.execute(sql`
-      SELECT
-        km.name AS module_name,
-        km.slug AS module_slug,
-        COUNT(te.id)::int AS event_count
-      FROM kernel_modules km
-      LEFT JOIN telemetry_events te ON te.module_id = km.id
-      GROUP BY km.id, km.name, km.slug
-      ORDER BY event_count DESC
-    `);
-    const moduleUsage = moduleResult.rows as { module_name: string; module_slug: string; event_count: number }[];
-
-    // Ritual engagement: ratio of build-completions to swipe-starts
-    const [swipeStarts] = await db
-      .select({ n: count() })
-      .from(telemetryEventsTable)
-      .where(eq(telemetryEventsTable.eventType, "swipe_start"));
-
-    const [buildCompletions] = await db
-      .select({ n: count() })
-      .from(telemetryEventsTable)
-      .where(eq(telemetryEventsTable.eventType, "build_complete"));
-
-    const ritualEngagement =
-      swipeStarts.n > 0
-        ? Math.round((buildCompletions.n / swipeStarts.n) * 100)
-        : 0;
-
-    return res.json({
-      total,
-      dailyCounts,
-      topEventTypes,
-      moduleUsage,
-      ritualEngagement,
-    });
+    return res.json({ ...primary, comparison });
   } catch {
     return res.status(500).json({ error: "Failed to load telemetry summary" });
   }
