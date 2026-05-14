@@ -16,26 +16,23 @@
 const MODULE_SLUG = "craft-smoke";
 
 let _moduleId: string | null = null;
-let _fetchInFlight = false;
 let _fetchPromise: Promise<void> | null = null;
 
-async function warmModuleId(): Promise<void> {
-  if (_moduleId !== null) return;
-  if (_fetchInFlight) { await _fetchPromise; return; }
-  _fetchInFlight = true;
+function ensureModuleId(): Promise<void> {
+  if (_moduleId !== null) return Promise.resolve();
+  if (_fetchPromise)      return _fetchPromise;
   _fetchPromise = fetch("/api/kernel/modules")
     .then((r) => r.ok ? r.json() : Promise.reject())
     .then((d: { modules: { id: string; slug: string }[] }) => {
       const m = d.modules.find((m) => m.slug === MODULE_SLUG);
-      _moduleId = m?.id ?? null;
+      if (m) _moduleId = m.id;
     })
-    .catch(() => { _moduleId = null; })
-    .finally(() => { _fetchInFlight = false; });
-  await _fetchPromise;
+    .catch(() => { /* leave _moduleId null; retry next time */ _fetchPromise = null; });
+  return _fetchPromise;
 }
 
 // Warm the module ID in background at import time
-void warmModuleId();
+void ensureModuleId();
 
 /**
  * Resolve the current venueId from localStorage (set by VenueContext).
@@ -57,15 +54,22 @@ export function emitKernelEvent(
   payload?: Record<string, unknown>,
 ): void {
   const venueId = resolveVenueId();
-  const body: Record<string, unknown> = { eventType };
-  if (_moduleId)  body.moduleId = _moduleId;
-  if (venueId)    body.venueId  = venueId;
-  if (payload)    body.payload  = payload;
 
-  // best-effort, fire-and-forget — never throws
-  fetch("/api/kernel/telemetry", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  }).catch(() => { /* silent */ });
+  // Internally async so we can await the module ID, but callers are never blocked.
+  void (async () => {
+    try {
+      await ensureModuleId();
+      const body: Record<string, unknown> = { eventType };
+      if (_moduleId) body.moduleId = _moduleId;
+      if (venueId)   body.venueId  = venueId;
+      if (payload)   body.payload  = payload;
+      await fetch("/api/kernel/telemetry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+    } catch {
+      /* silent — telemetry must never interrupt the guest experience */
+    }
+  })();
 }
