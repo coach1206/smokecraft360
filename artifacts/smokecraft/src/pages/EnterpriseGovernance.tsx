@@ -4,9 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, Shield, ToggleLeft, ToggleRight, Users,
   FileText, Clock, CheckCircle, XCircle, AlertTriangle,
-  ChevronRight, Activity, Lock, Unlock, RefreshCw,
+  ChevronRight, Activity, Lock, Unlock, RefreshCw, Crown, Zap,
 } from "lucide-react";
 import { getAuthHeaders } from "@/services/auth";
+import { useKernelMode, type KernelMode } from "@/contexts/KernelModeContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const BASE = "/api";
 
@@ -25,7 +27,7 @@ const C = {
   blue:   "#60a5fa",
 };
 
-type Tab = "kill-switches" | "role-matrix" | "automation-queue" | "audit-stream";
+type Tab = "kill-switches" | "role-matrix" | "automation-queue" | "audit-stream" | "sovereign-mode";
 
 interface KillSwitch {
   name: string; label: string; description: string;
@@ -114,6 +116,51 @@ export default function EnterpriseGovernance() {
     disabledSwitches: string[];
     systemStatus: string;
   } | null>(null);
+
+  const kernel = useKernelMode();
+  const { user: authUser, token: authToken } = useAuth();
+  const isKernelAdmin = authUser?.role === "super_admin" || authUser?.role === "venue_owner";
+  const [modeError, setModeError] = useState("");
+  const [modeSuccess, setModeSuccess] = useState(false);
+  const [pendingMode, setPendingMode] = useState<KernelMode | null>(null);
+  const [modeConfirmOpen, setModeConfirmOpen] = useState(false);
+  const [modeRefreshing, setModeRefreshing] = useState(false);
+  const [modeRefreshSuccess, setModeRefreshSuccess] = useState(false);
+
+  async function handleModeRefresh() {
+    setModeRefreshing(true);
+    setModeRefreshSuccess(false);
+    setModeError("");
+    try {
+      await kernel.refresh();
+      setModeRefreshSuccess(true);
+      setTimeout(() => setModeRefreshSuccess(false), 2500);
+    } catch (err) {
+      setModeError(err instanceof Error ? err.message : "Refresh failed");
+      setTimeout(() => setModeError(""), 5000);
+    } finally {
+      setModeRefreshing(false);
+    }
+  }
+
+  async function applyMode(newMode: KernelMode) {
+    if (!authToken) {
+      setModeError("Not authenticated — please log in first");
+      setTimeout(() => setModeError(""), 4000);
+      return;
+    }
+    setModeError("");
+    try {
+      await kernel.setMode(newMode, authToken);
+      setModeSuccess(true);
+      setTimeout(() => setModeSuccess(false), 2500);
+    } catch (err) {
+      setModeError(err instanceof Error ? err.message : "Failed to update mode");
+      setTimeout(() => setModeError(""), 5000);
+    }
+    setPendingMode(null);
+    setModeConfirmOpen(false);
+  }
 
   const headers = { ...getAuthHeaders(), "Content-Type": "application/json" };
 
@@ -214,6 +261,7 @@ export default function EnterpriseGovernance() {
   }
 
   const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
+    { id: "sovereign-mode",    label: "Mode",               icon: <Crown size={14} /> },
     { id: "kill-switches",     label: "Kill Switches",      icon: <Shield size={14} /> },
     { id: "role-matrix",       label: "Role Matrix",        icon: <Users size={14} /> },
     { id: "automation-queue",  label: "Approvals",          icon: <Clock size={14} /> },
@@ -316,6 +364,205 @@ export default function EnterpriseGovernance() {
       {/* ── Body ── */}
       <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px" }}>
         <AnimatePresence mode="wait">
+
+          {/* ── Sovereign Mode ── */}
+          {tab === "sovereign-mode" && (
+            <motion.div key="sm" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+
+              {/* Current tier banner */}
+              <div style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "16px 20px", borderRadius: 14, marginBottom: 20,
+                background: kernel.mode === "sovereign"
+                  ? "linear-gradient(135deg, rgba(212,139,0,0.12), rgba(212,139,0,0.06))"
+                  : "rgba(26,26,27,0.06)",
+                border: `1px solid ${kernel.mode === "sovereign" ? "rgba(212,139,0,0.35)" : C.border}`,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  {kernel.mode === "sovereign"
+                    ? <Crown size={22} color={C.gold} />
+                    : <Zap size={22} color={C.muted} />}
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: kernel.mode === "sovereign" ? C.gold : C.text, textTransform: "capitalize" }}>
+                      {kernel.loading ? "Loading…" : `${kernel.mode} Mode`}
+                    </div>
+                    <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>
+                      {kernel.mode === "sovereign"
+                        ? "Luxury add-ons, AI personalization, and premium analytics are active."
+                        : "Venue is running on core features only. Luxury add-ons are locked."}
+                    </div>
+                  </div>
+                </div>
+                <AnimatePresence>
+                  {modeSuccess && (
+                    <motion.span
+                      key="saved"
+                      initial={{ opacity: 0, x: 6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
+                      style={{ fontSize: 11, color: C.green, fontWeight: 600 }}
+                    >Saved!</motion.span>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Description */}
+              <div style={{ fontSize: 13, color: C.muted, lineHeight: 1.6, marginBottom: 20 }}>
+                <strong style={{ color: C.gold }}>Sovereign</strong> unlocks luxury add-ons, AI personalization, premium analytics, the Designer, Central Command, and enterprise intelligence layers.{" "}
+                <strong style={{ color: C.text }}>Essential</strong> restricts the venue to core transaction and loyalty features. Toggling mode takes effect immediately and is persisted to the database.
+                {!isKernelAdmin && (
+                  <div style={{
+                    marginTop: 10, padding: "8px 12px", borderRadius: 8,
+                    background: `${C.red}10`, border: `1px solid ${C.red}25`,
+                    fontSize: 12, color: C.red,
+                  }}>
+                    Super Admin or Venue Owner role required to change this setting.
+                  </div>
+                )}
+              </div>
+
+              {/* Mode selector cards */}
+              <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+                {(["sovereign", "essential"] as KernelMode[]).map((m) => {
+                  const isCurrent = kernel.mode === m;
+                  const isSov = m === "sovereign";
+                  const accent = isSov ? C.gold : C.muted;
+                  const ModeIcon = isSov ? Crown : Zap;
+                  return (
+                    <motion.button
+                      key={m}
+                      whileTap={isKernelAdmin && !kernel.saving ? { scale: 0.97 } : {}}
+                      onClick={() => {
+                        if (!isKernelAdmin || isCurrent || kernel.saving) return;
+                        setPendingMode(m);
+                        setModeConfirmOpen(true);
+                      }}
+                      style={{
+                        flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
+                        padding: "20px 16px", borderRadius: 14, position: "relative",
+                        cursor: isKernelAdmin && !isCurrent && !kernel.saving ? "pointer" : "default",
+                        background: isCurrent
+                          ? (isSov ? "linear-gradient(135deg, rgba(212,139,0,0.14), rgba(212,139,0,0.07))" : "rgba(26,26,27,0.08)")
+                          : "rgba(26,26,27,0.04)",
+                        border: `2px solid ${isCurrent ? (isSov ? C.gold : "rgba(26,26,27,0.30)") : C.border}`,
+                        opacity: kernel.loading || (kernel.saving && !isCurrent) ? 0.5 : 1,
+                        transition: "border-color 0.2s, background 0.2s, opacity 0.2s",
+                      }}
+                    >
+                      <div style={{
+                        width: 48, height: 48, borderRadius: 12,
+                        background: isCurrent ? `${accent}18` : "rgba(26,26,27,0.06)",
+                        border: `1px solid ${isCurrent ? `${accent}35` : "rgba(26,26,27,0.10)"}`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        <ModeIcon size={22} color={isCurrent ? accent : "rgba(26,26,27,0.28)"} />
+                      </div>
+                      <div style={{ textAlign: "center" }}>
+                        <div style={{ fontSize: 15, fontWeight: 700, color: isCurrent ? accent : "rgba(26,26,27,0.38)", textTransform: "capitalize", marginBottom: 4 }}>
+                          {m}
+                        </div>
+                        <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.4 }}>
+                          {isSov ? "Full luxury features" : "Core features only"}
+                        </div>
+                      </div>
+                      {isCurrent && (
+                        <span style={{
+                          position: "absolute", top: 10, right: 10,
+                          fontSize: 9, fontWeight: 700, color: accent,
+                          padding: "2px 7px", borderRadius: 4,
+                          background: `${accent}18`,
+                          textTransform: "uppercase", letterSpacing: "0.08em",
+                        }}>
+                          {kernel.saving ? "…" : "Active"}
+                        </span>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+
+              {/* Force refresh */}
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <motion.button
+                  whileTap={!modeRefreshing ? { scale: 0.96 } : {}}
+                  onClick={handleModeRefresh}
+                  disabled={modeRefreshing}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 6,
+                    padding: "8px 16px", borderRadius: 10, cursor: modeRefreshing ? "default" : "pointer",
+                    background: C.panel, border: `1px solid ${C.border}`,
+                    color: C.muted, fontSize: 12, fontWeight: 500,
+                    opacity: modeRefreshing ? 0.6 : 1,
+                  }}
+                >
+                  <motion.div
+                    animate={modeRefreshing ? { rotate: 360 } : { rotate: 0 }}
+                    transition={modeRefreshing ? { repeat: Infinity, duration: 0.8, ease: "linear" } : { duration: 0 }}
+                    style={{ display: "flex" }}
+                  >
+                    <RefreshCw size={13} />
+                  </motion.div>
+                  {modeRefreshing ? "Refreshing…" : "Force Refresh"}
+                </motion.button>
+                <AnimatePresence>
+                  {modeRefreshSuccess && (
+                    <motion.span
+                      key="rsuccess"
+                      initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
+                      style={{ fontSize: 11, color: C.green, fontWeight: 600 }}
+                    >
+                      <CheckCircle size={12} style={{ display: "inline", marginRight: 4 }} />
+                      Refreshed
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Error message */}
+              {modeError && (
+                <div style={{
+                  marginTop: 12, padding: "10px 14px", borderRadius: 10,
+                  background: `${C.red}10`, border: `1px solid ${C.red}25`,
+                  fontSize: 12, color: C.red, display: "flex", alignItems: "center", gap: 8,
+                }}>
+                  <XCircle size={13} />
+                  {modeError}
+                </div>
+              )}
+
+              {/* What changes section */}
+              <div style={{
+                marginTop: 24, padding: "16px 18px", borderRadius: 14,
+                background: "rgba(26,26,27,0.04)", border: `1px solid ${C.border}`,
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", color: C.muted, marginBottom: 12 }}>
+                  What changes with each mode
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                  {[
+                    { label: "Designer",           sovereign: true },
+                    { label: "Governance",          sovereign: true },
+                    { label: "Central Command",     sovereign: true },
+                    { label: "Enterprise Intel",    sovereign: true },
+                    { label: "Master Ops",          sovereign: true },
+                    { label: "AI Personalization",  sovereign: true },
+                    { label: "Orders & Inventory",  sovereign: false },
+                    { label: "Loyalty & Rewards",   sovereign: false },
+                  ].map(item => (
+                    <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                      {item.sovereign
+                        ? <Crown size={11} color={C.gold} />
+                        : <CheckCircle size={11} color={C.green} />}
+                      <span style={{ fontSize: 12, color: item.sovereign ? C.text : C.muted }}>
+                        {item.label}
+                        {item.sovereign && (
+                          <span style={{ fontSize: 10, color: C.gold, marginLeft: 4 }}>Sovereign</span>
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           {/* ── Kill Switches ── */}
           {tab === "kill-switches" && (
@@ -735,6 +982,64 @@ export default function EnterpriseGovernance() {
                   border: `1px solid ${C.border}`, color: C.muted,
                   fontSize: 12, cursor: "pointer",
                 }}>Cancel</motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Mode confirm modal ── */}
+      <AnimatePresence>
+        {modeConfirmOpen && pendingMode && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={() => { setModeConfirmOpen(false); setPendingMode(null); }}
+            style={{
+              position: "fixed", inset: 0, zIndex: 100,
+              background: "rgba(6,4,10,0.70)", backdropFilter: "blur(8px)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+            <motion.div
+              initial={{ scale: 0.94, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.94, y: 20 }}
+              onClick={e => e.stopPropagation()}
+              style={{
+                width: 360, background: "#0d0a12",
+                border: `1px solid ${C.border}`, borderRadius: 20,
+                padding: 24, boxShadow: "0 24px 80px rgba(26,26,27,0.32)",
+              }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                {pendingMode === "sovereign" ? <Crown size={18} color={C.gold} /> : <Zap size={18} color={C.muted} />}
+                <div style={{ fontSize: 16, fontWeight: 700, color: C.gold }}>Change Mode</div>
+              </div>
+              <div style={{ fontSize: 13, color: C.muted, marginBottom: 20, lineHeight: 1.55 }}>
+                {pendingMode === "essential"
+                  ? "Switch to Essential mode? This will lock luxury features for this venue."
+                  : "Switch to Sovereign mode? This will unlock luxury add-ons, AI personalization, and premium analytics for this venue."}
+              </div>
+              <div style={{ display: "flex", gap: 10 }}>
+                <motion.button whileTap={{ scale: 0.97 }}
+                  onClick={() => applyMode(pendingMode)}
+                  disabled={kernel.saving}
+                  style={{
+                    flex: 1, padding: "11px", borderRadius: 10, cursor: "pointer",
+                    background: pendingMode === "sovereign"
+                      ? "linear-gradient(135deg, #D48B00, #b87700)"
+                      : "rgba(26,26,27,0.20)",
+                    border: `1px solid ${pendingMode === "sovereign" ? C.gold : "rgba(26,26,27,0.30)"}`,
+                    color: pendingMode === "sovereign" ? "#1A1A1B" : C.text,
+                    fontSize: 13, fontWeight: 700,
+                    opacity: kernel.saving ? 0.6 : 1,
+                  }}>
+                  {kernel.saving ? "Saving…" : `Confirm`}
+                </motion.button>
+                <motion.button whileTap={{ scale: 0.97 }}
+                  onClick={() => { setModeConfirmOpen(false); setPendingMode(null); }}
+                  style={{
+                    flex: 1, padding: "11px", borderRadius: 10, cursor: "pointer",
+                    background: "transparent",
+                    border: `1px solid ${C.border}`,
+                    color: C.muted, fontSize: 13, fontWeight: 600,
+                  }}>Cancel</motion.button>
+              </div>
             </motion.div>
           </motion.div>
         )}
