@@ -2350,6 +2350,51 @@ function TrendSparkline({ trend }: { trend: TrendPoint[] | undefined }) {
   );
 }
 
+/* ── Trend Arrow ─────────────────────────────────────────────────────────────── */
+
+interface TrendStats {
+  direction: "up" | "down" | "flat";
+  changePct: number | null;
+}
+
+function computeTrendStats(trend: TrendPoint[] | undefined): TrendStats {
+  if (!trend || trend.length < 4) return { direction: "flat", changePct: null };
+  const recent = trend.slice(-3);
+  const prior  = trend.slice(0, -3);
+  const recentAvg = recent.reduce((s, p) => s + p.adds, 0) / recent.length;
+  const priorAvg  = prior.reduce((s, p) => s + p.adds, 0)  / prior.length;
+  if (priorAvg === 0) return { direction: recentAvg > 0 ? "up" : "flat", changePct: null };
+  const changePct = Math.round(((recentAvg - priorAvg) / priorAvg) * 100);
+  const direction = changePct >= 15 ? "up" : changePct <= -15 ? "down" : "flat";
+  return { direction, changePct };
+}
+
+function TrendArrow({ trend }: { trend: TrendPoint[] | undefined }) {
+  const { direction, changePct } = computeTrendStats(trend);
+  const pctLabel = changePct !== null
+    ? ` (${changePct > 0 ? "+" : ""}${changePct}%)`
+    : "";
+  const cfg = direction === "up"
+    ? { symbol: "↑", color: "#4ade80", title: `Trending up${pctLabel}` }
+    : direction === "down"
+    ? { symbol: "↓", color: "#f87171", title: `Trending down${pctLabel}` }
+    : { symbol: "→", color: "rgba(245,237,216,0.3)", title: changePct !== null ? `Flat${pctLabel}` : "Not enough data" };
+  return (
+    <span
+      title={cfg.title}
+      style={{
+        fontSize: 13, fontWeight: 700,
+        color: cfg.color,
+        lineHeight: 1,
+        userSelect: "none",
+        flexShrink: 0,
+      }}
+    >
+      {cfg.symbol}
+    </span>
+  );
+}
+
 /* ── Product Trend Modal ─────────────────────────────────────────────────────── */
 
 const MODAL_DAYS_OPTIONS = [7, 30, 90] as const;
@@ -2850,7 +2895,7 @@ function ProductsTab({
             {/* Table header */}
             <div style={{
               display: "grid",
-              gridTemplateColumns: "36px 1fr 72px 60px 60px 60px 88px 140px",
+              gridTemplateColumns: "36px 1fr 72px 60px 60px 60px 104px 140px",
               gap: "0 12px",
               padding: "10px 16px",
               borderBottom: "1px solid rgba(255,255,255,0.06)",
@@ -2882,7 +2927,7 @@ function ProductsTab({
                   onClick={() => setSelectedProduct(p)}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "36px 1fr 72px 60px 60px 60px 88px 140px",
+                    gridTemplateColumns: "36px 1fr 72px 60px 60px 60px 104px 140px",
                     gap: "0 12px",
                     padding: "12px 16px",
                     borderBottom: "1px solid rgba(255,255,255,0.04)",
@@ -2955,9 +3000,10 @@ function ProductsTab({
                     {p.total.toLocaleString()}
                   </div>
 
-                  {/* 7-day sparkline */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {/* 7-day sparkline + trend arrow */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
                     <TrendSparkline trend={trendData} />
+                    <TrendArrow trend={trendData} />
                   </div>
 
                   {/* Add ratio bar */}
