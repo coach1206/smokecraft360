@@ -8,9 +8,10 @@
  * AnimatePresence crossfade on every image rotation.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useKernelMode } from "@/contexts/KernelModeContext";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Leaf, Coffee, Utensils, ShoppingCart, Users, Eye, Star,
   Send, ClipboardList, Bell, BookOpen, ChevronRight,
@@ -436,8 +437,13 @@ function TableRail({
 // ── Main ─────────────────────────────────────────────────────
 interface Props { T: Theme; }
 
+type SyncStatus = "idle" | "syncing" | "synced" | "error";
+
 export function StaffCockpit({ T }: Props) {
-  const { mode } = useKernelMode();
+  const { mode, refresh } = useKernelMode();
+  const { user } = useAuth();
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle");
+  const syncResetRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [sessions, setSessions]       = useState<GuestSession[]>(MOCK_SESSIONS);
   const [selectedId, setSelectedId]   = useState<string | null>(MOCK_SESSIONS[0].id);
   const [note, setNote]               = useState("");
@@ -486,6 +492,31 @@ export function StaffCockpit({ T }: Props) {
     rotCigar && rotLiquor && selected ? 3 :
     selected ? 2 : 1;
 
+  const canSyncMode =
+    user?.role === "manager" ||
+    user?.role === "venue_owner" ||
+    user?.role === "super_admin";
+
+  useEffect(() => {
+    return () => {
+      if (syncResetRef.current !== null) clearTimeout(syncResetRef.current);
+    };
+  }, []);
+
+  async function handleSyncMode() {
+    if (syncStatus === "syncing") return;
+    if (syncResetRef.current !== null) clearTimeout(syncResetRef.current);
+    setSyncStatus("syncing");
+    try {
+      await refresh();
+      setSyncStatus("synced");
+      syncResetRef.current = setTimeout(() => setSyncStatus("idle"), 3000);
+    } catch {
+      setSyncStatus("error");
+      syncResetRef.current = setTimeout(() => setSyncStatus("idle"), 3000);
+    }
+  }
+
   function showToast(msg: string) {
     triggerHaptic("success");
     setToast(msg);
@@ -532,6 +563,63 @@ export function StaffCockpit({ T }: Props) {
 
       {/* ── CENTER: Ice-blue workflow surface ── */}
       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", background: SURFACE, overflow: "hidden" }}>
+
+        {/* Cockpit header with Sync Mode trigger */}
+        {canSyncMode && (
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "flex-end",
+            padding: "6px 16px",
+            background: CARD,
+            borderBottom: `1px solid ${T.border}`,
+            flexShrink: 0,
+            minHeight: 36,
+          }}>
+            <motion.button
+              whileTap={{ scale: 0.93 }}
+              onClick={handleSyncMode}
+              disabled={syncStatus === "syncing"}
+              style={{
+                display: "flex", alignItems: "center", gap: 5,
+                padding: "5px 12px",
+                borderRadius: 8,
+                border: `1px solid ${
+                  syncStatus === "synced" ? `${T.green}50` :
+                  syncStatus === "error"  ? `${T.yellow}50` :
+                  `${T.accent}35`
+                }`,
+                background:
+                  syncStatus === "synced" ? `${T.green}10` :
+                  syncStatus === "error"  ? `${T.yellow}10` :
+                  `${T.accent}0C`,
+                color:
+                  syncStatus === "synced" ? T.green :
+                  syncStatus === "error"  ? T.yellow :
+                  T.accent,
+                cursor: syncStatus === "syncing" ? "not-allowed" : "pointer",
+                fontSize: 9.5,
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                opacity: syncStatus === "syncing" ? 0.7 : 1,
+                transition: "all 0.2s ease",
+              }}
+            >
+              <motion.span
+                animate={syncStatus === "syncing" ? { rotate: 360 } : { rotate: 0 }}
+                transition={syncStatus === "syncing" ? { duration: 0.8, repeat: Infinity, ease: "linear" } : { duration: 0 }}
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                {syncStatus === "synced"
+                  ? <CheckCircle2 size={11} />
+                  : <RefreshCw size={11} />
+                }
+              </motion.span>
+              {syncStatus === "syncing" ? "Syncing…" :
+               syncStatus === "synced"  ? "Up to date" :
+               syncStatus === "error"   ? "Sync failed" :
+               "Sync Mode"}
+            </motion.button>
+          </div>
+        )}
 
         {/* Step continuity rail */}
         <StepRail current={currentStep} T={T} />
