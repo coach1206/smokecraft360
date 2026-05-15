@@ -215,10 +215,28 @@ interface RecentEvent {
 interface ProductItem {
   card_id: string;
   title: string | null;
+  craft_type: string | null;
   adds: number;
   skips: number;
   total: number;
 }
+
+type CraftFilter = "all" | "smoke" | "pour" | "brew" | "vape";
+
+const CRAFT_FILTERS: { id: CraftFilter; label: string; color: string }[] = [
+  { id: "all",   label: "ALL",   color: "#C4610A" },
+  { id: "smoke", label: "SMOKE", color: "#8B5CF6" },
+  { id: "pour",  label: "POUR",  color: "#3B82F6" },
+  { id: "brew",  label: "BREW",  color: "#D97706" },
+  { id: "vape",  label: "VAPE",  color: "#10B981" },
+];
+
+const CRAFT_BADGE_COLORS: Record<string, { bg: string; text: string }> = {
+  smoke: { bg: "rgba(139,92,246,0.15)", text: "#A78BFA" },
+  pour:  { bg: "rgba(59,130,246,0.15)", text: "#60A5FA" },
+  brew:  { bg: "rgba(217,119,6,0.15)",  text: "#FCD34D" },
+  vape:  { bg: "rgba(16,185,129,0.15)", text: "#34D399" },
+};
 
 const EMPTY_SUMMARY: TelemetrySummary = {
   total: 0,
@@ -329,6 +347,7 @@ export default function EATDashboard() {
 
   const [products, setProducts]             = useState<ProductItem[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
+  const [craftFilter, setCraftFilter]       = useState<CraftFilter>("all");
 
   // Keep tabRef in sync so fetchRecentEvents can read current tab without
   // needing it as a dependency (which would restart the poll on every tab change).
@@ -415,13 +434,14 @@ export default function EATDashboard() {
       .catch(() => { /* silent */ });
   }, []);
 
-  const fetchProducts = useCallback((d = days) => {
+  const fetchProducts = useCallback((d = days, cf: CraftFilter = craftFilter) => {
     setProductsLoading(true);
-    apiFetch<{ products: ProductItem[] }>(`/telemetry/products?days=${d}`)
+    const craftParam = cf !== "all" ? `&craftType=${cf}` : "";
+    apiFetch<{ products: ProductItem[] }>(`/telemetry/products?days=${d}${craftParam}`)
       .then(({ products: p }) => { setProducts(p); })
       .catch(() => { /* silent */ })
       .finally(() => setProductsLoading(false));
-  }, [days]);
+  }, [days, craftFilter]);
 
   useEffect(() => {
     if (pollRef.current) clearInterval(pollRef.current);
@@ -438,8 +458,8 @@ export default function EATDashboard() {
   }, [days, compareDays, compareEnabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (tab === "products") fetchProducts(days);
-  }, [tab, days]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (tab === "products") fetchProducts(days, craftFilter);
+  }, [tab, days, craftFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (counterRef.current) clearInterval(counterRef.current);
@@ -825,7 +845,7 @@ export default function EATDashboard() {
             )}
             {tab === "modules"   && <ModulesTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
             {tab === "ritual"    && <RitualTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
-            {tab === "products"  && <ProductsTab products={products} loading={productsLoading} days={days} />}
+            {tab === "products"  && <ProductsTab products={products} loading={productsLoading} days={days} craftFilter={craftFilter} onCraftFilter={setCraftFilter} />}
             {tab === "live"      && <LiveFeedTab events={recentEvents} newEventIds={newEventIds} />}
           </>
         )}
@@ -1349,15 +1369,29 @@ function RitualTab({
 const ADD_COLOR   = "#4ade80";
 const SKIP_COLOR  = "#f87171";
 
+function hexToRgbStr(hex: string): string {
+  const clean = hex.replace("#", "");
+  const r = parseInt(clean.substring(0, 2), 16);
+  const g = parseInt(clean.substring(2, 4), 16);
+  const b = parseInt(clean.substring(4, 6), 16);
+  return `${r},${g},${b}`;
+}
+
 function ProductsTab({
   products,
   loading,
   days,
+  craftFilter,
+  onCraftFilter,
 }: {
   products: ProductItem[];
   loading: boolean;
   days: number;
+  craftFilter: CraftFilter;
+  onCraftFilter: (cf: CraftFilter) => void;
 }) {
+  const activeFilterConfig = CRAFT_FILTERS.find((f) => f.id === craftFilter) ?? CRAFT_FILTERS[0]!;
+
   if (loading) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "60px 0", gap: 10, color: "rgba(245,237,216,0.3)" }}>
@@ -1380,8 +1414,42 @@ function ProductsTab({
         sub={`Ranked by swipe interactions (adds + skips) over the last ${days} day${days === 1 ? "" : "s"}`}
       />
 
+      {/* Craft type filter pills */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+        <span style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.3)", marginRight: 4 }}>CRAFT</span>
+        {CRAFT_FILTERS.map((f) => {
+          const isActive = craftFilter === f.id;
+          return (
+            <button
+              key={f.id}
+              onClick={() => onCraftFilter(f.id)}
+              style={{
+                background: isActive ? `rgba(${hexToRgbStr(f.color)},0.18)` : "rgba(255,255,255,0.04)",
+                border: `1px solid ${isActive ? f.color : "rgba(255,255,255,0.08)"}`,
+                borderRadius: 20,
+                padding: "5px 14px",
+                fontSize: 10, fontWeight: 700, letterSpacing: "0.12em",
+                color: isActive ? f.color : "rgba(245,237,216,0.4)",
+                cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+            >
+              {f.label}
+            </button>
+          );
+        })}
+        {craftFilter !== "all" && (
+          <span style={{ fontSize: 9, color: activeFilterConfig.color, letterSpacing: "0.1em", marginLeft: 4, opacity: 0.7 }}>
+            filtered
+          </span>
+        )}
+      </div>
+
       {products.length === 0 ? (
-        <EmptyState label="No swipe_add or swipe_skip events with cardId found in this window. Swipe interactions will appear here once guests engage with the experience." />
+        <EmptyState label={craftFilter === "all"
+          ? "No swipe_add or swipe_skip events with cardId found in this window. Swipe interactions will appear here once guests engage with the experience."
+          : `No ${craftFilter.toUpperCase()} products found in this window.`}
+        />
       ) : (
         <>
           {/* Legend */}
@@ -1408,7 +1476,7 @@ function ProductsTab({
             {/* Table header */}
             <div style={{
               display: "grid",
-              gridTemplateColumns: "36px 1fr 60px 60px 60px 140px",
+              gridTemplateColumns: "36px 1fr 72px 60px 60px 60px 140px",
               gap: "0 12px",
               padding: "10px 16px",
               borderBottom: "1px solid rgba(255,255,255,0.06)",
@@ -1417,6 +1485,7 @@ function ProductsTab({
             }}>
               <span>#</span>
               <span>PRODUCT</span>
+              <span>CRAFT</span>
               <span style={{ textAlign: "right" }}>ADDS</span>
               <span style={{ textAlign: "right" }}>SKIPS</span>
               <span style={{ textAlign: "right" }}>TOTAL</span>
@@ -1427,14 +1496,16 @@ function ProductsTab({
               const addRatio  = p.total > 0 ? (p.adds / p.total) * 100 : 0;
               const isTop     = i === 0;
               const label     = p.title ?? p.card_id;
-              const rowKey    = `${p.card_id}|${p.title ?? ""}`;
+              const rowKey    = `${p.card_id}|${p.title ?? ""}|${p.craft_type ?? ""}`;
+              const ct        = p.craft_type?.toLowerCase() ?? null;
+              const badgeStyle = ct && CRAFT_BADGE_COLORS[ct] ? CRAFT_BADGE_COLORS[ct]! : null;
 
               return (
                 <div
                   key={rowKey}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "36px 1fr 60px 60px 60px 140px",
+                    gridTemplateColumns: "36px 1fr 72px 60px 60px 60px 140px",
                     gap: "0 12px",
                     padding: "12px 16px",
                     borderBottom: "1px solid rgba(255,255,255,0.04)",
@@ -1470,6 +1541,24 @@ function ProductsTab({
                       <div style={{ fontSize: 9, color: "rgba(245,237,216,0.25)", fontFamily: "monospace", marginTop: 2 }}>
                         {p.card_id}
                       </div>
+                    )}
+                  </div>
+
+                  {/* Craft type badge */}
+                  <div>
+                    {badgeStyle ? (
+                      <span style={{
+                        display: "inline-block",
+                        padding: "2px 8px",
+                        borderRadius: 20,
+                        fontSize: 9, fontWeight: 700, letterSpacing: "0.12em",
+                        background: badgeStyle.bg,
+                        color: badgeStyle.text,
+                      }}>
+                        {ct!.toUpperCase()}
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: 9, color: "rgba(245,237,216,0.2)" }}>—</span>
                     )}
                   </div>
 
