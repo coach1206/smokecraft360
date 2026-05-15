@@ -1,0 +1,99 @@
+/**
+ * NOVEE OS: SmokeCraft 360 Ritual Controller
+ * Authority: Profound Innovations LLC
+ * Framework: E.A.T. (Environment, Asset, Transaction)
+ */
+
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const RitualController = () => {
+  const [step, setStep] = useState(2); // Starting at Step 2 as requested
+  const [ledger, setLedger] = useState([]);
+
+  const ritualStages = [
+    { id: 2, label: "Selection & Cut", eat: "Asset Validation" },
+    { id: 3, label: "Toasting the Foot", eat: "Environment Prep" },
+    { id: 4, label: "The Initial Draw", eat: "Transaction Initialization" },
+    // ... logic continues through Step 13
+  ];
+
+  const handleTransition = () => {
+    if (step < 13) {
+      const newEntry = {
+        step: step,
+        timestamp: new Date().toLocaleTimeString(),
+        status: "COMMITTED"
+      };
+      setLedger([...ledger, newEntry]);
+      setStep(step + 1);
+    }
+  };
+
+  return (
+    <div style={styles.obsidianContainer}>
+      <header style={styles.header}>
+        <span style={styles.brand}>NOVEE OS</span>
+        <span style={styles.eatBadge}>E.A.T. ACTIVE</span>
+      </header>
+
+      <AnimatePresence mode="wait">
+        <motion.div 
+          key={step}
+          initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+          exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          style={styles.ritualCard}
+        >
+          <h2 style={styles.stepTitle}>STEP 0{step}</h2>
+          <p style={styles.stepLabel}>{ritualStages.find(s => s.id === step)?.label}</p>
+          <div style={styles.titaniumBorder} />
+          <button onClick={handleTransition} style={styles.morphButton}>
+            NEXT PHASE
+          </button>
+        </motion.div>
+      </AnimatePresence>
+
+      <footer style={styles.ledger}>
+        <p>Transaction Ledger: {ledger.length} entries committed to NOVEE</p>
+      </footer>
+    </div>
+  );
+};
+
+const styles = {
+  obsidianContainer: {
+    background: 'radial-gradient(circle, #1a1a1a 0%, #000000 100%)',
+    height: '100vh',
+    color: '#e0e0e0',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontFamily: 'Inter, sans-serif'
+  },
+  header: { position: 'absolute', top: '40px', width: '90%', display: 'flex', justifyContent: 'space-between' },
+  brand: { fontWeight: '800', letterSpacing: '4px', color: '#fff' },
+  eatBadge: { color: '#00ffcc', fontSize: '10px', border: '1px solid #00ffcc', padding: '2px 8px' },
+  ritualCard: { 
+    background: 'rgba(255, 255, 255, 0.05)', 
+    backdropFilter: 'blur(20px)', 
+    padding: '60px', 
+    borderRadius: '2px', 
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    textAlign: 'center',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+  },
+  titaniumBorder: { height: '1px', background: 'linear-gradient(90deg, transparent, #b0b0b0, transparent)', margin: '20px 0' },
+  morphButton: { 
+    background: 'none', 
+    border: '1px solid #fff', 
+    color: '#fff', 
+    padding: '10px 30px', 
+    cursor: 'pointer',
+    letterSpacing: '2px'
+  }
+};
+
+export default RitualController;

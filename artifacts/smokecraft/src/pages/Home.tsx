@@ -8,6 +8,8 @@ import DrawEngineeringScene from "@/components/CinematicLanding/DrawEngineeringS
 import PinGate from "@/components/CinematicLanding/PinGate";
 import PresenceEnvironment from "@/components/CinematicLanding/PresenceEnvironment";
 import TerroirArchitecture from "@/components/CinematicLanding/TerroirArchitecture";
+import { RitualEngine } from "@/components/CinematicLanding/RitualEngine";
+import type { RitualData } from "@/components/CinematicLanding/RitualConfig";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence, animate, useAnimation } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
@@ -42,7 +44,7 @@ import { OrderModal }        from "@/components/Order/OrderModal";
 import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
 import type { SavedBlend }   from "@/services/storage";
 
-type Phase = "welcome" | "pin_gate" | "presence" | "terroir" | "form" | "loading" | "ready" | "results" | "draw_engineering";
+type Phase = "welcome" | "pin_gate" | "presence" | "terroir" | "ritual" | "form" | "loading" | "ready" | "results" | "draw_engineering";
 
 /* ── Universal slide animation ────────────────────────────────── */
 const SLIDE_VARIANTS = {
@@ -250,6 +252,7 @@ export default function Home() {
   }, [showPlayground, contentAnim]);
 
   const [phase, setPhase]                     = useState<Phase>("welcome");
+  const [ritualData, setRitualData]           = useState<RitualData>({});
   const [error, setError]                     = useState<string | null>(null);
   const [results, setResults]                 = useState<RecommendResponse | null>(null);
   const [vaultOpen, setVaultOpen]             = useState(false);
@@ -806,12 +809,31 @@ export default function Home() {
         {phase === "terroir" && (
           <TerroirArchitecture
             key="terroir-architecture"
-            onComplete={() => setPhase("form")}
+            onComplete={() => {
+              setMorphing(true);
+              setTimeout(() => setPhase("ritual"), 460);
+              setTimeout(() => setMorphing(false), 980);
+            }}
           />
         )}
       </AnimatePresence>
 
-      {/* ── Session 03: Engineering of the Draw — Step 8 / 14 ────────── */}
+      {/* ── Sessions 02–07: Sovereign Ritual Engine — Steps 2–7 / 14 ── */}
+      <AnimatePresence>
+        {phase === "ritual" && (
+          <RitualEngine
+            key="ritual-engine"
+            onComplete={(data) => {
+              setRitualData(data);
+              setMorphing(true);
+              setTimeout(() => setPhase("form"), 460);
+              setTimeout(() => setMorphing(false), 980);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Session 08: Engineering of the Draw — Step 8 / 14 ────────── */}
       <AnimatePresence>
         {phase === "draw_engineering" && (
           <DrawEngineeringScene
