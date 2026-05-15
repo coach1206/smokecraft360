@@ -84,6 +84,8 @@ function buildComparisonCsvContent(
   compareDays: number,
 ): string {
   const cmp = data.comparison;
+  const primaryLabel = `Primary: last ${days} day(s)`;
+  const compareLabel = `Compare: last ${compareDays} day(s)`;
   const rows: string[] = [];
 
   rows.push("# E.A.T. Engine Comparison Export");
@@ -92,16 +94,17 @@ function buildComparisonCsvContent(
   rows.push(`# Generated: ${new Date().toISOString()}`);
   rows.push("");
 
-  rows.push("## Daily Comparison");
+  // ── Daily Counts ──────────────────────────────────────────────────────────
+  rows.push("## Daily Counts");
   const maxLen = Math.max(
     data.dailyCounts.length,
     cmp ? cmp.dailyCounts.length : 0,
   );
   const unequalWindows = days !== compareDays;
   if (unequalWindows) {
-    rows.push("primary_date,comparison_date,primary_count,comparison_count,delta_pct");
+    rows.push(`primary_date,comparison_date,"${primaryLabel}","${compareLabel}",delta_pct`);
   } else {
-    rows.push("date,primary_count,comparison_count,delta_pct");
+    rows.push(`date,"${primaryLabel}","${compareLabel}",delta_pct`);
   }
   for (let i = 0; i < maxLen; i++) {
     const primary = data.dailyCounts[i];
@@ -120,8 +123,45 @@ function buildComparisonCsvContent(
   }
   rows.push("");
 
+  // ── Top Event Types — Primary ─────────────────────────────────────────────
+  rows.push(`## Top Event Types — ${primaryLabel}`);
+  rows.push("event_type,count");
+  for (const e of data.topEventTypes) {
+    rows.push(`"${e.event_type.replace(/"/g, '""')}",${e.cnt}`);
+  }
+  rows.push("");
+
+  // ── Top Event Types — Comparison ──────────────────────────────────────────
+  rows.push(`## Top Event Types — ${compareLabel}`);
+  rows.push("event_type,count");
+  if (cmp) {
+    for (const e of cmp.topEventTypes) {
+      rows.push(`"${e.event_type.replace(/"/g, '""')}",${e.cnt}`);
+    }
+  }
+  rows.push("");
+
+  // ── Module Usage — Primary ────────────────────────────────────────────────
+  rows.push(`## Module Usage — ${primaryLabel}`);
+  rows.push("module_name,module_slug,event_count");
+  for (const m of data.moduleUsage) {
+    rows.push(`"${m.module_name.replace(/"/g, '""')}","${m.module_slug}",${m.event_count}`);
+  }
+  rows.push("");
+
+  // ── Module Usage — Comparison ─────────────────────────────────────────────
+  rows.push(`## Module Usage — ${compareLabel}`);
+  rows.push("module_name,module_slug,event_count");
+  if (cmp) {
+    for (const m of cmp.moduleUsage) {
+      rows.push(`"${m.module_name.replace(/"/g, '""')}","${m.module_slug}",${m.event_count}`);
+    }
+  }
+  rows.push("");
+
+  // ── Summary ───────────────────────────────────────────────────────────────
   rows.push("## Summary");
-  rows.push("metric,primary,comparison,delta_pct");
+  rows.push(`metric,"${primaryLabel}","${compareLabel}",delta_pct`);
   const totalDelta =
     cmp && cmp.total > 0
       ? String(Math.round(((data.total - cmp.total) / cmp.total) * 100))
