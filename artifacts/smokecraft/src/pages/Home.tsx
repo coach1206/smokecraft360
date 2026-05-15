@@ -16,6 +16,7 @@ import type { EATState } from "@/components/CinematicLanding/EATController";
 import { NoveeRegistry } from "@/lib/NoveeRegistry";
 import type { NoveePersistedState } from "@/lib/NoveeRegistry";
 import { ResumeSessionModal } from "@/components/CinematicLanding/ResumeSessionModal";
+import { CommandHubPanel } from "@/components/CinematicLanding/CommandHubPanel";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence, animate, useAnimation } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
@@ -266,6 +267,7 @@ export default function Home() {
   const [resumePreDrawIndex, setResumePreDrawIndex] = useState(0);
   const [resumePostDrawIndex,setResumePostDrawIndex]= useState(0);
   const [currentRitualStep,  setCurrentRitualStep]  = useState(2);
+  const [hubOpen,            setHubOpen]            = useState(false);
   const [error, setError]                     = useState<string | null>(null);
   const [results, setResults]                 = useState<RecommendResponse | null>(null);
   const [vaultOpen, setVaultOpen]             = useState(false);
@@ -2355,6 +2357,65 @@ export default function Home() {
         </AnimatePresence>
       </div>
       </motion.div>
+
+      {/* ── Command Hub: fixed trigger (ritual phases only) ── */}
+      <AnimatePresence>
+        {(phase === "ritual" || phase === "draw_engineering" || phase === "ritual_post") && !hubOpen && (
+          <motion.button
+            key="hub-trigger"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setHubOpen(true)}
+            aria-label="Open Command Hub"
+            style={{
+              position: "fixed",
+              bottom: 28,
+              right: 20,
+              zIndex: 175,
+              background: "rgba(4,3,2,0.84)",
+              border: "1px solid rgba(212,175,55,0.3)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              padding: "9px 18px",
+              color: "rgba(212,175,55,0.65)",
+              fontSize: 7,
+              letterSpacing: "0.42em",
+              textTransform: "uppercase",
+              cursor: "pointer",
+              fontFamily: "'Inter', monospace",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <span style={{
+              display: "inline-block",
+              width: 5, height: 5, borderRadius: "50%",
+              background: "rgba(212,175,55,0.55)",
+              boxShadow: "0 0 6px rgba(212,175,55,0.4)",
+              flexShrink: 0,
+            }} />
+            COMMAND HUB
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* ── Command Hub panel ── */}
+      <AnimatePresence>
+        {hubOpen && (
+          <CommandHubPanel
+            key="command-hub-panel"
+            eatState={eatState}
+            currentStep={currentRitualStep}
+            phase={phase}
+            onClose={() => setHubOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
