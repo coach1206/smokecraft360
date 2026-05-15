@@ -31,7 +31,11 @@ export default function SettingsModule() {
 
   const kernel = useKernelMode();
   const { user: authUser, token: authToken } = useAuth();
-  const isKernelAdmin = authUser?.role === "super_admin" || authUser?.role === "venue_owner";
+  const isKernelAdmin =
+    authUser?.role === "super_admin" ||
+    (authUser?.role === "venue_owner" &&
+      authUser.venueId != null &&
+      authUser.venueId === venue.id);
   const [kernelError, setKernelError] = useState("");
   const [kernelSuccess, setKernelSuccess] = useState(false);
   const [pendingKernelMode, setPendingKernelMode] = useState<KernelMode | null>(null);
@@ -553,7 +557,9 @@ export default function SettingsModule() {
             Controls which feature tier is active for this venue. <strong>Sovereign</strong> unlocks luxury add-ons, AI personalization, and premium analytics. <strong>Essential</strong> locks those features.
             {!isKernelAdmin && (
               <span style={{ display: "block", marginTop: 6, color: "#ef4444", fontSize: 11, fontWeight: 600 }}>
-                Super Admin or Venue Owner role required to change this setting.
+                {authUser?.role === "venue_owner"
+                  ? "Venue Owners can only change the mode for their own venue."
+                  : "Super Admin or Venue Owner role required to change this setting."}
               </span>
             )}
           </div>
