@@ -1,0 +1,72 @@
+1. The Global Rotation & Diversity Blueprint
+We are eliminating all static visuals on the guest-facing gateways. Every portal card and cinematic hero background will feature a continuous, diverse, and rotating sequence of images.
+
+Core Directives for all Crafts:
+
+Strict E.A.T. Rotation Logic: The E.A.T. (Environment, Asset, Transaction) framework is now linked to image rotation. For example, a morning "Environment" (high natural light) will trigger a different visual asset and rotation speed than a late-night premium session.
+
+Staggered Cycle offsets: To ensure the entire dashboard doesn't cycle at the same time, every craft card and background will use staggered cycle delays. A 14–22 second loop is recommended for smoke, with similar varying cycles for other liquid flows.
+
+Maximum Aesthetic Variety: The asset diversity must reflect the request. If there are four cards, each card on the home page should cycle different looks, materials, and settings.
+
+Zero Synchronicity: The dashboard must remain "alive" rather than synchronized.
+
+2. Specific Craft Rotation Details
+Here is the master sensory list for the rotating assets that the system must cycle:
+
+SmokeCraft 360: Diversity and Ritual Rotation
+We will strictly enforce diverse profiles for cigar smokers, rotating specific looks from established sophisticates to the new generation, all under high-fidelity cinematic lighting.
+
+Smoker Profiles (Diverse Representation):
+
+An established professional enjoying a slow, elegant ritual in a dark lounge.
+
+A younger, diverse smoker with natural hair (e.g., dreadlocks) enjoying a modern blend.
+
+An authentic female connoisseur/sommelier.
+
+Historical legacy representation of tradition and memory.
+
+The Ritual Process (Rotation Cycle):
+
+Selection: Rotating visuals of premium cigars, hand-rolled by a master roller (Domincan focus).
+
+Calibration: Dynamic views of the precision cut (straight, V-cut, punch).
+
+Thermal Ignition: The toast and ignition draw, with high-fidelity smoke curling and animated embers (6 gradients, 28 particles).
+
+Evolution: Visuals of first-third, second-third, and final-third transition.
+
+Asset Variety: Diverse cigar premium profiles (wrapper types, ring gauges, optimal humidity) linked to the active session.
+
+PourCraft 360: Liquid Dynamics and Glassware
+The rotation will showcase diverse spirits, pairing logic, and specific glassware, all synced with NOVEE's low-luxury lighting.
+
+Pouring Dynamics: Realistic liquid flow for whiskey, bourbon, cognac, and aged spirits.
+
+Diverse Glassware: Snifters, tumblers, and heavy-base glassware tailored to the specific spirit.
+
+Pairing Visuals: Interlocking views of the cigar asset and the suggested beverage.
+
+BeerCraft 360: discovery and Temperature Tracking
+The 12 ritual steps will rotate through a vast selection of cold beers and proper vessels, using appropriate pilsner glasses, steins, and mugs.
+
+discovery Loop: High-fidelity animations of craft beer discovery.
+
+Asset Rotation: Pilsner, IPA, Stout, Sour, and Wheat assets.
+
+Environmental Sync: Sensory data linked to vessel temperature, carbonation, and pour speed.
+
+WineCraft 360: Sommelier-Guided Ritual
+SOMMELIER-GUIDED WINE RITUAL will rotate through decanting, tasting notes, and vineyard aesthetics.
+
+Sommelier Ritual: Continuous looping of the proper decanting and tasting process.
+
+Pairing logic: Dynamic visuals of suggested pairings and terrior data.
+
+Asset Variety: Specific varietals, regions, and time-of-day time profiles.
+
+Next Steps to Close the Loop
+This blueprint is ready. To implement it, I recommend the following prompt to create the core animation asset array:
+
+Prompt: "Generate the Central Dynamic Asset Array for CraftHub 360. Create four distinct, continuously looping sensory arrays for Smoke, Pour, Beer, and WineCraft 360. Each array must contain 12 diverse, craft-specific, high-fidelity animations (e.g., smoke curling, liquid pouring, carbonation rising, decanting). The final output must include the logic to rotate these assets on the UI every nine seconds with staggered start offsets, adapting the selection based on the active time-of-day time profile. Explicitly include diverse smoker profile

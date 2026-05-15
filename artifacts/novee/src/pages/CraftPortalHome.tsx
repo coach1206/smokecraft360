@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { RotatingCraftVisual } from "@/components/RotatingCraftVisual";
+import type { CraftType } from "@/lib/craftAssets";
 
 interface CraftCard {
   id:       string;
@@ -203,9 +205,8 @@ export default function CraftPortalHome() {
             onClick={() => navigate(craft.route)}
             style={{
               position: "relative",
-              background: hovered === craft.id
-                ? `linear-gradient(160deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.01) 100%)`
-                : "rgba(255,255,255,0.018)",
+              overflow: "hidden",
+              background: "transparent",
               border: `1px solid ${hovered === craft.id ? craft.color + "44" : "rgba(255,255,255,0.07)"}`,
               cursor: "pointer",
               padding: "48px 36px 40px",
@@ -220,6 +221,11 @@ export default function CraftPortalHome() {
             onMouseEnter={() => setHovered(craft.id)}
             onMouseLeave={() => setHovered(null)}
           >
+            {/* Rotating background visual — staggered per card */}
+            <div style={{ position: "absolute", inset: 0, opacity: 0.48, overflow: "hidden", pointerEvents: "none" }}>
+              <RotatingCraftVisual craft={craft.id as CraftType} staggerOffset={i} showLabel={false} />
+            </div>
+
             {/* Corner symbol */}
             <div style={{
               fontSize: 22,

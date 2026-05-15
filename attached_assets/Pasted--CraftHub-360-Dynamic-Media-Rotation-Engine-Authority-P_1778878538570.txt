@@ -1,0 +1,58 @@
+/**
+ * CraftHub 360: Dynamic Media Rotation Engine
+ * Authority: Profound Innovations LLC
+ * Framework: E.A.T. (Environment, Asset, Transaction)
+ */
+
+import React, { useState, useEffect } from 'react';
+
+// Unified Asset Database representing genuine, diverse craft experiences
+const CRAFT_ASSET_DATABASE = {
+  smokecraft: [
+    { url: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?q=80&w=1200', desc: 'Premium hand-rolled cigar ritual' },
+    { url: 'https://images.unsplash.com/photo-1606166187734-a4cb74079027?q=80&w=1200', desc: 'Diverse connoisseurs in luxury lounge' },
+    { url: 'https://images.unsplash.com/photo-1527066579998-d4e419000c4b?q=80&w=1200', desc: 'Precision straight cap cut ceremony' },
+    { url: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=1200', desc: 'Toasting the foot with amber embers' }
+  ],
+  pourcraft: [
+    { url: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1200', desc: 'Aged bourbon slow pour in heavy crystal tumbler' },
+    { url: 'https://images.unsplash.com/photo-1527661591475-527312dd65f5?q=80&w=1200', desc: 'Premium cognac neat in a crystal snifter' },
+    { url: 'https://images.unsplash.com/photo-1569529465841-dfedd87500f1?q=80&w=1200', desc: 'Single malt scotch pairing ritual' }
+  ],
+  beercraft: [
+    { url: 'https://images.unsplash.com/photo-1436018626274-89acd67ae29e?q=80&w=1200', desc: 'Cold artisanal craft pilsner in classic stein' },
+    { url: 'https://images.unsplash.com/photo-1535958636474-b021ee887b13?q=80&w=1200', desc: 'Rich stout beer with dense head in a master mug' }
+  ],
+  winecraft: [
+    { url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=1200', desc: 'Sommelier-guided crystal decanter aeration' },
+    { url: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=1200', desc: 'Fine vintage red wine tasting presentation' }
+  ]
+};
+
+interface RotatorProps {
+  craft: 'smokecraft' | 'pourcraft' | 'beercraft' | 'winecraft';
+  intervalTime?: number;
+  children: (currentAsset: { url: string; desc: string }) => React.ReactNode;
+}
+
+export const CraftImageRotator: React.FC<RotatorProps> = ({ craft, intervalTime = 9000, children }) => {
+  const assets = CRAFT_ASSET_DATABASE[craft];
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    // Staggered initialization offset based on craft type to prevent synchronized flashing
+    const offsets = { smokecraft: 0, pourcraft: 2000, beercraft: 4000, winecraft: 6000 };
+    const initialTimeout = setTimeout(() => {
+      
+      const interval = setInterval(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % assets.length);
+      }, intervalTime);
+
+      return () => clearInterval(interval);
+    }, offsets[craft]);
+
+    return () => clearTimeout(initialTimeout);
+  }, [assets.length, craft, intervalTime]);
+
+  return <>{children(assets[currentIndex])}</>;
+};

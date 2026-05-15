@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
+import { RotatingCraftVisual } from "@/components/RotatingCraftVisual";
 
 const LEDGER_KEY = "NOVEE_EAT_RITUAL_LEDGER";
 
@@ -71,7 +72,7 @@ export default function SmokeCraftGateway() {
       ref={containerRef}
       style={{
         position: "fixed", inset: 0,
-        background: "radial-gradient(ellipse at 50% 80%, #160c06 0%, #0A0704 40%, #060504 100%)",
+        background: "#060504",
         display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center",
         overflow: "hidden",
@@ -128,6 +129,9 @@ export default function SmokeCraftGateway() {
           color: rgba(240,237,232,0.55) !important;
         }
       `}</style>
+
+      {/* ── Rotating cinematic background ─────────────────────────────────── */}
+      <RotatingCraftVisual craft="smoke" showLabel staggerOffset={0} />
 
       {/* ── Smoke wisps ──────────────────────────────────────────────────── */}
       {[

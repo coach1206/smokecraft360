@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
+import { RotatingCraftVisual } from "@/components/RotatingCraftVisual";
+import type { CraftType } from "@/lib/craftAssets";
+
+const CRAFT_TYPE_MAP: Record<string, CraftType> = {
+  pourcraft: "pour",
+  beercraft: "beer",
+  winecraft:  "wine",
+};
 
 interface CraftConfig {
   id:     string;
@@ -58,7 +66,7 @@ export default function CraftComingSoon({ craft }: Props) {
   return (
     <div style={{
       position: "fixed", inset: 0,
-      background: "#070605",
+      background: "#060403",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       fontFamily: "'Inter', 'SF Pro Display', -apple-system, sans-serif",
@@ -78,6 +86,9 @@ export default function CraftComingSoon({ craft }: Props) {
           50%       { opacity: 0.9; }
         }
       `}</style>
+
+      {/* ── Rotating craft visual background ─────────────────────────────── */}
+      <RotatingCraftVisual craft={CRAFT_TYPE_MAP[craft]} showLabel staggerOffset={0} />
 
       {/* Ambient glow */}
       <div style={{
