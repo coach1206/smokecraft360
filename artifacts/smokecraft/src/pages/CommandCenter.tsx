@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-  ArrowLeft, Activity, Layers, Lock, Sparkles, X,
+  ArrowLeft, Activity, Layers, Lock,
 } from "lucide-react";
+import { SovereignLockOverlay } from "@/components/SovereignLockOverlay";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter, POS_MODE_INFO } from "@/contexts/CommandCenterContext";
 import { useEngagementContext } from "@/contexts/EngagementContext";
@@ -364,145 +365,20 @@ export default function CommandCenter() {
       <SystemStatusPanel open={statusOpen} onClose={() => setStatusOpen(false)} />
 
       {/* ── Sovereign Upgrade Modal ── */}
-      <AnimatePresence>
-        {upgradeModal !== null && (() => {
-          const tile = TILES.find(t => t.id === upgradeModal);
-          const benefit = upgradeModal ? SOVEREIGN_BENEFITS[upgradeModal] : undefined;
-          if (!tile || !benefit) return null;
-          return (
-            <motion.div
-              key="upgrade-backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-              onClick={() => setUpgradeModal(null)}
-              style={{
-                position: "fixed", inset: 0,
-                background: "rgba(10,8,5,0.72)",
-                backdropFilter: "blur(6px)",
-                zIndex: 200,
-                display: "flex", alignItems: "flex-end", justifyContent: "center",
-                padding: "0 16px 32px",
-              }}
-            >
-              <motion.div
-                key="upgrade-sheet"
-                initial={{ opacity: 0, y: 60, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 40, scale: 0.97 }}
-                transition={{ duration: 0.28, ease: [0.34, 1.4, 0.64, 1] }}
-                onClick={e => e.stopPropagation()}
-                style={{
-                  width: "100%", maxWidth: 480,
-                  background: "rgba(239,235,224,0.97)",
-                  backdropFilter: "blur(20px)",
-                  borderRadius: 24,
-                  border: "1px solid rgba(212,139,0,0.28)",
-                  boxShadow: "0 32px 80px rgba(0,0,0,0.50), 0 0 0 1px rgba(212,139,0,0.10), inset 0 1px 0 rgba(255,255,255,0.50)",
-                  overflow: "hidden",
-                }}
-              >
-                {/* Amber glow strip */}
-                <div style={{
-                  height: 4,
-                  background: "linear-gradient(90deg, transparent 0%, #D48B00 40%, #f0a800 60%, transparent 100%)",
-                }} />
-
-                <div style={{ padding: "28px 28px 24px" }}>
-                  {/* Header row */}
-                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <div style={{
-                        width: 44, height: 44, borderRadius: 14,
-                        background: "rgba(212,139,0,0.12)",
-                        border: "1px solid rgba(212,139,0,0.30)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        flexShrink: 0,
-                      }}>
-                        <Lock size={20} color="#D48B00" strokeWidth={2} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#D48B00", marginBottom: 2 }}>Sovereign Required</div>
-                        <div style={{ fontSize: 18, fontWeight: 700, color: "#1A1A1B", lineHeight: 1.2 }}>{benefit.headline}</div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setUpgradeModal(null)}
-                      style={{
-                        width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                        background: "rgba(26,26,27,0.07)", border: "1px solid rgba(26,26,27,0.12)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        cursor: "pointer", color: "#6B5E4E",
-                      }}
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-
-                  {/* Body */}
-                  <p style={{
-                    fontSize: 15, lineHeight: 1.6, color: "#3A3028",
-                    margin: "0 0 24px", paddingLeft: 56,
-                  }}>
-                    {benefit.body}
-                  </p>
-
-                  {/* Perks list */}
-                  <div style={{
-                    display: "flex", flexDirection: "column", gap: 8,
-                    marginBottom: 28, paddingLeft: 56,
-                  }}>
-                    {["Full feature unlock across all Sovereign tiles", "Priority support & dedicated onboarding", "Advanced analytics, AI insights & fleet control"].map(perk => (
-                      <div key={perk} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <Sparkles size={13} color="#D48B00" style={{ flexShrink: 0 }} />
-                        <span style={{ fontSize: 13, color: "#4A3E30", fontWeight: 500 }}>{perk}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* CTAs */}
-                  <div style={{ display: "flex", gap: 10 }}>
-                    <motion.button
-                      whileTap={{ scale: 0.96 }}
-                      onClick={() => setUpgradeModal(null)}
-                      style={{
-                        flex: 1, height: 52, borderRadius: 14,
-                        background: "rgba(26,26,27,0.07)",
-                        border: "1px solid rgba(26,26,27,0.14)",
-                        fontSize: 14, fontWeight: 600, color: "#6B5E4E",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Not Now
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.02, boxShadow: "0 8px 28px rgba(212,139,0,0.40)" }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => {
-                        setUpgradeModal(null);
-                        navigate("/settings");
-                      }}
-                      style={{
-                        flex: 2, height: 52, borderRadius: 14,
-                        background: "linear-gradient(135deg, #D48B00 0%, #f0a800 100%)",
-                        border: "none",
-                        fontSize: 14, fontWeight: 700, color: "#1A1A1B",
-                        cursor: "pointer", letterSpacing: "0.04em",
-                        boxShadow: "0 4px 16px rgba(212,139,0,0.30)",
-                        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                      }}
-                    >
-                      <Sparkles size={15} />
-                      Upgrade to Sovereign
-                    </motion.button>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          );
-        })()}
-      </AnimatePresence>
+      {upgradeModal !== null && (() => {
+        const benefit = SOVEREIGN_BENEFITS[upgradeModal];
+        if (!benefit) return null;
+        return (
+          <SovereignLockOverlay
+            key={upgradeModal}
+            variant="modal"
+            featureName={benefit.headline}
+            description={benefit.body}
+            isOpen={upgradeModal !== null}
+            onClose={() => setUpgradeModal(null)}
+          />
+        );
+      })()}
     </div>
   );
 }

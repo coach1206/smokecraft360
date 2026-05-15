@@ -14,8 +14,9 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence }                   from "framer-motion";
-import { X, Download, Save, Send, Clock, RotateCcw, Check, Sparkles, Lock } from "lucide-react";
+import { X, Download, Save, Send, Clock, RotateCcw, Check, Sparkles } from "lucide-react";
 import { useKernelMode } from "@/contexts/KernelModeContext";
+import { SovereignLockOverlay } from "@/components/SovereignLockOverlay";
 import html2canvas                                   from "html2canvas";
 import {
   fetchDesignDrafts,
@@ -386,53 +387,13 @@ export default function SignatureStudio({
 
   if (mode === "essential") {
     return (
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <motion.div
-              className="fixed inset-0 z-[280]"
-              style={{ background: "rgba(26,26,27,0.45)", backdropFilter: "blur(8px)" }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={onClose}
-            />
-            <motion.div
-              role="dialog"
-              aria-label="Signature Studio locked"
-              className="fixed inset-x-4 top-1/2 z-[290] max-w-sm mx-auto flex flex-col items-center rounded-2xl overflow-hidden p-8 gap-4"
-              style={{
-                background: "linear-gradient(165deg, hsl(22 16% 8%), hsl(20 16% 5%))",
-                border: "1px solid rgba(212,139,0,0.2)",
-                transform: "translateY(-50%)",
-              }}
-              initial={{ opacity: 0, scale: 0.94 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              onClick={e => e.stopPropagation()}
-            >
-              <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(212,139,0,0.12)", border: "1.5px solid rgba(212,139,0,0.35)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Lock size={24} color="rgba(212,139,0,0.7)" />
-              </div>
-              <div style={{ fontSize: 10, letterSpacing: "0.2em", color: "rgba(212,139,0,0.7)", fontFamily: "monospace", fontWeight: 700 }}>
-                ESSENTIAL MODE ACTIVE
-              </div>
-              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 22, fontWeight: 600, color: "#F5F2ED", textAlign: "center" }}>
-                Signature Studio
-              </div>
-              <div style={{ fontSize: 13, color: "rgba(245,242,237,0.55)", lineHeight: 1.7, textAlign: "center" }}>
-                Signature Studio is a Sovereign-tier feature. Upgrade your venue plan to unlock custom craft design.
-              </div>
-              <button
-                onClick={onClose}
-                style={{ marginTop: 8, padding: "10px 28px", borderRadius: 10, border: "1px solid rgba(212,139,0,0.3)", background: "rgba(212,139,0,0.08)", color: "rgba(212,139,0,0.7)", cursor: "pointer", fontSize: 12, fontWeight: 700 }}
-              >
-                Close
-              </button>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <SovereignLockOverlay
+        variant="modal"
+        featureName="Signature Studio"
+        description="Signature Studio is a Sovereign-tier feature. Upgrade your venue plan to unlock custom craft design."
+        isOpen={isOpen}
+        onClose={onClose}
+      />
     );
   }
 
