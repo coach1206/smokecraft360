@@ -1,7 +1,6 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense, lazy } from "react";
-import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,7 +47,7 @@ function Router() {
         <Route path="/kernel"     component={EATDashboard} />
         <Route path="/eeie"       component={EATDashboard} />
 
-        <Route component={NotFound} />
+        <Route component={() => <Redirect to="/" />} />
       </Switch>
     </Suspense>
   );
