@@ -50,6 +50,13 @@
       "when": 1747267200000,
       "tag": "0006_kernel_foundation",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1747353600000,
+      "tag": "0007_kernel_module_audit_log",
+      "breakpoints": true
     }
   ]
 }

@@ -974,6 +974,14 @@ function RegisterModuleModal({
   );
 }
 
+interface AuditEntry {
+  id: string;
+  moduleId: string;
+  changedBy: string;
+  changedAt: string;
+  diff: Record<string, { before: unknown; after: unknown }>;
+}
+
 function EditModuleModal({
   adminToken,
   module: mod,
@@ -995,8 +1003,33 @@ function EditModuleModal({
   const [error,         setError]         = useState<string | null>(null);
   const [slugConflict,  setSlugConflict]  = useState<string | null>(null);
   const [slugChecking,  setSlugChecking]  = useState(false);
+  const [historyOpen,   setHistoryOpen]   = useState(false);
+  const [history,       setHistory]       = useState<AuditEntry[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const checkIdRef  = useRef(0);
+
+  const loadHistory = useCallback(async () => {
+    if (historyLoading) return;
+    setHistoryLoading(true);
+    try {
+      const result = await apiFetch<{ history: AuditEntry[] }>(`/modules/${mod.id}/history`, {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+      setHistory(result.history);
+    } catch {
+      // Silently fail — history is informational only
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, [mod.id, adminToken, historyLoading]);
+
+  const toggleHistory = useCallback(() => {
+    if (!historyOpen && history.length === 0) {
+      void loadHistory();
+    }
+    setHistoryOpen((v) => !v);
+  }, [historyOpen, history.length, loadHistory]);
 
   const slugFormatError = slug && !SLUG_RE.test(slug)
     ? "Slug must be lowercase letters, numbers, hyphens, or underscores"
@@ -1201,6 +1234,67 @@ function EditModuleModal({
             {error}
           </div>
         )}
+
+        {/* ── Edit history ───────────────────────────────────────────────── */}
+        <div style={{ marginBottom: 16, borderTop: "1px solid rgba(196,97,10,0.15)", paddingTop: 14 }}>
+          <button
+            onClick={toggleHistory}
+            style={{
+              background: "none", border: "none", cursor: "pointer",
+              display: "flex", alignItems: "center", gap: 6, padding: 0,
+              color: "rgba(196,97,10,0.7)", fontSize: 9, letterSpacing: "0.2em",
+            }}
+          >
+            <span style={{ fontSize: 10, transition: "transform 0.2s", display: "inline-block", transform: historyOpen ? "rotate(90deg)" : "rotate(0deg)" }}>▶</span>
+            EDIT HISTORY
+            {historyLoading && <span style={{ opacity: 0.5 }}>…</span>}
+          </button>
+
+          {historyOpen && (
+            <div style={{ marginTop: 10 }}>
+              {history.length === 0 && !historyLoading ? (
+                <div style={{ fontSize: 10, color: "rgba(245,237,216,0.3)", padding: "8px 0" }}>
+                  No edits recorded yet.
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 220, overflowY: "auto" }}>
+                  {history.map((entry) => (
+                    <div
+                      key={entry.id}
+                      style={{
+                        background: "rgba(255,255,255,0.03)", border: "1px solid rgba(196,97,10,0.12)",
+                        borderRadius: 8, padding: "8px 12px",
+                      }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
+                        <span style={{ fontSize: 9, color: "rgba(196,97,10,0.6)", letterSpacing: "0.1em" }}>
+                          {entry.changedBy}
+                        </span>
+                        <span style={{ fontSize: 9, color: "rgba(245,237,216,0.3)" }}>
+                          {new Date(entry.changedAt).toLocaleString()}
+                        </span>
+                      </div>
+                      {Object.keys(entry.diff).length === 0 ? (
+                        <div style={{ fontSize: 10, color: "rgba(245,237,216,0.3)" }}>No field changes detected</div>
+                      ) : (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                          {Object.entries(entry.diff).map(([field, { before, after }]) => (
+                            <div key={field} style={{ fontSize: 10, color: "rgba(245,237,216,0.6)", display: "flex", gap: 6, flexWrap: "wrap" }}>
+                              <span style={{ color: "rgba(196,97,10,0.7)", letterSpacing: "0.05em" }}>{field}</span>
+                              <span style={{ color: "rgba(248,113,113,0.7)" }}>{String(before ?? "—")}</span>
+                              <span style={{ color: "rgba(245,237,216,0.3)" }}>→</span>
+                              <span style={{ color: "rgba(134,239,172,0.7)" }}>{String(after ?? "—")}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
           <button

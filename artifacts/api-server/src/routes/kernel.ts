@@ -16,6 +16,7 @@ import {
   kernelModulesTable,
   kernelModeConfigTable,
   telemetryEventsTable,
+  kernelModuleAuditLogTable,
 } from "@workspace/db";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
 import { z }                             from "zod";
@@ -134,10 +135,11 @@ router.post("/modules", requireAuth, async (req: AuthRequest, res: Response) => 
 });
 
 // ── PATCH /api/kernel/modules/:id ─────────────────────────────────────────────
-// Update an existing module (admin/super_admin only).
+// Update an existing module (admin/super_admin only). Writes an audit log entry.
 
 router.patch("/modules/:id", requireAuth, async (req: AuthRequest, res: Response) => {
-  const role = (req as AuthRequest).user?.role;
+  const user = (req as AuthRequest).user;
+  const role = user?.role;
   if (role !== "admin" && role !== "super_admin") {
     return res.status(403).json({ error: "admin or super_admin only" });
   }
@@ -155,11 +157,39 @@ router.patch("/modules/:id", requireAuth, async (req: AuthRequest, res: Response
   }
 
   try {
-    const [mod] = await db
-      .update(kernelModulesTable)
-      .set(parsed.data)
-      .where(eq(kernelModulesTable.id, id))
-      .returning();
+    const changedBy = user?.email ?? user?.id ?? "unknown";
+
+    // Run module update + audit log insert atomically in a transaction
+    const mod = await db.transaction(async (tx) => {
+      // Fetch current values so we can compute a before/after diff
+      const [before] = await tx
+        .select()
+        .from(kernelModulesTable)
+        .where(eq(kernelModulesTable.id, id))
+        .limit(1);
+
+      if (!before) return null;
+
+      const [updated] = await tx
+        .update(kernelModulesTable)
+        .set(parsed.data)
+        .where(eq(kernelModulesTable.id, id))
+        .returning();
+
+      // Build diff: only include fields that actually changed
+      const diff: Record<string, { before: unknown; after: unknown }> = {};
+      for (const key of Object.keys(parsed.data) as (keyof typeof parsed.data)[]) {
+        const prev = before[key as keyof typeof before];
+        const next = parsed.data[key];
+        if (prev !== next) {
+          diff[key] = { before: prev, after: next };
+        }
+      }
+
+      await tx.insert(kernelModuleAuditLogTable).values({ moduleId: id, changedBy, diff });
+
+      return updated;
+    });
 
     if (!mod) return res.status(404).json({ error: "Module not found" });
     return res.json({ module: mod });
@@ -172,6 +202,44 @@ router.patch("/modules/:id", requireAuth, async (req: AuthRequest, res: Response
     ) {
       return res.status(409).json({ error: "Slug already in use", field: "slug" });
     }
+    const msg = err instanceof Error ? err.message : "Unknown error";
+    return res.status(500).json({ error: msg });
+  }
+});
+
+// ── GET /api/kernel/modules/:id/history ───────────────────────────────────────
+// Returns the last N audit log entries for a module (admin/super_admin only).
+// Optional query param: ?limit=<1–100>  (default: 50)
+
+router.get("/modules/:id/history", requireAuth, async (req: AuthRequest, res: Response) => {
+  const role = (req as AuthRequest).user?.role;
+  if (role !== "admin" && role !== "super_admin") {
+    return res.status(403).json({ error: "admin or super_admin only" });
+  }
+
+  const { id } = req.params as { id: string };
+  if (!UUID_RE.test(id)) return res.status(400).json({ error: "id must be a valid UUID" });
+
+  const rawLimit = req.query.limit as string | undefined;
+  let limitN = 50;
+  if (rawLimit !== undefined) {
+    const parsed = parseInt(rawLimit, 10);
+    if (isNaN(parsed) || parsed < 1 || parsed > 100) {
+      return res.status(400).json({ error: "limit must be an integer between 1 and 100" });
+    }
+    limitN = parsed;
+  }
+
+  try {
+    const entries = await db
+      .select()
+      .from(kernelModuleAuditLogTable)
+      .where(eq(kernelModuleAuditLogTable.moduleId, id))
+      .orderBy(desc(kernelModuleAuditLogTable.changedAt))
+      .limit(limitN);
+
+    return res.json({ history: entries });
+  } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     return res.status(500).json({ error: msg });
   }

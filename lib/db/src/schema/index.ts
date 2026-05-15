@@ -120,4 +120,5 @@ export * from "./enterpriseAi";
 export * from "./vendorProfiles";
 export * from "./kernelModules";
 export * from "./kernelModeConfig";
+export * from "./kernelModuleAuditLog";
 export * from "./telemetryEvents";
