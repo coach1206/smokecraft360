@@ -57,6 +57,7 @@ const Axiom360              = lazy(() => import('@/pages/Axiom360'));
 const StaffModule           = lazy(() => import('@/pages/StaffModule'));
 const TouchscreenHome       = lazy(() => import('@/pages/TouchscreenHome'));
 const Entry                 = lazy(() => import('@/pages/Entry'));
+const ExperiencesModule     = lazy(() => import('@/pages/ExperiencesModule'));
 const DemoExperienceCenter  = lazy(() => import('@/pages/DemoExperienceCenter'));
 const StaffTraining         = lazy(() => import('@/pages/StaffTraining'));
 const InvestorSimulator     = lazy(() => import('@/pages/InvestorSimulator'));
@@ -1050,6 +1051,11 @@ export default function App() {
           {/* ── /portal — Pristine Boot State (System Purge destination) ── */}
           <Route path="/portal">
             <SubPageProviders><LivingPortal /></SubPageProviders>
+          </Route>
+
+          {/* ── Root: Craft Your Experience selector ── */}
+          <Route path="/">
+            <SubPageProviders><ExperiencesModule /></SubPageProviders>
           </Route>
 
           {/* ── Default: Sovereign Gate — all entry flows begin here ── */}
