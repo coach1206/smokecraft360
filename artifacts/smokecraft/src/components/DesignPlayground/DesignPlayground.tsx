@@ -7,6 +7,23 @@ import { Lock, Sparkles, ChevronRight, Check, Save } from "lucide-react";
 import { fetchDesignDrafts, upsertDesignDraft } from "@/services/api";
 import CraftRenderer from "@/components/CraftRenderer/CraftRenderer";
 
+/* ── Design tokens ─────────────────────────────────────────────────────── */
+const OBSIDIAN      = "#010101";
+const GOLD          = "#bf953f";
+const GOLD_BRIGHT   = "#fcf6ba";
+const GOLD_MID      = "#D4AF37";
+const GOLD_DIM      = "rgba(191,149,63,0.55)";
+const GOLD_FAINT    = "rgba(191,149,63,0.18)";
+const GOLD_GHOST    = "rgba(191,149,63,0.08)";
+const TEXT_PRIMARY  = "rgba(235,225,210,0.92)";
+const TEXT_MUTED    = "rgba(191,149,63,0.52)";
+const TEXT_DIM      = "rgba(180,165,140,0.38)";
+const GOLD_GRADIENT = `linear-gradient(135deg, ${GOLD} 0%, ${GOLD_BRIGHT} 50%, ${GOLD} 100%)`;
+const GLASS_BG      = "rgba(12,9,5,0.82)";
+const GLASS_BORDER  = "1px solid rgba(191,149,63,0.32)";
+const GLASS_SHADOW  = "0 8px 48px rgba(0,0,0,0.72), inset 0 1px 0 rgba(191,149,63,0.10), inset 0 0 40px rgba(0,0,0,0.30)";
+
+/* ── Types ─────────────────────────────────────────────────────────────── */
 export type PlaygroundCraft = "smoke" | "brew" | "pour" | "vape";
 
 export interface ColorSwatch  { id: string; label: string; primary: string; accent: string; locked?: boolean }
@@ -33,9 +50,10 @@ export interface PlaygroundConfig {
   lockedHint:           string;
 }
 
+/* ── Helpers ───────────────────────────────────────────────────────────── */
 export function hasSeenPlayground(craft: string): boolean {
   try { return sessionStorage.getItem(`playground_seen_${craft}`) === "1"; }
-  catch { return false; } // storage unavailable → show playground (default visible)
+  catch { return false; }
 }
 
 export function markPlaygroundSeen(craft: string): void {
@@ -85,7 +103,6 @@ function generateCritique(
     ? `The ${swatch.label} finish marks you as someone who already knows what lies ahead.`
     : (COLOR_NOTES[colorId] ?? `The ${swatch.label} palette strikes a distinctive mood that will set this apart.`);
 
-  // Incorporate the first unlocked style field (label style, wood tone, glass type, etc.)
   const styleField = config.selectFields.find(sf => !sf.locked && selectFields[sf.id]);
   const styleNote  = styleField
     ? (() => {
@@ -104,6 +121,30 @@ function generateCritique(
     : `"${name}" ${namePhrase}. ${colorNote} ${motivation}`;
 }
 
+/* ── PanelSection sub-component ────────────────────────────────────────── */
+function PanelSection({
+  label, locked, children,
+}: {
+  label: string; locked?: boolean; children: React.ReactNode;
+}) {
+  return (
+    <div style={{ marginBottom: 18, flexShrink: 0 }}>
+      <p style={{
+        margin: "0 0 8px", fontSize: 9,
+        letterSpacing: "0.30em", textTransform: "uppercase",
+        color: locked ? TEXT_DIM : GOLD_MID,
+        fontWeight: 700,
+        display: "flex", alignItems: "center", gap: 5,
+      }}>
+        {label}
+        {locked && <Lock size={8} style={{ color: GOLD_DIM }} />}
+      </p>
+      {children}
+    </div>
+  );
+}
+
+/* ── Main component ─────────────────────────────────────────────────────── */
 interface Props {
   craft:      PlaygroundCraft;
   config:     PlaygroundConfig;
@@ -114,10 +155,10 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const controls  = useAnimation();
 
-  const [brandName,    setBrandName]    = useState("");
-  const [selectedColor, setSelectedColor] = useState(config.colorSwatches[0].id);
+  const [brandName,      setBrandName]      = useState("");
+  const [selectedColor,  setSelectedColor]  = useState(config.colorSwatches[0].id);
   const [selectedEmblem, setSelectedEmblem] = useState(config.emblemOptions[0].id);
-  const [selectFields,  setSelectFields]  = useState<Record<string, string>>(() => {
+  const [selectFields,   setSelectFields]   = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {};
     for (const sf of config.selectFields) init[sf.id] = sf.options[0]?.id ?? "";
     return init;
@@ -126,14 +167,12 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
   const [saving,    setSaving]    = useState(false);
   const [saved,     setSaved]     = useState(false);
   const [saveLocal, setSaveLocal] = useState(false);
-  const [critique, setCritique] = useState<string | null>(null);
+  const [critique,  setCritique]  = useState<string | null>(null);
 
-  // Pinch-to-scale — tablet two-finger gesture on the canvas
   const [canvasScale, setCanvasScale]  = useState(1.0);
   const pinchStartDistRef              = useRef<number | null>(null);
   const pinchStartScaleRef             = useRef<number>(1.0);
 
-  // Reset "Draft Saved" label when any field changes after a successful save
   const fieldKey   = `${brandName}|${selectedColor}|${selectedEmblem}|${engravingText}|${Object.values(selectFields).join("|")}`;
   const savedRef   = useRef(false);
   savedRef.current = saved;
@@ -141,7 +180,6 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
     if (savedRef.current) { setSaved(false); setSaveLocal(false); }
   }, [fieldKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Load latest draft on mount
   useEffect(() => {
     void (async () => {
       const drafts = await fetchDesignDrafts(craft);
@@ -156,7 +194,6 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
         }
         return;
       }
-      // localStorage fallback for guests
       try {
         const raw = localStorage.getItem(`playground_draft_${craft}`);
         if (!raw) return;
@@ -179,15 +216,13 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
     if (saving) return;
     setSaving(true);
     const payload = { brandName, selectedColor, selectedEmblem, engravingText, selectFields };
-    // Mirror to localStorage; track whether write confirmed (fails silently on private browsing)
     let localOk = false;
     try { localStorage.setItem(`playground_draft_${craft}`, JSON.stringify(payload)); localOk = true; } catch {}
-    // PATCH upsert aligns with existing backend route (idempotent, craft-scoped)
     const cloudResult = await upsertDesignDraft({ craft, draftName: brandName || "My Draft", payload });
     const cloudOk     = cloudResult !== null;
     setSaving(false);
-    setSaved(localOk || cloudOk);      // only show saved if at least one path succeeded
-    setSaveLocal(!cloudOk && localOk); // "Saved locally" = local confirmed, cloud unavailable
+    setSaved(localOk || cloudOk);
+    setSaveLocal(!cloudOk && localOk);
     setCritique(generateCritique(config, brandName, selectedColor, selectFields));
   };
 
@@ -225,7 +260,6 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
     if (e.touches.length < 2) pinchStartDistRef.current = null;
   };
 
-  // Canvas product shape dimensions per craft
   const productW = craft === "smoke" ? 240 : craft === "pour" ? 160 : 220;
   const productH = craft === "pour"  ? 300 : craft === "smoke" ? 140 : craft === "vape" ? 200 : 160;
   const productR = craft === "smoke" ? 10  : craft === "pour"  ? 80  : craft === "vape"  ? 24 : 16;
@@ -235,23 +269,34 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
       animate={controls}
       style={{
         position: "fixed", inset: 0, zIndex: 200,
-        background: "rgba(245,242,237,0.97)",
+        background: OBSIDIAN,
         display: "flex", flexDirection: "column",
         overflow: "hidden",
       }}
     >
-      {/* Craft background image */}
+      {/* Ambient depth gradient */}
+      <div style={{
+        position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none",
+        background: `
+          radial-gradient(ellipse 60% 50% at 15% 85%, rgba(191,149,63,0.07) 0%, transparent 60%),
+          radial-gradient(ellipse 40% 35% at 85% 15%, rgba(191,149,63,0.04) 0%, transparent 55%),
+          radial-gradient(ellipse 80% 60% at 50% 50%, rgba(5,3,1,0.60) 0%, transparent 100%)
+        `,
+      }} />
+
+      {/* Craft texture — ultra-dim */}
       <div style={{
         position: "absolute", inset: 0, zIndex: 0,
         backgroundImage: `url(${config.background})`,
         backgroundSize: "cover", backgroundPosition: "center",
-        opacity: 0.1, filter: "saturate(0.5)",
+        opacity: 0.04, filter: "saturate(0) brightness(0.4)",
         pointerEvents: "none",
       }} />
-      {/* Tint overlay */}
+
+      {/* Hairline gold top-edge glow */}
       <div style={{
-        position: "absolute", inset: 0, zIndex: 1,
-        background: `radial-gradient(ellipse at 30% 50%, ${config.tint}, transparent 65%), linear-gradient(135deg,rgba(245,242,237,0.72),rgba(245,242,237,0.88))`,
+        position: "absolute", top: 0, left: 0, right: 0, height: 1, zIndex: 1,
+        background: `linear-gradient(90deg, transparent 0%, ${GOLD}55 30%, ${GOLD_BRIGHT}80 50%, ${GOLD}55 70%, transparent 100%)`,
         pointerEvents: "none",
       }} />
 
@@ -263,7 +308,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
         overflow: "hidden",
       }}>
 
-        {/* Header */}
+        {/* ── Header ──────────────────────────────────────────────── */}
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
           marginBottom: 20, flexShrink: 0,
@@ -271,33 +316,39 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
           <div>
             <p style={{
               margin: 0, fontSize: 10,
-              letterSpacing: "0.32em", textTransform: "uppercase",
-              color: config.accent, fontWeight: 700,
+              letterSpacing: "0.35em", textTransform: "uppercase",
+              color: TEXT_MUTED, fontWeight: 700,
             }}>
               {config.craftLabel} · Design Playground
             </p>
             <h1 style={{
-              margin: "4px 0 0",
+              margin: "5px 0 0",
               fontSize: "clamp(20px, 2.2vw, 28px)",
               fontFamily: "var(--app-font-serif, Georgia, serif)",
-              fontWeight: 600, color: "#1A1A1B", letterSpacing: "0.02em",
+              fontWeight: 600,
+              letterSpacing: "0.2em",
+              background: GOLD_GRADIENT,
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              textTransform: "uppercase",
             }}>
               Design First. Build Worthy of It.
             </h1>
           </div>
-          <Sparkles size={26} color={config.accent} style={{ opacity: 0.55 }} />
+          <Sparkles size={24} color={GOLD_MID} style={{ opacity: 0.70 }} />
         </div>
 
         <div style={{
           flex: 1,
           display: "grid",
           gridTemplateColumns: "1fr 370px",
-          gap: 22,
+          gap: 20,
           overflow: "hidden",
           minHeight: 0,
         }}>
 
-          {/* Canvas — drag chips to reposition, pinch to scale */}
+          {/* ── Canvas ──────────────────────────────────────────── */}
           <div
             ref={canvasRef}
             onTouchStart={handleCanvasTouchStart}
@@ -306,27 +357,25 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
             style={{
               position: "relative",
               borderRadius: 20,
-              background: "rgba(26,26,27,0.03)",
-              border: `1px solid ${config.accent}1A`,
+              background: `radial-gradient(ellipse at 50% 40%, rgba(30,22,8,0.95), rgba(5,3,1,0.98))`,
+              border: `1px solid ${GOLD_FAINT}`,
+              boxShadow: `inset 0 0 60px rgba(0,0,0,0.60), 0 0 0 1px rgba(191,149,63,0.06)`,
               overflow: "hidden",
               display: "flex", alignItems: "center", justifyContent: "center",
               touchAction: "none",
             }}
           >
             <div style={{
-              position: "absolute", inset: 0,
-              background: `radial-gradient(ellipse at 50% 40%, ${swatch.accent}10, transparent 65%)`,
-              pointerEvents: "none",
+              position: "absolute", inset: 0, pointerEvents: "none",
+              background: `radial-gradient(ellipse at 50% 40%, ${swatch.accent}0D, transparent 60%)`,
             }} />
 
-            {/* Product mock — CraftRenderer for pour/brew, styled box for smoke/vape */}
             {(craft === "pour" || craft === "brew") ? (
               <div style={{
-                position: "relative",
-                flexShrink: 0,
+                position: "relative", flexShrink: 0,
                 transform: `scale(${canvasScale})`,
                 transformOrigin: "center",
-                filter: `drop-shadow(0 24px 40px ${swatch.accent}35) drop-shadow(0 0 18px ${swatch.accent}20)`,
+                filter: `drop-shadow(0 24px 40px ${swatch.accent}40) drop-shadow(0 0 20px ${swatch.accent}22)`,
               }}>
                 <CraftRenderer
                   craft={craft}
@@ -341,9 +390,9 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                 position: "relative",
                 width: productW, height: productH,
                 borderRadius: productR,
-                background: `linear-gradient(155deg, ${swatch.primary}, ${swatch.accent}20)`,
-                border: `2px solid ${swatch.accent}50`,
-                boxShadow: `0 24px 72px rgba(26,26,27,0.30), 0 0 40px ${swatch.accent}18`,
+                background: `linear-gradient(155deg, ${swatch.primary}, ${swatch.accent}18)`,
+                border: `1.5px solid ${swatch.accent}60`,
+                boxShadow: `0 32px 80px rgba(0,0,0,0.70), 0 0 50px ${swatch.accent}22, inset 0 1px 0 ${swatch.accent}30`,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 flexDirection: "column", gap: 6,
                 flexShrink: 0,
@@ -352,14 +401,14 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
               }}>
                 <div style={{
                   position: "absolute", inset: 8,
-                  border: `1px solid ${swatch.accent}30`,
+                  border: `1px solid ${swatch.accent}28`,
                   borderRadius: Math.max(productR - 6, 4),
                   pointerEvents: "none",
                 }} />
                 <span style={{
                   fontSize: 10, fontWeight: 700,
-                  letterSpacing: "0.3em", textTransform: "uppercase",
-                  color: swatch.accent, opacity: 0.45,
+                  letterSpacing: "0.32em", textTransform: "uppercase",
+                  color: swatch.accent, opacity: 0.55,
                 }}>
                   {config.craftLabel.toUpperCase()}
                 </span>
@@ -373,25 +422,22 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
               dragMomentum={false}
               dragElastic={0.06}
               style={{
-                position: "absolute",
-                top: "28%", left: "20%",
-                cursor: "grab",
-                touchAction: "none",
-                userSelect: "none",
-                zIndex: 10,
+                position: "absolute", top: "28%", left: "20%",
+                cursor: "grab", touchAction: "none",
+                userSelect: "none", zIndex: 10,
               }}
               whileDrag={{ cursor: "grabbing" }}
             >
               <div style={{
-                padding: "7px 15px", borderRadius: 999,
-                background: `linear-gradient(135deg, ${swatch.primary}dd, ${swatch.accent}28)`,
-                border: `1px solid ${swatch.accent}66`,
-                boxShadow: `0 6px 22px rgba(26,26,27,0.22), 0 0 12px ${swatch.accent}18`,
+                padding: "7px 16px", borderRadius: 999,
+                background: `linear-gradient(135deg, rgba(15,11,5,0.92), rgba(30,22,8,0.88))`,
+                border: `1px solid ${swatch.accent}70`,
+                boxShadow: `0 8px 28px rgba(0,0,0,0.55), 0 0 14px ${swatch.accent}22`,
                 fontSize: 14,
                 fontFamily: "var(--app-font-serif, Georgia, serif)",
                 fontWeight: 600,
                 color: swatch.accent,
-                letterSpacing: "0.06em",
+                letterSpacing: "0.08em",
                 whiteSpace: "nowrap",
                 maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis",
                 transform: `scale(${canvasScale})`,
@@ -408,22 +454,19 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
               dragMomentum={false}
               dragElastic={0.06}
               style={{
-                position: "absolute",
-                top: "54%", left: "60%",
-                cursor: "grab",
-                touchAction: "none",
-                userSelect: "none",
-                zIndex: 10,
+                position: "absolute", top: "54%", left: "60%",
+                cursor: "grab", touchAction: "none",
+                userSelect: "none", zIndex: 10,
               }}
               whileDrag={{ cursor: "grabbing" }}
             >
               <div style={{
                 width: 48, height: 48, borderRadius: "50%",
-                background: `${swatch.accent}18`,
-                border: `1px solid ${swatch.accent}55`,
+                background: `rgba(15,11,5,0.88)`,
+                border: `1px solid ${swatch.accent}60`,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 20,
-                boxShadow: "0 4px 16px rgba(26,26,27,0.18)",
+                boxShadow: `0 6px 20px rgba(0,0,0,0.50), 0 0 12px ${swatch.accent}18`,
                 transform: `scale(${canvasScale})`,
                 transformOrigin: "center",
               }}>
@@ -431,26 +474,31 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
               </div>
             </motion.div>
 
-            {/* Canvas hint */}
             <p style={{
               position: "absolute", bottom: 12,
-              fontSize: 9, letterSpacing: "0.24em", textTransform: "uppercase",
-              color: "rgba(26,26,27,0.22)", fontWeight: 600,
+              fontSize: 9, letterSpacing: "0.26em", textTransform: "uppercase",
+              color: TEXT_DIM, fontWeight: 600,
               pointerEvents: "none",
             }}>
               Drag · Pinch to scale
             </p>
           </div>
 
-          {/* RIGHT: Properties panel */}
+          {/* ── RIGHT: Glassmorphic properties panel ──────────────── */}
           <div style={{
             display: "flex", flexDirection: "column",
             overflowY: "auto", overflowX: "hidden",
             paddingRight: 2,
+            background: GLASS_BG,
+            backdropFilter: "blur(25px)",
+            WebkitBackdropFilter: "blur(25px)",
+            border: GLASS_BORDER,
+            borderRadius: 18,
+            boxShadow: GLASS_SHADOW,
+            padding: "20px 18px 18px",
           }}>
 
-            {/* Brand Name */}
-            <PanelSection label={config.brandNameLabel} accent={config.accent}>
+            <PanelSection label={config.brandNameLabel}>
               <input
                 value={brandName}
                 onChange={e => setBrandName(e.target.value)}
@@ -458,93 +506,103 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                 maxLength={32}
                 style={{
                   width: "100%", background: "transparent",
-                  border: "none", borderBottom: `1px solid ${config.accent}30`,
+                  border: "none", borderBottom: `1px solid ${GOLD_DIM}`,
                   outline: "none",
                   fontFamily: "var(--app-font-serif, Georgia, serif)",
-                  fontSize: 18, color: "rgba(26,26,27,0.90)",
-                  caretColor: config.accent, padding: "5px 0",
-                  letterSpacing: "0.04em",
+                  fontSize: 18, color: TEXT_PRIMARY,
+                  caretColor: GOLD_MID, padding: "5px 0",
+                  letterSpacing: "0.06em",
                 }}
               />
             </PanelSection>
 
-            {/* Color palette */}
-            <PanelSection label="Palette" accent={config.accent}>
+            <PanelSection label="Palette">
               <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-                {config.colorSwatches.map(sw => (
-                  <button
-                    key={sw.id}
-                    onClick={() => !sw.locked && setSelectedColor(sw.id)}
-                    title={sw.locked ? `${sw.label} — unlocks in Signature Studio` : sw.label}
-                    style={{
-                      display: "flex", alignItems: "center", gap: 5,
-                      padding: "4px 9px", borderRadius: 999,
-                      background: selectedColor === sw.id ? `${sw.accent}20` : "rgba(26,26,27,0.06)",
-                      border: `1px solid ${selectedColor === sw.id ? sw.accent + "70" : "rgba(26,26,27,0.10)"}`,
-                      color: sw.locked ? "rgba(107,94,78,0.30)" : selectedColor === sw.id ? sw.accent : "rgba(107,94,78,0.58)",
-                      fontSize: 11, fontWeight: 600, letterSpacing: "0.07em",
-                      opacity: sw.locked ? 0.6 : 1,
-                      cursor: sw.locked ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    <span style={{ width: 9, height: 9, borderRadius: "50%", background: sw.accent, flexShrink: 0 }} />
-                    {sw.label}
-                    {sw.locked && <Lock size={8} style={{ color: `${config.accent}45` }} />}
-                  </button>
-                ))}
-              </div>
-            </PanelSection>
-
-            {/* Emblem / insignia picker */}
-            <PanelSection label={config.emblemLabel} accent={config.accent}>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {config.emblemOptions.map(em => (
-                  <button
-                    key={em.id}
-                    onClick={() => setSelectedEmblem(em.id)}
-                    style={{
-                      padding: "4px 10px", borderRadius: 8, fontSize: 12,
-                      background: selectedEmblem === em.id ? `${config.accent}15` : "rgba(26,26,27,0.06)",
-                      border: `1px solid ${selectedEmblem === em.id ? config.accent + "55" : "rgba(26,26,27,0.10)"}`,
-                      color: selectedEmblem === em.id ? config.accent : "rgba(107,94,78,0.58)",
-                      cursor: "pointer", fontWeight: 500,
-                    }}
-                  >
-                    {em.label}
-                  </button>
-                ))}
-              </div>
-            </PanelSection>
-
-            {/* Dynamic select fields */}
-            {config.selectFields.map(sf => (
-              <PanelSection key={sf.id} label={sf.label} accent={config.accent} locked={sf.locked}>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, opacity: sf.locked ? 0.45 : 1 }}>
-                  {sf.options.map(opt => (
+                {config.colorSwatches.map(sw => {
+                  const isActive = selectedColor === sw.id;
+                  return (
                     <button
-                      key={opt.id}
-                      onClick={() => !sf.locked && setSelectFields(prev => ({ ...prev, [sf.id]: opt.id }))}
+                      key={sw.id}
+                      onClick={() => !sw.locked && setSelectedColor(sw.id)}
+                      title={sw.locked ? `${sw.label} — unlocks in Signature Studio` : sw.label}
                       style={{
-                        padding: "4px 10px", borderRadius: 8, fontSize: 12,
-                        background: !sf.locked && selectFields[sf.id] === opt.id ? `${config.accent}15` : "rgba(26,26,27,0.06)",
-                        border: `1px solid ${!sf.locked && selectFields[sf.id] === opt.id ? config.accent + "55" : "rgba(26,26,27,0.10)"}`,
-                        color: !sf.locked && selectFields[sf.id] === opt.id ? config.accent : "rgba(107,94,78,0.58)",
-                        cursor: sf.locked ? "not-allowed" : "pointer",
+                        display: "flex", alignItems: "center", gap: 5,
+                        padding: "5px 10px", borderRadius: 999,
+                        background: isActive
+                          ? `linear-gradient(135deg, ${sw.accent}28, ${sw.accent}14)`
+                          : GOLD_GHOST,
+                        border: `1px solid ${isActive ? sw.accent + "70" : GOLD_FAINT}`,
+                        color: sw.locked ? TEXT_DIM : isActive ? sw.accent : TEXT_MUTED,
+                        fontSize: 11, fontWeight: 600, letterSpacing: "0.08em",
+                        opacity: sw.locked ? 0.5 : 1,
+                        cursor: sw.locked ? "not-allowed" : "pointer",
+                        boxShadow: isActive ? `0 0 10px ${sw.accent}20` : "none",
+                        transition: "all 0.18s ease",
                       }}
                     >
-                      {opt.label}
+                      <span style={{ width: 8, height: 8, borderRadius: "50%", background: sw.accent, flexShrink: 0 }} />
+                      {sw.label}
+                      {sw.locked && <Lock size={8} style={{ color: GOLD_DIM }} />}
                     </button>
-                  ))}
+                  );
+                })}
+              </div>
+            </PanelSection>
+
+            <PanelSection label={config.emblemLabel}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {config.emblemOptions.map(em => {
+                  const isActive = selectedEmblem === em.id;
+                  return (
+                    <button
+                      key={em.id}
+                      onClick={() => setSelectedEmblem(em.id)}
+                      style={{
+                        padding: "5px 11px", borderRadius: 8, fontSize: 12,
+                        background: isActive ? `${GOLD}22` : GOLD_GHOST,
+                        border: `1px solid ${isActive ? GOLD_DIM : GOLD_FAINT}`,
+                        color: isActive ? GOLD_MID : TEXT_MUTED,
+                        cursor: "pointer", fontWeight: 600,
+                        boxShadow: isActive ? `0 0 10px ${GOLD}20` : "none",
+                        transition: "all 0.18s ease",
+                      }}
+                    >
+                      {em.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </PanelSection>
+
+            {config.selectFields.map(sf => (
+              <PanelSection key={sf.id} label={sf.label} locked={sf.locked}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, opacity: sf.locked ? 0.38 : 1 }}>
+                  {sf.options.map(opt => {
+                    const isActive = !sf.locked && selectFields[sf.id] === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        onClick={() => !sf.locked && setSelectFields(prev => ({ ...prev, [sf.id]: opt.id }))}
+                        style={{
+                          padding: "5px 11px", borderRadius: 8, fontSize: 12,
+                          background: isActive ? `${GOLD}22` : GOLD_GHOST,
+                          border: `1px solid ${isActive ? GOLD_DIM : GOLD_FAINT}`,
+                          color: isActive ? GOLD_MID : TEXT_MUTED,
+                          cursor: sf.locked ? "not-allowed" : "pointer",
+                          fontWeight: 600,
+                          boxShadow: isActive ? `0 0 10px ${GOLD}20` : "none",
+                          transition: "all 0.18s ease",
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </PanelSection>
             ))}
 
-            {/* Engraving / tagline text */}
-            <PanelSection
-              label={config.engravingLabel}
-              accent={config.accent}
-              locked={config.engravingLocked}
-            >
+            <PanelSection label={config.engravingLabel} locked={config.engravingLocked}>
               <input
                 value={engravingText}
                 onChange={e => !config.engravingLocked && setEngravingText(e.target.value)}
@@ -554,53 +612,62 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                 style={{
                   width: "100%", background: "transparent",
                   border: "none",
-                  borderBottom: `1px solid ${config.accent}${config.engravingLocked ? "15" : "28"}`,
+                  borderBottom: `1px solid ${config.engravingLocked ? GOLD_GHOST : GOLD_FAINT}`,
                   outline: "none", fontSize: 13,
-                  color: config.engravingLocked ? "rgba(107,94,78,0.30)" : "rgba(210,190,155,0.85)",
-                  caretColor: config.accent, padding: "5px 0",
+                  color: config.engravingLocked ? TEXT_DIM : TEXT_PRIMARY,
+                  caretColor: GOLD_MID, padding: "5px 0",
+                  letterSpacing: "0.04em",
                 }}
               />
             </PanelSection>
 
-            {/* Locked field hint */}
+            {/* Locked hint */}
             <div style={{
               padding: "9px 12px", borderRadius: 10,
-              background: `${config.accent}07`,
-              border: `1px solid ${config.accent}16`,
-              fontSize: 10, color: `${config.accent}65`,
+              background: GOLD_GHOST,
+              border: `1px solid rgba(191,149,63,0.14)`,
+              fontSize: 10, color: TEXT_MUTED,
               letterSpacing: "0.03em", lineHeight: 1.65,
               display: "flex", gap: 8, alignItems: "flex-start",
               marginBottom: 14, flexShrink: 0,
             }}>
-              <Lock size={10} style={{ flexShrink: 0, marginTop: 1, color: config.accent }} />
+              <Lock size={10} style={{ flexShrink: 0, marginTop: 1, color: GOLD }} />
               <span>{config.lockedHint}</span>
             </div>
 
             <div style={{ flex: 1, minHeight: 4 }} />
 
-            {/* Save as Draft */}
+            {/* Save as Draft — pinned gold action button */}
             <motion.button
               onClick={handleSave}
               disabled={saving}
+              whileHover={{ scale: 1.02, boxShadow: `0 0 28px ${GOLD}38` }}
               whileTap={{ scale: 0.97 }}
               style={{
-                width: "100%", padding: "10px 18px", borderRadius: 12, flexShrink: 0,
-                background: saved ? "rgba(100,200,120,0.1)" : "rgba(26,26,27,0.06)",
-                border: `1px solid ${saved ? "rgba(100,200,120,0.32)" : config.accent + "28"}`,
-                color: saved ? "rgba(100,200,120,0.85)" : "rgba(26,26,27,0.68)",
-                fontSize: 11, fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase",
+                width: "100%", padding: "12px 18px", borderRadius: 12, flexShrink: 0,
+                background: saved
+                  ? "linear-gradient(135deg, rgba(52,211,153,0.14), rgba(52,211,153,0.06))"
+                  : GOLD_GRADIENT,
+                border: saved ? "1px solid rgba(52,211,153,0.35)" : "none",
+                color: saved ? "rgba(52,211,153,0.90)" : "#0D0900",
+                fontSize: 11, fontWeight: 800, letterSpacing: "0.22em", textTransform: "uppercase",
                 cursor: saving ? "default" : "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
                 marginBottom: 8,
+                boxShadow: saved
+                  ? "none"
+                  : `0 8px 28px rgba(191,149,63,0.30), inset 0 1px 0 rgba(255,255,255,0.08)`,
+                opacity: saving ? 0.6 : 1,
+                transition: "all 0.22s ease",
               }}
             >
               {saved
-                ? <><Check size={12} /> {saveLocal ? "Saved locally" : "Draft Saved"}</>
+                ? <><Check size={12} /> {saveLocal ? "Saved Locally" : "Draft Saved"}</>
                 : <><Save size={12} /> Save as Draft</>
               }
             </motion.button>
 
-            {/* AI Critique card */}
+            {/* AI Critique */}
             <AnimatePresence>
               {critique && (
                 <motion.div
@@ -611,22 +678,19 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                   style={{ overflow: "hidden", marginBottom: 10, flexShrink: 0 }}
                 >
                   <div style={{
-                    padding: "11px 13px", borderRadius: 12,
-                    background: `linear-gradient(135deg, ${config.accent}0E, rgba(245,242,237,0.5))`,
-                    border: `1px solid ${config.accent}28`,
+                    padding: "12px 14px", borderRadius: 12,
+                    background: `linear-gradient(135deg, rgba(191,149,63,0.08), rgba(191,149,63,0.03))`,
+                    border: `1px solid rgba(191,149,63,0.22)`,
+                    boxShadow: `inset 0 1px 0 rgba(191,149,63,0.10)`,
                   }}>
                     <p style={{
                       margin: "0 0 5px", fontSize: 9,
-                      letterSpacing: "0.28em", textTransform: "uppercase",
-                      color: config.accent, fontWeight: 700, opacity: 0.65,
+                      letterSpacing: "0.30em", textTransform: "uppercase",
+                      color: GOLD_MID, fontWeight: 700, opacity: 0.75,
                     }}>
                       Craft Intelligence
                     </p>
-                    <p style={{
-                      margin: 0, fontSize: 12,
-                      color: "rgba(26,26,27,0.78)",
-                      lineHeight: 1.65,
-                    }}>
+                    <p style={{ margin: 0, fontSize: 12, color: TEXT_PRIMARY, lineHeight: 1.65 }}>
                       {critique}
                     </p>
                   </div>
@@ -637,24 +701,26 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
             {/* Enter Challenge CTA */}
             <motion.button
               onClick={handleEnterChallenge}
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.02, boxShadow: `0 16px 50px rgba(191,149,63,0.42)` }}
               whileTap={{ scale: 0.97 }}
               style={{
-                width: "100%", padding: "14px 20px", borderRadius: 14, flexShrink: 0,
-                background: `linear-gradient(135deg, ${config.accent}, ${config.accentSoft})`,
-                border: "none",
-                color: "#F5F2ED",
-                fontSize: 12, fontWeight: 700, letterSpacing: "0.26em", textTransform: "uppercase",
+                width: "100%", padding: "15px 20px", borderRadius: 14, flexShrink: 0,
+                background: `linear-gradient(135deg, #1a1200, #2c1f00, #1a1200)`,
+                border: `1px solid ${GOLD}80`,
+                color: GOLD_MID,
+                fontSize: 12, fontWeight: 800, letterSpacing: "0.28em", textTransform: "uppercase",
                 cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 9,
-                boxShadow: `0 10px 36px ${config.accent}38`,
+                boxShadow: `0 8px 36px rgba(191,149,63,0.22), inset 0 1px 0 rgba(191,149,63,0.20)`,
+                transition: "all 0.22s ease",
               }}
             >
               Enter Challenge <ChevronRight size={15} />
             </motion.button>
+
             <p style={{
-              textAlign: "center", margin: "7px 0 0", flexShrink: 0,
-              fontSize: 10, color: "rgba(107,94,78,0.30)", letterSpacing: "0.1em",
+              textAlign: "center", margin: "8px 0 0", flexShrink: 0,
+              fontSize: 10, color: TEXT_DIM, letterSpacing: "0.12em",
               fontStyle: "italic",
             }}>
               Now build something worthy of this.
@@ -663,27 +729,5 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
         </div>
       </div>
     </motion.div>
-  );
-}
-
-function PanelSection({
-  label, accent, locked, children,
-}: {
-  label: string; accent: string; locked?: boolean; children: React.ReactNode;
-}) {
-  return (
-    <div style={{ marginBottom: 16, flexShrink: 0 }}>
-      <p style={{
-        margin: "0 0 7px", fontSize: 9,
-        letterSpacing: "0.28em", textTransform: "uppercase",
-        color: locked ? "rgba(107,94,78,0.28)" : accent,
-        fontWeight: 700,
-        display: "flex", alignItems: "center", gap: 5,
-      }}>
-        {label}
-        {locked && <Lock size={8} style={{ color: `${accent}40` }} />}
-      </p>
-      {children}
-    </div>
   );
 }
