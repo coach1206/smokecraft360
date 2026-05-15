@@ -3,29 +3,27 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── Verified luxury asset database (matched to CraftImageRotator verified set) ─
+// Local images served from public/images/ — guaranteed correct content, no CDN dependency
+// Images sourced from SmokeCraft's own verified production image references
 const CRAFT_ASSETS = {
   smokecraft: [
-    // source.unsplash.com search URLs — reliably return matching premium imagery
-    { url: "https://source.unsplash.com/800x600/?cigar,luxury,lounge&sig=10", desc: "Luxury cigar lounge" },
-    { url: "https://source.unsplash.com/800x600/?cigar,smoke,premium&sig=20", desc: "Premium cigar smoke" },
-    { url: "https://source.unsplash.com/800x600/?cigar,humidor,tobacco&sig=30", desc: "Fine cigar humidor" },
-    { url: "https://source.unsplash.com/800x600/?whiskey,cigar,lounge&sig=40", desc: "Cigar & whiskey pairing" },
+    { url: "/novee/images/smokecraft-card.jpg",  desc: "Luxury cigar masterclass" },
+    { url: "/novee/images/smoke-verified-3.jpg", desc: "Premium cigar selection" },
+    { url: "/novee/images/smoke-home-1.jpg",     desc: "Cigar humidor ritual" },
   ],
   pourcraft: [
-    // Replaced cocktail image with confirmed scotch/cognac imagery
-    { url: "https://images.unsplash.com/photo-1569529465841-dfedd87500f1?q=80&w=1200", desc: "Single malt scotch in crystal glass" },
-    { url: "https://images.unsplash.com/photo-1527661591475-527312dd65f5?q=80&w=1200", desc: "Premium cognac neat — crystal snifter" },
-    { url: "https://images.unsplash.com/photo-1569529465841-dfedd87500f1?q=80&w=1200", desc: "Aged bourbon pairing ritual" },
+    { url: "/novee/images/pourcraft-card.jpg",   desc: "Premium spirits selection" },
+    { url: "/novee/images/pour-verified-1.jpg",  desc: "Macallan 18 — single malt scotch" },
+    { url: "/novee/images/pour-1.jpg",           desc: "Whiskey bottle wall" },
   ],
   beercraft: [
-    // Reordered: stout confirmed loading; stein URL was broken
-    { url: "https://images.unsplash.com/photo-1535958636474-b021ee887b13?q=80&w=1200", desc: "Rich dark stout with dense head" },
-    { url: "https://images.unsplash.com/photo-1608270586620-248524c67de9?q=80&w=1200", desc: "Craft pilsner in artisanal glassware" },
+    { url: "/novee/images/brewcraft-card.jpg",   desc: "Craft beer discovery" },
+    { url: "/novee/images/beer-verified-1.jpg",  desc: "Guinness Draught — dark stout" },
+    { url: "/novee/images/beer-verified-2.jpg",  desc: "Artisanal craft pour" },
   ],
   winecraft: [
-    // Both confirmed loading correctly
-    { url: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=1200", desc: "Sommelier-guided crystal decanter aeration" },
-    { url: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=1200", desc: "Fine vintage red wine tasting presentation" },
+    { url: "/novee/images/wine-1.jpg", desc: "Sommelier decanter aeration" },
+    { url: "/novee/images/wine-2.jpg", desc: "Fine vintage red wine" },
   ],
 } as const;
 
