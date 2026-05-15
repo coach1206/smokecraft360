@@ -69,11 +69,11 @@ const TILES = [
   { id: "settings", title: "Settings", desc: "System & security", color: "#64748b", route: "/settings", dataKey: "settings" as const, image: "/images/scenes/relaxed.jpg" },
   { id: "designer", title: "Designer", desc: "Signature customizer", color: "#9A7820", route: "/designer", dataKey: "designer" as const, image: "/images/cigar.png", sovereignOnly: true },
   { id: "craft-hub",   title: "Craft Hub",    desc: "All 360 experiences",  color: "#06b6d4", route: "/craft-hub",   dataKey: "craft-hub" as const,   image: "/images/smoke/smoke_selection.png" },
-  { id: "governance",      title: "Governance",      desc: "RBAC · Kill Switches",  color: "#ef4444", route: "/governance",      dataKey: "governance" as const,      image: "/images/scenes/reflective.jpg" },
-  { id: "central-command", title: "Central Command", desc: "Remote ops · OTA · Fleet",       color: "#60a5fa", route: "/central-command", dataKey: "central-command" as const, image: "/images/scenes/bold.jpg" },
+  { id: "governance",      title: "Governance",      desc: "RBAC · Kill Switches",  color: "#ef4444", route: "/governance",      dataKey: "governance" as const,      image: "/images/scenes/reflective.jpg", sovereignOnly: true },
+  { id: "central-command", title: "Central Command", desc: "Remote ops · OTA · Fleet",       color: "#60a5fa", route: "/central-command", dataKey: "central-command" as const, image: "/images/scenes/bold.jpg", sovereignOnly: true },
   { id: "environment",          title: "Environment",   desc: "Atmosphere · Energy · Reaction",    color: "#a78bfa", route: "/environment",            dataKey: "environment" as const,          image: "/images/scenes/reflective.jpg" },
-  { id: "enterprise-intel",    title: "Intel",         desc: "Enterprise Intelligence · Analytics", color: "#34d399", route: "/enterprise-intelligence", dataKey: "enterprise-intel" as const,     image: "/images/scenes/bold.jpg" },
-  { id: "master-ops",          title: "Master Ops",    desc: "Unified operational command center",  color: "#D48B00", route: "/operations",              dataKey: "master-ops" as const,           image: "/images/scenes/reflective.jpg" },
+  { id: "enterprise-intel",    title: "Intel",         desc: "Enterprise Intelligence · Analytics", color: "#34d399", route: "/enterprise-intelligence", dataKey: "enterprise-intel" as const,     image: "/images/scenes/bold.jpg", sovereignOnly: true },
+  { id: "master-ops",          title: "Master Ops",    desc: "Unified operational command center",  color: "#D48B00", route: "/operations",              dataKey: "master-ops" as const,           image: "/images/scenes/reflective.jpg", sovereignOnly: true },
 ] as const;
 
 export default function CommandCenter() {
@@ -300,7 +300,7 @@ export default function CommandCenter() {
                       pointerEvents: "none", zIndex: 20,
                     }}
                   >
-                    Upgrade to Sovereign to unlock Designer
+                    Upgrade to Sovereign to unlock {tile.title}
                     <div style={{
                       position: "absolute", top: "100%", left: "50%",
                       transform: "translateX(-50%)",
