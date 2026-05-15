@@ -139,6 +139,18 @@ function loadLocalBackgrounds(venueId: string): Partial<Record<BackgroundKey, st
   return {};
 }
 
+/** Remove all `venue_backgrounds_*` entries from localStorage (called on logout). */
+export function clearAllVenueBackgroundCaches(): void {
+  try {
+    const keys: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith("venue_backgrounds_")) keys.push(key);
+    }
+    keys.forEach((k) => localStorage.removeItem(k));
+  } catch { /* ignore */ }
+}
+
 export function VenueProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<VenueConfig>(() => ({
     ...DEFAULT_CONFIG,
@@ -162,6 +174,10 @@ export function VenueProvider({ children }: { children: ReactNode }) {
         return r.json() as Promise<VenueConfig>;
       })
       .then((data) => {
+        const prevVenueId = localStorage.getItem("smokecraft_venue");
+        if (prevVenueId && prevVenueId !== venueId) {
+          localStorage.removeItem(`venue_backgrounds_${prevVenueId}`);
+        }
         const localBgs = loadLocalBackgrounds(venueId);
         const merged: VenueConfig = {
           ...DEFAULT_CONFIG,
