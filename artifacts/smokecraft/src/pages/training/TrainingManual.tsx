@@ -448,7 +448,7 @@ export default function TrainingManual() {
               { step: "Tap / Click", desc: "Patron taps the card. Modal opens. Event logged as 'affiliate_click'. This is the primary conversion signal." },
               { step: "Package Browse", desc: "Patron views individual travel cards inside the modal. Each card swipe/view is a secondary engagement event." },
               { step: "Offer Tap", desc: "Patron taps a specific offer (hotel, experience, etc.). This is a qualified lead. DayOne360 receives the venue ID and session token for attribution." },
-              { step: "Receipt Upsell", desc: "Post-payment receipt screen (AxiomReceipt) shows a DayOne360 upsell banner. Second conversion opportunity after a completed transaction." },
+              { step: "Receipt Upsell", desc: "Post-payment receipt screen (NOVEE Receipt) shows a DayOne360 upsell banner. Second conversion opportunity after a completed transaction." },
             ].map((row, i) => (
               <div key={i} style={{ display: "flex", gap: 12, padding: "9px 0", borderBottom: i < 4 ? `1px solid ${C.border}` : "none" }}>
                 <div style={{ width: 22, height: 22, borderRadius: 6, background: `${C.purple}18`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 9, fontWeight: 700, color: C.purple }}>{i+1}</div>

@@ -649,7 +649,7 @@ export default function AxiomDemo() {
             </motion.div>
 
             <h1 style={{ fontSize: 26, fontWeight: 800, color: "rgba(240,232,216,0.95)", margin: "0 0 10px", letterSpacing: "-0.02em" }}>
-              The Axiom Experience
+              The NOVEE Experience
             </h1>
             <p style={{ fontSize: 14, color: "rgba(240,232,216,0.45)", margin: "0 0 32px", maxWidth: 380, lineHeight: 1.7 }}>
               A guided 6-step demonstration of the full experience loop — from craft selection through behavioral AI, cinematic reveal, and real-time analytics.

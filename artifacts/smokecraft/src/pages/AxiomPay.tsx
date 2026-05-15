@@ -844,7 +844,7 @@ export default function AxiomPay() {
         </button>
         <div>
           <div style={{ fontSize: 18, fontWeight: 700, color: T.gold, fontFamily: "'Cormorant Garamond', serif", letterSpacing: "0.06em" }}>
-            Axiom Pay
+            NOVEE Pay
           </div>
           <div style={{ fontSize: 10, color: T.textMuted, letterSpacing: "0.12em", textTransform: "uppercase" }}>
             Payments · Tabs · Fulfillment · Connect

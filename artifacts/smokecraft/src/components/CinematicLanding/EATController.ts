@@ -64,6 +64,7 @@ export interface EATLedgerEntry {
   field:     string;
   value:     string;
   timestamp: string;
+  authority: string;   // "Profound Innovations" — hard-stamped on every entry
 }
 
 /* ── Composite State ─────────────────────────────────────────────── */
@@ -105,6 +106,7 @@ export function eatApplyStep(
     field:     params.field,
     value:     params.value,
     timestamp: new Date().toISOString(),
+    authority: "Profound Innovations",
   };
 
   return {
