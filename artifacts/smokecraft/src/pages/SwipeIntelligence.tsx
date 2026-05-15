@@ -164,16 +164,35 @@ interface SwipeMetrics {
   skipSwipes:        number;
 }
 
+interface CraftActivity {
+  craftType:      string;
+  swipe_start:    number;
+  swipe_add:      number;
+  swipe_skip:     number;
+  build_complete: number;
+  add_to_order:   number;
+}
+
+const CRAFT_ACTIVITY_EVENTS: { key: keyof CraftActivity; label: string; color: string }[] = [
+  { key: "swipe_start",    label: "Sessions",      color: "#60A5FA" },
+  { key: "swipe_add",      label: "Adds",          color: "#34D399" },
+  { key: "swipe_skip",     label: "Skips",         color: "#F87171" },
+  { key: "build_complete", label: "Completions",   color: "#D48B00" },
+  { key: "add_to_order",   label: "Orders",        color: "#A78BFA" },
+];
+
 export default function SwipeIntelligence() {
   const [, navigate] = useLocation();
   const { mode } = useKernelMode();
-  const [data,        setData]        = useState<AnalyticsData | null>(null);
-  const [metrics,     setMetrics]     = useState<SwipeMetrics | null>(null);
-  const [orchData,    setOrchData]    = useState<OrchestratorAnalytics | null>(null);
-  const [orchLoading, setOrchLoading] = useState(false);
-  const [loading,     setLoading]     = useState(true);
-  const [error,       setError]       = useState<string | null>(null);
-  const [tab,         setTab]         = useState<"overview" | "tags" | "revenue" | "craft" | "orchestration">("overview");
+  const [data,           setData]           = useState<AnalyticsData | null>(null);
+  const [metrics,        setMetrics]        = useState<SwipeMetrics | null>(null);
+  const [orchData,       setOrchData]       = useState<OrchestratorAnalytics | null>(null);
+  const [orchLoading,    setOrchLoading]    = useState(false);
+  const [craftActivity,  setCraftActivity]  = useState<CraftActivity[] | null>(null);
+  const [craftLoading,   setCraftLoading]   = useState(false);
+  const [loading,        setLoading]        = useState(true);
+  const [error,          setError]          = useState<string | null>(null);
+  const [tab,            setTab]            = useState<"overview" | "tags" | "revenue" | "craft" | "orchestration">("overview");
 
   useEffect(() => {
     let cancelled = false;
@@ -203,6 +222,22 @@ export default function SwipeIntelligence() {
   const completionRate = totalSessions > 0 && data?.recommendationShown
     ? Math.round((data.recommendationShown / totalSessions) * 100)
     : 0;
+
+  // Lazy-load craft activity when Craft Compare tab is activated.
+  // craftActivity===null means "not yet fetched"; ===[] means "fetch failed".
+  const loadCraftActivity = () => {
+    setCraftLoading(true);
+    setCraftActivity(null);
+    apiGet("/api/kernel/telemetry/craft-activity")
+      .then(d => setCraftActivity((d as { crafts: CraftActivity[] }).crafts))
+      .catch(() => setCraftActivity([]))
+      .finally(() => setCraftLoading(false));
+  };
+
+  useEffect(() => {
+    if (tab !== "craft" || craftActivity !== null || craftLoading) return;
+    loadCraftActivity();
+  }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Lazy-load orchestration analytics when tab is activated
   useEffect(() => {
@@ -674,13 +709,12 @@ export default function SwipeIntelligence() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
+                {/* Session volume overview (from existing analytics data) */}
                 <div style={{
                   background: C.card, border: `1px solid ${C.border}`,
                   borderRadius: 16, padding: "24px", marginBottom: 16,
                 }}>
-                  <div style={{
-                    display: "flex", alignItems: "center", gap: 8, marginBottom: 24,
-                  }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
                     <BarChart2 size={16} color={C.accent} />
                     <span style={{ fontSize: 14, fontWeight: 600, color: C.text }}>
                       Sessions by Craft Type
@@ -702,47 +736,157 @@ export default function SwipeIntelligence() {
                   )}
                 </div>
 
-                {/* Craft cards */}
-                <div style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                  gap: 12,
-                }}>
-                  {["smoke", "pour", "brew", "vape"].map(craft => {
-                    const sessions = data?.sessionsByType.find(r => r.experienceType === craft);
-                    const count    = Number(sessions?.count ?? 0);
-                    const pct      = totalSessions > 0 ? Math.round((count / totalSessions) * 100) : 0;
-                    const color    = CRAFT_COLORS[craft]!;
-                    return (
-                      <div key={craft} style={{
-                        background: C.card,
-                        border: `1px solid ${C.border}`,
-                        borderRadius: 14,
-                        padding: "18px 20px",
-                        borderLeft: `4px solid ${color}`,
-                      }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>
-                          {CRAFT_LABELS[craft]}
-                        </div>
-                        <div style={{ fontSize: 26, fontWeight: 700, color: C.text }}>
-                          <AnimCounter value={count} />
-                        </div>
-                        <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>sessions ({pct}%)</div>
-                        <div style={{
-                          height: 3, background: "rgba(26,26,27,0.02)", borderRadius: 2,
-                          marginTop: 12, overflow: "hidden",
-                        }}>
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${pct}%` }}
-                            transition={{ duration: 0.7 }}
-                            style={{ height: "100%", background: color, borderRadius: 2 }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                {/* Per-craft swipe event breakdown */}
+                {craftLoading ? (
+                  <AxLoadingState rows={1} columns={4} rowHeight={180} message="Loading craft activity…" />
+                ) : craftActivity !== null && craftActivity.length === 0 && !craftLoading ? (
+                  <div style={{
+                    background: C.card, border: `1px solid ${C.border}`,
+                    borderRadius: 14, padding: "32px 24px",
+                    display: "flex", flexDirection: "column",
+                    alignItems: "center", gap: 12, textAlign: "center",
+                  }}>
+                    <BarChart2 size={28} color={C.dim} />
+                    <p style={{ color: C.muted, fontSize: 13, margin: 0 }}>
+                      Could not load craft activity data.
+                    </p>
+                    <button
+                      onClick={loadCraftActivity}
+                      style={{
+                        padding: "8px 18px", borderRadius: 8,
+                        background: `${C.gold}18`, border: `1px solid ${C.gold}40`,
+                        color: C.gold, fontSize: 13, fontWeight: 600, cursor: "pointer",
+                      }}
+                    >
+                      Retry
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    {/* Event type breakdown matrix — one card per event type */}
+                    <div style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                      gap: 14, marginBottom: 16,
+                    }}>
+                      {CRAFT_ACTIVITY_EVENTS.map(evt => {
+                        const values = (craftActivity ?? []).map(c => Number(c[evt.key]));
+                        const maxVal = Math.max(...values, 1);
+                        return (
+                          <div key={evt.key} style={{
+                            background: C.card, border: `1px solid ${C.border}`,
+                            borderRadius: 14, padding: "20px 22px",
+                          }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                              <div style={{
+                                width: 10, height: 10, borderRadius: "50%",
+                                background: evt.color, flexShrink: 0,
+                              }} />
+                              <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>
+                                {evt.label}
+                              </span>
+                              <span style={{ marginLeft: "auto", fontSize: 11, color: C.muted }}>
+                                total: {values.reduce((s, v) => s + v, 0).toLocaleString()}
+                              </span>
+                            </div>
+                            {(craftActivity ?? []).map(c => (
+                              <HBar
+                                key={c.craftType}
+                                label={CRAFT_LABELS[c.craftType] ?? c.craftType}
+                                value={Number(c[evt.key])}
+                                max={maxVal}
+                                color={CRAFT_COLORS[c.craftType] ?? C.accent}
+                              />
+                            ))}
+                            {(!craftActivity || craftActivity.length === 0) && (
+                              <p style={{ fontSize: 12, color: C.muted }}>No data yet</p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Per-craft summary cards */}
+                    <div style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                      gap: 12,
+                    }}>
+                      {["smoke", "pour", "brew", "vape"].map(craft => {
+                        const sessions = data?.sessionsByType.find(r => r.experienceType === craft);
+                        const sessionCount = Number(sessions?.count ?? 0);
+                        const pct = totalSessions > 0 ? Math.round((sessionCount / totalSessions) * 100) : 0;
+                        const color = CRAFT_COLORS[craft]!;
+                        const activity = craftActivity?.find(c => c.craftType === craft);
+                        const totalActivity = activity
+                          ? activity.swipe_start + activity.swipe_add + activity.swipe_skip + activity.build_complete + activity.add_to_order
+                          : 0;
+                        const conversionRate = activity && activity.swipe_start > 0
+                          ? Math.round((activity.add_to_order / activity.swipe_start) * 100)
+                          : 0;
+                        return (
+                          <div key={craft} style={{
+                            background: C.card,
+                            border: `1px solid ${C.border}`,
+                            borderRadius: 14,
+                            padding: "18px 20px",
+                            borderLeft: `4px solid ${color}`,
+                          }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
+                              {CRAFT_LABELS[craft]}
+                            </div>
+                            <div style={{ fontSize: 24, fontWeight: 700, color: C.text }}>
+                              <AnimCounter value={sessionCount} />
+                            </div>
+                            <div style={{ fontSize: 12, color: C.muted, marginTop: 1 }}>sessions ({pct}%)</div>
+
+                            {/* Mini event breakdown */}
+                            <div style={{
+                              display: "grid", gridTemplateColumns: "1fr 1fr",
+                              gap: "6px 12px", marginTop: 14,
+                            }}>
+                              {CRAFT_ACTIVITY_EVENTS.map(evt => (
+                                <div key={evt.key} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: evt.color, flexShrink: 0 }} />
+                                  <span style={{ fontSize: 11, color: C.muted }}>{evt.label}</span>
+                                  <span style={{ fontSize: 11, fontWeight: 600, color: C.text, marginLeft: "auto" }}>
+                                    {activity ? Number(activity[evt.key]).toLocaleString() : "—"}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Conversion rate + total */}
+                            <div style={{
+                              marginTop: 12, paddingTop: 10,
+                              borderTop: `1px solid ${C.border}`,
+                              display: "flex", justifyContent: "space-between", alignItems: "center",
+                            }}>
+                              <span style={{ fontSize: 11, color: C.muted }}>
+                                {totalActivity.toLocaleString()} events
+                              </span>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: conversionRate > 0 ? C.green : C.muted }}>
+                                {conversionRate > 0 ? `${conversionRate}% conv.` : "no data"}
+                              </span>
+                            </div>
+
+                            <div style={{
+                              height: 3, background: "rgba(26,26,27,0.02)", borderRadius: 2,
+                              marginTop: 10, overflow: "hidden",
+                            }}>
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${pct}%` }}
+                                transition={{ duration: 0.7 }}
+                                style={{ height: "100%", background: color, borderRadius: 2 }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
               </motion.div>
             )}
           </>

@@ -495,6 +495,93 @@ router.get("/telemetry/products", async (req: Request, res: Response) => {
   }
 });
 
+// ── GET /api/kernel/telemetry/craft-activity ──────────────────────────────────
+// Returns per-craft breakdown of swipe lifecycle events for the Craft Compare
+// tab on the Swipe Intelligence Dashboard.
+//
+// Query params:
+//   ?days=N       — look-back window in days (default 30, max 365)
+//   ?window=...   — shorthand (24h, 7d, 30d, 90d) — overridden by ?days
+//
+// Response:
+//   { days, crafts: [{ craftType, swipe_start, swipe_add, swipe_skip, build_complete, add_to_order }] }
+//
+// Data is pulled from telemetry_events joined with kernel_modules so that
+// rows written by any of the craft-* modules are captured even when
+// payload.craftType is absent — falling back to the module's craftType field.
+
+router.get("/telemetry/craft-activity", async (req: Request, res: Response) => {
+  const q = req.query as Record<string, string | undefined>;
+
+  // Resolve window
+  let days = 30;
+  if (q.days !== undefined) {
+    const d = parseInt(q.days, 10);
+    if (Number.isFinite(d) && d > 0) days = Math.min(d, 365);
+  } else if (q.window !== undefined) {
+    const w = q.window.trim().toLowerCase();
+    if (w === "24h" || w === "1d") {
+      days = 1;
+    } else {
+      const m = /^(\d+)d$/.exec(w);
+      if (m) days = Math.min(parseInt(m[1]!, 10), 365);
+    }
+  }
+
+  try {
+    type CraftRow = {
+      craft_type: string;
+      swipe_start: number;
+      swipe_add: number;
+      swipe_skip: number;
+      build_complete: number;
+      add_to_order: number;
+    };
+
+    const result = await db.execute(sql`
+      SELECT
+        COALESCE(te.payload->>'craftType', km.craft_type::text, 'unknown') AS craft_type,
+        SUM(CASE WHEN te.event_type = 'swipe_start'    THEN 1 ELSE 0 END)::int AS swipe_start,
+        SUM(CASE WHEN te.event_type = 'swipe_add'      THEN 1 ELSE 0 END)::int AS swipe_add,
+        SUM(CASE WHEN te.event_type = 'swipe_skip'     THEN 1 ELSE 0 END)::int AS swipe_skip,
+        SUM(CASE WHEN te.event_type = 'build_complete' THEN 1 ELSE 0 END)::int AS build_complete,
+        SUM(CASE WHEN te.event_type = 'add_to_order'   THEN 1 ELSE 0 END)::int AS add_to_order
+      FROM telemetry_events te
+      LEFT JOIN kernel_modules km ON km.id = te.module_id
+      WHERE te.event_type IN ('swipe_start', 'swipe_add', 'swipe_skip', 'build_complete', 'add_to_order')
+        AND te.occurred_at >= NOW() - (${days} || ' days')::interval
+        AND COALESCE(te.payload->>'craftType', km.craft_type::text) IN ('smoke', 'pour', 'brew', 'vape')
+        AND (
+          km.slug IN ('craft-smoke', 'craft-pour', 'craft-brew', 'craft-vape')
+          OR te.payload->>'craftType' IN ('smoke', 'pour', 'brew', 'vape')
+        )
+      GROUP BY 1
+      ORDER BY 1
+    `);
+
+    const dbRows = result.rows as CraftRow[];
+
+    // Ensure all four crafts are always present (zero-filled when no events)
+    const ALL_CRAFTS = ["smoke", "pour", "brew", "vape"] as const;
+    const byType = new Map(dbRows.map(r => [r.craft_type, r]));
+    const crafts = ALL_CRAFTS.map(ct => {
+      const r = byType.get(ct);
+      return {
+        craftType:      ct,
+        swipe_start:    r?.swipe_start    ?? 0,
+        swipe_add:      r?.swipe_add      ?? 0,
+        swipe_skip:     r?.swipe_skip     ?? 0,
+        build_complete: r?.build_complete ?? 0,
+        add_to_order:   r?.add_to_order   ?? 0,
+      };
+    });
+
+    return res.json({ days, crafts });
+  } catch {
+    return res.status(500).json({ error: "Failed to load craft activity" });
+  }
+});
+
 // ── GET /api/kernel/telemetry/products/:cardId/trend ──────────────────────────
 // Returns daily add/skip counts for a specific product over the last N days.
 // Query params:
