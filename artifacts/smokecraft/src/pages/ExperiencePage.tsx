@@ -1357,6 +1357,8 @@ export default function ExperiencePage() {
   async function handleFinish() {
     if (!sessionId) { navigate("/"); return; }
     apiPost(`/api/swipe-experience/session/${sessionId}/complete`, {}).catch(() => {});
+    // Mark ritual as complete — unlocks Signature Studio eligibility gate
+    try { sessionStorage.setItem("titan_ritual_complete", "true"); } catch { /* ignore */ }
     // Write full sensory profile — consumed by LegacyHandoff
     try {
       sessionStorage.setItem("nb_handoff", JSON.stringify({

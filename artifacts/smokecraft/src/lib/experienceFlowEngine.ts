@@ -257,8 +257,9 @@ export const ExperienceFlowEngine = {
    */
   isSignatureStudioEligible(threshold = 3): boolean {
     try {
-      const raw = sessionStorage.getItem("titan_swipe_accepts");
-      return parseInt(raw ?? "0", 10) >= threshold;
+      const ritualDone = sessionStorage.getItem("titan_ritual_complete") === "true";
+      const accepts    = parseInt(sessionStorage.getItem("titan_swipe_accepts") ?? "0", 10);
+      return ritualDone && accepts >= threshold;
     } catch { return false; }
   },
 
