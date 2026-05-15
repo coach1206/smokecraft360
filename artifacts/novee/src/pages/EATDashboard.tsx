@@ -204,7 +204,9 @@ const PRESET_OPTIONS = [
   { label: "90D", days: 90 },
 ];
 
-const EAT_LS_KEY = "eat_dashboard_days";
+const EAT_LS_KEY         = "eat_dashboard_days";
+const EAT_LS_COMPARE_KEY = "eat_dashboard_compare";
+const EAT_LS_COMPARE_DAYS_KEY = "eat_dashboard_compare_days";
 
 function parseDaysFromSearch(search: string): number {
   try {
@@ -217,6 +219,31 @@ function parseDaysFromSearch(search: string): number {
     if (Number.isFinite(stored) && stored > 0) return Math.min(stored, 365);
   } catch { /* ignore */ }
   return 30;
+}
+
+function parseCompareFromSearch(search: string): boolean {
+  try {
+    const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+    if (params.has("compare")) return params.get("compare") === "1";
+  } catch { /* ignore */ }
+  try {
+    const stored = localStorage.getItem(EAT_LS_COMPARE_KEY);
+    if (stored !== null) return stored === "1";
+  } catch { /* ignore */ }
+  return false;
+}
+
+function parseCompareDaysFromSearch(search: string, fallbackDays: number): number {
+  try {
+    const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+    const raw = parseInt(params.get("compareDays") ?? "", 10);
+    if (Number.isFinite(raw) && raw > 0) return Math.min(raw, 365);
+  } catch { /* ignore */ }
+  try {
+    const stored = parseInt(localStorage.getItem(EAT_LS_COMPARE_DAYS_KEY) ?? "", 10);
+    if (Number.isFinite(stored) && stored > 0) return Math.min(stored, 365);
+  } catch { /* ignore */ }
+  return fallbackDays;
 }
 
 function deltaPercent(current: number, prior: number): number | null {
@@ -233,8 +260,12 @@ export default function EATDashboard() {
   const [customInput, setCustomInput]   = useState<string>("");
   const [showCustom, setShowCustom]     = useState(false);
 
-  const [compareEnabled, setCompareEnabled]     = useState(false);
-  const [compareDays, setCompareDaysState]       = useState<number>(30);
+  const [compareEnabled, setCompareEnabledState] = useState<boolean>(
+    () => parseCompareFromSearch(window.location.search),
+  );
+  const [compareDays, setCompareDaysState] = useState<number>(
+    () => parseCompareDaysFromSearch(window.location.search, parseDaysFromSearch(window.location.search)),
+  );
   const [compareCustomInput, setCompareCustomInput] = useState<string>("");
   const [showCompareCustom, setShowCompareCustom]   = useState(false);
 
@@ -271,23 +302,41 @@ export default function EATDashboard() {
     window.history.replaceState({}, "", url.toString());
   }, []);
 
+  const setCompareEnabled = useCallback((enabled: boolean) => {
+    setCompareEnabledState(enabled);
+    try { localStorage.setItem(EAT_LS_COMPARE_KEY, enabled ? "1" : "0"); } catch { /* ignore */ }
+    const url = new URL(window.location.href);
+    if (enabled) {
+      url.searchParams.set("compare", "1");
+      const cd = parseInt(url.searchParams.get("compareDays") ?? "", 10);
+      if (!Number.isFinite(cd) || cd <= 0) {
+        url.searchParams.set("compareDays", String(compareDays));
+      }
+    } else {
+      url.searchParams.delete("compare");
+      url.searchParams.delete("compareDays");
+    }
+    window.history.replaceState({}, "", url.toString());
+  }, [compareDays]);
+
   const setCompareDays = useCallback((n: number) => {
     setCompareDaysState(n);
+    try { localStorage.setItem(EAT_LS_COMPARE_DAYS_KEY, String(n)); } catch { /* ignore */ }
+    const url = new URL(window.location.href);
+    url.searchParams.set("compareDays", String(n));
+    window.history.replaceState({}, "", url.toString());
   }, []);
 
   useEffect(() => {
     const onPopState = () => {
-      const next = parseDaysFromSearch(window.location.search);
-      setDaysState(next);
+      const search = window.location.search;
+      setDaysState(parseDaysFromSearch(search));
+      setCompareEnabledState(parseCompareFromSearch(search));
+      setCompareDaysState(parseCompareDaysFromSearch(search, parseDaysFromSearch(search)));
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
-
-  // When days changes, default compareDays to match
-  useEffect(() => {
-    setCompareDaysState(days);
-  }, [days]);
 
   const fetchSummary = useCallback((isInitial = false, d = days, cd = compareDays, ce = compareEnabled) => {
     if (isInitial) setLoading(true);
@@ -501,7 +550,7 @@ export default function EATDashboard() {
 
           {/* Compare toggle */}
           <button
-            onClick={() => setCompareEnabled((v) => !v)}
+            onClick={() => setCompareEnabled(!compareEnabled)}
             style={{
               background: compareEnabled ? "rgba(74,144,217,0.18)" : "rgba(255,255,255,0.04)",
               border: `1px solid ${compareEnabled ? "rgba(74,144,217,0.5)" : "rgba(255,255,255,0.08)"}`,
