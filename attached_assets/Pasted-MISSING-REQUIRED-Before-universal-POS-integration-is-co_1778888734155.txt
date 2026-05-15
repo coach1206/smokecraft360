@@ -1,0 +1,129 @@
+MISSING / REQUIRED
+
+Before universal POS integration is considered production-ready, the following systems MUST exist and be fully wired:
+
+1. POS Abstraction Layer
+    Allows EEIS/E.A.T to communicate with Clover, Toast, Square, Lightspeed, Shopify POS, NCR, and future systems without rebuilding core logic.
+2. Universal Order Schema
+    One internal order language for ALL POS systems.
+3. Merchant Credential Vault
+    Encrypted storage for:
+
+* OAuth tokens
+* Merchant IDs
+* Refresh tokens
+* API secrets
+
+4. Adapter Isolation System
+    One POS failure cannot crash the full platform.
+5. Retry + Queue Engine
+    Failed ticket pushes retry safely.
+6. Inventory Synchronization Layer
+    AI recommendations must respect real stock availability.
+7. Webhook Verification System
+    All incoming POS webhooks must be authenticated.
+8. Local Edge Sync Layer
+    Supports offline lounges and local tablet communication.
+9. Menu Mapping Dashboard
+    Admins visually map EEIS items to POS item IDs.
+10. Audit + Compliance Logging
+    Every order event, payment, refund, sync, and failure must be immutable.
+11. Device Session Engine
+    Tablet, kiosk, TV, and staff device synchronization.
+12. Real-Time Event Bus
+    Triggers:
+
+* XP rewards
+* loyalty
+* lounge effects
+* analytics
+* AI learning
+* ambient changes
+
+13. Multi-Tenant Isolation
+    Every lounge/vendor sandboxed independently.
+14. POS Health Monitoring
+    Tracks API outages, token expiration, failed syncs, webhook failures.
+15. Security Hardening
+
+* AES-256 token encryption
+* JWT auth
+* RBAC
+* rate limiting
+* idempotency
+* replay protection
+* webhook signature verification
+
+⸻
+
+FAILURE PREVENTION CHECKLIST
+
+✔ Universal POS schema
+✔ POS adapter architecture
+✔ Queue + retry protection
+✔ OAuth refresh handling
+✔ Inventory reconciliation
+✔ Device synchronization
+✔ Offline recovery
+✔ Local cache support
+✔ Audit logging
+✔ Webhook verification
+✔ Multi-tenant protection
+✔ POS failover handling
+✔ Secure token storage
+✔ Live event processing
+✔ Merchant isolation
+✔ Universal menu mapping
+✔ API timeout handling
+✔ Background workers
+✔ Live POS health dashboard
+✔ Edge-node compatibility
+
+⸻
+
+MASTER PROMPT
+
+Build a COMPLETE enterprise-grade universal POS integration architecture for EEIS / E.A.T / SmokeCraft 360 that allows the platform to integrate with:
+
+* Clover
+* Toast
+* Square
+* Lightspeed
+* Shopify POS
+* NCR
+* Micros
+* Future POS systems
+
+The platform is NOT replacing POS systems.
+
+It is building an EXPERIENCE INTELLIGENCE LAYER above them.
+
+The architecture must be modular, scalable, fault-tolerant, secure, multi-tenant, and production-ready.
+
+The system must allow:
+
+* AI recommendations
+* cigar pairings
+* whiskey pairings
+* loyalty systems
+* gamification
+* guest sessions
+* analytics
+* ambient intelligence
+* EEIS interactions
+* XP rewards
+* lounge automation
+
+to synchronize with external POS systems in real time.
+
+DO NOT create placeholder code.
+
+DO NOT create frontend-only systems.
+
+DO NOT create mock APIs.
+
+Everything must be real, connected, and fully wired.
+
+⸻
+
+REQUIRED BACKEND ARCHITECTURE
