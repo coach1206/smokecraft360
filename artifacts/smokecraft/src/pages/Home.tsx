@@ -996,6 +996,7 @@ export default function Home() {
             cigar={upgradeProduct ?? results?.recommendations[0]}
             drink={results?.pairings[0]}
             food={results?.foodPairings[0]}
+            craftType={category === "cigar" ? "smoke" : "pour"}
             onClose={() => { setOrderModalOpen(false); setUpgradeProduct(null); }}
             onSuccess={handleOrderSuccess}
           />

@@ -11,7 +11,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence }           from "framer-motion";
-import { emitKernelEvent } from "@/lib/kernelTelemetry";
+import { emitKernelEvent, craftToModuleSlug } from "@/lib/kernelTelemetry";
 import {
   X, MapPin, Loader2, CheckCircle, XCircle,
   UtensilsCrossed, Wine, Cigarette, ShoppingBag, Hash,
@@ -23,13 +23,14 @@ import {
 import { DEMO_MODE } from "@/config/demo";
 
 interface OrderModalProps {
-  isOpen:    boolean;
-  cigar?:    ProductResult;
-  drink?:    ProductResult;
-  food?:     FoodResult;
-  venueId?:  string;
-  onClose:   () => void;
-  onSuccess: (orderId: string, orderType: OrderType) => void;
+  isOpen:     boolean;
+  cigar?:     ProductResult;
+  drink?:     ProductResult;
+  food?:      FoodResult;
+  venueId?:   string;
+  craftType?: "smoke" | "pour" | "brew" | "vape";
+  onClose:    () => void;
+  onSuccess:  (orderId: string, orderType: OrderType) => void;
 }
 
 // Demo venue location — Times Square, NYC
@@ -56,7 +57,7 @@ const ORDER_TYPES: { type: OrderType; label: string; sublabel: string; icon: Rea
   { type: "delivery", label: "Delivery",         sublabel: "Delivered to your location",  icon: <MapPin size={16} /> },
 ];
 
-export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuccess }: OrderModalProps) {
+export function OrderModal({ isOpen, cigar, drink, food, venueId, craftType = "smoke", onClose, onSuccess }: OrderModalProps) {
   const [selectedType,    setSelectedType]    = useState<OrderType | null>(null);
   const [deliveryStatus,  setDeliveryStatus]  = useState<DeliveryStatus>("idle");
   const [deliveryMiles,   setDeliveryMiles]   = useState<number | null>(null);
@@ -147,11 +148,16 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, onClose, onSuc
       }
 
       // Kernel telemetry — add_to_order
-      emitKernelEvent("add_to_order", {
-        orderId:  order.id,
-        type:     selectedType,
-        items:    [cigar, drink].filter(Boolean).map((i) => (i as { id: string; name: string }).name),
-      });
+      emitKernelEvent(
+        "add_to_order",
+        {
+          orderId:   order.id,
+          type:      selectedType,
+          craftType,
+          items:     [cigar, drink].filter(Boolean).map((i) => (i as { id: string; name: string }).name),
+        },
+        craftToModuleSlug(craftType),
+      );
 
       // Step 2 — table orders go straight to confirmation (no payment required)
       if (selectedType === "table") {
