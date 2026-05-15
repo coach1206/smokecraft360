@@ -110,6 +110,14 @@ interface RecentEvent {
   occurredAt: string;
 }
 
+interface ProductItem {
+  card_id: string;
+  title: string | null;
+  adds: number;
+  skips: number;
+  total: number;
+}
+
 const EMPTY_SUMMARY: TelemetrySummary = {
   total: 0,
   dailyCounts: [],
@@ -124,7 +132,7 @@ const ACCENT_DIM  = "rgba(196,97,10,0.35)";
 const COMPARE_COLOR = "#4A90D9";
 const SURFACE     = "rgba(24,24,25,0.85)";
 
-type DashTab = "overview" | "events" | "modules" | "ritual" | "live";
+type DashTab = "overview" | "events" | "modules" | "ritual" | "live" | "products";
 
 const POLL_INTERVAL_MS = 15_000;
 
@@ -182,6 +190,9 @@ export default function EATDashboard() {
   const prevEventIdsRef                     = useRef<Set<string>>(new Set());
   const hasBaselineRef                      = useRef(false);
   const flashTimerRef                       = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [products, setProducts]             = useState<ProductItem[]>([]);
+  const [productsLoading, setProductsLoading] = useState(false);
 
   const setDays = useCallback((n: number) => {
     setDaysState(n);
@@ -243,6 +254,14 @@ export default function EATDashboard() {
       .catch(() => { /* silent */ });
   }, []);
 
+  const fetchProducts = useCallback((d = days) => {
+    setProductsLoading(true);
+    apiFetch<{ products: ProductItem[] }>(`/telemetry/products?days=${d}`)
+      .then(({ products: p }) => { setProducts(p); })
+      .catch(() => { /* silent */ })
+      .finally(() => setProductsLoading(false));
+  }, [days]);
+
   useEffect(() => {
     if (pollRef.current) clearInterval(pollRef.current);
     fetchSummary(true, days, compareDays, compareEnabled);
@@ -256,6 +275,10 @@ export default function EATDashboard() {
       if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
     };
   }, [days, compareDays, compareEnabled]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (tab === "products") fetchProducts(days);
+  }, [tab, days]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (counterRef.current) clearInterval(counterRef.current);
@@ -292,11 +315,12 @@ export default function EATDashboard() {
   const isCompareCustomActive = !PRESET_OPTIONS.some((p) => p.days === compareDays);
 
   const TABS: { id: DashTab; label: string }[] = [
-    { id: "overview", label: "OVERVIEW" },
-    { id: "events",   label: "EVENTS" },
-    { id: "modules",  label: "MODULES" },
-    { id: "ritual",   label: "RITUAL" },
-    { id: "live",     label: "● LIVE FEED" },
+    { id: "overview",  label: "OVERVIEW" },
+    { id: "events",    label: "EVENTS" },
+    { id: "modules",   label: "MODULES" },
+    { id: "ritual",    label: "RITUAL" },
+    { id: "products",  label: "TOP PRODUCTS" },
+    { id: "live",      label: "● LIVE FEED" },
   ];
 
   return (
@@ -581,9 +605,10 @@ export default function EATDashboard() {
                 compareDays={compareDays}
               />
             )}
-            {tab === "modules"  && <ModulesTab data={data} />}
-            {tab === "ritual"   && <RitualTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
-            {tab === "live"     && <LiveFeedTab events={recentEvents} newEventIds={newEventIds} />}
+            {tab === "modules"   && <ModulesTab data={data} />}
+            {tab === "ritual"    && <RitualTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
+            {tab === "products"  && <ProductsTab products={products} loading={productsLoading} days={days} />}
+            {tab === "live"      && <LiveFeedTab events={recentEvents} newEventIds={newEventIds} />}
           </>
         )}
       </main>
@@ -1060,6 +1085,176 @@ function RitualTab({
           <span>70 — EXCELLENT</span>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── Top Products Tab ───────────────────────────────────────────────────────── */
+
+const ADD_COLOR   = "#4ade80";
+const SKIP_COLOR  = "#f87171";
+
+function ProductsTab({
+  products,
+  loading,
+  days,
+}: {
+  products: ProductItem[];
+  loading: boolean;
+  days: number;
+}) {
+  if (loading) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "60px 0", gap: 10, color: "rgba(245,237,216,0.3)" }}>
+        <div style={{
+          width: 16, height: 16, borderRadius: "50%",
+          border: "2px solid rgba(196,97,10,0.3)",
+          borderTopColor: "#C4610A",
+          animation: "spin 0.8s linear infinite",
+        }} />
+        <span style={{ fontSize: 11, letterSpacing: "0.2em" }}>LOADING PRODUCT DATA</span>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      <SectionHeader
+        label="TOP PRODUCTS"
+        sub={`Ranked by swipe interactions (adds + skips) over the last ${days} day${days === 1 ? "" : "s"}`}
+      />
+
+      {products.length === 0 ? (
+        <EmptyState label="No swipe_add or swipe_skip events with cardId found in this window. Swipe interactions will appear here once guests engage with the experience." />
+      ) : (
+        <>
+          {/* Legend */}
+          <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ width: 10, height: 10, borderRadius: 2, background: ADD_COLOR }} />
+              <span style={{ fontSize: 10, letterSpacing: "0.15em", color: "rgba(245,237,216,0.45)" }}>ADDS</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ width: 10, height: 10, borderRadius: 2, background: SKIP_COLOR }} />
+              <span style={{ fontSize: 10, letterSpacing: "0.15em", color: "rgba(245,237,216,0.45)" }}>SKIPS</span>
+            </div>
+            <div style={{ fontSize: 10, color: "rgba(245,237,216,0.25)", letterSpacing: "0.1em", marginLeft: "auto" }}>
+              {products.length} product{products.length !== 1 ? "s" : ""} tracked
+            </div>
+          </div>
+
+          <div style={{
+            background: SURFACE,
+            border: "1px solid rgba(255,255,255,0.06)",
+            borderRadius: 10,
+            overflow: "hidden",
+          }}>
+            {/* Table header */}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "36px 1fr 60px 60px 60px 140px",
+              gap: "0 12px",
+              padding: "10px 16px",
+              borderBottom: "1px solid rgba(255,255,255,0.06)",
+              fontSize: 9, fontWeight: 700, letterSpacing: "0.18em",
+              color: "rgba(245,237,216,0.25)",
+            }}>
+              <span>#</span>
+              <span>PRODUCT</span>
+              <span style={{ textAlign: "right" }}>ADDS</span>
+              <span style={{ textAlign: "right" }}>SKIPS</span>
+              <span style={{ textAlign: "right" }}>TOTAL</span>
+              <span style={{ textAlign: "center" }}>ADD RATIO</span>
+            </div>
+
+            {products.map((p, i) => {
+              const addRatio  = p.total > 0 ? (p.adds / p.total) * 100 : 0;
+              const isTop     = i === 0;
+              const label     = p.title ?? p.card_id;
+              const rowKey    = `${p.card_id}|${p.title ?? ""}`;
+
+              return (
+                <div
+                  key={rowKey}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "36px 1fr 60px 60px 60px 140px",
+                    gap: "0 12px",
+                    padding: "12px 16px",
+                    borderBottom: "1px solid rgba(255,255,255,0.04)",
+                    alignItems: "center",
+                    background: isTop ? "rgba(196,97,10,0.04)" : "transparent",
+                    transition: "background 0.15s",
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.03)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = isTop ? "rgba(196,97,10,0.04)" : "transparent"; }}
+                >
+                  {/* Rank */}
+                  <div style={{
+                    width: 24, height: 24, borderRadius: 6,
+                    background: isTop ? "rgba(196,97,10,0.2)" : "rgba(255,255,255,0.05)",
+                    border: `1px solid ${isTop ? "rgba(196,97,10,0.4)" : "rgba(255,255,255,0.08)"}`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 10, fontWeight: 700,
+                    color: isTop ? "#C4610A" : "rgba(245,237,216,0.35)",
+                  }}>
+                    {i + 1}
+                  </div>
+
+                  {/* Title */}
+                  <div style={{ overflow: "hidden" }}>
+                    <div style={{
+                      fontSize: 13, fontWeight: isTop ? 600 : 400,
+                      color: isTop ? "#F5EDD8" : "rgba(245,237,216,0.75)",
+                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                    }}>
+                      {label}
+                    </div>
+                    {p.title && (
+                      <div style={{ fontSize: 9, color: "rgba(245,237,216,0.25)", fontFamily: "monospace", marginTop: 2 }}>
+                        {p.card_id}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Adds */}
+                  <div style={{ fontSize: 13, fontWeight: 600, color: ADD_COLOR, textAlign: "right" }}>
+                    {p.adds.toLocaleString()}
+                  </div>
+
+                  {/* Skips */}
+                  <div style={{ fontSize: 13, fontWeight: 600, color: SKIP_COLOR, textAlign: "right" }}>
+                    {p.skips.toLocaleString()}
+                  </div>
+
+                  {/* Total */}
+                  <div style={{ fontSize: 13, color: "rgba(245,237,216,0.5)", textAlign: "right" }}>
+                    {p.total.toLocaleString()}
+                  </div>
+
+                  {/* Add ratio bar */}
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                      <span style={{ fontSize: 9, color: addRatio >= 50 ? ADD_COLOR : SKIP_COLOR, letterSpacing: "0.08em" }}>
+                        {Math.round(addRatio)}% add
+                      </span>
+                    </div>
+                    <div style={{ height: 5, background: "rgba(248,113,113,0.25)", borderRadius: 3, overflow: "hidden" }}>
+                      <div style={{
+                        height: "100%", borderRadius: 3,
+                        width: `${addRatio}%`,
+                        background: `linear-gradient(90deg, rgba(74,222,128,0.6), ${ADD_COLOR})`,
+                        transition: "width 0.6s ease",
+                      }} />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }

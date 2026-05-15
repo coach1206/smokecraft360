@@ -325,4 +325,84 @@ router.get("/telemetry/summary", async (req: Request, res: Response) => {
   }
 });
 
+// ── GET /api/kernel/telemetry/products ────────────────────────────────────────
+// Aggregates swipe_add / swipe_skip counts by cardId + title from the payload.
+// Query params:
+//   ?moduleId=<uuid>       — filter to a specific module (optional)
+//   ?window=24h|7d|30d|90d — shorthand time window (default: 30d)
+//   ?days=N                — explicit day count (overrides window, max 365)
+
+router.get("/telemetry/products", async (req: Request, res: Response) => {
+  const q = req.query as Record<string, string | undefined>;
+
+  // Resolve window in days
+  let days = 30;
+  if (q.days !== undefined) {
+    const d = parseInt(q.days, 10);
+    if (Number.isFinite(d) && d > 0) days = Math.min(d, 365);
+  } else if (q.window !== undefined) {
+    const w = q.window.trim().toLowerCase();
+    if (w === "24h" || w === "1d") {
+      days = 1;
+    } else {
+      const m = /^(\d+)d$/.exec(w);
+      if (m) days = Math.min(parseInt(m[1]!, 10), 365);
+    }
+  }
+
+  const moduleId = q.moduleId;
+  if (moduleId !== undefined && !UUID_RE.test(moduleId)) {
+    return res.status(400).json({ error: "moduleId must be a valid UUID" });
+  }
+
+  try {
+    const windowStart = sql`NOW() - (${days} || ' days')::interval`;
+
+    type ProductRow = { card_id: string; title: string | null; adds: number; skips: number; total: number };
+
+    let rows: ProductRow[];
+
+    if (moduleId) {
+      const result = await db.execute(sql`
+        SELECT
+          payload->>'cardId'  AS card_id,
+          payload->>'title'   AS title,
+          SUM(CASE WHEN event_type = 'swipe_add'  THEN 1 ELSE 0 END)::int AS adds,
+          SUM(CASE WHEN event_type = 'swipe_skip' THEN 1 ELSE 0 END)::int AS skips,
+          COUNT(*)::int AS total
+        FROM telemetry_events
+        WHERE event_type IN ('swipe_add', 'swipe_skip')
+          AND occurred_at >= ${windowStart}
+          AND module_id = ${moduleId}::uuid
+          AND payload->>'cardId' IS NOT NULL
+        GROUP BY payload->>'cardId', payload->>'title'
+        ORDER BY total DESC
+        LIMIT 50
+      `);
+      rows = result.rows as ProductRow[];
+    } else {
+      const result = await db.execute(sql`
+        SELECT
+          payload->>'cardId'  AS card_id,
+          payload->>'title'   AS title,
+          SUM(CASE WHEN event_type = 'swipe_add'  THEN 1 ELSE 0 END)::int AS adds,
+          SUM(CASE WHEN event_type = 'swipe_skip' THEN 1 ELSE 0 END)::int AS skips,
+          COUNT(*)::int AS total
+        FROM telemetry_events
+        WHERE event_type IN ('swipe_add', 'swipe_skip')
+          AND occurred_at >= ${windowStart}
+          AND payload->>'cardId' IS NOT NULL
+        GROUP BY payload->>'cardId', payload->>'title'
+        ORDER BY total DESC
+        LIMIT 50
+      `);
+      rows = result.rows as ProductRow[];
+    }
+
+    return res.json({ products: rows, days, moduleId: moduleId ?? null });
+  } catch {
+    return res.status(500).json({ error: "Failed to load product telemetry" });
+  }
+});
+
 export default router;
