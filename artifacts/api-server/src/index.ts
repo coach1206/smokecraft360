@@ -132,13 +132,18 @@ try {
     CREATE INDEX IF NOT EXISTS telemetry_events_occurred_idx ON telemetry_events (occurred_at)
   `);
 
-  // 3. Seed SmokeCraft module (idempotent)
+  // 3. Seed craft modules (idempotent)
   await db.execute(drizzleSql`
     INSERT INTO kernel_modules (name, craft_type, slug, status, description, launch_url)
-    VALUES (
-      'Craft: Smoke', 'smoke', 'craft-smoke', 'active',
-      'SmokeCraft — luxury cigar recommendation and experience engine', '/'
-    )
+    VALUES
+      ('Craft: Smoke', 'smoke', 'craft-smoke', 'active',
+       'SmokeCraft — luxury cigar recommendation and experience engine', '/'),
+      ('Craft: Pour',  'pour',  'craft-pour',  'active',
+       'PourCraft — spirits and cocktail recommendation engine', '/pourcraft'),
+      ('Craft: Brew',  'brew',  'craft-brew',  'active',
+       'BrewCraft — beer and ale recommendation engine', '/brewcraft'),
+      ('Craft: Vape',  'vape',  'craft-vape',  'active',
+       'VapeCraft — vaporizer flavor recommendation engine', '/vapecraft')
     ON CONFLICT (slug) DO NOTHING
   `);
   logger.info("Kernel bootstrap complete (tables + seed)");

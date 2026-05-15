@@ -18,6 +18,7 @@ import {
 } from "framer-motion";
 import { ArrowLeft, Sparkles, Check, X, Volume2, VolumeX } from "lucide-react";
 import { playClick, playAmbientHum } from "@/lib/audioEngine";
+import { emitKernelEvent, craftToModuleSlug } from "@/lib/kernelTelemetry";
 import { useAudio, AudioWaveToggle } from "@/contexts/AudioContext";
 import { getCraftTheme, type CraftTheme } from "@/lib/craftThemes";
 import { CraftRealism } from "@/components/CraftRealism";
@@ -1167,9 +1168,17 @@ export default function ExperiencePage() {
         setSessionId(sid);
         if (sid) {
           const cardData = await apiGet(`/api/swipe-experience/${type}/cards?sessionId=${sid}`);
-          if (!cancelled) setCards(cardData.cards?.length ? cardData.cards : FALLBACK_CARDS[type] ?? []);
+          if (!cancelled) {
+            const loadedCards = cardData.cards?.length ? cardData.cards : FALLBACK_CARDS[type] ?? [];
+            setCards(loadedCards);
+            // Emit swipe_start for the craft-specific module
+            emitKernelEvent("swipe_start", { sessionId: sid, craftType: type }, craftToModuleSlug(type));
+          }
         } else {
-          if (!cancelled) setCards(FALLBACK_CARDS[type] ?? []);
+          if (!cancelled) {
+            setCards(FALLBACK_CARDS[type] ?? []);
+            emitKernelEvent("swipe_start", { craftType: type }, craftToModuleSlug(type));
+          }
         }
       } catch {
         if (!cancelled) setCards(FALLBACK_CARDS[type] ?? []);
@@ -1290,6 +1299,13 @@ export default function ExperiencePage() {
         setTimeout(() => setMentorWarning(true), 400);
       }
     }
+
+    // Kernel telemetry — craft-specific module attribution
+    emitKernelEvent(
+      action === "add" ? "swipe_add" : "swipe_skip",
+      { cardId: card.id, title: (card as { title?: string }).title ?? "", craftType: type },
+      craftToModuleSlug(type),
+    );
 
     // Signal environment engine
     if (envCtx && card.tags?.length) {

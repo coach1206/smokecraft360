@@ -1,5 +1,5 @@
 /**
- * NOVEE OS Kernel Telemetry — SmokeCraft module bridge.
+ * NOVEE OS Kernel Telemetry — multi-craft module bridge.
  *
  * Fire-and-forget helper that emits telemetry events to
  * POST /api/kernel/telemetry. All calls are silent on failure
@@ -11,28 +11,44 @@
  *   swipe_skip       — guest swipes left / taps SKIP on a card
  *   build_complete   — recommendations are loaded on RevealPage
  *   add_to_order     — guest submits an order via OrderModal
+ *
+ * moduleSlug defaults to "craft-smoke" for backwards compatibility.
+ * Pass a craft-specific slug (e.g. "craft-pour") to attribute events
+ * to the correct module in the E.A.T. Engine dashboard.
  */
 
-const MODULE_SLUG = "craft-smoke";
+const DEFAULT_SLUG = "craft-smoke";
 
-let _moduleId: string | null = null;
-let _fetchPromise: Promise<void> | null = null;
+/** Per-slug resolved module ID cache. null = resolved but not found. */
+const _moduleIdCache = new Map<string, string | null>();
+/** Per-slug in-flight fetch promises to deduplicate concurrent calls. */
+const _fetchPromises  = new Map<string, Promise<void>>();
 
-function ensureModuleId(): Promise<void> {
-  if (_moduleId !== null) return Promise.resolve();
-  if (_fetchPromise)      return _fetchPromise;
-  _fetchPromise = fetch("/api/kernel/modules")
+function ensureModuleId(slug: string): Promise<void> {
+  if (_moduleIdCache.has(slug)) return Promise.resolve();
+  const existing = _fetchPromises.get(slug);
+  if (existing) return existing;
+
+  const promise = fetch("/api/kernel/modules")
     .then((r) => r.ok ? r.json() : Promise.reject())
     .then((d: { modules: { id: string; slug: string }[] }) => {
-      const m = d.modules.find((m) => m.slug === MODULE_SLUG);
-      if (m) _moduleId = m.id;
+      const m = d.modules.find((m) => m.slug === slug);
+      _moduleIdCache.set(slug, m ? m.id : null);
     })
-    .catch(() => { /* leave _moduleId null; retry next time */ _fetchPromise = null; });
-  return _fetchPromise;
+    .catch(() => {
+      /* leave entry absent so the next call retries */
+      _fetchPromises.delete(slug);
+    })
+    .finally(() => {
+      _fetchPromises.delete(slug);
+    });
+
+  _fetchPromises.set(slug, promise);
+  return promise;
 }
 
-// Warm the module ID in background at import time
-void ensureModuleId();
+// Warm the default module ID in background at import time
+void ensureModuleId(DEFAULT_SLUG);
 
 /**
  * Resolve the current venueId from localStorage (set by VenueContext).
@@ -52,17 +68,24 @@ function resolveVenueId(): string | null {
 export function emitKernelEvent(
   eventType: string,
   payload?: Record<string, unknown>,
+  moduleSlug: string = DEFAULT_SLUG,
 ): void {
   const venueId = resolveVenueId();
+
+  // Warm up any non-default slug so subsequent events resolve faster
+  if (moduleSlug !== DEFAULT_SLUG && !_moduleIdCache.has(moduleSlug)) {
+    void ensureModuleId(moduleSlug);
+  }
 
   // Internally async so we can await the module ID, but callers are never blocked.
   void (async () => {
     try {
-      await ensureModuleId();
+      await ensureModuleId(moduleSlug);
+      const moduleId = _moduleIdCache.get(moduleSlug) ?? null;
       const body: Record<string, unknown> = { eventType };
-      if (_moduleId) body.moduleId = _moduleId;
-      if (venueId)   body.venueId  = venueId;
-      if (payload)   body.payload  = payload;
+      if (moduleId) body.moduleId = moduleId;
+      if (venueId)  body.venueId  = venueId;
+      if (payload)  body.payload  = payload;
       await fetch("/api/kernel/telemetry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -72,4 +95,18 @@ export function emitKernelEvent(
       /* silent — telemetry must never interrupt the guest experience */
     }
   })();
+}
+
+/**
+ * Map a craft type string to its kernel module slug.
+ * Centralises the slug derivation so all callers stay consistent.
+ */
+export function craftToModuleSlug(craftType: string): string {
+  switch (craftType) {
+    case "pour":  return "craft-pour";
+    case "brew":  return "craft-brew";
+    case "vape":  return "craft-vape";
+    case "smoke":
+    default:      return "craft-smoke";
+  }
 }

@@ -36,6 +36,8 @@ interface Props {
   onCardFocus?: (id: string) => void;
   rightLabel?:  string;
   leftLabel?:   string;
+  /** Kernel module slug for telemetry attribution. Defaults to "craft-smoke". */
+  moduleSlug?:  string;
 }
 
 /* ── Single top card ─────────────────────────────────────────── */
@@ -47,9 +49,10 @@ interface TopCardProps {
   onSwipeLeft:   () => void;
   rightLabel:    string;
   leftLabel:     string;
+  moduleSlug:    string;
 }
 
-function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, leftLabel }: TopCardProps) {
+function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, leftLabel, moduleSlug }: TopCardProps) {
   const x        = useMotionValue(260);
   const rotate   = useTransform(x, [-280, 280], [-14, 14]);
   const cardOpacity = useTransform(x, [-320, -100, 0, 100, 320], [0, 1, 1, 1, 0]);
@@ -61,7 +64,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
   useEffect(() => {
     animate(x, 0, { duration: 0.38, ease: [0.22, 1, 0.36, 1] });
     if (index === 0) {
-      emitKernelEvent("swipe_start", { cardId: item.id });
+      emitKernelEvent("swipe_start", { cardId: item.id }, moduleSlug);
     }
   }, [x]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -70,7 +73,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
     exiting.current = true;
     playSelect();                                                  // accept chime
     haptic.select();                                               // tactile commit
-    emitKernelEvent("swipe_add", { cardId: item.id, title: item.title });
+    emitKernelEvent("swipe_add", { cardId: item.id, title: item.title }, moduleSlug);
     animate(x, 680, { duration: 0.32, ease: [0.4, 0, 1, 1] }).then(onSwipeRight);
   }
 
@@ -79,7 +82,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
     exiting.current = true;
     playSwipe();                                                   // skip whoosh
     haptic.swipe();                                                // tactile skip
-    emitKernelEvent("swipe_skip", { cardId: item.id, title: item.title });
+    emitKernelEvent("swipe_skip", { cardId: item.id, title: item.title }, moduleSlug);
     animate(x, -680, { duration: 0.32, ease: [0.4, 0, 1, 1] }).then(onSwipeLeft);
   }
 
@@ -481,6 +484,7 @@ export function SwipeCardDeck({
   onCardFocus,
   rightLabel = "Select",
   leftLabel  = "Skip",
+  moduleSlug = "craft-smoke",
 }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected]         = useState<string[]>([]);
@@ -546,6 +550,7 @@ export function SwipeCardDeck({
         onSwipeLeft={() => advance(false)}
         rightLabel={rightLabel}
         leftLabel={leftLabel}
+        moduleSlug={moduleSlug}
       />
 
       {/* Progress dots */}

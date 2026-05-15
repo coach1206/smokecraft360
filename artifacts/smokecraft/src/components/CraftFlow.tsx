@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { emitKernelEvent, craftToModuleSlug } from "@/lib/kernelTelemetry";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Sparkles, ShoppingBag, ChevronRight, RotateCcw, Zap, PenLine, Share2 } from "lucide-react";
@@ -401,12 +402,13 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         strength: style.strength,
         mood: mood.id,
       });
+      let finalResp = r;
       if (config.category === "vape") {
         const onlyVape = r.recommendations.filter((p) => p.category === "vape");
-        setResp(onlyVape.length ? { ...r, recommendations: onlyVape } : { ...r, recommendations: [] });
-      } else {
-        setResp(r);
+        finalResp = onlyVape.length ? { ...r, recommendations: onlyVape } : { ...r, recommendations: [] };
       }
+      setResp(finalResp);
+      emitKernelEvent("build_complete", { craftType, count: finalResp.recommendations.length }, craftToModuleSlug(craftType));
       setPhase("reveal");
       void upsertCraftBuild({ craft: craftType, phase: "reveal", styleChoice: style.id, moodChoice: mood.id });
       void saveCraftSession({
@@ -537,6 +539,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     resetTimer(dur, dur);
     setTimerRunning(true);
     setPhase("style");
+    emitKernelEvent("swipe_start", { craftType }, craftToModuleSlug(craftType));
     void startCraftSession(craftType, dur, "style");
   }, [resumeSession, craftType, resetTimer]);
 
@@ -544,6 +547,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     if (isExpired) return;
     setSelectedStyle(s);
     setPhase("profile");
+    emitKernelEvent("swipe_add", { cardId: s.id, title: s.title, step: "style" }, craftToModuleSlug(craftType));
     void updateScore(s, null, "style");
     debouncedSave({
       craft:       craftType,
@@ -557,6 +561,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const handleMoodPick = useCallback((m: CraftMoodCard) => {
     if (isExpired) return;
     setSelectedMood(m);
+    emitKernelEvent("swipe_add", { cardId: m.id, title: m.title, step: "profile" }, craftToModuleSlug(craftType));
     if (selectedStyle) {
       void updateScore(selectedStyle, m, "profile");
       // Stage 5 — show Journey Path before running the match
@@ -774,6 +779,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                     resetTimer(dur, dur);
                     setTimerRunning(true);
                     setPhase("style");
+                    emitKernelEvent("swipe_start", { craftType }, craftToModuleSlug(craftType));
                     void startCraftSession(craftType, dur, "style");
                   }}
                   whileHover={{ scale: 1.04 }}

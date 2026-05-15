@@ -10,7 +10,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useParams, useLocation } from "wouter";
-import { emitKernelEvent } from "@/lib/kernelTelemetry";
+import { emitKernelEvent, craftToModuleSlug } from "@/lib/kernelTelemetry";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Sparkles, ShoppingBag, Star, Check, Package, AlertTriangle } from "lucide-react";
 import { getCraftTheme } from "@/lib/craftThemes";
@@ -128,10 +128,10 @@ export default function RevealPage() {
 
   const theme = getCraftTheme(craftType);
 
-  // Signal reveal climax to environment engine on mount + emit reveal_view telemetry
+  // Signal reveal climax to environment engine on mount
   useEffect(() => {
     envCtx?.onRevealStart();
-    emitKernelEvent("reveal_view", { sessionId });
+    // reveal_view is emitted after craftType is resolved in the fetch effect below
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Neural Bridge: socket listener for neural:identity_evolved ───────────
@@ -169,13 +169,17 @@ export default function RevealPage() {
         const data = await apiGet(`/api/swipe-experience/session/${sessionId}/recommendations`);
         const loaded: Recommendation[] = data.recommendations ?? [];
         setRecs(loaded);
-        emitKernelEvent("build_complete", { sessionId, count: loaded.length });
         const cat = data.recommendations?.[0]?.item?.category;
         const ct = cat === "cigar" ? "smoke"
                  : cat === "alcohol" ? "pour"
                  : cat === "beer"    ? "brew"
+                 : cat === "vape"    ? "vape"
                  : "smoke";
         setCraftType(ct);
+        // Emit reveal_view and build_complete with the resolved craft-specific slug
+        const slug = craftToModuleSlug(ct);
+        emitKernelEvent("reveal_view",     { sessionId },                   slug);
+        emitKernelEvent("build_complete",  { sessionId, count: loaded.length }, slug);
 
         // Compute blend intelligence from recommendation tags
         const allTags = loaded.flatMap(r => r.item.tags);
@@ -268,6 +272,12 @@ export default function RevealPage() {
           itemId,
           priceCents: rec.item.priceCents ?? 0,
         });
+        emitKernelEvent("add_to_order", {
+          itemId,
+          itemName:   rec.item.name,
+          craftType,
+          priceCents: rec.item.priceCents ?? 0,
+        }, craftToModuleSlug(craftType));
         envCtx?.onOrderConfirm();
       }
     } catch {
