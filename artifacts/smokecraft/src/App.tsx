@@ -38,6 +38,7 @@ import { SovereignInsightCube }       from '@/components/SovereignInsightCube';
 import { useSovereignSocket }         from '@/hooks/useSovereignSocket';
 import PhantomHUD                     from '@/components/PhantomHUD';
 import { KernelModeProvider }         from '@/contexts/KernelModeContext';
+import InactivityGuard               from '@/components/InactivityGuard';
 
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
@@ -174,6 +175,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                           <UniversalBackButton />
                                           {children}
                                           <RouteTransitionOverlay />
+                                          <InactivityGuard />
                                           <EeisOverlay />
                                           <GhostEntryTrigger />
                                           <SuperAdminOverlay />
