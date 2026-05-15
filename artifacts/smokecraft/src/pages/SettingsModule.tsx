@@ -614,6 +614,20 @@ export default function SettingsModule() {
             })}
           </div>
 
+          {(kernel.updatedByName || kernel.updatedAt) && (
+            <div style={{
+              marginTop: 12, display: "flex", alignItems: "center", gap: 6,
+              fontSize: 11, color: "rgba(26,26,27,0.40)",
+            }}>
+              <ShieldAlert size={11} color="rgba(26,26,27,0.30)" />
+              <span>
+                Last changed
+                {kernel.updatedByName ? <> by <strong style={{ color: "rgba(26,26,27,0.60)", fontWeight: 600 }}>{kernel.updatedByName}</strong></> : null}
+                {kernel.updatedAt ? <> on {kernel.updatedAt.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })} at {kernel.updatedAt.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}</> : null}
+              </span>
+            </div>
+          )}
+
           {isKernelAdmin && (
             <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10 }}>
               <motion.button

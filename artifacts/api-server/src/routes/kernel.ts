@@ -17,6 +17,7 @@ import {
   kernelModeConfigTable,
   telemetryEventsTable,
   kernelModuleAuditLogTable,
+  usersTable,
 } from "@workspace/db";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
 import { z }                             from "zod";
@@ -272,22 +273,33 @@ router.delete("/modules/:id", requireAuth, async (req: AuthRequest, res: Respons
 });
 
 // ── GET /api/kernel/mode/:venueId ─────────────────────────────────────────────
-// Public read — no PII returned, mode config is venue-level operational data.
+// Public read — returns mode config and, when a prior change exists, the display
+// name of the admin who last made the change (updatedByName) alongside updatedAt.
 
 router.get("/mode/:venueId", async (req: Request, res: Response) => {
   const { venueId } = req.params as { venueId: string };
   if (!UUID_RE.test(venueId)) return res.status(400).json({ error: "venueId must be a valid UUID" });
 
   try {
-    const [cfg] = await db
-      .select()
+    const [row] = await db
+      .select({
+        mode:          kernelModeConfigTable.mode,
+        updatedAt:     kernelModeConfigTable.updatedAt,
+        updatedByName: usersTable.name,
+      })
       .from(kernelModeConfigTable)
+      .leftJoin(usersTable, eq(kernelModeConfigTable.updatedBy, usersTable.id))
       .where(eq(kernelModeConfigTable.venueId, venueId));
 
-    if (!cfg) {
+    if (!row) {
       return res.json({ venueId, mode: "sovereign" });
     }
-    return res.json({ venueId, mode: cfg.mode, updatedAt: cfg.updatedAt });
+    return res.json({
+      venueId,
+      mode:          row.mode,
+      updatedAt:     row.updatedAt,
+      updatedByName: row.updatedByName ?? undefined,
+    });
   } catch {
     return res.status(500).json({ error: "Failed to read mode config" });
   }
@@ -332,7 +344,12 @@ router.patch("/mode/:venueId", requireAuth, async (req: AuthRequest, res: Respon
         },
       })
       .returning();
-    return res.json({ venueId, mode: cfg.mode, updatedAt: cfg.updatedAt });
+    return res.json({
+      venueId,
+      mode:          cfg.mode,
+      updatedAt:     cfg.updatedAt,
+      updatedByName: (req as AuthRequest).user?.name ?? undefined,
+    });
   } catch {
     return res.status(500).json({ error: "Failed to update mode config" });
   }

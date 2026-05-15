@@ -25,6 +25,8 @@ export type KernelMode = "sovereign" | "essential";
 
 interface KernelModeContextValue {
   mode: KernelMode;
+  updatedAt: Date | null;
+  updatedByName: string | null;
   loading: boolean;
   saving: boolean;
   setMode: (mode: KernelMode, token: string) => Promise<void>;
@@ -33,6 +35,8 @@ interface KernelModeContextValue {
 
 const KernelModeContext = createContext<KernelModeContextValue>({
   mode: "sovereign",
+  updatedAt: null,
+  updatedByName: null,
   loading: false,
   saving: false,
   setMode: async () => {},
@@ -92,20 +96,28 @@ export function KernelModeProvider({ children }: { children: ReactNode }) {
 
   const cached = readCached(venueId);
 
-  const [mode, setModeState] = useState<KernelMode>(cached ?? "sovereign");
-  const [loading, setLoading] = useState(cached === null);
-  const [saving, setSaving]   = useState(false);
-  const timerRef              = useRef<ReturnType<typeof setInterval> | null>(null);
-  const prevVenueIdRef        = useRef<string>(venueId);
+  const [mode, setModeState]           = useState<KernelMode>(cached ?? "sovereign");
+  const [updatedAt, setUpdatedAt]       = useState<Date | null>(null);
+  const [updatedByName, setUpdatedByName] = useState<string | null>(null);
+  const [loading, setLoading]           = useState(cached === null);
+  const [saving, setSaving]             = useState(false);
+  const timerRef                        = useRef<ReturnType<typeof setInterval> | null>(null);
+  const prevVenueIdRef                  = useRef<string>(venueId);
 
   async function fetchMode(id: string): Promise<boolean> {
     try {
       const res = await fetch(`/api/kernel/mode/${id}`);
       if (!res.ok) return false;
-      const data = (await res.json()) as { mode?: KernelMode };
+      const data = (await res.json()) as {
+        mode?: KernelMode;
+        updatedAt?: string;
+        updatedByName?: string;
+      };
       if (data.mode === "essential" || data.mode === "sovereign") {
         setModeState(data.mode);
         writeCache(id, data.mode);
+        setUpdatedAt(data.updatedAt ? new Date(data.updatedAt) : null);
+        setUpdatedByName(data.updatedByName ?? null);
         return true;
       }
       return false;
@@ -141,13 +153,15 @@ export function KernelModeProvider({ children }: { children: ReactNode }) {
         const err = (await res.json().catch(() => ({}))) as { error?: string };
         throw new Error(err.error ?? `HTTP ${res.status}`);
       }
-      const data = (await res.json()) as { mode?: KernelMode };
+      const data = (await res.json()) as { mode?: KernelMode; updatedAt?: string; updatedByName?: string };
       const confirmed: KernelMode =
         data.mode === "essential" || data.mode === "sovereign"
           ? data.mode
           : newMode;
       setModeState(confirmed);
       writeCache(venueId, confirmed);
+      if (data.updatedAt) setUpdatedAt(new Date(data.updatedAt));
+      if (data.updatedByName !== undefined) setUpdatedByName(data.updatedByName);
     } finally {
       setSaving(false);
     }
@@ -169,6 +183,8 @@ export function KernelModeProvider({ children }: { children: ReactNode }) {
       setLoading(true);
     }
 
+    setUpdatedAt(null);
+    setUpdatedByName(null);
     fetchMode(venueId);
 
     timerRef.current = setInterval(() => {
@@ -182,7 +198,7 @@ export function KernelModeProvider({ children }: { children: ReactNode }) {
   }, [venueId]);
 
   return (
-    <KernelModeContext.Provider value={{ mode, loading, saving, setMode, refresh }}>
+    <KernelModeContext.Provider value={{ mode, updatedAt, updatedByName, loading, saving, setMode, refresh }}>
       {children}
     </KernelModeContext.Provider>
   );
