@@ -182,6 +182,26 @@ function buildComparisonCsvContent(
   return rows.join("\r\n");
 }
 
+function buildProductsCsvContent(products: ProductItem[], days: number): string {
+  const rows: string[] = [];
+
+  rows.push("# E.A.T. Engine — Top Products Export");
+  rows.push(`# Date range: last ${days} day(s)`);
+  rows.push(`# Generated: ${new Date().toISOString()}`);
+  rows.push("");
+
+  rows.push("rank,title,card_id,adds,skips,total,add_ratio_pct");
+  for (let i = 0; i < products.length; i++) {
+    const p = products[i]!;
+    const addRatio = p.total > 0 ? Math.round((p.adds / p.total) * 100) : 0;
+    const title = (p.title ?? "").replace(/"/g, '""');
+    const cardId = p.card_id.replace(/"/g, '""');
+    rows.push(`${i + 1},"${title}","${cardId}",${p.adds},${p.skips},${p.total},${addRatio}`);
+  }
+
+  return rows.join("\r\n");
+}
+
 function triggerCsvDownload(content: string, filename: string): void {
   const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
@@ -763,7 +783,37 @@ export default function EATDashboard() {
                 EXPORT COMPARISON
               </button>
             )}
-            {(userRole === "admin" || userRole === "super_admin") && !loading && (
+            {(userRole === "admin" || userRole === "super_admin") && tab === "products" && !productsLoading && products.length > 0 && (
+              <button
+                onClick={() => {
+                  const csv = buildProductsCsvContent(products, days);
+                  const today = new Date().toISOString().slice(0, 10);
+                  triggerCsvDownload(csv, `eat-products-${days}d-${today}.csv`);
+                }}
+                title={`Export top products (last ${days} day(s)) as CSV`}
+                style={{
+                  display: "flex", alignItems: "center", gap: 5,
+                  background: "rgba(196,97,10,0.12)",
+                  border: "1px solid rgba(196,97,10,0.35)",
+                  borderRadius: 5, padding: "4px 11px",
+                  fontSize: 10, fontWeight: 700, letterSpacing: "0.12em",
+                  color: "#C4610A", cursor: "pointer",
+                  transition: "background 0.15s, border-color 0.15s",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = "rgba(196,97,10,0.22)";
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(196,97,10,0.6)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = "rgba(196,97,10,0.12)";
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(196,97,10,0.35)";
+                }}
+              >
+                <span style={{ fontSize: 11 }}>↓</span>
+                EXPORT CSV
+              </button>
+            )}
+            {(userRole === "admin" || userRole === "super_admin") && !loading && tab !== "products" && (
               <button
                 onClick={() => {
                   const csv = buildCsvContent(data, days);
