@@ -268,15 +268,45 @@ export default function CommandCenter() {
                   pointerEvents: "none",
                 }} />
                 {(tile.id === "smokecraft" || tile.id === "brewcraft" || tile.id === "pourcraft" || tile.id === "vapecraft") && (
-                  <div style={{
-                    position: "absolute", top: 10, right: 12,
-                    fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
-                    textTransform: "uppercase",
-                    color: tile.color,
-                    background: "rgba(18,14,8,0.84)",
-                    border: `1px solid ${tile.color}55`,
-                    padding: "2px 8px", borderRadius: 999,
-                  }}>🔥 Trending</div>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.72 }}
+                    animate={{
+                      opacity: [null, 1, 0.75, 1],
+                      scale: 1,
+                      boxShadow: [
+                        `0 0 0px ${tile.color}00`,
+                        `0 0 8px ${tile.color}88`,
+                        `0 0 2px ${tile.color}44`,
+                        `0 0 8px ${tile.color}88`,
+                      ],
+                    }}
+                    transition={{
+                      scale: { duration: 0.22, ease: [0.34, 1.56, 0.64, 1] },
+                      opacity: {
+                        times: [0, 0.18, 0.6, 1],
+                        duration: 3.6,
+                        repeat: Infinity,
+                        repeatDelay: 1.4,
+                        ease: "easeInOut",
+                      },
+                      boxShadow: {
+                        times: [0, 0.5, 0.75, 1],
+                        duration: 3.6,
+                        repeat: Infinity,
+                        repeatDelay: 1.4,
+                        ease: "easeInOut",
+                      },
+                    }}
+                    style={{
+                      position: "absolute", top: 10, right: 12,
+                      fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
+                      textTransform: "uppercase",
+                      color: tile.color,
+                      background: "rgba(18,14,8,0.84)",
+                      border: `1px solid ${tile.color}55`,
+                      padding: "2px 8px", borderRadius: 999,
+                    }}
+                  >🔥 Trending</motion.div>
                 )}
                 {isLocked && (
                   <motion.div
