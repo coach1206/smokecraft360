@@ -1,0 +1,26 @@
+### NOVEE OS | MASTER VISUAL ENGINE PROMPT
+
+**CORE CONCEPT:** 
+Construct a photorealistic, hyper-tactile interface frame for **NOVEE OS**. The aesthetic must strictly adhere to **Environmental Adaptation Technology (E.A.T.)** standards: no glyphs, no emojis, and no flat digital abstractions. The UI must look like a high-end, physical instrument machined from premium materials.
+
+**MATERIAL ARCHITECTURE:**
+*   **The Foundation:** Use **obsidian glass** (`rgba(10,8,6,0.90)`) with a `32px` backdrop blur and `0.6` saturation, creating a sense of immense physical weight and depth.
+*   **The Framework:** A `52px` header rail in **brushed titanium** with sub-pixel horizontal grain textures, anchored by polished **smoked chrome** bolt accents at the structural vertices.
+*   **The Light Catchers:** Apply a `135°` angular gradient to all borders using **amber and bronze chrome** highlights, featuring an inset top rule to simulate light reflecting off a machined edge.
+
+**VISUAL ASSETS & OPTICS:**
+*   **Zero-Icon Directive:** All navigation and interaction are driven by **Macro Photography** and typography. 
+*   **Hero Imagery:** Ultra-sharp, high-contrast macro shots: the oily texture of a **Havana cigar wrapper**, the crystalline meniscus of **whiskey** against a heavy glass rim, and the geometric precision of **carbon fiber twill**.
+*   **Atmospheric Depth:** Backgrounds at `18%` brightness with a `28px` Gaussian blur; center interaction panels remain razor-sharp.
+*   **Lighting:** Volumetric ambient amber radial glow at the top edge, pulsing slowly like a heartbeat, filtered through a dark vignette.
+
+**SYSTEM LOGIC (E.A.T. ENGINE):**
+*   **Interface Feel:** A luxury automotive cockpit with a 4-tile material strip divider.
+*   **Data Visualization:** Use high-fidelity system gauge bars and a scrolling "boot sequence" ticker.
+*   **Text Commands:** "E.A.T. ENGINE · PRESENCE INTERFACE" — LOADING PALATE MATRIX → CALIBRATING TASTE VECTORS → SYNCING TERROIR DATABASE.
+
+**NO-FLY ZONE:**
+*   NO emojis or glyphs.
+*   NO flat design or 2D vector art.
+*   NO smartphone-style templates.
+*   NO vibrant or primary colors (Stick to Obsidian, Titanium, Chrome, and Amber).
