@@ -13,7 +13,7 @@
  */
 
 import { Router, type IRouter, type Response } from "express";
-import { eq, and, lt } from "drizzle-orm";
+import { eq, and, lt, count } from "drizzle-orm";
 import { z } from "zod";
 import {
   db,
@@ -227,6 +227,51 @@ router.post("/", async (req: AuthRequest, res: Response) => {
     reservation,
     feedback: `${inventoryName} added to your order`,
   });
+});
+
+// ── GET /api/swipe-orders/active-count ───────────────────────────────────────
+// Returns the count of pending swipe orders for the caller's venue.
+// Used by the Settings UI to warn admins before downgrading kernel mode.
+//
+// Tenant isolation:
+//   - venue_owner: always scoped to their own venueId from the JWT
+//   - super_admin: may pass ?venueId= to scope; without it returns global count
+//   - unauthenticated / other roles: 401
+
+router.get("/active-count", async (req: AuthRequest, res: Response) => {
+  const user = req.user;
+  if (!user) {
+    res.status(401).json({ error: "Authentication required" });
+    return;
+  }
+
+  let scopedVenueId: string | null = null;
+
+  if (user.role === "super_admin") {
+    const qv = req.query["venueId"];
+    scopedVenueId = typeof qv === "string" && qv.length > 0 ? qv : null;
+  } else if (user.role === "venue_owner" || user.role === "admin") {
+    if (!user.venueId) {
+      res.json({ count: 0 });
+      return;
+    }
+    scopedVenueId = user.venueId;
+  } else {
+    res.status(403).json({ error: "Insufficient permissions" });
+    return;
+  }
+
+  const conditions = [eq(swipeOrdersTable.status, "pending")];
+  if (scopedVenueId) {
+    conditions.push(eq(swipeOrdersTable.venueId, scopedVenueId));
+  }
+
+  const [row] = await db
+    .select({ total: count() })
+    .from(swipeOrdersTable)
+    .where(and(...conditions));
+
+  res.json({ count: row?.total ?? 0 });
 });
 
 // ── GET /api/swipe-orders/session/:sessionId ──────────────────────────────────

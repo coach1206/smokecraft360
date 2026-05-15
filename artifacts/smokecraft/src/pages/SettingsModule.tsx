@@ -41,6 +41,8 @@ export default function SettingsModule() {
   const [pendingKernelMode, setPendingKernelMode] = useState<KernelMode | null>(null);
   const [kernelRefreshing, setKernelRefreshing] = useState(false);
   const [kernelRefreshSuccess, setKernelRefreshSuccess] = useState(false);
+  const [activeOrderCount, setActiveOrderCount] = useState<number | null>(null);
+  const [activeOrderCountLoading, setActiveOrderCountLoading] = useState(false);
 
   async function handleKernelRefresh() {
     setKernelRefreshing(true);
@@ -574,9 +576,29 @@ export default function SettingsModule() {
                 <motion.button
                   key={m}
                   whileTap={isKernelAdmin && !kernel.saving ? { scale: 0.97 } : {}}
-                  onClick={() => {
+                  onClick={async () => {
                     if (!isKernelAdmin || isCurrent || kernel.saving) return;
+                    setActiveOrderCount(null);
                     setPendingKernelMode(m);
+                    if (m === "essential") {
+                      setActiveOrderCountLoading(true);
+                      try {
+                        const qs = authUser?.role === "super_admin" && venue.id && venue.id !== "default"
+                          ? `?venueId=${venue.id}`
+                          : "";
+                        const headers: HeadersInit = {};
+                        if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
+                        const res = await fetch(`/api/swipe-orders/active-count${qs}`, { headers });
+                        if (res.ok) {
+                          const data = await res.json() as { count: number };
+                          setActiveOrderCount(data.count);
+                        }
+                      } catch {
+                        // non-blocking — skip warning on fetch error
+                      } finally {
+                        setActiveOrderCountLoading(false);
+                      }
+                    }
                   }}
                   style={{
                     flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
@@ -829,9 +851,16 @@ export default function SettingsModule() {
         open={!!pendingKernelMode}
         title="Change Kernel Mode"
         message={pendingKernelMode ? `Switch to ${pendingKernelMode.charAt(0).toUpperCase() + pendingKernelMode.slice(1)} mode? ${pendingKernelMode === "essential" ? "This will lock luxury features for this venue." : "This will unlock luxury add-ons, AI personalization, and premium analytics for this venue."}` : ""}
+        warning={
+          pendingKernelMode === "essential" && activeOrderCount != null && activeOrderCount > 0
+            ? `${activeOrderCount} active session${activeOrderCount === 1 ? "" : "s"} will lose access to premium features immediately.`
+            : undefined
+        }
+        danger={pendingKernelMode === "essential" && (activeOrderCount ?? 0) > 0}
+        confirmDisabled={pendingKernelMode === "essential" && activeOrderCountLoading}
         confirmLabel="Confirm Change"
         onConfirm={() => pendingKernelMode && applyKernelMode(pendingKernelMode)}
-        onCancel={() => setPendingKernelMode(null)}
+        onCancel={() => { setPendingKernelMode(null); setActiveOrderCount(null); }}
       />
     </div>
   );
