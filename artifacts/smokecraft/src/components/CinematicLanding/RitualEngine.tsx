@@ -9,7 +9,10 @@
  * On each step completion the engine:
  *   1. Updates E.A.T. environment state via the option's `eatEnv` field
  *   2. Appends a Transaction entry to the ledger
- *   3. Advances to the next step with a GPU-composited morph overlay
+ *   3. Calls onStepChange(absoluteStep) so the parent can sync theme + persist
+ *   4. Advances to the next step with a GPU-composited morph overlay
+ *
+ * Session recovery: initialStepIndex resumes from an in-progress step.
  */
 
 import { useState } from "react";
@@ -22,22 +25,33 @@ import type { EATState } from "./EATController";
 
 interface RitualEngineProps {
   /** Step configs to sequence through. Defaults to PRE_DRAW_STEPS. */
-  steps?:       RitualStepConfig[];
+  steps?:            RitualStepConfig[];
+  /** 0-based index to resume from (for session recovery). */
+  initialStepIndex?: number;
   /** Current E.A.T. state passed in from the parent. */
-  eatState?:    EATState;
+  eatState?:         EATState;
   /** Called whenever a step updates the E.A.T. state. */
-  onEATUpdate?: (state: EATState) => void;
+  onEATUpdate?:      (state: EATState) => void;
+  /**
+   * Called after each step lock with the absolute ritual step number (2–13).
+   * Parent uses this for Theme Sync and ledger commits.
+   */
+  onStepChange?:     (absoluteStep: number) => void;
   /** Called when all steps in this block are locked, with the collected data. */
-  onComplete:   (data: Record<string, string>) => void;
+  onComplete:        (data: Record<string, string>) => void;
 }
 
 export function RitualEngine({
-  steps      = PRE_DRAW_STEPS,
+  steps            = PRE_DRAW_STEPS,
+  initialStepIndex = 0,
   eatState,
   onEATUpdate,
+  onStepChange,
   onComplete,
 }: RitualEngineProps) {
-  const [stepIndex, setStepIndex] = useState(0);
+  const [stepIndex, setStepIndex] = useState(() =>
+    Math.min(Math.max(0, initialStepIndex), steps.length - 1)
+  );
   const [localData, setLocalData] = useState<Record<string, string>>({});
   const [morphing,  setMorphing]  = useState(false);
 
@@ -55,12 +69,13 @@ export function RitualEngine({
     onEATUpdate(next);
   }
 
-  function advance(newData: Record<string, string>) {
-    if (stepIndex < steps.length - 1) {
+  function advance(newData: Record<string, string>, nextIndex: number) {
+    if (nextIndex < steps.length) {
       setMorphing(true);
       setTimeout(() => {
-        setStepIndex((i) => i + 1);
+        setStepIndex(nextIndex);
         setMorphing(false);
+        onStepChange?.(steps[nextIndex].step);
       }, 460);
     } else {
       setMorphing(true);
@@ -72,15 +87,17 @@ export function RitualEngine({
     applyEAT(selection, config);
     const newData = { ...localData, [config.field]: selection.id };
     setLocalData(newData);
-    advance(newData);
+    advance(newData, stepIndex + 1);
   }
 
   function handleBack() {
     if (stepIndex === 0) return;
     setMorphing(true);
     setTimeout(() => {
-      setStepIndex((i) => i - 1);
+      const prev = stepIndex - 1;
+      setStepIndex(prev);
       setMorphing(false);
+      onStepChange?.(steps[prev].step);
     }, 380);
   }
 

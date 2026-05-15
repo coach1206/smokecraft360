@@ -13,6 +13,9 @@ import { PRE_DRAW_STEPS, POST_DRAW_STEPS } from "@/components/CinematicLanding/R
 import type { RitualData } from "@/components/CinematicLanding/RitualConfig";
 import { initEAT, extractAPIParams } from "@/components/CinematicLanding/EATController";
 import type { EATState } from "@/components/CinematicLanding/EATController";
+import { NoveeRegistry } from "@/lib/NoveeRegistry";
+import type { NoveePersistedState } from "@/lib/NoveeRegistry";
+import { ResumeSessionModal } from "@/components/CinematicLanding/ResumeSessionModal";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence, animate, useAnimation } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
@@ -257,6 +260,12 @@ export default function Home() {
   const [phase, setPhase]                     = useState<Phase>("welcome");
   const [ritualData, setRitualData]           = useState<RitualData>({});
   const [eatState,   setEATState]             = useState<EATState>(() => initEAT());
+  /* ── NOVEE OS Persistence & Sync Engine state ─────────────────── */
+  const [showResume,         setShowResume]         = useState(false);
+  const [savedRitual,        setSavedRitual]        = useState<NoveePersistedState | null>(null);
+  const [resumePreDrawIndex, setResumePreDrawIndex] = useState(0);
+  const [resumePostDrawIndex,setResumePostDrawIndex]= useState(0);
+  const [currentRitualStep,  setCurrentRitualStep]  = useState(2);
   const [error, setError]                     = useState<string | null>(null);
   const [results, setResults]                 = useState<RecommendResponse | null>(null);
   const [vaultOpen, setVaultOpen]             = useState(false);
@@ -507,6 +516,7 @@ export default function Home() {
         } : {}),
       });
       setResults(data);
+      NoveeRegistry.clearLedger();
       // Fire recommendation_view event for each recommended product, tagging campaignId if set
       for (const rec of data.recommendations) {
         trackEvent({
@@ -557,6 +567,53 @@ export default function Home() {
     if (!isPresenting || presentationStep !== 2) return;
     if (phase === "results") onResultsReady();
   }, [isPresenting, presentationStep, phase, onResultsReady]);
+
+  /* ── NOVEE OS: Session recovery check on mount ──────────────────── */
+  useEffect(() => {
+    const saved = NoveeRegistry.recoverState();
+    if (saved) {
+      setSavedRitual(saved);
+      setShowResume(true);
+    }
+  }, []);
+
+  /* ── NOVEE OS: Theme Sync — deepen Obsidian Glass with each step ── */
+  useEffect(() => {
+    const ritualPhases: Phase[] = ["ritual", "draw_engineering", "ritual_post"];
+    if (!ritualPhases.includes(phase)) {
+      NoveeRegistry.clearTheme();
+      return;
+    }
+    const step = phase === "draw_engineering"
+      ? 8
+      : (currentRitualStep || (phase === "ritual" ? 2 : 9));
+    NoveeRegistry.applyTheme(step);
+    return () => NoveeRegistry.clearTheme();
+  }, [phase, currentRitualStep]);
+
+  /* ── NOVEE OS: Resume handler — morph back to saved step ────────── */
+  function handleResume() {
+    if (!savedRitual) return;
+    const saved = savedRitual;
+    const idx   = NoveeRegistry.stepIndexFor(saved.phase, saved.absoluteStep);
+    if (saved.phase === "ritual")      setResumePreDrawIndex(idx);
+    if (saved.phase === "ritual_post") setResumePostDrawIndex(idx);
+    setEATState(saved.eatState);
+    setRitualData(saved.ritualData);
+    setCurrentRitualStep(saved.absoluteStep);
+    setShowResume(false);
+    setMorphing(true);
+    setTimeout(() => {
+      setPhase(saved.phase);
+      setMorphing(false);
+    }, 520);
+  }
+
+  function handleDiscard() {
+    NoveeRegistry.clearLedger();
+    setShowResume(false);
+    setSavedRitual(null);
+  }
 
   const handleDiscover = () => {
     if (flavors.length === 0) { setError("Please select at least one tasting note."); return; }
@@ -828,10 +885,25 @@ export default function Home() {
           <RitualEngine
             key="ritual-engine-pre"
             steps={PRE_DRAW_STEPS}
+            initialStepIndex={resumePreDrawIndex}
             eatState={eatState}
-            onEATUpdate={setEATState}
+            onEATUpdate={(nextEAT) => {
+              setEATState(nextEAT);
+              const last = nextEAT.ledger.at(-1);
+              if (last) {
+                NoveeRegistry.commitToLedger(
+                  nextEAT, "ritual",
+                  last.step, last.step - 2, ritualData,
+                );
+              }
+            }}
+            onStepChange={(absStep) => {
+              setCurrentRitualStep(absStep);
+              NoveeRegistry.applyTheme(absStep);
+            }}
             onComplete={(data) => {
               setRitualData(data as RitualData);
+              setResumePreDrawIndex(0);
               setMorphing(true);
               setTimeout(() => setPhase("draw_engineering"), 460);
               setTimeout(() => setMorphing(false), 980);
@@ -865,17 +937,32 @@ export default function Home() {
           <RitualEngine
             key="ritual-engine-post"
             steps={POST_DRAW_STEPS}
+            initialStepIndex={resumePostDrawIndex}
             eatState={eatState}
-            onEATUpdate={setEATState}
+            onEATUpdate={(nextEAT) => {
+              setEATState(nextEAT);
+              const last = nextEAT.ledger.at(-1);
+              if (last) {
+                NoveeRegistry.commitToLedger(
+                  nextEAT, "ritual_post",
+                  last.step, last.step - 9, ritualData,
+                );
+              }
+            }}
+            onStepChange={(absStep) => {
+              setCurrentRitualStep(absStep);
+              NoveeRegistry.applyTheme(absStep);
+            }}
             onComplete={(_data) => {
               /* All ritual sessions sealed — extract API params from the
                * accumulated E.A.T. asset and launch the recommendation engine. */
               const params = extractAPIParams(eatState.asset);
-              /* Sync discovered flavors / strength / mood into local state
-               * so the results panel can render the sidebar correctly. */
+              /* Sync flavors / strength / mood into local state so the
+               * results sidebar renders the correct session summary. */
               setFlavors(params.flavors);
               setStrength(params.strength);
               setMood(params.mood);
+              setResumePostDrawIndex(0);
               setMorphing(true);
               setTimeout(() => {
                 setMorphing(false);
@@ -892,6 +979,16 @@ export default function Home() {
           />
         )}
       </AnimatePresence>
+
+      {/* ── NOVEE OS: Cinematic Session Recovery Modal ────────────────── */}
+      {savedRitual && (
+        <ResumeSessionModal
+          saved={savedRitual}
+          visible={showResume}
+          onResume={handleResume}
+          onDiscard={handleDiscard}
+        />
+      )}
 
       <motion.div
         initial={wasPlayground ? { opacity: 0.88, scale: 0.97 } : false}
