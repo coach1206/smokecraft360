@@ -1,12 +1,13 @@
 /**
  * Kernel routes — NOVEE OS Titan Kernel
  *
- * GET  /api/kernel/modules              — list registered modules
- * POST /api/kernel/modules              — register a module (admin/super_admin)
- * GET  /api/kernel/mode/:venueId        — get Sovereign/Essential mode for a venue
- * PATCH /api/kernel/mode/:venueId       — set mode (admin/super_admin only)
- * POST /api/kernel/telemetry            — ingest a telemetry event
- * GET  /api/kernel/telemetry/summary    — aggregated telemetry summary
+ * GET  /api/kernel/modules                              — list registered modules
+ * POST /api/kernel/modules                              — register a module (admin/super_admin)
+ * GET  /api/kernel/mode/:venueId                        — get Sovereign/Essential mode for a venue
+ * PATCH /api/kernel/mode/:venueId                       — set mode (admin/super_admin only)
+ * POST /api/kernel/telemetry                            — ingest a telemetry event
+ * GET  /api/kernel/telemetry/summary                    — aggregated telemetry summary
+ * GET  /api/kernel/telemetry/products/:cardId/trend     — daily add/skip trend for a product
  */
 
 import { Router, type IRouter, type Request, type Response } from "express";
@@ -491,6 +492,60 @@ router.get("/telemetry/products", async (req: Request, res: Response) => {
     return res.json({ products: rows, days, moduleId: moduleId ?? null, craftType: craftType ?? null });
   } catch {
     return res.status(500).json({ error: "Failed to load product telemetry" });
+  }
+});
+
+// ── GET /api/kernel/telemetry/products/:cardId/trend ──────────────────────────
+// Returns daily add/skip counts for a specific product over the last N days.
+// Query params:
+//   ?days=N  — number of days to look back (default 7, max 90)
+//
+// Response: { cardId, days, trend: [{ day: "YYYY-MM-DD", adds: N, skips: N }] }
+// Days with no events are included with zeros so the client always gets a full series.
+
+router.get("/telemetry/products/:cardId/trend", async (req: Request, res: Response) => {
+  const cardId = req.params.cardId as string;
+
+  if (!cardId || cardId.trim().length === 0) {
+    return res.status(400).json({ error: "cardId is required" });
+  }
+
+  const q = req.query as Record<string, string | undefined>;
+  const rawDays = parseInt(q.days ?? "7", 10);
+  const days = Number.isFinite(rawDays) && rawDays > 0 ? Math.min(rawDays, 90) : 7;
+
+  try {
+    type TrendRow = { day: string; adds: number; skips: number };
+
+    const result = await db.execute(sql`
+      SELECT
+        TO_CHAR(DATE(occurred_at), 'YYYY-MM-DD') AS day,
+        SUM(CASE WHEN event_type = 'swipe_add'  THEN 1 ELSE 0 END)::int AS adds,
+        SUM(CASE WHEN event_type = 'swipe_skip' THEN 1 ELSE 0 END)::int AS skips
+      FROM telemetry_events
+      WHERE event_type IN ('swipe_add', 'swipe_skip')
+        AND occurred_at >= NOW() - (${days} || ' days')::interval
+        AND payload->>'cardId' = ${cardId}
+      GROUP BY DATE(occurred_at)
+      ORDER BY day ASC
+    `);
+
+    const dbRows = result.rows as TrendRow[];
+    const dbMap = new Map(dbRows.map((r) => [r.day, r]));
+
+    // Build a full series filling gaps with zeros
+    const trend: TrendRow[] = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setUTCDate(d.getUTCDate() - i);
+      const dayKey = d.toISOString().slice(0, 10);
+      const existing = dbMap.get(dayKey);
+      trend.push({ day: dayKey, adds: existing?.adds ?? 0, skips: existing?.skips ?? 0 });
+    }
+
+    return res.json({ cardId, days, trend });
+  } catch {
+    return res.status(500).json({ error: "Failed to load product trend" });
   }
 });
 

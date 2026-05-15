@@ -221,6 +221,12 @@ interface ProductItem {
   total: number;
 }
 
+interface TrendPoint {
+  day: string;
+  adds: number;
+  skips: number;
+}
+
 type CraftFilter = "all" | "smoke" | "pour" | "brew" | "vape";
 
 const CRAFT_FILTERS: { id: CraftFilter; label: string; color: string }[] = [
@@ -348,6 +354,7 @@ export default function EATDashboard() {
   const [products, setProducts]             = useState<ProductItem[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const [craftFilter, setCraftFilter]       = useState<CraftFilter>("all");
+  const [productTrends, setProductTrends]   = useState<Map<string, TrendPoint[]>>(new Map());
 
   // Keep tabRef in sync so fetchRecentEvents can read current tab without
   // needing it as a dependency (which would restart the poll on every tab change).
@@ -436,9 +443,32 @@ export default function EATDashboard() {
 
   const fetchProducts = useCallback((d = days, cf: CraftFilter = craftFilter) => {
     setProductsLoading(true);
+    setProductTrends(new Map());
     const craftParam = cf !== "all" ? `&craftType=${cf}` : "";
     apiFetch<{ products: ProductItem[] }>(`/telemetry/products?days=${d}${craftParam}`)
-      .then(({ products: p }) => { setProducts(p); })
+      .then(({ products: p }) => {
+        setProducts(p);
+        // Fetch 7-day sparkline trend for each product concurrently
+        if (p.length === 0) return;
+        const TREND_DAYS = 7;
+        Promise.allSettled(
+          p.map((item) =>
+            apiFetch<{ cardId: string; trend: TrendPoint[] }>(
+              `/telemetry/products/${encodeURIComponent(item.card_id)}/trend?days=${TREND_DAYS}`,
+            ).then((data) => ({ cardId: item.card_id, trend: data.trend }))
+          )
+        ).then((results) => {
+          setProductTrends((prev) => {
+            const next = new Map(prev);
+            for (const r of results) {
+              if (r.status === "fulfilled") {
+                next.set(r.value.cardId, r.value.trend);
+              }
+            }
+            return next;
+          });
+        }).catch(() => { /* silent */ });
+      })
       .catch(() => { /* silent */ })
       .finally(() => setProductsLoading(false));
   }, [days, craftFilter]);
@@ -845,7 +875,7 @@ export default function EATDashboard() {
             )}
             {tab === "modules"   && <ModulesTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
             {tab === "ritual"    && <RitualTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
-            {tab === "products"  && <ProductsTab products={products} loading={productsLoading} days={days} craftFilter={craftFilter} onCraftFilter={setCraftFilter} />}
+            {tab === "products"  && <ProductsTab products={products} loading={productsLoading} days={days} craftFilter={craftFilter} onCraftFilter={setCraftFilter} trends={productTrends} />}
             {tab === "live"      && <LiveFeedTab events={recentEvents} newEventIds={newEventIds} />}
           </>
         )}
@@ -1377,18 +1407,76 @@ function hexToRgbStr(hex: string): string {
   return `${r},${g},${b}`;
 }
 
+/* ── Trend Sparkline ─────────────────────────────────────────────────────────── */
+
+function TrendSparkline({ trend }: { trend: TrendPoint[] | undefined }) {
+  const W = 80;
+  const H = 28;
+  const PAD = 2;
+
+  if (!trend || trend.length < 2) {
+    return (
+      <svg width={W} height={H} style={{ display: "block", opacity: 0.2 }}>
+        <line x1={PAD} y1={H / 2} x2={W - PAD} y2={H / 2}
+          stroke="rgba(245,237,216,0.3)" strokeWidth={1} strokeDasharray="3 3" />
+      </svg>
+    );
+  }
+
+  const pts     = trend;
+  const maxVal  = Math.max(...pts.map((p) => Math.max(p.adds, p.skips)), 1);
+  const innerW  = W - PAD * 2;
+  const innerH  = H - PAD * 2;
+  const xStep   = innerW / (pts.length - 1);
+
+  function toPoints(key: "adds" | "skips"): string {
+    return pts
+      .map((p, i) => {
+        const x = PAD + i * xStep;
+        const y = PAD + innerH - (p[key] / maxVal) * innerH;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      })
+      .join(" ");
+  }
+
+  return (
+    <svg width={W} height={H} style={{ display: "block", overflow: "visible" }}>
+      <polyline
+        points={toPoints("adds")}
+        fill="none"
+        stroke="#4ade80"
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        opacity={0.8}
+      />
+      <polyline
+        points={toPoints("skips")}
+        fill="none"
+        stroke="#f87171"
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        opacity={0.8}
+      />
+    </svg>
+  );
+}
+
 function ProductsTab({
   products,
   loading,
   days,
   craftFilter,
   onCraftFilter,
+  trends,
 }: {
   products: ProductItem[];
   loading: boolean;
   days: number;
   craftFilter: CraftFilter;
   onCraftFilter: (cf: CraftFilter) => void;
+  trends: Map<string, TrendPoint[]>;
 }) {
   const activeFilterConfig = CRAFT_FILTERS.find((f) => f.id === craftFilter) ?? CRAFT_FILTERS[0]!;
 
@@ -1476,7 +1564,7 @@ function ProductsTab({
             {/* Table header */}
             <div style={{
               display: "grid",
-              gridTemplateColumns: "36px 1fr 72px 60px 60px 60px 140px",
+              gridTemplateColumns: "36px 1fr 72px 60px 60px 60px 88px 140px",
               gap: "0 12px",
               padding: "10px 16px",
               borderBottom: "1px solid rgba(255,255,255,0.06)",
@@ -1489,6 +1577,7 @@ function ProductsTab({
               <span style={{ textAlign: "right" }}>ADDS</span>
               <span style={{ textAlign: "right" }}>SKIPS</span>
               <span style={{ textAlign: "right" }}>TOTAL</span>
+              <span style={{ textAlign: "center" }}>7D TREND</span>
               <span style={{ textAlign: "center" }}>ADD RATIO</span>
             </div>
 
@@ -1499,13 +1588,14 @@ function ProductsTab({
               const rowKey    = `${p.card_id}|${p.title ?? ""}|${p.craft_type ?? ""}`;
               const ct        = p.craft_type?.toLowerCase() ?? null;
               const badgeStyle = ct && CRAFT_BADGE_COLORS[ct] ? CRAFT_BADGE_COLORS[ct]! : null;
+              const trendData = trends.get(p.card_id);
 
               return (
                 <div
                   key={rowKey}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "36px 1fr 72px 60px 60px 60px 140px",
+                    gridTemplateColumns: "36px 1fr 72px 60px 60px 60px 88px 140px",
                     gap: "0 12px",
                     padding: "12px 16px",
                     borderBottom: "1px solid rgba(255,255,255,0.04)",
@@ -1575,6 +1665,11 @@ function ProductsTab({
                   {/* Total */}
                   <div style={{ fontSize: 13, color: "rgba(245,237,216,0.5)", textAlign: "right" }}>
                     {p.total.toLocaleString()}
+                  </div>
+
+                  {/* 7-day sparkline */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <TrendSparkline trend={trendData} />
                   </div>
 
                   {/* Add ratio bar */}
