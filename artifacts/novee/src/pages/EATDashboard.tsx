@@ -15,6 +15,7 @@ import { useLocation } from "wouter";
 import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell,
+  PieChart, Pie,
 } from "recharts";
 import { apiFetch } from "@/lib/api";
 
@@ -419,6 +420,13 @@ interface TrendPoint {
   skips: number;
 }
 
+interface CraftBreakdownPoint {
+  craft_type: string;
+  adds: number;
+  skips: number;
+  total: number;
+}
+
 type CraftFilter = "all" | "smoke" | "pour" | "brew" | "vape";
 
 const CRAFT_FILTERS: { id: CraftFilter; label: string; color: string }[] = [
@@ -616,6 +624,7 @@ export default function EATDashboard() {
   const [productsLoading, setProductsLoading] = useState(false);
   const [craftFilter, setCraftFilterState]  = useState<CraftFilter>(() => parseCraftFilterFromSearch(window.location.search));
   const [productTrends, setProductTrends]   = useState<Map<string, TrendPoint[]>>(new Map());
+  const [craftBreakdown, setCraftBreakdown] = useState<CraftBreakdownPoint[]>([]);
 
   // ── Mute state ────────────────────────────────────────────────────────────
   const [muteUntil, setMuteUntilState] = useState<number | null>(() => {
@@ -829,6 +838,13 @@ export default function EATDashboard() {
     setProductsLoading(true);
     setProductTrends(new Map());
     const craftParam = cf !== "all" ? `&craftType=${cf}` : "";
+
+    // Fetch breakdown (always unfiltered — shows all crafts regardless of pill)
+    setCraftBreakdown([]);
+    apiFetch<{ breakdown: CraftBreakdownPoint[] }>(`/telemetry/products/by-craft?days=${d}`)
+      .then(({ breakdown }) => setCraftBreakdown(breakdown))
+      .catch(() => setCraftBreakdown([]));
+
     apiFetch<{ products: ProductItem[] }>(`/telemetry/products?days=${d}${craftParam}`)
       .then(({ products: p }) => {
         setProducts(p);
@@ -1566,7 +1582,7 @@ export default function EATDashboard() {
             )}
             {tab === "modules"   && <ModulesTab data={data} days={days} compareEnabled={compareEnabled} compareDays={compareDays} />}
             {tab === "ritual"    && <RitualTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
-            {tab === "products"  && <ProductsTab products={products} loading={productsLoading} days={days} craftFilter={craftFilter} onCraftFilter={setCraftFilter} trends={productTrends} />}
+            {tab === "products"  && <ProductsTab products={products} loading={productsLoading} days={days} craftFilter={craftFilter} onCraftFilter={setCraftFilter} trends={productTrends} breakdown={craftBreakdown} />}
             {tab === "live"      && <LiveFeedTab events={recentEvents} newEventIds={newEventIds} liveLimit={liveLimit} onLimitChange={setLiveLimit} />}
           </>
         )}
@@ -2334,6 +2350,171 @@ function TrendSparkline({ trend }: { trend: TrendPoint[] | undefined }) {
   );
 }
 
+function CraftBreakdownChart({
+  breakdown,
+  craftFilter,
+  onCraftFilter,
+}: {
+  breakdown: CraftBreakdownPoint[];
+  craftFilter: CraftFilter;
+  onCraftFilter: (cf: CraftFilter) => void;
+}) {
+  const grandTotal = breakdown.reduce((s, r) => s + r.total, 0);
+  const hasData = grandTotal > 0;
+
+  const craftColor = (ct: string) =>
+    CRAFT_FILTERS.find((f) => f.id === ct)?.color ?? "#888";
+
+  // Build donut data: one slice per craft, value = adds + skips
+  const pieData = breakdown.map((r) => ({
+    name: r.craft_type.toUpperCase(),
+    value: r.total,
+    craftType: r.craft_type as CraftFilter,
+    adds: r.adds,
+    skips: r.skips,
+    color: craftColor(r.craft_type),
+  }));
+
+  return (
+    <div style={{
+      background: SURFACE,
+      border: "1px solid rgba(255,255,255,0.06)",
+      borderRadius: 10,
+      padding: "16px 20px",
+      display: "flex",
+      gap: 24,
+      alignItems: "center",
+      flexWrap: "wrap",
+    }}>
+      {/* Chart area */}
+      <div style={{ position: "relative", width: 120, height: 120, flexShrink: 0 }}>
+        {hasData ? (
+          <PieChart width={120} height={120}>
+            <Pie
+              data={pieData}
+              cx={55}
+              cy={55}
+              innerRadius={34}
+              outerRadius={54}
+              paddingAngle={2}
+              dataKey="value"
+              stroke="none"
+              onClick={(entry) => {
+                const ct = (entry as typeof pieData[number]).craftType;
+                onCraftFilter(craftFilter === ct ? "all" : ct);
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              {pieData.map((entry) => (
+                <Cell
+                  key={entry.craftType}
+                  fill={entry.color}
+                  opacity={craftFilter === "all" || craftFilter === entry.craftType ? 1 : 0.28}
+                />
+              ))}
+            </Pie>
+            <Tooltip
+              content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+                const d = payload[0]?.payload as typeof pieData[number];
+                if (!d) return null;
+                const pct = grandTotal > 0 ? ((d.value / grandTotal) * 100).toFixed(1) : "0";
+                return (
+                  <div style={{
+                    background: "rgba(18,18,20,0.95)",
+                    border: `1px solid ${d.color}`,
+                    borderRadius: 6,
+                    padding: "8px 12px",
+                    fontSize: 10,
+                    letterSpacing: "0.1em",
+                    color: "rgba(245,237,216,0.85)",
+                    minWidth: 120,
+                  }}>
+                    <div style={{ color: d.color, fontWeight: 700, marginBottom: 4 }}>{d.name}</div>
+                    <div>ADDS:  {d.adds}</div>
+                    <div>SKIPS: {d.skips}</div>
+                    <div style={{ marginTop: 4, color: "rgba(245,237,216,0.45)" }}>{pct}% of total</div>
+                  </div>
+                );
+              }}
+            />
+          </PieChart>
+        ) : (
+          <div style={{
+            width: 120, height: 120, borderRadius: "50%",
+            border: "2px solid rgba(255,255,255,0.06)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 9, color: "rgba(245,237,216,0.2)", letterSpacing: "0.12em",
+          }}>
+            NO DATA
+          </div>
+        )}
+        {/* Center label */}
+        <div style={{
+          position: "absolute", top: "50%", left: "50%",
+          transform: "translate(-50%,-50%)",
+          textAlign: "center", pointerEvents: "none",
+        }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "rgba(245,237,216,0.9)", lineHeight: 1 }}>
+            {grandTotal > 999 ? `${(grandTotal / 1000).toFixed(1)}k` : grandTotal}
+          </div>
+          <div style={{ fontSize: 8, letterSpacing: "0.12em", color: "rgba(245,237,216,0.3)", marginTop: 2 }}>
+            TOTAL
+          </div>
+        </div>
+      </div>
+
+      {/* Legend / stat rows */}
+      <div style={{ flex: 1, minWidth: 180, display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.3)", marginBottom: 2 }}>
+          CRAFT BREAKDOWN — CLICK SEGMENT OR ROW TO FILTER
+        </div>
+        {pieData.map((entry) => {
+          const pct = grandTotal > 0 ? (entry.value / grandTotal) * 100 : 0;
+          const isActive = craftFilter === "all" || craftFilter === entry.craftType;
+          return (
+            <button
+              key={entry.craftType}
+              onClick={() => onCraftFilter(craftFilter === entry.craftType ? "all" : entry.craftType)}
+              style={{
+                background: "transparent",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                opacity: isActive ? 1 : 0.35,
+                transition: "opacity 0.15s",
+              }}
+            >
+              <div style={{ width: 8, height: 8, borderRadius: 2, background: entry.color, flexShrink: 0 }} />
+              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: entry.color, width: 38, textAlign: "left" }}>
+                {entry.name}
+              </span>
+              <div style={{ flex: 1, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                <div style={{
+                  width: `${pct}%`,
+                  height: "100%",
+                  background: entry.color,
+                  borderRadius: 2,
+                  transition: "width 0.4s ease",
+                }} />
+              </div>
+              <span style={{ fontSize: 9, color: "rgba(245,237,216,0.45)", width: 32, textAlign: "right", flexShrink: 0 }}>
+                {entry.value}
+              </span>
+              <span style={{ fontSize: 9, color: "rgba(245,237,216,0.25)", width: 36, textAlign: "right", flexShrink: 0 }}>
+                {pct.toFixed(0)}%
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function ProductsTab({
   products,
   loading,
@@ -2341,6 +2522,7 @@ function ProductsTab({
   craftFilter,
   onCraftFilter,
   trends,
+  breakdown,
 }: {
   products: ProductItem[];
   loading: boolean;
@@ -2348,6 +2530,7 @@ function ProductsTab({
   craftFilter: CraftFilter;
   onCraftFilter: (cf: CraftFilter) => void;
   trends: Map<string, TrendPoint[]>;
+  breakdown: CraftBreakdownPoint[];
 }) {
   const activeFilterConfig = CRAFT_FILTERS.find((f) => f.id === craftFilter) ?? CRAFT_FILTERS[0]!;
 
@@ -2372,6 +2555,9 @@ function ProductsTab({
         label="TOP PRODUCTS"
         sub={`Ranked by swipe interactions (adds + skips) over the last ${days} day${days === 1 ? "" : "s"}`}
       />
+
+      {/* Craft type breakdown donut chart */}
+      <CraftBreakdownChart breakdown={breakdown} craftFilter={craftFilter} onCraftFilter={onCraftFilter} />
 
       {/* Craft type filter pills */}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>

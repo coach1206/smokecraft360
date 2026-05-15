@@ -727,6 +727,64 @@ router.get("/telemetry/craft-activity", async (req: Request, res: Response) => {
   }
 });
 
+// ── GET /api/kernel/telemetry/products/by-craft ───────────────────────────────
+// Returns adds + skips per craft type, scoped to the same ?days window used
+// by the /telemetry/products endpoint.  Used by the Products tab breakdown chart.
+//
+// Query params:
+//   ?days=N  — look-back window in days (default 30, max 365)
+//
+// Response: { days, breakdown: [{ craft_type, adds, skips, total }] }
+// All four craft types are always present (zeroed when no events found).
+
+router.get("/telemetry/products/by-craft", async (req: Request, res: Response) => {
+  const q = req.query as Record<string, string | undefined>;
+
+  let days = 30;
+  if (q.days !== undefined) {
+    const d = parseInt(q.days, 10);
+    if (Number.isFinite(d) && d > 0) days = Math.min(d, 365);
+  }
+
+  try {
+    const windowStart = sql`NOW() - (${days} || ' days')::interval`;
+
+    type BreakdownRow = { craft_type: string; adds: number; skips: number; total: number };
+
+    const result = await db.execute(sql`
+      SELECT
+        payload->>'craftType' AS craft_type,
+        SUM(CASE WHEN event_type = 'swipe_add'  THEN 1 ELSE 0 END)::int AS adds,
+        SUM(CASE WHEN event_type = 'swipe_skip' THEN 1 ELSE 0 END)::int AS skips,
+        COUNT(*)::int AS total
+      FROM telemetry_events
+      WHERE event_type IN ('swipe_add', 'swipe_skip')
+        AND occurred_at >= ${windowStart}
+        AND payload->>'cardId' IS NOT NULL
+        AND payload->>'craftType' IN ('smoke', 'pour', 'brew', 'vape')
+      GROUP BY payload->>'craftType'
+      ORDER BY total DESC
+    `);
+
+    const dbRows = result.rows as BreakdownRow[];
+    const byType = new Map(dbRows.map(r => [r.craft_type, r]));
+    const ALL_CRAFTS = ["smoke", "pour", "brew", "vape"] as const;
+    const breakdown = ALL_CRAFTS.map(ct => {
+      const r = byType.get(ct);
+      return {
+        craft_type: ct,
+        adds:  r?.adds  ?? 0,
+        skips: r?.skips ?? 0,
+        total: r?.total ?? 0,
+      };
+    });
+
+    return res.json({ days, breakdown });
+  } catch {
+    return res.status(500).json({ error: "Failed to load craft breakdown" });
+  }
+});
+
 // ── GET /api/kernel/telemetry/products/:cardId/trend ──────────────────────────
 // Returns daily add/skip counts for a specific product over the last N days.
 // Query params:
