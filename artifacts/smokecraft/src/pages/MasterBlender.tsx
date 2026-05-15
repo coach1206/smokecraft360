@@ -812,6 +812,16 @@ function AlchemyReveal({
 export default function MasterBlender() {
   const [, nav]       = useLocation();
   const { speak, stopSpeak } = useAudio();
+
+  // ── Ritual eligibility guard — redirect if guest hasn't completed the ritual ──
+  useEffect(() => {
+    try {
+      const ritualDone = sessionStorage.getItem("titan_ritual_complete") === "true";
+      const accepts    = parseInt(sessionStorage.getItem("titan_swipe_accepts") ?? "0", 10);
+      if (!ritualDone || accepts < 3) nav("/");
+    } catch { nav("/"); }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [step,   setStep]   = useState<0|1|2|3>(0);
   const [sel,    setSel]    = useState<Sel>({});
   const [xp,     setXp]     = useState(0);
@@ -962,13 +972,13 @@ export default function MasterBlender() {
             initial={{ opacity: 0, x: 60, filter: "blur(4px)" }}
             animate={{ opacity: 1, x: 0,  filter: "blur(0px)" }}
             exit={{ opacity: 0, x: -60, filter: "blur(4px)" }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col h-full"
           >
-            {/* Step title */}
+            {/* Ritual moment title */}
             <div className="flex flex-col mb-3">
               <span className="text-[10px] tracking-[0.3em] uppercase" style={{ color: `${GOLD}70` }}>
-                STEP {step + 1} OF 4
+                MOMENT {step + 1} OF 4
               </span>
               <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.7rem", fontWeight: 300, color: "rgba(240,232,212,0.95)", margin: 0, lineHeight: 1.1 }}>
                 {STEP_TITLES[step]}

@@ -1,0 +1,25 @@
+The current interface lacks contrast, the fonts are too small for older gentlemen reading in a dim lounge room, and the critical experiential stages are missing. You must immediately overwrite SmokeCraftGateway.tsx with the provided Legibility & Experience Engine code.
+
+1. Enforce Low-Light Visibility Rules:
+
+Every single piece of description text must be forced to a minimum of 22px with a highly readable line height of 1.8. Sub-headings must be 24px, and primary headers must scale up to 3.8rem.
+
+Overwrite all text colors inside the components to crisp, high-contrast warm white (#f5f6f7) and rich liquid gold (#fffcf5). Muted dark greys or faint browns must be completely scrubbed to prevent eye strain in a dark room.
+
+Increase the backing opacity of the Smoked Obsidian cards to 0.96 to ensure background animations never wash out or bleed through the text content.
+
+2. Build the Complete Structural Flow Sequences:
+
+Stage 1 (Intro): Display a pure cinematic smoke landing viewport with large text, removing all dashboards, grids, and tools.
+
+Stage 2 (Orientation Chamber): Display an immersive overview defining the luxury masterclass philosophy, pairing criteria, and the core progression.
+
+Stage 3 (Mentor Selection): Mount a premium selection card matrix where users pick an authentic Country Authority and Rolling Style (Don Manuel / Dominican Republic Entubado vs. Alejandro / Nicaragua Accordion).
+
+Stage 4 (Cultivation Sourcing): Mount the foundational asset selectors where guests pick their Tobacco Seed Stock (Corojo Premium vs. Criollo 98) and their Terroir Soil Environment (Volcanic Ash vs. Alluvial Loam).
+
+3. Button Mechanics & Compiling:
+
+Scale all action buttons to large tap-targets with significant padding (20px 48px), using a robust, tracking-spaced bold uppercase style.
+
+Compile the application using the TypeScript compiler, ensure all route switches hook up cleanly to the public root Collection portal, and launch the dev server preview directly to check the enhanced visibility."

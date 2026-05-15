@@ -702,7 +702,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0, scale: 0.97 }}
-        transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
         style={{
           position:   "fixed",
           inset:      0,
