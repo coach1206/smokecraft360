@@ -1,0 +1,47 @@
+Prompt: "Completely strip out all generic templates, cocktail graphics, confetti textures, and fruit imagery from this workspace right now. The current UI look is completely unacceptable for a premium lounge brand. You must immediately rewrite the asset data arrays and styling across CraftPortalHome.tsx to hardcode these exact, verified high-fidelity luxury specifications:
+
+1. Force True SmokeCraft 360 Assets (Cigars Only):
+
+Completely overwrite the image array for smokecraft with these exact, hardcoded premium URLs:
+
+Image 1 (Cigar Lounge & Aficionado): https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80
+
+Image 2 (Premium Hand-Rolled Textures): https://images.unsplash.com/photo-1601314002592-b87303360776?auto=format&fit=crop&w=800&q=80
+
+Image 3 (Master Ritual Cut & Lighting): https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80
+
+2. Force True PourCraft 360 Assets (Premium Spirits Only):
+
+Remove the watermelons and casual cocktails. Overwrite the pourcraft array with these exact URLs:
+
+Image 1 (Aged Bourbon in Crystal Tumbler): https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80
+
+Image 2 (Dark Premium Cognac Neat): https://images.unsplash.com/photo-1527661591475-527312dd65f5?auto=format&fit=crop&w=800&q=80
+
+3. Force True BeerCraft & WineCraft Assets:
+
+For beercraft (Dark Master Mugs & Artisanal Steins): https://images.unsplash.com/photo-1436018626274-89acd67ae29e?auto=format&fit=crop&w=800&q=80
+
+For winecraft (Sommelier Decanter & Fine Vintage Crystal): https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80
+
+4. Enforce the Premium Material Finishes & Terminology:
+
+The Core Header: Set the main portal heading text to 'THE CRAFT COLLECTION' using Cormorant Garamond typography with a gradient fill blending warm white (#fffcf5) into rich metallic gold (#dfba73).
+
+The Interface Phrasing: Erase all instances of 'Enter Ritual' or 'Choose Your Ritual'. Every action button on the public-facing cards must strictly read: 'BEGIN EXPERIENCE' or 'SELECT MASTERCLASS'.
+
+The Obsidian Glass: Enforce a heavy smoked obsidian background for the cards: linear-gradient(135deg, rgba(15, 16, 18, 0.85) 0%, rgba(5, 6, 7, 0.98) 100%) layered with a structural backdrop-filter: blur(30px) saturate(120%). Include an internal rim light (inset 0 1px 1px rgba(255, 255, 255, 0.08)) and a deep external shadow (0 24px 64px rgba(0, 0, 0, 0.9)).
+
+The Metallic Borders: Encase the SmokeCraft 360 card in a continuous Liquid Gold Metallic linear gradient micro-border: #dfba73 to #fbf5b7 to #9e7831 to #dfba73. Encase the Pour, Beer, and Wine cards in a sleek Brushed Titanium/Silver Metallic micro-border gradient: #7a7d80 to #e1e4e6 to #595b5e.
+
+The Control Buttons: Style all buttons using a Smoked Chrome automotive-style finish: linear-gradient(180deg, #242629 0%, #111214 100%) with a razor-thin silver edge and uppercase letter-spacing.
+
+5. Staggered Image Rotation & Flow Execution:
+
+Ensure the background image array for each card actively loops and cross-fades every 9000ms (9 seconds) using a clean Framer Motion fade-and-scale transition.
+
+Stagger the initialization offsets for each craft card (0ms, 2000ms, 4000ms, 6000ms) so they rotate out of sync, keeping the dashboard naturally alive.
+
+Maintain the hidden staff link to /sovereign in the top right corner, but route all guest interactions cleanly to their standalone portals.
+
+Recompile the workspace application framework immediately, flush the local rendering cache entirely, and force the live development server preview to refresh directly onto the true luxury lounge deck."

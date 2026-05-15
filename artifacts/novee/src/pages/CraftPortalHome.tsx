@@ -1,411 +1,370 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { CraftImageRotator } from "@/components/CraftImageRotator";
+import { motion, AnimatePresence } from "framer-motion";
 
-const CARD_TO_ROTATOR = {
-  smoke: "smokecraft",
-  pour:  "pourcraft",
-  beer:  "beercraft",
-  wine:  "winecraft",
+// ── Verified luxury asset database ───────────────────────────────────────────
+const CRAFT_ASSETS = {
+  smokecraft: [
+    { url: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80", desc: "Cigar lounge & aficionado" },
+    { url: "https://images.unsplash.com/photo-1601314002592-b87303360776?auto=format&fit=crop&w=800&q=80", desc: "Premium hand-rolled textures" },
+    { url: "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80", desc: "Master ritual cut & lighting" },
+  ],
+  pourcraft: [
+    { url: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80", desc: "Aged bourbon in crystal tumbler" },
+    { url: "https://images.unsplash.com/photo-1527661591475-527312dd65f5?auto=format&fit=crop&w=800&q=80", desc: "Dark premium cognac neat" },
+  ],
+  beercraft: [
+    { url: "https://images.unsplash.com/photo-1436018626274-89acd67ae29e?auto=format&fit=crop&w=800&q=80", desc: "Dark master mugs & artisanal steins" },
+  ],
+  winecraft: [
+    { url: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80", desc: "Sommelier decanter & fine vintage crystal" },
+  ],
 } as const;
-type RotatorKey = (typeof CARD_TO_ROTATOR)[keyof typeof CARD_TO_ROTATOR];
 
-interface CraftCard {
-  id:       string;
-  title:    string;
-  sub:      string;
-  tagline:  string;
-  color:    string;
-  glow:     string;
-  route:    string;
-  symbol:   string;
-  active:   boolean;
+type CraftKey = keyof typeof CRAFT_ASSETS;
+
+// ── Staggered background image rotator ───────────────────────────────────────
+function CardBackground({ craft, offset }: { craft: CraftKey; offset: number }) {
+  const images = CRAFT_ASSETS[craft];
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    const timeout = setTimeout(() => {
+      interval = setInterval(() => {
+        setIdx(prev => (prev + 1) % images.length);
+      }, 9000);
+    }, offset);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [images.length, offset]);
+
+  return (
+    <AnimatePresence>
+      <motion.img
+        key={idx}
+        src={images[idx].url}
+        alt={images[idx].desc}
+        initial={{ opacity: 0, scale: 1.06, filter: "blur(8px)" }}
+        animate={{ opacity: 0.38, scale: 1,    filter: "blur(0px)" }}
+        exit={{    opacity: 0, scale: 0.96, filter: "blur(8px)" }}
+        transition={{ duration: 1.8, ease: "easeInOut" }}
+        style={{
+          position: "absolute",
+          top: 0, left: 0,
+          width: "100%", height: "100%",
+          objectFit: "cover",
+          mixBlendMode: "luminosity",
+          zIndex: 1,
+          pointerEvents: "none",
+        }}
+      />
+    </AnimatePresence>
+  );
 }
 
-const CRAFTS: CraftCard[] = [
-  {
-    id:      "smoke",
-    title:   "SmokeCraft 360",
-    sub:     "Luxury Cigar Ritual",
-    tagline: "Every blend tells a story.",
-    color:   "#C4610A",
-    glow:    "rgba(196,97,10,0.22)",
-    route:   "/smokecraft",
-    symbol:  "◈",
-    active:  true,
-  },
-  {
-    id:      "pour",
-    title:   "PourCraft 360",
-    sub:     "Whiskey · Bourbon · Cognac",
-    tagline: "The art of the pour, perfected.",
-    color:   "#D4AF37",
-    glow:    "rgba(212,175,55,0.20)",
-    route:   "/pourcraft",
-    symbol:  "◉",
-    active:  false,
-  },
-  {
-    id:      "beer",
-    title:   "BeerCraft 360",
-    sub:     "Craft Beer Discovery",
-    tagline: "Beyond the pint. Into the craft.",
-    color:   "#B87333",
-    glow:    "rgba(184,115,51,0.20)",
-    route:   "/beercraft",
-    symbol:  "⬡",
-    active:  false,
-  },
-  {
-    id:      "wine",
-    title:   "WineCraft 360",
-    sub:     "Sommelier-Guided Wine Ritual",
-    tagline: "From terroir to table.",
-    color:   "#9B3A4A",
-    glow:    "rgba(155,58,74,0.22)",
-    route:   "/winecraft",
-    symbol:  "◇",
-    active:  false,
-  },
+// ── Portal definitions ────────────────────────────────────────────────────────
+const PORTALS = [
+  { id: "smokecraft" as CraftKey, title: "SmokeCraft 360", sub: "Luxury Cigar Masterclass",           route: "/smokecraft", metallic: "gold",     offset: 0,    active: true  },
+  { id: "pourcraft"  as CraftKey, title: "PourCraft 360",  sub: "Whiskey · Bourbon · Cognac Pairing", route: "/pourcraft",  metallic: "titanium", offset: 2000, active: false },
+  { id: "beercraft"  as CraftKey, title: "BeerCraft 360",  sub: "Craft Beer Discovery",               route: "/beercraft",  metallic: "titanium", offset: 4000, active: false },
+  { id: "winecraft"  as CraftKey, title: "WineCraft 360",  sub: "Sommelier-Guided Wine Presentation", route: "/winecraft",  metallic: "titanium", offset: 6000, active: false },
 ];
 
+// Fixed smoke positions — no Math.random() so no hydration mismatch
+const SMOKE_WISPS = [
+  { left: "7%",  bottom: "-10%", dur: 20, delay: 0,  dx:  40 },
+  { left: "22%", bottom: "-10%", dur: 25, delay: 4,  dx: -48 },
+  { left: "41%", bottom: "-10%", dur: 18, delay: 8,  dx:  32 },
+  { left: "58%", bottom: "-10%", dur: 23, delay: 2,  dx: -36 },
+  { left: "74%", bottom: "-10%", dur: 26, delay: 6,  dx:  52 },
+  { left: "91%", bottom: "-10%", dur: 21, delay: 10, dx: -44 },
+];
+
+// ── Main component ────────────────────────────────────────────────────────────
 export default function CraftPortalHome() {
   const [, navigate] = useLocation();
-  const [hovered, setHovered] = useState<string | null>(null);
 
   return (
     <div style={{
       minHeight: "100dvh",
       background: "radial-gradient(ellipse at center, #161719 0%, #050607 100%)",
-      fontFamily: "'Inter', 'SF Pro Display', -apple-system, sans-serif",
       display: "flex",
       flexDirection: "column",
-      color: "#F0EDE8",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "#e3e4e6",
       position: "relative",
       overflow: "hidden",
+      padding: "40px 32px",
+      fontFamily: "'Inter', -apple-system, sans-serif",
     }}>
+
+      {/* ── Google Fonts ─────────────────────────────────────────────────── */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;0,400;1,300&family=Inter:wght@300;400&display=swap');
-
-        @keyframes nv-grain {
-          0%, 100% { transform: translate(0, 0); }
-          25%       { transform: translate(-1px, 1px); }
-          50%       { transform: translate(1px, -1px); }
-          75%       { transform: translate(-1px, -1px); }
-        }
-        @keyframes nv-fade-up {
-          from { opacity: 0; transform: translateY(18px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes nv-pulse-border {
-          0%, 100% { opacity: 0.32; }
-          50%       { opacity: 0.68; }
-        }
-
-        /* ── Ambient lounge smoke drifts ─────────────────────────────── */
-        @keyframes nv-amb1 {
-          0%, 100% { transform: translate(0px,   0px) scale(1.00); opacity: 0.018; }
-          50%       { transform: translate(28px, -44px) scale(1.14); opacity: 0.030; }
-        }
-        @keyframes nv-amb2 {
-          0%, 100% { transform: translate(0px,   0px) scale(1.00); opacity: 0.022; }
-          50%       { transform: translate(-34px,-36px) scale(1.09); opacity: 0.034; }
-        }
-        @keyframes nv-amb3 {
-          0%, 100% { transform: translate(0px,   0px) scale(1.00); opacity: 0.014; }
-          50%       { transform: translate(22px, -52px) scale(1.18); opacity: 0.026; }
-        }
-        @keyframes nv-amb4 {
-          0%, 100% { transform: translate(0px,   0px) scale(1.00); opacity: 0.020; }
-          50%       { transform: translate(-18px,-30px) scale(1.11); opacity: 0.032; }
-        }
-        @keyframes nv-amb5 {
-          0%, 100% { transform: translate(0px,   0px) scale(1.00); opacity: 0.016; }
-          50%       { transform: translate(40px, -38px) scale(1.07); opacity: 0.028; }
-        }
-        @keyframes nv-amb6 {
-          0%, 100% { transform: translate(0px,   0px) scale(1.00); opacity: 0.024; }
-          50%       { transform: translate(-24px,-48px) scale(1.13); opacity: 0.036; }
-        }
-
-        /* ── Card base ───────────────────────────────────────────────── */
-        .craft-card {
-          transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
-                      box-shadow 0.38s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .craft-card:hover {
-          transform: translateY(-5px) scale(1.014);
-        }
-
-        /* ── Metallic gradient borders (mask technique) ──────────────── */
-        .craft-card-smoke::before,
-        .craft-card-standard::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          padding: 1px;
-          border-radius: inherit;
-          -webkit-mask: linear-gradient(#fff 0 0) content-box,
-                        linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          pointer-events: none;
-          z-index: 20;
-        }
-        .craft-card-smoke::before {
-          background: linear-gradient(135deg, #dfba73, #fbf5b7, #9e7831, #dfba73);
-        }
-        .craft-card-standard::before {
-          background: linear-gradient(135deg, #7a7d80, #e1e4e6, #595b5e, #7a7d80);
-        }
-        .craft-card-smoke:hover::before {
-          background: linear-gradient(135deg, #e8c87a, #fff5bc, #b08c40, #e8c87a);
-          filter: drop-shadow(0 0 9px rgba(223,186,115,0.55));
-        }
-        .craft-card-standard:hover::before {
-          background: linear-gradient(135deg, #9aa0a6, #edf0f2, #70767a, #9aa0a6);
-          filter: drop-shadow(0 0 7px rgba(225,228,230,0.32));
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@200;300;400&family=Inter:wght@300;400;500&display=swap');
       `}</style>
 
-      {/* Ambient grain overlay */}
-      <div style={{
-        position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
-        backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E\")",
-        opacity: 0.6,
-      }} />
-
-      {/* ── 6 ambient lounge smoke vectors ─────────────────────────────── */}
-      {([
-        { top: "12%", left:  "6%", size: 380, anim: "nv-amb1", dur: "22s", delay:  "0s" },
-        { top: "58%", left: "70%", size: 430, anim: "nv-amb2", dur: "18s", delay:  "3s" },
-        { top: "28%", left: "52%", size: 350, anim: "nv-amb3", dur: "25s", delay:  "6s" },
-        { top: "72%", left: "18%", size: 460, anim: "nv-amb4", dur: "20s", delay:  "9s" },
-        { top:  "4%", left: "40%", size: 320, anim: "nv-amb5", dur: "15s", delay:  "4s" },
-        { top: "48%", left: "83%", size: 395, anim: "nv-amb6", dur: "23s", delay:  "7s" },
-      ] as const).map((v, i) => (
-        <div key={i} style={{
-          position: "fixed",
-          top: v.top, left: v.left,
-          width: v.size, height: v.size,
-          background: "radial-gradient(ellipse, rgba(220,220,220,0.022) 0%, transparent 70%)",
-          filter: "blur(60px)",
-          animation: `${v.anim} ${v.dur} ${v.delay} ease-in-out infinite`,
-          pointerEvents: "none", zIndex: 0,
-        }} />
+      {/* ── Cinematic ambient lounge smoke ───────────────────────────────── */}
+      {SMOKE_WISPS.map((s, i) => (
+        <motion.div
+          key={i}
+          animate={{
+            y: ["0vh", "-125vh"],
+            x: [`0px`, `${s.dx}px`],
+            scale: [1, 1.6],
+            opacity: [0, 0.85, 0],
+          }}
+          transition={{
+            duration: s.dur,
+            repeat: Infinity,
+            delay: s.delay,
+            ease: "linear",
+          }}
+          style={{
+            position: "fixed",
+            bottom: s.bottom,
+            left: s.left,
+            width: 560,
+            height: 560,
+            background: "radial-gradient(circle, rgba(220,220,220,0.022) 0%, transparent 70%)",
+            filter: "blur(80px)",
+            pointerEvents: "none",
+            zIndex: 1,
+          }}
+        />
       ))}
 
-      {/* Ambient radial glow — center bottom */}
-      <div style={{
-        position: "fixed", bottom: -200, left: "50%", transform: "translateX(-50%)",
-        width: 600, height: 400,
-        background: "radial-gradient(ellipse, rgba(196,97,10,0.07) 0%, transparent 70%)",
-        pointerEvents: "none", zIndex: 0,
-      }} />
+      {/* ── Discreet sovereign access ────────────────────────────────────── */}
+      <button
+        onClick={() => navigate("/sovereign")}
+        style={{
+          position: "fixed", top: 26, right: 36,
+          background: "none", border: "none",
+          fontSize: 9, letterSpacing: "0.40em",
+          textTransform: "uppercase",
+          color: "rgba(255,255,255,0.20)",
+          cursor: "pointer",
+          fontFamily: "'Inter', sans-serif",
+          transition: "color 0.3s",
+          zIndex: 50,
+          padding: 0,
+        }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.46)"; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.20)"; }}
+      >
+        Sovereign Access
+      </button>
 
-      {/* ── Header ─────────────────────────────────────────────────────── */}
-      <header style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "28px 40px 0",
-        position: "relative", zIndex: 10,
-        animation: "nv-fade-up 0.8s ease both",
-      }}>
-        <div>
-          <p style={{
-            fontSize: 8, letterSpacing: "0.52em", textTransform: "uppercase",
-            color: "rgba(212,175,55,0.50)", marginBottom: 4,
-            fontFamily: "'Inter', sans-serif",
-          }}>
-            Profound Innovations
-          </p>
-          <h1 style={{
-            fontSize: 15, letterSpacing: "0.32em", textTransform: "uppercase",
-            fontWeight: 300, color: "rgba(240,237,232,0.92)",
-            fontFamily: "'Inter', sans-serif",
-          }}>
-            NOVEE OS
-          </h1>
-        </div>
-
-        <button
-          onClick={() => navigate("/sovereign")}
+      {/* ── Header ───────────────────────────────────────────────────────── */}
+      <header style={{ textAlign: "center", marginBottom: 56, position: "relative", zIndex: 10 }}>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.0, delay: 0.1 }}
           style={{
-            background: "none", border: "1px solid rgba(240,237,232,0.10)",
-            color: "rgba(240,237,232,0.30)", fontSize: 7,
-            letterSpacing: "0.36em", textTransform: "uppercase",
-            padding: "7px 16px", cursor: "pointer",
-            transition: "border-color 0.2s, color 0.2s",
+            fontSize: 8, letterSpacing: "0.52em",
+            textTransform: "uppercase",
+            color: "rgba(212,175,55,0.45)",
+            marginBottom: 10,
             fontFamily: "'Inter', sans-serif",
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(240,237,232,0.28)";
-            (e.currentTarget as HTMLButtonElement).style.color = "rgba(240,237,232,0.55)";
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(240,237,232,0.10)";
-            (e.currentTarget as HTMLButtonElement).style.color = "rgba(240,237,232,0.30)";
           }}
         >
-          Sovereign Access
-        </button>
+          Profound Innovations
+        </motion.p>
+        <motion.h1
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontSize: "clamp(28px, 4.5vw, 52px)",
+            fontWeight: 300,
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            margin: "0 0 14px",
+            lineHeight: 1.05,
+            background: "linear-gradient(180deg, #fffcf5 0%, #dfba73 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+          }}
+        >
+          The Craft Collection
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.2, delay: 0.3 }}
+          style={{
+            fontSize: 9, letterSpacing: "0.38em",
+            textTransform: "uppercase",
+            color: "rgba(240,237,232,0.18)",
+            fontWeight: 300,
+            fontFamily: "'Inter', sans-serif",
+          }}
+        >
+          Four Masterclasses · One Sovereign Collection
+        </motion.p>
       </header>
 
-      {/* ── Hero headline ──────────────────────────────────────────────── */}
-      <div style={{
-        textAlign: "center", padding: "64px 40px 52px",
-        position: "relative", zIndex: 10,
-        animation: "nv-fade-up 0.9s 0.1s ease both",
-      }}>
-        <h2 style={{
-          fontFamily: "'Cormorant Garamond', Georgia, serif",
-          fontSize: "clamp(30px, 4.6vw, 54px)",
-          fontWeight: 300, letterSpacing: "0.20em",
-          margin: "0 0 14px", lineHeight: 1.1,
-          textTransform: "uppercase",
-          background: "linear-gradient(135deg, #fffcf5 0%, #dfba73 52%, #fffcf5 100%)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          backgroundClip: "text",
-        }}>
-          The Craft Collection
-        </h2>
-        <p style={{
-          fontSize: 9, letterSpacing: "0.40em", textTransform: "uppercase",
-          color: "rgba(240,237,232,0.20)", fontWeight: 300,
-        }}>
-          Four Masterclasses · One Sovereign Collection
-        </p>
-      </div>
+      {/* ── Portal grid ──────────────────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.0, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(270px, 1fr))",
+          gap: 28,
+          width: "100%",
+          maxWidth: 1380,
+          position: "relative",
+          zIndex: 10,
+        }}
+      >
+        {PORTALS.map(portal => {
+          const isGold = portal.metallic === "gold";
+          const borderGrad = isGold
+            ? "linear-gradient(135deg, #dfba73 0%, #fbf5b7 35%, #9e7831 70%, #dfba73 100%)"
+            : "linear-gradient(135deg, #7a7d80 0%, #e1e4e6 40%, #595b5e 100%)";
+          const cardBg = "linear-gradient(135deg, rgba(15,16,18,0.85) 0%, rgba(5,6,7,0.98) 100%)";
+          const hoverShadow = isGold
+            ? "inset 0 1px 1px rgba(255,255,255,0.10), 0 24px 64px rgba(0,0,0,0.92), 0 0 28px rgba(223,186,115,0.18)"
+            : "inset 0 1px 1px rgba(255,255,255,0.08), 0 24px 64px rgba(0,0,0,0.92), 0 0 20px rgba(255,255,255,0.06)";
 
-      {/* ── Craft Portal Grid ──────────────────────────────────────────── */}
-      <main style={{
-        flex: 1,
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-        gap: 2,
-        padding: "0 40px 60px",
-        maxWidth: 1200, margin: "0 auto", width: "100%",
-        position: "relative", zIndex: 10,
-      }}>
-        {CRAFTS.map((craft, i) => (
-          <div
-            key={craft.id}
-            className={`craft-card ${craft.id === "smoke" ? "craft-card-smoke" : "craft-card-standard"}`}
-            onClick={() => navigate(craft.route)}
-            style={{
-              position: "relative",
-              overflow: "hidden",
-              borderRadius: 2,
-              background: "linear-gradient(135deg, rgba(15,16,18,0.82) 0%, rgba(5,6,7,0.95) 100%)",
-              border: "none",
-              cursor: "pointer",
-              padding: "48px 36px 40px",
-              display: "flex", flexDirection: "column", justifyContent: "space-between",
-              minHeight: 300,
-              animation: `nv-fade-up 0.7s ${0.15 + i * 0.08}s ease both`,
-              boxShadow: hovered === craft.id
-                ? `inset 0 1px 1px rgba(255,255,255,0.10), 0 24px 64px rgba(0,0,0,0.92), 0 0 32px ${craft.glow}`
-                : "inset 0 1px 1px rgba(255,255,255,0.06), 0 24px 64px rgba(0,0,0,0.88)",
-              transition: "box-shadow 0.38s cubic-bezier(0.22, 1, 0.36, 1)",
-              backdropFilter: "saturate(120%)",
-            }}
-            onMouseEnter={() => setHovered(craft.id)}
-            onMouseLeave={() => setHovered(null)}
-          >
-            {/* Cinematic image rotator — 9 s interval, staggered per craft */}
-            <CraftImageRotator
-              craft={CARD_TO_ROTATOR[craft.id as keyof typeof CARD_TO_ROTATOR] as RotatorKey}
-              intervalMs={9000}
-            />
+          return (
+            <motion.div
+              key={portal.id}
+              onClick={() => navigate(portal.route)}
+              whileHover={{ scale: 1.018, boxShadow: hoverShadow }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                position: "relative",
+                height: 460,
+                borderRadius: 4,
+                overflow: "hidden",
+                // Two-gradient metallic border technique
+                backgroundImage: `${cardBg}, ${borderGrad}`,
+                backgroundOrigin: "border-box",
+                backgroundClip: "padding-box, border-box",
+                border: "1px solid transparent",
+                backdropFilter: "blur(30px) saturate(120%)",
+                WebkitBackdropFilter: "blur(30px) saturate(120%)",
+                boxShadow: "inset 0 1px 1px rgba(255,255,255,0.08), 0 24px 64px rgba(0,0,0,0.90)",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                padding: 40,
+                cursor: "pointer",
+              }}
+            >
+              {/* ── Rotating image background ─────────────────────────── */}
+              <CardBackground craft={portal.id} offset={portal.offset} />
 
-            {/* Corner symbol */}
-            <div style={{
-              fontSize: 22,
-              color: hovered === craft.id ? craft.color : "rgba(255,255,255,0.15)",
-              transition: "color 0.3s",
-              marginBottom: 32,
-              lineHeight: 1,
-            }}>
-              {craft.symbol}
-            </div>
-
-            {/* Text block */}
-            <div style={{ flex: 1 }}>
-              <p style={{
-                fontSize: 9, letterSpacing: "0.38em", textTransform: "uppercase",
-                color: hovered === craft.id ? craft.color : "rgba(255,255,255,0.25)",
-                marginBottom: 12, transition: "color 0.3s",
-              }}>
-                {craft.sub}
-              </p>
-              <h3 style={{
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
-                fontSize: 28, fontWeight: 300, letterSpacing: "0.06em",
-                color: "#F0EDE8", margin: "0 0 14px", lineHeight: 1.1,
-              }}>
-                {craft.title}
-              </h3>
-              <p style={{
-                fontSize: 11, color: "rgba(240,237,232,0.35)",
-                letterSpacing: "0.04em", lineHeight: 1.7,
-              }}>
-                {craft.tagline}
-              </p>
-            </div>
-
-            {/* CTA */}
-            <div style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              marginTop: 36,
-              paddingTop: 20,
-              borderTop: `1px solid ${hovered === craft.id ? craft.color + "28" : "rgba(255,255,255,0.05)"}`,
-              transition: "border-color 0.3s",
-            }}>
-              <span style={{
-                fontSize: 8, letterSpacing: "0.42em", textTransform: "uppercase",
-                color: hovered === craft.id ? craft.color : "rgba(255,255,255,0.22)",
-                transition: "color 0.3s",
-              }}>
-                {craft.active ? "Begin Experience" : "Select Masterclass"}
-              </span>
-              <span style={{
-                fontSize: 14,
-                color: hovered === craft.id ? craft.color : "rgba(255,255,255,0.18)",
-                transition: "color 0.3s, transform 0.3s",
-                transform: hovered === craft.id ? "translateX(4px)" : "translateX(0)",
-                display: "inline-block",
-              }}>
-                →
-              </span>
-            </div>
-
-            {/* Active indicator */}
-            {craft.active && (
+              {/* ── Bottom-fade scrim ─────────────────────────────────── */}
               <div style={{
-                position: "absolute", top: 20, right: 20,
-                width: 6, height: 6, borderRadius: "50%",
-                background: craft.color,
-                boxShadow: `0 0 8px ${craft.color}`,
-                animation: "nv-pulse-border 2.4s ease-in-out infinite",
+                position: "absolute",
+                inset: 0,
+                background: "linear-gradient(180deg, rgba(5,6,7,0.18) 0%, rgba(5,6,7,0.84) 100%)",
+                zIndex: 2,
+                pointerEvents: "none",
               }} />
-            )}
-          </div>
-        ))}
-      </main>
 
-      {/* ── Footer ─────────────────────────────────────────────────────── */}
-      <footer style={{
-        textAlign: "center", padding: "0 40px 28px",
-        position: "relative", zIndex: 10,
-        animation: "nv-fade-up 1.0s 0.5s ease both",
-      }}>
-        <p style={{
-          fontSize: 7, letterSpacing: "0.38em", textTransform: "uppercase",
-          color: "rgba(240,237,232,0.14)",
-        }}>
-          NOVEE OS 1.0 — Sovereign Edition · Profound Innovations LLC · 360 Enterprise Services
-        </p>
-      </footer>
+              {/* ── Card content ──────────────────────────────────────── */}
+              <div style={{
+                position: "relative",
+                zIndex: 3,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}>
+                {/* Title block */}
+                <div>
+                  <h2 style={{
+                    fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    fontSize: 32,
+                    fontWeight: 300,
+                    letterSpacing: "0.06em",
+                    margin: "0 0 10px",
+                    color: "#fffcf5",
+                    lineHeight: 1.1,
+                  }}>
+                    {portal.title}
+                  </h2>
+                  <p style={{
+                    fontSize: 10,
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    color: "#a3a6a8",
+                    lineHeight: 1.7,
+                    margin: 0,
+                  }}>
+                    {portal.sub}
+                  </p>
+                </div>
+
+                {/* Smoked chrome CTA button */}
+                <button
+                  onClick={e => { e.stopPropagation(); navigate(portal.route); }}
+                  style={{
+                    background: "linear-gradient(180deg, #242629 0%, #111214 100%)",
+                    border: "1px solid rgba(138,141,144,0.30)",
+                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 12px rgba(0,0,0,0.50)",
+                    color: "#e3e4e6",
+                    padding: "14px 28px",
+                    fontSize: 9,
+                    fontWeight: 500,
+                    letterSpacing: "0.30em",
+                    textTransform: "uppercase",
+                    borderRadius: 3,
+                    cursor: "pointer",
+                    width: "100%",
+                    textAlign: "center",
+                    fontFamily: "'Inter', sans-serif",
+                    transition: "background 0.3s ease, border-color 0.3s ease",
+                  }}
+                  onMouseEnter={e => {
+                    const b = e.currentTarget as HTMLButtonElement;
+                    b.style.background = "linear-gradient(180deg, #2d3035 0%, #16181b 100%)";
+                    b.style.borderColor = "rgba(225,228,230,0.45)";
+                  }}
+                  onMouseLeave={e => {
+                    const b = e.currentTarget as HTMLButtonElement;
+                    b.style.background = "linear-gradient(180deg, #242629 0%, #111214 100%)";
+                    b.style.borderColor = "rgba(138,141,144,0.30)";
+                  }}
+                >
+                  {portal.active ? "Begin Experience" : "Select Masterclass"}
+                </button>
+              </div>
+            </motion.div>
+          );
+        })}
+      </motion.div>
+
+      {/* ── Footer ───────────────────────────────────────────────────────── */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5, delay: 0.8 }}
+        style={{
+          position: "relative",
+          zIndex: 10,
+          marginTop: 44,
+          fontSize: 7,
+          letterSpacing: "0.38em",
+          textTransform: "uppercase",
+          color: "rgba(240,237,232,0.10)",
+          fontFamily: "'Inter', sans-serif",
+          textAlign: "center",
+        }}
+      >
+        NOVEE OS 1.0 · Profound Innovations LLC · 360 Enterprise Services
+      </motion.p>
     </div>
   );
 }
