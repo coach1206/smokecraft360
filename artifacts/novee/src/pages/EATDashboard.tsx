@@ -1341,6 +1341,34 @@ function writeSessionString(key: string, v: string): void {
   try { sessionStorage.setItem(key, v); } catch { /* ignore */ }
 }
 
+function buildLiveFeedCsv(events: RecentEvent[]): string {
+  const header = "id,event_type,module_id,venue_id,occurred_at";
+  const rows = events.map((e) => {
+    const escape = (v: string | null) =>
+      v === null ? "" : `"${v.replace(/"/g, '""')}"`;
+    return [
+      escape(e.id),
+      escape(e.eventType),
+      escape(e.moduleId),
+      escape(e.venueId),
+      escape(e.occurredAt),
+    ].join(",");
+  });
+  return [header, ...rows].join("\r\n");
+}
+
+function triggerLiveFeedCsvDownload(events: RecentEvent[]): void {
+  const today = new Date().toISOString().slice(0, 10);
+  const filename = `live-feed-${today}.csv`;
+  const blob = new Blob([buildLiveFeedCsv(events)], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
 function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventIds: Set<string> }) {
   const [, forceRender] = useState(0);
 
@@ -1399,17 +1427,35 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
             Most recent 20 telemetry events · auto-refreshes every 15 s
           </div>
         </div>
-        <div style={{
-          display: "flex", alignItems: "center", gap: 6,
-          background: "rgba(196,97,10,0.08)", border: "1px solid rgba(196,97,10,0.2)",
-          borderRadius: 20, padding: "4px 12px",
-        }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <button
+            onClick={() => filteredEvents.length > 0 && triggerLiveFeedCsvDownload(filteredEvents)}
+            disabled={filteredEvents.length === 0}
+            style={{
+              display: "flex", alignItems: "center", gap: 5,
+              background: filteredEvents.length > 0 ? "rgba(196,97,10,0.1)" : "rgba(196,97,10,0.04)",
+              border: `1px solid ${filteredEvents.length > 0 ? "rgba(196,97,10,0.3)" : "rgba(196,97,10,0.12)"}`,
+              borderRadius: 6, padding: "5px 11px",
+              cursor: filteredEvents.length > 0 ? "pointer" : "not-allowed",
+              fontSize: 11, fontWeight: 600, letterSpacing: "0.05em",
+              color: filteredEvents.length > 0 ? "#C4610A" : "rgba(196,97,10,0.35)",
+              opacity: filteredEvents.length > 0 ? 1 : 0.6,
+            }}
+          >
+            ↓ Export CSV
+          </button>
           <div style={{
-            width: 7, height: 7, borderRadius: "50%", background: "#C4610A",
-            boxShadow: "0 0 6px #C4610A",
-            animation: "feedPulse 2s ease-in-out infinite",
-          }} />
-          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: "#C4610A" }}>LIVE</span>
+            display: "flex", alignItems: "center", gap: 6,
+            background: "rgba(196,97,10,0.08)", border: "1px solid rgba(196,97,10,0.2)",
+            borderRadius: 20, padding: "4px 12px",
+          }}>
+            <div style={{
+              width: 7, height: 7, borderRadius: "50%", background: "#C4610A",
+              boxShadow: "0 0 6px #C4610A",
+              animation: "feedPulse 2s ease-in-out infinite",
+            }} />
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: "#C4610A" }}>LIVE</span>
+          </div>
         </div>
         <style>{`@keyframes feedPulse{0%,100%{opacity:1}50%{opacity:0.35}}`}</style>
       </div>
