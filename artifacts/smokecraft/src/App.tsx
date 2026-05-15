@@ -745,7 +745,7 @@ function SovereignBootFlow() {
   );
 }
 
-/* ── Guest-route ambient layer — persistent smoke/ember/vignette ─────────── */
+/* ── Guest-route ambient layer — persistent canvas smoke/ember/vignette ─────── */
 
 const GUEST_PREFIXES = [
   '/craft-hub', '/experience/', '/experience-overview/', '/synchronization/',
@@ -753,35 +753,136 @@ const GUEST_PREFIXES = [
   '/master-blender',
 ];
 
-const SMOKE_BLOBS = [
-  { id: 0, x: 10, size: 280, dur: 22, del: 0,  op: 0.055, drift: 28 },
-  { id: 1, x: 34, size: 360, dur: 28, del: 4,  op: 0.040, drift: -22 },
-  { id: 2, x: 56, size: 210, dur: 19, del: 7,  op: 0.060, drift: 18 },
-  { id: 3, x: 77, size: 300, dur: 25, del: 2,  op: 0.045, drift: -30 },
-  { id: 4, x: 20, size: 190, dur: 17, del: 11, op: 0.050, drift: 24 },
-  { id: 5, x: 63, size: 330, dur: 30, del: 8,  op: 0.035, drift: -18 },
-];
-
-const EMBER_PARTICLES = [
-  { id: 0,  x: 8,  y: 85, r: 1.2, dur: 12, del: 0,  op: 0.12 },
-  { id: 1,  x: 18, y: 70, r: 0.9, dur: 15, del: 2,  op: 0.09 },
-  { id: 2,  x: 28, y: 92, r: 1.4, dur: 11, del: 4,  op: 0.14 },
-  { id: 3,  x: 40, y: 78, r: 0.8, dur: 14, del: 1,  op: 0.10 },
-  { id: 4,  x: 52, y: 88, r: 1.1, dur: 13, del: 6,  op: 0.11 },
-  { id: 5,  x: 64, y: 75, r: 0.7, dur: 16, del: 3,  op: 0.08 },
-  { id: 6,  x: 72, y: 90, r: 1.3, dur: 10, del: 8,  op: 0.13 },
-  { id: 7,  x: 85, y: 80, r: 1.0, dur: 14, del: 5,  op: 0.10 },
-  { id: 8,  x: 92, y: 86, r: 0.8, dur: 12, del: 9,  op: 0.09 },
-  { id: 9,  x: 33, y: 94, r: 1.5, dur: 11, del: 7,  op: 0.15 },
-  { id: 10, x: 48, y: 68, r: 0.9, dur: 17, del: 2,  op: 0.08 },
-  { id: 11, x: 60, y: 96, r: 1.2, dur: 13, del: 10, op: 0.12 },
-];
-
-const AMBER = '#D4AF37';
+interface AmbientParticle {
+  x: number; y: number;
+  vx: number; vy: number;
+  life: number; maxLife: number;
+  size: number;
+  type: 'smoke' | 'ember';
+  phase: number; // time offset for phase-shifted fade
+}
 
 function GuestAmbientLayer() {
   const [loc] = useLocation();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const active = GUEST_PREFIXES.some(p => loc === p.replace(/\/$/, '') || loc.startsWith(p));
+
+  useEffect(() => {
+    if (!active) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rawCtx = canvas.getContext('2d');
+    if (!rawCtx) return;
+    const ctx: CanvasRenderingContext2D = rawCtx;
+
+    let raf: number;
+    let frame = 0;
+    const particles: AmbientParticle[] = [];
+
+    function resize() {
+      canvas!.width  = window.innerWidth;
+      canvas!.height = window.innerHeight;
+    }
+    resize();
+
+    function spawnSmoke() {
+      const w = canvas!.width;
+      const h = canvas!.height;
+      particles.push({
+        x: w * Math.random(),
+        y: h * 1.05,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: -(0.18 + Math.random() * 0.28),
+        life: 0,
+        maxLife: 420 + Math.random() * 340,
+        size: 90 + Math.random() * 140,
+        type: 'smoke',
+        phase: Math.random() * Math.PI * 2,
+      });
+    }
+
+    function spawnEmber() {
+      const w = canvas!.width;
+      const h = canvas!.height;
+      particles.push({
+        x: w * (0.1 + Math.random() * 0.8),
+        y: h * (0.6 + Math.random() * 0.4),
+        vx: (Math.random() - 0.5) * 0.55,
+        vy: -(0.45 + Math.random() * 0.75),
+        life: 0,
+        maxLife: 200 + Math.random() * 160,
+        size: 0.8 + Math.random() * 1.6,
+        type: 'ember',
+        phase: Math.random() * Math.PI * 2,
+      });
+    }
+
+    // Pre-seed with staggered smoke blobs
+    for (let i = 0; i < 6; i++) {
+      spawnSmoke();
+      // Push each to a random point in its lifecycle so they don't all appear at once
+      const p = particles[particles.length - 1]!;
+      p.life = Math.floor(Math.random() * p.maxLife * 0.7);
+      p.y = canvas.height * (0.2 + Math.random() * 0.8);
+    }
+
+    function tick() {
+      frame++;
+      const w = canvas!.width;
+      const h = canvas!.height;
+      ctx.clearRect(0, 0, w, h);
+
+      if (frame % 18 === 0) spawnSmoke();
+      if (frame % 6  === 0) spawnEmber();
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i]!;
+        p.x   += p.vx;
+        p.y   += p.vy;
+        p.vx  += (Math.random() - 0.5) * 0.015;
+        p.life++;
+
+        const progress = p.life / p.maxLife;
+        // Bell curve alpha with per-particle phase shift for organic feel
+        const alpha = Math.sin(progress * Math.PI + p.phase * 0.1) * (1 - progress * 0.3);
+
+        if (p.type === 'smoke') {
+          const r = p.size * (1 + progress * 0.8);
+          const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
+          grad.addColorStop(0,   `rgba(180,120,40,${Math.max(0, alpha * 0.062)})`);
+          grad.addColorStop(0.45, `rgba(212,175,55,${Math.max(0, alpha * 0.038)})`);
+          grad.addColorStop(1,   `rgba(212,175,55,0)`);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+          ctx.fillStyle = grad;
+          ctx.fill();
+        } else {
+          const a = Math.max(0, alpha * 0.13);
+          ctx.save();
+          ctx.shadowBlur  = p.size * 4;
+          ctx.shadowColor = `rgba(212,175,55,${a * 0.7})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(212,175,55,${a})`;
+          ctx.fill();
+          ctx.restore();
+        }
+
+        if (p.life >= p.maxLife || p.y < -80) particles.splice(i, 1);
+      }
+
+      raf = requestAnimationFrame(tick);
+    }
+
+    raf = requestAnimationFrame(tick);
+    window.addEventListener('resize', resize);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', resize);
+    };
+  }, [active]);
+
   if (!active) return null;
 
   return (
@@ -791,56 +892,11 @@ function GuestAmbientLayer() {
         position: 'absolute', inset: 0,
         background: 'radial-gradient(ellipse 82% 72% at 50% 50%, transparent 28%, rgba(4,2,0,0.52) 100%)',
       }} />
-
-      {/* Smoke blobs — drift upward */}
-      {SMOKE_BLOBS.map(b => (
-        <motion.div
-          key={b.id}
-          initial={{ y: '115%', opacity: 0 }}
-          animate={{
-            y:       ['115%', '60%', '10%', '-22%'],
-            x:       [0, b.drift, -(b.drift * 0.5), b.drift * 0.3],
-            opacity: [0, b.op, b.op * 0.8, 0],
-          }}
-          transition={{ duration: b.dur, delay: b.del, repeat: Infinity, ease: 'easeOut' }}
-          style={{
-            position:     'absolute',
-            left:         `${b.x}%`,
-            bottom:       0,
-            width:        b.size,
-            height:       b.size * 1.7,
-            borderRadius: '45% 55% 55% 45% / 40% 40% 60% 60%',
-            background:   'radial-gradient(ellipse at 50% 65%, rgba(180,130,60,0.13) 0%, rgba(212,175,55,0.05) 38%, transparent 72%)',
-            filter:       'blur(34px)',
-            willChange:   'transform, opacity',
-          }}
-        />
-      ))}
-
-      {/* Ember particles — rise and fade */}
-      {EMBER_PARTICLES.map(e => (
-        <motion.div
-          key={e.id}
-          animate={{
-            y:       [0, -110, -260, -400],
-            x:       [0, 11, -7, 15],
-            opacity: [0, e.op, e.op * 0.65, 0],
-            scale:   [0.7, 1.2, 0.85, 0.4],
-          }}
-          transition={{ duration: e.dur, delay: e.del, repeat: Infinity, ease: 'easeOut' }}
-          style={{
-            position:  'absolute',
-            left:      `${e.x}%`,
-            top:       `${e.y}%`,
-            width:     e.r * 2,
-            height:    e.r * 2,
-            borderRadius: '50%',
-            background: AMBER,
-            boxShadow:  `0 0 ${e.r * 4}px ${AMBER}`,
-            willChange: 'transform, opacity',
-          }}
-        />
-      ))}
+      {/* Canvas-based volumetric smoke + ember system */}
+      <canvas
+        ref={canvasRef}
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', willChange: 'contents' }}
+      />
     </div>
   );
 }

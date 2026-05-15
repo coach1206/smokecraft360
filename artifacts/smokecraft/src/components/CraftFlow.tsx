@@ -752,7 +752,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         <main>
           <AnimatePresence mode="wait">
             {phase === "intro" && (
-              <motion.div key="intro" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}
+              <motion.div key="intro" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
                 data-testid={`${config.testIdPrefix}-intro`}
                 style={{
                   padding: "60px 40px",
@@ -888,12 +888,12 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
             )}
 
             {phase === "profile" && selectedStyle && (
-              <motion.div key="profile" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
+              <motion.div key="profile" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}>
                 <p style={{
                   margin: "0 0 6px", fontSize: 11,
                   letterSpacing: "0.32em", textTransform: "uppercase",
                   color: config.theme.accent, fontWeight: 700,
-                }}>Step 2 — {config.language.profilePrompt}</p>
+                }}>{config.language.profilePrompt}</p>
                 <p style={{ margin: "0 0 22px", fontSize: 13, color: "rgba(26,26,27,0.52)" }}>
                   Picked <span style={{ color: "#1A1A1B", fontWeight: 600 }}>{selectedStyle.title}</span>. Now set the mood.
                 </p>
@@ -933,7 +933,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
             )}
 
             {phase === "match" && (
-              <motion.div key="match" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              <motion.div key="match" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.02 }}
                 data-testid={`${config.testIdPrefix}-loading`}
                 style={{
                   minHeight: 460, display: "flex", flexDirection: "column",
@@ -957,7 +957,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
             )}
 
             {phase === "reveal" && (
-              <motion.div key="reveal" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}
+              <motion.div key="reveal" initial={{ opacity: 0, y: 28, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
                 data-testid={`${config.testIdPrefix}-result`}>
                 {error && (
                   <div style={{ color: "#E5818F", fontSize: 14, marginBottom: 16 }}>{error}</div>

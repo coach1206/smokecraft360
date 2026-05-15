@@ -1536,7 +1536,7 @@ export default function ExperiencePage() {
             {swipeCount} swiped
           </div>
           <AudioWaveToggle />
-          {type === "smoke" && ExperienceFlowEngine.isSignatureStudioEligible() && (
+          {type === "smoke" && done && ExperienceFlowEngine.isSignatureStudioEligible() && (
             <motion.button
               whileTap={{ scale: 0.91 }}
               onClick={() => navigate("/master-blender")}
