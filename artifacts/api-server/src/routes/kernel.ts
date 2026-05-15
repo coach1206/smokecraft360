@@ -484,7 +484,40 @@ async function buildSummary(windowDays: number, offsetDays = 0) {
   const { starts, completions } = ritualResult.rows[0] as { starts: number; completions: number };
   const ritualEngagement = starts > 0 ? Math.round((completions / starts) * 100) : 0;
 
-  return { total, dailyCounts, topEventTypes, moduleUsage, ritualEngagement };
+  // Per-module daily counts (sparkline data) — cross join modules × date series,
+  // then left join telemetry events so every module gets a zero-filled series.
+  const moduleSparklineResult = await db.execute(sql`
+    SELECT
+      km.slug AS module_slug,
+      gs.day::date::text AS day,
+      COALESCE(c.cnt, 0)::int AS cnt
+    FROM kernel_modules km
+    CROSS JOIN (
+      SELECT generate_series(
+        (${windowStart})::date,
+        (${windowEnd})::date - INTERVAL '1 day',
+        '1 day'::interval
+      )::date AS day
+    ) gs
+    LEFT JOIN (
+      SELECT module_id, DATE_TRUNC('day', occurred_at)::date AS day, COUNT(*)::int AS cnt
+      FROM telemetry_events
+      WHERE occurred_at >= ${windowStart} AND occurred_at < ${windowEnd}
+      GROUP BY module_id, 2
+    ) c ON c.module_id = km.id AND c.day = gs.day
+    ORDER BY km.slug, gs.day
+  `);
+
+  type SparkRow = { module_slug: string; day: string; cnt: number };
+  const sparkRows = moduleSparklineResult.rows as SparkRow[];
+
+  const moduleDailyCounts: Record<string, { day: string; cnt: number }[]> = {};
+  for (const r of sparkRows) {
+    if (!moduleDailyCounts[r.module_slug]) moduleDailyCounts[r.module_slug] = [];
+    moduleDailyCounts[r.module_slug]!.push({ day: r.day, cnt: r.cnt });
+  }
+
+  return { total, dailyCounts, topEventTypes, moduleUsage, ritualEngagement, moduleDailyCounts };
 }
 
 router.get("/telemetry/summary", async (req: Request, res: Response) => {

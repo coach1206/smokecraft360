@@ -263,6 +263,7 @@ interface TelemetryWindowSummary {
   dailyCounts: { day: string; cnt: number }[];
   topEventTypes: { event_type: string; cnt: number }[];
   moduleUsage: { module_name: string; module_slug: string; event_count: number }[];
+  moduleDailyCounts: Record<string, { day: string; cnt: number }[]>;
   ritualEngagement: number;
 }
 
@@ -316,6 +317,7 @@ const EMPTY_SUMMARY: TelemetrySummary = {
   dailyCounts: [],
   topEventTypes: [],
   moduleUsage: [],
+  moduleDailyCounts: {},
   ritualEngagement: 0,
   comparison: null,
 };
@@ -1730,6 +1732,58 @@ function EventsTab({
   );
 }
 
+function ModuleSparkline({ points }: { points: { day: string; cnt: number }[] }) {
+  const W = 60;
+  const H = 20;
+
+  if (!points || points.length < 2) {
+    return (
+      <svg width={W} height={H} style={{ display: "block", flexShrink: 0 }}>
+        <line x1={0} y1={H / 2} x2={W} y2={H / 2} stroke="rgba(196,97,10,0.2)" strokeWidth={1} />
+      </svg>
+    );
+  }
+
+  const counts = points.map((p) => p.cnt);
+  const maxVal = Math.max(1, ...counts);
+  const minVal = Math.min(...counts);
+  const range = maxVal - minVal || 1;
+
+  const pad = 2;
+  const step = (W - pad * 2) / (points.length - 1);
+
+  const coords = points.map((p, i) => {
+    const x = pad + i * step;
+    const y = pad + ((maxVal - p.cnt) / range) * (H - pad * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+
+  const polyPoints = coords.join(" ");
+
+  // Build a closed fill path by adding bottom-right and bottom-left corners
+  const lastX = (pad + (points.length - 1) * step).toFixed(1);
+  const fillPoints = `${polyPoints} ${lastX},${H} ${pad},${H}`;
+
+  return (
+    <svg width={W} height={H} style={{ display: "block", flexShrink: 0, overflow: "visible" }}>
+      <polygon
+        points={fillPoints}
+        fill="rgba(196,97,10,0.12)"
+        stroke="none"
+      />
+      <polyline
+        points={polyPoints}
+        fill="none"
+        stroke={ACCENT}
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        opacity={0.9}
+      />
+    </svg>
+  );
+}
+
 function ModulesTab({
   data,
   compareEnabled,
@@ -1808,13 +1862,15 @@ function ModulesTab({
             const isGhost = m.status === "ghost";
             const isNew   = m.status === "new";
             const rowOpacity = isGhost ? 0.45 : 1;
+            const sparkPoints = data.moduleDailyCounts[m.module_slug] ?? [];
             return (
               <div key={m.module_slug} style={{ opacity: rowOpacity }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                  <div style={{ fontSize: 12, fontWeight: 500, color: isGhost ? "rgba(245,237,216,0.5)" : "#F5EDD8" }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: isGhost ? "rgba(245,237,216,0.5)" : "#F5EDD8", minWidth: 0, flex: 1, marginRight: 10 }}>
                     {m.module_name}
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <ModuleSparkline points={sparkPoints} />
                     {cmp && isNew && (
                       <div style={{
                         display: "inline-flex", alignItems: "center",
