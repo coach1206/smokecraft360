@@ -1740,30 +1740,97 @@ function ModulesTab({
   compareDays: number;
 }) {
   const cmp = compareEnabled ? data.comparison : null;
-  const allCounts = [
-    ...data.moduleUsage.map((m) => m.event_count),
-    ...(cmp ? cmp.moduleUsage.map((m) => m.event_count) : []),
-  ];
+
+  // Build a merged module list that includes modules from both windows.
+  type MergedModule = {
+    module_slug: string;
+    module_name: string;
+    primaryCount: number;
+    cmpCount: number;
+    status: "normal" | "new" | "ghost";
+  };
+
+  const mergedModules: MergedModule[] = (() => {
+    const primaryMap = new Map(
+      data.moduleUsage.map((m) => [m.module_slug, m]),
+    );
+    const cmpMap = new Map(
+      (cmp?.moduleUsage ?? []).map((m) => [m.module_slug, m]),
+    );
+
+    const seen = new Set<string>();
+    const rows: MergedModule[] = [];
+
+    // Primary window rows (including modules also in compare)
+    for (const m of data.moduleUsage) {
+      seen.add(m.module_slug);
+      const cmpCount = cmpMap.get(m.module_slug)?.event_count ?? 0;
+      rows.push({
+        module_slug: m.module_slug,
+        module_name: m.module_name,
+        primaryCount: m.event_count,
+        cmpCount,
+        status: cmp && cmpCount === 0 ? "new" : "normal",
+      });
+    }
+
+    // Ghost rows: only in compare window
+    if (cmp) {
+      for (const m of cmp.moduleUsage) {
+        if (seen.has(m.module_slug)) continue;
+        rows.push({
+          module_slug: m.module_slug,
+          module_name: primaryMap.get(m.module_slug)?.module_name ?? m.module_name,
+          primaryCount: 0,
+          cmpCount: m.event_count,
+          status: "ghost",
+        });
+      }
+    }
+
+    return rows;
+  })();
+
+  const allCounts = mergedModules.map((m) => Math.max(m.primaryCount, m.cmpCount));
   const maxEvents = Math.max(1, ...allCounts);
+
+  const isEmpty = data.moduleUsage.length === 0 && (cmp?.moduleUsage ?? []).length === 0;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       <SectionHeader label="MODULE USAGE" sub="Event count per registered kernel module" />
 
-      {data.moduleUsage.length === 0 ? (
+      {isEmpty ? (
         <EmptyState label="No module usage data yet." />
       ) : (
         <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "24px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
-          {data.moduleUsage.map((m, i) => {
-            const cmpModule = cmp?.moduleUsage.find((c) => c.module_slug === m.module_slug);
-            const cmpCount  = cmpModule?.event_count ?? 0;
+          {mergedModules.map((m, i) => {
+            const isGhost = m.status === "ghost";
+            const isNew   = m.status === "new";
+            const rowOpacity = isGhost ? 0.45 : 1;
             return (
-              <div key={m.module_slug}>
+              <div key={m.module_slug} style={{ opacity: rowOpacity }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                  <div style={{ fontSize: 12, fontWeight: 500, color: "#F5EDD8" }}>{m.module_name}</div>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: isGhost ? "rgba(245,237,216,0.5)" : "#F5EDD8" }}>
+                    {m.module_name}
+                  </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    {cmp && <DeltaBadge current={m.event_count} prior={cmpCount} />}
-                    <div style={{ fontSize: 11, color: "rgba(245,237,216,0.5)" }}>{m.event_count.toLocaleString()} events</div>
+                    {cmp && isNew && (
+                      <div style={{
+                        display: "inline-flex", alignItems: "center",
+                        background: "rgba(74,222,128,0.1)",
+                        border: "1px solid rgba(74,222,128,0.25)",
+                        borderRadius: 4, padding: "2px 6px",
+                        fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
+                        color: "#4ade80",
+                      }}>
+                        NEW
+                      </div>
+                    )}
+                    {cmp && !isNew && <DeltaBadge current={m.primaryCount} prior={m.cmpCount} />}
+                    <div style={{ fontSize: 11, color: "rgba(245,237,216,0.5)" }}>
+                      {m.primaryCount.toLocaleString()} events
+                    </div>
                   </div>
                 </div>
                 <div style={{ position: "relative", height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
@@ -1772,23 +1839,25 @@ function ModulesTab({
                     <div style={{
                       position: "absolute", top: 0, left: 0,
                       height: "100%", borderRadius: 2,
-                      width: `${(cmpCount / maxEvents) * 100}%`,
+                      width: `${(m.cmpCount / maxEvents) * 100}%`,
                       background: "rgba(74,144,217,0.35)",
                       transition: "width 0.6s ease",
                     }} />
                   )}
-                  {/* Primary bar */}
-                  <div style={{
-                    position: "absolute", top: 0, left: 0,
-                    height: "100%", borderRadius: 2,
-                    width: `${(m.event_count / maxEvents) * 100}%`,
-                    background: i === 0 ? ACCENT : ACCENT_DIM,
-                    transition: "width 0.6s ease",
-                  }} />
+                  {/* Primary bar — hidden for ghost rows */}
+                  {!isGhost && (
+                    <div style={{
+                      position: "absolute", top: 0, left: 0,
+                      height: "100%", borderRadius: 2,
+                      width: `${(m.primaryCount / maxEvents) * 100}%`,
+                      background: i === 0 ? ACCENT : ACCENT_DIM,
+                      transition: "width 0.6s ease",
+                    }} />
+                  )}
                 </div>
-                {cmp && cmpModule && (
+                {cmp && m.cmpCount > 0 && !isNew && (
                   <div style={{ fontSize: 9, color: COMPARE_COLOR, marginTop: 3, opacity: 0.6 }}>
-                    prior: {cmpCount.toLocaleString()} ({compareDays}D)
+                    prior: {m.cmpCount.toLocaleString()} ({compareDays}D)
                   </div>
                 )}
               </div>
