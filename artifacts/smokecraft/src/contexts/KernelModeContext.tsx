@@ -62,6 +62,28 @@ function writeCache(venueId: string, mode: KernelMode): void {
   }
 }
 
+function deleteCache(venueId: string): void {
+  try {
+    localStorage.removeItem(storageKey(venueId));
+  } catch {
+    // ignore
+  }
+}
+
+/** Remove every kernel_mode_* entry — call on logout or full session reset. */
+export function clearAllKernelModeCache(): void {
+  try {
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("kernel_mode_")) keysToRemove.push(key);
+    }
+    keysToRemove.forEach((k) => localStorage.removeItem(k));
+  } catch {
+    // localStorage unavailable
+  }
+}
+
 export function KernelModeProvider({ children }: { children: ReactNode }) {
   const venue = useVenue();
   const venueId = venue.id !== "default" ? venue.id : NULL_VENUE_ID;
@@ -72,6 +94,7 @@ export function KernelModeProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(cached === null);
   const [saving, setSaving]   = useState(false);
   const timerRef              = useRef<ReturnType<typeof setInterval> | null>(null);
+  const prevVenueIdRef        = useRef<string>(venueId);
 
   async function fetchMode(id: string): Promise<void> {
     try {
@@ -120,6 +143,12 @@ export function KernelModeProvider({ children }: { children: ReactNode }) {
   }, [venueId]);
 
   useEffect(() => {
+    const prevId = prevVenueIdRef.current;
+    if (prevId !== venueId) {
+      deleteCache(prevId);
+      prevVenueIdRef.current = venueId;
+    }
+
     const fresh = readCached(venueId);
     if (fresh !== null) {
       setModeState(fresh);

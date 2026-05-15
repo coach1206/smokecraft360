@@ -17,6 +17,7 @@ import {
   getStoredToken,
   getStoredUser,
 } from "@/services/auth";
+import { clearAllKernelModeCache } from "@/contexts/KernelModeContext";
 
 interface AuthState {
   user:     AuthUser | null;
@@ -38,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!token) { setLoading(false); return; }
     authMe()
       .then((u) => { setUser(u); })
-      .catch(() => { clearAuth(); setUser(null); setToken(null); })
+      .catch(() => { clearAllKernelModeCache(); clearAuth(); setUser(null); setToken(null); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -60,6 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const logout = useCallback(() => {
+    clearAllKernelModeCache();
     clearAuth();
     setToken(null);
     setUser(null);
