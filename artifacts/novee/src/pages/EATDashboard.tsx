@@ -461,11 +461,12 @@ const PRESET_OPTIONS = [
   { label: "90D", days: 90 },
 ];
 
-const EAT_LS_KEY              = "eat_dashboard_days";
-const EAT_LS_COMPARE_KEY      = "eat_dashboard_compare";
-const EAT_LS_COMPARE_DAYS_KEY = "eat_dashboard_compare_days";
-const EAT_LS_PRESETS_KEY      = "eat_dashboard_custom_presets";
-const EAT_LS_TAB_KEY          = "eat_dashboard_tab";
+const EAT_LS_KEY                  = "eat_dashboard_days";
+const EAT_LS_COMPARE_KEY          = "eat_dashboard_compare";
+const EAT_LS_COMPARE_DAYS_KEY     = "eat_dashboard_compare_days";
+const EAT_LS_PRESETS_KEY          = "eat_dashboard_custom_presets";
+const EAT_LS_TAB_KEY              = "eat_dashboard_tab";
+const EAT_LS_CRAFT_FILTER_KEY     = "eat_dashboard_craft_filter";
 
 type SavedPreset = { name: string; days: number };
 
@@ -547,6 +548,21 @@ function parseCompareDaysFromSearch(search: string, fallbackDays: number): numbe
   return fallbackDays;
 }
 
+const VALID_CRAFT_FILTERS: CraftFilter[] = ["all", "smoke", "pour", "brew", "vape"];
+
+function parseCraftFilterFromSearch(search: string): CraftFilter {
+  try {
+    const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+    const raw = params.get("craftType");
+    if (raw && (VALID_CRAFT_FILTERS as string[]).includes(raw)) return raw as CraftFilter;
+  } catch { /* ignore */ }
+  try {
+    const stored = localStorage.getItem(EAT_LS_CRAFT_FILTER_KEY);
+    if (stored && (VALID_CRAFT_FILTERS as string[]).includes(stored)) return stored as CraftFilter;
+  } catch { /* ignore */ }
+  return "all";
+}
+
 function deltaPercent(current: number, prior: number): number | null {
   if (prior === 0) return null;
   return Math.round(((current - prior) / prior) * 100);
@@ -598,7 +614,7 @@ export default function EATDashboard() {
 
   const [products, setProducts]             = useState<ProductItem[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
-  const [craftFilter, setCraftFilter]       = useState<CraftFilter>("all");
+  const [craftFilter, setCraftFilterState]  = useState<CraftFilter>(() => parseCraftFilterFromSearch(window.location.search));
   const [productTrends, setProductTrends]   = useState<Map<string, TrendPoint[]>>(new Map());
 
   // ── Mute state ────────────────────────────────────────────────────────────
@@ -737,6 +753,7 @@ export default function EATDashboard() {
       setCompareEnabledState(parseCompareFromSearch(search));
       setCompareDaysState(parseCompareDaysFromSearch(search, parseDaysFromSearch(search)));
       setTabState(parseTabFromSearch(search));
+      setCraftFilterState(parseCraftFilterFromSearch(search));
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
@@ -750,6 +767,18 @@ export default function EATDashboard() {
       url.searchParams.delete("tab");
     } else {
       url.searchParams.set("tab", t);
+    }
+    window.history.replaceState({}, "", url.toString());
+  }, []);
+
+  const setCraftFilter = useCallback((cf: CraftFilter) => {
+    setCraftFilterState(cf);
+    try { localStorage.setItem(EAT_LS_CRAFT_FILTER_KEY, cf); } catch { /* ignore */ }
+    const url = new URL(window.location.href);
+    if (cf === "all") {
+      url.searchParams.delete("craftType");
+    } else {
+      url.searchParams.set("craftType", cf);
     }
     window.history.replaceState({}, "", url.toString());
   }, []);
