@@ -73,9 +73,9 @@ function CardBackground({ craft, offset }: { craft: CraftKey; offset: number }) 
 // ── Portal definitions ────────────────────────────────────────────────────────
 const PORTALS = [
   { id: "smokecraft" as CraftKey, title: "SmokeCraft 360", sub: "Luxury Cigar Masterclass",           route: "/smokecraft", metallic: "gold",     offset: 0,    active: true  },
-  { id: "pourcraft"  as CraftKey, title: "PourCraft 360",  sub: "Whiskey · Bourbon · Cognac Pairing", route: "/pourcraft",  metallic: "titanium", offset: 2000, active: false },
+  { id: "pourcraft"  as CraftKey, title: "PourCraft 360",  sub: "Whiskey · Bourbon · Cognac",         route: "/pourcraft",  metallic: "titanium", offset: 2000, active: false },
   { id: "beercraft"  as CraftKey, title: "BeerCraft 360",  sub: "Craft Beer Discovery",               route: "/beercraft",  metallic: "titanium", offset: 4000, active: false },
-  { id: "winecraft"  as CraftKey, title: "WineCraft 360",  sub: "Sommelier-Guided Wine Presentation", route: "/winecraft",  metallic: "titanium", offset: 6000, active: false },
+  { id: "winecraft"  as CraftKey, title: "WineCraft 360",  sub: "Sommelier Wine Presentation",        route: "/winecraft",  metallic: "titanium", offset: 6000, active: false },
 ];
 
 // Fixed smoke positions — no Math.random() so no hydration mismatch
