@@ -292,6 +292,9 @@ const EAT_LS_KEY         = "eat_dashboard_days";
 const EAT_LS_COMPARE_KEY = "eat_dashboard_compare";
 const EAT_LS_COMPARE_DAYS_KEY = "eat_dashboard_compare_days";
 
+const MUTE_SS_KEY      = "eat_live_mute_until";
+const MUTE_DURATION_MS = 5 * 60 * 1000;
+
 function parseDaysFromSearch(search: string): number {
   try {
     const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
@@ -381,6 +384,79 @@ export default function EATDashboard() {
   const [craftFilter, setCraftFilter]       = useState<CraftFilter>("all");
   const [productTrends, setProductTrends]   = useState<Map<string, TrendPoint[]>>(new Map());
 
+  // ── Mute state ────────────────────────────────────────────────────────────
+  const [muteUntil, setMuteUntilState] = useState<number | null>(() => {
+    try {
+      // Do NOT restore mute after a hard page reload — spec says mute should
+      // not survive reloads. sessionStorage persists across reloads by default,
+      // so we detect a reload navigation and discard any stored value.
+      const navEntry = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+      if (navEntry?.type === "reload") {
+        sessionStorage.removeItem(MUTE_SS_KEY);
+        return null;
+      }
+      const v = sessionStorage.getItem(MUTE_SS_KEY);
+      if (v) {
+        const n = parseInt(v, 10);
+        if (Number.isFinite(n) && n > Date.now()) return n;
+      }
+    } catch { /* ignore */ }
+    return null;
+  });
+  const muteUntilRef     = useRef<number | null>(muteUntil);
+  const longPressRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressFiredRef = useRef(false);
+  const [showMuteMenu, setShowMuteMenu] = useState(false);
+  const muteMenuBtnRef   = useRef<HTMLButtonElement | null>(null);
+
+  // Keep muteUntilRef in sync so fetchRecentEvents can read it without deps.
+  useEffect(() => { muteUntilRef.current = muteUntil; }, [muteUntil]);
+
+  // Auto-expire the mute when the timer runs out.
+  useEffect(() => {
+    if (muteUntil === null) return;
+    const remaining = muteUntil - Date.now();
+    if (remaining <= 0) {
+      setMuteUntilState(null);
+      try { sessionStorage.removeItem(MUTE_SS_KEY); } catch { /* ignore */ }
+      return;
+    }
+    const id = setTimeout(() => {
+      setMuteUntilState(null);
+      try { sessionStorage.removeItem(MUTE_SS_KEY); } catch { /* ignore */ }
+    }, remaining);
+    return () => clearTimeout(id);
+  }, [muteUntil]);
+
+  // Close mute menu on outside click.
+  useEffect(() => {
+    if (!showMuteMenu) return;
+    const handler = (e: MouseEvent) => {
+      if (muteMenuBtnRef.current && !muteMenuBtnRef.current.contains(e.target as Node)) {
+        setShowMuteMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showMuteMenu]);
+
+  const isMuted = muteUntil !== null && Date.now() < muteUntil;
+
+  const activateMute = useCallback(() => {
+    const until = Date.now() + MUTE_DURATION_MS;
+    setMuteUntilState(until);
+    muteUntilRef.current = until;
+    try { sessionStorage.setItem(MUTE_SS_KEY, String(until)); } catch { /* ignore */ }
+    setShowMuteMenu(false);
+  }, []);
+
+  const deactivateMute = useCallback(() => {
+    setMuteUntilState(null);
+    muteUntilRef.current = null;
+    try { sessionStorage.removeItem(MUTE_SS_KEY); } catch { /* ignore */ }
+    setShowMuteMenu(false);
+  }, []);
+
   // Keep tabRef in sync so fetchRecentEvents can read current tab without
   // needing it as a dependency (which would restart the poll on every tab change).
   useEffect(() => { tabRef.current = tab; }, [tab]);
@@ -454,7 +530,8 @@ export default function EATDashboard() {
             if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
             setNewEventIds(freshIds);
             flashTimerRef.current = setTimeout(() => setNewEventIds(new Set()), 1800);
-            if (tabRef.current !== "live") {
+            const muted = muteUntilRef.current !== null && Date.now() < muteUntilRef.current;
+            if (tabRef.current !== "live" && !muted) {
               setUnreadCount((c) => c + freshIds.size);
             }
             lastEventAtRef.current = Date.now();
@@ -894,54 +971,169 @@ export default function EATDashboard() {
         display: "flex", gap: 0,
         background: "rgba(0,0,0,0.3)",
       }}>
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            className={`novee-tab${tab === t.id ? " active" : ""}`}
-            onClick={() => {
-              setTab(t.id);
-              if (t.id === "live") setUnreadCount(0);
-            }}
-            style={{ position: "relative" }}
-          >
-            {t.label}
-            {t.id === "live" && unreadCount > 0 && (
-              <span style={{
-                position: "absolute",
-                top: 6,
-                right: 4,
-                minWidth: 18,
-                height: 18,
-                padding: "0 4px",
-                borderRadius: 9,
-                background: "#C4610A",
-                color: "#F5EDD8",
-                fontSize: 9,
-                fontWeight: 700,
-                letterSpacing: "0.05em",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                lineHeight: 1,
-                pointerEvents: "none",
-              }}>
-                +{unreadCount > 99 ? "99" : unreadCount}
-              </span>
-            )}
-            {t.id === "live" && liveDotVisible && (
-              <span className={`eat-live-dot${liveDotFading ? " fading" : ""}`} style={{
-                position: "absolute",
-                bottom: 5,
-                right: 5,
-                width: 7,
-                height: 7,
-                borderRadius: "50%",
-                background: "#4ADE80",
-                pointerEvents: "none",
-              }} />
-            )}
-          </button>
-        ))}
+        {TABS.map((t) => {
+          const isLive = t.id === "live";
+          return (
+            <button
+              key={t.id}
+              ref={isLive ? muteMenuBtnRef : undefined}
+              className={`novee-tab${tab === t.id ? " active" : ""}`}
+              onClick={() => {
+                setTab(t.id);
+                if (t.id === "live") setUnreadCount(0);
+              }}
+              onContextMenu={(e) => {
+                if (!isLive) return;
+                e.preventDefault();
+                setShowMuteMenu((v) => !v);
+              }}
+              onTouchStart={() => {
+                if (!isLive) return;
+                longPressFiredRef.current = false;
+                longPressRef.current = setTimeout(() => {
+                  longPressFiredRef.current = true;
+                  setShowMuteMenu((v) => !v);
+                }, 500);
+              }}
+              onTouchEnd={(e) => {
+                if (longPressRef.current) { clearTimeout(longPressRef.current); longPressRef.current = null; }
+                // Suppress the synthetic click that follows a long-press action.
+                if (longPressFiredRef.current) { e.preventDefault(); longPressFiredRef.current = false; }
+              }}
+              onTouchMove={() => {
+                if (longPressRef.current) { clearTimeout(longPressRef.current); longPressRef.current = null; }
+              }}
+              style={{ position: "relative" }}
+            >
+              {t.label}
+
+              {/* Mute icon: shown when muted (replaces unread badge) */}
+              {isLive && isMuted && (
+                <span
+                  title={`Muted — unmutes at ${new Date(muteUntil!).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`}
+                  style={{
+                    position: "absolute",
+                    top: 5,
+                    right: 4,
+                    fontSize: 12,
+                    lineHeight: 1,
+                    pointerEvents: "none",
+                    opacity: 0.75,
+                  }}
+                >
+                  🔇
+                </span>
+              )}
+
+              {/* Unread badge: hidden when muted */}
+              {isLive && !isMuted && unreadCount > 0 && (
+                <span style={{
+                  position: "absolute",
+                  top: 6,
+                  right: 4,
+                  minWidth: 18,
+                  height: 18,
+                  padding: "0 4px",
+                  borderRadius: 9,
+                  background: "#C4610A",
+                  color: "#F5EDD8",
+                  fontSize: 9,
+                  fontWeight: 700,
+                  letterSpacing: "0.05em",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  lineHeight: 1,
+                  pointerEvents: "none",
+                }}>
+                  +{unreadCount > 99 ? "99" : unreadCount}
+                </span>
+              )}
+
+              {isLive && liveDotVisible && (
+                <span className={`eat-live-dot${liveDotFading ? " fading" : ""}`} style={{
+                  position: "absolute",
+                  bottom: 5,
+                  right: 5,
+                  width: 7,
+                  height: 7,
+                  borderRadius: "50%",
+                  background: "#4ADE80",
+                  pointerEvents: "none",
+                }} />
+              )}
+
+              {/* Mute context menu */}
+              {isLive && showMuteMenu && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "calc(100% + 4px)",
+                    right: 0,
+                    zIndex: 300,
+                    background: "#1E1E1F",
+                    border: "1px solid rgba(196,97,10,0.3)",
+                    borderRadius: 7,
+                    padding: "4px 0",
+                    minWidth: 160,
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.6)",
+                    whiteSpace: "nowrap",
+                  }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  {!isMuted ? (
+                    <div
+                      role="menuitem"
+                      tabIndex={0}
+                      onClick={(e) => { e.stopPropagation(); activateMute(); }}
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && activateMute()}
+                      style={{
+                        display: "block", width: "100%", textAlign: "left",
+                        cursor: "pointer",
+                        padding: "8px 14px",
+                        fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+                        color: "#F5EDD8",
+                        transition: "background 0.1s",
+                      }}
+                      onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.background = "rgba(196,97,10,0.15)")}
+                      onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.background = "none")}
+                    >
+                      🔇 &nbsp;MUTE FOR 5 MIN
+                    </div>
+                  ) : (
+                    <div
+                      role="menuitem"
+                      tabIndex={0}
+                      onClick={(e) => { e.stopPropagation(); deactivateMute(); }}
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && deactivateMute()}
+                      style={{
+                        display: "block", width: "100%", textAlign: "left",
+                        cursor: "pointer",
+                        padding: "8px 14px",
+                        fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+                        color: "#4ADE80",
+                        transition: "background 0.1s",
+                      }}
+                      onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.background = "rgba(74,222,128,0.1)")}
+                      onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.background = "none")}
+                    >
+                      🔔 &nbsp;UNMUTE NOW
+                    </div>
+                  )}
+                  {isMuted && muteUntil && (
+                    <div style={{
+                      padding: "4px 14px 8px",
+                      fontSize: 9, letterSpacing: "0.12em",
+                      color: "rgba(245,237,216,0.35)",
+                    }}>
+                      UNMUTES AT {new Date(muteUntil).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* Content */}
