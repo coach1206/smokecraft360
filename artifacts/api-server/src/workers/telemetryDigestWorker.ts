@@ -3,10 +3,15 @@
  *
  * Runs once a week (configurable via TELEMETRY_DIGEST_INTERVAL_MS for testing).
  * For every venue it:
- *   1. Fetches the 7-day telemetry summary.
- *   2. Builds the same CSV shape the EATDashboard exports manually
- *      (section headers, CRLF line endings, and quoting identical to
- *      buildCsvContent() in EATDashboard.tsx).
+ *   1. Fetches a primary telemetry summary (default: last 7 days) and a
+ *      comparison summary for the prior period (configurable via
+ *      TELEMETRY_COMPARE_WINDOW_DAYS, default: same as primary window).
+ *   2. Builds a side-by-side comparison CSV matching the layout of
+ *      buildComparisonCsvContent() in EATDashboard.tsx:
+ *        Daily Counts, Top Event Types — Primary/Compare, Module Usage —
+ *        Primary/Compare, Top Event Types Comparison, Module Usage Comparison,
+ *        Summary with delta_pct columns.
+ *      Column headers include window labels (e.g. "Primary: last 7 day(s)").
  *   3. Emails it to every eligible admin for that venue who has NOT opted out:
  *      - venue_owner / manager: receive a digest for their own venue.
  *      - super_admin: receives a digest for every active venue; if they have no
@@ -31,6 +36,14 @@ import { logger }               from "../lib/logger";
 const WINDOW_DAYS = 7;
 const INTERVAL_MS = Number(process.env["TELEMETRY_DIGEST_INTERVAL_MS"]) || 7 * 24 * 60 * 60 * 1000;
 
+// Clamp comparison window to [1, 365] days to prevent negative/zero or
+// excessively large values from producing incorrect query windows.
+const _rawCompareDays = Number(process.env["TELEMETRY_COMPARE_WINDOW_DAYS"]);
+const COMPARE_WINDOW_DAYS =
+  Number.isFinite(_rawCompareDays) && _rawCompareDays >= 1
+    ? Math.min(Math.floor(_rawCompareDays), 365)
+    : WINDOW_DAYS;
+
 let timer: ReturnType<typeof setInterval> | null = null;
 
 // ── HMAC token helpers ────────────────────────────────────────────────────────
@@ -49,13 +62,7 @@ export function verifyUnsubscribeToken(userId: string, token: string): boolean {
   }
 }
 
-// ── CSV builder ───────────────────────────────────────────────────────────────
-// Exactly mirrors buildCsvContent() in EATDashboard.tsx:
-//   • Section headers use "##" (not "#")
-//   • Date-range line: "# Date range: last N day(s)"
-//   • event_type and module_name values are double-quote escaped per RFC 4180
-//   • module_slug is also quoted (matching dashboard)
-//   • Lines joined with CRLF ("\r\n")
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 interface TelemetrySummary {
   total:            number;
@@ -65,55 +72,187 @@ interface TelemetrySummary {
   ritualEngagement: number;
 }
 
-function buildCsv(summary: TelemetrySummary, windowDays: number): string {
+interface TelemetrySummaryWithComparison extends TelemetrySummary {
+  comparison: TelemetrySummary | null;
+}
+
+// ── CSV builder ───────────────────────────────────────────────────────────────
+// Mirrors buildComparisonCsvContent() in EATDashboard.tsx:
+//   • Section headers use "##"
+//   • Window labels in column headers: "Primary: last N day(s)" / "Compare: last N day(s)"
+//   • event_type / module_name / module_slug values are double-quote escaped per RFC 4180
+//   • Lines joined with CRLF ("\r\n")
+//   • Falls back gracefully when comparison data is absent (null)
+
+function buildComparisonCsv(
+  data: TelemetrySummaryWithComparison,
+  primaryDays: number,
+  compareDays: number,
+): string {
+  const cmp = data.comparison;
+  const primaryLabel = `Primary: last ${primaryDays} day(s)`;
+  const compareLabel = `Compare: last ${compareDays} day(s)`;
   const rows: string[] = [];
 
-  rows.push("# E.A.T. Engine Telemetry Export");
-  rows.push(`# Date range: last ${windowDays} day(s)`);
+  rows.push("# E.A.T. Engine Comparison Export");
+  rows.push(`# Primary window: last ${primaryDays} day(s)`);
+  rows.push(`# Comparison window: last ${compareDays} day(s)`);
   rows.push(`# Generated: ${new Date().toISOString()}`);
   rows.push("");
 
+  // ── Daily Counts ────────────────────────────────────────────────────────────
   rows.push("## Daily Counts");
-  rows.push("date,events");
-  for (const d of summary.dailyCounts) {
-    rows.push(`${d.day},${d.cnt}`);
+  const maxLen = Math.max(
+    data.dailyCounts.length,
+    cmp ? cmp.dailyCounts.length : 0,
+  );
+  const unequalWindows = primaryDays !== compareDays;
+  if (unequalWindows) {
+    rows.push(`primary_date,comparison_date,"${primaryLabel}","${compareLabel}",delta_pct`);
+  } else {
+    rows.push(`date,"${primaryLabel}","${compareLabel}",delta_pct`);
+  }
+  for (let i = 0; i < maxLen; i++) {
+    const primary     = data.dailyCounts[i];
+    const comparison  = cmp?.dailyCounts[i];
+    const primaryCnt  = primary?.cnt ?? 0;
+    const compCnt     = comparison?.cnt ?? 0;
+    const deltaPct    =
+      compCnt === 0
+        ? ""
+        : String(Math.round(((primaryCnt - compCnt) / compCnt) * 100));
+    if (unequalWindows) {
+      rows.push(`${primary?.day ?? ""},${comparison?.day ?? ""},${primaryCnt},${compCnt},${deltaPct}`);
+    } else {
+      rows.push(`${primary?.day ?? ""},${primaryCnt},${compCnt},${deltaPct}`);
+    }
   }
   rows.push("");
 
-  rows.push("## Top Event Types");
+  // ── Top Event Types — Primary ───────────────────────────────────────────────
+  rows.push(`## Top Event Types — ${primaryLabel}`);
   rows.push("event_type,count");
-  for (const e of summary.topEventTypes) {
+  for (const e of data.topEventTypes) {
     rows.push(`"${e.event_type.replace(/"/g, '""')}",${e.cnt}`);
   }
   rows.push("");
 
-  rows.push("## Module Usage");
+  // ── Top Event Types — Comparison ───────────────────────────────────────────
+  rows.push(`## Top Event Types — ${compareLabel}`);
+  rows.push("event_type,count");
+  if (cmp) {
+    for (const e of cmp.topEventTypes) {
+      rows.push(`"${e.event_type.replace(/"/g, '""')}",${e.cnt}`);
+    }
+  }
+  rows.push("");
+
+  // ── Module Usage — Primary ─────────────────────────────────────────────────
+  rows.push(`## Module Usage — ${primaryLabel}`);
   rows.push("module_name,module_slug,event_count");
-  for (const m of summary.moduleUsage) {
+  for (const m of data.moduleUsage) {
     rows.push(`"${m.module_name.replace(/"/g, '""')}","${m.module_slug}",${m.event_count}`);
   }
   rows.push("");
 
+  // ── Module Usage — Comparison ──────────────────────────────────────────────
+  rows.push(`## Module Usage — ${compareLabel}`);
+  rows.push("module_name,module_slug,event_count");
+  if (cmp) {
+    for (const m of cmp.moduleUsage) {
+      rows.push(`"${m.module_name.replace(/"/g, '""')}","${m.module_slug}",${m.event_count}`);
+    }
+  }
+  rows.push("");
+
+  // ── Top Event Types Comparison ─────────────────────────────────────────────
+  rows.push("## Top Event Types Comparison");
+  rows.push("name,primary_count,comparison_count,delta_pct");
+  {
+    const cmpEventMap = new Map<string, number>(
+      (cmp?.topEventTypes ?? []).map((e) => [e.event_type, e.cnt]),
+    );
+    const merged = [...data.topEventTypes]
+      .map((e) => {
+        const compCnt  = cmpEventMap.get(e.event_type) ?? 0;
+        const deltaPct =
+          compCnt === 0
+            ? ""
+            : String(Math.round(((e.cnt - compCnt) / compCnt) * 100));
+        return { name: e.event_type, primary: e.cnt, comparison: compCnt, deltaPct };
+      })
+      .sort((a, b) => b.primary - a.primary);
+    for (const row of merged) {
+      rows.push(`"${row.name.replace(/"/g, '""')}",${row.primary},${row.comparison},${row.deltaPct}`);
+    }
+  }
+  rows.push("");
+
+  // ── Module Usage Comparison ────────────────────────────────────────────────
+  rows.push("## Module Usage Comparison");
+  rows.push("name,primary_count,comparison_count,delta_pct");
+  {
+    const cmpModuleMap = new Map<string, number>(
+      (cmp?.moduleUsage ?? []).map((m) => [m.module_slug, m.event_count]),
+    );
+    const merged = [...data.moduleUsage]
+      .map((m) => {
+        const compCnt  = cmpModuleMap.get(m.module_slug) ?? 0;
+        const deltaPct =
+          compCnt === 0
+            ? ""
+            : String(Math.round(((m.event_count - compCnt) / compCnt) * 100));
+        return { name: m.module_name, primary: m.event_count, comparison: compCnt, deltaPct };
+      })
+      .sort((a, b) => b.primary - a.primary);
+    for (const row of merged) {
+      rows.push(`"${row.name.replace(/"/g, '""')}",${row.primary},${row.comparison},${row.deltaPct}`);
+    }
+  }
+  rows.push("");
+
+  // ── Summary ────────────────────────────────────────────────────────────────
   rows.push("## Summary");
-  rows.push("metric,value");
-  rows.push(`total_events,${summary.total}`);
-  rows.push(`ritual_engagement_pct,${summary.ritualEngagement}`);
+  rows.push(`metric,"${primaryLabel}","${compareLabel}",delta_pct`);
+  const totalDelta =
+    cmp && cmp.total > 0
+      ? String(Math.round(((data.total - cmp.total) / cmp.total) * 100))
+      : "";
+  rows.push(`total_events,${data.total},${cmp?.total ?? ""},${totalDelta}`);
+  const ritualDelta =
+    cmp && cmp.ritualEngagement > 0
+      ? String(Math.round(((data.ritualEngagement - cmp.ritualEngagement) / cmp.ritualEngagement) * 100))
+      : "";
+  rows.push(`ritual_engagement_pct,${data.ritualEngagement},${cmp?.ritualEngagement ?? ""},${ritualDelta}`);
 
   return rows.join("\r\n");
 }
 
 // ── Telemetry summary query ───────────────────────────────────────────────────
 // Same aggregation logic as buildSummary() in kernel.ts.
+//
+// offsetDays: how many days before NOW() the window ends.
+//   0 → current period (ends now, starts windowDays ago)
+//   N → prior period   (ends N days ago, starts N+windowDays ago)
 
-async function fetchSummary(windowDays: number, venueId: string | null): Promise<TelemetrySummary> {
+async function fetchSummary(
+  windowDays: number,
+  venueId: string | null,
+  offsetDays: number = 0,
+): Promise<TelemetrySummary> {
   const venueFilter = venueId
     ? sql` AND venue_id = ${venueId}::uuid`
     : sql``;
 
+  // Window: [NOW() - (offsetDays + windowDays), NOW() - offsetDays)
+  const windowEnd   = offsetDays > 0 ? sql`NOW() - (${offsetDays} || ' days')::interval` : sql`NOW()`;
+  const windowStart = sql`NOW() - (${offsetDays + windowDays} || ' days')::interval`;
+
   const totalResult = await db.execute(sql`
     SELECT COUNT(*)::int AS total
     FROM telemetry_events
-    WHERE occurred_at >= NOW() - (${windowDays} || ' days')::interval
+    WHERE occurred_at >= ${windowStart}
+      AND occurred_at < ${windowEnd}
     ${venueFilter}
   `);
   const total = (totalResult.rows[0] as { total: number }).total;
@@ -124,15 +263,16 @@ async function fetchSummary(windowDays: number, venueId: string | null): Promise
       COALESCE(c.cnt, 0)::int AS cnt
     FROM (
       SELECT generate_series(
-        (NOW() - (${windowDays} || ' days')::interval)::date,
-        NOW()::date - INTERVAL '1 day',
+        ${windowStart}::date,
+        (${windowEnd}::date - INTERVAL '1 day'),
         '1 day'::interval
       )::date AS day
     ) gs
     LEFT JOIN (
       SELECT DATE_TRUNC('day', occurred_at)::date AS day, COUNT(*)::int AS cnt
       FROM telemetry_events
-      WHERE occurred_at >= NOW() - (${windowDays} || ' days')::interval
+      WHERE occurred_at >= ${windowStart}
+        AND occurred_at < ${windowEnd}
       ${venueFilter}
       GROUP BY 1
     ) c USING (day)
@@ -143,7 +283,8 @@ async function fetchSummary(windowDays: number, venueId: string | null): Promise
   const topResult = await db.execute(sql`
     SELECT event_type, COUNT(*)::int AS cnt
     FROM telemetry_events
-    WHERE occurred_at >= NOW() - (${windowDays} || ' days')::interval
+    WHERE occurred_at >= ${windowStart}
+      AND occurred_at < ${windowEnd}
     ${venueFilter}
     GROUP BY event_type
     ORDER BY cnt DESC
@@ -159,7 +300,8 @@ async function fetchSummary(windowDays: number, venueId: string | null): Promise
     FROM kernel_modules km
     LEFT JOIN telemetry_events te
       ON te.module_id = km.id
-      AND te.occurred_at >= NOW() - (${windowDays} || ' days')::interval
+      AND te.occurred_at >= ${windowStart}
+      AND te.occurred_at < ${windowEnd}
       ${venueId ? sql`AND te.venue_id = ${venueId}::uuid` : sql``}
     GROUP BY km.id, km.name, km.slug
     ORDER BY event_count DESC
@@ -171,7 +313,8 @@ async function fetchSummary(windowDays: number, venueId: string | null): Promise
       SUM(CASE WHEN event_type = 'swipe_start'    THEN 1 ELSE 0 END)::int AS starts,
       SUM(CASE WHEN event_type = 'build_complete' THEN 1 ELSE 0 END)::int AS completions
     FROM telemetry_events
-    WHERE occurred_at >= NOW() - (${windowDays} || ' days')::interval
+    WHERE occurred_at >= ${windowStart}
+      AND occurred_at < ${windowEnd}
     ${venueFilter}
   `);
   const { starts, completions } = ritualResult.rows[0] as { starts: number; completions: number };
@@ -254,12 +397,17 @@ async function runDigest(): Promise<void> {
     }
   }
 
-  // Pre-fetch summaries per unique venueId to avoid redundant DB round trips.
-  const summaryCache = new Map<string | null, TelemetrySummary>();
+  // Pre-fetch primary + comparison summaries per unique venueId to avoid
+  // redundant DB round trips.
+  const summaryCache = new Map<string | null, TelemetrySummaryWithComparison>();
   const uniqueVenueIds = [...new Set(sendTargets.map(t => t.venueId))];
   for (const vid of uniqueVenueIds) {
     try {
-      summaryCache.set(vid, await fetchSummary(WINDOW_DAYS, vid));
+      const [primary, comparison] = await Promise.all([
+        fetchSummary(WINDOW_DAYS, vid, 0),
+        fetchSummary(COMPARE_WINDOW_DAYS, vid, WINDOW_DAYS),
+      ]);
+      summaryCache.set(vid, { ...primary, comparison });
     } catch (err) {
       logger.error({ err, venueId: vid }, "[TelemetryDigest] Failed to fetch summary — skipping venue");
     }
@@ -276,7 +424,7 @@ async function runDigest(): Promise<void> {
     const summary = summaryCache.get(venueId);
     if (!summary) continue;
 
-    const csv      = buildCsv(summary, WINDOW_DAYS);
+    const csv      = buildComparisonCsv(summary, WINDOW_DAYS, COMPARE_WINDOW_DAYS);
     const csvB64   = Buffer.from(csv, "utf-8").toString("base64");
     const filename = `telemetry-${venueId ?? "global"}-${new Date().toISOString().slice(0, 10)}.csv`;
     const venueLabel = venueId ? `Venue ${venueId.slice(0, 8)}` : "All Venues";
