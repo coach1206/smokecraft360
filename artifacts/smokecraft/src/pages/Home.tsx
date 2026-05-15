@@ -191,27 +191,38 @@ const SMOKE_PLAYGROUND_CONFIG: PlaygroundConfig = {
   ],
   selectFields: [
     {
-      id: "woodTone", label: "Box Wood Tone",
+      id: "woodTone", label: "Exterior Veneer",
       options: [
-        { id: "cedar",    label: "Cedar"       },
-        { id: "mahogany", label: "Mahogany"     },
-        { id: "walnut",   label: "Dark Walnut"  },
-        { id: "pine",     label: "Light Pine"   },
+        { id: "cedar",    label: "Cedar Burl"      },
+        { id: "mahogany", label: "Dark Mahogany"   },
+        { id: "walnut",   label: "Macassar Ebony"  },
+        { id: "pine",     label: "Maple Burl"      },
+        { id: "rosewood", label: "Rosewood"        },
       ],
     },
     {
-      id: "interiorColor", label: "Interior Color",
+      id: "interiorColor", label: "Interior Lining",
       options: [
-        { id: "cream", label: "Cream Satin"  },
-        { id: "ebony", label: "Ebony Velvet" },
-        { id: "ivory", label: "Ivory Linen"  },
+        { id: "crimson", label: "Crimson Velvet" },
+        { id: "obsidian", label: "Obsidian Satin" },
+        { id: "navy",    label: "Navy Tweed"     },
+        { id: "ivory",   label: "Ivory Cream"    },
       ],
     },
+    {
+      id: "hardware", label: "Metallic Hardware",
+      options: [
+        { id: "rosegold", label: "Brushed Rose Gold" },
+        { id: "platinum", label: "Axiom Platinum"    },
+        { id: "gunmetal", label: "Chrome Gunmetal"   },
+      ],
+      locked: true,
+    },
   ],
-  engravingLabel: "Engraving Text",
+  engravingLabel: "Lid Engraving",
   engravingPlaceholder: "Add a personal engraving…",
   engravingLocked: false,
-  lockedHint: "Obsidian & Platinum finishes and 3D box editing unlock in Signature Studio.",
+  lockedHint: "Metallic Hardware & Obsidian/Platinum finishes unlock in Signature Studio.",
 };
 
 export default function Home() {
