@@ -9,12 +9,15 @@ const queryClient = new QueryClient({
   },
 });
 
-const OSShell      = lazy(() => import("@/pages/OSShell"));
-const EATDashboard = lazy(() => import("@/pages/EATDashboard"));
+const CraftPortalHome  = lazy(() => import("@/pages/CraftPortalHome"));
+const SmokeCraftGateway = lazy(() => import("@/pages/SmokeCraftGateway"));
+const CraftComingSoon  = lazy(() => import("@/pages/CraftComingSoon"));
+const OSShell          = lazy(() => import("@/pages/OSShell"));
+const EATDashboard     = lazy(() => import("@/pages/EATDashboard"));
 
 function PageLoader() {
   return (
-    <div style={{ position: "fixed", inset: 0, background: "#0D0D0E", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ position: "fixed", inset: 0, background: "#070605", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <svg width="40" height="40" viewBox="0 0 40 40">
         <circle cx="20" cy="20" r="16" stroke="rgba(196,97,10,0.18)" strokeWidth="2" fill="none" />
         <circle cx="20" cy="20" r="16" stroke="#C4610A" strokeWidth="2" fill="none"
@@ -30,8 +33,21 @@ function Router() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Switch>
-        <Route path="/"           component={OSShell} />
+        {/* ── Public craft portals ── */}
+        <Route path="/"           component={CraftPortalHome} />
+        <Route path="/smokecraft" component={SmokeCraftGateway} />
+        <Route path="/pourcraft"  component={() => <CraftComingSoon craft="pourcraft" />} />
+        <Route path="/beercraft"  component={() => <CraftComingSoon craft="beercraft" />} />
+        <Route path="/winecraft"  component={() => <CraftComingSoon craft="winecraft" />} />
+
+        {/* ── Enterprise / operational layer ── */}
+        <Route path="/sovereign"  component={OSShell} />
+        <Route path="/admin"      component={OSShell} />
+        <Route path="/ops"        component={OSShell} />
         <Route path="/eat-engine" component={EATDashboard} />
+        <Route path="/kernel"     component={EATDashboard} />
+        <Route path="/eeie"       component={EATDashboard} />
+
         <Route component={NotFound} />
       </Switch>
     </Suspense>
