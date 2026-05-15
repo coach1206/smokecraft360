@@ -886,17 +886,69 @@ function GuestAmbientLayer() {
   if (!active) return null;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
+    <div style={{
+      position: 'fixed', inset: 0, pointerEvents: 'none',
+      zIndex: 9990, overflow: 'hidden',
+      mixBlendMode: 'screen',
+    }}>
       {/* Cinematic edge vignette */}
       <div style={{
         position: 'absolute', inset: 0,
         background: 'radial-gradient(ellipse 82% 72% at 50% 50%, transparent 28%, rgba(4,2,0,0.52) 100%)',
       }} />
-      {/* Canvas-based volumetric smoke + ember system */}
+      {/* Canvas-based volumetric smoke + ember particle system */}
       <canvas
         ref={canvasRef}
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', willChange: 'contents' }}
       />
+      {/* Persistent smoldering cigar-tip fixture — bottom-right, 5s pulse */}
+      <motion.div
+        animate={{
+          boxShadow: [
+            '0 0 6px 2px rgba(212,175,55,0.22)',
+            '0 0 26px 8px rgba(212,175,55,0.70)',
+            '0 0 12px 4px rgba(212,175,55,0.40)',
+            '0 0 26px 8px rgba(212,175,55,0.70)',
+            '0 0 6px 2px rgba(212,175,55,0.22)',
+          ],
+          opacity: [0.72, 1, 0.82, 1, 0.72],
+        }}
+        transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut' }}
+        style={{
+          position:     'absolute',
+          bottom:       72,
+          right:        '13%',
+          width:        10,
+          height:       6,
+          borderRadius: '50%',
+          background:   'radial-gradient(ellipse, #fff8e1 0%, #d4af37 42%, #7c3800 100%)',
+          willChange:   'box-shadow, opacity',
+        }}
+      />
+      {/* Micro-sparks from persistent fixture */}
+      {([0, 1, 2] as const).map(i => (
+        <motion.div
+          key={`global-spark-${i}`}
+          animate={{
+            x:       [0, (i === 0 ? -6 : i === 1 ? 5 : -2)],
+            y:       [0, -(14 + i * 8)],
+            opacity: [0, 0.8, 0],
+            scale:   [1, 0.3],
+          }}
+          transition={{ duration: 0.5 + i * 0.15, repeat: Infinity, delay: i * 1.6 + 0.4, ease: 'easeOut' }}
+          style={{
+            position:     'absolute',
+            bottom:       74,
+            right:        `calc(13% + ${i * 3}px)`,
+            width:        2.5,
+            height:       2.5,
+            borderRadius: '50%',
+            background:   '#fff8e1',
+            boxShadow:    '0 0 4px #d4af37',
+            willChange:   'transform, opacity',
+          }}
+        />
+      ))}
     </div>
   );
 }

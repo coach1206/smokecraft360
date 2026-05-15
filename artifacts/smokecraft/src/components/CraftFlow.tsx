@@ -33,7 +33,6 @@ import {
 import ShareCard from "@/components/ShareCard/ShareCard";
 import { JourneyPath }       from "@/components/UniversalExperience/JourneyPath";
 import { ExperienceRecap }   from "@/components/UniversalExperience/ExperienceRecap";
-import { ExperienceFlowEngine } from "@/lib/experienceFlowEngine";
 
 export type CraftCategory = "beer" | "alcohol" | "vape";
 
@@ -200,10 +199,10 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const [coachResuming,  setCoachResuming ] = useState(false);
   const [studioOpen,     setStudioOpen    ] = useState(false);
   const [showShareCard,  setShowShareCard ] = useState(false);
-  // Stage 5 — Journey Path overlay (shown between profile→match)
+  // Ritual path overlay (shown between profile→match)
   const [showJourney,          setShowJourney         ] = useState(false);
   const [pendingJourneyMood,   setPendingJourneyMood  ] = useState<CraftMoodCard | null>(null);
-  // Stage 9 — Experience Recap overlay (shown on "Complete Session" in reveal)
+  // Ritual recap overlay (shown on "Complete Ritual" in reveal)
   const [showRecap,            setShowRecap           ] = useState(false);
 
   const phaseIndex = useMemo(() => {
@@ -565,7 +564,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     emitKernelEvent("swipe_add", { cardId: m.id, title: m.title, step: "profile", craftType }, craftToModuleSlug(craftType));
     if (selectedStyle) {
       void updateScore(selectedStyle, m, "profile");
-      // Stage 5 — show Journey Path before running the match
+      // Ritual path — show Journey Path before running the match
       setPendingJourneyMood(m);
       setShowJourney(true);
     }
@@ -933,7 +932,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
             )}
 
             {phase === "match" && (
-              <motion.div key="match" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.02 }}
+              <motion.div key="match" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.02 }} transition={{ duration: 1.8, ease: [0.22, 1, 0.36, 1] }}
                 data-testid={`${config.testIdPrefix}-loading`}
                 style={{
                   minHeight: 460, display: "flex", flexDirection: "column",
@@ -1081,69 +1080,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                       </div>
                     )}
 
-                    {/* ── Signature Studio CTA — gated: score ≥ 70 + ritual finale ── */}
-                    {scoreState.score >= 70 && ExperienceFlowEngine.isSignatureStudioEligible() && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 16 }}
-                        animate={{ opacity: 1, y: 0  }}
-                        transition={{ delay: 0.55, duration: 0.4 }}
-                        style={{ marginTop: 22 }}
-                        data-testid={`${config.testIdPrefix}-studio-cta`}
-                      >
-                        <div style={{
-                          padding: "18px 20px",
-                          borderRadius: 18,
-                          background: `linear-gradient(145deg, ${config.theme.accent}14, rgba(245,242,237,0.7))`,
-                          border: `1px solid ${config.theme.accent}40`,
-                          boxShadow: `0 20px 60px ${config.theme.accent}18`,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          gap: 16,
-                        }}>
-                          <div>
-                            <div style={{
-                              display: "flex", alignItems: "center", gap: 6,
-                              fontSize: 9, letterSpacing: "0.32em", textTransform: "uppercase",
-                              color: config.theme.accent, fontWeight: 700, marginBottom: 5,
-                            }}>
-                              <Sparkles size={11} /> Signature Studio Unlocked
-                            </div>
-                            <p style={{
-                              margin: 0, fontSize: 13, fontWeight: 600, color: "#1A1A1B",
-                              fontFamily: "var(--app-font-serif, Georgia, serif)",
-                            }}>
-                              Design Your Signature
-                            </p>
-                            <p style={{ margin: "4px 0 0", fontSize: 11, color: "rgba(26,26,27,0.52)", lineHeight: 1.4 }}>
-                              Score {(scoreState.score / 10).toFixed(1)} — you've unlocked the full design studio.
-                            </p>
-                          </div>
-                          <motion.button
-                            type="button"
-                            data-testid={`${config.testIdPrefix}-studio-open`}
-                            onClick={() => setStudioOpen(true)}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.96 }}
-                            style={{
-                              background: `linear-gradient(135deg, ${config.theme.accent}, ${config.theme.accentSoft})`,
-                              color: "#F5F2ED", border: "none",
-                              padding: "12px 22px", borderRadius: 999,
-                              fontSize: 11, fontWeight: 700,
-                              letterSpacing: "0.22em", textTransform: "uppercase",
-                              cursor: "pointer",
-                              display: "inline-flex", alignItems: "center", gap: 8,
-                              boxShadow: `0 10px 28px ${config.theme.accent}50`,
-                              flexShrink: 0,
-                            }}
-                          >
-                            <PenLine size={13} /> Open Studio
-                          </motion.button>
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {/* ── Stage 9: Complete Session CTA ──────────────────── */}
+                    {/* ── Ritual Finale: Complete Session CTA ──────────── */}
                     <motion.div
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -1456,7 +1393,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         )}
       </AnimatePresence>
 
-      {/* ── Stage 5: Journey Path overlay ──────────────────────────── */}
+      {/* ── Ritual Path overlay (style → mood transition) ──────────── */}
       <AnimatePresence>
         {showJourney && (
           <JourneyPath
@@ -1469,7 +1406,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
         )}
       </AnimatePresence>
 
-      {/* ── Stage 9: Experience Recap overlay ──────────────────────── */}
+      {/* ── Ritual Recap overlay (session complete) ─────────────────── */}
       <AnimatePresence>
         {showRecap && (
           <ExperienceRecap
