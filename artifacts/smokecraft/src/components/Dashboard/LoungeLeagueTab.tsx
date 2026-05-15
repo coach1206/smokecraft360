@@ -12,10 +12,11 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence }           from "framer-motion";
 import {
   Trophy, RefreshCw, Crown, Star, TrendingUp, Users,
-  Flame, Medal, Award,
+  Flame, Medal, Award, Lock,
 } from "lucide-react";
 import { fetchLoungeLeague, fetchMyLoungeStats, type LoungeLeagueEntry } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
+import { useKernelMode } from "@/contexts/KernelModeContext";
 
 const GOLD     = "rgba(212,139,0,1)";
 const GOLD_DIM = "rgba(212,139,0,0.55)";
@@ -145,6 +146,7 @@ function LeaderRow({
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export function LoungeLeagueTab() {
+  const { mode } = useKernelMode();
   const { user }                                     = useAuth();
   const [league,    setLeague]    = useState<LoungeLeagueEntry[]>([]);
   const [myLounge,  setMyLounge]  = useState<(LoungeLeagueEntry & { totalVenues: number }) | null>(null);
@@ -160,7 +162,34 @@ export function LoungeLeagueTab() {
     finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    if (mode === "sovereign") void load();
+    else setLoading(false);
+  }, [load, mode]);
+
+  if (mode !== "sovereign") {
+    return (
+      <div style={{ textAlign: "center", padding: "48px 24px" }}>
+        <div style={{
+          display: "inline-flex", alignItems: "center", justifyContent: "center",
+          width: 56, height: 56, borderRadius: "50%",
+          background: "rgba(212,139,0,0.10)", border: "1px solid rgba(212,139,0,0.25)",
+          marginBottom: 20,
+        }}>
+          <Lock size={22} style={{ color: GOLD }} />
+        </div>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.22em", color: GOLD, textTransform: "uppercase", marginBottom: 10 }}>
+          ESSENTIAL MODE ACTIVE
+        </div>
+        <div style={{ fontSize: 20, fontWeight: 600, color: "rgba(26,26,27,0.85)", marginBottom: 8 }}>
+          Lounge League
+        </div>
+        <div style={{ fontSize: 13, color: MUTED, maxWidth: 320, margin: "0 auto" }}>
+          The Lounge League competition leaderboard is a sovereign-tier feature. Upgrade to Sovereign to view rankings, badges, and venue standings.
+        </div>
+      </div>
+    );
+  }
 
   const maxScore    = Math.max(...league.map((e) => e.score), 1);
   const topLounge   = league[0];

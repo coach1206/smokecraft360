@@ -8,6 +8,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useLocation } from "wouter";
+import { useKernelMode } from "@/contexts/KernelModeContext";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, Brain, TrendingUp, TrendingDown, BarChart2,
@@ -165,6 +166,7 @@ interface SwipeMetrics {
 
 export default function SwipeIntelligence() {
   const [, navigate] = useLocation();
+  const { mode } = useKernelMode();
   const [data,        setData]        = useState<AnalyticsData | null>(null);
   const [metrics,     setMetrics]     = useState<SwipeMetrics | null>(null);
   const [orchData,    setOrchData]    = useState<OrchestratorAnalytics | null>(null);
@@ -212,13 +214,14 @@ export default function SwipeIntelligence() {
       .finally(() => setOrchLoading(false));
   }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const TABS = [
-    { id: "overview",       label: "Overview"        },
-    { id: "tags",           label: "Taste Clusters"  },
-    { id: "revenue",        label: "Revenue Funnel"  },
-    { id: "craft",          label: "Craft Compare"   },
-    { id: "orchestration",  label: "Orchestration IQ" },
+  const ALL_TABS = [
+    { id: "overview",       label: "Overview",         sovereign: false },
+    { id: "tags",           label: "Taste Clusters",   sovereign: false },
+    { id: "revenue",        label: "Revenue Funnel",   sovereign: false },
+    { id: "craft",          label: "Craft Compare",    sovereign: false },
+    { id: "orchestration",  label: "Orchestration IQ", sovereign: true  },
   ] as const;
+  const TABS = ALL_TABS.filter(t => !t.sovereign || mode === "sovereign");
 
   return (
     <div style={{ minHeight: "100dvh", background: C.bg, color: C.text }}>
@@ -558,7 +561,7 @@ export default function SwipeIntelligence() {
             )}
 
             {/* ── ORCHESTRATION IQ TAB ── */}
-            {tab === "orchestration" && (
+            {tab === "orchestration" && mode === "sovereign" && (
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}

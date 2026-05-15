@@ -6,6 +6,7 @@ import { KernelModeProvider } from "@/contexts/KernelModeContext";
 // VenueContext — fixed venue id so the localStorage cache key is deterministic
 vi.mock("@/contexts/VenueContext", () => ({
   useVenue: () => ({ id: "default" }),
+  useVenueContext: () => ({}),
 }));
 
 // NULL_VENUE_ID used by KernelModeProvider when venue.id === "default"
@@ -27,13 +28,20 @@ vi.mock("html2canvas", () => ({
   default: vi.fn(() => Promise.resolve({ toDataURL: () => "" })),
 }));
 
-// API services used by SignatureStudio
+// API services
 vi.mock("@/services/api", () => ({
   fetchDesignDrafts: vi.fn(() => Promise.resolve([])),
   saveDesignDraft: vi.fn(() => Promise.resolve(null)),
+  fetchLoungeLeague: vi.fn(() => Promise.resolve([])),
+  fetchMyLoungeStats: vi.fn(() => Promise.resolve(null)),
 }));
 vi.mock("@/services/auth", () => ({ getAuthHeaders: vi.fn(() => ({})) }));
 vi.mock("@/components/Band/bandConstants", () => ({ COLOR_OPTIONS: [] }));
+
+// Auth context
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: () => ({ user: null, loading: false, token: null, logout: vi.fn() }),
+}));
 
 // SignatureStudio craft panels
 vi.mock("@/components/SignatureStudio/SmokeDesignPanel", () => ({
@@ -55,6 +63,63 @@ vi.mock("@/components/SignatureStudio/VapeDesignPanel", () => ({
   VapeDesignPanel: () => <div />, VapePreview: () => <div />,
   DEFAULT_VAPE_STATE: { flavorName: "", labelOffset: { x: 0, y: 0 } },
 }));
+
+// Ax components used by SwipeIntelligence
+vi.mock("@/components/ax", () => ({
+  AxEmptyState: ({ title }: { title?: string }) => <div data-testid="ax-empty">{title}</div>,
+  AxLoadingState: () => <div data-testid="ax-loading" />,
+}));
+
+// POS context used by CommandCenter
+vi.mock("@/contexts/PosContext", () => ({
+  usePosContext: () => ({
+    orders: [],
+    products: [],
+    currentUser: null,
+  }),
+}));
+
+// CommandCenter context
+vi.mock("@/contexts/CommandCenterContext", () => ({
+  useCommandCenter: () => ({
+    systemStatus: "operational",
+    devices: [],
+    staff: [],
+    vendors: [],
+    hourlyRevenue: [],
+    activeGuests: 0,
+    posMode: "overlay",
+    addAuditEntry: vi.fn(),
+    setPosMode: vi.fn(),
+  }),
+  POS_MODE_INFO: {
+    overlay:  { label: "Overlay",            description: "", color: "#5b8def" },
+    hybrid:   { label: "Hybrid",             description: "", color: "#f59e0b" },
+    full_pos: { label: "Full Commerce Mode", description: "", color: "#34d399" },
+  },
+}));
+
+// Engagement context used by CommandCenter
+vi.mock("@/contexts/EngagementContext", () => ({
+  useEngagementContext: () => ({
+    totalPoints: 0,
+    sessionActions: 0,
+    lastReward: null,
+    trackAction: vi.fn(),
+    dismissReward: vi.fn(),
+  }),
+}));
+
+// Audio engine used by CommandCenter
+vi.mock("@/lib/audioEngine", () => ({ playSwitch: vi.fn() }));
+
+// LiveKpi widget used by CommandCenter
+vi.mock("@/components/LiveKpi", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
+}));
+
+// SystemStatusPanel used by CommandCenter
+vi.mock("@/components/SystemStatusPanel", () => ({ default: () => null }));
 
 // Seed localStorage cache AND mock the fetch endpoint before each test so
 // KernelModeProvider resolves to "essential" both synchronously (cache) and
@@ -157,5 +222,94 @@ describe("StaffCockpit in Essential mode", () => {
   it("still shows the AI Pairing Showcase (non-gated)", async () => {
     await renderCockpit();
     expect(screen.getByText("AI Pairing Showcase")).toBeInTheDocument();
+  });
+});
+
+// ─── LoungeLeagueTab ──────────────────────────────────────────────────────────
+
+describe("LoungeLeagueTab in Essential mode", () => {
+  async function renderLeague() {
+    const { LoungeLeagueTab } = await import(
+      "@/components/Dashboard/LoungeLeagueTab"
+    );
+    return withKernel(<LoungeLeagueTab />);
+  }
+
+  it("renders the locked overlay", async () => {
+    await renderLeague();
+    expect(screen.getByText("ESSENTIAL MODE ACTIVE")).toBeInTheDocument();
+    expect(screen.getByText("Lounge League")).toBeInTheDocument();
+    expect(screen.getByText(/sovereign-tier feature/i)).toBeInTheDocument();
+  });
+
+  it("does not render the leaderboard or rankings content", async () => {
+    await renderLeague();
+    expect(screen.queryByText("Top Lounge This Week")).not.toBeInTheDocument();
+    expect(screen.queryByText("Full Rankings")).not.toBeInTheDocument();
+    expect(screen.queryByText("Lounge Badges")).not.toBeInTheDocument();
+  });
+});
+
+// ─── SwipeIntelligence ────────────────────────────────────────────────────────
+
+describe("SwipeIntelligence in Essential mode", () => {
+  async function renderSwipeIntel() {
+    const { default: SwipeIntelligence } = await import(
+      "@/pages/SwipeIntelligence"
+    );
+    return withKernel(<SwipeIntelligence />);
+  }
+
+  it("hides the sovereign-only Orchestration IQ tab", async () => {
+    await renderSwipeIntel();
+    expect(screen.queryByText("Orchestration IQ")).not.toBeInTheDocument();
+  });
+
+  it("still shows the non-sovereign tabs", async () => {
+    await renderSwipeIntel();
+    expect(screen.getByText("Overview")).toBeInTheDocument();
+    expect(screen.getByText("Taste Clusters")).toBeInTheDocument();
+    expect(screen.getByText("Revenue Funnel")).toBeInTheDocument();
+    expect(screen.getByText("Craft Compare")).toBeInTheDocument();
+  });
+
+  it("does not render the Orchestration IQ panel content", async () => {
+    await renderSwipeIntel();
+    expect(screen.queryByText("Session Mood Distribution")).not.toBeInTheDocument();
+    expect(screen.queryByText("Pacing Distribution")).not.toBeInTheDocument();
+    expect(screen.queryByText("Sessions Scored")).not.toBeInTheDocument();
+  });
+});
+
+// ─── CommandCenter ────────────────────────────────────────────────────────────
+
+describe("CommandCenter in Essential mode", () => {
+  async function renderCommandCenter() {
+    const { default: CommandCenter } = await import("@/pages/CommandCenter");
+    return withKernel(<CommandCenter />);
+  }
+
+  it("shows 'Sovereign Required' badge on all sovereign-only tiles", async () => {
+    await renderCommandCenter();
+    const badges = screen.getAllByText(/Sovereign Required/i);
+    expect(badges.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("locks the Designer tile", async () => {
+    await renderCommandCenter();
+    const badges = screen.getAllByText(/Sovereign Required/i);
+    const sovereignTileNames = ["Designer", "Governance", "Central Command", "Intel", "Master Ops"];
+    const renderedTileNames = sovereignTileNames.filter(
+      name => screen.queryByText(name) !== null,
+    );
+    expect(renderedTileNames.length).toBeGreaterThanOrEqual(1);
+    expect(badges.length).toBe(renderedTileNames.length);
+  });
+
+  it("does not lock standard non-sovereign tiles", async () => {
+    await renderCommandCenter();
+    expect(screen.getByText("SmokeCraft")).toBeInTheDocument();
+    expect(screen.getAllByText("Orders").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Analytics")).toBeInTheDocument();
   });
 });
