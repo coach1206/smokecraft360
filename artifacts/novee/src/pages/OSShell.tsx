@@ -1174,6 +1174,11 @@ function EditModuleModal({
           {slugFieldError && (
             <div style={{ fontSize: 10, color: "#f87171", marginTop: -8, marginBottom: 12 }}>{slugFieldError}</div>
           )}
+          {!slugFieldError && slug.trim() !== mod.slug && (
+            <div style={{ fontSize: 10, color: "#ca8a04", marginTop: -8, marginBottom: 12 }}>
+              Changing the slug will invalidate any existing links or integrations using the old slug.
+            </div>
+          )}
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
