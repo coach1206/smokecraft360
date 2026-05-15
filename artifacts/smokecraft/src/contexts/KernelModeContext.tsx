@@ -5,6 +5,9 @@
  *
  * The last-known mode is persisted to localStorage (key: kernel_mode_<venueId>)
  * so the gate loads instantly on cold start with no flicker.
+ *
+ * setMode() calls PATCH /api/kernel/mode/:venueId with a Bearer token and
+ * optimistically updates the local state on success.
  */
 
 import {
@@ -13,6 +16,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useCallback,
   type ReactNode,
 } from "react";
 import { useVenue } from "@/contexts/VenueContext";
@@ -22,11 +26,15 @@ export type KernelMode = "sovereign" | "essential";
 interface KernelModeContextValue {
   mode: KernelMode;
   loading: boolean;
+  saving: boolean;
+  setMode: (mode: KernelMode, token: string) => Promise<void>;
 }
 
 const KernelModeContext = createContext<KernelModeContextValue>({
   mode: "sovereign",
   loading: false,
+  saving: false,
+  setMode: async () => {},
 });
 
 const POLL_INTERVAL_MS = 30_000;
@@ -60,8 +68,9 @@ export function KernelModeProvider({ children }: { children: ReactNode }) {
 
   const cached = readCached(venueId);
 
-  const [mode, setMode]       = useState<KernelMode>(cached ?? "sovereign");
+  const [mode, setModeState] = useState<KernelMode>(cached ?? "sovereign");
   const [loading, setLoading] = useState(cached === null);
+  const [saving, setSaving]   = useState(false);
   const timerRef              = useRef<ReturnType<typeof setInterval> | null>(null);
 
   async function fetchMode(id: string): Promise<void> {
@@ -70,7 +79,7 @@ export function KernelModeProvider({ children }: { children: ReactNode }) {
       if (!res.ok) return;
       const data = (await res.json()) as { mode?: KernelMode };
       if (data.mode === "essential" || data.mode === "sovereign") {
-        setMode(data.mode);
+        setModeState(data.mode);
         writeCache(id, data.mode);
       }
     } catch {
@@ -80,13 +89,43 @@ export function KernelModeProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const setMode = useCallback(async (newMode: KernelMode, token: string): Promise<void> => {
+    if (venueId === NULL_VENUE_ID) {
+      throw new Error("No venue selected");
+    }
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/kernel/mode/${venueId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ mode: newMode }),
+      });
+      if (!res.ok) {
+        const err = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(err.error ?? `HTTP ${res.status}`);
+      }
+      const data = (await res.json()) as { mode?: KernelMode };
+      const confirmed: KernelMode =
+        data.mode === "essential" || data.mode === "sovereign"
+          ? data.mode
+          : newMode;
+      setModeState(confirmed);
+      writeCache(venueId, confirmed);
+    } finally {
+      setSaving(false);
+    }
+  }, [venueId]);
+
   useEffect(() => {
     const fresh = readCached(venueId);
     if (fresh !== null) {
-      setMode(fresh);
+      setModeState(fresh);
       setLoading(false);
     } else {
-      setMode("sovereign");
+      setModeState("sovereign");
       setLoading(true);
     }
 
@@ -103,7 +142,7 @@ export function KernelModeProvider({ children }: { children: ReactNode }) {
   }, [venueId]);
 
   return (
-    <KernelModeContext.Provider value={{ mode, loading }}>
+    <KernelModeContext.Provider value={{ mode, loading, saving, setMode }}>
       {children}
     </KernelModeContext.Provider>
   );

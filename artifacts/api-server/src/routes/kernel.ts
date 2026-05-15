@@ -199,16 +199,22 @@ router.get("/mode/:venueId", async (req: Request, res: Response) => {
 });
 
 // ── PATCH /api/kernel/mode/:venueId ──────────────────────────────────────────
-// Admin/super_admin only — requires a valid Bearer JWT with the correct role.
+// super_admin: can update any venue.
+// venue_owner: can only update the venue they own (req.user.venueId must match).
 
 router.patch("/mode/:venueId", requireAuth, async (req: AuthRequest, res: Response) => {
-  const role = (req as AuthRequest).user?.role;
-  if (role !== "admin" && role !== "super_admin") {
-    return res.status(403).json({ error: "admin or super_admin only" });
+  const { role, venueId: userVenueId } = (req as AuthRequest).user ?? {};
+  if (role !== "super_admin" && role !== "venue_owner") {
+    return res.status(403).json({ error: "super_admin or venue_owner only" });
   }
 
   const { venueId } = req.params as { venueId: string };
   if (!UUID_RE.test(venueId)) return res.status(400).json({ error: "venueId must be a valid UUID" });
+
+  // Venue-scoped guard: venue_owner may only update their own venue.
+  if (role === "venue_owner" && userVenueId !== venueId) {
+    return res.status(403).json({ error: "venue_owner may only update their own venue" });
+  }
   const parsed = SetModeSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.format() });

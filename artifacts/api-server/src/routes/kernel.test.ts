@@ -1,10 +1,15 @@
 /**
- * kernel routes — duplicate-slug rejection coverage
+ * kernel routes — duplicate-slug rejection coverage + kernel mode authorization
  *
- * Tests the 409 path on POST /api/kernel/modules and the slug availability
- * check on GET /api/kernel/modules?slug=.
+ * Tests:
+ *  - 409 path on POST /api/kernel/modules
+ *  - slug availability check on GET /api/kernel/modules?slug=
+ *  - PATCH /api/kernel/mode/:venueId role-based access control:
+ *      super_admin → any venue allowed
+ *      venue_owner → own venue allowed, other venue rejected (403)
+ *      other roles → rejected (403)
  *
- * Both paths use mocked db calls so no real database is needed.
+ * All paths use mocked db calls so no real database is needed.
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -13,13 +18,17 @@ import request from "supertest";
 
 // ── Module mocks (hoisted before any imports of the mocked modules) ───────────
 
+// Mutable user so individual tests can override role/venueId
+let mockUser: object = { id: "admin-uuid", email: "admin@test.com", role: "super_admin", name: "Admin", venueId: null };
+
 vi.mock("@workspace/db", () => ({
   db: {
     select: vi.fn(),
     insert: vi.fn(),
+    update: vi.fn(),
   },
   kernelModulesTable: { slug: "slug", id: "id", registeredAt: "registeredAt" },
-  kernelModeConfigTable: {},
+  kernelModeConfigTable: { venueId: "venue_id", mode: "mode", updatedAt: "updated_at", updatedBy: "updated_by" },
   telemetryEventsTable: {},
 }));
 
@@ -29,7 +38,7 @@ vi.mock("../middleware/auth", () => ({
     _res: express.Response,
     next: express.NextFunction,
   ) => {
-    req.user = { id: "admin-uuid", email: "admin@test.com", role: "admin", name: "Admin" };
+    req.user = mockUser;
     next();
   },
 }));
@@ -76,7 +85,8 @@ function makeInsertMock(result: object | Error) {
   } else {
     returning.mockResolvedValue([result]);
   }
-  const values = vi.fn().mockReturnValue({ returning });
+  const onConflictDoUpdate = vi.fn().mockReturnValue({ returning });
+  const values = vi.fn().mockReturnValue({ returning, onConflictDoUpdate });
   (db.insert as ReturnType<typeof vi.fn>).mockReturnValue({ values });
 }
 
@@ -90,11 +100,15 @@ function modulePayload(overrides: Record<string, unknown> = {}) {
   };
 }
 
+const VENUE_A = "00000000-0000-0000-0000-000000000001";
+const VENUE_B = "00000000-0000-0000-0000-000000000002";
+
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe("POST /api/kernel/modules — duplicate-slug rejection", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUser = { id: "admin-uuid", email: "admin@test.com", role: "super_admin", name: "Admin", venueId: null };
   });
 
   it("returns 201 on the first insert", async () => {
@@ -139,6 +153,7 @@ describe("POST /api/kernel/modules — duplicate-slug rejection", () => {
 describe("GET /api/kernel/modules?slug= — availability check", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUser = { id: "admin-uuid", email: "admin@test.com", role: "super_admin", name: "Admin", venueId: null };
   });
 
   it("returns { available: false } when the slug is already taken", async () => {
@@ -181,5 +196,98 @@ describe("GET /api/kernel/modules?slug= — availability check", () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("error", "excludeId must be a valid UUID");
+  });
+});
+
+describe("PATCH /api/kernel/mode/:venueId — role-based access control", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("super_admin can update any venue", async () => {
+    mockUser = { id: "su-uuid", email: "su@test.com", role: "super_admin", name: "SU", venueId: null };
+    makeInsertMock({ venueId: VENUE_A, mode: "essential", updatedAt: new Date().toISOString() });
+
+    const app = buildApp();
+    const res = await request(app)
+      .patch(`/api/kernel/mode/${VENUE_A}`)
+      .send({ mode: "essential" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("mode", "essential");
+  });
+
+  it("super_admin can update a venue they do not own", async () => {
+    mockUser = { id: "su-uuid", email: "su@test.com", role: "super_admin", name: "SU", venueId: VENUE_B };
+    makeInsertMock({ venueId: VENUE_A, mode: "sovereign", updatedAt: new Date().toISOString() });
+
+    const app = buildApp();
+    const res = await request(app)
+      .patch(`/api/kernel/mode/${VENUE_A}`)
+      .send({ mode: "sovereign" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("mode", "sovereign");
+  });
+
+  it("venue_owner can update their own venue", async () => {
+    mockUser = { id: "vo-uuid", email: "vo@test.com", role: "venue_owner", name: "Owner", venueId: VENUE_A };
+    makeInsertMock({ venueId: VENUE_A, mode: "essential", updatedAt: new Date().toISOString() });
+
+    const app = buildApp();
+    const res = await request(app)
+      .patch(`/api/kernel/mode/${VENUE_A}`)
+      .send({ mode: "essential" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("mode", "essential");
+  });
+
+  it("venue_owner is rejected when targeting a different venue (403)", async () => {
+    mockUser = { id: "vo-uuid", email: "vo@test.com", role: "venue_owner", name: "Owner", venueId: VENUE_A };
+
+    const app = buildApp();
+    const res = await request(app)
+      .patch(`/api/kernel/mode/${VENUE_B}`)
+      .send({ mode: "essential" });
+
+    expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("manager role is rejected with 403", async () => {
+    mockUser = { id: "mgr-uuid", email: "mgr@test.com", role: "manager", name: "Manager", venueId: VENUE_A };
+
+    const app = buildApp();
+    const res = await request(app)
+      .patch(`/api/kernel/mode/${VENUE_A}`)
+      .send({ mode: "essential" });
+
+    expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("staff role is rejected with 403", async () => {
+    mockUser = { id: "staff-uuid", email: "staff@test.com", role: "staff", name: "Staff", venueId: VENUE_A };
+
+    const app = buildApp();
+    const res = await request(app)
+      .patch(`/api/kernel/mode/${VENUE_A}`)
+      .send({ mode: "sovereign" });
+
+    expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 400 when mode value is invalid", async () => {
+    mockUser = { id: "su-uuid", email: "su@test.com", role: "super_admin", name: "SU", venueId: null };
+
+    const app = buildApp();
+    const res = await request(app)
+      .patch(`/api/kernel/mode/${VENUE_A}`)
+      .send({ mode: "premium" });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
   });
 });

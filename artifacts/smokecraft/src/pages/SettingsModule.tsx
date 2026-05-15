@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { motion } from "framer-motion";
-import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers, ShieldAlert, Paintbrush, Image, Type, Palette, Check, RotateCcw, Brain, ExternalLink, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers, ShieldAlert, Paintbrush, Image, Type, Palette, Check, RotateCcw, Brain, ExternalLink, ChevronRight, Crown, Zap } from "lucide-react";
 import { useCommandCenter, POS_MODE_INFO, type PosOperatingMode } from "@/contexts/CommandCenterContext";
 import { usePosContext } from "@/contexts/PosContext";
 import { useVenueContext, BACKGROUND_LABELS, DEFAULT_BACKGROUNDS, type BackgroundKey } from "@/contexts/VenueContext";
+import { useKernelMode, type KernelMode } from "@/contexts/KernelModeContext";
+import { useAuth } from "@/contexts/AuthContext";
 import ConfirmModal from "@/components/ConfirmModal";
 
 const POS_MODES: PosOperatingMode[] = ["overlay", "hybrid", "full_pos"];
@@ -26,6 +28,37 @@ export default function SettingsModule() {
   const lockedDevices = cc.devices.filter(d => d.locked).length;
   const activeStaff = cc.staff.filter(s => s.status === "active").length;
   const modeInfo = POS_MODE_INFO[cc.posMode];
+
+  const kernel = useKernelMode();
+  const { user: authUser, token: authToken } = useAuth();
+  const isKernelAdmin = authUser?.role === "super_admin" || authUser?.role === "venue_owner";
+  const [kernelError, setKernelError] = useState("");
+  const [kernelSuccess, setKernelSuccess] = useState(false);
+  const [pendingKernelMode, setPendingKernelMode] = useState<KernelMode | null>(null);
+
+  async function applyKernelMode(newMode: KernelMode) {
+    if (!authToken) {
+      setKernelError("Not authenticated — please log in first");
+      setTimeout(() => setKernelError(""), 4000);
+      return;
+    }
+    setKernelError("");
+    try {
+      await kernel.setMode(newMode, authToken);
+      setKernelSuccess(true);
+      setTimeout(() => setKernelSuccess(false), 2500);
+      cc.addAuditEntry(
+        "kernel.mode.change",
+        `Kernel mode changed to ${newMode}`,
+        authUser?.name ?? pos.currentUser?.name,
+      );
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to update kernel mode";
+      setKernelError(msg);
+      setTimeout(() => setKernelError(""), 5000);
+    }
+    setPendingKernelMode(null);
+  }
 
   const isPrivileged = pos.currentUser?.role === "owner" || pos.currentUser?.role === "manager";
   const [pendingMode, setPendingMode] = useState<PosOperatingMode | null>(null);
@@ -471,6 +504,114 @@ export default function SettingsModule() {
           </div>
         </div>
 
+        {/* ── Kernel Mode ── */}
+        <div style={{
+          padding: "16px", borderRadius: 14,
+          background: "rgba(26,26,27,0.05)", border: "1px solid rgba(26,26,27,0.08)",
+          marginBottom: 16,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Crown size={14} color="#D48B00" />
+              <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                Kernel Mode
+              </span>
+            </div>
+            <AnimatePresence>
+              {kernelSuccess && (
+                <motion.span
+                  key="saved"
+                  initial={{ opacity: 0, x: 6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
+                  style={{ fontSize: 11, color: "#34d399", fontWeight: 600 }}
+                >
+                  Saved!
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div style={{ fontSize: 12, color: "rgba(26,26,27,0.42)", lineHeight: 1.55, marginBottom: 14 }}>
+            Controls which feature tier is active for this venue. <strong>Sovereign</strong> unlocks luxury add-ons, AI personalization, and premium analytics. <strong>Essential</strong> locks those features.
+            {!isKernelAdmin && (
+              <span style={{ display: "block", marginTop: 6, color: "#ef4444", fontSize: 11, fontWeight: 600 }}>
+                Super Admin or Venue Owner role required to change this setting.
+              </span>
+            )}
+          </div>
+
+          <div style={{ display: "flex", gap: 10 }}>
+            {(["sovereign", "essential"] as KernelMode[]).map((m) => {
+              const isCurrent = kernel.mode === m;
+              const isSovereign = m === "sovereign";
+              const accentColor = isSovereign ? "#D48B00" : "#6B5E4E";
+              const ModeIcon = isSovereign ? Crown : Zap;
+              return (
+                <motion.button
+                  key={m}
+                  whileTap={isKernelAdmin && !kernel.saving ? { scale: 0.97 } : {}}
+                  onClick={() => {
+                    if (!isKernelAdmin || isCurrent || kernel.saving) return;
+                    setPendingKernelMode(m);
+                  }}
+                  style={{
+                    flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+                    padding: "16px 12px", borderRadius: 12, cursor: isKernelAdmin && !isCurrent && !kernel.saving ? "pointer" : "default",
+                    background: isCurrent ? `${accentColor}12` : "rgba(26,26,27,0.04)",
+                    border: `2px solid ${isCurrent ? accentColor : "rgba(26,26,27,0.10)"}`,
+                    opacity: kernel.loading || (kernel.saving && !isCurrent) ? 0.5 : 1,
+                    transition: "border-color 0.2s, background 0.2s, opacity 0.2s",
+                    position: "relative",
+                  }}
+                >
+                  <div style={{
+                    width: 40, height: 40, borderRadius: 10,
+                    background: isCurrent ? `${accentColor}18` : "rgba(26,26,27,0.06)",
+                    border: `1px solid ${isCurrent ? `${accentColor}35` : "rgba(26,26,27,0.10)"}`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <ModeIcon size={18} color={isCurrent ? accentColor : "rgba(26,26,27,0.30)"} />
+                  </div>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: isCurrent ? accentColor : "rgba(26,26,27,0.40)", textTransform: "capitalize", marginBottom: 2 }}>
+                      {m}
+                    </div>
+                    <div style={{ fontSize: 11, color: "rgba(26,26,27,0.35)", lineHeight: 1.4 }}>
+                      {isSovereign ? "Full luxury features" : "Core features only"}
+                    </div>
+                  </div>
+                  {isCurrent && (
+                    <span style={{
+                      position: "absolute", top: 8, right: 8,
+                      fontSize: 9, fontWeight: 700, color: accentColor,
+                      padding: "2px 6px", borderRadius: 4,
+                      background: `${accentColor}18`,
+                      textTransform: "uppercase", letterSpacing: "0.08em",
+                    }}>
+                      {kernel.saving ? "…" : "Active"}
+                    </span>
+                  )}
+                </motion.button>
+              );
+            })}
+          </div>
+
+          <AnimatePresence>
+            {kernelError && (
+              <motion.div
+                key="err"
+                initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                style={{
+                  marginTop: 10, padding: "10px 14px", borderRadius: 10,
+                  background: "rgba(239,68,68,0.10)", border: "1px solid rgba(239,68,68,0.25)",
+                  fontSize: 12, color: "#ef4444",
+                }}
+              >
+                {kernelError}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
         {/* ── Intelligence Systems ── */}
         <div style={{
           padding: "16px", borderRadius: 14,
@@ -606,6 +747,15 @@ export default function SettingsModule() {
         confirmLabel="Switch Mode"
         onConfirm={confirmModeChange}
         onCancel={() => setPendingMode(null)}
+      />
+
+      <ConfirmModal
+        open={!!pendingKernelMode}
+        title="Change Kernel Mode"
+        message={pendingKernelMode ? `Switch to ${pendingKernelMode.charAt(0).toUpperCase() + pendingKernelMode.slice(1)} mode? ${pendingKernelMode === "essential" ? "This will lock luxury features for this venue." : "This will unlock luxury add-ons, AI personalization, and premium analytics for this venue."}` : ""}
+        confirmLabel="Confirm Change"
+        onConfirm={() => pendingKernelMode && applyKernelMode(pendingKernelMode)}
+        onCancel={() => setPendingKernelMode(null)}
       />
     </div>
   );
