@@ -3,6 +3,7 @@ import DesignPlayground, {
   hasSeenPlayground, markPlaygroundSeen,
   type PlaygroundConfig,
 } from "@/components/DesignPlayground/DesignPlayground";
+import CinematicLanding from "@/components/CinematicLanding/CinematicLanding";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence, animate, useAnimation } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
@@ -704,6 +705,24 @@ export default function Home() {
               markPlaygroundSeen("smoke");
               setShowPlayground(false);
               setPhase("form");
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Scene 1 + 2: Cinematic Landing — full-screen obsidian overlay ── */}
+      <AnimatePresence>
+        {phase === "welcome" && !showPlayground && (
+          <CinematicLanding
+            key="cinematic-landing"
+            onActivate={() => {
+              playClick();
+              setBgKey(`experience_${category}`);
+              if (!hasSeenPlayground("smoke")) {
+                setShowPlayground(true);
+              } else {
+                setPhase("form");
+              }
             }}
           />
         )}
