@@ -355,6 +355,17 @@ function parseDaysFromSearch(search: string): number {
   return 30;
 }
 
+const VALID_TABS: DashTab[] = ["overview", "events", "modules", "ritual", "products", "live"];
+
+function parseTabFromSearch(search: string): DashTab {
+  try {
+    const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+    const raw = params.get("tab");
+    if (raw && (VALID_TABS as string[]).includes(raw)) return raw as DashTab;
+  } catch { /* ignore */ }
+  return "overview";
+}
+
 function parseCompareFromSearch(search: string): boolean {
   try {
     const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
@@ -403,7 +414,7 @@ export default function EATDashboard() {
   const [compareCustomInput, setCompareCustomInput] = useState<string>("");
   const [showCompareCustom, setShowCompareCustom]   = useState(false);
 
-  const [tab, setTab]             = useState<DashTab>("overview");
+  const [tab, setTabState]        = useState<DashTab>(() => parseTabFromSearch(window.location.search));
   const [data, setData]           = useState<TelemetrySummary>(EMPTY_SUMMARY);
   const [loading, setLoading]     = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -566,9 +577,21 @@ export default function EATDashboard() {
       setDaysState(parseDaysFromSearch(search));
       setCompareEnabledState(parseCompareFromSearch(search));
       setCompareDaysState(parseCompareDaysFromSearch(search, parseDaysFromSearch(search)));
+      setTabState(parseTabFromSearch(search));
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  const setTab = useCallback((t: DashTab) => {
+    setTabState(t);
+    const url = new URL(window.location.href);
+    if (t === "overview") {
+      url.searchParams.delete("tab");
+    } else {
+      url.searchParams.set("tab", t);
+    }
+    window.history.replaceState({}, "", url.toString());
   }, []);
 
   const fetchSummary = useCallback((isInitial = false, d = days, cd = compareDays, ce = compareEnabled) => {
