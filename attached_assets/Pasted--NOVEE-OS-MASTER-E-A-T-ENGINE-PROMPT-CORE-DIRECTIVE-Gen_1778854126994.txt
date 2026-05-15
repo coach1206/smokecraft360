@@ -1,0 +1,23 @@
+### NOVEE OS | MASTER E.A.T. ENGINE PROMPT
+
+**CORE DIRECTIVE:** 
+Generate a photorealistic, hyper-tactile user interface for **NOVEE OS**. This is a "Presence Interface" designed for high-end luxury environments. **STRICTLY PROHIBITED:** No icons, no emojis, no glyphs, and no flat/vector design elements. Every interaction is driven by material and photography.
+
+**MATERIAL & HARDWARE SPECIFICATIONS:**
+*   **Primary Surface:** **Obsidian glass** panel (`rgba(10,8,6,0.90)`) featuring a `32px` backdrop blur and `0.6` saturation for a heavy, physical density.
+*   **Structural Rail:** A `52px` header in **brushed titanium** with fine horizontal grain and sub-pixel texture.
+*   **Connectors:** **Smoked chrome** bolt accents (8px radial-gradient spheres) positioned at the corner vertices.
+*   **Optics:** **135° angular gradient borders** with amber/bronze chrome highlights and an inset top rule highlight to simulate a machined edge catching overhead light.
+
+**CINEMATIC VISUAL LANGUAGE:**
+*   **Macro Photography:** Navigation is driven by authentic textures. Use high-contrast macro shots: the oily tooth of a **Havana cigar wrapper**, the condensation on a **chilled wine crystal**, and **carbon fiber twill** weave.
+*   **Atmospherics:** Hero background at `18%` brightness with a `28px` Gaussian blur. The center interaction panel must remain razor-sharp.
+*   **Lighting:** Volumetric amber radial glow at the top edge with a slow "heartbeat" pulse; dark vignette radial overlay.
+
+**INTERFACE LOGIC (E.A.T. ARCHITECTURE):**
+*   **Layout:** 4-tile material strip at the bottom (**SmokeCraft | PourCraft | BrewCraft | WineCraft**) separated by brushed titanium dividers.
+*   **Data Visualization:** High-fidelity system gauge bars and an active boot ticker.
+*   **Typography:** "E.A.T. ENGINE · PRESENCE INTERFACE" — Sequence: LOADING PALATE MATRIX → CALIBRATING TASTE VECTORS → SYNCING TERROIR DATABASE → E.A.T. ENGINE INITIALIZED.
+
+**STYLE SUMMARY:** 
+Apple-level minimalism meets a high-end automotive cockpit. Dark, moody, tactile, and sovereign.

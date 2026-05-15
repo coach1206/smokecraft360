@@ -28,8 +28,8 @@ const MACRO = {
     "https://media.istockphoto.com/id/526826672/photo/glass-of-whiskey-on-dark-table.jpg?s=612x612&w=0&k=20&c=T9Rr3CK9FtXdwM8ED5zA5eVBToc3EYIkjgAT-o8lL20=",
   carbon:
     "https://thumbs.dreamstime.com/b/high-tech-carbon-fiber-weave-texture-detailed-macro-photograph-captures-intricate-twill-performance-composite-glossy-415462336.jpg",
-  vapor:
-    "https://thumbs.dreamstime.com/b/soft-white-smoke-billowing-dark-air-abstract-vapor-shapes-atmospheric-movement-soft-white-smoke-billowing-dark-420613447.jpg",
+  wine:
+    "https://thumbs.dreamstime.com/b/close-up-wine-glass-condensation-119473406.jpg",
 };
 
 /* ── Craft material tiles ─────────────────────────────────────────── */
@@ -37,7 +37,7 @@ const TILES = [
   { id: "smoke",   label: "SMOKECRAFT",  sub: "Tobacco Origin",   img: MACRO.cigar,   delay: 0.1  },
   { id: "pour",    label: "POURCRAFT",   sub: "Spirit Selection",  img: MACRO.whiskey, delay: 0.22 },
   { id: "brew",    label: "BREWCRAFT",   sub: "Craft Pour",        img: MACRO.carbon,  delay: 0.34 },
-  { id: "vape",    label: "VAPECRAFT",   sub: "Vapor Atmosphere",  img: MACRO.vapor,   delay: 0.46 },
+  { id: "wine",    label: "WINECRAFT",   sub: "Wine Selection",    img: MACRO.wine,    delay: 0.46 },
 ];
 
 /* ── Telemetry boot sequence labels ───────────────────────────────── */
