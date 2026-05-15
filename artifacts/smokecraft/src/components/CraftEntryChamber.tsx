@@ -642,9 +642,11 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
   function handleBeginClick() {
     const mentorMatchesCraft = mentor?.craftType === type;
     if (guestProfile && mentor && mentorMatchesCraft) {
+      // Returning guest with matched mentor — go straight to mentor reveal
       setScene("mentor");
     } else {
-      setScene("challenge");
+      // New guest — enroll first, then meet mentor (challenge path deferred to post-swipe)
+      setScene("enrollment");
     }
   }
 

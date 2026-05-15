@@ -1291,6 +1291,11 @@ export default function ExperiencePage() {
     if (action === "add") {
       // Fire SSE telemetry + in-process ritual event (drives scene overlay)
       dispatchRitualEvent(card.tags, type);
+      // Track accepted swipes — powers Signature Studio eligibility gate
+      try {
+        const prev = parseInt(sessionStorage.getItem("titan_swipe_accepts") ?? "0", 10);
+        sessionStorage.setItem("titan_swipe_accepts", String(prev + 1));
+      } catch { /* sessionStorage unavailable */ }
 
       // Mentor Warning: 3-archetype conflict detection
       const allTags = [...addedTags, ...(card.tags ?? [])];
@@ -1531,7 +1536,7 @@ export default function ExperiencePage() {
             {swipeCount} swiped
           </div>
           <AudioWaveToggle />
-          {type === "smoke" && (
+          {type === "smoke" && ExperienceFlowEngine.isSignatureStudioEligible() && (
             <motion.button
               whileTap={{ scale: 0.91 }}
               onClick={() => navigate("/master-blender")}

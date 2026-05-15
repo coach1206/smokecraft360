@@ -33,6 +33,7 @@ import {
 import ShareCard from "@/components/ShareCard/ShareCard";
 import { JourneyPath }       from "@/components/UniversalExperience/JourneyPath";
 import { ExperienceRecap }   from "@/components/UniversalExperience/ExperienceRecap";
+import { ExperienceFlowEngine } from "@/lib/experienceFlowEngine";
 
 export type CraftCategory = "beer" | "alcohol" | "vape";
 
@@ -1080,8 +1081,8 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                       </div>
                     )}
 
-                    {/* ── Signature Studio CTA ─────────────────────────── */}
-                    {scoreState.score >= 70 && (
+                    {/* ── Signature Studio CTA — gated: score ≥ 70 + ritual finale ── */}
+                    {scoreState.score >= 70 && ExperienceFlowEngine.isSignatureStudioEligible() && (
                       <motion.div
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0  }}

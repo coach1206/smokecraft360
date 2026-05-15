@@ -17,93 +17,207 @@ import { motion } from "framer-motion";
 
 type RealisticsProps = { accent: string; intensity?: number };
 
-// ── SmokeCraft: Ember Glow + Smoke Curl ──────────────────────────────────────
+// ── SmokeCraft: Canvas-based volumetric smoke + smoldering ember fixture ──────
+
+interface SmokeParticle {
+  x: number; y: number;
+  vx: number; vy: number;
+  life: number; maxLife: number;
+  size: number;
+  type: "ember" | "smoke";
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const clean = hex.startsWith("#") ? hex : "#d4af37";
+  return {
+    r: parseInt(clean.slice(1, 3), 16),
+    g: parseInt(clean.slice(3, 5), 16),
+    b: parseInt(clean.slice(5, 7), 16),
+  };
+}
 
 export function EmberGlow({ accent, intensity = 1 }: RealisticsProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rawCtx = canvas.getContext("2d");
+    if (!rawCtx) return;
+    // Capture as non-null alias so TypeScript is satisfied inside all closures
+    const c: CanvasRenderingContext2D = rawCtx;
+
+    let raf: number;
+    let t = 0;
+    const rgb = hexToRgb(accent);
+    const particles: SmokeParticle[] = [];
+
+    function resize() {
+      canvas!.width  = canvas!.offsetWidth;
+      canvas!.height = canvas!.offsetHeight;
+    }
+    resize();
+
+    function spawnEmber() {
+      const w = canvas!.width;
+      const h = canvas!.height;
+      particles.push({
+        x: w * (0.44 + (Math.random() - 0.5) * 0.14),
+        y: h * 0.74,
+        vx: (Math.random() - 0.5) * 0.7,
+        vy: -(0.55 + Math.random() * 0.85),
+        life: 0,
+        maxLife: 80 + Math.random() * 60,
+        size: 1.4 + Math.random() * 2,
+        type: "ember",
+      });
+    }
+
+    function spawnSmoke() {
+      const w = canvas!.width;
+      const h = canvas!.height;
+      particles.push({
+        x: w * (0.42 + (Math.random() - 0.5) * 0.18),
+        y: h * 0.70,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: -(0.28 + Math.random() * 0.45),
+        life: 0,
+        maxLife: 200 + Math.random() * 140,
+        size: 14 + Math.random() * 22,
+        type: "smoke",
+      });
+    }
+
+    function tick() {
+      t++;
+      const w = canvas!.width;
+      const h = canvas!.height;
+      c.clearRect(0, 0, w, h);
+
+      if (t % 4  === 0) spawnEmber();
+      if (t % 14 === 0) spawnSmoke();
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i]!;
+        p.x  += p.vx;
+        p.y  += p.vy;
+        p.vx += (Math.random() - 0.5) * 0.05;
+        p.life++;
+
+        const progress = p.life / p.maxLife;
+        const alpha    = Math.sin(progress * Math.PI) * intensity;
+
+        if (p.type === "ember") {
+          c.save();
+          c.shadowBlur  = p.size * 3.5;
+          c.shadowColor = `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha * 0.75})`;
+          c.beginPath();
+          c.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          c.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha * 0.92})`;
+          c.fill();
+          c.restore();
+        } else {
+          const r = p.size * (1 + progress * 1.6);
+          const grad = c.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
+          grad.addColorStop(0, `rgba(180,130,60,${alpha * 0.07})`);
+          grad.addColorStop(0.5, `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha * 0.04})`);
+          grad.addColorStop(1, `rgba(${rgb.r},${rgb.g},${rgb.b},0)`);
+          c.beginPath();
+          c.arc(p.x, p.y, r, 0, Math.PI * 2);
+          c.fillStyle = grad;
+          c.fill();
+        }
+
+        if (p.life >= p.maxLife) particles.splice(i, 1);
+      }
+
+      raf = requestAnimationFrame(tick);
+    }
+
+    raf = requestAnimationFrame(tick);
+
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, [accent, intensity]);
+
   return (
     <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-      {/* Base ember warmth */}
+      {/* Canvas-based 60fps volumetric smoke + ember particle system */}
+      <canvas
+        ref={canvasRef}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", willChange: "contents" }}
+      />
+
+      {/* ── Smoldering cigar-tip ember — fixed bottom-center, 4–6s pulse ── */}
       <motion.div
-        animate={{ opacity: [0.18, 0.32, 0.18], scale: [1, 1.06, 1] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+        animate={{
+          boxShadow: [
+            `0 0 6px 2px ${accent}38`,
+            `0 0 24px 7px ${accent}92`,
+            `0 0 12px 3px ${accent}60`,
+            `0 0 24px 7px ${accent}92`,
+            `0 0 6px 2px ${accent}38`,
+          ],
+          opacity: [0.82, 1, 0.88, 1, 0.82],
+        }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         style={{
-          position: "absolute",
-          bottom: -40, left: "20%",
-          width: "60%", height: "55%",
-          background: `radial-gradient(ellipse, ${accent}55 0%, ${accent}20 40%, transparent 70%)`,
-          willChange: "opacity, transform",
+          position:     "absolute",
+          bottom:       68,
+          left:         "49%",
+          width:        9,
+          height:       5,
+          borderRadius: "50%",
+          background:   `radial-gradient(ellipse, #fff8e1 0%, ${accent} 42%, #7c3800 100%)`,
+          willChange:   "box-shadow, opacity",
         }}
       />
-      {/* Ember particles */}
+
+      {/* Micro-sparks ejecting from tip */}
       {[0, 1, 2].map(i => (
         <motion.div
-          key={i}
+          key={`spark-${i}`}
           animate={{
-            y:       [0, -60 - i * 30, -120 - i * 30],
-            x:       [0, (i % 2 === 0 ? 1 : -1) * (8 + i * 4), 0],
-            opacity: [0, 0.8, 0],
-            scale:   [0.4, 1, 0.2],
+            x:       [0, (i === 0 ? -7 : i === 1 ? 5 : -2)],
+            y:       [0, -(16 + i * 9)],
+            opacity: [0, 0.88, 0],
+            scale:   [1, 0.35],
           }}
           transition={{
-            duration:   2.2 + i * 0.6,
-            repeat:     Infinity,
-            delay:      i * 0.9,
-            ease:       "easeOut",
-          }}
-          style={{
-            position: "absolute",
-            bottom: 40 + i * 10,
-            left:   `${38 + i * 8}%`,
-            width:  4 + i * 2,
-            height: 4 + i * 2,
-            borderRadius: "50%",
-            background: `${accent}`,
-            boxShadow:  `0 0 6px ${accent}`,
-            willChange: "transform, opacity",
-          }}
-        />
-      ))}
-      {/* Smoke curl wisps */}
-      {[0, 1].map(i => (
-        <motion.div
-          key={`smoke-${i}`}
-          animate={{
-            y:       [0, -80 - i * 20],
-            x:       [0, (i === 0 ? 12 : -10)],
-            opacity: [0, 0.12, 0],
-            scaleX:  [0.4, 1.8, 2.4],
-          }}
-          transition={{
-            duration: 4 + i * 1.2,
+            duration: 0.5 + i * 0.14,
             repeat:   Infinity,
-            delay:    i * 1.8,
+            delay:    i * 1.5 + 0.2,
             ease:     "easeOut",
           }}
           style={{
             position:     "absolute",
-            bottom:       60,
-            left:         `${44 + i * 6}%`,
-            width:        20,
-            height:       60,
-            background:   "linear-gradient(180deg, rgba(26,26,27,0.10) 0%, transparent 100%)",
-            borderRadius: "50% 50% 0 0",
+            bottom:       70,
+            left:         `calc(49% + ${i * 2}px)`,
+            width:        2.5,
+            height:       2.5,
+            borderRadius: "50%",
+            background:   "#fff8e1",
+            boxShadow:    `0 0 4px ${accent}`,
             willChange:   "transform, opacity",
           }}
         />
       ))}
-      {/* Cigar burn tip glow */}
+
+      {/* Base ember warmth pool — ambient heat underlay */}
       <motion.div
-        animate={{ boxShadow: [`0 0 8px ${accent}60`, `0 0 20px ${accent}90`, `0 0 8px ${accent}60`] }}
-        transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ opacity: [0.14, 0.26, 0.14], scale: [1, 1.05, 1] }}
+        transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
         style={{
-          position:     "absolute",
-          bottom:       72,
-          left:         "48%",
-          width:        8,
-          height:       4,
-          borderRadius: "50%",
-          background:   accent,
-          willChange:   "box-shadow",
+          position:  "absolute",
+          bottom:    -40, left: "20%",
+          width:     "60%", height: "55%",
+          background:`radial-gradient(ellipse, ${accent}55 0%, ${accent}20 40%, transparent 70%)`,
+          willChange:"opacity, transform",
         }}
       />
     </div>
