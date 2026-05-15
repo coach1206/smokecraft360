@@ -1789,6 +1789,7 @@ export default function Home() {
                         onCardFocus={(id) => setBgKey(`flavor_${id}`)}
                         rightLabel="Add"
                         leftLabel="Skip"
+                        craftType={category === "cigar" ? "smoke" : "pour"}
                       />
                       {/* Back: cigar returns to Structure (step 1), alcohol returns to Experience (step 0). */}
                       <button onClick={() => goToStep(category === "cigar" ? 1 : 0)} style={{ background:"transparent", border:"none", color:"rgba(210,190,155,0.4)", fontSize:12, letterSpacing:"0.2em", textTransform:"uppercase", cursor:"pointer", marginTop:44 }}>← Back</button>
@@ -1815,6 +1816,7 @@ export default function Home() {
                         onCardFocus={(id) => setBgKey(`strength_${id}`)}
                         rightLabel="Select"
                         leftLabel="Next"
+                        craftType={category === "cigar" ? "smoke" : "pour"}
                       />
                       <button onClick={() => goToStep(2)} style={{ background:"transparent", border:"none", color:"rgba(210,190,155,0.4)", fontSize:12, letterSpacing:"0.2em", textTransform:"uppercase", cursor:"pointer", marginTop:44 }}>← Back</button>
                     </motion.div>
@@ -1842,6 +1844,7 @@ export default function Home() {
                             onCardFocus={(id) => setBgKey(`mood_${id}`)}
                             rightLabel="This is Me"
                             leftLabel="Next"
+                            craftType={category === "cigar" ? "smoke" : "pour"}
                           />
                           <button onClick={() => goToStep(3)} style={{ background:"transparent", border:"none", color:"rgba(210,190,155,0.4)", fontSize:12, letterSpacing:"0.2em", textTransform:"uppercase", cursor:"pointer", marginTop:44 }}>← Back</button>
                         </>

@@ -547,7 +547,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
     if (isExpired) return;
     setSelectedStyle(s);
     setPhase("profile");
-    emitKernelEvent("swipe_add", { cardId: s.id, title: s.title, step: "style" }, craftToModuleSlug(craftType));
+    emitKernelEvent("swipe_add", { cardId: s.id, title: s.title, step: "style", craftType }, craftToModuleSlug(craftType));
     void updateScore(s, null, "style");
     debouncedSave({
       craft:       craftType,
@@ -561,7 +561,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const handleMoodPick = useCallback((m: CraftMoodCard) => {
     if (isExpired) return;
     setSelectedMood(m);
-    emitKernelEvent("swipe_add", { cardId: m.id, title: m.title, step: "profile" }, craftToModuleSlug(craftType));
+    emitKernelEvent("swipe_add", { cardId: m.id, title: m.title, step: "profile", craftType }, craftToModuleSlug(craftType));
     if (selectedStyle) {
       void updateScore(selectedStyle, m, "profile");
       // Stage 5 — show Journey Path before running the match

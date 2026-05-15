@@ -38,6 +38,8 @@ interface Props {
   leftLabel?:   string;
   /** Kernel module slug for telemetry attribution. Defaults to "craft-smoke". */
   moduleSlug?:  string;
+  /** Craft type included in telemetry event payloads. Defaults to "smoke". */
+  craftType?:   "smoke" | "pour" | "brew" | "vape";
 }
 
 /* ── Single top card ─────────────────────────────────────────── */
@@ -50,9 +52,10 @@ interface TopCardProps {
   rightLabel:    string;
   leftLabel:     string;
   moduleSlug:    string;
+  craftType:     "smoke" | "pour" | "brew" | "vape";
 }
 
-function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, leftLabel, moduleSlug }: TopCardProps) {
+function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, leftLabel, moduleSlug, craftType }: TopCardProps) {
   const x        = useMotionValue(260);
   const rotate   = useTransform(x, [-280, 280], [-14, 14]);
   const cardOpacity = useTransform(x, [-320, -100, 0, 100, 320], [0, 1, 1, 1, 0]);
@@ -73,7 +76,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
     exiting.current = true;
     playSelect();                                                  // accept chime
     haptic.select();                                               // tactile commit
-    emitKernelEvent("swipe_add", { cardId: item.id, title: item.title }, moduleSlug);
+    emitKernelEvent("swipe_add", { cardId: item.id, title: item.title, craftType }, moduleSlug);
     animate(x, 680, { duration: 0.32, ease: [0.4, 0, 1, 1] }).then(onSwipeRight);
   }
 
@@ -82,7 +85,7 @@ function TopCard({ item, index, total, onSwipeRight, onSwipeLeft, rightLabel, le
     exiting.current = true;
     playSwipe();                                                   // skip whoosh
     haptic.swipe();                                                // tactile skip
-    emitKernelEvent("swipe_skip", { cardId: item.id, title: item.title }, moduleSlug);
+    emitKernelEvent("swipe_skip", { cardId: item.id, title: item.title, craftType }, moduleSlug);
     animate(x, -680, { duration: 0.32, ease: [0.4, 0, 1, 1] }).then(onSwipeLeft);
   }
 
@@ -485,6 +488,7 @@ export function SwipeCardDeck({
   rightLabel = "Select",
   leftLabel  = "Skip",
   moduleSlug = "craft-smoke",
+  craftType  = "smoke",
 }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected]         = useState<string[]>([]);
@@ -551,6 +555,7 @@ export function SwipeCardDeck({
         rightLabel={rightLabel}
         leftLabel={leftLabel}
         moduleSlug={moduleSlug}
+        craftType={craftType}
       />
 
       {/* Progress dots */}
