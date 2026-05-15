@@ -18,7 +18,7 @@ import {
 } from "@workspace/db";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
 import { z }                             from "zod";
-import { eq, desc, sql, count }          from "drizzle-orm";
+import { eq, desc, sql, count, and, ne } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -44,19 +44,42 @@ const TelemetryIngestSchema = z.object({
   payload:   z.record(z.unknown()).optional(),
 });
 
+const EditModuleSchema = z.object({
+  name:        z.string().min(1).max(120).optional(),
+  craftType:   z.enum(["smoke", "pour", "brew", "vape", "none"]).optional(),
+  slug:        z.string().min(1).max(80).optional(),
+  status:      z.enum(["active", "inactive", "suspended"]).optional(),
+  description: z.string().optional(),
+  launchUrl:   z.string().optional(),
+});
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 // ── GET /api/kernel/modules ────────────────────────────────────────────────────
-// Optional query param: ?slug=<value>  — returns { available: boolean } only
+// Optional query params:
+//   ?slug=<value>       — returns { available: boolean } only
+//   ?excludeId=<uuid>   — when combined with ?slug, ignore a match with this ID
+//                         (used by the Edit modal so a module's own slug isn't
+//                          flagged as a conflict)
 
 router.get("/modules", async (req: Request, res: Response) => {
-  const { slug } = req.query as Record<string, string | undefined>;
+  const q = req.query as Record<string, string | undefined>;
+  const { slug, excludeId } = q;
 
   if (slug !== undefined) {
     // Slug availability check — no auth required
+    if (excludeId !== undefined && !UUID_RE.test(excludeId)) {
+      return res.status(400).json({ error: "excludeId must be a valid UUID" });
+    }
     try {
+      const whereClause = excludeId
+        ? and(eq(kernelModulesTable.slug, slug.trim()), ne(kernelModulesTable.id, excludeId))
+        : eq(kernelModulesTable.slug, slug.trim());
+
       const rows = await db
         .select({ id: kernelModulesTable.id })
         .from(kernelModulesTable)
-        .where(eq(kernelModulesTable.slug, slug.trim()))
+        .where(whereClause)
         .limit(1);
       return res.json({ available: rows.length === 0 });
     } catch {
@@ -109,7 +132,49 @@ router.post("/modules", requireAuth, async (req: AuthRequest, res: Response) => 
   }
 });
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+// ── PATCH /api/kernel/modules/:id ─────────────────────────────────────────────
+// Update an existing module (admin/super_admin only).
+
+router.patch("/modules/:id", requireAuth, async (req: AuthRequest, res: Response) => {
+  const role = (req as AuthRequest).user?.role;
+  if (role !== "admin" && role !== "super_admin") {
+    return res.status(403).json({ error: "admin or super_admin only" });
+  }
+
+  const { id } = req.params as { id: string };
+  if (!UUID_RE.test(id)) return res.status(400).json({ error: "id must be a valid UUID" });
+
+  const parsed = EditModuleSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: parsed.error.format() });
+  }
+
+  if (Object.keys(parsed.data).length === 0) {
+    return res.status(400).json({ error: "No fields to update" });
+  }
+
+  try {
+    const [mod] = await db
+      .update(kernelModulesTable)
+      .set(parsed.data)
+      .where(eq(kernelModulesTable.id, id))
+      .returning();
+
+    if (!mod) return res.status(404).json({ error: "Module not found" });
+    return res.json({ module: mod });
+  } catch (err: unknown) {
+    if (
+      err &&
+      typeof err === "object" &&
+      "code" in err &&
+      (err as { code: string }).code === "23505"
+    ) {
+      return res.status(409).json({ error: "Slug already in use", field: "slug" });
+    }
+    const msg = err instanceof Error ? err.message : "Unknown error";
+    return res.status(500).json({ error: msg });
+  }
+});
 
 // ── GET /api/kernel/mode/:venueId ─────────────────────────────────────────────
 // Public read — no PII returned, mode config is venue-level operational data.
