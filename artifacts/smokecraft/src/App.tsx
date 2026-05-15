@@ -98,6 +98,7 @@ const BrewCraft             = lazy(() => import('@/pages/BrewCraft'));
 const PourCraft             = lazy(() => import('@/pages/PourCraft'));
 const VapeCraft             = lazy(() => import('@/pages/VapeCraft'));
 const SARV                  = lazy(() => import('@/pages/SARV'));
+const SovereignCommand      = lazy(() => import('@/pages/SovereignCommand'));
 const LaunchReadiness       = lazy(() => import('@/pages/LaunchReadiness'));
 const Legal                 = lazy(() => import('@/pages/Legal'));
 const SystemValidation      = lazy(() => import('@/pages/SystemValidation'));
@@ -958,6 +959,9 @@ export default function App() {
           </Route>
           <Route path="/sarv">
             <SubPageProviders><SARV /></SubPageProviders>
+          </Route>
+          <Route path="/sovereign-command">
+            <SubPageProviders><SovereignCommand /></SubPageProviders>
           </Route>
           <Route path="/launch-readiness">
             <SubPageProviders><LaunchReadiness /></SubPageProviders>
