@@ -510,7 +510,7 @@ function ChallengePathSelector({ accent, onSelect, onBack }: ChallengePathSelect
         transition={{ delay: 0.1 }}
         style={{ fontSize: 10, letterSpacing: "0.28em", color: accent, textTransform: "uppercase", marginBottom: 10 }}
       >
-        Step 1 of 2 — Challenge Path
+        Your Ritual Path
       </motion.p>
 
       <motion.h2
@@ -700,7 +700,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0, scale: 0.97 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
         style={{
           position:   "fixed",
           inset:      0,
@@ -881,7 +881,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
 
                 {/* THE RULES */}
                 <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.3, duration: 0.7 }} style={sectionStyle}>
-                  <div style={labelStyle}>Scoring Pillars</div>
+                  <div style={labelStyle}>Ritual Pillars</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {info.rules.map((rule, i) => (
                       <div key={rule} style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -946,7 +946,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
                   style={{ width: 32, height: 32, borderRadius: "50%", border: `1.5px solid ${accent}40`, borderTopColor: accent }}
                 />
                 <span style={{ fontSize: 8, color: `${accent}55`, letterSpacing: "0.22em", fontFamily: "monospace" }}>
-                  ATMOSPHERE LOADING…
+                  RITUAL ASCENDING…
                 </span>
               </motion.div>
             )}
@@ -971,7 +971,7 @@ export function CraftEntryChamber({ type, theme, onBegin, onBack }: Props) {
             backdropFilter: "blur(20px)",
           }}
         >
-          {["Taste Profile", "AI Ranking", "Inventory Sync"].map((label, i) => (
+          {["Palate Profile", "Ritual Ranking", "Ambiance Ready"].map((label, i) => (
             <div key={label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <motion.div
                 style={{ width: 4, height: 4, borderRadius: "50%", background: accent }}

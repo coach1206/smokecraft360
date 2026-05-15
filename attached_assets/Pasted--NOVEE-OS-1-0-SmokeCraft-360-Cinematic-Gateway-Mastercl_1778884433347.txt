@@ -1,0 +1,300 @@
+/**
+ * NOVEE OS 1.0 — SmokeCraft 360 Cinematic Gateway & Masterclass Engine
+ * Component: SmokeCraftGateway.tsx
+ * Target Demographic: Men ages 40–60 in low-light luxury lounge environments
+ * Visual Architecture: 24px+ High-Contrast Type, Obsidian Glass, Liquid Metallic Gold, Real Smoke Simulation
+ */
+
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// High-Contrast Luxury Material Theme Map
+const theme = {
+  vaultBg: {
+    background: 'radial-gradient(ellipse at center, #1c1d21 0%, #050607 100%)',
+    position: 'relative' as const,
+    overflow: 'hidden' as const,
+    minHeight: '100vh',
+    width: '100vw',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '40px',
+    color: '#f5f6f7'
+  },
+  obsidianChamber: {
+    background: 'linear-gradient(135deg, rgba(20, 22, 26, 0.96) 0%, rgba(8, 9, 11, 0.99) 100%)',
+    backdropFilter: 'blur(40px)',
+    WebkitBackdropFilter: 'blur(40px)',
+    border: '1px solid transparent',
+    backgroundImage: 'linear-gradient(#14161a, #08090b), linear-gradient(135deg, #dfba73 0%, #fbf5b7 50%, #9e7831 100%)',
+    backgroundOrigin: 'border-box',
+    backgroundClip: 'padding-box, border-box',
+    boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 32px 80px rgba(0, 0, 0, 0.95)',
+    borderRadius: '8px',
+    width: '100%',
+    maxWidth: '1100px',
+    padding: '60px',
+    zIndex: 10,
+    margin: '20px auto'
+  },
+  goldHeader: {
+    fontFamily: '"Cormorant Garamond", serif',
+    background: 'linear-gradient(180deg, #ffffff 0%, #dfba73 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    fontSize: '3.8rem',
+    fontWeight: 300,
+    letterSpacing: '0.1em',
+    textAlign: 'center' as const,
+    margin: '0 0 24px 0',
+    textTransform: 'uppercase' as const
+  },
+  sectionTitle: {
+    fontFamily: '"Cormorant Garamond", serif',
+    fontSize: '2.5rem',
+    color: '#fffcf5',
+    fontWeight: 400,
+    marginBottom: '20px',
+    borderBottom: '1px solid rgba(223, 186, 115, 0.2)',
+    paddingBottom: '12px'
+  },
+  loungeParagraph: {
+    fontSize: '22px', // Maximum visibility for dimly lit rooms
+    lineHeight: '1.8',
+    color: '#f5f6f7',
+    fontWeight: 400,
+    marginBottom: '32px',
+    letterSpacing: '0.02em'
+  },
+  machinedButton: {
+    background: 'linear-gradient(180deg, #2e3136 0%, #111214 100%)',
+    border: '1px solid #dfba73',
+    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 6px 20px rgba(0,0,0,0.6)',
+    color: '#fffcf5',
+    padding: '20px 48px', // Large, explicit touch target
+    fontSize: '16px',
+    fontWeight: 600,
+    letterSpacing: '0.3em',
+    textTransform: 'uppercase' as const,
+    borderRadius: '4px',
+    cursor: 'pointer',
+    transition: 'all 0.4s ease'
+  },
+  optionGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gap: '24px',
+    margin: '32px 0'
+  },
+  selectionCard: (selected: boolean) => ({
+    background: selected ? 'rgba(35, 38, 44, 0.95)' : 'rgba(15, 16, 18, 0.6)',
+    border: selected ? '2px solid #dfba73' : '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '6px',
+    padding: '30px',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease'
+  }),
+  cardLabel: {
+    fontSize: '24px',
+    fontFamily: '"Cormorant Garamond", serif',
+    color: '#fffcf5',
+    margin: '0 0 10px 0',
+    fontWeight: 500
+  },
+  cardSubtext: {
+    fontSize: '18px',
+    color: '#cdd0d4',
+    lineHeight: '1.6'
+  },
+  smokeLayer: (delay: number, duration: number) => ({
+    position: 'absolute' as const,
+    bottom: '-15%',
+    left: `${Math.random() * 100}%`,
+    width: '700px',
+    height: '700px',
+    background: 'radial-gradient(circle, rgba(240, 240, 240, 0.03) 0%, transparent 75%)',
+    filter: 'blur(60px)',
+    pointerEvents: 'none' as const,
+    zIndex: 2,
+    animate: {
+      y: ['0vh', '-130vh'],
+      x: ['0px', `${Math.random() * 160 - 80}px`],
+      scale: [1, 1.6],
+      opacity: [0, 0.8, 0]
+    },
+    transition: { duration, repeat: Infinity, delay, ease: 'linear' }
+  })
+};
+
+export default function SmokeCraftGateway() {
+  const [stage, setStage] = useState<'intro' | 'orientation' | 'mentor' | 'cultivation'>('intro');
+  const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
+  const [selectedSeed, setSelectedSeed] = useState<string | null>(null);
+  const [selectedSoil, setSelectedSoil] = useState<string | null>(null);
+
+  const mentors = [
+    { id: 'dr', name: 'Don Manuel (Dominican Republic)', style: 'Traditional Entubado Rolling', bio: 'Mastery over smooth, complex profile layering with multi-generational Cuban seed descendants.' },
+    { id: 'nic', name: 'Alejandro (Nicaragua)', style: 'Estelí Accordion Technique', bio: 'Specializes in high-intensity, bold, spice-forward profiles utilizing volcanic soil properties.' }
+  ];
+
+  const seeds = [
+    { id: 'corojo', name: 'Corojo Premium', detail: 'Delivers a robust, spicy intensity with classic rich pepper notes.' },
+    { id: 'criollo', name: 'Criollo 98', detail: 'Provides an earthy, smooth complexity balancing wood and sweet cream.' }
+  ];
+
+  const soils = [
+    { id: 'volcanic', name: 'Volcanic Ash (Estelí)', detail: 'High mineral composition giving intense spice and deep structural strength.' },
+    { id: 'alluvial', name: 'Alluvial Valley (Cibao)', detail: 'Nutrient-dense loam creating silky wrapper leaves and refined, mellow body.' }
+  ];
+
+  return (
+    <div style={styles.vaultBg}>
+      {/* Heavy Volumetric Smoke Layer */}
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          style={styles.smokeLayer(i * 4, 20 + i * 2) as any}
+          animate={styles.smokeLayer(i * 4, 20 + i * 2).animate}
+          transition={styles.smokeLayer(i * 4, 20 + i * 2).transition}
+        />
+      ))}
+
+      <AnimatePresence mode="wait">
+        {/* STAGE 1: CINEMATIC INTRO SCREEN */}
+        {stage === 'intro' && (
+          <motion.div
+            key="intro"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.8 }}
+            style={{ textAlign: 'center', zIndex: 10, maxWidth: '900px', padding: '20px' }}
+          >
+            <h1 style={styles.goldHeader}>Welcome to SmokeCraft 360</h1>
+            <p style={{ ...styles.loungeParagraph, fontSize: '26px', fontStyle: 'italic', color: '#fffcf5' }}>
+              “A cigar is more than tobacco. It is atmosphere. Timing. Ritual. Presence.”
+            </p>
+            <div style={{ marginTop: '48px' }}>
+              <button style={styles.machinedButton} onClick={() => setStage('orientation')}>
+                Begin The Experience
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* STAGE 2: ORIENTATION CHAMBER */}
+        {stage === 'orientation' && (
+          <motion.div
+            key="orientation"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            style={styles.obsidianChamber}
+          >
+            <h2 style={styles.sectionTitle}>The SmokeCraft Masterclass Philosophy</h2>
+            <p style={styles.loungeParagraph}>
+              SmokeCraft 360 decouples software from art. Inside this sanctuary, you are not configuring metrics—you are controlling environment, sourcing legacy assets, and executing a precision ritual.
+            </p>
+            <p style={styles.loungeParagraph}>
+              Through this guided progression, you will map your personal flavor profile, select a legacy master roller mentor, cultivate your foundational tobacco assets down to the seed, and unlock access to the private Signature Humidor Studio.
+            </p>
+            <button style={styles.machinedButton} onClick={() => setStage('mentor')}>
+              Select Your Master Mentor
+            </button>
+          </motion.div>
+        )}
+
+        {/* STAGE 3: MASTER MENTOR SELECTION */}
+        {stage === 'mentor' && (
+          <motion.div
+            key="mentor"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={styles.obsidianChamber}
+          >
+            <h2 style={styles.sectionTitle}>Choose Country Authority & Rolling Style</h2>
+            <p style={styles.loungeParagraph}>
+              Your mentor establishes the baseline architecture, rolling technique, and draw profiles for your private reserve allocation.
+            </p>
+            
+            <div style={styles.optionGrid}>
+              {mentors.map((m) => (
+                <div
+                  key={m.id}
+                  style={styles.selectionCard(selectedMentor === m.id)}
+                  onClick={() => setSelectedMentor(m.id)}
+                >
+                  <h3 style={styles.cardLabel}>{m.name}</h3>
+                  <p style={{ ...styles.cardSubtext, color: '#dfba73', fontWeight: 600, marginBottom: '8px' }}>{m.style}</p>
+                  <p style={styles.cardSubtext}>{m.bio}</p>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '40px' }}>
+              <button style={{ ...styles.machinedButton, border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => setStage('orientation')}>Back</button>
+              <button style={styles.machinedButton} disabled={!selectedMentor} onClick={() => setStage('cultivation')}>Confirm & Select Seed Base</button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* STAGE 4: CULTIVATION ARCHITECTURE (SEED & SOIL) */}
+        {stage === 'cultivation' && (
+          <motion.div
+            key="cultivation"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={styles.obsidianChamber}
+          >
+            <h2 style={styles.sectionTitle}>Foundational Asset Sourcing: Seed & Soil</h2>
+            <p style={styles.loungeParagraph}>
+              Every premier blend owes its life to terroir and genetics. Establish your cultivation parameters below.
+            </p>
+
+            <h3 style={{ ...styles.cardLabel, fontSize: '22px', color: '#dfba73', marginTop: '24px' }}>1. Tobacco Varietal Selection</h3>
+            <div style={styles.optionGrid}>
+              {seeds.map((s) => (
+                <div
+                  key={s.id}
+                  style={styles.selectionCard(selectedSeed === s.id)}
+                  onClick={() => setSelectedSeed(s.id)}
+                >
+                  <h4 style={styles.cardLabel}>{s.name}</h4>
+                  <p style={styles.cardSubtext}>{s.detail}</p>
+                </div>
+              ))}
+            </div>
+
+            <h3 style={{ ...styles.cardLabel, fontSize: '22px', color: '#dfba73', marginTop: '32px' }}>2. Terroir Soil Environment</h3>
+            <div style={styles.optionGrid}>
+              {soils.map((so) => (
+                <div
+                  key={so.id}
+                  style={styles.selectionCard(selectedSoil === so.id)}
+                  onClick={() => setSelectedSoil(so.id)}
+                >
+                  <h4 style={styles.cardLabel}>{so.name}</h4>
+                  <p style={styles.cardSubtext}>{so.detail}</p>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '48px' }}>
+              <button style={{ ...styles.machinedButton, border: '1px solid rgba(255,255,255,0.2)' }} onClick={() => setStage('mentor')}>Back</button>
+              <button 
+                style={styles.machinedButton} 
+                disabled={!selectedSeed || !selectedSoil} 
+                onClick={() => window.location.href = '/smokecraft/flavor-scan'}
+              >
+                Proceed to Flavor Scan
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

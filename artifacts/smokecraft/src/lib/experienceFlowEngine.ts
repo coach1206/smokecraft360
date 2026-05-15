@@ -251,6 +251,18 @@ export const ExperienceFlowEngine = {
   },
 
   /**
+   * True when the guest has accepted enough swipes to unlock the Signature Studio.
+   * ExperiencePage increments "titan_swipe_accepts" in sessionStorage on each accepted swipe.
+   * Default threshold: 3 accepted swipes.
+   */
+  isSignatureStudioEligible(threshold = 3): boolean {
+    try {
+      const raw = sessionStorage.getItem("titan_swipe_accepts");
+      return parseInt(raw ?? "0", 10) >= threshold;
+    } catch { return false; }
+  },
+
+  /**
    * Mark SWIPE_RITUAL (or SPIRIT_CONSTRUCTION) complete — advances to LEGACY_HANDOFF.
    * Route is NOT returned here because it includes sessionId — ExperiencePage
    * builds the URL as `/legacy-handoff/:sessionId/:craftType` directly.

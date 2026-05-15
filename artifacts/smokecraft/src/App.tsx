@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
 import { Router, Route, Switch, useLocation } from 'wouter';
+import { motion } from 'framer-motion';
 import TitanCraftDeck from '@/pages/TitanCraftDeck';
 const LivingPortal = lazy(() => import('@/pages/LivingPortal'));
 import AIProviderSetup from '@/pages/enterprise/AIProviderSetup';
@@ -744,6 +745,106 @@ function SovereignBootFlow() {
   );
 }
 
+/* ── Guest-route ambient layer — persistent smoke/ember/vignette ─────────── */
+
+const GUEST_PREFIXES = [
+  '/craft-hub', '/experience/', '/experience-overview/', '/synchronization/',
+  '/legacy-handoff/', '/experience-center', '/enrollment', '/reveal/',
+  '/master-blender',
+];
+
+const SMOKE_BLOBS = [
+  { id: 0, x: 10, size: 280, dur: 22, del: 0,  op: 0.055, drift: 28 },
+  { id: 1, x: 34, size: 360, dur: 28, del: 4,  op: 0.040, drift: -22 },
+  { id: 2, x: 56, size: 210, dur: 19, del: 7,  op: 0.060, drift: 18 },
+  { id: 3, x: 77, size: 300, dur: 25, del: 2,  op: 0.045, drift: -30 },
+  { id: 4, x: 20, size: 190, dur: 17, del: 11, op: 0.050, drift: 24 },
+  { id: 5, x: 63, size: 330, dur: 30, del: 8,  op: 0.035, drift: -18 },
+];
+
+const EMBER_PARTICLES = [
+  { id: 0,  x: 8,  y: 85, r: 1.2, dur: 12, del: 0,  op: 0.12 },
+  { id: 1,  x: 18, y: 70, r: 0.9, dur: 15, del: 2,  op: 0.09 },
+  { id: 2,  x: 28, y: 92, r: 1.4, dur: 11, del: 4,  op: 0.14 },
+  { id: 3,  x: 40, y: 78, r: 0.8, dur: 14, del: 1,  op: 0.10 },
+  { id: 4,  x: 52, y: 88, r: 1.1, dur: 13, del: 6,  op: 0.11 },
+  { id: 5,  x: 64, y: 75, r: 0.7, dur: 16, del: 3,  op: 0.08 },
+  { id: 6,  x: 72, y: 90, r: 1.3, dur: 10, del: 8,  op: 0.13 },
+  { id: 7,  x: 85, y: 80, r: 1.0, dur: 14, del: 5,  op: 0.10 },
+  { id: 8,  x: 92, y: 86, r: 0.8, dur: 12, del: 9,  op: 0.09 },
+  { id: 9,  x: 33, y: 94, r: 1.5, dur: 11, del: 7,  op: 0.15 },
+  { id: 10, x: 48, y: 68, r: 0.9, dur: 17, del: 2,  op: 0.08 },
+  { id: 11, x: 60, y: 96, r: 1.2, dur: 13, del: 10, op: 0.12 },
+];
+
+const AMBER = '#D4AF37';
+
+function GuestAmbientLayer() {
+  const [loc] = useLocation();
+  const active = GUEST_PREFIXES.some(p => loc === p.replace(/\/$/, '') || loc.startsWith(p));
+  if (!active) return null;
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
+      {/* Cinematic edge vignette */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(ellipse 82% 72% at 50% 50%, transparent 28%, rgba(4,2,0,0.52) 100%)',
+      }} />
+
+      {/* Smoke blobs — drift upward */}
+      {SMOKE_BLOBS.map(b => (
+        <motion.div
+          key={b.id}
+          initial={{ y: '115%', opacity: 0 }}
+          animate={{
+            y:       ['115%', '60%', '10%', '-22%'],
+            x:       [0, b.drift, -(b.drift * 0.5), b.drift * 0.3],
+            opacity: [0, b.op, b.op * 0.8, 0],
+          }}
+          transition={{ duration: b.dur, delay: b.del, repeat: Infinity, ease: 'easeOut' }}
+          style={{
+            position:     'absolute',
+            left:         `${b.x}%`,
+            bottom:       0,
+            width:        b.size,
+            height:       b.size * 1.7,
+            borderRadius: '45% 55% 55% 45% / 40% 40% 60% 60%',
+            background:   'radial-gradient(ellipse at 50% 65%, rgba(180,130,60,0.13) 0%, rgba(212,175,55,0.05) 38%, transparent 72%)',
+            filter:       'blur(34px)',
+            willChange:   'transform, opacity',
+          }}
+        />
+      ))}
+
+      {/* Ember particles — rise and fade */}
+      {EMBER_PARTICLES.map(e => (
+        <motion.div
+          key={e.id}
+          animate={{
+            y:       [0, -110, -260, -400],
+            x:       [0, 11, -7, 15],
+            opacity: [0, e.op, e.op * 0.65, 0],
+            scale:   [0.7, 1.2, 0.85, 0.4],
+          }}
+          transition={{ duration: e.dur, delay: e.del, repeat: Infinity, ease: 'easeOut' }}
+          style={{
+            position:  'absolute',
+            left:      `${e.x}%`,
+            top:       `${e.y}%`,
+            width:     e.r * 2,
+            height:    e.r * 2,
+            borderRadius: '50%',
+            background: AMBER,
+            boxShadow:  `0 0 ${e.r * 4}px ${AMBER}`,
+            willChange: 'transform, opacity',
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 /* ── Brand partner firewall — redirects vendors away from protected routes ── */
 const VENDOR_BLOCKED_PREFIXES = [
   '/sovereign-dashboard', '/sovereign-gate', '/sovereign-verify',
@@ -777,6 +878,7 @@ export default function App() {
   return (
     <Router>
       <BrandPartnerFirewall />
+      <GuestAmbientLayer />
       <Suspense fallback={<PageLoader />}>
         <Switch>
           {/* ── Enterprise / AI (standalone — no full provider stack needed) ── */}
