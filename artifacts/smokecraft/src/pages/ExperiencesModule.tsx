@@ -7,7 +7,7 @@ import { useCommandCenter } from "@/contexts/CommandCenterContext";
 import { useVenueContext } from "@/contexts/VenueContext";
 import { useEngagementContext } from "@/contexts/EngagementContext";
 import KioskProductImage from "@/components/KioskProductImage";
-import BackgroundLayer from "@/components/Layout/BackgroundLayer";
+import CinematicCraftBg from "@/components/CinematicCraftBg";
 
 interface ExperienceType {
   id: string;
@@ -90,7 +90,7 @@ export default function ExperiencesModule() {
   const [, navigate] = useLocation();
   const pos = usePosContext();
   const cc = useCommandCenter();
-  const { getBackground } = useVenueContext();
+  useVenueContext();
   const engagement = useEngagementContext();
   const [phase, setPhase] = useState<Phase>("select");
   const [activeExp, setActiveExp] = useState<ExperienceType | null>(null);
@@ -160,17 +160,17 @@ export default function ExperiencesModule() {
   const stepLabels = activeExp ? [...activeExp.questions.map((_q, i) => `Step ${i + 1}`), "Reveal"] : [];
 
   return (
-    <BackgroundLayer image={getBackground("experiences")} style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "#1A1A1B", overflow: "hidden" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(26,26,27,0.08)", background: "rgba(245,242,237,0.8)", backdropFilter: "blur(8px)", flexShrink: 0 }}>
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", color: "rgba(232,222,208,0.95)", overflow: "hidden", background: "#010101", position: "relative" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", borderBottom: "1px solid rgba(191,149,63,0.18)", background: "rgba(5,3,1,0.95)", backdropFilter: "blur(12px)", flexShrink: 0 }}>
         <motion.button whileTap={{ scale: 0.9 }} onClick={phase === "select" ? () => navigate("/dashboard") : phase === "campaigns" ? () => setPhase("select") : reset}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.10)", color: "rgba(26,26,27,0.48)", cursor: "pointer" }}>
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(191,149,63,0.08)", border: "1px solid rgba(191,149,63,0.18)", color: "rgba(191,149,63,0.7)", cursor: "pointer" }}>
           <ArrowLeft size={20} />
         </motion.button>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 22, fontWeight: 700, color: "#1A1A1B", fontFamily: "'Playfair Display', serif", letterSpacing: "0.02em" }}>
+          <div style={{ fontSize: 22, fontWeight: 700, color: "rgba(232,222,208,0.95)", fontFamily: "'Playfair Display', serif", letterSpacing: "0.02em" }}>
             {phase === "campaigns" ? "Campaigns" : phase === "select" ? "Craft Your Experience" : activeExp?.title}
           </div>
-          <div style={{ fontSize: 10, color: "rgba(26,26,27,0.44)", letterSpacing: "0.25em", textTransform: "uppercase", marginTop: 2 }}>
+          <div style={{ fontSize: 10, color: "rgba(191,149,63,0.55)", letterSpacing: "0.25em", textTransform: "uppercase", marginTop: 2 }}>
             {phase === "campaigns" ? "Create promotional campaigns" : phase === "select" ? "Tap to begin your journey" : phase === "questions" ? `Question ${questionIdx + 1} of ${activeExp?.questions.length}` : "Your recommendation"}
           </div>
         </div>
@@ -204,33 +204,30 @@ export default function ExperiencesModule() {
                   style={{
                     display: "flex", flexDirection: "column", justifyContent: "flex-end",
                     aspectRatio: "1 / 2", padding: 0, minHeight: 420,
-                    background: "#F5F2ED",
-                    border: `1px solid ${exp.color}40`, borderRadius: 16,
+                    background: "#010101",
+                    border: `1px solid ${exp.color}30`, borderRadius: 16,
                     cursor: "pointer", textAlign: "left",
                     position: "relative", overflow: "hidden",
-                    boxShadow: `0 12px 40px rgba(26,26,27,0.18), 0 0 0 1px ${exp.color}10`,
+                    boxShadow: `0 12px 48px rgba(0,0,0,0.55), 0 0 0 1px ${exp.color}18`,
                   }}>
+                  {/* Craft-specific cinemagraph animation */}
+                  <CinematicCraftBg craft={exp.id} />
+                  {/* Gradient overlay — spec: linear-gradient(to bottom, rgba(0,0,0,0.4), #000000) */}
                   <div style={{
                     position: "absolute", inset: 0,
-                    backgroundImage: `url(${exp.image})`,
-                    backgroundSize: "cover", backgroundPosition: "center",
-                    pointerEvents: "none",
-                  }} />
-                  <div style={{
-                    position: "absolute", inset: 0,
-                    background: `linear-gradient(180deg, rgba(245,242,237,0.1) 0%, rgba(245,242,237,0.4) 50%, rgba(245,242,237,0.92) 100%)`,
+                    background: "linear-gradient(to bottom, rgba(0,0,0,0.40), #000000)",
                     pointerEvents: "none",
                   }} />
                   <div style={{ position: "relative", padding: "18px 20px 20px", textAlign: "left" }}>
                     <div style={{
-                      fontSize: 22, fontWeight: 700, color: "#1A1A1B",
+                      fontSize: 22, fontWeight: 700, color: "rgba(232,222,208,0.96)",
                       fontFamily: "'Playfair Display', serif",
-                      textShadow: "0 2px 8px rgba(26,26,27,0.40)",
+                      textShadow: "0 2px 12px rgba(0,0,0,0.80)",
                       marginBottom: 6,
                     }}>{exp.brand}</div>
                     <div style={{
                       fontSize: 9, color: exp.color, letterSpacing: "0.25em",
-                      textShadow: "0 1px 4px rgba(26,26,27,0.40)", fontWeight: 600,
+                      textShadow: "0 1px 6px rgba(0,0,0,0.80)", fontWeight: 600,
                     }}>{exp.tags}</div>
                   </div>
                 </motion.button>
@@ -568,6 +565,6 @@ export default function ExperiencesModule() {
           )}
         </AnimatePresence>
       </div>
-    </BackgroundLayer>
+    </div>
   );
 }

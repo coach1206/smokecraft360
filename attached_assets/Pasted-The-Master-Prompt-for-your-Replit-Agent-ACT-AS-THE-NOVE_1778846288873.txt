@@ -1,0 +1,33 @@
+The Master Prompt for your Replit Agent
+"ACT AS THE NOVEE OS LEAD FRONTEND ENGINEER.
+
+CRITICAL REVISION: The current landing page background assets are irrelevant and low-quality (remove all 'paint pouring,' 'books,' or 'lotus' imagery). We are replacing the bubble particle system with specific Cinemagraph Background Loops that reflect the high-stakes luxury of each craft.
+
+STYLE GUIDE (BUILD v2026.0514):
+
+Primary Aesthetic: Obsidian glass, 24k Gold leaf accents, deep mahogany, and cinematic lighting.
+
+Typography: .novee-gold-heading (letter-spacing: 0.2em).
+
+TASK: Update the 'Experience Hub' Landing Logic for the following crafts:
+
+SMOKECRAFT 360: Background must be a high-fidelity video of a lit Maduro Churchill cigar resting in a heavy, solid crystal and gold-inlaid ashtray. A single, thick, consistent plume of blue-grey smoke must curl upward. No cheap glass; no cluttered backgrounds.
+
+POURCRAFT 360: Background must be a slow-motion pour of viscous amber whiskey cascading over a single, perfectly clear, hand-carved ice sphere in a heavy-bottomed crystal rocks glass. Focus on the golden light refracting through the liquid.
+
+BEERCRAFT 360: Background must be a chilled pilsner glass being filled with a crisp golden lager. The animation must focus on the condensation on the glass and a dense, creamy, white foam head forming at the top.
+
+WINECRAFT 360: Background must be a deep ruby red wine being poured into a large crystal Bordeaux glass. The animation must show the 'legs' of the wine and the aeration of the liquid.
+
+UI LAYOUT: > * Apply a background-overlay: linear-gradient(to bottom, rgba(0,0,0,0.4), #000000) over the videos to ensure the 'Welcome' text is readable.
+
+Keep the smoke/liquid moving in a seamless, slow-motion loop.
+
+DO NOT PROCEED with any other tasks until these landing states are authenticated for the Investor Demo."
+
+Why this works:
+Direct Correction: It explicitly tells the agent to delete the "paint/books" assets.
+
+Material Specs: It defines the ashtray as "solid crystal and gold-inlaid," preventing it from looking cheap.
+
+Consistency: It uses the same "v2026.0
