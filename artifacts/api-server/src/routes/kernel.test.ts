@@ -90,6 +90,23 @@ function makeInsertMock(result: object | Error) {
   (db.insert as ReturnType<typeof vi.fn>).mockReturnValue({ values });
 }
 
+/**
+ * Chainable drizzle-like select mock for routes that use
+ * select → from → orderBy → limit (e.g. telemetry/recent).
+ */
+function makeOrderedSelectMock(rows: object[]) {
+  const builder = {
+    from: vi.fn(),
+    orderBy: vi.fn(),
+    limit: vi.fn(),
+  };
+  builder.limit.mockResolvedValue(rows);
+  builder.orderBy.mockReturnValue(builder);
+  builder.from.mockReturnValue(builder);
+  (db.select as ReturnType<typeof vi.fn>).mockReturnValue(builder);
+  return builder;
+}
+
 /** Minimal valid module payload. */
 function modulePayload(overrides: Record<string, unknown> = {}) {
   return {
@@ -288,6 +305,91 @@ describe("PATCH /api/kernel/mode/:venueId — role-based access control", () => 
       .send({ mode: "premium" });
 
     expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
+});
+
+describe("GET /api/kernel/telemetry/recent — payload field inclusion", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const SAMPLE_EVENT = {
+    id: "evt-uuid-1",
+    eventType: "swipe_start",
+    moduleId: "mod-uuid-1",
+    venueId: VENUE_A,
+    occurredAt: "2026-05-15T10:00:00.000Z",
+    payload: { craftType: "smoke", userId: "u1" },
+  };
+
+  it("returns 200 with events array that includes the payload field", async () => {
+    makeOrderedSelectMock([SAMPLE_EVENT]);
+
+    const app = buildApp();
+    const res = await request(app).get("/api/kernel/telemetry/recent");
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("events");
+    expect(Array.isArray(res.body.events)).toBe(true);
+    const evt = res.body.events[0] as typeof SAMPLE_EVENT;
+    expect(evt).toHaveProperty("payload");
+    expect(evt.payload).toEqual({ craftType: "smoke", userId: "u1" });
+  });
+
+  it("returns an empty events array when there are no rows", async () => {
+    makeOrderedSelectMock([]);
+
+    const app = buildApp();
+    const res = await request(app).get("/api/kernel/telemetry/recent");
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ events: [] });
+  });
+
+  it("includes all five core fields alongside payload", async () => {
+    makeOrderedSelectMock([SAMPLE_EVENT]);
+
+    const app = buildApp();
+    const res = await request(app).get("/api/kernel/telemetry/recent?limit=1");
+
+    expect(res.status).toBe(200);
+    const evt = res.body.events[0] as typeof SAMPLE_EVENT;
+    expect(evt).toMatchObject({
+      id: "evt-uuid-1",
+      eventType: "swipe_start",
+      moduleId: "mod-uuid-1",
+      venueId: VENUE_A,
+      occurredAt: "2026-05-15T10:00:00.000Z",
+      payload: { craftType: "smoke", userId: "u1" },
+    });
+  });
+
+  it("returns null payload without throwing when payload is null", async () => {
+    makeOrderedSelectMock([{ ...SAMPLE_EVENT, payload: null }]);
+
+    const app = buildApp();
+    const res = await request(app).get("/api/kernel/telemetry/recent");
+
+    expect(res.status).toBe(200);
+    expect(res.body.events[0].payload).toBeNull();
+  });
+
+  it("returns 500 when the database query fails", async () => {
+    const builder = {
+      from: vi.fn(),
+      orderBy: vi.fn(),
+      limit: vi.fn(),
+    };
+    builder.limit.mockRejectedValue(new Error("db error"));
+    builder.orderBy.mockReturnValue(builder);
+    builder.from.mockReturnValue(builder);
+    (db.select as ReturnType<typeof vi.fn>).mockReturnValue(builder);
+
+    const app = buildApp();
+    const res = await request(app).get("/api/kernel/telemetry/recent");
+
+    expect(res.status).toBe(500);
     expect(res.body).toHaveProperty("error");
   });
 });

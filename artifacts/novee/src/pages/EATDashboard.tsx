@@ -230,6 +230,7 @@ interface RecentEvent {
   moduleId: string | null;
   venueId: string | null;
   occurredAt: string;
+  payload: Record<string, unknown> | null;
 }
 
 interface ProductItem {
@@ -2030,16 +2031,21 @@ function writeSessionString(key: string, v: string): void {
 }
 
 function buildLiveFeedCsv(events: RecentEvent[]): string {
-  const header = "id,event_type,module_id,venue_id,occurred_at";
+  const header = "id,event_type,module_id,venue_id,occurred_at,payload";
   const rows = events.map((e) => {
     const escape = (v: string | null) =>
       v === null ? "" : `"${v.replace(/"/g, '""')}"`;
+    const payloadStr =
+      e.payload == null || Object.keys(e.payload).length === 0
+        ? ""
+        : `"${JSON.stringify(e.payload).replace(/"/g, '""')}"`;
     return [
       escape(e.id),
       escape(e.eventType),
       escape(e.moduleId),
       escape(e.venueId),
       escape(e.occurredAt),
+      payloadStr,
     ].join(",");
   });
   return [header, ...rows].join("\r\n");

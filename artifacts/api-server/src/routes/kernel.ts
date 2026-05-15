@@ -281,6 +281,7 @@ router.get("/telemetry/recent", async (req: Request, res: Response) => {
         moduleId:   telemetryEventsTable.moduleId,
         venueId:    telemetryEventsTable.venueId,
         occurredAt: telemetryEventsTable.occurredAt,
+        payload:    telemetryEventsTable.payload,
       })
       .from(telemetryEventsTable)
       .orderBy(desc(telemetryEventsTable.occurredAt))
