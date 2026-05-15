@@ -1,7 +1,7 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { KernelModeProvider } from "@/contexts/KernelModeContext";
+import { KernelModeProvider, useKernelMode } from "@/contexts/KernelModeContext";
 
 // VenueContext — fixed venue id so the localStorage cache key is deterministic
 vi.mock("@/contexts/VenueContext", () => ({
@@ -278,6 +278,124 @@ describe("SwipeIntelligence in Essential mode", () => {
     expect(screen.queryByText("Session Mood Distribution")).not.toBeInTheDocument();
     expect(screen.queryByText("Pacing Distribution")).not.toBeInTheDocument();
     expect(screen.queryByText("Sessions Scored")).not.toBeInTheDocument();
+  });
+});
+
+// ─── KernelModeContext refresh() ──────────────────────────────────────────────
+
+describe("KernelModeContext refresh()", () => {
+  function KernelConsumer() {
+    const { mode, loading, refresh } = useKernelMode();
+    return (
+      <div>
+        <span data-testid="mode">{mode}</span>
+        <span data-testid="loading">{String(loading)}</span>
+        <button onClick={() => void refresh()}>refresh</button>
+      </div>
+    );
+  }
+
+  it("triggers a new GET /api/kernel/mode/:venueId fetch when called", async () => {
+    render(
+      <KernelModeProvider>
+        <KernelConsumer />
+      </KernelModeProvider>,
+    );
+
+    // Let the initial mount fetch settle
+    await act(async () => {});
+
+    const fetchMock = vi.mocked(fetch);
+    const kernelGetsBefore = fetchMock.mock.calls.filter(
+      ([url]) => typeof url === "string" && (url as string).includes("/api/kernel/mode/"),
+    ).length;
+
+    await act(async () => {
+      screen.getByRole("button", { name: "refresh" }).click();
+    });
+
+    const kernelGetsAfter = fetchMock.mock.calls.filter(
+      ([url]) => typeof url === "string" && (url as string).includes("/api/kernel/mode/"),
+    ).length;
+
+    expect(kernelGetsAfter).toBe(kernelGetsBefore + 1);
+  });
+
+  it("updates mode state and localStorage cache after a successful refresh", async () => {
+    // Start with "essential" (set by beforeEach) then switch server response to "sovereign"
+    render(
+      <KernelModeProvider>
+        <KernelConsumer />
+      </KernelModeProvider>,
+    );
+    await act(async () => {});
+
+    expect(screen.getByTestId("mode").textContent).toBe("essential");
+    expect(localStorage.getItem(CACHE_KEY)).toBe("essential");
+
+    // Override fetch to now return "sovereign"
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: unknown) => {
+        if (typeof url === "string" && url.includes("/api/kernel/mode/")) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ mode: "sovereign" }),
+          });
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) });
+      }),
+    );
+
+    await act(async () => {
+      screen.getByRole("button", { name: "refresh" }).click();
+    });
+
+    expect(screen.getByTestId("mode").textContent).toBe("sovereign");
+    expect(localStorage.getItem(CACHE_KEY)).toBe("sovereign");
+  });
+
+  it("sets loading to true during refresh and false once the fetch resolves", async () => {
+    render(
+      <KernelModeProvider>
+        <KernelConsumer />
+      </KernelModeProvider>,
+    );
+    await act(async () => {});
+
+    // Confirm loading is false at rest
+    expect(screen.getByTestId("loading").textContent).toBe("false");
+
+    // Replace fetch with a promise we control manually
+    let resolveFetch!: () => void;
+    const gate = new Promise<void>((res) => { resolveFetch = res; });
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: unknown) => {
+        if (typeof url === "string" && url.includes("/api/kernel/mode/")) {
+          return gate.then(() => ({
+            ok: true,
+            json: () => Promise.resolve({ mode: "essential" }),
+          }));
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) });
+      }),
+    );
+
+    // Kick off refresh without awaiting so we can inspect mid-flight state
+    act(() => {
+      screen.getByRole("button", { name: "refresh" }).click();
+    });
+
+    // loading should be true while the fetch is still pending
+    expect(screen.getByTestId("loading").textContent).toBe("true");
+
+    // Resolve the fetch and let React flush
+    await act(async () => { resolveFetch(); });
+
+    // loading should return to false after the fetch completes
+    expect(screen.getByTestId("loading").textContent).toBe("false");
   });
 });
 
