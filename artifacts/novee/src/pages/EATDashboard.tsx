@@ -159,6 +159,52 @@ function buildComparisonCsvContent(
   }
   rows.push("");
 
+  // ── Top Event Types Comparison ────────────────────────────────────────────
+  rows.push("## Top Event Types Comparison");
+  rows.push("name,primary_count,comparison_count,delta_pct");
+  {
+    const cmpEventMap = new Map<string, number>(
+      (cmp?.topEventTypes ?? []).map((e) => [e.event_type, e.cnt]),
+    );
+    const merged = [...data.topEventTypes]
+      .map((e) => {
+        const comparisonCnt = cmpEventMap.get(e.event_type) ?? 0;
+        const deltaPct =
+          comparisonCnt === 0
+            ? ""
+            : String(Math.round(((e.cnt - comparisonCnt) / comparisonCnt) * 100));
+        return { name: e.event_type, primary: e.cnt, comparison: comparisonCnt, deltaPct };
+      })
+      .sort((a, b) => b.primary - a.primary);
+    for (const row of merged) {
+      rows.push(`"${row.name.replace(/"/g, '""')}",${row.primary},${row.comparison},${row.deltaPct}`);
+    }
+  }
+  rows.push("");
+
+  // ── Module Usage Comparison ───────────────────────────────────────────────
+  rows.push("## Module Usage Comparison");
+  rows.push("name,primary_count,comparison_count,delta_pct");
+  {
+    const cmpModuleMap = new Map<string, number>(
+      (cmp?.moduleUsage ?? []).map((m) => [m.module_slug, m.event_count]),
+    );
+    const merged = [...data.moduleUsage]
+      .map((m) => {
+        const comparisonCnt = cmpModuleMap.get(m.module_slug) ?? 0;
+        const deltaPct =
+          comparisonCnt === 0
+            ? ""
+            : String(Math.round(((m.event_count - comparisonCnt) / comparisonCnt) * 100));
+        return { name: m.module_name, primary: m.event_count, comparison: comparisonCnt, deltaPct };
+      })
+      .sort((a, b) => b.primary - a.primary);
+    for (const row of merged) {
+      rows.push(`"${row.name.replace(/"/g, '""')}",${row.primary},${row.comparison},${row.deltaPct}`);
+    }
+  }
+  rows.push("");
+
   // ── Summary ───────────────────────────────────────────────────────────────
   rows.push("## Summary");
   rows.push(`metric,"${primaryLabel}","${compareLabel}",delta_pct`);
