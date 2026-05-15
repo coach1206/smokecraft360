@@ -5,6 +5,21 @@ import { AudioWaveToggle, useAudio } from "@/contexts/AudioContext";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { getStaffLine } from "@/lib/CraftVoiceRouter";
 
+// ── Reference images ────────────────────────────────────────────────────────
+import imgGoldenBox      from "@assets/eff17e31-8450-48d0-af84-9bd221fa2b0c_1778884524142.jpeg";
+import imgSovereignMap   from "@assets/IMG_5166_1778884524149.png";
+import imgMentorStudio   from "@assets/IMG_5167_1778884524148.png";
+import imgSeedBank       from "@assets/IMG_5178_1778884524143.png";
+import imgSoilTablet     from "@assets/IMG_5177_1778884524144.png";
+import imgBeneathWrapper from "@assets/IMG_5172_1778884524146.png";
+import imgCutSpecs       from "@assets/IMG_5176_1778884524145.png";
+import imgVitolaSpecs    from "@assets/IMG_5169_1778884524147.png";
+import imgVitolaArch     from "@assets/IMG_5175_1778884524145.png";
+import imgBoxArchitect   from "@assets/IMG_5188_1778884524139.jpeg";
+import imgHumidor        from "@assets/IMG_5187_1778884524140.jpeg";
+import imgCultivation    from "@assets/IMG_5179_1778884524139.png";
+import imgBunching       from "@assets/IMG_5181_1778884524136.png";
+
 // ── Constants ──────────────────────────────────────────────────────────────
 const GOLD      = "#d4af37";
 const HALO_R    = 88;
@@ -82,6 +97,38 @@ const STEP_MENTOR: string[] = [
   "Select your vitola — the shape and smoke time define the rhythm of the experience.",
   "The final cut. How you begin the draw determines everything that follows.",
 ];
+
+// ── Gateway data ────────────────────────────────────────────────────────────
+const MENTORS = [
+  {
+    id: "tradition",
+    name: "Don Manuel",
+    origin: "Dominican Republic",
+    style: "Traditional Entubado Rolling",
+    bio: "Mastery over smooth, complex profile layering with multi-generational Cuban seed descendants.",
+    tag: "THE TRADITION",
+  },
+  {
+    id: "sovereign",
+    name: "Alejandro",
+    origin: "Nicaragua",
+    style: "Estelí Accordion Technique",
+    bio: "Specializes in high-intensity, bold, spice-forward profiles utilizing volcanic soil properties.",
+    tag: "THE MODERN SOVEREIGN",
+  },
+];
+
+const SEEDS = [
+  { id: "corojo",  name: "Corojo Premium", detail: "Robust, spicy intensity with classic rich pepper notes and long-leaf burn character." },
+  { id: "criollo", name: "Criollo '98",    detail: "Earthy, smooth complexity balancing wood, sweet cream, and refined body." },
+];
+
+const SOILS = [
+  { id: "volcanic", name: "Volcanic Ash",    region: "Estelí, Nicaragua",  detail: "High mineral composition giving intense spice and deep structural strength." },
+  { id: "alluvial", name: "Alluvial Valley", region: "Cibao, D.R.",         detail: "Nutrient-dense loam creating silky wrapper leaves and refined, mellow body." },
+];
+
+type GatewayPhase = "intro" | "orientation" | "mentor" | "cultivation" | "blending";
 
 type XPFloat  = { id: number; amount: number; x: number; y: number };
 type Sel      = {
@@ -386,6 +433,467 @@ function CigarSilhouette({ vitola, smokeTime }: { vitola: typeof VITOLAS[0]; smo
           opacity={0.7}
         />
       </motion.svg>
+    </motion.div>
+  );
+}
+
+// ── Shared gateway styles ───────────────────────────────────────────────────
+const GW = {
+  bg: {
+    background: "radial-gradient(ellipse at center, #1c1d21 0%, #050607 100%)",
+    minHeight: "100%",
+    width: "100%",
+    display: "flex",
+    flexDirection: "column" as const,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "40px 24px",
+    color: "#f5f6f7",
+    position: "relative" as const,
+    overflow: "hidden" as const,
+  },
+  chamber: {
+    background: "linear-gradient(135deg, rgba(20,22,26,0.97) 0%, rgba(8,9,11,0.99) 100%)",
+    backdropFilter: "blur(40px)",
+    border: "1px solid rgba(223,186,115,0.35)",
+    boxShadow: "inset 0 1px 2px rgba(255,255,255,0.08), 0 32px 80px rgba(0,0,0,0.95)",
+    borderRadius: "8px",
+    width: "100%",
+    maxWidth: "860px",
+    padding: "40px 36px",
+    zIndex: 10,
+    margin: "0 auto",
+  },
+  title: {
+    fontFamily: "'Cormorant Garamond', serif",
+    fontSize: "clamp(1.5rem, 4vw, 2.4rem)",
+    color: "#fffcf5",
+    fontWeight: 400,
+    marginBottom: "20px",
+    borderBottom: "1px solid rgba(223,186,115,0.18)",
+    paddingBottom: "12px",
+  },
+  para: {
+    fontSize: "clamp(16px, 2vw, 20px)",
+    lineHeight: "1.8",
+    color: "#e8eaec",
+    fontWeight: 400,
+    marginBottom: "20px",
+    letterSpacing: "0.02em",
+  },
+  btn: (dim?: boolean) => ({
+    background: dim
+      ? "rgba(212,175,55,0.08)"
+      : "linear-gradient(180deg, #2e3136 0%, #111214 100%)",
+    border: dim ? "1px solid rgba(255,255,255,0.14)" : "1px solid #dfba73",
+    boxShadow: dim ? "none" : "inset 0 1px 0 rgba(255,255,255,0.08), 0 6px 20px rgba(0,0,0,0.55)",
+    color: dim ? "rgba(240,232,212,0.45)" : "#fffcf5",
+    padding: "16px 36px",
+    fontSize: "clamp(13px, 1.6vw, 15px)",
+    fontWeight: 600,
+    letterSpacing: "0.28em",
+    textTransform: "uppercase" as const,
+    borderRadius: "4px",
+    cursor: dim ? "not-allowed" : "pointer",
+    transition: "all 0.3s ease",
+    fontFamily: "'Inter',sans-serif",
+  }),
+  card: (sel: boolean) => ({
+    background: sel ? "rgba(35,38,44,0.95)" : "rgba(15,16,18,0.6)",
+    border: sel ? `2px solid ${GOLD}` : "1px solid rgba(255,255,255,0.10)",
+    borderRadius: "6px",
+    padding: "24px",
+    cursor: "pointer",
+    transition: "all 0.28s ease",
+    boxShadow: sel ? `0 0 24px ${GOLD}33` : "none",
+  }),
+};
+
+// ── Gateway: Intro ──────────────────────────────────────────────────────────
+function GatewayIntro({ onNext }: { onNext: () => void }) {
+  return (
+    <motion.div
+      key="gw-intro"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ duration: 1.2 }}
+      style={{ ...GW.bg, justifyContent: "flex-end", padding: 0 }}
+      className="relative flex flex-col"
+    >
+      {/* Full-bleed hero */}
+      <div className="absolute inset-0">
+        <img
+          src={imgGoldenBox}
+          alt="Sovereign Humidor"
+          className="w-full h-full object-cover"
+          style={{ filter: "brightness(0.38) saturate(1.1)" }}
+        />
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(to top, rgba(5,3,0,0.97) 0%, rgba(5,3,0,0.55) 45%, rgba(5,3,0,0.2) 100%)",
+        }} />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center text-center px-6 pb-14 pt-16 w-full max-w-2xl mx-auto">
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 1.0 }}
+          style={{
+            fontFamily: "'Cormorant Garamond',serif",
+            fontSize: "clamp(13px, 2vw, 15px)",
+            letterSpacing: "0.35em",
+            color: `${GOLD}90`,
+            textTransform: "uppercase",
+            marginBottom: "18px",
+          }}
+        >
+          NOVEE OS · SMOKECRAFT 360
+        </motion.p>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.65, duration: 1.2 }}
+          style={{
+            fontFamily: "'Cormorant Garamond',serif",
+            background: "linear-gradient(180deg, #ffffff 0%, #dfba73 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontSize: "clamp(2rem, 6vw, 3.5rem)",
+            fontWeight: 300,
+            letterSpacing: "0.08em",
+            margin: "0 0 20px 0",
+            textTransform: "uppercase",
+            lineHeight: 1.1,
+          }}
+        >
+          Welcome to SmokeCraft 360
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1, duration: 1.0 }}
+          style={{
+            fontFamily: "'Cormorant Garamond',serif",
+            fontSize: "clamp(16px, 2.2vw, 22px)",
+            fontStyle: "italic",
+            color: "rgba(255,252,245,0.82)",
+            marginBottom: "40px",
+            lineHeight: 1.6,
+          }}
+        >
+          "A cigar is more than tobacco. It is atmosphere. Timing. Ritual. Presence."
+        </motion.p>
+
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.5, duration: 0.8 }}
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.96 }}
+          style={GW.btn()}
+          onClick={onNext}
+        >
+          Begin The Experience
+        </motion.button>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.0, duration: 1.0 }}
+          style={{ color: `${GOLD}50`, fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", marginTop: 20 }}
+        >
+          4-Stage Ritual · Private Reserve Protocol
+        </motion.p>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Gateway: Orientation ────────────────────────────────────────────────────
+function GatewayOrientation({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+  return (
+    <motion.div
+      key="gw-orientation"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.9 }}
+      style={GW.bg}
+    >
+      <div style={GW.chamber} className="flex flex-col gap-0 overflow-y-auto">
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+          {/* Text block */}
+          <div className="flex-1 min-w-0">
+            <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase", marginBottom: 10 }}>
+              Sovereign Ritual · Phase 1
+            </p>
+            <h2 style={GW.title}>The SmokeCraft Masterclass Philosophy</h2>
+            <p style={GW.para}>
+              SmokeCraft 360 decouples software from art. Inside this sanctuary, you are not configuring metrics — you are controlling environment, sourcing legacy assets, and executing a precision ritual.
+            </p>
+            <p style={GW.para}>
+              Through this guided progression, you will map your personal flavor profile, select a legacy master roller mentor, cultivate your foundational tobacco assets down to the seed, and unlock access to the private Legacy Reserve Studio.
+            </p>
+            <p style={{ ...GW.para, color: `${GOLD}80`, fontSize: "clamp(13px, 1.6vw, 16px)", fontStyle: "italic" }}>
+              Achieving Master Sommelier unlocks the rights to commence physical bespoke assets: Cigar Box · Whiskey Decanter · Brew Vessel.
+            </p>
+          </div>
+
+          {/* Reference image panels */}
+          <div className="flex flex-col gap-3 flex-shrink-0 w-full lg:w-80">
+            <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${GOLD}22` }}>
+              <img
+                src={imgSovereignMap}
+                alt="Sovereign Roadmap of Prestige"
+                className="w-full h-auto object-cover"
+                style={{ filter: "brightness(0.85)", maxHeight: 180, objectFit: "cover", width: "100%" }}
+              />
+              <div style={{ background: "rgba(8,9,11,0.85)", padding: "6px 12px" }}>
+                <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", margin: 0 }}>
+                  Sovereign Roadmap of Prestige
+                </p>
+              </div>
+            </div>
+            <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${GOLD}22` }}>
+              <img
+                src={imgCultivation}
+                alt="Cultivation & Harvest Protocol"
+                className="w-full object-cover"
+                style={{ filter: "brightness(0.82)", maxHeight: 150, objectFit: "cover", width: "100%" }}
+              />
+              <div style={{ background: "rgba(8,9,11,0.85)", padding: "6px 12px" }}>
+                <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", margin: 0 }}>
+                  Cultivation & Harvest · Phase 2
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-between mt-6 gap-4">
+          <button style={GW.btn(true)} onClick={onBack}>← Back</button>
+          <motion.button
+            style={GW.btn()}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={onNext}
+          >
+            Select Your Master Mentor →
+          </motion.button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Gateway: Mentor Selection ───────────────────────────────────────────────
+function GatewayMentor({
+  selected, onSelect, onNext, onBack,
+}: {
+  selected: string | null;
+  onSelect: (id: string) => void;
+  onNext: () => void;
+  onBack: () => void;
+}) {
+  return (
+    <motion.div
+      key="gw-mentor"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.9 }}
+      style={GW.bg}
+    >
+      <div style={GW.chamber} className="overflow-y-auto">
+        <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase", marginBottom: 8 }}>
+          Sovereign Ritual · Phase 2
+        </p>
+        <h2 style={GW.title}>Choose Country Authority & Rolling Style</h2>
+        <p style={GW.para}>
+          Your mentor establishes the baseline architecture, rolling technique, and draw profiles for your private reserve allocation.
+        </p>
+
+        {/* Mentor Studio reference image */}
+        <div className="rounded-lg overflow-hidden mb-5" style={{ border: `1px solid ${GOLD}18`, maxHeight: 220 }}>
+          <img
+            src={imgMentorStudio}
+            alt="Mentor Selection Studio"
+            className="w-full object-cover object-top"
+            style={{ maxHeight: 220, filter: "brightness(0.82)" }}
+          />
+        </div>
+
+        {/* Mentor cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          {MENTORS.map(m => (
+            <motion.div
+              key={m.id}
+              style={GW.card(selected === m.id)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => onSelect(m.id)}
+            >
+              <p style={{ color: GOLD, fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 4 }}>
+                {m.tag}
+              </p>
+              <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)", color: "#fffcf5", margin: "0 0 4px 0", fontWeight: 500 }}>
+                {m.name}
+              </h3>
+              <p style={{ color: GOLD, fontSize: 13, fontWeight: 600, marginBottom: 8 }}>{m.style}</p>
+              <p style={{ color: "#cdd0d4", fontSize: "clamp(13px, 1.5vw, 15px)", lineHeight: 1.6 }}>{m.bio}</p>
+              {selected === m.id && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  style={{ marginTop: 10, color: GOLD, fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase" }}
+                >
+                  ✦ MENTOR CONFIRMED
+                </motion.div>
+              )}
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="flex justify-between gap-4">
+          <button style={GW.btn(true)} onClick={onBack}>← Back</button>
+          <motion.button
+            style={GW.btn(!selected)}
+            whileHover={selected ? { scale: 1.03 } : {}}
+            whileTap={selected ? { scale: 0.97 } : {}}
+            onClick={() => selected && onNext()}
+          >
+            Confirm & Select Seed Base →
+          </motion.button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Gateway: Cultivation (Seed + Soil) ─────────────────────────────────────
+function GatewayCultivation({
+  selectedSeed, selectedSoil,
+  onSeed, onSoil,
+  onNext, onBack,
+}: {
+  selectedSeed: string | null;
+  selectedSoil: string | null;
+  onSeed: (id: string) => void;
+  onSoil: (id: string) => void;
+  onNext: () => void;
+  onBack: () => void;
+}) {
+  const canAdvance = !!selectedSeed && !!selectedSoil;
+  return (
+    <motion.div
+      key="gw-cultivation"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.9 }}
+      style={GW.bg}
+    >
+      <div style={GW.chamber} className="overflow-y-auto">
+        <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase", marginBottom: 8 }}>
+          Sovereign Ritual · Phase 3 — Foundational Asset Sourcing
+        </p>
+        <h2 style={GW.title}>Seed & Soil Architecture</h2>
+        <p style={GW.para}>
+          Every premier blend owes its life to terroir and genetics. Establish your cultivation parameters below.
+        </p>
+
+        {/* Seed bank reference image */}
+        <div className="rounded-lg overflow-hidden mb-5" style={{ border: `1px solid ${GOLD}18`, maxHeight: 200 }}>
+          <img
+            src={imgSeedBank}
+            alt="Tobacco Farm & Seed Bank"
+            className="w-full object-cover object-center"
+            style={{ maxHeight: 200, filter: "brightness(0.8)" }}
+          />
+          <div style={{ background: "rgba(8,9,11,0.85)", padding: "6px 12px" }}>
+            <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", margin: 0 }}>
+              Active Tobacco Farm · Seed Bank
+            </p>
+          </div>
+        </div>
+
+        {/* Seed selection */}
+        <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1rem, 2vw, 1.3rem)", color: GOLD, marginBottom: 12 }}>
+          1. Tobacco Varietal Selection
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          {SEEDS.map(s => (
+            <motion.div
+              key={s.id}
+              style={GW.card(selectedSeed === s.id)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => onSeed(s.id)}
+            >
+              <h4 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1rem, 2vw, 1.25rem)", color: "#fffcf5", margin: "0 0 8px 0", fontWeight: 500 }}>
+                {s.name}
+              </h4>
+              <p style={{ color: "#cdd0d4", fontSize: "clamp(13px, 1.5vw, 15px)", lineHeight: 1.6 }}>{s.detail}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Soil reference image */}
+        <div className="rounded-lg overflow-hidden mb-5" style={{ border: `1px solid ${GOLD}18`, maxHeight: 180 }}>
+          <img
+            src={imgSoilTablet}
+            alt="Terroir Soil Architecture"
+            className="w-full object-cover object-top"
+            style={{ maxHeight: 180, filter: "brightness(0.78)" }}
+          />
+          <div style={{ background: "rgba(8,9,11,0.85)", padding: "6px 12px" }}>
+            <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", margin: 0 }}>
+              Terroir · Seed & Soil Selection Protocol
+            </p>
+          </div>
+        </div>
+
+        {/* Soil selection */}
+        <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1rem, 2vw, 1.3rem)", color: GOLD, marginBottom: 12 }}>
+          2. Terroir Soil Environment
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          {SOILS.map(so => (
+            <motion.div
+              key={so.id}
+              style={GW.card(selectedSoil === so.id)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => onSoil(so.id)}
+            >
+              <p style={{ color: `${GOLD}70`, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>
+                {so.region}
+              </p>
+              <h4 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1rem, 2vw, 1.25rem)", color: "#fffcf5", margin: "0 0 8px 0", fontWeight: 500 }}>
+                {so.name}
+              </h4>
+              <p style={{ color: "#cdd0d4", fontSize: "clamp(13px, 1.5vw, 15px)", lineHeight: 1.6 }}>{so.detail}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="flex justify-between gap-4 mt-2">
+          <button style={GW.btn(true)} onClick={onBack}>← Back</button>
+          <motion.button
+            style={GW.btn(!canAdvance)}
+            whileHover={canAdvance ? { scale: 1.03 } : {}}
+            whileTap={canAdvance ? { scale: 0.97 } : {}}
+            onClick={() => canAdvance && onNext()}
+          >
+            Enter the Blending Chamber →
+          </motion.button>
+        </div>
+      </div>
     </motion.div>
   );
 }
@@ -791,6 +1299,39 @@ function AlchemyReveal({
               </motion.div>
             )}
 
+            {/* ── Legacy Reserve & Humidor finale images ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.0, duration: 0.9 }}
+              className="w-full max-w-md"
+            >
+              <p style={{ color: `${GOLD}65`, fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", textAlign: "center", marginBottom: 10 }}>
+                ✦ Legacy Reserve · Sovereign Attained
+              </p>
+              <div className="flex gap-3 rounded-xl overflow-hidden" style={{ border: `1px solid ${GOLD}22` }}>
+                <div className="flex-1 overflow-hidden" style={{ maxHeight: 150 }}>
+                  <img
+                    src={imgHumidor}
+                    alt="Private Humidor Reserve"
+                    className="w-full h-full object-cover"
+                    style={{ filter: "brightness(0.75)" }}
+                  />
+                </div>
+                <div className="flex-1 overflow-hidden" style={{ maxHeight: 150 }}>
+                  <img
+                    src={imgBoxArchitect}
+                    alt="Signature Studio Box Architect"
+                    className="w-full h-full object-cover"
+                    style={{ filter: "brightness(0.75)" }}
+                  />
+                </div>
+              </div>
+              <p style={{ color: `${GOLD}50`, fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", textAlign: "center", marginTop: 8 }}>
+                Signature Humidor Studio · Box Architect Tier 2
+              </p>
+            </motion.div>
+
             {/* Blend Again */}
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -822,6 +1363,12 @@ export default function MasterBlender() {
     } catch { nav("/"); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  // ── Gateway state ────────────────────────────────────────────────────────
+  const [gateway,        setGateway]        = useState<GatewayPhase>("intro");
+  const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
+  const [selectedSeed,   setSelectedSeed]   = useState<string | null>(null);
+  const [selectedSoil,   setSelectedSoil]   = useState<string | null>(null);
+
   const [step,   setStep]   = useState<0|1|2|3>(0);
   const [sel,    setSel]    = useState<Sel>({});
   const [xp,     setXp]     = useState(0);
@@ -888,6 +1435,53 @@ export default function MasterBlender() {
       className="fixed inset-0 flex flex-col overflow-hidden"
       style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.09) 0%, #060400 60%)", fontFamily: "'Inter',sans-serif" }}
     >
+      {/* ── Gateway overlay (intro → orientation → mentor → cultivation) ── */}
+      <AnimatePresence mode="wait">
+        {gateway !== "blending" && (
+          <motion.div
+            key="gateway-overlay"
+            className="absolute inset-0 z-[9995] overflow-y-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.4 }}
+          >
+            <AnimatePresence mode="wait">
+              {gateway === "intro" && (
+                <GatewayIntro key="intro" onNext={() => setGateway("orientation")} />
+              )}
+              {gateway === "orientation" && (
+                <GatewayOrientation
+                  key="orientation"
+                  onNext={() => setGateway("mentor")}
+                  onBack={() => setGateway("intro")}
+                />
+              )}
+              {gateway === "mentor" && (
+                <GatewayMentor
+                  key="mentor"
+                  selected={selectedMentor}
+                  onSelect={setSelectedMentor}
+                  onNext={() => setGateway("cultivation")}
+                  onBack={() => setGateway("orientation")}
+                />
+              )}
+              {gateway === "cultivation" && (
+                <GatewayCultivation
+                  key="cultivation"
+                  selectedSeed={selectedSeed}
+                  selectedSoil={selectedSoil}
+                  onSeed={setSelectedSeed}
+                  onSoil={setSelectedSoil}
+                  onNext={() => setGateway("blending")}
+                  onBack={() => setGateway("mentor")}
+                />
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Drifting smoke ambient */}
       <SmokeDrift />
 
@@ -987,35 +1581,68 @@ export default function MasterBlender() {
 
             {/* ── Step 0: Leaf ── */}
             {step === 0 && (
-              <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar flex-1 items-start content-start">
-                {LEAVES.map(leaf => (
-                  <SelectionCard
-                    key={leaf.id}
-                    item={leaf}
-                    selected={sel.leaf?.id === leaf.id}
-                    onClick={e => select("leaf", leaf, e)}
-                  />
-                ))}
+              <div className="flex flex-col flex-1 gap-3 overflow-y-auto no-scrollbar">
+                {/* Reference: Beneath the Wrapper anatomy + Bunching Protocol */}
+                <div className="flex gap-2 flex-shrink-0">
+                  <div className="flex-1 rounded-xl overflow-hidden relative" style={{ height: 120, border: `1px solid ${GOLD}18` }}>
+                    <img src={imgBeneathWrapper} alt="Beneath the Wrapper" className="w-full h-full object-cover object-center" style={{ filter: "brightness(0.52)" }} />
+                    <div className="absolute inset-0 flex items-end p-2" style={{ background: "linear-gradient(to top, rgba(5,3,0,0.88) 0%, transparent 60%)" }}>
+                      <span style={{ color: `${GOLD}90`, fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase" }}>Leaf Anatomy</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 rounded-xl overflow-hidden relative" style={{ height: 120, border: `1px solid ${GOLD}18` }}>
+                    <img src={imgBunching} alt="Stripping & Bunching Protocol" className="w-full h-full object-cover object-top" style={{ filter: "brightness(0.52)" }} />
+                    <div className="absolute inset-0 flex items-end p-2" style={{ background: "linear-gradient(to top, rgba(5,3,0,0.88) 0%, transparent 60%)" }}>
+                      <span style={{ color: `${GOLD}90`, fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase" }}>Bunching Protocol</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar items-start content-start">
+                  {LEAVES.map(leaf => (
+                    <SelectionCard
+                      key={leaf.id}
+                      item={leaf}
+                      selected={sel.leaf?.id === leaf.id}
+                      onClick={e => select("leaf", leaf, e)}
+                    />
+                  ))}
+                </div>
               </div>
             )}
 
             {/* ── Step 1: Wrapper ── */}
             {step === 1 && (
-              <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar flex-1 items-start content-start">
-                {WRAPPERS.map(w => (
-                  <SelectionCard
-                    key={w.id}
-                    item={w}
-                    selected={sel.wrapper?.id === w.id}
-                    onClick={e => select("wrapper", w, e)}
-                  />
-                ))}
+              <div className="flex flex-col flex-1 gap-3 overflow-y-auto no-scrollbar">
+                {/* Reference: Vitola Arch shows cut size / wrapper alignment */}
+                <div className="rounded-xl overflow-hidden flex-shrink-0 relative" style={{ height: 130, border: `1px solid ${GOLD}18` }}>
+                  <img src={imgVitolaArch} alt="Cut Size & Wrapper Alignment" className="w-full h-full object-cover object-top" style={{ filter: "brightness(0.55)" }} />
+                  <div className="absolute inset-0 flex items-end p-3" style={{ background: "linear-gradient(to top, rgba(5,3,0,0.88) 0%, transparent 60%)" }}>
+                    <span style={{ color: `${GOLD}90`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase" }}>Wrapper Leaf Grades · Cut Size / Texture Pairing</span>
+                  </div>
+                </div>
+                <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar items-start content-start">
+                  {WRAPPERS.map(w => (
+                    <SelectionCard
+                      key={w.id}
+                      item={w}
+                      selected={sel.wrapper?.id === w.id}
+                      onClick={e => select("wrapper", w, e)}
+                    />
+                  ))}
+                </div>
               </div>
             )}
 
             {/* ── Step 2: Vitola + interactive smoke time ── */}
             {step === 2 && (
               <div className="flex flex-col gap-3 flex-1 overflow-y-auto no-scrollbar">
+                {/* Reference: Vitola & Architectural Specs */}
+                <div className="rounded-xl overflow-hidden flex-shrink-0 relative" style={{ height: 130, border: `1px solid ${GOLD}18` }}>
+                  <img src={imgVitolaSpecs} alt="Vitola & Architectural Specs" className="w-full h-full object-cover object-top" style={{ filter: "brightness(0.52)" }} />
+                  <div className="absolute inset-0 flex items-end p-3" style={{ background: "linear-gradient(to top, rgba(5,3,0,0.88) 0%, transparent 60%)" }}>
+                    <span style={{ color: `${GOLD}90`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase" }}>Vitola Constructor · Ring Gauge / Cigar Architecture</span>
+                  </div>
+                </div>
                 <div className="flex gap-3 overflow-x-auto pb-1 no-scrollbar">
                   {VITOLAS.map(v => (
                     <SelectionCard
@@ -1073,8 +1700,15 @@ export default function MasterBlender() {
 
             {/* ── Step 3: Cut ── */}
             {step === 3 && (
-              <div className="flex flex-col gap-3 flex-1 items-center justify-center">
-                <div className="flex gap-4 flex-wrap justify-center">
+              <div className="flex flex-col gap-3 flex-1 overflow-y-auto no-scrollbar">
+                {/* Reference: Marathon Ritual Quiz — cut selection */}
+                <div className="rounded-xl overflow-hidden flex-shrink-0 relative" style={{ height: 130, border: `1px solid ${GOLD}18` }}>
+                  <img src={imgCutSpecs} alt="Ritual Cut Selection" className="w-full h-full object-cover object-top" style={{ filter: "brightness(0.52)" }} />
+                  <div className="absolute inset-0 flex items-end p-3" style={{ background: "linear-gradient(to top, rgba(5,3,0,0.88) 0%, transparent 60%)" }}>
+                    <span style={{ color: `${GOLD}90`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase" }}>Ritual Cut Protocol · V-Cut / Punch / Straight</span>
+                  </div>
+                </div>
+                <div className="flex gap-4 flex-wrap justify-center flex-1 items-center">
                   {CUTS.map(cut => (
                     <motion.button
                       key={cut.id}
