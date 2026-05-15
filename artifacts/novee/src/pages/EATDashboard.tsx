@@ -405,6 +405,16 @@ export default function EATDashboard() {
     return null;
   });
   const muteUntilRef     = useRef<number | null>(muteUntil);
+
+  const [liveLimit, setLiveLimitState] = useState<LiveLimit>(() => {
+    try {
+      const v = parseInt(sessionStorage.getItem(LIVE_FEED_LIMIT_SS_KEY) ?? "", 10);
+      if ((VALID_LIVE_LIMITS as readonly number[]).includes(v)) return v as LiveLimit;
+    } catch { /* ignore */ }
+    return 20;
+  });
+  const liveLimitRef = useRef<number>(liveLimit);
+
   const longPressRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressFiredRef = useRef(false);
   const [showMuteMenu, setShowMuteMenu] = useState(false);
@@ -412,6 +422,15 @@ export default function EATDashboard() {
 
   // Keep muteUntilRef in sync so fetchRecentEvents can read it without deps.
   useEffect(() => { muteUntilRef.current = muteUntil; }, [muteUntil]);
+
+  // Keep liveLimitRef in sync.
+  useEffect(() => { liveLimitRef.current = liveLimit; }, [liveLimit]);
+
+  const setLiveLimit = useCallback((n: LiveLimit) => {
+    setLiveLimitState(n);
+    liveLimitRef.current = n;
+    try { sessionStorage.setItem(LIVE_FEED_LIMIT_SS_KEY, String(n)); } catch { /* ignore */ }
+  }, []);
 
   // Auto-expire the mute when the timer runs out.
   useEffect(() => {
@@ -516,7 +535,7 @@ export default function EATDashboard() {
   }, [days, compareDays, compareEnabled]);
 
   const fetchRecentEvents = useCallback(() => {
-    apiFetch<{ events: RecentEvent[] }>("/telemetry/recent?limit=100")
+    apiFetch<{ events: RecentEvent[] }>(`/telemetry/recent?limit=${liveLimitRef.current}`)
       .then(({ events }) => {
         const incomingIds = new Set(events.map((e) => e.id));
         const isFirstLoad = !hasBaselineRef.current;
@@ -592,7 +611,7 @@ export default function EATDashboard() {
       if (pollRef.current) clearInterval(pollRef.current);
       if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
     };
-  }, [days, compareDays, compareEnabled]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [days, compareDays, compareEnabled, liveLimit]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (tab === "products") fetchProducts(days, craftFilter);
@@ -1163,7 +1182,7 @@ export default function EATDashboard() {
             {tab === "modules"   && <ModulesTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
             {tab === "ritual"    && <RitualTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
             {tab === "products"  && <ProductsTab products={products} loading={productsLoading} days={days} craftFilter={craftFilter} onCraftFilter={setCraftFilter} trends={productTrends} />}
-            {tab === "live"      && <LiveFeedTab events={recentEvents} newEventIds={newEventIds} />}
+            {tab === "live"      && <LiveFeedTab events={recentEvents} newEventIds={newEventIds} liveLimit={liveLimit} onLimitChange={setLiveLimit} />}
           </>
         )}
       </main>
@@ -2009,6 +2028,9 @@ function formatRelative(iso: string): string {
 
 const LIVE_FEED_FILTER_TYPES_KEY = "eat_live_feed_filter_types";
 const LIVE_FEED_FILTER_MODULE_KEY = "eat_live_feed_filter_module";
+const LIVE_FEED_LIMIT_SS_KEY = "eat_live_feed_limit";
+const VALID_LIVE_LIMITS = [20, 50, 100] as const;
+type LiveLimit = typeof VALID_LIVE_LIMITS[number];
 
 function readSessionSet(key: string): Set<string> {
   try {
@@ -2051,9 +2073,9 @@ function buildLiveFeedCsv(events: RecentEvent[]): string {
   return [header, ...rows].join("\r\n");
 }
 
-function triggerLiveFeedCsvDownload(events: RecentEvent[], scopeLabel: string): void {
+function triggerLiveFeedCsvDownload(events: RecentEvent[], scopeLabel: string, limit: number): void {
   const today = new Date().toISOString().slice(0, 10);
-  const filename = `live-feed-${scopeLabel}-${today}.csv`;
+  const filename = `live-feed-lim${limit}-${scopeLabel}-${today}.csv`;
   const blob = new Blob([buildLiveFeedCsv(events)], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -2072,7 +2094,12 @@ const EXPORT_TIME_WINDOWS: { label: string; minutes: number }[] = [
   { label: "Last 60 min", minutes: 60 },
 ];
 
-function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventIds: Set<string> }) {
+function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
+  events: RecentEvent[];
+  newEventIds: Set<string>;
+  liveLimit: LiveLimit;
+  onLimitChange: (n: LiveLimit) => void;
+}) {
   const [, forceRender] = useState(0);
   const [visibleCount, setVisibleCount] = useState(LIVE_FEED_PAGE_SIZE);
 
@@ -2144,12 +2171,33 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
 
       {/* Header row */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div>
-          <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(196,97,10,0.5)", marginBottom: 3 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(196,97,10,0.5)", marginBottom: 1 }}>
             LIVE EVENT FEED
           </div>
-          <div style={{ fontSize: 12, color: "rgba(245,237,216,0.4)" }}>
-            Up to 100 telemetry events · auto-refreshes every 15 s
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 12, color: "rgba(245,237,216,0.4)" }}>
+              Showing up to {liveLimit} events · auto-refreshes every 15 s
+            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <span style={{ fontSize: 9, letterSpacing: "0.18em", color: "rgba(245,237,216,0.25)" }}>LIMIT</span>
+              {VALID_LIVE_LIMITS.map((n) => (
+                <button
+                  key={n}
+                  onClick={() => onLimitChange(n)}
+                  style={{
+                    background: liveLimit === n ? "rgba(196,97,10,0.22)" : "rgba(255,255,255,0.04)",
+                    border: `1px solid ${liveLimit === n ? "rgba(196,97,10,0.55)" : "rgba(255,255,255,0.08)"}`,
+                    borderRadius: 5, padding: "3px 9px",
+                    fontSize: 10, fontWeight: liveLimit === n ? 700 : 400, letterSpacing: "0.08em",
+                    color: liveLimit === n ? "#C4610A" : "rgba(245,237,216,0.4)",
+                    cursor: "pointer", transition: "all 0.15s",
+                  }}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -2269,11 +2317,11 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
                     return (
                       <>
                         <div style={{ fontSize: 9, color: "rgba(245,237,216,0.25)", letterSpacing: "0.08em", marginBottom: 8 }}>
-                          {exportEvents.length} event{exportEvents.length !== 1 ? "s" : ""} · <span style={{ color: "rgba(196,97,10,0.55)", fontFamily: "monospace" }}>live-feed-{scopeLabel}-{new Date().toISOString().slice(0, 10)}.csv</span>
+                          {exportEvents.length} event{exportEvents.length !== 1 ? "s" : ""} · <span style={{ color: "rgba(196,97,10,0.55)", fontFamily: "monospace" }}>live-feed-lim{liveLimit}-{scopeLabel}-{new Date().toISOString().slice(0, 10)}.csv</span>
                         </div>
                         <button
                           onClick={() => {
-                            triggerLiveFeedCsvDownload(exportEvents, scopeLabel);
+                            triggerLiveFeedCsvDownload(exportEvents, scopeLabel, liveLimit);
                             setShowExportPopover(false);
                           }}
                           disabled={!canExport}
