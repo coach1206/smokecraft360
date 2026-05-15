@@ -5,6 +5,8 @@ import DesignPlayground, {
 } from "@/components/DesignPlayground/DesignPlayground";
 import CinematicLanding from "@/components/CinematicLanding/CinematicLanding";
 import DrawEngineeringScene from "@/components/CinematicLanding/DrawEngineeringScene";
+import PinGate from "@/components/CinematicLanding/PinGate";
+import TerroirArchitecture from "@/components/CinematicLanding/TerroirArchitecture";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence, animate, useAnimation } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
@@ -39,7 +41,7 @@ import { OrderModal }        from "@/components/Order/OrderModal";
 import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
 import type { SavedBlend }   from "@/services/storage";
 
-type Phase = "welcome" | "form" | "loading" | "ready" | "results" | "draw_engineering";
+type Phase = "welcome" | "pin_gate" | "terroir" | "form" | "loading" | "ready" | "results" | "draw_engineering";
 
 /* ── Universal slide animation ────────────────────────────────── */
 const SLIDE_VARIANTS = {
@@ -705,7 +707,7 @@ export default function Home() {
             onComplete={() => {
               markPlaygroundSeen("smoke");
               setShowPlayground(false);
-              setPhase("form");
+              setPhase("pin_gate");
             }}
           />
         )}
@@ -722,14 +724,34 @@ export default function Home() {
               if (!hasSeenPlayground("smoke")) {
                 setShowPlayground(true);
               } else {
-                setPhase("form");
+                setPhase("pin_gate");
               }
             }}
           />
         )}
       </AnimatePresence>
 
-      {/* ── Image 10: Engineering of the Draw — Sovereign Ascension ──── */}
+      {/* ── Stage 2: Sovereign PIN Gate ─────────────────────────────── */}
+      <AnimatePresence>
+        {phase === "pin_gate" && (
+          <PinGate
+            key="pin-gate"
+            onSuccess={() => setPhase("terroir")}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Stage 3: Terroir Architecture — Session 01 / Step 1 of 14 ── */}
+      <AnimatePresence>
+        {phase === "terroir" && (
+          <TerroirArchitecture
+            key="terroir-architecture"
+            onComplete={() => setPhase("form")}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Session 03: Engineering of the Draw — Step 8 / 14 ────────── */}
       <AnimatePresence>
         {phase === "draw_engineering" && (
           <DrawEngineeringScene
@@ -1139,7 +1161,7 @@ export default function Home() {
                   if (!hasSeenPlayground("smoke")) {
                     setShowPlayground(true);
                   } else {
-                    setPhase("form");
+                    setPhase("pin_gate");
                   }
                 }}
                 whileHover={{
