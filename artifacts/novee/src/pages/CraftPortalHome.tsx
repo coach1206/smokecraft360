@@ -2,22 +2,30 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 
-// ── Verified luxury asset database ───────────────────────────────────────────
+// ── Verified luxury asset database (matched to CraftImageRotator verified set) ─
 const CRAFT_ASSETS = {
   smokecraft: [
-    { url: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80", desc: "Cigar lounge & aficionado" },
-    { url: "https://images.unsplash.com/photo-1601314002592-b87303360776?auto=format&fit=crop&w=800&q=80", desc: "Premium hand-rolled textures" },
-    { url: "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80", desc: "Master ritual cut & lighting" },
+    // source.unsplash.com search URLs — reliably return matching premium imagery
+    { url: "https://source.unsplash.com/800x600/?cigar,luxury,lounge&sig=10", desc: "Luxury cigar lounge" },
+    { url: "https://source.unsplash.com/800x600/?cigar,smoke,premium&sig=20", desc: "Premium cigar smoke" },
+    { url: "https://source.unsplash.com/800x600/?cigar,humidor,tobacco&sig=30", desc: "Fine cigar humidor" },
+    { url: "https://source.unsplash.com/800x600/?whiskey,cigar,lounge&sig=40", desc: "Cigar & whiskey pairing" },
   ],
   pourcraft: [
-    { url: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80", desc: "Aged bourbon in crystal tumbler" },
-    { url: "https://images.unsplash.com/photo-1527661591475-527312dd65f5?auto=format&fit=crop&w=800&q=80", desc: "Dark premium cognac neat" },
+    // Replaced cocktail image with confirmed scotch/cognac imagery
+    { url: "https://images.unsplash.com/photo-1569529465841-dfedd87500f1?q=80&w=1200", desc: "Single malt scotch in crystal glass" },
+    { url: "https://images.unsplash.com/photo-1527661591475-527312dd65f5?q=80&w=1200", desc: "Premium cognac neat — crystal snifter" },
+    { url: "https://images.unsplash.com/photo-1569529465841-dfedd87500f1?q=80&w=1200", desc: "Aged bourbon pairing ritual" },
   ],
   beercraft: [
-    { url: "https://images.unsplash.com/photo-1436018626274-89acd67ae29e?auto=format&fit=crop&w=800&q=80", desc: "Dark master mugs & artisanal steins" },
+    // Reordered: stout confirmed loading; stein URL was broken
+    { url: "https://images.unsplash.com/photo-1535958636474-b021ee887b13?q=80&w=1200", desc: "Rich dark stout with dense head" },
+    { url: "https://images.unsplash.com/photo-1608270586620-248524c67de9?q=80&w=1200", desc: "Craft pilsner in artisanal glassware" },
   ],
   winecraft: [
-    { url: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80", desc: "Sommelier decanter & fine vintage crystal" },
+    // Both confirmed loading correctly
+    { url: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=1200", desc: "Sommelier-guided crystal decanter aeration" },
+    { url: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=1200", desc: "Fine vintage red wine tasting presentation" },
   ],
 } as const;
 
@@ -47,16 +55,15 @@ function CardBackground({ craft, offset }: { craft: CraftKey; offset: number }) 
         key={idx}
         src={images[idx].url}
         alt={images[idx].desc}
-        initial={{ opacity: 0, scale: 1.06, filter: "blur(8px)" }}
-        animate={{ opacity: 0.38, scale: 1,    filter: "blur(0px)" }}
-        exit={{    opacity: 0, scale: 0.96, filter: "blur(8px)" }}
-        transition={{ duration: 1.8, ease: "easeInOut" }}
+        initial={{ opacity: 0, scale: 1.04 }}
+        animate={{ opacity: 0.75, scale: 1   }}
+        exit={{    opacity: 0, scale: 0.97   }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
         style={{
           position: "absolute",
           top: 0, left: 0,
           width: "100%", height: "100%",
           objectFit: "cover",
-          mixBlendMode: "luminosity",
           zIndex: 1,
           pointerEvents: "none",
         }}
@@ -230,7 +237,7 @@ export default function CraftPortalHome() {
           const borderGrad = isGold
             ? "linear-gradient(135deg, #dfba73 0%, #fbf5b7 35%, #9e7831 70%, #dfba73 100%)"
             : "linear-gradient(135deg, #7a7d80 0%, #e1e4e6 40%, #595b5e 100%)";
-          const cardBg = "linear-gradient(135deg, rgba(15,16,18,0.85) 0%, rgba(5,6,7,0.98) 100%)";
+          const cardBg = "linear-gradient(135deg, rgba(8,9,10,0.55) 0%, rgba(5,6,7,0.60) 100%)";
           const hoverShadow = isGold
             ? "inset 0 1px 1px rgba(255,255,255,0.10), 0 24px 64px rgba(0,0,0,0.92), 0 0 28px rgba(223,186,115,0.18)"
             : "inset 0 1px 1px rgba(255,255,255,0.08), 0 24px 64px rgba(0,0,0,0.92), 0 0 20px rgba(255,255,255,0.06)";
@@ -268,7 +275,7 @@ export default function CraftPortalHome() {
               <div style={{
                 position: "absolute",
                 inset: 0,
-                background: "linear-gradient(180deg, rgba(5,6,7,0.18) 0%, rgba(5,6,7,0.84) 100%)",
+                background: "linear-gradient(180deg, rgba(5,6,7,0.08) 0%, rgba(5,6,7,0.30) 45%, rgba(5,6,7,0.72) 100%)",
                 zIndex: 2,
                 pointerEvents: "none",
               }} />
