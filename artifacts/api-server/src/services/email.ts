@@ -34,6 +34,14 @@ function ensureConfigured(): boolean {
   return true;
 }
 
+export interface EmailAttachment {
+  /** Base64-encoded file content. */
+  content:     string;
+  filename:    string;
+  type:        string;
+  disposition: "attachment" | "inline";
+}
+
 export interface SendEmailInput {
   to:        string;
   subject:   string;
@@ -42,6 +50,8 @@ export interface SendEmailInput {
   text?:     string;
   /** Override the global FROM if a tenant has its own verified sender. */
   fromOverride?: string;
+  /** Optional file attachments. */
+  attachments?: EmailAttachment[];
 }
 
 export type SendEmailResult =
@@ -68,11 +78,12 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
 
   try {
     const [resp] = await sgMail.send({
-      to:      input.to,
+      to:          input.to,
       from,
-      subject: input.subject,
-      html:    input.html,
-      text:    input.text ?? stripHtml(input.html),
+      subject:     input.subject,
+      html:        input.html,
+      text:        input.text ?? stripHtml(input.html),
+      attachments: input.attachments,
     });
     const messageId = resp?.headers?.["x-message-id"] as string | undefined;
     logger.info(

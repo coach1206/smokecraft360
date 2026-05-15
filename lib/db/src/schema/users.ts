@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, integer, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, integer, timestamp, boolean, pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -26,6 +26,8 @@ export const usersTable = pgTable("users", {
   ndaSignedAt:  timestamp("nda_signed_at", { withTimezone: true }),
   ndaSignatureName: text("nda_signature_name"),
   ndaSignatureIp:   text("nda_signature_ip"),
+  /** When true the user will not receive the weekly telemetry digest email. */
+  telemetryDigestOptOut: boolean("telemetry_digest_opt_out").notNull().default(false),
   createdAt:    timestamp("created_at").notNull().defaultNow(),
 });
 

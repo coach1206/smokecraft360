@@ -8,6 +8,7 @@ import { loadVenueInventory }   from "./services/venueInventoryStore";
 import { refreshTrends, scheduleTrendRefresh } from "./services/trendStore";
 import { loadBrandPartnerStore }               from "./services/brandPartnerStore";
 import { reconcileActiveTournamentScores }     from "./lib/tournamentSync";
+import { startTelemetryDigestWorker }          from "./workers/telemetryDigestWorker";
 
 // ── Required environment variable guard ───────────────────────────────────────
 // Fail fast at startup rather than crashing mid-request or silently misbehaving.
@@ -151,6 +152,19 @@ try {
   logger.warn({ err }, "Kernel bootstrap failed — /api/kernel may be unavailable");
 }
 
+// ── Users table migration — add telemetry_digest_opt_out if missing ───────────
+try {
+  const { db: migDb } = await import("@workspace/db");
+  const { sql: mSql } = await import("drizzle-orm");
+  await migDb.execute(mSql`
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS telemetry_digest_opt_out BOOLEAN NOT NULL DEFAULT FALSE
+  `);
+  logger.info("Users migration: telemetry_digest_opt_out column ensured");
+} catch (err) {
+  logger.warn({ err }, "Users migration for telemetry_digest_opt_out failed — opt-out column may be missing");
+}
+
 // Reconcile active tournament scores on startup (non-fatal).
 // Recovers any scores lost due to in-flight syncs interrupted by the restart.
 // Runs synchronously before the HTTP server binds so the first request sees
@@ -182,4 +196,5 @@ httpServer.listen(port, (err?: Error) => {
     process.exit(1);
   }
   logger.info({ port }, "Server listening (HTTP + Socket.io)");
+  startTelemetryDigestWorker();
 });

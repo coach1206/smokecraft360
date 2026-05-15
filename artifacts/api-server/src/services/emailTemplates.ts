@@ -92,6 +92,64 @@ export function testEmail(input: TestEmailInput): { subject: string; html: strin
   };
 }
 
+export interface TelemetryDigestInput {
+  adminName:          string;
+  venueLabel:         string;
+  windowDays:         number;
+  totalEvents:        number;
+  ritualEngagement:   number;
+  topEventTypes:      Array<{ event_type: string; cnt: number }>;
+  generatedAt:        string;
+  optOutUrl:          string;
+}
+
+export function telemetryDigest(input: TelemetryDigestInput): { subject: string; html: string } {
+  const subject = `Weekly Telemetry Digest — ${input.venueLabel}`;
+
+  const topRows = input.topEventTypes.slice(0, 5).map(e =>
+    `<tr>
+       <td style="padding:6px 8px;color:${BRAND_CREAM};font-family:Menlo,Monaco,monospace;font-size:12px;">${escape(e.event_type)}</td>
+       <td style="padding:6px 8px;color:#fff;font-size:14px;text-align:right;">${e.cnt.toLocaleString()}</td>
+     </tr>`,
+  ).join("") || `<tr><td colspan="2" style="padding:8px;color:${BRAND_CREAM};font-style:italic;font-size:13px;">No events recorded.</td></tr>`;
+
+  const html = `
+<!doctype html>
+<html><body style="margin:0;padding:0;background:${BRAND_CHARCOAL};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+  <div style="max-width:560px;margin:0 auto;padding:48px 32px;background:${BRAND_CHARCOAL};">
+    <div style="font-size:11px;letter-spacing:0.42em;text-transform:uppercase;color:${BRAND_GOLD};margin-bottom:14px;">E.A.T. Engine · Weekly Digest</div>
+    <h1 style="margin:0 0 6px;font-family:Georgia,serif;font-weight:400;font-size:28px;color:#fff;">${escape(input.venueLabel)}</h1>
+    <p style="margin:0 0 32px;color:${BRAND_CREAM};font-size:13px;">Hello ${escape(input.adminName)} — here is your ${input.windowDays}-day telemetry summary.<br/>The full CSV is attached.</p>
+
+    <table style="width:100%;border-collapse:collapse;background:rgba(255,255,255,0.04);border-radius:8px;overflow:hidden;margin-bottom:24px;">
+      <tr>
+        <td style="padding:16px 20px;">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.22em;color:${BRAND_CREAM};">Total Events</div>
+          <div style="font-size:34px;font-family:Georgia,serif;color:#fff;margin-top:4px;">${input.totalEvents.toLocaleString()}</div>
+        </td>
+        <td style="padding:16px 20px;border-left:1px solid rgba(212,175,55,0.18);">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.22em;color:${BRAND_CREAM};">Ritual Engagement</div>
+          <div style="font-size:34px;font-family:Georgia,serif;color:#fff;margin-top:4px;">${input.ritualEngagement}%</div>
+        </td>
+      </tr>
+    </table>
+
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.22em;color:${BRAND_GOLD};margin-bottom:10px;">Top Event Types</div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:32px;">
+      ${topRows}
+    </table>
+
+    <p style="margin:0;color:rgba(230,210,175,0.5);font-size:11px;line-height:1.8;">
+      Generated ${escape(input.generatedAt)} · ${input.windowDays}-day window<br/>
+      To stop receiving these digests:
+      <a href="${escape(input.optOutUrl)}" style="color:${BRAND_GOLD};">unsubscribe</a>
+    </p>
+  </div>
+</body></html>`.trim();
+
+  return { subject, html };
+}
+
 function escape(s: string): string {
   return s
     .replace(/&/g, "&amp;")
