@@ -6,6 +6,7 @@ import DesignPlayground, {
 import CinematicLanding from "@/components/CinematicLanding/CinematicLanding";
 import DrawEngineeringScene from "@/components/CinematicLanding/DrawEngineeringScene";
 import PinGate from "@/components/CinematicLanding/PinGate";
+import PresenceEnvironment from "@/components/CinematicLanding/PresenceEnvironment";
 import TerroirArchitecture from "@/components/CinematicLanding/TerroirArchitecture";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence, animate, useAnimation } from "framer-motion";
@@ -41,7 +42,7 @@ import { OrderModal }        from "@/components/Order/OrderModal";
 import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
 import type { SavedBlend }   from "@/services/storage";
 
-type Phase = "welcome" | "pin_gate" | "terroir" | "form" | "loading" | "ready" | "results" | "draw_engineering";
+type Phase = "welcome" | "pin_gate" | "presence" | "terroir" | "form" | "loading" | "ready" | "results" | "draw_engineering";
 
 /* ── Universal slide animation ────────────────────────────────── */
 const SLIDE_VARIANTS = {
@@ -736,7 +737,17 @@ export default function Home() {
         {phase === "pin_gate" && (
           <PinGate
             key="pin-gate"
-            onSuccess={() => setPhase("terroir")}
+            onSuccess={() => setPhase("presence")}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Stage 2.5: NOVEE OS Presence Environment — E.A.T. Interface ── */}
+      <AnimatePresence>
+        {phase === "presence" && (
+          <PresenceEnvironment
+            key="presence-environment"
+            onComplete={() => setPhase("terroir")}
           />
         )}
       </AnimatePresence>
