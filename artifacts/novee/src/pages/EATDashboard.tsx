@@ -78,9 +78,71 @@ function buildCsvContent(data: TelemetrySummary, days: number): string {
   return rows.join("\r\n");
 }
 
-function triggerCsvDownload(content: string, days: number): void {
-  const today = new Date().toISOString().slice(0, 10);
-  const filename = `eat-telemetry-${days}d-${today}.csv`;
+function buildComparisonCsvContent(
+  data: TelemetrySummary,
+  days: number,
+  compareDays: number,
+): string {
+  const cmp = data.comparison;
+  const rows: string[] = [];
+
+  rows.push("# E.A.T. Engine Comparison Export");
+  rows.push(`# Primary window: last ${days} day(s)`);
+  rows.push(`# Comparison window: last ${compareDays} day(s)`);
+  rows.push(`# Generated: ${new Date().toISOString()}`);
+  rows.push("");
+
+  rows.push("## Daily Comparison");
+  const maxLen = Math.max(
+    data.dailyCounts.length,
+    cmp ? cmp.dailyCounts.length : 0,
+  );
+  const unequalWindows = days !== compareDays;
+  if (unequalWindows) {
+    rows.push("primary_date,comparison_date,primary_count,comparison_count,delta_pct");
+  } else {
+    rows.push("date,primary_count,comparison_count,delta_pct");
+  }
+  for (let i = 0; i < maxLen; i++) {
+    const primary = data.dailyCounts[i];
+    const comparison = cmp?.dailyCounts[i];
+    const primaryCnt = primary?.cnt ?? 0;
+    const comparisonCnt = comparison?.cnt ?? 0;
+    const deltaPct =
+      comparisonCnt === 0
+        ? ""
+        : String(Math.round(((primaryCnt - comparisonCnt) / comparisonCnt) * 100));
+    if (unequalWindows) {
+      rows.push(`${primary?.day ?? ""},${comparison?.day ?? ""},${primaryCnt},${comparisonCnt},${deltaPct}`);
+    } else {
+      rows.push(`${primary?.day ?? ""},${primaryCnt},${comparisonCnt},${deltaPct}`);
+    }
+  }
+  rows.push("");
+
+  rows.push("## Summary");
+  rows.push("metric,primary,comparison,delta_pct");
+  const totalDelta =
+    cmp && cmp.total > 0
+      ? String(Math.round(((data.total - cmp.total) / cmp.total) * 100))
+      : "";
+  rows.push(`total_events,${data.total},${cmp?.total ?? ""},${totalDelta}`);
+  const ritualDelta =
+    cmp && cmp.ritualEngagement > 0
+      ? String(
+          Math.round(
+            ((data.ritualEngagement - cmp.ritualEngagement) / cmp.ritualEngagement) * 100,
+          ),
+        )
+      : "";
+  rows.push(
+    `ritual_engagement_pct,${data.ritualEngagement},${cmp?.ritualEngagement ?? ""},${ritualDelta}`,
+  );
+
+  return rows.join("\r\n");
+}
+
+function triggerCsvDownload(content: string, filename: string): void {
   const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -533,11 +595,41 @@ export default function EATDashboard() {
         {/* Right: meta + export */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {(userRole === "admin" || userRole === "super_admin") && !loading && compareEnabled && data.comparison && (
+              <button
+                onClick={() => {
+                  const csv = buildComparisonCsvContent(data, days, compareDays);
+                  triggerCsvDownload(csv, `eat-export-${days}d-vs-${compareDays}d.csv`);
+                }}
+                title={`Export ${days}d vs ${compareDays}d comparison as CSV`}
+                style={{
+                  display: "flex", alignItems: "center", gap: 5,
+                  background: "rgba(74,144,217,0.12)",
+                  border: "1px solid rgba(74,144,217,0.35)",
+                  borderRadius: 5, padding: "4px 11px",
+                  fontSize: 10, fontWeight: 700, letterSpacing: "0.12em",
+                  color: "#4A90D9", cursor: "pointer",
+                  transition: "background 0.15s, border-color 0.15s",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = "rgba(74,144,217,0.22)";
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(74,144,217,0.6)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = "rgba(74,144,217,0.12)";
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(74,144,217,0.35)";
+                }}
+              >
+                <span style={{ fontSize: 11 }}>↓</span>
+                EXPORT COMPARISON
+              </button>
+            )}
             {(userRole === "admin" || userRole === "super_admin") && !loading && (
               <button
                 onClick={() => {
                   const csv = buildCsvContent(data, days);
-                  triggerCsvDownload(csv, days);
+                  const today = new Date().toISOString().slice(0, 10);
+                  triggerCsvDownload(csv, `eat-telemetry-${days}d-${today}.csv`);
                 }}
                 title={`Export last ${days} day(s) as CSV`}
                 style={{
