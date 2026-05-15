@@ -228,7 +228,7 @@ export async function routeAI(opts: AIRouterOptions): Promise<AIRouterResult> {
     // AXIOM_MANAGED — use AXIOM platform keys
     providerQueue = ["openai"];
     if (failoverOn && failoverChain.length > 0) {
-      providerQueue = [...new Set(["openai", ...failoverChain as ProviderName[]])];
+      providerQueue = [...new Set(["openai", ...failoverChain])] as ProviderName[];
     }
   }
 

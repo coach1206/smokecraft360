@@ -53,7 +53,7 @@ const BYOK_PERMITTED: Record<string, boolean> = {
 /* ── GET /billing-mode/:venueId ─────────────────────────────────────────────── */
 
 router.get("/billing-mode/:venueId", requireAuth, async (req: AuthRequest, res) => {
-  const { venueId } = req.params;
+  const venueId = req.params["venueId"] as string;
   const [row] = await db
     .select()
     .from(venueAiBillingModesTable)
@@ -145,7 +145,7 @@ router.put("/billing-mode", requireAuth, requireRole("venue_owner", "admin", "su
 /* ── GET /providers/:venueId ────────────────────────────────────────────────── */
 
 router.get("/providers/:venueId", requireAuth, async (req: AuthRequest, res) => {
-  const { venueId } = req.params;
+  const venueId = req.params["venueId"] as string;
   const providers = await db
     .select({
       id:           venueAiProvidersTable.id,
@@ -250,7 +250,7 @@ router.post("/providers/connect", requireAuth, requireRole("venue_owner", "admin
 /* ── POST /providers/:id/validate ───────────────────────────────────────────── */
 
 router.post("/providers/:id/validate", requireAuth, requireRole("venue_owner", "admin", "super_admin"), async (req: AuthRequest, res) => {
-  const { id } = req.params;
+  const id = req.params["id"] as string;
   const providerRow = await db
     .select()
     .from(venueAiProvidersTable)
@@ -324,7 +324,7 @@ router.post("/providers/:id/validate", requireAuth, requireRole("venue_owner", "
 /* ── DELETE /providers/:id ──────────────────────────────────────────────────── */
 
 router.delete("/providers/:id", requireAuth, requireRole("venue_owner", "admin", "super_admin"), async (req: AuthRequest, res) => {
-  const { id } = req.params;
+  const id = req.params["id"] as string;
   await db
     .update(venueAiProvidersTable)
     .set({ status: "disconnected", disconnectedAt: new Date(), updatedAt: new Date() })
@@ -340,7 +340,7 @@ router.delete("/providers/:id", requireAuth, requireRole("venue_owner", "admin",
 /* ── GET /usage/:venueId ────────────────────────────────────────────────────── */
 
 router.get("/usage/:venueId", requireAuth, async (req: AuthRequest, res) => {
-  const { venueId } = req.params;
+  const venueId = req.params["venueId"] as string;
   const rows = await db
     .select()
     .from(venueApiUsageTable)
