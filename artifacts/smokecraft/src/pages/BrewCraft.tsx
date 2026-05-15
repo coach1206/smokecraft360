@@ -5,6 +5,7 @@ import DesignPlayground, {
   hasSeenPlayground, markPlaygroundSeen,
   type PlaygroundConfig,
 } from "@/components/DesignPlayground/DesignPlayground";
+import BeerCraftPresence from "@/components/CinematicLanding/BeerCraftPresence";
 import { useCraftImages }   from "@/hooks/useDynamicImage";
 import loungeBg      from "@assets/generated_images/brewcraft_beer.png";
 import brewLightImg  from "@assets/generated_images/brew_light.png";
@@ -107,6 +108,7 @@ const BASE_CONFIG: CraftFlowConfig = {
 };
 
 export default function BrewCraft() {
+  const [showPresence,   setShowPresence]   = useState(true);
   const [showPlayground, setShowPlayground] = useState(() => !hasSeenPlayground("brew"));
 
   const aiImages = useCraftImages("brew", STYLE_IDS as unknown as string[]);
@@ -118,6 +120,10 @@ export default function BrewCraft() {
       image: aiImages[s.id] ?? s.image,
     })),
   }), [aiImages]);
+
+  if (showPresence) {
+    return <BeerCraftPresence onComplete={() => setShowPresence(false)} />;
+  }
 
   if (showPlayground) {
     return (

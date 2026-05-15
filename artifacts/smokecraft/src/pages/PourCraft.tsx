@@ -5,6 +5,7 @@ import DesignPlayground, {
   hasSeenPlayground, markPlaygroundSeen,
   type PlaygroundConfig,
 } from "@/components/DesignPlayground/DesignPlayground";
+import PourCraftPresence from "@/components/CinematicLanding/PourCraftPresence";
 import { useCraftImages }   from "@/hooks/useDynamicImage";
 import loungeBg      from "@assets/locked_cards/experience_pourcraft.png";
 import pourSmoothImg from "@assets/generated_images/pour_smooth.png";
@@ -105,6 +106,7 @@ const BASE_CONFIG: CraftFlowConfig = {
 };
 
 export default function PourCraft() {
+  const [showPresence,   setShowPresence]   = useState(true);
   const [showPlayground, setShowPlayground] = useState(() => !hasSeenPlayground("pour"));
 
   const aiImages = useCraftImages("pour", STYLE_IDS as unknown as string[]);
@@ -116,6 +118,10 @@ export default function PourCraft() {
       image: aiImages[s.id] ?? s.image,
     })),
   }), [aiImages]);
+
+  if (showPresence) {
+    return <PourCraftPresence onComplete={() => setShowPresence(false)} />;
+  }
 
   if (showPlayground) {
     return (
