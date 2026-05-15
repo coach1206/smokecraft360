@@ -191,8 +191,15 @@ export default function EATDashboard() {
   const hasBaselineRef                      = useRef(false);
   const flashTimerRef                       = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [unreadCount, setUnreadCount]       = useState(0);
+  const tabRef                              = useRef<DashTab>(tab);
+
   const [products, setProducts]             = useState<ProductItem[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
+
+  // Keep tabRef in sync so fetchRecentEvents can read current tab without
+  // needing it as a dependency (which would restart the poll on every tab change).
+  useEffect(() => { tabRef.current = tab; }, [tab]);
 
   const setDays = useCallback((n: number) => {
     setDaysState(n);
@@ -245,6 +252,9 @@ export default function EATDashboard() {
             if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
             setNewEventIds(freshIds);
             flashTimerRef.current = setTimeout(() => setNewEventIds(new Set()), 1800);
+            if (tabRef.current !== "live") {
+              setUnreadCount((c) => c + freshIds.size);
+            }
           }
         }
 
@@ -575,9 +585,36 @@ export default function EATDashboard() {
           <button
             key={t.id}
             className={`novee-tab${tab === t.id ? " active" : ""}`}
-            onClick={() => setTab(t.id)}
+            onClick={() => {
+              setTab(t.id);
+              if (t.id === "live") setUnreadCount(0);
+            }}
+            style={{ position: "relative" }}
           >
             {t.label}
+            {t.id === "live" && unreadCount > 0 && (
+              <span style={{
+                position: "absolute",
+                top: 6,
+                right: 4,
+                minWidth: 18,
+                height: 18,
+                padding: "0 4px",
+                borderRadius: 9,
+                background: "#C4610A",
+                color: "#F5EDD8",
+                fontSize: 9,
+                fontWeight: 700,
+                letterSpacing: "0.05em",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                lineHeight: 1,
+                pointerEvents: "none",
+              }}>
+                +{unreadCount > 99 ? "99" : unreadCount}
+              </span>
+            )}
           </button>
         ))}
       </div>
