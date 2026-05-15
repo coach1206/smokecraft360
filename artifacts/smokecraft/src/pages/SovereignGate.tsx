@@ -22,14 +22,14 @@ import "@/styles/Sovereign.css";
 
 // ── Design tokens ─────────────────────────────────────────────
 const C = {
-  bg:       "#050A14",               // deep navy
-  surface:  "rgba(6,12,28,0.98)",    // dark frosted surface
-  gold:     "#0080FF",               // metallic blue
-  amber:    "#22AAFF",               // bright blue
-  ink:      "#D8EEFF",               // platinum white
-  muted:    "rgba(180,210,250,0.45)",// muted blue-white
-  dim:      "rgba(140,175,220,0.28)",// dim blue-white
-  border:   "rgba(0,128,255,0.22)",  // blue border
+  bg:       "#010101",               // true obsidian
+  surface:  "rgba(10,8,6,0.93)",     // obsidian glass
+  gold:     "#D4AF37",               // warm honey amber
+  amber:    "rgba(212,175,55,0.88)", // ambient amber
+  ink:      "rgba(232,222,202,0.97)",// parchment white
+  muted:    "rgba(200,185,160,0.55)",// muted warm
+  dim:      "rgba(160,145,120,0.35)",// dim warm
+  border:   "rgba(212,175,55,0.22)", // amber border
   green:    "#22c55e",
   red:      "#ef4444",
   mono:     "'JetBrains Mono','Courier New',monospace",
@@ -109,8 +109,8 @@ function PinDots({ filled, error, success }: {
               width:        on ? 13 : isSovExt ? 9 : 13,
               height:       on ? 13 : isSovExt ? 9 : 13,
               borderRadius: "50%",
-              background:   on ? color : "rgba(0,128,255,0.05)",
-              border:       `1.5px solid ${on ? color : isSovExt ? "rgba(0,128,255,0.12)" : "rgba(0,128,255,0.30)"}`,
+              background:   on ? color : "rgba(212,175,55,0.05)",
+              border:       `1.5px solid ${on ? color : isSovExt ? "rgba(212,175,55,0.12)" : "rgba(212,175,55,0.30)"}`,
               transition:   "background 0.14s, border-color 0.14s, width 0.12s, height 0.12s",
               alignSelf:    "center",
             }}
@@ -175,8 +175,8 @@ function KeyButton({ label, onPress, disabled, isGo, isClear, goReady }: {
       <div style={{
         position: "absolute", top: 0, left: "10%", right: "10%", height: 1,
         background: goReady
-          ? "rgba(100,180,255,0.50)"
-          : "rgba(0,128,255,0.18)",
+          ? "rgba(255,225,110,0.50)"
+          : "rgba(212,175,55,0.18)",
         pointerEvents: "none",
       }} />
 
@@ -193,8 +193,8 @@ function KeyButton({ label, onPress, disabled, isGo, isClear, goReady }: {
               width: 32, height: 32, marginLeft: -16, marginTop: -16,
               borderRadius: "50%",
               background: goReady
-                ? "radial-gradient(circle,rgba(0,128,255,0.55) 0%,transparent 70%)"
-                : "radial-gradient(circle,rgba(0,128,255,0.18) 0%,transparent 70%)",
+                ? "radial-gradient(circle,rgba(212,175,55,0.55) 0%,transparent 70%)"
+                : "radial-gradient(circle,rgba(212,175,55,0.18) 0%,transparent 70%)",
               pointerEvents: "none",
             }}
           />
@@ -217,8 +217,8 @@ function TierBadge({ len }: { len: number }) {
       style={{
         display: "inline-flex", alignItems: "center", gap: 5,
         padding: "3px 10px", borderRadius: 20, marginBottom: 14,
-        background: isSov ? "rgba(0,128,255,0.12)" : "rgba(34,197,94,0.08)",
-        border: `1px solid ${isSov ? "rgba(0,128,255,0.36)" : "rgba(34,197,94,0.22)"}`,
+        background: isSov ? "rgba(212,175,55,0.12)" : "rgba(34,197,94,0.08)",
+        border: `1px solid ${isSov ? "rgba(212,175,55,0.36)" : "rgba(34,197,94,0.22)"}`,
         fontSize: 8, letterSpacing: "0.18em", fontWeight: 700,
         color: isSov ? C.gold : C.green,
       }}
@@ -360,7 +360,7 @@ export default function SovereignGate() {
           padding: "44px 36px 36px",
           maxWidth: 400, width: "90%",
           textAlign: "center",
-          boxShadow: "0 48px 100px rgba(0,0,0,0.7), 0 0 80px rgba(0,128,255,0.06)",
+          boxShadow: "0 48px 100px rgba(0,0,0,0.7), 0 0 80px rgba(212,175,55,0.06)",
           transition: "border-color 0.25s",
           position: "relative", overflow: "hidden",
         }}
@@ -368,7 +368,7 @@ export default function SovereignGate() {
         {/* Top specular edge */}
         <div style={{
           position: "absolute", top: 0, left: "8%", right: "8%", height: 1,
-          background: `linear-gradient(90deg,transparent,rgba(0,128,255,${success ? 0.65 : 0.30}),transparent)`,
+          background: `linear-gradient(90deg,transparent,rgba(212,175,55,${success ? 0.65 : 0.30}),transparent)`,
           transition: "opacity 0.3s",
         }} />
 
@@ -400,7 +400,7 @@ export default function SovereignGate() {
           SOVEREIGN<br />COMMAND DECK
         </div>
         <div style={{ fontSize: 8, color: C.dim, letterSpacing: "0.18em", marginBottom: 32, lineHeight: 1.8 }}>
-          360 ENTERPRISES SERVICES LLC
+          PROFOUND INNOVATIONS · NOVEE OS
         </div>
 
         {/* Tier indicator */}
@@ -421,7 +421,7 @@ export default function SovereignGate() {
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.2 }}
               style={{
-                fontSize: 8, letterSpacing: "0.16em", color: "rgba(0,128,255,0.55)",
+                fontSize: 8, letterSpacing: "0.16em", color: "rgba(212,175,55,0.55)",
                 marginBottom: 14, textAlign: "center",
               }}
             >
@@ -486,10 +486,10 @@ export default function SovereignGate() {
       {/* Footer watermark */}
       <div className="sovereign-breath" style={{
         position: "fixed", bottom: 14, left: 0, right: 0,
-        textAlign: "center", fontSize: 7.5, color: "rgba(0,128,255,0.22)",
+        textAlign: "center", fontSize: 7.5, color: "rgba(212,175,55,0.22)",
         letterSpacing: "0.22em", pointerEvents: "none",
       }}>
-        AUTHORIZED OPERATOR // 360 ENTERPRISE SERVICES LLC
+        PROFOUND INNOVATIONS // AUTHORIZED OPERATOR
       </div>
 
       <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>

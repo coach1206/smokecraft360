@@ -218,7 +218,7 @@ const SMOKE_PLAYGROUND_CONFIG: PlaygroundConfig = {
       id: "hardware", label: "Metallic Hardware",
       options: [
         { id: "rosegold", label: "Brushed Rose Gold" },
-        { id: "platinum", label: "Axiom Platinum"    },
+        { id: "platinum", label: "Sovereign Platinum"  },
         { id: "gunmetal", label: "Chrome Gunmetal"   },
       ],
       locked: true,
@@ -282,6 +282,7 @@ export default function Home() {
   const [orderTaken, setOrderTaken] = useState(false);
   const [bgKey,      setBgKey]      = useState("welcome");
   const [moodDone,   setMoodDone]   = useState(false);
+  const [morphing,   setMorphing]   = useState(false);
 
   /* Sidebar slot computation. The sidebar exposes 4 abstract form slots
    * (Experience / Flavor / Strength / Mood) plus loading + results slots.
@@ -747,8 +748,56 @@ export default function Home() {
         {phase === "presence" && (
           <PresenceEnvironment
             key="presence-environment"
-            onComplete={() => setPhase("terroir")}
+            onComplete={() => {
+              setMorphing(true);
+              setTimeout(() => setPhase("terroir"), 460);
+              setTimeout(() => setMorphing(false), 980);
+            }}
           />
+        )}
+      </AnimatePresence>
+
+      {/* ── Material Morph Overlay — hardware-accelerated obsidian bridge ──
+           GPU-composited: only transform + opacity are mutated.
+           Expands from the center glass panel outward, holds, then dissolves
+           into the Terroir phase — creating a single continuous material object
+           rather than a page cut.                                              */}
+      <AnimatePresence>
+        {morphing && (
+          <motion.div
+            key="morph-overlay"
+            initial={{ opacity: 0, scale: 0.62 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              position: "fixed", inset: 0, zIndex: 175,
+              background: "rgba(10,8,6,0.98)",
+              backdropFilter: "blur(40px) saturate(0.4)",
+              WebkitBackdropFilter: "blur(40px) saturate(0.4)",
+              willChange: "transform, opacity",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            {/* 135° amber/bronze chrome border */}
+            <div style={{
+              position: "absolute", inset: 0,
+              border: "1px solid transparent",
+              background: "linear-gradient(rgba(10,8,6,0.98), rgba(10,8,6,0.98)) padding-box, linear-gradient(135deg, rgba(212,175,55,0.5) 0%, rgba(80,60,15,0.08) 50%, rgba(212,175,55,0.45) 100%) border-box",
+              pointerEvents: "none",
+            }} />
+            {/* amber pulse core */}
+            <motion.div
+              animate={{ scale: [1, 1.12, 1], opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 0.52, ease: "easeInOut" }}
+              style={{
+                width: 3, height: 3, borderRadius: "50%",
+                background: "rgba(212,175,55,0.95)",
+                boxShadow: "0 0 100px 50px rgba(212,175,55,0.12), 0 0 40px 18px rgba(212,175,55,0.22)",
+                willChange: "transform, opacity",
+              }}
+            />
+          </motion.div>
         )}
       </AnimatePresence>
 

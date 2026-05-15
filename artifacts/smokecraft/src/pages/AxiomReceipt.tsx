@@ -567,7 +567,7 @@ export default function AxiomReceipt() {
           transition={{ duration: 2, repeat: Infinity }}
           style={{ fontSize: 22, fontFamily: "'Cormorant Garamond', serif", color: T.gold, letterSpacing: "0.12em" }}
         >
-          AXIOM
+          NOVEE OS
         </motion.div>
         <div style={{ fontSize: 11, color: T.textMuted, letterSpacing: "0.14em", textTransform: "uppercase" }}>
           {generating ? "Composing your experience summary…" : "Loading…"}
@@ -628,7 +628,7 @@ export default function AxiomReceipt() {
             fontSize: 11, fontWeight: 700, color: T.gold,
             textTransform: "uppercase", letterSpacing: "0.16em",
           }}>
-            AXIOM SESSION SUMMARY
+            NOVEE OS SESSION SUMMARY
           </div>
           <div style={{ fontSize: 10, color: T.textMuted }}>
             {p.venue.name} · {sessionDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
@@ -831,7 +831,7 @@ export default function AxiomReceipt() {
             <div style={{ fontSize: 12, color: T.textLight, lineHeight: 1.65 }}>
               Your palate profile — <span style={{ color: T.gold }}>{p.continuity.flavorProfile.atmosphere}</span> atmosphere,
               {" "}<span style={{ color: T.gold }}>{p.continuity.flavorProfile.boldness}</span> boldness — has been updated.
-              Your Axiom guide will use this on your next visit to craft a personalized journey.
+              Your NOVEE OS profile will use this on your next visit to craft a personalized journey.
             </div>
           </GlassCard>
         </RevealBlock>
@@ -909,7 +909,7 @@ export default function AxiomReceipt() {
               {/* Copy */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, color: T.text, lineHeight: 1.65, marginBottom: 12 }}>
-                  Scan to open your <span style={{ color: T.gold, fontWeight: 600 }}>Axiom Mobile Hub</span> — your prestige rank and XP are encoded in the link.
+                  Scan to open your <span style={{ color: T.gold, fontWeight: 600 }}>NOVEE OS Mobile Hub</span> — your prestige rank and XP are encoded in the link.
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   {[
@@ -938,7 +938,7 @@ export default function AxiomReceipt() {
               fontSize: 18, fontFamily: "'Cormorant Garamond', serif", fontWeight: 700,
               color: T.goldDim, letterSpacing: "0.2em",
             }}>
-              AXIOM OS
+              NOVEE OS
             </div>
             <div style={{ fontSize: 9, color: T.textMuted, marginTop: 4, letterSpacing: "0.12em", textTransform: "uppercase" }}>
               A luxury experience, elevated
