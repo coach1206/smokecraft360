@@ -228,6 +228,130 @@ function buildComparisonCsvContent(
   return rows.join("\r\n");
 }
 
+function buildDailyCountsComparisonCsv(
+  data: TelemetrySummary,
+  days: number,
+  compareDays: number,
+): string {
+  const cmp = data.comparison;
+  const primaryLabel = `Primary: last ${days} day(s)`;
+  const compareLabel = `Compare: last ${compareDays} day(s)`;
+  const rows: string[] = [];
+  rows.push("# E.A.T. Engine — Daily Counts Comparison");
+  rows.push(`# Primary window: last ${days} day(s)`);
+  rows.push(`# Comparison window: last ${compareDays} day(s)`);
+  rows.push(`# Generated: ${new Date().toISOString()}`);
+  rows.push("");
+  const maxLen = Math.max(data.dailyCounts.length, cmp ? cmp.dailyCounts.length : 0);
+  const unequalWindows = days !== compareDays;
+  if (unequalWindows) {
+    rows.push(`primary_date,comparison_date,"${primaryLabel}","${compareLabel}",delta_pct`);
+  } else {
+    rows.push(`date,"${primaryLabel}","${compareLabel}",delta_pct`);
+  }
+  for (let i = 0; i < maxLen; i++) {
+    const primary = data.dailyCounts[i];
+    const comparison = cmp?.dailyCounts[i];
+    const primaryCnt = primary?.cnt ?? 0;
+    const comparisonCnt = comparison?.cnt ?? 0;
+    const deltaPct =
+      comparisonCnt === 0
+        ? ""
+        : String(Math.round(((primaryCnt - comparisonCnt) / comparisonCnt) * 100));
+    if (unequalWindows) {
+      rows.push(`${primary?.day ?? ""},${comparison?.day ?? ""},${primaryCnt},${comparisonCnt},${deltaPct}`);
+    } else {
+      rows.push(`${primary?.day ?? ""},${primaryCnt},${comparisonCnt},${deltaPct}`);
+    }
+  }
+  return rows.join("\r\n");
+}
+
+function buildTopEventTypesComparisonCsv(
+  data: TelemetrySummary,
+  days: number,
+  compareDays: number,
+): string {
+  const cmp = data.comparison;
+  const primaryLabel = `Primary: last ${days} day(s)`;
+  const compareLabel = `Compare: last ${compareDays} day(s)`;
+  const rows: string[] = [];
+  rows.push("# E.A.T. Engine — Top Event Types Comparison");
+  rows.push(`# Primary window: last ${days} day(s)`);
+  rows.push(`# Comparison window: last ${compareDays} day(s)`);
+  rows.push(`# Generated: ${new Date().toISOString()}`);
+  rows.push("");
+  rows.push(`name,"${primaryLabel}","${compareLabel}",delta_pct`);
+
+  // Build a union of all event types from both windows
+  const primaryEventMap = new Map<string, number>(
+    data.topEventTypes.map((e) => [e.event_type, e.cnt]),
+  );
+  const cmpEventMap = new Map<string, number>(
+    (cmp?.topEventTypes ?? []).map((e) => [e.event_type, e.cnt]),
+  );
+  const allNames = new Set([...primaryEventMap.keys(), ...cmpEventMap.keys()]);
+  const merged = [...allNames]
+    .map((name) => {
+      const primaryCnt = primaryEventMap.get(name) ?? 0;
+      const comparisonCnt = cmpEventMap.get(name) ?? 0;
+      const deltaPct =
+        comparisonCnt === 0
+          ? ""
+          : String(Math.round(((primaryCnt - comparisonCnt) / comparisonCnt) * 100));
+      return { name, primary: primaryCnt, comparison: comparisonCnt, deltaPct };
+    })
+    .sort((a, b) => b.primary - a.primary);
+  for (const row of merged) {
+    rows.push(`"${row.name.replace(/"/g, '""')}",${row.primary},${row.comparison},${row.deltaPct}`);
+  }
+  return rows.join("\r\n");
+}
+
+function buildModuleUsageComparisonCsv(
+  data: TelemetrySummary,
+  days: number,
+  compareDays: number,
+): string {
+  const cmp = data.comparison;
+  const primaryLabel = `Primary: last ${days} day(s)`;
+  const compareLabel = `Compare: last ${compareDays} day(s)`;
+  const rows: string[] = [];
+  rows.push("# E.A.T. Engine — Module Usage Comparison");
+  rows.push(`# Primary window: last ${days} day(s)`);
+  rows.push(`# Comparison window: last ${compareDays} day(s)`);
+  rows.push(`# Generated: ${new Date().toISOString()}`);
+  rows.push("");
+  rows.push(`name,module_slug,"${primaryLabel}","${compareLabel}",delta_pct`);
+
+  // Build a union of all module slugs from both windows (mirrors ModulesTab ghost-row logic)
+  const primaryModuleMap = new Map<string, { name: string; count: number }>(
+    data.moduleUsage.map((m) => [m.module_slug, { name: m.module_name, count: m.event_count }]),
+  );
+  const cmpModuleMap = new Map<string, { name: string; count: number }>(
+    (cmp?.moduleUsage ?? []).map((m) => [m.module_slug, { name: m.module_name, count: m.event_count }]),
+  );
+  const allSlugs = new Set([...primaryModuleMap.keys(), ...cmpModuleMap.keys()]);
+  const merged = [...allSlugs]
+    .map((slug) => {
+      const pri = primaryModuleMap.get(slug);
+      const cmpEntry = cmpModuleMap.get(slug);
+      const name = pri?.name ?? cmpEntry?.name ?? slug;
+      const primaryCnt = pri?.count ?? 0;
+      const comparisonCnt = cmpEntry?.count ?? 0;
+      const deltaPct =
+        comparisonCnt === 0
+          ? ""
+          : String(Math.round(((primaryCnt - comparisonCnt) / comparisonCnt) * 100));
+      return { name, slug, primary: primaryCnt, comparison: comparisonCnt, deltaPct };
+    })
+    .sort((a, b) => b.primary - a.primary);
+  for (const row of merged) {
+    rows.push(`"${row.name.replace(/"/g, '""')}","${row.slug}",${row.primary},${row.comparison},${row.deltaPct}`);
+  }
+  return rows.join("\r\n");
+}
+
 function buildProductsCsvContent(products: ProductItem[], days: number): string {
   const rows: string[] = [];
 
@@ -1411,7 +1535,7 @@ export default function EATDashboard() {
                 compareDays={compareDays}
               />
             )}
-            {tab === "modules"   && <ModulesTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
+            {tab === "modules"   && <ModulesTab data={data} days={days} compareEnabled={compareEnabled} compareDays={compareDays} />}
             {tab === "ritual"    && <RitualTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
             {tab === "products"  && <ProductsTab products={products} loading={productsLoading} days={days} craftFilter={craftFilter} onCraftFilter={setCraftFilter} trends={productTrends} />}
             {tab === "live"      && <LiveFeedTab events={recentEvents} newEventIds={newEventIds} liveLimit={liveLimit} onLimitChange={setLiveLimit} />}
@@ -1572,8 +1696,19 @@ function OverviewTab({
       {/* Line chart */}
       {data.dailyCounts.length > 0 ? (
         <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "20px" }}>
-          <div style={{ fontSize: 9, letterSpacing: "0.22em", color: "rgba(245,237,216,0.35)", marginBottom: 16 }}>
-            EVENTS OVER TIME ({days} DAYS{cmp ? ` vs PRIOR ${compareDays}D` : ""})
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+            <div style={{ fontSize: 9, letterSpacing: "0.22em", color: "rgba(245,237,216,0.35)" }}>
+              EVENTS OVER TIME ({days} DAYS{cmp ? ` vs PRIOR ${compareDays}D` : ""})
+            </div>
+            {cmp && (
+              <SectionDownloadButton
+                title={`Download Daily Counts comparison (${days}D vs ${compareDays}D) as CSV`}
+                onClick={() => triggerCsvDownload(
+                  buildDailyCountsComparisonCsv(data, days, compareDays),
+                  `eat-daily-counts-${days}d-vs-${compareDays}d.csv`,
+                )}
+              />
+            )}
           </div>
           <ResponsiveContainer width="100%" height={160}>
             <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: -20 }}>
@@ -1611,8 +1746,19 @@ function OverviewTab({
       {/* Top event types mini */}
       {data.topEventTypes.length > 0 && (
         <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "20px" }}>
-          <div style={{ fontSize: 9, letterSpacing: "0.22em", color: "rgba(245,237,216,0.35)", marginBottom: 16 }}>
-            TOP EVENT TYPES
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+            <div style={{ fontSize: 9, letterSpacing: "0.22em", color: "rgba(245,237,216,0.35)" }}>
+              TOP EVENT TYPES
+            </div>
+            {cmp && (
+              <SectionDownloadButton
+                title={`Download Top Event Types comparison (${days}D vs ${compareDays}D) as CSV`}
+                onClick={() => triggerCsvDownload(
+                  buildTopEventTypesComparisonCsv(data, days, compareDays),
+                  `eat-event-types-${days}d-vs-${compareDays}d.csv`,
+                )}
+              />
+            )}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {data.topEventTypes.slice(0, 5).map((et, i) => (
@@ -1641,7 +1787,18 @@ function EventsTab({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      <SectionHeader label="EVENT TYPE BREAKDOWN" sub="Count distribution across all ingested event types" />
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+        <SectionHeader label="EVENT TYPE BREAKDOWN" sub="Count distribution across all ingested event types" />
+        {cmp && data.topEventTypes.length > 0 && (
+          <SectionDownloadButton
+            title={`Download Top Event Types comparison (${days}D vs ${compareDays}D) as CSV`}
+            onClick={() => triggerCsvDownload(
+              buildTopEventTypesComparisonCsv(data, days, compareDays),
+              `eat-event-types-${days}d-vs-${compareDays}d.csv`,
+            )}
+          />
+        )}
+      </div>
 
       {data.topEventTypes.length === 0 ? (
         <EmptyState label="No events ingested yet." />
@@ -1666,10 +1823,21 @@ function EventsTab({
       {/* Daily trend with optional comparison series */}
       {data.dailyCounts.length > 0 && (
         <>
-          <SectionHeader
-            label="DAILY TREND"
-            sub={`Event volume per day over the last ${days} days${cmp ? ` vs prior ${compareDays}D window` : ""}`}
-          />
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+            <SectionHeader
+              label="DAILY TREND"
+              sub={`Event volume per day over the last ${days} days${cmp ? ` vs prior ${compareDays}D window` : ""}`}
+            />
+            {cmp && (
+              <SectionDownloadButton
+                title={`Download Daily Counts comparison (${days}D vs ${compareDays}D) as CSV`}
+                onClick={() => triggerCsvDownload(
+                  buildDailyCountsComparisonCsv(data, days, compareDays),
+                  `eat-daily-counts-${days}d-vs-${compareDays}d.csv`,
+                )}
+              />
+            )}
+          </div>
           <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "20px" }}>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: -20 }}>
@@ -1808,10 +1976,12 @@ function ModuleSparkline({ points }: { points: { day: string; cnt: number }[] })
 
 function ModulesTab({
   data,
+  days,
   compareEnabled,
   compareDays,
 }: {
   data: TelemetrySummary;
+  days: number;
   compareEnabled: boolean;
   compareDays: number;
 }) {
@@ -1874,7 +2044,18 @@ function ModulesTab({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      <SectionHeader label="MODULE USAGE" sub="Event count per registered kernel module" />
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+        <SectionHeader label="MODULE USAGE" sub="Event count per registered kernel module" />
+        {cmp && !isEmpty && (
+          <SectionDownloadButton
+            title={`Download Module Usage comparison (${days}D vs ${compareDays}D) as CSV`}
+            onClick={() => triggerCsvDownload(
+              buildModuleUsageComparisonCsv(data, days, compareDays),
+              `eat-module-usage-${days}d-vs-${compareDays}d.csv`,
+            )}
+          />
+        )}
+      </div>
 
       {isEmpty ? (
         <EmptyState label="No module usage data yet." />
@@ -2956,6 +3137,39 @@ function SectionHeader({ label, sub }: { label: string; sub?: string }) {
       <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(196,97,10,0.5)", marginBottom: 4 }}>{label}</div>
       {sub && <div style={{ fontSize: 12, color: "rgba(245,237,216,0.4)" }}>{sub}</div>}
     </div>
+  );
+}
+
+function SectionDownloadButton({ onClick, title }: { onClick: () => void; title: string }) {
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        width: 22, height: 22,
+        background: "rgba(74,144,217,0.1)",
+        border: "1px solid rgba(74,144,217,0.3)",
+        borderRadius: 4,
+        color: "#4A90D9",
+        fontSize: 12,
+        cursor: "pointer",
+        flexShrink: 0,
+        transition: "background 0.15s, border-color 0.15s",
+        padding: 0,
+        lineHeight: 1,
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background = "rgba(74,144,217,0.2)";
+        (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(74,144,217,0.5)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background = "rgba(74,144,217,0.1)";
+        (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(74,144,217,0.3)";
+      }}
+    >
+      ↓
+    </button>
   );
 }
 
