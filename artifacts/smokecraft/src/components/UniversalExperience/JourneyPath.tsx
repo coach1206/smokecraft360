@@ -91,7 +91,7 @@ export function JourneyPath({ craftType, accent, styleTitle, moodTitle, onContin
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 0.96 }}
-      transition={{ duration: 0.42 }}
+      transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
       style={{
         position: "fixed", inset: 0, zIndex: 70,
         background: craftType === "vape"

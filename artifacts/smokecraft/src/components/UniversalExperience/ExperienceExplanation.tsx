@@ -101,7 +101,7 @@ export function ExperienceExplanation({ craftType, accent, onContinue, onBack }:
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 0.97 }}
-      transition={{ duration: 0.45 }}
+      transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
       style={{
         position: "fixed", inset: 0, zIndex: 60,
         background: craftType === "vape"

@@ -116,7 +116,7 @@ export function LevelSelection({ craftType, accent, onSelect, onBack }: Props) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.38 }}
+      transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
       style={{
         position: "fixed", inset: 0, zIndex: 60,
         background: craftType === "vape"

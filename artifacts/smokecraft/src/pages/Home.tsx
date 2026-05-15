@@ -1749,7 +1749,7 @@ export default function Home() {
                       style={{ display: "flex", flexDirection: "column", gap: 24 }}
                     >
                       <div style={{ textAlign: "center" }}>
-                        <p style={{ color: "rgba(212,139,0,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Step 2 of 5</p>
+                        <p style={{ color: "rgba(212,139,0,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>Moment 2 of 5</p>
                         <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Cigar Structure</h2>
                         <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Choose your shape and the time you have</p>
                       </div>
@@ -1778,7 +1778,7 @@ export default function Home() {
                       style={{ display: "flex", flexDirection: "column", gap: 24 }}
                     >
                       <div style={{ textAlign: "center" }}>
-                        <p style={{ color: "rgba(212,139,0,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Step 3 of 5" : "Step 2 of 4"}</p>
+                        <p style={{ color: "rgba(212,139,0,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Moment 3 of 5" : "Moment 2 of 4"}</p>
                         <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Your Palate</h2>
                         <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Swipe right to add · left to skip</p>
                       </div>
@@ -1805,7 +1805,7 @@ export default function Home() {
                       style={{ display: "flex", flexDirection: "column", gap: 24 }}
                     >
                       <div style={{ textAlign: "center" }}>
-                        <p style={{ color: "rgba(212,139,0,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Step 4 of 5" : "Step 3 of 4"}</p>
+                        <p style={{ color: "rgba(212,139,0,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Moment 4 of 5" : "Moment 3 of 4"}</p>
                         <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Your Strength</h2>
                         <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Swipe right to select · left for next</p>
                       </div>
@@ -1833,7 +1833,7 @@ export default function Home() {
                       {!moodDone ? (
                         <>
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ color: "rgba(212,139,0,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Step 5 of 5" : "Step 4 of 4"}</p>
+                            <p style={{ color: "rgba(212,139,0,0.65)", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 10 }}>{category === "cigar" ? "Moment 5 of 5" : "Moment 4 of 4"}</p>
                             <h2 className="font-serif" style={{ fontSize: "clamp(1.6rem,4vw,2.2rem)", color: "rgba(245,235,221,0.94)", fontWeight: 300 }}>Your Atmosphere</h2>
                             <p style={{ color: "rgba(210,190,155,0.52)", fontSize: 13, marginTop: 6 }}>Swipe right when it resonates</p>
                           </div>
@@ -2050,7 +2050,7 @@ export default function Home() {
               <motion.div className="mb-8 text-center"
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.9 }}>
                 <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.32em", textTransform: "uppercase", color: "rgba(212,139,0,0.65)", marginBottom: 8 }}>
-                  Step 7 of 7
+                  Moment 7 of 7
                   {isDemoMode && <span style={{ marginLeft: 12, color: "rgba(212,139,0,0.50)" }}>· Demo</span>}
                 </p>
                 <h2 className="font-serif" style={{ fontSize: "clamp(1.7rem, 4vw, 2.6rem)", fontWeight: 700, color: "rgba(245,230,200,0.97)", letterSpacing: "0.04em", lineHeight: 1.1 }}>

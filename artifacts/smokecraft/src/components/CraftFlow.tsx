@@ -802,12 +802,12 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
             )}
 
             {phase === "style" && (
-              <motion.div key="style" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
+              <motion.div key="style" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}>
                 <p style={{
                   margin: "0 0 18px", fontSize: 11,
                   letterSpacing: "0.32em", textTransform: "uppercase",
                   color: config.theme.accent, fontWeight: 700,
-                }}>Step 1 — {config.language.stylePrompt}</p>
+                }}>{config.language.stylePrompt}</p>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20 }}>
                   {config.styles.map((style, i) => {
                     const engineType: EngineCraftType =
