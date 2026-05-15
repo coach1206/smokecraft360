@@ -1,0 +1,283 @@
+/**
+ * NOVEE OS 1.0 — Public Craft Gateway Portal
+ * Component: CraftPortalHome.tsx
+ * Authority: Profound Innovations LLC
+ * Style Specs: Obsidian Glass, Liquid Gold, Brushed Titanium, Smoked Chrome
+ */
+
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// 1. Authentic, Diverse Asset Database (No Generic Fills)
+const CRAFT_ASSETS = {
+  smokecraft: [
+    { url: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?q=80&w=1200', desc: 'Premium hand-rolled wrapper inspection' },
+    { url: 'https://images.unsplash.com/photo-1606166187734-a4cb74079027?q=80&w=1200', desc: 'Diverse connoisseurs sharing masterclass notes' },
+    { url: 'https://images.unsplash.com/photo-1527066579998-d4e419000c4b?q=80&w=1200', desc: 'Precision straight cap cut ceremony' },
+    { url: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=1200', desc: 'Toasting the foot with ambient amber embers' }
+  ],
+  pourcraft: [
+    { url: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1200', desc: 'Aged bourbon slow pour in heavy crystal' },
+    { url: 'https://images.unsplash.com/photo-1527661591475-527312dd65f5?q=80&w=1200', desc: 'Premium cognac neat in a crystal snifter' }
+  ],
+  beercraft: [
+    { url: 'https://images.unsplash.com/photo-1436018626274-89acd67ae29e?q=80&w=1200', desc: 'Artisanal cold craft pilsner in classic stein' }
+  ],
+  winecraft: [
+    { url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=1200', desc: 'Sommelier-guided crystal decanter aeration' }
+  ]
+};
+
+// 2. High-End Material Design System Styles
+const styles = {
+  loungeVault: {
+    background: 'radial-gradient(ellipse at center, #161719 0%, #050607 100%)',
+    position: 'relative' as const,
+    overflow: 'hidden' as const,
+    minHeight: '100vh',
+    width: '100vw',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '40px',
+    color: '#e3e4e6'
+  },
+  staffLink: {
+    position: 'absolute' as const,
+    top: '30px',
+    right: '40px',
+    fontSize: '11px',
+    letterSpacing: '0.3em',
+    color: 'rgba(255, 255, 255, 0.25)',
+    textDecoration: 'none',
+    textTransform: 'uppercase' as const,
+    cursor: 'pointer',
+    transition: 'color 0.3s ease'
+  },
+  headerArea: {
+    textAlign: 'center' as const,
+    marginBottom: '60px',
+    zIndex: 10
+  },
+  mainTitle: {
+    fontFamily: '"Cormorant Garamond", serif',
+    background: 'linear-gradient(180deg, #fffcf5 0%, #dfba73 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    letterSpacing: '0.12em',
+    fontSize: '3.5rem',
+    fontWeight: 300,
+    margin: 0,
+    textTransform: 'uppercase' as const
+  },
+  gridContainer: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gap: '32px',
+    width: '100%',
+    maxWidth: '1400px',
+    zIndex: 10
+  },
+  obsidianCard: {
+    position: 'relative' as const,
+    height: '480px',
+    borderRadius: '6px',
+    overflow: 'hidden' as const,
+    background: 'linear-gradient(135deg, rgba(15, 16, 18, 0.85) 0%, rgba(5, 6, 7, 0.98) 100%)',
+    backdropFilter: 'blur(30px) saturate(120%)',
+    WebkitBackdropFilter: 'blur(30px) saturate(120%)',
+    boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.08), 0 24px 64px rgba(0, 0, 0, 0.9)',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    justifyContent: 'space-between',
+    padding: '40px',
+    cursor: 'pointer'
+  },
+  cardBgImage: {
+    position: 'absolute' as const,
+    top: 0, left: 0, width: '100%', height: '100%',
+    objectFit: 'cover' as const,
+    opacity: 0.35,
+    zIndex: 1,
+    mixBlendMode: 'luminosity' as const
+  },
+  cardScrim: {
+    position: 'absolute' as const,
+    top: 0, left: 0, width: '100%', height: '100%',
+    background: 'linear-gradient(180deg, rgba(5,6,7,0.2) 0%, rgba(5,6,7,0.85) 100%)',
+    zIndex: 2
+  },
+  cardContent: {
+    position: 'relative' as const,
+    zIndex: 3,
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    justifyContent: 'space-between'
+  },
+  cardTitle: {
+    fontFamily: '"Cormorant Garamond", serif',
+    fontSize: '2rem',
+    fontWeight: 400,
+    letterSpacing: '0.05em',
+    margin: '0 0 8px 0',
+    color: '#fffcf5'
+  },
+  cardSubtitle: {
+    fontSize: '12px',
+    letterSpacing: '0.15em',
+    color: '#a3a6a8',
+    textTransform: 'uppercase' as const,
+    lineHeight: '1.6'
+  },
+  smokedChromeButton: {
+    background: 'linear-gradient(180deg, #242629 0%, #111214 100%)',
+    border: '1px solid rgba(138, 141, 144, 0.3)',
+    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0,0,0,0.5)',
+    color: '#e3e4e6',
+    padding: '14px 28px',
+    fontSize: '11px',
+    fontWeight: 500,
+    letterSpacing: '0.25em',
+    textTransform: 'uppercase' as const,
+    borderRadius: '4px',
+    cursor: 'pointer',
+    width: '100%',
+    textAlign: 'center' as const,
+    transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+  },
+  // Ambient Moving Smoke Gradient Array
+  smokeWisp: (delay: number, duration: number) => ({
+    position: 'absolute' as const,
+    bottom: '-10%',
+    left: `${Math.random() * 100}%`,
+    width: '600px',
+    height: '600px',
+    background: 'radial-gradient(circle, rgba(220, 220, 220, 0.02) 0%, transparent 70%)',
+    filter: 'blur(80px)',
+    zIndex: 1,
+    pointerEvents: 'none' as const,
+    animate: {
+      y: ['0vh', '-120vh'],
+      x: ['0px', `${Math.random() * 120 - 60}px`],
+      scale: [1, 1.5],
+      opacity: [0, 1, 0]
+    },
+    transition: {
+      duration: duration,
+      repeat: Infinity,
+      delay: delay,
+      ease: 'linear'
+    }
+  })
+};
+
+// 3. Sub-Component: Self-Contained Staggered Background Rotator
+const CardBackground: React.FC<{ craft: keyof typeof CRAFT_ASSETS; offset: number }> = ({ craft, offset }) => {
+  const images = CRAFT_ASSETS[craft];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const startTimeout = setTimeout(() => {
+      const interval = setInterval(() => {
+        setIndex((prev) => (prev + 1) % images.length);
+      }, 9000);
+      return () => clearInterval(interval);
+    }, offset);
+
+    return () => clearTimeout(startTimeout);
+  }, [images.length, offset]);
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.img
+        key={index}
+        src={images[index].url}
+        alt={images[index].desc}
+        style={styles.cardBgImage}
+        initial={{ opacity: 0, scale: 1.05, filter: 'blur(8px)' }}
+        animate={{ opacity: 0.35, scale: 1, filter: 'blur(0px)' }}
+        exit={{ opacity: 0, scale: 0.95, filter: 'blur(8px)' }}
+        transition={{ duration: 1.8, ease: 'easeInOut' }}
+      />
+    </AnimatePresence>
+  );
+};
+
+// 4. Main Component Export
+export default function CraftPortalHome() {
+  const portals = [
+    { id: 'smokecraft', title: 'SmokeCraft 360', sub: 'Luxury Cigar Masterclass', border: 'gold', offset: 0 },
+    { id: 'pourcraft', title: 'PourCraft 360', sub: 'Whiskey • Bourbon • Cognac Pairing', border: 'titanium', offset: 2000 },
+    { id: 'beercraft', title: 'BeerCraft 360', sub: 'Craft Beer Discovery', border: 'titanium', offset: 4000 },
+    { id: 'winecraft', title: 'WineCraft 360', sub: 'Sommelier-Guided Wine Presentation', border: 'titanium', offset: 6000 },
+  ];
+
+  const handleNavigation = (id: string) => {
+    window.location.href = `/${id}`;
+  };
+
+  return (
+    <div style={styles.loungeVault}>
+      {/* Discreet Path to Sovereign OS for Operations Staff */}
+      <a href="/sovereign" style={styles.staffLink}>Sovereign Access</a>
+
+      {/* Cinematic Ambient Smoke Layer */}
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          style={styles.smokeWisp(i * 3, 18 + i * 2) as any}
+          animate={styles.smokeWisp(i * 3, 18 + i * 2).animate}
+          transition={styles.smokeWisp(i * 3, 18 + i * 2).transition}
+        />
+      ))}
+
+      <header style={styles.headerArea}>
+        <h1 style={styles.mainTitle}>The Craft Collection</h1>
+      </header>
+
+      <div style={styles.gridContainer}>
+        {portals.map((portal) => {
+          // Dynamic Multi-Stop Metallic Micro-Border Logic
+          const borderStyle = portal.border === 'gold' 
+            ? 'linear-gradient(#0f1012, #050607), linear-gradient(135deg, #dfba73 0%, #fbf5b7 35%, #9e7831 70%, #dfba73 100%)'
+            : 'linear-gradient(#0f1012, #050607), linear-gradient(135deg, #7a7d80 0%, #e1e4e6 40%, #595b5e 100%)';
+
+          return (
+            <motion.div
+              key={portal.id}
+              onClick={() => handleNavigation(portal.id)}
+              whileHover={{ scale: 1.02, boxShadow: portal.border === 'gold' ? '0 0 25px rgba(223, 186, 115, 0.15)' : '0 0 25px rgba(255,255,255,0.05)' }}
+              style={{
+                ...styles.obsidianCard,
+                border: '1px solid transparent',
+                backgroundImage: borderStyle,
+                backgroundOrigin: 'border-box',
+                backgroundClip: 'padding-box, border-box',
+              }}
+            >
+              {/* Dynamic Fading Background Engine */}
+              <CardBackground craft={portal.id as any} offset={portal.offset} />
+              <div style={styles.cardScrim} />
+
+              <div style={styles.cardContent}>
+                <div>
+                  <h2 style={styles.cardTitle}>{portal.title}</h2>
+                  <p style={styles.cardSubtitle}>{portal.sub}</p>
+                </div>
+                
+                <button 
+                  style={styles.smokedChromeButton}
+                  whileHover={{ background: 'linear-gradient(180deg, #2d3035 0%, #16181b 100%)', borderColor: '#fff' }}
+                >
+                  Begin Experience
+                </button>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

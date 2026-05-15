@@ -292,7 +292,7 @@ export default function SmokeCraftGateway() {
               display: "flex", alignItems: "center", justifyContent: "space-between",
             }}
           >
-            <span>Enter Ritual</span>
+            <span>Begin Experience</span>
             <span style={{ fontSize: 12, opacity: 0.6 }}>→</span>
           </button>
 

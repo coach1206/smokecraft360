@@ -1,0 +1,34 @@
+The Unified Master Build Prompt
+Prompt: "Execute a complete, top-to-bottom architectural and visual rebuild of the application frontend across CraftPortalHome.tsx, SmokeCraftGateway.tsx, and all core style modules. You must permanently decouple the public guest experience from the enterprise backend, enforce the high-end material design system, and implement dynamic asset rotation. Follow these integrated specifications precisely:
+
+1. Public Routing, Gateway Isolation, & Terminology Purge:
+
+Re-engineer the root path (/) to load a clean, public gateway titled 'THE CRAFT COLLECTION' utilizing the Cormorant Garamond font stack with a warm-white to liquid-gold text gradient fill (#fffcf5 to #dfba73).
+
+Completely banish all 'witchcraft' or engineering phrasing from the guest viewport. Replace all instances of 'Enter Ritual' or 'Choose Your Ritual' with premium hospitality actions: 'BEGIN EXPERIENCE' or 'SELECT MASTERCLASS'.
+
+Move the entire NOVEE OS administrative core, telemetry dashboards, distribution vaults, and founder control centers strictly behind authenticated, hidden sub-routes: /sovereign, /admin, /ops, or /eeie. If a guest hits a missing route, default redirect them back to the public root /.
+
+Display exactly four premium lifestyle portal cards on the homepage: SmokeCraft 360 (Luxury cigar masterclass), PourCraft 360 (Whiskey • bourbon • cognac pairing), BeerCraft 360 (Craft beer discovery), and WineCraft 360 (Sommelier-guided wine presentation).
+
+2. Heavy Obsidian Glass & Metallic Materials (Novee Design System):
+
+The Environment Background: Wipe out all flat dark colors, light wood veneers, and cheap vector bubble animations. Implement a deep, weighted background: radial-gradient(ellipse at center, #161719 0%, #050607 100%). Overlays 6 massive, semi-transparent radial gradient vectors (rgba(220, 220, 220, 0.02)) with a blur(60px) filter, animating them to rise, drift, and expand slowly on a randomized 15-to-25-second loop to simulate authentic ambient lounge smoke texture.
+
+The Obsidian Cards: Structure the four experience cards as heavy, thick panels of smoked obsidian glass using a precise gradient fill: linear-gradient(135deg, rgba(15, 16, 18, 0.82) 0%, rgba(5, 6, 7, 0.95) 100%) layered with an intense blurring filter (backdrop-filter: blur(30px) saturate(120%)). Enforce a deep double-shadow profile using an internal rim light (inset 0 1px 1px rgba(255, 255, 255, 0.08)) and a heavy external drop shadow (0 24px 64px rgba(0, 0, 0, 0.9)).
+
+Metallic Precision Borders: Encase the featured SmokeCraft 360 card in a continuous Liquid Gold Metallic micro-border using a multi-stop linear gradient: #dfba73 to #fbf5b7 to #9e7831 to #dfba73. Encase the Pour, Beer, and Wine cards in a sleek Brushed Titanium/Silver Metallic micro-border gradient: #7a7d80 to #e1e4e6 to #595b5e. On hover, trigger a subtle glow effect matching the card’s metallic signature.
+
+Smoked Chrome Actions: Style all interface buttons to resemble heavy machined controls from a luxury cockpit. Apply a Smoked Chrome gradient finish: linear-gradient(180deg, #242629 0%, #111214 100%) with a sharp silver rim micro-edge and tracking-spaced uppercase lettering.
+
+3. Dynamic Image Rotation Hook & Authentic Craft Assets:
+
+Integrate a functional CraftImageRotator state loop into the background layer of each card. Program the assets to cross-fade every 9000ms (9 seconds) using a GPU-accelerated Framer Motion fade-and-scale morph. Apply staggered initialization offsets between each card (0ms, 2000ms, 4000ms, 6000ms) so they rotate out of sync, keeping the layout dynamically alive.
+
+Lock down the asset carousel to high-fidelity, authentic craft images only. Absolutely zero generic stock photos or food bowls are allowed.
+
+SmokeCraft 360 must rotate exclusively through real premium cigar culture: dark wood humidors, master hand-rolling, elegant lounge atmospheres, and a diverse range of genuine connoisseurs (young, old, professional, casual, and diverse profiles with natural hairstyles).
+
+PourCraft 360 must cycle rich amber spirits (bourbon, scotch, cognac) poured clean into heavy crystal tumblers or snifters. BeerCraft 360 must rotate cold artisanal brews in proper steins and mugs. WineCraft 360 must cycle sommelier decanting visuals.
+
+Run the full compiler suite, execute a global type-check, flush the local rendering cache, and boot the live preview server directly into the polished, luxury public interface."

@@ -76,7 +76,7 @@ export default function CraftPortalHome() {
   return (
     <div style={{
       minHeight: "100dvh",
-      background: "#070605",
+      background: "radial-gradient(ellipse at center, #161719 0%, #050607 100%)",
       fontFamily: "'Inter', 'SF Pro Display', -apple-system, sans-serif",
       display: "flex",
       flexDirection: "column",
@@ -85,7 +85,7 @@ export default function CraftPortalHome() {
       overflow: "hidden",
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Inter:wght@300;400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;0,400;1,300&family=Inter:wght@300;400&display=swap');
 
         @keyframes nv-grain {
           0%, 100% { transform: translate(0, 0); }
@@ -101,12 +101,70 @@ export default function CraftPortalHome() {
           0%, 100% { opacity: 0.32; }
           50%       { opacity: 0.68; }
         }
+
+        /* ── Ambient lounge smoke drifts ─────────────────────────────── */
+        @keyframes nv-amb1 {
+          0%, 100% { transform: translate(0px,   0px) scale(1.00); opacity: 0.018; }
+          50%       { transform: translate(28px, -44px) scale(1.14); opacity: 0.030; }
+        }
+        @keyframes nv-amb2 {
+          0%, 100% { transform: translate(0px,   0px) scale(1.00); opacity: 0.022; }
+          50%       { transform: translate(-34px,-36px) scale(1.09); opacity: 0.034; }
+        }
+        @keyframes nv-amb3 {
+          0%, 100% { transform: translate(0px,   0px) scale(1.00); opacity: 0.014; }
+          50%       { transform: translate(22px, -52px) scale(1.18); opacity: 0.026; }
+        }
+        @keyframes nv-amb4 {
+          0%, 100% { transform: translate(0px,   0px) scale(1.00); opacity: 0.020; }
+          50%       { transform: translate(-18px,-30px) scale(1.11); opacity: 0.032; }
+        }
+        @keyframes nv-amb5 {
+          0%, 100% { transform: translate(0px,   0px) scale(1.00); opacity: 0.016; }
+          50%       { transform: translate(40px, -38px) scale(1.07); opacity: 0.028; }
+        }
+        @keyframes nv-amb6 {
+          0%, 100% { transform: translate(0px,   0px) scale(1.00); opacity: 0.024; }
+          50%       { transform: translate(-24px,-48px) scale(1.13); opacity: 0.036; }
+        }
+
+        /* ── Card base ───────────────────────────────────────────────── */
         .craft-card {
           transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
                       box-shadow 0.38s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .craft-card:hover {
-          transform: translateY(-4px) scale(1.012);
+          transform: translateY(-5px) scale(1.014);
+        }
+
+        /* ── Metallic gradient borders (mask technique) ──────────────── */
+        .craft-card-smoke::before,
+        .craft-card-standard::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          padding: 1px;
+          border-radius: inherit;
+          -webkit-mask: linear-gradient(#fff 0 0) content-box,
+                        linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+          pointer-events: none;
+          z-index: 20;
+        }
+        .craft-card-smoke::before {
+          background: linear-gradient(135deg, #dfba73, #fbf5b7, #9e7831, #dfba73);
+        }
+        .craft-card-standard::before {
+          background: linear-gradient(135deg, #7a7d80, #e1e4e6, #595b5e, #7a7d80);
+        }
+        .craft-card-smoke:hover::before {
+          background: linear-gradient(135deg, #e8c87a, #fff5bc, #b08c40, #e8c87a);
+          filter: drop-shadow(0 0 9px rgba(223,186,115,0.55));
+        }
+        .craft-card-standard:hover::before {
+          background: linear-gradient(135deg, #9aa0a6, #edf0f2, #70767a, #9aa0a6);
+          filter: drop-shadow(0 0 7px rgba(225,228,230,0.32));
         }
       `}</style>
 
@@ -116,6 +174,26 @@ export default function CraftPortalHome() {
         backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E\")",
         opacity: 0.6,
       }} />
+
+      {/* ── 6 ambient lounge smoke vectors ─────────────────────────────── */}
+      {([
+        { top: "12%", left:  "6%", size: 380, anim: "nv-amb1", dur: "22s", delay:  "0s" },
+        { top: "58%", left: "70%", size: 430, anim: "nv-amb2", dur: "18s", delay:  "3s" },
+        { top: "28%", left: "52%", size: 350, anim: "nv-amb3", dur: "25s", delay:  "6s" },
+        { top: "72%", left: "18%", size: 460, anim: "nv-amb4", dur: "20s", delay:  "9s" },
+        { top:  "4%", left: "40%", size: 320, anim: "nv-amb5", dur: "15s", delay:  "4s" },
+        { top: "48%", left: "83%", size: 395, anim: "nv-amb6", dur: "23s", delay:  "7s" },
+      ] as const).map((v, i) => (
+        <div key={i} style={{
+          position: "fixed",
+          top: v.top, left: v.left,
+          width: v.size, height: v.size,
+          background: "radial-gradient(ellipse, rgba(220,220,220,0.022) 0%, transparent 70%)",
+          filter: "blur(60px)",
+          animation: `${v.anim} ${v.dur} ${v.delay} ease-in-out infinite`,
+          pointerEvents: "none", zIndex: 0,
+        }} />
+      ))}
 
       {/* Ambient radial glow — center bottom */}
       <div style={{
@@ -180,18 +258,22 @@ export default function CraftPortalHome() {
       }}>
         <h2 style={{
           fontFamily: "'Cormorant Garamond', Georgia, serif",
-          fontSize: "clamp(36px, 5vw, 58px)",
-          fontWeight: 300, letterSpacing: "0.08em",
-          color: "#F0EDE8", margin: "0 0 14px",
-          lineHeight: 1.1,
+          fontSize: "clamp(30px, 4.6vw, 54px)",
+          fontWeight: 300, letterSpacing: "0.20em",
+          margin: "0 0 14px", lineHeight: 1.1,
+          textTransform: "uppercase",
+          background: "linear-gradient(135deg, #fffcf5 0%, #dfba73 52%, #fffcf5 100%)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
         }}>
-          Choose Your Ritual
+          The Craft Collection
         </h2>
         <p style={{
-          fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase",
-          color: "rgba(240,237,232,0.28)", fontWeight: 300,
+          fontSize: 9, letterSpacing: "0.40em", textTransform: "uppercase",
+          color: "rgba(240,237,232,0.20)", fontWeight: 300,
         }}>
-          Four crafts · One sovereign experience
+          Four Masterclasses · One Sovereign Collection
         </p>
       </div>
 
@@ -208,22 +290,24 @@ export default function CraftPortalHome() {
         {CRAFTS.map((craft, i) => (
           <div
             key={craft.id}
-            className="craft-card"
+            className={`craft-card ${craft.id === "smoke" ? "craft-card-smoke" : "craft-card-standard"}`}
             onClick={() => navigate(craft.route)}
             style={{
               position: "relative",
               overflow: "hidden",
-              background: "transparent",
-              border: `1px solid ${hovered === craft.id ? craft.color + "44" : "rgba(255,255,255,0.07)"}`,
+              borderRadius: 2,
+              background: "linear-gradient(135deg, rgba(15,16,18,0.82) 0%, rgba(5,6,7,0.95) 100%)",
+              border: "none",
               cursor: "pointer",
               padding: "48px 36px 40px",
               display: "flex", flexDirection: "column", justifyContent: "space-between",
               minHeight: 300,
               animation: `nv-fade-up 0.7s ${0.15 + i * 0.08}s ease both`,
               boxShadow: hovered === craft.id
-                ? `0 0 40px ${craft.glow}, inset 0 1px 0 rgba(255,255,255,0.06)`
-                : "inset 0 1px 0 rgba(255,255,255,0.03)",
-              transition: "background 0.3s, border-color 0.3s, box-shadow 0.3s",
+                ? `inset 0 1px 1px rgba(255,255,255,0.10), 0 24px 64px rgba(0,0,0,0.92), 0 0 32px ${craft.glow}`
+                : "inset 0 1px 1px rgba(255,255,255,0.06), 0 24px 64px rgba(0,0,0,0.88)",
+              transition: "box-shadow 0.38s cubic-bezier(0.22, 1, 0.36, 1)",
+              backdropFilter: "saturate(120%)",
             }}
             onMouseEnter={() => setHovered(craft.id)}
             onMouseLeave={() => setHovered(null)}
@@ -282,7 +366,7 @@ export default function CraftPortalHome() {
                 color: hovered === craft.id ? craft.color : "rgba(255,255,255,0.22)",
                 transition: "color 0.3s",
               }}>
-                {craft.active ? "Enter Portal" : "Launching Soon"}
+                {craft.active ? "Begin Experience" : "Select Masterclass"}
               </span>
               <span style={{
                 fontSize: 14,
