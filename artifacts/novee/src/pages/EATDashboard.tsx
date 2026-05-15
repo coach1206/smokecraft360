@@ -929,7 +929,9 @@ export default function EATDashboard() {
         {/* Right: meta + export */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            {(userRole === "admin" || userRole === "super_admin") && !loading && compareEnabled && data.comparison && (
+            {/* Comparison export: available to any authenticated user (operator+) so venue managers
+                can download side-by-side reports. General telemetry exports below remain admin-only. */}
+            {userRole !== null && !loading && compareEnabled && data.comparison && (
               <button
                 onClick={() => {
                   const csv = buildComparisonCsvContent(data, days, compareDays);
