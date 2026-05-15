@@ -4,6 +4,7 @@ import DesignPlayground, {
   type PlaygroundConfig,
 } from "@/components/DesignPlayground/DesignPlayground";
 import CinematicLanding from "@/components/CinematicLanding/CinematicLanding";
+import DrawEngineeringScene from "@/components/CinematicLanding/DrawEngineeringScene";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence, animate, useAnimation } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
@@ -38,7 +39,7 @@ import { OrderModal }        from "@/components/Order/OrderModal";
 import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
 import type { SavedBlend }   from "@/services/storage";
 
-type Phase = "welcome" | "form" | "loading" | "ready" | "results";
+type Phase = "welcome" | "form" | "loading" | "ready" | "results" | "draw_engineering";
 
 /* ── Universal slide animation ────────────────────────────────── */
 const SLIDE_VARIANTS = {
@@ -724,6 +725,17 @@ export default function Home() {
                 setPhase("form");
               }
             }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Image 10: Engineering of the Draw — Sovereign Ascension ──── */}
+      <AnimatePresence>
+        {phase === "draw_engineering" && (
+          <DrawEngineeringScene
+            key="draw-engineering"
+            onComplete={() => setPhase("results")}
+            onExit={() => setPhase("results")}
           />
         )}
       </AnimatePresence>
@@ -2036,7 +2048,47 @@ export default function Home() {
               {/* Food pairings */}
               {venue.features.foodPairing && <FoodSection foodPairings={foodPairings} />}
 
-              <motion.div className="mt-16 text-center pb-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8, duration: 0.6 }}>
+              {/* Sovereign Ascension entry — Image 10 trigger */}
+              <motion.div
+                className="mt-10 mb-2 flex flex-col items-center gap-3"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 2.2, duration: 0.7 }}
+              >
+                <p style={{
+                  fontSize: 8, letterSpacing: "0.38em", fontWeight: 700,
+                  color: "rgba(191,149,63,0.35)", fontFamily: "monospace",
+                  textTransform: "uppercase", margin: 0,
+                }}>
+                  SOVEREIGN ASCENSION · STEP 8 / 14
+                </p>
+                <motion.button
+                  data-testid="btn-sovereign-build"
+                  onClick={() => { playClick(); setPhase("draw_engineering"); }}
+                  whileHover={{
+                    scale: 1.03,
+                    boxShadow: "0 0 0 1px rgba(191,149,63,0.65), 0 0 55px rgba(191,149,63,0.18)",
+                  }}
+                  whileTap={{ scale: 0.97 }}
+                  style={{
+                    padding: "0 44px", height: 52,
+                    background: "transparent",
+                    border: "1px solid rgba(191,149,63,0.45)",
+                    borderRadius: 3,
+                    color: "rgba(191,149,63,0.82)",
+                    fontFamily: "var(--app-font-serif, 'Cormorant Garamond', Georgia, serif)",
+                    fontSize: 13, fontWeight: 600,
+                    letterSpacing: "0.34em",
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                    boxShadow: "0 0 24px rgba(191,149,63,0.06)",
+                  }}
+                >
+                  BEGIN SOVEREIGN BUILD
+                </motion.button>
+              </motion.div>
+
+              <motion.div className="mt-6 text-center pb-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8, duration: 0.6 }}>
                 <button data-testid="btn-start-over" onClick={handleStartOver}
                   className="inline-flex items-center gap-2.5 text-xs uppercase tracking-[0.25em] group transition-all duration-300"
                   style={{ color: "rgba(107,94,78,0.40)" }}
