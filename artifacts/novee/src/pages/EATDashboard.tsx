@@ -340,10 +340,12 @@ const PRESET_OPTIONS = [
 const EAT_LS_KEY              = "eat_dashboard_days";
 const EAT_LS_COMPARE_KEY      = "eat_dashboard_compare";
 const EAT_LS_COMPARE_DAYS_KEY = "eat_dashboard_compare_days";
-const EAT_LS_PRESETS_KEY      = "eat_dashboard_presets";
+const EAT_LS_PRESETS_KEY      = "eat_dashboard_custom_presets";
 const EAT_LS_TAB_KEY          = "eat_dashboard_tab";
 
 type SavedPreset = { name: string; days: number };
+
+const MAX_SAVED_PRESETS = 3;
 
 function loadSavedPresets(): SavedPreset[] {
   try {
@@ -351,11 +353,13 @@ function loadSavedPresets(): SavedPreset[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter(
-      (p): p is SavedPreset =>
-        typeof p === "object" && p !== null &&
-        typeof p.name === "string" && typeof p.days === "number",
-    );
+    return parsed
+      .filter(
+        (p): p is SavedPreset =>
+          typeof p === "object" && p !== null &&
+          typeof p.name === "string" && typeof p.days === "number",
+      )
+      .slice(0, MAX_SAVED_PRESETS);
   } catch { return []; }
 }
 
@@ -768,10 +772,9 @@ export default function EATDashboard() {
   const handleSavePreset = () => {
     const name = presetNameInput.trim();
     if (!name) return;
-    const updated = [
-      ...savedPresets.filter((p) => p.days !== days),
-      { name, days },
-    ];
+    const existing = savedPresets.filter((p) => p.days !== days);
+    if (existing.length >= MAX_SAVED_PRESETS) return;
+    const updated = [...existing, { name, days }];
     setSavedPresets(updated);
     persistSavedPresets(updated);
     setShowSavePreset(false);
@@ -936,22 +939,35 @@ export default function EATDashboard() {
                 </button>
               </div>
             )}
-            {/* Save preset button — only visible when a custom day range is active */}
+            {/* Save preset button — only visible when a custom day range is active and under the cap */}
             {isCustomActive && !showSavePreset && (
-              <button
-                onClick={() => { setShowSavePreset(true); setPresetNameInput(""); }}
-                style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px dashed rgba(196,97,10,0.4)",
-                  borderRadius: 5, padding: "4px 8px",
-                  fontSize: 9, fontWeight: 700, letterSpacing: "0.12em",
-                  color: "rgba(196,97,10,0.6)",
-                  cursor: "pointer", transition: "all 0.15s",
-                }}
-                title={`Save ${days}D as a named preset`}
-              >
-                + SAVE PRESET
-              </button>
+              savedPresets.filter((p) => p.days !== days).length < MAX_SAVED_PRESETS ? (
+                <button
+                  onClick={() => { setShowSavePreset(true); setPresetNameInput(""); }}
+                  style={{
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px dashed rgba(196,97,10,0.4)",
+                    borderRadius: 5, padding: "4px 8px",
+                    fontSize: 9, fontWeight: 700, letterSpacing: "0.12em",
+                    color: "rgba(196,97,10,0.6)",
+                    cursor: "pointer", transition: "all 0.15s",
+                  }}
+                  title={`Save ${days}D as a named preset`}
+                >
+                  + SAVE PRESET
+                </button>
+              ) : (
+                <span
+                  style={{
+                    fontSize: 9, letterSpacing: "0.1em",
+                    color: "rgba(245,237,216,0.25)",
+                    padding: "4px 6px",
+                  }}
+                  title="Delete a preset to save a new one (max 3)"
+                >
+                  3/3 PRESETS
+                </span>
+              )
             )}
             {isCustomActive && showSavePreset && (
               <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
