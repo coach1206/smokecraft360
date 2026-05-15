@@ -223,7 +223,7 @@ export default function Home() {
    * `navigate("/")` or `<a href="/">`; Home was the lone gap. */
   const [, navigate] = useLocation();
 
-  const [showPlayground, setShowPlayground] = useState(() => !hasSeenPlayground("smoke"));
+  const [showPlayground, setShowPlayground] = useState(false);
   const [wasPlayground]                       = useState(showPlayground);
   const contentAnim                           = useAnimation();
 
@@ -692,6 +692,7 @@ export default function Home() {
             onComplete={() => {
               markPlaygroundSeen("smoke");
               setShowPlayground(false);
+              setPhase("form");
             }}
           />
         )}
@@ -1090,7 +1091,15 @@ export default function Home() {
                 data-testid="btn-begin-experience"
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.55 }}
-                onClick={() => { playClick(); setPhase("form"); setBgKey(`experience_${category}`); }}
+                onClick={() => {
+                  playClick();
+                  setBgKey(`experience_${category}`);
+                  if (!hasSeenPlayground("smoke")) {
+                    setShowPlayground(true);
+                  } else {
+                    setPhase("form");
+                  }
+                }}
                 whileHover={{
                   scale: 1.03,
                   boxShadow: "0 0 0 1px rgba(212,139,0,0.65), 0 16px 48px rgba(26,26,27,0.22), 0 0 80px rgba(212,139,0,0.22)",

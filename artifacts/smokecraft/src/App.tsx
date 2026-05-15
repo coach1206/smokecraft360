@@ -39,6 +39,7 @@ import { useSovereignSocket }         from '@/hooks/useSovereignSocket';
 import PhantomHUD                     from '@/components/PhantomHUD';
 import { KernelModeProvider }         from '@/contexts/KernelModeContext';
 import InactivityGuard               from '@/components/InactivityGuard';
+import { PresentationProvider }      from '@/contexts/PresentationContext';
 
 /* ── Lazy-loaded sub-pages ─────────────────────────────────── */
 const Dashboard             = lazy(() => import('@/pages/Dashboard'));
@@ -58,6 +59,7 @@ const Axiom360              = lazy(() => import('@/pages/Axiom360'));
 const StaffModule           = lazy(() => import('@/pages/StaffModule'));
 const TouchscreenHome       = lazy(() => import('@/pages/TouchscreenHome'));
 const Entry                 = lazy(() => import('@/pages/Entry'));
+const Home                  = lazy(() => import('@/pages/Home'));
 const ExperiencesModule     = lazy(() => import('@/pages/ExperiencesModule'));
 const DemoExperienceCenter  = lazy(() => import('@/pages/DemoExperienceCenter'));
 const StaffTraining         = lazy(() => import('@/pages/StaffTraining'));
@@ -171,6 +173,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                       <SuperAdminProvider>
                                         <TrifectaProvider>
                                         <HapticProvider>
+                                        <PresentationProvider>
                                           <UniversalTouchAnchors />
                                           <UniversalBackButton />
                                           {children}
@@ -183,6 +186,7 @@ function SubPageProviders({ children }: { children: React.ReactNode }) {
                                           <SovereignInsightCube />
                                           <SovereignSocketBridge />
                                           <StealthHandoff />
+                                        </PresentationProvider>
                                         </HapticProvider>
                                         </TrifectaProvider>
                                       </SuperAdminProvider>
@@ -1055,9 +1059,12 @@ export default function App() {
             <SubPageProviders><LivingPortal /></SubPageProviders>
           </Route>
 
-          {/* ── Root: Craft Your Experience selector ── */}
-          <Route path="/">
+          {/* ── Root: SmokeCraft landing page ── */}
+          <Route path="/experiences">
             <SubPageProviders><ExperiencesModule /></SubPageProviders>
+          </Route>
+          <Route path="/">
+            <SubPageProviders><Home /></SubPageProviders>
           </Route>
 
           {/* ── Default: Sovereign Gate — all entry flows begin here ── */}
