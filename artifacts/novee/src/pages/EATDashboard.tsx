@@ -335,9 +335,30 @@ const PRESET_OPTIONS = [
   { label: "90D", days: 90 },
 ];
 
-const EAT_LS_KEY         = "eat_dashboard_days";
-const EAT_LS_COMPARE_KEY = "eat_dashboard_compare";
+const EAT_LS_KEY              = "eat_dashboard_days";
+const EAT_LS_COMPARE_KEY      = "eat_dashboard_compare";
 const EAT_LS_COMPARE_DAYS_KEY = "eat_dashboard_compare_days";
+const EAT_LS_PRESETS_KEY      = "eat_dashboard_presets";
+
+type SavedPreset = { name: string; days: number };
+
+function loadSavedPresets(): SavedPreset[] {
+  try {
+    const raw = localStorage.getItem(EAT_LS_PRESETS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (p): p is SavedPreset =>
+        typeof p === "object" && p !== null &&
+        typeof p.name === "string" && typeof p.days === "number",
+    );
+  } catch { return []; }
+}
+
+function persistSavedPresets(presets: SavedPreset[]): void {
+  try { localStorage.setItem(EAT_LS_PRESETS_KEY, JSON.stringify(presets)); } catch { /* ignore */ }
+}
 
 const MUTE_SS_KEY      = "eat_live_mute_until";
 const MUTE_DURATION_MS = 5 * 60 * 1000;
@@ -404,6 +425,9 @@ export default function EATDashboard() {
   const [days, setDaysState] = useState<number>(() => parseDaysFromSearch(window.location.search));
   const [customInput, setCustomInput]   = useState<string>("");
   const [showCustom, setShowCustom]     = useState(false);
+  const [savedPresets, setSavedPresets] = useState<SavedPreset[]>(() => loadSavedPresets());
+  const [showSavePreset, setShowSavePreset] = useState(false);
+  const [presetNameInput, setPresetNameInput] = useState("");
 
   const [compareEnabled, setCompareEnabledState] = useState<boolean>(
     () => parseCompareFromSearch(window.location.search),
@@ -728,7 +752,28 @@ export default function EATDashboard() {
       setDays(Math.min(n, 365));
       setShowCustom(false);
       setCustomInput("");
+      setShowSavePreset(false);
+      setPresetNameInput("");
     }
+  };
+
+  const handleSavePreset = () => {
+    const name = presetNameInput.trim();
+    if (!name) return;
+    const updated = [
+      ...savedPresets.filter((p) => p.days !== days),
+      { name, days },
+    ];
+    setSavedPresets(updated);
+    persistSavedPresets(updated);
+    setShowSavePreset(false);
+    setPresetNameInput("");
+  };
+
+  const handleDeletePreset = (presetDays: number) => {
+    const updated = savedPresets.filter((p) => p.days !== presetDays);
+    setSavedPresets(updated);
+    persistSavedPresets(updated);
   };
 
   const handleCompareCustomSubmit = () => {
@@ -794,7 +839,7 @@ export default function EATDashboard() {
             {PRESET_OPTIONS.map((opt) => (
               <button
                 key={opt.days}
-                onClick={() => { setDays(opt.days); setShowCustom(false); }}
+                onClick={() => { setDays(opt.days); setShowCustom(false); setShowSavePreset(false); }}
                 style={{
                   background: days === opt.days ? "rgba(196,97,10,0.2)" : "rgba(255,255,255,0.04)",
                   border: `1px solid ${days === opt.days ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
@@ -807,8 +852,40 @@ export default function EATDashboard() {
                 {opt.label}
               </button>
             ))}
+            {/* Saved named presets */}
+            {savedPresets.map((preset) => (
+              <div key={preset.days} style={{ display: "flex", alignItems: "center", gap: 0 }}>
+                <button
+                  onClick={() => { setDays(preset.days); setShowCustom(false); setShowSavePreset(false); }}
+                  style={{
+                    background: days === preset.days ? "rgba(196,97,10,0.2)" : "rgba(255,255,255,0.04)",
+                    border: `1px solid ${days === preset.days ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
+                    borderRadius: "5px 0 0 5px", padding: "4px 8px",
+                    fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
+                    color: days === preset.days ? "#C4610A" : "rgba(245,237,216,0.45)",
+                    cursor: "pointer", transition: "all 0.15s", borderRight: "none",
+                  }}
+                  title={`${preset.days} days`}
+                >
+                  {preset.name}
+                </button>
+                <button
+                  onClick={() => handleDeletePreset(preset.days)}
+                  style={{
+                    background: days === preset.days ? "rgba(196,97,10,0.12)" : "rgba(255,255,255,0.03)",
+                    border: `1px solid ${days === preset.days ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
+                    borderRadius: "0 5px 5px 0", padding: "4px 6px",
+                    fontSize: 9, color: "rgba(245,237,216,0.3)",
+                    cursor: "pointer", transition: "all 0.15s", lineHeight: 1,
+                  }}
+                  title="Delete preset"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
             <button
-              onClick={() => setShowCustom((v) => !v)}
+              onClick={() => { setShowCustom((v) => !v); setShowSavePreset(false); }}
               style={{
                 background: isCustomActive ? "rgba(196,97,10,0.2)" : "rgba(255,255,255,0.04)",
                 border: `1px solid ${isCustomActive ? "rgba(196,97,10,0.5)" : "rgba(255,255,255,0.08)"}`,
@@ -848,6 +925,66 @@ export default function EATDashboard() {
                   }}
                 >
                   GO
+                </button>
+              </div>
+            )}
+            {/* Save preset button — only visible when a custom day range is active */}
+            {isCustomActive && !showSavePreset && (
+              <button
+                onClick={() => { setShowSavePreset(true); setPresetNameInput(""); }}
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px dashed rgba(196,97,10,0.4)",
+                  borderRadius: 5, padding: "4px 8px",
+                  fontSize: 9, fontWeight: 700, letterSpacing: "0.12em",
+                  color: "rgba(196,97,10,0.6)",
+                  cursor: "pointer", transition: "all 0.15s",
+                }}
+                title={`Save ${days}D as a named preset`}
+              >
+                + SAVE PRESET
+              </button>
+            )}
+            {isCustomActive && showSavePreset && (
+              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <input
+                  type="text"
+                  value={presetNameInput}
+                  onChange={(e) => setPresetNameInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSavePreset();
+                    if (e.key === "Escape") { setShowSavePreset(false); setPresetNameInput(""); }
+                  }}
+                  placeholder="preset name"
+                  autoFocus
+                  maxLength={24}
+                  style={{
+                    width: 100, padding: "4px 8px",
+                    background: "rgba(255,255,255,0.06)",
+                    border: "1px solid rgba(196,97,10,0.35)",
+                    borderRadius: 5, color: "#F5EDD8",
+                    fontSize: 11, outline: "none",
+                  }}
+                />
+                <button
+                  onClick={handleSavePreset}
+                  style={{
+                    background: "rgba(196,97,10,0.25)", border: "1px solid rgba(196,97,10,0.5)",
+                    borderRadius: 5, padding: "4px 8px",
+                    fontSize: 10, color: "#C4610A", cursor: "pointer",
+                  }}
+                >
+                  SAVE
+                </button>
+                <button
+                  onClick={() => { setShowSavePreset(false); setPresetNameInput(""); }}
+                  style={{
+                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: 5, padding: "4px 7px",
+                    fontSize: 10, color: "rgba(245,237,216,0.35)", cursor: "pointer",
+                  }}
+                >
+                  ✕
                 </button>
               </div>
             )}
