@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, Activity, Layers, Lock,
+  ArrowLeft, Activity, Layers, Lock, Sparkles, X,
 } from "lucide-react";
 import { usePosContext } from "@/contexts/PosContext";
 import { useCommandCenter, POS_MODE_INFO } from "@/contexts/CommandCenterContext";
@@ -76,13 +76,36 @@ const TILES = [
   { id: "master-ops",          title: "Master Ops",    desc: "Unified operational command center",  color: "#D48B00", route: "/operations",              dataKey: "master-ops" as const,           image: "/images/scenes/reflective.jpg", sovereignOnly: true },
 ] as const;
 
+const SOVEREIGN_BENEFITS: Record<string, { headline: string; body: string }> = {
+  designer: {
+    headline: "Signature Brand Designer",
+    body: "Craft custom cigar bands, box labels, and live previews. Deliver a fully branded experience that sets your venue apart from every other lounge.",
+  },
+  governance: {
+    headline: "Governance & Access Control",
+    body: "Fine-grained RBAC, kill switches for any system feature, and a full audit trail. Keep your operations secure, compliant, and in your control.",
+  },
+  "central-command": {
+    headline: "Central Command",
+    body: "Push OTA updates, manage your entire device fleet remotely, and trigger remote operations — all from a single unified control surface.",
+  },
+  "enterprise-intel": {
+    headline: "Enterprise Intelligence",
+    body: "Nine layers of deep analytics covering taste clusters, revenue funnels, cross-venue trends, and AI-generated growth insights for your business.",
+  },
+  "master-ops": {
+    headline: "Master Operations",
+    body: "Unified operational command across every system: live reconciliation, staff performance, supply chain, and automated revenue workflows.",
+  },
+};
+
 export default function CommandCenter() {
   const [, navigate] = useLocation();
   const pos = usePosContext();
   const cc = useCommandCenter();
   const { mode } = useKernelMode();
   const [statusOpen, setStatusOpen] = useState(false);
-  const [lockedTooltip, setLockedTooltip] = useState<string | null>(null);
+  const [upgradeModal, setUpgradeModal] = useState<string | null>(null);
 
   const todayRevenue = cc.hourlyRevenue.reduce((s, h) => s + h.amount, 0) + pos.orders.reduce((s, o) => s + o.total, 0);
   const onlineDevices = cc.devices.filter(d => d.status === "online").length;
@@ -198,7 +221,6 @@ export default function CommandCenter() {
         {TILES.map((tile, i) => {
           const data = tileData(tile.dataKey);
           const isLocked = "sovereignOnly" in tile && tile.sovereignOnly && mode === "essential";
-          const showTooltip = lockedTooltip === tile.id;
           return (
             <div key={tile.id} style={{ position: "relative" }}>
               <motion.button
@@ -212,7 +234,7 @@ export default function CommandCenter() {
                 whileTap={{ scale: 0.97 }}
                 onClick={() => {
                   if (isLocked) {
-                    setLockedTooltip(showTooltip ? null : tile.id);
+                    setUpgradeModal(tile.id);
                     return;
                   }
                   playSwitch();
@@ -292,40 +314,6 @@ export default function CommandCenter() {
                   <div style={{ fontSize: 13, fontWeight: 600, color: isLocked ? "rgba(212,139,0,0.45)" : tile.color, textShadow: "0 1px 4px rgba(26,26,27,0.40)" }}>{data}</div>
                 </div>
               </motion.button>
-
-              <AnimatePresence>
-                {showTooltip && (
-                  <motion.div
-                    key="tooltip"
-                    initial={{ opacity: 0, y: 6, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                    transition={{ duration: 0.18 }}
-                    style={{
-                      position: "absolute", bottom: "calc(100% + 8px)", left: "50%",
-                      transform: "translateX(-50%)",
-                      background: "rgba(18,14,8,0.96)",
-                      border: "1px solid rgba(212,139,0,0.40)",
-                      borderRadius: 10, padding: "8px 14px",
-                      fontSize: 12, fontWeight: 600,
-                      color: "#D48B00", whiteSpace: "nowrap",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.40)",
-                      backdropFilter: "blur(12px)",
-                      pointerEvents: "none", zIndex: 20,
-                    }}
-                  >
-                    Upgrade to Sovereign to unlock {tile.title}
-                    <div style={{
-                      position: "absolute", top: "100%", left: "50%",
-                      transform: "translateX(-50%)",
-                      width: 0, height: 0,
-                      borderLeft: "6px solid transparent",
-                      borderRight: "6px solid transparent",
-                      borderTop: "6px solid rgba(212,139,0,0.40)",
-                    }} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           );
         })}
@@ -344,6 +332,147 @@ export default function CommandCenter() {
       </div>
 
       <SystemStatusPanel open={statusOpen} onClose={() => setStatusOpen(false)} />
+
+      {/* ── Sovereign Upgrade Modal ── */}
+      <AnimatePresence>
+        {upgradeModal !== null && (() => {
+          const tile = TILES.find(t => t.id === upgradeModal);
+          const benefit = upgradeModal ? SOVEREIGN_BENEFITS[upgradeModal] : undefined;
+          if (!tile || !benefit) return null;
+          return (
+            <motion.div
+              key="upgrade-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              onClick={() => setUpgradeModal(null)}
+              style={{
+                position: "fixed", inset: 0,
+                background: "rgba(10,8,5,0.72)",
+                backdropFilter: "blur(6px)",
+                zIndex: 200,
+                display: "flex", alignItems: "flex-end", justifyContent: "center",
+                padding: "0 16px 32px",
+              }}
+            >
+              <motion.div
+                key="upgrade-sheet"
+                initial={{ opacity: 0, y: 60, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 40, scale: 0.97 }}
+                transition={{ duration: 0.28, ease: [0.34, 1.4, 0.64, 1] }}
+                onClick={e => e.stopPropagation()}
+                style={{
+                  width: "100%", maxWidth: 480,
+                  background: "rgba(239,235,224,0.97)",
+                  backdropFilter: "blur(20px)",
+                  borderRadius: 24,
+                  border: "1px solid rgba(212,139,0,0.28)",
+                  boxShadow: "0 32px 80px rgba(0,0,0,0.50), 0 0 0 1px rgba(212,139,0,0.10), inset 0 1px 0 rgba(255,255,255,0.50)",
+                  overflow: "hidden",
+                }}
+              >
+                {/* Amber glow strip */}
+                <div style={{
+                  height: 4,
+                  background: "linear-gradient(90deg, transparent 0%, #D48B00 40%, #f0a800 60%, transparent 100%)",
+                }} />
+
+                <div style={{ padding: "28px 28px 24px" }}>
+                  {/* Header row */}
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <div style={{
+                        width: 44, height: 44, borderRadius: 14,
+                        background: "rgba(212,139,0,0.12)",
+                        border: "1px solid rgba(212,139,0,0.30)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        flexShrink: 0,
+                      }}>
+                        <Lock size={20} color="#D48B00" strokeWidth={2} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#D48B00", marginBottom: 2 }}>Sovereign Required</div>
+                        <div style={{ fontSize: 18, fontWeight: 700, color: "#1A1A1B", lineHeight: 1.2 }}>{benefit.headline}</div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setUpgradeModal(null)}
+                      style={{
+                        width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                        background: "rgba(26,26,27,0.07)", border: "1px solid rgba(26,26,27,0.12)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        cursor: "pointer", color: "#6B5E4E",
+                      }}
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+
+                  {/* Body */}
+                  <p style={{
+                    fontSize: 15, lineHeight: 1.6, color: "#3A3028",
+                    margin: "0 0 24px", paddingLeft: 56,
+                  }}>
+                    {benefit.body}
+                  </p>
+
+                  {/* Perks list */}
+                  <div style={{
+                    display: "flex", flexDirection: "column", gap: 8,
+                    marginBottom: 28, paddingLeft: 56,
+                  }}>
+                    {["Full feature unlock across all Sovereign tiles", "Priority support & dedicated onboarding", "Advanced analytics, AI insights & fleet control"].map(perk => (
+                      <div key={perk} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <Sparkles size={13} color="#D48B00" style={{ flexShrink: 0 }} />
+                        <span style={{ fontSize: 13, color: "#4A3E30", fontWeight: 500 }}>{perk}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* CTAs */}
+                  <div style={{ display: "flex", gap: 10 }}>
+                    <motion.button
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => setUpgradeModal(null)}
+                      style={{
+                        flex: 1, height: 52, borderRadius: 14,
+                        background: "rgba(26,26,27,0.07)",
+                        border: "1px solid rgba(26,26,27,0.14)",
+                        fontSize: 14, fontWeight: 600, color: "#6B5E4E",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Not Now
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02, boxShadow: "0 8px 28px rgba(212,139,0,0.40)" }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => {
+                        setUpgradeModal(null);
+                        navigate("/settings");
+                      }}
+                      style={{
+                        flex: 2, height: 52, borderRadius: 14,
+                        background: "linear-gradient(135deg, #D48B00 0%, #f0a800 100%)",
+                        border: "none",
+                        fontSize: 14, fontWeight: 700, color: "#1A1A1B",
+                        cursor: "pointer", letterSpacing: "0.04em",
+                        boxShadow: "0 4px 16px rgba(212,139,0,0.30)",
+                        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                      }}
+                    >
+                      <Sparkles size={15} />
+                      Upgrade to Sovereign
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
     </div>
   );
 }
