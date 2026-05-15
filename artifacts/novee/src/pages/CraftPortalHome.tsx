@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { RotatingCraftVisual } from "@/components/RotatingCraftVisual";
-import type { CraftType } from "@/lib/craftAssets";
+import { CraftImageRotator } from "@/components/CraftImageRotator";
+
+const CARD_TO_ROTATOR = {
+  smoke: "smokecraft",
+  pour:  "pourcraft",
+  beer:  "beercraft",
+  wine:  "winecraft",
+} as const;
+type RotatorKey = (typeof CARD_TO_ROTATOR)[keyof typeof CARD_TO_ROTATOR];
 
 interface CraftCard {
   id:       string;
@@ -221,10 +228,11 @@ export default function CraftPortalHome() {
             onMouseEnter={() => setHovered(craft.id)}
             onMouseLeave={() => setHovered(null)}
           >
-            {/* Rotating background visual — staggered per card */}
-            <div style={{ position: "absolute", inset: 0, opacity: 0.48, overflow: "hidden", pointerEvents: "none" }}>
-              <RotatingCraftVisual craft={craft.id as CraftType} staggerOffset={i} showLabel={false} />
-            </div>
+            {/* Cinematic image rotator — 9 s interval, staggered per craft */}
+            <CraftImageRotator
+              craft={CARD_TO_ROTATOR[craft.id as keyof typeof CARD_TO_ROTATOR] as RotatorKey}
+              intervalMs={9000}
+            />
 
             {/* Corner symbol */}
             <div style={{
