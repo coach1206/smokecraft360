@@ -219,7 +219,7 @@ function DeliveryModal({
           Receive Your Receipt
         </div>
         <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 20 }}>
-          Choose how to save your Axiom session summary.
+          Choose how to save your NOVEE OS session summary.
         </div>
 
         {sent ? (

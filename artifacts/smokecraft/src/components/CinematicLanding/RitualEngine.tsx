@@ -1,46 +1,77 @@
 /**
- * RitualEngine — Orchestrator for Sessions 02–07
+ * RitualEngine — Generic orchestrator for any block of Sovereign Ritual sessions
  * NOVEE OS · E.A.T. Framework · Profound Innovations
  *
- * Sequences RitualStep panels with the same obsidian morph overlay used
- * by the Home.tsx Terroir → Draw transition. Manages step state and
- * calls onComplete(RitualData) when all six sessions are locked.
+ * Used twice in the ritual flow:
+ *   Phase "ritual"      → PRE_DRAW_STEPS  (Sessions 02–07)
+ *   Phase "ritual_post" → POST_DRAW_STEPS (Sessions 09–13)
+ *
+ * On each step completion the engine:
+ *   1. Updates E.A.T. environment state via the option's `eatEnv` field
+ *   2. Appends a Transaction entry to the ledger
+ *   3. Advances to the next step with a GPU-composited morph overlay
  */
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RitualStep } from "./RitualStep";
-import { RITUAL_STEPS } from "./RitualConfig";
-import type { RitualData, RitualOption } from "./RitualConfig";
+import { PRE_DRAW_STEPS } from "./RitualConfig";
+import type { RitualStepConfig, RitualOption } from "./RitualConfig";
+import { eatApplyStep } from "./EATController";
+import type { EATState } from "./EATController";
 
 interface RitualEngineProps {
-  onComplete: (data: RitualData) => void;
+  /** Step configs to sequence through. Defaults to PRE_DRAW_STEPS. */
+  steps?:       RitualStepConfig[];
+  /** Current E.A.T. state passed in from the parent. */
+  eatState?:    EATState;
+  /** Called whenever a step updates the E.A.T. state. */
+  onEATUpdate?: (state: EATState) => void;
+  /** Called when all steps in this block are locked, with the collected data. */
+  onComplete:   (data: Record<string, string>) => void;
 }
 
-export function RitualEngine({ onComplete }: RitualEngineProps) {
-  const [stepIndex, setStepIndex] = useState(0);       // 0–5 → sessions 02–07
-  const [ritualData, setRitualData] = useState<RitualData>({});
-  const [morphing,   setMorphing]   = useState(false);
+export function RitualEngine({
+  steps      = PRE_DRAW_STEPS,
+  eatState,
+  onEATUpdate,
+  onComplete,
+}: RitualEngineProps) {
+  const [stepIndex, setStepIndex] = useState(0);
+  const [localData, setLocalData] = useState<Record<string, string>>({});
+  const [morphing,  setMorphing]  = useState(false);
 
-  const config = RITUAL_STEPS[stepIndex];
+  const config = steps[stepIndex];
 
-  function advance(newData: RitualData) {
-    if (stepIndex < RITUAL_STEPS.length - 1) {
+  function applyEAT(selection: RitualOption, cfg: RitualStepConfig) {
+    if (!eatState || !onEATUpdate) return;
+    const next = eatApplyStep(eatState, {
+      step:        cfg.step,
+      session:     cfg.session,
+      field:       cfg.field,
+      value:       selection.id,
+      environment: selection.eatEnv,
+    });
+    onEATUpdate(next);
+  }
+
+  function advance(newData: Record<string, string>) {
+    if (stepIndex < steps.length - 1) {
       setMorphing(true);
       setTimeout(() => {
         setStepIndex((i) => i + 1);
         setMorphing(false);
       }, 460);
     } else {
-      // Final session complete — morph out, then surface the data
       setMorphing(true);
       setTimeout(() => onComplete(newData), 480);
     }
   }
 
   function handleStepComplete(selection: RitualOption) {
-    const newData: RitualData = { ...ritualData, [config.field]: selection.id };
-    setRitualData(newData);
+    applyEAT(selection, config);
+    const newData = { ...localData, [config.field]: selection.id };
+    setLocalData(newData);
     advance(newData);
   }
 
@@ -52,6 +83,8 @@ export function RitualEngine({ onComplete }: RitualEngineProps) {
       setMorphing(false);
     }, 380);
   }
+
+  const nextSession = steps[Math.min(stepIndex + 1, steps.length - 1)]?.session;
 
   return (
     <>
@@ -66,7 +99,7 @@ export function RitualEngine({ onComplete }: RitualEngineProps) {
         )}
       </AnimatePresence>
 
-      {/* Inter-session morph overlay — same GPU-only pattern as Home.tsx */}
+      {/* ── Inter-session morph overlay — GPU-composited only ── */}
       <AnimatePresence>
         {morphing && (
           <motion.div
@@ -84,7 +117,6 @@ export function RitualEngine({ onComplete }: RitualEngineProps) {
               display: "flex", alignItems: "center", justifyContent: "center",
             }}
           >
-            {/* Amber pulse core */}
             <motion.div
               animate={{ scale: [1, 1.14, 1], opacity: [0.35, 0.88, 0.35] }}
               transition={{ duration: 0.44, ease: "easeInOut" }}
@@ -98,13 +130,12 @@ export function RitualEngine({ onComplete }: RitualEngineProps) {
                 willChange: "transform, opacity",
               }}
             />
-            {/* Session counter — shows next step */}
             <p style={{
               position: "absolute", bottom: 36,
               fontSize: 9, letterSpacing: "0.38em", textTransform: "uppercase",
               color: "rgba(212,175,55,0.38)", fontFamily: "monospace",
             }}>
-              {RITUAL_STEPS[Math.min(stepIndex + 1, RITUAL_STEPS.length - 1)]?.session ?? "FINALISING"}
+              {stepIndex < steps.length - 1 ? nextSession : "SEALING RITUAL"}
             </p>
           </motion.div>
         )}

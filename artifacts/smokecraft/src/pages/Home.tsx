@@ -9,7 +9,10 @@ import PinGate from "@/components/CinematicLanding/PinGate";
 import PresenceEnvironment from "@/components/CinematicLanding/PresenceEnvironment";
 import TerroirArchitecture from "@/components/CinematicLanding/TerroirArchitecture";
 import { RitualEngine } from "@/components/CinematicLanding/RitualEngine";
+import { PRE_DRAW_STEPS, POST_DRAW_STEPS } from "@/components/CinematicLanding/RitualConfig";
 import type { RitualData } from "@/components/CinematicLanding/RitualConfig";
+import { initEAT, extractAPIParams } from "@/components/CinematicLanding/EATController";
+import type { EATState } from "@/components/CinematicLanding/EATController";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence, animate, useAnimation } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
@@ -44,7 +47,7 @@ import { OrderModal }        from "@/components/Order/OrderModal";
 import { OrderConfirmation } from "@/components/Order/OrderConfirmation";
 import type { SavedBlend }   from "@/services/storage";
 
-type Phase = "welcome" | "pin_gate" | "presence" | "terroir" | "ritual" | "form" | "loading" | "ready" | "results" | "draw_engineering";
+type Phase = "welcome" | "pin_gate" | "presence" | "terroir" | "ritual" | "draw_engineering" | "ritual_post" | "form" | "loading" | "ready" | "results";
 
 /* ── Universal slide animation ────────────────────────────────── */
 const SLIDE_VARIANTS = {
@@ -253,6 +256,7 @@ export default function Home() {
 
   const [phase, setPhase]                     = useState<Phase>("welcome");
   const [ritualData, setRitualData]           = useState<RitualData>({});
+  const [eatState,   setEATState]             = useState<EATState>(() => initEAT());
   const [error, setError]                     = useState<string | null>(null);
   const [results, setResults]                 = useState<RecommendResponse | null>(null);
   const [vaultOpen, setVaultOpen]             = useState(false);
@@ -818,15 +822,18 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* ── Sessions 02–07: Sovereign Ritual Engine — Steps 2–7 / 14 ── */}
+      {/* ── Sessions 02–07: Pre-Draw Ritual Engine — Steps 2–7 / 14 ─── */}
       <AnimatePresence>
         {phase === "ritual" && (
           <RitualEngine
-            key="ritual-engine"
+            key="ritual-engine-pre"
+            steps={PRE_DRAW_STEPS}
+            eatState={eatState}
+            onEATUpdate={setEATState}
             onComplete={(data) => {
-              setRitualData(data);
+              setRitualData(data as RitualData);
               setMorphing(true);
-              setTimeout(() => setPhase("form"), 460);
+              setTimeout(() => setPhase("draw_engineering"), 460);
               setTimeout(() => setMorphing(false), 980);
             }}
           />
@@ -838,8 +845,50 @@ export default function Home() {
         {phase === "draw_engineering" && (
           <DrawEngineeringScene
             key="draw-engineering"
-            onComplete={() => setPhase("results")}
-            onExit={() => setPhase("results")}
+            onComplete={() => {
+              setMorphing(true);
+              setTimeout(() => setPhase("ritual_post"), 460);
+              setTimeout(() => setMorphing(false), 980);
+            }}
+            onExit={() => {
+              setMorphing(true);
+              setTimeout(() => setPhase("ritual_post"), 460);
+              setTimeout(() => setMorphing(false), 980);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Sessions 09–13: Post-Draw Ritual Engine — Steps 9–13 / 14 ── */}
+      <AnimatePresence>
+        {phase === "ritual_post" && (
+          <RitualEngine
+            key="ritual-engine-post"
+            steps={POST_DRAW_STEPS}
+            eatState={eatState}
+            onEATUpdate={setEATState}
+            onComplete={(_data) => {
+              /* All ritual sessions sealed — extract API params from the
+               * accumulated E.A.T. asset and launch the recommendation engine. */
+              const params = extractAPIParams(eatState.asset);
+              /* Sync discovered flavors / strength / mood into local state
+               * so the results panel can render the sidebar correctly. */
+              setFlavors(params.flavors);
+              setStrength(params.strength);
+              setMood(params.mood);
+              setMorphing(true);
+              setTimeout(() => {
+                setMorphing(false);
+                void discover({
+                  category:     params.category,
+                  flavors:      params.flavors,
+                  strength:     params.strength,
+                  mood:         params.mood,
+                  cigarShape:   params.cigarShape,
+                  cigarSession: params.cigarSession,
+                });
+              }, 520);
+            }}
           />
         )}
       </AnimatePresence>
