@@ -1,7 +1,7 @@
 /**
  * PresenceEnvironment — NOVEE OS · E.A.T. Engine · Environmental Adaptation Interface
  *
- * Stage 2.5 of the ritual (between PIN Gate and Terroir).
+ * Ritual Moment 2.5 of the ritual (between PIN Gate and Terroir).
  * Renders after PIN authentication succeeds, before SESSION 01 begins.
  *
  * Design brief: photorealistic luxury UI — obsidian glass, brushed titanium

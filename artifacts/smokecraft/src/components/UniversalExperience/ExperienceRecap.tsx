@@ -1,5 +1,5 @@
 /**
- * ExperienceRecap — Stage 9 of the Universal Experience Flow.
+ * ExperienceRecap — Ritual Moment 9 of the Universal Experience Flow.
  *
  * Cinematic end-of-session recap. Shows what was explored, flavor notes
  * discovered, unlocks earned, and encourages return visits.

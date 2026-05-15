@@ -1,5 +1,5 @@
 /**
- * ExperienceExplanation — Stage 2 of the Universal Experience Flow.
+ * ExperienceExplanation — Ritual Moment 2 of the Universal Experience Flow.
  *
  * Shown after the atmospheric chamber intro, before level selection.
  * Explains in a luxurious, mysterious tone what the experience is,

@@ -512,7 +512,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
         }}>
           <div>
             <p style={{ margin:0, fontSize:10, letterSpacing:".34em", textTransform:"uppercase", color:TEXT_MUTED, fontWeight:700 }}>
-              {config.craftLabel} · Signature Studio
+              {config.craftLabel} · Legacy Reserve
             </p>
             <h1 style={{
               margin:"4px 0 0",
@@ -579,7 +579,7 @@ export default function DesignPlayground({ craft, config, onComplete }: Props) {
                       <button
                         key={sw.id}
                         onClick={() => !sw.locked && setSelectedColor(sw.id)}
-                        title={sw.locked ? `${sw.label} — unlocks in Signature Studio` : sw.label}
+                        title={sw.locked ? `${sw.label} — unlocks in Legacy Reserve` : sw.label}
                         style={{
                           display:"flex", alignItems:"center", gap:5,
                           padding:"5px 10px", borderRadius:999,

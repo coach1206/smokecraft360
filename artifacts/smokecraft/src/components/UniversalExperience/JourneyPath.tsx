@@ -1,5 +1,5 @@
 /**
- * JourneyPath — Stage 5 of the Universal Experience Flow.
+ * JourneyPath — Ritual Moment 5 of the Universal Experience Flow.
  *
  * Full-screen interstitial shown between taste/mood selection and the
  * live recommendation reveal. Generates a "Tonight's Journey" path with

@@ -1,5 +1,5 @@
 /**
- * LevelSelection — Stage 3 of the Universal Experience Flow.
+ * LevelSelection — Ritual Moment 3 of the Universal Experience Flow.
  *
  * Per-craft experience level tiers. Controls UI complexity,
  * educational depth, recommendation complexity, and progression speed.

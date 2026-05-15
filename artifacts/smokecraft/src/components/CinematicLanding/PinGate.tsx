@@ -1,6 +1,6 @@
 /**
  * PinGate — Sovereign Access PIN entry.
- * Stage 2 of the 14-step ritual. Renders after CinematicLanding's
+ * Ritual Moment 2 of the 14-step ritual. Renders after CinematicLanding's
  * Scene 2 handshake fires onActivate().
  *
  * Design: v2026.0514 FINAL_POLISH_PROTOCOL
