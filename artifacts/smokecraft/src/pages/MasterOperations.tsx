@@ -246,13 +246,19 @@ function EngineCard({ engine }: { engine: any }) {
         <span style={{ fontSize: 14, fontWeight: 600, color: T.text, letterSpacing: "0.04em" }}>
           {engine.name}
         </span>
-        <span style={{
-          fontSize: 11, fontWeight: 700, color, letterSpacing: "0.12em",
-          background: `${color}18`, border: `1px solid ${color}44`,
-          borderRadius: 4, padding: "2px 6px",
-        }}>
+        <motion.span
+          initial={{ opacity: 0, scale: 0.72 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.28, ease: [0.34, 1.56, 0.64, 1] }}
+          style={{
+            fontSize: 11, fontWeight: 700, color, letterSpacing: "0.12em",
+            background: `${color}18`, border: `1px solid ${color}44`,
+            borderRadius: 4, padding: "2px 6px",
+            display: "inline-block",
+          }}
+        >
           {engine.status}
-        </span>
+        </motion.span>
       </div>
       <span style={{ fontSize: 12, color: T.textMuted }}>{engine.desc}</span>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>

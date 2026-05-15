@@ -315,16 +315,21 @@ function TactileCard({
       onPointerCancel={e => release(e.currentTarget)}
     >
       {/* Craft badge */}
-      <div style={{
-        fontSize:     9,
-        color:        C.goldDim,
-        letterSpacing: "0.18em",
-        fontFamily:   "'Space Mono', monospace",
-        marginBottom: 8,
-        textTransform: "uppercase",
-      }}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.72 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.28, ease: [0.34, 1.56, 0.64, 1] }}
+        style={{
+          fontSize:     9,
+          color:        C.goldDim,
+          letterSpacing: "0.18em",
+          fontFamily:   "'Space Mono', monospace",
+          marginBottom: 8,
+          textTransform: "uppercase",
+        }}
+      >
         {badge}
-      </div>
+      </motion.div>
 
       {/* Title */}
       <h2 style={{
@@ -522,16 +527,21 @@ function BladePortal({ mod, active, index, total, onActivate, onDeactivate, onTr
               padding:   "0 20px 30px",
             }}
           >
-            <div style={{
-              fontSize:      8,
-              color:         mod.color,
-              letterSpacing: "0.26em",
-              textTransform: "uppercase",
-              fontFamily:    "'Space Mono', monospace",
-              marginBottom:  8,
-            }}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.72 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.28, delay: 0.06, ease: [0.34, 1.56, 0.64, 1] }}
+              style={{
+                fontSize:      8,
+                color:         mod.color,
+                letterSpacing: "0.26em",
+                textTransform: "uppercase",
+                fontFamily:    "'Space Mono', monospace",
+                marginBottom:  8,
+              }}
+            >
               {mod.badge}
-            </div>
+            </motion.div>
             <h2 style={{
               margin:        0,
               fontFamily:    "var(--app-font-serif, 'Cormorant Garamond', Georgia, serif)",
