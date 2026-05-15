@@ -1,0 +1,67 @@
+The Unified Ritual Engine & Material Asset Master Prompt
+Prompt: "Execute a total systemic overwrite of the frontend architecture across CraftPortalHome.tsx, SmokeCraftGateway.tsx, and all core routing layers. You must build a high-end luxury hospitality collection that behaves like a cinematic ritual engine, completely stripping out all generic software dashboards and default web templates. Implement the following structural flow, guardrails, and asset prompts exactly:
+
+1. THE GUEST EXPERIENTIAL LAYER & ROOT LANDING PAGE (/)
+
+The Interface Phrasing: Permanently banish all engineering, admin, and 'witchcraft' terminology from the guest viewport. Erase all instances of 'Enter Ritual' or 'Choose Your Ritual'. Every public action button must strictly read: 'BEGIN EXPERIENCE' or 'SELECT MASTERCLASS'.
+
+The Root Route (/): Create the public gateway titled 'THE CRAFT COLLECTION' using Cormorant Garamond typography with a warm-white to liquid-gold text gradient fill (#fffcf5 to #dfba73).
+
+The Four Experience Portals: The root page must display exactly four cinematic lifestyle portal cards. These are premium lifestyle gateways, not software modules:
+
+SmokeCraft 360 — Luxury cigar masterclass
+
+PourCraft 360 — Whiskey • bourbon • cognac pairing
+
+BeerCraft 360 — Craft beer discovery
+
+WineCraft 360 — Sommelier-guided wine presentation
+
+Enterprise Isolation: Move the entire NOVEE OS administrative core, telemetry panels, distribution vaults, and founder control centers strictly behind authenticated, hidden sub-routes: /sovereign, /admin, /ops, or /eeie. Place a low-profile, single-pixel text link for 'Sovereign Access' in the top-right corner for staff authentication. If an unauthenticated guest hits an invalid route, default redirect them back to the public root /.
+
+2. THE UNBREAKABLE CRAFT CULTURE VISUAL PROMPTS (IMAGE GENERATION ENGINE)
+Hardcode the visual rendering layers for each craft card to match these four distinct luxury campaigns. Use a state-driven image rotator hook to cross-fade these precise styles every 9000ms using a GPU-accelerated Framer Motion fade-and-scale morph, staggered by 2000ms intervals between cards so the dashboard feels continuously alive:
+
+SMOKECRAFT 360 VISUALS: A cinematic luxury cigar lounge environment filled with diverse, sophisticated adults (Black, White, Hispanic, Asian, and multicultural men and women ages 30–65) dressed in upscale fashion (tailored suits, elegant dresses, luxury casual wear). Show premium cigars, volumetric smoke drifting through warm amber lighting, luxury leather seating, dark wood interiors, whiskey glasses nearby, and humidor walls. Avoid flashy club scenes, neon overload, cheap cigars, and party vibes. The image must feel like Casa de Montecristo meets Rolls Royce hospitality.
+
+POURCRAFT 360 VISUALS: A cinematic ultra-luxury whiskey and bourbon tasting environment featuring diverse high-class adults in elegant upscale attire. Show aged bourbon, premium whiskey pours, crystal glasses, neat pours, whiskey flights, cigar pairings, luxury bars, and slow-pouring liquid motion. Strictly NO fruity drinks, tropical cocktails, or nightclub energy. The image must feel like a Macallan Reserve Lounge meets a high-end Kentucky bourbon society.
+
+BEERCRAFT 360 VISUALS: A cinematic premium craft beer environment featuring diverse adults enjoying high-quality craft beer culture in a refined social atmosphere. Show frosted beer mugs, rich golden beer pours, dark stout beers, craft brewery atmospheres, premium bar interiors, wood and industrial textures, beer foam details, and cold condensation on glassware. Avoid frat party vibes, sports bar chaos, or cheap commercial branding.
+
+WINECRAFT 360 VISUALS: A cinematic luxury wine tasting environment with diverse sophisticated adults in elegant upscale attire. Show red wine pours, white wine tastings, vineyard-inspired luxury interiors, crystal wine glasses, sommelier interactions, candlelight ambiance, velvet textures, and aged wine bottles. Avoid party scenes, cheap winery tours, or bright tourist energy. It must feel like Napa luxury reserve meets a Michelin-star experience.
+
+3. THE STRATIFIED SMOKECRAFT EXPERIENCE FLOW (/smokecraft)
+Completely dismantle any instant-access humidor customization builders or configuration software panels upon entry. Enforce a 10-stage sequential onboarding progression mapped to persistent local state:
+
+Stage 1: Opening Experience Screen: Fullscreen cinematic smoke atmosphere, ember particles, and luxury typography reading: 'Welcome to SmokeCraft 360' with subtext: 'A cigar is more than tobacco. It is atmosphere. Timing. Ritual. Presence.' Action CTA: 'Begin The Experience'.
+
+Stage 2: Orientation Chamber: A fullscreen immersive onboarding screen explaining flavor ritual philosophy, pairing culture, XP progression, and the Golden Box challenge.
+
+Stage 3: Experience Level Selection: Visually distinct option blocks for Beginner Ritual, Explorer Ritual, Connoisseur Session, and Master Experience.
+
+Stage 4: Flavor Personality Scan: Interactive sensory questions (smooth vs. bold, earthy vs. sweet, slow burn vs. rich intensity) with fluid visual response tracking.
+
+Stage 5: Wrapper & Cut Education: High-fidelity macro tobacco textures and large visual imagery detailing wrappers, cuts, sizes, draw behavior, and burn characteristics.
+
+Stage 6: AI Recommendation Reveal: A premium presentation showing the generated cigar recommendation, flavor identity, pairing suggestions, and strength profile.
+
+Stage 7: Pairing Chamber: Interactive liquid visualization selection for pairing the active cigar with bourbon, whiskey, cognac, espresso, or dark beer.
+
+Stage 8: Golden Box Challenge: An optional gamified achievement challenge system to unlock premium personalization access and hidden blends.
+
+Stage 9: Session Completion Reveal: Displays the final blend identity, flavor score, mastery progression, and saved profile in an emotionally rewarding, clean interface.
+
+Stage 10: Delayed Unlock — Signature Humidor Studio (/smokecraft/humidor-studio): Only after Stage 9 is completed, or via verified member unlock, is the customization tool accessible. Rename the screen to 'Signature Humidor Studio' or 'Legacy Reserve Collection' and present it strictly as an advanced personalization reward.
+
+4. MATERIAL DESIGN SYSTEM SPECIFICATIONS
+Enforce these styling primitives across all rendered elements using custom CSS and inline theme mappings:
+
+Obsidian Glass: Background: linear-gradient(135deg, rgba(15, 16, 18, 0.85) 0%, rgba(5, 6, 7, 0.98) 100%), backdrop-filter: blur(30px) saturate(120%), with an internal rim light (inset 0 1px 1px rgba(255, 255, 255, 0.08)) and a deep external drop shadow (0 24px 64px rgba(0, 0, 0, 0.9)).
+
+Liquid Gold Micro-Border (SmokeCraft Featured): 1px transparent border styled with a multi-stop linear gradient stroke: #dfba73 to #fbf5b7 to #9e7831 to #dfba73.
+
+Brushed Titanium Micro-Border (Secondary Elements): Linear gradient stroke: #7a7d80 to #e1e4e6 to #595b5e.
+
+Smoked Chrome Controls: Buttons styled with a premium finish: linear-gradient(180deg, #242629 0%, #111214 100%) with a sharp silver rim edge and tracked uppercase font weight.
+
+Recompile the workspace framework, clean the local development container cache, and launch the preview viewport directly into the true luxury hospitality layout."
