@@ -2045,9 +2045,9 @@ function buildLiveFeedCsv(events: RecentEvent[]): string {
   return [header, ...rows].join("\r\n");
 }
 
-function triggerLiveFeedCsvDownload(events: RecentEvent[]): void {
+function triggerLiveFeedCsvDownload(events: RecentEvent[], scopeLabel: string): void {
   const today = new Date().toISOString().slice(0, 10);
-  const filename = `live-feed-${today}.csv`;
+  const filename = `live-feed-${scopeLabel}-${today}.csv`;
   const blob = new Blob([buildLiveFeedCsv(events)], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -2058,6 +2058,13 @@ function triggerLiveFeedCsvDownload(events: RecentEvent[]): void {
 }
 
 const LIVE_FEED_PAGE_SIZE = 20;
+
+const EXPORT_TIME_WINDOWS: { label: string; minutes: number }[] = [
+  { label: "All time",    minutes: 0 },
+  { label: "Last 15 min", minutes: 15 },
+  { label: "Last 30 min", minutes: 30 },
+  { label: "Last 60 min", minutes: 60 },
+];
 
 function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventIds: Set<string> }) {
   const [, forceRender] = useState(0);
@@ -2070,10 +2077,26 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
     () => readSessionString(LIVE_FEED_FILTER_MODULE_KEY),
   );
 
+  const [showExportPopover, setShowExportPopover] = useState(false);
+  const [exportScope, setExportScope]             = useState<"filtered" | "all">("filtered");
+  const [exportMinutes, setExportMinutes]         = useState<number>(0);
+  const exportBtnRef = useRef<HTMLButtonElement | null>(null);
+
   useEffect(() => {
     const timer = setInterval(() => forceRender((n) => n + 1), 10_000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (!showExportPopover) return;
+    const handler = (e: MouseEvent) => {
+      if (exportBtnRef.current && !exportBtnRef.current.closest("[data-export-popover-root]")?.contains(e.target as Node)) {
+        setShowExportPopover(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showExportPopover]);
 
   const allEventTypes = Array.from(new Set(events.map((e) => e.eventType))).sort();
   const allModules    = Array.from(new Set(events.map((e) => e.moduleId).filter(Boolean) as string[])).sort();
@@ -2124,22 +2147,149 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button
-            onClick={() => filteredEvents.length > 0 && triggerLiveFeedCsvDownload(filteredEvents)}
-            disabled={filteredEvents.length === 0}
-            style={{
-              display: "flex", alignItems: "center", gap: 5,
-              background: filteredEvents.length > 0 ? "rgba(196,97,10,0.1)" : "rgba(196,97,10,0.04)",
-              border: `1px solid ${filteredEvents.length > 0 ? "rgba(196,97,10,0.3)" : "rgba(196,97,10,0.12)"}`,
-              borderRadius: 6, padding: "5px 11px",
-              cursor: filteredEvents.length > 0 ? "pointer" : "not-allowed",
-              fontSize: 11, fontWeight: 600, letterSpacing: "0.05em",
-              color: filteredEvents.length > 0 ? "#C4610A" : "rgba(196,97,10,0.35)",
-              opacity: filteredEvents.length > 0 ? 1 : 0.6,
-            }}
+          {/* Export options trigger */}
+          <div
+            data-export-popover-root
+            style={{ position: "relative" }}
           >
-            ↓ Export CSV
-          </button>
+            <button
+              ref={exportBtnRef}
+              onClick={() => events.length > 0 && setShowExportPopover((v) => !v)}
+              disabled={events.length === 0}
+              style={{
+                display: "flex", alignItems: "center", gap: 5,
+                background: events.length > 0 ? "rgba(196,97,10,0.1)" : "rgba(196,97,10,0.04)",
+                border: `1px solid ${showExportPopover ? "rgba(196,97,10,0.6)" : events.length > 0 ? "rgba(196,97,10,0.3)" : "rgba(196,97,10,0.12)"}`,
+                borderRadius: 6, padding: "5px 11px",
+                cursor: events.length > 0 ? "pointer" : "not-allowed",
+                fontSize: 11, fontWeight: 600, letterSpacing: "0.05em",
+                color: events.length > 0 ? "#C4610A" : "rgba(196,97,10,0.35)",
+                opacity: events.length > 0 ? 1 : 0.6,
+              }}
+            >
+              ↓ Export CSV ▾
+            </button>
+
+            {/* Export options popover */}
+            {showExportPopover && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "calc(100% + 6px)",
+                  right: 0,
+                  zIndex: 400,
+                  background: "#1E1E1F",
+                  border: "1px solid rgba(196,97,10,0.35)",
+                  borderRadius: 10,
+                  padding: "14px 16px",
+                  minWidth: 230,
+                  boxShadow: "0 12px 32px rgba(0,0,0,0.65)",
+                  display: "flex", flexDirection: "column", gap: 12,
+                }}
+              >
+                {/* Scope */}
+                <div>
+                  <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.3)", marginBottom: 6 }}>
+                    SCOPE
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    {(["filtered", "all"] as const).map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => setExportScope(s)}
+                        style={{
+                          flex: 1,
+                          background: exportScope === s ? "rgba(196,97,10,0.22)" : "rgba(255,255,255,0.04)",
+                          border: `1px solid ${exportScope === s ? "rgba(196,97,10,0.55)" : "rgba(255,255,255,0.1)"}`,
+                          borderRadius: 6, padding: "5px 8px",
+                          fontSize: 10, fontWeight: exportScope === s ? 700 : 400,
+                          letterSpacing: "0.08em",
+                          color: exportScope === s ? "#C4610A" : "rgba(245,237,216,0.45)",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {s === "filtered" ? "Current filters" : "All events"}
+                      </button>
+                    ))}
+                  </div>
+                  {exportScope === "filtered" && activeFilterCount === 0 && (
+                    <div style={{ marginTop: 5, fontSize: 9, color: "rgba(245,237,216,0.3)", letterSpacing: "0.08em" }}>
+                      No filters active — same as "All events"
+                    </div>
+                  )}
+                </div>
+
+                {/* Time window */}
+                <div>
+                  <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.3)", marginBottom: 6 }}>
+                    TIME WINDOW
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {EXPORT_TIME_WINDOWS.map((w) => (
+                      <button
+                        key={w.minutes}
+                        onClick={() => setExportMinutes(w.minutes)}
+                        style={{
+                          background: exportMinutes === w.minutes ? "rgba(196,97,10,0.22)" : "rgba(255,255,255,0.04)",
+                          border: `1px solid ${exportMinutes === w.minutes ? "rgba(196,97,10,0.55)" : "rgba(255,255,255,0.1)"}`,
+                          borderRadius: 6, padding: "4px 9px",
+                          fontSize: 10, fontWeight: exportMinutes === w.minutes ? 700 : 400,
+                          letterSpacing: "0.06em",
+                          color: exportMinutes === w.minutes ? "#C4610A" : "rgba(245,237,216,0.45)",
+                          cursor: "pointer",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {w.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Divider + export button */}
+                <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: 10 }}>
+                  {(() => {
+                    const baseEvents = exportScope === "all" ? events : filteredEvents;
+                    const cutoff = exportMinutes > 0 ? Date.now() - exportMinutes * 60_000 : null;
+                    const exportEvents = cutoff
+                      ? baseEvents.filter((e) => new Date(e.occurredAt).getTime() >= cutoff)
+                      : baseEvents;
+                    const parts: string[] = [];
+                    if (exportScope === "filtered" && activeFilterCount > 0) parts.push("filtered");
+                    if (exportMinutes > 0) parts.push(`last${exportMinutes}m`);
+                    if (parts.length === 0) parts.push("all");
+                    const scopeLabel = parts.join("-");
+                    const canExport = exportEvents.length > 0;
+                    return (
+                      <>
+                        <div style={{ fontSize: 9, color: "rgba(245,237,216,0.25)", letterSpacing: "0.08em", marginBottom: 8 }}>
+                          {exportEvents.length} event{exportEvents.length !== 1 ? "s" : ""} · <span style={{ color: "rgba(196,97,10,0.55)", fontFamily: "monospace" }}>live-feed-{scopeLabel}-{new Date().toISOString().slice(0, 10)}.csv</span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            triggerLiveFeedCsvDownload(exportEvents, scopeLabel);
+                            setShowExportPopover(false);
+                          }}
+                          disabled={!canExport}
+                          style={{
+                            width: "100%",
+                            background: canExport ? "rgba(196,97,10,0.18)" : "rgba(196,97,10,0.06)",
+                            border: `1px solid ${canExport ? "rgba(196,97,10,0.45)" : "rgba(196,97,10,0.15)"}`,
+                            borderRadius: 6, padding: "7px 0",
+                            fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+                            color: canExport ? "#C4610A" : "rgba(196,97,10,0.35)",
+                            cursor: canExport ? "pointer" : "not-allowed",
+                          }}
+                        >
+                          ↓ EXPORT
+                        </button>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+            )}
+          </div>
           <div style={{
             display: "flex", alignItems: "center", gap: 6,
             background: "rgba(196,97,10,0.08)", border: "1px solid rgba(196,97,10,0.2)",
