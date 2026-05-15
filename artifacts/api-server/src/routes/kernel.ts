@@ -177,6 +177,32 @@ router.patch("/modules/:id", requireAuth, async (req: AuthRequest, res: Response
   }
 });
 
+// ── DELETE /api/kernel/modules/:id ────────────────────────────────────────────
+// Permanently removes a module from the registry (admin/super_admin only).
+
+router.delete("/modules/:id", requireAuth, async (req: AuthRequest, res: Response) => {
+  const role = (req as AuthRequest).user?.role;
+  if (role !== "admin" && role !== "super_admin") {
+    return res.status(403).json({ error: "admin or super_admin only" });
+  }
+
+  const { id } = req.params as { id: string };
+  if (!UUID_RE.test(id)) return res.status(400).json({ error: "id must be a valid UUID" });
+
+  try {
+    const [deleted] = await db
+      .delete(kernelModulesTable)
+      .where(eq(kernelModulesTable.id, id))
+      .returning({ id: kernelModulesTable.id });
+
+    if (!deleted) return res.status(404).json({ error: "Module not found" });
+    return res.status(204).send();
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Unknown error";
+    return res.status(500).json({ error: msg });
+  }
+});
+
 // ── GET /api/kernel/mode/:venueId ─────────────────────────────────────────────
 // Public read — no PII returned, mode config is venue-level operational data.
 

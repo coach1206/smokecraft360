@@ -76,6 +76,7 @@ export default function OSShell() {
   const [showModuleDock, setShowModuleDock] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [editingModule, setEditingModule] = useState<KernelModule | null>(null);
+  const [deletingModule, setDeletingModule] = useState<KernelModule | null>(null);
   const [bootPhase, setBootPhase] = useState<"boot" | "ready">("boot");
   const [bootProgress, setBootProgress] = useState(0);
 
@@ -338,6 +339,7 @@ export default function OSShell() {
                   mod={mod}
                   onLaunch={launchModule}
                   onEdit={adminToken ? () => setEditingModule(mod) : undefined}
+                  onDelete={adminToken ? () => setDeletingModule(mod) : undefined}
                 />
               ))}
             </div>
@@ -376,6 +378,19 @@ export default function OSShell() {
             setEditingModule(null);
           }}
           onClose={() => setEditingModule(null)}
+        />
+      )}
+
+      {/* Confirm Delete modal */}
+      {deletingModule && (
+        <ConfirmDeleteModal
+          adminToken={adminToken}
+          module={deletingModule}
+          onSuccess={(id) => {
+            setModules((prev) => prev.filter((m) => m.id !== id));
+            setDeletingModule(null);
+          }}
+          onClose={() => setDeletingModule(null)}
         />
       )}
 
@@ -458,10 +473,12 @@ function ModuleCard({
   mod,
   onLaunch,
   onEdit,
+  onDelete,
 }: {
   mod: KernelModule;
   onLaunch: (m: KernelModule) => void;
   onEdit?: () => void;
+  onDelete?: () => void;
 }) {
   const color = CRAFT_COLORS[mod.craftType] ?? "#6b7280";
   const icon  = CRAFT_ICONS[mod.craftType]  ?? "◆";
@@ -504,6 +521,15 @@ function ModuleCard({
             style={{ padding: "6px 14px", fontSize: 11, minHeight: 32 }}
           >
             EDIT
+          </button>
+        )}
+        {onDelete && (
+          <button
+            onClick={onDelete}
+            className="novee-btn-ghost"
+            style={{ padding: "6px 14px", fontSize: 11, minHeight: 32, color: "#e05252", borderColor: "rgba(224,82,82,0.3)" }}
+          >
+            DELETE
           </button>
         )}
         <button
@@ -621,6 +647,86 @@ function AdminTokenModal({
             AUTHORIZE
           </button>
           <button onClick={onClose} className="novee-btn-ghost" style={{ flex: 1 }}>
+            CANCEL
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ConfirmDeleteModal({
+  adminToken,
+  module: mod,
+  onSuccess,
+  onClose,
+}: {
+  adminToken: string;
+  module: KernelModule;
+  onSuccess: (id: string) => void;
+  onClose: () => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState<string | null>(null);
+
+  const handleConfirm = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await apiFetch(`/modules/${mod.id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+      onSuccess(mod.id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete module");
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", backdropFilter: "blur(8px)",
+        zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="novee-glass"
+        style={{ borderRadius: 16, padding: "32px 28px", width: "min(420px, 92vw)" }}
+      >
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(224,82,82,0.6)", marginBottom: 6 }}>KERNEL REGISTRY · DESTRUCTIVE ACTION</div>
+          <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: "0.08em" }}>Delete Module?</div>
+          <div style={{ fontSize: 13, color: "rgba(245,237,216,0.55)", marginTop: 10, lineHeight: 1.6 }}>
+            This will permanently remove{" "}
+            <span style={{ color: "#F5EDD8", fontWeight: 600 }}>{mod.name}</span>{" "}
+            from the kernel registry. This action cannot be undone.
+          </div>
+        </div>
+
+        {error && (
+          <div style={{ fontSize: 12, color: "#e05252", marginBottom: 14, padding: "8px 12px", background: "rgba(224,82,82,0.08)", borderRadius: 6 }}>
+            {error}
+          </div>
+        )}
+
+        <div style={{ display: "flex", gap: 10 }}>
+          <button
+            onClick={handleConfirm}
+            disabled={loading}
+            style={{
+              flex: 1, padding: "10px 0", borderRadius: 8, border: "1px solid rgba(224,82,82,0.4)",
+              background: loading ? "rgba(224,82,82,0.06)" : "rgba(224,82,82,0.12)",
+              color: "#e05252", fontSize: 12, fontWeight: 700, letterSpacing: "0.1em",
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+          >
+            {loading ? "DELETING…" : "DELETE"}
+          </button>
+          <button onClick={onClose} className="novee-btn-ghost" style={{ flex: 1 }} disabled={loading}>
             CANCEL
           </button>
         </div>
