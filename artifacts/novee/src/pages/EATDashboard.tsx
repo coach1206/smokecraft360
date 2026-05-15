@@ -434,7 +434,7 @@ export default function EATDashboard() {
   }, [days, compareDays, compareEnabled]);
 
   const fetchRecentEvents = useCallback(() => {
-    apiFetch<{ events: RecentEvent[] }>("/telemetry/recent?limit=20")
+    apiFetch<{ events: RecentEvent[] }>("/telemetry/recent?limit=100")
       .then(({ events }) => {
         const incomingIds = new Set(events.map((e) => e.id));
         const isFirstLoad = !hasBaselineRef.current;
@@ -1821,8 +1821,11 @@ function triggerLiveFeedCsvDownload(events: RecentEvent[]): void {
   setTimeout(() => URL.revokeObjectURL(url), 100);
 }
 
+const LIVE_FEED_PAGE_SIZE = 20;
+
 function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventIds: Set<string> }) {
   const [, forceRender] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(LIVE_FEED_PAGE_SIZE);
 
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(
     () => readSessionSet(LIVE_FEED_FILTER_TYPES_KEY),
@@ -1846,11 +1849,13 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
       writeSessionSet(LIVE_FEED_FILTER_TYPES_KEY, next);
       return next;
     });
+    setVisibleCount(LIVE_FEED_PAGE_SIZE);
   };
 
   const handleModuleChange = (mod: string) => {
     setSelectedModule(mod);
     writeSessionString(LIVE_FEED_FILTER_MODULE_KEY, mod);
+    setVisibleCount(LIVE_FEED_PAGE_SIZE);
   };
 
   const filteredEvents = events.filter((ev) => {
@@ -1858,6 +1863,9 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
     if (selectedModule && ev.moduleId !== selectedModule) return false;
     return true;
   });
+
+  const visibleEvents = filteredEvents.slice(0, visibleCount);
+  const hasMore = filteredEvents.length > visibleCount;
 
   const activeFilterCount = selectedTypes.size + (selectedModule ? 1 : 0);
 
@@ -1876,7 +1884,7 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
             LIVE EVENT FEED
           </div>
           <div style={{ fontSize: 12, color: "rgba(245,237,216,0.4)" }}>
-            Most recent 20 telemetry events · auto-refreshes every 15 s
+            Up to 100 telemetry events · auto-refreshes every 15 s
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -1990,6 +1998,7 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
                 setSelectedModule("");
                 writeSessionSet(LIVE_FEED_FILTER_TYPES_KEY, new Set());
                 writeSessionString(LIVE_FEED_FILTER_MODULE_KEY, "");
+                setVisibleCount(LIVE_FEED_PAGE_SIZE);
               }}
               style={{
                 background: "rgba(255,255,255,0.04)",
@@ -2028,10 +2037,12 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
         </div>
       )}
 
-      {/* Filtered count note */}
-      {activeFilterCount > 0 && events.length > 0 && (
+      {/* Count note — shown whenever pagination is active or filters are applied */}
+      {events.length > 0 && (activeFilterCount > 0 || hasMore || filteredEvents.length < events.length) && (
         <div style={{ fontSize: 10, color: "rgba(245,237,216,0.3)", letterSpacing: "0.1em" }}>
-          Showing {filteredEvents.length} of {events.length} event{events.length !== 1 ? "s" : ""}
+          {activeFilterCount > 0
+            ? `Showing ${Math.min(visibleCount, filteredEvents.length)} of ${filteredEvents.length} matching event${filteredEvents.length !== 1 ? "s" : ""} (${events.length} total fetched)`
+            : `Showing ${Math.min(visibleCount, filteredEvents.length)} of ${events.length} event${events.length !== 1 ? "s" : ""}`}
         </div>
       )}
 
@@ -2060,7 +2071,7 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
             <span style={{ textAlign: "right" }}>TIME</span>
           </div>
 
-          {filteredEvents.map((ev) => {
+          {visibleEvents.map((ev) => {
             const isNew = newEventIds.has(ev.id);
             return (
               <div
@@ -2109,6 +2120,33 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Load more */}
+      {hasMore && (
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <button
+            onClick={() => setVisibleCount((c) => c + LIVE_FEED_PAGE_SIZE)}
+            style={{
+              background: "rgba(196,97,10,0.08)",
+              border: "1px solid rgba(196,97,10,0.25)",
+              borderRadius: 8, padding: "8px 24px",
+              fontSize: 11, fontWeight: 600, letterSpacing: "0.1em",
+              color: "#C4610A", cursor: "pointer",
+              transition: "background 0.15s, border-color 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "rgba(196,97,10,0.16)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(196,97,10,0.45)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "rgba(196,97,10,0.08)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(196,97,10,0.25)";
+            }}
+          >
+            LOAD MORE ({filteredEvents.length - visibleCount} remaining)
+          </button>
         </div>
       )}
     </div>
