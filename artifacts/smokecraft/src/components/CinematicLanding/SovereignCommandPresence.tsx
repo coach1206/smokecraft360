@@ -2,7 +2,7 @@
  * SovereignCommandPresence — NOVEE OS · Sovereign Command · Profound Innovations
  *
  * Master command hub E.A.T. cinematic entry frame.
- * Links Hospitality (CraftHub), Performance (SARV), Presence (Lexi Visuals),
+ * Links Hospitality (CraftHub), Performance (SARV), Presence (NOVEE Visuals),
  * and Supply (Sovereign Supply) under a single executive cockpit.
  *
  * Material architecture (locked spec):

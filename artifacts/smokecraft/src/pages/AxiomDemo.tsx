@@ -1,7 +1,7 @@
 /**
  * AxiomDemo — /demo/axiom-experience
  *
- * Investor-facing guided story mode demonstrating the full Axiom OS experience loop.
+ * Investor-facing guided story mode demonstrating the full NOVEE OS experience loop.
  * Uses cinematic visuals + real system data where available.
  *
  * Safety: No POST calls that create persistent data. All read-only API access.

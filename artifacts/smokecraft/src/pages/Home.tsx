@@ -799,6 +799,33 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      {/* ── NOVEE OS 1.0 Boot Sequence Version Stamp ─────────────────── */}
+      <AnimatePresence>
+        {phase === "welcome" && (
+          <motion.div
+            key="novee-version-stamp"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ delay: 2.8, duration: 1.4 }}
+            style={{
+              position: "fixed", bottom: 18, left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 60, textAlign: "center", pointerEvents: "none",
+            }}
+          >
+            <p style={{
+              fontSize: 6, letterSpacing: "0.46em", textTransform: "uppercase",
+              color: "rgba(212,175,55,0.30)",
+              fontFamily: "'Inter', 'SF Pro Display', monospace",
+              whiteSpace: "nowrap",
+            }}>
+              NOVEE OS 1.0 — SOVEREIGN EDITION &nbsp;·&nbsp; PROFOUND INNOVATIONS
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Stage 2: Sovereign PIN Gate ─────────────────────────────── */}
       <AnimatePresence>
         {phase === "pin_gate" && (

@@ -452,8 +452,71 @@ export function CommandHubPanel({ eatState, currentStep, phase, onClose }: {
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.30 }}
             >
+              {/* ── Gate enforcement lock ── */}
+              {!audit.gateVerified && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  style={{
+                    marginTop: 24, marginBottom: 8,
+                    border: "1px solid rgba(185,190,210,0.16)",
+                    padding: "22px 18px",
+                    textAlign: "center",
+                    background: "rgba(185,190,210,0.03)",
+                  }}
+                >
+                  <div style={{
+                    width: 28, height: 28, margin: "0 auto 14px",
+                    border: "1px solid rgba(185,190,210,0.28)",
+                    borderRadius: 2,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <div style={{
+                      width: 10, height: 10,
+                      border: "1.5px solid rgba(185,190,210,0.55)",
+                      borderRadius: 1,
+                      position: "relative",
+                    }}>
+                      <div style={{
+                        position: "absolute", top: -7, left: "50%",
+                        transform: "translateX(-50%)",
+                        width: 7, height: 7,
+                        border: "1.5px solid rgba(185,190,210,0.40)",
+                        borderBottom: "none",
+                        borderRadius: "4px 4px 0 0",
+                      }} />
+                    </div>
+                  </div>
+                  <p style={{
+                    fontSize: 8, letterSpacing: "0.30em", textTransform: "uppercase",
+                    color: "rgba(185,190,210,0.55)", marginBottom: 8,
+                  }}>
+                    GATE AUTHENTICATION REQUIRED
+                  </p>
+                  <p style={{
+                    fontSize: 8, color: "rgba(150,155,170,0.38)",
+                    lineHeight: 1.6, letterSpacing: "0.04em",
+                  }}>
+                    Strategic oversight is restricted to verified sessions.
+                    Authenticate via /gate to unlock full E.A.T. access.
+                  </p>
+                  <div style={{
+                    marginTop: 14, paddingTop: 12,
+                    borderTop: "1px solid rgba(185,190,210,0.10)",
+                  }}>
+                    <p style={{
+                      fontSize: 6, letterSpacing: "0.38em",
+                      color: "rgba(185,190,210,0.22)", textTransform: "uppercase",
+                    }}>
+                      NOVEE OS 1.0 — SOVEREIGN EDITION
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+
               {/* Integrity score */}
-              <SectionLabel chrome>INTEGRITY AUDIT · {audit.systemCheck}</SectionLabel>
+              {audit.gateVerified && <SectionLabel chrome>INTEGRITY AUDIT · {audit.systemCheck}</SectionLabel>}
+              {!audit.gateVerified && <SectionLabel chrome>INTEGRITY AUDIT · RESTRICTED</SectionLabel>}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                 <div>
                   <p style={{
@@ -519,7 +582,7 @@ export function CommandHubPanel({ eatState, currentStep, phase, onClose }: {
               }}>
                 <div>
                   <p style={{ fontSize: 6, letterSpacing: "0.32em", color: "rgba(185,190,210,0.32)", textTransform: "uppercase", marginBottom: 2 }}>
-                    NOVEE OS 1.0 · SOVEREIGN SEAL
+                    NOVEE OS 1.0 — SOVEREIGN EDITION
                   </p>
                   <p style={{ fontSize: 8, letterSpacing: "0.14em", color: "rgba(212,175,55,0.58)" }}>
                     {audit.authority}

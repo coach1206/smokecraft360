@@ -47,7 +47,7 @@ export interface RitualTheme {
 
 const LEDGER_KEY = "NOVEE_EAT_RITUAL_LEDGER";
 const AUTHORITY  = "Profound Innovations";
-const VERSION    = "1.0";
+const VERSION    = "NOVEE OS 1.0 - Sovereign Edition";
 
 /* ── NoveeRegistry ───────────────────────────────────────────────── */
 
@@ -72,6 +72,8 @@ export const NoveeRegistry = {
         localStorage.getItem("axiom_jwt")
       );
 
+    const isFinalStep = absoluteStep >= 13;
+
     const entry: NoveePersistedState = {
       eatState,
       phase,
@@ -81,7 +83,7 @@ export const NoveeRegistry = {
       timestamp:   new Date().toISOString(),
       authority:   AUTHORITY,
       version:     VERSION,
-      status:      gateVerified ? "GATE_VERIFIED" : "IN_PROGRESS",
+      status:      isFinalStep ? "COMPLETE" : gateVerified ? "GATE_VERIFIED" : "IN_PROGRESS",
       gateVerified,
     };
 
