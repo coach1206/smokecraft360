@@ -13,9 +13,12 @@ vi.mock("@/contexts/VenueContext", () => ({
 const NULL_VENUE_ID = "00000000-0000-0000-0000-000000000000";
 const CACHE_KEY = `kernel_mode_${NULL_VENUE_ID}`;
 
+// Persistent navigate spy — hoisted so it is in scope inside vi.mock factories.
+const mockNavigate = vi.hoisted(() => vi.fn());
+
 // Wouter
 vi.mock("wouter", () => ({
-  useLocation: () => ["/", vi.fn()],
+  useLocation: () => ["/", mockNavigate],
   Link: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useRoute: () => [false, {}],
 }));
@@ -143,6 +146,7 @@ beforeEach(() => {
 afterEach(() => {
   localStorage.clear();
   vi.unstubAllGlobals();
+  mockNavigate.mockClear();
 });
 
 function withKernel(ui: React.ReactElement) {
@@ -397,6 +401,101 @@ describe("KernelModeContext refresh()", () => {
     // loading should return to false after the fetch completes
     expect(screen.getByTestId("loading").textContent).toBe("false");
   });
+});
+
+// ─── SovereignRoute ───────────────────────────────────────────────────────────
+
+describe("SovereignRoute", () => {
+  const SOVEREIGN_ROUTES = [
+    "/designer",
+    "/governance",
+    "/central-command",
+    "/command-center",
+    "/enterprise-intelligence",
+    "/operations",
+  ];
+
+  function renderWithRoute(
+    mode: "essential" | "sovereign",
+    children: React.ReactNode,
+  ) {
+    // Override the fetch mock to return the given mode
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: unknown) => {
+        if (typeof url === "string" && url.includes("/api/kernel/mode/")) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ mode }),
+          });
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve({}) });
+      }),
+    );
+
+    // Set the localStorage cache to match
+    const NULL_VENUE_ID = "00000000-0000-0000-0000-000000000000";
+    localStorage.setItem(`kernel_mode_${NULL_VENUE_ID}`, mode);
+
+    return render(<KernelModeProvider>{children}</KernelModeProvider>);
+  }
+
+  it("renders children in sovereign mode", async () => {
+    const { SovereignRoute } = await import("@/components/SovereignRoute");
+    renderWithRoute("sovereign", (
+      <SovereignRoute>
+        <div data-testid="protected-content">Protected</div>
+      </SovereignRoute>
+    ));
+
+    await act(async () => {});
+    expect(screen.getByTestId("protected-content")).toBeInTheDocument();
+  });
+
+  it("does not render children in essential mode", async () => {
+    const { SovereignRoute } = await import("@/components/SovereignRoute");
+    renderWithRoute("essential", (
+      <SovereignRoute>
+        <div data-testid="protected-content">Protected</div>
+      </SovereignRoute>
+    ));
+
+    await act(async () => {});
+    expect(screen.queryByTestId("protected-content")).not.toBeInTheDocument();
+  });
+
+  it("calls navigate to redirect away in essential mode", async () => {
+    const { SovereignRoute } = await import("@/components/SovereignRoute");
+
+    const NULL_VENUE_ID = "00000000-0000-0000-0000-000000000000";
+    localStorage.setItem(`kernel_mode_${NULL_VENUE_ID}`, "essential");
+
+    render(
+      <KernelModeProvider>
+        <SovereignRoute>
+          <div>Protected</div>
+        </SovereignRoute>
+      </KernelModeProvider>,
+    );
+
+    await act(async () => {});
+    expect(mockNavigate).toHaveBeenCalledWith("/");
+  });
+
+  it.each(SOVEREIGN_ROUTES)(
+    "protects %s — renders nothing in essential mode",
+    async (path) => {
+      const { SovereignRoute } = await import("@/components/SovereignRoute");
+      renderWithRoute("essential", (
+        <SovereignRoute>
+          <div data-testid={`content-${path}`}>{path} content</div>
+        </SovereignRoute>
+      ));
+
+      await act(async () => {});
+      expect(screen.queryByTestId(`content-${path}`)).not.toBeInTheDocument();
+    },
+  );
 });
 
 // ─── CommandCenter ────────────────────────────────────────────────────────────

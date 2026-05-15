@@ -38,6 +38,7 @@ import { SovereignInsightCube }       from '@/components/SovereignInsightCube';
 import { useSovereignSocket }         from '@/hooks/useSovereignSocket';
 import PhantomHUD                     from '@/components/PhantomHUD';
 import { KernelModeProvider }         from '@/contexts/KernelModeContext';
+import { SovereignRoute }             from '@/components/SovereignRoute';
 import InactivityGuard               from '@/components/InactivityGuard';
 import { PresentationProvider }      from '@/contexts/PresentationContext';
 
@@ -812,7 +813,7 @@ export default function App() {
             <SubPageProviders><CommandCenter /></SubPageProviders>
           </Route>
           <Route path="/command-center">
-            <SubPageProviders><CentralCommand /></SubPageProviders>
+            <SubPageProviders><SovereignRoute><CentralCommand /></SovereignRoute></SubPageProviders>
           </Route>
           <Route path="/welcome-eeie">
             <WelcomeEEIE />
@@ -830,7 +831,7 @@ export default function App() {
             <SubPageProviders><EEIEModulePage /></SubPageProviders>
           </Route>
           <Route path="/operations">
-            <SubPageProviders><MasterOperations /></SubPageProviders>
+            <SubPageProviders><SovereignRoute><MasterOperations /></SovereignRoute></SubPageProviders>
           </Route>
           <Route path="/finance-reconciliation">
             <SubPageProviders><FinanceReconciliation /></SubPageProviders>
@@ -926,7 +927,7 @@ export default function App() {
             <SubPageProviders><MasterBlender /></SubPageProviders>
           </Route>
           <Route path="/designer">
-            <SubPageProviders><DesignerPage /></SubPageProviders>
+            <SubPageProviders><SovereignRoute><DesignerPage /></SovereignRoute></SubPageProviders>
           </Route>
 
           {/* ── Previously unregistered pages — recovered routes ── */}
@@ -982,13 +983,13 @@ export default function App() {
             <SubPageProviders><EnvironmentEngine /></SubPageProviders>
           </Route>
           <Route path="/enterprise-intelligence">
-            <SubPageProviders><EnterpriseIntelligence /></SubPageProviders>
+            <SubPageProviders><SovereignRoute><EnterpriseIntelligence /></SovereignRoute></SubPageProviders>
           </Route>
           <Route path="/governance">
-            <SubPageProviders><EnterpriseGovernance /></SubPageProviders>
+            <SubPageProviders><SovereignRoute><EnterpriseGovernance /></SovereignRoute></SubPageProviders>
           </Route>
           <Route path="/central-command">
-            <SubPageProviders><CentralCommand /></SubPageProviders>
+            <SubPageProviders><SovereignRoute><CentralCommand /></SovereignRoute></SubPageProviders>
           </Route>
           <Route path="/axiom-pay">
             <SubPageProviders><AxiomPay /></SubPageProviders>
