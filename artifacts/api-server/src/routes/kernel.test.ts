@@ -26,10 +26,12 @@ vi.mock("@workspace/db", () => ({
     select: vi.fn(),
     insert: vi.fn(),
     update: vi.fn(),
+    transaction: vi.fn(),
   },
   kernelModulesTable: { slug: "slug", id: "id", registeredAt: "registeredAt" },
   kernelModeConfigTable: { venueId: "venue_id", mode: "mode", updatedAt: "updated_at", updatedBy: "updated_by" },
   telemetryEventsTable: {},
+  kernelModuleAuditLogTable: {},
 }));
 
 vi.mock("../middleware/auth", () => ({
@@ -306,6 +308,76 @@ describe("PATCH /api/kernel/mode/:venueId — role-based access control", () => 
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("error");
+  });
+});
+
+describe("PATCH /api/kernel/modules/:id — duplicate-slug rejection", () => {
+  const MODULE_ID = "00000000-0000-0000-0000-000000000010";
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockUser = { id: "admin-uuid", email: "admin@test.com", role: "super_admin", name: "Admin", venueId: null };
+  });
+
+  it("returns 409 with { error: 'Slug already in use', field: 'slug' } when renaming to an already-taken slug", async () => {
+    const pgError = Object.assign(new Error("duplicate key value"), { code: "23505" });
+    (db.transaction as ReturnType<typeof vi.fn>).mockRejectedValue(pgError);
+
+    const app = buildApp();
+    const res = await request(app)
+      .patch(`/api/kernel/modules/${MODULE_ID}`)
+      .send({ slug: "already-taken" });
+
+    expect(res.status).toBe(409);
+    expect(res.body).toEqual({ error: "Slug already in use", field: "slug" });
+  });
+
+  it("returns 200 when PATCHing a module with its own current slug (self-rename / excludeId scenario)", async () => {
+    const existingModule = { id: MODULE_ID, name: "My Module", slug: "my-module", craftType: "smoke" };
+    const updatedModule  = { ...existingModule };
+
+    (db.transaction as ReturnType<typeof vi.fn>).mockImplementation(
+      async (callback: (tx: object) => Promise<unknown>) => {
+        const txSelectBuilder = {
+          from:  vi.fn(),
+          where: vi.fn(),
+          limit: vi.fn(),
+        };
+        txSelectBuilder.limit.mockResolvedValue([existingModule]);
+        txSelectBuilder.where.mockReturnValue(txSelectBuilder);
+        txSelectBuilder.from.mockReturnValue(txSelectBuilder);
+
+        const txUpdateBuilder = {
+          set:       vi.fn(),
+          where:     vi.fn(),
+          returning: vi.fn(),
+        };
+        txUpdateBuilder.returning.mockResolvedValue([updatedModule]);
+        txUpdateBuilder.where.mockReturnValue(txUpdateBuilder);
+        txUpdateBuilder.set.mockReturnValue(txUpdateBuilder);
+
+        const txInsertBuilder = {
+          values: vi.fn().mockResolvedValue([{}]),
+        };
+
+        const tx = {
+          select:  vi.fn().mockReturnValue(txSelectBuilder),
+          update:  vi.fn().mockReturnValue(txUpdateBuilder),
+          insert:  vi.fn().mockReturnValue(txInsertBuilder),
+        };
+
+        return callback(tx);
+      },
+    );
+
+    const app = buildApp();
+    const res = await request(app)
+      .patch(`/api/kernel/modules/${MODULE_ID}`)
+      .send({ slug: "my-module" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("module");
+    expect(res.body.module).toMatchObject({ slug: "my-module" });
   });
 });
 
