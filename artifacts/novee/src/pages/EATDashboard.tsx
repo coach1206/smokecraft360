@@ -2350,6 +2350,234 @@ function TrendSparkline({ trend }: { trend: TrendPoint[] | undefined }) {
   );
 }
 
+/* ── Product Trend Modal ─────────────────────────────────────────────────────── */
+
+const MODAL_DAYS_OPTIONS = [7, 30, 90] as const;
+type ModalDays = typeof MODAL_DAYS_OPTIONS[number];
+
+function TrendTooltipContent({ active, payload, label: day }: {
+  active?: boolean;
+  payload?: { value: number }[];
+  label?: string;
+}) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{
+      background: "#1A1A1B",
+      border: "1px solid rgba(255,255,255,0.1)",
+      borderRadius: 8,
+      padding: "8px 12px",
+      fontSize: 11,
+    }}>
+      <div style={{ color: "rgba(245,237,216,0.5)", marginBottom: 4, fontSize: 10, letterSpacing: "0.1em" }}>{day}</div>
+      <div style={{ color: ADD_COLOR }}>Adds: <strong>{payload[0]?.value ?? 0}</strong></div>
+      <div style={{ color: SKIP_COLOR }}>Skips: <strong>{payload[1]?.value ?? 0}</strong></div>
+    </div>
+  );
+}
+
+function ProductTrendModal({
+  product,
+  onClose,
+}: {
+  product: ProductItem;
+  onClose: () => void;
+}) {
+  const [modalDays, setModalDays] = useState<ModalDays>(30);
+  const [trend, setTrend] = useState<TrendPoint[]>([]);
+  const [trendLoading, setTrendLoading] = useState(true);
+
+  useEffect(() => {
+    setTrendLoading(true);
+    apiFetch<{ cardId: string; days: number; trend: TrendPoint[] }>(
+      `/kernel/telemetry/products/${encodeURIComponent(product.card_id)}/trend?days=${modalDays}`
+    )
+      .then((data) => setTrend(data.trend))
+      .catch(() => setTrend([]))
+      .finally(() => setTrendLoading(false));
+  }, [product.card_id, modalDays]);
+
+  const ct = product.craft_type?.toLowerCase() ?? null;
+  const badgeStyle = ct && CRAFT_BADGE_COLORS[ct] ? CRAFT_BADGE_COLORS[ct]! : null;
+  const addRatio = product.total > 0 ? (product.adds / product.total) * 100 : 0;
+  const label = product.title ?? product.card_id;
+  const tickInterval = Math.max(0, Math.floor(trend.length / 8) - 1);
+
+  return (
+    <div
+      style={{
+        position: "fixed", inset: 0, zIndex: 9999,
+        background: "rgba(0,0,0,0.78)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: 24,
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div style={{
+        background: "#111112",
+        border: "1px solid rgba(255,255,255,0.08)",
+        borderRadius: 16,
+        width: "min(720px, 100%)",
+        maxHeight: "90vh",
+        overflow: "auto",
+        padding: "28px 32px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 24,
+      }}>
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <h2 style={{
+                margin: 0, fontSize: 20, fontWeight: 700,
+                color: "#F5EDD8",
+                fontFamily: "'Cormorant Garamond', serif",
+                letterSpacing: "0.04em",
+                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+              }}>
+                {label}
+              </h2>
+              {badgeStyle && (
+                <span style={{
+                  display: "inline-block", padding: "2px 8px", borderRadius: 20,
+                  fontSize: 9, fontWeight: 700, letterSpacing: "0.12em",
+                  background: badgeStyle.bg, color: badgeStyle.text,
+                  flexShrink: 0,
+                }}>
+                  {ct!.toUpperCase()}
+                </span>
+              )}
+            </div>
+            {product.title && (
+              <div style={{ fontSize: 10, color: "rgba(245,237,216,0.25)", fontFamily: "monospace", marginTop: 4 }}>
+                {product.card_id}
+              </div>
+            )}
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 8, padding: "6px 14px",
+              color: "rgba(245,237,216,0.5)",
+              fontSize: 12, cursor: "pointer",
+              flexShrink: 0,
+              transition: "all 0.15s",
+            }}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Aggregate totals */}
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          {([
+            { label: "ADDS", value: product.adds.toLocaleString(), color: ADD_COLOR },
+            { label: "SKIPS", value: product.skips.toLocaleString(), color: SKIP_COLOR },
+            { label: "TOTAL", value: product.total.toLocaleString(), color: "rgba(245,237,216,0.6)" },
+            { label: "ADD RATE", value: `${Math.round(addRatio)}%`, color: addRatio >= 50 ? ADD_COLOR : SKIP_COLOR },
+          ] as { label: string; value: string; color: string }[]).map((stat) => (
+            <div key={stat.label} style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              borderRadius: 10, padding: "12px 16px",
+              flex: "1 1 110px",
+            }}>
+              <div style={{ fontSize: 8, letterSpacing: "0.2em", color: "rgba(245,237,216,0.3)", marginBottom: 6 }}>{stat.label}</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: stat.color, fontFamily: "'Cormorant Garamond', serif" }}>{stat.value}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Day range selector */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.3)" }}>RANGE</span>
+          <div style={{ display: "flex", gap: 8 }}>
+            {MODAL_DAYS_OPTIONS.map((d) => (
+              <button
+                key={d}
+                onClick={() => setModalDays(d)}
+                style={{
+                  background: modalDays === d ? "rgba(196,97,10,0.2)" : "rgba(255,255,255,0.04)",
+                  border: `1px solid ${modalDays === d ? "#C4610A" : "rgba(255,255,255,0.08)"}`,
+                  borderRadius: 20, padding: "5px 16px",
+                  fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+                  color: modalDays === d ? "#C4610A" : "rgba(245,237,216,0.4)",
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                }}
+              >
+                {d}D
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Chart */}
+        <div style={{
+          background: SURFACE,
+          border: "1px solid rgba(255,255,255,0.06)",
+          borderRadius: 10, padding: "20px 8px 8px",
+          minHeight: 280,
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          {trendLoading ? (
+            <div style={{ display: "flex", gap: 8, alignItems: "center", color: "rgba(245,237,216,0.3)" }}>
+              <div style={{
+                width: 14, height: 14, borderRadius: "50%",
+                border: "2px solid rgba(196,97,10,0.3)", borderTopColor: "#C4610A",
+                animation: "spin 0.8s linear infinite",
+              }} />
+              <span style={{ fontSize: 11, letterSpacing: "0.15em" }}>LOADING TREND</span>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={260}>
+              <LineChart data={trend} margin={{ top: 8, right: 16, left: -16, bottom: 0 }}>
+                <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
+                <XAxis
+                  dataKey="day"
+                  tickFormatter={(v: string) => {
+                    const d = new Date(v + "T00:00:00Z");
+                    return `${d.getUTCMonth() + 1}/${d.getUTCDate()}`;
+                  }}
+                  tick={{ fontSize: 9, fill: "rgba(245,237,216,0.3)" }}
+                  axisLine={false} tickLine={false}
+                  interval={tickInterval}
+                />
+                <YAxis
+                  allowDecimals={false}
+                  tick={{ fontSize: 9, fill: "rgba(245,237,216,0.3)" }}
+                  axisLine={false} tickLine={false}
+                />
+                <Tooltip content={<TrendTooltipContent />} />
+                <Legend
+                  formatter={(v: string) => (
+                    <span style={{ fontSize: 10, letterSpacing: "0.1em", color: "rgba(245,237,216,0.5)" }}>
+                      {v.toUpperCase()}
+                    </span>
+                  )}
+                />
+                <Line
+                  type="monotone" dataKey="adds" name="adds"
+                  stroke={ADD_COLOR} strokeWidth={2}
+                  dot={false} activeDot={{ r: 4, fill: ADD_COLOR }}
+                />
+                <Line
+                  type="monotone" dataKey="skips" name="skips"
+                  stroke={SKIP_COLOR} strokeWidth={2}
+                  dot={false} activeDot={{ r: 4, fill: SKIP_COLOR }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CraftBreakdownChart({
   breakdown,
   craftFilter,
@@ -2533,6 +2761,7 @@ function ProductsTab({
   breakdown: CraftBreakdownPoint[];
 }) {
   const activeFilterConfig = CRAFT_FILTERS.find((f) => f.id === craftFilter) ?? CRAFT_FILTERS[0]!;
+  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
 
   if (loading) {
     return (
@@ -2634,7 +2863,7 @@ function ProductsTab({
               <span style={{ textAlign: "right" }}>ADDS</span>
               <span style={{ textAlign: "right" }}>SKIPS</span>
               <span style={{ textAlign: "right" }}>TOTAL</span>
-              <span style={{ textAlign: "center" }}>7D TREND</span>
+              <span style={{ textAlign: "center" }}>7D TREND ↗</span>
               <span style={{ textAlign: "center" }}>ADD RATIO</span>
             </div>
 
@@ -2650,6 +2879,7 @@ function ProductsTab({
               return (
                 <div
                   key={rowKey}
+                  onClick={() => setSelectedProduct(p)}
                   style={{
                     display: "grid",
                     gridTemplateColumns: "36px 1fr 72px 60px 60px 60px 88px 140px",
@@ -2659,8 +2889,9 @@ function ProductsTab({
                     alignItems: "center",
                     background: isTop ? "rgba(196,97,10,0.04)" : "transparent",
                     transition: "background 0.15s",
+                    cursor: "pointer",
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.03)"; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.06)"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = isTop ? "rgba(196,97,10,0.04)" : "transparent"; }}
                 >
                   {/* Rank */}
@@ -2750,6 +2981,13 @@ function ProductsTab({
             })}
           </div>
         </>
+      )}
+
+      {selectedProduct && (
+        <ProductTrendModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
       )}
     </div>
   );
