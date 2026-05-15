@@ -369,6 +369,11 @@ export default function EATDashboard() {
   const flashTimerRef                       = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [unreadCount, setUnreadCount]       = useState(0);
+  // Dot state: visible = should render; fading = transitioning out
+  const [liveDotVisible, setLiveDotVisible] = useState(false);
+  const [liveDotFading, setLiveDotFading]   = useState(false);
+  const lastEventAtRef                      = useRef<number | null>(null);
+  const liveDotFadeTimerRef                 = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tabRef                              = useRef<DashTab>(tab);
 
   const [products, setProducts]             = useState<ProductItem[]>([]);
@@ -452,6 +457,10 @@ export default function EATDashboard() {
             if (tabRef.current !== "live") {
               setUnreadCount((c) => c + freshIds.size);
             }
+            lastEventAtRef.current = Date.now();
+            if (liveDotFadeTimerRef.current) clearTimeout(liveDotFadeTimerRef.current);
+            setLiveDotFading(false);
+            setLiveDotVisible(true);
           }
         }
 
@@ -510,6 +519,29 @@ export default function EATDashboard() {
   useEffect(() => {
     if (tab === "products") fetchProducts(days, craftFilter);
   }, [tab, days, craftFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Drive the "recently active" dot — re-evaluate every 5 s; clears once 60 s
+  // has elapsed since the last new event arrived. Fades out gracefully instead
+  // of disappearing abruptly.
+  useEffect(() => {
+    const ACTIVITY_WINDOW_MS = 60_000;
+    const FADE_DURATION_MS   = 600;
+    const id = setInterval(() => {
+      if (lastEventAtRef.current === null) return;
+      const elapsed = Date.now() - lastEventAtRef.current;
+      if (elapsed >= ACTIVITY_WINDOW_MS) {
+        setLiveDotFading(true);
+        liveDotFadeTimerRef.current = setTimeout(() => {
+          setLiveDotVisible(false);
+          setLiveDotFading(false);
+        }, FADE_DURATION_MS);
+      }
+    }, 5_000);
+    return () => {
+      clearInterval(id);
+      if (liveDotFadeTimerRef.current) clearTimeout(liveDotFadeTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (counterRef.current) clearInterval(counterRef.current);
@@ -895,6 +927,18 @@ export default function EATDashboard() {
               }}>
                 +{unreadCount > 99 ? "99" : unreadCount}
               </span>
+            )}
+            {t.id === "live" && liveDotVisible && (
+              <span className={`eat-live-dot${liveDotFading ? " fading" : ""}`} style={{
+                position: "absolute",
+                bottom: 5,
+                right: 5,
+                width: 7,
+                height: 7,
+                borderRadius: "50%",
+                background: "#4ADE80",
+                pointerEvents: "none",
+              }} />
             )}
           </button>
         ))}
