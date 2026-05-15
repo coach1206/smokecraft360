@@ -28,6 +28,7 @@ interface KernelModeContextValue {
   loading: boolean;
   saving: boolean;
   setMode: (mode: KernelMode, token: string) => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
 const KernelModeContext = createContext<KernelModeContextValue>({
@@ -35,6 +36,7 @@ const KernelModeContext = createContext<KernelModeContextValue>({
   loading: false,
   saving: false,
   setMode: async () => {},
+  refresh: async () => {},
 });
 
 const POLL_INTERVAL_MS = 30_000;
@@ -96,21 +98,30 @@ export function KernelModeProvider({ children }: { children: ReactNode }) {
   const timerRef              = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevVenueIdRef        = useRef<string>(venueId);
 
-  async function fetchMode(id: string): Promise<void> {
+  async function fetchMode(id: string): Promise<boolean> {
     try {
       const res = await fetch(`/api/kernel/mode/${id}`);
-      if (!res.ok) return;
+      if (!res.ok) return false;
       const data = (await res.json()) as { mode?: KernelMode };
       if (data.mode === "essential" || data.mode === "sovereign") {
         setModeState(data.mode);
         writeCache(id, data.mode);
+        return true;
       }
+      return false;
     } catch {
       // network error — keep previous mode
+      return false;
     } finally {
       setLoading(false);
     }
   }
+
+  const refresh = useCallback(async (): Promise<void> => {
+    setLoading(true);
+    const ok = await fetchMode(venueId);
+    if (!ok) throw new Error("Failed to reach server — mode unchanged");
+  }, [venueId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setMode = useCallback(async (newMode: KernelMode, token: string): Promise<void> => {
     if (venueId === NULL_VENUE_ID) {
@@ -171,7 +182,7 @@ export function KernelModeProvider({ children }: { children: ReactNode }) {
   }, [venueId]);
 
   return (
-    <KernelModeContext.Provider value={{ mode, loading, saving, setMode }}>
+    <KernelModeContext.Provider value={{ mode, loading, saving, setMode, refresh }}>
       {children}
     </KernelModeContext.Provider>
   );

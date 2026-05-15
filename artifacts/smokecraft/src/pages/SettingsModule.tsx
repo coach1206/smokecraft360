@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers, ShieldAlert, Paintbrush, Image, Type, Palette, Check, RotateCcw, Brain, ExternalLink, ChevronRight, Crown, Zap } from "lucide-react";
+import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers, ShieldAlert, Paintbrush, Image, Type, Palette, Check, RotateCcw, Brain, ExternalLink, ChevronRight, Crown, Zap, RefreshCw } from "lucide-react";
 import { useCommandCenter, POS_MODE_INFO, type PosOperatingMode } from "@/contexts/CommandCenterContext";
 import { usePosContext } from "@/contexts/PosContext";
 import { useVenueContext, BACKGROUND_LABELS, DEFAULT_BACKGROUNDS, type BackgroundKey } from "@/contexts/VenueContext";
@@ -35,6 +35,25 @@ export default function SettingsModule() {
   const [kernelError, setKernelError] = useState("");
   const [kernelSuccess, setKernelSuccess] = useState(false);
   const [pendingKernelMode, setPendingKernelMode] = useState<KernelMode | null>(null);
+  const [kernelRefreshing, setKernelRefreshing] = useState(false);
+  const [kernelRefreshSuccess, setKernelRefreshSuccess] = useState(false);
+
+  async function handleKernelRefresh() {
+    setKernelRefreshing(true);
+    setKernelRefreshSuccess(false);
+    setKernelError("");
+    try {
+      await kernel.refresh();
+      setKernelRefreshSuccess(true);
+      setTimeout(() => setKernelRefreshSuccess(false), 2500);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Refresh failed";
+      setKernelError(msg);
+      setTimeout(() => setKernelError(""), 5000);
+    } finally {
+      setKernelRefreshing(false);
+    }
+  }
 
   async function applyKernelMode(newMode: KernelMode) {
     if (!authToken) {
@@ -594,6 +613,43 @@ export default function SettingsModule() {
               );
             })}
           </div>
+
+          {isKernelAdmin && (
+            <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10 }}>
+              <motion.button
+                whileTap={!kernelRefreshing ? { scale: 0.96 } : {}}
+                onClick={handleKernelRefresh}
+                disabled={kernelRefreshing}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "8px 14px", borderRadius: 10, cursor: kernelRefreshing ? "default" : "pointer",
+                  background: "rgba(26,26,27,0.06)", border: "1px solid rgba(26,26,27,0.12)",
+                  fontSize: 12, fontWeight: 600, color: "rgba(26,26,27,0.55)",
+                  opacity: kernelRefreshing ? 0.6 : 1, transition: "opacity 0.2s",
+                }}
+              >
+                <motion.span
+                  animate={kernelRefreshing ? { rotate: 360 } : { rotate: 0 }}
+                  transition={kernelRefreshing ? { repeat: Infinity, duration: 0.8, ease: "linear" } : { duration: 0 }}
+                  style={{ display: "flex" }}
+                >
+                  <RefreshCw size={13} />
+                </motion.span>
+                {kernelRefreshing ? "Refreshing…" : "Force Refresh"}
+              </motion.button>
+              <AnimatePresence>
+                {kernelRefreshSuccess && (
+                  <motion.span
+                    key="refresh-ok"
+                    initial={{ opacity: 0, x: 6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
+                    style={{ fontSize: 11, color: "#34d399", fontWeight: 600 }}
+                  >
+                    Up to date!
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
 
           <AnimatePresence>
             {kernelError && (
