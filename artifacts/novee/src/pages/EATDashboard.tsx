@@ -1281,17 +1281,78 @@ function formatRelative(iso: string): string {
   return `${Math.floor(diff / 3600)}h ago`;
 }
 
+const LIVE_FEED_FILTER_TYPES_KEY = "eat_live_feed_filter_types";
+const LIVE_FEED_FILTER_MODULE_KEY = "eat_live_feed_filter_module";
+
+function readSessionSet(key: string): Set<string> {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return new Set();
+    return new Set(JSON.parse(raw) as string[]);
+  } catch { return new Set(); }
+}
+
+function writeSessionSet(key: string, s: Set<string>): void {
+  try { sessionStorage.setItem(key, JSON.stringify([...s])); } catch { /* ignore */ }
+}
+
+function readSessionString(key: string): string {
+  try { return sessionStorage.getItem(key) ?? ""; } catch { return ""; }
+}
+
+function writeSessionString(key: string, v: string): void {
+  try { sessionStorage.setItem(key, v); } catch { /* ignore */ }
+}
+
 function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventIds: Set<string> }) {
   const [, forceRender] = useState(0);
+
+  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(
+    () => readSessionSet(LIVE_FEED_FILTER_TYPES_KEY),
+  );
+  const [selectedModule, setSelectedModule] = useState<string>(
+    () => readSessionString(LIVE_FEED_FILTER_MODULE_KEY),
+  );
+
   useEffect(() => {
     const timer = setInterval(() => forceRender((n) => n + 1), 10_000);
     return () => clearInterval(timer);
   }, []);
 
+  const allEventTypes = Array.from(new Set(events.map((e) => e.eventType))).sort();
+  const allModules    = Array.from(new Set(events.map((e) => e.moduleId).filter(Boolean) as string[])).sort();
+
+  const toggleType = (type: string) => {
+    setSelectedTypes((prev) => {
+      const next = new Set(prev);
+      if (next.has(type)) next.delete(type); else next.add(type);
+      writeSessionSet(LIVE_FEED_FILTER_TYPES_KEY, next);
+      return next;
+    });
+  };
+
+  const handleModuleChange = (mod: string) => {
+    setSelectedModule(mod);
+    writeSessionString(LIVE_FEED_FILTER_MODULE_KEY, mod);
+  };
+
+  const filteredEvents = events.filter((ev) => {
+    if (selectedTypes.size > 0 && !selectedTypes.has(ev.eventType)) return false;
+    if (selectedModule && ev.moduleId !== selectedModule) return false;
+    return true;
+  });
+
+  const activeFilterCount = selectedTypes.size + (selectedModule ? 1 : 0);
+
+  const ghostTypes   = [...selectedTypes].filter((t) => !allEventTypes.includes(t));
+  const moduleIsGhost = selectedModule !== "" && !allModules.includes(selectedModule);
+  const hasGhostFilters = ghostTypes.length > 0 || moduleIsGhost;
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <style>{FLASH_KEYFRAMES}</style>
 
+      {/* Header row */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
           <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(196,97,10,0.5)", marginBottom: 3 }}>
@@ -1316,8 +1377,133 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
         <style>{`@keyframes feedPulse{0%,100%{opacity:1}50%{opacity:0.35}}`}</style>
       </div>
 
+      {/* Filter controls */}
+      {events.length > 0 && (
+        <div style={{
+          display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center",
+          padding: "12px 16px",
+          background: "rgba(255,255,255,0.025)",
+          border: "1px solid rgba(255,255,255,0.06)",
+          borderRadius: 10,
+        }}>
+          {/* Event type pills */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center", flex: 1 }}>
+            <span style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.25)", marginRight: 2, whiteSpace: "nowrap" }}>
+              TYPE
+            </span>
+            {allEventTypes.map((type) => {
+              const active = selectedTypes.has(type);
+              return (
+                <button
+                  key={type}
+                  onClick={() => toggleType(type)}
+                  style={{
+                    background: active ? "rgba(196,97,10,0.22)" : "rgba(255,255,255,0.04)",
+                    border: `1px solid ${active ? "rgba(196,97,10,0.55)" : "rgba(255,255,255,0.08)"}`,
+                    borderRadius: 20, padding: "3px 10px",
+                    fontSize: 10, fontWeight: active ? 700 : 400, letterSpacing: "0.08em",
+                    color: active ? "#C4610A" : "rgba(245,237,216,0.45)",
+                    cursor: "pointer", transition: "all 0.15s",
+                    fontFamily: "monospace",
+                  }}
+                >
+                  {type}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Module dropdown */}
+          {allModules.length > 0 && (
+            <>
+              <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)", flexShrink: 0 }} />
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(245,237,216,0.25)", whiteSpace: "nowrap" }}>
+                  MODULE
+                </span>
+                <select
+                  value={selectedModule}
+                  onChange={(e) => handleModuleChange(e.target.value)}
+                  style={{
+                    background: selectedModule ? "rgba(196,97,10,0.15)" : "rgba(255,255,255,0.04)",
+                    border: `1px solid ${selectedModule ? "rgba(196,97,10,0.45)" : "rgba(255,255,255,0.1)"}`,
+                    borderRadius: 6, padding: "4px 8px",
+                    fontSize: 10, color: selectedModule ? "#C4610A" : "rgba(245,237,216,0.45)",
+                    cursor: "pointer", outline: "none",
+                    fontFamily: "monospace", letterSpacing: "0.05em",
+                  }}
+                >
+                  <option value="">ALL</option>
+                  {moduleIsGhost && (
+                    <option key="__ghost__" value={selectedModule} disabled>
+                      {selectedModule} (not in window)
+                    </option>
+                  )}
+                  {allModules.map((mod) => (
+                    <option key={mod} value={mod}>{mod}</option>
+                  ))}
+                </select>
+              </div>
+            </>
+          )}
+
+          {/* Clear button */}
+          {activeFilterCount > 0 && (
+            <button
+              onClick={() => {
+                setSelectedTypes(new Set());
+                setSelectedModule("");
+                writeSessionSet(LIVE_FEED_FILTER_TYPES_KEY, new Set());
+                writeSessionString(LIVE_FEED_FILTER_MODULE_KEY, "");
+              }}
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                borderRadius: 6, padding: "3px 10px",
+                fontSize: 9, letterSpacing: "0.14em",
+                color: "rgba(245,237,216,0.35)",
+                cursor: "pointer", transition: "all 0.15s",
+                whiteSpace: "nowrap",
+              }}
+            >
+              CLEAR ({activeFilterCount})
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Stale filter hint */}
+      {hasGhostFilters && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: 8,
+          padding: "7px 12px",
+          background: "rgba(196,97,10,0.07)",
+          border: "1px solid rgba(196,97,10,0.2)",
+          borderRadius: 7,
+          fontSize: 10, color: "rgba(196,97,10,0.75)", letterSpacing: "0.08em",
+        }}>
+          <span style={{ fontSize: 12 }}>⚠</span>
+          <span>
+            {[
+              ghostTypes.length > 0 && `${ghostTypes.join(", ")} not in current window`,
+              moduleIsGhost && `module "${selectedModule}" not in current window`,
+            ].filter(Boolean).join(" · ")}
+            {" — filters still active; clear to show all events"}
+          </span>
+        </div>
+      )}
+
+      {/* Filtered count note */}
+      {activeFilterCount > 0 && events.length > 0 && (
+        <div style={{ fontSize: 10, color: "rgba(245,237,216,0.3)", letterSpacing: "0.1em" }}>
+          Showing {filteredEvents.length} of {events.length} event{events.length !== 1 ? "s" : ""}
+        </div>
+      )}
+
       {events.length === 0 ? (
         <EmptyState label="No telemetry events recorded yet. Emit events from SmokeCraft to see them here." />
+      ) : filteredEvents.length === 0 ? (
+        <EmptyState label="No events match the active filters. Try removing a filter pill or clearing all filters." />
       ) : (
         <div style={{
           background: SURFACE,
@@ -1339,7 +1525,7 @@ function LiveFeedTab({ events, newEventIds }: { events: RecentEvent[]; newEventI
             <span style={{ textAlign: "right" }}>TIME</span>
           </div>
 
-          {events.map((ev) => {
+          {filteredEvents.map((ev) => {
             const isNew = newEventIds.has(ev.id);
             return (
               <div
