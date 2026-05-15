@@ -89,15 +89,17 @@ export default function RitualGate({ craftType, theme, onChamberBegin, onBack }:
     return () => clearTimeout(t);
   }, [phase, craftType]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Already at SWIPE — gate is inert ────────────────────────────────────
-  if (phase === "SWIPE") return null;
+  // CHAMBER exit duration — keep in sync with the chamber motion transition below
+  const CHAMBER_EXIT_MS = 2800;
 
   return (
-    // Gate layer: positioned fixed above everything, covers full viewport
-    <div style={{ position: "fixed", inset: 0, zIndex: 180 }}>
+    // Gate layer: positioned fixed above everything, covers full viewport.
+    // We keep this mounted even during the SWIPE phase so AnimatePresence can
+    // run the CHAMBER exit dissolve before navigation occurs.
+    <div style={{ position: "fixed", inset: 0, zIndex: 180, pointerEvents: phase === "SWIPE" ? "none" : undefined }}>
       <AnimatePresence mode="wait">
 
-        {/* ── Step 2: CINEMATIC INTRO ────────────────────────────────────── */}
+        {/* ── Cinematic Intro ───────────────────────────────────────────── */}
         {phase === "INTRO" && (
           <motion.div
             key="intro"
@@ -114,7 +116,7 @@ export default function RitualGate({ craftType, theme, onChamberBegin, onBack }:
           </motion.div>
         )}
 
-        {/* ── Step 3: PITCH-BLACK BLACKOUT (telemetry_status: ARMED) ─────── */}
+        {/* ── Pitch-black Blackout (telemetry armed) ───────────────────── */}
         {phase === "BLACKOUT" && (
           <motion.div
             key="blackout"
@@ -160,7 +162,7 @@ export default function RitualGate({ craftType, theme, onChamberBegin, onBack }:
           </motion.div>
         )}
 
-        {/* ── Step 4: INITIATION CHAMBER ────────────────────────────────── */}
+        {/* ── Initiation Chamber ───────────────────────────────────────── */}
         {phase === "CHAMBER" && (
           <motion.div
             key="chamber"
@@ -176,8 +178,11 @@ export default function RitualGate({ craftType, theme, onChamberBegin, onBack }:
               onBegin={() => {
                 if (doneRef.current) return;
                 doneRef.current = true;
+                // Advance phase to SWIPE — AnimatePresence runs the chamber
+                // exit blur+scale dissolve (CHAMBER_EXIT_MS). Defer navigation
+                // callback until after that dissolve completes.
                 setPhase("SWIPE");
-                onChamberBegin();
+                setTimeout(onChamberBegin, CHAMBER_EXIT_MS);
               }}
               onBack={onBack}
             />

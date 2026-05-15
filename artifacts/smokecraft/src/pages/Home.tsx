@@ -829,7 +829,7 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* ── Stage 2: Sovereign PIN Gate ─────────────────────────────── */}
+      {/* ── Ritual Moment 2: Sovereign PIN Gate ──────────────────────── */}
       <AnimatePresence>
         {phase === "pin_gate" && (
           <PinGate
@@ -842,7 +842,7 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* ── Stage 2.5: NOVEE OS Presence Environment — E.A.T. Interface ── */}
+      {/* ── Ritual Moment 2.5: NOVEE OS Presence Environment ─────────── */}
       <AnimatePresence>
         {phase === "presence" && (
           <PresenceEnvironment
@@ -900,7 +900,7 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* ── Stage 3: Terroir Architecture — Session 01 / Step 1 of 14 ── */}
+      {/* ── Ritual Moment 3: Terroir Architecture — Session 01 ──────── */}
       <AnimatePresence>
         {phase === "terroir" && (
           <TerroirArchitecture
