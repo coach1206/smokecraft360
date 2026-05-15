@@ -341,6 +341,7 @@ const EAT_LS_KEY              = "eat_dashboard_days";
 const EAT_LS_COMPARE_KEY      = "eat_dashboard_compare";
 const EAT_LS_COMPARE_DAYS_KEY = "eat_dashboard_compare_days";
 const EAT_LS_PRESETS_KEY      = "eat_dashboard_presets";
+const EAT_LS_TAB_KEY          = "eat_dashboard_tab";
 
 type SavedPreset = { name: string; days: number };
 
@@ -385,6 +386,10 @@ function parseTabFromSearch(search: string): DashTab {
     const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
     const raw = params.get("tab");
     if (raw && (VALID_TABS as string[]).includes(raw)) return raw as DashTab;
+  } catch { /* ignore */ }
+  try {
+    const stored = localStorage.getItem(EAT_LS_TAB_KEY);
+    if (stored && (VALID_TABS as string[]).includes(stored)) return stored as DashTab;
   } catch { /* ignore */ }
   return "overview";
 }
@@ -611,6 +616,7 @@ export default function EATDashboard() {
 
   const setTab = useCallback((t: DashTab) => {
     setTabState(t);
+    try { localStorage.setItem(EAT_LS_TAB_KEY, t); } catch { /* ignore */ }
     const url = new URL(window.location.href);
     if (t === "overview") {
       url.searchParams.delete("tab");
