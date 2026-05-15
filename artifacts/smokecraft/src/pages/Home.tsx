@@ -15,6 +15,7 @@ import { initEAT, extractAPIParams } from "@/components/CinematicLanding/EATCont
 import type { EATState } from "@/components/CinematicLanding/EATController";
 import { NoveeRegistry } from "@/lib/NoveeRegistry";
 import type { NoveePersistedState } from "@/lib/NoveeRegistry";
+import NoveeOrchestrator from "@/lib/NoveeOrchestrator";
 import { ResumeSessionModal } from "@/components/CinematicLanding/ResumeSessionModal";
 import { CommandHubPanel } from "@/components/CinematicLanding/CommandHubPanel";
 import { useLocation } from "wouter";
@@ -519,6 +520,7 @@ export default function Home() {
       });
       setResults(data);
       NoveeRegistry.clearLedger();
+      NoveeOrchestrator.reset();
       // Fire recommendation_view event for each recommended product, tagging campaignId if set
       for (const rec of data.recommendations) {
         trackEvent({
@@ -613,6 +615,7 @@ export default function Home() {
 
   function handleDiscard() {
     NoveeRegistry.clearLedger();
+    NoveeOrchestrator.reset();
     setShowResume(false);
     setSavedRitual(null);
   }
@@ -831,7 +834,10 @@ export default function Home() {
         {phase === "pin_gate" && (
           <PinGate
             key="pin-gate"
-            onSuccess={() => setPhase("presence")}
+            onSuccess={() => {
+                NoveeOrchestrator.handleGateSuccess(true);
+                setPhase("presence");
+              }}
           />
         )}
       </AnimatePresence>
@@ -928,7 +934,7 @@ export default function Home() {
             }}
             onStepChange={(absStep) => {
               setCurrentRitualStep(absStep);
-              NoveeRegistry.applyTheme(absStep);
+              NoveeOrchestrator.executeNextPhase(absStep);
             }}
             onComplete={(data) => {
               setRitualData(data as RitualData);
@@ -980,7 +986,7 @@ export default function Home() {
             }}
             onStepChange={(absStep) => {
               setCurrentRitualStep(absStep);
-              NoveeRegistry.applyTheme(absStep);
+              NoveeOrchestrator.executeNextPhase(absStep);
             }}
             onComplete={(_data) => {
               /* All ritual sessions sealed — extract API params from the
