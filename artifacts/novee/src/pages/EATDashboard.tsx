@@ -783,7 +783,7 @@ export default function EATDashboard() {
                 compareDays={compareDays}
               />
             )}
-            {tab === "modules"   && <ModulesTab data={data} />}
+            {tab === "modules"   && <ModulesTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
             {tab === "ritual"    && <RitualTab data={data} compareEnabled={compareEnabled} compareDays={compareDays} />}
             {tab === "products"  && <ProductsTab products={products} loading={productsLoading} days={days} />}
             {tab === "live"      && <LiveFeedTab events={recentEvents} newEventIds={newEventIds} />}
@@ -1126,8 +1126,21 @@ function EventsTab({
   );
 }
 
-function ModulesTab({ data }: { data: TelemetrySummary }) {
-  const maxEvents = Math.max(1, ...data.moduleUsage.map((m) => m.event_count));
+function ModulesTab({
+  data,
+  compareEnabled,
+  compareDays,
+}: {
+  data: TelemetrySummary;
+  compareEnabled: boolean;
+  compareDays: number;
+}) {
+  const cmp = compareEnabled ? data.comparison : null;
+  const allCounts = [
+    ...data.moduleUsage.map((m) => m.event_count),
+    ...(cmp ? cmp.moduleUsage.map((m) => m.event_count) : []),
+  ];
+  const maxEvents = Math.max(1, ...allCounts);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
@@ -1137,22 +1150,46 @@ function ModulesTab({ data }: { data: TelemetrySummary }) {
         <EmptyState label="No module usage data yet." />
       ) : (
         <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "24px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
-          {data.moduleUsage.map((m, i) => (
-            <div key={m.module_slug}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                <div style={{ fontSize: 12, fontWeight: 500, color: "#F5EDD8" }}>{m.module_name}</div>
-                <div style={{ fontSize: 11, color: "rgba(245,237,216,0.5)" }}>{m.event_count.toLocaleString()} events</div>
+          {data.moduleUsage.map((m, i) => {
+            const cmpModule = cmp?.moduleUsage.find((c) => c.module_slug === m.module_slug);
+            const cmpCount  = cmpModule?.event_count ?? 0;
+            return (
+              <div key={m.module_slug}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: "#F5EDD8" }}>{m.module_name}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    {cmp && <DeltaBadge current={m.event_count} prior={cmpCount} />}
+                    <div style={{ fontSize: 11, color: "rgba(245,237,216,0.5)" }}>{m.event_count.toLocaleString()} events</div>
+                  </div>
+                </div>
+                <div style={{ position: "relative", height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                  {/* Comparison bar (behind) */}
+                  {cmp && (
+                    <div style={{
+                      position: "absolute", top: 0, left: 0,
+                      height: "100%", borderRadius: 2,
+                      width: `${(cmpCount / maxEvents) * 100}%`,
+                      background: "rgba(74,144,217,0.35)",
+                      transition: "width 0.6s ease",
+                    }} />
+                  )}
+                  {/* Primary bar */}
+                  <div style={{
+                    position: "absolute", top: 0, left: 0,
+                    height: "100%", borderRadius: 2,
+                    width: `${(m.event_count / maxEvents) * 100}%`,
+                    background: i === 0 ? ACCENT : ACCENT_DIM,
+                    transition: "width 0.6s ease",
+                  }} />
+                </div>
+                {cmp && cmpModule && (
+                  <div style={{ fontSize: 9, color: COMPARE_COLOR, marginTop: 3, opacity: 0.6 }}>
+                    prior: {cmpCount.toLocaleString()} ({compareDays}D)
+                  </div>
+                )}
               </div>
-              <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
-                <div style={{
-                  height: "100%", borderRadius: 2,
-                  width: `${(m.event_count / maxEvents) * 100}%`,
-                  background: i === 0 ? ACCENT : ACCENT_DIM,
-                  transition: "width 0.6s ease",
-                }} />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
