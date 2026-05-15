@@ -1,0 +1,80 @@
+/**
+ * NOVEE OS 1.0: Central E.A.T. Router & Orchestrator
+ * Authority: Profound Innovations LLC
+ * Objective: Connects the /gate to SmokeCraft Steps 2-13
+ */
+
+import smokeCraftRitual from './smokeCraftRitual';
+import NoveeRegistry from './NoveeRegistry';
+
+const NoveeOrchestrator = {
+  currentState: {
+    mode: "RITUAL",
+    step: 2,
+    authenticated: false,
+    environment: "Luxury Lounge",
+    asset: null
+  },
+
+  // 1. Bridge the /gate PIN validation to the Ritual Entry
+  handleGateSuccess: (pinVerified, selectedAsset) => {
+    if (!pinVerified) {
+      console.error("NOVEE Security Alert: Unauthenticated access attempt.");
+      return { redirect: '/gate', status: "DENIED" };
+    }
+
+    // Initialize session state
+    NoveeOrchestrator.currentState.authenticated = true;
+    NoveeOrchestrator.currentState.asset = selectedAsset;
+
+    // Trigger Step 2 via the Ritual Engine
+    const stepTwoInitialization = smokeCraftRitual.initiateStepTwo({
+      environment: NoveeOrchestrator.currentState.environment,
+      asset: selectedAsset
+    });
+
+    // Commit initial state to the persistent ledger
+    NoveeRegistry.commitToLedger(stepTwoInitialization);
+
+    return {
+      redirect: '/smokecraft/step2',
+      status: "SOVEREIGN_ACTIVE",
+      payload: stepTwoInitialization
+    };
+  },
+
+  // 2. Synchronized Next-Step Progression (Steps 2-13)
+  executeNextPhase: () => {
+    const currentStep = NoveeOrchestrator.currentState.step;
+    
+    if (currentStep >= 13) {
+      return { status: "RITUAL_COMPLETE", redirect: '/command-hub' };
+    }
+
+    // Advance via engine logic
+    const progression = smokeCraftRitual.advanceRitual(currentStep);
+    
+    if (progression.ready) {
+      NoveeOrchestrator.currentState.step = progression.nextStep;
+      
+      // Sync environmental theme adjustments
+      const currentTheme = NoveeRegistry.syncEnvironment(progression.nextStep);
+
+      // Log the transaction
+      NoveeRegistry.commitToLedger({
+        step: progression.nextStep,
+        environment: NoveeOrchestrator.currentState.environment,
+        theme: currentTheme,
+        asset: NoveeOrchestrator.currentState.asset
+      });
+
+      return {
+        status: "MORPH_TRIGGERED",
+        nextStep: progression.nextStep,
+        theme: currentTheme
+      };
+    }
+  }
+};
+
+export default NoveeOrchestrator;
