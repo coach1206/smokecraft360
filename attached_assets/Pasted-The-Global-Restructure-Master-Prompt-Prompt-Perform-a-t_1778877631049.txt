@@ -1,0 +1,39 @@
+The Global Restructure Master Prompt
+Prompt: "Perform a total systemic restructure of the application routing, view access permissions, and page layouts to decouple the public-facing guest portals from the internal administrative enterprise layer.
+
+1. Root Route Redirection (/): > * Completely strip down the default / route. It must NOT load the Sovereign Command Center, EEIE dashboard, or any enterprise modules.
+
+Convert the homepage into the public Craft Ritual Collection gateway.
+
+Design this root view with an 'Apple-level' minimalist dark lounge aesthetic. Display exactly four cinematic portal cards: SmokeCraft 360 (Luxury cigar ritual experience), PourCraft 360 (Whiskey • bourbon • cognac pairing), BeerCraft 360 (Craft beer discovery), and WineCraft 360 (Sommelier-guided wine ritual). Eliminate all vape craft text. These must look and feel like premium lifestyle portals, not software applications.
+
+2. Enterprise Isolation & Administrative Hiding: > * Move the entire NOVEE OS Sovereign Command Center, including the Distribution Vault, Hardware Lab, Ambassador Deck, Founder Control, Master Operations, and Vendor Portal, strictly behind authenticated operational sub-routes.
+
+Restrict this view so it is only accessible via explicit paths: /sovereign, /admin, /kernel, /ops, or /eeie.
+
+Thoroughly scrub all guest-facing UI layouts of enterprise terminology, including 'telemetry', 'kernel', 'operations', 'command center', 'distribution vault', 'founder control', 'loyalty engine', and 'revenue brain'.
+
+3. Client-Side Routing Correction: > * Audit the navigation event handlers. Remove any logic inside the public cards or button actions that automatically routes guests to /sovereign-dashboard or /novee.
+
+Map the workspace routing specifically to dedicated, clean lifestyle endpoints: /smokecraft, /pourcraft, /beercraft, and /winecraft.
+
+4. SmokeCraft 360 Fullscreen Cinematic Gateway (/smokecraft): > * Build the /smokecraft view as an absolute immersive experience. Wipe out all grids, sidebars, dashboard metrics, and settings cards.
+
+Implement a fullscreen cinematic hero wrapper. Set the background to dark ambient lounge lighting featuring animated wisps of moving smoke and soft ember particle effects.
+
+Place a beautifully typeset, high-contrast title in the center: SMOKECRAFT 360, with the elegant subtext: 'Every blend tells a story.'
+
+Below the main title typography, render exactly three premium button components styled in micro-bordered smoked chrome or brushed titanium: 'Enter Ritual' (routes directly to the Step 2 protocol), 'Continue Session' (recovers state from the E.A.T. registry), and 'Golden Box Challenge'.
+
+5. Compilation & Build Execution: > * Overwrite the main router (such as App.jsx, main.jsx, or routes.js) and component files to enforce this clean separation of concerns.
+
+Recompile the application and launch the dev environment live preview directly onto the brand-new, public-facing Craft Ritual homepage."
+
+What Happens Next
+Drop this prompt directly into your Replit Agent panel. The agent will execute the following file system changes:
+
+Isolate: It will take the dashboard layout currently visible in your screenshot and lock it inside a protected file like pages/admin/SovereignDashboard.jsx assigned only to /sovereign.
+
+Re-route: It will create a clean guest landing page at pages/Home.jsx showing only your four high-end hospitality experiences.
+
+Immerse: It will craft a dedicated, standalone fullscreen cinematic component for /smokecraft with smoke animations, cleaning up the guest experience before they begin Step 2 o
