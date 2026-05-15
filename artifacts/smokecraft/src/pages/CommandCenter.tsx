@@ -257,20 +257,34 @@ export default function CommandCenter() {
                   }}>🔥 Trending</div>
                 )}
                 {isLocked && (
-                  <div style={{
-                    position: "absolute", top: 10, right: 12,
-                    display: "flex", alignItems: "center", gap: 4,
-                    fontSize: 9, fontWeight: 700, letterSpacing: "0.12em",
-                    textTransform: "uppercase",
-                    color: "#D48B00",
-                    background: "rgba(18,14,8,0.90)",
-                    border: "1px solid rgba(212,139,0,0.45)",
-                    padding: "3px 8px", borderRadius: 999,
-                    backdropFilter: "blur(8px)",
-                  }}>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.72 }}
+                    animate={{ opacity: [null, 1, 0.72, 1], scale: 1 }}
+                    transition={{
+                      scale: { duration: 0.22, ease: [0.34, 1.56, 0.64, 1] },
+                      opacity: {
+                        times: [0, 0.18, 0.6, 1],
+                        duration: 3.6,
+                        repeat: Infinity,
+                        repeatDelay: 1.4,
+                        ease: "easeInOut",
+                      },
+                    }}
+                    style={{
+                      position: "absolute", top: 10, right: 12,
+                      display: "flex", alignItems: "center", gap: 4,
+                      fontSize: 9, fontWeight: 700, letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      color: "#D48B00",
+                      background: "rgba(18,14,8,0.90)",
+                      border: "1px solid rgba(212,139,0,0.45)",
+                      padding: "3px 8px", borderRadius: 999,
+                      backdropFilter: "blur(8px)",
+                    }}
+                  >
                     <Lock size={9} strokeWidth={2.5} color="#D48B00" />
                     Sovereign Required
-                  </div>
+                  </motion.div>
                 )}
                 <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 16, fontWeight: 700, color: isLocked ? "rgba(245,235,220,0.55)" : "rgba(245,235,220,0.96)", marginBottom: 3, textShadow: "0 1px 6px rgba(0,0,0,0.75)" }}>{tile.title}</div>
