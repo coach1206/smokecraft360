@@ -76,7 +76,7 @@ router.post("/artisan-orders", async (req, res) => {
 
   const result = await sendEmail({
     to:      "jc@360enterprisesservices.com",
-    subject: `◈ AXIOM OS — ${CRAFT_LABELS[order.craft] ?? "Commission"} ${orderId}`,
+    subject: `◈ NOVEE OS — ${CRAFT_LABELS[order.craft] ?? "Commission"} ${orderId}`,
     html:    buildEmail({ ...order, orderId, ts }),
   });
 
@@ -147,7 +147,7 @@ function buildEmail(o: {
       <div style="display:inline-block;background:#D4AF3714;border:1px solid #D4AF3770;
                   color:#D4AF37;font-size:9px;letter-spacing:.24em;
                   padding:6px 18px;border-radius:999px">
-        ◈ AXIOM OS · ${o.craft.toUpperCase()}CRAFT 360
+        ◈ NOVEE OS · ${o.craft.toUpperCase()}CRAFT 360
       </div>
       <div style="color:#F5F2ED;font-size:24px;font-weight:300;letter-spacing:.2em;
                   text-transform:uppercase;margin:18px 0 4px">
@@ -180,7 +180,7 @@ function buildEmail(o: {
     <!-- Footer -->
     <div style="margin-top:36px;text-align:center;
                 color:#D4AF3730;font-size:8px;letter-spacing:.16em">
-      AXIOM OS · MASTER ARTISAN BRIDGE · jc@360enterprisesservices.com
+      NOVEE OS · MASTER ARTISAN BRIDGE · jc@360enterprisesservices.com
     </div>
   </div>
 </body>

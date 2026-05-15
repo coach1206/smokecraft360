@@ -1,5 +1,5 @@
 /**
- * enterpriseExecutionEngine.ts — AXIOM OS Enterprise Execution Backbone.
+ * enterpriseExecutionEngine.ts — NOVEE OS Enterprise Execution Backbone.
  *
  * Consolidated single-file module providing four engines not covered by the
  * individual revenue/ service classes:

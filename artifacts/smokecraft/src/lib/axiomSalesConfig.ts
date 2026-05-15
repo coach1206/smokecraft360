@@ -1,5 +1,5 @@
 // ============================================================
-// AXIOM OS — SALES + LICENSING CONFIG ENGINE
+// NOVEE OS — SALES + LICENSING CONFIG ENGINE
 // XEI + EEIS COMMERCIAL INFRASTRUCTURE
 // ============================================================
 

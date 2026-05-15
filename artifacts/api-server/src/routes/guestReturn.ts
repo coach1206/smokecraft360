@@ -8,7 +8,7 @@
  *       is the guest's permanent cross-venue credential.
  *
  * This is the "You Belong Here" moment: a returning guest walks into any
- * Axiom OS venue, enters their last name and phone digits, and their entire
+ * NOVEE OS venue, enters their last name and phone digits, and their entire
  * Mastery history, Mentor, and Golden Box progress loads instantly.
  */
 

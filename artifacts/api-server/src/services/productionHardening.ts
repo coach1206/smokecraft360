@@ -1,5 +1,5 @@
 /**
- * productionHardening.ts — AXIOM OS Production Hardening Layer
+ * productionHardening.ts — NOVEE OS Production Hardening Layer
  *
  * Provides:
  *   initProductionIndexes()  — CREATE INDEX IF NOT EXISTS on all high-traffic tables

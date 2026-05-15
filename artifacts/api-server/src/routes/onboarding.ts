@@ -141,7 +141,7 @@ async function seedVenueDefaults(
 
   // 4. Seed welcome + per-craft starter campaigns
   const campaignSeeds: Array<{ name: string; type: CampaignType; xpMultiplier: number; rewardBonus: number }> = [
-    { name: "Welcome to Axiom OS",  type: "GENERAL", xpMultiplier: 1.5, rewardBonus: 10  },
+    { name: "Welcome to NOVEE OS",  type: "GENERAL", xpMultiplier: 1.5, rewardBonus: 10  },
     ...crafts.map(craft => ({
       name:         `${craft.charAt(0).toUpperCase() + craft.slice(1)}Craft Launch Promotion`,
       type:         "GENERAL" as CampaignType,

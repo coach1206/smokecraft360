@@ -1,5 +1,5 @@
 /**
- * runtimeActivation.ts — AXIOM OS Runtime Activation Service
+ * runtimeActivation.ts — NOVEE OS Runtime Activation Service
  *
  * Runs structured health checks across all subsystems at boot time.
  * Caches a structured ActivationReport; exposed via GET /api/axiom/activation/status.
@@ -119,7 +119,7 @@ export class RuntimeActivationService {
   }
 
   static async run(): Promise<ActivationReport> {
-    logger.info("AXIOM OS — Runtime Activation starting");
+    logger.info("NOVEE OS — Runtime Activation starting");
 
     const checks = await Promise.all([
 
@@ -426,7 +426,7 @@ export class RuntimeActivationService {
 
     logger.info(
       { overallStatus, activeCount, degradedCount, offlineCount },
-      "AXIOM OS — Runtime Activation complete",
+      "NOVEE OS — Runtime Activation complete",
     );
 
     axiomBus.emitSignal("TENANT_PROVISIONED", {

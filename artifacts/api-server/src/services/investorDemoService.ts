@@ -1,5 +1,5 @@
 /**
- * InvestorDemoEngine — Axiom OS Expansion & Valuation Engine
+ * InvestorDemoEngine — NOVEE OS Expansion & Valuation Engine
  *
  * Two derivation functions, faithful to the spec:
  *

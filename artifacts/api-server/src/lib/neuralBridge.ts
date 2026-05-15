@@ -1,7 +1,7 @@
 /**
  * neuralBridge.ts — Cross-Engine Neural Bridge
  *
- * The Neural Bridge is the real-time pub-sub spine of Axiom OS.
+ * The Neural Bridge is the real-time pub-sub spine of NOVEE OS.
  * When a guest interacts (swipe order, enrollment, craft session), this module
  * fans out to all 4 engines in parallel, then broadcasts every result via
  * Socket.io so owner dashboards and the kiosk UI update within milliseconds.

@@ -17,7 +17,7 @@ const TRAINING_ACCOUNTS = [
     role:        "venue_owner",
     roleLabel:   "Venue Owner",
     name:        "Demo Owner",
-    description: "Full access to all Axiom OS modules. Use for owner training and investor demos.",
+    description: "Full access to all NOVEE OS modules. Use for owner training and investor demos.",
     color:       "#d4af37",
   },
   {

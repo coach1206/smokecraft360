@@ -1,5 +1,5 @@
 /**
- * Investor Demo API — Axiom OS Expansion & Valuation Engine
+ * Investor Demo API — NOVEE OS Expansion & Valuation Engine
  *
  * GET /api/investor-demo/snapshot
  *   Live DB counts → full valuation + revenue streams + scale projections

@@ -1,7 +1,7 @@
 /**
  * ProvisioningEngine — Tier-to-Feature Provisioning.
  *
- * Maps AXIOM OS subscription tiers to their included feature keys.
+ * Maps NOVEE OS subscription tiers to their included feature keys.
  * On tier activation, bulk-provisions all included features.
  * On tier downgrade, revokes features not in the new tier.
  *

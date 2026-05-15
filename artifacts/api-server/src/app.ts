@@ -571,7 +571,7 @@ if (process.env["NODE_ENV"] !== "test") {
   Promise.all([
     initProductionIndexes(),
     RuntimeActivationService.run(),
-  ]).catch(err => logger.error({ err }, "AXIOM OS — startup hardening failed"));
+  ]).catch(err => logger.error({ err }, "NOVEE OS — startup hardening failed"));
 }
 
 // ── 404 + global error handler ────────────────────────────────────────────────
