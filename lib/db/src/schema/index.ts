@@ -163,3 +163,4 @@ export * from "./engagementScores";
 export * from "./distributedCluster";
 export * from "./kernelModuleSlugHistory";
 export * from "./kernelModeAuditLog";
+export * from "./supply360";

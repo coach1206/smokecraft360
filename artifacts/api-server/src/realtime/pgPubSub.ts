@@ -29,6 +29,7 @@ const CHANNELS = [
   "twin",
   "telemetry",
   "cognition",
+  "supply",
 ] as const;
 
 export type PubSubChannel = typeof CHANNELS[number];
@@ -185,6 +186,17 @@ class PgPubSub {
         const venueId = payload["venueId"] as string | undefined;
         if (venueId) {
           io.to(`ops:${venueId}`).emit("cognition_update", payload);
+        }
+      } catch { /* */ }
+    });
+
+
+    this.subscribe("supply", (payload) => {
+      try {
+        const io = getIO();
+        const venueId = payload["venueId"] as string | undefined;
+        if (venueId) {
+          io.to(`ops:${venueId}`).emit("supply_update", payload);
         }
       } catch { /* */ }
     });

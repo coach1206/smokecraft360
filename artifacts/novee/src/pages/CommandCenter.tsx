@@ -29,6 +29,31 @@ interface OrchestrationEvent {
   ts?:        number;
 }
 
+interface SupplyEntry {
+  id:              string;
+  sku:             string;
+  productName:     string;
+  category:        string;
+  quantityOnHand:  number;
+  reorderThreshold:number;
+  unit:            string;
+  status:          string;
+  supplierName?:   string | null;
+  lastMutatedAt:   string;
+}
+
+interface SupplyLedgerEntry {
+  id:               string;
+  entryId:          string;
+  mutationType:     string;
+  quantityDelta:    number;
+  previousQuantity: number;
+  newQuantity:      number;
+  operatorId?:      string | null;
+  broadcastedAt?:   string | null;
+  createdAt:        string;
+}
+
 interface AwarenessReport {
   overallScore:      number;
   staffReadiness:    number;
@@ -181,7 +206,7 @@ function EventFeed({ events }: { events: OrchestrationEvent[] }) {
 export default function CommandCenter() {
   const [venueId,   setVenueId]   = useState(DEMO_VENUE);
   const [connected, setConnected] = useState(false);
-  const [tab,       setTab]       = useState<"overview"|"awareness"|"social"|"temporal"|"adaptive"|"edge"|"learning"|"knowledge"|"compliance"|"experience">("overview");
+  const [tab,       setTab]       = useState<"overview"|"awareness"|"social"|"temporal"|"adaptive"|"edge"|"learning"|"knowledge"|"compliance"|"experience"|"supply">("overview");
 
   const [intelligence, setIntelligence] = useState<IntelligenceScore>({
     overallScore:0, engagementLevel:0, socialEnergy:0, activeGuests:0, decisionCount:0,
@@ -216,6 +241,10 @@ export default function CommandCenter() {
   const [ambientState,  setAmbientState]  = useState<{ sceneName: string; accentColor: string; glowIntensity: number; backgroundVariant: string } | null>(null);
   const [motionTokens,  setMotionTokens]  = useState<Record<string, { label: string; color: string; animate: boolean; priority: number }> | null>(null);
 
+  // Supply Chain & Logistics state
+  const [supplyEntries, setSupplyEntries] = useState<SupplyEntry[]>([]);
+  const [supplyLedger,  setSupplyLedger]  = useState<SupplyLedgerEntry[]>([]);
+
   const socketRef = useRef<Socket | null>(null);
   const inputRef  = useRef<HTMLInputElement>(null);
 
@@ -242,6 +271,8 @@ export default function CommandCenter() {
       // Experience layer
       fetch(`${base}/experience/ambient/${vid}`).then(r => r.json()).then((d: typeof ambientState) => setAmbientState(d)).catch(() => {}),
       fetch(`${base}/experience/tokens`).then(r => r.json()).then((d: typeof motionTokens) => setMotionTokens(d)),
+      fetch(`${base}/supply/inventory/${vid}`).then(r => r.json()).then((d: { entries?: SupplyEntry[] }) => { if (Array.isArray(d.entries)) setSupplyEntries(d.entries); }).catch(() => {}),
+      fetch(`${base}/supply/ledger/${vid}`).then(r => r.json()).then((d: { entries?: SupplyLedgerEntry[] }) => { if (Array.isArray(d.entries)) setSupplyLedger(d.entries); }).catch(() => {}),
     ]);
   }, []);
 
@@ -265,6 +296,25 @@ export default function CommandCenter() {
     socket.on("social_update", () => { fetchPanelData(vid).catch(() => {}); });
     socket.on("temporal_update", () => { fetchPanelData(vid).catch(() => {}); });
     socket.on("cognition_update", () => { fetchPanelData(vid).catch(() => {}); });
+    socket.on("supply_update", (p: Partial<{ venueId: string; sku: string; productName: string; mutationType: string; quantityDelta: number; previousQuantity: number; newQuantity: number; status: string; broadcastedAt: string; ledgerId: string; entryId: string }>) => {
+      if (p.entryId) {
+        // Prepend a ledger entry from the live payload
+        const liveRow: SupplyLedgerEntry = {
+          id:               p.ledgerId ?? p.entryId ?? String(Date.now()),
+          entryId:          p.entryId ?? "",
+          mutationType:     p.mutationType ?? "adjustment",
+          quantityDelta:    p.quantityDelta ?? 0,
+          previousQuantity: p.previousQuantity ?? 0,
+          newQuantity:      p.newQuantity ?? 0,
+          operatorId:       null,
+          broadcastedAt:    p.broadcastedAt ?? new Date().toISOString(),
+          createdAt:        p.broadcastedAt ?? new Date().toISOString(),
+        };
+        setSupplyLedger(prev => [liveRow, ...prev].slice(0, 50));
+      }
+      // Refresh full inventory list in background
+      fetchPanelData(vid).catch(() => {});
+    });
 
     socketRef.current = socket;
     fetchPanelData(vid).catch(() => {});
@@ -294,7 +344,7 @@ export default function CommandCenter() {
     } catch { /* */ } finally { setLoadingRun(false); }
   };
 
-  const TABS = ["overview","awareness","social","temporal","adaptive","edge","learning","knowledge","compliance","experience"] as const;
+  const TABS = ["overview","awareness","social","temporal","adaptive","edge","learning","knowledge","compliance","experience","supply"] as const;
 
   return (
     <div style={{ minHeight:"100vh", background:"#F5F2ED", fontFamily:"'Cormorant Garamond', serif", padding:"0 0 60px" }}>
@@ -943,6 +993,132 @@ export default function CommandCenter() {
           </Panel>
         )}
       </div>
+
+
+        {/* ── Supply Chain & Logistics Tab ── */}
+        {tab === "supply" && (
+          <>
+            <Panel title="Supply Chain Ledger — Live Feed">
+              {supplyLedger.length === 0 ? (
+                <div style={{ color:"#9A8A7A", fontSize:13, textAlign:"center", padding:"20px 0" }}>
+                  Awaiting SUPPLY_LEDGER_MUTATION events…
+                </div>
+              ) : (
+                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                  {supplyLedger.slice(0, 20).map((row, i) => (
+                    <motion.div key={row.id + i}
+                      initial={{ opacity:0, y:-6 }} animate={{ opacity:1, y:0 }}
+                      style={{ background:"#fff", borderRadius:8, padding:"10px 14px",
+                        border:"1px solid rgba(26,26,27,.08)", display:"flex",
+                        alignItems:"center", justifyContent:"space-between", gap:12 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                        <span style={{ fontSize:10, fontWeight:700, letterSpacing:"0.1em",
+                          textTransform:"uppercase", color:
+                            row.mutationType === "restock"  ? "#2E7D32" :
+                            row.mutationType === "depletion"? "#C62828" :
+                            row.mutationType === "back_order"? "#E65100" :
+                            row.mutationType === "allocation"? "#1565C0" : "#6B5E4E",
+                          background:
+                            row.mutationType === "restock"  ? "rgba(46,125,50,.1)"  :
+                            row.mutationType === "depletion"? "rgba(198,40,40,.1)"  :
+                            row.mutationType === "back_order"? "rgba(230,81,0,.1)"  :
+                            row.mutationType === "allocation"? "rgba(21,101,192,.1)" : "rgba(107,94,78,.1)",
+                          padding:"2px 8px", borderRadius:20 }}>
+                          {row.mutationType}
+                        </span>
+                        <span style={{ fontSize:12, color:"#1A1A1B", fontWeight:600 }}>
+                          {row.quantityDelta > 0 ? "+" : ""}{row.quantityDelta} units
+                        </span>
+                        <span style={{ fontSize:11, color:"#9A8A7A" }}>
+                          {row.previousQuantity} → {row.newQuantity}
+                        </span>
+                      </div>
+                      <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                        {row.operatorId && (
+                          <span style={{ fontSize:10, color:"#6B5E4E" }}>{row.operatorId}</span>
+                        )}
+                        <span style={{ fontSize:10, color:"#9A8A7A" }}>
+                          {row.broadcastedAt ? new Date(row.broadcastedAt).toLocaleTimeString() : "—"}
+                        </span>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </Panel>
+
+            <Panel title="Current Inventory">
+              {supplyEntries.length === 0 ? (
+                <div style={{ color:"#9A8A7A", fontSize:13, textAlign:"center", padding:"20px 0" }}>
+                  No inventory entries. POST to /api/supply/mutation to populate.
+                </div>
+              ) : (
+                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                  {supplyEntries.slice(0, 30).map(entry => (
+                    <div key={entry.id}
+                      style={{ background:"#fff", borderRadius:8, padding:"10px 14px",
+                        border:"1px solid rgba(26,26,27,.08)", display:"flex",
+                        alignItems:"center", justifyContent:"space-between", gap:12 }}>
+                      <div>
+                        <div style={{ fontSize:13, fontWeight:700, color:"#1A1A1B" }}>{entry.productName}</div>
+                        <div style={{ fontSize:11, color:"#9A8A7A" }}>{entry.sku} · {entry.category}</div>
+                      </div>
+                      <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                        <div style={{ textAlign:"right" }}>
+                          <div style={{ fontSize:15, fontWeight:700, color:
+                            entry.status === "in_stock"   ? "#2E7D32" :
+                            entry.status === "low_stock"  ? "#E65100" :
+                            entry.status === "back_ordered"? "#C62828" : "#6B5E4E" }}>
+                            {entry.quantityOnHand} {entry.unit}
+                          </div>
+                          <div style={{ fontSize:10, color:"#9A8A7A", textTransform:"uppercase", letterSpacing:"0.08em" }}>
+                            {entry.status.replace(/_/g, " ")}
+                          </div>
+                        </div>
+                        {entry.quantityOnHand <= entry.reorderThreshold && (
+                          <span style={{ fontSize:9, fontWeight:700, color:"#fff",
+                            background:"#C62828", padding:"2px 7px", borderRadius:20,
+                            letterSpacing:"0.1em", textTransform:"uppercase" }}>
+                            REORDER
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Panel>
+
+            <Panel title="Channel Status">
+              <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                {[
+                  { label:"pgPubSub Channel",   value:"supply — LISTEN active",                  ok:true  },
+                  { label:"Socket.IO Event",     value:"supply_update → ops:<venueId>",            ok:true  },
+                  { label:"Mutation Endpoint",   value:"POST /api/supply/mutation",               ok:true  },
+                  { label:"Ledger Endpoint",     value:"GET /api/supply/ledger/:venueId",         ok:true  },
+                  { label:"Inventory Endpoint",  value:"GET /api/supply/inventory/:venueId",      ok:true  },
+                  { label:"Live Ledger Entries", value:`${supplyLedger.length} in buffer`,        ok:supplyLedger.length > 0 },
+                  { label:"Inventory Entries",   value:`${supplyEntries.length} tracked`,         ok:supplyEntries.length > 0 },
+                ].map(row => (
+                  <div key={row.label} style={{ display:"flex", justifyContent:"space-between",
+                    alignItems:"center", padding:"6px 0",
+                    borderBottom:"1px solid rgba(26,26,27,.06)" }}>
+                    <span style={{ fontSize:12, color:"#6B5E4E" }}>{row.label}</span>
+                    <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                      <span style={{ fontSize:12, color:"#1A1A1B", fontFamily:"monospace" }}>{row.value}</span>
+                      <span style={{ fontSize:9, fontWeight:700,
+                        color: row.ok ? "#2E7D32" : "#9A8A7A",
+                        background: row.ok ? "rgba(46,125,50,.1)" : "rgba(107,94,78,.1)",
+                        padding:"2px 6px", borderRadius:20, textTransform:"uppercase", letterSpacing:"0.08em" }}>
+                        {row.ok ? "LIVE" : "IDLE"}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </>
+        )}
 
       {/* Transport badge */}
       <div style={{ position:"fixed", bottom:16, right:16, fontSize:10, color:"#9A8A7A",
