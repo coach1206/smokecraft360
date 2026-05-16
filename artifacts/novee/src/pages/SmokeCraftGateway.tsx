@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -110,24 +110,167 @@ function loadState(): RitualState {
   return BLANK;
 }
 
-// ── Deterministic particle positions ──────────────────────────────────────────
-const EMBERS = Array.from({ length: 28 }, (_, i) => ({
-  id: i,
-  x: ((i * 3.57 + 4) % 100),
-  size: 1.5 + (i % 5) * 0.6,
-  duration: 6 + (i % 7),
-  delay: (i * 0.37) % 9,
-  drift: ((i % 7) - 3) * 14,
-}));
+// ── Sound Engine (Web Audio API) ──────────────────────────────────────────────
+// Synthesises a crisp mechanical click and a velvet slide tone.
+// AudioContext is created lazily on first user gesture to comply with browser
+// autoplay policies. All calls are try/catch so missing API never breaks UI.
+let _audioCtx: AudioContext | null = null;
+function getAudioCtx(): AudioContext | null {
+  try {
+    if (!_audioCtx) {
+      _audioCtx = new (window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    }
+    if (_audioCtx.state === "suspended") { _audioCtx.resume().catch(() => {}); }
+    return _audioCtx;
+  } catch { return null; }
+}
+function playClick(): void {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  try {
+    const len    = Math.floor(ctx.sampleRate * 0.058);
+    const buf    = ctx.createBuffer(1, len, ctx.sampleRate);
+    const data   = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.11));
+    }
+    const src    = ctx.createBufferSource();
+    src.buffer   = buf;
+    const bpf    = ctx.createBiquadFilter();
+    bpf.type     = "bandpass";
+    bpf.frequency.value = 3400;
+    bpf.Q.value  = 0.7;
+    const gain   = ctx.createGain();
+    gain.gain.setValueAtTime(0.20, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.058);
+    src.connect(bpf); bpf.connect(gain); gain.connect(ctx.destination);
+    src.start();
+  } catch { /* noop */ }
+}
+function playSlide(): void {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  try {
+    const osc   = ctx.createOscillator();
+    const gain  = ctx.createGain();
+    osc.type    = "sine";
+    osc.frequency.setValueAtTime(210, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(130, ctx.currentTime + 0.22);
+    gain.gain.setValueAtTime(0.07, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + 0.22);
+  } catch { /* noop */ }
+}
 
-const SMOKE_BLOBS = [
-  { x: "8%",  w: 600, h: 700, dur: 22, delay: 0   },
-  { x: "24%", w: 480, h: 580, dur: 17, delay: 3   },
-  { x: "46%", w: 700, h: 800, dur: 25, delay: 1.2 },
-  { x: "63%", w: 420, h: 540, dur: 19, delay: 5   },
-  { x: "79%", w: 550, h: 650, dur: 20, delay: 0.6 },
-  { x: "92%", w: 380, h: 480, dur: 16, delay: 8   },
-];
+// ── Voice Assistance Stub ─────────────────────────────────────────────────────
+// Architectural stub for a hands-free voice control pipeline.
+// Activate by wiring a SpeechRecognition or native SDK to the onCommand handler.
+// Expected commands: "begin" | "next" | "back" | "restart" | "continue" | "select [level]"
+type VoiceCommand = "begin" | "next" | "back" | "restart" | "continue";
+function useVoiceAssistance(_onCommand: (cmd: VoiceCommand) => void): void {
+  useEffect(() => {
+    // const SR = window.SpeechRecognition || (window as unknown as { webkitSpeechRecognition: unknown }).webkitSpeechRecognition;
+    // if (!SR) return;
+    // const recognition = new (SR as typeof SpeechRecognition)();
+    // recognition.continuous = true; recognition.lang = "en-US";
+    // recognition.onresult = (e) => { const t = e.results[e.results.length-1][0].transcript.trim().toLowerCase(); ... };
+    // recognition.start();
+    // return () => recognition.stop();
+  }, []);
+}
+
+// ── HTML5 Canvas Particle System ──────────────────────────────────────────────
+// Replaces CSS smoke-blob + ember-rise divs with a real-time Canvas renderer.
+// Two particle types: slow-drifting ambient smoke wisps + rising amber embers.
+interface CanvasParticle {
+  x: number; y: number; vx: number; vy: number;
+  size: number; life: number; maxLife: number;
+  type: "smoke" | "ember";
+}
+function SmokeCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    let raf = 0;
+    const particles: CanvasParticle[] = [];
+    const resize = () => {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+    const spawn = () => {
+      for (let i = 0; i < 4; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: canvas.height + 70,
+          vx: (Math.random() - 0.5) * 0.38,
+          vy: -(0.22 + Math.random() * 0.42),
+          size: 70 + Math.random() * 140,
+          life: 0,
+          maxLife: 400 + Math.floor(Math.random() * 200),
+          type: "smoke",
+        });
+      }
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: canvas.height + 4,
+        vx: (Math.random() - 0.5) * 1.3,
+        vy: -(1.6 + Math.random() * 2.4),
+        size: 1.1 + Math.random() * 1.7,
+        life: 0,
+        maxLife: 85 + Math.floor(Math.random() * 65),
+        type: "ember",
+      });
+    }
+    let frame = 0;
+    const tick = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      frame++;
+      if (frame % 55 === 0) spawn();
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.life++; p.x += p.vx; p.y += p.vy;
+        const t = p.life / p.maxLife;
+        if (p.type === "smoke") {
+          const a = t < 0.15 ? (t / 0.15) * 0.052 : t > 0.78 ? ((1 - t) / 0.22) * 0.052 : 0.052;
+          const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+          g.addColorStop(0, `rgba(188,165,134,${a})`);
+          g.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = g;
+          ctx.fill();
+        } else {
+          const a = t < 0.12 ? t / 0.12 : (1 - t);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(208,108,16,${a * 0.88})`;
+          ctx.shadowBlur = 5;
+          ctx.shadowColor = "rgba(208,108,16,0.45)";
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+        if (p.life >= p.maxLife) particles.splice(i, 1);
+      }
+      raf = requestAnimationFrame(tick);
+    }
+    for (let i = 0; i < 3; i++) spawn();
+    tick();
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
+  }, []);
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 1 }}
+    />
+  );
+}
 
 // ── Shared variants ────────────────────────────────────────────────────────────
 const FADE: Parameters<typeof motion.div>[0] = {
@@ -255,8 +398,11 @@ function MachinedBtn({ children, onClick, disabled, variant = "primary" }: {
 
   return (
     <motion.button
-      whileHover={!disabled ? { scale: 1.01, y: -2 } : {}}
-      whileTap={!disabled ? { scale: 0.98 } : {}}
+      whileHover={!disabled ? { scale: 1.01, y: -2, boxShadow: "0 0 20px rgba(212,175,55,0.20), 0 6px 20px rgba(0,0,0,0.60)" } : {}}
+      whileTap={!disabled ? { scale: 0.97, boxShadow: "inset 0px 4px 12px rgba(0,0,0,0.80)" } : {}}
+      transition={{ duration: 0.10, ease: "easeOut" }}
+      onMouseDown={!disabled ? () => playClick() : undefined}
+      onTouchStart={!disabled ? () => playClick() : undefined}
       onClick={disabled ? undefined : onClick}
       style={{ ...base, ...styles[variant] }}
     >
@@ -271,8 +417,13 @@ function MachinedBtn({ children, onClick, disabled, variant = "primary" }: {
 function SelectionCard({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <motion.div
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
+      whileHover={{ scale: 1.01, boxShadow: selected
+        ? "0 0 32px rgba(223,186,115,0.22), 0 0 0 1px rgba(223,186,115,0.20)"
+        : "0 0 16px rgba(212,175,55,0.10)" }}
+      whileTap={{ scale: 0.97, boxShadow: "inset 0px 4px 12px rgba(0,0,0,0.80)" }}
+      transition={{ duration: 0.10, ease: "easeOut" }}
+      onMouseDown={() => playClick()}
+      onTouchStart={() => playClick()}
       onClick={onClick}
       style={{
         background: selected ? "rgba(35,38,44,0.95)" : "rgba(12,13,15,0.65)",
@@ -281,7 +432,7 @@ function SelectionCard({ selected, onClick, children }: { selected: boolean; onC
         borderRadius: 6,
         padding: "32px 28px",
         cursor: "pointer",
-        transition: "all 0.30s ease",
+        transition: "border 0.30s ease, background 0.30s ease",
       }}
     >
       {children}
@@ -919,6 +1070,17 @@ export default function SmokeCraftGateway() {
   const patch = useCallback((p: Partial<RitualState>) => setRs(prev => ({ ...prev, ...p })), []);
   const goTo  = useCallback((stage: number) => patch({ stage }), [patch]);
 
+  // Voice assistance stub — listens for hands-free control commands.
+  // Swap the SpeechRecognition stub in useVoiceAssistance() for live activation.
+  useVoiceAssistance(useCallback((cmd: VoiceCommand) => {
+    if (cmd === "begin")    goTo(2);
+    else if (cmd === "next" && rs.stage < 10) goTo(rs.stage + 1);
+    else if (cmd === "back") {
+      if (rs.stage <= 1) navigate("/");
+      else goTo(rs.stage - 1);
+    } else if (cmd === "restart") setRs(BLANK);
+  }, [rs.stage, goTo, navigate]));
+
   const hasSession = rs.stage > 1 && !rs.completedAt;
 
   function handleContinue() {
@@ -953,44 +1115,10 @@ export default function SmokeCraftGateway() {
         background: "radial-gradient(ellipse at 50% 100%, rgba(255,176,0,0.02) 0%, transparent 70%)" }} />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;1,300&family=Inter:wght@300;400;500;600&display=swap');
-        @keyframes smoke-rise {
-          0%   { transform: translateY(0) scaleX(1); opacity: 0; }
-          8%   { opacity: 1; }
-          82%  { opacity: 0.18; }
-          100% { transform: translateY(-115vh) scaleX(1.7); opacity: 0; }
-        }
-        @keyframes ember-rise {
-          0%   { transform: translate(0, 0); opacity: 0; }
-          5%   { opacity: 0.90; }
-          78%  { opacity: 0.50; }
-          100% { transform: translate(var(--edrift), -95vh); opacity: 0; }
-        }
       `}</style>
 
-      {/* ── Volumetric smoke blobs ──────────────────────────────────────── */}
-      {SMOKE_BLOBS.map((s, i) => (
-        <div key={i} style={{
-          position: "absolute", bottom: -80, left: s.x,
-          width: s.w, height: s.h,
-          background: "radial-gradient(ellipse, rgba(200,180,155,0.09) 0%, transparent 72%)",
-          filter: "blur(60px)",
-          animation: `smoke-rise ${s.dur}s ${s.delay}s ease-in-out infinite`,
-          transformOrigin: "bottom center", pointerEvents: "none",
-        }} />
-      ))}
-
-      {/* ── Ember particles ──────────────────────────────────────────────── */}
-      {EMBERS.map(e => (
-        <div key={e.id} style={{
-          position: "absolute", bottom: 0, left: `${e.x}%`,
-          width: e.size, height: e.size, borderRadius: "50%",
-          background: "radial-gradient(circle, #D47A20 0%, #C4610A 60%, transparent 100%)",
-          boxShadow: "0 0 5px rgba(196,97,10,0.60)",
-          animation: `ember-rise ${e.duration}s ${e.delay}s ease-out infinite`,
-          "--edrift": `${e.drift}px`,
-          pointerEvents: "none",
-        } as React.CSSProperties} />
-      ))}
+      {/* ── Canvas particle system (smoke wisps + embers) ────────────────── */}
+      <SmokeCanvas />
 
       {/* ── Vignette ─────────────────────────────────────────────────────── */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", background: "radial-gradient(ellipse at center, transparent 35%, rgba(3,2,1,0.90) 100%)" }} />
