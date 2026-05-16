@@ -1,0 +1,118 @@
+FINAL NEXT-MOVE MASTER PROMPT
+
+MISSING / REQUIRED
+
+The EEIS / E.A.T infrastructure now includes:
+
+* universal POS abstraction
+* token vault
+* retry systems
+* inventory sync
+* health monitoring
+* event pipeline
+* offline replay
+* background workers
+* webhook orchestration
+
+BUT the platform is still missing the final layer that transforms it into:
+
+REAL-TIME HOSPITALITY INTELLIGENCE INFRASTRUCTURE
+
+The missing layer is:
+
+1. Live operational event fabric
+2. WebSocket propagation architecture
+3. Redis Pub/Sub orchestration
+4. Device session intelligence
+5. Live lounge telemetry maps
+6. AI behavioral memory engine
+7. Real-time ambient response system
+8. Operational command center
+9. Event replay synchronization
+10. Adapter certification + integrity testing
+
+Without these systems:
+EEIS remains:
+
+* reactive
+    instead of:
+* intelligent
+* predictive
+* alive
+
+⸻
+
+FAILURE PREVENTION CHECKLIST
+
+✔ Socket.IO architecture
+✔ Redis Pub/Sub integration
+✔ Room-based websocket scaling
+✔ Event replay protection
+✔ Reconnect synchronization
+✔ Device heartbeat tracking
+✔ Session expiration handling
+✔ AI telemetry ingestion
+✔ Event deduplication
+✔ Redis-backed websocket scaling
+✔ Operational telemetry compression
+✔ Offline replay recovery
+✔ Adapter certification framework
+✔ Ambient trigger orchestration
+✔ Live lounge heatmaps
+✔ Staff response telemetry
+✔ Active table orchestration
+✔ Backpressure protection
+✔ Event integrity validation
+✔ Real-time operational dashboards
+
+⸻
+
+MASTER PROMPT
+
+Build the FINAL REAL-TIME OPERATIONAL INTELLIGENCE LAYER for EEIS / E.A.T / SmokeCraft 360.
+
+The system already contains:
+
+* universal POS infrastructure
+* telemetry systems
+* aggregation workers
+* retry queues
+* Redis cache
+* inventory synchronization
+* OAuth credential vault
+* offline edge replay
+* health monitoring
+* event processing
+* loyalty/XP infrastructure
+
+Now build the missing:
+
+LIVE OPERATIONAL EVENT FABRIC
+
+This layer must transform EEIS into:
+
+a living hospitality nervous system.
+
+DO NOT build:
+
+* polling-based dashboards
+* temporary websocket hacks
+* frontend-only live updates
+* mock telemetry
+* disconnected event emitters
+
+Everything must be:
+
+* event-driven
+* production-grade
+* scalable
+* multi-tenant
+* edge-compatible
+* Redis-backed
+* operationally intelligent
+
+⸻
+
+REQUIRED BACKEND STRUCTURE
+
+Create:
