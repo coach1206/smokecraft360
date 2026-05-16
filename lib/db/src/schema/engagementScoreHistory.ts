@@ -23,11 +23,11 @@ export const engagementScoreHistoryTable = pgTable(
     createdAt:       timestamp("created_at").notNull().defaultNow(),
   },
   (t) => [
-    index("esh_venue_idx").on(t.venueId),
-    index("esh_guest_idx").on(t.guestId),
-    index("esh_session_idx").on(t.sessionId),
-    index("esh_created_idx").on(t.createdAt),
-    index("esh_score_idx").on(t.score),
+    index("eng_sh_venue_idx").on(t.venueId),
+    index("eng_sh_guest_idx").on(t.guestId),
+    index("eng_sh_session_idx").on(t.sessionId),
+    index("eng_sh_created_idx").on(t.createdAt),
+    index("eng_sh_score_idx").on(t.score),
   ],
 );
 
