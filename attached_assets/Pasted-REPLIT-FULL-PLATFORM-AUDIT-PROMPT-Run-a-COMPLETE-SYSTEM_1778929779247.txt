@@ -1,0 +1,189 @@
+REPLIT FULL PLATFORM AUDIT PROMPT
+
+Run a COMPLETE SYSTEM AUDIT of the entire Novee OS / EEIS / E.A.T codebase currently inside Replit.
+
+DO NOT assume anything is complete simply because files exist.
+
+I want a REAL operational audit.
+
+Audit ALL backend, frontend, distributed infrastructure, cognition systems, orchestration layers, realtime systems, AI systems, POS integrations, edge systems, and deployment layers.
+
+For EVERY subsystem determine:
+
+1. FULLY OPERATIONAL
+- fully wired
+- imported
+- initialized
+- routes connected
+- workers running
+- DB integrated
+- realtime connected
+- production-ready
+
+2. PARTIAL
+- scaffolding exists
+- partially wired
+- mock logic
+- no real execution
+- missing boot integration
+- missing DB persistence
+- missing telemetry integration
+- frontend only
+- backend only
+- no orchestration hookup
+
+3. MISSING
+- referenced in architecture
+- referenced in prompts
+- not implemented
+- placeholder only
+- dead routes
+- dead imports
+- empty files
+- unregistered services
+
+AUDIT THESE AREAS:
+
+CORE INFRASTRUCTURE
+- distributed cluster systems
+- orchestration systems
+- replay systems
+- distributed queues
+- observability
+- resilience
+- governance
+- feature flags
+- policy engine
+- schema evolution
+- archival systems
+
+REALTIME SYSTEMS
+- websocket architecture
+- replay sync
+- heartbeat systems
+- telemetry propagation
+- transport abstraction
+- realtime operational streams
+
+COGNITION SYSTEMS
+- context engine
+- contextual weighting
+- predictive systems
+- state engines
+- operational awareness
+- AI memory
+- orchestration learning
+- reinforcement learning
+- semantic graphs
+- digital twin systems
+
+POS + COMMERCE
+- adapters
+- normalization
+- inventory reconciliation
+- payment state machine
+- mutation engine
+- replay systems
+- table orchestration
+- session correlation
+
+EDGE + OFFLINE
+- edge coordinator
+- local replay
+- offline inference
+- edge queues
+- failover FSM
+- offline venue mode
+- reconnect reconciliation
+
+EXPERIENCE + UI
+- CommandCenter
+- operational overlays
+- topology rendering
+- predictive UI
+- cinematic transitions
+- orchestration motion
+- ambient UI sync
+
+COMPLIANCE + GOVERNANCE
+- GDPR
+- CCPA
+- explainability
+- privacy controls
+- consent tracking
+- rollout management
+- operational governance
+
+LEARNING + AI
+- RL loops
+- embeddings
+- recommendation training
+- environmental learning
+- orchestration learning
+- adaptive optimization
+
+SIMULATION + TESTING
+- synthetic venues
+- orchestration sandbox
+- stress testing
+- replay testing
+- simulation telemetry
+
+DEPLOYMENT + HARDWARE
+- deployment automation
+- edge packaging
+- IoT integration
+- DMX bridge
+- ambient hardware bridge
+- multi-venue federation
+
+FOR EACH AREA REPORT:
+
+- operational status
+- missing integrations
+- dead code
+- placeholder logic
+- duplicate systems
+- unused files
+- orphan workers
+- orphan routes
+- circular dependencies
+- missing imports
+- missing startup hooks
+- missing telemetry propagation
+- missing replay safety
+- missing rollback support
+- missing realtime wiring
+
+ALSO RUN:
+
+- full typecheck
+- route registration validation
+- worker boot validation
+- websocket boot validation
+- DB schema validation
+- startup dependency validation
+- replay integrity validation
+- distributed coordination validation
+- environment variable validation
+- edge failover validation
+
+OUTPUT FORMAT:
+
+1. FULLY OPERATIONAL
+2. PARTIAL
+3. MISSING
+4. HIGH RISK
+5. DEAD/UNUSED
+6. PRODUCTION BLOCKERS
+7. RECOMMENDED NEXT FIXES
+8. TRUE COMPLETION PERCENTAGE
+
+DO NOT GIVE A MARKETING SUMMARY.
+
+DO NOT ASSUME COMPLETION.
+
+DO NOT SCORE BASED ON FILE COUNT.
+
+ONLY SCORE:
+REAL EXECUTIONAL READINESS.
