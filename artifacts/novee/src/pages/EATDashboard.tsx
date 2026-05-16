@@ -623,6 +623,16 @@ export default function EATDashboard() {
   const [renamingPresetDays, setRenamingPresetDays] = useState<number | null>(null);
   const [renameInput, setRenameInput] = useState("");
 
+  useEffect(() => {
+    function handleStorageSync(e: StorageEvent) {
+      if (e.key === EAT_LS_PRESETS_KEY) {
+        setSavedPresets(loadSavedPresets());
+      }
+    }
+    window.addEventListener("storage", handleStorageSync);
+    return () => window.removeEventListener("storage", handleStorageSync);
+  }, []);
+
   const [compareEnabled, setCompareEnabledState] = useState<boolean>(
     () => parseCompareFromSearch(window.location.search),
   );
