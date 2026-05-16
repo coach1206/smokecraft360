@@ -44,6 +44,7 @@ export default function SettingsModule() {
   const [kernelRefreshSuccess, setKernelRefreshSuccess] = useState(false);
   const [activeOrderCount, setActiveOrderCount] = useState<number | null>(null);
   const [activeOrderCountLoading, setActiveOrderCountLoading] = useState(false);
+  const [liveActiveCount, setLiveActiveCount] = useState<number | null>(null);
   const [ownedVenueName, setOwnedVenueName] = useState<string | null>(null);
   const [sovereignReadiness, setSovereignReadiness] = useState<{ ready: boolean; missing: string[] } | null>(null);
   const [sovereignReadinessLoading, setSovereignReadinessLoading] = useState(false);
@@ -59,6 +60,26 @@ export default function SettingsModule() {
       })
       .catch(() => {});
   }, [isKernelAdmin, authUser?.role, authUser?.venueId]);
+
+  useEffect(() => {
+    if (!isKernelAdmin) return;
+    function fetchLiveCount() {
+      const qs = authUser?.role === "super_admin" && venue.id && venue.id !== "default"
+        ? `?venueId=${venue.id}`
+        : "";
+      const headers: HeadersInit = {};
+      if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
+      fetch(`/api/swipe-orders/active-count${qs}`, { headers })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data: { count: number } | null) => {
+          if (data != null) setLiveActiveCount(data.count);
+        })
+        .catch(() => {});
+    }
+    fetchLiveCount();
+    const timer = setInterval(fetchLiveCount, 30_000);
+    return () => clearInterval(timer);
+  }, [isKernelAdmin, authUser?.role, venue.id, authToken]);
 
   async function handleKernelRefresh() {
     setKernelRefreshing(true);
@@ -572,6 +593,16 @@ export default function SettingsModule() {
               <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(26,26,27,0.48)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
                 Kernel Mode
               </span>
+              {isKernelAdmin && liveActiveCount != null && liveActiveCount > 0 && (
+                <span style={{
+                  fontSize: 10, fontWeight: 700, color: "#D48B00",
+                  padding: "2px 7px", borderRadius: 20,
+                  background: "rgba(212,139,0,0.12)", border: "1px solid rgba(212,139,0,0.25)",
+                  letterSpacing: "0.04em", lineHeight: 1,
+                }}>
+                  {liveActiveCount} active session{liveActiveCount === 1 ? "" : "s"}
+                </span>
+              )}
             </div>
             <AnimatePresence>
               {kernelSuccess && (
