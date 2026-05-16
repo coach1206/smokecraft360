@@ -107,7 +107,8 @@ async function runHealthCheck(): Promise<void> {
       }
     }
 
-    const io       = getIO();
+    let io: ReturnType<typeof getIO> | null = null;
+    try { io = getIO(); } catch { /* socket not yet ready — skip broadcasts this cycle */ }
     const now      = new Date().toISOString();
     let changed = 0;
 
@@ -153,8 +154,8 @@ async function runHealthCheck(): Promise<void> {
 
       if (healthChanged) {
         changed++;
-        io.to(`venue:${venueId}`).emit("cluster:venue_health", state);
-        io.to("admin").emit("cluster:venue_health", state);
+        io?.to(`venue:${venueId}`).emit("cluster:venue_health", state);
+        io?.to("admin").emit("cluster:venue_health", state);
         NeuralEventBus.publish("cluster.health_event", state, venueId);
 
         logger.info(
