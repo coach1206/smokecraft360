@@ -44,6 +44,7 @@ import ReserveVaultExplosion   from "@/components/ReserveVaultExplosion";
 import { dispatchRitualEvent, checkMentorWarning, edgeHaptic } from "@/lib/kineticFeedback";
 import { ExperienceFlowEngine } from "@/lib/experienceFlowEngine";
 import InitiationChamber          from "@/components/InitiationChamber";
+import { OrderModal } from "@/components/Order/OrderModal";
 
 // ── Ambient particles — same visual language as CraftHub ──────────────────────
 
@@ -1075,6 +1076,7 @@ export default function ExperiencePage() {
   const [swipeCount,   setSwipeCount]   = useState(0);
   const [feedback,     setFeedback]     = useState<{ text: string; type: "add" | "skip" } | null>(null);
   const [done,         setDone]         = useState(false);
+  const [orderModalOpen, setOrderModalOpen] = useState(false);
   const [returnBanner, setReturnBanner] = useState(false);
   // Entry chamber: always shows on every new navigation to /experience/:type.
   // CraftEntryChamber handles returning guests internally (skips enrollment, goes to mentor reveal).
@@ -1651,21 +1653,38 @@ export default function ExperiencePage() {
                   We've learned your preferences.<br />Let's reveal your perfect match.
                 </p>
               </div>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={handleFinish}
-                style={{
-                  padding: "16px 44px", borderRadius: 14,
-                  background: `linear-gradient(135deg, ${theme.accent}, ${theme.accentSoft})`,
-                  border: "none", color: "#F5F2ED",
-                  fontSize: 15, fontWeight: 700, cursor: "pointer",
-                  letterSpacing: "0.08em",
-                  boxShadow: `0 8px 32px ${theme.accent}40`,
-                }}
-              >
-                See Your Match
-              </motion.button>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={handleFinish}
+                  style={{
+                    padding: "16px 44px", borderRadius: 14,
+                    background: `linear-gradient(135deg, ${theme.accent}, ${theme.accentSoft})`,
+                    border: "none", color: "#F5F2ED",
+                    fontSize: 15, fontWeight: 700, cursor: "pointer",
+                    letterSpacing: "0.08em",
+                    boxShadow: `0 8px 32px ${theme.accent}40`,
+                  }}
+                >
+                  See Your Match
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setOrderModalOpen(true)}
+                  style={{
+                    padding: "12px 32px", borderRadius: 14,
+                    background: "rgba(255,255,255,0.07)",
+                    border: `1px solid ${theme.accent}50`,
+                    color: theme.accent,
+                    fontSize: 13, fontWeight: 600, cursor: "pointer",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  Order Now
+                </motion.button>
+              </div>
             </motion.div>
 
           ) : cards.length === 0 ? (
@@ -2123,6 +2142,14 @@ export default function ExperiencePage() {
         />
       )}
     </AnimatePresence>
+
+    {/* ── Order Modal ───────────────────────────────────────────────────── */}
+    <OrderModal
+      isOpen={orderModalOpen}
+      craftType={(["smoke","pour","brew","vape"].includes(type) ? type : "smoke") as "smoke" | "pour" | "brew" | "vape"}
+      onClose={() => setOrderModalOpen(false)}
+      onSuccess={() => setOrderModalOpen(false)}
+    />
 
     </>
     </StaffRippleTransition>

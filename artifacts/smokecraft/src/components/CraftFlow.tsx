@@ -12,7 +12,9 @@ import {
   fetchCraftVoiceFeedback,
   type RecommendResponse,
   type ProductResult,
+  type OrderType,
 } from "@/services/api";
+import { OrderModal } from "@/components/Order/OrderModal";
 import { isCoachMuted } from "@/services/sound";
 import LivePreviewPanel, { type LiveMeters } from "@/components/LivePreview/LivePreviewPanel";
 import AICoach from "@/components/AICoach/AICoach";
@@ -199,6 +201,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
   const [coachResuming,  setCoachResuming ] = useState(false);
   const [studioOpen,     setStudioOpen    ] = useState(false);
   const [showShareCard,  setShowShareCard ] = useState(false);
+  const [orderModalOpen, setOrderModalOpen] = useState(false);
   // Ritual path overlay (shown between profile→match)
   const [showJourney,          setShowJourney         ] = useState(false);
   const [pendingJourneyMood,   setPendingJourneyMood  ] = useState<CraftMoodCard | null>(null);
@@ -1037,7 +1040,7 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
                           <motion.button
                             type="button"
                             data-testid={`${config.testIdPrefix}-order`}
-                            onClick={() => navigate("/pos")}
+                            onClick={() => setOrderModalOpen(true)}
                             whileHover={{ scale: 1.04 }}
                             whileTap={{ scale: 0.96 }}
                             style={{
@@ -1493,6 +1496,16 @@ export default function CraftFlow({ config }: { config: CraftFlowConfig }) {
           onClose={() => setShowShareCard(false)}
         />
       )}
+
+      {/* ── Order Modal ──────────────────────────────────────────────────── */}
+      <OrderModal
+        isOpen={orderModalOpen}
+        craftType={craftType}
+        cigar={craftType === "smoke" && featured ? featured : undefined}
+        drink={craftType !== "smoke" && featured ? featured : undefined}
+        onClose={() => setOrderModalOpen(false)}
+        onSuccess={(_orderId: string, _orderType: OrderType) => setOrderModalOpen(false)}
+      />
 
       {/* ── Bottom strip ─────────────────────────────────────────────────── */}
       <div style={{
