@@ -197,7 +197,7 @@ const SOILS = [
   { id: "alluvial", name: "Alluvial Valley", region: "Cibao, D.R.",         detail: "Nutrient-dense loam creating silky wrapper leaves and refined, mellow body." },
 ];
 
-type GatewayPhase = "intro" | "orientation" | "mentor" | "cultivation" | "blending";
+type GatewayPhase = "intro" | "orientation" | "mentor" | "terroir" | "seed_biology" | "cultivation" | "blending";
 
 type XPFloat  = { id: number; amount: number; x: number; y: number };
 type Sel      = {
@@ -950,6 +950,268 @@ function GatewayMentor({
 }
 
 // ── Gateway: Cultivation (Seed + Soil) ─────────────────────────────────────
+// -- Gateway: Tobacco Terroir & Craft (Stage 3a) ---------------------------
+function GatewayTerroir({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+  const REGIONS = [
+    {
+      region: "Dominican Republic", abbr: "D.R.",
+      soil: "Volcanic loam \u2014 Cibao Valley", altitude: "400\u2013900 m",
+      cure: "Air-cured 45\u201360 days",
+      note: "Mild cedar sweetness. Long white ash. Don Manuel\u2019s homeland leaf.",
+    },
+    {
+      region: "Nicaragua", abbr: "NIC",
+      soil: "Rich black silt \u2014 Jalapa & Estel\u00ed", altitude: "600\u20131 400 m",
+      cure: "Double-fermented 90 days",
+      note: "Volcanic spice with earth undercurrent. Cocoa finish. Alejandro\u2019s native leaf.",
+    },
+    {
+      region: "Cuba", abbr: "CUB",
+      soil: "Red laterite \u2014 Vuelta Abajo", altitude: "Sea level",
+      cure: "Sun-cured \u2014 pil\u00f3n method",
+      note: "The sovereign archetype. Unrivalled complexity. Don Salvador\u2019s legacy territory.",
+    },
+    {
+      region: "Ecuador", abbr: "ECU",
+      soil: "Andean cloud-forest humus", altitude: "1 200\u20131 800 m",
+      cure: "Shade-grown 60 days",
+      note: "Silky cream and white pepper. Do\u00f1a Rosa\u2019s signature wrapper origin.",
+    },
+  ];
+  const CURES = [
+    { name: "Air Cure",  desc: "Passive barn ventilation 45\u201390 days. Preserves natural sweetness and oils." },
+    { name: "Sun Cure",  desc: "Solar dehydration on bamboo racks. Traditional Cuban pil\u00f3n heritage." },
+    { name: "Fire Cure", desc: "Open hardwood smoke. Deep penetration. Nicotiana rustica lineage." },
+    { name: "Flue Cure", desc: "Indirect heat channels lock glucose. Bright, light body character." },
+  ];
+  return (
+    <motion.div
+      key="gw-terroir"
+      initial={{ opacity: 0, x: 40 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -40 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      style={GW.bg}
+    >
+      {/* Macro tobacco leaf terrain backdrop */}
+      <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
+        <img
+          src="https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80"
+          alt=""
+          className="w-full h-full object-cover"
+          style={{ filter: "brightness(0.18) saturate(0.70)" }}
+        />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 40%, rgba(212,175,55,0.07) 0%, rgba(0,0,0,0.82) 100%)" }} />
+      </div>
+
+      <div style={GW.chamber} className="overflow-y-auto">
+        <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase" as const, marginBottom: 10 }}>
+          Sovereign Ritual &middot; Stage 3a &mdash; Terroir Codex
+        </p>
+        <h2 style={GW.title}>Tobacco Terroir &amp; Craft</h2>
+
+        {/* Regional terroir grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 20 }}>
+          {REGIONS.map(t => (
+            <div
+              key={t.region}
+              style={{
+                background: "rgba(212,175,55,0.04)",
+                border: `1px solid ${GOLD}20`,
+                borderRadius: 8,
+                padding: "16px 14px",
+                backdropFilter: "blur(12px)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                <span style={{
+                  color: GOLD, fontSize: 10, fontWeight: 700, letterSpacing: "0.06em",
+                  background: "rgba(212,175,55,0.12)", border: `1px solid ${GOLD}30`,
+                  borderRadius: 3, padding: "2px 6px",
+                }}>
+                  {t.abbr}
+                </span>
+                <span style={{ color: "rgba(245,235,215,0.78)", fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase" as const }}>
+                  {t.region}
+                </span>
+              </div>
+              {([ ["Soil", t.soil], ["Altitude", t.altitude], ["Cure", t.cure] ] as [string, string][]).map(([label, value]) => (
+                <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 6, marginBottom: 4 }}>
+                  <span style={{ color: `${GOLD}50`, fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase" as const, flexShrink: 0 }}>{label}</span>
+                  <span style={{ color: "rgba(240,232,212,0.65)", fontSize: 9, textAlign: "right" as const }}>{value}</span>
+                </div>
+              ))}
+              <p style={{ color: "rgba(240,232,212,0.46)", fontSize: 10, fontStyle: "italic", marginTop: 8, lineHeight: 1.55 }}>
+                {t.note}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Global curing traditions */}
+        <div style={{ background: "rgba(212,175,55,0.03)", border: `1px solid ${GOLD}15`, borderRadius: 8, padding: "14px 16px", marginBottom: 22 }}>
+          <p style={{ color: `${GOLD}75`, fontSize: 9, letterSpacing: "0.28em", textTransform: "uppercase" as const, marginBottom: 10 }}>
+            Global Curing Traditions
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 12 }}>
+            {CURES.map(c => (
+              <div key={c.name} style={{ flex: "1 1 160px" }}>
+                <span style={{ color: GOLD, fontSize: 10, fontWeight: 700, letterSpacing: "0.10em", display: "block", marginBottom: 2 }}>{c.name}</span>
+                <span style={{ color: "rgba(240,232,212,0.42)", fontSize: 10, lineHeight: 1.5 }}>{c.desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+          <button
+            style={GW.btn(true)}
+            onMouseDown={() => playClick()}
+            onClick={onBack}
+          >
+            Back
+          </button>
+          <motion.button
+            style={GW.btn()}
+            onMouseDown={() => playClick()}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97, y: 2 }}
+            onClick={onNext}
+          >
+            Seed Biology &rarr;
+          </motion.button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// -- Gateway: Seed Biology & Priming (Stage 3b) ----------------------------
+function GatewaySeedBiology({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+  const LEAVES = [
+    {
+      id: "volado", pos: "Bottom \u2014 Volado", strength: 14,
+      profile: "Light body \u00b7 Combustion agent", color: "#8BC34A",
+      note: "Lowest nicotine density. Ensures even burn throughout the smoke. Mild cereal and hay notes. Every master blend needs at least 20% Volado filler for reliable combustion.",
+    },
+    {
+      id: "seco", pos: "Mid \u2014 Seco", strength: 52,
+      profile: "Medium body \u00b7 Flavor bridge", color: GOLD,
+      note: "The architect\u2019s leaf. Primary flavor expression: cedar, leather, cocoa, or spice. Constitutes 40\u201360% of premium blends. Air-cured to preserve aromatic compounds.",
+    },
+    {
+      id: "ligero", pos: "Crown \u2014 Ligero", strength: 94,
+      profile: "Full power \u00b7 Strength apex", color: "#E8741A",
+      note: "The sovereign leaf. Highest nicotine density \u2014 requires 18\u201324 months minimum aging. One Ligero filler transforms any blend to full-body. Deploy with measured precision.",
+    },
+  ];
+  const VARIETALS = [
+    { name: "Criollo 98",        origin: "Cuba",            body: "Full",  note: "The heritage benchmark" },
+    { name: "Corojo 99",         origin: "Cuba / Honduras", body: "Med+",  note: "Spice & red pepper finish" },
+    { name: "Habano 2000",       origin: "Nicaragua",       body: "Full",  note: "Earth, cocoa, volcanic mineral" },
+    { name: "Connecticut Shade", origin: "Ecuador / USA",   body: "Mild",  note: "Cream, cedar, subtle sweetness" },
+    { name: "Broadleaf",         origin: "Connecticut, USA",body: "Full+", note: "Dark wrapper gold standard" },
+  ];
+  return (
+    <motion.div
+      key="gw-seed-bio"
+      initial={{ opacity: 0, x: 40 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -40 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      style={GW.bg}
+    >
+      {/* Tobacco terrain backdrop - deeper burn for contrast with bars */}
+      <div className="absolute inset-0" style={{ zIndex: 0, pointerEvents: "none" }}>
+        <img
+          src="https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=1200&q=80"
+          alt=""
+          className="w-full h-full object-cover"
+          style={{ filter: "brightness(0.13) saturate(0.55)" }}
+        />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 60%, rgba(255,176,0,0.06) 0%, rgba(0,0,0,0.88) 100%)" }} />
+      </div>
+
+      <div style={GW.chamber} className="overflow-y-auto">
+        <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase" as const, marginBottom: 10 }}>
+          Sovereign Ritual &middot; Stage 3b &mdash; Seed Codex
+        </p>
+        <h2 style={GW.title}>Seed Biology &amp; Priming</h2>
+
+        {/* Leaf position architecture */}
+        <p style={{ color: `${GOLD}65`, fontSize: 9, letterSpacing: "0.28em", textTransform: "uppercase" as const, marginBottom: 12 }}>
+          Leaf Position Architecture &mdash; Flavor Intensity Scale
+        </p>
+        <div style={{ display: "flex", flexDirection: "column" as const, gap: 10, marginBottom: 20 }}>
+          {LEAVES.map(leaf => (
+            <div
+              key={leaf.id}
+              style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(212,175,55,0.13)", borderRadius: 8, padding: "14px 16px" }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6, flexWrap: "wrap" as const, gap: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ color: leaf.color, fontSize: 11, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase" as const }}>{leaf.pos}</span>
+                  <span style={{ color: "rgba(240,232,212,0.40)", fontSize: 10 }}>{leaf.profile}</span>
+                </div>
+                <span style={{ color: leaf.color, fontSize: 13, fontWeight: 700 }}>{leaf.strength}%</span>
+              </div>
+              {/* Animated strength bar */}
+              <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, marginBottom: 8, overflow: "hidden" }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${leaf.strength}%` }}
+                  transition={{ delay: 0.35, duration: 1.0, ease: "easeOut" }}
+                  style={{ height: "100%", background: leaf.color, borderRadius: 2 }}
+                />
+              </div>
+              <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 10, lineHeight: 1.55 }}>{leaf.note}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Seed varietals */}
+        <div style={{ background: "rgba(212,175,55,0.03)", border: `1px solid ${GOLD}13`, borderRadius: 8, padding: "14px 16px", marginBottom: 22 }}>
+          <p style={{ color: `${GOLD}75`, fontSize: 9, letterSpacing: "0.28em", textTransform: "uppercase" as const, marginBottom: 10 }}>
+            Seed Varietals &amp; Heritage Lines
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 8 }}>
+            {VARIETALS.map(v => (
+              <div
+                key={v.name}
+                style={{ flex: "1 1 150px", background: "rgba(255,255,255,0.02)", borderRadius: 6, padding: "10px 12px", border: `1px solid ${GOLD}0F` }}
+              >
+                <span style={{ color: GOLD, fontSize: 10, fontWeight: 700, display: "block", marginBottom: 1 }}>{v.name}</span>
+                <span style={{ color: "rgba(240,232,212,0.35)", fontSize: 9, display: "block", marginBottom: 3 }}>{v.origin} &middot; {v.body} body</span>
+                <span style={{ color: "rgba(240,232,212,0.50)", fontSize: 10, fontStyle: "italic" }}>{v.note}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+          <button
+            style={GW.btn(true)}
+            onMouseDown={() => playClick()}
+            onClick={onBack}
+          >
+            Back
+          </button>
+          <motion.button
+            style={GW.btn()}
+            onMouseDown={() => playClick()}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97, y: 2 }}
+            onClick={onNext}
+          >
+            Begin Cultivation &rarr;
+          </motion.button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+
 function GatewayCultivation({
   selectedSeed, selectedSoil, selectedMentor,
   onSeed, onSoil, onXP,
@@ -2089,8 +2351,22 @@ export default function MasterBlender() {
                   key="mentor"
                   selected={selectedMentor}
                   onSelect={setSelectedMentor}
-                  onNext={() => setGateway("cultivation")}
+                  onNext={() => setGateway("terroir")}
                   onBack={() => setGateway("orientation")}
+                />
+              )}
+              {gateway === "terroir" && (
+                <GatewayTerroir
+                  key="terroir"
+                  onNext={() => setGateway("seed_biology")}
+                  onBack={() => setGateway("mentor")}
+                />
+              )}
+              {gateway === "seed_biology" && (
+                <GatewaySeedBiology
+                  key="seed_biology"
+                  onNext={() => setGateway("cultivation")}
+                  onBack={() => setGateway("terroir")}
                 />
               )}
               {gateway === "cultivation" && (
@@ -2103,7 +2379,7 @@ export default function MasterBlender() {
                   onSoil={setSelectedSoil}
                   onXP={spawnXP}
                   onNext={handleCultivationNext}
-                  onBack={() => setGateway("mentor")}
+                  onBack={() => setGateway("seed_biology")}
                 />
               )}
             </AnimatePresence>
