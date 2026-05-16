@@ -12,7 +12,7 @@ export const useSovereignBiometrics = (venueId: string) => {
   const [isActive, setIsActive] = useState(false);
   const [lastDispatch, setLastDispatch] = useState<string | null>(null);
   
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const debounceGuardRef = useRef<boolean>(false);
 
   // Generates 10Hz stream data via sine-wave modeling + Gaussian noise
@@ -41,8 +41,8 @@ export const useSovereignBiometrics = (venueId: string) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sceneId: 'low_amber_recovery' })
       });
-    } catch {
-      // ambient override dispatch failure — non-fatal, best-effort
+    } catch (err) {
+      console.error('SARV ambient override dispatch failure:', err);
     }
 
     // Enforce strict 8-second debounce to prevent endpoint saturation
