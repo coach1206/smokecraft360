@@ -1,0 +1,20 @@
+STOP ALL CURRENT PLAN ACTIONS IMMEDIATELY. Clear your execution queue. The code is completely broken: buttons are completely non-responsive, none of the requested visual overhauls took place, and the system is permanently stuck pulling cached session/local storage states making it act like a returning user dropped at Stage 9/10 instead of a fresh initialization.
+
+We need a complete structural and interactive reset across all three Masterclasses (SmokeCraft, PourCraft, BeerCraft). Execute these exact steps directly:
+
+1. WIPE PERSISTENT STATE ON LAUNCH:
+   - In your initialization hooks (useEffect/useState in MasterBlender.tsx or the main provider context), force a script that clears any localStorage or sessionStorage keys related to 'smokeCraftStage', 'currentStage', 'titan_ritual_complete', or 'guestProfile' when mounting the clean entry portal. 
+   - Explicitly force the default state to 'STAGE_1' (the Intro / Cinematic Gateway sequence).
+
+2. FIX CARD IMAGES & INTERACTIVE CLICK HANDLERS:
+   - Restore the three individual Masterclass cards properly on the home portal. Fix the broken click events so they actually transition states upon tapping.
+   - Card 1 (SmokeCraft 360): Remove the duplicated stock cigar image. Replace it with a premium asset depicting a diverse group of modern connoisseurs (including a Black man, a South Asian woman, and a Caucasian man) in a dimly lit luxury lounge.
+   - Card 2 (PourCraft 360): Restore the premium whiskey/bourbon pouring asset.
+   - Card 3 (BeerCraft 360): Restore the original high-end craft beer discovery asset.
+
+3. OVERHAUL THE STYLING (REMOVE THE HEAVY TEXT BOXES):
+   - Replace the solid, flat, muddy dark boxes with floating glassmorphic containers: 'background: rgba(15, 15, 15, 0.65); backdrop-filter: blur(25px); border: 1px solid rgba(212, 175, 55, 0.12);'.
+   - Base background must be pure absolute black (#000000) with a 3% ambient amber glow layout layer (#FFB000).
+   - Ensure all layout buttons use operational event listeners (onClick / e.preventDefault) so they do not lock up the user interface.
+
+Refactor the state architecture and apply the cinematic polish now. Do not leave this broken returning-user state active.
