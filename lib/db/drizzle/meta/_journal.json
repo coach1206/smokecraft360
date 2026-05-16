@@ -57,6 +57,13 @@
       "when": 1747353600000,
       "tag": "0007_kernel_module_audit_log",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1747612800000,
+      "tag": "0009_venue_pos_mode",
+      "breakpoints": true
     }
   ]
 }

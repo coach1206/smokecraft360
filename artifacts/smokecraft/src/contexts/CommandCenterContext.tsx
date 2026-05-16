@@ -71,7 +71,9 @@ export interface CommandCenterState {
   systemStatus: "operational" | "degraded" | "critical";
   activeGuests: number;
   posMode: PosOperatingMode;
-  setPosMode: (mode: PosOperatingMode) => void;
+  posModeChangedBy: string | null;
+  posModeChangedAt: Date | null;
+  setPosMode: (mode: PosOperatingMode, changedBy?: string) => void;
   toggleDeviceLock: (deviceId: string) => void;
   forceRefreshDevice: (deviceId: string) => void;
   setDeviceRole: (deviceId: string, role: Device["role"]) => void;
@@ -107,6 +109,33 @@ function loadPosMode(): PosOperatingMode {
   return "overlay";
 }
 
+function loadPosModeChangedBy(): string | null {
+  try {
+    return localStorage.getItem("smokecraft_pos_mode_changed_by") ?? null;
+  } catch {}
+  return null;
+}
+
+function loadPosModeChangedAt(): Date | null {
+  try {
+    const stored = localStorage.getItem("smokecraft_pos_mode_changed_at");
+    if (stored) {
+      const d = new Date(stored);
+      if (!isNaN(d.getTime())) return d;
+    }
+  } catch {}
+  return null;
+}
+
+function getVenueId(): string {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("venue") ?? localStorage.getItem("smokecraft_venue") ?? "default";
+  } catch {
+    return "default";
+  }
+}
+
 export function CommandCenterProvider({ children }: { children: ReactNode }) {
   const [devices, setDevices] = useState<Device[]>([]);
   const [staff, setStaff] = useState<StaffMember[]>([]);
@@ -114,8 +143,56 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
   const [auditLog, setAuditLog] = useState<AuditEntry[]>(() => [...INITIAL_AUDIT]);
   const [hourlyRevenue, setHourlyRevenue] = useState<HourlyRevenue[]>([]);
   const [posMode, setPosModeRaw] = useState<PosOperatingMode>(loadPosMode);
+  const [posModeChangedBy, setPosModeChangedBy] = useState<string | null>(loadPosModeChangedBy);
+  const [posModeChangedAt, setPosModeChangedAt] = useState<Date | null>(loadPosModeChangedAt);
   const systemStatus: "operational" | "degraded" | "critical" = devices.filter(d => d.status === "offline").length >= 3 ? "critical" : devices.some(d => d.status === "offline") ? "degraded" : "operational";
   const activeGuests = devices.filter(d => d.status === "online").length;
+
+  // Load POS mode + last-changed metadata from server on mount.
+  // Falls back to localStorage values already seeded via useState above.
+  useEffect(() => {
+    const venueId = getVenueId();
+    if (venueId === "default") return; // default venue has no DB record
+    async function loadPosModeFromServer() {
+      try {
+        const res = await fetch(`/api/venues/${venueId}`);
+        if (!res.ok) return;
+        const data = await res.json() as {
+          posMode?:          string | null;
+          posModeChangedBy?: string | null;
+          posModeChangedAt?: string | null;
+        };
+        if (data.posMode === "overlay" || data.posMode === "hybrid" || data.posMode === "full_pos") {
+          setPosModeRaw(data.posMode);
+          try { localStorage.setItem("smokecraft_pos_mode", data.posMode); } catch {}
+        }
+        // Always apply server values, including null — clears stale local state
+        // from a prior session or different venue.
+        const serverBy = data.posModeChangedBy ?? null;
+        setPosModeChangedBy(serverBy);
+        try {
+          if (serverBy) localStorage.setItem("smokecraft_pos_mode_changed_by", serverBy);
+          else localStorage.removeItem("smokecraft_pos_mode_changed_by");
+        } catch {}
+
+        const serverAt = data.posModeChangedAt ?? null;
+        if (serverAt) {
+          const d = new Date(serverAt);
+          if (!isNaN(d.getTime())) {
+            setPosModeChangedAt(d);
+            try { localStorage.setItem("smokecraft_pos_mode_changed_at", serverAt); } catch {}
+          }
+        } else {
+          setPosModeChangedAt(null);
+          try { localStorage.removeItem("smokecraft_pos_mode_changed_at"); } catch {}
+        }
+      } catch {
+        // Keep localStorage values on any network error
+      }
+    }
+    void loadPosModeFromServer();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Load real devices from /api/devices
   useEffect(() => {
@@ -249,10 +326,52 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
     }, ...prev].slice(0, 50));
   }, []);
 
-  const setPosMode = useCallback((mode: PosOperatingMode) => {
+  const setPosMode = useCallback((mode: PosOperatingMode, changedBy?: string) => {
+    const now = new Date();
+    const actor = changedBy ?? "Unknown";
+    // Optimistic local update
     setPosModeRaw(mode);
-    try { localStorage.setItem("smokecraft_pos_mode", mode); } catch {}
-    addAuditEntry("settings.pos_mode", `Commerce mode changed to ${POS_MODE_INFO[mode].label}`);
+    setPosModeChangedBy(actor);
+    setPosModeChangedAt(now);
+    try {
+      localStorage.setItem("smokecraft_pos_mode", mode);
+      localStorage.setItem("smokecraft_pos_mode_changed_by", actor);
+      localStorage.setItem("smokecraft_pos_mode_changed_at", now.toISOString());
+    } catch {}
+    addAuditEntry("settings.pos_mode", `Commerce mode changed to ${POS_MODE_INFO[mode].label}`, actor);
+    // Persist to server (best-effort — localStorage remains the fallback)
+    const venueId = getVenueId();
+    if (venueId !== "default") {
+      fetch(`/api/venues/${venueId}/pos-mode`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders() as Record<string, string>,
+        },
+        body: JSON.stringify({ posMode: mode }),
+      }).then(async (res) => {
+        if (res.ok) {
+          const data = await res.json() as {
+            posModeChangedBy?: string | null;
+            posModeChangedAt?: string | null;
+          };
+          // Overwrite optimistic actor with authoritative server value
+          if (data.posModeChangedBy) {
+            setPosModeChangedBy(data.posModeChangedBy);
+            try { localStorage.setItem("smokecraft_pos_mode_changed_by", data.posModeChangedBy); } catch {}
+          }
+          if (data.posModeChangedAt) {
+            const d = new Date(data.posModeChangedAt);
+            if (!isNaN(d.getTime())) {
+              setPosModeChangedAt(d);
+              try { localStorage.setItem("smokecraft_pos_mode_changed_at", data.posModeChangedAt); } catch {}
+            }
+          }
+        }
+      }).catch(() => {
+        // Server update failed — localStorage + optimistic state remain
+      });
+    }
   }, [addAuditEntry]);
 
   const toggleDeviceLock = useCallback((deviceId: string) => {
@@ -300,7 +419,7 @@ export function CommandCenterProvider({ children }: { children: ReactNode }) {
   return (
     <CCContext.Provider value={{
       devices, staff, vendors, auditLog, hourlyRevenue,
-      systemStatus, activeGuests, posMode, setPosMode,
+      systemStatus, activeGuests, posMode, posModeChangedBy, posModeChangedAt, setPosMode,
       toggleDeviceLock, forceRefreshDevice, setDeviceRole, shutdownDevice,
       addAuditEntry, requestRestock, switchStaffStatus,
     }}>

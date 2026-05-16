@@ -153,7 +153,8 @@ export default function SettingsModule() {
 
   function confirmModeChange() {
     if (pendingMode) {
-      cc.setPosMode(pendingMode);
+      const actor = authUser?.name ?? pos.currentUser?.name ?? "Unknown";
+      cc.setPosMode(pendingMode, actor);
       setPendingMode(null);
     }
   }
@@ -528,6 +529,20 @@ export default function SettingsModule() {
               );
             })}
           </div>
+
+          {(cc.posModeChangedBy || cc.posModeChangedAt) && (
+            <div style={{
+              marginTop: 12, display: "flex", alignItems: "center", gap: 6,
+              fontSize: 11, color: "rgba(26,26,27,0.40)",
+            }}>
+              <ShieldAlert size={11} color="rgba(26,26,27,0.30)" />
+              <span>
+                Last changed
+                {cc.posModeChangedBy ? <> by <strong style={{ color: "rgba(26,26,27,0.60)", fontWeight: 600 }}>{cc.posModeChangedBy}</strong></> : null}
+                {cc.posModeChangedAt ? <> on {cc.posModeChangedAt.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })} at {cc.posModeChangedAt.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}</> : null}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* ── Kernel Mode ── */}

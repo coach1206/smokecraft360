@@ -26,6 +26,9 @@ export const venuesTable = pgTable("venues", {
   stripeConnectAccountId:   text("stripe_connect_account_id"),
   stripeConnectOnboarded:   boolean("stripe_connect_onboarded").notNull().default(false),
   platformFeeBps:           text("platform_fee_bps").default("500"), // basis points: 500 = 5.00%
+  posMode:                  text("pos_mode").default("overlay"),
+  posModeChangedBy:         text("pos_mode_changed_by"),
+  posModeChangedAt:         timestamp("pos_mode_changed_at", { withTimezone: true }),
   createdAt:                timestamp("created_at").notNull().defaultNow(),
 });
 

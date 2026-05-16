@@ -86,6 +86,9 @@ router.get("/:id", async (req, res: Response) => {
       logoText:     "SmokeCraft",
       tagline:      "Connoisseur's Companion",
       primaryColor: "#D4AF37",
+      posMode:          "overlay",
+      posModeChangedBy: null,
+      posModeChangedAt: null,
       features: {
         demoMode:    true,
         bandCreator: true,
@@ -114,6 +117,9 @@ router.get("/:id", async (req, res: Response) => {
     tagline:      venue.tagline ?? "Powered by SmokeCraft",
     primaryColor: venue.primaryColor ?? "#D4AF37",
     logoUrl:      venue.logoUrl ?? null,
+    posMode:          venue.posMode ?? "overlay",
+    posModeChangedBy: venue.posModeChangedBy ?? null,
+    posModeChangedAt: venue.posModeChangedAt?.toISOString() ?? null,
     features: {
       demoMode:    venue.plan !== "basic",
       bandCreator: venue.plan === "premium",
@@ -123,6 +129,65 @@ router.get("/:id", async (req, res: Response) => {
     },
   });
 });
+
+// ── PATCH /api/venues/:id/pos-mode — update POS operating mode ───────────────
+// Accessible to venue_owner and manager who own this venue, or super_admin.
+// Actor is always derived server-side from the authenticated user — never
+// accepted from the request body — to prevent audit attribution spoofing.
+router.patch(
+  "/:id/pos-mode",
+  requireAuth,
+  requireRole("venue_owner", "manager"),
+  allowOnly("posMode"),
+  async (req: AuthRequest, res: Response) => {
+    const id = String(req.params["id"] ?? "");
+    if (!id) { res.status(400).json({ error: "venue id is required" }); return; }
+
+    // Tenant authorization: super_admin can update any venue;
+    // everyone else must own the venue they are trying to update.
+    const user = req.user!;
+    if (user.role !== "super_admin" && user.venueId !== id) {
+      res.status(403).json({ error: "You can only update your own venue's settings" });
+      return;
+    }
+
+    const { posMode } = req.body as { posMode?: string };
+
+    const VALID_MODES = ["overlay", "hybrid", "full_pos"];
+    if (!posMode || !VALID_MODES.includes(posMode)) {
+      res.status(400).json({ error: `posMode must be one of: ${VALID_MODES.join(", ")}` });
+      return;
+    }
+
+    const [existing] = await db.select().from(venuesTable).where(eq(venuesTable.id, id)).limit(1);
+    if (!existing) { res.status(404).json({ error: "Venue not found" }); return; }
+
+    const now = new Date();
+    // Actor is always derived from the authenticated JWT — never from the client body.
+    const actor = user.name ?? user.email ?? user.id;
+    const [updated] = await db
+      .update(venuesTable)
+      .set({ posMode, posModeChangedBy: actor, posModeChangedAt: now })
+      .where(eq(venuesTable.id, id))
+      .returning();
+
+    await logAudit(req, {
+      action:     "venue.pos_mode.change",
+      entityType: "venue",
+      entityId:   id,
+      before:     { posMode: existing.posMode },
+      after:      { posMode, posModeChangedBy: actor, posModeChangedAt: now },
+      venueId:    id,
+    });
+
+    req.log.info({ venueId: id, posMode, by: user.id }, "POS mode updated");
+    res.json({
+      posMode:          updated.posMode,
+      posModeChangedBy: updated.posModeChangedBy,
+      posModeChangedAt: updated.posModeChangedAt?.toISOString() ?? null,
+    });
+  },
+);
 
 // ── PATCH /api/venues/:id — admin template + plan + active control ──────────
 //
