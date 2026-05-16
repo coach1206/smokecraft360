@@ -21,6 +21,7 @@ import {
   kernelModuleAuditLogTable,
   kernelModuleSlugHistoryTable,
   usersTable,
+  venueAiProvidersTable,
 } from "@workspace/db";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
 import { z }                             from "zod";
@@ -579,6 +580,86 @@ router.patch("/mode/:venueId", requireAuth, async (req: AuthRequest, res: Respon
   } catch {
     return res.status(500).json({ error: "Failed to update mode config" });
   }
+});
+
+// ── GET /api/kernel/sovereign-readiness ──────────────────────────────────────
+// Pre-upgrade check: reports whether AI provider keys are configured so the UI
+// can warn admins before they switch to Sovereign mode.
+//
+// Access: super_admin or venue_owner only.
+//
+// Optional query param:
+//   ?venueId=<uuid>  — also checks BYOK providers stored for that venue.
+//
+// Response:
+//   { ready: boolean, missing: string[], byokAvailable: boolean }
+//   - ready          : true when at least one AI provider is usable
+//   - missing        : names of AXIOM platform keys that are absent
+//   - byokAvailable  : true when the venue has ≥1 connected BYOK provider
+
+router.get("/sovereign-readiness", requireAuth, async (req: AuthRequest, res: Response) => {
+  const user = (req as AuthRequest).user;
+  const { role, venueId: userVenueId } = user ?? {};
+  if (role !== "super_admin" && role !== "venue_owner") {
+    return res.status(403).json({ error: "super_admin or venue_owner only" });
+  }
+
+  // Resolve which venue to check BYOK for.
+  // venue_owner is scoped to their own venue — they may not probe other venues.
+  const rawVenueId = req.query["venueId"] as string | undefined;
+  let resolvedVenueId: string | undefined;
+
+  if (rawVenueId !== undefined) {
+    if (!UUID_RE.test(rawVenueId)) {
+      return res.status(400).json({ error: "venueId must be a valid UUID" });
+    }
+    if (role === "venue_owner" && userVenueId !== rawVenueId) {
+      return res.status(403).json({ error: "venue_owner may only check readiness for their own venue" });
+    }
+    resolvedVenueId = rawVenueId;
+  } else if (role === "venue_owner" && userVenueId) {
+    // Default to the caller's own venue when no param is supplied
+    resolvedVenueId = userVenueId;
+  }
+
+  const AXIOM_KEYS: { key: string; label: string }[] = [
+    { key: "OPENAI_API_KEY",      label: "OpenAI"       },
+    { key: "ANTHROPIC_API_KEY",   label: "Anthropic"    },
+    { key: "GEMINI_API_KEY",      label: "Gemini"       },
+    { key: "AZURE_OPENAI_API_KEY",label: "Azure OpenAI" },
+  ];
+
+  const missing = AXIOM_KEYS
+    .filter(({ key }) => !process.env[key])
+    .map(({ label }) => label);
+
+  const allAxiomMissing = missing.length === AXIOM_KEYS.length;
+
+  let byokAvailable = false;
+  let byokCheckError = false;
+  if (resolvedVenueId) {
+    try {
+      const rows = await db
+        .select({ id: venueAiProvidersTable.id })
+        .from(venueAiProvidersTable)
+        .where(
+          and(
+            eq(venueAiProvidersTable.venueId, resolvedVenueId),
+            eq(venueAiProvidersTable.status, "connected"),
+            isNull(venueAiProvidersTable.disconnectedAt),
+          ),
+        )
+        .limit(1);
+      byokAvailable = rows.length > 0;
+    } catch (err) {
+      req.log.warn({ err, venueId: resolvedVenueId }, "sovereign-readiness: BYOK provider lookup failed");
+      byokCheckError = true;
+    }
+  }
+
+  const ready = !allAxiomMissing || byokAvailable;
+
+  return res.json({ ready, missing, byokAvailable, byokCheckError });
 });
 
 // ── GET /api/kernel/mode/:venueId/history ────────────────────────────────────

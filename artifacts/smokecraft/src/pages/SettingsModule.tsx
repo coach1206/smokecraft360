@@ -45,6 +45,9 @@ export default function SettingsModule() {
   const [activeOrderCount, setActiveOrderCount] = useState<number | null>(null);
   const [activeOrderCountLoading, setActiveOrderCountLoading] = useState(false);
   const [ownedVenueName, setOwnedVenueName] = useState<string | null>(null);
+  const [sovereignReadiness, setSovereignReadiness] = useState<{ ready: boolean; missing: string[] } | null>(null);
+  const [sovereignReadinessLoading, setSovereignReadinessLoading] = useState(false);
+  const [sovereignReadinessError, setSovereignReadinessError] = useState(false);
 
   useEffect(() => {
     setOwnedVenueName(null);
@@ -630,6 +633,7 @@ export default function SettingsModule() {
                   onClick={async () => {
                     if (!isKernelAdmin || isCurrent || kernel.saving) return;
                     setActiveOrderCount(null);
+                    setSovereignReadiness(null);
                     setPendingKernelMode(m);
                     if (m === "essential") {
                       setActiveOrderCountLoading(true);
@@ -648,6 +652,26 @@ export default function SettingsModule() {
                         // non-blocking — skip warning on fetch error
                       } finally {
                         setActiveOrderCountLoading(false);
+                      }
+                    }
+                    if (m === "sovereign") {
+                      setSovereignReadinessLoading(true);
+                      setSovereignReadinessError(false);
+                      try {
+                        const qs = venue.id && venue.id !== "default" ? `?venueId=${venue.id}` : "";
+                        const headers: HeadersInit = {};
+                        if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
+                        const res = await fetch(`/api/kernel/sovereign-readiness${qs}`, { headers });
+                        if (res.ok) {
+                          const data = await res.json() as { ready: boolean; missing: string[] };
+                          setSovereignReadiness(data);
+                        } else {
+                          setSovereignReadinessError(true);
+                        }
+                      } catch {
+                        setSovereignReadinessError(true);
+                      } finally {
+                        setSovereignReadinessLoading(false);
                       }
                     }
                   }}
@@ -911,14 +935,21 @@ export default function SettingsModule() {
         warning={
           pendingKernelMode === "essential" && activeOrderCount != null && activeOrderCount > 0
             ? `${activeOrderCount} active session${activeOrderCount === 1 ? "" : "s"} will lose access to premium features immediately.`
-            : undefined
+            : pendingKernelMode === "sovereign" && sovereignReadinessError
+              ? "AI readiness could not be verified — confirm AI provider configuration before proceeding to avoid silent feature failures."
+              : pendingKernelMode === "sovereign" && sovereignReadiness != null && !sovereignReadiness.ready
+                ? "AI personalization is unavailable — configure a provider first. Sovereign features requiring AI will silently fail until a provider is set up."
+                : undefined
         }
         danger={pendingKernelMode === "essential"}
-        confirmDisabled={pendingKernelMode === "essential" && activeOrderCountLoading}
+        confirmDisabled={
+          (pendingKernelMode === "essential" && activeOrderCountLoading) ||
+          (pendingKernelMode === "sovereign" && sovereignReadinessLoading)
+        }
         confirmPhrase={pendingKernelMode === "essential" ? "ESSENTIAL" : undefined}
-        confirmLabel="Confirm Change"
+        confirmLabel={pendingKernelMode === "sovereign" && sovereignReadinessLoading ? "Checking…" : "Confirm Change"}
         onConfirm={() => pendingKernelMode && applyKernelMode(pendingKernelMode)}
-        onCancel={() => { setPendingKernelMode(null); setActiveOrderCount(null); }}
+        onCancel={() => { setPendingKernelMode(null); setActiveOrderCount(null); setSovereignReadiness(null); setSovereignReadinessError(false); }}
       />
     </div>
   );
