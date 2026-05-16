@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Shield, Activity, Monitor, Clock, FileText, Layers, ShieldAlert, Paintbrush, Image, Type, Palette, Check, RotateCcw, Brain, ExternalLink, ChevronRight, Crown, Zap, RefreshCw } from "lucide-react";
@@ -44,6 +44,18 @@ export default function SettingsModule() {
   const [kernelRefreshSuccess, setKernelRefreshSuccess] = useState(false);
   const [activeOrderCount, setActiveOrderCount] = useState<number | null>(null);
   const [activeOrderCountLoading, setActiveOrderCountLoading] = useState(false);
+  const [ownedVenueName, setOwnedVenueName] = useState<string | null>(null);
+
+  useEffect(() => {
+    setOwnedVenueName(null);
+    if (isKernelAdmin || authUser?.role !== "venue_owner" || !authUser.venueId) return;
+    fetch(`/api/venues/${encodeURIComponent(authUser.venueId)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { logoText?: string } | null) => {
+        if (data?.logoText) setOwnedVenueName(data.logoText);
+      })
+      .catch(() => {});
+  }, [isKernelAdmin, authUser?.role, authUser?.venueId]);
 
   async function handleKernelRefresh() {
     setKernelRefreshing(true);
@@ -574,10 +586,33 @@ export default function SettingsModule() {
           <div style={{ fontSize: 12, color: "rgba(26,26,27,0.42)", lineHeight: 1.55, marginBottom: 14 }}>
             Controls which feature tier is active for this venue. <strong>Sovereign</strong> unlocks luxury add-ons, AI personalization, and premium analytics. <strong>Essential</strong> locks those features.
             {!isKernelAdmin && (
-              <span style={{ display: "block", marginTop: 6, color: "#ef4444", fontSize: 11, fontWeight: 600 }}>
-                {authUser?.role === "venue_owner"
-                  ? "Venue Owners can only change the mode for their own venue."
-                  : "Super Admin or Venue Owner role required to change this setting."}
+              <span style={{ display: "block", marginTop: 8, padding: "10px 12px", borderRadius: 8, background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.18)" }}>
+                {authUser?.role === "venue_owner" ? (
+                  <>
+                    <span style={{ display: "block", color: "#ef4444", fontSize: 11, fontWeight: 700, marginBottom: 4 }}>
+                      Access restricted — this is not your venue.
+                    </span>
+                    <span style={{ display: "block", color: "rgba(26,26,27,0.55)", fontSize: 11, lineHeight: 1.5 }}>
+                      You can only manage kernel mode for{" "}
+                      {authUser.venueId ? (
+                        <a
+                          href={`/?venue=${encodeURIComponent(authUser.venueId)}`}
+                          style={{ color: "#D48B00", fontWeight: 600, textDecoration: "underline", cursor: "pointer" }}
+                          title="Go to your venue's settings"
+                        >
+                          {ownedVenueName ?? authUser.venueId}
+                        </a>
+                      ) : (
+                        <span style={{ fontWeight: 600 }}>your assigned venue</span>
+                      )}
+                      . Switch to that venue to adjust this setting.
+                    </span>
+                  </>
+                ) : (
+                  <span style={{ color: "#ef4444", fontSize: 11, fontWeight: 600 }}>
+                    Super Admin or Venue Owner role required to change this setting.
+                  </span>
+                )}
               </span>
             )}
           </div>
