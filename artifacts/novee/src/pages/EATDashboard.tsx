@@ -353,7 +353,12 @@ function buildModuleUsageComparisonCsv(
   return rows.join("\r\n");
 }
 
-function buildProductsCsvContent(products: ProductItem[], days: number, craftFilter: "all" | "smoke" | "pour" | "brew" | "vape" = "all"): string {
+function buildProductsCsvContent(
+  products: ProductItem[],
+  days: number,
+  craftFilter: "all" | "smoke" | "pour" | "brew" | "vape" = "all",
+  trends?: Map<string, TrendPoint[]>,
+): string {
   const rows: string[] = [];
 
   const filtered = craftFilter === "all" ? products : products.filter((p) => p.craft_type === craftFilter);
@@ -372,6 +377,24 @@ function buildProductsCsvContent(products: ProductItem[], days: number, craftFil
     const cardId = p.card_id.replace(/"/g, '""');
     const craftType = (p.craft_type ?? "").replace(/"/g, '""');
     rows.push(`${i + 1},"${title}","${cardId}","${craftType}",${p.adds},${p.skips},${p.total},${addRatio}`);
+  }
+
+  if (trends && trends.size > 0) {
+    const trendRows: string[] = [];
+    for (const p of filtered) {
+      const points = trends.get(p.card_id);
+      if (!points || points.length === 0) continue;
+      const cardId = p.card_id.replace(/"/g, '""');
+      for (const pt of points) {
+        trendRows.push(`"${cardId}","${pt.day}",${pt.adds},${pt.skips}`);
+      }
+    }
+    if (trendRows.length > 0) {
+      rows.push("");
+      rows.push("## 7-Day Trend");
+      rows.push("card_id,day,adds,skips");
+      rows.push(...trendRows);
+    }
   }
 
   return rows.join("\r\n");
@@ -1309,7 +1332,7 @@ export default function EATDashboard() {
             {(userRole === "admin" || userRole === "super_admin") && tab === "products" && !productsLoading && products.length > 0 && (
               <button
                 onClick={() => {
-                  const csv = buildProductsCsvContent(products, days, craftFilter);
+                  const csv = buildProductsCsvContent(products, days, craftFilter, productTrends);
                   const today = new Date().toISOString().slice(0, 10);
                   const craftSegment = craftFilter !== "all" ? `-${craftFilter}` : "";
                   triggerCsvDownload(csv, `eat-products${craftSegment}-${days}d-${today}.csv`);
