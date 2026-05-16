@@ -34,8 +34,11 @@ function Router() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Switch>
-        <Route path="/"              component={CraftPortalHome} />
-        <Route path="/smokecraft"    component={SmokeCraftGateway} />
+        {/* Default entry: immediate cinematic launch into the blending chamber */}
+        <Route path="/"                  component={SmokeCraftGateway} />
+        <Route path="/smokecraft"        component={SmokeCraftGateway} />
+        {/* Craft collection preserved for multi-craft navigation */}
+        <Route path="/craft-collection"  component={CraftPortalHome} />
         <Route path="/pourcraft"     component={() => <CraftComingSoon craft="pourcraft" />} />
         <Route path="/beercraft"     component={() => <CraftComingSoon craft="beercraft" />} />
         <Route path="/winecraft"     component={() => <CraftComingSoon craft="winecraft" />} />

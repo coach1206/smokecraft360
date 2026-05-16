@@ -1290,8 +1290,13 @@ export default function App() {
           <Route path="/experiences">
             <SubPageProviders><ExperiencesModule /></SubPageProviders>
           </Route>
-          <Route path="/">
+          {/* ── /home preserved for admin/staff direct access ── */}
+          <Route path="/home">
             <SubPageProviders><Home /></SubPageProviders>
+          </Route>
+          {/* ── Default: live blending workspace mounts immediately ── */}
+          <Route path="/">
+            <SubPageProviders><MasterBlender /></SubPageProviders>
           </Route>
 
           {/* ── Default: Sovereign Gate — all entry flows begin here ── */}
