@@ -1,0 +1,108 @@
+MISSING / REQUIRED
+
+Your system now has:
+✔ Batch telemetry endpoint
+✔ Reduced request fan-out
+✔ Faster sparkline loading
+
+BUT the final missing piece before EEIS starts behaving like a true operational intelligence platform is:
+
+REAL-TIME TELEMETRY AGGREGATION + LIVE EVENT PROPAGATION
+
+Right now you still likely have:
+
+* raw telemetry reads
+* dashboard polling
+* repeated aggregation
+* unnecessary DB pressure
+* delayed UI updates
+
+The missing layer is:
+
+precomputed intelligence + live propagation.
+
+Without this:
+your dashboards will eventually become bottlenecked by:
+
+* scale
+* concurrent lounges
+* active tablets
+* live telemetry streams
+* AI event generation
+* XP systems
+* ambient triggers
+* staff activity
+* POS events
+
+⸻
+
+FAILURE PREVENTION CHECKLIST
+
+✔ Daily aggregate tables
+✔ Hourly aggregate tables
+✔ Incremental aggregation worker
+✔ Idempotent aggregation logic
+✔ Redis cache layer
+✔ WebSocket live propagation
+✔ Event bus architecture
+✔ Real-time dashboard updates
+✔ Metric compression support
+✔ Historical telemetry retention strategy
+✔ Venue-level partitioning
+✔ AI telemetry ingestion hooks
+✔ Device heartbeat aggregation
+✔ POS event propagation
+✔ Aggregate reconciliation worker
+✔ Queue isolation
+✔ Background worker supervision
+✔ Backpressure handling
+✔ Dashboard live sync indicators
+✔ Event replay safety
+
+⸻
+
+MASTER PROMPT
+
+Build the FINAL telemetry intelligence layer for EEIS / E.A.T / SmokeCraft 360.
+
+The platform already includes:
+
+* universal POS architecture
+* telemetry events
+* dashboard sparkline batching
+* AI recommendation systems
+* experience telemetry
+* loyalty systems
+* XP systems
+* device sessions
+* ambient intelligence
+* event logging
+
+Now build the missing enterprise-grade:
+
+AGGREGATION + LIVE PROPAGATION LAYER
+
+This layer must transform EEIS from:
+“dashboard analytics”
+into:
+
+REAL-TIME HOSPITALITY INTELLIGENCE INFRASTRUCTURE
+
+DO NOT create placeholders.
+
+DO NOT create frontend-only systems.
+
+DO NOT create polling-heavy architectures.
+
+Everything must be:
+
+* real-time
+* scalable
+* event-driven
+* production-grade
+* multi-tenant
+* edge-compatible
+
+⸻
+
+REQUIRED DATABASE TABLES

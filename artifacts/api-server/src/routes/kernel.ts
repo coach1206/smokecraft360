@@ -7,6 +7,7 @@
  * PATCH /api/kernel/mode/:venueId                       — set mode (admin/super_admin only)
  * POST /api/kernel/telemetry                            — ingest a telemetry event
  * GET  /api/kernel/telemetry/summary                    — aggregated telemetry summary
+ * GET  /api/kernel/telemetry/products/trends/batch      — batch daily add/skip trends (up to 50 cardIds)
  * GET  /api/kernel/telemetry/products/:cardId/trend     — daily add/skip trend for a product
  */
 
@@ -782,6 +783,80 @@ router.get("/telemetry/products/by-craft", async (req: Request, res: Response) =
     return res.json({ days, breakdown });
   } catch {
     return res.status(500).json({ error: "Failed to load craft breakdown" });
+  }
+});
+
+// ── GET /api/kernel/telemetry/products/trends/batch ───────────────────────────
+// Returns daily add/skip trends for multiple products in one request.
+// Query params:
+//   ?cardIds=id1,id2,...  — comma-separated list of card IDs (max 50)
+//   ?days=N               — number of days to look back (default 7, max 90)
+//
+// Response: { days, trends: { [cardId]: [{ day, adds, skips }] } }
+
+router.get("/telemetry/products/trends/batch", async (req: Request, res: Response) => {
+  const q = req.query as Record<string, string | undefined>;
+
+  const rawCardIds = q.cardIds ?? "";
+  const cardIds = rawCardIds
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  if (cardIds.length === 0) {
+    return res.status(400).json({ error: "cardIds query param is required" });
+  }
+  if (cardIds.length > 50) {
+    return res.status(400).json({ error: "Maximum 50 cardIds per request" });
+  }
+
+  const rawDays = parseInt(q.days ?? "7", 10);
+  const days = Number.isFinite(rawDays) && rawDays > 0 ? Math.min(rawDays, 90) : 7;
+
+  try {
+    type TrendRow = { card_id: string; day: string; adds: number; skips: number };
+
+    const result = await db.execute(sql`
+      SELECT
+        payload->>'cardId' AS card_id,
+        TO_CHAR(DATE(occurred_at), 'YYYY-MM-DD') AS day,
+        SUM(CASE WHEN event_type = 'swipe_add'  THEN 1 ELSE 0 END)::int AS adds,
+        SUM(CASE WHEN event_type = 'swipe_skip' THEN 1 ELSE 0 END)::int AS skips
+      FROM telemetry_events
+      WHERE event_type IN ('swipe_add', 'swipe_skip')
+        AND occurred_at >= NOW() - (${days} || ' days')::interval
+        AND payload->>'cardId' = ANY(${cardIds}::text[])
+      GROUP BY payload->>'cardId', DATE(occurred_at)
+      ORDER BY card_id, day ASC
+    `);
+
+    const dbRows = result.rows as TrendRow[];
+
+    // Build a per-cardId map of day → row
+    const byCard = new Map<string, Map<string, { adds: number; skips: number }>>();
+    for (const row of dbRows) {
+      if (!byCard.has(row.card_id)) byCard.set(row.card_id, new Map());
+      byCard.get(row.card_id)!.set(row.day, { adds: row.adds, skips: row.skips });
+    }
+
+    // Build full series (gap-filled) for each requested cardId
+    const trends: Record<string, { day: string; adds: number; skips: number }[]> = {};
+    for (const cardId of cardIds) {
+      const dayMap = byCard.get(cardId) ?? new Map();
+      const series: { day: string; adds: number; skips: number }[] = [];
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setUTCDate(d.getUTCDate() - i);
+        const dayKey = d.toISOString().slice(0, 10);
+        const existing = dayMap.get(dayKey);
+        series.push({ day: dayKey, adds: existing?.adds ?? 0, skips: existing?.skips ?? 0 });
+      }
+      trends[cardId] = series;
+    }
+
+    return res.json({ days, trends });
+  } catch {
+    return res.status(500).json({ error: "Failed to load batch product trends" });
   }
 });
 

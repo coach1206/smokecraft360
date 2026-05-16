@@ -848,25 +848,14 @@ export default function EATDashboard() {
     apiFetch<{ products: ProductItem[] }>(`/telemetry/products?days=${d}${craftParam}`)
       .then(({ products: p }) => {
         setProducts(p);
-        // Fetch 7-day sparkline trend for each product concurrently
+        // Fetch 7-day sparkline trends for all products in a single batch request
         if (p.length === 0) return;
         const TREND_DAYS = 7;
-        Promise.allSettled(
-          p.map((item) =>
-            apiFetch<{ cardId: string; trend: TrendPoint[] }>(
-              `/telemetry/products/${encodeURIComponent(item.card_id)}/trend?days=${TREND_DAYS}`,
-            ).then((data) => ({ cardId: item.card_id, trend: data.trend }))
-          )
-        ).then((results) => {
-          setProductTrends((prev) => {
-            const next = new Map(prev);
-            for (const r of results) {
-              if (r.status === "fulfilled") {
-                next.set(r.value.cardId, r.value.trend);
-              }
-            }
-            return next;
-          });
+        const cardIds = p.map((item) => item.card_id).join(",");
+        apiFetch<{ days: number; trends: Record<string, TrendPoint[]> }>(
+          `/telemetry/products/trends/batch?cardIds=${encodeURIComponent(cardIds)}&days=${TREND_DAYS}`,
+        ).then(({ trends }) => {
+          setProductTrends(new Map(Object.entries(trends)));
         }).catch(() => { /* silent */ });
       })
       .catch(() => { /* silent */ })
