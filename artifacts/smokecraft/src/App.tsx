@@ -89,6 +89,7 @@ const AxiomDemo             = lazy(() => import('@/pages/AxiomDemo'));
 const MasterBlender         = lazy(() => import('@/pages/MasterBlender'));
 const DesignerPage          = lazy(() => import('@/pages/DesignerPage'));
 const UpgradePage           = lazy(() => import('@/pages/UpgradePage'));
+const UpgradeRequired       = lazy(() => import('@/pages/UpgradeRequired'));
 
 /* ── Lazy-loaded pages previously unregistered in router ───── */
 const PaymentSuccess        = lazy(() => import('@/pages/PaymentSuccess'));
@@ -1024,7 +1025,7 @@ export default function App() {
             <SubPageProviders><CommandCenter /></SubPageProviders>
           </Route>
           <Route path="/command-center">
-            <SubPageProviders><SovereignRoute><CentralCommand /></SovereignRoute></SubPageProviders>
+            <SubPageProviders><SovereignRoute featureName="Command Center"><CentralCommand /></SovereignRoute></SubPageProviders>
           </Route>
           <Route path="/welcome-eeie">
             <WelcomeEEIE />
@@ -1042,7 +1043,7 @@ export default function App() {
             <SubPageProviders><EEIEModulePage /></SubPageProviders>
           </Route>
           <Route path="/operations">
-            <SubPageProviders><SovereignRoute><MasterOperations /></SovereignRoute></SubPageProviders>
+            <SubPageProviders><SovereignRoute featureName="Master Operations"><MasterOperations /></SovereignRoute></SubPageProviders>
           </Route>
           <Route path="/finance-reconciliation">
             <SubPageProviders><FinanceReconciliation /></SubPageProviders>
@@ -1138,10 +1139,13 @@ export default function App() {
             <SubPageProviders><MasterBlender /></SubPageProviders>
           </Route>
           <Route path="/designer">
-            <SubPageProviders><SovereignRoute><DesignerPage /></SovereignRoute></SubPageProviders>
+            <SubPageProviders><SovereignRoute featureName="Experience Designer"><DesignerPage /></SovereignRoute></SubPageProviders>
           </Route>
           <Route path="/upgrade">
             <SubPageProviders><UpgradePage /></SubPageProviders>
+          </Route>
+          <Route path="/upgrade-required">
+            <SubPageProviders><UpgradeRequired /></SubPageProviders>
           </Route>
 
           {/* ── Previously unregistered pages — recovered routes ── */}
@@ -1197,13 +1201,13 @@ export default function App() {
             <SubPageProviders><EnvironmentEngine /></SubPageProviders>
           </Route>
           <Route path="/enterprise-intelligence">
-            <SubPageProviders><SovereignRoute><EnterpriseIntelligence /></SovereignRoute></SubPageProviders>
+            <SubPageProviders><SovereignRoute featureName="Enterprise Intelligence"><EnterpriseIntelligence /></SovereignRoute></SubPageProviders>
           </Route>
           <Route path="/governance">
-            <SubPageProviders><SovereignRoute><EnterpriseGovernance /></SovereignRoute></SubPageProviders>
+            <SubPageProviders><SovereignRoute featureName="Enterprise Governance"><EnterpriseGovernance /></SovereignRoute></SubPageProviders>
           </Route>
           <Route path="/central-command">
-            <SubPageProviders><SovereignRoute><CentralCommand /></SovereignRoute></SubPageProviders>
+            <SubPageProviders><SovereignRoute featureName="Central Command"><CentralCommand /></SovereignRoute></SubPageProviders>
           </Route>
           <Route path="/axiom-pay">
             <SubPageProviders><AxiomPay /></SubPageProviders>

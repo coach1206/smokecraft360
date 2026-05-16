@@ -113,7 +113,7 @@ describe("SovereignRoute router integration — Essential mode", () => {
   );
 
   it.each(SOVEREIGN_PATHS)(
-    "navigates to '/' from %s when mode is essential",
+    "navigates to '/upgrade-required' from %s when mode is essential",
     async (path) => {
       const navigate = vi.fn();
       renderAtPath(path, navigate);
@@ -121,7 +121,7 @@ describe("SovereignRoute router integration — Essential mode", () => {
       await act(async () => {});
 
       expect(navigate).toHaveBeenCalled();
-      expect(navigate.mock.calls[0][0]).toBe("/");
+      expect(navigate.mock.calls[0][0]).toMatch(/^\/upgrade-required/);
     },
   );
 });

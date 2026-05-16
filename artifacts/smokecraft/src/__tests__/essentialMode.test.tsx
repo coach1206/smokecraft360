@@ -479,7 +479,8 @@ describe("SovereignRoute", () => {
     );
 
     await act(async () => {});
-    expect(mockNavigate).toHaveBeenCalledWith("/");
+    expect(mockNavigate).toHaveBeenCalled();
+    expect(mockNavigate.mock.calls[0][0]).toMatch(/^\/upgrade-required/);
   });
 
   it.each(SOVEREIGN_ROUTES)(
