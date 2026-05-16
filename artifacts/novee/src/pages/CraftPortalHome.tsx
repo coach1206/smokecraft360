@@ -7,23 +7,22 @@ import { motion, AnimatePresence } from "framer-motion";
 // Images sourced from SmokeCraft's own verified production image references
 const CRAFT_ASSETS = {
   smokecraft: [
-    { url: "/novee/images/smokecraft-card.jpg",  desc: "Luxury cigar masterclass" },
+    { url: "/novee/images/smokecraft-card.jpg",  desc: "Diverse connoisseurs — luxury cigar lounge" },
     { url: "/novee/images/smoke-verified-3.jpg", desc: "Premium cigar selection" },
     { url: "/novee/images/smoke-home-1.jpg",     desc: "Cigar humidor ritual" },
   ],
   pourcraft: [
-    { url: "/novee/images/pourcraft-card.jpg",   desc: "Premium spirits selection" },
-    { url: "/novee/images/pour-verified-1.jpg",  desc: "Macallan 18 — single malt scotch" },
-    { url: "/novee/images/pour-1.jpg",           desc: "Whiskey bottle wall" },
+    { url: "/novee/images/pourcraft-card.png",  desc: "Premium whiskey and bourbon selection" },
+    { url: "/novee/images/pour-verified-1.jpg", desc: "Macallan 18 — single malt scotch" },
+    { url: "/novee/images/pour-1.jpg",          desc: "Whiskey bottle wall" },
   ],
   beercraft: [
-    { url: "/novee/images/brewcraft-card.jpg",   desc: "Craft beer discovery" },
-    { url: "/novee/images/beer-verified-1.jpg",  desc: "Guinness Draught — dark stout" },
-    { url: "/novee/images/beer-verified-2.jpg",  desc: "Artisanal craft pour" },
+    { url: "/novee/images/brewcraft-card.png",  desc: "Artisanal craft beer — perfect pour" },
+    { url: "/novee/images/beer-verified-1.jpg", desc: "Guinness Draught — dark stout" },
+    { url: "/novee/images/beer-verified-2.jpg", desc: "Artisanal craft pour" },
   ],
   winecraft: [
     { url: "/novee/images/wine-1.jpg", desc: "Sommelier decanter aeration" },
-    { url: "/novee/images/wine-2.jpg", desc: "Fine vintage red wine" },
   ],
 } as const;
 
@@ -78,16 +77,6 @@ const PORTALS = [
   { id: "winecraft"  as CraftKey, title: "WineCraft 360",  sub: "Sommelier Wine Presentation",        route: "/winecraft",  metallic: "titanium", offset: 6000, active: false },
 ];
 
-// Fixed smoke positions — no Math.random() so no hydration mismatch
-const SMOKE_WISPS = [
-  { left: "7%",  bottom: "-10%", dur: 20, delay: 0,  dx:  40 },
-  { left: "22%", bottom: "-10%", dur: 25, delay: 4,  dx: -48 },
-  { left: "41%", bottom: "-10%", dur: 18, delay: 8,  dx:  32 },
-  { left: "58%", bottom: "-10%", dur: 23, delay: 2,  dx: -36 },
-  { left: "74%", bottom: "-10%", dur: 26, delay: 6,  dx:  52 },
-  { left: "91%", bottom: "-10%", dur: 21, delay: 10, dx: -44 },
-];
-
 // ── Main component ────────────────────────────────────────────────────────────
 export default function CraftPortalHome() {
   const [, navigate] = useLocation();
@@ -95,12 +84,12 @@ export default function CraftPortalHome() {
   return (
     <div style={{
       minHeight: "100dvh",
-      background: "radial-gradient(ellipse at center, #161719 0%, #050607 100%)",
+      background: "#050505",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      color: "#e3e4e6",
+      color: "#E5E5E5",
       position: "relative",
       overflow: "hidden",
       padding: "40px 32px",
@@ -112,35 +101,16 @@ export default function CraftPortalHome() {
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@200;300;400&family=Inter:wght@300;400;500&display=swap');
       `}</style>
 
-      {/* ── Cinematic ambient lounge smoke ───────────────────────────────── */}
-      {SMOKE_WISPS.map((s, i) => (
-        <motion.div
-          key={i}
-          animate={{
-            y: ["0vh", "-125vh"],
-            x: [`0px`, `${s.dx}px`],
-            scale: [1, 1.6],
-            opacity: [0, 0.85, 0],
-          }}
-          transition={{
-            duration: s.dur,
-            repeat: Infinity,
-            delay: s.delay,
-            ease: "linear",
-          }}
-          style={{
-            position: "fixed",
-            bottom: s.bottom,
-            left: s.left,
-            width: 560,
-            height: 560,
-            background: "radial-gradient(circle, rgba(220,220,220,0.022) 0%, transparent 70%)",
-            filter: "blur(80px)",
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-      ))}
+      {/* ── Ambient lounge accent glow — low-lit private room ───────────── */}
+      <div style={{
+        position: "fixed", inset: 0, pointerEvents: "none", zIndex: 1,
+        background: "radial-gradient(ellipse at 50% 0%, rgba(255,176,0,0.04) 0%, transparent 55%)",
+      }} />
+      <div style={{
+        position: "fixed", bottom: 0, left: 0, right: 0, pointerEvents: "none", zIndex: 1,
+        height: "40%",
+        background: "radial-gradient(ellipse at 50% 100%, rgba(255,176,0,0.025) 0%, transparent 70%)",
+      }} />
 
       {/* ── Discreet sovereign access ────────────────────────────────────── */}
       <button
@@ -231,34 +201,22 @@ export default function CraftPortalHome() {
         }}
       >
         {PORTALS.map(portal => {
-          const isGold = portal.metallic === "gold";
-          const borderGrad = isGold
-            ? "linear-gradient(135deg, #dfba73 0%, #fbf5b7 35%, #9e7831 70%, #dfba73 100%)"
-            : "linear-gradient(135deg, #7a7d80 0%, #e1e4e6 40%, #595b5e 100%)";
-          const cardBg = "linear-gradient(135deg, rgba(8,9,10,0.55) 0%, rgba(5,6,7,0.60) 100%)";
-          const hoverShadow = isGold
-            ? "inset 0 1px 1px rgba(255,255,255,0.10), 0 24px 64px rgba(0,0,0,0.92), 0 0 28px rgba(223,186,115,0.18)"
-            : "inset 0 1px 1px rgba(255,255,255,0.08), 0 24px 64px rgba(0,0,0,0.92), 0 0 20px rgba(255,255,255,0.06)";
-
           return (
             <motion.div
               key={portal.id}
               onClick={() => navigate(portal.route)}
-              whileHover={{ scale: 1.018, boxShadow: hoverShadow }}
+              whileHover={{ scale: 1.016, boxShadow: "0 24px 72px rgba(0,0,0,0.95), 0 0 32px rgba(212,175,55,0.12)" }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               style={{
                 position: "relative",
                 height: 460,
-                borderRadius: 4,
+                borderRadius: 6,
                 overflow: "hidden",
-                // Two-gradient metallic border technique
-                backgroundImage: `${cardBg}, ${borderGrad}`,
-                backgroundOrigin: "border-box",
-                backgroundClip: "padding-box, border-box",
-                border: "1px solid transparent",
-                backdropFilter: "blur(30px) saturate(120%)",
-                WebkitBackdropFilter: "blur(30px) saturate(120%)",
-                boxShadow: "inset 0 1px 1px rgba(255,255,255,0.08), 0 24px 64px rgba(0,0,0,0.90)",
+                background: "rgba(15,15,15,0.75)",
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+                border: "1px solid rgba(212,175,55,0.15)",
+                boxShadow: "0 20px 60px rgba(0,0,0,0.88)",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -295,18 +253,19 @@ export default function CraftPortalHome() {
                     fontWeight: 300,
                     letterSpacing: "0.06em",
                     margin: "0 0 10px",
-                    color: "#fffcf5",
+                    color: "#D4AF37",
                     lineHeight: 1.1,
                   }}>
                     {portal.title}
                   </h2>
                   <p style={{
-                    fontSize: 10,
-                    letterSpacing: "0.18em",
+                    fontSize: 11,
+                    letterSpacing: "0.16em",
                     textTransform: "uppercase",
-                    color: "#a3a6a8",
-                    lineHeight: 1.7,
+                    color: "#E5E5E5",
+                    lineHeight: 1.6,
                     margin: 0,
+                    opacity: 0.7,
                   }}>
                     {portal.sub}
                   </p>
@@ -316,31 +275,33 @@ export default function CraftPortalHome() {
                 <button
                   onClick={e => { e.stopPropagation(); navigate(portal.route); }}
                   style={{
-                    background: "linear-gradient(180deg, #242629 0%, #111214 100%)",
-                    border: "1px solid rgba(138,141,144,0.30)",
-                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 12px rgba(0,0,0,0.50)",
-                    color: "#e3e4e6",
+                    background: "rgba(12,12,12,0.80)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
+                    border: "1px solid rgba(212,175,55,0.25)",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.55)",
+                    color: "#E5E5E5",
                     padding: "14px 28px",
                     fontSize: 9,
                     fontWeight: 500,
                     letterSpacing: "0.30em",
                     textTransform: "uppercase",
-                    borderRadius: 3,
+                    borderRadius: 4,
                     cursor: "pointer",
                     width: "100%",
                     textAlign: "center",
                     fontFamily: "'Inter', sans-serif",
-                    transition: "background 0.3s ease, border-color 0.3s ease",
+                    transition: "border-color 0.3s ease, background 0.3s ease",
                   }}
                   onMouseEnter={e => {
                     const b = e.currentTarget as HTMLButtonElement;
-                    b.style.background = "linear-gradient(180deg, #2d3035 0%, #16181b 100%)";
-                    b.style.borderColor = "rgba(225,228,230,0.45)";
+                    b.style.borderColor = "rgba(212,175,55,0.55)";
+                    b.style.background = "rgba(212,175,55,0.08)";
                   }}
                   onMouseLeave={e => {
                     const b = e.currentTarget as HTMLButtonElement;
-                    b.style.background = "linear-gradient(180deg, #242629 0%, #111214 100%)";
-                    b.style.borderColor = "rgba(138,141,144,0.30)";
+                    b.style.borderColor = "rgba(212,175,55,0.25)";
+                    b.style.background = "rgba(12,12,12,0.80)";
                   }}
                 >
                   {portal.active ? "Begin Experience" : "Select Masterclass"}
