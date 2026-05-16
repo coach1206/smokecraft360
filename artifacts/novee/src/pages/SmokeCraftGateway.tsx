@@ -149,12 +149,12 @@ const INTER         = '"Inter", -apple-system, sans-serif';
 function ObsidianPanel({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
     <div style={{
-      background: "linear-gradient(rgba(14,16,20,0.97), rgba(6,7,9,0.99)) padding-box, linear-gradient(135deg, #dfba73 0%, #fbf5b7 50%, #9e7831 100%) border-box",
-      border: "1px solid transparent",
+      background: "rgba(15,15,15,0.65)",
+      border: "1px solid rgba(212,175,55,0.15)",
       borderRadius: 8,
-      backdropFilter: "blur(40px)",
-      WebkitBackdropFilter: "blur(40px)",
-      boxShadow: "inset 0 1px 2px rgba(255,255,255,0.12), 0 32px 80px rgba(0,0,0,0.92)",
+      backdropFilter: "blur(20px)",
+      WebkitBackdropFilter: "blur(20px)",
+      boxShadow: "0 32px 80px rgba(0,0,0,0.92)",
       padding: "52px 56px",
       width: "100%",
       maxWidth: 960,
@@ -906,7 +906,10 @@ function Stage10({ onBack }: { onBack: () => void }) {
 // ── Main Orchestrator ─────────────────────────────────────────────────────────
 export default function SmokeCraftGateway() {
   const [, navigate] = useLocation();
-  const [rs, setRs]   = useState<RitualState>(loadState);
+  // Always boot Stage 1 — never restore a prior session from localStorage.
+  // CraftPortalHome clears NOVEE_SC_RITUAL_v1 on every entry, and this line
+  // is a second hard guarantee: fresh mount = Stage 1, no exceptions.
+  const [rs, setRs]   = useState<RitualState>(BLANK);
   const [entered, setEntered] = useState(false);
   const [sessionMsg, setSessionMsg] = useState<string | null>(null);
 
@@ -933,7 +936,7 @@ export default function SmokeCraftGateway() {
   return (
     <div style={{
       position: "fixed", inset: 0,
-      background: "radial-gradient(ellipse at center, #1c1d21 0%, #050607 100%)",
+      background: "#000000",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       overflow: "hidden", overflowY: "auto",
@@ -942,6 +945,12 @@ export default function SmokeCraftGateway() {
       transition: "opacity 0.90s ease",
       fontFamily: INTER,
     }}>
+      {/* Cinematic ambient amber glow — 3% overlay, pointer-events off */}
+      <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
+        background: "radial-gradient(ellipse at 50% 0%, rgba(255,176,0,0.03) 0%, transparent 58%)" }} />
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, pointerEvents: "none", zIndex: 0,
+        height: "45%",
+        background: "radial-gradient(ellipse at 50% 100%, rgba(255,176,0,0.02) 0%, transparent 70%)" }} />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;1,300&family=Inter:wght@300;400;500;600&display=swap');
         @keyframes smoke-rise {

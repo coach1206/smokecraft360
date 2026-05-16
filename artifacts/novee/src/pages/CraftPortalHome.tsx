@@ -91,6 +91,7 @@ export default function CraftPortalHome() {
       sessionStorage.removeItem("axiom_eeis_journey");
       sessionStorage.removeItem("axiom_experience_level");
       sessionStorage.removeItem("axiom_craft_build");
+      localStorage.removeItem("NOVEE_SC_RITUAL_v1");
       localStorage.removeItem("titan_ritual_complete");
       localStorage.removeItem("smokeCraftStage");
       localStorage.removeItem("currentStage");

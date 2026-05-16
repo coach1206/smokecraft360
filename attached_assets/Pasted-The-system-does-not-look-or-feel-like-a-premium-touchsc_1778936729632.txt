@@ -1,0 +1,23 @@
+The system does not look or feel like a premium touchscreen hardware interface. It lacks visual elevation, audio feedback, sliding depth, atmospheric smoke assets, and the main images are completely missing or broken across all three masterclass cards. 
+
+Please execute a total sensory and structural overhaul across MasterBlender.tsx, RitualStep.tsx, and your global CSS layers immediately:
+
+1. RESTORE MASTERCLASS IMAGES (GLOBAL PORTAL):
+   - SmokeCraft 360 Card: Map a premium, realistic asset showing a diverse group of modern connoisseurs (Black man, South Asian woman, Caucasian man) in a dimly lit luxury lounge.
+   - PourCraft 360 Card: Restore the high-end luxury whiskey/bourbon bottle asset.
+   - BeerCraft 360 Card: Restore the original microbrew draft beer pour asset.
+
+2. TOUCHSCREEN INTERACTIVITY & BUTTON ELEVATION:
+   - Add clear visual elevation states to all buttons and actionable cards. Use a subtle outer glow for interactive elements. On active touch/click, apply an immediate mechanical dip effect: 'transform: scale(0.97); box-shadow: inset 0px 4px 12px rgba(0, 0, 0, 0.8); transition: transform 0.1s ease;'.
+   - Ensure all touch sliders and selection components are fully interactive with responsive gesture event listeners.
+
+3. SOUND EFFECTS ENGINE (UI TACTILITY):
+   - Implement an immediate audio feedback trigger for all interface elements.
+   - Every primary button press must trigger a crisp, high-end mechanical click sound file.
+   - Any slider movement or carousel step change must trigger a low-frequency velvet sliding accent sound.
+
+4. VOICE ASSISTANCE & SMOKE PARTICLES:
+   - Drop in the architectural framework stub for our native hands-free voice assistance system to listen for active control parameters.
+   - Remove any lingering moving web bubbles. Replace the background with an HTML5 Canvas particle layer that renders a slow-drifting, ambient luxury smoke mist over the absolute black (#000000) and amber-glow (#FFB000, 3%) background layout.
+
+Clear your current task queue and execute this entire tactile, multi-craft rebuild now.
