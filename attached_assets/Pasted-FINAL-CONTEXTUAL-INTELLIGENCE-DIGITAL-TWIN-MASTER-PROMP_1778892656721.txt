@@ -1,0 +1,122 @@
+FINAL CONTEXTUAL INTELLIGENCE + DIGITAL TWIN MASTER PROMPT
+
+MISSING / REQUIRED
+
+The platform already includes:
+
+* universal POS abstraction
+* telemetry infrastructure
+* aggregation workers
+* operational command systems
+* websocket propagation
+* AI memory foundations
+* ambient orchestration
+* retry/reconciliation systems
+* autonomous orchestration direction
+* event-driven architecture
+
+BUT the platform is still missing:
+
+CONTEXTUAL OPERATIONAL INTELLIGENCE
+
+The system currently processes:
+
+* events
+    but does not yet understand:
+* context
+* venue state
+* behavioral momentum
+* environmental impact
+* operational rhythm
+* temporal intelligence
+* social energy
+* system-wide awareness
+
+Without these systems:
+EEIS remains:
+
+* reactive
+    instead of:
+
+cognitively adaptive.
+
+⸻
+
+FAILURE PREVENTION CHECKLIST
+
+✔ Context engine
+✔ State engine
+✔ Venue digital twin
+✔ Temporal intelligence
+✔ Environmental memory
+✔ Social intelligence
+✔ Operational awareness scoring
+✔ Behavioral momentum tracking
+✔ Context aggregation layer
+✔ Predictive venue modeling
+✔ AI contextual orchestration
+✔ Real-time state synchronization
+✔ Distributed state reconciliation
+✔ Multi-tenant context isolation
+✔ Event-to-context transformation
+✔ Environmental effectiveness tracking
+✔ Adaptive orchestration weighting
+✔ Replay-safe state recovery
+✔ Context confidence scoring
+✔ Autonomous optimization loops
+
+⸻
+
+MASTER PROMPT
+
+Build the COMPLETE CONTEXTUAL INTELLIGENCE + DIGITAL TWIN LAYER for EEIS / E.A.T / SmokeCraft 360.
+
+The system already contains:
+
+* operational telemetry
+* websocket event fabric
+* AI memory infrastructure
+* autonomous orchestration
+* ambient intelligence
+* operational command center
+* venue telemetry
+* aggregation pipelines
+* behavioral telemetry
+* recommendation systems
+* device intelligence
+* live operational state
+
+Now build the missing:
+
+CONTEXT ENGINE + DIGITAL TWIN ARCHITECTURE
+
+The system must evolve from:
+“event-driven orchestration”
+into:
+
+contextual hospitality cognition.
+
+DO NOT build:
+
+* static analytics
+* isolated AI systems
+* disconnected telemetry processors
+* simple recommendation loops
+* polling-driven state systems
+
+Everything must be:
+
+* contextual
+* state-aware
+* adaptive
+* predictive
+* multi-tenant
+* event-driven
+* production-grade
+* operationally intelligent
+
+⸻
+
+REQUIRED BACKEND STRUCTURE
+
+Create:

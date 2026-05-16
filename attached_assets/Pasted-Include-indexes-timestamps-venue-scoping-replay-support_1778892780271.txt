@@ -1,0 +1,160 @@
+Include:
+
+* indexes
+* timestamps
+* venue scoping
+* replay support
+* audit trails
+* confidence scoring
+* rollback protection
+* snapshot versioning
+
+⸻
+
+REQUIRED CONTEXT ENGINE
+
+Build a context engine that continuously combines:
+
+* telemetry
+* AI memory
+* venue state
+* guest behavior
+* social energy
+* environmental conditions
+* operational load
+* inventory pressure
+* recommendation confidence
+* temporal patterns
+
+into:
+
+a unified operational awareness model.
+
+⸻
+
+REQUIRED STATE ENGINE
+
+Track real-time:
+
+✔ venue state
+✔ guest state
+✔ staff state
+✔ device state
+✔ environmental state
+✔ operational state
+✔ orchestration state
+✔ social state
+
+All state systems must synchronize live through websocket/event propagation.
+
+⸻
+
+REQUIRED TEMPORAL INTELLIGENCE
+
+The system must understand:
+
+✔ time-of-day patterns
+✔ engagement waves
+✔ venue pacing
+✔ event cycles
+✔ traffic rhythms
+✔ seasonal behaviors
+✔ conversion timing
+✔ VIP behavior timing
+
+Allow orchestration behavior to adapt based on temporal awareness.
+
+⸻
+
+REQUIRED SOCIAL INTELLIGENCE
+
+Track:
+
+✔ communal energy
+✔ interaction density
+✔ social momentum
+✔ group behavior
+✔ engagement clustering
+✔ conversation activity
+✔ VIP influence patterns
+
+Use social telemetry to influence:
+
+* recommendations
+* ambient scenes
+* lounge intensity
+* pairing weighting
+
+⸻
+
+REQUIRED ENVIRONMENTAL MEMORY
+
+Track relationships between:
+
+✔ lighting profiles
+✔ sound profiles
+✔ engagement outcomes
+✔ conversion success
+✔ recommendation performance
+✔ guest retention
+✔ social interaction
+
+The system must learn:
+which environmental conditions produce optimal lounge behavior.
+
+⸻
+
+REQUIRED DIGITAL TWIN SYSTEM
+
+Build:
+
+live virtual venue models.
+
+Each venue twin must continuously model:
+
+✔ active guests
+✔ active sessions
+✔ device activity
+✔ environmental state
+✔ operational load
+✔ traffic flow
+✔ inventory state
+✔ engagement heatmaps
+✔ orchestration status
+✔ ambient behavior
+
+Allow predictive simulation of:
+
+* engagement changes
+* environmental changes
+* operational strain
+* recommendation effectiveness
+
+⸻
+
+REQUIRED AUTONOMOUS OPTIMIZATION
+
+The system must autonomously optimize:
+
+✔ recommendations
+✔ ambient conditions
+✔ engagement pacing
+✔ social interaction prompts
+✔ upsell weighting
+✔ pairing visibility
+✔ operational flow
+✔ VIP handling
+
+Based on:
+
+* live context
+* predictive scoring
+* environmental effectiveness
+* social energy
+* temporal intelligence
+
+⸻
+
+REQUIRED LIVE EVENT FLOW
+
+Buil
