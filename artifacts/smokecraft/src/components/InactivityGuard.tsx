@@ -157,8 +157,8 @@ export default function InactivityGuard() {
           style={{
             position:        "fixed",
             inset:           0,
-            // High enough to clear all MasterBlender layers (max 9998) + margin
-            zIndex:          999990,
+            // Above all MasterBlender layers (max 9994) — hard-coded per architecture contract
+            zIndex:          999999,
             background:      "rgba(10,9,8,0.72)",
             backdropFilter:  "blur(10px)",
             WebkitBackdropFilter: "blur(10px)",

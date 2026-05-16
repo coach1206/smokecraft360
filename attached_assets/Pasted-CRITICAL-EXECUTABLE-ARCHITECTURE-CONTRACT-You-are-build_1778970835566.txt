@@ -1,0 +1,24 @@
+CRITICAL EXECUTABLE ARCHITECTURE CONTRACT: You are building all 8 architectural tasks end-to-end. This backend infrastructure must directly serve a high-premium, touchscreen hospitality kiosk running in low-light luxury lounges. 
+
+Ensure the following structural, visual, and operational rules are hardcoded across all 8 tasks:
+
+1. THE LOYALTY PROGRESSION & MULTI-SESSION INTERVAL TIERS:
+   - Persist user metrics in the database schema to manage returning guests. Map their accumulated XP to 4 distinct progression ranks: 'Just Curious' (0-250 XP), 'Cultivated Beginner' (251-750 XP), 'Rising Aficionado' (751-1500 XP), and 'Master Sommelier' (1501+ XP).
+   - Dynamic Lock: The backend session controller must enforce that the final checkout is strictly LOCKED until the user has completed premium leaf selections from TWO different countries.
+   - Display a persistent progress tracker showing current tier, point balances, and a message explicitly calculating the distance to their next milestone phase.
+
+2. ON-TABLET POS TERMINAL CHECKOUT & CULINARY MATRICES:
+   - Provide a glassmorphic "Settle & Order Now" invoice aggregation layer that securely routes transaction tokens to the integrated card terminal.
+   - Hardcode an automated sensory matrix directly into the selection controller to display real-product images and menu upells out of the box:
+     * Dominican Republic (Smooth/Cedar/Cocoa) -> Arturo Fuente Opus X + Highland Single Malt Scotch + Prime Dry-Aged Ribeye or Dark Chocolate Ganache.
+     * Nicaragua (Bold/Espresso/Spice) -> Padrón 1926 Series + Barrel-Proof Bourbon + Charred Pepper-Crusted New York Strip or Espresso Smoked Brisket.
+     * Ecuador/Shade (Creamy/Aromatic) -> Davidoff Nicaragua + Japanese Whisky + Pan-Seared Duck Breast or Artisanal Charcuterie.
+   - The exact millisecond payment is authorized, push an instant real-time print/alert command directly to the kitchen display system (KDS) and bar terminal, preparing the staff for the table handoff.
+
+3. UN-HIDE LEAD_SCORE REDUCERS & LOUNGE AVERAGES:
+   - Run a live point-tracking state engine (+5 XP for perfect structural affinities, -2 PTS for clear soil/seed mismatches) driving Web Audio API touch noise clicks.
+   - At payment confirmation, freeze the current scorecard data. Execute an instant daily calculation against the ledger to project the user's score directly against the live, running 'Nightly Lounge Average' on the terminal.
+
+4. PREMIUM OBSIDIAN TEXTURES & ABSOLUTE BRAND PURGE:
+   - Completely strip all corporate/tech terms system-wide: 'Sovereign Ritual', 'Phase 1', 'Phase 2', 'Legacy Assets', 'Precision Ritual', and 'baseline architecture'.
+   - Maintain the absolute black (#000000) field layout, smoked glass components (backdrop-filter: blur(30px)), deep gold border containers, and the HTML5 SmokeCanvas moving at z-index 9996. Ensure the timeout modal overlay handles pointer-events auto cleanly at z-index 999999 to resolve interaction locks.

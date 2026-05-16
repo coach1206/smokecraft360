@@ -131,6 +131,7 @@ import craftSessionsRouter      from "./routes/craftSessions";
 import craftRouter              from "./routes/craft";
 import competitionsRouter       from "./routes/competitions";
 import posOrdersRouter          from "./routes/posOrders";
+import posSettleOrderRouter     from "./routes/posSettleOrder";
 import swipeExperienceRouter    from "./routes/swipeExperience";
 import experienceItemsRouter    from "./routes/experienceItems";
 import swipeOrdersRouter        from "./routes/swipeOrders";
@@ -319,6 +320,7 @@ app.use("/api", deviceTouch);
 // Both endpoints are Zod-validated before any property access so there is
 // no prototype-pollution risk from skipping the depth guard here.
 app.use("/api", posOrdersRouter);
+app.use("/api/pos", posSettleOrderRouter);
 
 app.use(rejectDeepPayloads);
 // Parse Accept-Language → req.locale (en/es/fr). Passive: no body changes.

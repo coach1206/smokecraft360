@@ -101,6 +101,46 @@ function loadVisitedCountries(): string[] {
   try { return JSON.parse(localStorage.getItem("blender_countries") ?? "[]"); } catch { return []; }
 }
 
+// ── Sensory Matrix — origin → product + culinary pairings ─────────────────
+const SENSORY_MATRIX: Record<string, {
+  cigar: string; spirit: string; spiritStyle: string;
+  foods: [string, string]; descriptors: [string, string, string];
+  accent: string;
+}> = {
+  "Dominican Republic": {
+    cigar:       "Arturo Fuente Opus X",
+    spirit:      "Highland Single Malt Scotch",
+    spiritStyle: "12yr+ Aged",
+    foods:       ["Prime Dry-Aged Ribeye", "Dark Chocolate Ganache"],
+    descriptors: ["Smooth", "Cedar", "Cocoa"],
+    accent:      "#C8860A",
+  },
+  "Nicaragua": {
+    cigar:       "Padrón 1926 Series",
+    spirit:      "Barrel-Proof Bourbon",
+    spiritStyle: "Cask Strength",
+    foods:       ["Charred Pepper NY Strip", "Espresso Smoked Brisket"],
+    descriptors: ["Bold", "Espresso", "Spice"],
+    accent:      "#8B3A0F",
+  },
+  "Ecuador": {
+    cigar:       "Davidoff Nicaragua",
+    spirit:      "Japanese Whisky",
+    spiritStyle: "Single Malt",
+    foods:       ["Pan-Seared Duck Breast", "Artisanal Charcuterie"],
+    descriptors: ["Creamy", "Aromatic", "Shade-grown"],
+    accent:      "#2E6B4F",
+  },
+  "Cuba": {
+    cigar:       "Cohiba Behike 52",
+    spirit:      "Ron Zacapa 23 Rum",
+    spiritStyle: "Sistema Solera",
+    foods:       ["Mojo-Glazed Pork Tenderloin", "Coconut Flan"],
+    descriptors: ["Earthy", "Floral", "Honey"],
+    accent:      "#7A4F1A",
+  },
+};
+
 const HALO_R    = 88;
 const HALO_CIRC = 2 * Math.PI * HALO_R;
 
@@ -1022,6 +1062,146 @@ function GatewayMentor({
 
 // ── Gateway: Cultivation (Seed + Soil) ─────────────────────────────────────
 // -- Gateway: Tobacco Terroir & Craft (Stage 3a) ---------------------------
+// ── Settle & Order Now — sensory matrix + KDS push ─────────────────────
+function SettleOrderPanel({ currentCountry, finalScore }: {
+  currentCountry: string | null; finalScore: number;
+}) {
+  const [orderSent, setOrderSent] = useState(false);
+  const [sending,   setSending]   = useState(false);
+
+  const visited    = loadVisitedCountries();
+  const allVisited = currentCountry
+    ? [...new Set([...visited, currentCountry])]
+    : visited;
+  const isUnlocked = allVisited.length >= 2;
+  const matrix     = currentCountry ? SENSORY_MATRIX[currentCountry] ?? null : null;
+
+  async function handleSettle() {
+    if (!isUnlocked || sending || orderSent) return;
+    setSending(true);
+    try {
+      await fetch("/api/pos/settle-order", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({
+          country: currentCountry, cigar: matrix?.cigar,
+          spirit:  matrix?.spirit, foods: matrix?.foods, finalScore,
+        }),
+      });
+      setOrderSent(true);
+    } catch { /* offline */ } finally { setSending(false); }
+  }
+
+  const btnBorder = `1.5px solid ${isUnlocked ? GOLD : 'rgba(255,255,255,0.14)'}`;
+  const btnBg     = orderSent
+    ? "rgba(74,222,128,0.12)"
+    : isUnlocked
+      ? `linear-gradient(135deg,${GOLD}18,rgba(0,0,0,0.55))`
+      : "rgba(255,255,255,0.04)";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0  }}
+      transition={{ delay: 0.6, duration: 0.7 }}
+      style={{
+        background: "rgba(0,0,0,0.58)", border: `1px solid ${GOLD}30`,
+        borderRadius: 12, padding: "20px 22px", marginBottom: 20,
+        backdropFilter: "blur(30px)", WebkitBackdropFilter: "blur(30px)",
+        width: "100%", maxWidth: 448,
+      }}
+    >
+      {/* Header */}
+      <div style={{ display:"flex", alignItems:"center",
+        justifyContent:"space-between", marginBottom:14,
+        flexWrap:"wrap" as const, gap:8 }}>
+        <span style={{ color:`${GOLD}90`, fontSize:9, fontWeight:800,
+          letterSpacing:"0.34em", textTransform:"uppercase" as const }}>
+          Origin Sensory Matrix
+        </span>
+        {currentCountry && (
+          <span style={{ color:GOLD, fontSize:11, fontWeight:700, letterSpacing:"0.16em" }}>
+            {COUNTRY_FLAGS[currentCountry] ?? ""} {currentCountry}
+          </span>
+        )}
+      </div>
+
+      {/* Product trio */}
+      {matrix ? (
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr",
+          gap:8, marginBottom:16 }}>
+          {[
+            { label:"Cigar",   icon:"\u{1F6AC}", name:matrix.cigar,    sub:matrix.descriptors.join(" · ") },
+            { label:"Spirit",  icon:"\u{1F943}", name:matrix.spirit,   sub:matrix.spiritStyle },
+            { label:"Cuisine", icon:"\u{1F356}", name:matrix.foods[0], sub:matrix.foods[1] },
+          ].map(col => (
+            <div key={col.label} style={{
+              background:`rgba(212,175,55,0.07)`, border:`1px solid ${GOLD}22`,
+              borderRadius:8, padding:"10px 8px", textAlign:"center" as const }}>
+              <div style={{ color:`${GOLD}60`, fontSize:8, letterSpacing:"0.26em",
+                textTransform:"uppercase" as const, marginBottom:6 }}>{col.label}</div>
+              <div style={{ fontSize:20, marginBottom:5 }}>{col.icon}</div>
+              <div style={{ color:"rgba(240,232,212,0.90)", fontSize:10,
+                fontWeight:700, lineHeight:1.35 }}>{col.name}</div>
+              <div style={{ color:`${GOLD}50`, fontSize:8, marginTop:4,
+                lineHeight:1.4 }}>{col.sub}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ color:"rgba(240,232,212,0.30)", fontSize:13,
+          textAlign:"center" as const, padding:"16px 0", letterSpacing:"0.08em" }}>
+          Select your origin terroir to reveal your sensory pairing
+        </div>
+      )}
+
+      {/* Settle & Order button */}
+      <motion.button
+        whileHover={isUnlocked && !orderSent ? { scale:1.02 } : {}}
+        whileTap={isUnlocked  && !orderSent ? { scale:0.97 } : {}}
+        onClick={handleSettle}
+        disabled={!isUnlocked || orderSent || sending}
+        style={{
+          width:"100%", padding:"14px 20px", borderRadius:8,
+          border: btnBorder, background: btnBg,
+          cursor: isUnlocked && !orderSent ? "pointer" : "default",
+          display:"flex", alignItems:"center", justifyContent:"center", gap:10,
+          backdropFilter:"blur(12px)",
+        }}
+      >
+        {orderSent ? (
+          <><span style={{ color:"#4ade80", fontSize:16 }}>✓</span>
+            <span style={{ color:"#4ade80", fontSize:13, fontWeight:700,
+              letterSpacing:"0.16em", textTransform:"uppercase" as const }}>
+              Kitchen &amp; Bar Notified</span></>
+        ) : sending ? (
+          <span style={{ color:`${GOLD}80`, fontSize:13,
+            letterSpacing:"0.14em", textTransform:"uppercase" as const }}>
+            Sending to Terminal…
+          </span>
+        ) : isUnlocked ? (
+          <><span style={{ fontSize:18 }}>{"\u{1F4B3}"}</span>
+            <span style={{ color:GOLD, fontSize:13, fontWeight:700,
+              letterSpacing:"0.18em", textTransform:"uppercase" as const }}>
+              Settle &amp; Order Now</span></>
+        ) : (
+          <><span style={{ fontSize:16 }}>{"\u{1F512}"}</span>
+            <span style={{ color:"rgba(240,232,212,0.35)", fontSize:12,
+              letterSpacing:"0.14em", textTransform:"uppercase" as const }}>
+              Complete 2nd Origin to Unlock</span></>
+        )}
+      </motion.button>
+
+      {!isUnlocked && (
+        <p style={{ color:"rgba(212,175,55,0.38)", fontSize:11,
+          textAlign:"center" as const, margin:"10px 0 0", letterSpacing:"0.08em" }}>
+          {allVisited.length}/2 origins completed — return for a second masterclass
+        </p>
+      )}
+    </motion.div>
+  );
+}
+
 // ── Mastery Progress Lock Banner (fixed top, blending phase only) ───────────────
 function ProgressLockBanner({ xp }: { xp: number }) {
   const tier   = getTier(xp);
@@ -1494,7 +1674,7 @@ function GatewayCultivation({
     onSoil(id);
     const isMatch = id === expectedSoil;
     setSoilFeedback(isMatch ? "match" : "miss");
-    onXP(isMatch ? 5 : -1, e);
+    onXP(isMatch ? 5 : -2, e);
   }
 
   return (
@@ -2968,6 +3148,9 @@ function AlchemyReveal({
                 Signature Humidor Studio · Box Architect Tier 2
               </p>
             </motion.div>
+
+            {/* Sensory Matrix + Settle & Order Now */}
+            <SettleOrderPanel currentCountry={currentCountry ?? null} finalScore={finalScore} />
 
             {/* Origin Passport */}
             <CountryTracker currentCountry={currentCountry ?? null} />
