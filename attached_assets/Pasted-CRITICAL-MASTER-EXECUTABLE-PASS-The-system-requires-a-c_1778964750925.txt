@@ -1,0 +1,60 @@
+CRITICAL MASTER EXECUTABLE PASS: The system requires a complete linguistic, structural, and visual alignment. We are entirely replacing all corporate, technical, and investor-focused jargon with an immersive luxury cigar lounge experience optimized for low-light tablet touchscreens. You must overhaul the Mentor Selection cards with precise visual identities, national flags, and appropriate imagery tailored to each master's unique background.
+
+Refactor MasterBlender.tsx, RitualStep.tsx, and your step-routing layout frames immediately to enforce this exact production specification:
+
+1. REMOVE ALL CORPORATE & TECHNICAL LANGUAGE SYSTEM-WIDE:
+   - Permanently DELETE the following phrases from ALL user-facing code and markup: 'Sovereign Ritual', 'Phase 1', 'Phase 2', 'Legacy Assets', 'Precision Ritual', 'Commission Bespoke Physical Assets', 'Sovereign Roadmap', 'baseline architecture', 'private reserve allocation', 'prestige roadmap', and all corporate/software jargon.
+   - Remove all administrative 'Phase' badges, mechanical step counters, and corporate thumbnails.
+
+2. INJECT THE EXACT 5-SECOND NARRATIVE GATEWAY (STAGE 1):
+   - Replace the entire content area of the Stage 1 Cinematic Landing page with this exact copy architecture:
+     * TITLE (Large Cinematic Luxury Serif Font): 
+       The Art of the Cigar
+     * BODY TEXT (Clean Luxury Sans-Serif Font, Minimum 22px High-Contrast Scale):
+       SmokeCraft was designed to help you experience cigars differently.
+       Not just by smoking them — but by understanding them.
+       Learn how tobacco leaves are cultivated, how blends are crafted, how wrappers change flavor, and how pairings elevate the experience.
+       Then build your own personalized cigar profile guided by master mentors, flavor science, and luxury pairing recommendations.
+       Your journey into cigar culture begins here.
+     * PRIMARY ACTION BUTTON: ENTER SMOKECRAFT
+     * SECONDARY NAVIGATION BUTTON: BACK
+
+3. CULTURAL REDESIGN OF THE 4 GLOBAL MENTOR CARDS:
+   - Header Copy: Set Title to 'Choose Your Master Mentor'. Set Body to: 'Every cigar master brings a different philosophy, flavor profile, and tobacco tradition. Some favor bold spice and strength. Others pursue smooth balance, creamy wrappers, or deep earthy complexity. Select the mentor whose style matches the experience you want to create.'
+   - Structure 4 distinct, oversized, interactive glassmorphic cards featuring built-in national flags, responsive hover/touch glows, animated card elevation, and appropriate dark-filtered portrait backdrops mapped strictly to each person's background:
+     * DON MANUEL (The Traditionalist • Dominican Republic 🇩🇴):
+       - Flavor Notes: Cedar • Cocoa • Leather • Earth
+       - Style: Smooth medium-bodied blends crafted through old-world rolling traditions.
+       - Best Paired With: Aged whiskey, jazz lounges, relaxed evenings.
+       - Philosophy: “A cigar should unfold slowly, like a good story.”
+       - Targeted Image Asset: https://images.unsplash.com/photo-1541532713592-79a0317b6b77?auto=format&fit=crop&w=600&q=80 (Sophisticated old-world leather and jazz lounge ambience)
+     * ALEJANDRO (The Modern Blender • Nicaragua 🇳🇮):
+       - Flavor Notes: Espresso • Pepper • Spice • Dark Chocolate
+       - Style: Bold full-bodied cigars shaped by volcanic soil and modern blending techniques.
+       - Best Paired With: Bourbon, steak dinners, late-night conversations.
+       - Philosophy: “Strength means nothing without balance.”
+       - Targeted Image Asset: https://images.unsplash.com/photo-1508962914676-134849a727f0?auto=format&fit=crop&w=600&q=80 (Rich, deep-textured dark volcanic tobacco leaf terrain)
+     * DOÑA ROSA (The Botanical Master • Ecuador 🇪🇨):
+       - Flavor Notes: Cream • Honey • Toasted Almond • Floral Notes
+       - Style: Elegant smooth wrappers with refined aromatic complexity.
+       - Best Paired With: Cognac, rooftop lounges, sophisticated pairing sessions.
+       - Philosophy: “Every leaf has its own personality.”
+       - Targeted Image Asset: https://images.unsplash.com/photo-1511113202302-ef60000a6e87?auto=format&fit=crop&w=600&q=80 (Elegant, golden-hour light and refined botanical complexity)
+
+4. INSERT THE TWO MANDATORY TOBACCO & SEED EDUCATION CHECKPOINTS:
+   - Restructure the wizard flow right after Stage 3 (Mentor Selection is locked) to split the workflow by inserting two dedicated informational screens BEFORE allowing any active inputs:
+     * Stage 3a (Tobacco Terroir & Craft): A premium narrative panel detailing global leaf geography, regional soil types, and traditional curing arts. Use the macro tobacco leaf backdrop image.
+     * Stage 3b (Seed Biology & Priming): An educational layout detailing seed varietals, leaf positioning on the stalk (Volado, Seco, Ligero), and how flavor profiles scale.
+   - The user must interact with and step through these educational barriers before the active cultivation matrix unlocks.
+
+5. REPAIR TIMEOUT MODAL INTERACTION INTERCEPT BLOCK:
+   - Fault Isolation: Permanently fix the unclickable 'I'm Still Here' and 'Start New Experience' timeout buttons. Apply 'pointer-events: auto; position: relative; z-index: 999999;' directly to the button interaction layer.
+   - Audit parent containers to guarantee zero invisible fullscreen backdrops sit above the buttons intercepting click events on the glass.
+   - If a modal overlay lock encounters zero input on a lounge kiosk, trigger a 5-second auto-dismiss failsafe to automatically restore regular session usability.
+
+6. TOUCHSCREEN HARDWARE DEPTH, AUDIO, AND TEXTURES:
+   - Native Web Audio API: Keep playClick() [3400Hz mechanical bandpass noise burst, 58ms decay] bound to all 'onTouchStart' actions, and playSlide() [210Hz to 130Hz sine sweep] bound to range slider adjustments.
+   - 3D Touch Feeling: Buttons and selection cards must mechanically compress on contact: scaling down (scale-96), translate-y-[2px], and flashing a heavy inset box shadow (inset 0px 4px 12px rgba(0,0,0,0.9)).
+   - Visual Casing: Force the base layout to an absolute black (#000000) field with a 4% opacity centered gold overlay (#FFB000). Pull the HTML5 SmokeCanvas up to z-index 9996 so organic smoke mist drifts cleanly across all text cards.
+
+Execute this comprehensive experience and interface overhaul now to prioritize high-fidelity touchscreen interaction over simple form-filling. Ensure 'tsc --noEmit' passes clean with an exit code of 0.
