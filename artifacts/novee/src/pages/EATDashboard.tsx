@@ -527,8 +527,14 @@ function persistSavedPresets(presets: SavedPreset[]): void {
   try { localStorage.setItem(EAT_LS_PRESETS_KEY, JSON.stringify(presets)); } catch { /* ignore */ }
 }
 
-const MUTE_SS_KEY      = "eat_live_mute_until";
-const MUTE_DURATION_MS = 5 * 60 * 1000;
+const MUTE_SS_KEY = "eat_live_mute_until";
+
+const MUTE_OPTIONS: { label: string; ms: number }[] = [
+  { label: "5 MIN",  ms: 5  * 60 * 1000 },
+  { label: "15 MIN", ms: 15 * 60 * 1000 },
+  { label: "30 MIN", ms: 30 * 60 * 1000 },
+  { label: "1 HOUR", ms: 60 * 60 * 1000 },
+];
 
 function parseDaysFromSearch(search: string): number {
   try {
@@ -731,8 +737,8 @@ export default function EATDashboard() {
 
   const isMuted = muteUntil !== null && Date.now() < muteUntil;
 
-  const activateMute = useCallback(() => {
-    const until = Date.now() + MUTE_DURATION_MS;
+  const activateMute = useCallback((durationMs: number) => {
+    const until = Date.now() + durationMs;
     setMuteUntilState(until);
     muteUntilRef.current = until;
     try { sessionStorage.setItem(MUTE_SS_KEY, String(until)); } catch { /* ignore */ }
@@ -1543,24 +1549,37 @@ export default function EATDashboard() {
                   onMouseDown={(e) => e.stopPropagation()}
                 >
                   {!isMuted ? (
-                    <div
-                      role="menuitem"
-                      tabIndex={0}
-                      onClick={(e) => { e.stopPropagation(); activateMute(); }}
-                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && activateMute()}
-                      style={{
-                        display: "block", width: "100%", textAlign: "left",
-                        cursor: "pointer",
-                        padding: "8px 14px",
-                        fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
-                        color: "#F5EDD8",
-                        transition: "background 0.1s",
-                      }}
-                      onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.background = "rgba(196,97,10,0.15)")}
-                      onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.background = "none")}
-                    >
-                      🔇 &nbsp;MUTE FOR 5 MIN
-                    </div>
+                    <>
+                      <div style={{
+                        padding: "5px 14px 3px",
+                        fontSize: 9, fontWeight: 700, letterSpacing: "0.14em",
+                        color: "rgba(245,237,216,0.35)",
+                        userSelect: "none",
+                      }}>
+                        MUTE FOR…
+                      </div>
+                      {MUTE_OPTIONS.map((opt) => (
+                        <div
+                          key={opt.ms}
+                          role="menuitem"
+                          tabIndex={0}
+                          onClick={(e) => { e.stopPropagation(); activateMute(opt.ms); }}
+                          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && activateMute(opt.ms)}
+                          style={{
+                            display: "block", width: "100%", textAlign: "left",
+                            cursor: "pointer",
+                            padding: "8px 14px",
+                            fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+                            color: "#F5EDD8",
+                            transition: "background 0.1s",
+                          }}
+                          onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.background = "rgba(196,97,10,0.15)")}
+                          onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.background = "none")}
+                        >
+                          🔇 &nbsp;{opt.label}
+                        </div>
+                      ))}
+                    </>
                   ) : (
                     <div
                       role="menuitem"
