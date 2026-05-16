@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, Activity, Layers, Lock,
 } from "lucide-react";
@@ -268,77 +268,82 @@ export default function CommandCenter() {
                     : `linear-gradient(160deg, rgba(18,14,8,0.70) 0%, rgba(18,14,8,0.40) 60%, ${tile.color}55 100%)`,
                   pointerEvents: "none",
                 }} />
-                {(tile.id === "smokecraft" || tile.id === "brewcraft" || tile.id === "pourcraft" || tile.id === "vapecraft") && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.72 }}
-                    animate={{
-                      opacity: [null, 1, 0.75, 1],
-                      scale: 1,
-                      boxShadow: [
-                        `0 0 0px ${tile.color}00`,
-                        `0 0 8px ${tile.color}88`,
-                        `0 0 2px ${tile.color}44`,
-                        `0 0 8px ${tile.color}88`,
-                      ],
-                    }}
-                    transition={{
-                      scale: { duration: 0.22, ease: [0.34, 1.56, 0.64, 1] },
-                      opacity: {
-                        times: [0, 0.18, 0.6, 1],
-                        duration: 3.6,
-                        repeat: Infinity,
-                        repeatDelay: 1.4,
-                        ease: "easeInOut",
-                      },
-                      boxShadow: {
-                        times: [0, 0.5, 0.75, 1],
-                        duration: 3.6,
-                        repeat: Infinity,
-                        repeatDelay: 1.4,
-                        ease: "easeInOut",
-                      },
-                    }}
-                    style={{
-                      position: "absolute", top: 10, right: 12,
-                      fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
-                      textTransform: "uppercase",
-                      color: tile.color,
-                      background: "rgba(18,14,8,0.84)",
-                      border: `1px solid ${tile.color}55`,
-                      padding: "2px 8px", borderRadius: 999,
-                    }}
-                  >🔥 Trending</motion.div>
-                )}
-                {isLocked && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.72 }}
-                    animate={{ opacity: [null, 1, 0.72, 1], scale: 1 }}
-                    transition={{
-                      scale: { duration: 0.22, ease: [0.34, 1.56, 0.64, 1] },
-                      opacity: {
-                        times: [0, 0.18, 0.6, 1],
-                        duration: 3.6,
-                        repeat: Infinity,
-                        repeatDelay: 1.4,
-                        ease: "easeInOut",
-                      },
-                    }}
-                    style={{
-                      position: "absolute", top: 10, right: 12,
-                      display: "flex", alignItems: "center", gap: 4,
-                      fontSize: 9, fontWeight: 700, letterSpacing: "0.12em",
-                      textTransform: "uppercase",
-                      color: "#D48B00",
-                      background: "rgba(18,14,8,0.90)",
-                      border: "1px solid rgba(212,139,0,0.45)",
-                      padding: "3px 8px", borderRadius: 999,
-                      backdropFilter: "blur(8px)",
-                    }}
-                  >
-                    <Lock size={9} strokeWidth={2.5} color="#D48B00" />
-                    Sovereign Required
-                  </motion.div>
-                )}
+                <AnimatePresence mode="wait">
+                  {isLocked ? (
+                    <motion.div
+                      key="locked"
+                      initial={{ opacity: 0, scale: 0.72 }}
+                      animate={{ opacity: [null, 1, 0.72, 1], scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.72, transition: { duration: 0.15, ease: "easeIn" } }}
+                      transition={{
+                        scale: { duration: 0.22, ease: [0.34, 1.56, 0.64, 1] },
+                        opacity: {
+                          times: [0, 0.18, 0.6, 1],
+                          duration: 3.6,
+                          repeat: Infinity,
+                          repeatDelay: 1.4,
+                          ease: "easeInOut",
+                        },
+                      }}
+                      style={{
+                        position: "absolute", top: 10, right: 12,
+                        display: "flex", alignItems: "center", gap: 4,
+                        fontSize: 9, fontWeight: 700, letterSpacing: "0.12em",
+                        textTransform: "uppercase",
+                        color: "#D48B00",
+                        background: "rgba(18,14,8,0.90)",
+                        border: "1px solid rgba(212,139,0,0.45)",
+                        padding: "3px 8px", borderRadius: 999,
+                        backdropFilter: "blur(8px)",
+                      }}
+                    >
+                      <Lock size={9} strokeWidth={2.5} color="#D48B00" />
+                      Sovereign Required
+                    </motion.div>
+                  ) : (tile.id === "smokecraft" || tile.id === "brewcraft" || tile.id === "pourcraft" || tile.id === "vapecraft") ? (
+                    <motion.div
+                      key="trending"
+                      initial={{ opacity: 0, scale: 0.72 }}
+                      animate={{
+                        opacity: [null, 1, 0.75, 1],
+                        scale: 1,
+                        boxShadow: [
+                          `0 0 0px ${tile.color}00`,
+                          `0 0 8px ${tile.color}88`,
+                          `0 0 2px ${tile.color}44`,
+                          `0 0 8px ${tile.color}88`,
+                        ],
+                      }}
+                      exit={{ opacity: 0, scale: 0.72, transition: { duration: 0.15, ease: "easeIn" } }}
+                      transition={{
+                        scale: { duration: 0.22, ease: [0.34, 1.56, 0.64, 1] },
+                        opacity: {
+                          times: [0, 0.18, 0.6, 1],
+                          duration: 3.6,
+                          repeat: Infinity,
+                          repeatDelay: 1.4,
+                          ease: "easeInOut",
+                        },
+                        boxShadow: {
+                          times: [0, 0.5, 0.75, 1],
+                          duration: 3.6,
+                          repeat: Infinity,
+                          repeatDelay: 1.4,
+                          ease: "easeInOut",
+                        },
+                      }}
+                      style={{
+                        position: "absolute", top: 10, right: 12,
+                        fontSize: 9, fontWeight: 700, letterSpacing: "0.2em",
+                        textTransform: "uppercase",
+                        color: tile.color,
+                        background: "rgba(18,14,8,0.84)",
+                        border: `1px solid ${tile.color}55`,
+                        padding: "2px 8px", borderRadius: 999,
+                      }}
+                    >🔥 Trending</motion.div>
+                  ) : null}
+                </AnimatePresence>
                 <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 16, fontWeight: 700, color: isLocked ? "rgba(245,235,220,0.55)" : "rgba(245,235,220,0.96)", marginBottom: 3, textShadow: "0 1px 6px rgba(0,0,0,0.75)" }}>{tile.title}</div>
                   <div style={{ fontSize: 13, color: "rgba(245,235,220,0.60)", marginBottom: 5, textShadow: "0 1px 4px rgba(0,0,0,0.70)" }}>{tile.desc}</div>
