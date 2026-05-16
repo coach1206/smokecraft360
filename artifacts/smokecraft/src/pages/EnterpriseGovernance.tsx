@@ -137,6 +137,7 @@ export default function EnterpriseGovernance() {
   const [modeSuccess, setModeSuccess] = useState(false);
   const [pendingMode, setPendingMode] = useState<KernelMode | null>(null);
   const [modeConfirmOpen, setModeConfirmOpen] = useState(false);
+  const [confirmEssentialInput, setConfirmEssentialInput] = useState("");
   const [modeRefreshing, setModeRefreshing] = useState(false);
   const [modeRefreshSuccess, setModeRefreshSuccess] = useState(false);
 
@@ -200,6 +201,7 @@ export default function EnterpriseGovernance() {
     }
     setPendingMode(null);
     setModeConfirmOpen(false);
+    setConfirmEssentialInput("");
   }
 
   const headers = { ...getAuthHeaders(), "Content-Type": "application/json" };
@@ -1182,7 +1184,7 @@ export default function EnterpriseGovernance() {
         {modeConfirmOpen && pendingMode && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            onClick={() => { setModeConfirmOpen(false); setPendingMode(null); }}
+            onClick={() => { setModeConfirmOpen(false); setPendingMode(null); setConfirmEssentialInput(""); }}
             style={{
               position: "fixed", inset: 0, zIndex: 100,
               background: "rgba(6,4,10,0.70)", backdropFilter: "blur(8px)",
@@ -1193,36 +1195,77 @@ export default function EnterpriseGovernance() {
               onClick={e => e.stopPropagation()}
               style={{
                 width: 360, background: "#0d0a12",
-                border: `1px solid ${C.border}`, borderRadius: 20,
+                border: `1px solid ${pendingMode === "essential" ? "rgba(239,68,68,0.30)" : C.border}`,
+                borderRadius: 20,
                 padding: 24, boxShadow: "0 24px 80px rgba(26,26,27,0.32)",
               }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                {pendingMode === "sovereign" ? <Crown size={18} color={C.gold} /> : <Zap size={18} color={C.muted} />}
-                <div style={{ fontSize: 16, fontWeight: 700, color: C.gold }}>Change Mode</div>
+                {pendingMode === "sovereign" ? <Crown size={18} color={C.gold} /> : <Zap size={18} color={C.red} />}
+                <div style={{ fontSize: 16, fontWeight: 700, color: pendingMode === "essential" ? C.red : C.gold }}>
+                  {pendingMode === "essential" ? "Downgrade to Essential" : "Change Mode"}
+                </div>
               </div>
-              <div style={{ fontSize: 13, color: C.muted, marginBottom: 20, lineHeight: 1.55 }}>
+              <div style={{ fontSize: 13, color: C.muted, marginBottom: pendingMode === "essential" ? 16 : 20, lineHeight: 1.55 }}>
                 {pendingMode === "essential"
-                  ? "Switch to Essential mode? This will lock luxury features for this venue."
+                  ? "This will immediately lock Governance, Designer, AI, and all premium features for this venue."
                   : "Switch to Sovereign mode? This will unlock luxury add-ons, AI personalization, and premium analytics for this venue."}
               </div>
+
+              {pendingMode === "essential" && (
+                <div style={{ marginBottom: 20 }}>
+                  <div style={{
+                    fontSize: 12, fontWeight: 600, color: "rgba(245,242,237,0.50)",
+                    marginBottom: 8, letterSpacing: "0.02em",
+                  }}>
+                    Type{" "}
+                    <span style={{
+                      fontFamily: "monospace", fontWeight: 700, color: C.red,
+                      background: "rgba(239,68,68,0.12)", padding: "1px 5px", borderRadius: 4,
+                    }}>ESSENTIAL</span>
+                    {" "}to confirm
+                  </div>
+                  <input
+                    type="text"
+                    value={confirmEssentialInput}
+                    onChange={e => setConfirmEssentialInput(e.target.value)}
+                    placeholder="ESSENTIAL"
+                    autoComplete="off"
+                    spellCheck={false}
+                    style={{
+                      width: "100%", padding: "10px 12px", borderRadius: 10,
+                      fontSize: 14, fontWeight: 600, fontFamily: "monospace",
+                      background: "rgba(255,255,255,0.05)",
+                      border: `1px solid ${confirmEssentialInput && confirmEssentialInput !== "ESSENTIAL" ? "rgba(239,68,68,0.55)" : "rgba(255,255,255,0.12)"}`,
+                      color: "#F5F2ED", outline: "none",
+                      transition: "border-color 0.15s",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+              )}
+
               <div style={{ display: "flex", gap: 10 }}>
                 <motion.button whileTap={{ scale: 0.97 }}
                   onClick={() => applyMode(pendingMode)}
-                  disabled={kernel.saving}
+                  disabled={kernel.saving || (pendingMode === "essential" && confirmEssentialInput !== "ESSENTIAL")}
                   style={{
-                    flex: 1, padding: "11px", borderRadius: 10, cursor: "pointer",
+                    flex: 1, padding: "11px", borderRadius: 10,
+                    cursor: kernel.saving || (pendingMode === "essential" && confirmEssentialInput !== "ESSENTIAL") ? "not-allowed" : "pointer",
                     background: pendingMode === "sovereign"
                       ? "linear-gradient(135deg, #D48B00, #b87700)"
-                      : "rgba(26,26,27,0.20)",
-                    border: `1px solid ${pendingMode === "sovereign" ? C.gold : "rgba(26,26,27,0.30)"}`,
-                    color: pendingMode === "sovereign" ? "#1A1A1B" : C.text,
+                      : confirmEssentialInput === "ESSENTIAL"
+                        ? "linear-gradient(135deg, #ef4444, #dc2626)"
+                        : "rgba(26,26,27,0.20)",
+                    border: `1px solid ${pendingMode === "sovereign" ? C.gold : confirmEssentialInput === "ESSENTIAL" ? "rgba(239,68,68,0.60)" : "rgba(26,26,27,0.30)"}`,
+                    color: pendingMode === "sovereign" ? "#1A1A1B" : confirmEssentialInput === "ESSENTIAL" ? "#fff" : C.muted,
                     fontSize: 13, fontWeight: 700,
-                    opacity: kernel.saving ? 0.6 : 1,
+                    opacity: kernel.saving || (pendingMode === "essential" && confirmEssentialInput !== "ESSENTIAL") ? 0.55 : 1,
+                    transition: "background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s",
                   }}>
-                  {kernel.saving ? "Saving…" : `Confirm`}
+                  {kernel.saving ? "Saving…" : "Confirm"}
                 </motion.button>
                 <motion.button whileTap={{ scale: 0.97 }}
-                  onClick={() => { setModeConfirmOpen(false); setPendingMode(null); }}
+                  onClick={() => { setModeConfirmOpen(false); setPendingMode(null); setConfirmEssentialInput(""); }}
                   style={{
                     flex: 1, padding: "11px", borderRadius: 10, cursor: "pointer",
                     background: "transparent",

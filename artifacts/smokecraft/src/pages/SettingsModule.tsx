@@ -863,8 +863,9 @@ export default function SettingsModule() {
             ? `${activeOrderCount} active session${activeOrderCount === 1 ? "" : "s"} will lose access to premium features immediately.`
             : undefined
         }
-        danger={pendingKernelMode === "essential" && (activeOrderCount ?? 0) > 0}
+        danger={pendingKernelMode === "essential"}
         confirmDisabled={pendingKernelMode === "essential" && activeOrderCountLoading}
+        confirmPhrase={pendingKernelMode === "essential" ? "ESSENTIAL" : undefined}
         confirmLabel="Confirm Change"
         onConfirm={() => pendingKernelMode && applyKernelMode(pendingKernelMode)}
         onCancel={() => { setPendingKernelMode(null); setActiveOrderCount(null); }}
