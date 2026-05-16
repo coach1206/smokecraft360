@@ -716,6 +716,23 @@ export default function EATDashboard() {
     return () => clearTimeout(id);
   }, [muteUntil]);
 
+  // Countdown label shown on the mute badge — recomputes every 30 s.
+  const [muteCountdown, setMuteCountdown] = useState<string>(() => {
+    if (muteUntil === null) return "";
+    const mins = Math.ceil((muteUntil - Date.now()) / 60_000);
+    return mins > 0 ? `${mins}m` : "<1m";
+  });
+  useEffect(() => {
+    if (muteUntil === null) { setMuteCountdown(""); return; }
+    const compute = () => {
+      const mins = Math.ceil((muteUntil - Date.now()) / 60_000);
+      setMuteCountdown(mins > 0 ? `${mins}m` : "<1m");
+    };
+    compute();
+    const id = setInterval(compute, 30_000);
+    return () => clearInterval(id);
+  }, [muteUntil]);
+
   // Close mute menu on outside click.
   useEffect(() => {
     if (!showMuteMenu) return;
@@ -1475,6 +1492,9 @@ export default function EATDashboard() {
                     position: "absolute",
                     top: 5,
                     right: 4,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
                     fontSize: 12,
                     lineHeight: 1,
                     pointerEvents: "none",
@@ -1482,6 +1502,11 @@ export default function EATDashboard() {
                   }}
                 >
                   🔇
+                  {muteCountdown && (
+                    <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.04em" }}>
+                      {muteCountdown}
+                    </span>
+                  )}
                 </span>
               )}
 
