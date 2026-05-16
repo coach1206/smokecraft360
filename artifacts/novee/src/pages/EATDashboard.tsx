@@ -1955,7 +1955,7 @@ function OverviewTab({
       )}
 
       {/* Top event types mini */}
-      {data.topEventTypes.length > 0 && (
+      {(data.topEventTypes.length > 0 || (cmp != null && cmp.topEventTypes.length > 0)) && (
         <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "20px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
             <div style={{ fontSize: 9, letterSpacing: "0.22em", color: "rgba(245,237,216,0.35)" }}>
@@ -1972,9 +1972,48 @@ function OverviewTab({
             )}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {data.topEventTypes.slice(0, 5).map((et, i) => (
-              <HBar key={et.event_type} label={et.event_type} value={et.cnt} max={data.topEventTypes[0].cnt} rank={i} />
-            ))}
+            {(() => {
+              type MiniRow = { event_type: string; cnt: number; status: "normal" | "new" | "ghost" };
+              const cmpMap = new Map((cmp?.topEventTypes ?? []).map((e) => [e.event_type, e.cnt]));
+              const seen = new Set<string>();
+              const rows: MiniRow[] = [];
+              for (const et of data.topEventTypes) {
+                seen.add(et.event_type);
+                rows.push({ event_type: et.event_type, cnt: et.cnt, status: cmp && !cmpMap.has(et.event_type) ? "new" : "normal" });
+              }
+              if (cmp) {
+                for (const et of cmp.topEventTypes) {
+                  if (seen.has(et.event_type)) continue;
+                  rows.push({ event_type: et.event_type, cnt: 0, status: "ghost" });
+                }
+              }
+              const top5 = rows.slice(0, 5);
+              const mergedMax = Math.max(1, ...top5.map((e) => e.cnt));
+              return top5.map((et, i) => (
+                <div key={et.event_type} style={{ opacity: et.status === "ghost" ? 0.45 : 1 }}>
+                  <HBar
+                    label={et.event_type}
+                    value={et.cnt}
+                    max={mergedMax}
+                    rank={i}
+                    badge={
+                      cmp && et.status === "new" ? (
+                        <div style={{
+                          display: "inline-flex", alignItems: "center",
+                          background: "rgba(74,222,128,0.1)",
+                          border: "1px solid rgba(74,222,128,0.25)",
+                          borderRadius: 4, padding: "2px 5px",
+                          fontSize: 9, fontWeight: 700, letterSpacing: "0.08em",
+                          color: "#4ade80",
+                        }}>NEW</div>
+                      ) : cmp && et.status === "ghost" ? (
+                        <DeltaBadge current={0} prior={1} />
+                      ) : undefined
+                    }
+                  />
+                </div>
+              ));
+            })()}
           </div>
         </div>
       )}
@@ -1996,11 +2035,31 @@ function EventsTab({
   const cmp = compareEnabled ? data.comparison : null;
   const chartData = mergeChartData(data.dailyCounts, cmp?.dailyCounts);
 
+  // Build a union of event types from both windows (ghost-row pattern, mirrors ModulesTab)
+  type MergedET = { event_type: string; cnt: number; status: "normal" | "new" | "ghost" };
+  const mergedEventTypes: MergedET[] = (() => {
+    const cmpMap = new Map((cmp?.topEventTypes ?? []).map((e) => [e.event_type, e.cnt]));
+    const seen = new Set<string>();
+    const rows: MergedET[] = [];
+    for (const et of data.topEventTypes) {
+      seen.add(et.event_type);
+      rows.push({ event_type: et.event_type, cnt: et.cnt, status: cmp && !cmpMap.has(et.event_type) ? "new" : "normal" });
+    }
+    if (cmp) {
+      for (const et of cmp.topEventTypes) {
+        if (seen.has(et.event_type)) continue;
+        rows.push({ event_type: et.event_type, cnt: 0, status: "ghost" });
+      }
+    }
+    return rows;
+  })();
+  const hasAnyEventTypes = mergedEventTypes.length > 0;
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
         <SectionHeader label="EVENT TYPE BREAKDOWN" sub="Count distribution across all ingested event types" />
-        {cmp && data.topEventTypes.length > 0 && (
+        {cmp && hasAnyEventTypes && (
           <SectionDownloadButton
             title={`Download Top Event Types comparison (${days}D vs ${compareDays}D) as CSV`}
             onClick={() => triggerCsvDownload(
@@ -2011,19 +2070,19 @@ function EventsTab({
         )}
       </div>
 
-      {data.topEventTypes.length === 0 ? (
+      {!hasAnyEventTypes ? (
         <EmptyState label="No events ingested yet." />
       ) : (
         <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "20px" }}>
-          <ResponsiveContainer width="100%" height={Math.max(200, data.topEventTypes.length * 40)}>
-            <BarChart data={data.topEventTypes} layout="vertical" margin={{ left: 16, right: 24 }}>
+          <ResponsiveContainer width="100%" height={Math.max(200, mergedEventTypes.length * 40)}>
+            <BarChart data={mergedEventTypes} layout="vertical" margin={{ left: 16, right: 24 }}>
               <CartesianGrid stroke="rgba(255,255,255,0.04)" horizontal={false} />
               <XAxis type="number" tick={{ fill: "rgba(245,237,216,0.25)", fontSize: 9 }} />
               <YAxis type="category" dataKey="event_type" width={140} tick={{ fill: "rgba(245,237,216,0.5)", fontSize: 10 }} />
               <Tooltip contentStyle={{ background: "#1A1A1B", border: "1px solid rgba(196,97,10,0.3)", borderRadius: 6, fontSize: 11 }} />
               <Bar dataKey="cnt" radius={[0, 4, 4, 0]}>
-                {data.topEventTypes.map((_, i) => (
-                  <Cell key={i} fill={i === 0 ? ACCENT : `rgba(196,97,10,${0.6 - i * 0.06})`} />
+                {mergedEventTypes.map((et, i) => (
+                  <Cell key={i} fill={et.status === "ghost" ? "rgba(196,97,10,0.2)" : i === 0 ? ACCENT : `rgba(196,97,10,${0.6 - i * 0.06})`} />
                 ))}
               </Bar>
             </BarChart>
@@ -2081,7 +2140,7 @@ function EventsTab({
           </div>
 
           {/* Per-type delta table when compare is on */}
-          {cmp && cmp.topEventTypes.length > 0 && (
+          {cmp && mergedEventTypes.length > 0 && (
             <>
               <SectionHeader label="EVENT TYPE DELTA" sub="Change in event counts between primary and comparison windows" />
               <div style={{ background: SURFACE, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, overflow: "hidden" }}>
@@ -2097,8 +2156,10 @@ function EventsTab({
                   <span style={{ textAlign: "right" }}>PRIOR</span>
                   <span style={{ textAlign: "right" }}>DELTA</span>
                 </div>
-                {data.topEventTypes.map((et) => {
-                  const prior = cmp.topEventTypes.find((c) => c.event_type === et.event_type)?.cnt ?? 0;
+                {mergedEventTypes.map((et) => {
+                  const isGhost = et.status === "ghost";
+                  const isNew   = et.status === "new";
+                  const prior   = cmp.topEventTypes.find((c) => c.event_type === et.event_type)?.cnt ?? 0;
                   return (
                     <div
                       key={et.event_type}
@@ -2107,19 +2168,44 @@ function EventsTab({
                         gap: "0 12px", padding: "10px 16px",
                         borderBottom: "1px solid rgba(255,255,255,0.04)",
                         alignItems: "center",
+                        opacity: isGhost ? 0.45 : 1,
                       }}
                     >
-                      <span style={{ fontSize: 11, fontFamily: "monospace", color: "#F5EDD8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {et.event_type}
-                      </span>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: ACCENT, textAlign: "right" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+                        <span style={{ fontSize: 11, fontFamily: "monospace", color: isGhost ? "rgba(245,237,216,0.5)" : "#F5EDD8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {et.event_type}
+                        </span>
+                        {isNew && (
+                          <div style={{
+                            flexShrink: 0,
+                            display: "inline-flex", alignItems: "center",
+                            background: "rgba(74,222,128,0.1)",
+                            border: "1px solid rgba(74,222,128,0.25)",
+                            borderRadius: 4, padding: "1px 5px",
+                            fontSize: 9, fontWeight: 700, letterSpacing: "0.08em",
+                            color: "#4ade80",
+                          }}>NEW</div>
+                        )}
+                      </div>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: isGhost ? "rgba(245,237,216,0.3)" : ACCENT, textAlign: "right" }}>
                         {et.cnt.toLocaleString()}
                       </span>
                       <span style={{ fontSize: 12, color: "rgba(74,144,217,0.8)", textAlign: "right" }}>
                         {prior.toLocaleString()}
                       </span>
                       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                        <DeltaBadge current={et.cnt} prior={prior} />
+                        {isNew ? (
+                          <div style={{
+                            display: "inline-flex", alignItems: "center",
+                            background: "rgba(255,255,255,0.05)",
+                            border: "1px solid rgba(255,255,255,0.1)",
+                            borderRadius: 4, padding: "2px 6px",
+                            fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
+                            color: "rgba(245,237,216,0.3)",
+                          }}>—</div>
+                        ) : (
+                          <DeltaBadge current={et.cnt} prior={prior} />
+                        )}
                       </div>
                     </div>
                   );
@@ -4101,14 +4187,17 @@ function SectionDownloadButton({ onClick, title }: { onClick: () => void; title:
   );
 }
 
-function HBar({ label, value, max, rank }: { label: string; value: number; max: number; rank: number }) {
+function HBar({ label, value, max, rank, badge }: { label: string; value: number; max: number; rank: number; badge?: React.ReactNode }) {
   const pct = max > 0 ? (value / max) * 100 : 0;
   const color = rank === 0 ? ACCENT : `rgba(196,97,10,${0.7 - rank * 0.1})`;
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
         <span style={{ fontSize: 11, color: "rgba(245,237,216,0.6)", fontFamily: "monospace" }}>{label}</span>
-        <span style={{ fontSize: 11, color: "rgba(245,237,216,0.4)" }}>{value.toLocaleString()}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          {badge}
+          <span style={{ fontSize: 11, color: "rgba(245,237,216,0.4)" }}>{value.toLocaleString()}</span>
+        </div>
       </div>
       <div style={{ height: 3, background: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden" }}>
         <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: 2, transition: "width 0.5s ease" }} />
