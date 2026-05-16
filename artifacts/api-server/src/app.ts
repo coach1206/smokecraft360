@@ -194,6 +194,11 @@ import biometricHardwareRouter     from "./routes/biometricHardware";
 import titanEngineRouter, { startSignalMonitor } from "./routes/titanEngine";
 import cognitiveBuildSheetRouter   from "./routes/cognitiveBuildSheet";
 import kernelRouter                from "./routes/kernel";
+import edgeRouter                  from "./routes/edge";
+import learningRouter              from "./routes/learning";
+import knowledgeRouter             from "./routes/knowledge";
+import complianceRouter            from "./routes/compliance";
+import experienceLayerRouter       from "./routes/experience";
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 
@@ -579,6 +584,13 @@ app.use("/api/cognitive",     cognitiveRouter);
 // replay coordination, anomaly monitoring, rollout management, governance
 app.use("/api",           distributedClusterRouter);
 
+// ── Edge + Learning + Knowledge + Compliance + Experience Layers ──────────────
+app.use("/api/edge",       edgeRouter);
+app.use("/api/learning",   learningRouter);
+app.use("/api/knowledge",  knowledgeRouter);
+app.use("/api/compliance", complianceRouter);
+app.use("/api/experience", experienceLayerRouter);
+
 // ── Platform Maturity Layer ───────────────────────────────────────────────────
 // Feature flags, policy engine, observability, backpressure, versioning,
 // data retention, self-healing workers, simulation/sandbox
@@ -644,6 +656,26 @@ if (process.env["NODE_ENV"] !== "test") {
   startClusterCoordinator(["intelligence", "orchestration", "pos", "replay"]).catch(
     err => logger.warn({ err }, "NOVEE OS — cluster coordinator startup failed (non-fatal)"),
   );
+
+  // Edge Layer — offline venue autonomy, local inference, buffer replay, ambient execution
+  const { startLocalFailover }          = await import("./edge/localFailover");
+  const { startEdgeAmbientExecution }   = await import("./edge/edgeAmbientExecution");
+  const { startEdgeStateSync }          = await import("./edge/edgeStateSync");
+  const { startLocalReplay }            = await import("./edge/localReplay");
+  startLocalFailover();
+  startEdgeAmbientExecution();
+  startEdgeStateSync();
+  startLocalReplay();
+
+  // Experience Layer — motion directives, ambient UI sync
+  const { startOrchestrationMotion }    = await import("./experience/orchestrationMotion");
+  const { startAmbientInterfaceSync }   = await import("./experience/ambientInterfaceSync");
+  startOrchestrationMotion();
+  startAmbientInterfaceSync();
+
+  // Compliance Layer — data retention enforcement (daily cycle)
+  const { startRetentionCompliance }    = await import("./compliance/retentionCompliance");
+  startRetentionCompliance();
 
   // Autonomous Intelligence Layer
   const { startIntelligenceWorker } = await import("./workers/intelligenceWorker");

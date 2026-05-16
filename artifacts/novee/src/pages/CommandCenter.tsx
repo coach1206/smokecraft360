@@ -181,7 +181,7 @@ function EventFeed({ events }: { events: OrchestrationEvent[] }) {
 export default function CommandCenter() {
   const [venueId,   setVenueId]   = useState(DEMO_VENUE);
   const [connected, setConnected] = useState(false);
-  const [tab,       setTab]       = useState<"overview"|"awareness"|"social"|"temporal"|"adaptive">("overview");
+  const [tab,       setTab]       = useState<"overview"|"awareness"|"social"|"temporal"|"adaptive"|"edge"|"learning"|"knowledge"|"compliance"|"experience">("overview");
 
   const [intelligence, setIntelligence] = useState<IntelligenceScore>({
     overallScore:0, engagementLevel:0, socialEnergy:0, activeGuests:0, decisionCount:0,
@@ -196,6 +196,26 @@ export default function CommandCenter() {
   const [loadingScene, setLoadingScene] = useState(false);
   const [loadingRun,   setLoadingRun]   = useState(false);
 
+  // Edge layer state
+  const [edgeStatuses,  setEdgeStatuses]  = useState<Array<{ venueId: string; mode: string; queueDepth: number; inferenceReady: boolean }>>([]);
+  const [inferenceReady, setInferenceReady] = useState(false);
+
+  // Learning layer state
+  const [rlWeights,     setRlWeights]     = useState<Record<string, number> | null>(null);
+  const [recWeights,    setRecWeights]    = useState<Record<string, number> | null>(null);
+  const [trainingJobs,  setTrainingJobs]  = useState<Array<{ id: string; domain: string; status: string; startedAt?: number; completedAt?: number }>>([]);
+
+  // Knowledge layer state
+  const [graphStats,    setGraphStats]    = useState<Record<string, { nodes: number; edges: number }> | null>(null);
+
+  // Compliance layer state
+  const [retentionPolicies, setRetentionPolicies] = useState<Array<{ entityType: string; retainDays: number; action: string }>>([]);
+  const [venuePolicy,       setVenuePolicy]       = useState<{ region: string; regulations: string[]; requiresConsent: boolean; maxRetentionDays: number } | null>(null);
+
+  // Experience layer state
+  const [ambientState,  setAmbientState]  = useState<{ sceneName: string; accentColor: string; glowIntensity: number; backgroundVariant: string } | null>(null);
+  const [motionTokens,  setMotionTokens]  = useState<Record<string, { label: string; color: string; animate: boolean; priority: number }> | null>(null);
+
   const socketRef = useRef<Socket | null>(null);
   const inputRef  = useRef<HTMLInputElement>(null);
 
@@ -206,6 +226,22 @@ export default function CommandCenter() {
       fetch(`${base}/cognitive/social/${vid}`).then(r => r.json()).then((d: { clusters?: SocialCluster[] }) => { if (d.clusters) setClusters(d.clusters); }),
       fetch(`${base}/cognitive/temporal/${vid}`).then(r => r.json()).then((d: TemporalData & { ok?: boolean }) => { if (d.ok !== false) setTemporal(d); }),
       fetch(`${base}/cognitive/adaptive/${vid}/history`).then(r => r.json()).then((d: { logs?: AdaptiveLog[] }) => { if (d.logs) setAdaptiveLogs(d.logs.slice(0, 20)); }),
+      // Edge layer
+      fetch(`${base}/edge/status`).then(r => r.json()).then((d: { statuses?: typeof edgeStatuses; inferenceReady?: boolean }) => {
+        if (Array.isArray(d.statuses)) setEdgeStatuses(d.statuses);
+        if (d.inferenceReady !== undefined) setInferenceReady(d.inferenceReady);
+      }),
+      // Learning layer
+      fetch(`${base}/learning/jobs`).then(r => r.json()).then((d: unknown) => { if (Array.isArray(d)) setTrainingJobs(d.slice(0, 10)); }),
+      fetch(`${base}/learning/rec-weights/${vid}`).then(r => r.json()).then((d: Record<string, number>) => setRecWeights(d)),
+      // Knowledge layer
+      fetch(`${base}/knowledge/stats`).then(r => r.json()).then((d: Record<string, { nodes: number; edges: number }>) => setGraphStats(d)),
+      // Compliance layer
+      fetch(`${base}/compliance/retention/policies`).then(r => r.json()).then((d: unknown) => { if (Array.isArray(d)) setRetentionPolicies(d); }),
+      fetch(`${base}/compliance/regions/${vid}`).then(r => r.json()).then((d: typeof venuePolicy) => setVenuePolicy(d)),
+      // Experience layer
+      fetch(`${base}/experience/ambient/${vid}`).then(r => r.json()).then((d: typeof ambientState) => setAmbientState(d)).catch(() => {}),
+      fetch(`${base}/experience/tokens`).then(r => r.json()).then((d: typeof motionTokens) => setMotionTokens(d)),
     ]);
   }, []);
 
@@ -258,7 +294,7 @@ export default function CommandCenter() {
     } catch { /* */ } finally { setLoadingRun(false); }
   };
 
-  const TABS = ["overview","awareness","social","temporal","adaptive"] as const;
+  const TABS = ["overview","awareness","social","temporal","adaptive","edge","learning","knowledge","compliance","experience"] as const;
 
   return (
     <div style={{ minHeight:"100vh", background:"#F5F2ED", fontFamily:"'Cormorant Garamond', serif", padding:"0 0 60px" }}>
@@ -489,6 +525,374 @@ export default function CommandCenter() {
                 </div>
               </Panel>
             )}
+          </>
+        )}
+
+        {/* ── Edge Tab ── */}
+        {tab === "edge" && (
+          <>
+            <Panel title="Edge Layer" badge={inferenceReady ? "INFERENCE READY" : "WARMING"} accent={inferenceReady}>
+              <div style={{ display:"flex", gap:12, marginBottom:4, alignItems:"center" }}>
+                <div style={{ width:10, height:10, borderRadius:"50%",
+                  background: inferenceReady ? "#4CAF50" : "#9A8A7A" }}/>
+                <span style={{ fontSize:12, color: inferenceReady ? "#2d5a27" : "#6B5E4E", fontWeight:700 }}>
+                  {inferenceReady ? "Local inference active" : "Cloud mode — inference not needed"}
+                </span>
+              </div>
+              {edgeStatuses.length === 0 ? (
+                <div style={{ textAlign:"center", padding:"30px 0", color:"#9A8A7A", fontSize:13 }}>
+                  No edge nodes active — all venues connected to cloud
+                </div>
+              ) : (
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(220px, 1fr))", gap:10 }}>
+                  {edgeStatuses.map((s, i) => {
+                    const modeColor: Record<string, string> = {
+                      online:"#4CAF50", degraded:"#F59E0B", offline:"#EF4444", recovering:"#8B5CF6",
+                    };
+                    return (
+                      <div key={i} style={{ background:"#EFEBE0", borderRadius:10, padding:"14px 16px",
+                        border:`1.5px solid ${(modeColor[s.mode] ?? "#9A8A7A")}40` }}>
+                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
+                          <span style={{ fontSize:11, fontWeight:700, color:"#1A1A1B", fontFamily:"monospace" }}>
+                            {s.venueId.slice(0, 12)}…
+                          </span>
+                          <span style={{ fontSize:10, fontWeight:700, padding:"2px 8px", borderRadius:20,
+                            background:`${(modeColor[s.mode] ?? "#9A8A7A")}20`,
+                            color: modeColor[s.mode] ?? "#9A8A7A", textTransform:"uppercase" as const }}>
+                            {s.mode}
+                          </span>
+                        </div>
+                        <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:"#6B5E4E" }}>
+                          <span>Queue depth</span>
+                          <span style={{ fontWeight:700, color:"#1A1A1B" }}>{s.queueDepth ?? 0}</span>
+                        </div>
+                        <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:"#6B5E4E", marginTop:4 }}>
+                          <span>Inference</span>
+                          <span style={{ fontWeight:700, color: s.inferenceReady ? "#2d5a27" : "#9A8A7A" }}>
+                            {s.inferenceReady ? "local" : "cloud"}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </Panel>
+
+            <Panel title="Edge Capabilities">
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
+                {[
+                  { cap:"Offline Inference",     desc:"Local recommendation scoring" },
+                  { cap:"Ambient Execution",     desc:"Scene scheduling without cloud" },
+                  { cap:"Buffer Replay",          desc:"Event queue with cloud sync" },
+                  { cap:"State Sync",             desc:"Conflict-safe reconciliation" },
+                  { cap:"Local Failover",         desc:"Auto-detect disconnection" },
+                  { cap:"Offline Venue Mode",     desc:"Full autonomy for 24+ hours" },
+                ].map(({ cap, desc }) => (
+                  <div key={cap} style={{ background:"rgba(212,139,0,.06)", borderRadius:8,
+                    padding:"12px 14px", border:"1px solid rgba(212,139,0,.2)" }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:"#1A1A1B", marginBottom:3 }}>{cap}</div>
+                    <div style={{ fontSize:10, color:"#6B5E4E" }}>{desc}</div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </>
+        )}
+
+        {/* ── Learning Tab ── */}
+        {tab === "learning" && (
+          <>
+            <Panel title="Training Jobs" badge={`${trainingJobs.length}`}>
+              {trainingJobs.length === 0 ? (
+                <div style={{ textAlign:"center", padding:"30px 0", color:"#9A8A7A", fontSize:13 }}>
+                  No training jobs — system uses real-time RL updates
+                </div>
+              ) : (
+                <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                  {trainingJobs.map((job, i) => {
+                    const statusColor: Record<string, string> = {
+                      complete:"#4CAF50", pending:"#F59E0B", running:"#6B8DD6", failed:"#EF4444",
+                    };
+                    return (
+                      <div key={i} style={{ display:"grid", gridTemplateColumns:"1fr auto auto",
+                        gap:12, padding:"10px 14px", background:"#EFEBE0", borderRadius:8,
+                        border:"1px solid rgba(26,26,27,.08)", alignItems:"center" }}>
+                        <div>
+                          <div style={{ fontSize:12, fontWeight:700, color:"#1A1A1B", textTransform:"uppercase" as const }}>
+                            {job.domain}
+                          </div>
+                          {job.startedAt && (
+                            <div style={{ fontSize:10, color:"#6B5E4E", marginTop:2 }}>
+                              {new Date(job.startedAt).toLocaleTimeString()}
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ fontSize:10, fontWeight:700, padding:"3px 10px", borderRadius:20,
+                          background:`${(statusColor[job.status] ?? "#9A8A7A")}20`,
+                          color: statusColor[job.status] ?? "#9A8A7A", textTransform:"uppercase" as const }}>
+                          {job.status}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </Panel>
+
+            {recWeights && (
+              <Panel title="Recommendation Weight Matrix" badge="LIVE">
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:10 }}>
+                  {Object.entries(recWeights).map(([key, val]) => (
+                    <div key={key} style={{ background:"rgba(212,139,0,.07)", borderRadius:8, padding:"12px 14px" }}>
+                      <div style={{ fontSize:10, color:"#9A8A7A", letterSpacing:"0.07em", marginBottom:4 }}>
+                        {key.toUpperCase()}
+                      </div>
+                      <div style={{ fontSize:20, fontWeight:700, color:"#D48B00" }}>
+                        {Math.round(Number(val) * 100)}%
+                      </div>
+                      <div style={{ marginTop:6, height:4, background:"rgba(212,139,0,.12)", borderRadius:2, overflow:"hidden" }}>
+                        <div style={{ height:"100%", width:`${Number(val) * 100}%`, background:"#D48B00", borderRadius:2 }}/>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Panel>
+            )}
+
+            <Panel title="Learning Domains">
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+                {[
+                  { domain:"Recommendations", desc:"Taste/margin/stock weight optimisation" },
+                  { domain:"Orchestration",   desc:"Rule priority from outcome history" },
+                  { domain:"Environmental",   desc:"Scene→engagement correlation" },
+                  { domain:"Behavioral",      desc:"32-dim guest embeddings" },
+                  { domain:"Venue",           desc:"Cross-venue transfer learning" },
+                  { domain:"Preference",      desc:"Flavor/mood affinity vectors" },
+                ].map(({ domain, desc }) => (
+                  <div key={domain} style={{ background:"rgba(212,139,0,.05)", borderRadius:8,
+                    padding:"10px 14px", border:"1px solid rgba(212,139,0,.15)" }}>
+                    <div style={{ fontSize:12, fontWeight:700, color:"#1A1A1B" }}>{domain}</div>
+                    <div style={{ fontSize:11, color:"#6B5E4E", marginTop:3 }}>{desc}</div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </>
+        )}
+
+        {/* ── Knowledge Tab ── */}
+        {tab === "knowledge" && (
+          <>
+            <Panel title="Knowledge Graph Statistics" badge="5 GRAPHS">
+              {graphStats ? (
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(160px, 1fr))", gap:10 }}>
+                  {Object.entries(graphStats).filter(([k]) => k !== "entityRegistry").map(([name, stat]) => (
+                    <div key={name} style={{ background:"rgba(212,139,0,.07)", borderRadius:10,
+                      padding:"14px 16px", border:"1px solid rgba(212,139,0,.2)" }}>
+                      <div style={{ fontSize:10, fontWeight:700, color:"#9A8A7A",
+                        letterSpacing:"0.08em", marginBottom:8, textTransform:"uppercase" as const }}>
+                        {name}
+                      </div>
+                      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
+                        <span style={{ fontSize:11, color:"#6B5E4E" }}>Nodes</span>
+                        <span style={{ fontSize:16, fontWeight:700, color:"#1A1A1B" }}>{(stat as { nodes: number }).nodes}</span>
+                      </div>
+                      <div style={{ display:"flex", justifyContent:"space-between" }}>
+                        <span style={{ fontSize:11, color:"#6B5E4E" }}>Edges</span>
+                        <span style={{ fontSize:16, fontWeight:700, color:"#D48B00" }}>{(stat as { edges: number }).edges}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ textAlign:"center", padding:"30px 0", color:"#9A8A7A", fontSize:13 }}>
+                  Connect to venue to load knowledge graphs
+                </div>
+              )}
+            </Panel>
+
+            <Panel title="Graph Topology">
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+                {[
+                  { graph:"Behavioral",     desc:"Guest ↔ product ↔ session relations",     icon:"◎" },
+                  { graph:"Venue",          desc:"Cross-venue guest affinity network",        icon:"⬡" },
+                  { graph:"Recommendation", desc:"Pairing graph + acceptance rates",          icon:"◈" },
+                  { graph:"Environmental",  desc:"Scene → engagement → craft mappings",       icon:"◉" },
+                  { graph:"Operational",    desc:"Rule → trigger → action chains",            icon:"◆" },
+                  { graph:"Entity Registry",desc:"Canonical ID resolution across systems",   icon:"⬤" },
+                ].map(({ graph, desc, icon }) => (
+                  <div key={graph} style={{ display:"flex", gap:12, padding:"10px 14px",
+                    background:"#EFEBE0", borderRadius:8, alignItems:"flex-start",
+                    border:"1px solid rgba(26,26,27,.07)" }}>
+                    <span style={{ fontSize:20, color:"#D48B00", lineHeight:1, flexShrink:0 }}>{icon}</span>
+                    <div>
+                      <div style={{ fontSize:12, fontWeight:700, color:"#1A1A1B" }}>{graph}</div>
+                      <div style={{ fontSize:11, color:"#6B5E4E", marginTop:2 }}>{desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </>
+        )}
+
+        {/* ── Compliance Tab ── */}
+        {tab === "compliance" && (
+          <>
+            {venuePolicy && (
+              <Panel title="Regional Policy" badge={venuePolicy.region} accent>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                  <div>
+                    <div style={{ fontSize:11, color:"#9A8A7A", marginBottom:4 }}>REGULATIONS</div>
+                    <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                      {venuePolicy.regulations.length === 0
+                        ? <span style={{ color:"#9A8A7A", fontSize:12 }}>None configured</span>
+                        : venuePolicy.regulations.map(r => (
+                          <span key={r} style={{ fontSize:11, fontWeight:700, padding:"2px 8px",
+                            background:"rgba(212,139,0,.15)", borderRadius:20, color:"#7A5000" }}>{r}</span>
+                        ))}
+                    </div>
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:12 }}>
+                      <span style={{ color:"#6B5E4E" }}>Consent required</span>
+                      <span style={{ fontWeight:700, color: venuePolicy.requiresConsent ? "#D48B00" : "#4CAF50" }}>
+                        {venuePolicy.requiresConsent ? "Yes" : "No"}
+                      </span>
+                    </div>
+                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:12 }}>
+                      <span style={{ color:"#6B5E4E" }}>Max retention</span>
+                      <span style={{ fontWeight:700, color:"#1A1A1B" }}>{venuePolicy.maxRetentionDays}d</span>
+                    </div>
+                  </div>
+                </div>
+              </Panel>
+            )}
+
+            <Panel title="Retention Policies" badge={`${retentionPolicies.length}`}>
+              {retentionPolicies.length === 0 ? (
+                <div style={{ textAlign:"center", padding:"30px 0", color:"#9A8A7A", fontSize:13 }}>
+                  Loading retention policies…
+                </div>
+              ) : (
+                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                  {retentionPolicies.map((p, i) => (
+                    <div key={i} style={{ display:"grid", gridTemplateColumns:"1fr auto auto",
+                      gap:12, padding:"8px 12px", background:"#EFEBE0",
+                      borderRadius:8, border:"1px solid rgba(26,26,27,.07)", alignItems:"center" }}>
+                      <div style={{ fontSize:12, fontWeight:600, color:"#1A1A1B",
+                        textTransform:"uppercase" as const, letterSpacing:"0.05em" }}>
+                        {p.entityType}
+                      </div>
+                      <div style={{ fontSize:11, color:"#6B5E4E" }}>{p.retainDays}d</div>
+                      <div style={{ fontSize:10, fontWeight:700, padding:"2px 8px", borderRadius:20,
+                        background: p.action === "delete" ? "rgba(239,68,68,.1)" : "rgba(212,139,0,.12)",
+                        color: p.action === "delete" ? "#EF4444" : "#D48B00",
+                        textTransform:"uppercase" as const }}>
+                        {p.action}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Panel>
+
+            <Panel title="Compliance Modules">
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:10 }}>
+                {[
+                  { mod:"Consent Tracking",  desc:"Grant/revoke audit log" },
+                  { mod:"AI Explainability", desc:"Decision transparency reports" },
+                  { mod:"Privacy Controls",  desc:"Role-gated data access" },
+                  { mod:"Retention Engine",  desc:"Daily automated purge cycle" },
+                  { mod:"Regional Policies", desc:"GDPR/CCPA/PIPEDA rule sets" },
+                  { mod:"Compliance Exports",desc:"Portability + audit exports" },
+                ].map(({ mod, desc }) => (
+                  <div key={mod} style={{ background:"rgba(212,139,0,.05)", borderRadius:8,
+                    padding:"10px 12px", border:"1px solid rgba(212,139,0,.12)" }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:"#1A1A1B", marginBottom:3 }}>{mod}</div>
+                    <div style={{ fontSize:10, color:"#6B5E4E" }}>{desc}</div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </>
+        )}
+
+        {/* ── Experience Tab ── */}
+        {tab === "experience" && (
+          <>
+            {ambientState && (
+              <Panel title="Ambient UI State" badge={ambientState.sceneName} accent>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, alignItems:"center" }}>
+                  <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                      <div style={{ width:24, height:24, borderRadius:"50%",
+                        background: ambientState.accentColor,
+                        boxShadow:`0 0 ${ambientState.glowIntensity * 16}px ${ambientState.accentColor}` }}/>
+                      <span style={{ fontSize:12, color:"#1A1A1B", fontWeight:600 }}>
+                        {ambientState.accentColor}
+                      </span>
+                    </div>
+                    <MeterBar label="Glow Intensity" value={ambientState.glowIntensity} color={ambientState.accentColor}/>
+                    <div style={{ fontSize:11, color:"#6B5E4E" }}>
+                      Background: <strong style={{ color:"#1A1A1B" }}>{ambientState.backgroundVariant}</strong>
+                    </div>
+                  </div>
+                  <div style={{ background:"rgba(212,139,0,.07)", borderRadius:10,
+                    padding:"20px", textAlign:"center",
+                    boxShadow:`inset 0 0 ${ambientState.glowIntensity * 30}px ${ambientState.accentColor}20` }}>
+                    <div style={{ fontSize:18, fontWeight:700, color:"#1A1A1B", letterSpacing:"0.1em" }}>
+                      {ambientState.sceneName}
+                    </div>
+                    <div style={{ fontSize:11, color:"#6B5E4E", marginTop:4 }}>Active Scene</div>
+                  </div>
+                </div>
+              </Panel>
+            )}
+
+            {motionTokens && (
+              <Panel title="Operational Visual Tokens">
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(160px, 1fr))", gap:10 }}>
+                  {Object.entries(motionTokens).map(([state, token]) => (
+                    <div key={state} style={{ borderRadius:8, padding:"10px 14px",
+                      background:(token as { bgColor?: string }).bgColor ?? "rgba(212,139,0,.06)",
+                      border:`1px solid ${token.color}30` }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
+                        <span style={{ fontSize:14, color: token.color }}>{(token as { icon?: string }).icon ?? "●"}</span>
+                        <span style={{ fontSize:11, fontWeight:700, color: token.color, letterSpacing:"0.06em" }}>
+                          {token.label}
+                        </span>
+                        {token.animate && (
+                          <motion.div animate={{ opacity:[1,0.3,1] }} transition={{ repeat:Infinity, duration:1.5 }}
+                            style={{ width:6, height:6, borderRadius:"50%", background:token.color, marginLeft:"auto" }}/>
+                        )}
+                      </div>
+                      <div style={{ fontSize:10, color:"#6B5E4E" }}>P{token.priority}</div>
+                    </div>
+                  ))}
+                </div>
+              </Panel>
+            )}
+
+            <Panel title="Experience Modules">
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
+                {[
+                  { mod:"Cinematic Transitions", desc:"Cross-scene animation choreography" },
+                  { mod:"Adaptive Engine",        desc:"Context-to-directive translation" },
+                  { mod:"Orchestration Motion",  desc:"Event → animation directives" },
+                  { mod:"Predictive UI",          desc:"Next-screen pre-fetching" },
+                  { mod:"Ambient Interface Sync", desc:"Real-time scene → frontend tokens" },
+                  { mod:"Visual Language",        desc:"Operational state tokens + badges" },
+                ].map(({ mod, desc }) => (
+                  <div key={mod} style={{ background:"rgba(212,139,0,.05)", borderRadius:8,
+                    padding:"10px 12px", border:"1px solid rgba(212,139,0,.12)" }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:"#1A1A1B", marginBottom:3 }}>{mod}</div>
+                    <div style={{ fontSize:10, color:"#6B5E4E" }}>{desc}</div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
           </>
         )}
 
