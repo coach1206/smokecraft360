@@ -1275,6 +1275,11 @@ function EditModuleModal({
             style={inputStyle}
             onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }}
           />
+          {launchUrl.trim() !== (mod.launchUrl ?? "") && (
+            <div style={{ fontSize: 10, color: "#ca8a04", marginTop: -8, marginBottom: 12 }}>
+              Changing the launch URL will break any saved shortcuts or bookmarks pointing to this module.
+            </div>
+          )}
         </div>
 
         {error && (
