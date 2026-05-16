@@ -3153,7 +3153,7 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
   onLimitChange: (n: LiveLimit) => void;
 }) {
   const [, forceRender] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(LIVE_FEED_PAGE_SIZE);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(
     () => readSessionSet(LIVE_FEED_FILTER_TYPES_KEY),
@@ -3193,13 +3193,13 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
       writeSessionSet(LIVE_FEED_FILTER_TYPES_KEY, next);
       return next;
     });
-    setVisibleCount(LIVE_FEED_PAGE_SIZE);
+    setCurrentPage(1);
   };
 
   const handleModuleChange = (mod: string) => {
     setSelectedModule(mod);
     writeSessionString(LIVE_FEED_FILTER_MODULE_KEY, mod);
-    setVisibleCount(LIVE_FEED_PAGE_SIZE);
+    setCurrentPage(1);
   };
 
   const filteredEvents = events.filter((ev) => {
@@ -3208,8 +3208,16 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
     return true;
   });
 
-  const visibleEvents = filteredEvents.slice(0, visibleCount);
-  const hasMore = filteredEvents.length > visibleCount;
+  const totalPages = Math.max(1, Math.ceil(filteredEvents.length / LIVE_FEED_PAGE_SIZE));
+
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+  }, [currentPage, totalPages]);
+
+  const safePage = Math.min(currentPage, totalPages);
+  const pageStart = (safePage - 1) * LIVE_FEED_PAGE_SIZE;
+  const visibleEvents = filteredEvents.slice(pageStart, pageStart + LIVE_FEED_PAGE_SIZE);
+  const hasMore = totalPages > 1;
 
   const activeFilterCount = selectedTypes.size + (selectedModule ? 1 : 0);
 
@@ -3490,7 +3498,7 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
                 setSelectedModule("");
                 writeSessionSet(LIVE_FEED_FILTER_TYPES_KEY, new Set());
                 writeSessionString(LIVE_FEED_FILTER_MODULE_KEY, "");
-                setVisibleCount(LIVE_FEED_PAGE_SIZE);
+                setCurrentPage(1);
               }}
               style={{
                 background: "rgba(255,255,255,0.04)",
@@ -3533,8 +3541,8 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
       {events.length > 0 && (activeFilterCount > 0 || hasMore || filteredEvents.length < events.length) && (
         <div style={{ fontSize: 10, color: "rgba(245,237,216,0.3)", letterSpacing: "0.1em" }}>
           {activeFilterCount > 0
-            ? `Showing ${Math.min(visibleCount, filteredEvents.length)} of ${filteredEvents.length} matching event${filteredEvents.length !== 1 ? "s" : ""} (${events.length} total fetched)`
-            : `Showing ${Math.min(visibleCount, filteredEvents.length)} of ${events.length} event${events.length !== 1 ? "s" : ""}`}
+            ? `Showing ${visibleEvents.length} of ${filteredEvents.length} matching event${filteredEvents.length !== 1 ? "s" : ""} (${events.length} total fetched) — page ${safePage} of ${totalPages}`
+            : `Showing ${visibleEvents.length} of ${events.length} event${events.length !== 1 ? "s" : ""} — page ${safePage} of ${totalPages}`}
         </div>
       )}
 
@@ -3615,32 +3623,86 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
         </div>
       )}
 
-      {/* Load more */}
-      {hasMore && (
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <button
-            onClick={() => setVisibleCount((c) => c + LIVE_FEED_PAGE_SIZE)}
-            style={{
-              background: "rgba(196,97,10,0.08)",
-              border: "1px solid rgba(196,97,10,0.25)",
-              borderRadius: 8, padding: "8px 24px",
-              fontSize: 11, fontWeight: 600, letterSpacing: "0.1em",
-              color: "#C4610A", cursor: "pointer",
-              transition: "background 0.15s, border-color 0.15s",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "rgba(196,97,10,0.16)";
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(196,97,10,0.45)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "rgba(196,97,10,0.08)";
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(196,97,10,0.25)";
-            }}
-          >
-            LOAD MORE ({filteredEvents.length - visibleCount} remaining)
-          </button>
-        </div>
-      )}
+      {/* Page navigation */}
+      {hasMore && (() => {
+        const MAX_VISIBLE_PAGES = 7;
+        let pageNums: (number | "…")[] = [];
+        if (totalPages <= MAX_VISIBLE_PAGES) {
+          pageNums = Array.from({ length: totalPages }, (_, i) => i + 1);
+        } else {
+          const left  = Math.max(2, safePage - 2);
+          const right = Math.min(totalPages - 1, safePage + 2);
+          pageNums = [1];
+          if (left > 2) pageNums.push("…");
+          for (let p = left; p <= right; p++) pageNums.push(p);
+          if (right < totalPages - 1) pageNums.push("…");
+          pageNums.push(totalPages);
+        }
+        return (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
+            {/* Prev */}
+            <button
+              disabled={safePage === 1}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                borderRadius: 6, padding: "5px 11px",
+                fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
+                color: safePage === 1 ? "rgba(245,237,216,0.2)" : "rgba(245,237,216,0.5)",
+                cursor: safePage === 1 ? "default" : "pointer",
+                transition: "all 0.15s",
+              }}
+            >
+              ‹
+            </button>
+
+            {pageNums.map((p, idx) =>
+              p === "…" ? (
+                <span
+                  key={`ellipsis-${idx}`}
+                  style={{ fontSize: 11, color: "rgba(245,237,216,0.2)", padding: "0 2px" }}
+                >
+                  …
+                </span>
+              ) : (
+                <button
+                  key={p}
+                  onClick={() => setCurrentPage(p as number)}
+                  style={{
+                    background: safePage === p ? "rgba(196,97,10,0.22)" : "rgba(255,255,255,0.04)",
+                    border: `1px solid ${safePage === p ? "rgba(196,97,10,0.55)" : "rgba(255,255,255,0.08)"}`,
+                    borderRadius: 6, padding: "5px 10px", minWidth: 32,
+                    fontSize: 11, fontWeight: safePage === p ? 700 : 400, letterSpacing: "0.06em",
+                    color: safePage === p ? "#C4610A" : "rgba(245,237,216,0.4)",
+                    cursor: safePage === p ? "default" : "pointer",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  {p}
+                </button>
+              )
+            )}
+
+            {/* Next */}
+            <button
+              disabled={safePage === totalPages}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                borderRadius: 6, padding: "5px 11px",
+                fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
+                color: safePage === totalPages ? "rgba(245,237,216,0.2)" : "rgba(245,237,216,0.5)",
+                cursor: safePage === totalPages ? "default" : "pointer",
+                transition: "all 0.15s",
+              }}
+            >
+              ›
+            </button>
+          </div>
+        );
+      })()}
     </div>
   );
 }
