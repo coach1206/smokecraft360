@@ -59,6 +59,7 @@ import { toastWebhookHandler }   from "./integrations/webhooks/toast.webhook";
 import { squareWebhookHandler }  from "./integrations/webhooks/square.webhook";
 import { shopifyWebhookHandler } from "./integrations/webhooks/shopify.webhook";
 import posIntegrationsRouter     from "./routes/posIntegrations";
+import posOperationsRouter       from "./routes/posOperations";
 import posHealthRouter           from "./routes/posHealth";
 import posMenuMappingRouter      from "./routes/posMenuMapping";
 import eeisOrdersRouter          from "./routes/eeisOrders";
@@ -574,6 +575,8 @@ app.use("/api/cognitive",     cognitiveRouter);
 // ── Universal POS Integration Layer ───────────────────────────────────────────
 // Connections CRUD, credential vault, OAuth flow, on-demand sync
 app.use("/api",                         posIntegrationsRouter);
+// Enterprise POS operations: payments, inventory, correlation, tables, orders, replay, resilience
+app.use("/api",                         posOperationsRouter);
 // Health monitoring, retry queue stats
 app.use("/api",                         posHealthRouter);
 // Admin menu mapping (EEIS ↔ POS item IDs)

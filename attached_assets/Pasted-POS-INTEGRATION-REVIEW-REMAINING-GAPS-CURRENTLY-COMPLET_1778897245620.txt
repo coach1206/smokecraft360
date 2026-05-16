@@ -1,0 +1,333 @@
+POS INTEGRATION REVIEW — REMAINING GAPS
+
+CURRENTLY COMPLETE:
+- Universal POS abstraction
+- Adapter architecture
+- OAuth/token vault
+- Retry queue
+- Inventory sync
+- Webhook processing
+- Health monitoring
+- Offline edge replay
+- Event bus integration
+- Adapter certification foundation
+- Operational telemetry linkage
+- Replay-safe transport layer
+
+REMAINING CRITICAL POS GAPS:
+
+1. UNIVERSAL MENU NORMALIZATION LAYER
+
+Missing:
+- canonical product normalization
+- modifier normalization
+- tax normalization
+- category normalization
+- variant normalization
+
+Need:
+server/integrations/normalization/
+- normalizeProduct.ts
+- normalizeModifier.ts
+- normalizeCategory.ts
+- normalizeTaxes.ts
+
+Right now adapters translate transport.
+You still need:
+UNIVERSAL COMMERCE LANGUAGE.
+
+---
+
+2. REAL POS INVENTORY RECONCILIATION
+
+Current sync exists.
+Missing:
+- inventory drift correction
+- stock conflict resolution
+- stale inventory detection
+- reservation-aware inventory
+- inventory confidence scoring
+
+Need:
+server/integrations/inventory/
+- driftDetection.ts
+- inventoryConfidence.ts
+- stockReconciliation.ts
+- reservationEngine.ts
+
+Critical for:
+real lounge operations.
+
+---
+
+3. PAYMENT STATE MACHINE
+
+Very important missing layer.
+
+Need:
+- authorized
+- pending
+- captured
+- partially_refunded
+- refunded
+- disputed
+- failed
+- voided
+
+Current system likely handles:
+success/failure only.
+
+Need:
+server/integrations/payments/
+- paymentStateMachine.ts
+- disputeProcessor.ts
+- refundOrchestrator.ts
+
+Without this:
+financial integrity risk exists.
+
+---
+
+4. POS SESSION CORRELATION
+
+Need:
+mapping between:
+- EEIS session
+- POS ticket
+- guest
+- table
+- device
+- staff member
+
+Create:
+- pos_session_correlations
+- pos_order_correlations
+
+Critical for:
+true operational awareness.
+
+---
+
+5. REAL-TIME TABLE SYNCHRONIZATION
+
+Missing:
+- active table ownership
+- live seat state
+- staff handoff synchronization
+- multi-device table locking
+- table collision prevention
+
+Need:
+server/integrations/tables/
+- tableStateEngine.ts
+- tableLocks.ts
+- staffHandoff.ts
+
+Critical for:
+busy lounge operations.
+
+---
+
+6. ORDER MODIFICATION ORCHESTRATION
+
+Need support for:
+- add item
+- remove item
+- split check
+- transfer table
+- merge checks
+- partial payment
+- staff reassignment
+
+Current integration likely:
+create-order focused.
+
+Need:
+server/integrations/orders/
+- orderMutationEngine.ts
+- splitPayments.ts
+- transferFlow.ts
+
+Very important for real hospitality usage.
+
+---
+
+7. POS LATENCY + FAILOVER SCORING
+
+Need:
+- adapter latency scoring
+- degraded mode handling
+- offline operational fallback
+- provider outage detection
+- auto-failover logic
+
+Need:
+server/integrations/resilience/
+- latencyMonitor.ts
+- providerFailover.ts
+- degradedMode.ts
+
+This becomes critical at scale.
+
+---
+
+8. UNIVERSAL RECEIPT + TRANSACTION LEDGER
+
+Need:
+- normalized receipts
+- immutable transaction logs
+- cross-provider financial consistency
+- payout linkage
+- refund linkage
+- tax snapshots
+
+Create:
+- transaction_ledger
+- receipt_snapshots
+- refund_ledger
+
+This becomes:
+institutional-grade finance integrity.
+
+---
+
+9. MULTI-LOCATION POS FEDERATION
+
+Missing:
+- parent/child venue linkage
+- shared inventory pools
+- multi-location analytics
+- franchise federation
+- venue inheritance configs
+
+Critical if scaling beyond single lounges.
+
+---
+
+10. POS SECURITY HARDENING
+
+Need:
+- webhook nonce replay protection
+- adapter-level rate limiting
+- credential rotation
+- encrypted adapter secrets
+- adapter sandbox isolation
+- provider signature verification hardening
+
+Current likely:
+functional but not hardened.
+
+---
+
+11. LIVE POS STREAM TELEMETRY
+
+Need:
+- order throughput monitoring
+- payment velocity
+- inventory velocity
+- staff performance telemetry
+- POS uptime scoring
+- adapter health scoring
+
+These should feed:
+Context Engine + Operational Awareness.
+
+---
+
+12. POS EVENT RECONSTRUCTION
+
+Critical missing enterprise feature.
+
+Need ability to:
+reconstruct:
+- orders
+- payments
+- refunds
+- staff actions
+- inventory mutations
+
+from event history.
+
+Create:
+server/integrations/replay/
+- orderReplay.ts
+- paymentReplay.ts
+- inventoryReplay.ts
+
+Critical for:
+audit + rollback + forensic debugging.
+
+---
+
+13. DEVICE ↔ POS BINDING
+
+Need:
+binding between:
+- tablets
+- kiosks
+- POS terminals
+- staff devices
+- venue devices
+
+Track:
+- ownership
+- active session
+- operational role
+- reconnect state
+
+Critical for:
+true operational orchestration.
+
+---
+
+14. SMART UPSALE ORCHESTRATION
+
+Massive future revenue layer.
+
+Need:
+- POS-aware recommendation timing
+- cart-aware upsells
+- pacing-aware prompts
+- check-total optimization
+- staff suggestion intelligence
+
+Should connect:
+POS
++
+Context Engine
++
+AI Memory
++
+Ambient Intelligence
+
+This becomes:
+revenue orchestration intelligence.
+
+---
+
+15. COMPLIANCE + ACCOUNTING EXPORT LAYER
+
+Missing:
+- QuickBooks export
+- Xero export
+- tax snapshots
+- accounting event normalization
+- compliance retention
+
+Required for:
+enterprise adoption.
+
+---
+
+HIGHEST PRIORITY NEXT POS ITEMS:
+
+1. Payment state machine
+2. Inventory reconciliation
+3. Session/order correlation
+4. Table synchronization
+5. Order mutation engine
+6. Transaction ledger
+7. POS replay system
+8. POS telemetry feed into cognition layer
+
+THOSE are the major remaining enterprise-grade POS gaps.
