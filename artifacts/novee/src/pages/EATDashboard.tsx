@@ -3162,6 +3162,8 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
     () => readSessionString(LIVE_FEED_FILTER_MODULE_KEY),
   );
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [showExportPopover, setShowExportPopover] = useState(false);
   const [exportScope, setExportScope]             = useState<"filtered" | "all">("filtered");
   const [exportMinutes, setExportMinutes]         = useState<number>(0);
@@ -3202,9 +3204,12 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
     setCurrentPage(1);
   };
 
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+
   const filteredEvents = events.filter((ev) => {
     if (selectedTypes.size > 0 && !selectedTypes.has(ev.eventType)) return false;
     if (selectedModule && ev.moduleId !== selectedModule) return false;
+    if (normalizedSearch && !ev.eventType.toLowerCase().includes(normalizedSearch)) return false;
     return true;
   });
 
@@ -3219,7 +3224,7 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
   const visibleEvents = filteredEvents.slice(pageStart, pageStart + LIVE_FEED_PAGE_SIZE);
   const hasMore = totalPages > 1;
 
-  const activeFilterCount = selectedTypes.size + (selectedModule ? 1 : 0);
+  const activeFilterCount = selectedTypes.size + (selectedModule ? 1 : 0) + (normalizedSearch ? 1 : 0);
 
   const ghostTypes   = [...selectedTypes].filter((t) => !allEventTypes.includes(t));
   const moduleIsGhost = selectedModule !== "" && !allModules.includes(selectedModule);
@@ -3420,6 +3425,55 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
         <style>{`@keyframes feedPulse{0%,100%{opacity:1}50%{opacity:0.35}}`}</style>
       </div>
 
+      {/* Search input */}
+      {events.length > 0 && (
+        <div style={{ position: "relative" }}>
+          <span style={{
+            position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)",
+            fontSize: 13, color: "rgba(245,237,216,0.25)", pointerEvents: "none",
+            lineHeight: 1,
+          }}>
+            ⌕
+          </span>
+          <input
+            type="text"
+            placeholder="Search event type…"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            style={{
+              width: "100%",
+              boxSizing: "border-box",
+              background: "rgba(255,255,255,0.025)",
+              border: `1px solid ${normalizedSearch ? "rgba(196,97,10,0.45)" : "rgba(255,255,255,0.08)"}`,
+              borderRadius: 8,
+              padding: "8px 10px 8px 30px",
+              fontSize: 12,
+              fontFamily: "monospace",
+              letterSpacing: "0.04em",
+              color: "#F5EDD8",
+              outline: "none",
+              transition: "border-color 0.15s",
+            }}
+          />
+          {normalizedSearch && (
+            <button
+              onClick={() => { setSearchTerm(""); setCurrentPage(1); }}
+              style={{
+                position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
+                background: "none", border: "none", cursor: "pointer",
+                fontSize: 14, color: "rgba(245,237,216,0.35)", lineHeight: 1, padding: "2px 4px",
+              }}
+              title="Clear search"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Filter controls */}
       {events.length > 0 && (
         <div style={{
@@ -3496,6 +3550,7 @@ function LiveFeedTab({ events, newEventIds, liveLimit, onLimitChange }: {
               onClick={() => {
                 setSelectedTypes(new Set());
                 setSelectedModule("");
+                setSearchTerm("");
                 writeSessionSet(LIVE_FEED_FILTER_TYPES_KEY, new Set());
                 writeSessionString(LIVE_FEED_FILTER_MODULE_KEY, "");
                 setCurrentPage(1);
