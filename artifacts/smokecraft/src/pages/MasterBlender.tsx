@@ -454,7 +454,7 @@ function SelectionCard<T extends { id: string; label: string; sub?: string; desc
       whileHover={{ scale: 1.04, y: -4 }}
       className="relative flex-shrink-0 flex flex-col overflow-hidden rounded-2xl cursor-pointer"
       style={{
-        width:          160,
+        width:          210,
         border:         `1px solid ${selected ? GOLD : "rgba(212,175,55,0.18)"}`,
         background:     selected
           ? `linear-gradient(160deg, rgba(212,175,55,0.18) 0%, rgba(212,175,55,0.06) 100%)`
@@ -484,17 +484,16 @@ function SelectionCard<T extends { id: string; label: string; sub?: string; desc
       </div>
 
       <div className="flex flex-col items-start px-3 py-2.5 gap-0.5">
-        <span className="text-xs font-bold tracking-wider uppercase"
-          style={{ color: selected ? GOLD : "rgba(240,232,212,0.85)" }}>
+        <span className="font-bold tracking-wider uppercase" style={{ fontSize: 16, color: selected ? GOLD : "rgba(240,232,212,0.85)" }}>
           {item.label}
         </span>
         {"sub" in item && (
-          <span className="text-[9px] leading-snug" style={{ color: "rgba(240,232,212,0.42)" }}>
+          <span style={{ fontSize: 13, lineHeight: 1.4, color: "rgba(240,232,212,0.60)" }}>
             {(item as { sub?: string }).sub}
           </span>
         )}
         {"desc" in item && (
-          <span className="text-[9px] leading-snug mt-1 italic" style={{ color: `${GOLD}60` }}>
+          <span style={{ fontSize: 13, lineHeight: 1.45, marginTop: 4, fontStyle: "italic", color: `${GOLD}80` }}>
             {(item as { desc?: string }).desc}
           </span>
         )}
@@ -661,7 +660,7 @@ const GW = {
     boxShadow: dim ? "none" : "inset 0 1px 0 rgba(255,255,255,0.08), 0 6px 20px rgba(0,0,0,0.55)",
     color: dim ? "rgba(240,232,212,0.45)" : "#fffcf5",
     padding: "16px 36px",
-    fontSize: "clamp(13px, 1.6vw, 15px)",
+    fontSize: "clamp(16px, 1.8vw, 18px)",
     fontWeight: 600,
     letterSpacing: "0.28em",
     textTransform: "uppercase" as const,
@@ -845,7 +844,7 @@ function GatewayOrientation({ onNext, onBack }: { onNext: () => void; onBack: ()
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Text block */}
           <div className="flex-1 min-w-0">
-            <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase", marginBottom: 10 }}>
+            <p style={{ ...GW.para, fontSize: 16, letterSpacing: "0.18em", color: `${GOLD}90`, textTransform: "uppercase", marginBottom: 10 }}>
               SmokeCraft · Your Cigar Journey
             </p>
             <h2 style={GW.title}>From Leaf to Legacy</h2>
@@ -994,6 +993,7 @@ function GatewayMentor({
 // ── Gateway: Cultivation (Seed + Soil) ─────────────────────────────────────
 // -- Gateway: Tobacco Terroir & Craft (Stage 3a) ---------------------------
 function GatewayTerroir({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const REGIONS = [
     {
       region: "Dominican Republic", abbr: "D.R.", flag: "🇩🇴",
@@ -1047,60 +1047,84 @@ function GatewayTerroir({ onNext, onBack }: { onNext: () => void; onBack: () => 
       </div>
 
       <div style={GW.chamber} className="overflow-y-auto">
-        <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase" as const, marginBottom: 10 }}>
+        <p style={{ ...GW.para, fontSize: 16, letterSpacing: "0.18em", color: `${GOLD}90`, textTransform: "uppercase" as const, marginBottom: 10 }}>
           Tobacco Origins &middot; The Terroir Codex
         </p>
         <h2 style={GW.title}>Tobacco Terroir &amp; Craft</h2>
+        <p style={{ color: "rgba(240,232,212,0.65)", fontSize: 17, lineHeight: 1.6, marginBottom: 18, maxWidth: 520 }}>
+          Every great cigar starts with its homeland. Tap a region below to discover its soil, altitude, and curing secrets.
+        </p>
 
-        {/* Regional terroir grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 20 }}>
-          {REGIONS.map(t => (
-            <div
-              key={t.region}
-              style={{
-                background: "rgba(212,175,55,0.04)",
-                border: `1px solid ${GOLD}20`,
-                borderRadius: 8,
-                padding: "16px 14px",
-                backdropFilter: "blur(12px)",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                <span style={{ fontSize: 22, lineHeight: "1", flexShrink: 0 }}>{t.flag}</span>
-                <span style={{
-                  color: GOLD, fontSize: 10, fontWeight: 700, letterSpacing: "0.06em",
-                  background: "rgba(212,175,55,0.12)", border: `1px solid ${GOLD}30`,
-                  borderRadius: 3, padding: "2px 6px",
-                }}>
-                  {t.abbr}
-                </span>
-                <span style={{ color: "rgba(245,235,215,0.78)", fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase" as const }}>
-                  {t.region}
-                </span>
-              </div>
-              {([ ["Soil", t.soil], ["Altitude", t.altitude], ["Cure", t.cure] ] as [string, string][]).map(([label, value]) => (
-                <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 6, marginBottom: 4 }}>
-                  <span style={{ color: `${GOLD}50`, fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase" as const, flexShrink: 0 }}>{label}</span>
-                  <span style={{ color: "rgba(240,232,212,0.65)", fontSize: 9, textAlign: "right" as const }}>{value}</span>
+        {/* Regional terroir grid — TAP TO SELECT */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14, marginBottom: 22 }}>
+          {REGIONS.map(t => {
+            const isSelected = selectedRegion === t.region;
+            return (
+              <motion.div
+                key={t.region}
+                whileTap={{ scale: 0.97 }}
+                whileHover={{ scale: 1.02 }}
+                onClick={() => { setSelectedRegion(t.region); }}
+                style={{
+                  background: isSelected ? "rgba(212,175,55,0.13)" : "rgba(212,175,55,0.04)",
+                  border: isSelected ? `2px solid ${GOLD}` : `1px solid ${GOLD}22`,
+                  borderRadius: 10,
+                  padding: "20px 18px",
+                  backdropFilter: "blur(12px)",
+                  cursor: "pointer",
+                  boxShadow: isSelected ? `0 0 28px rgba(212,175,55,0.22)` : "none",
+                  transition: "box-shadow 0.3s",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                  <span style={{ fontSize: 30, lineHeight: "1", flexShrink: 0 }}>{t.flag}</span>
+                  <div>
+                    <span style={{
+                      color: GOLD, fontSize: 13, fontWeight: 700, letterSpacing: "0.06em",
+                      background: "rgba(212,175,55,0.15)", border: `1px solid ${GOLD}35`,
+                      borderRadius: 3, padding: "3px 8px", display: "inline-block", marginBottom: 4,
+                    }}>
+                      {t.abbr}
+                    </span>
+                    <div style={{ color: "rgba(245,235,215,0.90)", fontSize: 16, letterSpacing: "0.08em", fontWeight: 600, textTransform: "uppercase" as const }}>
+                      {t.region}
+                    </div>
+                  </div>
+                  {isSelected && (
+                    <motion.div
+                      initial={{ scale: 0 }} animate={{ scale: 1 }}
+                      style={{ marginLeft: "auto", color: GOLD, fontSize: 22, fontWeight: 700 }}
+                    >✓</motion.div>
+                  )}
                 </div>
-              ))}
-              <p style={{ color: "rgba(240,232,212,0.46)", fontSize: 10, fontStyle: "italic", marginTop: 8, lineHeight: 1.55 }}>
-                {t.note}
-              </p>
-            </div>
-          ))}
+                {([ ["Soil", t.soil], ["Altitude", t.altitude], ["Cure", t.cure] ] as [string, string][]).map(([label, value]) => (
+                  <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 8, marginBottom: 7 }}>
+                    <span style={{ color: `${GOLD}65`, fontSize: 14, letterSpacing: "0.12em", textTransform: "uppercase" as const, flexShrink: 0 }}>{label}</span>
+                    <span style={{ color: "rgba(240,232,212,0.80)", fontSize: 14, textAlign: "right" as const }}>{value}</span>
+                  </div>
+                ))}
+                <motion.p
+                  animate={{ maxHeight: isSelected ? 200 : 60, opacity: isSelected ? 1 : 0.55 }}
+                  transition={{ duration: 0.35 }}
+                  style={{ color: isSelected ? "rgba(240,232,212,0.85)" : "rgba(240,232,212,0.50)", fontSize: isSelected ? 15 : 13, fontStyle: "italic", marginTop: 10, lineHeight: 1.6, overflow: "hidden" }}
+                >
+                  {t.note}
+                </motion.p>
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Global curing traditions */}
         <div style={{ background: "rgba(212,175,55,0.03)", border: `1px solid ${GOLD}15`, borderRadius: 8, padding: "14px 16px", marginBottom: 22 }}>
-          <p style={{ color: `${GOLD}75`, fontSize: 9, letterSpacing: "0.28em", textTransform: "uppercase" as const, marginBottom: 10 }}>
+          <p style={{ color: `${GOLD}85`, fontSize: 14, letterSpacing: "0.22em", textTransform: "uppercase" as const, marginBottom: 12 }}>
             Global Curing Traditions
           </p>
           <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 12 }}>
             {CURES.map(c => (
               <div key={c.name} style={{ flex: "1 1 160px" }}>
-                <span style={{ color: GOLD, fontSize: 10, fontWeight: 700, letterSpacing: "0.10em", display: "block", marginBottom: 2 }}>{c.name}</span>
-                <span style={{ color: "rgba(240,232,212,0.42)", fontSize: 10, lineHeight: 1.5 }}>{c.desc}</span>
+                <span style={{ color: GOLD, fontSize: 17, fontWeight: 700, letterSpacing: "0.08em", display: "block", marginBottom: 5 }}>{c.name}</span>
+                <span style={{ color: "rgba(240,232,212,0.65)", fontSize: 15, lineHeight: 1.6 }}>{c.desc}</span>
               </div>
             ))}
           </div>
@@ -1115,13 +1139,16 @@ function GatewayTerroir({ onNext, onBack }: { onNext: () => void; onBack: () => 
             Back
           </button>
           <motion.button
-            style={GW.btn()}
-            onMouseDown={() => playClick()}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97, y: 2 }}
-            onClick={onNext}
+            style={{
+              ...GW.btn(!selectedRegion),
+              ...(selectedRegion ? {} : { opacity: 0.45, cursor: "not-allowed" }),
+            }}
+            onMouseDown={() => selectedRegion && playClick()}
+            whileHover={selectedRegion ? { scale: 1.03 } : {}}
+            whileTap={selectedRegion ? { scale: 0.97, y: 2 } : {}}
+            onClick={() => selectedRegion && onNext()}
           >
-            Seed Biology &rarr;
+            {selectedRegion ? `${selectedRegion} Selected — Continue →` : "Select a Region to Continue"}
           </motion.button>
         </div>
       </div>
@@ -1131,6 +1158,7 @@ function GatewayTerroir({ onNext, onBack }: { onNext: () => void; onBack: () => 
 
 // -- Gateway: Seed Biology & Priming (Stage 3b) ----------------------------
 function GatewaySeedBiology({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+  const [selectedLeaf, setSelectedLeaf] = useState<string | null>(null);
   const LEAVES = [
     {
       id: "volado", pos: "Bottom \u2014 Volado", strength: 14,
@@ -1176,45 +1204,70 @@ function GatewaySeedBiology({ onNext, onBack }: { onNext: () => void; onBack: ()
       </div>
 
       <div style={GW.chamber} className="overflow-y-auto">
-        <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase" as const, marginBottom: 10 }}>
+        <p style={{ ...GW.para, fontSize: 16, letterSpacing: "0.18em", color: `${GOLD}90`, textTransform: "uppercase" as const, marginBottom: 10 }}>
           Seed &amp; Leaf &middot; The Biology of Flavor
         </p>
         <h2 style={GW.title}>Seed Biology &amp; Priming</h2>
+        <p style={{ color: "rgba(240,232,212,0.65)", fontSize: 17, lineHeight: 1.6, marginBottom: 18 }}>
+          A cigar's soul lives in the leaf's position on the stalk. Tap each position to reveal its character.
+        </p>
 
         {/* Leaf position architecture */}
-        <p style={{ color: `${GOLD}65`, fontSize: 9, letterSpacing: "0.28em", textTransform: "uppercase" as const, marginBottom: 12 }}>
+        <p style={{ color: `${GOLD}80`, fontSize: 15, letterSpacing: "0.20em", textTransform: "uppercase" as const, marginBottom: 14 }}>
           Leaf Position Architecture &mdash; Flavor Intensity Scale
         </p>
-        <div style={{ display: "flex", flexDirection: "column" as const, gap: 10, marginBottom: 20 }}>
-          {LEAVES.map(leaf => (
-            <div
-              key={leaf.id}
-              style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(212,175,55,0.13)", borderRadius: 8, padding: "14px 16px" }}
-            >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6, flexWrap: "wrap" as const, gap: 8 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ color: leaf.color, fontSize: 11, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase" as const }}>{leaf.pos}</span>
-                  <span style={{ color: "rgba(240,232,212,0.40)", fontSize: 10 }}>{leaf.profile}</span>
+        <div style={{ display: "flex", flexDirection: "column" as const, gap: 14, marginBottom: 24 }}>
+          {LEAVES.map(leaf => {
+            const isOpen = selectedLeaf === leaf.id;
+            return (
+              <motion.div
+                key={leaf.id}
+                onClick={() => setSelectedLeaf(isOpen ? null : leaf.id)}
+                whileTap={{ scale: 0.98 }}
+                style={{
+                  background: isOpen ? "rgba(255,255,255,0.045)" : "rgba(255,255,255,0.025)",
+                  border: isOpen ? `1.5px solid ${leaf.color}55` : "1px solid rgba(212,175,55,0.15)",
+                  borderRadius: 10, padding: "18px 20px", cursor: "pointer",
+                  boxShadow: isOpen ? `0 0 24px ${leaf.color}18` : "none",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10, flexWrap: "wrap" as const, gap: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span style={{ color: leaf.color, fontSize: 18, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" as const }}>{leaf.pos}</span>
+                    <span style={{ color: "rgba(240,232,212,0.55)", fontSize: 15 }}>{leaf.profile}</span>
+                  </div>
+                  <span style={{ color: leaf.color, fontSize: 20, fontWeight: 700 }}>{leaf.strength}%</span>
                 </div>
-                <span style={{ color: leaf.color, fontSize: 13, fontWeight: 700 }}>{leaf.strength}%</span>
-              </div>
-              {/* Animated strength bar */}
-              <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, marginBottom: 8, overflow: "hidden" }}>
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${leaf.strength}%` }}
-                  transition={{ delay: 0.35, duration: 1.0, ease: "easeOut" }}
-                  style={{ height: "100%", background: leaf.color, borderRadius: 2 }}
-                />
-              </div>
-              <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 10, lineHeight: 1.55 }}>{leaf.note}</p>
-            </div>
-          ))}
+                {/* Animated strength bar */}
+                <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 3, marginBottom: 10, overflow: "hidden" }}>
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${leaf.strength}%` }}
+                    transition={{ delay: 0.35, duration: 1.0, ease: "easeOut" }}
+                    style={{ height: "100%", background: leaf.color, borderRadius: 3 }}
+                  />
+                </div>
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      style={{ color: "rgba(240,232,212,0.80)", fontSize: 16, lineHeight: 1.65, margin: 0, overflow: "hidden" }}
+                    >{leaf.note}</motion.p>
+                  )}
+                </AnimatePresence>
+                {!isOpen && (
+                  <p style={{ color: "rgba(240,232,212,0.45)", fontSize: 15, lineHeight: 1.5, margin: 0 }}>Tap to reveal the full character of this leaf position.</p>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Seed varietals */}
         <div style={{ background: "rgba(212,175,55,0.03)", border: `1px solid ${GOLD}13`, borderRadius: 8, padding: "14px 16px", marginBottom: 22 }}>
-          <p style={{ color: `${GOLD}75`, fontSize: 9, letterSpacing: "0.28em", textTransform: "uppercase" as const, marginBottom: 10 }}>
+          <p style={{ color: `${GOLD}85`, fontSize: 14, letterSpacing: "0.20em", textTransform: "uppercase" as const, marginBottom: 12 }}>
             Seed Varietals &amp; Heritage Lines
           </p>
           <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 8 }}>
@@ -1223,9 +1276,9 @@ function GatewaySeedBiology({ onNext, onBack }: { onNext: () => void; onBack: ()
                 key={v.name}
                 style={{ flex: "1 1 150px", background: "rgba(255,255,255,0.02)", borderRadius: 6, padding: "10px 12px", border: `1px solid ${GOLD}0F` }}
               >
-                <span style={{ color: GOLD, fontSize: 10, fontWeight: 700, display: "block", marginBottom: 1 }}>{v.name}</span>
-                <span style={{ color: "rgba(240,232,212,0.35)", fontSize: 9, display: "block", marginBottom: 3 }}>{v.origin} &middot; {v.body} body</span>
-                <span style={{ color: "rgba(240,232,212,0.50)", fontSize: 10, fontStyle: "italic" }}>{v.note}</span>
+                <span style={{ color: GOLD, fontSize: 16, fontWeight: 700, display: "block", marginBottom: 4 }}>{v.name}</span>
+                <span style={{ color: "rgba(240,232,212,0.55)", fontSize: 14, display: "block", marginBottom: 4 }}>{v.origin} &middot; {v.body} body</span>
+                <span style={{ color: "rgba(240,232,212,0.70)", fontSize: 14, fontStyle: "italic" }}>{v.note}</span>
               </div>
             ))}
           </div>
@@ -1303,7 +1356,7 @@ function GatewayCultivation({
       style={GW.bg}
     >
       <div style={GW.chamber} className="overflow-y-auto">
-        <p style={{ ...GW.para, fontSize: 12, letterSpacing: "0.3em", color: `${GOLD}80`, textTransform: "uppercase", marginBottom: 8 }}>
+        <p style={{ ...GW.para, fontSize: 16, letterSpacing: "0.18em", color: `${GOLD}90`, textTransform: "uppercase", marginBottom: 8 }}>
           The Growing Season · Cultivation Begins
         </p>
         <h2 style={GW.title}>Seed &amp; Soil Architecture</h2>
@@ -1319,13 +1372,13 @@ function GatewayCultivation({
           padding:      "12px 16px",
           marginBottom: 16,
         }}>
-          <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", margin: "0 0 4px 0" }}>
+          <p style={{ color: `${GOLD}80`, fontSize: 15, letterSpacing: "0.16em", textTransform: "uppercase", margin: "0 0 6px 0" }}>
             Mentor Directive — {mentorObj?.name ?? "Your Mentor"} · {mentorObj?.origin}
           </p>
-          <p style={{ color: "rgba(240,232,212,0.80)", fontSize: 13, lineHeight: 1.55, margin: 0, fontStyle: "italic" }}>
+          <p style={{ color: "rgba(240,232,212,0.90)", fontSize: 17, lineHeight: 1.65, margin: 0, fontStyle: "italic" }}>
             "{mentorObj?.bio}"
           </p>
-          <p style={{ color: `${GOLD}55`, fontSize: 11, margin: "8px 0 0 0" }}>
+          <p style={{ color: `${GOLD}70`, fontSize: 16, margin: "10px 0 0 0" }}>
             Match your soil selection to this mentor’s terroir affinity to earn the cultivation bonus.
           </p>
         </div>
@@ -1356,7 +1409,7 @@ function GatewayCultivation({
               <div>
                 <p style={{
                   color:         soilFeedback === "match" ? "#4ade80" : "#ef4444",
-                  fontSize:      12,
+                  fontSize:      16,
                   fontWeight:    700,
                   margin:        0,
                   letterSpacing: "0.08em",
@@ -1367,7 +1420,7 @@ function GatewayCultivation({
                     : "-1 PTS — Terroir Mismatch · Reconsider Your Selection"}
                 </p>
                 {soilFeedback === "miss" && (
-                  <p style={{ color: "rgba(240,232,212,0.50)", fontSize: 11, margin: "3px 0 0 0" }}>
+                  <p style={{ color: "rgba(240,232,212,0.65)", fontSize: 15, margin: "5px 0 0 0" }}>
                     Hint: {mentorObj?.name} cultivates on {affinityLabel}
                   </p>
                 )}
@@ -1385,16 +1438,19 @@ function GatewayCultivation({
             style={{ maxHeight: 200, filter: "brightness(0.8)" }}
           />
           <div style={{ background: "rgba(8,9,11,0.85)", padding: "6px 12px" }}>
-            <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", margin: 0 }}>
+            <p style={{ color: `${GOLD}80`, fontSize: 14, letterSpacing: "0.18em", textTransform: "uppercase", margin: 0 }}>
               Active Tobacco Farm · Seed Bank
             </p>
           </div>
         </div>
 
         {/* Seed selection */}
-        <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1rem, 2vw, 1.3rem)", color: GOLD, marginBottom: 12 }}>
-          1. Tobacco Varietal Selection
+        <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.2rem, 2.5vw, 1.6rem)", color: GOLD, marginBottom: 12 }}>
+          1. Heritage Seed Line
         </h3>
+        <p style={{ color: "rgba(240,232,212,0.60)", fontSize: 16, lineHeight: 1.6, marginBottom: 14 }}>
+          Choose the genetic lineage that defines your blend's character.
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           {SEEDS.map(s => (
             <motion.div
@@ -1421,18 +1477,18 @@ function GatewayCultivation({
             style={{ maxHeight: 180, filter: "brightness(0.78)" }}
           />
           <div style={{ background: "rgba(8,9,11,0.85)", padding: "6px 12px" }}>
-            <p style={{ color: `${GOLD}70`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", margin: 0 }}>
+            <p style={{ color: `${GOLD}80`, fontSize: 14, letterSpacing: "0.16em", textTransform: "uppercase", margin: 0 }}>
               Terroir · Seed &amp; Soil Selection Protocol
             </p>
           </div>
         </div>
 
         {/* Soil selection — CHALLENGE GATE */}
-        <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1rem, 2vw, 1.3rem)", color: GOLD, marginBottom: 6 }}>
-          2. Terroir Soil Environment
+        <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1.2rem, 2.5vw, 1.6rem)", color: GOLD, marginBottom: 6 }}>
+          2. Terroir Soil Match
         </h3>
-        <p style={{ color: `${GOLD}55`, fontSize: 11, letterSpacing: "0.14em", marginBottom: 12, textTransform: "uppercase" }}>
-          Select the soil matching your mentor’s affinity — wrong choice incurs a penalty
+        <p style={{ color: `${GOLD}75`, fontSize: 16, letterSpacing: "0.06em", marginBottom: 14 }}>
+          Select the soil that matches your mentor’s terroir affinity. A wrong choice incurs a penalty.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           {SOILS.map(so => (
@@ -1450,7 +1506,7 @@ function GatewayCultivation({
               whileTap={{ scale: 0.97 }}
               onClick={e => handleSoilClick(so.id, e)}
             >
-              <p style={{ color: `${GOLD}70`, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>
+              <p style={{ color: `${GOLD}80`, fontSize: 15, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 6 }}>
                 {so.region}
               </p>
               <h4 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(1rem, 2vw, 1.25rem)", color: "#fffcf5", margin: "0 0 8px 0", fontWeight: 500 }}>
@@ -2354,9 +2410,9 @@ export default function MasterBlender() {
   const stepKeys: (keyof Sel)[] = ["leaf","wrapper","vitola","cut"];
   const canAdvance = !!sel[stepKeys[step]];
 
-  const STEP_LABELS = ["TOBACCO LEAF", "WRAPPER", "VITOLA & SMOKE", "THE CUT"];
+  const STEP_LABELS = ["FILLER LEAF", "WRAPPER", "VITOLA & SMOKE", "THE CUT"];
   const STEP_TITLES = [
-    "Select Your Tobacco Leaf",
+    "Choose Your Filler Leaf",
     "Choose the Wrapper",
     "Vitola & Smoke Time",
     "The Final Cut",
@@ -2540,7 +2596,7 @@ export default function MasterBlender() {
           >
             {/* Ritual moment title */}
             <div className="flex flex-col mb-3">
-              <span className="text-[10px] tracking-[0.3em] uppercase" style={{ color: `${GOLD}70` }}>
+              <span className="text-[14px] tracking-[0.22em] uppercase" style={{ color: `${GOLD}80` }}>
                 MOMENT {step + 1} OF 4
               </span>
               <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.7rem", fontWeight: 300, color: "rgba(240,232,212,0.95)", margin: 0, lineHeight: 1.1 }}>
@@ -2556,13 +2612,13 @@ export default function MasterBlender() {
                   <div className="flex-1 rounded-xl overflow-hidden relative" style={{ height: 120, border: `1px solid ${GOLD}18` }}>
                     <img src={imgBeneathWrapper} alt="Beneath the Wrapper" className="w-full h-full object-cover object-center" style={{ filter: "brightness(0.52)" }} />
                     <div className="absolute inset-0 flex items-end p-2" style={{ background: "linear-gradient(to top, rgba(5,3,0,0.88) 0%, transparent 60%)" }}>
-                      <span style={{ color: `${GOLD}90`, fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase" }}>Leaf Anatomy</span>
+                      <span style={{ color: `${GOLD}90`, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase" }}>Leaf Anatomy</span>
                     </div>
                   </div>
                   <div className="flex-1 rounded-xl overflow-hidden relative" style={{ height: 120, border: `1px solid ${GOLD}18` }}>
                     <img src={imgBunching} alt="Stripping & Bunching Protocol" className="w-full h-full object-cover object-top" style={{ filter: "brightness(0.52)" }} />
                     <div className="absolute inset-0 flex items-end p-2" style={{ background: "linear-gradient(to top, rgba(5,3,0,0.88) 0%, transparent 60%)" }}>
-                      <span style={{ color: `${GOLD}90`, fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase" }}>Bunching Protocol</span>
+                      <span style={{ color: `${GOLD}90`, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase" }}>Bunching Protocol</span>
                     </div>
                   </div>
                 </div>
@@ -2586,7 +2642,7 @@ export default function MasterBlender() {
                 <div className="rounded-xl overflow-hidden flex-shrink-0 relative" style={{ height: 130, border: `1px solid ${GOLD}18` }}>
                   <img src={imgVitolaArch} alt="Cut Size & Wrapper Alignment" className="w-full h-full object-cover object-top" style={{ filter: "brightness(0.55)" }} />
                   <div className="absolute inset-0 flex items-end p-3" style={{ background: "linear-gradient(to top, rgba(5,3,0,0.88) 0%, transparent 60%)" }}>
-                    <span style={{ color: `${GOLD}90`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase" }}>Wrapper Leaf Grades · Cut Size / Texture Pairing</span>
+                    <span style={{ color: `${GOLD}90`, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase" }}>Wrapper Leaf Grades · Cut Size / Texture Pairing</span>
                   </div>
                 </div>
                 <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar items-start content-start">
@@ -2609,7 +2665,7 @@ export default function MasterBlender() {
                 <div className="rounded-xl overflow-hidden flex-shrink-0 relative" style={{ height: 130, border: `1px solid ${GOLD}18` }}>
                   <img src={imgVitolaSpecs} alt="Vitola & Architectural Specs" className="w-full h-full object-cover object-top" style={{ filter: "brightness(0.52)" }} />
                   <div className="absolute inset-0 flex items-end p-3" style={{ background: "linear-gradient(to top, rgba(5,3,0,0.88) 0%, transparent 60%)" }}>
-                    <span style={{ color: `${GOLD}90`, fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase" }}>Vitola Constructor · Ring Gauge / Cigar Architecture</span>
+                    <span style={{ color: `${GOLD}90`, fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase" }}>Vitola Constructor · Ring Gauge / Cigar Architecture</span>
                   </div>
                 </div>
                 <div className="flex gap-3 overflow-x-auto pb-1 no-scrollbar">
@@ -2634,8 +2690,8 @@ export default function MasterBlender() {
                     <CigarSilhouette vitola={sel.vitola} smokeTime={smokeSlider} />
 
                     <div className="flex items-center justify-between">
-                      <span className="text-[9px] tracking-[0.22em] uppercase" style={{ color: `${GOLD}70` }}>SMOKE TIME</span>
-                      <span className="text-sm font-bold tabular-nums" style={{ color: GOLD }}>{smokeSlider} min</span>
+                      <span style={{ fontSize: 14, letterSpacing: "0.18em", textTransform: "uppercase", color: `${GOLD}80` }}>SMOKE TIME</span>
+                      <span style={{ fontSize: 17, fontWeight: 700, fontVariantNumeric: "tabular-nums", color: GOLD }}>{smokeSlider} min</span>
                     </div>
 
                     {/* Range slider */}
