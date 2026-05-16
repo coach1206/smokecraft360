@@ -381,6 +381,222 @@ describe("PATCH /api/kernel/modules/:id — duplicate-slug rejection", () => {
   });
 });
 
+/** Chainable drizzle-like update mock for DELETE (soft-delete) path. */
+function makeUpdateMock(rows: object[]) {
+  const returning = vi.fn().mockResolvedValue(rows);
+  const where = vi.fn().mockReturnValue({ returning });
+  const set = vi.fn().mockReturnValue({ where });
+  (db.update as ReturnType<typeof vi.fn>).mockReturnValue({ set });
+}
+
+/**
+ * Mock for GET /modules/:id/history which issues two sequential selects:
+ *   1. count query  — resolves with [{ total: N }]
+ *   2. entries query — resolves with the given rows
+ */
+function makeHistorySelectMock(total: number, entries: object[]) {
+  const countBuilder = {
+    from: vi.fn(),
+    where: vi.fn(),
+  };
+  countBuilder.where.mockResolvedValue([{ total }]);
+  countBuilder.from.mockReturnValue(countBuilder);
+
+  const entriesBuilder = {
+    from: vi.fn(),
+    where: vi.fn(),
+    orderBy: vi.fn(),
+    limit: vi.fn(),
+    offset: vi.fn(),
+  };
+  entriesBuilder.offset.mockResolvedValue(entries);
+  entriesBuilder.limit.mockReturnValue(entriesBuilder);
+  entriesBuilder.orderBy.mockReturnValue(entriesBuilder);
+  entriesBuilder.where.mockReturnValue(entriesBuilder);
+  entriesBuilder.from.mockReturnValue(entriesBuilder);
+
+  (db.select as ReturnType<typeof vi.fn>)
+    .mockReturnValueOnce(countBuilder)
+    .mockReturnValueOnce(entriesBuilder);
+}
+
+// ── DELETE /api/kernel/modules/:id ────────────────────────────────────────────
+
+describe("DELETE /api/kernel/modules/:id — soft-delete", () => {
+  const MODULE_ID = "00000000-0000-0000-0000-000000000020";
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockUser = { id: "admin-uuid", email: "admin@test.com", role: "super_admin", name: "Admin", venueId: null };
+  });
+
+  it("returns 204 when a valid module UUID is soft-deleted", async () => {
+    makeUpdateMock([{ id: MODULE_ID }]);
+
+    const app = buildApp();
+    const res = await request(app).delete(`/api/kernel/modules/${MODULE_ID}`);
+
+    expect(res.status).toBe(204);
+    expect(res.body).toEqual({});
+  });
+
+  it("returns 404 when the UUID does not match any active module", async () => {
+    makeUpdateMock([]);
+
+    const app = buildApp();
+    const res = await request(app).delete(`/api/kernel/modules/${MODULE_ID}`);
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 403 for manager role", async () => {
+    mockUser = { id: "mgr-uuid", email: "mgr@test.com", role: "manager", name: "Manager", venueId: null };
+
+    const app = buildApp();
+    const res = await request(app).delete(`/api/kernel/modules/${MODULE_ID}`);
+
+    expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 403 for staff role", async () => {
+    mockUser = { id: "staff-uuid", email: "staff@test.com", role: "staff", name: "Staff", venueId: null };
+
+    const app = buildApp();
+    const res = await request(app).delete(`/api/kernel/modules/${MODULE_ID}`);
+
+    expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 400 when id is not a valid UUID", async () => {
+    const app = buildApp();
+    const res = await request(app).delete("/api/kernel/modules/not-a-uuid");
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 500 when the database update fails", async () => {
+    const returning = vi.fn().mockRejectedValue(new Error("db failure"));
+    const where = vi.fn().mockReturnValue({ returning });
+    const set = vi.fn().mockReturnValue({ where });
+    (db.update as ReturnType<typeof vi.fn>).mockReturnValue({ set });
+
+    const app = buildApp();
+    const res = await request(app).delete(`/api/kernel/modules/${MODULE_ID}`);
+
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty("error");
+  });
+});
+
+// ── GET /api/kernel/modules/:id/history ───────────────────────────────────────
+
+describe("GET /api/kernel/modules/:id/history — audit log", () => {
+  const MODULE_ID = "00000000-0000-0000-0000-000000000030";
+
+  const SAMPLE_ENTRY = {
+    id: "audit-uuid-1",
+    moduleId: MODULE_ID,
+    changedBy: "admin@test.com",
+    changedAt: "2026-05-15T10:00:00.000Z",
+    diff: { name: { before: "Old Name", after: "New Name" } },
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockUser = { id: "admin-uuid", email: "admin@test.com", role: "super_admin", name: "Admin", venueId: null };
+  });
+
+  it("returns 200 with history array and pagination metadata", async () => {
+    makeHistorySelectMock(1, [SAMPLE_ENTRY]);
+
+    const app = buildApp();
+    const res = await request(app).get(`/api/kernel/modules/${MODULE_ID}/history`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("history");
+    expect(Array.isArray(res.body.history)).toBe(true);
+    expect(res.body.history).toHaveLength(1);
+    expect(res.body).toHaveProperty("total", 1);
+    expect(res.body).toHaveProperty("page", 1);
+    expect(res.body).toHaveProperty("totalPages", 1);
+  });
+
+  it("returns 200 with an empty history array when no audit entries exist", async () => {
+    makeHistorySelectMock(0, []);
+
+    const app = buildApp();
+    const res = await request(app).get(`/api/kernel/modules/${MODULE_ID}/history`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.history).toEqual([]);
+    expect(res.body.total).toBe(0);
+  });
+
+  it("returns 403 for manager role", async () => {
+    mockUser = { id: "mgr-uuid", email: "mgr@test.com", role: "manager", name: "Manager", venueId: null };
+
+    const app = buildApp();
+    const res = await request(app).get(`/api/kernel/modules/${MODULE_ID}/history`);
+
+    expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 403 for staff role", async () => {
+    mockUser = { id: "staff-uuid", email: "staff@test.com", role: "staff", name: "Staff", venueId: null };
+
+    const app = buildApp();
+    const res = await request(app).get(`/api/kernel/modules/${MODULE_ID}/history`);
+
+    expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 400 when id is not a valid UUID", async () => {
+    const app = buildApp();
+    const res = await request(app).get("/api/kernel/modules/not-a-uuid/history");
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 400 when limit is out of range", async () => {
+    const app = buildApp();
+    const res = await request(app).get(`/api/kernel/modules/${MODULE_ID}/history?limit=99`);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 400 when page is not a positive integer", async () => {
+    const app = buildApp();
+    const res = await request(app).get(`/api/kernel/modules/${MODULE_ID}/history?page=0`);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("returns 500 when the database query fails", async () => {
+    const failBuilder = {
+      from: vi.fn(),
+      where: vi.fn(),
+    };
+    failBuilder.where.mockRejectedValue(new Error("db failure"));
+    failBuilder.from.mockReturnValue(failBuilder);
+    (db.select as ReturnType<typeof vi.fn>).mockReturnValue(failBuilder);
+
+    const app = buildApp();
+    const res = await request(app).get(`/api/kernel/modules/${MODULE_ID}/history`);
+
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty("error");
+  });
+});
+
 describe("GET /api/kernel/telemetry/recent — payload field inclusion", () => {
   beforeEach(() => {
     vi.clearAllMocks();
