@@ -1,0 +1,173 @@
+NEXT PRIORITY:
+BUILD THE OBSERVABILITY + RESILIENCE LAYER.
+
+DO NOT jump ahead into more AI or visuals yet.
+
+You now need:
+SYSTEM STABILITY INTELLIGENCE.
+
+This becomes:
+the backbone that keeps the entire cognitive infrastructure operational at scale.
+
+BUILD NOW:
+
+server/observability/
+
+Create:
+- tracing/
+- metrics/
+- logging/
+- monitoring/
+- health/
+- recovery/
+
+FILES:
+
+tracing/
+- distributedTrace.ts
+- eventTrace.ts
+- orchestrationTrace.ts
+- websocketTrace.ts
+
+metrics/
+- telemetryMetrics.ts
+- cognitionMetrics.ts
+- orchestrationMetrics.ts
+- websocketMetrics.ts
+- workerMetrics.ts
+
+logging/
+- structuredLogger.ts
+- auditLogger.ts
+- cognitionLogger.ts
+- anomalyLogger.ts
+
+monitoring/
+- systemMonitor.ts
+- queueMonitor.ts
+- latencyMonitor.ts
+- throughputMonitor.ts
+- eventPressureMonitor.ts
+
+health/
+- healthChecks.ts
+- degradedMode.ts
+- dependencyHealth.ts
+- adapterHealth.ts
+
+recovery/
+- workerRecovery.ts
+- replayRecovery.ts
+- websocketRecovery.ts
+- queueRecovery.ts
+- orchestrationRecovery.ts
+
+REQUIREMENTS:
+
+- distributed tracing
+- event propagation tracing
+- websocket tracing
+- orchestration timing
+- cognition timing
+- queue timing
+- worker telemetry
+- realtime throughput metrics
+- anomaly detection
+- backpressure detection
+- degraded mode activation
+- replay-safe recovery
+- automatic worker restart
+- stuck queue recovery
+- websocket reconnect recovery
+- event pressure monitoring
+- adaptive throttling
+- structured JSON logging
+- immutable audit chains
+- operational metrics aggregation
+- tenant-aware monitoring
+- operational alerting
+- replay diagnostics
+
+BUILD:
+
+SYSTEM HEALTH SCORE ENGINE
+
+Track:
+- websocket health
+- queue pressure
+- event latency
+- cognition timing
+- orchestration stability
+- adapter health
+- worker uptime
+- replay backlog
+- telemetry throughput
+
+Generate:
+REAL-TIME OPERATIONAL HEALTH SCORES.
+
+BUILD:
+
+BACKPRESSURE ENGINE
+
+Capabilities:
+- adaptive throttling
+- queue prioritization
+- telemetry sampling
+- degraded realtime mode
+- websocket rate protection
+- cognition load shedding
+
+Critical for:
+large venue scalability.
+
+BUILD:
+
+SELF-HEALING INFRASTRUCTURE
+
+Capabilities:
+- stuck worker detection
+- automatic recovery
+- replay correction
+- queue healing
+- websocket recovery
+- degraded-mode activation
+- orchestration rollback recovery
+
+BUILD:
+
+OBSERVABILITY COMMAND CENTER PANELS
+
+Add to Novee OS:
+- live system health
+- websocket throughput
+- orchestration latency
+- queue pressure
+- replay backlog
+- event propagation timing
+- cognition timing
+- anomaly streams
+- degraded mode alerts
+- recovery activity streams
+
+The UI should feel like:
+MISSION CONTROL FOR A LIVE COGNITIVE OPERATING SYSTEM.
+
+NOT:
+server logs.
+
+FINAL REQUIREMENTS:
+
+- no silent failures
+- no untracked orchestration
+- no untraceable websocket events
+- no opaque AI decisions
+- no unmonitored workers
+- no replay blind spots
+
+Everything must become:
+observable
+recoverable
+traceable
+self-healing
+operationally intelligent.

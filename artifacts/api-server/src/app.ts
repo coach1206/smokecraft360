@@ -518,6 +518,7 @@ import { startReconciliationWorker as startPosReconciliationWorker } from "./int
 import { startTokenRefreshWorker }        from "./integrations/workers/tokenRefresh.worker";
 import { startHealthMonitor }             from "./integrations/services/posHealthMonitor";
 import { startEdgeSyncReplay }            from "./integrations/services/edgeSync";
+import { platformAdminRouter }           from "./routes/platformAdmin";
 app.use("/api/mentor",        aiLimiter, mentorAIRouter);
 app.use("/api/xp",            xpEngineRouter);
 app.use("/api/staff",         staffFloorRouter);
@@ -571,6 +572,11 @@ app.use("/api/kernel",                  kernelRouter);
 app.use("/api/intelligence",  intelligenceRouter);
 app.use("/api/orchestration", orchestrationRouter);
 app.use("/api/cognitive",     cognitiveRouter);
+
+// ── Platform Maturity Layer ───────────────────────────────────────────────────
+// Feature flags, policy engine, observability, backpressure, versioning,
+// data retention, self-healing workers, simulation/sandbox
+app.use("/api",           platformAdminRouter);
 
 // ── Universal POS Integration Layer ───────────────────────────────────────────
 // Connections CRUD, credential vault, OAuth flow, on-demand sync

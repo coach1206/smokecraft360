@@ -1,0 +1,281 @@
+STATUS:
+You have officially crossed from:
+“advanced hospitality platform”
+into:
+FOUNDATIONAL HOSPITALITY OPERATING INFRASTRUCTURE.
+
+The layers you just completed are MAJOR.
+
+You now have:
+- commerce normalization
+- inventory cognition
+- payment lifecycle orchestration
+- operational reconciliation
+- session correlation
+- table intelligence
+- mutation replay
+- forensic reconstruction
+- provider failover
+- degraded operations
+
+That is real enterprise-grade infrastructure.
+
+NEXT PRIORITY:
+BUILD THE DISTRIBUTED ORCHESTRATION + OBSERVABILITY LAYER.
+
+This is now the biggest remaining infrastructure gap.
+
+BUILD NOW:
+
+server/distributed/
+
+Create:
+- clusterCoordinator.ts
+- distributedLocks.ts
+- workerLeaderElection.ts
+- orchestrationCoordinator.ts
+- distributedReplay.ts
+- nodeHealth.ts
+- clusterMembership.ts
+- distributedQueues.ts
+
+REQUIREMENTS:
+- multi-node coordination
+- distributed worker ownership
+- cluster-safe orchestration
+- replay ownership coordination
+- failover-safe queue handling
+- node heartbeat monitoring
+- distributed lock management
+- leader election
+- degraded cluster recovery
+
+This removes:
+single-instance assumptions.
+
+---
+
+BUILD:
+
+server/observability/
+
+Create:
+
+tracing/
+- distributedTrace.ts
+- orchestrationTrace.ts
+- websocketTrace.ts
+- replayTrace.ts
+
+metrics/
+- systemMetrics.ts
+- queueMetrics.ts
+- cognitionMetrics.ts
+- paymentMetrics.ts
+- inventoryMetrics.ts
+- websocketMetrics.ts
+
+monitoring/
+- anomalyMonitor.ts
+- eventPressureMonitor.ts
+- throughputMonitor.ts
+- orchestrationMonitor.ts
+- replayMonitor.ts
+
+logging/
+- structuredLogger.ts
+- cognitionLogger.ts
+- paymentAuditLogger.ts
+- replayAuditLogger.ts
+
+recovery/
+- workerRecovery.ts
+- queueRecovery.ts
+- websocketRecovery.ts
+- orchestrationRecovery.ts
+
+REQUIREMENTS:
+- distributed tracing
+- queue timing
+- orchestration latency
+- websocket propagation timing
+- cognition timing
+- replay diagnostics
+- anomaly streams
+- worker health
+- replay backlog monitoring
+- telemetry throughput
+- structured JSON logging
+- immutable audit chains
+- operational metrics aggregation
+- distributed recovery
+- self-healing workers
+
+---
+
+BUILD:
+
+BACKPRESSURE + LOAD MANAGEMENT
+
+Create:
+server/resilience/
+
+Files:
+- adaptiveThrottling.ts
+- loadShedding.ts
+- degradedRealtimeMode.ts
+- queuePressureBalancer.ts
+- websocketRateProtection.ts
+
+REQUIREMENTS:
+- adaptive throttling
+- queue prioritization
+- degraded realtime mode
+- websocket protection
+- telemetry sampling
+- cognition load balancing
+- operational pressure scoring
+
+Critical before:
+large-scale live venues.
+
+---
+
+BUILD:
+
+POLICY + FEATURE FLAG ENGINE
+
+Create:
+server/governance/
+
+Files:
+- policyEngine.ts
+- featureFlags.ts
+- rolloutManager.ts
+- orchestrationPolicies.ts
+- automationConstraints.ts
+
+REQUIREMENTS:
+- venue feature flags
+- staged rollouts
+- orchestration constraints
+- AI governance rules
+- operational safety policies
+- emergency feature disable
+- rollout targeting
+- tenant-aware feature management
+
+This becomes:
+enterprise operational governance.
+
+---
+
+BUILD:
+
+EVENT VERSIONING + SCHEMA EVOLUTION
+
+Create:
+server/events/
+
+Files:
+- eventVersioning.ts
+- schemaEvolution.ts
+- replayCompatibility.ts
+- eventMigration.ts
+
+REQUIREMENTS:
+- replay-safe versioning
+- schema migration compatibility
+- event evolution
+- backward compatibility
+- deterministic replay reconstruction
+
+Critical for:
+long-term platform maturity.
+
+---
+
+BUILD:
+
+DATA RETENTION + ARCHIVAL
+
+Create:
+server/archive/
+
+Files:
+- telemetryArchive.ts
+- replayArchive.ts
+- operationalSnapshots.ts
+- lifecyclePolicies.ts
+
+REQUIREMENTS:
+- telemetry retention
+- replay archival
+- AI memory archival
+- operational snapshots
+- long-term storage policies
+- DB growth protection
+
+---
+
+BUILD:
+
+SIMULATION + SANDBOX ENGINE
+
+Create:
+server/simulation/
+
+Files:
+- syntheticVenue.ts
+- fakeTelemetry.ts
+- orchestrationSandbox.ts
+- stressTesting.ts
+- aiSimulation.ts
+
+REQUIREMENTS:
+- synthetic venue generation
+- fake guest traffic
+- orchestration dry-runs
+- stress testing
+- AI behavior simulation
+- replay testing
+
+Critical before:
+true autonomous deployment.
+
+---
+
+BUILD:
+
+FINAL COMMAND CENTER EXPANSION
+
+Add:
+- distributed cluster health
+- replay backlog maps
+- queue pressure heatmaps
+- orchestration timing overlays
+- websocket propagation visualization
+- failover status
+- degraded-mode visibility
+- anomaly streams
+- recovery streams
+- distributed node health
+- simulation control panels
+
+The system should now feel like:
+A LIVE COGNITIVE OPERATING INFRASTRUCTURE.
+
+NOT:
+hospitality software.
+
+FINAL TARGET:
+- observable
+- recoverable
+- replay-safe
+- cluster-safe
+- self-healing
+- context-aware
+- autonomous
+- operationally intelligent
+- distributed
+- enterprise-grade
