@@ -1,28 +1,40 @@
 /**
- * intelligenceWorker — background orchestration + context refresh loop.
+ * intelligenceWorker — background orchestration + full cognition loop.
  *
- * Runs every 30 seconds per active venue:
- *   1. Builds operational context
- *   2. Syncs digital twin
- *   3. Runs orchestration evaluation (triggers decisions if rules match)
- *   4. Detects anomalies
- *   5. Updates behavioral momentum
+ * 30-second tick (per active venue):
+ *   1. Build operational context
+ *   2. Sync digital twin
+ *   3. Anomaly detection
+ *   4. Orchestration evaluation + ambient actions
+ *   5. Behavioral momentum update
+ *   6. Social engagement cycle
+ *   7. Operational awareness synthesis
  *
- * Also runs a 5-minute memory decay pass.
+ * 5-minute tick (per active venue):
+ *   8. Temporal pattern learning
+ *   9. Adaptive optimization cycle
+ *
+ * 5-minute tick (global):
+ *   10. AI memory decay
  */
 
-import { pool } from "@workspace/db";
-import { logger } from "../lib/logger";
+import { pool }                               from "@workspace/db";
+import { logger }                             from "../lib/logger";
 import { buildOperationalContext, detectAnomaly } from "../cognition/context/contextEngine";
-import { syncTwinFromContext } from "../cognition/digitalTwin/venueTwin";
-import { evaluateVenue, updateVenueContext } from "../intelligence/orchestration/orchestrationEngine";
-import { applyAction } from "../intelligence/ambient/ambientOrchestrator";
-import { decayMemory } from "../intelligence/behavior/aiMemoryEngine";
-import { pgPubSub } from "../realtime/pgPubSub";
+import { syncTwinFromContext }                from "../cognition/digitalTwin/venueTwin";
+import { evaluateVenue, updateVenueContext }  from "../intelligence/orchestration/orchestrationEngine";
+import { applyAction }                        from "../intelligence/ambient/ambientOrchestrator";
+import { decayMemory }                        from "../intelligence/behavior/aiMemoryEngine";
+import { runSocialEngagementCycle }           from "../intelligence/social/socialEngagementEngine";
+import { runTemporalLearningCycle }           from "../intelligence/temporal/temporalPatternEngine";
+import { runAwarenessCycle }                  from "../intelligence/awareness/operationalAwarenessEngine";
+import { runAdaptiveCycle }                   from "../intelligence/adaptive/adaptiveOptimizer";
 
-let evaluationTimer: ReturnType<typeof setInterval> | null = null;
-let decayTimer:      ReturnType<typeof setInterval> | null = null;
-let isRunning        = false;
+let evaluationTimer:  ReturnType<typeof setInterval> | null = null;
+let slowCycleTimer:   ReturnType<typeof setInterval> | null = null;
+let decayTimer:       ReturnType<typeof setInterval> | null = null;
+let isRunning         = false;
+let isSlowRunning     = false;
 
 async function getActiveVenues(): Promise<string[]> {
   try {
@@ -33,57 +45,84 @@ async function getActiveVenues(): Promise<string[]> {
     );
     if (rows.length > 0) return rows.map((r) => r.venue_id);
 
-    // Bootstrap: pull from venues table if it exists
     const { rows: venueRows } = await pool.query<{ id: string }>(
       `SELECT id FROM venues LIMIT 10`,
     ).catch(() => ({ rows: [] }));
     return venueRows.map((r) => r.id);
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
+
+// ── 30-second evaluation cycle ────────────────────────────────────────────────
 
 async function runEvaluationCycle(): Promise<void> {
   if (isRunning) return;
   isRunning = true;
   try {
     const venues = await getActiveVenues();
-    for (const venueId of venues) {
-      try {
-        // 1. Build context
-        const ctx = await buildOperationalContext(venueId);
-
-        // 2. Sync digital twin
-        await syncTwinFromContext(ctx);
-
-        // 3. Anomaly detection
-        const anomaly = await detectAnomaly(venueId);
-        if (anomaly !== ctx.anomalyDetected) {
-          await updateVenueContext(venueId, { anomalyDetected: anomaly });
-        }
-
-        // 4. Orchestration evaluation
-        const decisions = await evaluateVenue(venueId);
-
-        // 5. Apply ambient actions from decisions
-        for (const decision of decisions) {
-          if (decision.status !== "applied") continue;
-          for (const action of decision.actions) {
-            await applyAction(venueId, action.type, action.payload, decision.id);
-          }
-        }
-
-        // 6. Update behavioral momentum
-        await updateBehavioralMomentum(venueId, ctx.engagementLevel, ctx.socialEnergy);
-
-      } catch (err) {
-        logger.warn({ err, venueId }, "intelligenceWorker: venue evaluation failed");
-      }
-    }
+    await Promise.allSettled(venues.map(evaluateVenueFull));
   } finally {
     isRunning = false;
   }
 }
+
+async function evaluateVenueFull(venueId: string): Promise<void> {
+  try {
+    // 1. Context
+    const ctx = await buildOperationalContext(venueId);
+
+    // 2. Digital twin sync
+    await syncTwinFromContext(ctx);
+
+    // 3. Anomaly detection
+    const anomaly = await detectAnomaly(venueId);
+    if (anomaly !== ctx.anomalyDetected) {
+      await updateVenueContext(venueId, { anomalyDetected: anomaly });
+    }
+
+    // 4. Orchestration rules + ambient actions
+    const decisions = await evaluateVenue(venueId);
+    for (const decision of decisions) {
+      if (decision.status !== "applied") continue;
+      for (const action of decision.actions) {
+        await applyAction(venueId, action.type, action.payload, decision.id);
+      }
+    }
+
+    // 5. Behavioral momentum
+    await updateBehavioralMomentum(venueId, ctx.engagementLevel, ctx.socialEnergy);
+
+    // 6. Social engagement (lightweight — detect active clusters)
+    await runSocialEngagementCycle(venueId).catch(() => {});
+
+    // 7. Operational awareness synthesis
+    await runAwarenessCycle(venueId).catch(() => {});
+
+  } catch (err) {
+    logger.warn({ err, venueId }, "intelligenceWorker: venue evaluation failed");
+  }
+}
+
+// ── 5-minute slow cycle (learning + optimization) ─────────────────────────────
+
+async function runSlowCycle(): Promise<void> {
+  if (isSlowRunning) return;
+  isSlowRunning = true;
+  try {
+    const venues = await getActiveVenues();
+    await Promise.allSettled(venues.map(async (venueId) => {
+      try {
+        await runTemporalLearningCycle(venueId);
+        await runAdaptiveCycle(venueId);
+      } catch (err) {
+        logger.warn({ err, venueId }, "intelligenceWorker: slow cycle failed");
+      }
+    }));
+  } finally {
+    isSlowRunning = false;
+  }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 async function updateBehavioralMomentum(
   venueId:    string,
@@ -94,48 +133,52 @@ async function updateBehavioralMomentum(
   try {
     await pool.query(
       `INSERT INTO behavioral_momentum
-         (venue_id, momentum_type, momentum, trend, updated_at)
-       VALUES ($1, 'venue', $2, $3, NOW())
+         (venue_id, momentum_type, value, updated_at)
+       VALUES ($1, 'venue', $2, NOW())
        ON CONFLICT (venue_id, momentum_type) DO UPDATE
-         SET momentum   = EXCLUDED.momentum,
-             velocity   = EXCLUDED.momentum - behavioral_momentum.momentum,
-             trend      = CASE
-               WHEN EXCLUDED.momentum > behavioral_momentum.momentum + 0.05 THEN 'rising'
-               WHEN EXCLUDED.momentum < behavioral_momentum.momentum - 0.05 THEN 'declining'
-               ELSE 'stable' END,
+         SET value      = EXCLUDED.value,
              updated_at = NOW()`,
-      [venueId, momentum, momentum > 0.6 ? "rising" : momentum < 0.3 ? "declining" : "stable"],
+      [venueId, momentum],
     );
   } catch { /* non-critical */ }
 }
 
+// ── Lifecycle ─────────────────────────────────────────────────────────────────
+
 export function startIntelligenceWorker(): void {
   logger.info("intelligenceWorker: starting");
 
-  // Main evaluation loop: every 30 seconds
+  // 30-second evaluation + cognition loop
   evaluationTimer = setInterval(() => {
     runEvaluationCycle().catch((err) => {
       logger.error({ err }, "intelligenceWorker: evaluation cycle error");
     });
   }, 30_000);
 
-  // Memory decay: every 5 minutes
+  // 5-minute temporal learning + adaptive optimization
+  slowCycleTimer = setInterval(() => {
+    runSlowCycle().catch((err) => {
+      logger.warn({ err }, "intelligenceWorker: slow cycle error");
+    });
+  }, 300_000);
+
+  // 5-minute AI memory decay
   decayTimer = setInterval(() => {
     decayMemory().catch((err) => {
       logger.warn({ err }, "intelligenceWorker: memory decay error");
     });
   }, 300_000);
 
-  // Run immediately on start
-  setTimeout(() => {
-    runEvaluationCycle().catch(() => {});
-  }, 5000);
+  // Staggered warm-up
+  setTimeout(() => { runEvaluationCycle().catch(() => {}); }, 5_000);
+  setTimeout(() => { runSlowCycle().catch(() => {}); },       60_000);
 
-  logger.info("intelligenceWorker: evaluation loop running (30s interval)");
+  logger.info("intelligenceWorker: all cycles running (30s eval / 5m learn)");
 }
 
 export function stopIntelligenceWorker(): void {
   if (evaluationTimer) { clearInterval(evaluationTimer); evaluationTimer = null; }
+  if (slowCycleTimer)  { clearInterval(slowCycleTimer);  slowCycleTimer  = null; }
   if (decayTimer)      { clearInterval(decayTimer);      decayTimer      = null; }
   logger.info("intelligenceWorker: stopped");
 }

@@ -15,14 +15,13 @@ interface IntelligenceScore {
 interface TwinState {
   version:            number;
   environmentalState: { sceneId: string | null; moodScore: number; atmosphere: number };
-  trafficHeatmap:     number[][];
   orchestrationStatus:{ active: boolean; rulesFired: number; guardActive: boolean };
   syncHealth:         number;
 }
 
 interface OrchestrationEvent {
   event:      string;
-  venueId:    string;
+  venueId?:   string;
   trigger?:   string;
   confidence?:number;
   actions?:   Array<{ type: string; priority: number }>;
@@ -30,129 +29,149 @@ interface OrchestrationEvent {
   ts?:        number;
 }
 
-interface AmbientUpdate {
-  sceneId:   string;
-  sceneName: string;
-  moodScore: number;
-  intensity: number;
-  triggeredBy:string;
+interface AwarenessReport {
+  overallScore:      number;
+  staffReadiness:    number;
+  guestSatisfaction: number;
+  inventoryHealth:   number;
+  socialMomentum:    number;
+  temporalAlignment: number;
+  environmentalFit:  number;
+  riskLevel:         string;
+  activeAlerts:      number;
+  recommendations:   string[];
+}
+
+interface SocialCluster {
+  clusterType:  string;
+  groupSize:    number;
+  socialEnergy: number;
+  sharedOrders: number;
+}
+
+interface TemporalData {
+  currentAlignment: number;
+  patterns:         Array<{ hour_of_day: number; day_of_week: number; avg_engagement: number; confidence: number }>;
+}
+
+interface AdaptiveLog {
+  optimizationType: string;
+  deltaScore:       number;
+  confidence:       number;
+  applied:          boolean;
+  createdAt:        string;
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const BASE = import.meta.env.BASE_URL ?? "/";
-const API  = BASE.endsWith("/") ? BASE.slice(0, -1) : BASE;
+const BASE = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
 const DEMO_VENUE = "demo-venue-001";
 
-function fmt(n: number, decimals = 1): string {
-  return (Math.round(n * 10 ** decimals) / 10 ** decimals).toFixed(decimals);
+function fmt(n: number, d = 1) { return (Math.round(n * 10 ** d) / 10 ** d).toFixed(d); }
+
+function riskColor(level: string) {
+  if (level === "low")      return "#2d5a27";
+  if (level === "moderate") return "#5a4a0a";
+  if (level === "high")     return "#7a2a0a";
+  return "#8b0000";
 }
 
-function scoreBg(n: number): string {
-  if (n >= 0.75) return "#2d5a27";
-  if (n >= 0.5)  return "#5a4a0a";
-  return "#5a1a1a";
-}
+// ── Sub-components ─────────────────────────────────────────────────────────────
 
-// ── Heatmap ───────────────────────────────────────────────────────────────────
-
-function Heatmap({ data }: { data: number[][] }) {
-  if (!data.length) return <div style={{ color: "#6B5E4E", fontSize: 13 }}>No heatmap data</div>;
+function ScoreRing({ value, label, size = 80, color = "#D48B00" }: {
+  value: number; label: string; size?: number; color?: string;
+}) {
+  const r    = (size - 12) / 2;
+  const circ = 2 * Math.PI * r;
   return (
-    <div style={{ display: "grid", gridTemplateRows: `repeat(${data.length}, 1fr)`, gap: 3 }}>
-      {data.map((row, ri) => (
-        <div key={ri} style={{ display: "grid", gridTemplateColumns: `repeat(${row.length}, 1fr)`, gap: 3 }}>
-          {row.map((val, ci) => (
-            <div
-              key={ci}
-              title={fmt(val)}
-              style={{
-                height:       28,
-                borderRadius: 4,
-                background:   `rgba(212,139,0,${Math.min(val, 1)})`,
-                border:       "1px solid rgba(212,139,0,0.2)",
-              }}
-            />
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ── Score Ring ─────────────────────────────────────────────────────────────────
-
-function ScoreRing({ value, label, size = 88 }: { value: number; label: string; size?: number }) {
-  const radius   = (size - 12) / 2;
-  const circ     = 2 * Math.PI * radius;
-  const stroke   = circ * (1 - value);
-  return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
       <svg width={size} height={size}>
-        <circle cx={size/2} cy={size/2} r={radius} fill="none"
-          stroke="rgba(212,139,0,0.15)" strokeWidth={6} />
-        <circle cx={size/2} cy={size/2} r={radius} fill="none"
-          stroke="#D48B00" strokeWidth={6}
-          strokeDasharray={circ} strokeDashoffset={stroke}
-          strokeLinecap="round"
-          transform={`rotate(-90 ${size/2} ${size/2})`} />
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(212,139,0,.15)" strokeWidth={6}/>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={6}
+          strokeDasharray={circ} strokeDashoffset={circ * (1 - Math.max(0, Math.min(value, 1)))}
+          strokeLinecap="round" transform={`rotate(-90 ${size/2} ${size/2})`}/>
         <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle"
           fill="#1A1A1B" fontFamily="Cormorant Garamond, serif" fontSize={size * 0.22} fontWeight={600}>
           {Math.round(value * 100)}
         </text>
       </svg>
-      <span style={{ fontSize: 11, color: "#6B5E4E", fontFamily: "Cormorant Garamond, serif", letterSpacing: "0.05em" }}>
+      <span style={{ fontSize:11, color:"#6B5E4E", fontFamily:"Cormorant Garamond, serif", letterSpacing:"0.05em", textAlign:"center" }}>
         {label.toUpperCase()}
       </span>
     </div>
   );
 }
 
-// ── Event Feed ─────────────────────────────────────────────────────────────────
+function MeterBar({ label, value, color = "#D48B00" }: { label: string; value: number; color?: string }) {
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:"#6B5E4E" }}>
+        <span>{label}</span>
+        <span style={{ color:"#1A1A1B", fontWeight:600 }}>{Math.round(value * 100)}%</span>
+      </div>
+      <div style={{ height:6, background:"rgba(212,139,0,.12)", borderRadius:3, overflow:"hidden" }}>
+        <motion.div
+          animate={{ width: `${value * 100}%` }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          style={{ height:"100%", background:color, borderRadius:3 }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function Panel({ title, badge, children, accent = false }: {
+  title: string; badge?: string; children: React.ReactNode; accent?: boolean;
+}) {
+  return (
+    <div style={{
+      background: accent ? "rgba(212,139,0,.06)" : "#EFEBE0",
+      border: `1px solid ${accent ? "rgba(212,139,0,.35)" : "rgba(26,26,27,.08)"}`,
+      borderRadius: 12, padding: "18px 20px", display:"flex", flexDirection:"column", gap:14,
+    }}>
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <span style={{ fontSize:11, fontWeight:700, letterSpacing:"0.1em", color:"#6B5E4E", fontFamily:"Cormorant Garamond, serif" }}>
+          {title.toUpperCase()}
+        </span>
+        {badge && (
+          <span style={{ fontSize:10, background:"rgba(212,139,0,.18)", color:"#7A5000",
+            borderRadius:20, padding:"2px 8px", fontWeight:700, letterSpacing:"0.05em" }}>
+            {badge}
+          </span>
+        )}
+      </div>
+      {children}
+    </div>
+  );
+}
 
 function EventFeed({ events }: { events: OrchestrationEvent[] }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+    <div style={{ display:"flex", flexDirection:"column", gap:6, maxHeight:200, overflowY:"auto" }}>
       <AnimatePresence initial={false}>
-        {events.slice(0, 12).map((ev, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{
-              background:   "rgba(26,26,27,0.05)",
-              borderLeft:   `3px solid ${ev.status === "blocked" ? "#c0392b" : "#D48B00"}`,
-              borderRadius: "0 6px 6px 0",
-              padding:      "7px 10px",
-              fontSize:     12,
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontWeight: 600, color: "#1A1A1B", fontFamily: "Cormorant Garamond, serif" }}>
-                {ev.event}
-              </span>
+        {events.length === 0 && (
+          <span style={{ fontSize:12, color:"#9A8A7A", textAlign:"center", padding:"20px 0" }}>
+            Waiting for orchestration events…
+          </span>
+        )}
+        {events.slice(0, 10).map((ev, i) => (
+          <motion.div key={i} initial={{ opacity:0, x:-8 }} animate={{ opacity:1, x:0 }}
+            exit={{ opacity:0 }} transition={{ duration:0.25 }}
+            style={{ display:"flex", alignItems:"flex-start", gap:8, padding:"8px 10px",
+              background:"rgba(212,139,0,.06)", borderRadius:8, fontSize:11 }}>
+            <span style={{ color:"#D48B00", fontSize:16, lineHeight:1 }}>◆</span>
+            <div style={{ flex:1 }}>
+              <div style={{ fontWeight:600, color:"#1A1A1B" }}>{ev.event ?? ev.trigger ?? "event"}</div>
               {ev.confidence !== undefined && (
-                <span style={{ fontSize: 11, color: "#6B5E4E" }}>
-                  {Math.round(ev.confidence * 100)}% conf
-                </span>
+                <div style={{ color:"#6B5E4E" }}>
+                  confidence {Math.round((ev.confidence ?? 0) * 100)}%
+                  {ev.actions && ` · ${ev.actions.length} action(s)`}
+                </div>
               )}
             </div>
-            {ev.trigger && (
-              <div style={{ color: "#6B5E4E", fontSize: 11, marginTop: 2 }}>
-                Trigger: {ev.trigger}
-                {ev.actions && ` · ${ev.actions.length} actions`}
-              </div>
-            )}
           </motion.div>
         ))}
       </AnimatePresence>
-      {events.length === 0 && (
-        <div style={{ color: "#6B5E4E", fontSize: 13, textAlign: "center", padding: 16 }}>
-          Waiting for orchestration events…
-        </div>
-      )}
     </div>
   );
 }
@@ -160,369 +179,372 @@ function EventFeed({ events }: { events: OrchestrationEvent[] }) {
 // ── Main Component ─────────────────────────────────────────────────────────────
 
 export default function CommandCenter() {
-  const [venueId,       setVenueId]       = useState(DEMO_VENUE);
-  const [inputVenueId,  setInputVenueId]  = useState(DEMO_VENUE);
-  const [connected,     setConnected]     = useState(false);
-  const [score,         setScore]         = useState<IntelligenceScore | null>(null);
-  const [twin,          setTwin]          = useState<TwinState | null>(null);
-  const [scene,         setScene]         = useState<AmbientUpdate | null>(null);
-  const [events,        setEvents]        = useState<OrchestrationEvent[]>([]);
-  const [guardrailsOn,  setGuardrailsOn]  = useState(true);
+  const [venueId,   setVenueId]   = useState(DEMO_VENUE);
+  const [connected, setConnected] = useState(false);
+  const [tab,       setTab]       = useState<"overview"|"awareness"|"social"|"temporal"|"adaptive">("overview");
+
+  const [intelligence, setIntelligence] = useState<IntelligenceScore>({
+    overallScore:0, engagementLevel:0, socialEnergy:0, activeGuests:0, decisionCount:0,
+  });
+  const [twin,       setTwin]       = useState<TwinState | null>(null);
+  const [events,     setEvents]     = useState<OrchestrationEvent[]>([]);
+  const [awareness,  setAwareness]  = useState<AwarenessReport | null>(null);
+  const [clusters,   setClusters]   = useState<SocialCluster[]>([]);
+  const [temporal,   setTemporal]   = useState<TemporalData | null>(null);
+  const [adaptiveLogs, setAdaptiveLogs] = useState<AdaptiveLog[]>([]);
+  const [activeScene, setActiveScene]   = useState<string>("STANDARD");
+  const [loadingScene, setLoadingScene] = useState(false);
+  const [loadingRun,   setLoadingRun]   = useState(false);
+
   const socketRef = useRef<Socket | null>(null);
+  const inputRef  = useRef<HTMLInputElement>(null);
 
-  const pushEvent = useCallback((ev: OrchestrationEvent) => {
-    setEvents((prev) => [{ ...ev, ts: Date.now() }, ...prev].slice(0, 30));
+  const fetchPanelData = useCallback(async (vid: string) => {
+    const base = `${BASE}/api`;
+    await Promise.allSettled([
+      fetch(`${base}/cognitive/awareness/${vid}`).then(r => r.json()).then((d: { report?: AwarenessReport }) => { if (d.report) setAwareness(d.report); }),
+      fetch(`${base}/cognitive/social/${vid}`).then(r => r.json()).then((d: { clusters?: SocialCluster[] }) => { if (d.clusters) setClusters(d.clusters); }),
+      fetch(`${base}/cognitive/temporal/${vid}`).then(r => r.json()).then((d: TemporalData & { ok?: boolean }) => { if (d.ok !== false) setTemporal(d); }),
+      fetch(`${base}/cognitive/adaptive/${vid}/history`).then(r => r.json()).then((d: { logs?: AdaptiveLog[] }) => { if (d.logs) setAdaptiveLogs(d.logs.slice(0, 20)); }),
+    ]);
   }, []);
 
-  // REST: initial data load
-  const loadData = useCallback(async (vid: string) => {
+  const connect = useCallback((vid: string) => {
+    if (socketRef.current) { socketRef.current.disconnect(); socketRef.current = null; }
+    const origin = window.location.origin;
+    const socket = io(origin, { path: "/api/socket.io", transports: ["websocket","polling"] });
+    socket.on("connect",    () => { setConnected(true);  socket.emit("join_intelligence", { venueId: vid }); });
+    socket.on("disconnect", () => setConnected(false));
+
+    socket.on("intelligence_update", (p: Partial<IntelligenceScore> & { overallScore?: number }) => {
+      setIntelligence(prev => ({ ...prev, ...p }));
+    });
+    socket.on("twin_update", (p: TwinState) => setTwin(p));
+    socket.on("orchestration_event", (p: OrchestrationEvent) => {
+      setEvents(prev => [p, ...prev].slice(0, 50));
+    });
+    socket.on("awareness_update", (p: Partial<AwarenessReport>) => {
+      setAwareness(prev => prev ? { ...prev, ...p } : null);
+    });
+    socket.on("social_update", () => { fetchPanelData(vid).catch(() => {}); });
+    socket.on("temporal_update", () => { fetchPanelData(vid).catch(() => {}); });
+    socket.on("cognition_update", () => { fetchPanelData(vid).catch(() => {}); });
+
+    socketRef.current = socket;
+    fetchPanelData(vid).catch(() => {});
+  }, [fetchPanelData]);
+
+  useEffect(() => () => { socketRef.current?.disconnect(); }, []);
+
+  const handleConnect = () => { const v = inputRef.current?.value.trim() || venueId; setVenueId(v); connect(v); };
+
+  const triggerScene = async (scene: string) => {
+    setLoadingScene(true);
     try {
-      const [ctxRes, twinRes] = await Promise.allSettled([
-        fetch(`${API}/api/intelligence/context/${vid}`),
-        fetch(`${API}/api/intelligence/twin/${vid}`),
-      ]);
-      if (ctxRes.status === "fulfilled" && ctxRes.value.ok) {
-        const ctx = await ctxRes.value.json() as {
-          engagementLevel: number; socialEnergy: number; activeGuests: number;
-        };
-        setScore({
-          overallScore:    (ctx.engagementLevel + ctx.socialEnergy) / 2,
-          engagementLevel: ctx.engagementLevel,
-          socialEnergy:    ctx.socialEnergy,
-          activeGuests:    ctx.activeGuests,
-          decisionCount:   0,
-        });
-      }
-      if (twinRes.status === "fulfilled" && twinRes.value.ok) {
-        const t = await twinRes.value.json() as TwinState;
-        setTwin(t);
-      }
-    } catch { /* non-critical */ }
-  }, []);
-
-  // Socket.IO connection
-  useEffect(() => {
-    const sock = io(window.location.origin, {
-      path:       `${API}/api/socket.io`,
-      transports: ["websocket", "polling"],
-    });
-    socketRef.current = sock;
-
-    sock.on("connect",    () => setConnected(true));
-    sock.on("disconnect", () => setConnected(false));
-
-    sock.on("intelligence_update", (data: Record<string, unknown>) => {
-      if (data["venueId"] !== venueId) return;
-      if (data["event"] === "INTELLIGENCE_SCORE_UPDATED") {
-        setScore({
-          overallScore:    data["overallScore"] as number,
-          engagementLevel: data["engagementLevel"] as number,
-          socialEnergy:    data["socialEnergy"] as number,
-          activeGuests:    data["activeGuests"] as number,
-          decisionCount:   data["decisionCount"] as number,
-        });
-      }
-      pushEvent({ event: data["event"] as string, venueId: data["venueId"] as string });
-    });
-
-    sock.on("orchestration_event", (data: Record<string, unknown>) => {
-      if (data["venueId"] !== venueId) return;
-      pushEvent(data as OrchestrationEvent);
-    });
-
-    sock.on("twin_update", (data: Record<string, unknown>) => {
-      if (data["venueId"] !== venueId) return;
-      setTwin(data as unknown as TwinState);
-    });
-
-    sock.on("ambient_update", (data: Record<string, unknown>) => {
-      if (data["venueId"] !== venueId) return;
-      setScene(data as unknown as AmbientUpdate);
-      pushEvent({ event: `SCENE: ${(data["sceneName"] as string) ?? data["sceneId"]}`, venueId: data["venueId"] as string });
-    });
-
-    sock.emit("join_ops",          { venueId });
-    sock.emit("join_intelligence",  { venueId });
-
-    loadData(venueId);
-
-    return () => { sock.disconnect(); };
-  }, [venueId, pushEvent, loadData]);
-
-  const handleVenueChange = () => {
-    if (inputVenueId.trim()) setVenueId(inputVenueId.trim());
-  };
-
-  const triggerEvaluation = async () => {
-    try {
-      const res = await fetch(`${API}/api/intelligence/evaluate/${venueId}`, { method: "POST" });
-      const data = await res.json() as { decisions: number };
-      pushEvent({ event: `MANUAL_EVALUATE — ${data.decisions} decisions`, venueId });
-    } catch { /* */ }
-  };
-
-  const activateScene = async (sceneId: string) => {
-    try {
-      await fetch(`${API}/api/intelligence/scene`, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ venueId, sceneId, triggeredBy: "operator" }),
+      await fetch(`${BASE}/api/intelligence/ambient/${venueId}`, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ sceneId: scene.toLowerCase().replace(/ /g,"_") }),
       });
-    } catch { /* */ }
+      setActiveScene(scene);
+    } catch { /* */ } finally { setLoadingScene(false); }
   };
 
-  const emergencyStop = async () => {
+  const runAwarenessNow = async () => {
+    setLoadingRun(true);
     try {
-      await fetch(`${API}/api/orchestration/guardrails/${venueId}/stop`, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ operator: "operator", reason: "Manual emergency stop" }),
-      });
-      setGuardrailsOn(false);
-      pushEvent({ event: "EMERGENCY_STOP", venueId });
-    } catch { /* */ }
+      const r = await fetch(`${BASE}/api/cognitive/awareness/${venueId}/run`, { method:"POST" });
+      const d = await r.json() as { report?: AwarenessReport };
+      if (d.report) setAwareness(d.report);
+    } catch { /* */ } finally { setLoadingRun(false); }
   };
 
-  const resumeAutomation = async () => {
-    try {
-      await fetch(`${API}/api/orchestration/guardrails/${venueId}/resume`, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ operator: "operator" }),
-      });
-      setGuardrailsOn(true);
-      pushEvent({ event: "AUTOMATION_RESUMED", venueId });
-    } catch { /* */ }
-  };
+  const TABS = ["overview","awareness","social","temporal","adaptive"] as const;
 
-  // ── Layout ──────────────────────────────────────────────────────────────────
   return (
-    <div style={{
-      minHeight:   "100vh",
-      background:  "#F5F2ED",
-      fontFamily:  "system-ui, sans-serif",
-      padding:     24,
-    }}>
+    <div style={{ minHeight:"100vh", background:"#F5F2ED", fontFamily:"'Cormorant Garamond', serif", padding:"0 0 60px" }}>
       {/* Header */}
-      <div style={{
-        background:    "#1A1A1B",
-        borderRadius:  12,
-        padding:       "20px 28px",
-        marginBottom:  24,
-        display:       "flex",
-        alignItems:    "center",
-        justifyContent:"space-between",
-      }}>
+      <div style={{ background:"#1A1A1B", padding:"20px 28px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <div>
-          <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: 26, fontWeight: 700, color: "#D48B00", letterSpacing: "0.04em" }}>
-            COMMAND CENTER
-          </div>
-          <div style={{ fontSize: 12, color: "#6B5E4E", marginTop: 2, letterSpacing: "0.08em" }}>
-            EEIS / E.A.T — Autonomous Hospitality Intelligence
-          </div>
+          <div style={{ fontSize:20, fontWeight:700, letterSpacing:"0.12em", color:"#F5F2ED" }}>COMMAND CENTER</div>
+          <div style={{ fontSize:12, color:"rgba(245,242,237,.5)", marginTop:2 }}>EEIS / E.A.T — Autonomous Hospitality Intelligence</div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{
-            width: 8, height: 8, borderRadius: "50%",
-            background: connected ? "#27ae60" : "#e74c3c",
-            boxShadow:  connected ? "0 0 8px #27ae60" : "0 0 8px #e74c3c",
-          }} />
-          <span style={{ fontSize: 12, color: connected ? "#27ae60" : "#e74c3c", letterSpacing: "0.06em" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+          <motion.div animate={{ scale: connected ? [1,1.2,1] : 1 }} transition={{ repeat:Infinity, duration:2 }}
+            style={{ width:10, height:10, borderRadius:"50%", background: connected ? "#4CAF50" : "#ef5350" }}/>
+          <span style={{ fontSize:12, color: connected ? "#4CAF50" : "#ef5350", fontWeight:700 }}>
             {connected ? "LIVE" : "OFFLINE"}
           </span>
         </div>
       </div>
 
-      {/* Venue Selector */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
-        <input
-          value={inputVenueId}
-          onChange={(e) => setInputVenueId(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleVenueChange()}
+      <div style={{ padding:"20px 28px 0", display:"flex", gap:12, alignItems:"center" }}>
+        <input ref={inputRef} defaultValue={DEMO_VENUE}
+          style={{ flex:1, height:40, padding:"0 14px", borderRadius:8, border:"1.5px solid rgba(26,26,27,.15)",
+            background:"#fff", fontSize:13, fontFamily:"inherit", outline:"none", color:"#1A1A1B" }}
           placeholder="Venue ID"
-          style={{
-            flex: 1, padding: "8px 12px", borderRadius: 8,
-            border: "1px solid rgba(26,26,27,0.15)", background: "white",
-            fontSize: 13, color: "#1A1A1B", outline: "none",
-          }}
+          onKeyDown={(e) => e.key === "Enter" && handleConnect()}
         />
-        <button
-          onClick={handleVenueChange}
-          style={{
-            padding: "8px 16px", borderRadius: 8, border: "none",
-            background: "#D48B00", color: "white", cursor: "pointer", fontSize: 13, fontWeight: 600,
-          }}
-        >
+        <button onClick={handleConnect}
+          style={{ height:40, padding:"0 22px", background:"#D48B00", color:"#fff", border:"none",
+            borderRadius:8, fontWeight:700, fontSize:13, cursor:"pointer", letterSpacing:"0.05em",
+            fontFamily:"inherit" }}>
           Connect
         </button>
       </div>
 
-      {/* Score Rings Row */}
-      <div style={{
-        background: "rgba(255,255,255,0.7)",
-        backdropFilter: "blur(12px)",
-        border: "1px solid rgba(212,139,0,0.2)",
-        borderRadius: 12,
-        padding: 24,
-        marginBottom: 20,
-        display: "flex",
-        justifyContent: "space-around",
-        alignItems: "center",
-        flexWrap: "wrap",
-        gap: 16,
-      }}>
-        <ScoreRing value={score?.overallScore    ?? 0} label="Overall" />
-        <ScoreRing value={score?.engagementLevel ?? 0} label="Engagement" />
-        <ScoreRing value={score?.socialEnergy    ?? 0} label="Social" />
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-          <div style={{
-            fontSize: 36, fontWeight: 700, color: "#1A1A1B",
-            fontFamily: "Cormorant Garamond, serif",
-          }}>
-            {score?.activeGuests ?? 0}
-          </div>
-          <span style={{ fontSize: 11, color: "#6B5E4E", letterSpacing: "0.05em" }}>ACTIVE GUESTS</span>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-          <div style={{
-            fontSize: 36, fontWeight: 700, color: "#D48B00",
-            fontFamily: "Cormorant Garamond, serif",
-          }}>
-            {score?.decisionCount ?? 0}
-          </div>
-          <span style={{ fontSize: 11, color: "#6B5E4E", letterSpacing: "0.05em" }}>DECISIONS</span>
-        </div>
+      {/* Tabs */}
+      <div style={{ display:"flex", gap:4, padding:"16px 28px 0", borderBottom:"1.5px solid rgba(26,26,27,.08)" }}>
+        {TABS.map(t => (
+          <button key={t} onClick={() => setTab(t)}
+            style={{ padding:"8px 18px", background: tab===t ? "#D48B00" : "transparent",
+              color: tab===t ? "#fff" : "#6B5E4E", border:"none", borderRadius:"8px 8px 0 0",
+              cursor:"pointer", fontSize:12, fontWeight:700, letterSpacing:"0.07em",
+              fontFamily:"inherit", textTransform:"uppercase" }}>
+            {t}
+          </button>
+        ))}
       </div>
 
-      {/* Main Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20, marginBottom: 20 }}>
-
-        {/* Digital Twin */}
-        <div style={{
-          background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",
-          border: "1px solid rgba(212,139,0,0.2)", borderRadius: 12, padding: 20,
-        }}>
-          <div style={{ fontSize: 11, letterSpacing: "0.1em", color: "#6B5E4E", marginBottom: 12, fontWeight: 600 }}>
-            DIGITAL TWIN — v{twin?.version ?? 0}
-          </div>
-          <Heatmap data={twin?.trafficHeatmap ?? []} />
-          <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-            {[
-              { label: "Mood",      value: fmt(twin?.environmentalState.moodScore ?? 0) },
-              { label: "Atmosphere",value: fmt(twin?.environmentalState.atmosphere ?? 0) },
-              { label: "Rules fired",value: String(twin?.orchestrationStatus.rulesFired ?? 0) },
-              { label: "Sync",      value: `${Math.round((twin?.syncHealth ?? 0) * 100)}%` },
-            ].map(({ label, value }) => (
-              <div key={label} style={{
-                background: "rgba(26,26,27,0.04)", borderRadius: 8, padding: "8px 12px",
-              }}>
-                <div style={{ fontSize: 10, color: "#6B5E4E", letterSpacing: "0.06em" }}>{label.toUpperCase()}</div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: "#1A1A1B", fontFamily: "Cormorant Garamond, serif" }}>
-                  {value}
+      <div style={{ padding:"20px 28px", display:"flex", flexDirection:"column", gap:16 }}>
+        {/* ── Overview Tab ── */}
+        {tab === "overview" && (
+          <>
+            {/* Score rings */}
+            <Panel title="Intelligence Scores">
+              <div style={{ display:"flex", gap:20, flexWrap:"wrap", justifyContent:"space-around" }}>
+                <ScoreRing value={intelligence.overallScore}    label="Overall"/>
+                <ScoreRing value={intelligence.engagementLevel} label="Engagement"/>
+                <ScoreRing value={intelligence.socialEnergy}    label="Social"/>
+                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6 }}>
+                  <span style={{ fontSize:36, fontWeight:700, color:"#1A1A1B" }}>{intelligence.activeGuests}</span>
+                  <span style={{ fontSize:11, color:"#6B5E4E", letterSpacing:"0.05em" }}>ACTIVE GUESTS</span>
+                </div>
+                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6 }}>
+                  <span style={{ fontSize:36, fontWeight:700, color:"#D48B00" }}>{intelligence.decisionCount}</span>
+                  <span style={{ fontSize:11, color:"#6B5E4E", letterSpacing:"0.05em" }}>DECISIONS</span>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
+            </Panel>
 
-        {/* Orchestration Event Feed */}
-        <div style={{
-          background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",
-          border: "1px solid rgba(212,139,0,0.2)", borderRadius: 12, padding: 20,
-        }}>
-          <div style={{ fontSize: 11, letterSpacing: "0.1em", color: "#6B5E4E", marginBottom: 12, fontWeight: 600 }}>
-            ORCHESTRATION FEED
-          </div>
-          <EventFeed events={events} />
-        </div>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16 }}>
+              {/* Digital twin */}
+              <Panel title={`Digital Twin — v${twin?.version ?? 0}`}>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+                  {[
+                    ["MOOD",    fmt(twin?.environmentalState.moodScore    ?? 0)],
+                    ["ATMOS",   fmt(twin?.environmentalState.atmosphere    ?? 0)],
+                    ["RULES",   String(twin?.orchestrationStatus.rulesFired ?? 0)],
+                    ["SYNC",    `${Math.round((twin?.syncHealth ?? 0) * 100)}%`],
+                  ].map(([k,v]) => (
+                    <div key={k} style={{ background:"rgba(212,139,0,.07)", borderRadius:8,
+                      padding:"10px 12px" }}>
+                      <div style={{ fontSize:10, color:"#9A8A7A", letterSpacing:"0.07em" }}>{k}</div>
+                      <div style={{ fontSize:18, fontWeight:700, color:"#1A1A1B", marginTop:2 }}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+              </Panel>
 
-        {/* Ambient Control */}
-        <div style={{
-          background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",
-          border: "1px solid rgba(212,139,0,0.2)", borderRadius: 12, padding: 20,
-        }}>
-          <div style={{ fontSize: 11, letterSpacing: "0.1em", color: "#6B5E4E", marginBottom: 12, fontWeight: 600 }}>
-            AMBIENT CONTROL
-          </div>
-          {scene && (
-            <div style={{
-              background: "rgba(212,139,0,0.1)", borderRadius: 8, padding: "10px 14px", marginBottom: 12,
-              border: "1px solid rgba(212,139,0,0.3)",
-            }}>
-              <div style={{ fontSize: 11, color: "#6B5E4E" }}>ACTIVE SCENE</div>
-              <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: 18, fontWeight: 700, color: "#D48B00" }}>
-                {scene.sceneName}
-              </div>
-              <div style={{ fontSize: 11, color: "#6B5E4E" }}>
-                Mood {fmt(scene.moodScore)} · Intensity {fmt(scene.intensity)} · by {scene.triggeredBy}
-              </div>
+              {/* Orchestration feed */}
+              <Panel title="Orchestration Feed">
+                <EventFeed events={events}/>
+              </Panel>
+
+              {/* Ambient control */}
+              <Panel title="Ambient Control">
+                {["PREMIUM LOUNGE","SOCIAL LOUNGE","ENERGIZE","INTIMATE","STANDARD"].map(scene => (
+                  <button key={scene} onClick={() => triggerScene(scene)} disabled={loadingScene}
+                    style={{ width:"100%", padding:"10px 16px", marginBottom:6,
+                      background: activeScene===scene ? "rgba(212,139,0,.18)" : "#fff",
+                      border: activeScene===scene ? "1.5px solid #D48B00" : "1.5px solid rgba(26,26,27,.1)",
+                      borderRadius:8, color: activeScene===scene ? "#7A5000" : "#1A1A1B",
+                      fontSize:12, fontWeight:700, letterSpacing:"0.07em", cursor:"pointer",
+                      fontFamily:"inherit", textTransform:"uppercase" as const }}>
+                    {scene}
+                  </button>
+                ))}
+              </Panel>
             </div>
-          )}
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {["premium-lounge","social-lounge","energize","intimate","standard"].map((s) => (
-              <button
-                key={s}
-                onClick={() => activateScene(s)}
-                style={{
-                  padding: "8px 12px", borderRadius: 8, border: "1px solid rgba(212,139,0,0.3)",
-                  background: scene?.sceneId === s ? "#D48B00" : "transparent",
-                  color:      scene?.sceneId === s ? "white"   : "#1A1A1B",
-                  cursor: "pointer", fontSize: 12, fontWeight: 600,
-                  transition: "all 0.2s",
-                }}
-              >
-                {s.replace(/-/g, " ").toUpperCase()}
+          </>
+        )}
+
+        {/* ── Awareness Tab ── */}
+        {tab === "awareness" && (
+          <>
+            <div style={{ display:"flex", justifyContent:"flex-end", gap:10 }}>
+              <button onClick={runAwarenessNow} disabled={loadingRun}
+                style={{ padding:"8px 20px", background:"#D48B00", color:"#fff", border:"none",
+                  borderRadius:8, fontWeight:700, fontSize:12, cursor:"pointer",
+                  letterSpacing:"0.07em", fontFamily:"inherit", opacity: loadingRun ? 0.6 : 1 }}>
+                {loadingRun ? "RUNNING…" : "▶ RUN NOW"}
               </button>
-            ))}
-          </div>
-        </div>
+            </div>
+
+            {awareness ? (
+              <>
+                <Panel title="Overall Awareness" badge={awareness.riskLevel.toUpperCase()}
+                  accent={awareness.riskLevel === "high" || awareness.riskLevel === "critical"}>
+                  <div style={{ display:"flex", gap:20, flexWrap:"wrap", justifyContent:"space-around", alignItems:"center" }}>
+                    <ScoreRing value={awareness.overallScore} label="Awareness" size={100}
+                      color={riskColor(awareness.riskLevel)}/>
+                    <div style={{ flex:1, minWidth:200, display:"flex", flexDirection:"column", gap:10 }}>
+                      <MeterBar label="Staff Readiness"    value={awareness.staffReadiness}/>
+                      <MeterBar label="Guest Satisfaction" value={awareness.guestSatisfaction}/>
+                      <MeterBar label="Inventory Health"   value={awareness.inventoryHealth}/>
+                      <MeterBar label="Social Momentum"    value={awareness.socialMomentum} color="#6B8DD6"/>
+                      <MeterBar label="Temporal Alignment" value={awareness.temporalAlignment} color="#7BC67E"/>
+                      <MeterBar label="Environmental Fit"  value={awareness.environmentalFit} color="#E9956A"/>
+                    </div>
+                  </div>
+                </Panel>
+
+                {awareness.recommendations.length > 0 && (
+                  <Panel title="Recommendations" badge={`${awareness.recommendations.length}`} accent>
+                    <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                      {awareness.recommendations.map((rec, i) => (
+                        <div key={i} style={{ display:"flex", gap:10, padding:"10px 12px",
+                          background:"rgba(212,139,0,.08)", borderRadius:8, fontSize:13 }}>
+                          <span style={{ color:"#D48B00" }}>→</span>
+                          <span style={{ color:"#1A1A1B" }}>{rec}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </Panel>
+                )}
+              </>
+            ) : (
+              <div style={{ textAlign:"center", padding:"60px 0", color:"#9A8A7A", fontSize:14 }}>
+                Connect to a venue to view awareness data
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ── Social Tab ── */}
+        {tab === "social" && (
+          <Panel title="Social Engagement Clusters" badge={`${clusters.length} GROUPS`}>
+            {clusters.length === 0 ? (
+              <div style={{ textAlign:"center", padding:"40px 0", color:"#9A8A7A", fontSize:13 }}>
+                No active social clusters detected
+              </div>
+            ) : (
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(180px, 1fr))", gap:12 }}>
+                {clusters.map((c, i) => {
+                  const clusterColors: Record<string, string> = {
+                    party:"#D48B00", group:"#6B8DD6", pair:"#7BC67E", solo:"#9A8A7A",
+                  };
+                  const color = clusterColors[c.clusterType] ?? "#9A8A7A";
+                  return (
+                    <div key={i} style={{ background:"#fff", borderRadius:10, padding:"14px 16px",
+                      border:`2px solid ${color}30` }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+                        <span style={{ fontSize:11, fontWeight:700, color, textTransform:"uppercase",
+                          letterSpacing:"0.07em" }}>{c.clusterType}</span>
+                        <span style={{ fontSize:10, color:"#6B5E4E" }}>{c.groupSize} guests</span>
+                      </div>
+                      <MeterBar label="Social Energy"  value={c.socialEnergy}  color={color}/>
+                      <div style={{ marginTop:8 }}>
+                        <MeterBar label="Shared Orders" value={Math.min(c.sharedOrders / 10, 1)} color={color}/>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </Panel>
+        )}
+
+        {/* ── Temporal Tab ── */}
+        {tab === "temporal" && (
+          <>
+            <Panel title="Temporal Alignment">
+              <div style={{ display:"flex", alignItems:"center", gap:24 }}>
+                <ScoreRing value={temporal?.currentAlignment ?? 0} label="Now" color="#7BC67E"/>
+                <div style={{ flex:1, fontSize:13, color:"#6B5E4E", lineHeight:1.7 }}>
+                  <div><strong style={{ color:"#1A1A1B" }}>Hour:</strong> {new Date().getHours()}:00</div>
+                  <div><strong style={{ color:"#1A1A1B" }}>Day:</strong> {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][new Date().getDay()]}</div>
+                  <div><strong style={{ color:"#1A1A1B" }}>Patterns learned:</strong> {temporal?.patterns.length ?? 0}</div>
+                </div>
+              </div>
+            </Panel>
+
+            {temporal?.patterns && temporal.patterns.length > 0 && (
+              <Panel title="Hourly Engagement Pattern">
+                <div style={{ display:"flex", gap:4, alignItems:"flex-end", height:80 }}>
+                  {Array.from({ length: 24 }, (_, h) => {
+                    const match = temporal.patterns.find(p => p.hour_of_day === h);
+                    const val   = match ? match.avg_engagement : 0;
+                    const isNow = h === new Date().getHours();
+                    return (
+                      <div key={h} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:2 }}>
+                        <div style={{
+                          width:"100%", height: `${Math.max(4, val * 70)}px`,
+                          background: isNow ? "#D48B00" : "rgba(212,139,0,.3)",
+                          borderRadius:"2px 2px 0 0", transition:"height .3s",
+                        }} title={`${h}:00 — ${fmt(val)}`}/>
+                        {h % 6 === 0 && <span style={{ fontSize:8, color:"#9A8A7A" }}>{h}h</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </Panel>
+            )}
+          </>
+        )}
+
+        {/* ── Adaptive Tab ── */}
+        {tab === "adaptive" && (
+          <Panel title="Adaptive Optimization Log" badge={`${adaptiveLogs.filter(l => l.applied).length} APPLIED`}>
+            {adaptiveLogs.length === 0 ? (
+              <div style={{ textAlign:"center", padding:"40px 0", color:"#9A8A7A", fontSize:13 }}>
+                No optimization history yet — system is learning
+              </div>
+            ) : (
+              <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                {adaptiveLogs.map((log, i) => (
+                  <div key={i} style={{ display:"grid", gridTemplateColumns:"1fr auto auto",
+                    gap:12, padding:"10px 14px", background: log.applied ? "rgba(212,139,0,.07)" : "#fff",
+                    borderRadius:8, border:"1px solid rgba(26,26,27,.08)", alignItems:"center" }}>
+                    <div>
+                      <div style={{ fontSize:12, fontWeight:700, color:"#1A1A1B",
+                        textTransform:"uppercase" as const }}>{log.optimizationType}</div>
+                      <div style={{ fontSize:11, color:"#6B5E4E", marginTop:2 }}>
+                        {new Date(log.createdAt).toLocaleTimeString()}
+                      </div>
+                    </div>
+                    <div style={{ textAlign:"center" }}>
+                      <div style={{ fontSize:16, fontWeight:700,
+                        color: log.deltaScore > 0 ? "#2d5a27" : "#8b0000" }}>
+                        {log.deltaScore > 0 ? "+" : ""}{fmt(log.deltaScore, 2)}
+                      </div>
+                      <div style={{ fontSize:10, color:"#9A8A7A" }}>Δ score</div>
+                    </div>
+                    <div style={{ textAlign:"center" }}>
+                      <div style={{
+                        fontSize:10, fontWeight:700, padding:"3px 10px", borderRadius:20,
+                        background: log.applied ? "rgba(76,175,80,.15)" : "rgba(158,158,158,.12)",
+                        color: log.applied ? "#2d5a27" : "#6B5E4E",
+                        textTransform:"uppercase" as const,
+                      }}>
+                        {log.applied ? "applied" : "skipped"}
+                      </div>
+                      <div style={{ fontSize:10, color:"#9A8A7A", marginTop:2 }}>
+                        {Math.round(log.confidence * 100)}% conf
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Panel>
+        )}
       </div>
 
-      {/* Control Bar */}
-      <div style={{
-        background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",
-        border: "1px solid rgba(212,139,0,0.2)", borderRadius: 12, padding: "16px 24px",
-        display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap",
-      }}>
-        <div style={{ fontSize: 11, letterSpacing: "0.1em", color: "#6B5E4E", fontWeight: 600, marginRight: 8 }}>
-          OPERATOR CONTROLS
-        </div>
-        <button
-          onClick={triggerEvaluation}
-          style={{
-            padding: "8px 18px", borderRadius: 8, border: "none",
-            background: "#D48B00", color: "white", cursor: "pointer",
-            fontSize: 12, fontWeight: 600,
-          }}
-        >
-          RUN EVALUATION
-        </button>
-        {guardrailsOn ? (
-          <button
-            onClick={emergencyStop}
-            style={{
-              padding: "8px 18px", borderRadius: 8, border: "none",
-              background: "#c0392b", color: "white", cursor: "pointer",
-              fontSize: 12, fontWeight: 600,
-            }}
-          >
-            EMERGENCY STOP
-          </button>
-        ) : (
-          <button
-            onClick={resumeAutomation}
-            style={{
-              padding: "8px 18px", borderRadius: 8, border: "none",
-              background: "#27ae60", color: "white", cursor: "pointer",
-              fontSize: 12, fontWeight: 600,
-            }}
-          >
-            RESUME AUTOMATION
-          </button>
-        )}
-        <div style={{ marginLeft: "auto", fontSize: 11, color: "#6B5E4E" }}>
-          Venue: <strong style={{ color: "#1A1A1B" }}>{venueId}</strong>
-        </div>
+      {/* Transport badge */}
+      <div style={{ position:"fixed", bottom:16, right:16, fontSize:10, color:"#9A8A7A",
+        background:"rgba(245,242,237,.9)", padding:"4px 10px", borderRadius:20,
+        border:"1px solid rgba(26,26,27,.1)", backdropFilter:"blur(8px)" }}>
+        E.A.T / EEIS · Transport: PostgreSQL LISTEN/NOTIFY · Redis-ready
       </div>
     </div>
   );

@@ -64,6 +64,7 @@ import posMenuMappingRouter      from "./routes/posMenuMapping";
 import eeisOrdersRouter          from "./routes/eeisOrders";
 import intelligenceRouter         from "./routes/intelligence";
 import orchestrationRouter        from "./routes/orchestration";
+import cognitiveRouter            from "./routes/cognitiveIntelligence";
 import operationsRouter         from "./routes/operations";
 import imagesRouter             from "./routes/images";
 import enrollmentRouter         from "./routes/enrollment";
@@ -565,9 +566,10 @@ app.use("/api",                         aiConfigureRouter);
 app.use("/api",                         demoSimulateRouter);
 app.use("/api/kernel",                  kernelRouter);
 
-// ── Autonomous Intelligence Layer ─────────────────────────────────────────────
+// ── Autonomous Intelligence + Contextual Cognition Layer ─────────────────────
 app.use("/api/intelligence",  intelligenceRouter);
 app.use("/api/orchestration", orchestrationRouter);
+app.use("/api/cognitive",     cognitiveRouter);
 
 // ── Universal POS Integration Layer ───────────────────────────────────────────
 // Connections CRUD, credential vault, OAuth flow, on-demand sync

@@ -651,6 +651,207 @@ try {
   logger.warn({ err }, "Intelligence table provisioning failed — intelligence layer may be unavailable");
 }
 
+// ── Contextual Cognition Layer — extended table provisioning ──────────────────
+try {
+  const { pool: cPool } = await import("@workspace/db");
+  const cognitionTables = `
+    CREATE TABLE IF NOT EXISTS staff_context_profiles (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      staff_id UUID NOT NULL,
+      role TEXT NOT NULL DEFAULT 'server',
+      zone TEXT,
+      shift_start_at TIMESTAMPTZ,
+      shift_end_at TIMESTAMPTZ,
+      active_guests INT NOT NULL DEFAULT 0,
+      interaction_rate DOUBLE PRECISION NOT NULL DEFAULT 0,
+      upsell_rate DOUBLE PRECISION NOT NULL DEFAULT 0,
+      satisfaction_score DOUBLE PRECISION NOT NULL DEFAULT 0,
+      recommendations INT NOT NULL DEFAULT 0,
+      conversions INT NOT NULL DEFAULT 0,
+      is_on_floor BOOLEAN NOT NULL DEFAULT FALSE,
+      energy_level DOUBLE PRECISION NOT NULL DEFAULT 0.5,
+      context_metadata JSONB NOT NULL DEFAULT '{}',
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (venue_id, staff_id)
+    );
+    CREATE INDEX IF NOT EXISTS scp_venue_idx ON staff_context_profiles (venue_id);
+    CREATE INDEX IF NOT EXISTS scp_zone_idx ON staff_context_profiles (venue_id, zone);
+
+    CREATE TABLE IF NOT EXISTS social_engagement_state (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      group_id TEXT,
+      group_size INT NOT NULL DEFAULT 1,
+      social_energy DOUBLE PRECISION NOT NULL DEFAULT 0,
+      conversation_rate DOUBLE PRECISION NOT NULL DEFAULT 0,
+      shared_orders INT NOT NULL DEFAULT 0,
+      viral_moment_score DOUBLE PRECISION NOT NULL DEFAULT 0,
+      cluster_type TEXT NOT NULL DEFAULT 'solo',
+      dominant_craft TEXT,
+      peak_moment_at TIMESTAMPTZ,
+      engagement_arc JSONB NOT NULL DEFAULT '[]',
+      metadata JSONB NOT NULL DEFAULT '{}',
+      window_start TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS ses_venue_idx ON social_engagement_state (venue_id, updated_at DESC);
+    CREATE INDEX IF NOT EXISTS ses_group_idx ON social_engagement_state (venue_id, group_id);
+
+    CREATE TABLE IF NOT EXISTS temporal_behavior_patterns (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      pattern_type TEXT NOT NULL DEFAULT 'hourly',
+      hour_of_day INT,
+      day_of_week INT,
+      week_of_year INT,
+      avg_engagement DOUBLE PRECISION NOT NULL DEFAULT 0,
+      avg_revenue DOUBLE PRECISION NOT NULL DEFAULT 0,
+      avg_guest_count DOUBLE PRECISION NOT NULL DEFAULT 0,
+      peak_craft TEXT,
+      conversion_rate DOUBLE PRECISION NOT NULL DEFAULT 0,
+      sample_count INT NOT NULL DEFAULT 0,
+      confidence DOUBLE PRECISION NOT NULL DEFAULT 0,
+      features JSONB NOT NULL DEFAULT '{}',
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (venue_id, pattern_type, hour_of_day, day_of_week)
+    );
+    CREATE INDEX IF NOT EXISTS tbp_venue_idx ON temporal_behavior_patterns (venue_id, pattern_type);
+
+    CREATE TABLE IF NOT EXISTS operational_awareness_scores (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      overall_score DOUBLE PRECISION NOT NULL DEFAULT 0,
+      staff_readiness DOUBLE PRECISION NOT NULL DEFAULT 0,
+      guest_satisfaction DOUBLE PRECISION NOT NULL DEFAULT 0,
+      inventory_health DOUBLE PRECISION NOT NULL DEFAULT 0,
+      social_momentum DOUBLE PRECISION NOT NULL DEFAULT 0,
+      temporal_alignment DOUBLE PRECISION NOT NULL DEFAULT 0,
+      environmental_fit DOUBLE PRECISION NOT NULL DEFAULT 0,
+      risk_level TEXT NOT NULL DEFAULT 'low',
+      active_alerts INT NOT NULL DEFAULT 0,
+      recommendations JSONB NOT NULL DEFAULT '[]',
+      factors JSONB NOT NULL DEFAULT '{}',
+      period TEXT NOT NULL DEFAULT '5m',
+      window_start TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS oas_venue_idx ON operational_awareness_scores (venue_id, created_at DESC);
+    CREATE INDEX IF NOT EXISTS oas_risk_idx ON operational_awareness_scores (venue_id, risk_level);
+
+    CREATE TABLE IF NOT EXISTS adaptive_optimization_logs (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      optimization_type TEXT NOT NULL,
+      trigger TEXT NOT NULL,
+      before_state JSONB NOT NULL DEFAULT '{}',
+      after_state JSONB NOT NULL DEFAULT '{}',
+      delta_score DOUBLE PRECISION NOT NULL DEFAULT 0,
+      confidence DOUBLE PRECISION NOT NULL DEFAULT 0,
+      applied BOOLEAN NOT NULL DEFAULT FALSE,
+      rolled_back BOOLEAN NOT NULL DEFAULT FALSE,
+      outcome TEXT,
+      outcome_score DOUBLE PRECISION,
+      metadata JSONB NOT NULL DEFAULT '{}',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      resolved_at TIMESTAMPTZ
+    );
+    CREATE INDEX IF NOT EXISTS aol_venue_idx ON adaptive_optimization_logs (venue_id, created_at DESC);
+    CREATE INDEX IF NOT EXISTS aol_type_idx ON adaptive_optimization_logs (venue_id, optimization_type);
+
+    CREATE TABLE IF NOT EXISTS contextual_orchestration_events (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      event_type TEXT NOT NULL,
+      source_system TEXT NOT NULL DEFAULT 'eeis',
+      context_snapshot JSONB NOT NULL DEFAULT '{}',
+      trigger TEXT NOT NULL,
+      confidence DOUBLE PRECISION NOT NULL DEFAULT 0,
+      priority INT NOT NULL DEFAULT 0,
+      actions JSONB NOT NULL DEFAULT '[]',
+      executed BOOLEAN NOT NULL DEFAULT FALSE,
+      executed_at TIMESTAMPTZ,
+      result TEXT,
+      replay_key TEXT,
+      idempotency_key TEXT UNIQUE,
+      ttl_ms INT NOT NULL DEFAULT 300000,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS coe_venue_idx ON contextual_orchestration_events (venue_id, created_at DESC);
+    CREATE INDEX IF NOT EXISTS coe_type_idx ON contextual_orchestration_events (venue_id, event_type);
+    CREATE INDEX IF NOT EXISTS coe_replay_idx ON contextual_orchestration_events (replay_key);
+
+    CREATE TABLE IF NOT EXISTS orchestration_events (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      session_id UUID,
+      guest_id TEXT,
+      event_type TEXT NOT NULL,
+      craft_type TEXT,
+      payload JSONB NOT NULL DEFAULT '{}',
+      score DOUBLE PRECISION,
+      metadata JSONB NOT NULL DEFAULT '{}',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS oe_venue_idx ON orchestration_events (venue_id, created_at DESC);
+    CREATE INDEX IF NOT EXISTS oe_session_idx ON orchestration_events (session_id);
+    CREATE INDEX IF NOT EXISTS oe_type_idx ON orchestration_events (event_type);
+    CREATE INDEX IF NOT EXISTS oe_craft_idx ON orchestration_events (craft_type);
+    CREATE INDEX IF NOT EXISTS oe_guest_idx ON orchestration_events (guest_id);
+
+    CREATE TABLE IF NOT EXISTS environmental_states (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      scene_id TEXT NOT NULL,
+      scene_name TEXT NOT NULL,
+      lighting_preset TEXT NOT NULL DEFAULT 'warm',
+      music_genre TEXT,
+      music_tempo TEXT NOT NULL DEFAULT 'moderate',
+      music_volume DOUBLE PRECISION NOT NULL DEFAULT 0.5,
+      scent_profile TEXT,
+      temperature DOUBLE PRECISION,
+      crowd_density DOUBLE PRECISION NOT NULL DEFAULT 0,
+      mood_score DOUBLE PRECISION NOT NULL DEFAULT 0.5,
+      atmosphere_index DOUBLE PRECISION NOT NULL DEFAULT 0.5,
+      is_active BOOLEAN NOT NULL DEFAULT TRUE,
+      triggered_by TEXT NOT NULL DEFAULT 'system',
+      effectiveness_score DOUBLE PRECISION,
+      metadata JSONB NOT NULL DEFAULT '{}',
+      activated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      deactivated_at TIMESTAMPTZ
+    );
+    CREATE INDEX IF NOT EXISTS es_venue_idx ON environmental_states (venue_id, activated_at DESC);
+    CREATE INDEX IF NOT EXISTS es_active_idx ON environmental_states (venue_id, is_active);
+
+    CREATE TABLE IF NOT EXISTS engagement_scores (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id UUID NOT NULL,
+      entity_id TEXT NOT NULL,
+      entity_type TEXT NOT NULL DEFAULT 'venue',
+      score_type TEXT NOT NULL DEFAULT 'composite',
+      overall_score DOUBLE PRECISION NOT NULL DEFAULT 0,
+      interaction_score DOUBLE PRECISION NOT NULL DEFAULT 0,
+      retention_score DOUBLE PRECISION NOT NULL DEFAULT 0,
+      social_score DOUBLE PRECISION NOT NULL DEFAULT 0,
+      craft_score DOUBLE PRECISION NOT NULL DEFAULT 0,
+      velocity_delta DOUBLE PRECISION NOT NULL DEFAULT 0,
+      factors JSONB NOT NULL DEFAULT '{}',
+      window_minutes DOUBLE PRECISION NOT NULL DEFAULT 5,
+      period TEXT NOT NULL DEFAULT '5m',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS egs_venue_idx ON engagement_scores (venue_id, created_at DESC);
+    CREATE INDEX IF NOT EXISTS egs_entity_idx ON engagement_scores (entity_id, entity_type);
+  `;
+
+  for (const stmt of cognitionTables.split(";").map(s => s.trim()).filter(Boolean)) {
+    await cPool.query(stmt);
+  }
+  logger.info("Contextual Cognition Layer: all 9 extended tables provisioned");
+} catch (err) {
+  logger.warn({ err }, "Cognition table provisioning failed — extended cognition layer may be unavailable");
+}
+
 // ── Users table migration — add telemetry_digest_opt_out if missing ───────────
 try {
   const { db: migDb } = await import("@workspace/db");
@@ -690,7 +891,11 @@ const { registerIntelligenceRooms } = await import("./realtime/websocketRooms");
 const { getIO } = await import("./lib/socketServer");
 registerIntelligenceRooms(getIO());
 
-// Initialize PostgreSQL pub/sub event bus
+// Initialize transport-abstracted event bus (postgres by default, redis-swappable)
+const { initEventBus } = await import("./realtime/transport/eventBus");
+await initEventBus();
+
+// Keep legacy pgPubSub alive for backward-compat with existing legacy subscribers
 const { pgPubSub } = await import("./realtime/pgPubSub");
 await pgPubSub.init();
 
