@@ -1,6 +1,6 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import bcrypt from "bcryptjs";
-import { eq, count } from "drizzle-orm";
+import { eq, count, and, isNull } from "drizzle-orm";
 import { db, usersTable } from "@workspace/db";
 import { signToken } from "../lib/jwt";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
@@ -94,7 +94,14 @@ router.post(
     const token = await signToken({ sub: user.id, email: user.email, role: user.role, name: user.name, venueId: user.venueId ?? null });
 
     req.log.info({ userId: user.id }, "user logged in");
-    res.json({ token, user: sanitizeUser(user) });
+
+    const response: Record<string, unknown> = { token, user: sanitizeUser(user) };
+    if (user.role === "venue_owner" && !user.venueId) {
+      req.log.warn({ userId: user.id, role: user.role }, "venue_owner login with no venueId — Sovereign mode will be inaccessible");
+      response.warning = "This venue_owner account has no venueId assigned. Sovereign mode will not be accessible until a venueId is set by a super_admin.";
+    }
+
+    res.json(response);
   },
 );
 
@@ -107,7 +114,71 @@ router.get("/me", requireAuth, async (req: AuthRequest, res: Response) => {
 
   if (!user) { res.status(404).json({ error: "User not found" }); return; }
 
-  res.json({ user: sanitizeUser(user) });
+  const meResponse: Record<string, unknown> = { user: sanitizeUser(user) };
+  if (user.role === "venue_owner" && !user.venueId) {
+    req.log.warn({ userId: user.id, role: user.role }, "venue_owner /me with no venueId — Sovereign mode will be inaccessible");
+    meResponse.warning = "This venue_owner account has no venueId assigned. Sovereign mode will not be accessible until a venueId is set by a super_admin.";
+  }
+
+  res.json(meResponse);
+});
+
+/**
+ * GET /api/auth/orphaned-venue-owners
+ *
+ * Super-admin only. Lists all venue_owner accounts that have no venueId assigned,
+ * making them unable to access Sovereign mode.
+ */
+router.get("/orphaned-venue-owners", requireAuth, async (req: AuthRequest, res: Response) => {
+  if (req.user?.role !== "super_admin") {
+    res.status(403).json({ error: "Forbidden" }); return;
+  }
+
+  const orphaned = await db.select({
+    id: usersTable.id,
+    name: usersTable.name,
+    email: usersTable.email,
+    createdAt: usersTable.createdAt,
+  }).from(usersTable).where(
+    and(eq(usersTable.role, "venue_owner"), isNull(usersTable.venueId))
+  );
+
+  res.json({ count: orphaned.length, users: orphaned });
+});
+
+/**
+ * PATCH /api/auth/assign-venue/:userId
+ *
+ * Super-admin only. Assigns a venueId to a venue_owner account that was
+ * created without one (legacy accounts), restoring their Sovereign mode access.
+ */
+router.patch("/assign-venue/:userId", requireAuth, allowOnly("venueId"), async (req: AuthRequest, res: Response) => {
+  if (req.user?.role !== "super_admin") {
+    res.status(403).json({ error: "Forbidden" }); return;
+  }
+
+  const { userId } = req.params as { userId: string };
+  const { venueId } = req.body as { venueId?: string };
+
+  if (!venueId || typeof venueId !== "string" || venueId.trim().length === 0) {
+    res.status(400).json({ error: "venueId is required" }); return;
+  }
+
+  const [target] = await db.select({ id: usersTable.id, role: usersTable.role })
+    .from(usersTable).where(eq(usersTable.id, userId)).limit(1);
+
+  if (!target) { res.status(404).json({ error: "User not found" }); return; }
+  if (target.role !== "venue_owner") {
+    res.status(400).json({ error: "Only venue_owner accounts can be assigned a venueId via this endpoint" }); return;
+  }
+
+  const [updated] = await db.update(usersTable)
+    .set({ venueId: venueId.trim() })
+    .where(eq(usersTable.id, userId))
+    .returning();
+
+  req.log.info({ adminId: req.user.id, targetUserId: userId, venueId: venueId.trim() }, "super_admin assigned venueId to venue_owner");
+  res.json({ user: sanitizeUser(updated) });
 });
 
 /**
