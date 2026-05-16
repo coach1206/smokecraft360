@@ -1,0 +1,28 @@
+CRITICAL LOYALTY PROGRESSION & MULTI-SESSION MILESTONE REFACTOR: The system is ending the user experience too quickly. To maximize venue engagement and revenue, the onboarding flow must be structured as a multi-tiered progression path ranging from 'Just Curious' to 'Master Sommelier'. The user CANNOT complete the experience in a single session; they must actively unlock and complete selections from TWO different countries to qualify for the Golden Box vault. Furthermore, scores must persist in the database to show returning users their status, current nightly averages, and the exact points required to level up.
+
+Refactor MasterBlender.tsx, RitualStep.tsx, usePosIntegration.ts, and your database schema user state models immediately to enforce this production specification:
+
+1. WIRE THE CIGAR MASTERY STATUS TIERS:
+   - Hardcode the exact four-tier progression framework into the user session state engine:
+     * Rank 1: 'Just Curious' (0-250 XP) -> Binds to Session I (10 Mins: Terroir, Soil Chemistry, Seed Lineage).
+     * Rank 2: 'Cultivated Beginner' (251-750 XP) -> Binds to Session II (12 Mins: Vertical Primings, Curing Barns, Fermentation). Requires unlocking a 2nd country selection.
+     * Rank 3: 'Rising Aficionado' (751-1500 XP) -> Binds to Session III (15 Mins: Vitola Gauges, Draw Physics, Cut Profiles).
+     * Rank 4: 'Master Sommelier' (1501+ XP) -> Unlocks 'The Alchemy Chamber' and permits purchasing the physical Golden Box.
+   - Add a dynamic 'Progress Lock' banner at the top of the interface displaying their current tier, active point balance, and a message explicitly stating: "You need [X] more points to unlock the next Masterclass Phase."
+
+2. ENFORCE THE MULTI-COUNTRY SELECTION LOCK:
+   - Add a structural restriction inside the blending matrix logic: the session completion sequence remains LOCKED until the user has successfully selected and configured premium leaf profiles from two different countries (e.g., completing a Dominican profile, then returning to selection to build a Nicaraguan profile).
+   - Display a visual glassmorphic split-tracker showing both country flags (e.g., 🇩🇴 and 🇳🇮) illuminating instantly upon configuration completion to visually prompt the double purchase.
+
+3. PERSIST VISITOR POINTS AND NIGHTLY LOUNGE AVERAGES:
+   - Upon completing any session phase, store the user's running total point balance to a persistent profile state inside the database layer.
+   - Return-Visit Verification: When a user logs back onto the tablet terminal via their identifier, pull their historical point metrics, flash their current ranking tier across the obsidian background, and output their precise position against the live running 'Nightly Lounge Average'.
+
+4. LOCK IN END-TO-END CULINARY POS CHECKOUT:
+   - Keep the on-tablet payment gateway completely operational at the checkout portal. Ensure prices dynamically aggregate for the multi-country cigar lines, matched spirits (Single Malts, Bourbons, Cognacs), and high-end culinary entrees (Prime Ribeye, Pepper-Crusted NY Strip, Duck Breast).
+   - Authorizing payment must seamlessly clear items out of the venue's active humidor/bar stock and instantly print the paid ticket to the kitchen display network for the waitress table handoff.
+
+5. MAINTAIN LUXURY COCKPIT VISUAL TEXTURES & SENSORY EFFECTS:
+   - Keep the absolute black (#000000) base layout with the 4% gold overlay, smoked glass components (backdrop-filter: blur(30px)), and the HTML5 SmokeCanvas moving smoothly at z-index 9996. All touch actions must synchronously snap with our 3400Hz playClick() bandpass audio clicks.
+
+Execute this comprehensive multi-session longevity progression, dual-country lock, and POS payment refactor now. Ensure 'tsc --noEmit' passes completely with an exit code of 0.

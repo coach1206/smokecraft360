@@ -1,0 +1,46 @@
+-- Migration: 20260516_smokecraft_backend_core.sql
+
+-- 1. ENUM DEFINITIONS FOR LEVELING PROGRESSION
+CREATE TYPE smokecraft_rank AS ENUM ('JUST_CURIOUS', 'CULTIVATED_BEGINNER', 'RISING_AFICIONADO', 'MASTER_SOMMELIER');
+CREATE TYPE leaf_priming AS ENUM ('VOLADO', 'SECO', 'VISO', 'LIGERO');
+CREATE TYPE cut_profile AS ENUM ('STRAIGHT', 'V_CUT', 'PUNCH');
+
+-- 2. CORE USER PROGRESSION TABLE (RETURNS LOGIC)
+CREATE TABLE IF NOT EXISTS smokecraft_user_profiles (
+    user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    session_identifier VARCHAR(100) UNIQUE NOT NULL,
+    current_rank smokecraft_rank DEFAULT 'JUST_CURIOUS',
+    accumulated_xp INT DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. INTERACTIVE MATRIX STATE TRACKING
+CREATE TABLE IF NOT EXISTS smokecraft_active_sessions (
+    session_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES smokecraft_user_profiles(user_id) ON DELETE CASCADE,
+    terminal_id VARCHAR(50) NOT NULL,
+    completed_countries VARCHAR(50)[] DEFAULT '{}'::VARCHAR(50)[],
+    current_score INT DEFAULT 0,
+    is_frozen BOOLEAN DEFAULT FALSE,
+    started_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 4. UNIFIED POS TRANSACTION & INVENTORY ACCELERATOR LEDGER
+CREATE TABLE IF NOT EXISTS supply_verification_ledger (
+    transaction_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    session_id UUID REFERENCES smokecraft_active_sessions(session_id),
+    terminal_id VARCHAR(50) NOT NULL,
+    cigar_sku VARCHAR(100) NOT NULL,
+    cigar_name VARCHAR(255) NOT NULL,
+    spirit_sku VARCHAR(100) NOT NULL,
+    culinary_sku VARCHAR(100) NOT NULL,
+    final_score INT NOT NULL,
+    logged_date DATE DEFAULT CURRENT_DATE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- INDEXES FOR INSTANT REAL-TIME NIGHTLY AVERAGE QUERIES
+CREATE INDEX IF NOT EXISTS idx_ledger_logged_date ON supply_verification_ledger(logged_date);
+CREATE INDEX IF NOT EXISTS idx_profiles_identifier ON smokecraft_user_profiles(session_identifier);

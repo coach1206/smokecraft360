@@ -71,6 +71,36 @@ import imgBunching       from "@assets/IMG_5181_1778884524136.png";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const GOLD      = "#d4af37";
+
+// ── Cigar Mastery Tier System ───────────────────────────────────────────────
+const MASTERY_TIERS = [
+  { rank: 1, name: "Just Curious",        min: 0,    max: 250,     color: "#8BC34A", sessionLabel: "Session I · 10 mins"   },
+  { rank: 2, name: "Cultivated Beginner", min: 251,  max: 750,     color: GOLD,      sessionLabel: "Session II · 12 mins"  },
+  { rank: 3, name: "Rising Aficionado",   min: 751,  max: 1500,    color: "#E8741A", sessionLabel: "Session III · 15 mins" },
+  { rank: 4, name: "Master Sommelier",    min: 1501, max: Infinity, color: "#a78bfa", sessionLabel: "The Alchemy Chamber"        },
+] as const;
+type MasteryTier = (typeof MASTERY_TIERS)[number];
+function getTier(xp: number): MasteryTier {
+  return ([...MASTERY_TIERS] as MasteryTier[]).reverse().find(t => xp >= t.min) ?? MASTERY_TIERS[0];
+}
+const COUNTRY_FLAGS: Record<string, string> = {
+  "Dominican Republic": "\u{1F1E9}\u{1F1F4}",
+  "Nicaragua":          "\u{1F1F3}\u{1F1EE}",
+  "Cuba":               "\u{1F1E8}\u{1F1FA}",
+  "Ecuador":            "\u{1F1EA}\u{1F1E8}",
+  "Honduras":           "\u{1F1ED}\u{1F1F3}",
+  "Brazil":             "\u{1F1E7}\u{1F1F7}",
+};
+function persistCountry(country: string): void {
+  try {
+    const ex: string[] = JSON.parse(localStorage.getItem("blender_countries") ?? "[]");
+    if (!ex.includes(country)) localStorage.setItem("blender_countries", JSON.stringify([...ex, country]));
+  } catch { /* kiosk */ }
+}
+function loadVisitedCountries(): string[] {
+  try { return JSON.parse(localStorage.getItem("blender_countries") ?? "[]"); } catch { return []; }
+}
+
 const HALO_R    = 88;
 const HALO_CIRC = 2 * Math.PI * HALO_R;
 
@@ -992,7 +1022,128 @@ function GatewayMentor({
 
 // ── Gateway: Cultivation (Seed + Soil) ─────────────────────────────────────
 // -- Gateway: Tobacco Terroir & Craft (Stage 3a) ---------------------------
-function GatewayTerroir({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+// ── Mastery Progress Lock Banner (fixed top, blending phase only) ───────────────
+function ProgressLockBanner({ xp }: { xp: number }) {
+  const tier   = getTier(xp);
+  const tiers  = [...MASTERY_TIERS] as MasteryTier[];
+  const next   = tiers.find(t => t.rank === tier.rank + 1);
+  const pct    = next ? Math.min(((xp - tier.min) / (next.min - tier.min)) * 100, 100) : 100;
+  const remain = next ? Math.max(next.min - xp, 0) : 0;
+  return (
+    <motion.div initial={{ y: -48, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      style={{ position:"fixed", top:0, left:0, right:0, zIndex:9994,
+        background:"rgba(0,0,0,0.88)", backdropFilter:"blur(20px)",
+        borderBottom:`1px solid ${tier.color}28`, padding:"10px 22px",
+        display:"flex", alignItems:"center", gap:18, flexWrap:"wrap" as const }} >
+      <div style={{ display:"flex", flexDirection:"column" as const, minWidth:155 }}>
+        <span style={{ color:tier.color, fontSize:11, fontWeight:800,
+          letterSpacing:"0.28em", textTransform:"uppercase" as const }}>{tier.name}</span>
+        <span style={{ color:"rgba(240,232,212,0.44)", fontSize:11,
+          letterSpacing:"0.08em" }}>{tier.sessionLabel}</span>
+      </div>
+      <div style={{ flex:1, maxWidth:300 }}>
+        <div style={{ height:4, borderRadius:2, background:"rgba(255,255,255,0.07)",
+          overflow:"hidden", marginBottom:4 }}>
+          <motion.div initial={{ width:0 }} animate={{ width:`${pct}%` }}
+            transition={{ duration:1.3, ease:"easeOut" }}
+            style={{ height:"100%", borderRadius:2,
+              background:`linear-gradient(90deg,${tier.color},${tier.color}80)` }} />
+        </div>
+        <div style={{ display:"flex", justifyContent:"space-between" }}>
+          <span style={{ color:`${GOLD}70`, fontSize:11 }}>{xp} XP</span>
+          {next
+            ? <span style={{ color:"rgba(240,232,212,0.37)", fontSize:11 }}>
+                {remain} pts to <span style={{ color:next.color }}>{next.name}</span>
+              </span>
+            : <span style={{ color:tier.color, fontSize:11 }}>★ MAX TIER</span>}
+        </div>
+      </div>
+      <div style={{ display:"flex", gap:5, alignItems:"center" }}>
+        {tiers.map(t => (
+          <div key={t.rank} title={t.name} style={{ width:9, height:9, borderRadius:"50%",
+            transition:"background 0.4s",
+            background: xp >= t.min ? t.color : "rgba(255,255,255,0.10)",
+            border: xp >= t.min ? "none" : `1px solid ${t.color}35` }} />
+        ))}
+      </div>
+      {next && <span style={{ color:"rgba(240,232,212,0.35)", fontSize:11,
+        letterSpacing:"0.06em", whiteSpace:"nowrap" as const }}>
+        {remain} more XP to unlock {next.sessionLabel}</span>}
+    </motion.div>
+  );
+}
+
+// ── Country Passport Tracker (dual-flag split, localStorage-backed) ─────────────
+function CountryTracker({ currentCountry }: { currentCountry: string | null }) {
+  const [allVisited, setAllVisited] = useState<string[]>([]);
+  useEffect(() => { setAllVisited(loadVisitedCountries()); }, []);
+  const combined = currentCountry ? [...new Set([...allVisited, currentCountry])] : allVisited;
+  const hasTwo   = combined.length >= 2;
+  const slot1    = combined[0] ?? null;
+  const slot2    = combined[1] ?? null;
+  return (
+    <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }}
+      transition={{ delay:0.45, duration:0.6 }}
+      style={{ background: hasTwo ? "rgba(212,175,55,0.06)" : "rgba(0,0,0,0.45)",
+        border:`1px solid ${hasTwo ? GOLD+"38" : "rgba(255,255,255,0.10)"}`,
+        borderRadius:10, padding:"16px 20px", marginBottom:20,
+        backdropFilter:"blur(20px)" }} >
+      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14,
+        flexWrap:"wrap" as const }}>
+        <span style={{ color: hasTwo ? GOLD : "rgba(240,232,212,0.50)", fontSize:12,
+          fontWeight:800, letterSpacing:"0.24em", textTransform:"uppercase" as const }}>
+          Origin Passport — {combined.length}/2 Countries
+        </span>
+        {hasTwo && <motion.span initial={{ scale:0 }} animate={{ scale:1 }}
+          style={{ color:"#4ade80", fontSize:18, lineHeight:1 }}>✓</motion.span>}
+      </div>
+      <div style={{ display:"flex", gap:12, flexWrap:"wrap" as const }}>
+        {([slot1, slot2] as (string|null)[]).map((country, i) => (
+          <div key={i} style={{ flex:1, minWidth:140,
+            background: country ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.015)",
+            border:`1.5px solid ${country ? GOLD+"38" : "rgba(255,255,255,0.09)"}`,
+            borderRadius:8, padding:"14px 16px", display:"flex", alignItems:"center", gap:12 }}>
+            {country ? (
+              <>
+                <span style={{ fontSize:28, lineHeight:1 }}>{COUNTRY_FLAGS[country] ?? "\u{1F33F}"}</span>
+                <div>
+                  <div style={{ color:GOLD, fontSize:14, fontWeight:700 }}>{country}</div>
+                  <div style={{ color:"#4ade80", fontSize:11, letterSpacing:"0.14em", marginTop:3 }}>✓ PROFILE LOCKED</div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ width:30, height:30, borderRadius:"50%", flexShrink:0,
+                  border:"1.5px dashed rgba(212,175,55,0.28)",
+                  display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <span style={{ color:"rgba(212,175,55,0.38)", fontSize:14 }}>?</span>
+                </div>
+                <div>
+                  <div style={{ color:"rgba(240,232,212,0.35)", fontSize:14 }}>Country {i + 1}</div>
+                  <div style={{ color:"rgba(212,175,55,0.32)", fontSize:11, marginTop:3,
+                    letterSpacing:"0.12em", textTransform:"uppercase" as const }}>
+                    {i === 0 ? "Select Terroir" : "Return to Unlock"}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+      <p style={{ color: hasTwo ? "#4ade80" : "rgba(240,232,212,0.40)",
+        fontSize:14, lineHeight:1.55, margin:"12px 0 0", letterSpacing:"0.03em" }}>
+        {hasTwo
+          ? "★ Dual-origin mastery achieved — Golden Box Vault access granted."
+          : "Complete a second origin masterclass to unlock the Golden Box Vault and Master Sommelier status."}
+      </p>
+    </motion.div>
+  );
+}
+
+function GatewayTerroir({ onNext, onBack, onCountrySelect }: {
+  onNext: () => void; onBack: () => void; onCountrySelect?: (country: string) => void;
+}) {
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const REGIONS = [
     {
@@ -1146,7 +1297,7 @@ function GatewayTerroir({ onNext, onBack }: { onNext: () => void; onBack: () => 
             onMouseDown={() => selectedRegion && playClick()}
             whileHover={selectedRegion ? { scale: 1.03 } : {}}
             whileTap={selectedRegion ? { scale: 0.97, y: 2 } : {}}
-            onClick={() => selectedRegion && onNext()}
+            onClick={() => { if (!selectedRegion) return; onCountrySelect?.(selectedRegion); onNext(); }}
           >
             {selectedRegion ? `${selectedRegion} Selected — Continue →` : "Select a Region to Continue"}
           </motion.button>
@@ -2324,14 +2475,20 @@ function HumidorPanel({ sel, synergy }: { sel: Sel; synergy: number }) {
 
 
 function AlchemyReveal({
-  sel, onRestart, finalScore,
-}: { sel: Sel; onRestart: () => void; finalScore: number }) {
+  sel, onRestart, finalScore, currentCountry,
+}: { sel: Sel; onRestart: () => void; finalScore: number; currentCountry?: string | null }) {
   const { speak } = useAudio();
   const { guestProfile, isReturning } = useGuestProfile();
   const [phase,       setPhase]       = useState<"scan" | "result">("scan");
   const [data,        setData]        = useState<PairingResult | null>(null);
   const [staffTab,    setStaffTab]    = useState(false);
   const [nightlyData, setNightlyData] = useState<{ avg: number; count: number; tier: string } | null>(null);
+
+  // Persist session country when reveal opens
+  useEffect(() => {
+    if (currentCountry) persistCountry(currentCountry);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     fetch("/api/master-blender/nightly-average")
@@ -2812,6 +2969,9 @@ function AlchemyReveal({
               </p>
             </motion.div>
 
+            {/* Origin Passport */}
+            <CountryTracker currentCountry={currentCountry ?? null} />
+
             {/* Nightly Lounge Leaderboard */}
             {nightlyData && (
               <motion.div
@@ -2969,7 +3129,8 @@ export default function MasterBlender() {
   const [gateway,        setGateway]        = useState<GatewayPhase>("intro");
   const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
   const [selectedSeed,   setSelectedSeed]   = useState<string | null>(null);
-  const [selectedSoil,   setSelectedSoil]   = useState<string | null>(null);
+  const [selectedSoil,    setSelectedSoil]    = useState<string | null>(null);
+  const [selectedTerroir, setSelectedTerroir] = useState<string | null>(null);
 
   const [step,   setStep]   = useState<0|1|2|3>(0);
   const [sel,    setSel]    = useState<Sel>({});
@@ -2999,6 +3160,7 @@ export default function MasterBlender() {
     setSelectedMentor(null);
     setSelectedSeed(null);
     setSelectedSoil(null);
+    setSelectedTerroir(null);
     scoreFrozenRef.current = false;
     setScoreFrozenState(false);
     setMentorPenaltyFired(false);
@@ -3192,6 +3354,10 @@ export default function MasterBlender() {
                   key="terroir"
                   onNext={() => setGateway("seed_biology")}
                   onBack={() => setGateway("mentor")}
+                  onCountrySelect={(country) => {
+                    setSelectedTerroir(country);
+                    persistCountry(country);
+                  }}
                 />
               )}
               {gateway === "seed_biology" && (
@@ -3279,6 +3445,9 @@ export default function MasterBlender() {
       <SmokeCanvas />
       <RippleCanvas />
 
+      {/* Mastery Progress Lock Banner — blending phase only */}
+      {gateway === "blending" && !reveal && <ProgressLockBanner xp={xp} />}
+
       {/* Live Humidor Panel — blending phase only */}
       {gateway === "blending" && !reveal && (
         <HumidorPanel sel={sel} synergy={synergy} />
@@ -3295,6 +3464,7 @@ export default function MasterBlender() {
           <AlchemyReveal
             sel={sel}
             finalScore={xp}
+            currentCountry={selectedTerroir}
             onRestart={() => {
               setReveal(false);
               setStep(0 as 0);
