@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft, Brain, TrendingUp, TrendingDown, BarChart2,
   Users, Zap, ShoppingBag, Package, Star, Cpu, Lock,
+  Activity, Wifi, WifiOff, RefreshCw,
 } from "lucide-react";
 import { AxEmptyState, AxLoadingState } from "../components/ax";
 
@@ -51,6 +52,239 @@ const CRAFT_COLORS: Record<string, string> = {
   brew:  "#ca8a04",
   vape:  "#0891b2",
 };
+
+// ── Telemetry health types ─────────────────────────────────────────────────────
+
+interface CraftHealth {
+  craftType:      string;
+  totalEvents24h: number;
+  totalEvents7d:  number;
+  lastEventAt:    string | null;
+  breakdown24h: {
+    swipe_start:    number;
+    swipe_add:      number;
+    swipe_skip:     number;
+    build_complete: number;
+    add_to_order:   number;
+  };
+}
+
+interface TelemetryHealth {
+  updatedAt: string;
+  overall: {
+    totalEvents24h: number;
+    totalEvents7d:  number;
+    lastEventAt:    string | null;
+  };
+  crafts: CraftHealth[];
+}
+
+// ── Telemetry health helpers ───────────────────────────────────────────────────
+
+const CRAFT_LABELS_SHORT: Record<string, string> = {
+  smoke: "Smoke",
+  pour:  "Pour",
+  brew:  "Brew",
+  vape:  "Vape",
+};
+
+function relativeTime(isoStr: string | null): string {
+  if (!isoStr) return "never";
+  const diffMs = Date.now() - new Date(isoStr).getTime();
+  if (diffMs < 60_000)     return "just now";
+  if (diffMs < 3_600_000)  return `${Math.floor(diffMs / 60_000)}m ago`;
+  if (diffMs < 86_400_000) return `${Math.floor(diffMs / 3_600_000)}h ago`;
+  return `${Math.floor(diffMs / 86_400_000)}d ago`;
+}
+
+function healthStatus(lastEventAt: string | null, events24h: number): "live" | "stale" | "silent" {
+  if (!lastEventAt || events24h === 0) return "silent";
+  const diffMs = Date.now() - new Date(lastEventAt).getTime();
+  if (diffMs < 3_600_000) return "live";   // within 1h
+  if (diffMs < 86_400_000) return "stale"; // within 24h
+  return "silent";
+}
+
+const STATUS_CONFIG = {
+  live:   { color: "#34D399", label: "Live",   Icon: Wifi    },
+  stale:  { color: "#FB923C", label: "Stale",  Icon: Wifi    },
+  silent: { color: "#F87171", label: "Silent", Icon: WifiOff },
+} as const;
+
+// ── Telemetry health widget ────────────────────────────────────────────────────
+
+function TelemetryHealthWidget({
+  health,
+  loading,
+  pollingAt,
+}: {
+  health: TelemetryHealth | null;
+  loading: boolean;
+  pollingAt: Date | null;
+}) {
+  const BREAKDOWN_LABELS: { key: keyof CraftHealth["breakdown24h"]; label: string; color: string }[] = [
+    { key: "swipe_start",    label: "Start",    color: "#60A5FA" },
+    { key: "swipe_add",      label: "Add",      color: "#34D399" },
+    { key: "swipe_skip",     label: "Skip",     color: "#F87171" },
+    { key: "build_complete", label: "Build",    color: "#D48B00" },
+    { key: "add_to_order",   label: "Order",    color: "#A78BFA" },
+  ];
+
+  const overallStatus = health
+    ? healthStatus(health.overall.lastEventAt, health.overall.totalEvents24h)
+    : "silent";
+  const { color: overallColor } = STATUS_CONFIG[overallStatus];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+      style={{
+        background: C.card,
+        border: `1px solid ${C.border}`,
+        borderRadius: 16,
+        padding: "20px 24px",
+        marginBottom: 16,
+      }}
+    >
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+        <div style={{
+          width: 32, height: 32, borderRadius: 8,
+          background: `${overallColor}14`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          flexShrink: 0,
+        }}>
+          <Activity size={15} color={overallColor} />
+        </div>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>Telemetry Health</div>
+          <div style={{ fontSize: 11, color: C.muted }}>E.A.T. Engine event pipeline — per-craft</div>
+        </div>
+
+        {/* Overall 24h badge */}
+        {health && (
+          <div style={{
+            marginLeft: "auto", display: "flex", alignItems: "center", gap: 10,
+          }}>
+            <div style={{
+              padding: "4px 12px",
+              borderRadius: 20,
+              background: `${overallColor}14`,
+              border: `1px solid ${overallColor}30`,
+              fontSize: 12, fontWeight: 700, color: overallColor,
+            }}>
+              {(health.overall.totalEvents24h ?? 0).toLocaleString()} events / 24h
+            </div>
+            {pollingAt && (
+              <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: C.dim }}>
+                <RefreshCw size={10} color={C.dim} />
+                {relativeTime(pollingAt.toISOString())}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      {loading && !health ? (
+        <div style={{ color: C.muted, fontSize: 13, padding: "8px 0" }}>Loading telemetry health…</div>
+      ) : !health ? (
+        <div style={{ color: C.muted, fontSize: 13, padding: "8px 0" }}>
+          Telemetry data unavailable — check API connectivity.
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {health.crafts.map((craft, idx) => {
+            const status  = healthStatus(craft.lastEventAt, craft.totalEvents24h);
+            const cfg     = STATUS_CONFIG[status];
+            const craftColor = CRAFT_COLORS[craft.craftType] ?? C.accent;
+
+            return (
+              <div
+                key={craft.craftType}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "90px 1fr auto",
+                  alignItems: "center",
+                  gap: 16,
+                  padding: "12px 14px",
+                  borderRadius: 10,
+                  background: idx % 2 === 0
+                    ? "rgba(26,26,27,0.03)"
+                    : "transparent",
+                  border: `1px solid ${C.border}`,
+                }}
+              >
+                {/* Craft label + status dot */}
+                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                  <div style={{
+                    width: 8, height: 8, borderRadius: "50%",
+                    background: craftColor, flexShrink: 0,
+                  }} />
+                  <span style={{ fontSize: 13, fontWeight: 700, color: C.text, textTransform: "capitalize" }}>
+                    {CRAFT_LABELS_SHORT[craft.craftType] ?? craft.craftType}
+                  </span>
+                </div>
+
+                {/* Breakdown mini-row */}
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  {BREAKDOWN_LABELS.map(ev => (
+                    <div key={ev.key} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <div style={{
+                        width: 6, height: 6, borderRadius: "50%",
+                        background: ev.color, flexShrink: 0,
+                      }} />
+                      <span style={{ fontSize: 11, color: C.muted }}>{ev.label}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: C.text }}>
+                        {craft.breakdown24h[ev.key]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Status + last seen */}
+                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
+                  <span style={{ fontSize: 11, color: C.dim, whiteSpace: "nowrap" }}>
+                    {relativeTime(craft.lastEventAt)}
+                  </span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    <cfg.Icon size={12} color={cfg.color} />
+                    <span style={{ fontSize: 11, fontWeight: 600, color: cfg.color }}>{cfg.label}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Footer: 7-day totals */}
+          <div style={{
+            display: "flex", gap: 24, paddingTop: 10,
+            borderTop: `1px solid ${C.border}`,
+            flexWrap: "wrap",
+          }}>
+            {health.crafts.map(craft => (
+              <div key={craft.craftType} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <div style={{
+                  width: 6, height: 6, borderRadius: "50%",
+                  background: CRAFT_COLORS[craft.craftType] ?? C.accent,
+                }} />
+                <span style={{ fontSize: 11, color: C.muted }}>
+                  {CRAFT_LABELS_SHORT[craft.craftType] ?? craft.craftType}
+                </span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: C.text }}>
+                  {(craft.totalEvents7d ?? 0).toLocaleString()}
+                </span>
+                <span style={{ fontSize: 10, color: C.dim }}>7d</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </motion.div>
+  );
+}
 
 // ── Animated counter ──────────────────────────────────────────────────────────
 
@@ -196,6 +430,9 @@ export default function SwipeIntelligence() {
   const [loading,        setLoading]        = useState(true);
   const [error,          setError]          = useState<string | null>(null);
   const [tab,            setTab]            = useState<"overview" | "tags" | "revenue" | "craft" | "orchestration">("overview");
+  const [telemetryHealth,        setTelemetryHealth]        = useState<TelemetryHealth | null>(null);
+  const [telemetryHealthLoading, setTelemetryHealthLoading] = useState(true);
+  const [telemetryPollingAt,     setTelemetryPollingAt]     = useState<Date | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -225,6 +462,32 @@ export default function SwipeIntelligence() {
   const completionRate = totalSessions > 0 && data?.recommendationShown
     ? Math.round((data.recommendationShown / totalSessions) * 100)
     : 0;
+
+  // Telemetry health — poll every 30 s while the overview tab is visible
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchHealth = async () => {
+      try {
+        const data = await apiGet("/api/kernel/telemetry/health");
+        if (!cancelled) {
+          setTelemetryHealth(data as TelemetryHealth);
+          setTelemetryPollingAt(new Date());
+        }
+      } catch {
+        // keep showing stale data; don't clear it on transient errors
+      } finally {
+        if (!cancelled) setTelemetryHealthLoading(false);
+      }
+    };
+
+    void fetchHealth();
+    const intervalId = setInterval(() => { void fetchHealth(); }, 30_000);
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, []); // intentionally runs for the full page lifetime — health data is cheap and stays fresh across tab switches
 
   // Lazy-load craft activity when Craft Compare tab is activated.
   // Cancels any in-flight request before starting a new one to prevent
@@ -379,6 +642,13 @@ export default function SwipeIntelligence() {
                   <StatCard label="Completion Rate"    value={completionRate}                    icon={BarChart2} color={C.blue}   suffix="%" sub="reached reveal" />
                   <StatCard label="Unique Preferences" value={data?.topSelectedTags.length ?? 0} icon={Brain}     color={C.orange} sub="distinct flavor tags" />
                 </div>
+
+                {/* Telemetry Health Widget */}
+                <TelemetryHealthWidget
+                  health={telemetryHealth}
+                  loading={telemetryHealthLoading}
+                  pollingAt={telemetryPollingAt}
+                />
 
                 {/* Top selected vs skipped side by side */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>

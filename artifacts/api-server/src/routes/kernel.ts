@@ -937,4 +937,98 @@ router.get("/telemetry/products/:cardId/trend", async (req: Request, res: Respon
   }
 });
 
+// ── GET /api/kernel/telemetry/health ──────────────────────────────────────────
+// Lightweight health summary for the Swipe Intelligence Telemetry Health widget.
+// No auth required — counts only, no PII.
+//
+// Response:
+//   {
+//     updatedAt: ISO string,
+//     overall: { totalEvents24h, totalEvents7d, lastEventAt | null },
+//     crafts: [{
+//       craftType, totalEvents24h, totalEvents7d,
+//       lastEventAt: ISO string | null,
+//       breakdown24h: { swipe_start, swipe_add, swipe_skip, build_complete, add_to_order }
+//     }]
+//   }
+
+router.get("/telemetry/health", async (_req: Request, res: Response) => {
+  try {
+    type CraftHealthRow = {
+      craft_type: string;
+      total_24h: number;
+      total_7d: number;
+      last_event_at: string | null;
+      swipe_start_24h: number;
+      swipe_add_24h: number;
+      swipe_skip_24h: number;
+      build_complete_24h: number;
+      add_to_order_24h: number;
+    };
+
+    const craftResult = await db.execute(sql`
+      SELECT
+        COALESCE(te.payload->>'craftType', km.craft_type::text) AS craft_type,
+        SUM(CASE WHEN te.occurred_at >= NOW() - INTERVAL '24 hours' THEN 1 ELSE 0 END)::int AS total_24h,
+        SUM(CASE WHEN te.occurred_at >= NOW() - INTERVAL '7 days'   THEN 1 ELSE 0 END)::int AS total_7d,
+        TO_CHAR(MAX(te.occurred_at) AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS last_event_at,
+        SUM(CASE WHEN te.occurred_at >= NOW() - INTERVAL '24 hours' AND te.event_type = 'swipe_start'    THEN 1 ELSE 0 END)::int AS swipe_start_24h,
+        SUM(CASE WHEN te.occurred_at >= NOW() - INTERVAL '24 hours' AND te.event_type = 'swipe_add'      THEN 1 ELSE 0 END)::int AS swipe_add_24h,
+        SUM(CASE WHEN te.occurred_at >= NOW() - INTERVAL '24 hours' AND te.event_type = 'swipe_skip'     THEN 1 ELSE 0 END)::int AS swipe_skip_24h,
+        SUM(CASE WHEN te.occurred_at >= NOW() - INTERVAL '24 hours' AND te.event_type = 'build_complete' THEN 1 ELSE 0 END)::int AS build_complete_24h,
+        SUM(CASE WHEN te.occurred_at >= NOW() - INTERVAL '24 hours' AND te.event_type = 'add_to_order'   THEN 1 ELSE 0 END)::int AS add_to_order_24h
+      FROM telemetry_events te
+      LEFT JOIN kernel_modules km ON km.id = te.module_id
+      WHERE te.occurred_at >= NOW() - INTERVAL '7 days'
+        AND COALESCE(te.payload->>'craftType', km.craft_type::text) IN ('smoke', 'pour', 'brew', 'vape')
+      GROUP BY 1
+    `);
+
+    const dbRows = craftResult.rows as CraftHealthRow[];
+    const byType = new Map(dbRows.map(r => [r.craft_type, r]));
+
+    const ALL_CRAFTS = ["smoke", "pour", "brew", "vape"] as const;
+    const crafts = ALL_CRAFTS.map(ct => {
+      const r = byType.get(ct);
+      return {
+        craftType:     ct,
+        totalEvents24h: r?.total_24h    ?? 0,
+        totalEvents7d:  r?.total_7d     ?? 0,
+        lastEventAt:    r?.last_event_at ?? null,
+        breakdown24h: {
+          swipe_start:    r?.swipe_start_24h    ?? 0,
+          swipe_add:      r?.swipe_add_24h      ?? 0,
+          swipe_skip:     r?.swipe_skip_24h     ?? 0,
+          build_complete: r?.build_complete_24h ?? 0,
+          add_to_order:   r?.add_to_order_24h   ?? 0,
+        },
+      };
+    });
+
+    const overallResult = await db.execute(sql`
+      SELECT
+        COALESCE(SUM(CASE WHEN occurred_at >= NOW() - INTERVAL '24 hours' THEN 1 ELSE 0 END), 0)::int AS total_24h,
+        COALESCE(SUM(CASE WHEN occurred_at >= NOW() - INTERVAL '7 days'   THEN 1 ELSE 0 END), 0)::int AS total_7d,
+        TO_CHAR(MAX(occurred_at) AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS last_event_at
+      FROM telemetry_events
+      WHERE occurred_at >= NOW() - INTERVAL '7 days'
+    `);
+
+    type OverallRow = { total_24h: number; total_7d: number; last_event_at: string | null };
+    const ov = (overallResult.rows[0] ?? { total_24h: 0, total_7d: 0, last_event_at: null }) as OverallRow;
+
+    return res.json({
+      updatedAt: new Date().toISOString(),
+      overall: {
+        totalEvents24h: ov.total_24h,
+        totalEvents7d:  ov.total_7d,
+        lastEventAt:    ov.last_event_at,
+      },
+      crafts,
+    });
+  } catch {
+    return res.status(500).json({ error: "Failed to load telemetry health" });
+  }
+});
+
 export default router;
