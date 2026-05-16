@@ -643,6 +643,7 @@ export default function EATDashboard() {
   // Dot state: visible = should render; fading = transitioning out
   const [liveDotVisible, setLiveDotVisible] = useState(false);
   const [liveDotFading, setLiveDotFading]   = useState(false);
+  const [lastEventAgo, setLastEventAgo]     = useState<string | null>(null);
   const lastEventAtRef                      = useRef<number | null>(null);
   const liveDotFadeTimerRef                 = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tabRef                              = useRef<DashTab>(tab);
@@ -849,6 +850,7 @@ export default function EATDashboard() {
               setUnreadCount((c) => c + freshIds.size);
             }
             lastEventAtRef.current = Date.now();
+            setLastEventAgo("0s ago");
             if (liveDotFadeTimerRef.current) clearTimeout(liveDotFadeTimerRef.current);
             setLiveDotFading(false);
             setLiveDotVisible(true);
@@ -909,18 +911,24 @@ export default function EATDashboard() {
 
   // Drive the "recently active" dot — re-evaluate every 5 s; clears once 60 s
   // has elapsed since the last new event arrived. Fades out gracefully instead
-  // of disappearing abruptly.
+  // of disappearing abruptly. Also keeps the relative-time label fresh.
   useEffect(() => {
     const ACTIVITY_WINDOW_MS = 60_000;
     const FADE_DURATION_MS   = 600;
+    const formatAgo = (ms: number): string => {
+      if (ms < 60_000) return `${Math.round(ms / 1000)}s ago`;
+      return `${Math.floor(ms / 60_000)}m ago`;
+    };
     const id = setInterval(() => {
       if (lastEventAtRef.current === null) return;
       const elapsed = Date.now() - lastEventAtRef.current;
+      setLastEventAgo(formatAgo(elapsed));
       if (elapsed >= ACTIVITY_WINDOW_MS) {
         setLiveDotFading(true);
         liveDotFadeTimerRef.current = setTimeout(() => {
           setLiveDotVisible(false);
           setLiveDotFading(false);
+          setLastEventAgo(null);
         }, FADE_DURATION_MS);
       }
     }, 5_000);
@@ -1444,6 +1452,21 @@ export default function EATDashboard() {
               style={{ position: "relative" }}
             >
               {t.label}
+
+              {/* Last-activity timestamp — shown while the live dot is active */}
+              {isLive && liveDotVisible && lastEventAgo && (
+                <span style={{
+                  marginLeft: 6,
+                  fontSize: 9,
+                  fontWeight: 500,
+                  letterSpacing: "0.04em",
+                  color: "rgba(74,222,128,0.75)",
+                  pointerEvents: "none",
+                  whiteSpace: "nowrap",
+                }}>
+                  {lastEventAgo}
+                </span>
+              )}
 
               {/* Mute icon: shown when muted (replaces unread badge) */}
               {isLive && isMuted && (
