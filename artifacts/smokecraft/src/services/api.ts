@@ -1481,6 +1481,7 @@ export interface DemandEventParams {
   eventType:    DemandEventType;
   venueId?:     string;
   sessionId?:   string;
+  craftType?:   "smoke" | "pour" | "brew" | "vape";
 }
 
 /** Fire-and-forget — captures a demand signal. Never blocks the UI. */

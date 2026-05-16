@@ -144,6 +144,7 @@ export function OrderModal({ isOpen, cigar, drink, food, venueId, craftType = "s
           flavorNotes: item.flavorNotes,
           eventType:   "order",
           venueId:     orderVenueId,
+          craftType,
         });
       }
 
