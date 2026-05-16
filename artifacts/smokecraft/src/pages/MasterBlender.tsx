@@ -5,6 +5,33 @@ import { AudioWaveToggle, useAudio } from "@/contexts/AudioContext";
 import { useGuestProfile } from "@/contexts/GuestProfileContext";
 import { getStaffLine } from "@/lib/CraftVoiceRouter";
 
+// Velvet slide tone (Web Audio synth — no external file)
+function velvetSlide(): void {
+  try {
+    type WinAC = typeof window & { webkitAudioContext?: typeof AudioContext };
+    const AC = window.AudioContext ?? (window as WinAC).webkitAudioContext;
+    if (!AC) return;
+    const ctx  = new AC();
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(210, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(130, ctx.currentTime + 0.22);
+    gain.gain.setValueAtTime(0.07, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.22);
+    setTimeout(() => ctx.close().catch(() => {}), 600);
+  } catch { /* blocked by browser policy — silent */ }
+}
+
+// Module-level ripple trigger (registered by RippleCanvas on mount)
+let _rippleFn: ((x: number, y: number) => void) | null = null;
+function triggerBlenderRipple(x: number, y: number): void { _rippleFn?.(x, y); }
+
+
 // ── Reference images ────────────────────────────────────────────────────────
 import imgGoldenBox      from "@assets/eff17e31-8450-48d0-af84-9bd221fa2b0c_1778884524142.jpeg";
 import imgSovereignMap   from "@assets/IMG_5166_1778884524149.png";
@@ -193,6 +220,80 @@ function SmokeDrift() {
         />
       ))}
     </div>
+  );
+}
+
+
+// RippleCanvas — full-screen HTML5 canvas; renders expanding gold ripple rings
+// when triggerBlenderRipple(x, y) is called (module-level setter pattern).
+function RippleCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+    resize();
+    window.addEventListener("resize", resize);
+
+    _rippleFn = (cx: number, cy: number) => {
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      const maxR   = Math.hypot(canvas.width, canvas.height) * 0.88;
+      const start  = performance.now();
+      const dur    = 1150;
+      let   raf    = 0;
+
+      const draw = (now: number) => {
+        const t = Math.min((now - start) / dur, 1);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Three staggered concentric rings
+        for (let wave = 0; wave < 3; wave++) {
+          const wt = Math.max(0, t - wave * 0.13);
+          if (wt <= 0) continue;
+          const r     = wt * maxR;
+          const alpha = (1 - wt) * 0.5;
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(212,175,55,${alpha.toFixed(3)})`;
+          ctx.lineWidth   = Math.max(0.5, 2.5 * (1 - wt));
+          ctx.stroke();
+        }
+
+        // Central amber shock-glow (first 40% of animation)
+        if (t < 0.4) {
+          const glowR = t * 200;
+          const grad  = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowR);
+          grad.addColorStop(0, `rgba(212,175,55,${((0.4 - t) * 0.6).toFixed(3)})`);
+          grad.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.beginPath();
+          ctx.arc(cx, cy, glowR, 0, Math.PI * 2);
+          ctx.fillStyle = grad;
+          ctx.fill();
+        }
+
+        if (t < 1) {
+          raf = requestAnimationFrame(draw);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      };
+
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(draw);
+    };
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      _rippleFn = null;
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9990 }}
+    />
   );
 }
 
@@ -1356,6 +1457,7 @@ function AlchemyReveal({
 export default function MasterBlender() {
   const [, nav]       = useLocation();
   const { speak, stopSpeak } = useAudio();
+  const { guestProfile }     = useGuestProfile();
 
   // ── Gateway state ────────────────────────────────────────────────────────
   const [gateway,        setGateway]        = useState<GatewayPhase>("intro");
@@ -1369,6 +1471,8 @@ export default function MasterBlender() {
   const [chips,  setChips]  = useState<XPFloat[]>([]);
   const [reveal, setReveal] = useState(false);
   const [smokeSlider, setSmokeSlider] = useState(50);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [txId,         setTxId]         = useState<string | null>(null);
 
   // ── Force Stage 1 on every fresh mount — prevents HMR state bleed ────────
   // Also wipes all legacy localStorage/sessionStorage keys so no prior session
@@ -1439,6 +1543,43 @@ export default function MasterBlender() {
   }
   function prevStep() { if (step > 0) setStep(s => (s - 1) as 0|1|2|3); }
 
+  async function handleRevealMatch(e: React.MouseEvent) {
+    if (!canAdvance) return;
+    if (step !== 3) { nextStep(); return; }
+
+    const x = e.clientX;
+    const y = e.clientY;
+
+    // Fire visual + audio layers synchronously — user sees immediate response
+    triggerBlenderRipple(x, y);
+    velvetSlide();
+
+    // Advance to reveal overlay immediately (optimistic)
+    nextStep();
+
+    // Background ledger submit — data hits Command Center as screen dissolves
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/novee/transaction/submit", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          blendSelected:   sel.leaf?.label   ?? "Unknown",
+          vitola:          sel.vitola?.label  ?? "Unknown",
+          customEngraving: sel.cut?.label     ?? "",
+          guestId:         guestProfile?.firstName ?? "guest",
+        }),
+      });
+      if (res.ok) {
+        const data = (await res.json()) as { transactionId: string };
+        setTxId(data.transactionId);
+      }
+    } catch { /* non-fatal — reveal overlay already shown */ } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   const stepKeys: (keyof Sel)[] = ["leaf","wrapper","vitola","cut"];
   const canAdvance = !!sel[stepKeys[step]];
 
@@ -1504,6 +1645,7 @@ export default function MasterBlender() {
 
       {/* Drifting smoke ambient */}
       <SmokeDrift />
+      <RippleCanvas />
 
       {/* XP float chips */}
       <AnimatePresence>
@@ -1833,7 +1975,7 @@ export default function MasterBlender() {
         </div>
 
         <motion.button
-          onClick={nextStep}
+          onClick={handleRevealMatch}
           whileTap={{ scale: 0.93 }}
           whileHover={{ scale: canAdvance ? 1.03 : 1 }}
           disabled={!canAdvance}
