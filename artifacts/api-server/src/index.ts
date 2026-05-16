@@ -152,6 +152,265 @@ try {
   logger.warn({ err }, "Kernel bootstrap failed — /api/kernel may be unavailable");
 }
 
+// ── Universal POS Integration Layer — provision tables if missing ─────────────
+// All 10 POS/EEIS tables are IF NOT EXISTS safe (idempotent on every restart).
+try {
+  const { db: posDb }       = await import("@workspace/db");
+  const { sql: posSql }     = await import("drizzle-orm");
+
+  // pos_connections — one row per venue × POS system
+  await posDb.execute(posSql`
+    CREATE TABLE IF NOT EXISTS pos_connections (
+      id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id     UUID NOT NULL,
+      provider     TEXT NOT NULL,
+      display_name TEXT NOT NULL,
+      merchant_id  TEXT,
+      location_id  TEXT,
+      webhook_url  TEXT,
+      is_default   BOOLEAN NOT NULL DEFAULT FALSE,
+      status       TEXT NOT NULL DEFAULT 'pending_auth',
+      last_sync_at TIMESTAMPTZ,
+      created_by   UUID,
+      meta         JSONB NOT NULL DEFAULT '{}',
+      created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS pos_connections_venue_idx ON pos_connections (venue_id)
+  `);
+
+  // pos_tokens — AES-256-GCM encrypted credential vault
+  await posDb.execute(posSql`
+    CREATE TABLE IF NOT EXISTS pos_tokens (
+      id                       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      connection_id            UUID NOT NULL,
+      venue_id                 UUID NOT NULL,
+      provider                 TEXT NOT NULL,
+      encrypted_access_token   TEXT NOT NULL,
+      encrypted_refresh_token  TEXT,
+      encrypted_api_secret     TEXT,
+      token_type               TEXT NOT NULL DEFAULT 'Bearer',
+      scopes                   TEXT,
+      expires_at               TIMESTAMPTZ,
+      is_revoked               BOOLEAN NOT NULL DEFAULT FALSE,
+      last_refreshed_at        TIMESTAMPTZ,
+      created_at               TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at               TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS pos_tokens_connection_idx ON pos_tokens (connection_id, venue_id)
+  `);
+
+  // pos_menu_mappings — EEIS product ↔ POS item ID mappings
+  await posDb.execute(posSql`
+    CREATE TABLE IF NOT EXISTS pos_menu_mappings (
+      id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      venue_id       UUID NOT NULL,
+      connection_id  UUID NOT NULL,
+      provider       TEXT NOT NULL,
+      eeis_prod_id   TEXT NOT NULL,
+      eeis_name      TEXT NOT NULL,
+      pos_prod_id    TEXT NOT NULL,
+      pos_name       TEXT NOT NULL,
+      pos_category   TEXT,
+      pos_price_cents INTEGER,
+      sku            TEXT,
+      is_verified    BOOLEAN NOT NULL DEFAULT FALSE,
+      is_active      BOOLEAN NOT NULL DEFAULT TRUE,
+      mapped_by      UUID,
+      created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS pos_menu_mappings_venue_idx ON pos_menu_mappings (venue_id, eeis_prod_id)
+  `);
+
+  // pos_inventory_cache — live inventory from POS (30-min TTL)
+  await posDb.execute(posSql`
+    CREATE TABLE IF NOT EXISTS pos_inventory_cache (
+      id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      connection_id UUID NOT NULL,
+      venue_id      UUID NOT NULL,
+      provider      TEXT NOT NULL,
+      product_id    TEXT NOT NULL,
+      product_name  TEXT NOT NULL,
+      quantity      INTEGER NOT NULL DEFAULT 0,
+      available     BOOLEAN NOT NULL DEFAULT TRUE,
+      price_cents   INTEGER,
+      sku           TEXT,
+      expires_at    TIMESTAMPTZ NOT NULL,
+      created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS pos_inventory_cache_venue_idx ON pos_inventory_cache (venue_id, product_id)
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS pos_inventory_cache_expires_idx ON pos_inventory_cache (expires_at)
+  `);
+
+  // pos_sync_logs — every inventory/catalog sync attempt
+  await posDb.execute(posSql`
+    CREATE TABLE IF NOT EXISTS pos_sync_logs (
+      id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      connection_id  UUID NOT NULL,
+      venue_id       UUID NOT NULL,
+      provider       TEXT NOT NULL,
+      sync_type      TEXT NOT NULL,
+      status         TEXT NOT NULL,
+      item_count     INTEGER NOT NULL DEFAULT 0,
+      duration_ms    INTEGER,
+      error_message  TEXT,
+      triggered_by   TEXT,
+      created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS pos_sync_logs_connection_idx ON pos_sync_logs (connection_id)
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS pos_sync_logs_venue_idx ON pos_sync_logs (venue_id)
+  `);
+
+  // pos_webhook_events — dedup + audit trail for all incoming POS webhooks
+  await posDb.execute(posSql`
+    CREATE TABLE IF NOT EXISTS pos_webhook_events (
+      id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      connection_id     UUID,
+      venue_id          UUID,
+      provider          TEXT NOT NULL,
+      event_type        TEXT NOT NULL,
+      external_event_id TEXT,
+      status            TEXT NOT NULL DEFAULT 'pending',
+      signature_valid   BOOLEAN NOT NULL DEFAULT FALSE,
+      raw_payload       JSONB NOT NULL DEFAULT '{}',
+      error_message     TEXT,
+      idempotency_key   TEXT,
+      processed_at      TIMESTAMPTZ,
+      created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await posDb.execute(posSql`
+    CREATE UNIQUE INDEX IF NOT EXISTS pos_webhook_events_idempotency_idx
+      ON pos_webhook_events (idempotency_key)
+      WHERE idempotency_key IS NOT NULL
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS pos_webhook_events_venue_idx ON pos_webhook_events (venue_id)
+  `);
+
+  // pos_retry_queue — exponential-backoff retry for failed POS operations
+  await posDb.execute(posSql`
+    CREATE TABLE IF NOT EXISTS pos_retry_queue (
+      id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      connection_id    UUID NOT NULL,
+      venue_id         UUID NOT NULL,
+      provider         TEXT NOT NULL,
+      operation        TEXT NOT NULL,
+      status           TEXT NOT NULL DEFAULT 'pending',
+      payload          JSONB NOT NULL DEFAULT '{}',
+      attempt_count    INTEGER NOT NULL DEFAULT 0,
+      max_attempts     INTEGER NOT NULL DEFAULT 5,
+      last_attempt_at  TIMESTAMPTZ,
+      last_error       TEXT,
+      next_retry_at    TIMESTAMPTZ,
+      resolved_at      TIMESTAMPTZ,
+      idempotency_key  TEXT,
+      created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS pos_retry_queue_due_idx
+      ON pos_retry_queue (status, next_retry_at)
+      WHERE status = 'pending'
+  `);
+
+  // pos_health_logs — 5-min connectivity probes for health dashboard
+  await posDb.execute(posSql`
+    CREATE TABLE IF NOT EXISTS pos_health_logs (
+      id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      connection_id     UUID NOT NULL,
+      venue_id          UUID NOT NULL,
+      provider          TEXT NOT NULL,
+      check_type        TEXT NOT NULL,
+      result            TEXT NOT NULL,
+      response_ms       INTEGER,
+      error_message     TEXT,
+      token_expires_at  TIMESTAMPTZ,
+      is_token_expired  BOOLEAN NOT NULL DEFAULT FALSE,
+      consecutive_fails INTEGER NOT NULL DEFAULT 0,
+      created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS pos_health_logs_connection_idx ON pos_health_logs (connection_id)
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS pos_health_logs_created_idx ON pos_health_logs (created_at DESC)
+  `);
+
+  // device_heartbeats — kiosk / tablet liveness pings
+  await posDb.execute(posSql`
+    CREATE TABLE IF NOT EXISTS device_heartbeats (
+      id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      device_id   TEXT NOT NULL,
+      venue_id    UUID NOT NULL,
+      device_type TEXT NOT NULL DEFAULT 'kiosk',
+      status      TEXT NOT NULL DEFAULT 'online',
+      app_version TEXT,
+      ip_address  TEXT,
+      meta        JSONB NOT NULL DEFAULT '{}',
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS device_heartbeats_device_idx ON device_heartbeats (device_id, created_at DESC)
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS device_heartbeats_venue_idx ON device_heartbeats (venue_id)
+  `);
+
+  // eeis_order_events — append-only audit trail for all EEIS order lifecycle events
+  await posDb.execute(posSql`
+    CREATE TABLE IF NOT EXISTS eeis_order_events (
+      id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      order_id          TEXT NOT NULL,
+      venue_id          UUID NOT NULL,
+      user_id           UUID,
+      guest_profile_id  UUID,
+      session_id        UUID,
+      event_type        TEXT NOT NULL,
+      provider          TEXT,
+      external_order_id TEXT,
+      total_cents       INTEGER NOT NULL DEFAULT 0,
+      item_count        INTEGER NOT NULL DEFAULT 0,
+      idempotency_key   TEXT,
+      error_message     TEXT,
+      meta              JSONB NOT NULL DEFAULT '{}',
+      created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS eeis_order_events_order_idx ON eeis_order_events (order_id)
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS eeis_order_events_venue_idx ON eeis_order_events (venue_id, created_at DESC)
+  `);
+  await posDb.execute(posSql`
+    CREATE INDEX IF NOT EXISTS eeis_order_events_user_idx ON eeis_order_events (user_id)
+      WHERE user_id IS NOT NULL
+  `);
+
+  logger.info("Universal POS Integration Layer: all 10 tables provisioned");
+} catch (err) {
+  logger.warn({ err }, "POS table provisioning failed — POS integration layer may be unavailable");
+}
+
 // ── Users table migration — add telemetry_digest_opt_out if missing ───────────
 try {
   const { db: migDb } = await import("@workspace/db");

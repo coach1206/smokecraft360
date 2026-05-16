@@ -41,7 +41,19 @@ export type BusTopic =
   | "sensory.audio_trigger"
   | "hospitality.prediction"
   | "cluster.health_event"
-  | "pos.sync_complete";
+  | "pos.sync_complete"
+  | "pos.inventory_synced"
+  | "pos.order.confirmed"
+  | "pos.order.failed"
+  | "pos.webhook.order_complete"
+  | "pos.connected"
+  | "pos.token.refreshed"
+  | "pos.token.refresh_failed"
+  | "pos.health.offline"
+  | "pos.inventory.drift_detected"
+  | "loyalty.award_trigger"
+  | "xp.award_trigger"
+  | "ambient.order_complete";
 
 export interface BusEvent<T = unknown> {
   topic:    BusTopic;

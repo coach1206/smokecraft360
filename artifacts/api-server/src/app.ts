@@ -54,6 +54,14 @@ import ndaRouter                from "./routes/nda";
 import checkoutRouter           from "./routes/checkout";
 import { stripeWebhookHandler } from "./routes/stripeWebhook";
 import { posWebhookHandler }    from "./routes/posWebhook";
+import { cloverWebhookHandler }  from "./integrations/webhooks/clover.webhook";
+import { toastWebhookHandler }   from "./integrations/webhooks/toast.webhook";
+import { squareWebhookHandler }  from "./integrations/webhooks/square.webhook";
+import { shopifyWebhookHandler } from "./integrations/webhooks/shopify.webhook";
+import posIntegrationsRouter     from "./routes/posIntegrations";
+import posHealthRouter           from "./routes/posHealth";
+import posMenuMappingRouter      from "./routes/posMenuMapping";
+import eeisOrdersRouter          from "./routes/eeisOrders";
 import operationsRouter         from "./routes/operations";
 import imagesRouter             from "./routes/images";
 import enrollmentRouter         from "./routes/enrollment";
@@ -258,6 +266,30 @@ app.post(
   "/api/webhooks/pos",
   express.raw({ type: "application/json", limit: "32kb" }),
   posWebhookHandler,
+);
+
+// Universal POS integration layer — per-provider webhook endpoints.
+// Each verifies its own HMAC signature before body parsing.
+// Mounted BEFORE express.json() so rawBody is available for HMAC.
+app.post(
+  "/api/webhooks/pos/clover",
+  express.raw({ type: "*/*", limit: "32kb" }),
+  cloverWebhookHandler,
+);
+app.post(
+  "/api/webhooks/pos/toast",
+  express.raw({ type: "*/*", limit: "32kb" }),
+  toastWebhookHandler,
+);
+app.post(
+  "/api/webhooks/pos/square",
+  express.raw({ type: "*/*", limit: "32kb" }),
+  squareWebhookHandler,
+);
+app.post(
+  "/api/webhooks/pos/shopify",
+  express.raw({ type: "*/*", limit: "32kb" }),
+  shopifyWebhookHandler,
 );
 
 app.use(express.json({ limit: "16kb" }));
@@ -476,6 +508,12 @@ import { aiLimiter }                      from "./middleware/rateLimit";
 import { startPredictiveIntentWorker }    from "./workers/predictiveIntentWorker";
 import { startRecurringBillingWorker }    from "./workers/recurringBillingWorker";
 import { startAIUsageWorker }             from "./workers/aiUsageWorker";
+import { startInventoryWorker }           from "./integrations/workers/inventory.worker";
+import { startRetryWorker }               from "./integrations/workers/retry.worker";
+import { startReconciliationWorker as startPosReconciliationWorker } from "./integrations/workers/reconciliation.worker";
+import { startTokenRefreshWorker }        from "./integrations/workers/tokenRefresh.worker";
+import { startHealthMonitor }             from "./integrations/services/posHealthMonitor";
+import { startEdgeSyncReplay }            from "./integrations/services/edgeSync";
 app.use("/api/mentor",        aiLimiter, mentorAIRouter);
 app.use("/api/xp",            xpEngineRouter);
 app.use("/api/staff",         staffFloorRouter);
@@ -525,6 +563,16 @@ app.use("/api",                         aiConfigureRouter);
 app.use("/api",                         demoSimulateRouter);
 app.use("/api/kernel",                  kernelRouter);
 
+// ── Universal POS Integration Layer ───────────────────────────────────────────
+// Connections CRUD, credential vault, OAuth flow, on-demand sync
+app.use("/api",                         posIntegrationsRouter);
+// Health monitoring, retry queue stats
+app.use("/api",                         posHealthRouter);
+// Admin menu mapping (EEIS ↔ POS item IDs)
+app.use("/api",                         posMenuMappingRouter);
+// Universal order creation + EEIS order event timeline
+app.use("/api",                         eeisOrdersRouter);
+
 // ── Deep health endpoint ───────────────────────────────────────────────────────
 
 app.get("/api/health/deep", async (_req, res) => {
@@ -566,6 +614,14 @@ if (process.env["NODE_ENV"] !== "test") {
   startReconciliationWorker();
   startSignalMonitor();
   RuntimeActivationService.registerWorker("reconciliation");
+
+  // Universal POS Integration Layer workers
+  startInventoryWorker();
+  startRetryWorker();
+  startPosReconciliationWorker();
+  startTokenRefreshWorker();
+  startHealthMonitor();
+  startEdgeSyncReplay();
 
   // Non-blocking DB index hardening + runtime activation
   Promise.all([
