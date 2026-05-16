@@ -1,0 +1,133 @@
+HOSPITALITY INTELLIGENCE MASTER PROMPT
+
+MISSING / REQUIRED
+
+The platform already includes:
+
+* universal POS abstraction
+* telemetry ingestion
+* aggregation workers
+* event queues
+* retry systems
+* websocket direction
+* operational shell
+* health monitoring
+* inventory synchronization
+* adapter registry
+* token vault
+* EEIS order orchestration
+* dashboard telemetry
+
+BUT the platform is still missing the layer that transforms it from:
+
+operational software
+
+into:
+
+autonomous hospitality intelligence infrastructure.
+
+The missing systems are:
+
+1. Autonomous orchestration engine
+2. Real-time decision engine
+3. Predictive behavioral intelligence
+4. AI memory + preference evolution
+5. Environmental response orchestration
+6. Adaptive recommendation weighting
+7. Venue intelligence scoring
+8. Lounge engagement optimization
+9. Autonomous operational triggers
+10. Cross-system orchestration logic
+
+Without these systems:
+EEIS can:
+
+* display information
+    but cannot:
+* intelligently react
+* adapt
+* optimize
+* orchestrate environments
+* autonomously improve experiences
+
+⸻
+
+FAILURE PREVENTION CHECKLIST
+
+✔ Rule engine architecture
+✔ Autonomous decision engine
+✔ AI behavioral memory
+✔ Predictive telemetry scoring
+✔ Ambient orchestration
+✔ Event-driven automation
+✔ Multi-tenant venue intelligence
+✔ Adaptive recommendation weighting
+✔ Safety guardrails
+✔ Override systems
+✔ Operator approval modes
+✔ Live orchestration telemetry
+✔ Environmental state management
+✔ Venue scoring engine
+✔ AI confidence thresholds
+✔ Replay-safe decision processing
+✔ Telemetry-based learning
+✔ Event deduplication
+✔ Operational rollback protection
+✔ Distributed orchestration compatibility
+
+⸻
+
+MASTER PROMPT
+
+Build the COMPLETE AUTONOMOUS HOSPITALITY INTELLIGENCE LAYER for EEIS / E.A.T / SmokeCraft 360.
+
+The platform already contains:
+
+* operational telemetry
+* universal POS systems
+* websocket architecture
+* event propagation
+* aggregation workers
+* retry queues
+* Redis/Postgres event transport
+* AI recommendation systems
+* loyalty/XP systems
+* operational dashboards
+* venue telemetry
+* device synchronization
+* ambient intelligence foundations
+
+Now build the missing:
+
+AUTONOMOUS ORCHESTRATION ENGINE
+
+The system must evolve from:
+“reactive dashboard software”
+into:
+
+a living hospitality intelligence system.
+
+DO NOT build:
+
+* static automation
+* polling loops
+* hardcoded event chains
+* disconnected AI logic
+* generic recommendation engines
+
+Everything must be:
+
+* event-driven
+* adaptive
+* predictive
+* behavioral
+* multi-tenant
+* production-grade
+* orchestration-focused
+* operationally intelligent
+
+⸻
+
+REQUIRED BACKEND STRUCTURE
+
+Creat
