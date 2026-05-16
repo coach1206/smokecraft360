@@ -1,0 +1,241 @@
+NEXT EXECUTION TARGET:
+BUILD THE DEEPER COGNITION + PREDICTIVE LAYER NOW.
+
+Do NOT prioritize Command Center visuals yet.
+
+The visual layer should render REAL contextual cognition and predictive orchestration — not simulated UI effects.
+
+CURRENT PRIORITY ORDER:
+
+1. CONTEXT SUB-ENGINES
+2. PREDICTIVE / FORECASTING
+3. STATE ENGINES
+4. ENVIRONMENTAL MEMORY
+5. ORCHESTRATION REPLAY + ROLLBACK
+6. SOCKET HARDENING
+7. LIVE TELEMETRY LAYERS
+8. COMMAND CENTER VISUAL EXPANSION
+
+---
+
+BUILD NOW:
+
+server/cognition/context/
+
+Create:
+- contextBuilder.ts
+- contextAggregator.ts
+- contextWeighting.ts
+- contextScoring.ts
+- contextReplay.ts
+
+Requirements:
+- aggregate telemetry streams
+- aggregate operational state
+- aggregate AI memory
+- aggregate social energy
+- aggregate temporal patterns
+- aggregate environmental state
+- aggregate orchestration telemetry
+- output unified contextual awareness objects
+- confidence-weighted contextual prioritization
+- replay-safe context reconstruction
+- deterministic contextual scoring
+
+The Context Engine becomes:
+THE MASTER OPERATIONAL AWARENESS LAYER.
+
+All predictive systems must consume it.
+
+---
+
+THEN BUILD:
+
+server/cognition/predictive/
+
+Create:
+- momentumPrediction.ts
+- engagementForecasting.ts
+- conversionForecasting.ts
+- trafficPrediction.ts
+- environmentalPrediction.ts
+
+Requirements:
+- engagement wave prediction
+- venue momentum scoring
+- conversion probability
+- upsell forecasting
+- operational strain forecasting
+- environmental optimization prediction
+- recommendation confidence forecasting
+- VIP engagement prediction
+- traffic rhythm modeling
+
+All forecasting engines must consume:
+- context engine
+- temporal patterns
+- AI memory
+- social engagement
+- operational telemetry
+
+NO isolated prediction systems.
+
+---
+
+THEN BUILD:
+
+server/cognition/state/
+
+Create:
+- venueStateEngine.ts
+- guestStateEngine.ts
+
+Requirements:
+- authoritative live state systems
+- websocket synchronized
+- event-driven only
+- replay-safe state reconstruction
+- stale state cleanup
+- multi-tenant isolation
+- deterministic state updates
+
+These become:
+THE AUTHORITATIVE VENUE STATE LAYER.
+
+---
+
+THEN BUILD:
+
+server/cognition/environment/
+
+Create:
+- environmentalMemory.ts
+- atmosphereOptimization.ts
+
+Requirements:
+Track:
+- lighting profiles
+- sound profiles
+- engagement outcomes
+- conversion outcomes
+- pacing effectiveness
+- social density
+- recommendation performance
+
+The system must learn:
+which environmental conditions create optimal lounge behavior.
+
+This becomes:
+A MAJOR LONG-TERM MOAT.
+
+---
+
+THEN BUILD:
+
+server/intelligence/behavior/
+
+Create:
+- preferenceEvolution.ts
+- behavioralScoring.ts
+
+Requirements:
+- behavioral progression modeling
+- recommendation adaptation
+- VIP evolution tracking
+- flavor trajectory learning
+- session progression scoring
+- behavioral confidence scoring
+- longitudinal guest learning
+
+Evolve AI memory from:
+memory storage
+into:
+behavioral intelligence.
+
+---
+
+THEN BUILD:
+
+server/intelligence/orchestration/
+
+Create:
+- orchestrationQueue.ts
+- orchestrationReplay.ts
+- orchestrationRollback.ts
+
+Requirements:
+- replay-safe orchestration
+- rollback support
+- deterministic sequencing
+- orchestration auditing
+- event deduplication
+- failure recovery
+- emergency orchestration pause
+- replay reconstruction
+
+Critical before autonomous optimization scales.
+
+---
+
+THEN BUILD:
+
+server/realtime/socket/
+
+Create:
+- heartbeatManager.ts
+- replaySync.ts
+- websocketCompression.ts
+- socketAuth.ts
+
+Requirements:
+- authenticated websocket sessions
+- replay-safe reconnect handling
+- stale session cleanup
+- tenant-aware room isolation
+- operational payload compression
+- websocket heartbeat monitoring
+- reconnect synchronization
+- operational stream resilience
+
+This finalizes realtime infrastructure hardening.
+
+---
+
+THEN BUILD:
+
+server/realtime/telemetry/
+
+Create:
+- loungeHeatmap.ts
+- liveMetrics.ts
+- activeSessions.ts
+
+Requirements:
+- real-time operational telemetry
+- venue heatmaps
+- live engagement metrics
+- active session awareness
+- websocket streaming
+- contextual telemetry propagation
+- operational scoring integration
+
+---
+
+ONLY AFTER ALL OF THE ABOVE:
+
+Expand Command Center visuals with:
+- digital twin visualization
+- environmental effectiveness maps
+- social energy heatmaps
+- predictive overlays
+- orchestration timelines
+- contextual awareness visualization
+- live optimization telemetry
+- adapter certification monitoring
+- operational cognition overlays
+
+At that point:
+the Command Center will display REAL hospitality cognition,
+not cosmetic dashboards.
+
+DO NOT BUILD THE NASA VISUAL LAYER BEFORE PREDICTIVE COGNITION IS COMPLETE.
