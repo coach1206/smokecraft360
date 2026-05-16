@@ -1,0 +1,127 @@
+Correct.
+
+DO NOT rebuild platform/ systems that already exist.
+
+Your REAL remaining infrastructure gap is:
+DISTRIBUTED CLUSTER ORCHESTRATION.
+
+That is now the highest-priority architectural layer.
+
+PROCEED WITH:
+
+BATCH 1 — DISTRIBUTED CLUSTER CORE
+
+Create and fully wire:
+
+server/distributed/
+- clusterCoordinator.ts
+- distributedLocks.ts
+- workerLeaderElection.ts
+- orchestrationCoordinator.ts
+- distributedReplay.ts
+- nodeHealth.ts
+- clusterMembership.ts
+- distributedQueues.ts
+
+REQUIREMENTS:
+- multi-node awareness
+- distributed lock ownership
+- leader election
+- cluster-safe orchestration
+- replay ownership coordination
+- distributed worker scheduling
+- failover-safe queues
+- node heartbeat propagation
+- stale-node cleanup
+- degraded cluster handling
+- split-brain prevention
+- distributed queue ownership
+
+This removes:
+ALL remaining single-instance assumptions.
+
+---
+
+BATCH 2a — OBSERVABILITY EXPANSION
+
+ONLY build missing observability layers not already under platform/.
+
+Focus on:
+- distributed tracing propagation
+- orchestration timing metrics
+- websocket propagation timing
+- replay diagnostics
+- queue pressure telemetry
+- cognition timing metrics
+- distributed node telemetry
+- anomaly streams
+
+Avoid duplicating:
+existing metrics/logging foundations.
+
+---
+
+BATCH 2b — RECOVERY + RESILIENCE
+
+Focus on:
+- distributed recovery coordination
+- cluster-safe worker recovery
+- replay-safe failover recovery
+- distributed queue healing
+- degraded cluster recovery
+- adaptive throttling coordination
+- distributed load balancing
+
+This finalizes:
+SYSTEM RESILIENCE.
+
+---
+
+BATCH 2c — GOVERNANCE + ARCHIVE + SIMULATION
+
+ONLY build missing layers:
+- distributed schema evolution
+- replay compatibility
+- archival coordination
+- cluster-safe simulation orchestration
+- deployment governance
+- feature rollout governance
+
+Avoid rebuilding:
+existing feature flags or policy systems already completed.
+
+---
+
+NEXT CRITICAL STEP:
+
+WIRE EVERYTHING INTO:
+- app.ts
+- route registration
+- worker boot
+- transport registry
+- cluster coordinator
+- observability registry
+- distributed recovery systems
+
+REQUIREMENTS:
+- no orphan services
+- no unregistered workers
+- no disconnected telemetry
+- no isolated recovery logic
+- no duplicate event consumers
+- no circular boot dependencies
+
+VERIFY:
+- startup ordering
+- distributed boot safety
+- replay-safe initialization
+- leader-election ordering
+- worker ownership transfer
+- degraded cluster recovery
+
+IMPORTANT:
+The remaining work is now:
+INFRASTRUCTURE INTEGRATION + CLUSTER MATURITY.
+
+NOT:
+feature creation.

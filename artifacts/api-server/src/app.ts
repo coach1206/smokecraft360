@@ -65,6 +65,7 @@ import posMenuMappingRouter      from "./routes/posMenuMapping";
 import eeisOrdersRouter          from "./routes/eeisOrders";
 import intelligenceRouter         from "./routes/intelligence";
 import orchestrationRouter        from "./routes/orchestration";
+import distributedClusterRouter   from "./routes/distributedCluster";
 import cognitiveRouter            from "./routes/cognitiveIntelligence";
 import operationsRouter         from "./routes/operations";
 import imagesRouter             from "./routes/images";
@@ -572,6 +573,11 @@ app.use("/api/kernel",                  kernelRouter);
 app.use("/api/intelligence",  intelligenceRouter);
 app.use("/api/orchestration", orchestrationRouter);
 app.use("/api/cognitive",     cognitiveRouter);
+
+// ── Distributed Cluster + Extended Observability Layer ────────────────────────
+// Cluster membership, leader election, distributed locks, work queues,
+// replay coordination, anomaly monitoring, rollout management, governance
+app.use("/api",           distributedClusterRouter);
 
 // ── Platform Maturity Layer ───────────────────────────────────────────────────
 // Feature flags, policy engine, observability, backpressure, versioning,
